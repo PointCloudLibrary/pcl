@@ -63,7 +63,7 @@ namespace pcl
       PCL_EXPORTS virtual ~RangeImageSpherical () {}
 
       /** Return a newly created RangeImagePlanar.
-       *  Reimplmentation to return an image of the same type. */
+       *  Reimplementation to return an image of the same type. */
       virtual RangeImage*
       getNew () const { return new RangeImageSpherical; }
 

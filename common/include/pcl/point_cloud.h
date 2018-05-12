@@ -169,7 +169,7 @@ namespace pcl
     * \author Patrick Mihelich, Radu B. Rusu
     */
   template <typename PointT>
-  class PointCloud
+  class PCL_EXPORTS PointCloud
   {
     public:
       /** \brief Default constructor. Sets \ref is_dense to true, \ref width
@@ -414,7 +414,7 @@ namespace pcl
       /** \brief The point cloud height (if organized as an image-structure). */
       uint32_t height;
 
-      /** \brief True if no points are invalid (e.g., have NaN or Inf values). */
+      /** \brief True if no points are invalid (e.g., have NaN or Inf values in any of their floating point fields). */
       bool is_dense;
 
       /** \brief Sensor acquisition pose (origin/translation). */
@@ -427,6 +427,14 @@ namespace pcl
       typedef std::vector<PointCloud<PointT>, Eigen::aligned_allocator<PointCloud<PointT> > > CloudVectorType;
       typedef boost::shared_ptr<PointCloud<PointT> > Ptr;
       typedef boost::shared_ptr<const PointCloud<PointT> > ConstPtr;
+
+      // std container compatibility typedefs according to
+      // http://en.cppreference.com/w/cpp/concept/Container
+      typedef PointT        value_type;
+      typedef PointT&       reference;
+      typedef const PointT& const_reference;
+      typedef typename VectorType::difference_type difference_type;
+      typedef typename VectorType::size_type size_type;
 
       // iterators
       typedef typename VectorType::iterator iterator;

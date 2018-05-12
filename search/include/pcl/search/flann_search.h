@@ -59,27 +59,47 @@ namespace pcl
     /** \brief @b search::FlannSearch is a generic FLANN wrapper class for the new search interface.
       * It is able to wrap any FLANN index type, e.g. the kd tree as well as indices for high-dimensional
       * searches and intended as a more powerful and cleaner successor to KdTreeFlann.
+      * 
+      * By default, this class creates a single kd tree for indexing the input data. However, for high dimensions
+      * (> 10), it is often better to use the multiple randomized kd tree index provided by FLANN in combination with
+      * the \ref flann::L2 distance functor. During search in this type of index, the number of checks to perform before
+      * terminating the search can be controlled. Here is a code example if a high-dimensional 2-NN search:
+      * 
+      * \code
+      * // Feature and distance type
+      * typedef SHOT352 FeatureT;
+      * typedef flann::L2<float> DistanceT;
+      * 
+      * // Search and index types
+      * typedef search::FlannSearch<FeatureT, DistanceT> SearchT;
+      * typedef typename SearchT::FlannIndexCreatorPtr CreatorPtrT;
+      * typedef typename SearchT::KdTreeMultiIndexCreator IndexT;
+      * typedef typename SearchT::PointRepresentationPtr RepresentationPtrT;
+      * 
+      * // Features
+      * PointCloud<FeatureT>::Ptr query, target;
+      * 
+      * // Fill query and target with calculated features...
+      * 
+      * // Instantiate search object with 4 randomized trees and 256 checks
+      * SearchT search (true, CreatorPtrT (new IndexT (4)));
+      * search.setPointRepresentation (RepresentationPtrT (new DefaultFeatureRepresentation<FeatureT>));
+      * search.setChecks (256);
+      * search.setInputCloud (target);
+      * 
+      * // Do search
+      * std::vector<std::vector<int> > k_indices;
+      * std::vector<std::vector<float> > k_sqr_distances;
+      * search.nearestKSearch (*query, std::vector<int> (), 2, k_indices, k_sqr_distances);
+      * \endcode
       *
       * \author Andreas Muetzel
+      * \author Anders Glent Buch (multiple randomized kd tree interface)
       * \ingroup search
       */
     template<typename PointT, typename FlannDistance=flann::L2_Simple <float> >
     class FlannSearch: public Search<PointT>
     {
-      typedef typename Search<PointT>::PointCloud PointCloud;
-      typedef typename Search<PointT>::PointCloudConstPtr PointCloudConstPtr;
-
-      typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
-      typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
-      typedef flann::NNIndex< FlannDistance > Index;
-      typedef boost::shared_ptr<flann::NNIndex <FlannDistance > > IndexPtr;
-      typedef boost::shared_ptr<flann::Matrix <float> > MatrixPtr;
-      typedef boost::shared_ptr<const flann::Matrix <float> > MatrixConstPtr;
-
-      typedef pcl::PointRepresentation<PointT> PointRepresentation;
-      //typedef boost::shared_ptr<PointRepresentation> PointRepresentationPtr;
-      typedef boost::shared_ptr<const PointRepresentation> PointRepresentationConstPtr;
-
       using Search<PointT>::input_;
       using Search<PointT>::indices_;
       using Search<PointT>::sorted_results_;
@@ -87,6 +107,22 @@ namespace pcl
       public:
         typedef boost::shared_ptr<FlannSearch<PointT, FlannDistance> > Ptr;
         typedef boost::shared_ptr<const FlannSearch<PointT, FlannDistance> > ConstPtr;
+        
+        typedef typename Search<PointT>::PointCloud PointCloud;
+        typedef typename Search<PointT>::PointCloudConstPtr PointCloudConstPtr;
+
+        typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
+        typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
+
+        typedef boost::shared_ptr<flann::Matrix <float> > MatrixPtr;
+        typedef boost::shared_ptr<const flann::Matrix <float> > MatrixConstPtr;
+
+        typedef flann::NNIndex< FlannDistance > Index;
+        typedef boost::shared_ptr<flann::NNIndex <FlannDistance > > IndexPtr;
+
+        typedef pcl::PointRepresentation<PointT> PointRepresentation;
+        typedef boost::shared_ptr<PointRepresentation> PointRepresentationPtr;
+        typedef boost::shared_ptr<const PointRepresentation> PointRepresentationConstPtr;
 
         /** \brief Helper class that creates a FLANN index from a given FLANN matrix. To
           * use a FLANN index type with FlannSearch, implement this interface and
@@ -136,7 +172,7 @@ namespace pcl
         class KMeansIndexCreator: public FlannIndexCreator
         {
           public:
-          /** \param[in] max_leaf_size All FLANN kd trees created by this class will have
+          /** \brief All FLANN kd trees created by this class will have
             * a maximum of max_leaf_size points per leaf node. Higher values make index creation
             * cheaper, but search more costly (and the other way around).
             */
@@ -151,6 +187,29 @@ namespace pcl
             */
             virtual IndexPtr createIndex (MatrixConstPtr data);
           private:
+        };
+
+        /** \brief Creates a FLANN KdTreeIndex of multiple randomized trees from the given input data,
+         *  suitable for feature matching. Note that in this case, it is often more efficient to use the
+         *  \ref flann::L2 distance functor.
+          */
+        class KdTreeMultiIndexCreator: public FlannIndexCreator
+        {
+          public:
+          /** \param[in] trees Number of randomized trees to create.
+            */
+            KdTreeMultiIndexCreator (int trees = 4) : trees_ (trees) {}
+      
+            /** \brief Empty destructor */
+            virtual ~KdTreeMultiIndexCreator () {}
+
+          /** \brief Create a FLANN Index from the input data.
+            * \param[in] data The FLANN matrix containing the input.
+            * \return The FLANN index.
+            */
+            virtual IndexPtr createIndex (MatrixConstPtr data);
+          private:
+            int trees_;
         };
 
         FlannSearch (bool sorted = true, FlannIndexCreatorPtr creator = FlannIndexCreatorPtr (new KdTreeIndexCreator ()));
@@ -177,6 +236,22 @@ namespace pcl
         getEpsilon ()
         {
           return (eps_);
+        }
+
+        /** \brief Set the number of checks to perform during approximate searches in multiple randomized trees.
+          * \param[in] checks number of checks to perform during approximate searches in multiple randomized trees.
+          */
+        inline void
+        setChecks (int checks)
+        {
+          checks_ = checks;
+        }
+
+        /** \brief Get the number of checks to perform during approximate searches in multiple randomized trees. */
+        inline int
+        getChecks ()
+        {
+          return (checks_);
         }
 
         /** \brief Provide a pointer to the input dataset.
@@ -276,6 +351,11 @@ namespace pcl
         /** Epsilon for approximate NN search.
           */
         float eps_;
+        
+        /** Number of checks to perform for approximate NN search using the multiple randomized tree index
+         */
+        int checks_;
+        
         bool input_copied_for_flann_;
 
         PointRepresentationConstPtr point_representation_;

@@ -32,15 +32,14 @@ namespace pcl
       bool use_normals_;
       std::string directory_;
       float HEAD_ST_DIAMETER_;
-      float HEAD_ST_DIAMATER2_;
       float larger_radius_ratio_;
-      std::vector<Eigen::Vector3f> head_center_votes_;
-      std::vector<std::vector<Eigen::Vector3f> > head_center_votes_clustered_;
-      std::vector<std::vector<Eigen::Vector3f> > head_center_original_votes_clustered_;
-      std::vector<Eigen::Vector3f> angle_votes_;
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > head_center_votes_;
+      std::vector<std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > > head_center_votes_clustered_;
+      std::vector<std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > > head_center_original_votes_clustered_;
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > angle_votes_;
       std::vector<float> uncertainties_;
-      std::vector<Eigen::Vector3f> head_clusters_centers_;
-      std::vector<Eigen::Vector3f> head_clusters_rotation_;
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > head_clusters_centers_;
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > head_clusters_rotation_;
 
       pcl::PointCloud<pcl::PointXYZ>::Ptr input_;
       pcl::PointCloud<pcl::PointXYZI>::Ptr face_heat_map_;

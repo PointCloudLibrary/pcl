@@ -72,7 +72,7 @@ namespace pcl
           std::vector<CloudFilter*> & filter_list);
         virtual ~FilterWindow ();
 
-      public slots:
+      public Q_SLOTS:
         /** \brief Called if a different item in the filter list is selected. */
         virtual void itemSelected (int id);
         /** \brief Called when the 'finish' button is pressed. */
@@ -80,8 +80,8 @@ namespace pcl
         /** \brief Called when the 'next' button is pressed. */
         virtual void next ();
 
-      signals:
-        /** \brief Ommitted when a filter is created. */
+      Q_SIGNALS:
+        /** \brief Omitted when a filter is created. */
         void filterCreated ();
 
       protected:

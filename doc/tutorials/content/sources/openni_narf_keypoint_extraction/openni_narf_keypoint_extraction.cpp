@@ -87,7 +87,7 @@ int main (int argc, char** argv)
   pcl::visualization::RangeImageVisualizer range_image_widget ("Range Image");
   
   pcl::visualization::PCLVisualizer viewer ("3D Viewer");
-  viewer.addCoordinateSystem (1.0f);
+  viewer.addCoordinateSystem (1.0f, "global");
   viewer.setBackgroundColor (1, 1, 1);
   
   viewer.initCameraParameters ();

@@ -13,7 +13,7 @@
 #include <vtkLoopSubdivisionFilter.h>
 #include <vtkTriangle.h>
 #include <vtkTransform.h>
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>4)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>4)
 #include <vtkHardwareSelector.h>
 #include <vtkSelectionNode.h>
 #else 
@@ -61,7 +61,11 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
   vtkSmartPointer<vtkTransformFilter> trans_filter_center = vtkSmartPointer<vtkTransformFilter>::New ();
   trans_filter_center->SetTransform (trans_center);
+#if VTK_MAJOR_VERSION < 6
   trans_filter_center->SetInput (polydata_);
+#else
+  trans_filter_center->SetInputData (polydata_);
+#endif
   trans_filter_center->Update ();
 
   vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
@@ -109,16 +113,21 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
   ico->SetSolidTypeToIcosahedron ();
   ico->Update ();
 
-  //tesselate cells from icosahedron
+  //tessellate cells from icosahedron
   vtkSmartPointer<vtkLoopSubdivisionFilter> subdivide = vtkSmartPointer<vtkLoopSubdivisionFilter>::New ();
   subdivide->SetNumberOfSubdivisions (tesselation_level_);
   subdivide->SetInputConnection (ico->GetOutputPort ());
+#if VTK_MAJOR_VERSION>=6
+  subdivide->Update();
+#endif
 
   // Get camera positions
   vtkPolyData *sphere = subdivide->GetOutput ();
+#if VTK_MAJOR_VERSION<6
   sphere->Update ();
+#endif
 
-  std::vector<Eigen::Vector3f> cam_positions;
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > cam_positions;
   if (!use_vertices_)
   {
     vtkSmartPointer<vtkCellArray> cells_sphere = sphere->GetPolys ();

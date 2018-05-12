@@ -74,7 +74,6 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
   float h_a3_in[binsize] = {0};
   float h_a3_out[binsize] = {0};
   float h_a3_mix[binsize] = {0};
-  float h_d1[binsize] = {0};
 
   float h_d3_in[binsize] = {0};
   float h_d3_out[binsize] = {0};
@@ -109,7 +108,10 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
     Eigen::Vector4f v23 (p2 - p3);
     a = v21.norm (); b = v31.norm (); c = v23.norm (); s = (a+b+c) * 0.5f;
     if (s * (s-a) * (s-b) * (s-c) <= 0.001f)
-      continue;
+    {
+        nn_idx--;
+        continue;
+    }
 
     v21.normalize ();
     v31.normalize ();
@@ -186,7 +188,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
     }
 
     // D3 ( herons formula )
-    d3v.push_back (sqrtf (sqrtf (s * (s-a) * (s-b) * (s-c))));
+    d3v.push_back (std::sqrt (std::sqrt (s * (s-a) * (s-b) * (s-c))));
     if (vxlcnt_sum <= 21)
     {
       wt_d3.push_back (0);

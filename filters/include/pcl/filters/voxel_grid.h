@@ -186,11 +186,12 @@ namespace pcl
       typedef typename Filter<PointT>::PointCloud PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      
+    public:
+    
       typedef boost::shared_ptr< VoxelGrid<PointT> > Ptr;
       typedef boost::shared_ptr< const VoxelGrid<PointT> > ConstPtr;
- 
-
-    public:
+    
       /** \brief Empty constructor. */
       VoxelGrid () : 
         leaf_size_ (Eigen::Vector4f::Zero ()),
@@ -205,7 +206,8 @@ namespace pcl
         filter_field_name_ (""), 
         filter_limit_min_ (-FLT_MAX), 
         filter_limit_max_ (FLT_MAX),
-        filter_limit_negative_ (false)
+        filter_limit_negative_ (false),
+        min_points_per_voxel_ (0)
       {
         filter_name_ = "VoxelGrid";
       }
@@ -260,6 +262,17 @@ namespace pcl
         */
       inline bool 
       getDownsampleAllData () { return (downsample_all_data_); }
+
+      /** \brief Set the minimum number of points required for a voxel to be used.
+        * \param[in] min_points_per_voxel the minimum number of points for required for a voxel to be used
+        */
+      inline void 
+      setMinimumPointsNumberPerVoxel (unsigned int min_points_per_voxel) { min_points_per_voxel_ = min_points_per_voxel; }
+
+      /** \brief Return the minimum number of points required for a voxel to be used.
+       */
+      inline unsigned int
+      getMinimumPointsNumberPerVoxel () { return min_points_per_voxel_; }
 
       /** \brief Set to true if leaf layout information needs to be saved for later access.
         * \param[in] save_leaf_layout the new value (true/false)
@@ -471,6 +484,9 @@ namespace pcl
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_;
 
+      /** \brief Minimum number of points per voxel for the centroid to be computed */
+      unsigned int min_points_per_voxel_;
+
       typedef typename pcl::traits::fieldList<PointT>::type FieldList;
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
@@ -517,7 +533,8 @@ namespace pcl
         filter_field_name_ (""), 
         filter_limit_min_ (-FLT_MAX), 
         filter_limit_max_ (FLT_MAX),
-        filter_limit_negative_ (false)
+        filter_limit_negative_ (false),
+        min_points_per_voxel_ (0)
       {
         filter_name_ = "VoxelGrid";
       }
@@ -572,6 +589,17 @@ namespace pcl
         */
       inline bool 
       getDownsampleAllData () { return (downsample_all_data_); }
+
+      /** \brief Set the minimum number of points required for a voxel to be used.
+        * \param[in] min_points_per_voxel the minimum number of points for required for a voxel to be used
+        */
+      inline void 
+      setMinimumPointsNumberPerVoxel (unsigned int min_points_per_voxel) { min_points_per_voxel_ = min_points_per_voxel; }
+
+	  /** \brief Return the minimum number of points required for a voxel to be used.
+       */
+	  inline unsigned int
+	  getMinimumPointsNumberPerVoxel () { return min_points_per_voxel_; }
 
       /** \brief Set to true if leaf layout information needs to be saved for later access.
         * \param[in] save_leaf_layout the new value (true/false)
@@ -662,12 +690,12 @@ namespace pcl
         * \note for efficiency, user must make sure that the saving of the leaf layout is enabled and filtering performed
         */
       inline std::vector<int> 
-      getNeighborCentroidIndices (float x, float y, float z, const std::vector<Eigen::Vector3i> &relative_coordinates)
+      getNeighborCentroidIndices (float x, float y, float z, const std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > &relative_coordinates)
       {
         Eigen::Vector4i ijk (static_cast<int> (floorf (x * inverse_leaf_size_[0])), static_cast<int> (floorf (y * inverse_leaf_size_[1])), static_cast<int> (floorf (z * inverse_leaf_size_[2])), 0);
         std::vector<int> neighbors;
         neighbors.reserve (relative_coordinates.size ());
-        for (std::vector<Eigen::Vector3i>::const_iterator it = relative_coordinates.begin (); it != relative_coordinates.end (); it++)
+        for (std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> >::const_iterator it = relative_coordinates.begin (); it != relative_coordinates.end (); it++)
           neighbors.push_back (leaf_layout_[(ijk + (Eigen::Vector4i() << *it, 0).finished() - min_b_).dot (divb_mul_)]);
         return (neighbors);
       }
@@ -810,6 +838,9 @@ namespace pcl
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_;
+
+      /** \brief Minimum number of points per voxel for the centroid to be computed */
+      unsigned int min_points_per_voxel_;
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
         * \param[out] output the resultant point cloud

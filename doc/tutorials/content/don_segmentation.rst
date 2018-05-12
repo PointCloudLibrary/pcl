@@ -8,7 +8,6 @@ In this tutorial we will learn how to use Difference of Normals features, implem
 
 This algorithm performs a scale based segmentation of the given input point cloud, finding points that belong within the scale parameters given.
 
-.. donpipeline::
 .. figure:: images/donpipelinesmall.jpg
    :align: center
 
@@ -28,7 +27,6 @@ Formally the Difference of Normals operator is defined,
 
 where :math:`$r_s, r_l \in \mathbb{R}$`, :math:`$r_s<r_l$`, and :math:`$\mathbf{\hat{n}}(p, r)$` is the surface normal estimate at point :math:`$p$`, given the support radius :math:`$r$`. Notice, the response of the operator is a normalized vector field, and is thus orientable (the resulting direction is a key feature), however the operator's norm often provides an easier quantity to work with, and is always in the range :math:`(0,1)`.
 
-.. scalenormals_figure::
 .. figure:: images/don_scalenormals.svg
    :width: 60%
    :align: center
@@ -40,7 +38,6 @@ The primary motivation behind DoN is the observation that surface normals estima
 
 The above diagram illustrates this effect in 1D. Normals, :math:`$\mathbf{\hat{n}}$`, and tangents, :math:`$T$`, estimated with a small support radius :math:`$r_s$` are affected by small-scale surface structure (and similarly by noise). On the other hand, normals and tangent planes estimated with a large support radius $r_l$ are less affected by small-scale structure, and represent the geometry of larger scale surface structures. In fact a similair set of features is seen in the DoN feature vectors for real-world street curbs in a LiDAR image shown below.
 
-.. doncurbcloseup::
 .. figure:: images/don_curb_closeup_small.jpg
    :align: center
 
@@ -60,9 +57,9 @@ For segmentation we simply perform the following:
 
 The Data Set
 ============
-For this tutorial we suggest the use of publically available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. Examples and an example data set will be posted here in future as part of the tutorial. 
+For this tutorial we suggest the use of publicly available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. Examples and an example data set will be posted here in future as part of the tutorial. 
 
-.. For this tutorial we will use publically available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. An example scan is presented here from the KITTI data set in PCL form, is available for use with this example, `<https://raw.github.com/PointCloudLibrary/data/master/tutorials/don_segmentation_tutorial.pcd>`_.
+.. For this tutorial we will use publicly available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. An example scan is presented here from the KITTI data set in PCL form, is available for use with this example, `<https://raw.github.com/PointCloudLibrary/data/master/tutorials/don_segmentation_tutorial.pcd>`_.
 
 The Code
 ========
@@ -119,7 +116,7 @@ This is perhaps the most important section of code, estimating the normals. This
    :language: cpp
    :lines: 90-102
 
-Next we calculate the normals using our normal estimation class for both the large and small radius. It is important to use the ``NormalEstimation.setRadiusSearch()`` method v.s. the ``NormalEstimation.setMaximumNeighbours()`` method or equivilant. If the normal estimate is restricted to a set number of neighbours, it may not be based on the complete surface of the given radius, and thus is not suitable for the Difference of Normals features.
+Next we calculate the normals using our normal estimation class for both the large and small radius. It is important to use the ``NormalEstimation.setRadiusSearch()`` method v.s. the ``NormalEstimation.setMaximumNeighbours()`` method or equivalent. If the normal estimate is restricted to a set number of neighbours, it may not be based on the complete surface of the given radius, and thus is not suitable for the Difference of Normals features.
 
 .. note::
    For large supporting radii in dense point clouds, calculating the normal would be a very computationally intensive task potentially utilizing thousands of points in the calculation, when hundreds are more than enough for an accurate estimate. A simple method to speed up the calculation is to uniformly subsample the pointcloud when doing a large radius search, see the full example code in the PCL distribution at ``examples/features/example_difference_of_normals.cpp`` for more details.

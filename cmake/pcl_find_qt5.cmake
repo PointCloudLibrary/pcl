@@ -55,6 +55,8 @@ if(Qt5Core_FOUND)
     # set(CMAKE_AUTOMOC ON)
     # set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+    set(QT_QTOPENGL_INCLUDE_DIR Qt5OpenGL_INCLUDE_DIRS)
+
     # Replace qt4 macros.
     macro(qt4_wrap_cpp)
         qt5_wrap_cpp(${ARGN})
@@ -68,7 +70,7 @@ if(Qt5Core_FOUND)
         endmacro()
     endif()
 
-    set(QT_USE_FILE ${CMAKE_CURRENT_BINARY_DIR}/use-qt5.cmake CACHE PATH "")
+    set(QT_USE_FILE ${CMAKE_CURRENT_BINARY_DIR}/use-qt5.cmake CACHE PATH "" FORCE)
     file(WRITE ${QT_USE_FILE} "#")
 
     # Trick the remainder of the build system.

@@ -64,7 +64,7 @@ What `PointT` types are available in PCL?
 
 To cover all possible cases that we could think of, we defined a plethora of
 point types in PCL. The following might be only a snippet, please see
-`point_types.hpp <http://docs.pointclouds.org/point__types_8hpp_source.html>`_
+`point_types.hpp <https://github.com/PointCloudLibrary/pcl/blob/master/common/include/pcl/impl/point_types.hpp>`_
 for the complete list.
 
 This list is important, because before defining your own custom type, you need
@@ -127,7 +127,7 @@ addition, the type that you want, might already be defined for you.
 
 * `PointXYZRGBA` - Members: float x, y, z; uint32_t rgba;
 
-  Similar to `PointXYZI`, except `rgba` containts the RGBA information packed
+  Similar to `PointXYZI`, except `rgba` contains the RGBA information packed
   into a single integer.
 
 .. code-block:: cpp
@@ -197,7 +197,7 @@ addition, the type that you want, might already be defined for you.
 
 * `InterestPoint` - float x, y, z, strength;
 
-  Similar to `PointXYZI`, except `strength` containts a measure of the strength
+  Similar to `PointXYZI`, except `strength` contains a measure of the strength
   of the keypoint.
 
 .. code-block:: cpp
@@ -374,7 +374,7 @@ addition, the type that you want, might already be defined for you.
 
 * `PointWithRange` - float x, y, z (union with float point[4]), range;
 
-  Similar to `PointXYZI`, except `range` containts a measure of the distance
+  Similar to `PointXYZI`, except `range` contains a measure of the distance
   from the acqusition viewpoint to the point in the world.
 
 .. code-block:: cpp
@@ -401,7 +401,7 @@ addition, the type that you want, might already be defined for you.
 
 * `PointWithViewpoint` - float x, y, z, vp_x, vp_y, vp_z;
 
-  Similar to `PointXYZI`, except `vp_x`, `vp_y`, and `vp_z` containt the
+  Similar to `PointXYZI`, except `vp_x`, `vp_y`, and `vp_z` contain the
   acquisition viewpoint as a 3D point.
 
 .. code-block:: cpp
@@ -584,7 +584,7 @@ addition, the type that you want, might already be defined for you.
 
 * `PointWithScale` - float x, y, z, scale;
 
-  Similar to `PointXYZI`, except `scale` containts the scale at which a certain
+  Similar to `PointXYZI`, except `scale` contains the scale at which a certain
   point was considered for a geometric operation (e.g. the radius of the sphere
   for its nearest neighbors computation, the window size, etc).
 
@@ -807,8 +807,8 @@ make sense to try to use explicit instantiations for your `MyPointType` types,
 for any classes that you expose (from PCL our outside PCL).
 
 .. note::
-Starting with PCL-1.7 you need to define PCL_NO_PRECOMPILE before you include
-any PCL headers to include the templated algorithms as well.
+   Starting with PCL-1.7 you need to define PCL_NO_PRECOMPILE before you include
+   any PCL headers to include the templated algorithms as well.
 
 Example
 -------

@@ -68,6 +68,12 @@ main (int argc, char **argv)
   int lumIter = 1;
   pcl::console::parse_argument (argc, argv, "-l", lumIter);
 
+  double loopDist = 5.0;
+  pcl::console::parse_argument (argc, argv, "-D", loopDist);
+
+  unsigned int loopCount = 20;
+  pcl::console::parse_argument (argc, argv, "-c", loopCount);
+
   pcl::registration::LUM<PointType> lum;
   lum.setMaxIterations (lumIter);
   lum.setConvergenceThreshold (0.001f);
@@ -97,9 +103,9 @@ main (int argc, char **argv)
 
         //std::cout << i << " " << j << " " << diff.norm () << std::endl;
 
-        if(diff.norm () < 5.0 && (i - j == 1 || i - j > 20))
+        if(diff.norm () < loopDist && (i - j == 1 || i - j > loopCount))
         {
-          if(i - j > 20)
+          if(i - j > loopCount)
             std::cout << "add connection between " << i << " (" << clouds[i].first << ") and " << j << " (" << clouds[j].first << ")" << std::endl;
           pcl::registration::CorrespondenceEstimation<PointType, PointType> ce;
           ce.setInputTarget (clouds[i].second);
@@ -113,14 +119,14 @@ main (int argc, char **argv)
 
     lum.compute ();
 
-    for(int i = 0; i < lum.getNumVertices (); i++)
+    for(size_t i = 0; i < lum.getNumVertices (); i++)
     {
       //std::cout << i << ": " << lum.getTransformation (i) (0, 3) << " " << lum.getTransformation (i) (1, 3) << " " << lum.getTransformation (i) (2, 3) << std::endl;
       clouds[i].second = lum.getTransformedCloud (i);
     }
   }
 
-  for(int i = 0; i < lum.getNumVertices (); i++)
+  for(size_t i = 0; i < lum.getNumVertices (); i++)
   {
     std::string result_filename (clouds[i].first);
     result_filename = result_filename.substr (result_filename.rfind ("/") + 1);

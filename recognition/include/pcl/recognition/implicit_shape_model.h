@@ -104,6 +104,7 @@ namespace pcl
           * \param[out] out_peaks it will contain the strongest peaks
           * \param[in] in_class_id class of interest for which peaks are evaluated
           * \param[in] in_non_maxima_radius non maxima supression radius. The shapes radius is recommended for this value.
+          * \param in_sigma
           */
         void
         findStrongestPeaks (std::vector<ISMPeak, Eigen::aligned_allocator<ISMPeak> > &out_peaks, int in_class_id, double in_non_maxima_radius, double in_sigma);
@@ -356,7 +357,7 @@ namespace pcl
         void
         setTrainingClasses (const std::vector<unsigned int>& training_classes);
 
-        /** \brief This method returns the coresponding cloud of normals for every training point cloud. */
+        /** \brief This method returns the corresponding cloud of normals for every training point cloud. */
         std::vector<typename pcl::PointCloud<NormalT>::Ptr>
         getTrainingNormals ();
 
@@ -404,7 +405,7 @@ namespace pcl
         /** \brief This method allows to set the value of sigma used for calculating the learned weights for every single class.
           * \param[in] training_sigmas new sigmas for every class. If you want these values to be computed automatically,
           * just pass the empty array. The automatic regime calculates the maximum distance between the objects points and takes 10% of
-          * this value as recomended in the article. If there are several objects of the same class,
+          * this value as recommended in the article. If there are several objects of the same class,
           * then it computes the average maximum distance and takes 10%. Note that each class has its own sigma value.
           */
         void
@@ -425,7 +426,7 @@ namespace pcl
 
         /** \brief This method performs training and forms a visual vocabulary. It returns a trained model that
           * can be saved to file for later usage.
-          * \param[out] model trained model
+          * \param[out] trained_model trained model
           */
         bool
         trainISM (ISMModelPtr& trained_model);
@@ -434,7 +435,7 @@ namespace pcl
           * and returns the list of votes.
           * \param[in] model trained model which will be used for searching the objects
           * \param[in] in_cloud input cloud that need to be investigated
-          * \param[in] in_normals cloud of normals coresponding to the input cloud
+          * \param[in] in_normals cloud of normals corresponding to the input cloud
           * \param[in] in_class_of_interest class which we are looking for
           */
         boost::shared_ptr<pcl::features::ISMVoteList<PointT> >
@@ -454,7 +455,7 @@ namespace pcl
         /** \brief This method performs descriptor clustering.
           * \param[in] histograms descriptors to cluster
           * \param[out] labels it contains labels for each descriptor
-          * \param[out] cluster_centers stores the centers of clusters
+          * \param[out] clusters_centers stores the centers of clusters
           */
         bool
         clusterDescriptors (std::vector< pcl::Histogram<FeatureSize> >& histograms, Eigen::MatrixXi& labels, Eigen::MatrixXf& clusters_centers);
@@ -467,7 +468,6 @@ namespace pcl
 
         /** \brief This function forms a visual vocabulary and evaluates weights
           * described in [Knopp et al., 2010, (5)].
-          * \param[in] classes classes that we want to learn
           * \param[in] locations array containing description of each keypoint: its position, which cloud belongs
           * and expected direction to center
           * \param[in] labels labels that were obtained during k-means clustering
@@ -520,7 +520,6 @@ namespace pcl
 
         /** \brief This method estimates features for the given point cloud.
           * \param[in] sampled_point_cloud sampled point cloud for which the features must be computed
-          * \param[in] point_cloud original point cloud
           * \param[in] normal_cloud normals for the original point cloud
           * \param[out] feature_cloud it will store the computed histograms (features) for the given cloud
           */
@@ -566,9 +565,9 @@ namespace pcl
           * \param[out] center it will the contain generated center
           */
         void
-        generateRandomCenter (const std::vector<Eigen::Vector2f>& boxes, Eigen::VectorXf& center);
+        generateRandomCenter (const std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >& boxes, Eigen::VectorXf& center);
 
-        /** \brief Computes the square distance beetween two vectors.
+        /** \brief Computes the square distance between two vectors.
           * \param[in] vec_1 first vector
           * \param[in] vec_2 second vector
           */

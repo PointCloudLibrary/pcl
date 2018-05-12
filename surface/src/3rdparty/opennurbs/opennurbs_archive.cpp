@@ -3839,7 +3839,7 @@ bool ON_BinaryArchive::WriteObjectUserData( const ON_Object& object )
           {
             // 22 January 2004 Dale Lear
             //   Disable crc checking when writing the
-            //   unknow user data block.
+            //   unknown user data block.
             //   This has to be done so we don't get an extra
             //   32 bit CRC calculated on the block that
             //   ON_UnknownUserData::Write() writes.  The
@@ -13557,7 +13557,7 @@ bool ON_WriteOneObjectArchive(
 
   while(pObject)
   {
-    rc = archive.Write3dmStartSection( version, "Archive created by ON_WriteOneObjectArchive "__DATE__" "__TIME__ );
+    rc = archive.Write3dmStartSection( version, "Archive created by ON_WriteOneObjectArchive " __DATE__ " " __TIME__ );
     if ( !rc )
       break;
 
@@ -15366,7 +15366,7 @@ const wchar_t* ON_FileIterator::NextFile()
       0, // null output error status
       (4|8|16), // mask common conversion errors
       0, // error_code_point = null terminator inserted at point of conversion error
-      0  // null ouput end-of-string pointer
+      0  // null output end-of-string pointer
       );
     // TODO
     //   Test m_dirent.d_name to make sure it passes m_ws/utf8_file_name_filter

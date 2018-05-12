@@ -128,7 +128,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
     filter.setStddevMulThresh (std_dev_mul);
     filter.setNegative (negative);
     filter.setKeepOrganized (keep_organized);
-    PCL_INFO ("Computing filtered cloud from %zu points with mean_k %d, std_dev_mul %f, inliers %d ...", xyz_cloud->size (), filter.getMeanK (), filter.getStddevMulThresh (), filter.getNegative ());
+    PCL_INFO ("Computing filtered cloud from %lu points with mean_k %d, std_dev_mul %f, inliers %d ...", xyz_cloud->size (), filter.getMeanK (), filter.getStddevMulThresh (), filter.getNegative ());
     filter.filter (*xyz_cloud_filtered);
     // Get the indices that have been explicitly removed
     filter.getRemovedIndices (*removed_indices);
@@ -141,7 +141,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
     filter.setMinNeighborsInRadius (min_pts);
     filter.setNegative (negative);
     filter.setKeepOrganized (keep_organized);
-    PCL_INFO ("Computing filtered cloud from %zu points with radius %f, min_pts %d ...", xyz_cloud->size (), radius, min_pts);
+    PCL_INFO ("Computing filtered cloud from %lu points with radius %f, min_pts %d ...", xyz_cloud->size (), radius, min_pts);
     filter.filter (*xyz_cloud_filtered);
     // Get the indices that have been explicitly removed
     filter.getRemovedIndices (*removed_indices);
@@ -152,7 +152,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
     return;
   }
     
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", xyz_cloud_filtered->width * xyz_cloud_filtered->height); print_info (" points, %zu indices removed]\n", removed_indices->indices.size ());
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", xyz_cloud_filtered->width * xyz_cloud_filtered->height); print_info (" points, %lu indices removed]\n", removed_indices->indices.size ());
 
   if (keep_organized)
   {

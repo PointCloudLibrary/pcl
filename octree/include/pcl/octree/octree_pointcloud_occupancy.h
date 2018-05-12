@@ -39,7 +39,7 @@
 #ifndef PCL_OCTREE_OCCUPANCY_H
 #define PCL_OCTREE_OCCUPANCY_H
 
-#include "octree_pointcloud.h"
+#include <pcl/octree/octree_pointcloud.h>
 
 namespace pcl
 {
@@ -93,16 +93,16 @@ namespace pcl
          *  \param point_arg:  input point
          * */
         void setOccupiedVoxelAtPoint( const PointT& point_arg ) {
-        	OctreeKey key;
+            OctreeKey key;
 
             // make sure bounding box is big enough
-            adoptBoundingBoxToPoint (point_arg);
+            this->adoptBoundingBoxToPoint (point_arg);
 
             // generate key
-            genOctreeKeyforPoint (point_arg, key);
+            this->genOctreeKeyforPoint (point_arg, key);
 
             // add point to octree at key
-            this->addData (key, 0);
+            this->createLeaf (key);
         }
 
         /** \brief Set occupied voxels at all points from point cloud.

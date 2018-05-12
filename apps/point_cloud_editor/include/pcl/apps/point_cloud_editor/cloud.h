@@ -45,6 +45,17 @@
 #include <QtGui/QColor>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/statistics.h>
+#ifdef OPENGL_IS_A_FRAMEWORK
+# include <OpenGL/gl.h>
+# include <OpenGL/glu.h>
+#else
+#if _WIN32
+// Need this to pull in APIENTRY, etc.
+#include "windows.h"
+#endif
+# include <GL/gl.h>
+# include <GL/glu.h>
+#endif
 
 /// @brief A wrapper which allows to use any implementation of cloud provided by
 /// a third-party library.
@@ -348,7 +359,7 @@ class Cloud : public Statistics
     /// @param pts a vector used to store the points whose coordinates are
     /// transformed.
     void
-    getDisplaySpacePoints (std::vector<Point3D>& pts) const;
+    getDisplaySpacePoints (Point3DVector& pts) const;
 
     /// @brief Returns a const reference to the internal representation of this
     /// object.
@@ -402,7 +413,7 @@ class Cloud : public Statistics
     /// The internal representation of the cloud
     Cloud3D cloud_;
 
-    /// @breif A weak pointer pointing to the selection object.
+    /// @brief A weak pointer pointing to the selection object.
     /// @details This implementation uses the weak pointer to allow for a lazy
     /// update of the cloud if the selection object is destroyed.
     boost::weak_ptr<Selection> selection_wk_ptr_;
@@ -410,10 +421,6 @@ class Cloud : public Statistics
     /// Flag that indicates whether a color ramp should be used (true) or not
     /// (false) when displaying the cloud
     bool use_color_ramp_;
-
-    /// Flag that indicates whether the cloud should be colored with its own
-    /// color
-    bool use_native_color_;
 
     /// The axis which the color ramp is to be applied when drawing the cloud
     Axis color_ramp_axis_;

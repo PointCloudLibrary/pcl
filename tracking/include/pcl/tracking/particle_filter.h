@@ -5,13 +5,12 @@
 #include <pcl/tracking/tracker.h>
 #include <pcl/tracking/coherence.h>
 #include <pcl/filters/passthrough.h>
-#include <pcl/octree/octree.h>
+#include <pcl/octree/octree_pointcloud_changedetector.h>
 
 #include <Eigen/Dense>
 
 namespace pcl
 {
-
   namespace tracking
   {
     /** \brief @b ParticleFilterTracker tracks the PointCloud which is given by
@@ -376,7 +375,7 @@ namespace pcl
         
         /** \brief Implementation of "sample with replacement" using Walker's alias method.
             about Walker's alias method, you can check the paper below:
-            @article{355749,
+             article{355749},
              author = {Walker, Alastair J.},
              title = {An Efficient Method for Generating Discrete
              Random Variables with General Distributions},

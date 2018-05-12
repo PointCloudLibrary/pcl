@@ -61,7 +61,7 @@ pcl::SampleConsensusModelParallelPlane<PointT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::SampleConsensusModelParallelPlane<PointT>::countWithinDistance (
-      const Eigen::VectorXf &model_coefficients, const double threshold)
+      const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -73,7 +73,7 @@ pcl::SampleConsensusModelParallelPlane<PointT>::countWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelParallelPlane<PointT>::getDistancesToModel (
-      const Eigen::VectorXf &model_coefficients, std::vector<double> &distances)
+      const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) const
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -87,14 +87,10 @@ pcl::SampleConsensusModelParallelPlane<PointT>::getDistancesToModel (
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelParallelPlane<PointT>::isModelValid (const Eigen::VectorXf &model_coefficients)
+pcl::SampleConsensusModelParallelPlane<PointT>::isModelValid (const Eigen::VectorXf &model_coefficients) const
 {
-  // Needs a valid model coefficients
-  if (model_coefficients.size () != 4)
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelParallelPlane::isModelValid] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+  if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
     return (false);
-  }
 
   // Check against template, if given
   if (eps_angle_ > 0.0)

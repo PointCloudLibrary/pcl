@@ -418,7 +418,7 @@ void openni_wrapper::OpenNIDevice::InitShiftToDepthConversion ()
   {
     // Calculate shift conversion table
 
-    pcl::int32_t nIndex = 0;
+    pcl::uint32_t nIndex = 0;
     pcl::int32_t nShiftValue = 0;
     double dFixedRefX = 0;
     double dMetric = 0;
@@ -1129,7 +1129,7 @@ openni_wrapper::OpenNIDevice::findCompatibleImageMode (const XnMapOutputMode& ou
       if (modeIt->nFPS == output_mode.nFPS && isImageResizeSupported (modeIt->nXRes, modeIt->nYRes, output_mode.nXRes, output_mode.nYRes))
       {
         if (found)
-        { // check wheter the new mode is better -> smaller than the current one.
+        { // check whether the new mode is better -> smaller than the current one.
           if (mode.nXRes * mode.nYRes > modeIt->nXRes * modeIt->nYRes )
             mode = *modeIt;
         }
@@ -1161,7 +1161,7 @@ openni_wrapper::OpenNIDevice::findCompatibleDepthMode (const XnMapOutputMode& ou
       if (modeIt->nFPS == output_mode.nFPS && isImageResizeSupported (modeIt->nXRes, modeIt->nYRes, output_mode.nXRes, output_mode.nYRes))
       {
         if (found)
-        { // check wheter the new mode is better -> smaller than the current one.
+        { // check whether the new mode is better -> smaller than the current one.
           if (mode.nXRes * mode.nYRes > modeIt->nXRes * modeIt->nYRes )
             mode = *modeIt;
         }

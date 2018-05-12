@@ -190,7 +190,7 @@ namespace pcl
       // vector for nearest neighbor candidates
       std::vector<nearestNeighborCandidate> nearestNeighbors;
 
-      // iterator for radius seach lookup table
+      // iterator for radius search lookup table
       typename std::vector<radiusSearchLoopkupEntry>::const_iterator radiusSearchLookup_Iterator;
       radiusSearchLookup_Iterator = radiusSearchLookup_.begin ();
 

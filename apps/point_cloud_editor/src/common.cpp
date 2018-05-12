@@ -70,7 +70,7 @@ multMatrix(const float* left, const float* right, float* result)
 
 // This code was found on:
 // http://stackoverflow.com/questions/1148309/inverting-a-4x4-matrix
-// and is listed as being part of an open soure project (the MESA project)
+// and is listed as being part of an open source project (the MESA project)
 //
 // The original code in MESA comes from __gluInvertMatrixd() in project.c
 //

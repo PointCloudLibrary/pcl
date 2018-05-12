@@ -58,7 +58,7 @@ namespace pcl
         ItemInspector (QWidget* parent = 0);
         virtual ~ItemInspector();
       
-      public slots:
+      public Q_SLOTS:
         void 
         setModel (ProjectModel* new_model);
         void 
@@ -74,7 +74,7 @@ namespace pcl
         /** \brief Stores the state of the current tree view in item_treestate_map_  */
         void 
         storeTreeState ();
-        /** \brief Retores the state of \param model 's view from item_treestate_map_  */
+        /** \brief Restores the state of \param model 's view from item_treestate_map_  */
         void
         restoreTreeState ();
         /** \brief Removes the extra tabs the item might have */

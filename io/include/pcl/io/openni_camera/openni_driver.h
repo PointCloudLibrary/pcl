@@ -198,7 +198,7 @@ namespace openni_wrapper
     /**
      * @author Suat Gedikli
      * @brief decomposes the connection string into vendor id and product id.
-     * @param[in] connection_string the string containing teh connection information
+     * @param[in] connection_string the string containing the connection information
      * @param[out] vendorId the vendor id
      * @param[out] productId the product id
      */

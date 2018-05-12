@@ -46,7 +46,7 @@
 #include <pcl/exceptions.h>
 #include <iostream>
 
-namespace pcl
+namespace
 {
   typedef union
   {
@@ -60,6 +60,10 @@ namespace pcl
     float float_value;
     long long_value;
   } RGBValue;
+}
+
+namespace pcl
+{
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)

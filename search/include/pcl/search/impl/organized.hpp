@@ -77,7 +77,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   k_sqr_distances.reserve (max_nn);
 
   unsigned yEnd  = (bottom + 1) * input_->width + right + 1;
-  register unsigned idx  = top * input_->width + left;
+  unsigned idx  = top * input_->width + left;
   unsigned skip = input_->width - right + left - 1;
   unsigned xEnd = idx - left + right + 1;
 
@@ -153,7 +153,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
     testPoint (query, k, results, yBegin * input_->width + xBegin);
   else // point lys
   {
-    // find the box that touches the image border -> dont waste time evaluating boxes that are completely outside the image!
+    // find the box that touches the image border -> don't waste time evaluating boxes that are completely outside the image!
     int dist = std::numeric_limits<int>::max ();
 
     if (xBegin < 0)
@@ -350,14 +350,14 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   std::vector<int> indices;
   indices.reserve (input_->size () >> (pyramid_level_ << 1));
   
-  for (unsigned yIdx = 0, idx = 0; yIdx < input_->height; yIdx += ySkip, idx += input_->width * (ySkip - 1))
+  for (unsigned yIdx = 0, idx = 0; yIdx < input_->height; yIdx += ySkip, idx += input_->width * ySkip)
   {
-    for (unsigned xIdx = 0; xIdx < input_->width; xIdx += xSkip, idx += xSkip)
+    for (unsigned xIdx = 0, idx2 = idx; xIdx < input_->width; xIdx += xSkip, idx2 += xSkip)
     {
-      if (!mask_ [idx])
+      if (!mask_ [idx2])
         continue;
 
-      indices.push_back (idx);
+      indices.push_back (idx2);
     }
   }
 

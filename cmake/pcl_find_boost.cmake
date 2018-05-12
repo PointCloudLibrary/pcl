@@ -14,9 +14,16 @@ else(PCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32 AND WIN32)
 endif(PCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32 AND WIN32)
 
 if(${CMAKE_VERSION} VERSION_LESS 2.8.5)
-  SET(Boost_ADDITIONAL_VERSIONS "1.43" "1.43.0" "1.44" "1.44.0" "1.45" "1.45.0" "1.46.1" "1.46.0" "1.46" "1.47" "1.47.0")
+  set(Boost_ADDITIONAL_VERSIONS
+    "1.47.0" "1.47" "1.46.1"
+    "1.46.0" "1.46" "1.45.0" "1.45" "1.44.0" "1.44" "1.43.0" "1.43")
 else(${CMAKE_VERSION} VERSION_LESS 2.8.5)
-  SET(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0" "1.48" "1.48.0" "1.49" "1.49.0")
+  set(Boost_ADDITIONAL_VERSIONS
+    "1.66.0" "1.66" "1.65.1" "1.65.0" "1.65"
+    "1.64.0" "1.64" "1.63.0" "1.63" "1.62.0" "1.62" "1.61.0" "1.61" "1.60.0" "1.60"
+    "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55"
+    "1.54.0" "1.54" "1.53.0" "1.53" "1.52.0" "1.52" "1.51.0" "1.51"
+    "1.50.0" "1.50" "1.49.0" "1.49" "1.48.0" "1.48" "1.47.0" "1.47")
 endif(${CMAKE_VERSION} VERSION_LESS 2.8.5)
 
 # Disable the config mode of find_package(Boost)
@@ -24,23 +31,18 @@ set(Boost_NO_BOOST_CMAKE ON)
 
 # Optional boost modules
 find_package(Boost 1.40.0 QUIET COMPONENTS serialization mpi)
-if(Boost_MPI_FOUND)
-  set(BOOST_MPI_FOUND TRUE)
-endif(Boost_MPI_FOUND)
 if(Boost_SERIALIZATION_FOUND)
   set(BOOST_SERIALIZATION_FOUND TRUE)
 endif(Boost_SERIALIZATION_FOUND)
 
 # Required boost modules
-set(BOOST_REQUIRED_MODULES system filesystem thread date_time iostreams)
-# Starting with Boost 1.50, boost_thread depends on chrono. As this is not
-# taken care of automatically on Windows, we add an explicit dependency as a
-# workaround.
-if(WIN32 AND Boost_VERSION VERSION_GREATER "104900")
-  set(BOOST_REQUIRED_MODULES ${BOOST_REQUIRED_MODULES} chrono)
-endif(WIN32 AND Boost_VERSION VERSION_GREATER "104900")
-
+if(WITH_OPENNI2)
+set(BOOST_REQUIRED_MODULES filesystem thread date_time iostreams chrono system)
+find_package(Boost 1.47.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
+else()
+set(BOOST_REQUIRED_MODULES filesystem thread date_time iostreams system)
 find_package(Boost 1.40.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
+endif()
 
 if(Boost_FOUND)
   set(BOOST_FOUND TRUE)

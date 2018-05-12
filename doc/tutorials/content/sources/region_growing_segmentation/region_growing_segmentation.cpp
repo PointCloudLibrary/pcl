@@ -35,14 +35,14 @@ main (int argc, char** argv)
   pass.filter (*indices);
 
   pcl::RegionGrowing<pcl::PointXYZ, pcl::Normal> reg;
-  reg.setMinClusterSize (100);
-  reg.setMaxClusterSize (10000);
+  reg.setMinClusterSize (50);
+  reg.setMaxClusterSize (1000000);
   reg.setSearchMethod (tree);
   reg.setNumberOfNeighbours (30);
   reg.setInputCloud (cloud);
   //reg.setIndices (indices);
   reg.setInputNormals (normals);
-  reg.setSmoothnessThreshold (7.0 / 180.0 * M_PI);
+  reg.setSmoothnessThreshold (3.0 / 180.0 * M_PI);
   reg.setCurvatureThreshold (1.0);
 
   std::vector <pcl::PointIndices> clusters;
@@ -53,11 +53,14 @@ main (int argc, char** argv)
   std::cout << "These are the indices of the points of the initial" <<
     std::endl << "cloud that belong to the first cluster:" << std::endl;
   int counter = 0;
-  while (counter < 5 || counter > clusters[0].indices.size ())
+  while (counter < clusters[0].indices.size ())
   {
-    std::cout << clusters[0].indices[counter] << std::endl;
+    std::cout << clusters[0].indices[counter] << ", ";
     counter++;
+    if (counter % 10 == 0)
+      std::cout << std::endl;
   }
+  std::cout << std::endl;
 
   pcl::PointCloud <pcl::PointXYZRGB>::Ptr colored_cloud = reg.getColoredCloud ();
   pcl::visualization::CloudViewer viewer ("Cluster viewer");
@@ -68,3 +71,4 @@ main (int argc, char** argv)
 
   return (0);
 }
+

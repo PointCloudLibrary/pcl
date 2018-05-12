@@ -168,7 +168,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
     // ----- Compute current neighbour polar coordinates -----
 
     // Get distance between the neighbour and the origin
-    float r = sqrtf (nn_dists[ne]);
+    float r = std::sqrt (nn_dists[ne]);
 
     // Project point into the tangent plane
     Eigen::Vector3f proj;
@@ -235,7 +235,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
       PCL_ERROR ("Shape Context Error INF!\n");
     if (w != w)
       PCL_ERROR ("Shape Context Error IND!\n");
-    /// Accumulate w into correspondant Bin(j,k,l)
+    /// Accumulate w into correspondent Bin(j,k,l)
     desc[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j] += w;
 
     assert (desc[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j] >= 0);
@@ -246,7 +246,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
 template <typename PointInT, typename PointOutT, typename PointRFT> void
 pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointCloudOut &output)
 {
-  assert (descriptor_length_ == 1980);
+  assert (descriptor_length_ == 1960);
 
   output.is_dense = true;
 

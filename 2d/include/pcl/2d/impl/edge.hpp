@@ -78,8 +78,8 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeSobel (
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude = 
-      sqrtf ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
-             (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
+      std::sqrt ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
+                 (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
     output[i].direction = 
       atan2f ((*magnitude_y)[i].intensity, (*magnitude_x)[i].intensity);
   }
@@ -121,8 +121,8 @@ pcl::Edge<PointInT, PointOutT>::sobelMagnitudeDirection (
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude = 
-      sqrtf ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
-             (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
+      std::sqrt ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
+                 (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
     output[i].direction = 
       atan2f ((*magnitude_y)[i].intensity, (*magnitude_x)[i].intensity);
   }
@@ -160,8 +160,8 @@ pcl::Edge<PointInT, PointOutT>::detectEdgePrewitt (pcl::PointCloud<PointOutT> &o
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude = 
-      sqrtf ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
-             (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
+      std::sqrt ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
+                 (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
     output[i].direction = 
       atan2f ((*magnitude_y)[i].intensity, (*magnitude_x)[i].intensity);
   }
@@ -199,8 +199,8 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeRoberts (pcl::PointCloud<PointOutT> &o
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude = 
-      sqrtf ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
-             (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
+      std::sqrt ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
+                 (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
     output[i].direction = 
       atan2f ((*magnitude_y)[i].intensity, (*magnitude_x)[i].intensity);
   }
@@ -216,7 +216,7 @@ pcl::Edge<PointInT, PointOutT>::cannyTraceEdge (
   int newCol = col + colOffset;
   PointXYZI &pt = maxima (newCol, newRow);
 
-  if (newRow > 0 && newRow < maxima.height && newCol > 0 && newCol < maxima.width)
+  if (newRow > 0 && newRow < static_cast<int> (maxima.height) && newCol > 0 && newCol < static_cast<int> (maxima.width))
   {
     if (pt.intensity == 0.0f || pt.intensity == std::numeric_limits<float>::max ())
       return;
@@ -481,9 +481,6 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeLoG (
     pcl::PointCloud<PointOutT> &output)
 {
   convolution_.setInputCloud (input_);
-
-  const int height = input_->height;
-  const int width = input_->width;
 
   pcl::PointCloud<PointXYZI>::Ptr log_kernel (new pcl::PointCloud<PointXYZI>);
   kernel_.setKernelType (kernel<PointXYZI>::LOG);

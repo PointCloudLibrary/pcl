@@ -192,12 +192,12 @@ namespace pcl
     template <typename Tuple> bool
     CountPlanarInlier::operator () (const Tuple &t)
     {
-      if (!isfinite (thrust::get<0>(t).x))
+      if (!isfinite (thrust::raw_reference_cast(thrust::get<0>(t)).x))
         return (false);
 
-      return (fabs (thrust::get<0>(t).x * coefficients.x +
-                    thrust::get<0>(t).y * coefficients.y +
-                    thrust::get<0>(t).z * coefficients.z + coefficients.w) < threshold);
+      return (fabs (thrust::raw_reference_cast(thrust::get<0>(t)).x * coefficients.x +
+                    thrust::raw_reference_cast(thrust::get<0>(t)).y * coefficients.y +
+                    thrust::raw_reference_cast(thrust::get<0>(t)).z * coefficients.z + coefficients.w) < threshold);
     }
 
     //////////////////////////////////////////////////////////////////////////

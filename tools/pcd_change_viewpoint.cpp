@@ -119,7 +119,7 @@ main (int argc, char** argv)
     }
     else
     {
-      print_error ("Wrong number of values given (%zu): ", values.size ());
+      print_error ("Wrong number of values given (%lu): ", values.size ());
       print_error ("The VIEWPOINT specified with -viewpoint must contain 7 elements (tx, ty, tz, qw, qx, qy, qz).\n");
       return (-1);
     }

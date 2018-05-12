@@ -102,12 +102,12 @@ Cloud::Cloud (const Cloud &copy)
   use_color_ramp_(copy.use_color_ramp_),
   color_ramp_axis_(copy.color_ramp_axis_),
   display_scale_(copy.display_scale_),
+  partitioned_indices_(copy.partitioned_indices_),
   point_size_(copy.point_size_),
   selected_point_size_(copy.selected_point_size_),
   select_translate_x_(copy.select_translate_x_),
   select_translate_y_(copy.select_translate_y_),
-  select_translate_z_(copy.select_translate_z_),
-  partitioned_indices_(copy.partitioned_indices_)
+  select_translate_z_(copy.select_translate_z_)
 {
   std::copy(copy.center_xyz_, copy.center_xyz_+XYZ_SIZE, center_xyz_);
   std::copy(copy.cloud_matrix_, copy.cloud_matrix_+MATRIX_SIZE, cloud_matrix_);
@@ -254,15 +254,8 @@ Cloud::drawWithHighlightColor () const
 void
 Cloud::draw (bool disable_highlight) const
 {
-  SelectionPtr selection_ptr;
-  try
-  {
-    selection_ptr = selection_wk_ptr_.lock();
-  }
-  catch (boost::bad_weak_ptr)
-  {
-    selection_ptr.reset();
-  }
+  SelectionPtr selection_ptr = selection_wk_ptr_.lock();
+
   glPushAttrib(GL_CURRENT_BIT | GL_POINT_BIT | GL_COLOR_BUFFER_BIT);
   {
     glPointSize(point_size_);
@@ -425,7 +418,7 @@ Cloud::getDisplaySpacePoint (unsigned int index) const
 }
 
 void
-Cloud::getDisplaySpacePoints (std::vector<Point3D>& pts) const
+Cloud::getDisplaySpacePoints (Point3DVector& pts) const
 {
   for(unsigned int i = 0; i < cloud_.size(); ++i)
     pts.push_back(getDisplaySpacePoint(i));

@@ -107,22 +107,12 @@ pcl::BoxClipper3D<PointT>::transformPoint (const PointT& pointIn, PointT& pointO
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ToDo use product on point.getVector3fMap () and transformatio_.col (i) to use the SSE advantages of eigen
 template<typename PointT> bool
 pcl::BoxClipper3D<PointT>::clipPoint3D (const PointT& point) const
 {
-  return  (fabs(transformation_.data () [ 0] * point.x +
-                transformation_.data () [ 3] * point.y +
-                transformation_.data () [ 6] * point.z +
-                transformation_.data () [ 9]) <= 1 &&
-           fabs(transformation_.data () [ 1] * point.x +
-                transformation_.data () [ 4] * point.y +
-                transformation_.data () [ 7] * point.z +
-                transformation_.data () [10]) <= 1 &&
-           fabs(transformation_.data () [ 2] * point.x +
-                transformation_.data () [ 5] * point.y +
-                transformation_.data () [ 8] * point.z +
-                transformation_.data () [11]) <= 1 );
+  Eigen::Vector4f point_coordinates (transformation_.matrix ()
+    * point.getVector4fMap ());
+  return (point_coordinates.array ().abs () <= 1).all ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,7 +120,7 @@ pcl::BoxClipper3D<PointT>::clipPoint3D (const PointT& point) const
  * @attention untested code
  */
 template<typename PointT> bool
-pcl::BoxClipper3D<PointT>::clipLineSegment3D (PointT& point1, PointT& point2) const
+pcl::BoxClipper3D<PointT>::clipLineSegment3D (PointT&, PointT&) const
 {
   /*
   PointT pt1, pt2;
@@ -175,6 +165,7 @@ pcl::BoxClipper3D<PointT>::clipLineSegment3D (PointT& point1, PointT& point2) co
     return true;
   }
   */
+  throw std::logic_error ("Not implemented");
   return false;
 }
 
@@ -183,10 +174,11 @@ pcl::BoxClipper3D<PointT>::clipLineSegment3D (PointT& point1, PointT& point2) co
  * @attention untested code
  */
 template<typename PointT> void
-pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& polygon, std::vector<PointT, Eigen::aligned_allocator<PointT> >& clipped_polygon) const
+pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D (const std::vector<PointT, Eigen::aligned_allocator<PointT> >&, std::vector<PointT, Eigen::aligned_allocator<PointT> >& clipped_polygon) const
 {
   // not implemented -> clip everything
   clipped_polygon.clear ();
+  throw std::logic_error ("Not implemented");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -198,6 +190,7 @@ pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D (std::vector<PointT, Eigen::align
 {
   // not implemented -> clip everything
   polygon.clear ();
+  throw std::logic_error ("Not implemented");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,6 +198,7 @@ pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D (std::vector<PointT, Eigen::align
 template<typename PointT> void
 pcl::BoxClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cloud_in, std::vector<int>& clipped, const std::vector<int>& indices) const
 {
+  clipped.clear ();
   if (indices.empty ())
   {
     clipped.reserve (cloud_in.size ());

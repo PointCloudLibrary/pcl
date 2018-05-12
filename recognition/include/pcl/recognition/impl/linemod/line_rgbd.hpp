@@ -67,7 +67,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::readLTMHeader (int fd, pcl::io::TARHeader &
     return (false);
 
   // We only support regular files for now. 
-  // Addional file types in TAR include: hard links, symbolic links, device/special files, block devices, 
+  // Additional file types in TAR include: hard links, symbolic links, device/special files, block devices, 
   // directories, and named pipes.
   if (header.file_type[0] != '0' && header.file_type[0] != '\0')
     return (false);
@@ -107,7 +107,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
     // Search for extension
     std::string chunk_name (ltm_header.file_name);
 
-    std::transform (chunk_name.begin (), chunk_name.end (), chunk_name.begin (), tolower);
+    std::transform (chunk_name.begin (), chunk_name.end (), chunk_name.begin (), ::tolower);
     std::string::size_type it;
 
     if ((it = chunk_name.find (pcd_ext)) != std::string::npos &&
@@ -663,10 +663,12 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
     typename LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections_[detection_index];
 
     // find depth with most valid points
-    const size_t start_x = detection.region.x;
-    const size_t start_y = detection.region.y;
-    const size_t end_x = start_x + detection.region.width;
-    const size_t end_y = start_y + detection.region.height;
+    const size_t start_x = std::max (detection.region.x, 0);
+    const size_t start_y = std::max (detection.region.y, 0);
+    const size_t end_x = std::min (static_cast<size_t> (detection.region.x + detection.region.width),
+                                   static_cast<size_t> (cloud_xyz_->width));
+    const size_t end_y = std::min (static_cast<size_t> (detection.region.y + detection.region.height),
+                                   static_cast<size_t> (cloud_xyz_->height));
 
 
     float min_depth = std::numeric_limits<float>::max ();

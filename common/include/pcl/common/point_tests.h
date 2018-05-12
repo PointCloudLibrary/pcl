@@ -48,6 +48,7 @@ namespace pcl
 {
   /** Tests if the 3D components of a point are all finite
     * param[in] pt point to be tested
+    * return true if finite, false otherwise
     */
   template <typename PointT> inline bool
   isFinite (const PointT &pt)
@@ -66,6 +67,7 @@ namespace pcl
   template<> inline bool isFinite<pcl::RGB> (const pcl::RGB&) { return (true); }
   template<> inline bool isFinite<pcl::Label> (const pcl::Label&) { return (true); }
   template<> inline bool isFinite<pcl::Axis> (const pcl::Axis&) { return (true); }
+  template<> inline bool isFinite<pcl::Intensity> (const pcl::Intensity&) { return (true); }
   template<> inline bool isFinite<pcl::MomentInvariants> (const pcl::MomentInvariants&) { return (true); }
   template<> inline bool isFinite<pcl::PrincipalRadiiRSD> (const pcl::PrincipalRadiiRSD&) { return (true); }
   template<> inline bool isFinite<pcl::Boundary> (const pcl::Boundary&) { return (true); }
@@ -74,6 +76,7 @@ namespace pcl
   template<> inline bool isFinite<pcl::SHOT1344> (const pcl::SHOT1344&) { return (true); }
   template<> inline bool isFinite<pcl::ReferenceFrame> (const pcl::ReferenceFrame&) { return (true); }
   template<> inline bool isFinite<pcl::ShapeContext1980> (const pcl::ShapeContext1980&) { return (true); }
+  template<> inline bool isFinite<pcl::UniqueShapeContext1960> (const pcl::UniqueShapeContext1960&) { return (true); }
   template<> inline bool isFinite<pcl::PFHSignature125> (const pcl::PFHSignature125&) { return (true); }
   template<> inline bool isFinite<pcl::PFHRGBSignature250> (const pcl::PFHRGBSignature250&) { return (true); }
   template<> inline bool isFinite<pcl::PPFSignature> (const pcl::PPFSignature&) { return (true); }

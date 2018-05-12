@@ -80,7 +80,7 @@ void run(pcl::RFFaceDetectorTrainer & fdrf, typename pcl::PointCloud<PointInT>::
     vis.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 14, "votes_cloud");
   }
 
-  vis.addCoordinateSystem (0.1);
+  vis.addCoordinateSystem (0.1, "global");
 
   std::vector<Eigen::VectorXf> heads;
   fdrf.getDetectedFaces (heads);

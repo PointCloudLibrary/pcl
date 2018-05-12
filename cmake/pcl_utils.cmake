@@ -41,6 +41,20 @@ macro(PREFIX_LIST _output _prefix _list)
     endforeach(_item)
 endmacro(PREFIX_LIST)
 
+###############################################################################
+# Remove vtk definitions
+# This is used for CUDA targets, because nvcc does not like VTK 6+ definitions
+# style.
+macro(REMOVE_VTK_DEFINITIONS)
+    get_directory_property(_dir_defs DIRECTORY ${CMAKE_SOURCE_DIR} COMPILE_DEFINITIONS)
+    set(_vtk_definitions)
+    foreach(_item ${_dir_defs})
+        if(_item MATCHES "vtk*")
+            list(APPEND _vtk_definitions -D${_item})
+        endif()
+    endforeach()
+    remove_definitions(${_vtk_definitions})
+endmacro(REMOVE_VTK_DEFINITIONS)
 
 ###############################################################################
 # Pull the component parts out of the version number.
@@ -52,8 +66,13 @@ macro(DISSECT_VERSION)
         PCL_MINOR_VERSION "${PCL_VERSION}")
     string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
         PCL_REVISION_VERSION "${PCL_VERSION}")
-    string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1"
-        PCL_CANDIDATE_VERSION "${PCL_VERSION}")
+    set(PCL_VERSION_PLAIN "${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}.${PCL_REVISION_VERSION}")
+    if(${PCL_VERSION} MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+-dev$")
+        set(PCL_DEV_VERSION 1)
+        set(PCL_VERSION_PLAIN "${PCL_VERSION_PLAIN}.99")
+    else()
+        set(PCL_DEV_VERSION 0)
+    endif()
 endmacro(DISSECT_VERSION)
 
 ###############################################################################
@@ -84,8 +103,12 @@ macro(SET_INSTALL_DIRS)
   if (NOT DEFINED LIB_INSTALL_DIR)
     set(LIB_INSTALL_DIR "lib")
   endif (NOT DEFINED LIB_INSTALL_DIR)
-    set(INCLUDE_INSTALL_ROOT
-        "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+    if(NOT ANDROID)
+      set(INCLUDE_INSTALL_ROOT
+          "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+    else(NOT ANDROID)
+      set(INCLUDE_INSTALL_ROOT "include") # Android, don't put into subdir
+    endif(NOT ANDROID)
     set(INCLUDE_INSTALL_DIR "${INCLUDE_INSTALL_ROOT}/pcl")
     set(DOC_INSTALL_DIR "share/doc/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
     set(BIN_INSTALL_DIR "bin")
@@ -382,7 +405,7 @@ macro(sort_relative _list _sorted_list _to_sort_relative)
   if(NOT (list_length EQUAL to_sort_list_length))
     message(FATAL_ERROR "size mismatch between ${_to_sort_relative} ${to_sort_list_length} and ${_list} ${list_length}")
   endif(NOT (list_length EQUAL to_sort_list_length))
-  # unset the temporary list to avoid suprises (I had some them and were hard to find)
+  # unset the temporary list to avoid surprises (I had some them and were hard to find)
   unset(tmp_list)
   # fill it with a dummy value
   fill_list(tmp_list list_length "#")

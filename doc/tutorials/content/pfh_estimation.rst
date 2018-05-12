@@ -116,13 +116,13 @@ Estimating PFH features
 -----------------------
 
 Point Feature Histograms are implemented in PCL as part of the `pcl_features
-<http://docs.pointclouds.org/trunk/group__features.html>`_ library. 
+<http://docs.pointclouds.org/trunk/a02944.html>`_ library. 
 
 The default PFH implementation uses 5 binning subdivisions (e.g., each of the
 four feature values will use this many bins from its value interval), and does
 not include the distances (as explained above -- although the
 **computePairFeatures** method can be called by the user to obtain the
-distances too, if desired) which results in a 125-byte array (:math:`3^5`) of
+distances too, if desired) which results in a 125-byte array (:math:`5^3`) of
 float values. These are stored in a **pcl::PFHSignature125** point type.
 
 The following code snippet will estimate a set of PFH features for all the

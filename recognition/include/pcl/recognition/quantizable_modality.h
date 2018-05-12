@@ -62,7 +62,7 @@ namespace pcl
       virtual QuantizedMap &
       getQuantizedMap () = 0;
 
-      /** \brief Returns a reference to the internally computed spreaded quantized map. */
+      /** \brief Returns a reference to the internally computed spread quantized map. */
       virtual QuantizedMap &
       getSpreadedQuantizedMap () = 0;
 

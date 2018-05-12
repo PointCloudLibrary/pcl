@@ -94,7 +94,7 @@ namespace pcl
         shot_ (), lrf_radius_ (0),
         sqradius_ (0), radius3_4_ (0), radius1_4_ (0), radius1_2_ (0),
         nr_grid_sector_ (32),
-        maxAngularSectors_ (28),
+        maxAngularSectors_ (32),
         descLength_ (0)
       {
         feature_name_ = "SHOTEstimation";
@@ -160,7 +160,6 @@ namespace pcl
       /** \brief Create a binned distance shape histogram
         * \param[in] index the index of the point in indices_
         * \param[in] indices the k-neighborhood point indices in surface_
-        * \param[in] sqr_dists the k-neighborhood point distances in surface_
         * \param[out] bin_distance_shape the resultant histogram
         */
       void

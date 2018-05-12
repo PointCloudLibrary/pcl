@@ -112,7 +112,7 @@ namespace pcl
         /** \brief This is invoked to perform the manipulations specified on the model */
         void
         manipulateClouds (boost::shared_ptr<ManipulationEvent> manip_event);
-      public slots:
+      public Q_SLOTS:
         void 
         commandCompleted (CloudCommand* command);
         
@@ -148,7 +148,7 @@ namespace pcl
         
         /** \brief Slot Called whenever the item selection_model_ changes */
         void
-        itemSelectionChanged ( const QItemSelection & selected, const QItemSelection & deselected );
+        itemSelectionChanged ( const QItemSelection &, const QItemSelection &);
         
         /** \brief Creates a new cloud from the selected items and points */
         void 
@@ -157,7 +157,7 @@ namespace pcl
         /** \brief Selects all items in the model */
         void 
         selectAllItems (QStandardItem* item = 0 );
-      signals:  
+      Q_SIGNALS:
         void
         enqueueNewAction (AbstractTool* tool, ConstItemList data);
         

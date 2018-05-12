@@ -6,6 +6,7 @@ This tutorial aims at explaining how to detect people from RGB-D data with the p
 With the proposed method, people standing/walking on a planar ground plane can be detected in real time with standard CPU computation.
 This implementation corresponds to the people detection algorithm for RGB-D data presented in 
 
+- *M. Munaro and E. Menegatti*. "Fast RGB-D people tracking for service robots". In Autonomous Robots, Volume 37 Issue 3, pp. 227-242, Springer, 2014.
 - *M. Munaro, F. Basso and E. Menegatti*. "Tracking people within groups with RGB-D data". In Proceedings of the International Conference on Intelligent Robots and Systems (IROS) 2012, Vilamoura (Portugal), 2012.
 
 The code
@@ -108,7 +109,7 @@ In the main loop, new frames are acquired and processed until the application is
 The ``people_detector`` object receives as input the current cloud and the estimated ground coefficients and 
 computes people clusters properties, which are stored in :pcl:`PersonCluster <pcl::people::PersonCluster>` objects.
 The ground plane coefficients are re-estimated at every frame by using the previous frame estimate as initial condition.
-This procedure allows to adapt to small changes which can occurr to the ground plane equation if the camera is slowly moving.
+This procedure allows to adapt to small changes which can occur to the ground plane equation if the camera is slowly moving.
    
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp

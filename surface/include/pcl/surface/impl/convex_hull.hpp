@@ -57,14 +57,15 @@ template <typename PointInT> void
 pcl::ConvexHull<PointInT>::calculateInputDimension ()
 {
   PCL_DEBUG ("[pcl::%s::calculateInputDimension] WARNING: Input dimension not specified.  Automatically determining input dimension.\n", getClassName ().c_str ());
-  EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix;
   Eigen::Vector4d xyz_centroid;
-  computeMeanAndCovarianceMatrix (*input_, *indices_, covariance_matrix, xyz_centroid);
+  compute3DCentroid (*input_, *indices_, xyz_centroid);
+  EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix = Eigen::Matrix3d::Zero ();
+  computeCovarianceMatrixNormalized (*input_, *indices_, xyz_centroid, covariance_matrix);
 
   EIGEN_ALIGN16 Eigen::Vector3d eigen_values;
   pcl::eigen33 (covariance_matrix, eigen_values);
 
-  if (eigen_values[0] / eigen_values[2] < 1.0e-3)
+  if (std::abs (eigen_values[0]) < std::numeric_limits<double>::epsilon () || std::abs (eigen_values[0] / eigen_values[2]) < 1.0e-3)
     dimension_ = 2;
   else
     dimension_ = 3;
@@ -101,7 +102,9 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
     
   Eigen::Vector4d normal_calc_centroid;
   Eigen::Matrix3d normal_calc_covariance;
-  pcl::computeMeanAndCovarianceMatrix (normal_calc_cloud, normal_calc_covariance, normal_calc_centroid);
+  pcl::compute3DCentroid (normal_calc_cloud, normal_calc_centroid);
+  pcl::computeCovarianceMatrixNormalized (normal_calc_cloud, normal_calc_centroid, normal_calc_covariance);
+
   // Need to set -1 here. See eigen33 for explanations.
   Eigen::Vector3d::Scalar eigen_value;
   Eigen::Vector3d plane_params;
@@ -190,7 +193,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   // 0 if no error from qhull or it doesn't find any vertices
   if (exitcode != 0 || qh num_vertices == 0)
   {
-    PCL_ERROR ("[pcl::%s::performReconstrution2D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%zu)!\n", getClassName ().c_str (), indices_->size ());
+    PCL_ERROR ("[pcl::%s::performReconstrution2D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), indices_->size ());
 
     hull.points.resize (0);
     hull.width = hull.height = 0;
@@ -260,8 +263,13 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   polygons.resize (1);
   polygons[0].vertices.resize (hull.points.size ());
 
+  hull_indices_.header = input_->header;
+  hull_indices_.indices.clear ();
+  hull_indices_.indices.reserve (hull.points.size ());
+
   for (int j = 0; j < static_cast<int> (hull.points.size ()); j++)
   {
+    hull_indices_.indices.push_back ((*indices_)[idx_points[j].first]);
     hull.points[j] = input_->points[(*indices_)[idx_points[j].first]];
     polygons[0].vertices[j] = static_cast<unsigned int> (j);
   }
@@ -324,7 +332,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   // 0 if no error from qhull
   if (exitcode != 0)
   {
-    PCL_ERROR ("[pcl::%s::performReconstrution3D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%zu)!\n", getClassName ().c_str (), input_->points.size ());
+    PCL_ERROR ("[pcl::%s::performReconstrution3D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), input_->points.size ());
 
     hull.points.resize (0);
     hull.width = hull.height = 0;
@@ -357,10 +365,15 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   ++max_vertex_id;
   std::vector<int> qhid_to_pcidx (max_vertex_id);
 
+  hull_indices_.header = input_->header;
+  hull_indices_.indices.clear ();
+  hull_indices_.indices.reserve (num_vertices);
+
   FORALLvertices
   {
-    // Add vertices to hull point_cloud
-    hull.points[i] = input_->points[(*indices_)[qh_pointid (vertex->point)]];
+    // Add vertices to hull point_cloud and store index
+    hull_indices_.indices.push_back ((*indices_)[qh_pointid (vertex->point)]);
+    hull.points[i] = input_->points[(*indices_)[hull_indices_.indices.back ()]];
 
     qhid_to_pcidx[vertex->id] = i; // map the vertex id of qhull to the point cloud index
     ++i;
@@ -480,6 +493,12 @@ pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points, std::vector<pcl::Ver
   points.is_dense = true;
 
   deinitCompute ();
+}
+//////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::ConvexHull<PointInT>::getHullPointIndices (pcl::PointIndices &hull_point_indices) const
+{
+  hull_point_indices = hull_indices_;
 }
 
 #define PCL_INSTANTIATE_ConvexHull(T) template class PCL_EXPORTS pcl::ConvexHull<T>;

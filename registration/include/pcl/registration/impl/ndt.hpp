@@ -61,7 +61,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributions
 
   double gauss_c1, gauss_c2, gauss_d3;
 
-  // Initializes the guassian fitting parameters (eq. 6.8) [Magnusson 2009]
+  // Initializes the gaussian fitting parameters (eq. 6.8) [Magnusson 2009]
   gauss_c1 = 10.0 * (1 - outlier_ratio_);
   gauss_c2 = outlier_ratio_ / pow (resolution_, 3);
   gauss_d3 = -log (gauss_c2);
@@ -81,7 +81,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
 
   double gauss_c1, gauss_c2, gauss_d3;
 
-  // Initializes the guassian fitting parameters (eq. 6.8) [Magnusson 2009]
+  // Initializes the gaussian fitting parameters (eq. 6.8) [Magnusson 2009]
   gauss_c1 = 10 * (1 - outlier_ratio_);
   gauss_c2 = outlier_ratio_ / pow (resolution_, 3);
   gauss_d3 = -log (gauss_c2);
@@ -156,14 +156,20 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
     if (update_visualizer_ != 0)
       update_visualizer_ (output, std::vector<int>(), *target_, std::vector<int>() );
 
-    if (nr_iterations_ > max_iterations_ ||
-        (nr_iterations_ && (std::fabs (delta_p_norm) < transformation_epsilon_)))
-    {
-      converged_ = true;
-    }
+    double cos_angle = 0.5 * (transformation_.coeff (0, 0) + transformation_.coeff (1, 1) + transformation_.coeff (2, 2) - 1);
+    double translation_sqr = transformation_.coeff (0, 3) * transformation_.coeff (0, 3) +
+                             transformation_.coeff (1, 3) * transformation_.coeff (1, 3) +
+                             transformation_.coeff (2, 3) * transformation_.coeff (2, 3);
 
     nr_iterations_++;
 
+    if (nr_iterations_ >= max_iterations_ ||
+        ((transformation_epsilon_ > 0 && translation_sqr <= transformation_epsilon_) && (transformation_rotation_epsilon_ > 0 && cos_angle >= transformation_rotation_epsilon_)) ||
+        ((transformation_epsilon_ <= 0)                                             && (transformation_rotation_epsilon_ > 0 && cos_angle >= transformation_rotation_epsilon_)) ||
+        ((transformation_epsilon_ > 0 && translation_sqr <= transformation_epsilon_) && (transformation_rotation_epsilon_ <= 0)))
+    {
+      converged_ = true;
+    }
   }
 
   // Store transformation probability.  The realtive differences within each scan registration are accurate
@@ -356,7 +362,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives (
   Eigen::Vector3d cov_dxd_pi;
   // e^(-d_2/2 * (x_k - mu_k)^T Sigma_k^-1 (x_k - mu_k)) Equation 6.9 [Magnusson 2009]
   double e_x_cov_x = exp (-gauss_d2_ * x_trans.dot (c_inv * x_trans) / 2);
-  // Calculate probability of transtormed points existance, Equation 6.9 [Magnusson 2009]
+  // Calculate probability of transformed points existence, Equation 6.9 [Magnusson 2009]
   double score_inc = -gauss_d1_ * e_x_cov_x;
 
   e_x_cov_x = gauss_d2_ * e_x_cov_x;
@@ -680,7 +686,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT
   // Iterate until max number of iterations, interval convergance or a value satisfies the sufficient decrease, Equation 1.1, and curvature condition, Equation 1.2 [More, Thuente 1994]
   while (!interval_converged && step_iterations < max_step_iterations && !(psi_t <= 0 /*Sufficient Decrease*/ && d_phi_t <= -nu * d_phi_0 /*Curvature Condition*/))
   {
-    // Use auxilary function if interval I is not closed
+    // Use auxiliary function if interval I is not closed
     if (open_interval)
     {
       a_t = trialValueSelectionMT (a_l, f_l, g_l,

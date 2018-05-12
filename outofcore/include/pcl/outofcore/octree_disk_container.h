@@ -130,7 +130,7 @@ namespace pcl
          *
          * \param[in] start index of first point to read from disk
          * \param[in] count offset of last point to read from disk
-         * \param[out] v std::vector as destination for points read from disk into memory
+         * \param[out] dst std::vector as destination for points read from disk into memory
          */
         void
         readRange (const uint64_t start, const uint64_t count, AlignedPointTVector &dst);
@@ -138,7 +138,7 @@ namespace pcl
         void
         readRange (const uint64_t, const uint64_t, pcl::PCLPointCloud2::Ptr &dst);
 
-        /** \brief Reads the entire point contents from disk into \ref output_cloud
+        /** \brief Reads the entire point contents from disk into \c output_cloud
          *  \param[out] output_cloud
          */
         int
@@ -148,10 +148,10 @@ namespace pcl
          * unique (could have multiple identical points!)
          *
          * \param[in] start The starting index of points to select
-         * \param count[in] The length of the range of points from which to randomly sample 
+         * \param[in] count The length of the range of points from which to randomly sample 
          *  (i.e. from start to start+count)
-         * \param percent[in] The percentage of count that is enough points to make up this random sample
-         * \param dst[out] std::vector as destination for randomly sampled points; size will 
+         * \param[in] percent The percentage of count that is enough points to make up this random sample
+         * \param[out] dst std::vector as destination for randomly sampled points; size will 
          * be percentage*count
          */
         void
@@ -171,7 +171,7 @@ namespace pcl
         readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, 
                                       const double percent, AlignedPointTVector& dst);
 
-        /** \brief Returns the total number of points for which this container is responsible, \ref filelen_ + points in \ref writebuff_ that have not yet been flushed to the disk
+        /** \brief Returns the total number of points for which this container is responsible, \c filelen_ + points in \c writebuff_ that have not yet been flushed to the disk
          */
         uint64_t
         size () const
@@ -180,7 +180,7 @@ namespace pcl
         }
 
         /** \brief STL-like empty test
-         * \return true if container has no data on disk or waiting to be written in \ref writebuff_ */
+         * \return true if container has no data on disk or waiting to be written in \c writebuff_ */
         inline bool
         empty () const
         {
@@ -270,11 +270,11 @@ namespace pcl
         
       private:
         //no copy construction
-        OutofcoreOctreeDiskContainer (const OutofcoreOctreeDiskContainer &rval) { }
+        OutofcoreOctreeDiskContainer (const OutofcoreOctreeDiskContainer& /*rval*/) { }
 
 
         OutofcoreOctreeDiskContainer&
-        operator= (const OutofcoreOctreeDiskContainer &rval) { }
+        operator= (const OutofcoreOctreeDiskContainer& /*rval*/) { }
 
         void
         flushWritebuff (const bool force_cache_dealloc);

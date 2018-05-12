@@ -60,8 +60,8 @@ namespace pcl
     * when taking into account the segment between the points S1 and S2
     * \param X 2D coordinate of the point
     * \param S1 2D coordinate of the segment's first point
-    * \param S2 2D coordinate of the segment's secont point
-    * \param R 2D coorddinate of the reference point (defaults to 0,0)
+    * \param S2 2D coordinate of the segment's second point
+    * \param R 2D coordinate of the reference point (defaults to 0,0)
     * \ingroup surface
     */
   inline bool 
@@ -358,7 +358,7 @@ namespace pcl
       /** \brief Temporary variable to store a triangle (as a set of point indices) **/
       pcl::Vertices triangle_;
       /** \brief Temporary variable to store point coordinates **/
-      std::vector<Eigen::Vector3f> coords_;
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > coords_;
 
       /** \brief A list of angles to neighbors **/
       std::vector<nnAngle> angles_;
@@ -416,7 +416,7 @@ namespace pcl
       /** \brief 2D coordinates of the second fringe neighbor of the next point **/
       Eigen::Vector2f uvn_next_sfn_;
 
-      /** \brief Temporary variable to store 3 coordiantes **/
+      /** \brief Temporary variable to store 3 coordinates **/
       Eigen::Vector3f tmp_;
 
       /** \brief The actual surface reconstruction method.

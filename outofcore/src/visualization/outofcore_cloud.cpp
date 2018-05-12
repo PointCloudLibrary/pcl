@@ -21,9 +21,13 @@
 
 // PCL - visualziation
 #include <pcl/visualization/common/common.h>
+
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
+#endif
 
 // VTK
+#include <vtkVersion.h>
 #include <vtkActor.h>
 #include <vtkPolyData.h>
 #include <vtkProperty.h>
@@ -159,10 +163,18 @@ OutofcoreCloud::updateVoxelData ()
     double y = voxel_centers[i].y;
     double z = voxel_centers[i].z;
 
+#if VTK_MAJOR_VERSION < 6
     voxel_data->AddInput (getVtkCube (x - s, x + s, y - s, y + s, z - s, z + s));
+#else
+    voxel_data->AddInputData (getVtkCube (x - s, x + s, y - s, y + s, z - s, z + s));
+#endif
   }
 
+#if VTK_MAJOR_VERSION < 6
   voxel_mapper->SetInput (voxel_data->GetOutput ());
+#else
+  voxel_mapper->SetInputData (voxel_data->GetOutput ());
+#endif
 
   voxel_actor_->SetMapper (voxel_mapper);
   voxel_actor_->GetProperty ()->SetRepresentationToWireframe ();
@@ -242,11 +254,18 @@ OutofcoreCloud::render (vtkRenderer* renderer)
         {
 
           vtkSmartPointer<vtkActor> cloud_actor = vtkSmartPointer<vtkActor>::New ();
-          vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
-
           CloudDataCacheItem *cloud_data_cache_item = &cloud_data_cache.get(pcd_file);
 
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
+          vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
           mapper->SetInput (cloud_data_cache_item->item);
+#else
+          vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+          // Usually we choose between SetInput and SetInputData based on VTK version. But OpenGL ≥ 2 automatically
+          // means VTK version is ≥ 6.3
+          mapper->SetInputData (cloud_data_cache_item->item);
+#endif
+
           cloud_actor->SetMapper (mapper);
           cloud_actor->GetProperty ()->SetColor (0.0, 0.0, 1.0);
           cloud_actor->GetProperty ()->SetPointSize (1);
@@ -304,7 +323,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
       }
     }
 
-    for (int i = 0; i < actors_to_remove.size (); i++)
+    for (size_t i = 0; i < actors_to_remove.size (); i++)
     {
       points_loaded_ -= actors_to_remove.back ()->GetMapper ()->GetInput ()->GetNumberOfPoints ();
       data_loaded_ -= actors_to_remove.back ()->GetMapper ()->GetInput ()->GetActualMemorySize();

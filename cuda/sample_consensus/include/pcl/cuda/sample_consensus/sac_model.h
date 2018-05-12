@@ -123,10 +123,10 @@ namespace pcl
           setInputCloud (cloud);
         }
 
-        /** \brief Constructor for base SampleConsensusModel.
-          * \param cloud the input point cloud dataset
-          * \param indices a vector of point indices to be used from \a cloud
-          */
+        /* \brief Constructor for base SampleConsensusModel.
+         * \param cloud the input point cloud dataset
+         * \param indices a vector of point indices to be used from \a cloud
+         */
   /*      SampleConsensusModel (const PointCloudConstPtr &cloud, const std::vector<int> &indices) :
                               input_ (cloud),
                               indices_ (boost::make_shared <std::vector<int> > (indices)),
@@ -171,7 +171,7 @@ namespace pcl
         isSampleInlier (IndicesPtr &inliers_stencil, Samples &samples, unsigned int &i)
           {return ((*inliers_stencil)[samples[i]] != -1);};
 
-        /** \brief Recompute the model coefficients using the given inlier set
+        /* \brief Recompute the model coefficients using the given inlier set
           * and return them to the user. Pure virtual.
           *
           * @note: these are the coefficients of the model after refinement
@@ -187,12 +187,11 @@ namespace pcl
   //                                 const Eigen::VectorXf &model_coefficients,
   //                                 Eigen::VectorXf &optimized_coefficients) = 0;
 
-        /** \brief Compute all distances from the cloud data to a given model. Pure virtual.
-          * 
-          * \param model_coefficients the coefficients of a model that we need to
-          * compute distances to 
-          * \param distances the resultant estimated distances
-          */
+      /*  \brief Compute all distances from the cloud data to a given model. Pure virtual.
+        * \param model_coefficients the coefficients of a model that we need to
+        *   compute distances to 
+        * \param distances the resultant estimated distances
+        */
   //      virtual void 
   //      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
   //                           std::vector<float> &distances) = 0;
@@ -205,6 +204,7 @@ namespace pcl
           * \param threshold a maximum admissible distance threshold for
           * determining the inliers from the outliers
           * \param inliers the resultant model inliers
+          * \param inliers_stencil
           */
         virtual int
         selectWithinDistance (const Coefficients &model_coefficients, 
@@ -231,7 +231,7 @@ namespace pcl
         int
         deleteIndices (const Hypotheses &h, int idx, IndicesPtr &inliers, const IndicesPtr &inliers_delete);
 
-        /** \brief Create a new point cloud with inliers projected onto the model. Pure virtual.
+        /*  \brief Create a new point cloud with inliers projected onto the model. Pure virtual.
           * \param inliers the data inliers that we want to project on the model
           * \param model_coefficients the coefficients of a model
           * \param projected_points the resultant projected points
@@ -245,7 +245,7 @@ namespace pcl
   //                     PointCloud &projected_points, 
   //                     bool copy_data_fields = true) = 0;
 
-        /** \brief Verify whether a subset of indices verifies a given set of
+        /*  \brief Verify whether a subset of indices verifies a given set of
           * model coefficients. Pure virtual.
           *
           * \param indices the data indices that need to be tested against the model
@@ -268,15 +268,15 @@ namespace pcl
         inline PointCloudConstPtr 
         getInputCloud () const { return (input_); }
 
-        /** \brief Provide a pointer to the vector of indices that represents the input data.
-          * \param indices a pointer to the vector of indices that represents the input data.
-          */
+        /* \brief Provide a pointer to the vector of indices that represents the input data.
+         * \param indices a pointer to the vector of indices that represents the input data.
+         */
   //      inline void 
   //      setIndices (const IndicesPtr &indices) { indices_ = indices; }
 
-        /** \brief Provide the vector of indices that represents the input data.
-          * \param indices the vector of indices that represents the input data.
-          */
+        /* \brief Provide the vector of indices that represents the input data.
+         * \param indices the vector of indices that represents the input data.
+         */
   //      inline void 
   //      setIndices (std::vector<int> &indices) 
   //      { 
@@ -296,11 +296,11 @@ namespace pcl
           return (indices_);
         }
 
-        /** \brief Return an unique id for each type of model employed. */
+        /* \brief Return an unique id for each type of model employed. */
   //      virtual SacModel 
   //      getModelType () const = 0;
 
-        /** \brief Return the size of a sample from which a model is computed */
+        /* \brief Return the size of a sample from which a model is computed */
   //      inline unsigned int 
   //      getSampleSize () const { return SAC_SAMPLE_SIZE.at (getModelType ()); }
 
@@ -340,7 +340,7 @@ namespace pcl
 
 
       protected:
-        /** \brief Check whether a model is valid given the user constraints.
+        /*  \brief Check whether a model is valid given the user constraints.
           * \param model_coefficients the set of model coefficients
           */
   //      virtual inline bool
@@ -366,7 +366,7 @@ namespace pcl
         thrust::minstd_rand rngl_;
     };
 
-    /** \brief @b SampleConsensusModelFromNormals represents the base model class
+    /*  \brief @b SampleConsensusModelFromNormals represents the base model class
       * for models that require the use of surface normals for estimation.
       */
   //  template <typename PointT, typename PointNT>
@@ -379,10 +379,10 @@ namespace pcl
   //      typedef boost::shared_ptr<SampleConsensusModelFromNormals> Ptr;
   //      typedef boost::shared_ptr<const SampleConsensusModelFromNormals> ConstPtr;
   //
-  //      /** \brief Empty constructor for base SampleConsensusModelFromNormals. */
+  //      /* \brief Empty constructor for base SampleConsensusModelFromNormals. */
   //      SampleConsensusModelFromNormals () : normal_distance_weight_ (0.0) {};
   //
-  //      /** \brief Set the normal angular distance weight.
+  //      /*  \brief Set the normal angular distance weight.
   //        * \param w the relative weight (between 0 and 1) to give to the angular
   //        * distance (0 to pi/2) between point normals and the plane normal.
   //        * (The Euclidean distance will have weight 1-w.)
@@ -390,11 +390,11 @@ namespace pcl
   //      inline void 
   //      setNormalDistanceWeight (float w) { normal_distance_weight_ = w; }
   //
-  //      /** \brief Get the normal angular distance weight. */
+  //      /* \brief Get the normal angular distance weight. */
   //      inline float 
   //      getNormalDistanceWeight () { return (normal_distance_weight_); }
   //
-  //      /** \brief Provide a pointer to the input dataset that contains the point
+  //      /* \brief Provide a pointer to the input dataset that contains the point
   //        * normals of the XYZ dataset.
   //        *
   //        * \param normals the const boost shared pointer to a PointCloud message
@@ -402,17 +402,17 @@ namespace pcl
   //      inline void 
   //      setInputNormals (const PointCloudNConstPtr &normals) { normals_ = normals; }
   //
-  //      /** \brief Get a pointer to the normals of the input XYZ point cloud dataset. */
+  //      /* \brief Get a pointer to the normals of the input XYZ point cloud dataset. */
   //      inline PointCloudNConstPtr 
   //      getInputNormals () { return (normals_); }
   //
   //    protected:
-  //      /** \brief The relative weight (between 0 and 1) to give to the angular
+  //      /* \brief The relative weight (between 0 and 1) to give to the angular
   //        * distance (0 to pi/2) between point normals and the plane normal. 
   //        */
   //      float normal_distance_weight_;
   //
-  //      /** \brief A pointer to the input dataset that contains the point normals
+  //      /* \brief A pointer to the input dataset that contains the point normals
   //        * of the XYZ dataset. 
   //        */
   //      PointCloudNConstPtr normals_;

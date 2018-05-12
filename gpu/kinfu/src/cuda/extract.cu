@@ -90,7 +90,11 @@ namespace pcl
         __shared__ int cta_buffer[CTA_SIZE];
 #endif
 
-#if __CUDA_ARCH__ >= 120
+#if CUDA_VERSION >= 9000
+        if (__all_sync (__activemask (), x >= VOLUME_X)
+            || __all_sync (__activemask (), y >= VOLUME_Y))
+          return;
+#elif __CUDA_ARCH__ >= 120
         if (__all (x >= VOLUME_X) || __all (y >= VOLUME_Y))
           return;
 #else         
@@ -187,8 +191,11 @@ namespace pcl
             }              /* if (W != 0 && F != 1.f) */
           }            /* if (x < VOLUME_X && y < VOLUME_Y) */
 
-
-#if __CUDA_ARCH__ >= 200
+#if CUDA_VERSION >= 9000
+          int total_warp = __popc (__ballot_sync (__activemask (), local_count > 0))
+                         + __popc (__ballot_sync (__activemask (), local_count > 1))
+                         + __popc (__ballot_sync (__activemask (), local_count > 2));
+#elif __CUDA_ARCH__ >= 200
           ///not we fulfilled points array at current iteration
           int total_warp = __popc (__ballot (local_count > 0)) + __popc (__ballot (local_count > 1)) + __popc (__ballot (local_count > 2));
 #else

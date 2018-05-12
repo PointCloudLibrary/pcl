@@ -103,13 +103,13 @@ The executable we are building makes call to PCL functions. So far, we
 have only included the PCL headers so the compilers knows about the
 methods we are calling. We need also to make the linker knows about
 the libraries we are linking against. As said before the, PCL
-found libraries are refered to using ``PCL_LIBRARIES`` variable, all
+found libraries are referred to using ``PCL_LIBRARIES`` variable, all
 that remains is to trigger the link operation which we do calling
 ``target_link_libraries()`` macro.
 PCLConfig.cmake uses a CMake special feature named `EXPORT` which
 allows for using others' projects targets as if you built them
 yourself. When you are using such targets they are called `imported
-targets` and acts just like anyother target.
+targets` and acts just like any other target.
 
 Compiling and running the project
 ---------------------------------

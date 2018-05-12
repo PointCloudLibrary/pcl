@@ -161,17 +161,17 @@ This method simply launches the segmentation algorithm. After its work it will r
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 51-60
+   :lines: 51-63
 
 These lines are simple enough, so they won't be commented. They are intended for those who are not familiar with how to work with ``pcl::PointIndices``
 and how to access its elements.
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 62-67
+   :lines: 65-73
 
 The ``pcl::RegionGrowing`` class provides a method that returns the colored cloud where each cluster has its own color.
-So in this part of code the ``pcl::visualization::CloudViewer`` is instanciated for viewing the result of the segmentation - the same colored cloud.
+So in this part of code the ``pcl::visualization::CloudViewer`` is instantiated for viewing the result of the segmentation - the same colored cloud.
 You can learn more about cloud visualization in the :ref:`cloud_viewer` tutorial.
 
 Compiling and running the program

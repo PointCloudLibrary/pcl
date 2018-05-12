@@ -151,9 +151,9 @@ pcl::PCLBase<PointT>::initCompute ()
     {
       indices_->resize (input_->points.size ());
     }
-    catch (std::bad_alloc)
+    catch (const std::bad_alloc&)
     {
-      PCL_ERROR ("[initCompute] Failed to allocate %zu indices.\n", input_->points.size ());
+      PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", input_->points.size ());
     }
     for (size_t i = 0; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
   }

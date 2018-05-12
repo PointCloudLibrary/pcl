@@ -179,7 +179,7 @@ class BRISKDemo
       keypoints3d.height = keypoints->height;
       keypoints3d.is_dense = true;
 
-      int j = 0;
+      size_t j = 0;
       for (size_t i = 0; i < keypoints->size (); ++i)
       {
         PointT pt = bilinearInterpolation (cloud, keypoints->points[i].x, keypoints->points[i].y);

@@ -76,12 +76,13 @@ namespace pcl
   class SampleConsensusModelNormalPlane : public SampleConsensusModelPlane<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModelFromNormals<PointT, PointNT>::normals_;
       using SampleConsensusModelFromNormals<PointT, PointNT>::normal_distance_weight_;
       using SampleConsensusModel<PointT>::error_sqr_dists_;
-      using SampleConsensusModelPlane<PointT>::isModelValid;
+      using SampleConsensusModel<PointT>::isModelValid;
 
       typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
@@ -101,6 +102,9 @@ namespace pcl
         : SampleConsensusModelPlane<PointT> (cloud, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
+        model_name_ = "SampleConsensusModelNormalPlane";
+        sample_size_ = 3;
+        model_size_ = 4;
       }
 
       /** \brief Constructor for base SampleConsensusModelNormalPlane.
@@ -114,6 +118,9 @@ namespace pcl
         : SampleConsensusModelPlane<PointT> (cloud, indices, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
+        model_name_ = "SampleConsensusModelNormalPlane";
+        sample_size_ = 3;
+        model_size_ = 4;
       }
       
       /** \brief Empty destructor */
@@ -136,22 +143,26 @@ namespace pcl
         * \return the resultant number of inliers
         */
       virtual int
-      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
-                           const double threshold);
+      countWithinDistance (const Eigen::VectorXf &model_coefficients,
+                           const double threshold) const;
 
       /** \brief Compute all distances from the cloud data to a given plane model.
         * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
         * \param[out] distances the resultant estimated distances
         */
-      void 
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
-                           std::vector<double> &distances);
+      void
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients,
+                           std::vector<double> &distances) const;
 
       /** \brief Return an unique id for this model (SACMODEL_NORMAL_PLANE). */
       inline pcl::SacModel 
       getModelType () const { return (SACMODEL_NORMAL_PLANE); }
 
     	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    protected:
+      using SampleConsensusModel<PointT>::sample_size_;
+      using SampleConsensusModel<PointT>::model_size_;
   };
 }
 

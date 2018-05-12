@@ -69,7 +69,9 @@ namespace pcl
 #include <iostream>
 #include <stdarg.h>
 #include <stdio.h>
+#ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
+#endif
 #include <math.h>
 
 // MSCV doesn't have std::{isnan,isfinite}
@@ -101,9 +103,9 @@ namespace pcl
 #elif ANDROID
 // Use the math.h macros
 # include <math.h>
-# define pcl_isnan(x)    isnan(x)
-# define pcl_isfinite(x) isfinite(x)
-# define pcl_isinf(x)    isinf(x)
+# define pcl_isnan(x)    std::isnan(x)
+# define pcl_isfinite(x) std::isfinite(x)
+# define pcl_isinf(x)    std::isinf(x)
 
 #elif _GLIBCXX_USE_C99_MATH
 // Are the C++ cmath functions enabled?
@@ -287,6 +289,25 @@ log2f (float x)
     #define PCLAPI(rettype) PCL_EXTERN_C PCL_EXPORTS rettype PCL_CDECL
 #endif
 
+// Macro for pragma operator
+#if (defined (__GNUC__) || defined(__clang__))
+  #define PCL_PRAGMA(x) _Pragma (#x)
+#elif _MSC_VER
+  #define PCL_PRAGMA(x) __pragma (#x)
+#else
+  #define PCL_PRAGMA
+#endif
+
+// Macro for emitting pragma warning
+#if (defined (__GNUC__) || defined(__clang__))
+  #define PCL_PRAGMA_WARNING(x) PCL_PRAGMA (GCC warning x)
+#elif _MSC_VER
+  #define PCL_PRAGMA_WARNING(x) PCL_PRAGMA (warning (x))
+#else
+  #define PCL_PRAGMA_WARNING
+#endif
+
+
 // Macro to deprecate old functions
 //
 // Usage:
@@ -301,21 +322,21 @@ log2f (float x)
 #endif
 
 #if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) && ! defined(__clang__)) || defined(__INTEL_COMPILER)
-#define PCL_DEPRECATED(func, message) func __attribute__ ((deprecated))
+#define PCL_DEPRECATED(message) __attribute__ ((deprecated))
 #endif
 
 // gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
 #if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) >= PCL_LINEAR_VERSION(4,5,0)) || (defined(__clang__) && __has_extension(attribute_deprecated_with_message))
-#define PCL_DEPRECATED(func, message) func __attribute__ ((deprecated(message)))
+#define PCL_DEPRECATED(message) __attribute__ ((deprecated(message)))
 #endif
 
 #ifdef _MSC_VER
-#define PCL_DEPRECATED(func, message) __declspec(deprecated(message)) func
+#define PCL_DEPRECATED(message) __declspec(deprecated(message))
 #endif
 
 #ifndef PCL_DEPRECATED
 #pragma message("WARNING: You need to implement PCL_DEPRECATED for this compiler")
-#define PCL_DEPRECATED(func) func
+#define PCL_DEPRECATED(message)
 #endif
 
 
@@ -375,8 +396,10 @@ log2f (float x)
 
 #if defined(__APPLE__) || defined(_WIN64) || GLIBC_MALLOC_ALIGNED || FREEBSD_MALLOC_ALIGNED
   #define MALLOC_ALIGNED 1
-#else
-  #define MALLOC_ALIGNED 0
+#endif
+
+#if defined (HAVE_MM_MALLOC)
+  #include <mm_malloc.h>
 #endif
 
 inline void*
@@ -392,6 +415,8 @@ aligned_malloc (size_t size)
   ptr = _mm_malloc (size, 16);
 #elif defined (_MSC_VER)
   ptr = _aligned_malloc (size, 16);
+#elif defined (ANDROID)
+  ptr = memalign (16, size);
 #else
   #error aligned_malloc not supported on your platform
   ptr = 0;
@@ -405,9 +430,11 @@ aligned_free (void* ptr)
 #if   defined (MALLOC_ALIGNED) || defined (HAVE_POSIX_MEMALIGN)
   std::free (ptr);
 #elif defined (HAVE_MM_MALLOC)
-  ptr = _mm_free (ptr);
+  _mm_free (ptr);
 #elif defined (_MSC_VER)
   _aligned_free (ptr);
+#elif defined (ANDROID)
+  free (ptr);
 #else
   #error aligned_free not supported on your platform
 #endif

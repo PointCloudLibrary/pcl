@@ -4,7 +4,7 @@ Implicit Shape Model
 --------------------
 
 In this tutorial we will learn how to use the implicit shape model algorithm implemented in the ``pcl::ism::ImplicitShapeModel`` class.
-This algorithm was described in the article `"Hough Transforms and 3D SURF for robust three dimensional classification" <http://homes.esat.kuleuven.be/~rtimofte/publications/Knopp-ECCV-2010.pdf>`_ by Jan Knopp, Mukta Prasad, Geert Willems, Radu Timofte, and Luc Van Gool.
+This algorithm was described in the article `"Hough Transforms and 3D SURF for robust three dimensional classification" <http://homes.esat.kuleuven.be/~jknopp/papers/2010eccv_3d_paper.pdf>`_ by Jan Knopp, Mukta Prasad, Geert Willems, Radu Timofte, and Luc Van Gool.
 This algorithm is a combination of generalized Hough transform and the Bag of Features approach and its purpose is as follows. Having some training set - point clouds of different objects of the known class - the algorithm computes a certain model which will be later used to predict an object center in the given cloud that wasn't a part of the training set.
 
 Theoretical Primer
@@ -44,7 +44,7 @@ After the training process is done and the trained model (weights, directions et
   #. Previous step gives us a set of directions to the expected center and the power for each vote. In order to get single point that corresponds to center these votes need to be analysed. For this purpose algorithm uses the non maxima suppression approach. User just needs to pass the radius of the object of interest and the rest will be done by the ``ISMVoteList::findStrongestPeaks ()`` method.
 
 For more comprehensive information please refer to the article
-`"Hough Transforms and 3D SURF for robust three dimensional classification" <http://homes.esat.kuleuven.be/~rtimofte/publications/Knopp-ECCV-2010.pdf>`_.
+`"Hough Transforms and 3D SURF for robust three dimensional classification" <http://homes.esat.kuleuven.be/~jknopp/papers/2010eccv_3d_paper.pdf>`_.
 
 The code
 --------
@@ -53,11 +53,11 @@ First of all you will need the set of point clouds for this tutorial - training 
 Below is the list of clouds that are well suited for this tutorial (they were borrowed from the Ohio dataset).
 
 Clouds for training:
-  * `Cat <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_cat.pcd>`_
-  * `Horse <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_horse.pcd>`_
-  * `Lioness <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_lioness.pcd>`_
-  * `Michael <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_michael.pcd>`_
-  * `Wolf <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_wolf.pcd>`_
+  * `Cat (train) <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_cat.pcd>`_
+  * `Horse (train) <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_horse.pcd>`_
+  * `Lioness (train) <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_lioness.pcd>`_
+  * `Michael (train) <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_michael.pcd>`_
+  * `Wolf (train) <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_wolf.pcd>`_
 
 Clouds for testing:
   * `Cat <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_test_cat.pcd>`_

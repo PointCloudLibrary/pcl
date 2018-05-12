@@ -93,7 +93,7 @@ namespace pcl
         /** \brief Encode raw disparity map and color image.
          * \note Default values are configured according to the kinect/asus device specifications
          * \param[in] disparityMap_arg:  pointer to raw 16-bit disparity map
-         * \param[in] disparityMap_arg:  pointer to raw 8-bit rgb color image
+         * \param[in] colorImage_arg:  pointer to raw 8-bit rgb color image
          * \param[in] width_arg:  width of disparity map/color image
          * \param[in] height_arg:  height of disparity map/color image
          * \param[out] compressedDataOut_arg:  binary output stream containing compressed data
@@ -122,7 +122,7 @@ namespace pcl
          * \param[in] compressedDataIn_arg: binary input stream containing compressed data
          * \param[out] cloud_arg: reference to decoded point cloud
          * \param[in] bShowStatistics_arg: show compression statistics during decoding
-         * \return false if an I/O error occured.
+         * \return false if an I/O error occurred.
          */
         bool decodePointCloud (std::istream& compressedDataIn_arg,
                                PointCloudPtr &cloud_arg,

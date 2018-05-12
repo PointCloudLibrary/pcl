@@ -93,13 +93,6 @@ namespace pcl
         , mean_ ()
         , eigenvalues_  ()
       {}
-      
-      /** \brief Constructor with direct computation
-        * X input m*n matrix (ie n vectors of R(m))
-        * basis_only flag to compute only the PCA basis
-        */
-      PCL_DEPRECATED (PCA (const pcl::PointCloud<PointT>& X, bool basis_only = false), 
-                      "Use PCA (bool basis_only); setInputCloud (X.makeShared ()); instead");
 
       /** Copy Constructor
         * \param[in] pca PCA object
@@ -120,10 +113,10 @@ namespace pcl
       inline PCA& 
       operator= (PCA const & pca) 
       {
-        eigenvectors_ = pca.eigenvectors;
-        coefficients_ = pca.coefficients;
-        eigenvalues_  = pca.eigenvalues;
-        mean_         = pca.mean;
+        eigenvectors_ = pca.eigenvectors_;
+        coefficients_ = pca.coefficients_;
+        eigenvalues_  = pca.eigenvalues_;
+        mean_         = pca.mean_;
         return (*this);
       }
       
@@ -134,6 +127,51 @@ namespace pcl
       setInputCloud (const PointCloudConstPtr &cloud) 
       { 
         Base::setInputCloud (cloud);
+        compute_done_ = false;
+      }
+
+      /** \brief Provide a pointer to the vector of indices that represents the input data.
+        * \param[in] indices a pointer to the indices that represent the input data.
+        */
+      virtual void
+      setIndices (const IndicesPtr &indices)
+      {
+        Base::setIndices (indices);
+        compute_done_ = false;
+      }
+
+      /** \brief Provide a pointer to the vector of indices that represents the input data.
+        * \param[in] indices a pointer to the indices that represent the input data.
+        */
+      virtual void
+      setIndices (const IndicesConstPtr &indices)
+      {
+        Base::setIndices (indices);
+        compute_done_ = false;
+      }
+
+      /** \brief Provide a pointer to the vector of indices that represents the input data.
+        * \param[in] indices a pointer to the indices that represent the input data.
+        */
+      virtual void
+      setIndices (const PointIndicesConstPtr &indices)
+      {
+        Base::setIndices (indices);
+        compute_done_ = false;
+      }
+
+      /** \brief Set the indices for the points laying within an interest region of
+        * the point cloud.
+        * \note you shouldn't call this method on unorganized point clouds!
+        * \param[in] row_start the offset on rows
+        * \param[in] col_start the offset on columns
+        * \param[in] nb_rows the number of rows to be considered row_start included
+        * \param[in] nb_cols the number of columns to be considered col_start included
+        */
+      virtual void
+      setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols)
+      {
+        Base::setIndices (row_start, col_start, nb_rows, nb_cols);
         compute_done_ = false;
       }
 

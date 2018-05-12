@@ -41,8 +41,6 @@
 #ifndef PCL_SAMPLE_CONSENSUS_MODEL_TYPES_H_
 #define PCL_SAMPLE_CONSENSUS_MODEL_TYPES_H_
 
-#include <map>
-
 namespace pcl
 {
   enum SacModel
@@ -66,33 +64,6 @@ namespace pcl
     SACMODEL_NORMAL_PARALLEL_PLANE,
     SACMODEL_STICK
   };
-}
-
-// Define the number of samples in SacModel needs
-typedef std::map<pcl::SacModel, unsigned int>::value_type SampleSizeModel;
-const static SampleSizeModel sample_size_pairs[] = {SampleSizeModel (pcl::SACMODEL_PLANE, 3),
-                                                    SampleSizeModel (pcl::SACMODEL_LINE, 2),
-                                                    SampleSizeModel (pcl::SACMODEL_CIRCLE2D, 3),
-                                                    SampleSizeModel (pcl::SACMODEL_CIRCLE3D, 3),
-                                                    SampleSizeModel (pcl::SACMODEL_SPHERE, 4),
-                                                    SampleSizeModel (pcl::SACMODEL_CYLINDER, 2),
-                                                    SampleSizeModel (pcl::SACMODEL_CONE, 3),
-                                                    //SampleSizeModel (pcl::SACMODEL_TORUS, 2),
-                                                    SampleSizeModel (pcl::SACMODEL_PARALLEL_LINE, 2),
-                                                    SampleSizeModel (pcl::SACMODEL_PERPENDICULAR_PLANE, 3),
-                                                    //SampleSizeModel (pcl::PARALLEL_LINES, 2),
-                                                    SampleSizeModel (pcl::SACMODEL_NORMAL_PLANE, 3),
-                                                    SampleSizeModel (pcl::SACMODEL_NORMAL_SPHERE, 4),
-                                                    SampleSizeModel (pcl::SACMODEL_REGISTRATION, 3),
-                                                    SampleSizeModel (pcl::SACMODEL_REGISTRATION_2D, 3),
-                                                    SampleSizeModel (pcl::SACMODEL_PARALLEL_PLANE, 3),
-                                                    SampleSizeModel (pcl::SACMODEL_NORMAL_PARALLEL_PLANE, 3),
-                                                    SampleSizeModel (pcl::SACMODEL_STICK, 2)};
-
-namespace pcl
-{
-  const static std::map<pcl::SacModel, unsigned int> SAC_SAMPLE_SIZE (sample_size_pairs, sample_size_pairs
-      + sizeof (sample_size_pairs) / sizeof (SampleSizeModel));
 }
 
 #endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_TYPES_H_

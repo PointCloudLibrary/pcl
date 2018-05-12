@@ -201,7 +201,7 @@ saveOBJFile (const std::string &file_name,
   int f_idx = 0;
 
   // int idx_vt =0;
-  PCL_INFO ("Writting faces...\n");
+  PCL_INFO ("Writing faces...\n");
   for (int m = 0; m < nr_meshes; ++m)
   {
     if (m > 0) 
@@ -242,7 +242,7 @@ saveOBJFile (const std::string &file_name,
   /* Write material defination for OBJ file*/
   // Open file
   PCL_INFO ("Writing material files\n");
-  //dont do it if no material to write
+  //don't do it if no material to write
   if(tex_mesh.tex_materials.size() ==0)
     return (0);
 
@@ -339,7 +339,7 @@ void showCameras (pcl::texture_mapping::CameraVector cams, pcl::PointCloud<pcl::
   }
   
   // add a coordinate system
-  visu.addCoordinateSystem (1.0);
+  visu.addCoordinateSystem (1.0, "global");
   
   // add the mesh's cloud (colored on Z axis)
   pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> color_handler (cloud, "z");

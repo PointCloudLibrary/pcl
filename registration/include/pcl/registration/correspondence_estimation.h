@@ -113,17 +113,6 @@ namespace pcl
           *
           * \param[in] cloud the input point cloud source
           */
-        PCL_DEPRECATED (void setInputCloud (const PointCloudSourceConstPtr &cloud), "[pcl::registration::CorrespondenceEstimationBase::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.");
-
-        /** \brief Get a pointer to the input point cloud dataset target. */
-        PCL_DEPRECATED (PointCloudSourceConstPtr const getInputCloud (), 
-            "[pcl::registration::CorrespondenceEstimationBase::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.");
-
-        /** \brief Provide a pointer to the input source 
-          * (e.g., the point cloud that we want to align to the target)
-          *
-          * \param[in] cloud the input point cloud source
-          */
         inline void 
         setInputSource (const PointCloudSourceConstPtr &cloud)
         {
@@ -149,6 +138,31 @@ namespace pcl
         /** \brief Get a pointer to the input point cloud dataset target. */
         inline PointCloudTargetConstPtr const 
         getInputTarget () { return (target_ ); }
+
+
+        /** \brief See if this rejector requires source normals */
+        virtual bool
+        requiresSourceNormals () const
+        { return (false); }
+
+        /** \brief Abstract method for setting the source normals */
+        virtual void
+        setSourceNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+        {
+          PCL_WARN ("[pcl::registration::%s::setSourceNormals] This class does not require input source normals", getClassName ().c_str ());
+        }
+        
+        /** \brief See if this rejector requires target normals */
+        virtual bool
+        requiresTargetNormals () const
+        { return (false); }
+
+        /** \brief Abstract method for setting the target normals */
+        virtual void
+        setTargetNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+        {
+          PCL_WARN ("[pcl::registration::%s::setTargetNormals] This class does not require input target normals", getClassName ().c_str ());
+        }
 
         /** \brief Provide a pointer to the vector of indices that represent the 
           * input source point cloud.
@@ -265,6 +279,9 @@ namespace pcl
           point_representation_ = point_representation;
         }
 
+        /** \brief Clone and cast to CorrespondenceEstimationBase */
+        virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > clone () const = 0;
+
       protected:
         /** \brief The correspondence estimation method name. */
         std::string corr_name_;
@@ -296,11 +313,11 @@ namespace pcl
         inline const std::string& 
         getClassName () const { return (corr_name_); }
 
-        /** \brief Internal computation initalization. */
+        /** \brief Internal computation initialization. */
         bool
         initCompute ();
         
-        /** \brief Internal computation initalization for reciprocal correspondences. */
+        /** \brief Internal computation initialization for reciprocal correspondences. */
         bool
         initComputeReciprocal ();
 
@@ -405,6 +422,15 @@ namespace pcl
         virtual void 
         determineReciprocalCorrespondences (pcl::Correspondences &correspondences,
                                             double max_distance = std::numeric_limits<double>::max ());
+
+        
+        /** \brief Clone and cast to CorrespondenceEstimationBase */
+        virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > 
+        clone () const
+        {
+          Ptr copy (new CorrespondenceEstimation<PointSource, PointTarget, Scalar> (*this));
+          return (copy);
+        }
      };
   }
 }

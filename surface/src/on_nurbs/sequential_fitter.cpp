@@ -235,10 +235,10 @@ SequentialFitter::setCorners (pcl::PointIndices::Ptr &corners, bool flip_on_dema
     throw std::runtime_error ("[SequentialFitter::setCorners] Error: Empty or invalid pcl-point-cloud.\n");
 
   if (corners->indices.size () < 4)
-    throw std::runtime_error ("[SequentialFitter::setCorners] Error: to few corners (<4)\n");
+    throw std::runtime_error ("[SequentialFitter::setCorners] Error: too few corners (<4)\n");
 
   if (corners->indices.size () > 4)
-    printf ("[SequentialFitter::setCorners] Warning: to many corners (>4)\n");
+    printf ("[SequentialFitter::setCorners] Warning: too many corners (>4)\n");
 
   bool flip = false;
   pcl::PointXYZRGB &pt0 = m_cloud->at (corners->indices[0]);
@@ -483,13 +483,13 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
 
   if (unsigned (this->m_data.boundary.size ()) != num_bnd)
   {
-    printf ("[SequentialFitter::grow] %zu %u\n", this->m_data.boundary.size (), num_bnd);
+    printf ("[SequentialFitter::grow] %lu %u\n", this->m_data.boundary.size (), num_bnd);
     throw std::runtime_error ("[SequentialFitter::grow] size of boundary and boundary parameters do not match.");
   }
 
   if (this->m_boundary_indices->indices.size () != num_bnd)
   {
-    printf ("[SequentialFitter::grow] %zu %u\n", this->m_boundary_indices->indices.size (), num_bnd);
+    printf ("[SequentialFitter::grow] %lu %u\n", this->m_boundary_indices->indices.size (), num_bnd);
     throw std::runtime_error ("[SequentialFitter::grow] size of boundary indices and boundary parameters do not match.");
   }
 

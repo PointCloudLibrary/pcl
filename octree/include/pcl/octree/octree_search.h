@@ -40,9 +40,8 @@
 #define PCL_OCTREE_SEARCH_H_
 
 #include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 
-#include "octree_pointcloud.h"
+#include <pcl/octree/octree_pointcloud.h>
 
 namespace pcl
 {
@@ -85,7 +84,7 @@ namespace pcl
         {
         }
 
-        /** \brief Empty class constructor. */
+        /** \brief Empty class destructor. */
         virtual
         ~OctreePointCloudSearch ()
         {
@@ -600,6 +599,8 @@ namespace pcl
   }
 }
 
-#define PCL_INSTANTIATE_OctreePointCloudSearch(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudSearch<T>;
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/octree/impl/octree_search.hpp>
+#endif
 
 #endif    // PCL_OCTREE_SEARCH_H_

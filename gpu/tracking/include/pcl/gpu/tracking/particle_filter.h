@@ -51,7 +51,7 @@ namespace pcl
 				getParticleNum () const { return particle_num_; }
 
 			 /** \brief set a pointer to a reference dataset to be tracked.
-			 * \param cloud a pointer to a PointCloud message
+			 * \param ref a pointer to a PointCloud message
 			 */
 			inline void
 				setReferenceCloud (const DeviceArray2D<PointType> &ref) { ref_ = ref; }

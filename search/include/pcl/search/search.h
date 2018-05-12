@@ -42,6 +42,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/for_each_type.h>
 #include <pcl/common/concatenate.h>
+#include <pcl/common/copy_point.h>
 
 namespace pcl
 {
@@ -159,11 +160,7 @@ namespace pcl
                          std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
         {
           PointT p;
-          // Copy all the data fields from the input cloud to the output one
-          typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
-          typedef typename pcl::traits::fieldList<PointTDiff>::type FieldListOutT;
-          typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
-          pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (point, p));
+          copyPoint (point, p);
           return (nearestKSearch (p, k, k_indices, k_sqr_distances));
         }
 
@@ -291,11 +288,7 @@ namespace pcl
                        std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
         {
           PointT p;
-          // Copy all the data fields from the input cloud to the output one
-          typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
-          typedef typename pcl::traits::fieldList<PointTDiff>::type FieldListOutT;
-          typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
-          pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (point, p));
+          copyPoint (point, p);
           return (radiusSearch (p, radius, k_indices, k_sqr_distances, max_nn));
         }
 

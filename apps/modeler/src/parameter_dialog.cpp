@@ -156,7 +156,7 @@ pcl::modeler::Parameter* pcl::modeler::ParameterDelegate::getCurrentParameter(co
   std::map<std::string, Parameter*>::iterator currentParameter = parameter_map_.begin();
 
   size_t currentRow = 0;
-  while(currentRow < index.row() && currentParameter != parameter_map_.end()) {
+  while(currentRow < (size_t) index.row() && currentParameter != parameter_map_.end()) {
     ++ currentParameter;
     ++ currentRow;
   }

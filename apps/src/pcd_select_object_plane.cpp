@@ -194,7 +194,7 @@ class ObjectSelection
       if (cloud_->isOrganized ())
       {
         // Use an organized clustering segmentation to extract the individual clusters
-        typename EuclideanClusterComparator<PointT, Normal, Label>::Ptr euclidean_cluster_comparator (new EuclideanClusterComparator<PointT, Normal, Label>);
+        typename EuclideanClusterComparator<PointT, Label>::Ptr euclidean_cluster_comparator (new EuclideanClusterComparator<PointT, Label>);
         euclidean_cluster_comparator->setInputCloud (cloud);
         euclidean_cluster_comparator->setDistanceThreshold (0.03f, false);
         // Set the entire scene to false, and the inliers of the objects located on top of the plane to true
@@ -205,7 +205,8 @@ class ObjectSelection
           scene->points[points_above_plane->indices[i]].label = 1;
         euclidean_cluster_comparator->setLabels (scene);
 
-        vector<bool> exclude_labels (2);  exclude_labels[0] = true; exclude_labels[1] = false;
+        boost::shared_ptr<std::set<uint32_t> > exclude_labels = boost::make_shared<std::set<uint32_t> > ();
+        exclude_labels->insert (0);
         euclidean_cluster_comparator->setExcludeLabels (exclude_labels);
 
         OrganizedConnectedComponentSegmentation<PointT, Label> euclidean_segmentation (euclidean_cluster_comparator);
@@ -227,7 +228,7 @@ class ObjectSelection
         ec.setIndices (points_above_plane);
         ec.extract (euclidean_label_indices);
         
-        print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", euclidean_label_indices.size ()); print_info (" clusters]\n");
+        print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", euclidean_label_indices.size ()); print_info (" clusters]\n");
       }
 
       // For each cluster found
@@ -270,7 +271,7 @@ class ObjectSelection
         // Estimate normals
         PointCloud<Normal>::Ptr normal_cloud (new PointCloud<Normal>);
         estimateNormals (cloud_, *normal_cloud);
-        print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", normal_cloud->size ()); print_info (" points]\n");
+        print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", normal_cloud->size ()); print_info (" points]\n");
 
         OrganizedMultiPlaneSegmentation<PointT, Normal, Label> mps;
         mps.setMinInliers (1000);
@@ -313,7 +314,7 @@ class ObjectSelection
           print_highlight (stderr, "Searching for the largest plane (%2.0d) ", i++);
           TicToc tt; tt.tic ();
           seg.segment (*inliers, coefficients);
-          print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", inliers->indices.size ()); print_info (" points]\n");
+          print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", inliers->indices.size ()); print_info (" points]\n");
  
           // No datasets could be found anymore
           if (inliers->indices.empty ())
@@ -335,7 +336,7 @@ class ObjectSelection
           cloud_segmented.swap (cloud_remaining);
         }
       }
-      print_highlight ("Number of planar regions detected: %zu for a cloud of %zu points\n", regions.size (), cloud_->size ());
+      print_highlight ("Number of planar regions detected: %lu for a cloud of %lu points\n", regions.size (), cloud_->size ());
 
       double max_dist = numeric_limits<double>::max ();
       // Compute the distances from all the planar regions to the picked point, and select the closest region
@@ -358,7 +359,7 @@ class ObjectSelection
         if (cloud_->isOrganized ())
         {
           approximatePolygon (regions[idx], region, 0.01f, false, true);
-          print_highlight ("Planar region: %zu points initial, %zu points after refinement.\n", regions[idx].getContour ().size (), region.getContour ().size ());
+          print_highlight ("Planar region: %lu points initial, %lu points after refinement.\n", regions[idx].getContour ().size (), region.getContour ().size ());
         }
         else
         {
@@ -384,7 +385,7 @@ class ObjectSelection
           PointCloud<PointT> plane_hull;
           chull.reconstruct (plane_hull);
           region.setContour (plane_hull);
-          print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", plane_hull.size ()); print_info (" points]\n");
+          print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", plane_hull.size ()); print_info (" points]\n");
         }
 
       }
@@ -566,7 +567,7 @@ class ObjectSelection
 
       cloud_viewer_->addPointCloud (cloud_, "scene");
       cloud_viewer_->resetCameraViewpoint ("scene");
-      cloud_viewer_->addCoordinateSystem (0.1, 0, 0, 0);
+      cloud_viewer_->addCoordinateSystem (0.1, 0, 0, 0, "global");
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -584,7 +585,7 @@ class ObjectSelection
         return (false);
       }
       print_info ("[done, "); print_value ("%g", tt.toc ()); 
-      print_info (" ms : "); print_value ("%zu", cloud_->size ()); print_info (" points]\n");
+      print_info (" ms : "); print_value ("%lu", cloud_->size ()); print_info (" points]\n");
       
       if (cloud_->isOrganized ())
         search_.reset (new search::OrganizedNeighbor<PointT>);

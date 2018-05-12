@@ -41,8 +41,6 @@
 
 #include <pcl/people/hog.h>
 
-#define _USE_MATH_DEFINES
-#include <math.h>
 #include <string.h>
 
 #if defined(__SSE2__)
@@ -151,7 +149,7 @@ pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) c
   // compute gradient magnitude (M) and normalize Gx
   for( y=0; y<h4; y++ ) 
   {
-  m = 1.0f/sqrtf(M2[y]);
+  m = 1.0f / std::sqrt (M2[y]);
   m = m < 1e10f ? m : 1e10f;
     M2[y] = 1.0f / m;
     Gx[y] = ((Gx[y] * m) * acMult);
@@ -325,8 +323,8 @@ pcl::people::HOG::compute (float *I, float *descriptor) const
   float *M, *O, *G, *H;
   M = new float[h_ * w_];
   O = new float[h_ * w_];
-  H = (float*) calloc((w_ / bin_size_) * (h_ / bin_size_) * n_orients_, sizeof(float));
-  G = (float*) calloc((w_ / bin_size_) * (h_ / bin_size_) * n_orients_ *4, sizeof(float));
+  H = new float[(w_ / bin_size_) * (h_ / bin_size_) * n_orients_]();
+  G = new float[(w_ / bin_size_) * (h_ / bin_size_) * n_orients_ *4]();
 
   // Compute gradient magnitude and orientation at each location (uses sse):
   gradMag (I, h_, w_, n_channels_, M, O );
@@ -339,18 +337,18 @@ pcl::people::HOG::compute (float *I, float *descriptor) const
  
   // Select descriptor of internal part of the image (remove borders):
   int k = 0;    
-  for (unsigned int l = 0; l < (n_orients_ * 4); l++)
+  for (int l = 0; l < (n_orients_ * 4); l++)
   {
-    for (unsigned int j = 1; j < (w_ / bin_size_ - 1); j++)
+    for (int j = 1; j < (w_ / bin_size_ - 1); j++)
     {
-      for (unsigned int i = 1; i < (h_ / bin_size_ - 1); i++)
+      for (int i = 1; i < (h_ / bin_size_ - 1); i++)
       {
         descriptor[k] = G[i + j * h_ / bin_size_ + l * (h_ / bin_size_) * (w_ / bin_size_)];
         k++;
       }
     }
   }
-  free(M); free(O); free(H); free(G);
+  delete[] M; delete[] O; delete[] H; delete[] G;
 }
 
 void 
@@ -420,7 +418,8 @@ pcl::people::HOG::acosTable () const
 {
   int i, n=25000, n2=n/2; float t, ni;
   static float a[25000]; static bool init=false;
-  if( init ) return a+n2; ni = 2.02f/(float) n;
+  if( init ) return a+n2;
+  ni = 2.02f/(float) n;
   for( i=0; i<n; i++ ) {
     t = i*ni - 1.01f;
     t = t<-1 ? -1 : (t>1 ? 1 : t);

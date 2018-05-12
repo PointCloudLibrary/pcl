@@ -133,6 +133,21 @@ namespace pcl
         inline NormalsConstPtr
         getSourceNormals () const { return (source_normals_); }
 
+
+        /** \brief See if this rejector requires source normals */
+        bool
+        requiresSourceNormals () const
+        { return (true); }
+
+        /** \brief Blob method for setting the source normals */
+        void
+        setSourceNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          NormalsPtr cloud (new PointCloudNormals);
+          fromPCLPointCloud2 (*cloud2, *cloud);
+          setSourceNormals (cloud);
+        }
+
         /** \brief Determine the correspondences between input and target cloud.
           * \param[out] correspondences the found correspondences (index of query point, index of target point, distance)
           * \param[in] max_distance maximum distance between the normal on the source point cloud and the corresponding point in the target
@@ -165,8 +180,16 @@ namespace pcl
           * cloud for computing correspondences. By default we use k = 10 nearest 
           * neighbors.
           */
-        inline void
+        inline unsigned int
         getKSearch () const { return (k_); }
+
+        /** \brief Clone and cast to CorrespondenceEstimationBase */
+        virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > 
+        clone () const
+        {
+          Ptr copy (new CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar> (*this));
+          return (copy);
+        }
 
       protected:
 
@@ -175,7 +198,7 @@ namespace pcl
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::tree_reciprocal_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_;
 
-        /** \brief Internal computation initalization. */
+        /** \brief Internal computation initialization. */
         bool
         initCompute ();
 

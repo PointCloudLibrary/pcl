@@ -71,6 +71,8 @@ namespace pcl
   class SampleConsensusModelPerpendicularPlane : public SampleConsensusModelPlane<PointT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
+
       typedef typename SampleConsensusModelPlane<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModelPlane<PointT>::PointCloudPtr PointCloudPtr;
       typedef typename SampleConsensusModelPlane<PointT>::PointCloudConstPtr PointCloudConstPtr;
@@ -87,6 +89,9 @@ namespace pcl
         , axis_ (Eigen::Vector3f::Zero ())
         , eps_angle_ (0.0)
       {
+        model_name_ = "SampleConsensusModelPerpendicularPlane";
+        sample_size_ = 3;
+        model_size_ = 4;
       }
 
       /** \brief Constructor for base SampleConsensusModelPerpendicularPlane.
@@ -101,8 +106,11 @@ namespace pcl
         , axis_ (Eigen::Vector3f::Zero ())
         , eps_angle_ (0.0)
       {
+        model_name_ = "SampleConsensusModelPerpendicularPlane";
+        sample_size_ = 3;
+        model_size_ = 4;
       }
-      
+
       /** \brief Empty destructor */
       virtual ~SampleConsensusModelPerpendicularPlane () {}
 
@@ -144,27 +152,30 @@ namespace pcl
         * \return the resultant number of inliers
         */
       virtual int
-      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
-                           const double threshold);
+      countWithinDistance (const Eigen::VectorXf &model_coefficients,
+                           const double threshold) const;
 
       /** \brief Compute all distances from the cloud data to a given plane model.
         * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
         * \param[out] distances the resultant estimated distances
         */
-      void 
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
-                           std::vector<double> &distances);
+      void
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients,
+                           std::vector<double> &distances) const;
 
       /** \brief Return an unique id for this model (SACMODEL_PERPENDICULAR_PLANE). */
       inline pcl::SacModel 
       getModelType () const { return (SACMODEL_PERPENDICULAR_PLANE); }
 
     protected:
+      using SampleConsensusModel<PointT>::sample_size_;
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      bool 
-      isModelValid (const Eigen::VectorXf &model_coefficients);
+      virtual bool
+      isModelValid (const Eigen::VectorXf &model_coefficients) const;
 
       /** \brief The axis along which we need to search for a plane perpendicular to. */
       Eigen::Vector3f axis_;

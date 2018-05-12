@@ -72,7 +72,7 @@ namespace pcl
           /** \brief Callback that is used to get cloud data from the grabber. */
           void cloudCallback (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud);
 
-        signals:
+        Q_SIGNALS:
           /** \brief Omitted when a new cloud is received. */
           void cloudReceived (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud);
 

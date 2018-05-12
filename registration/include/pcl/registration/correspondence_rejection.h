@@ -134,6 +134,54 @@ namespace pcl
         inline const std::string& 
         getClassName () const { return (rejection_name_); }
 
+
+        /** \brief See if this rejector requires source points */
+        virtual bool
+        requiresSourcePoints () const
+        { return (false); }
+
+        /** \brief Abstract method for setting the source cloud */
+        virtual void
+        setSourcePoints (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+        {
+          PCL_WARN ("[pcl::registration::%s::setSourcePoints] This class does not require an input source cloud", getClassName ().c_str ());
+        }
+        
+        /** \brief See if this rejector requires source normals */
+        virtual bool
+        requiresSourceNormals () const
+        { return (false); }
+
+        /** \brief Abstract method for setting the source normals */
+        virtual void
+        setSourceNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+        { 
+          PCL_WARN ("[pcl::registration::%s::setSourceNormals] This class does not require input source normals", getClassName ().c_str ());
+        }
+        /** \brief See if this rejector requires a target cloud */
+        virtual bool
+        requiresTargetPoints () const
+        { return (false); }
+
+        /** \brief Abstract method for setting the target cloud */
+        virtual void
+        setTargetPoints (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+        {
+          PCL_WARN ("[pcl::registration::%s::setTargetPoints] This class does not require an input target cloud", getClassName ().c_str ());
+        }
+        
+        /** \brief See if this rejector requires target normals */
+        virtual bool
+        requiresTargetNormals () const
+        { return (false); }
+
+        /** \brief Abstract method for setting the target normals */
+        virtual void
+        setTargetNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+        {
+          PCL_WARN ("[pcl::registration::%s::setTargetNormals] This class does not require input target normals", getClassName ().c_str ());
+        }
+
       protected:
 
         /** \brief The name of the rejection method. */
@@ -157,6 +205,7 @@ namespace pcl
         virtual ~DataContainerInterface () {}
         virtual double getCorrespondenceScore (int index) = 0;
         virtual double getCorrespondenceScore (const pcl::Correspondence &) = 0;
+        virtual double getCorrespondenceScoreFromNormals (const pcl::Correspondence &) = 0;
      };
 
     /** @b DataContainer is a container for the input and target point clouds and implements the interface 
@@ -196,15 +245,6 @@ namespace pcl
       
         /** \brief Empty destructor */
         virtual ~DataContainer () {}
-
-        /** \brief Provide a source point cloud dataset (must contain XYZ
-          * data!), used to compute the correspondence distance.  
-          * \param[in] cloud a cloud containing XYZ data
-          */
-        PCL_DEPRECATED (void setInputCloud (const PointCloudConstPtr &cloud), "[pcl::registration::DataContainer::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.");
-
-        /** \brief Get a pointer to the input point cloud dataset target. */
-        PCL_DEPRECATED (PointCloudConstPtr const getInputCloud (), "[pcl::registration::DataContainer::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.");
 
         /** \brief Provide a source point cloud dataset (must contain XYZ
           * data!), used to compute the correspondence distance.  
@@ -306,7 +346,7 @@ namespace pcl
         }
         
         /** \brief Get the correspondence score for a given pair of correspondent points based on 
-          * the angle betweeen the normals. The normmals for the in put and target clouds must be 
+          * the angle between the normals. The normmals for the in put and target clouds must be 
           * set before using this function
           * \param[in] corr Correspondent points
           */
@@ -364,8 +404,6 @@ namespace pcl
     };
   }
 }
-
-#include <pcl/registration/impl/correspondence_rejection.hpp>
 
 #endif /* PCL_REGISTRATION_CORRESPONDENCE_REJECTION_H_ */
 

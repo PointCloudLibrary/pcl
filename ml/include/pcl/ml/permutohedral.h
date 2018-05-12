@@ -59,7 +59,7 @@ namespace pcl
   /** \brief Implementation of a high-dimensional gaussian filtering using the permutohedral lattice
     * \author Christian Potthast (potthast@usc.edu)
     *
-    * @INPROCEEDINGS{Adams_fasthigh-dimensional,
+    * Adams_fasthigh-dimensional
     *   author = {Andrew Adams and Jongmin Baek and Myers Abraham Davis},
     *   title = {Fast high-dimensional filtering using the permutohedral lattice},
     *   booktitle = {Computer Graphics Forum (EG 2010 Proceedings},

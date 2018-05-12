@@ -40,7 +40,8 @@
 
 #include <pcl/common/time.h>
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
-
+#include "estimate_combined.h"
+#include "internal.h"
 
 #include <Eigen/Core>
 #include <Eigen/SVD>
@@ -51,7 +52,6 @@
 #ifdef HAVE_OPENCV
   #include <opencv2/opencv.hpp>
   //~ #include <opencv2/gpu/gpu.hpp>
-  //~ #include <pcl/gpu/utils/timers_opencv.hpp>
 #endif
 
 using namespace std;
@@ -251,6 +251,7 @@ pcl::gpu::kinfuLS::KinfuTracker::reset ()
   
   
   lost_=false;
+  has_shifted_=false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -294,8 +295,10 @@ pcl::gpu::kinfuLS::KinfuTracker::allocateBufffers (int rows, int cols)
     coresps_[i].create (pyr_rows, pyr_cols);
   }  
   depthRawScaled_.create (rows, cols);
-  // see estimate tranform for the magic numbers
-  gbuf_.create (27, 20*60);
+  // see estimate transform for the magic numbers
+  int r = (int)ceil ( ((float)rows) / ESTIMATE_COMBINED_CUDA_GRID_Y );
+  int c = (int)ceil ( ((float)cols) / ESTIMATE_COMBINED_CUDA_GRID_X );
+  gbuf_.create (27, r * c);
   sumbuf_.create (27);
 }
 
@@ -542,7 +545,7 @@ pcl::gpu::kinfuLS::KinfuTracker::performPairWiseICP(const Intr cam_intrinsics, M
   }
   
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // since raw depthmaps are quite noisy, we make sure the estimated transform is big enought to be taken into account
+  // since raw depthmaps are quite noisy, we make sure the estimated transform is big enough to be taken into account
   float rnorm = rodrigues2(current_rotation).norm();
   float tnorm = (current_translation).norm();    
   const float alpha = 1.f;
@@ -579,7 +582,7 @@ pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth_raw)
   
   ///////////////////////////////////////////////////////////////////////////////////////////
   // Initialization at first frame
-  if (global_time_ == 0) // this is the frist frame, the tsdf volume needs to be initialized
+  if (global_time_ == 0) // this is the first frame, the tsdf volume needs to be initialized
   {  
     // Initial rotation
     Matrix3frm initial_cam_rot = rmats_[0]; //  [Ri|ti] - pos of camera
@@ -651,8 +654,8 @@ pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth_raw)
 
   ///////////////////////////////////////////////////////////////////////////////////////////  
   // check if we need to shift
-  bool has_shifted = cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * volume_size_, true, perform_last_scan_); // TODO make target distance from camera a param
-  if(has_shifted)
+  has_shifted_ = cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * volume_size_, true, perform_last_scan_); // TODO make target distance from camera a param
+  if(has_shifted_)
     PCL_WARN ("SHIFTING\n");
   
   ///////////////////////////////////////////////////////////////////////////////////////////
@@ -664,7 +667,7 @@ pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth_raw)
   device_current_translation_local -= getCyclicalBufferStructure()->origin_metric;   // translation (local translation = global translation - origin of cube)
   
   ///////////////////////////////////////////////////////////////////////////////////////////
-  // Integration check - We do not integrate volume if camera does not move far enought.  
+  // Integration check - We do not integrate volume if camera does not move far enough.  
   {
     float rnorm = rodrigues2(current_global_rotation.inverse() * last_known_global_rotation).norm();
     float tnorm = (current_global_translation - last_known_global_translation).norm();    
@@ -700,7 +703,7 @@ pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth_raw)
     pcl::device::kinfuLS::sync ();
   }
 
-  if(has_shifted && perform_last_scan_)
+  if(has_shifted_ && perform_last_scan_)
     extractAndSaveWorld ();
 
     

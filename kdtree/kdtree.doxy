@@ -4,7 +4,7 @@
   \section secKDtreePresentation Overview 
 
   The <b>pcl_kdtree</b> library provides the kd-tree data-structure, using
-  <a href="http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN">FLANN</a>,
+  <a href="http://www.cs.ubc.ca/research/flann/</a>,
   that allows for fast <a href="http://en.wikipedia.org/wiki/Nearest_neighbor_search">nearest neighbor searches</a>.
 
   A <a href="http://en.wikipedia.org/wiki/Kd-tree">Kd-tree</a> (<i>k</i>-dimensional tree) is a space-partitioning data 

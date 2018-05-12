@@ -1,8 +1,8 @@
 # pcl_outofcore_process
-PCL_ADD_EXECUTABLE(pcl_outofcore_process ${SUBSYS_NAME} outofcore_process.cpp)
+PCL_ADD_EXECUTABLE(pcl_outofcore_process "${SUBSYS_NAME}" outofcore_process.cpp)
 target_link_libraries(pcl_outofcore_process pcl_common pcl_filters pcl_io pcl_octree pcl_outofcore)
 
-PCL_ADD_EXECUTABLE(pcl_outofcore_print ${SUBSYS_NAME} outofcore_print.cpp)
+PCL_ADD_EXECUTABLE(pcl_outofcore_print "${SUBSYS_NAME}" outofcore_print.cpp)
 target_link_libraries(pcl_outofcore_print pcl_common pcl_filters pcl_io pcl_octree pcl_outofcore)
 
 if(NOT VTK_FOUND)
@@ -11,9 +11,9 @@ if(NOT VTK_FOUND)
 else(NOT VTK_FOUND)
   set(DEFAULT TRUE)
   set(REASON)
-  set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
-  include (${VTK_USE_FILE})
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+  set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
+  include("${VTK_USE_FILE}")
+  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
   
   if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.8")
     # pcl_outofcore_viewer uses some functions not present in vtk 5.8
@@ -28,7 +28,7 @@ else(NOT VTK_FOUND)
            ../src/visualization/viewport.cpp)
   
     # pcl_outofcore_viewer
-    PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_outofcore_viewer ${SUBSYS_NAME} ${srcs})
+    PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_outofcore_viewer "${SUBSYS_NAME}" ${srcs})
     target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_outofcore pcl_visualization pcl_octree pcl_filters)
   
   endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.8")

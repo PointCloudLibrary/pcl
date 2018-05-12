@@ -90,12 +90,13 @@ namespace pcl
         , orientation_ (Eigen::Matrix3f::Zero ())
         , cloud_ ()
         , vertex_count_ (0)
-        , vertex_properties_counter_ (0)
         , vertex_offset_before_ (0)
         , range_grid_ (0)
         , rgb_offset_before_ (0)
         , do_resize_ (false)
         , polygons_ (0)
+        , r_(0), g_(0), b_(0)
+        , a_(0), rgba_(0)
       {}
 
       PLYReader (const PLYReader &p)
@@ -105,12 +106,13 @@ namespace pcl
         , orientation_ (Eigen::Matrix3f::Zero ())
         , cloud_ ()
         , vertex_count_ (0)
-        , vertex_properties_counter_ (0)
         , vertex_offset_before_ (0)
         , range_grid_ (0)
         , rgb_offset_before_ (0)
         , do_resize_ (false)
         , polygons_ (0)
+        , r_(0), g_(0), b_(0)
+        , a_(0), rgba_(0)
       {
         *this = p;
       }
@@ -521,7 +523,7 @@ namespace pcl
 
       //vertex element artifacts
       pcl::PCLPointCloud2 *cloud_;
-      size_t vertex_count_, vertex_properties_counter_;
+      size_t vertex_count_;
       int vertex_offset_before_;
       //range element artifacts
       std::vector<std::vector <int> > *range_grid_;
@@ -531,6 +533,12 @@ namespace pcl
       std::vector<pcl::Vertices> *polygons_;
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      
+    private:
+      // RGB values stored by vertexColorCallback()
+      int32_t r_, g_, b_;
+      // Color values stored by vertexAlphaCallback()
+      uint32_t a_, rgba_;
   };
 
   /** \brief Point Cloud Data (PLY) file format writer.
@@ -734,7 +742,7 @@ namespace pcl
   {
     /** \brief Load a PLY v.6 file into a templated PointCloud type.
       *
-      * Any PLY files containg sensor data will generate a warning as a
+      * Any PLY files containing sensor data will generate a warning as a
       * pcl/PCLPointCloud2 message cannot hold the sensor origin.
       *
       * \param[in] file_name the name of the file to load
@@ -752,7 +760,7 @@ namespace pcl
       * \param[in] file_name the name of the file to load
       * \param[in] cloud the resultant templated point cloud
       * \param[in] origin the sensor acquisition origin (only for > PLY_V7 - null if not present)
-      * \param[in] orientation the sensor acquisition orientation if availble, 
+      * \param[in] orientation the sensor acquisition orientation if available, 
       * identity if not present
       * \ingroup io
       */
@@ -779,7 +787,7 @@ namespace pcl
 
     /** \brief Load a PLY file into a PolygonMesh type.
       *
-      * Any PLY files containg sensor data will generate a warning as a
+      * Any PLY files containing sensor data will generate a warning as a
       * pcl/PolygonMesh message cannot hold the sensor origin.
       *
       * \param[in] file_name the name of the file to load
@@ -799,6 +807,7 @@ namespace pcl
       * \param[in] origin the sensor data acquisition origin (translation)
       * \param[in] orientation the sensor data acquisition origin (rotation)
       * \param[in] binary_mode true for binary mode, false (default) for ASCII
+      * \param[in] use_camera
       * \ingroup io
       */
     inline int 

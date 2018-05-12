@@ -235,4 +235,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/frustum_culling.hpp>
+#endif
+
 #endif

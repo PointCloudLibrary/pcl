@@ -38,6 +38,7 @@
 //#include <pcl/gpu/utils/device/block.hpp>
 //#include <pcl/gpu/utils/device/funcattrib.hpp>
 #include "device.hpp"
+#include "estimate_combined.h"
 //#include <boost/graph/buffer_concepts.hpp>
 
 using namespace pcl::device;
@@ -76,8 +77,8 @@ namespace pcl
       {
         enum
         {
-          CTA_SIZE_X = 32,
-          CTA_SIZE_Y = 8,
+          CTA_SIZE_X = ESTIMATE_COMBINED_CUDA_GRID_X,
+          CTA_SIZE_Y = ESTIMATE_COMBINED_CUDA_GRID_Y,
           CTA_SIZE = CTA_SIZE_X * CTA_SIZE_Y
         };
 
@@ -310,7 +311,7 @@ namespace pcl
 
         combinedKernel<<<grid, block>>>(cs);
         cudaSafeCall ( cudaGetLastError () );
-        //cudaSafeCall(cudaDeviceSynchronize());
+        cudaSafeCall(cudaDeviceSynchronize());
 
         //printFuncAttrib(combinedKernel);
 

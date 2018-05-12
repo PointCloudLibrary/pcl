@@ -80,7 +80,7 @@ namespace pcl
         virtual PointOutT
         operator() (const std::vector<int>& indices, const std::vector<float>& distances) = 0;
 
-        /** \brief Must call this methode before doing any computation
+        /** \brief Must call this method before doing any computation
           * \note make sure to override this with at least
           * \code
           * bool initCompute ()
@@ -94,7 +94,7 @@ namespace pcl
         initCompute () { return false; }
 
         /** \brief Utility function that annihilates a point making it fail the \ref pcl::isFinite test
-          * \param[in/out] p point to annihilate
+          * \param p point to annihilate
           */
         static void
         makeInfinite (PointOutT& p)
@@ -150,7 +150,7 @@ namespace pcl
         inline void
         setThreshold (float threshold) { threshold_ = threshold; }
 
-        /** Must call this methode before doing any computation */
+        /** Must call this method before doing any computation */
         bool initCompute ();
 
         virtual PointOutT

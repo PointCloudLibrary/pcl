@@ -37,6 +37,7 @@
 
 #include <stdexcept>
 #include <pcl/surface/on_nurbs/fitting_cylinder_pdm.h>
+#include <pcl/pcl_macros.h>
 
 using namespace pcl;
 using namespace on_nurbs;

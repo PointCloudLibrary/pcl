@@ -3,10 +3,10 @@ set(SUBSYS_DESC "Point cloud common library")
 set(SUBSYS_DEPS)
 
 set(build TRUE)
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS eigen boost)
+PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
+PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS eigen boost)
 
-PCL_ADD_DOC(${SUBSYS_NAME})
+PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
     set(range_image_incs
@@ -35,13 +35,14 @@ if(build)
         src/common.cpp
         src/correspondence.cpp
         src/distances.cpp
-        src/intersections.cpp
         src/parse.cpp
         src/poses_from_matches.cpp
         src/print.cpp
         src/projection_matrix.cpp
         src/time_trigger.cpp
         src/gaussian.cpp
+        src/colors.cpp
+        src/feature_histogram.cpp
         ${range_image_srcs}
         )
 
@@ -55,7 +56,6 @@ if(build)
         include/pcl/point_traits.h
         include/pcl/point_types_conversion.h
         include/pcl/point_representation.h
-        include/pcl/correspondence.h
         include/pcl/point_types.h
         include/pcl/for_each_type.h
         include/pcl/pcl_tests.h
@@ -84,6 +84,7 @@ if(build)
         include/pcl/common/common_headers.h
         include/pcl/common/distances.h
         include/pcl/common/eigen.h
+        include/pcl/common/copy_point.h
         include/pcl/common/io.h
         include/pcl/common/file_io.h
         include/pcl/common/intersections.h
@@ -108,6 +109,8 @@ if(build)
         include/pcl/common/random.h
         include/pcl/common/generate.h
         include/pcl/common/projection_matrix.h
+        include/pcl/common/colors.h
+        include/pcl/common/feature_histogram.h
         )
 
     set(common_incs_impl
@@ -116,6 +119,8 @@ if(build)
         include/pcl/common/impl/centroid.hpp
         include/pcl/common/impl/common.hpp
         include/pcl/common/impl/eigen.hpp
+        include/pcl/common/impl/intersections.hpp
+        include/pcl/common/impl/copy_point.hpp
         include/pcl/common/impl/io.hpp
         include/pcl/common/impl/file_io.hpp
         include/pcl/common/impl/norms.hpp
@@ -131,6 +136,7 @@ if(build)
         include/pcl/common/impl/random.hpp
         include/pcl/common/impl/generate.hpp
         include/pcl/common/impl/projection_matrix.hpp
+        include/pcl/common/impl/accumulators.hpp
         )
 
     set(impl_incs 
@@ -138,11 +144,6 @@ if(build)
         include/pcl/impl/instantiate.hpp
         include/pcl/impl/point_types.hpp
         include/pcl/impl/cloud_iterator.hpp
-        )
-
-    set(ros_incs 
-        include/pcl/ros/conversions.h
-        include/pcl/ros/register_point_struct.h
         )
 
     set(tools_incs 
@@ -160,22 +161,20 @@ if(build)
         src/fft/kiss_fft.c
         src/fft/kiss_fftr.c)
 
-    set(LIB_NAME pcl_${SUBSYS_NAME})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
-    #PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
-    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
+    set(LIB_NAME "pcl_${SUBSYS_NAME}")
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+    PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
+    PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "" ""
         "" "" "")
 
     # Install include files
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} common/fft ${kissfft_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} common/impl ${common_incs_impl})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} impl ${impl_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ros ${ros_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} console ${tools_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} range_image ${range_image_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} range_image/impl ${range_image_incs_impl})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" "" ${incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" common ${common_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" common/fft ${kissfft_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" common/impl ${common_incs_impl})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" impl ${impl_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" console ${tools_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image ${range_image_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image/impl ${range_image_incs_impl})
 
 endif(build)

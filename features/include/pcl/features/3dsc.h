@@ -218,11 +218,11 @@ namespace pcl
       /** \brief Boost-based random number generator distribution. */
       boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
 
-      /** \brief Shift computed descriptor "L" times along the azimuthal direction
-        * \param[in] block_size the size of each azimuthal block
-        * \param[in] desc at input desc == original descriptor and on output it contains
-        * shifted descriptor resized descriptor_length_ * azimuth_bins_
-        */
+     /*  \brief Shift computed descriptor "L" times along the azimuthal direction
+       * \param[in] block_size the size of each azimuthal block
+       * \param[in] desc at input desc == original descriptor and on output it contains
+       *  shifted descriptor resized descriptor_length_ * azimuth_bins_
+       */
       //void
       //shiftAlongAzimuth (size_t block_size, std::vector<float>& desc);
 

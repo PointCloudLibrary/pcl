@@ -362,7 +362,7 @@ int main (int argc, char** argv)
     pcl::transformPointCloud (*temp, *result, GlobalTransform);
 
     //update the global transform
-    GlobalTransform = pairTransform * GlobalTransform;
+    GlobalTransform = GlobalTransform * pairTransform;
 
 		//save aligned pair, transformed into the first cloud's frame
     std::stringstream ss;

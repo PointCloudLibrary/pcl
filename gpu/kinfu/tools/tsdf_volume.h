@@ -225,9 +225,13 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     ////////////////////////////////////////////////////////////////////////////////////////
     // Functionality
 
-    /** \brief Converts volume to cloud of TSDF values*/
+    /** \brief Converts volume to cloud of TSDF values
+      * \param[ou] cloud - the output point cloud
+      * \param[in] step - the decimation step to use
+      */
     void
-    convertToTsdfCloud (pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud) const;
+    convertToTsdfCloud (pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud,
+                        const unsigned step = 2) const;
 
     /** \brief Converts the volume to a surface representation via a point cloud */
   //  void

@@ -52,12 +52,20 @@ pcl::Filter<pcl::PCLPointCloud2>::filter (PCLPointCloud2 &output)
   if (!initCompute ())
     return;
 
-  // Copy fields and header at a minimum
-  output.header = input_->header;
-  output.fields = input_->fields;
-
-  // Apply the actual filter
-  applyFilter (output);
+  if (input_.get () == &output)  // cloud_in = cloud_out
+  {
+    pcl::PCLPointCloud2 output_temp;
+    applyFilter (output_temp);
+    output_temp.fields = input_->fields;
+    output_temp.header = input_->header;
+    pcl::copyPointCloud (output_temp, output);
+  }
+  else
+  {
+    output.fields = input_->fields;
+    output.header = input_->header;
+    applyFilter (output);
+  }
 
   deinitCompute ();
 }

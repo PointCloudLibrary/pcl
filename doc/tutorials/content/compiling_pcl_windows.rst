@@ -85,7 +85,7 @@ The invocation to download the source code is thus, using a command line:
   cd wherever/you/want/to/put/the/repo/
   git clone https://github.com/PointCloudLibrary/pcl.git
 
-You could also use Github for Windows (http://windows.github.com/), but that is potentially more
+You could also use Github for Windows (https://windows.github.com/), but that is potentially more
 troublesome than setting up git on windows.
 
 Configuring PCL
@@ -109,7 +109,7 @@ Now hit the "Configure" button. You will be asked for a `generator`. A generator
 	"**Visual Studio 10**" generator. If you want to build 64bit PCL, then pick the "**Visual Studio 10 Win64**".
 
 	Make sure you have installed the right third party dependencies. You cannot mix 32bit and 64bit code, and it is 
-	highly recommanded to not mix codes compiled with different compilers.
+	highly recommended to not mix codes compiled with different compilers.
 	
 .. image:: images/windows/cmake_generator.png
     :alt: Choosing a generator
@@ -146,7 +146,7 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		:alt: Boost
 		:align: center	
 	
-	Let's tell CMake where boost headers are by specifiying the headers path in **Boost_INCLUDE_DIR** variable. For example, my boost 
+	Let's tell CMake where boost headers are by specifying the headers path in **Boost_INCLUDE_DIR** variable. For example, my boost 
 	headers are in C:\\Program Files\\PCL-Boost\\include (C:\\Program Files\\Boost\\include for newer installers). 
 	Then, let's hit `configure` again ! Hopefully, CMake is now able to find all the other items (the libraries).
 
@@ -245,7 +245,7 @@ Once CMake has found all the needed dependencies, let's see the PCL specific CMa
 	:alt: PCL
 	:align: center
 	
-- **PCL_SHARED_LIBS** is checked by default. Uncheck it if you want static PCL libs (not recommanded).
+- **PCL_SHARED_LIBS** is checked by default. Uncheck it if you want static PCL libs (not recommended).
 
 - **CMAKE_INSTALL_PREFIX** is where PCL will be installed after building it (more information on this later).
 	
@@ -291,7 +291,7 @@ CMake variable.
 
 .. note::
 
-	It is highly recommanded to add the bin folder in PCL installation tree (e.g. C:\\Program Files\\PCL\\bin)
+	It is highly recommended to add the bin folder in PCL installation tree (e.g. C:\\Program Files\\PCL\\bin)
 	to your **PATH** environment variable.
 
 Advanced topics
@@ -323,7 +323,7 @@ Advanced topics
 	Then, you need to enable the `documentation` project in Visual Studio by checking the **BUILD_DOCUMENTATION** checkbox in CMake.
 	
 	You can also build one single CHM file that will gather all the generated html files into one file. You need the `Microsoft
-	HTML HELP Workshop <http://www.microsoft.com/downloads/en/details.aspx?familyid=00535334-c8a6-452f-9aa0-d597d16580cc&displaylang=en>`_.
+	HTML HELP Workshop <http://www.microsoft.com/en-us/download/details.aspx?id=21138>`_.
 	After you install the `Microsoft HTML HELP Workshop`, hit `Configure`. If CMake is not able to find **HTML_HEL_COMPILER**, then fill
 	it manually with the path to `hhc.exe` (e.g. C:/Program Files (x86)/HTML Help Workshop/hhc.exe), then click `Configure` and `Generate`.
 	

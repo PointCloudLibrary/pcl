@@ -48,15 +48,20 @@
 #include <pcl/registration/joint_icp.h>
 #include <pcl/registration/icp_nl.h>
 #include <pcl/registration/gicp.h>
+#include <pcl/registration/gicp6d.h>
 #include <pcl/registration/transformation_estimation_point_to_plane.h>
 #include <pcl/registration/transformation_validation_euclidean.h>
+#include <pcl/registration/correspondence_rejection_median_distance.h>
+#include <pcl/registration/correspondence_rejection_sample_consensus.h>
+#include <pcl/registration/correspondence_rejection_surface_normal.h>
+#include <pcl/registration/correspondence_estimation_normal_shooting.h>
 #include <pcl/registration/ia_ransac.h>
 #include <pcl/registration/pyramid_feature_matching.h>
 #include <pcl/features/ppf.h>
 #include <pcl/registration/ppf_registration.h>
 #include <pcl/registration/ndt.h>
 #include <pcl/registration/sample_consensus_prerejective.h>
-// We need Histogram<2> to function, so we'll explicitely add kdtree_flann.hpp here
+// We need Histogram<2> to function, so we'll explicitly add kdtree_flann.hpp here
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 //(pcl::Histogram<2>)
 
@@ -65,6 +70,7 @@ using namespace pcl::io;
 using namespace std;
 
 PointCloud<PointXYZ> cloud_source, cloud_target, cloud_reg;
+PointCloud<PointXYZRGBA> cloud_with_color;
 
 template <typename PointSource, typename PointTarget>
 class RegistrationWrapper : public Registration<PointSource, PointTarget>
@@ -156,11 +162,6 @@ TEST (PCL, IterativeClosestPoint)
 {
   IterativeClosestPoint<PointXYZ, PointXYZ> reg;
   PointCloud<PointXYZ>::ConstPtr source (cloud_source.makeShared ());
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  reg.setInputCloud (source);     // test for PCL_DEPRECATED
-  source = reg.getInputCloud ();  // test for PCL_DEPRECATED
-#pragma GCC diagnostic pop
   reg.setInputSource (source);
   reg.setInputTarget (cloud_target.makeShared ());
   reg.setMaximumIterations (50);
@@ -197,6 +198,7 @@ TEST (PCL, IterativeClosestPoint)
 void
 sampleRandomTransform (Eigen::Affine3f &trans, float max_angle, float max_trans)
 {
+    srand(0);
     // Sample random transform
     Eigen::Vector3f axis((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
     axis.normalize();
@@ -208,6 +210,55 @@ sampleRandomTransform (Eigen::Affine3f &trans, float max_angle, float max_trans)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, IterativeClosestPointWithRejectors)
+{
+  IterativeClosestPoint<PointXYZ, PointXYZ> reg;
+  reg.setMaximumIterations (50);
+  reg.setTransformationEpsilon (1e-8);
+  reg.setMaxCorrespondenceDistance (0.15);
+  // Add a median distance rejector
+  pcl::registration::CorrespondenceRejectorMedianDistance::Ptr rej_med (new pcl::registration::CorrespondenceRejectorMedianDistance);
+  rej_med->setMedianFactor (4.0);
+  reg.addCorrespondenceRejector (rej_med);
+  // Also add a SaC rejector
+  pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>::Ptr rej_samp (new pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>);
+  reg.addCorrespondenceRejector (rej_samp);
+
+  size_t ntransforms = 10;
+  for (size_t t = 0; t < ntransforms; t++)
+  {
+    // Sample a fixed offset between cloud pairs
+    Eigen::Affine3f delta_transform;
+    sampleRandomTransform (delta_transform, 0., 0.05);
+    // Sample random global transform for each pair, to make sure we aren't biased around the origin
+    Eigen::Affine3f net_transform;
+    sampleRandomTransform (net_transform, 2*M_PI, 10.);
+
+    PointCloud<PointXYZ>::ConstPtr source (cloud_source.makeShared ());
+    PointCloud<PointXYZ>::Ptr source_trans (new PointCloud<PointXYZ>);
+    PointCloud<PointXYZ>::Ptr target_trans (new PointCloud<PointXYZ>);
+
+    pcl::transformPointCloud (*source, *source_trans, delta_transform.inverse () * net_transform);
+    pcl::transformPointCloud (*source, *target_trans, net_transform);
+
+    reg.setInputSource (source_trans);
+    reg.setInputTarget (target_trans);
+
+    // Register
+    reg.align (cloud_reg);
+    Eigen::Matrix4f trans_final = reg.getFinalTransformation ();
+    // Translation should be within 1cm
+    for (int y = 0; y < 4; y++)
+      EXPECT_NEAR (trans_final (y, 3), delta_transform (y, 3), 1E-2);
+    // Rotation within .1
+    for (int y = 0; y < 4; y++)
+      for (int x = 0; x < 3; x++)
+        EXPECT_NEAR (trans_final (y, x), delta_transform (y, x), 1E-1);
+
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, JointIterativeClosestPoint)
 {
   // Set up
@@ -215,10 +266,18 @@ TEST (PCL, JointIterativeClosestPoint)
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
   reg.setMaxCorrespondenceDistance (0.25); // Making sure the correspondence distance > the max translation
+  // Add a median distance rejector
+  pcl::registration::CorrespondenceRejectorMedianDistance::Ptr rej_med (new pcl::registration::CorrespondenceRejectorMedianDistance);
+  rej_med->setMedianFactor (4.0);
+  reg.addCorrespondenceRejector (rej_med);
+  // Also add a SaC rejector
+  pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>::Ptr rej_samp (new pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>);
+  reg.addCorrespondenceRejector (rej_samp);
+
   size_t ntransforms = 10;
   for (size_t t = 0; t < ntransforms; t++)
   {
-    
+
     // Sample a fixed offset between cloud pairs
     Eigen::Affine3f delta_transform;
     // No rotation, since at a random offset this could make it converge to a wrong (but still reasonable) result
@@ -302,7 +361,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
   EXPECT_EQ (transformation (3, 3), 1);
   */
   EXPECT_LT (reg.getFitnessScore (), 0.001);
- 
+
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
   {
@@ -318,7 +377,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
     if (force_cache_reciprocal)
       tree_recip->setInputCloud (temp_src);
     reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
-    
+
     // Register
     reg.align (output);
     EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
@@ -351,11 +410,18 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   reg.setInputTarget (tgt);
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
+  // Use a correspondence estimator which needs normals
+  registration::CorrespondenceEstimationNormalShooting<PointT, PointT, PointT>::Ptr ce (new registration::CorrespondenceEstimationNormalShooting<PointT, PointT, PointT>);
+  reg.setCorrespondenceEstimation (ce);
+  // Add rejector
+  registration::CorrespondenceRejectorSurfaceNormal::Ptr rej (new registration::CorrespondenceRejectorSurfaceNormal);
+  rej->setThreshold (0); //Could be a lot of rotation -- just make sure they're at least within 0 degrees
+  reg.addCorrespondenceRejector (rej);
 
   // Register
   reg.align (output);
   EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-  EXPECT_LT (reg.getFitnessScore (), 0.001);
+  EXPECT_LT (reg.getFitnessScore (), 0.005);
 
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
@@ -372,13 +438,13 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
     if (force_cache_reciprocal)
       tree_recip->setInputCloud (src);
     reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
-    
+
     // Register
     reg.align (output);
     EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-    EXPECT_LT (reg.getFitnessScore (), 0.001);
+    EXPECT_LT (reg.getFitnessScore (), 0.005);
   }
-  
+
 
 
   // We get different results on 32 vs 64-bit systems.  To address this, we've removed the explicit output test
@@ -419,7 +485,6 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
   copyPointCloud (cloud_target, *tgt);
   PointCloud<PointT> output;
 
-
   GeneralizedIterativeClosestPoint<PointT, PointT> reg;
   reg.setInputSource (src);
   reg.setInputTarget (tgt);
@@ -429,7 +494,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
   // Register
   reg.align (output);
   EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-  EXPECT_LT (reg.getFitnessScore (), 0.001);
+  EXPECT_LT (reg.getFitnessScore (), 0.0001);
 
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
@@ -446,13 +511,85 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
     if (force_cache_reciprocal)
       tree_recip->setInputCloud (src);
     reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
-    
+
     // Register
     reg.align (output);
     EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
-  
+
+  // Test guess matrix
+  Eigen::Isometry3f transform = Eigen::Isometry3f (Eigen::AngleAxisf (0.25 * M_PI, Eigen::Vector3f::UnitX ())
+                                                 * Eigen::AngleAxisf (0.50 * M_PI, Eigen::Vector3f::UnitY ())
+                                                 * Eigen::AngleAxisf (0.33 * M_PI, Eigen::Vector3f::UnitZ ()));
+  transform.translation () = Eigen::Vector3f (0.1, 0.2, 0.3);
+  PointCloud<PointT>::Ptr transformed_tgt (new PointCloud<PointT>);
+  pcl::transformPointCloud (*tgt, *transformed_tgt, transform.matrix ()); // transformed_tgt is now a copy of tgt with a transformation matrix applied
+
+  GeneralizedIterativeClosestPoint<PointT, PointT> reg_guess;
+  reg_guess.setInputSource (src);
+  reg_guess.setInputTarget (transformed_tgt);
+  reg_guess.setMaximumIterations (50);
+  reg_guess.setTransformationEpsilon (1e-8);
+  reg_guess.align (output, transform.matrix ());
+  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_LT (reg.getFitnessScore (), 0.0001);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, GeneralizedIterativeClosestPoint6D)
+{
+  typedef PointXYZRGBA PointT;
+  Eigen::Affine3f delta_transform;
+  PointCloud<PointT>::Ptr src_full (new PointCloud<PointT>);
+  copyPointCloud (cloud_with_color, *src_full);
+  PointCloud<PointT>::Ptr tgt_full (new PointCloud<PointT>);
+  sampleRandomTransform (delta_transform, M_PI/0.1, .03);
+  pcl::transformPointCloud (cloud_with_color, *tgt_full, delta_transform);
+  PointCloud<PointT> output;
+
+  // VoxelGrid filter
+  PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
+  PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);
+  pcl::VoxelGrid<PointT> sor;
+  sor.setLeafSize (0.02f, 0.02f, 0.02f);
+  sor.setInputCloud (src_full);
+  sor.filter (*src);
+  sor.setInputCloud (tgt_full);
+  sor.filter (*tgt);
+
+  GeneralizedIterativeClosestPoint6D reg;
+  reg.setInputSource (src);
+  reg.setInputTarget (tgt);
+  reg.setMaximumIterations (50);
+  reg.setTransformationEpsilon (1e-8);
+
+  // Register
+  reg.align (output);
+  EXPECT_EQ (int (output.points.size ()), int (src->points.size ()));
+  EXPECT_LT (reg.getFitnessScore (), 0.003);
+
+  // Check again, for all possible caching schemes
+  for (int iter = 0; iter < 4; iter++)
+  {
+    bool force_cache = (bool) iter/2;
+    bool force_cache_reciprocal = (bool) iter%2;
+    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+    // Ensure that, when force_cache is not set, we are robust to the wrong input
+    if (force_cache)
+      tree->setInputCloud (tgt);
+    reg.setSearchMethodTarget (tree, force_cache);
+
+    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
+    if (force_cache_reciprocal)
+      tree_recip->setInputCloud (src);
+    reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
+
+    // Register
+    reg.align (output);
+    EXPECT_EQ (int (output.points.size ()), int (src->points.size ()));
+    EXPECT_LT (reg.getFitnessScore (), 0.003);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -476,7 +613,7 @@ TEST (PCL, NormalDistributionsTransform)
   reg.align (output);
   EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
   EXPECT_LT (reg.getFitnessScore (), 0.001);
-  
+
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
   {
@@ -492,7 +629,7 @@ TEST (PCL, NormalDistributionsTransform)
     if (force_cache_reciprocal)
       tree_recip->setInputCloud (src);
     reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
-    
+
     // Register
     reg.align (output);
     EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
@@ -558,7 +695,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
   reg.align (cloud_reg);
   EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
   EXPECT_LT (reg.getFitnessScore (), 0.0005);
-  
+
   // Check again, for all possible caching schemes
   typedef pcl::PointXYZ PointT;
   for (int iter = 0; iter < 4; iter++)
@@ -575,7 +712,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
     if (force_cache_reciprocal)
       tree_recip->setInputCloud (cloud_source_ptr);
     reg.setSearchMethodSource(tree_recip, force_cache_reciprocal);
-    
+
     // Register
     reg.align (cloud_reg);
     EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
@@ -593,7 +730,7 @@ TEST (PCL, SampleConsensusPrerejective)
    *   1) the number of iterations is increased 1000 --> 5000
    *   2) the feature correspondence randomness (the number of kNNs) is decreased 10 --> 2
    */
-  
+
   // Transform the source cloud by a large amount
   Eigen::Vector3f initial_offset (100, 0, 0);
   float angle = static_cast<float> (M_PI) / 2.0f;
@@ -635,13 +772,13 @@ TEST (PCL, SampleConsensusPrerejective)
   fpfh_est.setInputNormals (normals.makeShared ());
   fpfh_est.compute (features_target);
 
-  // Initialize Sample Consensus Prerejective with 5x the number of iterations and 1/5 feature kNNs as SAC-IA 
+  // Initialize Sample Consensus Prerejective with 5x the number of iterations and 1/5 feature kNNs as SAC-IA
   SampleConsensusPrerejective<PointXYZ, PointXYZ, FPFHSignature33> reg;
   reg.setMaxCorrespondenceDistance (0.1);
   reg.setMaximumIterations (5000);
   reg.setSimilarityThreshold (0.6f);
   reg.setCorrespondenceRandomness (2);
-  
+
   // Set source and target cloud/features
   reg.setInputSource (cloud_source_ptr);
   reg.setInputTarget (cloud_target_ptr);
@@ -650,12 +787,12 @@ TEST (PCL, SampleConsensusPrerejective)
 
   // Register
   reg.align (cloud_reg);
-  
+
   // Check output consistency and quality of alignment
   EXPECT_EQ (static_cast<int> (cloud_reg.points.size ()), static_cast<int> (cloud_source.points.size ()));
   float inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.points.size ());
   EXPECT_GT (inlier_fraction, 0.95f);
-  
+
   // Check again, for all possible caching schemes
   typedef pcl::PointXYZ PointT;
   for (int iter = 0; iter < 4; iter++)
@@ -672,7 +809,7 @@ TEST (PCL, SampleConsensusPrerejective)
     if (force_cache_reciprocal)
       tree_recip->setInputCloud (cloud_source_ptr);
     reg.setSearchMethodSource(tree_recip, force_cache_reciprocal);
-    
+
     // Register
     reg.align (cloud_reg);
 
@@ -851,9 +988,9 @@ TEST (PCL, PPFRegistration)
 int
 main (int argc, char** argv)
 {
-  if (argc < 3)
+  if (argc < 4)
   {
-    std::cerr << "No test files given. Please download `bun0.pcd` and `bun4.pcd` and pass their path to the test." << std::endl;
+    std::cerr << "No test files given. Please download `bun0.pcd`, `bun4.pcd` and `milk_color.pcd` pass their path to the test." << std::endl;
     return (-1);
   }
 
@@ -866,6 +1003,11 @@ main (int argc, char** argv)
   if (loadPCDFile (argv[2], cloud_target) < 0)
   {
     std::cerr << "Failed to read test file. Please download `bun4.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+  if (loadPCDFile (argv[3], cloud_with_color) < 0)
+  {
+    std::cerr << "Failed to read test file. Please download `milk_color.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
 

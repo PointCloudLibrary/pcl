@@ -392,7 +392,7 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> simpleVis (pcl::PointCloud<
 
 void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
 {
-  // No reference image - but this is kept for compatability with range_test_v2:
+  // No reference image - but this is kept for compatibility with range_test_v2:
   float* reference = new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
   const float* depth_buffer = range_likelihood_->getDepthBuffer();
   // Copy one image from our last as a reference.
@@ -471,7 +471,7 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
     writer.writeBinary (point_cloud_fname, *pc_out);
     //cout << "finished writing file\n";
   }
-  // Disabled all OpenCV stuff for now: dont want the dependency
+  // Disabled all OpenCV stuff for now: don't want the dependency
   /*
   bool demo_other_stuff = false;
   if (demo_other_stuff && write_cloud)
@@ -606,7 +606,7 @@ void simulate_callback (const pcl::visualization::KeyboardEvent &event,
   
   
   
-  viewer->addCoordinateSystem (1.0,pose);
+  viewer->addCoordinateSystem (1.0,pose,"reference");
   
   
   
@@ -975,7 +975,7 @@ main (int argc, char** argv)
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, cloud_name_normals_pc.str ());
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc.str ());
       cloud_name_normals_pc << "-pc";
-      p->addPointCloudPrincipalCurvatures (cloud_xyz, cloud_normals, cloud_pc, factor, pc_scale, cloud_name_normals_pc.str (), viewport);
+      p->addPointCloudPrincipalCurvatures<pcl::PointXYZ, pcl::Normal> (cloud_xyz, cloud_normals, cloud_pc, factor, pc_scale, cloud_name_normals_pc.str (), viewport);
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc.str ());
     }
 
@@ -1086,7 +1086,7 @@ main (int argc, char** argv)
     double ax_x = 0.0, ax_y = 0.0, ax_z = 0.0;
     pcl::console::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z, false);
     // Draw XYZ axes if command-line enabled
-    p->addCoordinateSystem (axes, ax_x, ax_y, ax_z);
+    p->addCoordinateSystem (axes, ax_x, ax_y, ax_z, "reference");
   }
 
   // Clean up the memory used by the binary blob

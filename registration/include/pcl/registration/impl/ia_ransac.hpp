@@ -77,7 +77,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::select
   if (nr_samples > static_cast<int> (cloud.points.size ()))
   {
     PCL_ERROR ("[pcl::%s::selectSamples] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of samples (%d) must not be greater than the number of points (%zu)!\n",
+    PCL_ERROR ("The number of samples (%d) must not be greater than the number of points (%lu)!\n",
                nr_samples, cloud.points.size ());
     return;
   }
@@ -235,7 +235,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
     // Estimate the transform from the samples to their corresponding points
     transformation_estimation_->estimateRigidTransformation (*input_, sample_indices, *target_, corresponding_indices, transformation_);
 
-    // Tranform the data and compute the error
+    // Transform the data and compute the error
     transformPointCloud (*input_, input_transformed, transformation_);
     error = computeErrorMetric (input_transformed, static_cast<float> (corr_dist_threshold_));
 

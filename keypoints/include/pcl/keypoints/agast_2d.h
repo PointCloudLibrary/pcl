@@ -129,7 +129,6 @@ namespace pcl
 
           /** \brief Computes corner score. 
             * \param[in] im the pixels to compute the score at
-            * \param[in] bmax 
             */
           virtual int 
           computeCornerScore (const float* im) const = 0;
@@ -177,7 +176,6 @@ namespace pcl
 
           /** \brief Detects points of interest (i.e., keypoints) in the given image
             * \param[in] im the image to detect keypoints in 
-            * \param[out] corners_all the resultant set of keypoints detected
             */
           virtual void 
           detect (const float* im, 
@@ -196,8 +194,8 @@ namespace pcl
           struct CompareScoreIndex
           {
             /** \brief Comparator
-              * \param[i1] the first score index
-              * \param[i2] the second score index
+              * \param[in] i1 the first score index
+              * \param[in] i2 the second score index
               */
             inline bool
             operator() (const ScoreIndex &i1, const ScoreIndex &i2)

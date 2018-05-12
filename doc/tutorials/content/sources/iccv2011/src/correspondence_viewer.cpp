@@ -16,7 +16,7 @@ loadPoints (std::string filename)
   PointCloudPtr output (new PointCloud);
   filename.append (".pcd");
   pcl::io::loadPCDFile (filename, *output);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", filename.c_str (), output->size ());
+  pcl::console::print_info ("Loaded %s (%lu points)\n", filename.c_str (), output->size ());
   return (output);
 }
 
@@ -26,7 +26,7 @@ loadKeypoints (std::string filename)
   PointCloudPtr output (new PointCloud);
   filename.append ("_keypoints.pcd");
   pcl::io::loadPCDFile (filename, *output);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", filename.c_str (), output->size ());
+  pcl::console::print_info ("Loaded %s (%lu points)\n", filename.c_str (), output->size ());
   return (output);
 }
 
@@ -36,7 +36,7 @@ loadLocalDescriptors (std::string filename)
   LocalDescriptorsPtr output (new LocalDescriptors);
   filename.append ("_localdesc.pcd");
   pcl::io::loadPCDFile (filename, *output);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", filename.c_str (), output->size ());
+  pcl::console::print_info ("Loaded %s (%lu points)\n", filename.c_str (), output->size ());
   return (output);
 }
 

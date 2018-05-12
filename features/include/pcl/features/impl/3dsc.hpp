@@ -194,7 +194,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
 
     /// ----- Compute current neighbour polar coordinates -----
     /// Get distance between the neighbour and the origin
-    float r = sqrtf (nn_dists[ne]);
+    float r = std::sqrt (nn_dists[ne]);
 
     /// Project point into the tangent plane
     Eigen::Vector3f proj;
@@ -263,7 +263,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
       PCL_ERROR ("Shape Context Error INF!\n");
     if (w != w)
       PCL_ERROR ("Shape Context Error IND!\n");
-    /// Accumulate w into correspondant Bin(j,k,l)
+    /// Accumulate w into correspondent Bin(j,k,l)
     desc[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j] += w;
 
     assert (desc[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j] >= 0);

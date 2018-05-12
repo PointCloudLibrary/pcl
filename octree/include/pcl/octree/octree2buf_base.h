@@ -41,13 +41,11 @@
 
 #include <vector>
 
-#include "octree_nodes.h"
-#include "octree_container.h"
-#include "octree_key.h"
-#include "octree_iterator.h"
+#include <pcl/octree/octree_nodes.h>
+#include <pcl/octree/octree_container.h>
+#include <pcl/octree/octree_key.h>
+#include <pcl/octree/octree_iterator.h>
 
-#include <stdio.h>
-#include <string.h>
 
 namespace pcl
 {
@@ -491,7 +489,7 @@ namespace pcl
           return ret;
         }
 
-        /** \brief Check for leaf not existance in the octree
+        /** \brief Check if leaf doesn't exist in the octree
          *  \param key_arg: octree key addressing a leaf node.
          *  \return "true" if leaf node is found; "false" otherwise
          * */
@@ -805,7 +803,7 @@ namespace pcl
          *  \param depth_mask_arg: depth mask used for octree key analysis and branch depth indicator
          *  \param key_arg: reference to an octree key
          *  \param binary_tree_in_it_arg iterator of binary input data
-         *  \param leaf_container_vector__it_end_arg end iterator of binary input data
+         *  \param binary_tree_in_it_end_arg
          *  \param leaf_container_vector_it_arg: iterator pointing to leaf containter pointers to be added to a leaf node
          *  \param leaf_container_vector_it_end_arg: iterator pointing to leaf containter pointers pointing to last object in input container.
          *  \param branch_reset_arg: Reset pointer array of current branch
@@ -920,7 +918,9 @@ namespace pcl
   }
 }
 
-//#include "impl/octree2buf_base.hpp"
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/octree/impl/octree2buf_base.hpp>
+#endif
 
 #endif
 

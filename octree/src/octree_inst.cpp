@@ -1,4 +1,3 @@
-
 /*
  * Software License Agreement (BSD License)
  *
@@ -35,10 +34,6 @@
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-
 #include <pcl/octree/octree.h>
 #include <pcl/octree/octree_impl.h>
 
@@ -60,6 +55,11 @@ template class PCL_EXPORTS pcl::octree::OctreeBase<
     pcl::octree::OctreeContainerEmpty,
     pcl::octree::OctreeContainerEmpty >;
 
+#ifndef PCL_NO_PRECOMPILE
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+
 PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES)
 PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES)
 
@@ -69,6 +69,10 @@ PCL_INSTANTIATE(OctreePointCloudSearch, PCL_XYZ_POINT_TYPES)
 // PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataT, PCL_XYZ_POINT_TYPES)
 PCL_INSTANTIATE(OctreePointCloudSingleBufferWithEmptyLeaf, PCL_XYZ_POINT_TYPES)
 
+/*
+ * Note: Disable apriori instantiation of these octree types to speed up compilation.
+ * They are probably rarely used.
+ */
 // PCL_INSTANTIATE(OctreePointCloudDensity, PCL_XYZ_POINT_TYPES)
 // PCL_INSTANTIATE(OctreePointCloudSingleBufferWithDensityLeaf, PCL_XYZ_POINT_TYPES)
 // PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithDensityLeaf, PCL_XYZ_POINT_TYPES)
@@ -78,5 +82,7 @@ PCL_INSTANTIATE(OctreePointCloudSingleBufferWithEmptyLeaf, PCL_XYZ_POINT_TYPES)
 // PCL_INSTANTIATE(OctreePointCloudPointVector, PCL_XYZ_POINT_TYPES)
 // PCL_INSTANTIATE(OctreePointCloudChangeDetector, PCL_XYZ_POINT_TYPES)
 // PCL_INSTANTIATE(OctreePointCloudVoxelCentroid, PCL_XYZ_POINT_TYPES)
+// PCL_INSTANTIATE(OctreePointCloudAdjacency, PCL_XYZ_POINT_TYPES)
 
+#endif    // PCL_NO_PRECOMPILE
 

@@ -39,13 +39,7 @@
 #ifndef PCL_OCTREE_SEARCH_IMPL_H_
 #define PCL_OCTREE_SEARCH_IMPL_H_
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-
-#include <pcl/common/common.h>
 #include <assert.h>
-
-using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> bool
@@ -103,8 +97,8 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::n
   OctreeKey key;
   key.x = key.y = key.z = 0;
 
-  // initalize smallest point distance in search with high value
-  double smallest_dist = numeric_limits<double>::max ();
+  // initialize smallest point distance in search with high value
+  double smallest_dist = std::numeric_limits<double>::max ();
 
   getKNearestNeighborRecursive (p_q, k, this->root_node_, key, 1, smallest_dist, point_candidates);
 
@@ -247,7 +241,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
     }
     else
     {
-      search_heap[child_idx].point_distance = numeric_limits<float>::infinity ();
+      search_heap[child_idx].point_distance = std::numeric_limits<float>::infinity ();
     }
   }
 
@@ -276,7 +270,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
 
       float squared_dist;
       size_t i;
-      vector<int> decoded_point_vector;
+      std::vector<int> decoded_point_vector;
 
       const LeafNode* child_leaf = static_cast<const LeafNode*> (child_node);
 
@@ -374,7 +368,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
 
         size_t i;
         const LeafNode* child_leaf = static_cast<const LeafNode*> (child_node);
-        vector<int> decoded_point_vector;
+        std::vector<int> decoded_point_vector;
 
         // decode leaf node into decoded_point_vector
         (*child_leaf)->getPointIndices (decoded_point_vector);
@@ -422,7 +416,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::a
   const OctreeNode* child_node;
 
   // set minimum voxel distance to maximum value
-  min_voxel_center_distance = numeric_limits<double>::max ();
+  min_voxel_center_distance = std::numeric_limits<double>::max ();
 
   min_child_idx = 0xFF;
 
@@ -471,11 +465,11 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::a
     double squared_dist;
     double smallest_squared_dist;
     size_t i;
-    vector<int> decoded_point_vector;
+    std::vector<int> decoded_point_vector;
 
     const LeafNode* child_leaf = static_cast<const LeafNode*> (child_node);
 
-    smallest_squared_dist = numeric_limits<double>::max ();
+    smallest_squared_dist = std::numeric_limits<double>::max ();
 
     // decode leaf node into decoded_point_vector
     (**child_leaf).getPointIndices (decoded_point_vector);
@@ -557,7 +551,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::b
       {
         // we reached leaf node level
         size_t i;
-        vector<int> decoded_point_vector;
+        std::vector<int> decoded_point_vector;
         bool bInBox;
 
         const LeafNode* child_leaf = static_cast<const LeafNode*> (child_node);
@@ -602,7 +596,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
 
   initIntersectedVoxel (origin, direction, min_x, min_y, min_z, max_x, max_y, max_z, a);
 
-  if (max (max (min_x, min_y), min_z) < min (min (max_x, max_y), max_z))
+  if (std::max (std::max (min_x, min_y), min_z) < std::min (std::min (max_x, max_y), max_z))
     return getIntersectedVoxelCentersRecursive (min_x, min_y, min_z, max_x, max_y, max_z, a, this->root_node_, key,
                                                 voxel_center_list, max_voxel_count);
 
@@ -626,7 +620,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
 
   initIntersectedVoxel (origin, direction, min_x, min_y, min_z, max_x, max_y, max_z, a);
 
-  if (max (max (min_x, min_y), min_z) < min (min (max_x, max_y), max_z))
+  if (std::max (std::max (min_x, min_y), min_z) < std::min (std::min (max_x, max_y), max_z))
     return getIntersectedVoxelIndicesRecursive (min_x, min_y, min_z, max_x, max_y, max_z, a, this->root_node_, key,
                                                 k_indices, max_voxel_count);
   return (0);
@@ -864,5 +858,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
 
   return (voxel_count);
 }
+
+#define PCL_INSTANTIATE_OctreePointCloudSearch(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudSearch<T>;
 
 #endif    // PCL_OCTREE_SEARCH_IMPL_H_

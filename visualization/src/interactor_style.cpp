@@ -39,6 +39,7 @@
 #include <list>
 #include <pcl/visualization/common/io.h>
 #include <pcl/visualization/interactor_style.h>
+#include <vtkVersion.h>
 #include <vtkLODActor.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
@@ -63,7 +64,9 @@
 #include <vtkPointPicker.h>
 #include <vtkAreaPicker.h>
 
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
+#endif
 
 #define ORIENT_MODE 0
 #define SELECT_MODE 1
@@ -98,6 +101,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
 
   // Create the image filter and PNG writer objects
   wif_ = vtkSmartPointer<vtkWindowToImageFilter>::New ();
+  wif_->ReadFrontBufferOff ();
   snapshot_writer_ = vtkSmartPointer<vtkPNGWriter>::New ();
   snapshot_writer_->SetInputConnection (wif_->GetOutputPort ());
 
@@ -127,6 +131,165 @@ pcl::visualization::PCLVisualizerInteractorStyle::saveScreenshot (const std::str
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizerInteractorStyle::saveCameraParameters (const std::string &file)
+{
+  FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
+
+  ofstream ofs_cam (file.c_str ());
+  if (!ofs_cam.is_open ())
+  {
+    return (false);
+  }
+
+  vtkSmartPointer<vtkCamera> cam = Interactor->GetRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
+  double clip[2], focal[3], pos[3], view[3];
+  cam->GetClippingRange (clip);
+  cam->GetFocalPoint (focal);
+  cam->GetPosition (pos);
+  cam->GetViewUp (view);
+  int *win_pos = Interactor->GetRenderWindow ()->GetPosition ();
+  int *win_size = Interactor->GetRenderWindow ()->GetSize ();
+  ofs_cam << clip[0]  << "," << clip[1]  << "/" << focal[0] << "," << focal[1] << "," << focal[2] << "/" <<
+             pos[0]   << "," << pos[1]   << "," << pos[2]   << "/" << view[0]  << "," << view[1]  << "," << view[2] << "/" <<
+             cam->GetViewAngle () / 180.0 * M_PI  << "/" << win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
+          << endl;
+  ofs_cam.close ();
+
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters (pcl::visualization::Camera &camera)
+{
+  FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
+
+  vtkSmartPointer<vtkCamera> cam = Interactor->GetRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
+  cam->GetClippingRange (camera.clip);
+  cam->GetFocalPoint (camera.focal);
+  cam->GetPosition (camera.pos);
+  cam->GetViewUp (camera.view);
+  camera.fovy = cam->GetViewAngle () / 180.0 * M_PI;
+  int *win_pos = Interactor->GetRenderWindow ()->GetPosition ();
+  int *win_size = Interactor->GetRenderWindow ()->GetSize ();
+  camera.window_pos[0] = win_pos[0];
+  camera.window_pos[1] = win_pos[1];
+  camera.window_size[0] = win_size[0];
+  camera.window_size[1] = win_size[1];
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizerInteractorStyle::loadCameraParameters (const std::string &file)
+{
+  std::ifstream fs;
+  std::string line;
+  std::vector<std::string> camera;
+  bool ret;
+
+  fs.open (file.c_str ());
+  if (!fs.is_open ())
+  {
+    return (false);
+  }
+  while (!fs.eof ())
+  {
+    getline (fs, line);
+    if (line == "")
+      continue;
+
+    boost::split (camera, line, boost::is_any_of ("/"), boost::token_compress_on);
+    break;
+  }
+  fs.close ();
+
+  ret = getCameraParameters (camera);
+  if (ret)
+  {
+    camera_file_ = file;
+  }
+
+  return (ret);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const Eigen::Matrix3f &intrinsics,
+                                                                       const Eigen::Matrix4f &extrinsics,
+                                                                       int viewport)
+{
+  // Position = extrinsic translation
+  Eigen::Vector3f pos_vec = extrinsics.block<3, 1> (0, 3);
+
+  // Rotate the view vector
+  Eigen::Matrix3f rotation = extrinsics.block<3, 3> (0, 0);
+  Eigen::Vector3f y_axis (0.f, 1.f, 0.f);
+  Eigen::Vector3f up_vec (rotation * y_axis);
+
+  // Compute the new focal point
+  Eigen::Vector3f z_axis (0.f, 0.f, 1.f);
+  Eigen::Vector3f focal_vec = pos_vec + rotation * z_axis;
+
+  // Get the width and height of the image - assume the calibrated centers are at the center of the image
+  Eigen::Vector2i window_size;
+  window_size[0] = 2 * static_cast<int> (intrinsics (0, 2));
+  window_size[1] = 2 * static_cast<int> (intrinsics (1, 2));
+
+  // Compute the vertical field of view based on the focal length and image height
+  double fovy = 2 * atan (window_size[1] / (2. * intrinsics (1, 1))) * 180.0 / M_PI;
+
+
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  int i = 0;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    // Modify all renderer's cameras
+    if (viewport == 0 || viewport == i)
+    {
+      vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
+      cam->SetPosition (pos_vec[0], pos_vec[1], pos_vec[2]);
+      cam->SetFocalPoint (focal_vec[0], focal_vec[1], focal_vec[2]);
+      cam->SetViewUp (up_vec[0], up_vec[1], up_vec[2]);
+      cam->SetUseHorizontalViewAngle (0);
+      cam->SetViewAngle (fovy);
+      cam->SetClippingRange (0.01, 1000.01);
+      win_->SetSize (window_size[0], window_size[1]);
+    }
+    ++i;
+  }
+  win_->Render ();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const pcl::visualization::Camera &camera, int viewport)
+{
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  int i = 0;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    // Modify all renderer's cameras
+    if (viewport == 0 || viewport == i)
+    {
+      vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
+      cam->SetPosition (camera.pos[0], camera.pos[1], camera.pos[2]);
+      cam->SetFocalPoint (camera.focal[0], camera.focal[1], camera.focal[2]);
+      cam->SetViewUp (camera.view[0], camera.view[1], camera.view[2]);
+      cam->SetClippingRange (camera.clip);
+      cam->SetUseHorizontalViewAngle (0);
+      cam->SetViewAngle (camera.fovy * 180.0 / M_PI);
+
+      win_->SetSize (static_cast<int> (camera.window_size[0]),
+                     static_cast<int> (camera.window_size[1]));
+    }
+    ++i;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizerInteractorStyle::zoomIn ()
 {
@@ -148,6 +311,105 @@ pcl::visualization::PCLVisualizerInteractorStyle::zoomOut ()
   double factor = 10.0 * -0.2 * .5;
   Dolly (pow (1.1, factor));
   EndDolly ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters (const std::vector<std::string> &camera)
+{
+  pcl::visualization::Camera camera_temp;
+
+  // look for '/' as a separator
+  if (camera.size () != 7)
+  {
+    pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Camera parameters given, but with an invalid number of options (%lu vs 7)!\n", static_cast<unsigned long> (camera.size ()));
+    return (false);
+  }
+
+  std::string clip_str  = camera.at (0);
+  std::string focal_str = camera.at (1);
+  std::string pos_str   = camera.at (2);
+  std::string view_str  = camera.at (3);
+  std::string fovy_str  = camera.at (4);
+  std::string win_size_str = camera.at (5);
+  std::string win_pos_str  = camera.at (6);
+
+  // Get each camera setting separately and parse for ','
+  std::vector<std::string> clip_st;
+  boost::split (clip_st, clip_str, boost::is_any_of (","), boost::token_compress_on);
+  if (clip_st.size () != 2)
+  {
+    pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera clipping angle!\n");
+    return (false);
+  }
+  camera_temp.clip[0] = atof (clip_st.at (0).c_str ());
+  camera_temp.clip[1] = atof (clip_st.at (1).c_str ());
+
+  std::vector<std::string> focal_st;
+  boost::split (focal_st, focal_str, boost::is_any_of (","), boost::token_compress_on);
+  if (focal_st.size () != 3)
+  {
+    pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera focal point!\n");
+    return (false);
+  }
+  camera_temp.focal[0] = atof (focal_st.at (0).c_str ());
+  camera_temp.focal[1] = atof (focal_st.at (1).c_str ());
+  camera_temp.focal[2] = atof (focal_st.at (2).c_str ());
+
+  std::vector<std::string> pos_st;
+  boost::split (pos_st, pos_str, boost::is_any_of (","), boost::token_compress_on);
+  if (pos_st.size () != 3)
+  {
+    pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera position!\n");
+    return (false);
+  }
+  camera_temp.pos[0] = atof (pos_st.at (0).c_str ());
+  camera_temp.pos[1] = atof (pos_st.at (1).c_str ());
+  camera_temp.pos[2] = atof (pos_st.at (2).c_str ());
+
+  std::vector<std::string> view_st;
+  boost::split (view_st, view_str, boost::is_any_of (","), boost::token_compress_on);
+  if (view_st.size () != 3)
+  {
+    pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera viewup!\n");
+    return (false);
+  }
+  camera_temp.view[0] = atof (view_st.at (0).c_str ());
+  camera_temp.view[1] = atof (view_st.at (1).c_str ());
+  camera_temp.view[2] = atof (view_st.at (2).c_str ());
+
+  std::vector<std::string> fovy_size_st;
+  boost::split (fovy_size_st, fovy_str, boost::is_any_of (","), boost::token_compress_on);
+  if (fovy_size_st.size () != 1)
+  {
+    pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for field of view angle!\n");
+    return (false);
+  }
+  camera_temp.fovy = atof (fovy_size_st.at (0).c_str ());
+
+  std::vector<std::string> win_size_st;
+  boost::split (win_size_st, win_size_str, boost::is_any_of (","), boost::token_compress_on);
+  if (win_size_st.size () != 2)
+  {
+    pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for window size!\n");
+    return (false);
+  }
+  camera_temp.window_size[0] = atof (win_size_st.at (0).c_str ());
+  camera_temp.window_size[1] = atof (win_size_st.at (1).c_str ());
+
+  std::vector<std::string> win_pos_st;
+  boost::split (win_pos_st, win_pos_str, boost::is_any_of (","), boost::token_compress_on);
+  if (win_pos_st.size () != 2)
+  {
+    pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for window position!\n");
+    return (false);
+  }
+  camera_temp.window_pos[0] = atof (win_pos_st.at (0).c_str ());
+  camera_temp.window_pos[1] = atof (win_pos_st.at (1).c_str ());
+
+  setCameraParameters (camera_temp);
+
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,7 +466,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
     {
       break;
     }
-    // S have a special !ALT case
+    // S have special !ALT case
     case 's': case 'S':
     {
       if (!keymod)
@@ -307,6 +569,63 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
   // ---[ Check the rest of the key codes
 
+  // Save camera parameters
+  if ((Interactor->GetKeySym ()[0] == 'S' || Interactor->GetKeySym ()[0] == 's') && ctrl && !alt && !shift)
+  {
+    if (camera_file_.empty ())
+    {
+      getCameraParameters (camera_);
+      camera_saved_ = true;
+      pcl::console::print_info ("Camera parameters saved, you can press CTRL + R to restore.\n");
+    }
+    else
+    {
+      if (saveCameraParameters (camera_file_))
+      {
+        pcl::console::print_info ("Save camera parameters to %s, you can press CTRL + R to restore.\n", camera_file_.c_str ());
+      }
+      else
+      {
+        pcl::console::print_error ("[PCLVisualizerInteractorStyle] Can't save camera parameters to file: %s.\n", camera_file_.c_str ());
+      }
+    }
+  }
+
+  // Restore camera parameters
+  if ((Interactor->GetKeySym ()[0] == 'R' || Interactor->GetKeySym ()[0] == 'r') && ctrl && !alt && !shift)
+  {
+    if (camera_file_.empty ())
+    {
+      if (camera_saved_)
+      {
+        setCameraParameters (camera_);
+        pcl::console::print_info ("Camera parameters restored.\n");
+      }
+      else
+      {
+        pcl::console::print_info ("No camera parameters saved for restoring.\n");
+      }
+    }
+    else
+    {
+      if (boost::filesystem::exists (camera_file_))
+      {
+        if (loadCameraParameters (camera_file_))
+        {
+          pcl::console::print_info ("Restore camera parameters from %s.\n", camera_file_.c_str ());
+        }
+        else
+        {
+          pcl::console::print_error ("Can't restore camera parameters from file: %s.\n", camera_file_.c_str ());
+        }
+      }
+      else
+      {
+        pcl::console::print_info ("No camera parameters saved in %s for restoring.\n", camera_file_.c_str ());
+      }
+    }
+  }
+
   // Switch between point color/geometry handlers
   if (Interactor->GetKeySym () && Interactor->GetKeySym ()[0]  >= '0' && Interactor->GetKeySym ()[0] <= '9')
   {
@@ -321,7 +640,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     // Geometry ?
     if (keymod)
     {
-      for (it = actors_->begin (); it != actors_->end (); ++it)
+      for (it = cloud_actors_->begin (); it != cloud_actors_->end (); ++it)
       {
         CloudActor *act = &(*it).second;
         if (index >= static_cast<int> (act->geometry_handlers.size ()))
@@ -347,6 +666,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         data->SetPoints (points);
         data->SetVerts (vertices);
         // Modify the mapper
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
         if (use_vbos_)
         {
           vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act->actor->GetMapper ());
@@ -355,9 +675,14 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
           act->actor->SetMapper (mapper);
         }
         else
+#endif
         {
           vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
+#if VTK_MAJOR_VERSION < 6
           mapper->SetInput (data);
+#else
+          mapper->SetInputData (data);
+#endif
           // Modify the actor
           act->actor->SetMapper (mapper);
         }
@@ -366,7 +691,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     }
     else
     {
-      for (it = actors_->begin (); it != actors_->end (); ++it)
+      for (it = cloud_actors_->begin (); it != cloud_actors_->end (); ++it)
       {
         CloudActor *act = &(*it).second;
         // Check for out of bounds
@@ -386,8 +711,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         // Update the data
         vtkPolyData *data = static_cast<vtkPolyData*>(act->actor->GetMapper ()->GetInput ());
         data->GetPointData ()->SetScalars (scalars);
-        data->Update ();
         // Modify the mapper
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
         if (use_vbos_)
         {
           vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act->actor->GetMapper ());
@@ -398,11 +723,16 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
           act->actor->SetMapper (mapper);
         }
         else
+#endif
         {
           vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
           mapper->SetScalarRange (minmax);
           mapper->SetScalarModeToUsePointData ();
+#if VTK_MAJOR_VERSION < 6
           mapper->SetInput (data);
+#else
+          mapper->SetInputData (data);
+#endif
           // Modify the actor
           act->actor->SetMapper (mapper);
         }
@@ -443,7 +773,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
                   "          g, G   : display scale grid (on/off)\n"
                   "          u, U   : display lookup table (on/off)\n"
                   "\n"
+                  "    o, O         : switch between perspective/parallel projection (default = perspective)\n"
                   "    r, R [+ ALT] : reset camera [to viewpoint = {0, 0, 0} -> center_{x, y, z}]\n"
+                  "    CTRL + s, S  : save camera parameters\n"
+                  "    CTRL + r, R  : restore camera parameters\n"
                   "\n"
                   "    ALT + s, S   : turn stereo mode on/off\n"
                   "    ALT + f, F   : switch between maximized window mode and original size\n"
@@ -452,7 +785,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
                   "    ALT + 0..9 [+ CTRL]  : switch between different geometric handlers (where available)\n"
                   "          0..9 [+ CTRL]  : switch between different color handlers (where available)\n"
                   "\n"
-                  "    SHIFT + left click   : select a point\n"
+                  "    SHIFT + left click   : select a point (start with -use_point_picking)\n"
                   "\n"
                   "          x, X   : toggle rubber band selection mode for left mouse button\n"
           );
@@ -463,7 +796,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     case 'l': case 'L':
     {
       // Iterate over the entire actors list and extract the geomotry/color handlers list
-      for (CloudActorMap::iterator it = actors_->begin (); it != actors_->end (); ++it)
+      for (CloudActorMap::iterator it = cloud_actors_->begin (); it != cloud_actors_->end (); ++it)
       {
         std::list<std::string> geometry_handlers_list, color_handlers_list;
         CloudActor *act = &(*it).second;
@@ -508,6 +841,24 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       }
       break;
     }
+
+    // Switch representation to wireframe (override default behavior)
+    case 'w': case 'W':
+    {
+      vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors ();
+      vtkCollectionSimpleIterator ait;
+      for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait); )
+      {
+        for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
+        {
+          vtkSmartPointer<vtkActor> apart = reinterpret_cast <vtkActor*> (path->GetLastNode ()->GetViewProp ());
+          apart->GetProperty ()->SetRepresentationToWireframe ();
+          apart->GetProperty ()->SetLighting (false);
+        }
+      }
+      break;
+    }
+
     // Save a PNG snapshot with the current screen
     case 'j': case 'J':
     {
@@ -517,21 +868,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       saveScreenshot (snapshot_fn);
 
       sprintf (cam_fn, "screenshot-%d.cam", t);
-      ofstream ofs_cam;
-      ofs_cam.open (cam_fn);
-      vtkSmartPointer<vtkCamera> cam = Interactor->GetRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
-      double clip[2], focal[3], pos[3], view[3];
-      cam->GetClippingRange (clip);
-      cam->GetFocalPoint (focal);
-      cam->GetPosition (pos);
-      cam->GetViewUp (view);
-      int *win_pos = Interactor->GetRenderWindow ()->GetPosition ();
-      int *win_size = Interactor->GetRenderWindow ()->GetSize ();
-      ofs_cam << clip[0]  << "," << clip[1]  << "/" << focal[0] << "," << focal[1] << "," << focal[2] << "/" <<
-                 pos[0]   << "," << pos[1]   << "," << pos[2]   << "/" << view[0]  << "," << view[1]  << "," << view[2] << "/" <<
-                 cam->GetViewAngle () / 180.0 * M_PI  << "/" << win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
-              << endl;
-      ofs_cam.close ();
+      saveCameraParameters (cam_fn);
 
       pcl::console::print_info ("Screenshot (%s) and camera information (%s) successfully captured.\n", snapshot_fn, cam_fn);
       break;
@@ -547,10 +884,13 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       cam->GetViewUp (view);
       int *win_pos = Interactor->GetRenderWindow ()->GetPosition ();
       int *win_size = Interactor->GetRenderWindow ()->GetSize ();
-      std::cerr << clip[0]  << "," << clip[1]  << "/" << focal[0] << "," << focal[1] << "," << focal[2] << "/" <<
-                   pos[0]   << "," << pos[1]   << "," << pos[2]   << "/" << view[0]  << "," << view[1]  << "," << view[2] << "/" <<
-                   cam->GetViewAngle () / 180.0 * M_PI  << "/" << win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
-                << endl;
+      std::cerr <<  "Clipping plane [near,far] "  << clip[0] << ", " << clip[1] << endl <<
+                    "Focal point [x,y,z] " << focal[0] << ", " << focal[1] << ", " << focal[2] << endl <<
+                    "Position [x,y,z] " << pos[0] << ", " << pos[1] << ", " << pos[2] << endl <<
+                    "View up [x,y,z] " << view[0]  << ", " << view[1]  << ", " << view[2] << endl <<
+                    "Camera view angle [degrees] " << cam->GetViewAngle () << endl <<
+                    "Window size [x,y] " << win_size[0] << ", " << win_size[1] << endl <<
+                    "Window position [x,y] " << win_pos[0] << ", " << win_pos[1] << endl;
       break;
     }
     case '=':
@@ -680,7 +1020,20 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         Interactor->Render ();
       }
       else
-        Superclass::OnKeyDown ();
+      {
+        Superclass::OnKeyDown();
+        vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
+        vtkCollectionSimpleIterator ait;
+        for (ac->InitTraversal(ait); vtkActor* actor = ac->GetNextActor(ait);)
+        {
+          for (actor->InitPathTraversal(); vtkAssemblyPath* path = actor->GetNextPath();)
+          {
+            vtkSmartPointer<vtkActor> apart = reinterpret_cast<vtkActor*>(path->GetLastNode()->GetViewProp());
+            apart->GetProperty()->SetRepresentationToSurface();
+            apart->GetProperty()->SetLighting(true);
+          }
+        }
+      }
       break;
     }
 
@@ -714,27 +1067,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     // Display a LUT actor on screen
     case 'u': case 'U':
     {
-      CloudActorMap::iterator it;
-      for (it = actors_->begin (); it != actors_->end (); ++it)
-      {
-        CloudActor *act = &(*it).second;
-
-        vtkScalarsToColors* lut = act->actor->GetMapper ()->GetLookupTable ();
-        lut_actor_->SetLookupTable (lut);
-        lut_actor_->Modified ();
-      }
-      if (!lut_enabled_)
-      {
-        CurrentRenderer->AddActor (lut_actor_);
-        lut_actor_->SetVisibility (true);
-        lut_enabled_ = true;
-      }
-      else
-      {
-        CurrentRenderer->RemoveActor (lut_actor_);
-        lut_enabled_ = false;
-      }
-      CurrentRenderer->Render ();
+      updateLookUpTableDisplay (true);
       break;
     }
 
@@ -755,13 +1088,13 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
       vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
       
-      static CloudActorMap::iterator it = actors_->begin ();
+      static CloudActorMap::iterator it = cloud_actors_->begin ();
       // it might be that some actors don't have a valid transformation set -> we skip them to avoid a seg fault.
       bool found_transformation = false;
-      for (unsigned idx = 0; idx < actors_->size (); ++idx, ++it)
+      for (unsigned idx = 0; idx < cloud_actors_->size (); ++idx, ++it)
       {
-        if (it == actors_->end ())
-          it = actors_->begin ();
+        if (it == cloud_actors_->end ())
+          it = cloud_actors_->begin ();
         
         const CloudActor& actor = it->second;
         if (actor.viewpoint_transformation_.GetPointer ())
@@ -795,10 +1128,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       }
 
       // go to the next actor for the next key-press event.
-      if (it != actors_->end ())
+      if (it != cloud_actors_->end ())
         ++it;
       else
-        it = actors_->begin ();
+        it = cloud_actors_->begin ();
       
       CurrentRenderer->SetActiveCamera (cam);
       CurrentRenderer->ResetCameraClippingRange ();
@@ -842,6 +1175,135 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
   rens_->Render ();
   Interactor->Render ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Update the look up table displayed when 'u' is pressed
+void
+pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool add_lut)
+{
+  CloudActorMap::iterator am_it;
+  ShapeActorMap::iterator sm_it;
+  bool actor_found = false;
+
+  if (!lut_enabled_ && !add_lut)
+    return;
+
+  if (lut_actor_id_ != "")  // Search if provided actor id is in CloudActorMap or ShapeActorMap
+  {
+    am_it = cloud_actors_->find (lut_actor_id_);
+    if (am_it == cloud_actors_->end ())
+    {
+      sm_it = shape_actors_->find (lut_actor_id_);
+      if (sm_it == shape_actors_->end ())
+      {
+        PCL_WARN ("[updateLookUpTableDisplay] Could not find any actor with id <%s>!\n", lut_actor_id_.c_str ());
+        if (lut_enabled_)
+        {  // Remove LUT and exit
+          CurrentRenderer->RemoveActor (lut_actor_);
+          lut_enabled_ = false;
+        }
+        return;
+      }
+
+      // ShapeActor found
+      vtkSmartPointer<vtkProp> *act = & (*sm_it).second;
+      vtkSmartPointer<vtkActor> actor = vtkActor::SafeDownCast (*act);
+      if (!actor || !actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+      {
+        PCL_WARN ("[updateLookUpTableDisplay] id <%s> does not hold any color information!\n", lut_actor_id_.c_str ());
+        if (lut_enabled_)
+        {  // Remove LUT and exit
+          CurrentRenderer->RemoveActor (lut_actor_);
+          lut_enabled_ = false;
+        }
+        return;
+      }
+
+      lut_actor_->SetLookupTable (actor->GetMapper ()->GetLookupTable ());
+      lut_actor_->Modified ();
+      actor_found = true;
+    }
+    else
+    {
+      // CloudActor
+      CloudActor *act = & (*am_it).second;
+      if (!act->actor->GetMapper ()->GetLookupTable () && !act->actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+      {
+        PCL_WARN ("[updateLookUpTableDisplay] id <%s> does not hold any color information!\n", lut_actor_id_.c_str ());
+        if (lut_enabled_)
+        {  // Remove LUT and exit
+          CurrentRenderer->RemoveActor (lut_actor_);
+          lut_enabled_ = false;
+        }
+        return;
+      }
+
+      vtkScalarsToColors* lut = act->actor->GetMapper ()->GetLookupTable ();
+      lut_actor_->SetLookupTable (lut);
+      lut_actor_->Modified ();
+      actor_found = true;
+    }
+  }
+  else  // lut_actor_id_ == "", the user did not specify which cloud/shape LUT should be displayed
+  // Circling through all clouds/shapes and displaying first LUT found
+  {
+    for (am_it = cloud_actors_->begin (); am_it != cloud_actors_->end (); ++am_it)
+    {
+      CloudActor *act = & (*am_it).second;
+      if (!act->actor->GetMapper ()->GetLookupTable ())
+        continue;
+
+      if (!act->actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+        continue;
+
+      vtkScalarsToColors* lut = act->actor->GetMapper ()->GetLookupTable ();
+      lut_actor_->SetLookupTable (lut);
+      lut_actor_->Modified ();
+      actor_found = true;
+      break;
+    }
+
+    if (!actor_found)
+    {
+      for (sm_it = shape_actors_->begin (); sm_it != shape_actors_->end (); ++sm_it)
+      {
+        vtkSmartPointer<vtkProp> *act = & (*sm_it).second;
+        vtkSmartPointer<vtkActor> actor = vtkActor::SafeDownCast (*act);
+        if (!actor)
+          continue;
+
+        if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())  // Check if actor has scalars
+          continue;
+        lut_actor_->SetLookupTable (actor->GetMapper ()->GetLookupTable ());
+        lut_actor_->Modified ();
+        actor_found = true;
+        break;
+      }
+    }
+  }
+
+  if ( (!actor_found && lut_enabled_) || (lut_enabled_ && add_lut))  // Remove actor
+  {
+    CurrentRenderer->RemoveActor (lut_actor_);
+    lut_enabled_ = false;
+  }
+  else if (!lut_enabled_ && add_lut && actor_found)  // Add actor
+  {
+    CurrentRenderer->AddActor (lut_actor_);
+    lut_actor_->SetVisibility (true);
+    lut_enabled_ = true;
+  }
+  else if (lut_enabled_)  // Update actor (if displayed)
+  {
+    CurrentRenderer->RemoveActor (lut_actor_);
+    CurrentRenderer->AddActor (lut_actor_);
+  }
+  else
+    return;
+
+  CurrentRenderer->Render ();
+  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

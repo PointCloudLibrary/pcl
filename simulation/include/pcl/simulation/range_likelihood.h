@@ -84,11 +84,11 @@ namespace pcl
          */
         void
         setCameraIntrinsicsParameters (int camera_width_in,
-                                      int camera_height_in,
-                                      float camera_fx_in,
-                                      float camera_fy_in,
-                                      float camera_cx_in,
-                                      float camera_cy_in)
+                                       int camera_height_in,
+                                       float camera_fx_in,
+                                       float camera_fy_in,
+                                       float camera_cx_in,
+                                       float camera_cy_in)
         {
           camera_width_ = camera_width_in;
           camera_height_ = camera_height_in;
@@ -96,6 +96,25 @@ namespace pcl
           camera_fy_ = camera_fy_in;
           camera_cx_ = camera_cx_in;
           camera_cy_ = camera_cy_in;
+        }
+        
+        /**
+         * Get the basic camera intrinsic parameters
+         */
+        void
+        getCameraIntrinsicsParameters (int &camera_width_in,
+                                       int &camera_height_in,
+                                       float &camera_fx_in,
+                                       float &camera_fy_in,
+                                       float &camera_cx_in,
+                                       float &camera_cy_in)
+        {
+          camera_width_in = camera_width_;
+          camera_height_in = camera_height_;
+          camera_fx_in = camera_fx_;
+          camera_fy_in = camera_fy_;
+          camera_cx_in = camera_cx_;
+          camera_cy_in = camera_cy_;
         }
         
         /**
@@ -117,7 +136,7 @@ namespace pcl
         // global=false - PointCloud is as would be captured by an RGB-D camera [default]
         // global=true  - PointCloud is transformed into the model/world frame using the camera pose
         void getPointCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
-              bool make_global, const Eigen::Isometry3d & pose);
+              bool make_global, const Eigen::Isometry3d & pose, bool organized = false);
 
         // Convenience function to return RangeImagePlanar containing
         // simulated RGB-D:
@@ -145,6 +164,18 @@ namespace pcl
         const float*
         getScoreBuffer ();
 
+        float 
+        getZNear (){ return z_near_; }
+        
+        float 
+        getZFar (){ return z_far_; }
+        
+        void 
+        setZNear (float z){ z_near_ = z; }
+        
+        void 
+        setZFar (float z){ z_far_ = z; }
+        
       private:
         /**
          * Evaluate the likelihood/score for a set of particles
@@ -193,7 +224,7 @@ namespace pcl
         float camera_cy_;
 
         // min and max range of the rgbd sensor
-        // everything outside this doesnt appear in depth images
+        // everything outside this doesn't appear in depth images
         float z_near_;
         float z_far_;
 
@@ -225,7 +256,7 @@ namespace pcl
 
         gllib::Program::Ptr likelihood_program_;
         GLuint quad_vbo_;
-        std::vector<Eigen::Vector3f> vertices_;
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > vertices_;
         float* score_buffer_;
         Quad quad_;
         SumReduce sum_reduce_;

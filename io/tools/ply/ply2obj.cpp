@@ -294,8 +294,7 @@ ply_to_obj_converter::face_end ()
 bool 
 ply_to_obj_converter::convert (std::istream&, const std::string& istream_filename, std::ostream& ostream, const std::string&)
 {
-  pcl::io::ply::ply_parser::flags_type ply_parser_flags = 0;
-  pcl::io::ply::ply_parser ply_parser (ply_parser_flags);
+  pcl::io::ply::ply_parser ply_parser;
 
   ply_parser.info_callback (boost::bind (&ply_to_obj_converter::info_callback, this, boost::ref (istream_filename), _1, _2));
   ply_parser.warning_callback (boost::bind (&ply_to_obj_converter::warning_callback, this, boost::ref (istream_filename), _1, _2));
@@ -304,11 +303,11 @@ ply_to_obj_converter::convert (std::istream&, const std::string& istream_filenam
   ply_parser.element_definition_callback (boost::bind (&ply_to_obj_converter::element_definition_callback, this, _1, _2));
 
   pcl::io::ply::ply_parser::scalar_property_definition_callbacks_type scalar_property_definition_callbacks;
-  pcl::io::ply::at<pcl::io::ply::float32> (scalar_property_definition_callbacks) = boost::bind (&ply_to_obj_converter::scalar_property_definition_callback<pcl::io::ply::float32>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::float32> (scalar_property_definition_callbacks) = boost::bind (&ply_to_obj_converter::scalar_property_definition_callback<pcl::io::ply::float32>, this, _1, _2);
   ply_parser.scalar_property_definition_callbacks (scalar_property_definition_callbacks);
 
   pcl::io::ply::ply_parser::list_property_definition_callbacks_type list_property_definition_callbacks;
-  pcl::io::ply::at<pcl::io::ply::uint8, pcl::io::ply::int32> (list_property_definition_callbacks) = boost::bind (&ply_to_obj_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int32>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int32> (list_property_definition_callbacks) = boost::bind (&ply_to_obj_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int32>, this, _1, _2);
   ply_parser.list_property_definition_callbacks (list_property_definition_callbacks);
 
   ostream_ = &ostream;

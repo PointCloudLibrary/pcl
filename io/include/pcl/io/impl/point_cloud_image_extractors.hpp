@@ -38,19 +38,38 @@
 #ifndef PCL_POINT_CLOUD_IMAGE_EXTRACTORS_IMPL_HPP_
 #define PCL_POINT_CLOUD_IMAGE_EXTRACTORS_IMPL_HPP_
 
+#include <set>
 #include <map>
 #include <ctime>
 #include <cstdlib>
 
 #include <pcl/common/io.h>
+#include <pcl/common/colors.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::io::PointCloudImageExtractorFromNormalField<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img) const
+pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img) const
 {
   if (!cloud.isOrganized () || cloud.points.size () != cloud.width * cloud.height)
     return (false);
 
+  bool result = this->extractImpl (cloud, img);
+
+  if (paint_nans_with_black_ && result)
+  {
+    size_t size = img.encoding == "mono16" ? 2 : 3;
+    for (size_t i = 0; i < cloud.points.size (); ++i)
+      if (!pcl::isFinite (cloud[i]))
+        std::memset (&img.data[i * size], 0, size);
+  }
+
+  return (result);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::io::PointCloudImageExtractorFromNormalField<PointT>::extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const
+{
   std::vector<pcl::PCLPointField> fields;
   int field_x_idx = pcl::getFieldIndex (cloud, "normal_x", fields);
   int field_y_idx = pcl::getFieldIndex (cloud, "normal_y", fields);
@@ -85,11 +104,8 @@ pcl::io::PointCloudImageExtractorFromNormalField<PointT>::extract (const PointCl
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::io::PointCloudImageExtractorFromRGBField<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img) const
+pcl::io::PointCloudImageExtractorFromRGBField<PointT>::extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const
 {
-  if (!cloud.isOrganized () || cloud.points.size () != cloud.width * cloud.height)
-    return (false);
-
   std::vector<pcl::PCLPointField> fields;
   int field_idx = pcl::getFieldIndex (cloud, "rgb", fields);
   if (field_idx == -1)
@@ -120,11 +136,8 @@ pcl::io::PointCloudImageExtractorFromRGBField<PointT>::extract (const PointCloud
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img) const
+pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const
 {
-  if (!cloud.isOrganized () || cloud.points.size () != cloud.width * cloud.height)
-    return (false);
-
   std::vector<pcl::PCLPointField> fields;
   int field_idx = pcl::getFieldIndex (cloud, "label", fields);
   if (field_idx == -1)
@@ -178,6 +191,49 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extract (const PointClo
       }
       break;
     }
+    case COLORS_RGB_GLASBEY:
+    {
+      img.encoding = "rgb8";
+      img.width = cloud.width;
+      img.height = cloud.height;
+      img.step = img.width * sizeof (unsigned char) * 3;
+      img.data.resize (img.step * img.height);
+
+      std::srand(std::time(0));
+      std::set<uint32_t> labels;
+      std::map<uint32_t, size_t> colormap;
+
+      // First pass: find unique labels
+      for (size_t i = 0; i < cloud.points.size (); ++i)
+      {
+        // If we need to paint NaN points with black do not waste colors on them
+        if (paint_nans_with_black_ && !pcl::isFinite (cloud.points[i]))
+          continue;
+        uint32_t val;
+        pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+        labels.insert (val);
+      }
+
+      // Assign Glasbey colors in ascending order of labels
+      // Note: the color LUT has a finite size (256 colors), therefore when
+      // there are more labels the colors will repeat
+      size_t color = 0;
+      for (std::set<uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter)
+      {
+        colormap[*iter] = color % GlasbeyLUT::size ();
+        ++color;
+      }
+
+      // Second pass: copy colors from the LUT
+      for (size_t i = 0; i < cloud.points.size (); ++i)
+      {
+        uint32_t val;
+        pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+        memcpy (&img.data[i * 3], GlasbeyLUT::data () + colormap[val] * 3, 3);
+      }
+
+      break;
+    }
   }
 
   return (true);
@@ -185,11 +241,8 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extract (const PointClo
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::io::PointCloudImageExtractorWithScaling<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img) const
+pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const
 {
-  if (!cloud.isOrganized () || cloud.points.size () != cloud.width * cloud.height)
-    return (false);
-
   std::vector<pcl::PCLPointField> fields;
   int field_idx = pcl::getFieldIndex (cloud, field_name_, fields);
   if (field_idx == -1)

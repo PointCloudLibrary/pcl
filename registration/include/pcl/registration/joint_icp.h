@@ -107,12 +107,16 @@ namespace pcl
       using IterativeClosestPoint<PointSource, PointTarget, Scalar>::use_reciprocal_correspondence_;
       
       using IterativeClosestPoint<PointSource, PointTarget, Scalar>::convergence_criteria_;
+      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::source_has_normals_;
+      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::target_has_normals_;
+      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::need_source_blob_;
+      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::need_target_blob_;
 
 
       typedef typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
 
       /** \brief Empty constructor. */
-      JointIterativeClosestPoint () 
+      JointIterativeClosestPoint ()
       {
         IterativeClosestPoint<PointSource, PointTarget, Scalar> ();
         reg_name_ = "JointIterativeClosestPoint";
@@ -124,11 +128,9 @@ namespace pcl
 
       /** \brief Provide a pointer to the input source 
         * (e.g., the point cloud that we want to align to the target)
-        *
-        * \param[in] cloud the input point cloud source
         */
       virtual void
-      setInputSource (const PointCloudSourceConstPtr &cloud)
+      setInputSource (const PointCloudSourceConstPtr& /*cloud*/)
       {
         PCL_WARN ("[pcl::%s::setInputSource] Warning; JointIterativeClosestPoint expects multiple clouds. Please use addInputSource.", 
             getClassName ().c_str ());
@@ -137,7 +139,7 @@ namespace pcl
 
       /** \brief Add a source cloud to the joint solver
         *
-        * \param[in] source cloud
+        * \param[in] cloud source cloud
         */
       inline void
       addInputSource (const PointCloudSourceConstPtr &cloud)
@@ -150,11 +152,9 @@ namespace pcl
       
       /** \brief Provide a pointer to the input target 
         * (e.g., the point cloud that we want to align to the target)
-        *
-        * \param[in] cloud the input point cloud target
         */
       virtual void
-      setInputTarget (const PointCloudTargetConstPtr &cloud)
+      setInputTarget (const PointCloudTargetConstPtr& /*cloud*/)
       {
         PCL_WARN ("[pcl::%s::setInputTarget] Warning; JointIterativeClosestPoint expects multiple clouds. Please use addInputTarget.", 
             getClassName ().c_str ());
@@ -163,7 +163,7 @@ namespace pcl
 
       /** \brief Add a target cloud to the joint solver
         *
-        * \param[in] target cloud
+        * \param[in] cloud target cloud
         */
       inline void
       addInputTarget (const PointCloudTargetConstPtr &cloud)
@@ -179,7 +179,7 @@ namespace pcl
         * input source / target pair. They do not need to have trees 
         * or input clouds set ahead of time.
         *
-        * \param[in] Correspondence estimation
+        * \param[in] ce Correspondence estimation
         */
       inline void
       addCorrespondenceEstimation (CorrespondenceEstimationPtr ce)
@@ -214,6 +214,10 @@ namespace pcl
         */
       virtual void 
       computeTransformation (PointCloudSource &output, const Matrix4 &guess);
+      
+      /** \brief Looks at the Estimators and Rejectors and determines whether their blob-setter methods need to be called */
+      void
+      determineRequiredBlobData ();
 
       std::vector<PointCloudSourceConstPtr> sources_;
       std::vector<PointCloudTargetConstPtr> targets_;

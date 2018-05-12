@@ -45,6 +45,7 @@
 #pragma GCC system_header 
 #endif
 
+#ifndef Q_MOC_RUN
 // Marking all Boost headers as system headers to remove warnings
 #include <boost/random.hpp>
 #include <boost/random/normal_distribution.hpp>
@@ -57,5 +58,6 @@
 #include <boost/thread/thread.hpp>
 //#include <boost/uuid/uuid.hpp>
 //#include <boost/uuid/uuid_generators.hpp>
+#endif
 
 #endif    // PCL_TOOLS_BOOST_H_

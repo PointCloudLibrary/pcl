@@ -139,52 +139,6 @@ namespace
     else
       positive_score = surface_change_score * (1.0f-distance_factor);
   }
-
-  void 
-  translateDirection180To360 (Eigen::Vector2f& direction_vector)
-  {
-    // The following code does the equivalent to this:
-    // Get the angle of the 2D direction (with positive x) alpha, and return the direction of 2*alpha
-    // We do this to create a normal angular wrap-around at -180,180 instead of the one at -90,90, 
-    // enabling us to calculate the average angle as the direction of the sum of all unit vectors.
-    // We use sin (2a)=2*sin (a)*cos (a) and cos (2a)=2cos^2 (a)-1 so that we needn't actually compute the angles,
-    // which would be expensive
-    float cos_a = direction_vector[0],
-          cos_2a = 2*cos_a*cos_a - 1.0f,
-          sin_a = direction_vector[1],
-          sin_2a = 2.0f*sin_a*cos_a;
-    direction_vector[0] = cos_2a;
-    direction_vector[1] = sin_2a;
-  }
-
-  void 
-  translateDirection360To180 (Eigen::Vector2f& direction_vector)
-  {
-    // Inverse of the above
-    float cos_2a = direction_vector[0],
-          cos_a = sqrtf (0.5f* (cos_2a+1.0f)),
-          sin_2a = direction_vector[1],
-          sin_a = sin_2a / (2.0f*cos_a);
-    direction_vector[0] = cos_a;
-    direction_vector[1] = sin_a;
-  }
-  
-  inline Eigen::Vector2f 
-  nkdGetDirectionVector (const Eigen::Vector3f& direction, const Eigen::Affine3f& rotation)
-  {
-    Eigen::Vector3f rotated_direction = rotation*direction;
-    Eigen::Vector2f direction_vector (rotated_direction[0], rotated_direction[1]);
-    direction_vector.normalize ();
-    if (direction_vector[0]<0.0f)
-      direction_vector *= -1.0f;
-    
-
-#   if USE_BEAM_AVERAGE
-      translateDirection180To360 (direction_vector);
-#   endif
-    
-    return direction_vector;
-  }
   
   inline float 
   nkdGetDirectionAngle (const Eigen::Vector3f& direction, const Eigen::Affine3f& rotation)
@@ -402,7 +356,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
           continue;
         const Eigen::Vector3f& surface_change_direction = surface_change_directions[index2];
         
-        float distance = sqrtf (distance_squared);
+        float distance = std::sqrt (distance_squared);
         float distance_factor = radius_reciprocal*distance;
         float positive_score, current_negative_score;
         nkdGetScores (distance_factor, surface_change_score, pixelDistance,
@@ -438,7 +392,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
                                          normalized_angle_diff,   angle_change_value);
         }
       }
-      angle_change_value = sqrtf (angle_change_value);
+      angle_change_value = std::sqrt (angle_change_value);
       interest_value = negative_score * angle_change_value;
       
       if (parameters_.add_points_on_straight_edges)
@@ -618,7 +572,7 @@ NarfKeypoint::calculateSparseInterestImage ()
                                        normalized_angle_diff,   angle_change_value);
       }
     }
-    angle_change_value = sqrtf (angle_change_value);
+    angle_change_value = std::sqrt (angle_change_value);
     float maximum_interest_value = angle_change_value;
     
     if (parameters_.add_points_on_straight_edges)
@@ -726,7 +680,7 @@ NarfKeypoint::calculateSparseInterestImage ()
                                                                normalized_angle_diff);
           }
         }
-        angle_change_value = sqrtf (angle_change_value);
+        angle_change_value = std::sqrt (angle_change_value);
         interest_value = negative_score * angle_change_value;
         if (parameters_.add_points_on_straight_edges)
         {
@@ -770,7 +724,7 @@ NarfKeypoint::calculateInterestPoints ()
   typedef double RealForPolynomial;
   PolynomialCalculationsT<RealForPolynomial> polynomial_calculations;
   BivariatePolynomialT<RealForPolynomial> polynomial (2);
-  std::vector<Eigen::Matrix<RealForPolynomial, 3, 1> > sample_points;
+  std::vector<Eigen::Matrix<RealForPolynomial, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<RealForPolynomial, 3, 1> > > sample_points;
   std::vector<RealForPolynomial> x_values, y_values;
   std::vector<int> types;
   std::vector<bool> invalid_beams, old_invalid_beams;

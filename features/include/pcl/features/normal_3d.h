@@ -56,7 +56,7 @@ namespace pcl
     * \f]
     * \ingroup features
     */
-  template <typename PointT> inline void
+  template <typename PointT> inline bool
   computePointNormal (const pcl::PointCloud<PointT> &cloud,
                       Eigen::Vector4f &plane_parameters, float &curvature)
   {
@@ -70,11 +70,12 @@ namespace pcl
     {
       plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
       curvature = std::numeric_limits<float>::quiet_NaN ();
-      return;
+      return false;
     }
 
     // Get the plane normal and surface curvature
     solvePlaneParameters (covariance_matrix, xyz_centroid, plane_parameters, curvature);
+    return true;
   }
 
   /** \brief Compute the Least-Squares plane fit for a given set of points, using their indices,
@@ -88,7 +89,7 @@ namespace pcl
     * \f]
     * \ingroup features
     */
-  template <typename PointT> inline void
+  template <typename PointT> inline bool
   computePointNormal (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
                       Eigen::Vector4f &plane_parameters, float &curvature)
   {
@@ -101,10 +102,11 @@ namespace pcl
     {
       plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
       curvature = std::numeric_limits<float>::quiet_NaN ();
-      return;
+      return false;
     }
     // Get the plane normal and surface curvature
     solvePlaneParameters (covariance_matrix, xyz_centroid, plane_parameters, curvature);
+    return true;
   }
 
   /** \brief Flip (in place) the estimated normal of a point towards a given viewpoint
@@ -184,6 +186,49 @@ namespace pcl
     }
   }
 
+  /** \brief Flip (in place) normal to get the same sign of the mean of the normals specified by normal_indices.
+    * 
+    * The method is described in:
+    * A. Petrelli, L. Di Stefano, "A repeatable and efficient canonical reference for surface matching", 3DimPVT, 2012
+    * A. Petrelli, L. Di Stefano, "On the repeatability of the local reference frame for partial shape matching", 13th International Conference on Computer Vision (ICCV), 2011
+    *
+    * Normals should be unit vectors. Otherwise the resulting mean would be weighted by the normal norms.
+    * \param[in] normal_cloud Cloud of normals used to compute the mean
+    * \param[in] normal_indices Indices of normals used to compute the mean 
+    * \param[in] normal input Normal to flip. Normal is modified by the function.
+    * \return false if normal_indices does not contain any valid normal.
+    * \ingroup features
+    */
+  template<typename PointNT> inline bool
+  flipNormalTowardsNormalsMean ( pcl::PointCloud<PointNT> const &normal_cloud,
+                                 std::vector<int> const &normal_indices,
+                                 Eigen::Vector3f &normal)
+  {
+    Eigen::Vector3f normal_mean = Eigen::Vector3f::Zero ();
+
+    for (size_t i = 0; i < normal_indices.size (); ++i)
+    {
+      const PointNT& cur_pt = normal_cloud[normal_indices[i]];
+
+      if (pcl::isFinite (cur_pt))
+      {
+        normal_mean += cur_pt.getNormalVector3fMap ();
+      }
+    }
+
+    if (normal_mean.isZero ())
+      return false;
+
+    normal_mean.normalize ();
+
+    if (normal.dot (normal_mean) < 0)
+    {
+      normal = -normal;
+    }
+
+    return true;
+  }
+
   /** \brief NormalEstimation estimates local surface properties (surface normals and curvatures)at each
     * 3D point. If PointOutT is specified as pcl::Normal, the normal is stored in the first 3 components (0-2),
     * and the curvature is stored in component 3.
@@ -236,7 +281,7 @@ namespace pcl
         * \lambda_0 / (\lambda_0 + \lambda_1 + \lambda_2)
         * \f]
         */
-      inline void
+      inline bool
       computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices,
                           Eigen::Vector4f &plane_parameters, float &curvature)
       {
@@ -245,11 +290,12 @@ namespace pcl
         {
           plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
           curvature = std::numeric_limits<float>::quiet_NaN ();
-          return;
+          return false;
         }
 
         // Get the plane normal and surface curvature
         solvePlaneParameters (covariance_matrix_, xyz_centroid_, plane_parameters, curvature);
+        return true;
       }
 
       /** \brief Compute the Least-Squares plane fit for a given set of points, using their indices,
@@ -264,7 +310,7 @@ namespace pcl
         * \lambda_0 / (\lambda_0 + \lambda_1 + \lambda_2)
         * \f]
         */
-      inline void
+      inline bool
       computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices,
                           float &nx, float &ny, float &nz, float &curvature)
       {
@@ -272,11 +318,12 @@ namespace pcl
             computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix_, xyz_centroid_) == 0)
         {
           nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
-          return;
+          return false;
         }
 
         // Get the plane normal and surface curvature
         solvePlaneParameters (covariance_matrix_, nx, ny, nz, curvature);
+        return true;
       }
 
       /** \brief Provide a pointer to the input dataset
@@ -349,7 +396,7 @@ namespace pcl
     protected:
       /** \brief Estimate normals for all points given in <setInputCloud (), setIndices ()> using the surface in
         * setSearchSurface () and the spatial locator in setSearchMethod ()
-        * \note In situations where not enough neighbors are found, the normal and curvature values are set to -1.
+        * \note In situations where not enough neighbors are found, the normal and curvature values are set to NaN.
         * \param output the resultant point cloud model dataset that contains surface normals and curvatures
         */
       void

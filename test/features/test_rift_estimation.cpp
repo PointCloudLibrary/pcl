@@ -58,7 +58,7 @@ TEST (PCL, RIFTEstimation)
       PointXYZI p;
       p.x = x;
       p.y = y;
-      p.z = sqrtf (400 - x * x - y * y);
+      p.z = std::sqrt (400 - x * x - y * y);
       p.intensity = expf ((-powf (x - 3.0f, 2.0f) + powf (y + 2.0f, 2.0f)) / (2.0f * 25.0f)) + expf ((-powf (x + 5.0f, 2.0f) + powf (y - 5.0f, 2.0f))
                                                                                  / (2.0f * 4.0f));
 
@@ -81,7 +81,7 @@ TEST (PCL, RIFTEstimation)
     float nx = p.x;
     float ny = p.y;
     float nz = p.z;
-    float magnitude = sqrtf (nx * nx + ny * ny + nz * nz);
+    float magnitude = std::sqrt (nx * nx + ny * ny + nz * nz);
     nx /= magnitude;
     ny /= magnitude;
     nz /= magnitude;

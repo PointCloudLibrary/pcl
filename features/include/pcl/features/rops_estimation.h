@@ -79,7 +79,7 @@ namespace pcl
       void
       setNumberOfPartitionBins (unsigned int number_of_bins);
 
-      /** \brief Returns the nmber of partition bins. */
+      /** \brief Returns the number of partition bins. */
       unsigned int
       getNumberOfPartitionBins () const;
 
@@ -125,14 +125,14 @@ namespace pcl
 
       /** \brief This method simply builds the list of triangles for every point.
         * The list of triangles for each point consists of indices of triangles it belongs to.
-        * The only purpose of this method is to improve perfomance of the algorithm.
+        * The only purpose of this method is to improve performance of the algorithm.
         */
       void
       buildListOfPointsTriangles ();
 
       /** \brief This method crops all the triangles within the given radius of the given point.
         * \param[in] point point for which the local surface is computed
-        * \param[out] local_triangles strores the indices of the triangles that belong to the local surface
+        * \param[out] local_triangles stores the indices of the triangles that belong to the local surface
         * \param[out] local_points stores the indices of the points that belong to the local surface
         */
       void
@@ -141,7 +141,7 @@ namespace pcl
       /** \brief This method computes LRF (Local Reference Frame) matrix for the given point.
         * \param[in] point point for which the LRF is computed
         * \param[in] local_triangles list of triangles that represents the local surface of the point
-        * \paran[out] lrf_matrix strores computed LRF matrix for the given point
+        * \paran[out] lrf_matrix stores computed LRF matrix for the given point
         */
       void
       computeLRF (const PointInT& point, const std::set <unsigned int>& local_triangles, Eigen::Matrix3f& lrf_matrix) const;
@@ -215,10 +215,10 @@ namespace pcl
       /** \brief Stores the angle step. Step is calculated with respect to number of rotations. */
       float step_;
 
-      /** \brief Stores the set of triangles reprsenting the mesh. */
+      /** \brief Stores the set of triangles representing the mesh. */
       std::vector <pcl::Vertices> triangles_;
 
-      /** \brief Stores the set of triangles for each point. Its purpose is to improve perfomance. */
+      /** \brief Stores the set of triangles for each point. Its purpose is to improve performance. */
       std::vector <std::vector <unsigned int> > triangles_of_the_point_;
 
     public:

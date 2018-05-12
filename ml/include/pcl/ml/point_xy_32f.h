@@ -56,7 +56,7 @@ namespace pcl
       inline virtual ~PointXY32f () {}
 
       /** \brief Serializes the point to the specified stream.
-        * \param[out] The destination for the serialization.
+        * \param[out] stream The destination for the serialization.
         */
       inline void 
       serialize (std::ostream & stream) const
@@ -66,7 +66,7 @@ namespace pcl
       }
 
       /** \brief Deserializes the point from the specified stream.
-        * \param[in] The source for the deserialization.
+        * \param[in] stream The source for the deserialization.
         */
       inline void 
       deserialize (std::istream & stream)

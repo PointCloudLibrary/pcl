@@ -274,7 +274,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
     return;
   }
   qDebug () << "Images loaded, making cloud";
-  PointCloud<PointXYZRGB>::Ptr cloud = boost::make_shared <PointCloud<PointXYZRGB> >();
+  PointCloud<PointXYZRGB>::Ptr cloud = boost::shared_ptr<PointCloud<PointXYZRGB> > (new PointCloud<PointXYZRGB>);
   cloud->points.reserve (depth_dims[0] * depth_dims[1]);
   cloud->width = depth_dims[0];
   cloud->height = depth_dims[1];
@@ -292,9 +292,9 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
   depth_pixel = static_cast<unsigned short*>(depth_image->GetScalarPointer (depth_dims[0]-1,depth_dims[1]-1,0));
   color_pixel = static_cast<unsigned char*> (rgb_image->GetScalarPointer (depth_dims[0]-1,depth_dims[1]-1,0));
   
-  for (int y=0; y<cloud->height; ++y)
+  for (uint32_t y=0; y<cloud->height; ++y)
   {
-    for (int x=0; x<cloud->width; ++x, --depth_pixel, color_pixel-=3)
+    for (uint32_t x=0; x<cloud->width; ++x, --depth_pixel, color_pixel-=3)
     {
       PointXYZRGB new_point;
       //  uint8_t* p_i = &(cloud_blob->data[y * cloud_blob->row_step + x * cloud_blob->point_step]);
@@ -380,7 +380,7 @@ pcl::cloud_composer::ProjectModel::saveSelectedCloudToFile ()
   pcl::PCLPointCloud2::ConstPtr cloud = cloud_to_save->data (ItemDataRole::CLOUD_BLOB).value <pcl::PCLPointCloud2::ConstPtr> ();
   Eigen::Vector4f origin = cloud_to_save->data (ItemDataRole::ORIGIN).value <Eigen::Vector4f> ();
   Eigen::Quaternionf orientation = cloud_to_save->data (ItemDataRole::ORIENTATION).value <Eigen::Quaternionf> ();
-  int result = pcl::io::savePCDFile (filename.toStdString (), *cloud, origin, orientation );
+  pcl::io::savePCDFile (filename.toStdString (), *cloud, origin, orientation );
   
 }
 
@@ -539,7 +539,6 @@ void
 pcl::cloud_composer::ProjectModel::selectAllItems (QStandardItem* item)
 {
  
-  int num_rows;
   if (!item)
     item = this->invisibleRootItem ();
   else
@@ -564,7 +563,6 @@ pcl::cloud_composer::ProjectModel::emitAllStateSignals ()
   emit newCloudFromSelectionAvailable (onlyCloudItemsSelected ());  
   
   //Find out which style is active, emit the signal 
-  QMap<interactor_styles::INTERACTOR_STYLES, bool>::iterator itr = selected_style_map_.begin();
   foreach (interactor_styles::INTERACTOR_STYLES style, selected_style_map_.keys())
   {
     if (selected_style_map_.value (style))
@@ -578,7 +576,7 @@ pcl::cloud_composer::ProjectModel::emitAllStateSignals ()
 }
 
 void
-pcl::cloud_composer::ProjectModel::itemSelectionChanged ( const QItemSelection & selected, const QItemSelection & deselected )
+pcl::cloud_composer::ProjectModel::itemSelectionChanged ( const QItemSelection &, const QItemSelection &)
 {
   //qDebug () << "Item selection changed!";
   //Set all point selected cloud items back to green text, since if they are selected they get changed to white

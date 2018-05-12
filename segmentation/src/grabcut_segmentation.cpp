@@ -45,6 +45,8 @@
 #include <map>
 #include <algorithm>
 
+const int pcl::segmentation::grabcut::BoykovKolmogorov::TERMINAL = -1;
+
 pcl::segmentation::grabcut::BoykovKolmogorov::BoykovKolmogorov (std::size_t max_nodes)
   : flow_value_(0.0)
 {
@@ -96,7 +98,7 @@ pcl::segmentation::grabcut::BoykovKolmogorov::preAugmentPaths ()
     if (source_edges_[u] == 0.0) continue;
 
     // augment s-u-v-t paths
-    for (std::map<int, double>::iterator it = nodes_[u].begin (); it != nodes_[u].end (); it++)
+    for (std::map<int, double>::iterator it = nodes_[u].begin (); it != nodes_[u].end (); ++it)
     {
       const int v = it->first;
       if ((it->second == 0.0) || (target_edges_[v] == 0.0)) continue;
@@ -227,7 +229,7 @@ pcl::segmentation::grabcut::BoykovKolmogorov::reset ()
   std::fill (target_edges_.begin (), target_edges_.end (), 0.0);
   for (int u = 0; u < (int)nodes_.size (); u++)
   {
-    for (capacitated_edge::iterator it = nodes_[u].begin (); it != nodes_[u].end (); it++)
+    for (capacitated_edge::iterator it = nodes_[u].begin (); it != nodes_[u].end (); ++it)
     {
       it->second = 0.0;
     }
@@ -311,7 +313,7 @@ pcl::segmentation::grabcut::BoykovKolmogorov::expandTrees ()
     const int u = active_head_;
 
     if (cut_[u] == SOURCE) {
-      for (capacitated_edge::iterator it = nodes_[u].begin (); it != nodes_[u].end (); it++)
+      for (capacitated_edge::iterator it = nodes_[u].begin (); it != nodes_[u].end (); ++it)
       {
         if (it->second > 0.0)
         {
@@ -334,7 +336,7 @@ pcl::segmentation::grabcut::BoykovKolmogorov::expandTrees ()
     }
     else
     {
-      for (capacitated_edge::iterator it = nodes_[u].begin (); it != nodes_[u].end (); it++)
+      for (capacitated_edge::iterator it = nodes_[u].begin (); it != nodes_[u].end (); ++it)
       {
         if (cut_[it->first] == TARGET) continue;
         if (nodes_[it->first][u] > 0.0)

@@ -100,6 +100,7 @@ namespace pcl
 
       /** \brief Removes normals with high curvature caused by real edges or noisy data
         * \param[in] cloud pointcloud to be filtered
+        * \param[in] indices_to_use the indices to use
         * \param[out] indices_out the indices of the points with higher curvature than threshold
         * \param[out] indices_in the indices of the remaining points after filtering
         * \param[in] threshold threshold value for curvature
@@ -147,7 +148,7 @@ namespace pcl
         * \param[out] centroids vector to hold the centroids
         */
       inline void
-      getCentroidClusters (std::vector<Eigen::Vector3f> & centroids)
+      getCentroidClusters (std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
       {
         for (size_t i = 0; i < centroids_dominant_orientations_.size (); ++i)
           centroids.push_back (centroids_dominant_orientations_[i]);
@@ -157,7 +158,7 @@ namespace pcl
         * \param[out] centroids vector to hold the normal centroids
         */
       inline void
-      getCentroidNormalClusters (std::vector<Eigen::Vector3f> & centroids)
+      getCentroidNormalClusters (std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
       {
         for (size_t i = 0; i < dominant_normals_.size (); ++i)
           centroids.push_back (dominant_normals_[i]);
@@ -200,7 +201,7 @@ namespace pcl
         min_points_ = min;
       }
 
-      /** \brief Sets wether if the CVFH signatures should be normalized or not
+      /** \brief Sets whether if the CVFH signatures should be normalized or not
         * \param[in] normalize true if normalization is required, false otherwise 
         */
       inline void
@@ -226,7 +227,7 @@ namespace pcl
         */
       float leaf_size_;
 
-      /** \brief Wether to normalize the signatures or not. Default: false. */
+      /** \brief Whether to normalize the signatures or not. Default: false. */
       bool normalize_bins_;
 
       /** \brief Curvature threshold for removing normals. */
@@ -279,9 +280,9 @@ namespace pcl
 
     protected:
       /** \brief Centroids that were used to compute different CVFH descriptors */
-      std::vector<Eigen::Vector3f> centroids_dominant_orientations_;
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > centroids_dominant_orientations_;
       /** \brief Normal centroids that were used to compute different CVFH descriptors */
-      std::vector<Eigen::Vector3f> dominant_normals_;
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > dominant_normals_;
   };
 }
 

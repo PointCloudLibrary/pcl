@@ -215,7 +215,7 @@ visualize (const ModelLibrary::HashTable& hash_table)
     }
   }
 
-  vis.addCoordinateSystem(1.5);
+  vis.addCoordinateSystem(1.5, "global");
   vis.resetCamera ();
 
   // Enter the main loop

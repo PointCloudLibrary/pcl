@@ -62,23 +62,23 @@ namespace pcl
       virtual 
       ~DecisionForest () {}
 
-      ///** \brief Adds the specified tree to the forest.
-      //  * \param[in] tree The tree to be added to the forest.
-      //  */
+      /* \brief Adds the specified tree to the forest.
+      * \param[in] tree The tree to be added to the forest. */
+      //
       //void
       //addTree (DecisionTree<NodeType> & tree)
       //{
       //  trees_.push_back (tree);
       //}
 
-      ///** \brief Returns the number of trees in the forest. */
+      ///brief Returns the number of trees in the forest.
       //inline size_t
 
       /** \brief Serializes the decision tree. 
         * \param[out] stream The destination for the serialization.
         */
       void 
-      serialize (::std::ostream & stream) const
+      serialize (::std::ostream &stream) const
       {
         const int num_of_trees = static_cast<int> (this->size ());
         stream.write (reinterpret_cast<const char*> (&num_of_trees), sizeof (num_of_trees));

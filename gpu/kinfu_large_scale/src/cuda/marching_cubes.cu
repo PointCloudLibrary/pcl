@@ -146,8 +146,14 @@ namespace pcl
           int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
           int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
 
+        #if CUDA_VERSION >= 9000
+          if (__all_sync (__activemask (), x >= VOLUME_X)
+              || __all_sync (__activemask (), y >= VOLUME_Y))
+            return;
+        #else
           if (__all (x >= VOLUME_X) || __all (y >= VOLUME_Y))
             return;
+        #endif
 
           int ftid = Block::flattenedThreadId ();
                   int warp_id = Warp::id();
@@ -167,7 +173,11 @@ namespace pcl
               numVerts = (cubeindex == 0 || cubeindex == 255) ? 0 : tex1Dfetch (numVertsTex, cubeindex);
             }
 
+          #if CUDA_VERSION >= 9000
+            int total = __popc (__ballot_sync (__activemask (), numVerts > 0));
+          #else
             int total = __popc (__ballot (numVerts > 0));
+          #endif
                     if (total == 0)
                           continue;
 
@@ -178,7 +188,11 @@ namespace pcl
             }
             int old_global_voxels_count = warps_buffer[warp_id];
 
+          #if CUDA_VERSION >= 9000
+            int offs = Warp::binaryExclScan (__ballot_sync (__activemask (), numVerts > 0));
+          #else
             int offs = Warp::binaryExclScan (__ballot (numVerts > 0));
+          #endif
 
             if (old_global_voxels_count + offs < max_size && numVerts > 0)
             {

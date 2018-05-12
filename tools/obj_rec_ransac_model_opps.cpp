@@ -48,6 +48,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
+#include <vtkVersion.h>
 #include <vtkPolyDataReader.h>
 #include <vtkDoubleArray.h>
 #include <vtkDataArray.h>
@@ -215,7 +216,11 @@ void showModelOpps (PCLVisualizer& viz, const ModelLibrary::HashTable& hash_tabl
   // Save the normals
   vtk_opps->GetPointData ()->SetNormals (vtk_normals);
   // Setup the hedge hog object
+#if VTK_MAJOR_VERSION < 6
   vtk_hedge_hog->SetInput (vtk_opps);
+#else
+  vtk_hedge_hog->SetInputData (vtk_opps);
+#endif
   vtk_hedge_hog->SetVectorModeToUseNormal ();
   vtk_hedge_hog->SetScaleFactor (0.5f*pair_width);
   vtk_hedge_hog->Update ();

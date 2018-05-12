@@ -17,7 +17,7 @@ In order to run the code you'll need a decent Nvidia GPU with Fermi or Kepler ar
 
 This should indicate which GPU you have on your system, if you don't have an Nvidia GPU, we're sorry, but you
 won't be able to use PCL GPU.
-The output of this you can compare with `this link <http://www.nvidia.co.uk/object/cuda_gpus_uk.html>`_  
+The output of this you can compare with `this link <http://www.nvidia.co.uk/object/cuda-parallel-computing-uk.html>`_  
 on the Nvidia website, your card should mention compute capability of 2.x (Fermi) or 3.x (Kepler) or higher.
 If you want to run with a GUI, you can also run::
 
@@ -91,7 +91,7 @@ Go to your PCL root folder and do::
  $ ccmake ..
 
 Press c to configure ccmake, press t to toggle to the advanced mode as a number of options
-only appear in advanced mode. The latest CUDA algorithms are beeing kept in the GPU project, for
+only appear in advanced mode. The latest CUDA algorithms are being kept in the GPU project, for
 this the BUILD_GPU option needs to be on and the BUILD_gpu_<X> indicate the different
 GPU subprojects.
 

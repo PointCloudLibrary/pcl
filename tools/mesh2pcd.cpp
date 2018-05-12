@@ -58,7 +58,7 @@ printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.{ply,obj} output.pcd <options>\n", argv[0]);
   print_info ("  where options are:\n");
-  print_info ("                     -level X      = tesselated sphere level (default: ");
+  print_info ("                     -level X      = tessellated sphere level (default: ");
   print_value ("%d", default_tesselated_sphere_level);
   print_info (")\n");
   print_info ("                     -resolution X = the sphere resolution in angle increments (default: ");
@@ -68,6 +68,8 @@ printHelp (int, char **argv)
               "                     -leaf_size X  = the XYZ leaf size for the VoxelGrid -- for data reduction (default: ");
   print_value ("%f", default_leaf_size);
   print_info (" m)\n");
+  print_info (
+              "                     -no_vis_result = flag to stop visualizing the generated pcd\n");
 }
 
 /* ---[ */
@@ -90,6 +92,7 @@ main (int argc, char **argv)
   parse_argument (argc, argv, "-resolution", resolution);
   float leaf_size = default_leaf_size;
   parse_argument (argc, argv, "-leaf_size", leaf_size);
+  bool vis_result = ! find_switch (argc, argv, "-no_vis_result");
 
   // Parse the command line arguments for .ply and PCD files
   std::vector<int> pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
@@ -111,19 +114,18 @@ main (int argc, char **argv)
   {
     vtkSmartPointer<vtkPLYReader> readerQuery = vtkSmartPointer<vtkPLYReader>::New ();
     readerQuery->SetFileName (argv[ply_file_indices[0]]);
+    readerQuery->Update ();
     polydata1 = readerQuery->GetOutput ();
-    polydata1->Update ();
   }
   else if (obj_file_indices.size () == 1)
   {
     vtkSmartPointer<vtkOBJReader> readerQuery = vtkSmartPointer<vtkOBJReader>::New ();
     readerQuery->SetFileName (argv[obj_file_indices[0]]);
+    readerQuery->Update ();
     polydata1 = readerQuery->GetOutput ();
-    polydata1->Update ();
   }
 
   bool INTER_VIS = false;
-  bool VIS = true;
 
   visualization::PCLVisualizer vis;
   vis.addModelFromPolyData (polydata1, "mesh1", 0);
@@ -164,7 +166,7 @@ main (int argc, char **argv)
   for (size_t i = 0; i < aligned_clouds.size (); i++)
     *big_boy += *aligned_clouds[i];
 
-  if (VIS)
+  if (vis_result)
   {
     visualization::PCLVisualizer vis2 ("visualize");
     vis2.addPointCloud (big_boy);
@@ -177,7 +179,7 @@ main (int argc, char **argv)
   grid_.setLeafSize (leaf_size, leaf_size, leaf_size);
   grid_.filter (*big_boy);
 
-  if (VIS)
+  if (vis_result)
   {
     visualization::PCLVisualizer vis3 ("visualize");
     vis3.addPointCloud (big_boy);

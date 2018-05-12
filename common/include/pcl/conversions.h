@@ -52,7 +52,9 @@
 #include <pcl/for_each_type.h>
 #include <pcl/exceptions.h>
 #include <pcl/console/print.h>
+#ifndef Q_MOC_RUN
 #include <boost/foreach.hpp>
+#endif
 
 namespace pcl
 {
@@ -178,11 +180,14 @@ namespace pcl
     cloud.points.resize (num_points);
     uint8_t* cloud_data = reinterpret_cast<uint8_t*>(&cloud.points[0]);
 
-    // Check if we can copy adjacent points in a single memcpy
+    // Check if we can copy adjacent points in a single memcpy.  We can do so if there
+    // is exactly one field to copy and it is the same size as the source and destination
+    // point types.
     if (field_map.size() == 1 &&
         field_map[0].serialized_offset == 0 &&
         field_map[0].struct_offset == 0 &&
-        msg.point_step == sizeof(PointT))
+        field_map[0].size == msg.point_step &&
+        field_map[0].size == sizeof(PointT))
     {
       uint32_t cloud_row_step = static_cast<uint32_t> (sizeof (PointT) * cloud.width);
       const uint8_t* msg_data = &msg.data[0];
@@ -252,7 +257,10 @@ namespace pcl
     // Fill point cloud binary data (padding and all)
     size_t data_size = sizeof (PointT) * cloud.points.size ();
     msg.data.resize (data_size);
-    memcpy (&msg.data[0], &cloud.points[0], data_size);
+    if (data_size)
+    {
+      memcpy(&msg.data[0], &cloud.points[0], data_size);
+    }
 
     // Fill fields metadata
     msg.fields.clear ();

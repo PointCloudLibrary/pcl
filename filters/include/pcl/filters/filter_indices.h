@@ -133,7 +133,7 @@ namespace pcl
         * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
         */
       inline bool
-      getNegative ()
+      getNegative () const
       {
         return (negative_);
       }
@@ -153,7 +153,7 @@ namespace pcl
         * \return The value of the internal \a keep_organized_ parameter; false = remove points (default), true = redefine points, keep structure.
         */
       inline bool
-      getKeepOrganized ()
+      getKeepOrganized () const
       {
         return (keep_organized_);
       }
@@ -169,9 +169,9 @@ namespace pcl
       }
 
     protected:
+
       using Filter<PointT>::initCompute;
       using Filter<PointT>::deinitCompute;
-      using Filter<PointT>::applyFilter;
 
       /** \brief False = normal filter behavior (default), true = inverted behavior. */
       bool negative_;
@@ -185,6 +185,10 @@ namespace pcl
       /** \brief Abstract filter method for point cloud indices. */
       virtual void
       applyFilter (std::vector<int> &indices) = 0;
+
+      /** \brief Abstract filter method for point cloud. */
+      virtual void
+      applyFilter (PointCloud &output) = 0;
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -245,7 +249,7 @@ namespace pcl
         * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
         */
       inline bool
-      getNegative ()
+      getNegative () const
       {
         return (negative_);
       }
@@ -265,7 +269,7 @@ namespace pcl
         * \return The value of the internal \a keep_organized_ parameter; false = remove points (default), true = redefine points, keep structure.
         */
       inline bool
-      getKeepOrganized ()
+      getKeepOrganized () const
       {
         return (keep_organized_);
       }
@@ -282,8 +286,6 @@ namespace pcl
 
     protected:
 
-      using Filter<pcl::PCLPointCloud2>::applyFilter;
-
       /** \brief False = normal filter behavior (default), true = inverted behavior. */
       bool negative_;
 
@@ -296,6 +298,10 @@ namespace pcl
       /** \brief Abstract filter method for point cloud indices. */
       virtual void
       applyFilter (std::vector<int> &indices) = 0;
+
+      /** \brief Abstract filter method for point cloud. */
+      virtual void
+      applyFilter (PCLPointCloud2 &output) = 0;
   };
 }
 

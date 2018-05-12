@@ -64,7 +64,6 @@ namespace pcl
       void setColors (unsigned char rgb[3]) { memcpy (colors, rgb, 3 * sizeof (unsigned char)); }
       void setOpacity (double opacity) { SetOpacity (opacity); };
       unsigned char colors[3];
-      double opacity;
       std::vector<float> params;
     };
 
@@ -155,6 +154,18 @@ namespace pcl
         virtual bool Paint (vtkContext2D *painter);
         virtual void set (float x, float y, const std::string& _text);
         std::string text;
+      };
+
+      struct PCL_EXPORTS Markers : public Points
+      {
+        vtkTypeMacro (Markers, Points);
+        static Markers *New ();
+        virtual bool Paint (vtkContext2D *painter);
+        void setSize (float _size) { size = _size; }
+        void setPointColors (unsigned char r, unsigned char g, unsigned char b);
+        void setPointColors (unsigned char rgb[3]);
+        float size;
+        unsigned char point_colors[3];
       };
     }
   }

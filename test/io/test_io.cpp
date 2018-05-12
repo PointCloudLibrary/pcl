@@ -43,6 +43,7 @@
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 #include <pcl/console/print.h>
+#include <pcl/io/auto_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ascii_io.h>
@@ -89,7 +90,7 @@ TEST (PCL, ComplexPCDFileASCII)
   EXPECT_EQ (blob.fields[1].name, "_");
   EXPECT_EQ (blob.fields[1].offset, 4 * 33);
   EXPECT_EQ (blob.fields[1].count, 10);
-  EXPECT_EQ (blob.fields[1].datatype, pcl::PCLPointField::FLOAT32);
+  EXPECT_EQ (blob.fields[1].datatype, (uint8_t) -1);
   
   EXPECT_EQ (blob.fields[2].name, "x");
   EXPECT_EQ (blob.fields[2].offset, 4 * 33 + 10 * 1);
@@ -724,18 +725,21 @@ TEST (PCL, PCDReaderWriter)
 TEST (PCL, PCDReaderWriterASCIIColorPrecision)
 {
   PointCloud<PointXYZRGB> cloud;
+  cloud.points.reserve (256 / 4 * 256 / 4 * 256 / 4 * 256 / 16);
   for (size_t r_i = 0; r_i < 256; r_i += 5)
     for (size_t g_i = 0; g_i < 256; g_i += 5)
       for (size_t b_i = 0; b_i < 256; b_i += 5)
-      {
-        PointXYZRGB p;
-        p.r = static_cast<unsigned char> (r_i);
-        p.g = static_cast<unsigned char> (g_i);
-        p.b = static_cast<unsigned char> (b_i);
-        p.x = p.y = p.z = 0.f;
+          for (size_t a_i = 0; a_i < 256; a_i += 10)
+          {
+            PointXYZRGB p;
+            p.r = static_cast<unsigned char> (r_i);
+            p.g = static_cast<unsigned char> (g_i);
+            p.b = static_cast<unsigned char> (b_i);
+            p.a = static_cast<unsigned char> (a_i);
+            p.x = p.y = p.z = 0.f;
 
-        cloud.push_back (p);
-      }
+            cloud.push_back (p);
+          }
   cloud.height = 1;
   cloud.width = uint32_t (cloud.size ());
   cloud.is_dense = true;
@@ -761,7 +765,6 @@ TEST (PCL, PCDReaderWriterASCIIColorPrecision)
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, ASCIIReader)
 {
@@ -791,78 +794,18 @@ TEST (PCL, ASCIIReader)
   afile.close();
 
   ASCIIReader reader;
-  reader.setInputFields( pcl::PointXYZI() );
+  reader.setInputFields<pcl::PointXYZI> ();
 
   EXPECT_GE(reader.read("test_pcd.txt", rcloud), 0);
   EXPECT_EQ(cloud.points.size(), rcloud.points.size() );
 
-  for(int i=0;i < rcloud.points.size(); i++){
+  for(size_t i=0;i < rcloud.points.size(); i++){
     EXPECT_FLOAT_EQ(cloud.points[i].x, rcloud.points[i].x);
     EXPECT_FLOAT_EQ(cloud.points[i].y,rcloud.points[i].y);
     EXPECT_FLOAT_EQ(cloud.points[i].z, rcloud.points[i].z);
     EXPECT_FLOAT_EQ(cloud.points[i].intensity, rcloud.points[i].intensity);
   }
 
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, PLYReaderWriter)
-{
-  pcl::PCLPointCloud2 cloud_blob, cloud_blob2;
-  PointCloud<PointXYZI> cloud, cloud2;
-
-  cloud.width  = 640;
-  cloud.height = 480;
-  cloud.resize (cloud.width * cloud.height);
-  cloud.is_dense = true;
-
-  srand (static_cast<unsigned int> (time (NULL)));
-  size_t nr_p = cloud.size ();
-  // Randomly create a new point cloud
-  for (size_t i = 0; i < nr_p; ++i)
-  {
-    cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    cloud[i].z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    cloud[i].intensity = static_cast<float> (i);
-  }
-
-  // Convert from data type to blob
-  toPCLPointCloud2 (cloud, cloud_blob);
-
-  EXPECT_EQ (cloud_blob.width, cloud.width);    // test for toPCLPointCloud2 ()
-  EXPECT_EQ (cloud_blob.height, cloud.height);  // test for toPCLPointCloud2 ()
-  EXPECT_EQ (cloud_blob.is_dense, cloud.is_dense);  // test for toPCLPointCloud2 ()
-  EXPECT_EQ (cloud_blob.data.size (), 
-             cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  
-
-  // test for toPCLPointCloud2 ()
-  PLYWriter writer;
-  writer.write ("test_pcl_io.ply", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true, true);
-
-  PLYReader reader;
-  reader.read ("test_pcl_io.ply", cloud_blob2);
-  //PLY DOES preserve organiziation
-  EXPECT_EQ (cloud_blob.width * cloud_blob.height, cloud_blob2.width * cloud_blob2.height);
-  EXPECT_EQ (cloud_blob.is_dense, cloud.is_dense);   
-  EXPECT_EQ (size_t (cloud_blob2.data.size ()),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
-             cloud_blob2.width * cloud_blob2.height * sizeof (PointXYZ));  // test for loadPLYFile ()
-
-  // Convert from blob to data type
-  fromPCLPointCloud2 (cloud_blob2, cloud2);
-
-  // EXPECT_EQ (cloud.width, cloud2.width);    // test for fromPCLPointCloud2 ()
-  // EXPECT_EQ (cloud.height, cloud2.height);  // test for fromPCLPointCloud2 ()
-  // EXPECT_EQ (cloud.is_dense, cloud2.is_dense);   // test for fromPCLPointCloud2 ()
-  EXPECT_EQ (cloud.size (), cloud2.size ());         // test for fromPCLPointCloud2 ()
-
-  for (uint32_t counter = 0; counter < cloud.size (); ++counter)
-  {
-    EXPECT_FLOAT_EQ (cloud[counter].x, cloud2[counter].x);     // test for fromPCLPointCloud2 ()
-    EXPECT_FLOAT_EQ (cloud[counter].y, cloud2[counter].y);     // test for fromPCLPointCloud2 ()
-    EXPECT_FLOAT_EQ (cloud[counter].z, cloud2[counter].z);     // test for fromPCLPointCloud2 ()
-    EXPECT_FLOAT_EQ (cloud[counter].intensity, cloud2[counter].intensity);  // test for fromPCLPointCloud2 ()
-  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1030,7 +973,8 @@ TEST (PCL, LZF)
   EXPECT_EQ (res, 0);
 
   PCDReader reader;
-  reader.read<PointXYZ> ("test_pcl_io_compressed.pcd", cloud2);
+  res = reader.read<PointXYZ> ("test_pcl_io_compressed.pcd", cloud2);
+  EXPECT_EQ (res, 0);
 
   EXPECT_EQ (cloud2.width, cloud.width);
   EXPECT_EQ (cloud2.height, cloud.height);
@@ -1095,8 +1039,77 @@ TEST (PCL, LZFExtended)
   EXPECT_EQ (res, 0);
 
   PCDReader reader;
-  reader.read<PointXYZRGBNormal> ("test_pcl_io_compressed.pcd", cloud2);
+  res = reader.read<PointXYZRGBNormal> ("test_pcl_io_compressed.pcd", cloud2);
+  EXPECT_EQ (res, 0);
 
+  EXPECT_EQ (cloud2.width, blob.width);
+  EXPECT_EQ (cloud2.height, blob.height);
+  EXPECT_EQ (cloud2.is_dense, cloud.is_dense);
+  EXPECT_EQ (cloud2.points.size (), cloud.points.size ());
+
+  for (size_t i = 0; i < cloud2.points.size (); ++i)
+  {
+    EXPECT_EQ (cloud2.points[i].x, cloud.points[i].x);
+    EXPECT_EQ (cloud2.points[i].y, cloud.points[i].y);
+    EXPECT_EQ (cloud2.points[i].z, cloud.points[i].z);
+    EXPECT_EQ (cloud2.points[i].normal_x, cloud.points[i].normal_x);
+    EXPECT_EQ (cloud2.points[i].normal_y, cloud.points[i].normal_y);
+    EXPECT_EQ (cloud2.points[i].normal_z, cloud.points[i].normal_z);
+    EXPECT_EQ (cloud2.points[i].rgb, cloud.points[i].rgb);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, LZFInMem)
+{
+  PointCloud<PointXYZRGBNormal> cloud;
+  cloud.width  = 640;
+  cloud.height = 480;
+  cloud.points.resize (cloud.width * cloud.height);
+  cloud.is_dense = true;
+
+  srand (static_cast<unsigned int> (time (NULL)));
+  size_t nr_p = cloud.points.size ();
+  // Randomly create a new point cloud
+  for (size_t i = 0; i < nr_p; ++i)
+  {
+    cloud.points[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].normal_x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].normal_y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].normal_z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].rgb = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+  }
+
+  pcl::PCLPointCloud2 blob;
+  pcl::toPCLPointCloud2 (cloud, blob);
+
+  std::ostringstream oss;
+  PCDWriter writer;
+  int res = writer.writeBinaryCompressed (oss, blob);
+  EXPECT_EQ (res, 0);
+  std::string pcd_str = oss.str ();
+
+  Eigen::Vector4f origin;
+  Eigen::Quaternionf orientation;
+  int pcd_version = -1;
+  int data_type = -1;
+  unsigned int data_idx = 0;
+  std::istringstream iss (pcd_str, std::ios::binary);
+  PCDReader reader;
+  pcl::PCLPointCloud2 blob2;
+  res = reader.readHeader (iss, blob2, origin, orientation, pcd_version, data_type, data_idx);
+  EXPECT_EQ (res, 0);
+  EXPECT_EQ (blob2.width, blob.width);
+  EXPECT_EQ (blob2.height, blob.height);
+  EXPECT_EQ (data_type, 2); // since it was written by writeBinaryCompressed(), it should be compressed.
+
+  const unsigned char *data = reinterpret_cast<const unsigned char *> (pcd_str.data ());
+  res = reader.readBodyBinary (data, blob2, pcd_version, data_type == 2, data_idx);
+  PointCloud<PointXYZRGBNormal> cloud2;
+  pcl::fromPCLPointCloud2 (blob2, cloud2);
+  EXPECT_EQ (res, 0);
   EXPECT_EQ (cloud2.width, blob.width);
   EXPECT_EQ (cloud2.height, blob.height);
   EXPECT_EQ (cloud2.is_dense, cloud.is_dense);
@@ -1148,7 +1161,7 @@ TEST (PCL, Locale)
       std::locale::global (std::locale ("de_DE.UTF-8"));
 #endif
     }
-    catch (std::runtime_error e)
+    catch (const std::runtime_error&)
     {
       PCL_WARN ("Failed to set locale, skipping test.\n");
     }
@@ -1164,7 +1177,7 @@ TEST (PCL, Locale)
       std::locale::global (std::locale ("en_US.UTF-8"));
 #endif
     }
-    catch (std::runtime_error e)
+    catch (const std::runtime_error&)
     {
       PCL_WARN ("Failed to set locale, skipping test.\n");
     }
@@ -1186,10 +1199,47 @@ TEST (PCL, Locale)
       ASSERT_FLOAT_EQ (cloud2.points[i].z, cloud.points[i].z);
     }
   }
-  catch(std::exception& e)
+  catch (const std::exception&)
   {
   }
 #endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> class AutoIOTest : public testing::Test { };
+typedef ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_XYZ_POINT_TYPES PCL_NORMAL_POINT_TYPES)> PCLXyzNormalPointTypes;
+TYPED_TEST_CASE (AutoIOTest, PCLXyzNormalPointTypes);
+TYPED_TEST (AutoIOTest, AutoLoadCloudFiles)
+{
+  PointCloud<TypeParam> cloud;
+  PointCloud<TypeParam> cloud_pcd;
+  PointCloud<TypeParam> cloud_ply;
+  PointCloud<TypeParam> cloud_ifs;
+
+  cloud.width  = 10;
+  cloud.height = 5;
+  cloud.resize (cloud.width * cloud.height);
+  cloud.is_dense = true;
+
+  save ("test_autoio.pcd", cloud);
+  save ("test_autoio.ply", cloud);
+  save ("test_autoio.ifs", cloud);
+
+  load ("test_autoio.pcd", cloud_pcd);
+  EXPECT_EQ (cloud_pcd.width * cloud_pcd.height, cloud.width * cloud.height);
+  EXPECT_EQ (cloud_pcd.is_dense, cloud.is_dense);
+
+  load ("test_autoio.ply", cloud_ply);
+  EXPECT_EQ (cloud_ply.width * cloud_ply.height, cloud.width * cloud.height);
+  EXPECT_EQ (cloud_ply.is_dense, cloud.is_dense);
+
+  load ("test_autoio.ifs", cloud_ifs);
+  EXPECT_EQ (cloud_ifs.width * cloud_ifs.height, cloud.width * cloud.height);
+  EXPECT_EQ (cloud_ifs.is_dense, cloud.is_dense);
+
+  remove ("test_autoio.pcd");
+  remove ("test_autoio.ply");
+  remove ("test_autoio.ifs");
 }
 
 /* ---[ */

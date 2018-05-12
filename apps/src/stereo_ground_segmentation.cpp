@@ -123,7 +123,7 @@ class HRCSSegmentation
       
       // Set up a 3D viewer
       viewer->setBackgroundColor (0, 0, 0);
-      viewer->addCoordinateSystem (1.0);
+      viewer->addCoordinateSystem (1.0, "global");
       viewer->initCameraParameters ();
       viewer->registerKeyboardCallback (&HRCSSegmentation::keyboardCallback, *this, 0);
       
@@ -266,12 +266,12 @@ class HRCSSegmentation
       std::vector<Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> > covariances;
       std::vector<pcl::PointIndices> inlier_indices;
 
-      for (int i = 0; i < region_indices.size (); i++)
+      for (size_t i = 0; i < region_indices.size (); i++)
       {
         if (region_indices[i].indices.size () > 1000)
         {
 
-          for (int j = 0; j < region_indices[i].indices.size (); j++)
+          for (size_t j = 0; j < region_indices[i].indices.size (); j++)
           {  
             pcl::PointXYZ ground_pt (cloud->points[region_indices[i].indices[j]].x,
                                      cloud->points[region_indices[i].indices[j]].y,
@@ -354,11 +354,11 @@ class HRCSSegmentation
       
       //Note the regions that have been extended
       pcl::PointCloud<PointT> extended_ground_cloud;
-      for (int i = 0; i < region_indices.size (); i++)
+      for (size_t i = 0; i < region_indices.size (); i++)
       {
         if (region_indices[i].indices.size () > 1000)
         {
-          for (int j = 0; j < region_indices[i].indices.size (); j++)
+          for (size_t j = 0; j < region_indices[i].indices.size (); j++)
           {
             // Check to see if it has already been labeled
             if (ground_image->points[region_indices[i].indices[j]].g == ground_image->points[region_indices[i].indices[j]].b)
@@ -393,18 +393,12 @@ class HRCSSegmentation
         pcl::PointCloud<PointT>::CloudVectorType clusters;
         if (ground_cloud->points.size () > 0)
         {
-          std::vector<bool> plane_labels;
-          plane_labels.resize (region_indices.size (), false);
-          for (size_t i = 0; i < region_indices.size (); i++)
-          {
-            if (region_indices[i].indices.size () > mps.getMinInliers ())
-            {
-              plane_labels[i] = true;
-            }
-          }
+          boost::shared_ptr<std::set<uint32_t> > plane_labels = boost::make_shared<std::set<uint32_t> > ();
+          for (size_t i = 0; i < region_indices.size (); ++i)
+            if ((region_indices[i].indices.size () > mps.getMinInliers ()))
+              plane_labels->insert (i);
         
-          pcl::EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label>::Ptr euclidean_cluster_comparator_ (new pcl::EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label> ());
-
+          pcl::EuclideanClusterComparator<PointT, pcl::Label>::Ptr euclidean_cluster_comparator_ (new pcl::EuclideanClusterComparator<PointT, pcl::Label> ());
           euclidean_cluster_comparator_->setInputCloud (cloud);
           euclidean_cluster_comparator_->setLabels (labels_ptr);
           euclidean_cluster_comparator_->setExcludeLabels (plane_labels);
@@ -434,7 +428,7 @@ class HRCSSegmentation
               if ((ptp_dist > 0.5) && (ptp_dist < 3.0))
               {
               
-                for (int j = 0; j < euclidean_label_indices[i].indices.size (); j++)
+                for (size_t j = 0; j < euclidean_label_indices[i].indices.size (); j++)
                 {
                   ground_image->points[euclidean_label_indices[i].indices[j]].r = 255;
                   label_image->points[euclidean_label_indices[i].indices[j]].r = 255;
@@ -451,7 +445,7 @@ class HRCSSegmentation
       }
 
       // note the NAN points in the image as well
-      for (int i = 0; i < cloud->points.size (); i++)
+      for (size_t i = 0; i < cloud->points.size (); i++)
       {
         if (!pcl::isFinite (cloud->points[i]))
         {

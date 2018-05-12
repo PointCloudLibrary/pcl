@@ -42,9 +42,8 @@
 #include <cstddef>
 
 #include <assert.h>
-#include <cstring>
 
-#include <string.h>
+#include <Eigen/Core>
 
 #include <pcl/pcl_macros.h>
 
@@ -190,6 +189,10 @@ namespace pcl
 
       protected:
         ContainerT container_;
+        
+      public:
+        //Type ContainerT may have fixed-size Eigen objects inside
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

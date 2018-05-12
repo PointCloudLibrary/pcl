@@ -6,7 +6,7 @@
 The <b>pcl_octree</b> library provides efficient methods for creating a hierarchical tree 
 data structure from point cloud data. This enables spatial partitioning, 
 downsampling and search operations on the point data set. 
-Each octree node the has either eight children or no children. The root node describes 
+Each octree node has either eight children or no children. The root node describes 
 a cubic bounding box which encapsulates all points. At every tree level, this space 
 becomes subdivided by a factor of 2 which  results in an increased voxel resolution. 
 

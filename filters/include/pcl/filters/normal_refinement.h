@@ -118,7 +118,7 @@ namespace pcl
     }
     
     // Normalize if norm valid and non-zero
-    const float norm = sqrtf (nx * nx + ny * ny + nz * nz);
+    const float norm = std::sqrt (nx * nx + ny * ny + nz * nz);
     if (pcl_isfinite (norm) && norm > std::numeric_limits<float>::epsilon ())
     {
       point.normal_x = nx / norm;

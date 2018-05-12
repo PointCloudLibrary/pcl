@@ -72,14 +72,14 @@ main (int argc, char** av)
     return -1;
   }
 
-  pcl::console::print_highlight ("Loaded cloud %s of size %zu\n", av[1], cloud_ptr->points.size ());
+  pcl::console::print_highlight ("Loaded cloud %s of size %lu\n", av[1], cloud_ptr->points.size ());
 
   // Remove the nans
   cloud_ptr->is_dense = false;
   cloud_no_nans->is_dense = false;
   std::vector<int> indices;
   pcl::removeNaNFromPointCloud (*cloud_ptr, *cloud_no_nans, indices);
-  pcl::console::print_highlight ("Removed nans from %zu to %zu\n", cloud_ptr->points.size (), cloud_no_nans->points.size ());
+  pcl::console::print_highlight ("Removed nans from %lu to %lu\n", cloud_ptr->points.size (), cloud_no_nans->points.size ());
 
   // Estimate the normals
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
@@ -88,7 +88,7 @@ main (int argc, char** av)
   ne.setSearchMethod (tree_n);
   ne.setRadiusSearch (0.03);
   ne.compute (*cloud_normals);
-  pcl::console::print_highlight ("Normals are computed and size is %zu\n", cloud_normals->points.size ());
+  pcl::console::print_highlight ("Normals are computed and size is %lu\n", cloud_normals->points.size ());
 
   // Region growing
   pcl::RegionGrowing<pcl::PointXYZ, pcl::Normal> rg;
@@ -103,7 +103,7 @@ main (int argc, char** av)
   cloud_segmented = rg.getColoredCloud ();
 
   // Writing the resulting cloud into a pcd file
-  pcl::console::print_highlight ("Number of segments done is %zu\n", clusters.size ());
+  pcl::console::print_highlight ("Number of segments done is %lu\n", clusters.size ());
   writer.write<pcl::PointXYZRGB> ("segment_result.pcd", *cloud_segmented, false);
 
   if (pcl::console::find_switch (argc, av, "-dump"))

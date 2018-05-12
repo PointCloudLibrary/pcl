@@ -62,8 +62,6 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   std::ifstream fs;
   std::string line;
 
-  int specified_channel_count = 0;
-
   if (file_name == "" || !boost::filesystem::exists (file_name))
   {
     PCL_ERROR ("[pcl::IFSReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
@@ -130,7 +128,7 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
         fs.read ((char*)&nr_points, sizeof (uint32_t));
         if ((nr_points == 0) || (nr_points > 10000000))
         {
-          PCL_ERROR ("[pcl::IFSReader::readHeader] Bad number of vertices %zu!\n", nr_points);
+          PCL_ERROR ("[pcl::IFSReader::readHeader] Bad number of vertices %lu!\n", nr_points);
           fs.close ();
           return (-1);
         }
@@ -186,9 +184,6 @@ pcl::IFSReader::read (const std::string &file_name,
   if (res < 0)
     return (res);
 
-  // Get the number of points the cloud should have
-  unsigned int nr_points = cloud.width * cloud.height;
-
   // Setting the is_dense property to true by default
   cloud.is_dense = true;
 
@@ -239,9 +234,6 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
 
   if (res < 0)
     return (res);
-
-  // Get the number of points the mesh.cloud should have
-  unsigned int nr_points = mesh.cloud.width * mesh.cloud.height;
 
   // Setting the is_dense property to true by default
   mesh.cloud.is_dense = true;
@@ -301,7 +293,7 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   fs.read ((char*)&nr_facets, sizeof (uint32_t));
   if ((nr_facets == 0) || (nr_facets > 10000000))
   {
-    PCL_ERROR ("[pcl::IFSReader::read] Bad number of facets %zu!\n", nr_facets);
+    PCL_ERROR ("[pcl::IFSReader::read] Bad number of facets %lu!\n", nr_facets);
     fs.close ();
     return (-1);
   }
@@ -337,7 +329,7 @@ pcl::IFSWriter::write (const std::string &file_name, const pcl::PCLPointCloud2 &
 
   if (!cloud.is_dense)
   {
-    PCL_ERROR ("[pcl::IFSWriter::write] Non dense cloud are not alowed by IFS format!\n");
+    PCL_ERROR ("[pcl::IFSWriter::write] Non dense cloud are not allowed by IFS format!\n");
     return (-1);
   }
 

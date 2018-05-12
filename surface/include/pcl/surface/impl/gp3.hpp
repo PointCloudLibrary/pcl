@@ -138,7 +138,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   int is_free=0, nr_parts=0, increase_nnn4fn=0, increase_nnn4s=0, increase_dist=0, nr_touched = 0;
   bool is_fringe;
   angles_.resize(nnn_);
-  std::vector<Eigen::Vector2f> uvn_nn (nnn_);
+  std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > uvn_nn (nnn_);
   Eigen::Vector2f uvn_s;
 
   // iterating through fringe points and finishing them until everything is done
@@ -226,7 +226,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
               break;
             if (sfn_[nnIdx[doubleEdges[j].index]] != nnIdx[i])
               visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].second, Eigen::Vector2f::Zero());
-            if (!visibility == false)
+            if (!visibility)
               break;
           }
           angles_[i].visible = visibility;
@@ -420,7 +420,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
               angleMax = angle1;
             }
             double angleR = angles_[i].angle + M_PI;
-            if (angleR >= 2*M_PI)
+            if (angleR >= M_PI)
               angleR -= 2*M_PI;
             if ((source_[nnIdx[i]] == ffn_[nnIdx[i]]) || (source_[nnIdx[i]] == sfn_[nnIdx[i]]))
             {
@@ -1039,7 +1039,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       }
     }
   }
-  PCL_DEBUG ("Number of triangles: %zu\n", polygons.size());
+  PCL_DEBUG ("Number of triangles: %lu\n", polygons.size());
   PCL_DEBUG ("Number of unconnected parts: %d\n", nr_parts);
   if (increase_nnn4fn > 0)
     PCL_WARN ("Number of neighborhood size increase requests for fringe neighbors: %d\n", increase_nnn4fn);
@@ -1051,7 +1051,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   // sorting and removing doubles from fringe queue 
   std::sort (fringe_queue_.begin (), fringe_queue_.end ());
   fringe_queue_.erase (std::unique (fringe_queue_.begin (), fringe_queue_.end ()), fringe_queue_.end ());
-  PCL_DEBUG ("Number of processed points: %zu / %zu\n", fringe_queue_.size(), indices_->size ());
+  PCL_DEBUG ("Number of processed points: %lu / %lu\n", fringe_queue_.size(), indices_->size ());
   return (true);
 }
 
@@ -1479,7 +1479,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
                     neighbor_update = sfn_[next_index];
 
                     /* sfn[next_index] */
-                    if ((ffn_[sfn_[next_index]] = ffn_[current_index_]) || (sfn_[sfn_[next_index]] == ffn_[current_index_]))
+                    if ((ffn_[sfn_[next_index]] == ffn_[current_index_]) || (sfn_[sfn_[next_index]] == ffn_[current_index_]))
                     {
                       state_[sfn_[next_index]] = COMPLETED;
                     }
@@ -1669,7 +1669,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::getTriangleList (const pcl::Polygo
 
   for (size_t i=0; i < input.polygons.size (); ++i)
     for (size_t j=0; j < input.polygons[i].vertices.size (); ++j)
-      triangleList[j].push_back (i);
+      triangleList[input.polygons[i].vertices[j]].push_back (i);
   return (triangleList);
 }
 

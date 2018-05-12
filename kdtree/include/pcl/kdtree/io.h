@@ -53,9 +53,9 @@ namespace pcl
     * \param[out] indices the resultant set of nearest neighbor indices of \a cloud_in in \a cloud_ref
     * \ingroup kdtree
     */
-  template <typename PointT> void 
-  getApproximateIndices (const typename pcl::PointCloud<PointT>::Ptr &cloud_in, 
-                         const typename pcl::PointCloud<PointT>::Ptr &cloud_ref,
+  template <typename PointT> void
+  getApproximateIndices (const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
+                         const typename pcl::PointCloud<PointT>::ConstPtr &cloud_ref,
                          std::vector<int> &indices);
 
   /** \brief Get a set of approximate indices for a given point cloud into a reference point cloud. 
@@ -67,9 +67,9 @@ namespace pcl
     * \param[out] indices the resultant set of nearest neighbor indices of \a cloud_in in \a cloud_ref
     * \ingroup kdtree
     */
-  template <typename Point1T, typename Point2T> void 
-  getApproximateIndices (const typename pcl::PointCloud<Point1T>::Ptr &cloud_in, 
-                         const typename pcl::PointCloud<Point2T>::Ptr &cloud_ref,
+  template <typename Point1T, typename Point2T> void
+  getApproximateIndices (const typename pcl::PointCloud<Point1T>::ConstPtr &cloud_in,
+                         const typename pcl::PointCloud<Point2T>::ConstPtr &cloud_ref,
                          std::vector<int> &indices);
 }
 

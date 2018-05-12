@@ -433,10 +433,10 @@ namespace pcl
         }
 
         /** \brief Computes the signature of the oriented point pair ((p1, n1), (p2, n2)) consisting of the angles between
-          * n1 and (p2-p1),
-          * n2 and (p1-p2),
-          * n1 and n2
-          *
+          * \param p1
+          * \param n1
+          * \param p2
+          * \param n2
           * \param[out] signature is an array of three doubles saving the three angles in the order shown above. */
         static inline void
         compute_oriented_point_pair_signature (const float *p1, const float *n1, const float *p2, const float *n2, float signature[3])

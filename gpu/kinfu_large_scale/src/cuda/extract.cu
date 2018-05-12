@@ -108,7 +108,11 @@ namespace pcl
           __shared__ int cta_buffer[CTA_SIZE];
   #endif
 
-  #if __CUDA_ARCH__ >= 120
+  #if CUDA_VERSION >= 9000
+          if (__all_sync (__activemask (), x >= VOLUME_X)
+              || __all_sync (__activemask (), y >= VOLUME_Y))
+            return;
+  #elif __CUDA_ARCH__ >= 120
           if (__all (x >= VOLUME_X) || __all (y >= VOLUME_Y))
             return;
   #else         
@@ -206,7 +210,11 @@ namespace pcl
             }/* if (x < VOLUME_X && y < VOLUME_Y) */
 
 
-  #if __CUDA_ARCH__ >= 200
+  #if CUDA_VERSION >= 9000
+            int total_warp = __popc (__ballot_sync (__activemask (), local_count > 0))
+                           + __popc (__ballot_sync (__activemask (), local_count > 1))
+                           + __popc (__ballot_sync (__activemask (), local_count > 2));
+  #elif __CUDA_ARCH__ >= 200
             //not we fulfilled points array at current iteration
             int total_warp = __popc (__ballot (local_count > 0)) + __popc (__ballot (local_count > 1)) + __popc (__ballot (local_count > 2));
   #else
@@ -239,13 +247,14 @@ namespace pcl
                 storage_Z[storage_index + offset + l] = points[l].z;
               }
 
-              PointType *pos = output_xyz.data + old_global_count + lane;
-              for (int idx = lane; idx < total_warp; idx += Warp::STRIDE, pos += Warp::STRIDE)
+              int offset_storage = old_global_count + lane;
+              for (int idx = lane; idx < total_warp; idx += Warp::STRIDE, offset_storage += Warp::STRIDE)
               {
+                if (offset_storage >= output_xyz.size) break;
                 float x = storage_X[storage_index + idx];
                 float y = storage_Y[storage_index + idx];
                 float z = storage_Z[storage_index + idx];
-                store_point_type (x, y, z, pos);
+                store_point_type (x, y, z, output_xyz.data, offset_storage);
               }
 
               bool full = (old_global_count + total_warp) >= output_xyz.size;
@@ -286,7 +295,7 @@ namespace pcl
           int ftid = Block::flattenedThreadId ();
 
           int minimum_Z = 0;
-          int maximum_Z = VOLUME_Z;
+          int maximum_Z = VOLUME_Z - 1;
 
           for (int z = minimum_Z; z < maximum_Z; ++z)
           {
@@ -315,8 +324,15 @@ namespace pcl
 
             // local_count counts the number of zero crossing for the current thread. Now we need to merge this knowledge with the other threads
             // not we fulfilled points array at current iteration
-            int total_warp = __popc (__ballot (local_count > 0)) + __popc (__ballot (local_count > 1)) + __popc (__ballot (local_count > 2));
-            
+          #if CUDA_VERSION >= 9000
+            int total_warp = __popc (__ballot_sync (__activemask (), local_count > 0))
+                           + __popc (__ballot_sync (__activemask (), local_count > 1))
+                           + __popc (__ballot_sync (__activemask (), local_count > 2));
+          #else
+            int total_warp = __popc (__ballot (local_count > 0))
+                           + __popc (__ballot (local_count > 1))
+                           + __popc (__ballot (local_count > 2));
+          #endif
 
             if (total_warp > 0)  ///more than 0 zero-crossings
             {
@@ -352,6 +368,7 @@ namespace pcl
               int offset_storage = old_global_count + lane;
               for (int idx = lane; idx < total_warp; idx += Warp::STRIDE, offset_storage += Warp::STRIDE)
               {
+                if (offset_storage >= output_xyz.size) break;
                 float x = storage_X[storage_index + idx];
                 float y = storage_Y[storage_index + idx];
                 float z = storage_Z[storage_index + idx];
@@ -386,9 +403,9 @@ namespace pcl
         } /* operator() */
 
         __device__ __forceinline__ void
-        store_point_type (float x, float y, float z, float4* ptr) const 
+        store_point_type (float x, float y, float z, float4* ptr, int offset) const
         {
-          *ptr = make_float4 (x, y, z, 0);
+          *(ptr + offset) = make_float4 (x, y, z, 0);
         }
         
         //INLINE FUNCTION THAT STORES XYZ AND INTENSITY VALUES IN 2 SEPARATE DeviceArrays.
@@ -403,9 +420,9 @@ namespace pcl
         }
 
         __device__ __forceinline__ void
-        store_point_type (float x, float y, float z, float3* ptr) const 
+        store_point_type (float x, float y, float z, float3* ptr, int offset) const
         {
-          *ptr = make_float3 (x, y, z);
+          *(ptr + offset) = make_float3 (x, y, z);
         }
       };
 

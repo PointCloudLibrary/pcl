@@ -1,5 +1,5 @@
 #include <pcl/point_cloud.h>
-#include <pcl/octree/octree.h>
+#include <pcl/octree/octree_pointcloud_changedetector.h>
 
 #include <iostream>
 #include <vector>

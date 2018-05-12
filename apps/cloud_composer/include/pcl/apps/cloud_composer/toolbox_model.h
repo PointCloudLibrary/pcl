@@ -81,7 +81,7 @@ namespace pcl
       void
       enableAllTools ();
       
-    public slots:
+    public Q_SLOTS:
       void
       activeProjectChanged (ProjectModel* new_model, ProjectModel* previous_model);
       
@@ -98,7 +98,7 @@ namespace pcl
       /** \brief This slot is called whenever the current project model emits layoutChanged, and calls updateEnabledTools */
       void
       modelChanged ();
-    signals:  
+    Q_SIGNALS:
       void
       enqueueToolAction (AbstractTool* tool);
       
@@ -118,7 +118,6 @@ namespace pcl
 }
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::ToolBoxModel);
-Q_DECLARE_METATYPE (pcl::cloud_composer::ToolFactory*);
 Q_DECLARE_METATYPE (QStandardItemModel*);
 
 #endif //TOOLBOX_MODEL_H_

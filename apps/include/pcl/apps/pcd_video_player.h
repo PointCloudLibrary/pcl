@@ -128,14 +128,14 @@ class PCDVideoPlayer : public QMainWindow
     /** \brief Indicate that the timeoutSlot needs to reload the pointcloud */
     bool cloud_modified_;
 
-    /** \brief Indicate that files should play continiously */
+    /** \brief Indicate that files should play continuously */
     bool play_mode_;
     /** \brief In play mode only update if speed_counter_ == speed_value */
     unsigned int speed_counter_;
     /** \brief Fixes the speed in steps of 5ms, default 5, gives 5+1 * 5ms = 30ms = 33,3 Hz playback speed */
     unsigned int speed_value_;
 
-  public slots:
+  public Q_SLOTS:
     void 
     playButtonPressed ()
     { play_mode_ = true; }
@@ -159,7 +159,7 @@ class PCDVideoPlayer : public QMainWindow
     void
     indexSliderValueChanged (int value);
 
-  private slots:
+  private Q_SLOTS:
     void
     timeoutSlot ();
 

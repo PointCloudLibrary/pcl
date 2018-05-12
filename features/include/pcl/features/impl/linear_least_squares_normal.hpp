@@ -139,7 +139,7 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
   }
   else
   {
-    const float normInv = 1.0f / sqrtf (length);
+    const float normInv = 1.0f / std::sqrt (length);
 
     normal.normal_x = -nx * normInv;
     normal.normal_y = -ny * normInv;
@@ -252,7 +252,7 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
       }
       else
       {
-        const float normInv = 1.0f / sqrtf (length);
+        const float normInv = 1.0f / std::sqrt (length);
 
         output.points[index].normal_x = nx * normInv;
         output.points[index].normal_y = ny * normInv;

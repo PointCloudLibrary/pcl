@@ -51,6 +51,7 @@
 #ifdef __GNUC__
 #pragma GCC system_header
 #endif
+#include <vtkVersion.h>
 #include <vtkFloatArray.h>
 #include <vtkPointData.h>
 #include <vtkPoints.h>
@@ -59,6 +60,13 @@
 #include <vtkSmartPointer.h>
 #include <vtkStructuredGrid.h>
 #include <vtkVertexGlyphFilter.h>
+
+// Support for VTK 7.1 upwards
+#ifdef vtkGenericDataArray_h
+#define SetTupleValue SetTypedTuple
+#define InsertNextTupleValue InsertNextTypedTuple
+#define GetTupleValue GetTypedTuple
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -377,7 +385,7 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
 
   // Add 0D topology to every point
   vtkSmartPointer<vtkVertexGlyphFilter> vertex_glyph_filter = vtkSmartPointer<vtkVertexGlyphFilter>::New ();
-  #if VTK_MAJOR_VERSION <= 5
+  #if VTK_MAJOR_VERSION < 6
     vertex_glyph_filter->AddInputConnection (temp_polydata->GetProducerPort ());
   #else
     vertex_glyph_filter->SetInputData (temp_polydata);
@@ -501,6 +509,12 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
     structured_grid->GetPointData ()->AddArray (colors);
   }
 }
+
+#ifdef vtkGenericDataArray_h
+#undef SetTupleValue
+#undef InsertNextTupleValue
+#undef GetTupleValue
+#endif
 
 #endif  //#ifndef PCL_IO_VTK_IO_H_
 

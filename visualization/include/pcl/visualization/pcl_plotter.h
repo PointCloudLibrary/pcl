@@ -111,21 +111,21 @@ namespace pcl
                      char const *color=NULL);
 	
         /** \brief Adds a plot with correspondences in vectors arrayX and arrayY. This is the vector version of the addPlotData function. 
-          * \param[in] array_X X coordinates of point correspondence array
-          * \param[in] array_Y Y coordinates of point correspondence array
-          * \param[in] size length of the array arrayX and arrayY
+          * \param[in] array_x X coordinates of point correspondence array
+          * \param[in] array_y Y coordinates of point correspondence array
           * \param[in] name name of the plot which appears in the legend when toggled on
           * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
           * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
          */
         void 
-        addPlotData (std::vector<double> const &array_X, 
-                     std::vector<double>const &array_Y, 
+        addPlotData (std::vector<double> const &array_x, 
+                     std::vector<double>const &array_y, 
                      char const * name = "Y Axis", 
                      int type = vtkChart::LINE,
                      std::vector<char> const &color = std::vector<char> ());
         
-        /** \brief Adds a plot with correspondences in vector of pairs. The the first and second field of the pairs of the vector forms the correspondence. 
+        /** \brief Adds a plot with correspondences in vector of pairs. The the first and second field of the pairs of the vector forms the correspondence.
+          * \param plot_data
           * \param[in] name name of the plot which appears in the legend when toggled on
           * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
           * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
@@ -188,7 +188,7 @@ namespace pcl
                      std::vector<char> const &color = std::vector<char>());
         
         /** \brief Adds a plot based on a space/tab delimited table provided in a file
-          * \param[in] filename name of the file containing the table. 1st column represents the values of X-Axis. Rest of the columns represent the corresponding values in Y-Axes. First row of the file is concidered for naming/labling of the plot. The plot-names should not contain any space in between.
+          * \param[in] filename name of the file containing the table. 1st column represents the values of X-Axis. Rest of the columns represent the corresponding values in Y-Axes. First row of the file is considered for naming/labeling of the plot. The plot-names should not contain any space in between.
           * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
           */
         void
@@ -355,6 +355,19 @@ namespace pcl
         void
         setWindowSize (int w, int h);
         
+        /** \brief Set the position in screen coordinates.
+        * \param[in] x where to move the window to (X)
+        * \param[in] y where to move the window to (Y)
+        */
+        void
+        setWindowPosition (int x, int y);
+        
+        /** \brief Set the visualizer window name.
+        * \param[in] name the name of the window
+        */
+        void
+        setWindowName (const std::string &name);
+        
         /** \brief set/get method for the window size.
           * \return[in] array containing the width and height of the window
           */
@@ -392,7 +405,9 @@ namespace pcl
         //extra state variables
         int current_plot_;          //stores the id of the current (most recent) plot, used in automatic coloring and other state change schemes 
         int win_width_, win_height_;
+        int win_x_, win_y_; //window position according to screen coordinate
         double bkg_color_[3];
+        std::string win_name_;
           
         //####event callback class####
         struct ExitMainLoopTimerCallback : public vtkCommand
@@ -450,6 +465,7 @@ namespace pcl
           * \param[in] data data who's frequency distribution is to be found
           * \param[in] nbins number of bins for the histogram
           * \param[out] histogram vector of pairs containing the histogram. The first field of the pair represent the middle value of the corresponding bin. The second field denotes the frequency of data in that bin.
+          * \note NaN values will be ignored!
           */
         void 
         computeHistogram (std::vector<double> const & data, int const nbins, std::vector<std::pair<double, double> > &histogram);

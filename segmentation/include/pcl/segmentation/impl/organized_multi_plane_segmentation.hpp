@@ -94,7 +94,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   // Check that we got the same number of points and normals
   if (static_cast<int> (normals_->points.size ()) != static_cast<int> (input_->points.size ()))
   {
-    PCL_ERROR ("[pcl::%s::segment] Number of points in input cloud (%zu) and normal cloud (%zu) do not match!\n",
+    PCL_ERROR ("[pcl::%s::segment] Number of points in input cloud (%lu) and normal cloud (%lu) do not match!\n",
                getClassName ().c_str (), input_->points.size (),
                normals_->points.size ());
     return;
@@ -123,7 +123,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   compare_->setDistanceThreshold (static_cast<float> (distance_threshold_), true);
 
   // Set up the output
-  OrganizedConnectedComponentSegmentation<PointT,pcl::Label> connected_component (compare_);
+  OrganizedConnectedComponentSegmentation<PointT,PointLT> connected_component (compare_);
   connected_component.setInputCloud (input_);
   connected_component.segment (labels, label_indices);
 
@@ -317,7 +317,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
                                                                         PointCloudLPtr& labels,
                                                                         std::vector<pcl::PointIndices>& label_indices)
 {
-  //List of lables to grow, and index of model corresponding to each label
+  //List of labels to grow, and index of model corresponding to each label
   std::vector<bool> grow_labels;
   std::vector<int> label_to_model;
   grow_labels.resize (label_indices.size (), false);
@@ -356,7 +356,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
       {
         //test1 = true;
         labels->points[current_row+colIdx+1].label = current_label;
-        label_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
+        label_indices[current_label].indices.push_back (current_row+colIdx+1);
         inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
       }
       
@@ -368,7 +368,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
       if (refinement_compare_->compare (current_row+colIdx, next_row+colIdx))
       {
         labels->points[next_row+colIdx].label = current_label;
-        label_indices[label_to_model[current_label]].indices.push_back (next_row+colIdx);
+        label_indices[current_label].indices.push_back (next_row+colIdx);
         inlier_indices[label_to_model[current_label]].indices.push_back (next_row+colIdx);
       }
 
@@ -391,7 +391,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
       if (refinement_compare_->compare (current_row+colIdx, current_row+colIdx-1))
       {
         labels->points[current_row+colIdx-1].label = current_label;
-        label_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx-1);
+        label_indices[current_label].indices.push_back (current_row+colIdx-1);
         inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx-1);
       }
       
@@ -402,7 +402,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
       if (refinement_compare_->compare (current_row+colIdx, prev_row+colIdx))
       {
         labels->points[prev_row+colIdx].label = current_label;
-        label_indices[label_to_model[current_label]].indices.push_back (prev_row+colIdx);
+        label_indices[current_label].indices.push_back (prev_row+colIdx);
         inlier_indices[label_to_model[current_label]].indices.push_back (prev_row+colIdx);
       }
     }//col

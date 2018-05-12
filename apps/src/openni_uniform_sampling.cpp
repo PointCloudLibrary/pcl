@@ -38,7 +38,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
-#include <pcl/keypoints/uniform_sampling.h>
+#include <pcl/filters/uniform_sampling.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
 
@@ -80,14 +80,14 @@ class OpenNIUniformSampling
       FPS_CALC ("computation");
 
       cloud_.reset (new Cloud);
-      indices_.reset (new pcl::PointCloud<int>);
       keypoints_.reset (new pcl::PointCloud<pcl::PointXYZ>);
       // Computation goes here
       pass_.setInputCloud (cloud);
-      pass_.compute (*indices_);
+      pcl::PointCloud<pcl::PointXYZRGBA> sampled;
+      pass_.filter (sampled);
       *cloud_  = *cloud;
       
-      pcl::copyPointCloud<pcl::PointXYZRGBA, pcl::PointXYZ> (*cloud, indices_->points, *keypoints_);
+      pcl::copyPointCloud<pcl::PointXYZRGBA, pcl::PointXYZ> (sampled, *keypoints_);
     }
 
     void
@@ -138,7 +138,6 @@ class OpenNIUniformSampling
     boost::mutex mtx_;
     CloudPtr cloud_;
     pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_;
-    pcl::PointCloud<int>::Ptr indices_;
 };
 
 void

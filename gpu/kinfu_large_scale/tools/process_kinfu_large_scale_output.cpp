@@ -34,7 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include "../src/internal.h"
+#include <pcl/gpu/kinfu_large_scale/device.h>
 #include <pcl/gpu/kinfu_large_scale/standalone_marching_cubes.h>
 #include <pcl/gpu/kinfu_large_scale/impl/standalone_marching_cubes.hpp>
 #include <pcl/gpu/kinfu_large_scale/world_model.h>
@@ -87,7 +87,7 @@ main (int argc, char** argv)
     wm.addSlice (cloud);
   
     std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> clouds;
-    std::vector<Eigen::Vector3f> transforms;
+    std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > transforms;
   
     //Get world as a vector of cubes 
     wm.getWorldAsCubes (pcl::device::kinfuLS::VOLUME_X, clouds, transforms, 0.025); // 2.5% overlapp (12 cells with a 512-wide cube)

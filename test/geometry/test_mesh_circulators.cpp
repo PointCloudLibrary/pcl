@@ -95,7 +95,7 @@ class TestMeshCirculators : public ::testing::Test
       vi.push_back (VI (0)); vi.push_back (VI (4)); vi.push_back (VI (5)); faces_.push_back (vi); vi.clear ();
       vi.push_back (VI (0)); vi.push_back (VI (5)); vi.push_back (VI (6)); faces_.push_back (vi); vi.clear ();
       vi.push_back (VI (0)); vi.push_back (VI (6)); vi.push_back (VI (1)); faces_.push_back (vi); vi.clear ();
-      for (int i=0; i<faces_.size (); ++i)
+      for (size_t i=0; i<faces_.size (); ++i)
       {
         ASSERT_TRUE (mesh_.addFace (faces_ [i]).isValid ()) << "Face number " << i;
       }
@@ -492,7 +492,7 @@ TEST_F (TestMeshCirculators, FaceAroundFaceIncrement)
 {
   FaceIndices expected, actual;
   const int n = static_cast<int> (mesh_.sizeFaces ());
-  for (unsigned int i = 0; i < mesh_.sizeFaces (); ++i)
+  for (int i = 0; i < static_cast<int> (mesh_.sizeFaces ()); ++i)
   {
     expected.clear ();
     expected.push_back (FaceIndex (i==(n-1) ?  0    : (i+1)));
@@ -520,7 +520,7 @@ TEST_F (TestMeshCirculators, FaceAroundFaceDecrement)
 {
   FaceIndices expected, actual;
   const int n = static_cast<int> (mesh_.sizeFaces ());
-  for (unsigned int i = 0; i < mesh_.sizeFaces (); ++i)
+  for (int i = 0; i < static_cast<int> (mesh_.sizeFaces ()); ++i)
   {
     expected.clear ();
     expected.push_back (FaceIndex (i== 0    ? (n-1) : (i-1)));

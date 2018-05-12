@@ -41,6 +41,8 @@
 #include <vtkCocoaRenderWindowInteractor.h>
 #include <vtkObjectFactory.h>
 
+#if ((VTK_MAJOR_VERSION < 6) || ((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION < 2)))
+
 //----------------------------------------------------------------------------
 @interface vtkCocoaServerFix : NSObject
 {
@@ -142,7 +144,7 @@
     {
       [self breakEventLoop];
       
-      // The NSWindow is closing, so prevent anyone from accidently using it
+      // The NSWindow is closing, so prevent anyone from accidentally using it
       renWin->SetRootWindow(NULL);
     }
   }
@@ -213,4 +215,10 @@ vtkRenderWindowInteractor* vtkRenderWindowInteractorFixNew ()
 {
   return (vtkCocoaRenderWindowInteractorFix::New ());
 }
-
+#else
+//----------------------------------------------------------------------------
+vtkRenderWindowInteractor* vtkRenderWindowInteractorFixNew ()
+{
+  return (vtkCocoaRenderWindowInteractor::New ());
+}
+#endif

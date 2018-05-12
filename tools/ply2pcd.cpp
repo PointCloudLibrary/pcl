@@ -50,7 +50,7 @@ using namespace pcl::console;
 void
 printHelp (int, char **argv)
 {
-  print_error ("Syntax is: %s input.ply output.pcd\n", argv[0]);
+  print_error ("Syntax is: %s [-format 0|1] input.ply output.pcd\n", argv[0]);
 }
 
 bool

@@ -244,7 +244,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
       // Check the distance threshold
       if (squared_distance [0] < squared_distance_threshold)
       {
-        if (index [0] >= cloud_model_selected->size ())
+        if ((size_t) index [0] >= cloud_model_selected->size ())
         {
           std::cerr << "ERROR in icp.cpp: Segfault!\n";
           std::cerr << "  Trying to access index " << index [0] << " >= " << cloud_model_selected->size () << std::endl;
@@ -382,7 +382,7 @@ pcl::ihs::ICP::selectModelPoints (const MeshConstPtr&    mesh_model,
   for (Mesh::VertexDataCloud::const_iterator it=cloud.begin (); it!=cloud.end (); ++it)
   {
     // Don't consider points that are facing away from the camera.
-    if ((T_inv * it->getNormalVector4fMap ()).z () < 0.f)
+    if ((T_inv.lazyProduct (it->getNormalVector4fMap ())).z () < 0.f)
     {
       PointNormal pt;
       pt.getVector4fMap ()       = it->getVector4fMap ();

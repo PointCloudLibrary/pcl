@@ -44,6 +44,8 @@
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/kdtree/flann.h>
 
+#include <boost/shared_array.hpp>
+
 // Forward declarations
 namespace flann
 {
@@ -84,8 +86,8 @@ namespace pcl
       typedef ::flann::Index<Dist> FLANNIndex;
 
       // Boost shared pointers
-      typedef boost::shared_ptr<KdTreeFLANN<PointT> > Ptr;
-      typedef boost::shared_ptr<const KdTreeFLANN<PointT> > ConstPtr;
+      typedef boost::shared_ptr<KdTreeFLANN<PointT, Dist> > Ptr;
+      typedef boost::shared_ptr<const KdTreeFLANN<PointT, Dist> > ConstPtr;
 
       /** \brief Default Constructor for KdTreeFLANN.
         * \param[in] sorted set to true if the application that the tree will be used for requires sorted nearest neighbor indices (default). False otherwise. 
@@ -95,15 +97,15 @@ namespace pcl
       KdTreeFLANN (bool sorted = true);
 
       /** \brief Copy constructor
-        * \param[in] tree the tree to copy into this
+        * \param[in] k the tree to copy into this
         */
-      KdTreeFLANN (const KdTreeFLANN<PointT> &k);
+      KdTreeFLANN (const KdTreeFLANN<PointT, Dist> &k);
 
       /** \brief Copy operator
-        * \param[in] tree the tree to copy into this
+        * \param[in] k the tree to copy into this
         */ 
-      inline KdTreeFLANN<PointT>&
-      operator = (const KdTreeFLANN<PointT>& k)
+      inline KdTreeFLANN<PointT, Dist>&
+      operator = (const KdTreeFLANN<PointT, Dist>& k)
       {
         KdTree<PointT>::operator=(k);
         flann_index_ = k.flann_index_;
@@ -126,7 +128,7 @@ namespace pcl
       void 
       setSortedResults (bool sorted);
       
-      inline Ptr makeShared () { return Ptr (new KdTreeFLANN<PointT> (*this)); } 
+      inline Ptr makeShared () { return Ptr (new KdTreeFLANN<PointT, Dist> (*this)); } 
 
       /** \brief Destructor for KdTreeFLANN. 
         * Deletes all allocated data arrays and destroys the kd-tree structures. 
@@ -210,7 +212,7 @@ namespace pcl
       boost::shared_ptr<FLANNIndex> flann_index_;
 
       /** \brief Internal pointer to data. */
-      float* cloud_;
+      boost::shared_array<float> cloud_;
       
       /** \brief mapping between internal and external indices. */
       std::vector<int> index_mapping_;

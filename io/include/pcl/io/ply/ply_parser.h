@@ -157,16 +157,16 @@ namespace pcl
               at (const scalar_property_definition_callbacks_type& scalar_property_definition_callbacks);
           };
 
-          template <typename ScalarType>
-          friend typename scalar_property_definition_callback_type<ScalarType>::type&
+          template <typename ScalarType> static
+          typename scalar_property_definition_callback_type<ScalarType>::type&
           at (scalar_property_definition_callbacks_type& scalar_property_definition_callbacks)
           {
               return (scalar_property_definition_callbacks.get<ScalarType> ());
           }
 
           
-          template <typename ScalarType>
-          friend const typename scalar_property_definition_callback_type<ScalarType>::type&
+          template <typename ScalarType> static
+          const typename scalar_property_definition_callback_type<ScalarType>::type&
           at (const scalar_property_definition_callbacks_type& scalar_property_definition_callbacks)
           {
               return (scalar_property_definition_callbacks.get<ScalarType> ());
@@ -253,15 +253,15 @@ namespace pcl
               at (const list_property_definition_callbacks_type& list_property_definition_callbacks);
           };
           
-          template <typename SizeType, typename ScalarType>
-          friend typename list_property_definition_callback_type<SizeType, ScalarType>::type&
+          template <typename SizeType, typename ScalarType> static
+          typename list_property_definition_callback_type<SizeType, ScalarType>::type&
           at (list_property_definition_callbacks_type& list_property_definition_callbacks)
           {
               return (list_property_definition_callbacks.get<SizeType, ScalarType> ());
           }
           
-          template <typename SizeType, typename ScalarType>
-          friend const typename list_property_definition_callback_type<SizeType, ScalarType>::type&
+          template <typename SizeType, typename ScalarType> static
+          const typename list_property_definition_callback_type<SizeType, ScalarType>::type&
           at (const list_property_definition_callbacks_type& list_property_definition_callbacks)
           {
               return (list_property_definition_callbacks.get<SizeType, ScalarType> ());
@@ -304,8 +304,7 @@ namespace pcl
           typedef int flags_type;
           enum flags { };
 
-          ply_parser (flags_type flags = 0) : 
-            flags_ (flags), 
+          ply_parser () :
             comment_callback_ (), obj_info_callback_ (), end_header_callback_ (), 
             line_number_ (0), current_element_ ()
           {}
@@ -391,8 +390,6 @@ namespace pcl
             end_element_callback_type end_element_callback;
             std::vector<boost::shared_ptr<property> > properties;
           };
-
-          flags_type flags_;
           
           info_callback_type info_callback_;
           warning_callback_type warning_callback_;
@@ -559,9 +556,19 @@ inline bool pcl::io::ply::ply_parser::parse_scalar_property (format_type format,
   typedef ScalarType scalar_type;
   if (format == ascii_format)
   {
-    scalar_type value = std::numeric_limits<scalar_type>::quiet_NaN ();
+    std::string value_s;
+    scalar_type value;
     char space = ' ';
-    istream >> value;
+    istream >> value_s;
+    try
+    {
+      value = static_cast<scalar_type> (boost::lexical_cast<typename pcl::io::ply::type_traits<scalar_type>::parse_type> (value_s));
+    }
+    catch (boost::bad_lexical_cast &)
+    {
+      value = std::numeric_limits<scalar_type>::quiet_NaN ();
+    }
+
     if (!istream.eof ())
       istream >> space >> std::ws;
     if (!istream || !isspace (space))
@@ -625,9 +632,19 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
     }
     for (std::size_t index = 0; index < size; ++index)
     {
-      scalar_type value = std::numeric_limits<scalar_type>::quiet_NaN ();
+      std::string value_s;
+      scalar_type value;
       char space = ' ';
-      istream >> value;
+      istream >> value_s;
+      try
+      {
+        value = static_cast<scalar_type> (boost::lexical_cast<typename pcl::io::ply::type_traits<scalar_type>::parse_type> (value_s));
+      }
+      catch (boost::bad_lexical_cast &)
+      {
+        value = std::numeric_limits<scalar_type>::quiet_NaN ();
+      }
+
       if (!istream.eof ())
       {
         istream >> space >> std::ws;

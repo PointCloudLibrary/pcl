@@ -101,7 +101,7 @@ namespace pcl
         getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy);
         
 
-        /** \brief Sets initial camera pose relative to volume coordiante space
+        /** \brief Sets initial camera pose relative to volume coordinate space
           * \param[in] pose Initial camera pose
           */
         void
@@ -109,7 +109,7 @@ namespace pcl
                         
 		/** \brief Sets truncation threshold for depth image for ICP step only! This helps 
 		  *  to filter measurements that are outside tsdf volume. Pass zero to disable the truncation.
-          * \param[in] max_icp_distance_ Maximal distance, higher values are reset to zero (means no measurement). 
+          * \param[in] max_icp_distance Maximal distance, higher values are reset to zero (means no measurement). 
           */
         void
         setDepthTruncationForICP (float max_icp_distance = 0.f);
@@ -143,7 +143,8 @@ namespace pcl
         rows ();
 
         /** \brief Processes next frame.
-          * \param[in] Depth next frame with values in millimeters
+          * \param[in] depth next frame with values in millimeters
+          * \param hint
           * \return true if can render 3D view.
           */
         bool operator() (const DepthMap& depth, Eigen::Affine3f* hint=NULL);
@@ -280,7 +281,7 @@ namespace pcl
         /** \brief Camera movement threshold. TSDF is integrated iff a camera movement metric exceedes some value. */
         float integration_metric_threshold_;
 
-        /** \brief ICP step is completelly disabled. Inly integratio now */
+        /** \brief ICP step is completely disabled. Only integration now. */
         bool disable_icp_;
         
         /** \brief Allocates all GPU internal buffers.

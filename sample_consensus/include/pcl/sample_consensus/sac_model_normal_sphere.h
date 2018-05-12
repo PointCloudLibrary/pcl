@@ -69,6 +69,7 @@ namespace pcl
   class SampleConsensusModelNormalSphere : public SampleConsensusModelSphere<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
@@ -95,6 +96,9 @@ namespace pcl
         : SampleConsensusModelSphere<PointT> (cloud, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
+        model_name_ = "SampleConsensusModelNormalSphere";
+        sample_size_ = 4;
+        model_size_ = 4;
       }
 
       /** \brief Constructor for base SampleConsensusModelNormalSphere.
@@ -108,6 +112,9 @@ namespace pcl
         : SampleConsensusModelSphere<PointT> (cloud, indices, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
+        model_name_ = "SampleConsensusModelNormalSphere";
+        sample_size_ = 4;
+        model_size_ = 4;
       }
       
       /** \brief Empty destructor */
@@ -129,16 +136,16 @@ namespace pcl
         * \return the resultant number of inliers
         */
       virtual int
-      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
-                           const double threshold);
+      countWithinDistance (const Eigen::VectorXf &model_coefficients,
+                           const double threshold) const;
 
       /** \brief Compute all distances from the cloud data to a given sphere model.
         * \param[in] model_coefficients the coefficients of a sphere model that we need to compute distances to
         * \param[out] distances the resultant estimated distances
         */
-      void 
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
-                           std::vector<double> &distances);
+      void
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients,
+                           std::vector<double> &distances) const;
 
       /** \brief Return an unique id for this model (SACMODEL_NORMAL_SPHERE). */
       inline pcl::SacModel 
@@ -147,11 +154,14 @@ namespace pcl
     	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     protected:
+      using SampleConsensusModel<PointT>::sample_size_;
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      bool 
-      isModelValid (const Eigen::VectorXf &model_coefficients);
+      virtual bool
+      isModelValid (const Eigen::VectorXf &model_coefficients) const;
 
   };
 }

@@ -48,7 +48,7 @@ namespace pcl
 
   /** \brief Bilateral filtering implementation, based on the following paper:
     *   * Kopf, Johannes and Cohen, Michael F. and Lischinski, Dani and Uyttendaele, Matt - Joint Bilateral Upsampling,
-    *   * ACM Transations in Graphics, July 2007
+    *   * ACM Transactions in Graphics, July 2007
     *
     * Takes in a colored organized point cloud (i.e. PointXYZRGB or PointXYZRGBA), that might contain nan values for the
     * depth information, and it will return an upsampled version of this cloud, based on the formula:
@@ -144,6 +144,12 @@ namespace pcl
     protected:
       void
       performProcessing (pcl::PointCloud<PointOutT> &output);
+
+      /** \brief Computes the distance for depth and RGB.
+        * \param[out] val_exp_depth distance values for depth
+        * \param[out] val_exp_rgb distance values for RGB */
+      void
+      computeDistances (Eigen::MatrixXf &val_exp_depth, Eigen::VectorXf &val_exp_rgb);
 
     private:
       int window_size_;

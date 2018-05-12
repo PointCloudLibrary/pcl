@@ -60,7 +60,7 @@ manually.
 
 
 Our Kd-Tree implementation of choice for the purpose of this tutorial is of
-course, `FLANN <http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN>`_.
+course, `FLANN <http://www.cs.ubc.ca/research/flann/>`_.
 
 
 Training
@@ -75,7 +75,7 @@ below:
 .. image:: images/vfh_recognition/scene_segmented.jpg
 
 
-Since we're only trying to cover the explicity training/testing of VFH
+Since we're only trying to cover the explicit training/testing of VFH
 signatures in this tutorial, we provide a set of datasets already collected at:
 `vfh_recognition_tutorial_data.tbz
 <https://raw.github.com/PointCloudLibrary/data/master/tutorials/vfh_recognition/vfh_recognition_tutorial_data.tbz>`_.
@@ -254,7 +254,7 @@ Create a new ``CMakeLists.txt`` file, and put the following content into it
 
 .. note::
 	
-	If you are running this tutorial on Windows, you have to install (`HDF5 1.8.7 Shared Library <http://www.hdfgroup.org/ftp/HDF5/hdf5-1.8.7/bin/windows/>`_). If CMake is not able to find HDF5, 
+	If you are running this tutorial on Windows, you have to install (`HDF5 1.8.7 Shared Library <http://www.hdfgroup.org/ftp/HDF5/current/bin/windows/>`_). If CMake is not able to find HDF5, 
 	you can manually supply the include directory in HDF5_INCLUDE_DIR variable and the full path of **hdf5dll.lib** in HDF5_hdf5_LIBRARY variable. 
 	Make sure that the needed dlls are in the same folder as the executables.
 

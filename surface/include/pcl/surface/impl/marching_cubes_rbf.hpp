@@ -47,14 +47,6 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
-pcl::MarchingCubesRBF<PointNT>::MarchingCubesRBF ()
-  : MarchingCubes<PointNT> (),
-    off_surface_epsilon_ (0.1f)
-{
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointNT>
 pcl::MarchingCubesRBF<PointNT>::~MarchingCubesRBF ()
 {
 }
@@ -64,7 +56,7 @@ template <typename PointNT> void
 pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
 {
   // Initialize data structures
-  unsigned int N = static_cast<unsigned int> (input_->size ());
+  const unsigned int N = static_cast<unsigned int> (input_->size ());
   Eigen::MatrixXd M (2*N, 2*N),
                   d (2*N, 1);
 
@@ -90,7 +82,7 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
   w = M.fullPivLu ().solve (d);
 
   std::vector<double> weights (2*N);
-  std::vector<Eigen::Vector3d> centers (2*N);
+  std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > centers (2*N);
   for (unsigned int i = 0; i < N; ++i)
   {
     centers[i] = Eigen::Vector3f (input_->points[i].getVector3fMap ()).cast<double> ();
@@ -103,14 +95,13 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
     for (int y = 0; y < res_y_; ++y)
       for (int z = 0; z < res_z_; ++z)
       {
-        Eigen::Vector3d point;
-        point[0] = min_p_[0] + (max_p_[0] - min_p_[0]) * float (x) / float (res_x_);
-        point[1] = min_p_[1] + (max_p_[1] - min_p_[1]) * float (y) / float (res_y_);
-        point[2] = min_p_[2] + (max_p_[2] - min_p_[2]) * float (z) / float (res_z_);
+        const Eigen::Vector3f point_f = (size_voxel_ * Eigen::Array3f (x, y, z) 
+            + lower_boundary_).matrix ();
+        const Eigen::Vector3d point = point_f.cast<double> ();
 
         double f = 0.0;
         std::vector<double>::const_iterator w_it (weights.begin());
-        for (std::vector<Eigen::Vector3d>::const_iterator c_it = centers.begin ();
+        for (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> >::const_iterator c_it = centers.begin ();
              c_it != centers.end (); ++c_it, ++w_it)
           f += *w_it * kernel (*c_it, point);
 

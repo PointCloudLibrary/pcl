@@ -42,6 +42,7 @@
 
 #include <pcl/recognition/cg/correspondence_grouping.h>
 #include <pcl/recognition/boost.h>
+#include <pcl/point_types.h>
 
 namespace pcl
 {
@@ -447,7 +448,7 @@ namespace pcl
       bool needs_training_;
 
       /** \brief The result of the training. The vector between each model point and the centroid of the model adjusted by its local reference frame.*/
-      std::vector<Eigen::Vector3f> model_votes_;
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > model_votes_;
 
       /** \brief The minimum number of votes in the Hough space needed to infer the presence of a model instance into the scene cloud. */
       double hough_threshold_;
@@ -486,25 +487,22 @@ namespace pcl
       void
       clusterCorrespondences (std::vector<Correspondences> &model_instances);
 
-      ///** \brief Finds the transformation matrix between the input and the scene cloud for a set of correspondences using a RANSAC algorithm.
-      //  * 
-      //  * \param[in] the scene cloud in which the PointSceneT has been converted to PointModelT.
-      //  * \param[in] corrs a set of correspondences.
-      //  * \param[out] transform the transformation matrix between the input cloud and the scene cloud that aligns the found correspondences.
-      //  * \return true if the recognition had been successful or false if errors have occurred.
-      //  */
+      /*  \brief Finds the transformation matrix between the input and the scene cloud for a set of correspondences using a RANSAC algorithm.
+        * \param[in] the scene cloud in which the PointSceneT has been converted to PointModelT.
+        * \param[in] corrs a set of correspondences.
+        * \param[out] transform the transformation matrix between the input cloud and the scene cloud that aligns the found correspondences.
+        * \return true if the recognition had been successful or false if errors have occurred.
+        */
       //bool
       //getTransformMatrix (const PointCloudConstPtr &scene_cloud, const Correspondences &corrs, Eigen::Matrix4f &transform);
 
       /** \brief The Hough space voting procedure.
-        *
         * \return true if the voting had been successful or false if errors have occurred.
         */
       bool
       houghVoting ();
 
       /** \brief Computes the reference frame for an input cloud.
-        * 
         * \param[in] input the input cloud.
         * \param[out] rf the resulting reference frame.
         */

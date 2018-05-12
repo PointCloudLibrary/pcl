@@ -39,16 +39,12 @@
 #ifndef PCL_OCTREE_POINTCLOUD_H
 #define PCL_OCTREE_POINTCLOUD_H
 
-#include "octree_base.h"
-//#include "octree2buf_base.h"
+#include <pcl/octree/octree_base.h>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <queue>
 #include <vector>
-#include <algorithm>
-#include <iostream>
 
 namespace pcl
 {
@@ -76,33 +72,11 @@ namespace pcl
 
     class OctreePointCloud : public OctreeT
     {
-        // iterators are friends
-        friend class OctreeIteratorBase<OctreeT> ;
-        friend class OctreeDepthFirstIterator<OctreeT> ;
-        friend class OctreeBreadthFirstIterator<OctreeT> ;
-        friend class OctreeLeafNodeIterator<OctreeT> ;
-
       public:
         typedef OctreeT Base;
 
         typedef typename OctreeT::LeafNode LeafNode;
         typedef typename OctreeT::BranchNode BranchNode;
-
-        // Octree default iterators
-        typedef OctreeDepthFirstIterator<OctreeT> Iterator;
-        typedef const OctreeDepthFirstIterator<OctreeT> ConstIterator;
-
-        // Octree leaf node iterators
-        typedef OctreeLeafNodeIterator<OctreeT> LeafNodeIterator;
-        typedef const OctreeLeafNodeIterator<OctreeT> ConstLeafNodeIterator;
-
-        // Octree depth-first iterators
-        typedef OctreeDepthFirstIterator<OctreeT> DepthFirstIterator;
-        typedef const OctreeDepthFirstIterator<OctreeT> ConstDepthFirstIterator;
-
-        // Octree breadth-first iterators
-        typedef OctreeBreadthFirstIterator<OctreeT> BreadthFirstIterator;
-        typedef const OctreeBreadthFirstIterator<OctreeT> ConstBreadthFirstIterator;
 
         /** \brief Octree pointcloud constructor.
          * \param[in] resolution_arg octree resolution at lowest octree level
@@ -386,7 +360,7 @@ namespace pcl
          * \param[out] max_pt upper bound of voxel
          */
         inline void
-        getVoxelBounds (OctreeIteratorBase<OctreeT>& iterator, Eigen::Vector3f &min_pt, Eigen::Vector3f &max_pt)
+        getVoxelBounds (const OctreeIteratorBase<OctreeT>& iterator, Eigen::Vector3f &min_pt, Eigen::Vector3f &max_pt) const
         {
           this->genVoxelBoundsFromOctreeKey (iterator.getCurrentOctreeKey (),
               iterator.getCurrentOctreeDepth (), min_pt, max_pt);

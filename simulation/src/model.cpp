@@ -116,7 +116,7 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMe
 {
   bool found_rgb=false;
   for (size_t i=0; i<plg->cloud.fields.size () ;i++)
-    if (plg->cloud.fields[i].name.compare ("rgb") == 0)
+    if (plg->cloud.fields[i].name.compare ("rgb") == 0 || plg->cloud.fields[i].name.compare ("rgba") == 0)
       found_rgb = true;
   
   if (found_rgb)
@@ -144,7 +144,7 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMe
 	apoly.colors_[4*j + 0] = newcloud.points[pt].r/255.0f; // Red
 	apoly.colors_[4*j + 1] = newcloud.points[pt].g/255.0f; // Green
 	apoly.colors_[4*j + 2] = newcloud.points[pt].b/255.0f; // Blue
-	apoly.colors_[4*j + 3] = 1.0f; // transparancy? unnecessary?
+	apoly.colors_[4*j + 3] = 1.0f; // transparency? unnecessary?
       }
       polygons.push_back (apoly);
     }

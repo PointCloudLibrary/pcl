@@ -84,7 +84,7 @@ namespace pcl
       typedef void (sig_cb_openni_point_cloud_rgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
       typedef void (sig_cb_openni_point_cloud_i) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
 
-      /** \brief constuctor
+      /** \brief constructor
         * \param[in] file_name the path to the ONI file
         * \param[in] repeat whether the play back should be in an infinite loop or not
         * \param[in] stream whether the playback should be in streaming mode or in triggered mode.

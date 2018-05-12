@@ -58,7 +58,7 @@ printHelp (int, char **argv)
   print_info ("  where options are:\n");
   print_info ("           -trans dx,dy,dz           = the translation (default: "); 
   print_value ("%0.1f, %0.1f, %0.1f", 0, 0, 0); print_info (")\n");
-  print_info ("           -quat w,x,y,z             = rotation as quaternion\n"); 
+  print_info ("           -quat x,y,z,w             = rotation as quaternion\n");
   print_info ("           -axisangle ax,ay,az,theta = rotation in axis-angle form\n"); 
   print_info ("           -scale x,y,z              = scale each dimension with these values\n"); 
   print_info ("           -matrix v1,v2,...,v8,v9   = a 3x3 affine transform\n");
@@ -137,7 +137,7 @@ transformPointCloud2 (const pcl::PCLPointCloud2 &input, pcl::PCLPointCloud2 &out
   bool has_normals = false;
   for (size_t i = 0; i < input.fields.size (); ++i)
   {
-    if (input.fields[i].name == "rgb")
+    if (input.fields[i].name.find("rgb") != std::string::npos)
       has_rgb = true;
     if (input.fields[i].name == "normal_x")
       has_normals = true;
@@ -287,7 +287,7 @@ main (int argc, char** argv)
     }
     else
     {
-      print_error ("Wrong number of values given (%zu): ", values.size ());
+      print_error ("Wrong number of values given (%lu): ", values.size ());
       print_error ("The quaternion specified with -quat must contain 4 elements (w,x,y,z).\n");
     }
   }
@@ -304,7 +304,7 @@ main (int argc, char** argv)
     }
     else
     {
-      print_error ("Wrong number of values given (%zu): ", values.size ());
+      print_error ("Wrong number of values given (%lu): ", values.size ());
       print_error ("The rotation specified with -axisangle must contain 4 elements (ax,ay,az,theta).\n");
     }
   }
@@ -320,7 +320,7 @@ main (int argc, char** argv)
     }
     else
     {
-      print_error ("Wrong number of values given (%zu): ", values.size ());
+      print_error ("Wrong number of values given (%lu): ", values.size ());
       print_error ("The transformation specified with -matrix must be 3x3 (9) or 4x4 (16).\n");
     }
   }

@@ -68,7 +68,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegion
                              Neighbor( 0,  1,  labels->width    ),
                              Neighbor(-1,  1,  labels->width - 1)};
   
-  // find one pixel with other label in the neighborhood -> assume thats the one we came from
+  // find one pixel with other label in the neighborhood -> assume that's the one we came from
   int direction = -1;
   int x;
   int y;
@@ -100,7 +100,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegion
       x = curr_x + directions [nIdx].d_x;
       y = curr_y + directions [nIdx].d_y;
       index = curr_idx + directions [nIdx].d_index;
-      if (x >= 0 && y < int(labels->width) && y >= 0 && y < int(labels->height) && labels->points[index].label == label)
+      if (x >= 0 && x < int(labels->width) && y >= 0 && y < int(labels->height) && labels->points[index].label == label)
         break;
     }
     
@@ -120,7 +120,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   std::vector<unsigned> run_ids;
 
   unsigned invalid_label = std::numeric_limits<unsigned>::max ();
-  pcl::Label invalid_pt;
+  PointLT invalid_pt;
   invalid_pt.label = std::numeric_limits<unsigned>::max ();
   labels.points.resize (input_->points.size (), invalid_pt);
   labels.width = input_->width;
@@ -182,7 +182,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
         {
           if (labels[current_row + colIdx].label == invalid_label)
             labels[current_row + colIdx].label = labels[previous_row + colIdx].label;
-          else
+          else if (labels[previous_row + colIdx].label != invalid_label)
           {
             unsigned root1 = findRoot (run_ids, labels[current_row + colIdx].label);
             unsigned root2 = findRoot (run_ids, labels[previous_row + colIdx].label);

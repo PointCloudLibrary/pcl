@@ -12,5 +12,9 @@ if(BUILD_visualization)
     include (${VTK_USE_FILE})
     PCL_ADD_EXAMPLE(pcl_example_supervoxels FILES example_supervoxels.cpp
                     LINK_WITH pcl_common pcl_features pcl_segmentation pcl_octree pcl_kdtree pcl_visualization)
+    PCL_ADD_EXAMPLE(pcl_example_lccp_segmentation FILES example_lccp_segmentation.cpp
+                    LINK_WITH pcl_common pcl_io pcl_segmentation pcl_visualization)
+    PCL_ADD_EXAMPLE(pcl_example_cpc_segmentation FILES example_cpc_segmentation.cpp
+                    LINK_WITH pcl_common pcl_io pcl_segmentation pcl_visualization pcl_sample_consensus)
   endif(VTK_FOUND)
 endif(BUILD_visualization)

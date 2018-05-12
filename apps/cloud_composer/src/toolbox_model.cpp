@@ -73,7 +73,7 @@ pcl::cloud_composer::ToolBoxModel::addToolGroup (QString tool_group_name)
 }
 
 void 
-pcl::cloud_composer::ToolBoxModel::activeProjectChanged(ProjectModel* new_model, ProjectModel* previous_model)
+pcl::cloud_composer::ToolBoxModel::activeProjectChanged(ProjectModel* new_model, ProjectModel*)
 {
   //Disconnect old project model signal for selection change
   if (project_model_)
@@ -132,7 +132,7 @@ pcl::cloud_composer::ToolBoxModel::toolAction ()
 }
 
 void 
-pcl::cloud_composer::ToolBoxModel::selectedItemChanged ( const QItemSelection & selected, const QItemSelection & deselected )
+pcl::cloud_composer::ToolBoxModel::selectedItemChanged ( const QItemSelection & selected, const QItemSelection &)
 {
   updateEnabledTools (selected);
 }

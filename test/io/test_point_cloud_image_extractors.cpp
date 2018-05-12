@@ -64,7 +64,7 @@ TEST (PCL, PointCloudImageExtractorFromNormalField)
   pcl::PCLImage image;
   PointCloudImageExtractorFromNormalField<PointT> pcie;
 
-  ASSERT_TRUE (pcie.extract(cloud, image));
+  ASSERT_TRUE (pcie.extract (cloud, image));
 
   EXPECT_EQ ("rgb8", image.encoding);
   EXPECT_EQ (cloud.width, image.width);
@@ -102,7 +102,7 @@ TEST (PCL, PointCloudImageExtractorFromRGBField)
   pcl::PCLImage image;
   PointCloudImageExtractorFromRGBField<PointT> pcie;
 
-  ASSERT_TRUE (pcie.extract(cloud, image));
+  ASSERT_TRUE (pcie.extract (cloud, image));
 
   EXPECT_EQ ("rgb8", image.encoding);
   EXPECT_EQ (cloud.width, image.width);
@@ -141,7 +141,7 @@ TEST (PCL, PointCloudImageExtractorFromRGBAField)
   pcl::PCLImage image;
   PointCloudImageExtractorFromRGBField<PointT> pcie;
 
-  ASSERT_TRUE (pcie.extract(cloud, image));
+  ASSERT_TRUE (pcie.extract (cloud, image));
 
   EXPECT_EQ ("rgb8", image.encoding);
   EXPECT_EQ (cloud.width, image.width);
@@ -177,7 +177,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
   PointCloudImageExtractorFromLabelField<PointT> pcie;
   pcie.setColorMode (pcie.COLORS_MONO);
 
-  ASSERT_TRUE (pcie.extract(cloud, image));
+  ASSERT_TRUE (pcie.extract (cloud, image));
   unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
 
   EXPECT_EQ ("mono16", image.encoding);
@@ -204,7 +204,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
   PointCloudImageExtractorFromLabelField<PointT> pcie;
   pcie.setColorMode (pcie.COLORS_RGB_RANDOM);
 
-  ASSERT_TRUE (pcie.extract(cloud, image));
+  ASSERT_TRUE (pcie.extract (cloud, image));
 
   EXPECT_EQ ("rgb8", image.encoding);
   EXPECT_EQ (cloud.width, image.width);
@@ -227,6 +227,43 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
+{
+  typedef PointXYZL PointT;
+  PointCloud<PointT> cloud;
+  cloud.width = 2;
+  cloud.height = 2;
+  cloud.is_dense = true;
+  cloud.points.resize (cloud.width * cloud.height);
+  for (size_t i = 0; i < cloud.points.size (); i++)
+    cloud.points[i].label = i % 2;
+
+  pcl::PCLImage image;
+  PointCloudImageExtractorFromLabelField<PointT> pcie;
+  pcie.setColorMode (pcie.COLORS_RGB_GLASBEY);
+
+  ASSERT_TRUE (pcie.extract (cloud, image));
+
+  EXPECT_EQ ("rgb8", image.encoding);
+  EXPECT_EQ (cloud.width, image.width);
+  EXPECT_EQ (cloud.height, image.height);
+
+  // Fill in different labels and extract another image
+  for (size_t i = 0; i < cloud.points.size (); i++)
+    cloud.points[i].label = i % 2 + 10;
+  pcl::PCLImage image2;
+  ASSERT_TRUE (pcie.extract (cloud, image2));
+
+  // The first label should get the first Glasbey color
+  EXPECT_EQ (GlasbeyLUT::data ()[0], image.data[0]);
+  EXPECT_EQ (GlasbeyLUT::data ()[1], image.data[1]);
+  EXPECT_EQ (GlasbeyLUT::data ()[2], image.data[2]);
+  // Make sure the colors are the same
+  for (size_t i = 0; i < 2 * 2 * 3; ++i)
+    EXPECT_EQ (image2.data[i], image.data[i]);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointCloudImageExtractorFromZField)
 {
   typedef PointXYZL PointT;
@@ -241,7 +278,7 @@ TEST (PCL, PointCloudImageExtractorFromZField)
   pcl::PCLImage image;
   PointCloudImageExtractorFromZField<PointT> pcie;
 
-  ASSERT_TRUE (pcie.extract(cloud, image));
+  ASSERT_TRUE (pcie.extract (cloud, image));
   unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
 
   EXPECT_EQ ("mono16", image.encoding);
@@ -271,7 +308,7 @@ TEST (PCL, PointCloudImageExtractorFromCurvatureField)
   pcl::PCLImage image;
   PointCloudImageExtractorFromCurvatureField<PointT> pcie;
 
-  ASSERT_TRUE (pcie.extract(cloud, image));
+  ASSERT_TRUE (pcie.extract (cloud, image));
   unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
 
   EXPECT_EQ ("mono16", image.encoding);
@@ -280,9 +317,9 @@ TEST (PCL, PointCloudImageExtractorFromCurvatureField)
 
   // by default Curvature field extractor scales to full range of unsigned short
   EXPECT_EQ (0, data[0]);
-  EXPECT_EQ (std::numeric_limits<unsigned short>::max() , data[1]);
+  EXPECT_EQ (std::numeric_limits<unsigned short>::max () , data[1]);
   EXPECT_EQ (0, data[2]);
-  EXPECT_EQ (std::numeric_limits<unsigned short>::max() , data[3]);
+  EXPECT_EQ (std::numeric_limits<unsigned short>::max () , data[3]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -303,7 +340,7 @@ TEST (PCL, PointCloudImageExtractorFromIntensityField)
   pcl::PCLImage image;
   PointCloudImageExtractorFromIntensityField<PointT> pcie;
 
-  ASSERT_TRUE (pcie.extract(cloud, image));
+  ASSERT_TRUE (pcie.extract (cloud, image));
   unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
 
   EXPECT_EQ ("mono16", image.encoding);
@@ -312,7 +349,7 @@ TEST (PCL, PointCloudImageExtractorFromIntensityField)
 
   // by default Intensity field extractor does not apply scaling
   for (size_t i = 0; i < cloud.points.size (); i++)
-    EXPECT_EQ (static_cast<unsigned short>(cloud.points[i].intensity), data[i]);
+    EXPECT_EQ (static_cast<unsigned short> (cloud.points[i].intensity), data[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -349,6 +386,43 @@ TEST (PCL, PointCloudImageExtractorBadInput)
   {
     PointCloudImageExtractorFromIntensityField<PointT> pcie;
     EXPECT_FALSE (pcie.extract (cloud, image));
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, PointCloudImageExtractorBlackNaNs)
+{
+  typedef PointNormal PointT;
+  PointCloud<PointT> cloud;
+  cloud.width = 2;
+  cloud.height = 2;
+  cloud.is_dense = false;
+  cloud.points.resize (cloud.width * cloud.height);
+
+  cloud.points[0].curvature = 1.0;
+  cloud.points[1].curvature = 2.0;
+  cloud.points[2].curvature = 1.0;
+  cloud.points[3].curvature = 2.0;
+  cloud.points[3].z = std::numeric_limits<float>::quiet_NaN ();
+
+  pcl::PCLImage image;
+
+  PointCloudImageExtractorFromCurvatureField<PointT> pcie;
+
+  ASSERT_TRUE (pcie.extract (cloud, image));
+
+  {
+    unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
+    EXPECT_EQ (std::numeric_limits<unsigned short>::max (), data[3]);
+  }
+
+  pcie.setPaintNaNsWithBlack (true);
+
+  ASSERT_TRUE (pcie.extract (cloud, image));
+
+  {
+    unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
+    EXPECT_EQ (0, data[3]);
   }
 }
 

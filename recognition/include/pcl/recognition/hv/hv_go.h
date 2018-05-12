@@ -11,7 +11,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
 #include <pcl/common/common.h>
-#include "metslib/mets.hh"
+#include <pcl/recognition/3rdparty/metslib/mets.hh>
 #include <pcl/features/normal_3d.h>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
@@ -94,7 +94,7 @@ namespace pcl
           {
             solution_[index] = val;
             //update optimizer solution
-            cost_ = opt_->evaluateSolution (solution_, index); //this will udpate the cost function in opt_
+            cost_ = opt_->evaluateSolution (solution_, index); //this will update the cost function in opt_
           }
           void setSolution(std::vector<bool> & sol)
           {
@@ -447,6 +447,11 @@ namespace pcl
 
       void
       verify();
+      
+      void setResolutionOccupancyGrid(float r)
+      {
+        res_occupancy_grid_ = r;
+      }
 
       void setRadiusNormals(float r)
       {

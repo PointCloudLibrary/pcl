@@ -51,7 +51,7 @@ namespace pcl
   /** \brief class BearingAngleImage is used as an interface to generate Bearing Angle(BA) image.
     * \author: Qinghua Li (qinghua__li@163.com)
     */
-  class BearingAngleImage : public pcl::PointCloud<PointXYZRGBA>
+  class PCL_EXPORTS BearingAngleImage : public pcl::PointCloud<PointXYZRGBA>
   {
     public:
       // ===== TYPEDEFS =====
@@ -69,10 +69,12 @@ namespace pcl
       reset ();
 
       /** \brief Calculate the angle between the laser beam and the segment joining two consecutive
-        * \measurement points.
+        * measurement points.
+        * \param point1
+        * \param point2
         */
       double
-      getAngle (PointXYZ point1, PointXYZ point2);
+      getAngle (const PointXYZ &point1, const PointXYZ &point2);
 
       /** \brief Transform 3D point cloud into a 2D Bearing Angle(BA) image */
       void

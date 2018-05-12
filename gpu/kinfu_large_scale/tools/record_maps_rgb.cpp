@@ -284,7 +284,7 @@ receiveAndProcess ()
 
   {
     boost::mutex::scoped_lock io_lock (io_mutex);
-    PCL_INFO ("Writing remaing %d maps in the buffer to disk...\n", buff.getSize ());
+    PCL_INFO ("Writing remaining %d maps in the buffer to disk...\n", buff.getSize ());
   }
   while (!buff.isEmpty ())
   {

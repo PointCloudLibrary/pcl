@@ -77,7 +77,7 @@ Here the color threshold for clusters is set. This value is similar to the previ
    :language: cpp
    :lines: 37-37
 
-This value is similar to that which was used in the :ref:`region_growing_segmentation` tutorial. In addition to that, it is used for merging process mentioned in the begining.
+This value is similar to that which was used in the :ref:`region_growing_segmentation` tutorial. In addition to that, it is used for merging process mentioned in the beginning.
 If cluster has less points than was set through ``setMinClusterSize`` method, then it will be merged with the nearest neighbour.
 
 .. literalinclude:: sources/region_growing_rgb_segmentation/region_growing_rgb_segmentation.cpp

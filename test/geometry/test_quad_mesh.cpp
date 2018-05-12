@@ -369,7 +369,7 @@ TYPED_TEST (TestQuadMesh, NineQuads)
     {
       const FaceIndex index = mesh.addFace (ordered_faces [j]);
 
-      if (j < non_manifold [i] || !Mesh::IsManifold::value)
+      if (j < static_cast<unsigned int> (non_manifold [i]) || !Mesh::IsManifold::value)
       {
         EXPECT_TRUE (index.isValid ());
       }

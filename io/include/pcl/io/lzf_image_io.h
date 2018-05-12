@@ -143,7 +143,8 @@ namespace pcl
 
         /** \brief Load a compressed image array from disk
           * \param[in] filename the file name to load the data from
-          * \param[out] data_size the size of the data
+          * \param[out] data the size of the data
+          * \param uncompressed_size
           * \return an array filled with the data loaded from disk, NULL if error
           */
         bool
@@ -214,7 +215,7 @@ namespace pcl
                  unsigned int num_threads=0);
 
         /** \brief Read camera parameters from a given stream and store them internally.
-          * The parameters will be read from the <depth> ... </depth> tag.
+          * The parameters will be read from the \<depth\> ... \</depth\> tag.
           * \return true if operation successful, false otherwise
           */ 
         virtual bool
@@ -265,7 +266,7 @@ namespace pcl
                  unsigned int num_threads=0);
 
         /** \brief Read camera parameters from a given stream and store them internally.
-          * The parameters will be read from the <rgb> ... </rgb> tag.
+          * The parameters will be read from the \<rgb\> ... \</rgb\> tag.
           * \return true if operation successful, false otherwise
           */ 
         virtual bool
@@ -506,12 +507,12 @@ namespace pcl
           * \param[in] filename the file name to write
           * \return true if operation successful, false otherwise
           * This overwrites the following parameters in the xml file, under the 
-          * <depth> tag:
-          *   <focal_length_x>...</focal_length_x>
-          *   <focal_length_y>...</focal_length_y>
-          *   <principal_point_x>...</principal_point_x>
-          *   <principal_point_y>...</principal_point_y>
-          *   <z_multiplication_factor>...</z_multiplication_factor>
+          * \<depth> tag:
+          *   \<focal_length_x\>...\</focal_length_x\>
+          *   \<focal_length_y\>...\</focal_length_y\>
+          *   \<principal_point_x\>...\</principal_point_x\>
+          *   \<principal_point_y\>...\</principal_point_y\>
+          *   \<z_multiplication_factor\>...\</z_multiplication_factor\>
           */ 
         virtual bool
         writeParameters (const CameraParameters &parameters,

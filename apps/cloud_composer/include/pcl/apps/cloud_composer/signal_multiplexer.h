@@ -108,7 +108,7 @@ namespace pcl
         QObject 
         *currentObject () const { return object; }
 
-      public slots:
+      public Q_SLOTS:
         /**
                 Sets the current object the signals that are managed by the
                 SignalMultiplexer instance should be connected to. Any connections
@@ -121,7 +121,7 @@ namespace pcl
         void 
         setCurrentObject (QObject *newObject);
 
-      signals:
+      Q_SIGNALS:
         /**
                 Emitted when a new object is set to receive the signals managed by
                 this SignalMultiplexer instance.

@@ -65,9 +65,6 @@ pcl::Kmeans<PointT>::~Kmeans ()
 template <typename PointT> void
 pcl::Kmeans<PointT>::k_means ()
 {
-
-
-
 }
 
 template <typename PointT> void
@@ -135,7 +132,7 @@ pcl::Kmeans<PointT>::cluster (std::vector<PointIndices> &clusters)
     
     
   }
-  // if cluster field name is set, check if field name is valied
+  // if cluster field name is set, check if field name is valid
   else
   {
     user_index = pcl::getFieldIndex (point, cluster_field_name_.c_str (), fields);

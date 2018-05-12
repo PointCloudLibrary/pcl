@@ -18,11 +18,13 @@
 #if !defined(OPENNURBS_EXTENSIONS_INC_)
 #define OPENNURBS_EXTENSIONS_INC_
 
+#include <pcl/pcl_exports.h>
+
 /*
 Description:
   Used to store user data information in an ONX_Model.
 */
-class ON_CLASS ONX_Model_UserData
+class PCL_EXPORTS ON_CLASS ONX_Model_UserData
 {
 public:
 #if defined(ON_DLL_EXPORTS) || defined(ON_DLL_IMPORTS)
@@ -64,7 +66,7 @@ public:
 Description:
   Used to store geometry table object definition and attributes in an ONX_Model.
 */
-class ON_CLASS ONX_Model_Object
+class PCL_EXPORTS ON_CLASS ONX_Model_Object
 {
 public:
 #if defined(ON_DLL_EXPORTS) || defined(ON_DLL_IMPORTS)
@@ -106,7 +108,7 @@ private:
 Description:
   Used to store render light table light definition and attributes in an ONX_Model.
 */
-class ON_CLASS ONX_Model_RenderLight
+class PCL_EXPORTS ON_CLASS ONX_Model_RenderLight
 {
 public:
 #if defined(ON_DLL_EXPORTS) || defined(ON_DLL_IMPORTS)
@@ -172,7 +174,7 @@ Description:
   read from 3dm archives.  Please study example_read.cpp for
   details.
 */
-class ON_CLASS ONX_Model
+class PCL_EXPORTS ON_CLASS ONX_Model
 {
 public:
 #if defined(ON_DLL_EXPORTS) || defined(ON_DLL_IMPORTS)

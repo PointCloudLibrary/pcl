@@ -12,7 +12,6 @@
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/shot_local_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/shot_local_estimator_omp.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/fpfh_local_estimator.h>
-#include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/recognition/cg/correspondence_grouping.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
@@ -118,7 +117,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
       {
         std::cout << files[i] << std::endl;
         if (scene != -1)
-          if (scene != i)
+          if ((size_t) scene != i)
             continue;
 
         std::stringstream file;

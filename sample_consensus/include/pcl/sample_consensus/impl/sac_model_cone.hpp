@@ -53,12 +53,12 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::isSampleGood(const std::vector<i
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelCone<PointT, PointNT>::computeModelCoefficients (
-    const std::vector<int> &samples, Eigen::VectorXf &model_coefficients)
+    const std::vector<int> &samples, Eigen::VectorXf &model_coefficients) const
 {
   // Need 3 samples
   if (samples.size () != 3)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::computeModelCoefficients] Invalid set of samples given (%zu)!\n", samples.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCone::computeModelCoefficients] Invalid set of samples given (%lu)!\n", samples.size ());
     return (false);
   }
 
@@ -135,7 +135,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::computeModelCoefficients (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCone<PointT, PointNT>::getDistancesToModel (
-    const Eigen::VectorXf &model_coefficients, std::vector<double> &distances)
+    const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) const
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -172,7 +172,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::getDistancesToModel (
     // Calculate the cones perfect normals
     Eigen::Vector4f cone_normal = sinf (opening_angle) * height + cosf (opening_angle) * dir;
 
-    // Aproximate the distance from the point to the cone as the difference between
+    // Approximate the distance from the point to the cone as the difference between
     // dist(point,cone_axis) and actual cone radius
     double d_euclid = fabs (pointToAxisDistance (pt, model_coefficients) - actual_cone_radius);
 
@@ -228,7 +228,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
     // Calculate the cones perfect normals
     Eigen::Vector4f cone_normal = sinf (opening_angle) * height + cosf (opening_angle) * pp_pt_dir;
 
-    // Aproximate the distance from the point to the cone as the difference between
+    // Approximate the distance from the point to the cone as the difference between
     // dist(point,cone_axis) and actual cone radius
     double d_euclid = fabs (pointToAxisDistance (pt, model_coefficients) - actual_cone_radius);
 
@@ -253,7 +253,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> int
 pcl::SampleConsensusModelCone<PointT, PointNT>::countWithinDistance (
-    const Eigen::VectorXf &model_coefficients, const double threshold)
+    const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
 
   // Check if the model is valid given the user constraints
@@ -290,7 +290,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::countWithinDistance (
     // Calculate the cones perfect normals
     Eigen::Vector4f cone_normal = sinf (opening_angle) * height + cosf (opening_angle) * pp_pt_dir;
 
-    // Aproximate the distance from the point to the cone as the difference between
+    // Approximate the distance from the point to the cone as the difference between
     // dist(point,cone_axis) and actual cone radius
     double d_euclid = fabs (pointToAxisDistance (pt, model_coefficients) - actual_cone_radius);
 
@@ -307,14 +307,14 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::countWithinDistance (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCone<PointT, PointNT>::optimizeModelCoefficients (
-      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients)
+      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) const
 {
   optimized_coefficients = model_coefficients;
 
   // Needs a set of valid model coefficients
   if (model_coefficients.size () != 7)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::optimizeModelCoefficients] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCone::optimizeModelCoefficients] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return;
   }
 
@@ -324,9 +324,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::optimizeModelCoefficients (
     return;
   }
 
-  tmp_inliers_ = &inliers;
-
-  OptimizationFunctor functor (static_cast<int> (inliers.size ()), this);
+  OptimizationFunctor functor (this, inliers);
   Eigen::NumericalDiff<OptimizationFunctor > num_diff (functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, float> lm (num_diff);
   int info = lm.minimize (optimized_coefficients);
@@ -335,17 +333,23 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::optimizeModelCoefficients (
   PCL_DEBUG ("[pcl::SampleConsensusModelCone::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g %g %g %g \nFinal solution: %g %g %g %g %g %g %g\n",
              info, lm.fvec.norm (), model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3],
              model_coefficients[4], model_coefficients[5], model_coefficients[6], optimized_coefficients[0], optimized_coefficients[1], optimized_coefficients[2], optimized_coefficients[3], optimized_coefficients[4], optimized_coefficients[5], optimized_coefficients[6]);
+
+  Eigen::Vector3f line_dir (optimized_coefficients[3], optimized_coefficients[4], optimized_coefficients[5]);
+  line_dir.normalize ();
+  optimized_coefficients[3] = line_dir[0];
+  optimized_coefficients[4] = line_dir[1];
+  optimized_coefficients[5] = line_dir[2];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
-      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields)
+      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields) const
 {
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 7)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::projectPoints] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCone::projectPoints] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return;
   }
 
@@ -436,12 +440,12 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelCone<PointT, PointNT>::doSamplesVerifyModel (
-      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold)
+      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Needs a valid model coefficients
   if (model_coefficients.size () != 7)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::doSamplesVerifyModel] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCone::doSamplesVerifyModel] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return (false);
   }
 
@@ -467,7 +471,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::doSamplesVerifyModel (
     Eigen::Vector4f height = apex - pt_proj;
     double actual_cone_radius = tan (openning_angle) * height.norm ();
 
-    // Aproximate the distance from the point to the cone as the difference between
+    // Approximate the distance from the point to the cone as the difference between
     // dist(point,cone_axis) and actual cone radius
     if (fabs (static_cast<double>(pointToAxisDistance (pt, model_coefficients) - actual_cone_radius)) > threshold)
       return (false);
@@ -479,7 +483,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::doSamplesVerifyModel (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> double
 pcl::SampleConsensusModelCone<PointT, PointNT>::pointToAxisDistance (
-      const Eigen::Vector4f &pt, const Eigen::VectorXf &model_coefficients)
+      const Eigen::Vector4f &pt, const Eigen::VectorXf &model_coefficients) const
 {
   Eigen::Vector4f apex  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
   Eigen::Vector4f axis_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
@@ -488,15 +492,11 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::pointToAxisDistance (
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool 
-pcl::SampleConsensusModelCone<PointT, PointNT>::isModelValid (const Eigen::VectorXf &model_coefficients)
+pcl::SampleConsensusModelCone<PointT, PointNT>::isModelValid (const Eigen::VectorXf &model_coefficients) const
 {
-  // Needs a valid model coefficients
-  if (model_coefficients.size () != 7)
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::isModelValid] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+  if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
     return (false);
-  }
- 
+
   // Check against template, if given
   if (eps_angle_ > 0.0)
   {

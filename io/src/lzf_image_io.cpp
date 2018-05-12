@@ -59,6 +59,17 @@
 
 #define LZF_HEADER_SIZE 37
 
+
+// The signature of boost::property_tree::xml_parser::write_xml() changed in Boost 1.56
+// See https://github.com/PointCloudLibrary/pcl/issues/864
+#include <boost/version.hpp>
+#if (BOOST_VERSION >= 105600)
+  typedef boost::property_tree::xml_writer_settings<std::string> xml_writer_settings;
+#else
+  typedef boost::property_tree::xml_writer_settings<char> xml_writer_settings;
+#endif
+
+
 //////////////////////////////////////////////////////////////////////////////
 bool
 pcl::io::LZFImageWriter::saveImageBlob (const char* data, 
@@ -198,9 +209,8 @@ pcl::io::LZFImageWriter::writeParameter (const double &parameter,
   catch (std::exception& e)
   {}
 
-  boost::property_tree::xml_writer_settings<char> settings ('\t', 1);
   pt.put (tag, parameter);
-  write_xml (filename, pt, std::locale (), settings);
+  write_xml (filename, pt, std::locale (), xml_writer_settings ('\t', 1));
 
   return (true);
 }
@@ -218,13 +228,12 @@ pcl::io::LZFDepth16ImageWriter::writeParameters (const pcl::io::CameraParameters
   catch (std::exception& e)
   {}
 
-  boost::property_tree::xml_writer_settings<char> settings ('\t', 1);
   pt.put ("depth.focal_length_x", parameters.focal_length_x);
   pt.put ("depth.focal_length_y", parameters.focal_length_y);
   pt.put ("depth.principal_point_x", parameters.principal_point_x);
   pt.put ("depth.principal_point_y", parameters.principal_point_y);
   pt.put ("depth.z_multiplication_factor", z_multiplication_factor_);
-  write_xml (filename, pt, std::locale (), settings);
+  write_xml (filename, pt, std::locale (), xml_writer_settings ('\t', 1));
 
   return (true);
 }
@@ -240,7 +249,7 @@ pcl::io::LZFRGB24ImageWriter::write (const char *data,
   int ptr1 = 0,
       ptr2 = width * height,
       ptr3 = 2 * width * height;
-  for (int i = 0; i < width * height; ++i, ++ptr1, ++ptr2, ++ptr3)
+  for (uint32_t i = 0; i < width * height; ++i, ++ptr1, ++ptr2, ++ptr3)
   {
     rrggbb[ptr1] = data[i * 3 + 0];
     rrggbb[ptr2] = data[i * 3 + 1];
@@ -279,12 +288,11 @@ pcl::io::LZFRGB24ImageWriter::writeParameters (const pcl::io::CameraParameters &
   catch (std::exception& e)
   {}
 
-  boost::property_tree::xml_writer_settings<char> settings ('\t', 1);
   pt.put ("rgb.focal_length_x", parameters.focal_length_x);
   pt.put ("rgb.focal_length_y", parameters.focal_length_y);
   pt.put ("rgb.principal_point_x", parameters.principal_point_x);
   pt.put ("rgb.principal_point_y", parameters.principal_point_y);
-  write_xml (filename, pt, std::locale (), settings);
+  write_xml (filename, pt, std::locale (), xml_writer_settings ('\t', 1));
 
   return (true);
 }

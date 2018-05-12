@@ -45,10 +45,10 @@
 #  include <vtkWin32RenderWindowInteractor.h>
 #else
 #include <vtkConfigure.h>
-#if defined VTK_USE_CARBON
-#  include <vtkCarbonRenderWindowInteractor.h>
-#elif defined VTK_USE_COCOA
+#if (VTK_MAJOR_VERSION <= 5 && defined VTK_USE_COCOA) || defined __APPLE__
 #  include <vtkCocoaRenderWindowInteractor.h>
+#elif VTK_MAJOR_VERSION <= 5 && defined VTK_USE_CARBON
+#  include <vtkCarbonRenderWindowInteractor.h>
 #else
 // Stupid X.h defines Complex, Bool, Success globally (!)
 #  include <vtkXRenderWindowInteractor.h>
@@ -66,10 +66,10 @@ namespace pcl
     /** \brief The PCLVisualizer interactor */
 #ifdef _WIN32
     class PCL_EXPORTS PCLVisualizerInteractor : public vtkWin32RenderWindowInteractor
-#elif defined VTK_USE_CARBON
-    class PCLVisualizerInteractor : public vtkCarbonRenderWindowInteractor
-#elif defined VTK_USE_COCOA
+#elif (VTK_MAJOR_VERSION <= 5 && defined VTK_USE_COCOA) || defined __APPLE__
     class PCLVisualizerInteractor : public vtkCocoaRenderWindowInteractor
+#elif VTK_MAJOR_VERSION <= 5 && defined VTK_USE_CARBON
+    class PCLVisualizerInteractor : public vtkCarbonRenderWindowInteractor
 #else
     class PCLVisualizerInteractor : public vtkXRenderWindowInteractor
 #endif

@@ -181,7 +181,7 @@ Assuming that we want the new algorithm to be part of the PCL Filtering library,
 
 We also need a name for our new class. Let's call it `BilateralFilter`.
 
-.. [*] The PCL Filtering API specifies that two definitions and implementations must be available for every algorithm: one operating on PointCloud<T> and another one operating on PCLPointCloud2. For the purpose of this tutorial, we will concentrate only on the former.
+.. [*] Some PCL filter algorithms provide two implementations: one for PointCloud<T> types and another one operating on legacy PCLPointCloud2 types. This is no longer required.
 
 bilateral.h
 ===========
@@ -239,7 +239,7 @@ Let's write *bilateral.cpp* too:
     #include <pcl/filters/impl/bilateral.hpp>
     
 Because we are writing templated code in PCL (1.x) where the template parameter
-is a point type (see :ref:`adding_custom_ptype`), we want to explicitely
+is a point type (see :ref:`adding_custom_ptype`), we want to explicitly
 instantiate the most common use cases in *bilateral.cpp*, so that users don't
 have to spend extra cycles when compiling code that uses our
 `BilateralFilter`. To do this, we need to access both the header
@@ -288,7 +288,7 @@ begin filling in the actual code in each file. Let's start with the
 bilateral.cpp
 =============
 
-As previously mentioned, we're going to explicitely instantiate and
+As previously mentioned, we're going to explicitly instantiate and
 *precompile* a number of templated specializations for the `BilateralFilter`
 class. While this might lead to an increased compilation time for the PCL
 Filtering library, it will save users the pain of processing and compiling the
@@ -676,7 +676,7 @@ execution of the code, its value is still 0, we will print an error using the
 In the case of the search method, we can either do the same, or be clever and
 provide a default option for the user. The best default options are:
 
- * use an organized search method via :pcl:`pcl::OrganizedDataIndex<pcl::OrganizedDataIndex>` if the point cloud is organized;
+ * use an organized search method via :pcl:`pcl::OrganizedNeighbor<pcl::OrganizedNeighbor>` if the point cloud is organized;
  * use a general purpose kdtree via :pcl:`pcl::KdTreeFLANN<pcl::KdTreeFLANN>` if the point cloud is unorganized.
 
 .. code-block:: cpp
@@ -697,7 +697,7 @@ provide a default option for the user. The best default options are:
       if (!tree_)
       {
         if (input_->isOrganized ())
-          tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+          tree_.reset (new pcl::OrganizedNeighbor<PointT> ());
         else
           tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
       }
@@ -749,7 +749,7 @@ The implementation file header thus becomes:
       if (!tree_)
       {
         if (input_->isOrganized ())
-          tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+          tree_.reset (new pcl::OrganizedNeighbor<PointT> ());
         else
           tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
       }
@@ -812,7 +812,7 @@ The new *bilateral.hpp* class thus becomes:
       if (!tree_)
       {
         if (input_->isOrganized ())
-          tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+          tree_.reset (new pcl::OrganizedNeighbor<PointT> ());
         else
           tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
       }
@@ -864,7 +864,7 @@ The implementation file header thus becomes:
       if (!tree_)
       {
         if (input_->isOrganized ())
-          tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+          tree_.reset (new pcl::OrganizedNeighbor<PointT> ());
         else
           tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
       }
@@ -1221,9 +1221,9 @@ And the *bilateral.hpp* like:
       // In case a search method has not been given, initialize it using some defaults
       if (!tree_)
       {
-        // For organized datasets, use an OrganizedDataIndex
+        // For organized datasets, use an OrganizedNeighbor
         if (input_->isOrganized ())
-          tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+          tree_.reset (new pcl::OrganizedNeighbor<PointT> ());
         // For unorganized data, use a FLANN kdtree
         else
           tree_.reset (new pcl::KdTreeFLANN<PointT> (false));

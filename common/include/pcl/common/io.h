@@ -45,12 +45,13 @@
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
 #include <pcl/conversions.h>
+#include <pcl/exceptions.h>
 #include <locale>
 
 namespace pcl
 {
   /** \brief Get the index of a specified field (i.e., dimension/channel)
-    * \param[in] cloud the the point cloud message
+    * \param[in] cloud the point cloud message
     * \param[in] field_name the string defining the field name
     * \ingroup common
     */
@@ -65,7 +66,7 @@ namespace pcl
   }
 
   /** \brief Get the index of a specified field (i.e., dimension/channel)
-    * \param[in] cloud the the point cloud message
+    * \param[in] cloud the point cloud message
     * \param[in] field_name the string defining the field name
     * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
     * \ingroup common
@@ -99,7 +100,7 @@ namespace pcl
   getFields (std::vector<pcl::PCLPointField> &fields);
 
   /** \brief Get the list of all fields available in a given cloud
-    * \param[in] cloud the the point cloud message
+    * \param[in] cloud the point cloud message
     * \ingroup common
     */
   template <typename PointT> inline std::string 
@@ -173,12 +174,14 @@ namespace pcl
           return (pcl::PCLPointField::INT8);
         if (type == 'U')
           return (pcl::PCLPointField::UINT8);
+        break;
 
       case 2:
         if (type == 'I')
           return (pcl::PCLPointField::INT16);
         if (type == 'U')
           return (pcl::PCLPointField::UINT16);
+        break;
 
       case 4:
         if (type == 'I')
@@ -187,13 +190,14 @@ namespace pcl
           return (pcl::PCLPointField::UINT32);
         if (type == 'F')
           return (pcl::PCLPointField::FLOAT32);
+        break;
 
       case 8:
-        return (pcl::PCLPointField::FLOAT64);
-
-      default:
-        return (-1);
+        if (type == 'F')
+          return (pcl::PCLPointField::FLOAT64);
+        break;
     }
+    return (-1);
   }
 
   /** \brief Obtains the type of the PCLPointField from a specific PCLPointField as a char
@@ -222,6 +226,24 @@ namespace pcl
         return ('?');
     }
   }
+
+  typedef enum
+  {
+    BORDER_CONSTANT = 0, BORDER_REPLICATE = 1,
+    BORDER_REFLECT = 2, BORDER_WRAP = 3,
+    BORDER_REFLECT_101 = 4, BORDER_TRANSPARENT = 5,
+    BORDER_DEFAULT = BORDER_REFLECT_101
+  } InterpolationType;
+
+  /** \brief \return the right index according to the interpolation type.
+    * \note this is adapted from OpenCV
+    * \param p the index of point to interpolate
+    * \param length the top/bottom row or left/right column index
+    * \param type the requested interpolation
+    * \throws pcl::BadArgumentException if type is unknown
+    */
+  PCL_EXPORTS int
+  interpolatePointIndex (int p, int length, InterpolationType type);
 
   /** \brief Concatenate two pcl::PCLPointCloud2.
     * \param[in] cloud1 the first input point cloud dataset
@@ -379,6 +401,31 @@ namespace pcl
   copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
                   const std::vector<pcl::PointIndices> &indices, 
                   pcl::PointCloud<PointOutT> &cloud_out);
+
+  /** \brief Copy a point cloud inside a larger one interpolating borders.
+    * \param[in] cloud_in the input point cloud dataset
+    * \param[out] cloud_out the resultant output point cloud dataset
+    * \param top
+    * \param bottom
+    * \param left
+    * \param right
+    * Position of cloud_in inside cloud_out is given by \a top, \a left, \a bottom \a right.
+    * \param[in] border_type the interpolating method (pcl::BORDER_XXX)
+    *  BORDER_REPLICATE:     aaaaaa|abcdefgh|hhhhhhh
+    *  BORDER_REFLECT:       fedcba|abcdefgh|hgfedcb
+    *  BORDER_REFLECT_101:   gfedcb|abcdefgh|gfedcba
+    *  BORDER_WRAP:          cdefgh|abcdefgh|abcdefg
+    *  BORDER_CONSTANT:      iiiiii|abcdefgh|iiiiiii  with some specified 'i'
+    *  BORDER_TRANSPARENT:   mnopqr|abcdefgh|tuvwxyz  where m-r and t-z are original values of cloud_out
+    * \param value
+    * \throw pcl::BadArgumentException if any of top, bottom, left or right is negative.
+    * \ingroup common
+    */
+  template <typename PointT> void
+  copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
+                  pcl::PointCloud<PointT> &cloud_out,
+                  int top, int bottom, int left, int right,
+                  pcl::InterpolationType border_type, const PointT& value);
 
   /** \brief Concatenate two datasets representing different fields.
     *

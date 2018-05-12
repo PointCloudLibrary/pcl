@@ -220,8 +220,8 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   //data_.reserve (dim_.x () * dim_.y () * dim_.z ());
 
 /*
-  std::vector<Eigen::Vector3i> data;
-  std::vector<Eigen::Vector3i> color;
+  std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > data;
+  std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > color;
   // fill the data vector
   for (int kk = min_b.z (), k = 0; kk <= max_b.z (); kk++, k++)
   {
@@ -573,7 +573,7 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
   // create the output cloud
   output = *filtered_anno_;
 
-  for (size_t i = 0; i < N; i++)
+  for (int i = 0; i < N; i++)
   {
     output.points[i].label = labels[r[i]];
   }

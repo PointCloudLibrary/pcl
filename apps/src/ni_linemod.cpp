@@ -249,7 +249,7 @@ class NILinemod
       exppd.segment (*points_above_plane);
 
       // Use an organized clustering segmentation to extract the individual clusters
-      EuclideanClusterComparator<PointT, Normal, Label>::Ptr euclidean_cluster_comparator (new EuclideanClusterComparator<PointT, Normal, Label>);
+      EuclideanClusterComparator<PointT, Label>::Ptr euclidean_cluster_comparator (new EuclideanClusterComparator<PointT, Label>);
       euclidean_cluster_comparator->setInputCloud (cloud);
       euclidean_cluster_comparator->setDistanceThreshold (0.03f, false);
       // Set the entire scene to false, and the inliers of the objects located on top of the plane to true
@@ -260,8 +260,8 @@ class NILinemod
         scene->points[points_above_plane->indices[i]].label = 1;
       euclidean_cluster_comparator->setLabels (scene);
 
-      vector<bool> exclude_labels (2);  exclude_labels[0] = true; exclude_labels[1] = false;
-      euclidean_cluster_comparator->setExcludeLabels (exclude_labels);
+      boost::shared_ptr<std::set<uint32_t> > exclude_labels = boost::make_shared<std::set<uint32_t> > ();
+      exclude_labels->insert (0);
 
       OrganizedConnectedComponentSegmentation<PointT, Label> euclidean_segmentation (euclidean_cluster_comparator);
       euclidean_segmentation.setInputCloud (cloud);
@@ -323,7 +323,7 @@ class NILinemod
       vector<PointIndices> label_indices;
       vector<PointIndices> boundary_indices;
       mps_.segmentAndRefine (regions, model_coefficients, inlier_indices, labels, label_indices, boundary_indices);
-      PCL_DEBUG ("Number of planar regions detected: %zu for a cloud of %zu points and %zu normals.\n", regions.size (), search_.getInputCloud ()->points.size (), normal_cloud->points.size ());
+      PCL_DEBUG ("Number of planar regions detected: %lu for a cloud of %lu points and %lu normals.\n", regions.size (), search_.getInputCloud ()->points.size (), normal_cloud->points.size ());
 
       double max_dist = numeric_limits<double>::max ();
       // Compute the distances from all the planar regions to the picked point, and select the closest region
@@ -428,7 +428,7 @@ class NILinemod
 
         PlanarRegion<PointT> refined_region;
         pcl::approximatePolygon (region, refined_region, 0.01, false, true);
-        PCL_INFO ("Planar region: %zu points initial, %zu points after refinement.\n", region.getContour ().size (), refined_region.getContour ().size ());
+        PCL_INFO ("Planar region: %lu points initial, %lu points after refinement.\n", region.getContour ().size (), refined_region.getContour ().size ());
         cloud_viewer_.addPolygon (refined_region, 0.0, 0.0, 1.0, "refined_region");
         cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "refined_region");
 

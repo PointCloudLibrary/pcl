@@ -334,7 +334,7 @@ namespace pcl
 
         /**
          * \brief Initializes the FLANN structure from the provided source
-         * It does training for the models that havent been trained yet
+         * It does training for the models that haven't been trained yet
          */
 
         void

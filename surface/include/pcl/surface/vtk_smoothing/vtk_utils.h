@@ -50,11 +50,13 @@ namespace pcl
     public:
       /** \brief Convert a PCL PolygonMesh to a VTK vtkPolyData.
         * \param[in] triangles PolygonMesh to be converted to vtkPolyData, stored in the object.
+        * \param[out] triangles_out_vtk
         */
       static int
       convertToVTK (const pcl::PolygonMesh &triangles, vtkSmartPointer<vtkPolyData> &triangles_out_vtk);
 
       /** \brief Convert the vtkPolyData object back to PolygonMesh.
+        * \param[in] vtk_polygons
         * \param[out] triangles the PolygonMesh to store the vtkPolyData in.
         */
       static void

@@ -39,7 +39,8 @@
 #ifndef PCL_OCTREE_CHANGEDETECTOR_H
 #define PCL_OCTREE_CHANGEDETECTOR_H
 
-#include "octree_pointcloud.h"
+#include <pcl/octree/octree_pointcloud.h>
+#include <pcl/octree/octree2buf_base.h>
 
 namespace pcl
 {
@@ -98,7 +99,7 @@ namespace pcl
 
           for (it=leaf_containers.begin(); it!=it_end; ++it)
           {
-            if ((*it)->getSize()>=minPointsPerLeaf_arg)
+            if (static_cast<int> ((*it)->getSize ()) >= minPointsPerLeaf_arg)
               (*it)->getPointIndices(indicesVector_arg);
           }
 

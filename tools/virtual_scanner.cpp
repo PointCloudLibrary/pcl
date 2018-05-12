@@ -108,7 +108,7 @@ main (int argc, char** argv)
               "         -view_point <x,y,z>       : set the camera viewpoint from where the acquisition will take place\n"
               "         -target_point <x,y,z>     : the target point that the camera should look at (default: 0, 0, 0)\n"
               "         -organized <0|1>          : create an organized, grid-like point cloud of width x height (1), or keep it unorganized with height = 1 (0)\n"
-              "         -noise <0|1>              : add gausian noise (1) or keep the model noiseless (0)\n"
+              "         -noise <0|1>              : add gaussian noise (1) or keep the model noiseless (0)\n"
               "         -noise_std <x>            : use X times the standard deviation\n"
               "");
     return (-1);
@@ -218,10 +218,10 @@ main (int argc, char** argv)
   vtkSmartPointer<vtkLoopSubdivisionFilter> subdivide = vtkSmartPointer<vtkLoopSubdivisionFilter>::New ();
   subdivide->SetNumberOfSubdivisions (subdiv_level);
   subdivide->SetInputConnection (icosa->GetOutputPort ());
+  subdivide->Update ();
 
   // Get camera positions
   vtkPolyData *sphere = subdivide->GetOutput ();
-  sphere->Update ();
   if (!single_view)
     PCL_INFO ("Created %ld camera position points.\n", sphere->GetNumberOfPoints ());
 
@@ -431,7 +431,7 @@ main (int argc, char** argv)
     }
 
     pcl::PCDWriter writer;
-    PCL_INFO ("Wrote %zu points (%d x %d) to %s\n", cloud.points.size (), cloud.width, cloud.height, fname.c_str ());
+    PCL_INFO ("Wrote %lu points (%d x %d) to %s\n", cloud.points.size (), cloud.width, cloud.height, fname.c_str ());
     writer.writeBinaryCompressed (fname.c_str (), cloud);
   } // sphere
   return (0);

@@ -149,7 +149,7 @@ namespace pcl
         return (filtered_quantized_color_gradients_);
       }
   
-      /** \brief Returns a reference to the internally computed spreaded quantized map. */
+      /** \brief Returns a reference to the internally computed spread quantized map. */
       inline QuantizedMap &
       getSpreadedQuantizedMap () 
       { 
@@ -167,7 +167,7 @@ namespace pcl
         * \param[in] mask defines the areas where features are searched in. 
         * \param[in] nr_features defines the number of features to be extracted 
         *            (might be less if not sufficient information is present in the modality).
-        * \param[in] modality_index the index which is stored in the extracted features.
+        * \param[in] modalityIndex the index which is stored in the extracted features.
         * \param[out] features the destination for the extracted features.
         */
       void
@@ -177,7 +177,7 @@ namespace pcl
       /** \brief Extracts all possible features from the modality within the specified mask.
         * \param[in] mask defines the areas where features are searched in. 
         * \param[in] nr_features IGNORED (TODO: remove this parameter).
-        * \param[in] modality_index the index which is stored in the extracted features.
+        * \param[in] modalityIndex the index which is stored in the extracted features.
         * \param[out] features the destination for the extracted features.
         */
       void
@@ -243,7 +243,7 @@ namespace pcl
       /** \brief Determines whether variable numbers of features are extracted or not. */
       bool variable_feature_nr_;
 
-      /** \brief Stores a smoothed verion of the input cloud. */
+      /** \brief Stores a smoothed version of the input cloud. */
 	    pcl::PointCloud<pcl::RGB>::Ptr smoothed_input_;
 
       /** \brief Defines which feature selection method is used. */
@@ -264,7 +264,7 @@ namespace pcl
       pcl::QuantizedMap quantized_color_gradients_;
       /** \brief The map which holds the filtered quantized data. */
       pcl::QuantizedMap filtered_quantized_color_gradients_;
-      /** \brief The map which holds the spreaded quantized data. */
+      /** \brief The map which holds the spread quantized data. */
       pcl::QuantizedMap spreaded_filtered_quantized_color_gradients_;
   
   };
@@ -915,7 +915,7 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       if (sqr_mag_r > sqr_mag_g && sqr_mag_r > sqr_mag_b)
       {
         GradientXY gradient;
-        gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_r));
+        gradient.magnitude = std::sqrt (static_cast<float> (sqr_mag_r));
         gradient.angle = atan2f (static_cast<float> (r_dy), static_cast<float> (r_dx)) * 180.0f / pi;
         if (gradient.angle < -180.0f) gradient.angle += 360.0f;
         if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
@@ -927,7 +927,7 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       else if (sqr_mag_g > sqr_mag_b)
       {
         GradientXY gradient;
-        gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_g));
+        gradient.magnitude = std::sqrt (static_cast<float> (sqr_mag_g));
         gradient.angle = atan2f (static_cast<float> (g_dy), static_cast<float> (g_dx)) * 180.0f / pi;
         if (gradient.angle < -180.0f) gradient.angle += 360.0f;
         if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
@@ -939,7 +939,7 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       else
       {
         GradientXY gradient;
-        gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_b));
+        gradient.magnitude = std::sqrt (static_cast<float> (sqr_mag_b));
         gradient.angle = atan2f (static_cast<float> (b_dy), static_cast<float> (b_dx)) * 180.0f / pi;
         if (gradient.angle < -180.0f) gradient.angle += 360.0f;
         if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;

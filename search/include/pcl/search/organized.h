@@ -112,7 +112,7 @@ namespace pcl
           // 2 * tan (85 degree) ~ 22.86
           float min_f = 0.043744332f * static_cast<float>(input_->width);
           //std::cout << "isValid: " << determinant3x3Matrix<Eigen::Matrix3f> (KR_ / sqrt (KR_KRT_.coeff (8))) << " >= " << (min_f * min_f) << std::endl;
-          return (determinant3x3Matrix<Eigen::Matrix3f> (KR_ / sqrtf (KR_KRT_.coeff (8))) >= (min_f * min_f));
+          return (determinant3x3Matrix<Eigen::Matrix3f> (KR_ / std::sqrt (KR_KRT_.coeff (8))) >= (min_f * min_f));
         }
         
         /** \brief Compute the camera matrix
@@ -208,9 +208,9 @@ namespace pcl
         /** \brief test if point given by index is among the k NN in results to the query point.
           * \param[in] query query point
           * \param[in] k number of maximum nn interested in
-          * \param[in] queue priority queue with k NN
+          * \param[in,out] queue priority queue with k NN
           * \param[in] index index on point to be tested
-          * \return wheter the top element changed or not.
+          * \return whether the top element changed or not.
           */
         inline bool 
         testPoint (const PointT& query, unsigned k, std::priority_queue<Entry>& queue, unsigned index) const
@@ -224,7 +224,10 @@ namespace pcl
             float dist_z = point.z - query.z;
             float squared_distance = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
             if (queue.size () < k)
+            {
               queue.push (Entry (index, squared_distance));
+              return queue.size () == k;
+            }
             else if (queue.top ().distance > squared_distance)
             {
               queue.pop ();

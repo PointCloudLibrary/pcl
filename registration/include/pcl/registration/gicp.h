@@ -48,7 +48,7 @@ namespace pcl
 {
   /** \brief GeneralizedIterativeClosestPoint is an ICP variant that implements the 
     * generalized iterative closest point algorithm as described by Alex Segal et al. in 
-    * http://www.stanford.edu/~avsegal/resources/papers/Generalized_ICP.pdf
+    * http://www.robots.ox.ac.uk/~avsegal/resources/papers/Generalized_ICP.pdf
     * The approach is based on using anistropic cost functions to optimize the alignment 
     * after closest point assignments have been made.
     * The original code uses GSL and ANN while in ours we use an eigen mapped BFGS and 
@@ -90,6 +90,10 @@ namespace pcl
       typedef PointIndices::Ptr PointIndicesPtr;
       typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
+      typedef std::vector< Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> > MatricesVector;
+      typedef boost::shared_ptr< MatricesVector > MatricesVectorPtr;
+      typedef boost::shared_ptr< const MatricesVector > MatricesVectorConstPtr;
+      
       typedef typename Registration<PointSource, PointTarget>::KdTree InputKdTree;
       typedef typename Registration<PointSource, PointTarget>::KdTreePtr InputKdTreePtr;
 
@@ -104,8 +108,6 @@ namespace pcl
         : k_correspondences_(20)
         , gicp_epsilon_(0.001)
         , rotation_epsilon_(2e-3)
-        , input_covariances_(0)
-        , target_covariances_(0)
         , mahalanobis_(0)
         , max_inner_iterations_(20)
       {
@@ -118,11 +120,6 @@ namespace pcl
           boost::bind (&GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationBFGS, 
                        this, _1, _2, _3, _4, _5); 
       }
-      
-      /** \brief Provide a pointer to the input dataset
-        * \param cloud the const boost shared pointer to a PointCloud message
-        */
-      PCL_DEPRECATED (void setInputCloud (const PointCloudSourceConstPtr &cloud), "[pcl::registration::GeneralizedIterativeClosestPoint::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.");
 
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
@@ -142,10 +139,20 @@ namespace pcl
           input[i].data[3] = 1.0;
         
         pcl::IterativeClosestPoint<PointSource, PointTarget>::setInputSource (cloud);
-        input_covariances_.clear ();
-        input_covariances_.reserve (input_->size ());
+        input_covariances_.reset ();
       }
 
+      /** \brief Provide a pointer to the covariances of the input source (if computed externally!). 
+        * If not set, GeneralizedIterativeClosestPoint will compute the covariances itself.
+        * Make sure to set the covariances AFTER setting the input source point cloud (setting the input source point cloud will reset the covariances).
+        * \param[in] target the input point cloud target
+        */
+      inline void 
+      setSourceCovariances (const MatricesVectorPtr& covariances)
+      {
+        input_covariances_ = covariances;
+      }
+      
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)
         * \param[in] target the input point cloud target
         */
@@ -153,16 +160,26 @@ namespace pcl
       setInputTarget (const PointCloudTargetConstPtr &target)
       {
         pcl::IterativeClosestPoint<PointSource, PointTarget>::setInputTarget(target);
-        target_covariances_.clear ();
-        target_covariances_.reserve (target_->size ());
+        target_covariances_.reset ();
       }
 
+      /** \brief Provide a pointer to the covariances of the input target (if computed externally!). 
+        * If not set, GeneralizedIterativeClosestPoint will compute the covariances itself.
+        * Make sure to set the covariances AFTER setting the input source point cloud (setting the input source point cloud will reset the covariances).
+        * \param[in] target the input point cloud target
+        */
+	    inline void 
+      setTargetCovariances (const MatricesVectorPtr& covariances)
+      {
+        target_covariances_ = covariances;
+      }
+      
       /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative
         * non-linear Levenberg-Marquardt approach.
         * \param[in] cloud_src the source point cloud dataset
         * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
         * \param[in] cloud_tgt the target point cloud dataset
-        * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
+        * \param[in] indices_tgt the vector of indices describing the correspondences of the interest points from \a indices_src
         * \param[out] transformation_matrix the resultant transformation matrix
         */
       void
@@ -236,7 +253,7 @@ namespace pcl
       int k_correspondences_;
 
       /** \brief The epsilon constant for gicp paper; this is NOT the convergence 
-        * tolerence 
+        * tolerance 
         * default: 0.001
         */
       double gicp_epsilon_;
@@ -264,10 +281,10 @@ namespace pcl
 
       
       /** \brief Input cloud points covariances. */
-      std::vector<Eigen::Matrix3d> input_covariances_;
+      MatricesVectorPtr input_covariances_;
 
       /** \brief Target cloud points covariances. */
-      std::vector<Eigen::Matrix3d> target_covariances_;
+      MatricesVectorPtr target_covariances_;
 
       /** \brief Mahalanobis matrices holder. */
       std::vector<Eigen::Matrix3d> mahalanobis_;
@@ -276,15 +293,15 @@ namespace pcl
       int max_inner_iterations_;
 
       /** \brief compute points covariances matrices according to the K nearest 
-        * neighbors. K is set via setCorrespondenceRandomness() methode.
+        * neighbors. K is set via setCorrespondenceRandomness() method.
         * \param cloud pointer to point cloud
         * \param tree KD tree performer for nearest neighbors search
-        * \return cloud_covariance covariances matrices for each point in the cloud
+        * \param[out] cloud_covariances covariances matrices for each point in the cloud
         */
       template<typename PointT>
       void computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud, 
                               const typename pcl::search::KdTree<PointT>::Ptr tree,
-                              std::vector<Eigen::Matrix3d>& cloud_covariances);
+                              MatricesVector& cloud_covariances);
 
       /** \return trace of mat1^t . mat2 
         * \param mat1 matrix of dimension nxm

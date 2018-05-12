@@ -110,12 +110,18 @@ macro(PCL_SUBSYS_DEPEND _var _name)
         if(SUBSYS_EXT_DEPS)
         foreach(_dep ${SUBSYS_EXT_DEPS})
             string(TOUPPER "${_dep}_found" EXT_DEP_FOUND)
-            if(NOT ${EXT_DEP_FOUND} OR (NOT ("${EXT_DEP_FOUND}" STREQUAL "TRUE")))
+            if(NOT ${EXT_DEP_FOUND} OR (NOT (${EXT_DEP_FOUND} STREQUAL "TRUE")))
                 set(${_var} FALSE)
                 PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires external library ${_dep}.")
-            endif(NOT ${EXT_DEP_FOUND} OR (NOT ("${EXT_DEP_FOUND}" STREQUAL "TRUE")))
+            endif(NOT ${EXT_DEP_FOUND} OR (NOT (${EXT_DEP_FOUND} STREQUAL "TRUE")))
         endforeach(_dep)
         endif(SUBSYS_EXT_DEPS)
+        if(SUBSYS_OPT_DEPS)
+        foreach(_dep ${SUBSYS_OPT_DEPS})
+            PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
+            include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
+        endforeach(_dep)
+        endif(SUBSYS_OPT_DEPS)
     endif(${_var} AND (NOT ("${subsys_status}" STREQUAL "AUTO_OFF")))
 endmacro(PCL_SUBSYS_DEPEND)
 
@@ -196,27 +202,12 @@ macro(PCL_ADD_LIBRARY _name _component)
       target_link_libraries(${_name} gomp)
     endif()
 	
-	if(MSVC90 OR MSVC10)
+	if(MSVC)
 	  target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
 	endif()
-    #
-    # Only link if needed
-    if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
-      endif()
-    elseif(__COMPILER_PATHSCALE)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
-    elseif(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition -Wl,--as-needed")
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
-    endif()
-    #
+
     set_target_properties(${_name} PROPERTIES
-        VERSION ${PCL_VERSION}
+        VERSION ${PCL_VERSION_PLAIN}
         SOVERSION ${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
     if(USE_PROJECT_FOLDERS)
@@ -237,6 +228,7 @@ endmacro(PCL_ADD_LIBRARY)
 # _component The part of PCL that this library belongs to.
 # ARGN The source files for the library.
 macro(PCL_CUDA_ADD_LIBRARY _name _component)
+    REMOVE_VTK_DEFINITIONS()
     if(PCL_SHARED_LIBS)
         # to overcome a limitation in cuda_add_library, we add manually PCLAPI_EXPORTS macro
         cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -DPCLAPI_EXPORTS)
@@ -246,20 +238,9 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
     
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
-    #
-    # Only link if needed
-    if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
-      endif()
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
-    endif()
-    #
+
     set_target_properties(${_name} PROPERTIES
-        VERSION ${PCL_VERSION}
+        VERSION ${PCL_VERSION_PLAIN}
         SOVERSION ${PCL_MAJOR_VERSION}
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
     if(USE_PROJECT_FOLDERS)
@@ -286,24 +267,12 @@ macro(PCL_ADD_EXECUTABLE _name _component)
     else()
       target_link_libraries(${_name} ${Boost_LIBRARIES})
     endif()
-    #
-    # Only link if needed
+
     if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
-                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
-      endif()
-    elseif(__COMPILER_PATHSCALE)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
-    elseif(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition -Wl,--as-needed")
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
-    #
+
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
     endif(USE_PROJECT_FOLDERS)
@@ -332,24 +301,12 @@ endif(APPLE AND VTK_USE_COCOA)
     else()
       target_link_libraries(${_name} ${Boost_LIBRARIES})
     endif()
-    #
-    # Only link if needed
+
     if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
-                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
-      endif()
-    elseif(__COMPILER_PATHSCALE)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
-    elseif(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition -Wl,--as-needed")
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
-    #
+
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
     endif(USE_PROJECT_FOLDERS)
@@ -375,23 +332,16 @@ endmacro(PCL_ADD_EXECUTABLE_OPT_BUNDLE)
 # _component The part of PCL that this library belongs to.
 # ARGN the source files for the library.
 macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
+    REMOVE_VTK_DEFINITIONS()
     cuda_add_executable(${_name} ${ARGN})
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
-    #
-    # Only link if needed
+
     if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
-                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
-      endif()
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
-    #
+
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
     endif(USE_PROJECT_FOLDERS)
@@ -420,23 +370,14 @@ macro(PCL_ADD_TEST _name _exename)
     endif(NOT WIN32)
     #target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
     target_link_libraries(${_exename} ${PCL_ADD_TEST_LINK_WITH} ${CLANG_LIBRARIES})
-    #
-    # Only link if needed
+
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_exename} PROPERTIES LINK_FLAGS -Wl)
-      endif()
       target_link_libraries(${_exename} pthread)
     elseif(UNIX AND NOT ANDROID)
-      set_target_properties(${_exename} PROPERTIES LINK_FLAGS -Wl,--as-needed)
       # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
       target_link_libraries(${_exename} pthread)
-    elseif(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
-      set_target_properties(${_exename} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition -Wl,--as-needed")
-    elseif(WIN32)
-      set_target_properties(${_exename} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
     endif()
-    # 
+
     # must link explicitly against boost only on Windows
     target_link_libraries(${_exename} ${Boost_LIBRARIES})
     #
@@ -449,6 +390,8 @@ macro(PCL_ADD_TEST _name _exename)
     else(${CMAKE_VERSION} VERSION_LESS 2.8.4)
       add_test(NAME ${_name} COMMAND ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
     endif(${CMAKE_VERSION} VERSION_LESS 2.8.4)
+
+    add_dependencies(tests ${_exename})
 endmacro(PCL_ADD_TEST)
 
 ###############################################################################
@@ -507,7 +450,7 @@ endmacro(PCL_ADD_LINKFLAGS)
 
 ###############################################################################
 # Make a pkg-config file for a library. Do not include general PCL stuff in the
-# arguments; they will be added automaticaly.
+# arguments; they will be added automatically.
 # _name The library name. "pcl_" will be preprended to this.
 # _component The part of PCL that this pkg-config file belongs to.
 # _desc Description of the library.
@@ -544,7 +487,7 @@ endmacro(PCL_MAKE_PKGCONFIG)
 # Essentially a duplicate of PCL_MAKE_PKGCONFIG, but 
 # ensures that no -L or l flags will be created
 # Do not include general PCL stuff in the
-# arguments; they will be added automaticaly.
+# arguments; they will be added automatically.
 # _name The library name. "pcl_" will be preprended to this.
 # _component The part of PCL that this pkg-config file belongs to.
 # _desc Description of the library.
@@ -680,7 +623,7 @@ endmacro(PCL_GET_SUBSUBSYS_STATUS)
 ###############################################################################
 # Set the hyperstatus of a subsystem and its dependee
 # _name Subsystem name.
-# _dependee Dependant subsystem.
+# _dependee Dependent subsystem.
 # _status AUTO_OFF to disable AUTO_ON to enable
 # ARGN[0] Reason for not building.
 macro(PCL_SET_SUBSYS_HYPERSTATUS _name _dependee _status) 
@@ -693,7 +636,7 @@ endmacro(PCL_SET_SUBSYS_HYPERSTATUS)
 ###############################################################################
 # Get the hyperstatus of a subsystem and its dependee
 # _name IN subsystem name.
-# _dependee IN dependant subsystem.
+# _dependee IN dependent subsystem.
 # _var OUT hyperstatus
 # ARGN[0] Reason for not building.
 macro(PCL_GET_SUBSYS_HYPERSTATUS _var _name)
@@ -901,3 +844,35 @@ macro (PCL_ADD_DOC _subsys)
     endif(USE_PROJECT_FOLDERS)
   endif(DOXYGEN_FOUND)
 endmacro(PCL_ADD_DOC)
+
+###############################################################################
+# Add a dependency for a grabber
+# _name The dependency name.
+# _description The description text to display when dependency is not found.
+# This macro adds on option named "WITH_NAME", where NAME is the capitalized
+# dependency name. The user may use this option to control whether the
+# corresponding grabber should be built or not. Also an attempt to find a
+# package with the given name is made. If it is not successful, then the
+# "WITH_NAME" option is coerced to FALSE.
+macro(PCL_ADD_GRABBER_DEPENDENCY _name _description)
+    string(TOUPPER ${_name} _name_capitalized)
+    option(WITH_${_name_capitalized} "${_description}" TRUE)
+    if(WITH_${_name_capitalized})
+      find_package(${_name})
+      if (NOT ${_name_capitalized}_FOUND)
+        set(WITH_${_name_capitalized} FALSE CACHE BOOL "${_description}" FORCE)
+        message(WARNING "${_description}: not building because ${_name} not found")
+      else()
+        set(HAVE_${_name_capitalized} TRUE)
+        include_directories(SYSTEM "${${_name_capitalized}_INCLUDE_DIRS}")
+      endif()
+    endif()
+endmacro(PCL_ADD_GRABBER_DEPENDENCY)
+
+###############################################################################
+# Set the dependencies for a specific test module on the provided variable
+# _var The variable to be filled with the dependencies
+# _module The module name
+macro(PCL_SET_TEST_DEPENDENCIES _var _module)
+    set(${_var} global_tests ${_module} ${PCL_SUBSYS_DEPS_${_module}})
+endmacro(PCL_SET_TEST_DEPENDENCIES)
