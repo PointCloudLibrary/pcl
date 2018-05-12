@@ -41,8 +41,8 @@
 */
 
 //#include "stdafx.h"
-#include "PointCloud2Images.h"
 
+#include <pcl/range_image/PointCloud2Images.h>
 namespace pcl
 {
 	singleton* singleton::instance(void)
@@ -677,89 +677,89 @@ namespace pcl
 	}
 }
 
-int main(int argc, char* argv[])
-{
-	using namespace pcl;
-	const int w_degree = 60;	//Vertical viewing angle
-	const int h_degree = 180;	//Horizontal viewing angle
-	const int w_n_pixel = 360;	//Picture width
-	const int h_n_pixel = 360;	//Picture height
-	const int picnum = 60;		//Picture num
-
-	//The best point of view is to select the middle of the scene or the data acquisition track
-	const pcl::PointXYZ Viewpoint (0,0,0);//Viewpoint
-	
-	string data_in = "data_xyzirgbl.txt";
-	string images_out = "Image//";
-
-	if (argc == 1)
-	{
-		data_in = "..//..//Points2Image//data_xyzirgbl.txt";
-		images_out = "..//..//Points2Image//Image//";
-	}
-	else if (strcmp(argv[1], "help") == 0 || strcmp(argv[1], "h") == 0)
-	{
-		cout << "Program input: [Data_input path] and [Images_output path]" << endl;
-		cout << "Data Format:[x y z i r g b l]" << endl;
-		return 0;
-	}
-	else if (argc == 3)
-	{
-		data_in = argv[1];
-		images_out = argv[2];
-	}
-	else if (argc > 3)
-	{
-		cout << "Program input: [Data_input path] and [Images_output path]" << endl;
-		cout << "Data Format:[x y z i r g b l]" << endl;
-		return 0;
-	}
-
-	singleton *globaldata = singleton::instance();
-	PointCloud2Image pci;
-
-	double start, end;
-	//start = GetTickCount();
-	pci.data_input(data_in, Viewpoint, globaldata->data);
-	if (globaldata->data.size()==0)
-	{
-		cout << "Data_path : "<< data_in << endl;
-		cout << "Point cloud size is empty! " << endl;
-		//system("pause");
-		return 0;
-	}
-	//end = GetTickCount();
-	//cout << ">>> Data_input ok! Time consuming " << (end - start) / 1000 << "s" << " Data size: " << globaldata->data.size() << endl;
-
-	//start = GetTickCount();
-	pci.get_Matrix(globaldata, w_degree, h_degree, w_n_pixel, h_n_pixel, picnum);
-	//end = GetTickCount();
-	//cout << ">>> Get_Matrix ok! Time consuming " << (end - start) / 1000 << "s" << endl;
-
-	//start = GetTickCount();
-	pci.get_Feature(globaldata);
-	//end = GetTickCount();
-	//cout << ">>> Get_Feature ok! Time consuming " << (end - start) / 1000 << "s" << endl;
-
-	//start = GetTickCount();
-	#pragma omp parallel for
-	for (int i = 0; i < globaldata->picnum; i++)
-	{
-		stringstream ss; string t;
-		ss << i; ss >> t;
-		#pragma omp parallel
-		{
-			pci.draw_picture_PBA(string(images_out) + "PBA_" + t + ".png", globaldata->n_image[i]);
-			pci.draw_picture_N(string(images_out) + "N_" + t + ".png", globaldata->n_image[i]);
-			pci.draw_picture_BA(string(images_out) + "BA_" + t + ".png", globaldata->n_image[i]);
-			pci.draw_picture_Intensity(string(images_out) + "I_" + t + ".png", globaldata->n_image[i]);
-			pci.draw_picture_Depth(string(images_out) + "Depth_" + t + ".png", globaldata->n_image[i]);
-			pci.draw_picture_RGB(string(images_out) + "RGB_" + t + ".png", globaldata->n_image[i]);
-		}
-	}
-	//end = GetTickCount();
-	//cout << ">>> Draw_picture ok! Time consuming " << (end - start) / 1000 << "s" << endl;
-	//system("pause");
-	return 0;
-}
-
+//int main(int argc, char* argv[])
+//{
+//	using namespace pcl;
+//	const int w_degree = 60;	//Vertical viewing angle
+//	const int h_degree = 180;	//Horizontal viewing angle
+//	const int w_n_pixel = 360;	//Picture width
+//	const int h_n_pixel = 360;	//Picture height
+//	const int picnum = 60;		//Picture num
+//
+//	//The best point of view is to select the middle of the scene or the data acquisition track
+//	const pcl::PointXYZ Viewpoint (0,0,0);//Viewpoint
+//	
+//	string data_in = "data_xyzirgbl.txt";
+//	string images_out = "Image//";
+//
+//	if (argc == 1)
+//	{
+//		data_in = "..//..//Points2Image//data_xyzirgbl.txt";
+//		images_out = "..//..//Points2Image//Image//";
+//	}
+//	else if (strcmp(argv[1], "help") == 0 || strcmp(argv[1], "h") == 0)
+//	{
+//		cout << "Program input: [Data_input path] and [Images_output path]" << endl;
+//		cout << "Data Format:[x y z i r g b l]" << endl;
+//		return 0;
+//	}
+//	else if (argc == 3)
+//	{
+//		data_in = argv[1];
+//		images_out = argv[2];
+//	}
+//	else if (argc > 3)
+//	{
+//		cout << "Program input: [Data_input path] and [Images_output path]" << endl;
+//		cout << "Data Format:[x y z i r g b l]" << endl;
+//		return 0;
+//	}
+//
+//	singleton *globaldata = singleton::instance();
+//	PointCloud2Image pci;
+//
+//	double start, end;
+//	//start = GetTickCount();
+//	pci.data_input(data_in, Viewpoint, globaldata->data);
+//	if (globaldata->data.size()==0)
+//	{
+//		cout << "Data_path : "<< data_in << endl;
+//		cout << "Point cloud size is empty! " << endl;
+//		//system("pause");
+//		return 0;
+//	}
+//	//end = GetTickCount();
+//	//cout << ">>> Data_input ok! Time consuming " << (end - start) / 1000 << "s" << " Data size: " << globaldata->data.size() << endl;
+//
+//	//start = GetTickCount();
+//	pci.get_Matrix(globaldata, w_degree, h_degree, w_n_pixel, h_n_pixel, picnum);
+//	//end = GetTickCount();
+//	//cout << ">>> Get_Matrix ok! Time consuming " << (end - start) / 1000 << "s" << endl;
+//
+//	//start = GetTickCount();
+//	pci.get_Feature(globaldata);
+//	//end = GetTickCount();
+//	//cout << ">>> Get_Feature ok! Time consuming " << (end - start) / 1000 << "s" << endl;
+//
+//	//start = GetTickCount();
+//	#pragma omp parallel for
+//	for (int i = 0; i < globaldata->picnum; i++)
+//	{
+//		stringstream ss; string t;
+//		ss << i; ss >> t;
+//		#pragma omp parallel
+//		{
+//			pci.draw_picture_PBA(string(images_out) + "PBA_" + t + ".png", globaldata->n_image[i]);
+//			pci.draw_picture_N(string(images_out) + "N_" + t + ".png", globaldata->n_image[i]);
+//			pci.draw_picture_BA(string(images_out) + "BA_" + t + ".png", globaldata->n_image[i]);
+//			pci.draw_picture_Intensity(string(images_out) + "I_" + t + ".png", globaldata->n_image[i]);
+//			pci.draw_picture_Depth(string(images_out) + "Depth_" + t + ".png", globaldata->n_image[i]);
+//			pci.draw_picture_RGB(string(images_out) + "RGB_" + t + ".png", globaldata->n_image[i]);
+//		}
+//	}
+//	//end = GetTickCount();
+//	//cout << ">>> Draw_picture ok! Time consuming " << (end - start) / 1000 << "s" << endl;
+//	//system("pause");
+//	return 0;
+//}
+//
