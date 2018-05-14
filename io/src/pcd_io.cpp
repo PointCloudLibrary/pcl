@@ -609,7 +609,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
 
     // Unpack the xxyyzz to xyz
     std::vector<char*> pters (fields.size ());
-    int toff = 0;
+    size_t toff = 0;
     for (size_t i = 0; i < pters.size (); ++i)
     {
       pters[i] = &buf[toff];
@@ -999,7 +999,7 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
 
   std::stringstream field_names, field_types, field_sizes, field_counts;
   // Check if the size of the fields is smaller than the size of the point step
-  unsigned int toffset = 0;
+  size_t toffset = 0;
   for (size_t i = 0; i < cloud.fields.size (); ++i)
   {
     // If field offsets do not match, then we need to create fake fields
@@ -1403,7 +1403,7 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
   //   pters[3] = &only_valid_data[offset_of_plane_RGB];
   //
   std::vector<char*> pters (fields.size ());
-  int toff = 0;
+  size_t toff = 0;
   for (size_t i = 0; i < pters.size (); ++i)
   {
     pters[i] = &only_valid_data[toff];
@@ -1423,10 +1423,10 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
 
   std::vector<char> temp_buf (data_size * 3 / 2 + 8);
   // Compress the valid data
-  unsigned int compressed_size = pcl::lzfCompress (&only_valid_data.front (), 
-                                                   static_cast<unsigned int> (data_size), 
-                                                   &temp_buf[8], 
-                                                   data_size * 3 / 2);
+  size_t compressed_size = pcl::lzfCompress (&only_valid_data.front (),
+                                             data_size,
+                                             &temp_buf[8],
+                                             data_size * 3 / 2);
   // Was the compression successful?
   if (compressed_size == 0)
   {

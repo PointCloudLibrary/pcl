@@ -374,21 +374,21 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
     }
   }
 
-  char* temp_buf = static_cast<char*> (malloc (static_cast<size_t> (static_cast<float> (data_size) * 1.5f + 8.0f)));
+  char* temp_buf = static_cast<char*> (malloc (static_cast<size_t> (static_cast<double> (data_size) * 1.5 + 8.0)));
   // Compress the valid data
-  unsigned int compressed_size = pcl::lzfCompress (only_valid_data, 
-                                                   static_cast<uint32_t> (data_size), 
+  size_t compressed_size = pcl::lzfCompress (only_valid_data,
+                                                   static_cast<size_t> (data_size),
                                                    &temp_buf[8], 
-                                                   static_cast<uint32_t> (static_cast<float>(data_size) * 1.5f));
-  unsigned int compressed_final_size = 0;
+                                                   static_cast<size_t> (static_cast<double>(data_size) * 1.5));
+  size_t compressed_final_size = 0;
   // Was the compression successful?
   if (compressed_size)
   {
     char *header = &temp_buf[0];
-    memcpy (&header[0], &compressed_size, sizeof (unsigned int));
-    memcpy (&header[4], &data_size, sizeof (unsigned int));
+    memcpy (&header[0], &compressed_size, sizeof (size_t));
+    memcpy (&header[4], &data_size, sizeof (size_t));
     data_size = compressed_size + 8;
-    compressed_final_size = static_cast<uint32_t> (data_size) + data_idx;
+    compressed_final_size = static_cast<size_t> (data_size) + data_idx;
   }
   else
   {

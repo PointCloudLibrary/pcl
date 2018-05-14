@@ -84,9 +84,9 @@ typedef unsigned int LZF_STATE[1 << (HLOG)];
 // 111ooooo LLLLLLLL oooooooo ; backref L+8 octets, o+1=1..4096 offset
 //
 //
-unsigned int
-pcl::lzfCompress (const void *const in_data, unsigned int in_len,
-                  void *out_data, unsigned int out_len)
+size_t
+pcl::lzfCompress (const void *const in_data, size_t in_len,
+                  void *out_data, size_t out_len)
 {
   LZF_STATE htab;
   const unsigned char *ip = static_cast<const unsigned char *> (in_data);
@@ -108,7 +108,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
   unsigned long off;
 #endif
   unsigned int hval;
-  int lit;
+  long lit;
 
   if (!in_len || !out_len)
   {
@@ -146,7 +146,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
       )
     {
       // Match found at *ref++
-      unsigned int len = 2;
+      size_t len = 2;
       ptrdiff_t maxlen = in_end - ip - len;
       maxlen = maxlen > ((1 << 8) + (1 << 3)) ? ((1 << 8) + (1 << 3)) : maxlen;
 
@@ -193,7 +193,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
 
         do
           len++;
-        while (len < static_cast<unsigned int> (maxlen) && ref[len] == ip[len]);
+        while (len < static_cast<size_t> (maxlen) && ref[len] == ip[len]);
 
         break;
       }
@@ -272,13 +272,13 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
   // Undo run if length is zero
   op -= !lit;
 
-  return (static_cast<unsigned int> (op - static_cast<unsigned char *> (out_data)));
+  return (static_cast<size_t> (op - static_cast<unsigned char *> (out_data)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-unsigned int 
-pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
-                    void             *out_data, unsigned int out_len)
+size_t
+pcl::lzfDecompress (const void *const in_data,  size_t in_len,
+                    void             *out_data, size_t out_len)
 {
   unsigned char const *ip = static_cast<const unsigned char *> (in_data);
   unsigned char       *op = static_cast<unsigned char *> (out_data);
@@ -287,7 +287,7 @@ pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
 
   do
   {
-    unsigned int ctrl = *ip++;
+    size_t ctrl = *ip++;
 
     // Literal run
     if (ctrl < (1 << 5))
@@ -321,7 +321,7 @@ pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
     // Back reference
     else
     {
-      unsigned int len = ctrl >> 5;
+      size_t len = ctrl >> 5;
 
       unsigned char *ref = op - ((ctrl & 0x1f) << 8) - 1;
 
@@ -393,6 +393,6 @@ pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
   }
   while (ip < in_end);
 
-  return (static_cast<unsigned int> (op - static_cast<unsigned char*> (out_data)));
+  return (static_cast<size_t> (op - static_cast<unsigned char*> (out_data)));
 }
 
