@@ -49,12 +49,13 @@
 
 namespace pcl
 {
-  RealSense2Grabber::RealSense2Grabber (const std::string& file_name_or_serial_number)
+  RealSense2Grabber::RealSense2Grabber (const std::string& file_name_or_serial_number, const bool repeat_playback)
     : signal_PointXYZ (createSignal<signal_librealsense_PointXYZ> ())
     , signal_PointXYZI (createSignal<signal_librealsense_PointXYZI> ())
     , signal_PointXYZRGB (createSignal<signal_librealsense_PointXYZRGB> ())
     , signal_PointXYZRGBA (createSignal<signal_librealsense_PointXYZRGBA> ())
     , file_name_or_serial_number_ (file_name_or_serial_number)
+	, repeat_playback_(repeat_playback)
     , quit_ (false)
     , running_ (false)
     , fps_ (0)
@@ -98,7 +99,7 @@ namespace pcl
     // capture from file
     if (file_name_or_serial_number_.rfind (".bag") == file_name_or_serial_number_.length() - 4)
     {
-      cfg.enable_device_from_file (file_name_or_serial_number_);
+      cfg.enable_device_from_file (file_name_or_serial_number_, repeat_playback_);
     }
     else
     {

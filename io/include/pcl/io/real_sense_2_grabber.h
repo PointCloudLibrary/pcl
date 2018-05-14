@@ -62,7 +62,7 @@ namespace pcl
     /** \brief Constructor
     * \param[in] file_name_or_serial_number used for either loading bag file or specific device by serial number
     */
-    RealSense2Grabber (const std::string& file_name_or_serial_number = "");   
+    RealSense2Grabber (const std::string& file_name_or_serial_number = "", const bool repeat_playback = true);   
 
     /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
     virtual ~RealSense2Grabber () throw ();
@@ -188,6 +188,8 @@ namespace pcl
     mutable std::mutex mutex_;
     /** \brief Defines either a file path to a bag file or a realsense device serial number. */
     std::string file_name_or_serial_number_;
+	/** \brief Repeat playback when reading from file */
+	bool repeat_playback_;
     /** \brief controlling the state of the thread. */
     bool quit_;
     /** \brief Is the grabber running. */
