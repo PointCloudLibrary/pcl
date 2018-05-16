@@ -62,7 +62,7 @@ namespace pcl
     /** \brief Constructor
     * \param[in] file_name_or_serial_number used for either loading bag file or specific device by serial number
     */
-    RealSense2Grabber (const std::string& file_name_or_serial_number = "", const bool repeat_playback = true);   
+    RealSense2Grabber ( const std::string& file_name_or_serial_number = "", const bool repeat_playback = true );
 
     /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
     virtual ~RealSense2Grabber () throw ();
@@ -72,8 +72,8 @@ namespace pcl
     * \param[in] height resolution
     * \param[in] fps target frames per second for the device
     */
-    inline void 
-    setDeviceOptions (uint32_t width, uint32_t height, uint32_t fps = 30)
+    inline void
+    setDeviceOptions ( uint32_t width, uint32_t height, uint32_t fps = 30 )
     {
       device_width_ = width;
       device_height_ = height;
@@ -83,7 +83,7 @@ namespace pcl
     }
 
     /** \brief Start the data acquisition. */
-    virtual void 
+    virtual void
     start ();
 
     /** \brief Stop the data acquisition. */
@@ -91,29 +91,29 @@ namespace pcl
     stop ();
 
     /** \brief Check if the data acquisition is still running. */
-    virtual bool 
+    virtual bool
     isRunning () const;
 
     /** \brief Obtain the number of frames per second (FPS). */
-    virtual float 
+    virtual float
     getFramesPerSecond () const;
 
     /** \brief defined grabber name*/
-    virtual std::string 
-    getName () const { return std::string ("RealSense2Grabber"); }
+    virtual std::string
+    getName () const { return std::string ( "RealSense2Grabber" ); }
 
     //define callback signature typedefs
-    typedef void (signal_librealsense_PointXYZ) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ>>&);
-    typedef void (signal_librealsense_PointXYZI) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI>>&);
-    typedef void (signal_librealsense_PointXYZRGB) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB>>&);
-    typedef void (signal_librealsense_PointXYZRGBA) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA>>&);
+    typedef void (signal_librealsense_PointXYZ) ( const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ>>& );
+    typedef void (signal_librealsense_PointXYZI) ( const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI>>& );
+    typedef void (signal_librealsense_PointXYZRGB) ( const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB>>& );
+    typedef void (signal_librealsense_PointXYZRGBA) ( const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA>>& );
 
   protected:
-    
+
     boost::signals2::signal<signal_librealsense_PointXYZ>* signal_PointXYZ;
     boost::signals2::signal<signal_librealsense_PointXYZI>* signal_PointXYZI;
     boost::signals2::signal<signal_librealsense_PointXYZRGB>* signal_PointXYZRGB;
-    boost::signals2::signal<signal_librealsense_PointXYZRGBA>* signal_PointXYZRGBA;    
+    boost::signals2::signal<signal_librealsense_PointXYZRGBA>* signal_PointXYZRGBA;
 
     /** \brief Handle when a signal callback has been changed
     */
@@ -122,40 +122,40 @@ namespace pcl
 
     /** \brief the thread function
     */
-    void 
+    void
     threadFunction ();
 
     /** \brief Dynamic reinitialization.
     */
-    void 
+    void
     ReInitialize ();
 
     /** \brief Convert a Depth image to a pcl::PointCloud<pcl::PointXYZ>
     * \param[in] points the depth points
     */
     pcl::PointCloud<pcl::PointXYZ>::Ptr
-    convertDepthToPointXYZ (const rs2::points& points);
+    convertDepthToPointXYZ ( const rs2::points& points );
 
     /** \brief Convert an Infrared Depth image to a pcl::PointCloud<pcl::PointXYZI>
     * \param[in] points the depth points
     * \param[in] ir Infrared video frame
     */
     pcl::PointCloud<pcl::PointXYZI>::Ptr
-    convertIntensityDepthToPointXYZRGBI (const rs2::points& points, const rs2::video_frame& ir);
+    convertIntensityDepthToPointXYZRGBI ( const rs2::points& points, const rs2::video_frame& ir );
 
     /** \brief Convert an rgb Depth image to a pcl::PointCloud<pcl::PointXYZRGB>
     * \param[in] points the depth points
     * \param[in] rgb rgb video frame
     */
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr
-    convertRGBDepthToPointXYZRGB (const rs2::points& points, const rs2::video_frame& rgb);
+    convertRGBDepthToPointXYZRGB ( const rs2::points& points, const rs2::video_frame& rgb );
 
     /** \brief Convert an rgb Depth image to a pcl::PointCloud<pcl::PointXYZRGBA>
     * \param[in] points the depth points
     * \param[in] rgb rgb video frame
     */
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
-    convertRGBADepthToPointXYZRGBA (const rs2::points& points, const rs2::video_frame& rgb);
+    convertRGBADepthToPointXYZRGBA ( const rs2::points& points, const rs2::video_frame& rgb );
 
     /** \brief template function to convert realsense point cloud to PCL point cloud
     * \param[in] points - realsense point cloud array
@@ -163,7 +163,7 @@ namespace pcl
     */
     template <typename PointT, typename Functor>
     typename pcl::PointCloud<PointT>::Ptr
-    convertRealsensePointsToPointCloud (const rs2::points& points, Functor mapColorFunc);
+    convertRealsensePointsToPointCloud ( const rs2::points& points, Functor mapColorFunc );
 
     /** \brief Retrieve RGB color from texture video frame
     * \param[in] texture the texture
@@ -171,7 +171,7 @@ namespace pcl
     * \param[in] v 2D coordinate
     */
     pcl::RGB
-    getTextureColor (const rs2::video_frame& texture, float u, float v);
+    getTextureColor ( const rs2::video_frame& texture, float u, float v );
 
     /** \brief Retrieve color intensity from texture video frame
     * \param[in] texture the texture
@@ -179,7 +179,7 @@ namespace pcl
     * \param[in] v 2D coordinate
     */
     uint8_t
-    getTextureIntensity (const rs2::video_frame& texture, float u, float v);
+    getTextureIntensity ( const rs2::video_frame& texture, float u, float v );
 
 
     /** \brief handle to the thread */
@@ -188,8 +188,8 @@ namespace pcl
     mutable std::mutex mutex_;
     /** \brief Defines either a file path to a bag file or a realsense device serial number. */
     std::string file_name_or_serial_number_;
-	/** \brief Repeat playback when reading from file */
-	bool repeat_playback_;
+    /** \brief Repeat playback when reading from file */
+    bool repeat_playback_;
     /** \brief controlling the state of the thread. */
     bool quit_;
     /** \brief Is the grabber running. */
