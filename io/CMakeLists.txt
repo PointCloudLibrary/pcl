@@ -12,6 +12,13 @@ endif(WIN32)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
+if(NOT WIN32)
+  set(PCL_IO_ENABLE_MAND_LOCKING "ON" CACHE BOOL "Enables the use of mandatory locking on filesystems mounted using the mand option.")
+  if (NOT PCL_IO_ENABLE_MAND_LOCKING)
+    add_definitions(-DNO_MANDATORY_LOCKING)
+  endif(PCL_IO_ENABLE_MAND_LOCKING)
+endif(NOT WIN32)
+
 if(build)
     if(WITH_OPENNI2)
         set(IMAGE_INCLUDES

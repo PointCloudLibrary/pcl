@@ -72,6 +72,7 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
   (void)file_name;
   (void)lock;
 #ifndef WIN32
+#ifndef NO_MANDATORY_LOCKING
   // Boost version 1.49 introduced permissions
 #if BOOST_VERSION >= 104900
   // Attempt to lock the file. 
@@ -93,6 +94,7 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
   }
 #endif
 #endif
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -103,6 +105,7 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
   (void)file_name;
   (void)lock;
 #ifndef WIN32
+#ifndef NO_MANDATORY_LOCKING
   // Boost version 1.49 introduced permissions
 #if BOOST_VERSION >= 104900
   (void)file_name;
@@ -116,6 +119,7 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
     PCL_DEBUG ("[pcl::PCDWriter::resetLockingPermissions] Permissions on %s could not be reset!\n", file_name.c_str ());
   }
   lock.unlock ();
+#endif
 #endif
 #endif
 }
