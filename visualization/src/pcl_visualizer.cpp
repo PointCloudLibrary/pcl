@@ -96,6 +96,10 @@
 #include <vtkLookupTable.h>
 #include <vtkTextureUnitManager.h>
 
+#if VTK_MAJOR_VERSION > 7
+#include <vtkTexture.h>
+#endif
+
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/common/common.h>
