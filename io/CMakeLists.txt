@@ -17,7 +17,7 @@ if(NOT WIN32)
   mark_as_advanced(PCL_IO_ENABLE_MAND_LOCKING)
   if (NOT PCL_IO_ENABLE_MAND_LOCKING)
     add_definitions(-DNO_MANDATORY_LOCKING)
-  endif(PCL_IO_ENABLE_MAND_LOCKING)
+  endif(NOT PCL_IO_ENABLE_MAND_LOCKING)
 endif(NOT WIN32)
 
 if(build)
