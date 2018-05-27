@@ -3524,7 +3524,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
   std::size_t tex_id = 0;
   while (tex_id < last_tex_id)
   {
-#if VTK_MAJOR_VERSION < 8
+#if VTK_MAJOR_VERSION < 9
     int tu = vtkProperty::VTK_TEXTURE_UNIT_0 + tex_id;
 #else
     const char *tu = mesh.tex_materials[tex_id].tex_name.c_str ();
