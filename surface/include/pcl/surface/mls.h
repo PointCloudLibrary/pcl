@@ -732,7 +732,6 @@ namespace pcl
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
-#ifdef _OPENMP
   /** \brief MovingLeastSquaresOMP is a parallelized version of MovingLeastSquares, using the OpenMP standard.
    * \note Compared to MovingLeastSquares, an overhead is incurred in terms of runtime and memory usage.
    * \note The upsampling methods DISTINCT_CLOUD and VOXEL_GRID_DILATION are not parallelized completely, i.e. parts of the algorithm run on a single thread only.
@@ -761,7 +760,6 @@ namespace pcl
         */
       MovingLeastSquaresOMP (unsigned int threads = 0) : threads_ (threads)
       {
-
       }
 
       /** \brief Set the maximum number of threads to use
@@ -793,7 +791,6 @@ namespace pcl
       /** \brief The maximum number of threads the scheduler should use. */
       unsigned int threads_;
   };
-#endif
 }
 
 #ifdef PCL_NO_PRECOMPILE

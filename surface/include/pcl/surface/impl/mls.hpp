@@ -92,7 +92,6 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
   if (!initCompute ())
     return;
 
-
   // Initialize the spatial locator
   if (!tree_)
   {
@@ -326,7 +325,6 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-#ifdef _OPENMP
 template <typename PointInT, typename PointOutT> void
 pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOut &output)
 {
@@ -342,7 +340,9 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
   std::vector<PointIndices> corresponding_input_indices (threads);
 
   // For all points
+#ifdef _OPENMP
 #pragma omp parallel for schedule (dynamic,1000) num_threads (threads)
+#endif
   for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
     // Allocate enough space to hold the results of nearest neighbor searches
@@ -358,7 +358,11 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
       if (nn_indices.size () >= 3)
       {
         // This thread's ID (range 0 to threads-1)
+#ifdef _OPENMP
         int tn = omp_get_thread_num ();
+#else
+        int tn = 0;
+#endif
 
         // Size of projected points before computeMLSPointNormal () adds points
         size_t pp_size = projected_points[tn].size ();
@@ -375,10 +379,9 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
         // Copy all information from the input cloud to the output points (not doing any interpolation)
         for (size_t pp = pp_size; pp < projected_points[tn].size (); ++pp)
           this->copyMissingFields (input_->points[(*indices_)[cp]], projected_points[tn][pp]);
-	    }
-	  }
+      }
+    }
   }
-
 
   // Combine all threads' results into the output vectors
   for (unsigned int tn = 0; tn < threads; ++tn)
@@ -393,7 +396,6 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
   // Perform the distinct-cloud or voxel-grid upsampling
   this->performUpsampling (output);
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
@@ -929,11 +931,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::copyMissingFields (const PointInT 
   point_out.z = temp.z;
 }
 
-
 #define PCL_INSTANTIATE_MovingLeastSquares(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquares<T,OutT>;
-
-#ifdef _OPENMP
 #define PCL_INSTANTIATE_MovingLeastSquaresOMP(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquaresOMP<T,OutT>;
-#endif
 
 #endif    // PCL_SURFACE_IMPL_MLS_H_
