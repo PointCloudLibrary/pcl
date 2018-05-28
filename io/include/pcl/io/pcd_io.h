@@ -406,6 +406,10 @@ namespace pcl
         * \param[in] cloud the point cloud data message
         * \param[in] origin the sensor acquisition origin
         * \param[in] orientation the sensor acquisition orientation
+        * \return
+        * (-1) for a general error
+        * (-2) if the input cloud is too large for the file format
+        * 0 on success
         */
       int 
       writeBinaryCompressed (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
@@ -417,6 +421,10 @@ namespace pcl
         * \param[in] cloud the point cloud data message
         * \param[in] origin the sensor acquisition origin
         * \param[in] orientation the sensor acquisition orientation
+        * \return
+        * (-1) for a general error
+        * (-2) if the input cloud is too large for the file format
+        * 0 on success
         */
       int
       writeBinaryCompressed (std::ostream &os, const pcl::PCLPointCloud2 &cloud,
@@ -487,6 +495,10 @@ namespace pcl
       /** \brief Save point cloud data to a binary comprssed PCD file
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data message
+        * \return
+        * (-1) for a general error
+        * (-2) if the input cloud is too large for the file format
+        * 0 on success
         */
       template <typename PointT> int 
       writeBinaryCompressed (const std::string &file_name, 
