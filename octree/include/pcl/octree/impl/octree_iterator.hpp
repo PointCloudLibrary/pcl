@@ -326,7 +326,7 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename OctreeT>
-    OctreeLeafNodeBreadthIterator<OctreeT>::OctreeLeafNodeBreadthIterator (unsigned int max_depth_arg) :
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>::OctreeLeafNodeBreadthFirstIterator (unsigned int max_depth_arg) :
         OctreeBreadthFirstIterator<OctreeT> (max_depth_arg)
     {
       reset ();
@@ -334,7 +334,7 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename OctreeT>
-    OctreeLeafNodeBreadthIterator<OctreeT>::OctreeLeafNodeBreadthIterator (OctreeT* octree_arg, unsigned int max_depth_arg) :
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>::OctreeLeafNodeBreadthFirstIterator (OctreeT* octree_arg, unsigned int max_depth_arg) :
         OctreeBreadthFirstIterator<OctreeT> (octree_arg, max_depth_arg)
     {
       reset ();
@@ -342,7 +342,7 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename OctreeT>
-    OctreeLeafNodeBreadthIterator<OctreeT>::OctreeLeafNodeBreadthIterator (OctreeT* octree_arg,
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>::OctreeLeafNodeBreadthFirstIterator (OctreeT* octree_arg,
                                                                            unsigned int max_depth_arg,
                                                                            IteratorState* current_state,
                                                                            const std::deque<IteratorState>& fifo)
@@ -354,7 +354,7 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename OctreeT>
-    void OctreeLeafNodeBreadthIterator<OctreeT>::reset ()
+    void OctreeLeafNodeBreadthFirstIterator<OctreeT>::reset ()
     {
       OctreeBreadthFirstIterator<OctreeT>::reset ();
       ++*this;
@@ -362,8 +362,8 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename OctreeT>
-    OctreeLeafNodeBreadthIterator<OctreeT>&
-    OctreeLeafNodeBreadthIterator<OctreeT>::operator++ ()
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>&
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>::operator++ ()
     {          
       do
       {
@@ -375,10 +375,10 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename OctreeT>
-    OctreeLeafNodeBreadthIterator<OctreeT>
-    OctreeLeafNodeBreadthIterator<OctreeT>::operator++ (int)
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>::operator++ (int)
     {
-      OctreeLeafNodeBreadthIterator _Tmp = *this;
+      OctreeLeafNodeBreadthFirstIterator _Tmp = *this;
       ++*this;
       return (_Tmp);
     }

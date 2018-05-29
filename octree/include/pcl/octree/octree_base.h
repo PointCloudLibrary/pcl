@@ -105,8 +105,8 @@ namespace pcl
         friend class OctreeDepthFirstIterator<OctreeT> ;
         friend class OctreeBreadthFirstIterator<OctreeT> ;
         friend class OctreeFixedDepthIterator<OctreeT> ;
-        friend class OctreeLeafNodeIterator<OctreeT> ;
-        friend class OctreeLeafNodeBreadthIterator<OctreeT> ;
+        friend class OctreeLeafNodeDepthFirstIterator<OctreeT> ;
+        friend class OctreeLeafNodeBreadthFirstIterator<OctreeT> ;
 
         // Octree default iterators
         typedef OctreeDepthFirstIterator<OctreeT> Iterator;
@@ -123,17 +123,36 @@ namespace pcl
         };
 
         // Octree leaf node iterators
-        typedef OctreeLeafNodeIterator<OctreeT> LeafNodeIterator;
-        typedef const OctreeLeafNodeIterator<OctreeT> ConstLeafNodeIterator;
+        // The previous deprecated names
+        // LeafNodeIterator and ConstLeafNodeIterator are deprecated.
+        // Please use LeafNodeDepthFirstIterator and ConstLeafNodeDepthFirstIterator instead.
+        typedef OctreeLeafNodeDepthFirstIterator<OctreeT> LeafNodeIterator;
+        typedef const OctreeLeafNodeDepthFirstIterator<OctreeT> ConstLeafNodeIterator;
 
+        PCL_DEPRECATED ("Please use leaf_depth_begin () instead.")
         LeafNodeIterator leaf_begin (unsigned int max_depth_arg = 0u)
         {
           return LeafNodeIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
         };
 
+        PCL_DEPRECATED ("Please use leaf_depth_end () instead.")
         const LeafNodeIterator leaf_end ()
         {
           return LeafNodeIterator (this, 0, NULL);
+        };
+
+        // The currently valide names
+        typedef OctreeLeafNodeDepthFirstIterator<OctreeT> LeafNodeDepthFirstIterator;
+        typedef const OctreeLeafNodeDepthFirstIterator<OctreeT> ConstLeafNodeDepthFirstIterator;
+
+        LeafNodeDepthFirstIterator leaf_depth_begin (unsigned int max_depth_arg = 0u)
+        {
+          return LeafNodeDepthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
+        };
+
+        const LeafNodeDepthFirstIterator leaf_depth_end ()
+        {
+          return LeafNodeDepthFirstIterator (this, 0, NULL);
         };
 
         // Octree depth-first iterators
@@ -179,17 +198,17 @@ namespace pcl
         };
 
         // Octree leaf node iterators
-        typedef OctreeLeafNodeBreadthIterator<OctreeT> LeafNodeBreadthIterator;
-        typedef const OctreeLeafNodeBreadthIterator<OctreeT> ConstLeafNodeBreadthIterator;
+        typedef OctreeLeafNodeBreadthFirstIterator<OctreeT> LeafNodeBreadthFirstIterator;
+        typedef const OctreeLeafNodeBreadthFirstIterator<OctreeT> ConstLeafNodeBreadthFirstIterator;
 
-        LeafNodeBreadthIterator leaf_breadth_begin (unsigned int max_depth_arg = 0u)
+        LeafNodeBreadthFirstIterator leaf_breadth_begin (unsigned int max_depth_arg = 0u)
         {
-          return LeafNodeBreadthIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
+          return LeafNodeBreadthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
         };
 
-        const LeafNodeBreadthIterator leaf_breadth_end ()
+        const LeafNodeBreadthFirstIterator leaf_breadth_end ()
         {
-          return LeafNodeBreadthIterator (this, 0, NULL);
+          return LeafNodeBreadthFirstIterator (this, 0, NULL);
         };
 
         /** \brief Empty constructor. */

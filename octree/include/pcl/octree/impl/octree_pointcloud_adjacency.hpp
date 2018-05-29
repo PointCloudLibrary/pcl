@@ -91,9 +91,9 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::addPointsFromInputCloud ();
   
   LeafContainerT *leaf_container;
-  typename OctreeAdjacencyT::LeafNodeIterator leaf_itr;
+  typename OctreeAdjacencyT::LeafNodeDepthFirstIterator leaf_itr;
   leaf_vector_.reserve (this->getLeafCount ());
-  for ( leaf_itr = this->leaf_begin () ; leaf_itr != this->leaf_end (); ++leaf_itr)
+  for ( leaf_itr = this->leaf_depth_begin () ; leaf_itr != this->leaf_depth_end (); ++leaf_itr)
   {
     OctreeKey leaf_key = leaf_itr.getCurrentOctreeKey ();
     leaf_container = &(leaf_itr.getLeafContainer ());
@@ -221,7 +221,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   voxel_adjacency_graph.clear ();
   //Add a vertex for each voxel, store ids in map
   std::map <LeafContainerT*, VoxelID> leaf_vertex_id_map;
-  for (typename OctreeAdjacencyT::LeafNodeIterator leaf_itr = this->leaf_begin () ; leaf_itr != this->leaf_end (); ++leaf_itr)
+  for (typename OctreeAdjacencyT::LeafNodeDepthFirstIterator leaf_itr = this->leaf_depth_begin () ; leaf_itr != this->leaf_depth_end (); ++leaf_itr)
   {
     OctreeKey leaf_key = leaf_itr.getCurrentOctreeKey ();
     PointT centroid_point;
