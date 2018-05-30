@@ -90,18 +90,12 @@ pcl::io::LZFImageWriter::saveImageBlob (const char* data,
   int fd = pcl_open (filename.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
   if (fd < 0)
     return (false);
-  // Stretch the file size to the size of the data
-  off_t result = pcl_lseek (fd, data_size - 1, SEEK_SET);
-  if (result < 0)
+
+  // Allocate disk space for the entire file to prevent bus errors.
+  if (::posix_fallocate (fd, 0, data_size) != 0)
   {
     pcl_close (fd);
-    return (false);
-  }
-  // Write a bogus entry so that the new file size comes in effect
-  result = static_cast<int> (::write (fd, "", 1));
-  if (result != 1)
-  {
-    pcl_close (fd);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during posix_fallocate ()!");
     return (false);
   }
 
