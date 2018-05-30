@@ -329,6 +329,15 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   // Compute the size of data
   data_size = cloud.points.size () * fsize;
 
+  // If the data is to large the two 32 bit integers used to store the
+  // compressed and uncompressed size will overflow.
+  if (data_size * 3 / 2 > std::numeric_limits<uint32_t>::max ())
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] The input data exceeds the maximum size for compressed version 0.7 pcds of %l bytes.\n",
+               static_cast<size_t> (std::numeric_limits<uint32_t>::max ()) * 2 / 3);
+    return (-2);
+  }
+
   //////////////////////////////////////////////////////////////////////
   // Empty array holding only the valid data
   // data_size = nr_points * point_size 
