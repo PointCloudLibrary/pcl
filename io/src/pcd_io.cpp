@@ -1389,9 +1389,10 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
 
   // If the data is too large the two 32 bit integers used to store the
   // compressed and uncompressed size will overflow.
-  if (data_size * 3 / 2 > std::numeric_limits<uint32_t>::max ()) {
+  if (data_size * 3 / 2 > std::numeric_limits<uint32_t>::max ())
+  {
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] The input data exceeds the maximum size for compressed version 0.7 pcds of %l bytes.\n",
-               static_cast<size_t>(std::numeric_limits<uint32_t>::max()) * 2 / 3);
+               static_cast<size_t> (std::numeric_limits<uint32_t>::max ()) * 2 / 3);
     return (-2);
   }
 
