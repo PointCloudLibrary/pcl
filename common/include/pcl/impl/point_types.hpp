@@ -348,10 +348,17 @@ namespace pcl
       r = g = b = 0;
       a = 255;
     }
-  
+
+    inline RGB (uint8_t _r, uint8_t _g, uint8_t _b)
+    {
+      r = _r;
+      g = _g;
+      b = _b;
+      a = 255;
+    }
+
     friend std::ostream& operator << (std::ostream& os, const RGB& p);
   };
-  
 
   struct _Intensity
   {
