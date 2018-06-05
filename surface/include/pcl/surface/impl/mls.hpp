@@ -283,61 +283,16 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
   // Compute the number of coefficients
   nr_coeff_ = (order_ + 1) * (order_ + 2) / 2;
 
-  // Allocate enough space to hold the results of nearest neighbor searches
-  // \note resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices;
-  std::vector<float> nn_sqr_dists;
-  
   size_t mls_result_index = 0;
 
-  // For all points
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
-  {
-    // Get the initial estimates of point positions and their neighborhoods
-    if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
-      continue;
-
-
-    // Check the number of nearest neighbors for normal estimation (and later
-    // for polynomial fit as well)
-    if (nn_indices.size () < 3)
-      continue;
-
-
-    PointCloudOut projected_points;
-    NormalCloud projected_points_normals;
-    // Get a plane approximating the local surface's tangent and project point onto it
-    int index = (*indices_)[cp];
-    
-    if (cache_mls_results_)
-      mls_result_index = index; // otherwise we give it a dummy location.
-
-    computeMLSPointNormal (index, nn_indices, projected_points, projected_points_normals, *corresponding_input_indices_, mls_results_[mls_result_index]);
-
-    // Append projected points to output
-    output.insert (output.end (), projected_points.begin (), projected_points.end ());
-    if (compute_normals_)
-      normals_->insert (normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
-  }
-
-  // Perform the distinct-cloud or voxel-grid upsampling
-  performUpsampling (output);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> void
-pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOut &output)
-{
-  // Compute the number of coefficients
-  nr_coeff_ = (order_ + 1) * (order_ + 2) / 2;
-
+#ifdef _OPENMP
   // (Maximum) number of threads
-  unsigned int threads = threads_ == 0 ? 1 : threads_;
-
+  const unsigned int threads = threads_ == 0 ? 1 : threads_;
   // Create temporaries for each thread in order to avoid synchronization
-  typename PointCloudOut::CloudVectorType projected_points (threads);
-  typename NormalCloud::CloudVectorType projected_points_normals (threads);
-  std::vector<PointIndices> corresponding_input_indices (threads);
+  typename PointCloudOut::CloudVectorType projected_points(threads);
+  typename NormalCloud::CloudVectorType projected_points_normals(threads);
+  std::vector<PointIndices> corresponding_input_indices(threads);
+#endif
 
   // For all points
 #ifdef _OPENMP
@@ -351,38 +306,46 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
     std::vector<float> nn_sqr_dists;
 
     // Get the initial estimates of point positions and their neighborhoods
-    if (this->searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
+    if (searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
     {
-      // Check the number of nearest neighbors for normal estimation (and later
-      // for polynomial fit as well)
+      // Check the number of nearest neighbors for normal estimation (and later for polynomial fit as well)
       if (nn_indices.size () >= 3)
       {
         // This thread's ID (range 0 to threads-1)
 #ifdef _OPENMP
-        int tn = omp_get_thread_num ();
-#else
-        int tn = 0;
-#endif
-
+        const int tn = omp_get_thread_num ();
         // Size of projected points before computeMLSPointNormal () adds points
         size_t pp_size = projected_points[tn].size ();
+#else
+        PointCloudOut projected_points;
+        NormalCloud projected_points_normals;
+#endif
 
         // Get a plane approximating the local surface's tangent and project point onto it
-        int index = (*indices_)[cp];
-        size_t mls_result_index = 0;
-        
-        if (this->cache_mls_results_)
+        const int index = (*indices_)[cp];
+
+        if (cache_mls_results_)
           mls_result_index = index; // otherwise we give it a dummy location.
-        
-        this->computeMLSPointNormal (index, nn_indices, projected_points[tn], projected_points_normals[tn], corresponding_input_indices[tn], this->mls_results_[mls_result_index]);
+
+#ifdef _OPENMP
+        computeMLSPointNormal(index, nn_indices, projected_points[tn], projected_points_normals[tn], corresponding_input_indices[tn], mls_results_[mls_result_index]);
 
         // Copy all information from the input cloud to the output points (not doing any interpolation)
         for (size_t pp = pp_size; pp < projected_points[tn].size (); ++pp)
-          this->copyMissingFields (input_->points[(*indices_)[cp]], projected_points[tn][pp]);
+          copyMissingFields(input_->points[(*indices_)[cp]], projected_points[tn][pp]);
+#else
+        computeMLSPointNormal(index, nn_indices, projected_points, projected_points_normals, *corresponding_input_indices_, mls_results_[mls_result_index]);
+    
+        // Append projected points to output
+        output.insert(output.end (), projected_points.begin (), projected_points.end ());
+        if (compute_normals_)
+          normals_->insert(normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
+#endif
       }
     }
   }
 
+#ifdef _OPENMP
   // Combine all threads' results into the output vectors
   for (unsigned int tn = 0; tn < threads; ++tn)
   {
@@ -392,9 +355,10 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
     if (compute_normals_)
       normals_->insert (normals_->end (), projected_points_normals[tn].begin (), projected_points_normals[tn].end ());
   }
+#endif
 
   // Perform the distinct-cloud or voxel-grid upsampling
-  this->performUpsampling (output);
+  performUpsampling (output);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
