@@ -117,11 +117,12 @@ pcl::PCDWriter::generateHeader (const pcl::PointCloud<PointT> &cloud, const int 
   oss << "\nSIZE" << field_sizes.str () 
       << "\nTYPE" << field_types.str () 
       << "\nCOUNT" << field_counts.str ();
+  oss << "\nWIDTH " << std::setfill('0') << std::setw(10);
   // If the user passes in a number of points value, use that instead
   if (nr_points != std::numeric_limits<int>::max ())
-    oss << "\nWIDTH " << nr_points << "\nHEIGHT " << 1 << "\n";
+    oss << nr_points << "\nHEIGHT " << 1 << "\n";
   else
-    oss << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
+    oss << cloud.width << "\nHEIGHT " << cloud.height << "\n";
 
   oss << "VIEWPOINT " << cloud.sensor_origin_[0] << " " << cloud.sensor_origin_[1] << " " << cloud.sensor_origin_[2] << " " << 
                          cloud.sensor_orientation_.w () << " " << 
@@ -129,12 +130,13 @@ pcl::PCDWriter::generateHeader (const pcl::PointCloud<PointT> &cloud, const int 
                          cloud.sensor_orientation_.y () << " " << 
                          cloud.sensor_orientation_.z () << "\n";
   
+  oss << "POINTS " << std::setfill('0') << std::setw(10);
   // If the user passes in a number of points value, use that instead
   if (nr_points != std::numeric_limits<int>::max ())
-    oss << "POINTS " << nr_points << "\n";
+     oss << nr_points;
   else
-    oss << "POINTS " << cloud.points.size () << "\n";
-
+    oss << cloud.points.size ();
+  oss << "\n";
   return (oss.str ());
 }
 
@@ -948,6 +950,374 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
   resetLockingPermissions (file_name, file_lock);
 
   return (0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT> int
+pcl::PCDWriter::appendBinary(const std::string &file_name, 
+                             const pcl::PointCloud<PointT> &cloud)
+{
+  if(cloud.empty())
+  {
+    throw pcl::IOException("[pcl::PCDWriter::appendBinary] Input point cloud has no data!");
+    return -1;
+  }
+
+  if(!boost::filesystem::exists(file_name))
+    return writeBinary(file_name, cloud);
+
+  std::ifstream file_istream;
+  file_istream.open(file_name.c_str(), std::ifstream::binary);
+  if(!file_istream.good())
+  {
+    throw pcl::IOException("[pcl::PCDWriter::appendBinary] Error opening file for reading");
+    return -1;
+  }
+  file_istream.seekg(0, std::ios_base::end);
+  size_t file_size = file_istream.tellg();
+  file_istream.close();
+
+  pcl::PCLPointCloud2 tmp_cloud;
+  PCDReader reader;
+  if(reader.readHeader(file_name, tmp_cloud) != 0)
+  {
+    throw pcl::IOException("[pcl::PCDWriter::appendBinary] Failed reading header");
+    return -1;
+  }
+  if(tmp_cloud.height != 1 || cloud.height != 1)
+  {
+    throw pcl::IOException("[pcl::PCDWriter::appendBinary] can't use appendBinary with a point cloud that "
+      "has height different than 1!");
+    return -1;
+  }
+  tmp_cloud.width += cloud.width;
+  std::ostringstream oss;
+  pcl::PointCloud<PointT> tmp_cloud2;
+  // copy the header values:
+  tmp_cloud2.header = tmp_cloud.header;
+  tmp_cloud2.width = tmp_cloud.width;
+  tmp_cloud2.height = tmp_cloud.height;
+  tmp_cloud2.is_dense = tmp_cloud.is_dense;
+  
+  oss << PCDWriter::generateHeader(tmp_cloud2, tmp_cloud2.width) << "DATA binary\n";
+  size_t data_idx = oss.tellp();
+  
+#if _WIN32
+  HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+  if (h_native_file == INVALID_HANDLE_VALUE)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::appendBinary] Error during CreateFile!");
+    return (-1);
+  }
+#else
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_APPEND, static_cast<mode_t> (0600));
+  if (fd < 0)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::appendBinary] Error during open!");
+    return (-1);
+  }
+#endif
+  // Mandatory lock file
+  boost::interprocess::file_lock file_lock;
+  setLockingPermissions (file_name, file_lock);
+
+  std::vector<pcl::PCLPointField> fields;
+  std::vector<int> fields_sizes;
+  size_t fsize = 0;
+  size_t data_size = 0;
+  size_t nri = 0;
+  pcl::getFields (cloud, fields);
+  // Compute the total size of the fields
+  for (size_t i = 0; i < fields.size (); ++i)
+  {
+    if (fields[i].name == "_")
+      continue;
+
+    int fs = fields[i].count * getFieldSize (fields[i].datatype);
+    fsize += fs;
+    fields_sizes.push_back (fs);
+    fields[nri++] = fields[i];
+  }
+  fields.resize (nri);
+
+  data_size = cloud.points.size () * fsize;
+
+  data_idx += (tmp_cloud.width - cloud.width) * fsize;
+  if (data_idx != file_size)
+  {
+    const char *msg = "[pcl::PCDWriter::appendBinary] The expected data size and the current data size are different!";
+    PCL_WARN(msg);
+    throw pcl::IOException (msg);
+    return -1;
+  }
+
+  // Prepare the map
+#if _WIN32
+  HANDLE fm = CreateFileMappingA (h_native_file, NULL, PAGE_READWRITE, 0, (DWORD) (data_idx + data_size), NULL);
+  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
+  CloseHandle (fm);
+#else
+  // Stretch the file size to the size of the data
+  off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
+
+  if (result < 0)
+  {
+    pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    PCL_ERROR ("[pcl::PCDWriter::appendBinary] lseek errno: %d strerror: %s\n", errno, strerror (errno));
+
+    throw pcl::IOException ("[pcl::PCDWriter::appendBinary] Error during lseek ()!");
+    return (-1);
+  }
+  // Write a bogus entry so that the new file size comes in effect
+  result = static_cast<int> (::write (fd, "", 1));
+  if (result != 1)
+  {
+    pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    throw pcl::IOException ("[pcl::PCDWriter::appendBinary] Error during write ()!");
+    return (-1);
+  }
+
+  char *map = static_cast<char*> (mmap (0, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0));
+  if (map == reinterpret_cast<char*> (-1)) //MAP_FAILED)
+  {
+    pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    throw pcl::IOException ("[pcl::PCDWriter::appendBinary] Error during mmap ()!");
+    return (-1);
+  }
+#endif
+
+  char* out = &map[0] + data_idx;
+  // Copy the data
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+  {
+    int nrj = 0;
+    for (size_t j = 0; j < fields.size (); ++j)
+    {
+      memcpy (out, reinterpret_cast<const char*> (&cloud.points[i]) + fields[j].offset, fields_sizes[nrj]);
+      out += fields_sizes[nrj++];
+    }
+  }
+
+  // write the new header:
+  std::string header(oss.str());
+  memcpy(map, header.c_str(), header.size());
+
+
+  // If the user set the synchronization flag on, call msync
+#if !_WIN32
+  if (map_synchronization_)
+    msync (map, data_idx + data_size, MS_SYNC);
+#endif
+
+  // Unmap the pages of memory
+#if _WIN32
+  UnmapViewOfFile (map);
+#else
+  if (munmap (map, (data_idx + data_size)) == -1)
+  {
+    pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during munmap ()!");
+    return (-1);
+  }
+#endif
+  // Close file
+#if _WIN32
+  CloseHandle (h_native_file);
+#else
+  pcl_close (fd);
+#endif
+
+  resetLockingPermissions (file_name, file_lock);
+  return 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT> int
+pcl::PCDWriter::appendBinary(const std::string &file_name, 
+                             const pcl::PointCloud<PointT> &cloud,
+                             const std::vector<int> &indices)
+{
+  if(cloud.empty() || indices.empty())
+  {
+    throw pcl::IOException("[pcl::PCDWriter::appendBinary] Input point cloud has no data or empty indices given!");
+    return -1;
+  }
+
+  if(!boost::filesystem::exists(file_name))
+    return writeBinary(file_name, cloud, indices);
+
+  std::ifstream file_istream;
+  file_istream.open(file_name.c_str(), std::ifstream::binary);
+  if(!file_istream.good())
+  {
+    throw pcl::IOException("[pcl::PCDWriter::appendBinary] Error opening file for reading");
+    return -1;
+  }
+  file_istream.seekg(0, std::ios_base::end);
+  size_t file_size = file_istream.tellg();
+  file_istream.close();
+
+  pcl::PCLPointCloud2 tmp_cloud;
+  PCDReader reader;
+  if(reader.readHeader(file_name, tmp_cloud) != 0)
+  {
+    throw pcl::IOException("[pcl::PCDWriter::appendBinary] Failed reading header");
+    return -1;
+  }
+  if(tmp_cloud.height != 1 || cloud.height != 1)
+  {
+    throw pcl::IOException("[pcl::PCDWriter::appendBinary] can't use appendBinary with a point cloud that "
+      "has height different than 1!");
+    return -1;
+  }
+  tmp_cloud.width += indices.size();
+  std::ostringstream oss;
+  pcl::PointCloud<PointT> tmp_cloud2;
+
+  // copy the header values:
+  tmp_cloud2.header = tmp_cloud.header;
+  tmp_cloud2.width = tmp_cloud.width;
+  tmp_cloud2.height = tmp_cloud.height;
+  tmp_cloud2.is_dense = tmp_cloud.is_dense;
+
+  oss << PCDWriter::generateHeader(tmp_cloud2, tmp_cloud2.width) << "DATA binary\n";
+  size_t data_idx = oss.tellp();
+
+#if _WIN32
+  HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+  if (h_native_file == INVALID_HANDLE_VALUE)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::appendBinary] Error during CreateFile!");
+    return (-1);
+  }
+#else
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_APPEND, static_cast<mode_t> (0600));
+  if (fd < 0)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::appendBinary] Error during open!");
+    return (-1);
+  }
+#endif
+  // Mandatory lock file
+  boost::interprocess::file_lock file_lock;
+  setLockingPermissions (file_name, file_lock);
+
+  std::vector<pcl::PCLPointField> fields;
+  std::vector<int> fields_sizes;
+  size_t fsize = 0;
+  size_t data_size = 0;
+  size_t nri = 0;
+  pcl::getFields (cloud, fields);
+  // Compute the total size of the fields
+  for (size_t i = 0; i < fields.size (); ++i)
+  {
+    if (fields[i].name == "_")
+      continue;
+
+    int fs = fields[i].count * getFieldSize (fields[i].datatype);
+    fsize += fs;
+    fields_sizes.push_back (fs);
+    fields[nri++] = fields[i];
+  }
+  fields.resize (nri);
+
+  data_size = indices.size () * fsize;
+
+  data_idx += (tmp_cloud.width - cloud.width) * fsize;
+  if(data_idx != file_size)
+  {
+    const char *msg = "[pcl::PCDWriter::appendBinary] The expected data size and the current data size are different!";
+    PCL_WARN(msg);
+    throw pcl::IOException (msg);
+    return -1;
+  }
+
+  // Prepare the map
+#if _WIN32
+  HANDLE fm = CreateFileMappingA (h_native_file, NULL, PAGE_READWRITE, 0, (DWORD) (data_idx + data_size), NULL);
+  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
+  CloseHandle (fm);
+#else
+  // Stretch the file size to the size of the data
+  off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
+
+  if (result < 0)
+  {
+    pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    PCL_ERROR ("[pcl::PCDWriter::appendBinary] lseek errno: %d strerror: %s\n", errno, strerror (errno));
+
+    throw pcl::IOException ("[pcl::PCDWriter::appendBinary] Error during lseek ()!");
+    return (-1);
+  }
+  // Write a bogus entry so that the new file size comes in effect
+  result = static_cast<int> (::write (fd, "", 1));
+  if (result != 1)
+  {
+    pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    throw pcl::IOException ("[pcl::PCDWriter::appendBinary] Error during write ()!");
+    return (-1);
+  }
+
+  char *map = static_cast<char*> (mmap (0, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0));
+  if (map == reinterpret_cast<char*> (-1)) //MAP_FAILED)
+  {
+    pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    throw pcl::IOException ("[pcl::PCDWriter::appendBinary] Error during mmap ()!");
+    return (-1);
+  }
+#endif
+
+  char* out = &map[0] + data_idx;
+
+  // Copy the data
+  for (size_t i = 0; i < indices.size (); ++i)
+  {
+    int nrj = 0;
+    for (size_t j = 0; j < fields.size (); ++j)
+    {
+      memcpy (out, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[j].offset, fields_sizes[nrj]);
+      out += fields_sizes[nrj++];
+    }
+  }
+
+  // write the new header:
+  std::string header(oss.str());
+  memcpy(map, header.c_str(), header.size());
+
+  // If the user set the synchronization flag on, call msync
+#if !_WIN32
+  if (map_synchronization_)
+    msync (map, data_idx + data_size, MS_SYNC);
+#endif
+
+  // Unmap the pages of memory
+#if _WIN32
+  UnmapViewOfFile (map);
+#else
+  if (munmap (map, (data_idx + data_size)) == -1)
+  {
+    pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during munmap ()!");
+    return (-1);
+  }
+#endif
+  // Close file
+#if _WIN32
+  CloseHandle (h_native_file);
+#else
+  pcl_close (fd);
+#endif
+
+  resetLockingPermissions (file_name, file_lock);
+  return 0;
 }
 
 #endif  //#ifndef PCL_IO_PCD_IO_H_

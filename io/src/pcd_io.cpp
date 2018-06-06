@@ -967,12 +967,12 @@ pcl::PCDWriter::generateHeaderASCII (const pcl::PCLPointCloud2 &cloud,
   // Remove trailing spaces
   result = stream.str ();
   boost::trim (result);
-  oss << result << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
+  oss << result << "\nWIDTH " << std::setfill('0') << std::setw(10) << cloud.width << "\nHEIGHT " << cloud.height << "\n";
 
   oss << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " << 
                          orientation.x () << " " << orientation.y () << " " << orientation.z () << "\n";
   
-  oss << "POINTS " << cloud.width * cloud.height << "\n";
+  oss << "POINTS " << std::setfill('0') << std::setw(10) << cloud.width * cloud.height << "\n";
 
   return (oss.str ());
 }
@@ -1048,12 +1048,12 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
   oss << "\nSIZE" << field_sizes.str () 
       << "\nTYPE" << field_types.str () 
       << "\nCOUNT" << field_counts.str ();
-  oss << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
+  oss << "\nWIDTH " << std::setfill('0') << std::setw(10) << cloud.width << "\nHEIGHT " << cloud.height << "\n";
 
   oss << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " << 
                          orientation.x () << " " << orientation.y () << " " << orientation.z () << "\n";
   
-  oss << "POINTS " << cloud.width * cloud.height << "\n";
+  oss << "POINTS " << std::setfill('0') << std::setw(10) << cloud.width * cloud.height << "\n";
 
   return (oss.str ());
 }

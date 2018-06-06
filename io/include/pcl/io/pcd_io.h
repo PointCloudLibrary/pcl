@@ -536,6 +536,29 @@ namespace pcl
                   const std::vector<int> &indices,
                   const int precision = 8);
 
+      /** \brief Append point cloud data to a PCD file containing n-D points, in BINARY format.
+        * If the file does not exist, the method 
+        * writeBinary(const std::string&, const pcl::PointCloud<PointT>&) is called from here
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message
+        */
+      template<typename PointT> int
+      appendBinary(const std::string &file_name,
+                   const pcl::PointCloud<PointT> &cloud);
+
+
+      /** \brief Append point cloud data to a PCD file containing n-D points, in BINARY format.
+        * If the file does not exist, the method 
+        * writeBinary(const std::string&, const pcl::PointCloud<PointT>&) is called from here
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message
+        * \param[in] indices the set of point indices that we want written to disk
+        */
+      template<typename PointT> int
+      appendBinary(const std::string &file_name,
+                   const pcl::PointCloud<PointT> &cloud,
+                   const std::vector<int> &indices);
+
       /** \brief Save point cloud data to a PCD file containing n-D points
         * \param[in] file_name the output file name
         * \param[in] cloud the pcl::PointCloud data

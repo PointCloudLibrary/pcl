@@ -67,22 +67,22 @@ namespace pcl
 {
   namespace outofcore
   {
-    template<typename PointT>
-    boost::mutex OutofcoreOctreeDiskContainer<PointT>::rng_mutex_;
+    template<typename PointT, bool use_appender>
+    boost::mutex OutofcoreOctreeDiskContainer<PointT, use_appender>::rng_mutex_;
 
-    template<typename PointT> boost::mt19937
-    OutofcoreOctreeDiskContainer<PointT>::rand_gen_ (static_cast<unsigned int> (std::time(NULL)));
+    template<typename PointT, bool use_appender> boost::mt19937
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::rand_gen_ (static_cast<unsigned int> (std::time(NULL)));
 
-    template<typename PointT>
-    boost::uuids::random_generator OutofcoreOctreeDiskContainer<PointT>::uuid_gen_ (&rand_gen_);
+    template<typename PointT, bool use_appender>
+    boost::uuids::random_generator OutofcoreOctreeDiskContainer<PointT, use_appender>::uuid_gen_ (&rand_gen_);
 
-    template<typename PointT>
-    const uint64_t OutofcoreOctreeDiskContainer<PointT>::READ_BLOCK_SIZE_ = static_cast<uint64_t> (2e12);
-    template<typename PointT>
-    const uint64_t OutofcoreOctreeDiskContainer<PointT>::WRITE_BUFF_MAX_ = static_cast<uint64_t> (2e12);
+    template<typename PointT, bool use_appender>
+    const uint64_t OutofcoreOctreeDiskContainer<PointT, use_appender>::READ_BLOCK_SIZE_ = static_cast<uint64_t> (2e12);
+    template<typename PointT, bool use_appender>
+    const uint64_t OutofcoreOctreeDiskContainer<PointT, use_appender>::WRITE_BUFF_MAX_ = static_cast<uint64_t> (2e12);
 
-    template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::getRandomUUIDString (std::string& s)
+    template<typename PointT, bool use_appender> void
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::getRandomUUIDString (std::string& s)
     {
       boost::uuids::uuid u;
       {
@@ -96,8 +96,8 @@ namespace pcl
     }
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT>
-    OutofcoreOctreeDiskContainer<PointT>::OutofcoreOctreeDiskContainer () 
+    template<typename PointT, bool use_appender>
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::OutofcoreOctreeDiskContainer () 
       : disk_storage_filename_ ()
       , filelen_ (0)
       , writebuff_ (0)
@@ -109,8 +109,8 @@ namespace pcl
     }
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT>
-    OutofcoreOctreeDiskContainer<PointT>::OutofcoreOctreeDiskContainer (const boost::filesystem::path& path)
+    template<typename PointT, bool use_appender>
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::OutofcoreOctreeDiskContainer (const boost::filesystem::path& path)
       : disk_storage_filename_ ()
       , filelen_ (0)
       , writebuff_ (0)
@@ -156,15 +156,15 @@ namespace pcl
     }
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT>
-    OutofcoreOctreeDiskContainer<PointT>::~OutofcoreOctreeDiskContainer ()
+    template<typename PointT, bool use_appender>
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::~OutofcoreOctreeDiskContainer ()
     {
       flushWritebuff (true);
     }
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::flushWritebuff (const bool force_cache_dealloc)
+    template<typename PointT, bool use_appender> void
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::flushWritebuff (const bool force_cache_dealloc)
     {
       if (writebuff_.size () > 0)
       {
@@ -194,8 +194,8 @@ namespace pcl
     }
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT> PointT
-    OutofcoreOctreeDiskContainer<PointT>::operator[] (uint64_t idx) const
+    template<typename PointT, bool use_appender> PointT
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::operator[] (uint64_t idx) const
     {
       PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeDiskContainer] Not implemented for use with PCL library\n");
       
@@ -235,8 +235,8 @@ namespace pcl
     }
     
     ////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& dst)
+    template<typename PointT, bool use_appender> void
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& dst)
     {
       if (count == 0)
       {
@@ -262,8 +262,8 @@ namespace pcl
     }
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& dst)
+    template<typename PointT, bool use_appender> void
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& dst)
     {
       if (count == 0)
       {
@@ -355,8 +355,8 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
 //change this to use a weighted coin flip, to allow sparse sampling of small clouds (eg the bernoulli above)
-    template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::readRangeSubSample (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& dst)
+    template<typename PointT, bool use_appender> void
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::readRangeSubSample (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& dst)
     {
       if (count == 0)
       {
@@ -452,8 +452,8 @@ namespace pcl
     }
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::push_back (const PointT& p)
+    template<typename PointT, bool use_appender> void
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::push_back (const PointT& p)
     {
       writebuff_.push_back (p);
       if (writebuff_.size () > WRITE_BUFF_MAX_)
@@ -463,8 +463,8 @@ namespace pcl
     }
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::insertRange (const AlignedPointTVector& src)
+    template<typename PointT, bool use_appender> void
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::insertRange (const AlignedPointTVector& src)
     {
       const uint64_t count = src.size ();
       
@@ -508,8 +508,8 @@ namespace pcl
   
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::insertRange (const pcl::PCLPointCloud2::Ptr& input_cloud)
+    template<typename PointT, bool use_appender> void
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::insertRange (const pcl::PCLPointCloud2::Ptr& input_cloud)
     {
       pcl::PCLPointCloud2::Ptr tmp_cloud (new pcl::PCLPointCloud2 ());
           
@@ -549,8 +549,8 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::readRange (const uint64_t, const uint64_t, pcl::PCLPointCloud2::Ptr& dst)
+    template<typename PointT, bool use_appender> void
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::readRange (const uint64_t, const uint64_t, pcl::PCLPointCloud2::Ptr& dst)
     {
       pcl::PCDReader reader;
 
@@ -573,8 +573,8 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT> int
-    OutofcoreOctreeDiskContainer<PointT>::read (pcl::PCLPointCloud2::Ptr& output_cloud)
+    template<typename PointT, bool use_appender> int
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::read (pcl::PCLPointCloud2::Ptr& output_cloud)
     {
       pcl::PCLPointCloud2::Ptr temp_output_cloud (new pcl::PCLPointCloud2 ());
 
@@ -606,8 +606,8 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::insertRange (const PointT* const * start, const uint64_t count)
+    template<typename PointT, bool use_appender> void
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::insertRange (const PointT* const * start, const uint64_t count)
     {
 //      PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeDiskContainer] Deprecated\n");
       //copy the handles to a continuous block
@@ -625,8 +625,8 @@ namespace pcl
     
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::insertRange (const PointT* start, const uint64_t count)
+    template<typename PointT, bool use_appender> void
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::insertRange (const PointT* start, const uint64_t count)
     {
       typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> ());
 
@@ -668,9 +668,8 @@ namespace pcl
       assert (res == 0);
     }
     ////////////////////////////////////////////////////////////////////////////////
-
-    template<typename PointT> boost::uint64_t
-    OutofcoreOctreeDiskContainer<PointT>::getDataSize () const
+    template<typename PointT, bool use_appender> boost::uint64_t
+    OutofcoreOctreeDiskContainer<PointT, use_appender>::getDataSize () const
     {
       pcl::PCLPointCloud2 cloud_info;
       Eigen::Vector4f origin;
@@ -688,6 +687,58 @@ namespace pcl
       return (total_points);
     }
     ////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+    template<typename PointT>
+    OutofcoreOctreeDiskContainer<PointT, false>::OutofcoreOctreeDiskContainer()
+      : OutofcoreOctreeDiskContainer<PointT, true>()
+    {
+    }
+    ////////////////////////////////////////////////////////////////////////////////
+
+    template<typename PointT>
+    OutofcoreOctreeDiskContainer<PointT, false>::OutofcoreOctreeDiskContainer(const boost::filesystem::path &dir)
+      : OutofcoreOctreeDiskContainer<PointT, true>(dir)
+    {
+    }
+    ////////////////////////////////////////////////////////////////////////////////
+
+    template<typename PointT>
+    OutofcoreOctreeDiskContainer<PointT, false>::~OutofcoreOctreeDiskContainer()
+    {
+    }
+    ////////////////////////////////////////////////////////////////////////////////
+
+    template<typename PointT> void
+    OutofcoreOctreeDiskContainer<PointT, false>::insertRange(const PointT* start, const uint64_t count)
+    {
+      typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> ());
+
+      // Add any points in the cache
+      for (size_t i = 0; i < writebuff_.size (); i++)
+      {
+        tmp_cloud->points.push_back (writebuff_ [i]);
+      }
+
+      //add the new points passed with this function
+      for (size_t i = 0; i < count; i++)
+      {
+        tmp_cloud->points.push_back (*(start + i));
+      }
+
+      tmp_cloud->width = static_cast<uint32_t> (tmp_cloud->points.size ());
+      tmp_cloud->height = 1;
+
+      //save and close
+      PCDWriter writer;
+
+      int res = writer.appendBinary(*disk_storage_filename_, *tmp_cloud);
+      (void)res;
+      assert (res == 0);
+    }
+
 
   }//namespace outofcore
 }//namespace pcl

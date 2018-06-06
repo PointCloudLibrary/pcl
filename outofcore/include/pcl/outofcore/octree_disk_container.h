@@ -69,7 +69,7 @@ namespace pcl
    *  \ingroup outofcore
    *  \author Jacob Schloss (jacob.schloss@urbanrobotics.net)
    */
-    template<typename PointT = pcl::PointXYZ>
+    template<typename PointT = pcl::PointXYZ, bool use_compression = true>
     class OutofcoreOctreeDiskContainer : public OutofcoreAbstractNodeContainer<PointT>
     {
   
@@ -91,7 +91,7 @@ namespace pcl
         OutofcoreOctreeDiskContainer (const boost::filesystem::path &dir);
 
         /** \brief flushes write buffer, then frees memory */
-        ~OutofcoreOctreeDiskContainer ();
+        virtual ~OutofcoreOctreeDiskContainer ();
 
         /** \brief provides random access to points based on a linear index
          */
@@ -115,13 +115,13 @@ namespace pcl
     
         /** \brief This is the primary method for serialization of
          * blocks of point data. This is called by the outofcore
-         * octree interface, opens the binary file for appending data,
-         * and writes it to disk.
+         * octree interface, opens the binary file to load the existing data,
+         * it appends the new cloud and writes it to disk.
          *
          * \param[in] start address of the first point to insert
          * \param[in] count offset from start of the last point to insert
          */
-        void
+        virtual void
         insertRange (const PointT* start, const uint64_t count);
 
         /** \brief Reads \b count points into memory from the disk container
@@ -268,7 +268,7 @@ namespace pcl
         boost::uint64_t
         getDataSize () const;
         
-      private:
+      protected:
         //no copy construction
         OutofcoreOctreeDiskContainer (const OutofcoreOctreeDiskContainer& /*rval*/) { }
 
@@ -299,6 +299,50 @@ namespace pcl
         static boost::uuids::random_generator uuid_gen_;
 
     };
+
+    /** \class OutofcoreOctreeDiskContainer without compression
+     * \note Code was adapted from the original OutofcoreOctreeDiskContainer with compression
+     *
+     * \brief Class responsible for serialization and deserialization of out of core point data; this specialization
+     *  is at the same time a derived class of the OutofcoreOctreeDiskContainer with compression, but uses an
+     *  append method to avoid loading data already in disk. It is faster, but uses more disk space.
+     * \ingroup outofcore
+     * \author Juan A. Garcia Pardo (Juan-Angel.Garcia-Pardo@leica-geosystems.com)
+     */
+    template<typename PointT>
+    class OutofcoreOctreeDiskContainer<PointT, false> : public OutofcoreOctreeDiskContainer<PointT, true>
+    {
+      public:
+        /** \brief Empty constructor creates disk container and sets filename from random uuid string*/
+        OutofcoreOctreeDiskContainer();
+        /** \brief Creates uuid named file or loads existing file
+         * 
+         * If \b dir is a directory, this constructor will create a new
+         * uuid named file; if \b dir is an existing file, it will load the
+         * file metadata for accessing the tree.
+         *
+         * \param[in] dir Path to the tree. If it is a directory, it
+         * will create the metadata. If it is a file, it will load the metadata into memory.
+         */
+        OutofcoreOctreeDiskContainer(const boost::filesystem::path &dir);
+        /** \brief flushes write buffer, then frees memory */
+        virtual ~OutofcoreOctreeDiskContainer();
+        using OutofcoreOctreeDiskContainer<PointT, true>::insertRange;
+
+        /** \brief This is the primary method for serialization of
+         * blocks of point data. This is called by the outofcore
+         * octree interface, opens the binary file for appending data,
+         * and writes it to disk.
+         *
+         * \param[in] start address of the first point to insert
+         * \param[in] count offset from start of the last point to insert
+         */
+        void insertRange(const PointT* start, const uint64_t count);
+      protected:
+        using OutofcoreOctreeDiskContainer<PointT, true>::writebuff_;
+        using OutofcoreOctreeDiskContainer<PointT, true>::disk_storage_filename_;
+    };
+
   } //namespace outofcore
 } //namespace pcl
 
