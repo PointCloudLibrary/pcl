@@ -36,24 +36,12 @@
  */
 
 #include <pcl/pcl_config.h>
+#include <pcl/io/low_level_io.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/tar.h>
-        
-#ifdef _WIN32
-# include <io.h>
-# include <windows.h>
-# define pcl_open                    _open
-# define pcl_close(fd)               _close(fd)
-# define pcl_lseek(fd,offset,origin) _lseek(fd,offset,origin)
-#else
-# include <sys/mman.h>
-# define pcl_open                    open
-# define pcl_close(fd)               close(fd)
-# define pcl_lseek(fd,offset,origin) lseek(fd,offset,origin)
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberImplementation //////////////////////
@@ -186,7 +174,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::readAhead ()
     else
     {
       tar_offset_ += (tar_header_.getFileSize ()) + (512 - tar_header_.getFileSize () % 512);
-      int result = static_cast<int> (pcl_lseek (tar_fd_, tar_offset_, SEEK_SET));
+      int result = static_cast<int> (io::raw_lseek (tar_fd_, tar_offset_, SEEK_SET));
       if (result < 0)
         closeTARFile ();
     }
@@ -209,7 +197,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::readAhead ()
         else
         {
           tar_offset_ += (tar_header_.getFileSize ()) + (512 - tar_header_.getFileSize () % 512);
-          int result = static_cast<int> (pcl_lseek (tar_fd_, tar_offset_, SEEK_SET));
+          int result = static_cast<int> (io::raw_lseek (tar_fd_, tar_offset_, SEEK_SET));
           if (result < 0)
             closeTARFile ();
         }
@@ -271,7 +259,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::readTARHeader ()
 void
 pcl::PCDGrabberBase::PCDGrabberImpl::closeTARFile ()
 {
-  pcl_close (tar_fd_);
+  io::raw_close (tar_fd_);
   tar_fd_ = -1;
   tar_offset_ = 0;
   memset (&tar_header_.file_name[0], 0, 512);
@@ -281,7 +269,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::closeTARFile ()
 int
 pcl::PCDGrabberBase::PCDGrabberImpl::openTARFile (const std::string &file_name)
 {
-  tar_fd_ = pcl_open (file_name.c_str (), O_RDONLY);
+  tar_fd_ = io::raw_open (file_name.c_str (), O_RDONLY);
   if (tar_fd_ == -1)
     return (-1);
 
@@ -334,7 +322,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::scrapeForClouds (bool force)
         cloud_idx_to_file_idx_.push_back (i);
         // Update offset
         tar_offset_ += (tar_header_.getFileSize ()) + (512 - tar_header_.getFileSize () % 512);
-        int result = static_cast<int> (pcl_lseek (tar_fd_, tar_offset_, SEEK_SET));
+        int result = static_cast<int> (io::raw_lseek (tar_fd_, tar_offset_, SEEK_SET));
         if (result < 0)
           break;
         if (tar_fd_ == -1)

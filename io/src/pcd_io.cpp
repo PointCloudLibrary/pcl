@@ -43,25 +43,14 @@
 #include <stdlib.h>
 #include <pcl/io/boost.h>
 #include <pcl/common/io.h>
-#include <pcl/io/pcd_io.h>
+#include <pcl/io/low_level_io.h>
 #include <pcl/io/lzf.h>
+#include <pcl/io/pcd_io.h>
 #include <pcl/console/time.h>
 
 #include <cstring>
 #include <cerrno>
 
-#ifdef _WIN32
-# include <io.h>
-# include <windows.h>
-# define pcl_open                    _open
-# define pcl_close(fd)               _close(fd)
-# define pcl_lseek(fd,offset,origin) _lseek(fd,offset,origin)
-#else
-# include <sys/mman.h>
-# define pcl_open                    open
-# define pcl_close(fd)               close(fd)
-# define pcl_lseek(fd,offset,origin) lseek(fd,offset,origin)
-#endif
 #include <boost/version.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -750,7 +739,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   /// We must re-open the file and read with mmap () for binary
   {
     // Open for reading
-    int fd = pcl_open (file_name.c_str (), O_RDONLY);
+    int fd = io::raw_open (file_name.c_str (), O_RDONLY);
     if (fd == -1)
     {
       PCL_ERROR ("[pcl::PCDReader::read] Failure to open file %s\n", file_name.c_str () );
@@ -758,17 +747,17 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     }
 
     // Infer file size
-    const size_t file_size = pcl_lseek (fd, 0, SEEK_END);
-    pcl_lseek (fd, 0, SEEK_SET);
+    const size_t file_size = io::raw_lseek (fd, 0, SEEK_END);
+    io::raw_lseek (fd, 0, SEEK_SET);
     
     size_t mmap_size = offset + data_idx;   // ...because we mmap from the start of the file.
     if (data_type == 2)
     {
       // Seek to real start of data.
-      off_t result = pcl_lseek (fd, offset + data_idx, SEEK_SET);
+      long result = io::raw_lseek (fd, offset + data_idx, SEEK_SET);
       if (result < 0)
       {
-        pcl_close (fd);
+        io::raw_close (fd);
         PCL_ERROR ("[pcl::PCDReader::read] lseek errno: %d strerror: %s\n", errno, strerror (errno));
         PCL_ERROR ("[pcl::PCDReader::read] Error during lseek ()!\n");
         return (-1);
@@ -776,10 +765,10 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     
       // Read compressed size to compute how much must be mapped
       unsigned int compressed_size = 0;
-      ssize_t num_read = pcl_read (fd, &compressed_size, 4);
+      ssize_t num_read = io::raw_read (fd, &compressed_size, 4);
       if (num_read < 0)
       {
-        pcl_close (fd);
+        io::raw_close (fd);
         PCL_ERROR ("[pcl::PCDReader::read] read errno: %d strerror: %s\n", errno, strerror (errno));
         PCL_ERROR ("[pcl::PCDReader::read] Error during read()!\n");
         return (-1);
@@ -789,7 +778,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       mmap_size += 8;
 
       // Reset position
-      pcl_lseek (fd, 0, SEEK_SET);
+      io::raw_lseek (fd, 0, SEEK_SET);
     }
     else
     {
@@ -798,7 +787,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
 
     if (mmap_size > file_size)
     {
-      pcl_close (fd);
+      io::raw_close (fd);
       PCL_ERROR ("[pcl::PCDReader::read] Corrupted PCD file. The file is smaller than expected!\n");
       return (-1);
     }
@@ -814,15 +803,15 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     if (map == NULL)
     {
       CloseHandle (fm);
-      pcl_close (fd);
+      io::raw_close (fd);
       PCL_ERROR ("[pcl::PCDReader::read] Error mapping view of file, %s\n", file_name.c_str ());
       return (-1);
     }
 #else
-    unsigned char *map = static_cast<unsigned char*> (mmap (0, mmap_size, PROT_READ, MAP_SHARED, fd, 0));
+    unsigned char *map = static_cast<unsigned char*> (::mmap (0, mmap_size, PROT_READ, MAP_SHARED, fd, 0));
     if (map == reinterpret_cast<unsigned char*> (-1))    // MAP_FAILED
     {
-      pcl_close (fd);
+      io::raw_close (fd);
       PCL_ERROR ("[pcl::PCDReader::read] Error preparing mmap for binary PCD file.\n");
       return (-1);
     }
@@ -835,14 +824,14 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     UnmapViewOfFile (map);
     CloseHandle (fm);
 #else
-    if (munmap (map, mmap_size) == -1)
+    if (::munmap (map, mmap_size) == -1)
     {
-      pcl_close (fd);
+      io::raw_close (fd);
       PCL_ERROR ("[pcl::PCDReader::read] Munmap failure\n");
       return (-1);
     }
 #endif
-    pcl_close (fd);
+    io::raw_close (fd);
   }
   double total_time = tt.toc ();
   PCL_DEBUG ("[pcl::PCDReader::read] Loaded %s as a %s cloud in %g ms with %d points. Available dimensions: %s.\n", 
@@ -1272,7 +1261,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
   setLockingPermissions (file_name, file_lock);
 
 #else
-  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+  int fd = io::raw_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (fd < 0)
   {
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during open (%s)!\n", file_name.c_str());
@@ -1283,10 +1272,10 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
   setLockingPermissions (file_name, file_lock);
 
   // Stretch the file size to the size of the data
-  off_t result = pcl_lseek (fd, getpagesize () + cloud.data.size () - 1, SEEK_SET);
+  long result = io::raw_lseek (fd, getpagesize () + cloud.data.size () - 1, SEEK_SET);
   if (result < 0)
   {
-    pcl_close (fd);
+    io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] lseek errno: %d strerror: %s\n", errno, strerror (errno));
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during lseek ()!\n");
@@ -1296,7 +1285,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
   result = static_cast<int> (::write (fd, "", 1));
   if (result != 1)
   {
-    pcl_close (fd);
+    io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during write ()!\n");
     return (-1);
@@ -1312,7 +1301,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
   char *map = static_cast<char*> (mmap (0, static_cast<size_t> (data_idx + cloud.data.size ()), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
-    pcl_close (fd);
+    io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during mmap ()!\n");
     return (-1);
@@ -1335,9 +1324,9 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
 #ifdef _WIN32
     UnmapViewOfFile (map);
 #else
-  if (munmap (map, static_cast<size_t> (data_idx + cloud.data.size ())) == -1)
+  if (::munmap (map, static_cast<size_t> (data_idx + cloud.data.size ())) == -1)
   {
-    pcl_close (fd);
+    io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during munmap ()!\n");
     return (-1);
@@ -1347,7 +1336,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
 #ifdef _WIN32
   CloseHandle(h_native_file);
 #else
-  pcl_close (fd);
+  io::raw_close (fd);
 #endif
   resetLockingPermissions (file_name, file_lock);
   return (0);
@@ -1481,7 +1470,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
     return (-1);
   }
 #else
-  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+  int fd = io::raw_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (fd < 0)
   {
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during open (%s)!\n", file_name.c_str ());
@@ -1497,10 +1486,10 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
   size_t page_size = getpagesize ();
   size_t size_pages = ostr.size () / page_size;
   size_t partial_pages = (size_pages * page_size < ostr.size ()) ? 1 : 0;
-  off_t result = pcl_lseek (fd, (size_pages + partial_pages) * page_size - 1, SEEK_SET);
+  long result = io::raw_lseek (fd, (size_pages + partial_pages) * page_size - 1, SEEK_SET);
   if (result < 0)
   {
-    pcl_close (fd);
+    io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] lseek errno: %d strerror: %s\n", errno, strerror (errno));
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during lseek ()!\n");
@@ -1510,7 +1499,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
   result = static_cast<int> (::write (fd, "", 1));
   if (result != 1)
   {
-    pcl_close (fd);
+    io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during write ()!\n");
     return (-1);
@@ -1524,10 +1513,10 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
   CloseHandle (fm);
 
 #else
-  char *map = static_cast<char*> (mmap (0, ostr.size (), PROT_WRITE, MAP_SHARED, fd, 0));
+  char *map = static_cast<char*> (::mmap (0, ostr.size (), PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
-    pcl_close (fd);
+    io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during mmap ()!\n");
     return (-1);
@@ -1547,9 +1536,9 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
 #ifdef _WIN32
     UnmapViewOfFile (map);
 #else
-  if (munmap (map, ostr.size ()) == -1)
+  if (::munmap (map, ostr.size ()) == -1)
   {
-    pcl_close (fd);
+    io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during munmap ()!\n");
     return (-1);
@@ -1559,7 +1548,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
 #ifdef _WIN32
   CloseHandle (h_native_file);
 #else
-  pcl_close (fd);
+  io::raw_close (fd);
 #endif
   resetLockingPermissions (file_name, file_lock);
 
