@@ -181,7 +181,7 @@ namespace pcl
      * \return The MLSProjectionResults for the input data.
      */
     inline MLSProjectionResults
-    projectPoint(const Eigen::Vector3d &pt, ProjectionMethod method, int required_neighbors = 0) const;
+    projectPoint (const Eigen::Vector3d &pt, ProjectionMethod method, int required_neighbors = 0) const;
 
     /**
      * \brief Project the query point used to generate the mls surface about using the specified method.
@@ -192,7 +192,7 @@ namespace pcl
      * \return The MLSProjectionResults for the input data.
      */
     inline MLSProjectionResults
-    projectQueryPoint(ProjectionMethod method, int required_neighbors = 0) const;
+    projectQueryPoint (ProjectionMethod method, int required_neighbors = 0) const;
 
     /** \brief Smooth a given point and its neighborghood using Moving Least Squares.
       * \param[in] index the index of the query point in the input cloud
@@ -307,7 +307,7 @@ namespace pcl
                               cache_mls_results_ (true),
                               mls_results_ (),
                               projection_method_ (MLSResult::SIMPLE),
-                              threads_(1),
+                              threads_ (1),
                               voxel_size_ (1.0),
                               dilation_iteration_num_ (0),
                               nr_coeff_ (),
@@ -519,7 +519,7 @@ namespace pcl
       * \param threads the maximum number of hardware threads to use (0 sets the value to 1)
       */
       inline void
-      setNumberOfThreads(unsigned int threads = 0)
+      setNumberOfThreads (unsigned int threads = 0)
       {
         threads_ = threads;
       }
@@ -705,13 +705,13 @@ namespace pcl
         * \param[out] corresponding_input_indices the set of indices with each point in output having the corresponding point in input
         */
       void
-      addProjectedPointNormal(int index,
-                              const Eigen::Vector3d &point,
-                              const Eigen::Vector3d &normal,
-                              double curvature,
-                              PointCloudOut &projected_points,
-                              NormalCloud &projected_points_normals,
-                              PointIndices &corresponding_input_indices) const;
+      addProjectedPointNormal (int index,
+                               const Eigen::Vector3d &point,
+                               const Eigen::Vector3d &normal,
+                               double curvature,
+                               PointCloudOut &projected_points,
+                               NormalCloud &projected_points_normals,
+                               PointIndices &corresponding_input_indices) const;
 
 
       void
@@ -761,9 +761,9 @@ namespace pcl
     /** \brief Constructor for parallelized Moving Least Squares
     * \param threads the maximum number of hardware threads to use (0 sets the value to 1)
     */
-    MovingLeastSquaresOMP(unsigned int threads = 0)
+    MovingLeastSquaresOMP (unsigned int threads = 0)
     {
-      this->setNumberOfThreads(threads);
+      this->setNumberOfThreads (threads);
     }
   };
 }

@@ -246,13 +246,13 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
 }
 
 template <typename PointInT, typename PointOutT> void
-pcl::MovingLeastSquares<PointInT, PointOutT>::addProjectedPointNormal(int index,
-                                                                      const Eigen::Vector3d &point,
-                                                                      const Eigen::Vector3d &normal,
-                                                                      double curvature,
-                                                                      PointCloudOut &projected_points,
-                                                                      NormalCloud &projected_points_normals,
-                                                                      PointIndices &corresponding_input_indices) const
+pcl::MovingLeastSquares<PointInT, PointOutT>::addProjectedPointNormal (int index,
+                                                                       const Eigen::Vector3d &point,
+                                                                       const Eigen::Vector3d &normal,
+                                                                       double curvature,
+                                                                       PointCloudOut &projected_points,
+                                                                       NormalCloud &projected_points_normals,
+                                                                       PointIndices &corresponding_input_indices) const
 {
   PointOutT aux;
   aux.x = static_cast<float> (point[0]);
@@ -289,9 +289,9 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
   // (Maximum) number of threads
   const unsigned int threads = threads_ == 0 ? 1 : threads_;
   // Create temporaries for each thread in order to avoid synchronization
-  typename PointCloudOut::CloudVectorType projected_points(threads);
-  typename NormalCloud::CloudVectorType projected_points_normals(threads);
-  std::vector<PointIndices> corresponding_input_indices(threads);
+  typename PointCloudOut::CloudVectorType projected_points (threads);
+  typename NormalCloud::CloudVectorType projected_points_normals (threads);
+  std::vector<PointIndices> corresponding_input_indices (threads);
 #endif
 
   // For all points
@@ -328,18 +328,18 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
           mls_result_index = index; // otherwise we give it a dummy location.
 
 #ifdef _OPENMP
-        computeMLSPointNormal(index, nn_indices, projected_points[tn], projected_points_normals[tn], corresponding_input_indices[tn], mls_results_[mls_result_index]);
+        computeMLSPointNormal (index, nn_indices, projected_points[tn], projected_points_normals[tn], corresponding_input_indices[tn], mls_results_[mls_result_index]);
 
         // Copy all information from the input cloud to the output points (not doing any interpolation)
         for (size_t pp = pp_size; pp < projected_points[tn].size (); ++pp)
-          copyMissingFields(input_->points[(*indices_)[cp]], projected_points[tn][pp]);
+          copyMissingFields (input_->points[(*indices_)[cp]], projected_points[tn][pp]);
 #else
-        computeMLSPointNormal(index, nn_indices, projected_points, projected_points_normals, *corresponding_input_indices_, mls_results_[mls_result_index]);
+        computeMLSPointNormal (index, nn_indices, projected_points, projected_points_normals, *corresponding_input_indices_, mls_results_[mls_result_index]);
     
         // Append projected points to output
         output.insert(output.end (), projected_points.begin (), projected_points.end ());
         if (compute_normals_)
-          normals_->insert(normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
+          normals_->insert (normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
 #endif
       }
     }
