@@ -296,7 +296,7 @@ namespace pcl
 
         static boost::mutex rng_mutex_;
         static boost::mt19937 rand_gen_;
-        static boost::uuids::random_generator uuid_gen_;
+        static boost::uuids::basic_random_generator<boost::mt19937> uuid_gen_;
 
     };
   } //namespace outofcore
