@@ -71,35 +71,29 @@ namespace pcl
         // is that our distribution's properties are consistent over the space
         // of rotations.
         Eigen::Matrix3f current_rotation;
-        current_rotation = getTransformation(x, y, z, roll, pitch, yaw).rotation();
-        Eigen::Quaternionf q_current_rotation(current_rotation);
+        current_rotation = getTransformation (x, y, z, roll, pitch, yaw).rotation ();
+        Eigen::Quaternionf q_current_rotation (current_rotation);
 
         Eigen::Matrix3f mean_rotation;
-        mean_rotation = getTransformation(mean[0], mean[1], mean[2],
-                                          mean[3], mean[4], mean[5]).rotation();
-        Eigen::Quaternionf q_mean_rotation(mean_rotation);
+        mean_rotation = getTransformation (mean[0], mean[1], mean[2],
+                                          mean[3], mean[4], mean[5]).rotation ();
+        Eigen::Quaternionf q_mean_rotation (mean_rotation);
 
         // Scales 1.0 radians of variance in RPY sampling into equivalent units for quaternion sampling.
         const float scale_factor = 0.2862;
 
-        float a = sampleNormal(0, scale_factor*cov[3]);
-        float b = sampleNormal(0, scale_factor*cov[4]);
-        float c = sampleNormal(0, scale_factor*cov[5]);
+        float a = sampleNormal (0, scale_factor*cov[3]);
+        float b = sampleNormal (0, scale_factor*cov[4]);
+        float c = sampleNormal (0, scale_factor*cov[5]);
 
-        Eigen::Vector4f vec_sample_mean_0(a, b, c, 1);
-        Eigen::Quaternionf q_sample_mean_0(vec_sample_mean_0);
-        q_sample_mean_0.normalize();
+        Eigen::Vector4f vec_sample_mean_0 (a, b, c, 1);
+        Eigen::Quaternionf q_sample_mean_0 (vec_sample_mean_0);
+        q_sample_mean_0.normalize ();
 
         Eigen::Quaternionf q_sample_user_mean = q_sample_mean_0 * q_mean_rotation * q_current_rotation;
 
-        Eigen::Affine3f affine_R(q_sample_user_mean.toRotationMatrix());
-        float new_roll, new_pitch, new_yaw;
-        pcl::getEulerAngles(affine_R, new_roll, new_pitch, new_yaw);
-
-        roll  = new_roll;
-        pitch = new_pitch;
-        yaw   = new_yaw;
-
+        Eigen::Affine3f affine_R (q_sample_user_mean.toRotationMatrix ());
+        pcl::getEulerAngles (affine_R, roll, pitch, yaw);
       }
 
       void
