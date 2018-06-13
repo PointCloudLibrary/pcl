@@ -519,7 +519,7 @@ namespace pcl
       * \param threads the maximum number of hardware threads to use (0 sets the value to 1)
       */
       inline void
-      setNumberOfThreads (unsigned int threads = 0)
+      setNumberOfThreads (unsigned int threads = 1)
       {
         threads_ = threads;
       }
@@ -761,7 +761,7 @@ namespace pcl
       /** \brief Constructor for parallelized Moving Least Squares
       * \param threads the maximum number of hardware threads to use (0 sets the value to 1)
       */
-      MovingLeastSquaresOMP (unsigned int threads = 0)
+      MovingLeastSquaresOMP (unsigned int threads = 1)
       {
         this->setNumberOfThreads (threads);
       }
