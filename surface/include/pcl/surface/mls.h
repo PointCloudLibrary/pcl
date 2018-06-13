@@ -60,7 +60,7 @@ namespace pcl
     enum ProjectionMethod
     {
       NONE,      /**< \brief Project to the mls plane. */
-      SIMPLE,    /**< \brief Project along the mls plans normal to the polynomial surface. */
+      SIMPLE,    /**< \brief Project along the mls plane normal to the polynomial surface. */
       ORTHOGONAL /**< \brief Project to the closest point on the polynonomial surface. */
     };
 
@@ -232,10 +232,10 @@ namespace pcl
 
   };
 
-  /** \brief MovingLeastSquares represent an implementation of the MLS (Moving Least Squares) algorithm 
-    * for data smoothing and improved normal estimation. It also contains methods for upsampling the 
+  /** \brief MovingLeastSquares represent an implementation of the MLS (Moving Least Squares) algorithm
+    * for data smoothing and improved normal estimation. It also contains methods for upsampling the
     * resulting cloud based on the parametric fit.
-    * Reference paper: "Computing and Rendering Point Set Surfaces" by Marc Alexa, Johannes Behr, 
+    * Reference paper: "Computing and Rendering Point Set Surfaces" by Marc Alexa, Johannes Behr,
     * Daniel Cohen-Or, Shachar Fleishman, David Levin and Claudio T. Silva
     * www.sci.utah.edu/~shachar/Publications/crpss.pdf
     * \note There is a parallelized version of the processing step, using the OpenMP standard.
@@ -246,7 +246,7 @@ namespace pcl
     * \ingroup surface
     */
   template <typename PointInT, typename PointOutT>
-  class MovingLeastSquares: public CloudSurfaceProcessing<PointInT, PointOutT>
+  class MovingLeastSquares : public CloudSurfaceProcessing<PointInT, PointOutT>
   {
     public:
       typedef boost::shared_ptr<MovingLeastSquares<PointInT, PointOutT> > Ptr;
@@ -632,7 +632,7 @@ namespace pcl
           getCellIndex (const Eigen::Vector3f &p, Eigen::Vector3i& index) const
           {
             for (int i = 0; i < 3; ++i)
-              index[i] = static_cast<Eigen::Vector3i::Scalar> ((p[i] - bounding_min_(i)) / voxel_size_);
+              index[i] = static_cast<Eigen::Vector3i::Scalar> ((p[i] - bounding_min_ (i)) / voxel_size_);
           }
 
           inline void
@@ -719,7 +719,7 @@ namespace pcl
                          PointOutT &point_out) const;
 
       /** \brief Abstract surface reconstruction method.
-        * \param[out] output the result of the reconstruction 
+        * \param[out] output the result of the reconstruction
         */
       virtual void
       performProcessing (PointCloudOut &output);
@@ -746,7 +746,7 @@ namespace pcl
       getClassName () const { return ("MovingLeastSquares"); }
 
     public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief MovingLeastSquaresOMP implementation has been merged into MovingLeastSquares for better maintainability.
@@ -757,14 +757,14 @@ namespace pcl
   template <typename PointInT, typename PointOutT>
   class MovingLeastSquaresOMP : public MovingLeastSquares<PointInT, PointOutT>
   {
-  public:
-    /** \brief Constructor for parallelized Moving Least Squares
-    * \param threads the maximum number of hardware threads to use (0 sets the value to 1)
-    */
-    MovingLeastSquaresOMP (unsigned int threads = 0)
-    {
-      this->setNumberOfThreads (threads);
-    }
+    public:
+      /** \brief Constructor for parallelized Moving Least Squares
+      * \param threads the maximum number of hardware threads to use (0 sets the value to 1)
+      */
+      MovingLeastSquaresOMP (unsigned int threads = 0)
+      {
+        this->setNumberOfThreads (threads);
+      }
   };
 }
 
