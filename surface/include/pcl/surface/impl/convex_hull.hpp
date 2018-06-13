@@ -131,77 +131,45 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
     yz_proj_safe = false;
   }
 
-  // True if qhull should free points in qh_freeqhull() or reallocation
-  boolT ismalloc = True;
-  // output from qh_produce_output(), use NULL to skip qh_produce_output()
-  FILE *outfile = NULL;
-
-#ifndef HAVE_QHULL_2011
-  if (compute_area_)
-    outfile = stderr;
-#endif
-
-  // option flags for qhull, see qh_opt.htm
-  const char* flags = qhull_flags.c_str ();
-  // error messages from qhull code
-  FILE *errfile = stderr;
-
   // Array of coordinates for each point
-  coordT *points = reinterpret_cast<coordT*> (calloc (indices_->size () * dimension, sizeof (coordT)));
+  std::vector<double> points (2 * indices_->size ());
 
-  // Build input data, using appropriate projection
-  int j = 0;
-  if (xy_proj_safe)
-  {
-    for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
-    {
-      points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].x);
-      points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].y);
-    }
-  } 
-  else if (yz_proj_safe)
-  {
-    for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
-    {
-      points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].y);
-      points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
-    }
-  }
-  else if (xz_proj_safe)
-  {
-    for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
-    {
-      points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].x);
-      points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
-    }
-  }
-  else
+  if (!xy_proj_safe && !yz_proj_safe && !xz_proj_safe)
   {
     // This should only happen if we had invalid input
     PCL_ERROR ("[pcl::%s::performReconstruction2D] Invalid input!\n", getClassName ().c_str ());
+    return;
   }
-   
+
+  // works because all _proj_safe are mutually exclusive
+  const uint8_t c0 = yz_proj_safe;
+  const uint8_t c1 = !xy_proj_safe + 1;
+
+  for (size_t i = 0, j = 0; i < indices_->size ();++i)
+  {
+    points[j++].input_->points[(*indices_)[i]].data[c0];
+    points[j++].input_->points[(*indices_)[i]].data[c1];
+  }
+
+  orgQhull::Qhull qhull;
   // Compute convex hull
-  int exitcode = qh_new_qhull (dimension, static_cast<int> (indices_->size ()), points, ismalloc, const_cast<char*> (flags), outfile, errfile);
-#ifdef HAVE_QHULL_2011
-  if (compute_area_)
+  try
   {
-    qh_prepare_output();
+    qhull.runQhull("", dimension, indices_->size (), points.data(), "");
+
+    // 0 if no error from qhull or it doesn't find any vertices
+    if (qhull.qhullStatus() != 0 || qhull.vertexCount() == 0)
+    {
+      throw std::runtime_error(qhull.qhullMessage());
+    }
   }
-#endif
-    
-  // 0 if no error from qhull or it doesn't find any vertices
-  if (exitcode != 0 || qh num_vertices == 0)
+  catch (const std::exception& e)
   {
-    PCL_ERROR ("[pcl::%s::performReconstrution2D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), indices_->size ());
+    PCL_ERROR ("[pcl::%s::performReconstrution2D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\nError: %s\n", getClassName ().c_str (), indices_->size (), e.what());
 
     hull.points.resize (0);
     hull.width = hull.height = 0;
     polygons.resize (0);
-
-    qh_freeqhull (!qh_ALL);
-    int curlong, totlong;
-    qh_memfreeshort (&curlong, &totlong);
 
     return;
   }
@@ -209,57 +177,31 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   // Qhull returns the area in volume for 2D
   if (compute_area_)
   {
-    total_area_ = qh totvol;
+    total_area_ = qhull.volume();
     total_volume_ = 0.0;
   }
 
-  int num_vertices = qh num_vertices;
-  hull.points.resize (num_vertices);
-  memset (&hull.points[0], static_cast<int> (hull.points.size ()), sizeof (PointInT));
+  orgQhull::QhullVertexList vertexs = qhull.vertexList();
 
-  vertexT * vertex;
-  int i = 0;
-
-  std::vector<std::pair<int, Eigen::Vector4f>, Eigen::aligned_allocator<std::pair<int, Eigen::Vector4f> > > idx_points (num_vertices);
-  idx_points.resize (hull.points.size ());
-  memset (&idx_points[0], static_cast<int> (hull.points.size ()), sizeof (std::pair<int, Eigen::Vector4f>));
-
-  FORALLvertices
+  std::vector<std::pair<int, Eigen::Vector4f>, Eigen::aligned_allocator<std::pair<int, Eigen::Vector4f> > > idx_points (vertexs.size ());
+  for(orgQhull::QhullVertexList::iterator it = vertexs.begin (); it != vertexs.end (); ++it)
   {
-    hull.points[i] = input_->points[(*indices_)[qh_pointid (vertex->point)]];
-    idx_points[i].first = qh_pointid (vertex->point);
-    ++i;
+    hull.push_back(input_->points[(*indices_)[it->point().id ()]]);
+    idx_points.push_back(std::make_pair (it->point ().id (), Eigen::Vector4f ()));
   }
 
   // Sort
   Eigen::Vector4f centroid;
   pcl::compute3DCentroid (hull, centroid);
-  if (xy_proj_safe)
+
+  for (size_t j = 0; j < hull.points.size (); ++j)
   {
-    for (size_t j = 0; j < hull.points.size (); j++)
-    {
-      idx_points[j].second[0] = hull.points[j].x - centroid[0];
-      idx_points[j].second[1] = hull.points[j].y - centroid[1];
-    }
+    idx_points[j].second[0] = hull.points[j][c0] - centroid[c0];
+    idx_points[j].second[1] = hull.points[j][c1] - centroid[c1];
   }
-  else if (yz_proj_safe)
-  {
-    for (size_t j = 0; j < hull.points.size (); j++)
-    {
-      idx_points[j].second[0] = hull.points[j].y - centroid[1];
-      idx_points[j].second[1] = hull.points[j].z - centroid[2];
-    }
-  }
-  else if (xz_proj_safe)
-  {
-    for (size_t j = 0; j < hull.points.size (); j++)
-    {
-      idx_points[j].second[0] = hull.points[j].x - centroid[0];
-      idx_points[j].second[1] = hull.points[j].z - centroid[2];
-    }
-  }
+
   std::sort (idx_points.begin (), idx_points.end (), comparePoints2D);
-    
+
   polygons.resize (1);
   polygons[0].vertices.resize (hull.points.size ());
 
@@ -267,21 +209,16 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   hull_indices_.indices.clear ();
   hull_indices_.indices.reserve (hull.points.size ());
 
-  for (int j = 0; j < static_cast<int> (hull.points.size ()); j++)
+  for (unsigned int j = 0; j < hull.points.size (); ++j)
   {
     hull_indices_.indices.push_back ((*indices_)[idx_points[j].first]);
     hull.points[j] = input_->points[(*indices_)[idx_points[j].first]];
-    polygons[0].vertices[j] = static_cast<unsigned int> (j);
+    polygons[0].vertices[j] = j;
   }
-    
-  qh_freeqhull (!qh_ALL);
-  int curlong, totlong;
-  qh_memfreeshort (&curlong, &totlong);
 
   hull.width = static_cast<uint32_t> (hull.points.size ());
   hull.height = 1;
   hull.is_dense = false;
-  return;
 }
 
 #ifdef __GNUC__
@@ -294,119 +231,90 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
 {
   int dimension = 3;
 
-  // True if qhull should free points in qh_freeqhull() or reallocation
-  boolT ismalloc = True;
-  // output from qh_produce_output(), use NULL to skip qh_produce_output()
-  FILE *outfile = NULL;
-
-#ifndef HAVE_QHULL_2011
-  if (compute_area_)
-    outfile = stderr;
-#endif
-
-  // option flags for qhull, see qh_opt.htm
-  const char *flags = qhull_flags.c_str ();
-  // error messages from qhull code
-  FILE *errfile = stderr;
-
   // Array of coordinates for each point
-  coordT *points = reinterpret_cast<coordT*> (calloc (indices_->size () * dimension, sizeof (coordT)));
+  std::vector<double> points (3 * indices_->size ());
 
-  int j = 0;
-  for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
+  for (size_t i = 0; i < indices_->size (); ++i)
   {
-    points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].x);
-    points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].y);
-    points[j + 2] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
+    points[3*i].push_back(input_->points[(*indices_)[i]].x);
+    points[3*i + 1].push_back(input_->points[(*indices_)[i]].y);
+    points[3*i + 2].push_back(input_->points[(*indices_)[i]].z);
   }
 
+  orgQhull::Qhull qhull;
   // Compute convex hull
-  int exitcode = qh_new_qhull (dimension, static_cast<int> (indices_->size ()), points, ismalloc, const_cast<char*> (flags), outfile, errfile);
-#ifdef HAVE_QHULL_2011
-  if (compute_area_)
-  {
-    qh_prepare_output();
-  }
-#endif
+  try {
+    qhull.runQhull("", dimension, indices_->size (), points.data(), "");
 
-  // 0 if no error from qhull
-  if (exitcode != 0)
+    // 0 if no error from qhull or it doesn't find any vertices
+    if (qhull.qhullStatus() != 0 || qhull.vertexCount() == 0)
+    {
+      throw std::runtime_error(qhull.qhullMessage());
+    }
+
+    qh_triangulate (qhull.qh());
+  }
+  catch (const std::exception& e)
   {
-    PCL_ERROR ("[pcl::%s::performReconstrution3D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), input_->points.size ());
+    PCL_ERROR ("[pcl::%s::performReconstrution3D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\nError: %s\n", getClassName ().c_str (), input_->points.size (), e.what());
 
     hull.points.resize (0);
     hull.width = hull.height = 0;
     polygons.resize (0);
-
-    qh_freeqhull (!qh_ALL);
-    int curlong, totlong;
-    qh_memfreeshort (&curlong, &totlong);
-
-    return;
   }
 
-  qh_triangulate ();
-
-  int num_facets = qh num_facets;
-
-  int num_vertices = qh num_vertices;
+  int num_facets = qhull.facetCount();
+  int num_vertices = qhull.vertexCount();
   hull.points.resize (num_vertices);
 
-  vertexT * vertex;
-  int i = 0;
   // Max vertex id
   unsigned int max_vertex_id = 0;
-  FORALLvertices
+  orgQhull::QhullVertexList vertexs = qhull.vertexList();
+  for(orgQhull::QhullVertexList::iterator it = vertexs.begin (); it != vertexs.end (); ++it)
   {
-    if (vertex->id + 1 > max_vertex_id)
-      max_vertex_id = vertex->id + 1;
+    if (it->id() + 1 > max_vertex_id)
+      max_vertex_id = it->id() + 1;
   }
 
-  ++max_vertex_id;
-  std::vector<int> qhid_to_pcidx (max_vertex_id);
+  std::vector<uint32_t> qhid_to_pcidx (++max_vertex_id);
 
   hull_indices_.header = input_->header;
   hull_indices_.indices.clear ();
   hull_indices_.indices.reserve (num_vertices);
 
-  FORALLvertices
+  uint32_t i = 0;
+  for(orgQhull::QhullVertexList::iterator it = vertexs.begin (); it != vertexs.end (); ++it, ++i)
   {
     // Add vertices to hull point_cloud and store index
-    hull_indices_.indices.push_back ((*indices_)[qh_pointid (vertex->point)]);
-    hull.points[i] = input_->points[(*indices_)[hull_indices_.indices.back ()]];
+    hull_indices_.indices.push_back ((*indices_)[it->point().id()]);
+    hull.points[i] = input_->points[hull_indices_.indices.back ()];
 
-    qhid_to_pcidx[vertex->id] = i; // map the vertex id of qhull to the point cloud index
-    ++i;
+    qhid_to_pcidx[it->id()] = i; // map the vertex id of qhull to the point cloud index
   }
 
   if (compute_area_)
   {
-    total_area_  = qh totarea;
-    total_volume_ = qh totvol;
+    total_area_  = qhull.area();
+    total_volume_ = qhull.volume();
   }
 
   if (fill_polygon_data)
   {
     polygons.resize (num_facets);
-    int dd = 0;
+    size_t dd = 0;
 
-    facetT * facet;
-    FORALLfacets
+    orgQhull::QhullFacetList facets = qhull.facetList();
+    for(orgQhull::QhullFacetList::iterator it = facets.begin (); it != facets.end (); ++it, ++dd)
     {
       polygons[dd].vertices.resize (3);
 
-      // Needed by FOREACHvertex_i_
-      int vertex_n, vertex_i;
-      FOREACHvertex_i_ ((*facet).vertices)
-      //facet_vertices.vertices.push_back (qhid_to_pcidx[vertex->id]);
-      polygons[dd].vertices[vertex_i] = qhid_to_pcidx[vertex->id];
-      ++dd;
+      orgQhull::QhullVertexSet vertices = it->vertices();
+      size_t vertex_i = 0;
+      for(orgQhull::QhullVertexSet::iterator jt = vertices.begin (); jt != vertices.end (); ++jt, ++vertex_i) {
+        polygons[dd].vertices[vertex_i] = qhid_to_pcidx[(*jt).id()];
+      }
     }
   }
-  // Deallocates memory (also the points)
-  qh_freeqhull (!qh_ALL);
-  int curlong, totlong;
-  qh_memfreeshort (&curlong, &totlong);
 
   hull.width = static_cast<uint32_t> (hull.points.size ());
   hull.height = 1;
