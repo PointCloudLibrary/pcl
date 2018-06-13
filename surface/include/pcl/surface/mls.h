@@ -239,8 +239,8 @@ namespace pcl
     * Daniel Cohen-Or, Shachar Fleishman, David Levin and Claudio T. Silva
     * www.sci.utah.edu/~shachar/Publications/crpss.pdf
     * \note There is a parallelized version of the processing step, using the OpenMP standard.
-    * \note Compared to the standard version, an overhead is incurred in terms of runtime and memory usage.
-    * \note The upsampling methods DISTINCT_CLOUD and VOXEL_GRID_DILATION are not parallelized completely,
+    * Compared to the standard version, an overhead is incurred in terms of runtime and memory usage.
+    * The upsampling methods DISTINCT_CLOUD and VOXEL_GRID_DILATION are not parallelized completely,
     * i.e. parts of the algorithm run on a single thread only.
     * \author Zoltan Csaba Marton, Radu B. Rusu, Alexandru E. Ichim, Suat Gedikli, Robert Huitl
     * \ingroup surface
