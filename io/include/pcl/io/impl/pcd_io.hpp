@@ -206,25 +206,14 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   CloseHandle (fm);
 
 #else
-  // Stretch the file size to the size of the data
-  off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
-
-  if (result < 0)
+  // Allocate disk space for the entire file to prevent bus errors.
+  if (::posix_fallocate (fd, 0, data_idx + data_size) != 0)
   {
     pcl_close (fd);
     resetLockingPermissions (file_name, file_lock);
-    PCL_ERROR ("[pcl::PCDWriter::writeBinary] lseek errno: %d strerror: %s\n", errno, strerror (errno));
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] posix_fallocate errno: %d strerror: %s\n", errno, strerror (errno));
 
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during lseek ()!");
-    return (-1);
-  }
-  // Write a bogus entry so that the new file size comes in effect
-  result = static_cast<int> (::write (fd, "", 1));
-  if (result != 1)
-  {
-    pcl_close (fd);
-    resetLockingPermissions (file_name, file_lock);
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during write ()!");
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during posix_fallocate ()!");
     return (-1);
   }
 
@@ -340,6 +329,15 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   // Compute the size of data
   data_size = cloud.points.size () * fsize;
 
+  // If the data is to large the two 32 bit integers used to store the
+  // compressed and uncompressed size will overflow.
+  if (data_size * 3 / 2 > std::numeric_limits<uint32_t>::max ())
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] The input data exceeds the maximum size for compressed version 0.7 pcds of %l bytes.\n",
+               static_cast<size_t> (std::numeric_limits<uint32_t>::max ()) * 2 / 3);
+    return (-2);
+  }
+
   //////////////////////////////////////////////////////////////////////
   // Empty array holding only the valid data
   // data_size = nr_points * point_size 
@@ -400,29 +398,6 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
     return (-1);
   }
 
-#if !_WIN32
-  // Stretch the file size to the size of the data
-  off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
-  if (result < 0)
-  {
-    pcl_close (fd);
-    resetLockingPermissions (file_name, file_lock);
-    PCL_ERROR ("[pcl::PCDWriter::writeBinary] lseek errno: %d strerror: %s\n", errno, strerror (errno));
-    
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during lseek ()!");
-    return (-1);
-  }
-  // Write a bogus entry so that the new file size comes in effect
-  result = static_cast<int> (::write (fd, "", 1));
-  if (result != 1)
-  {
-    pcl_close (fd);
-    resetLockingPermissions (file_name, file_lock);
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during write ()!");
-    return (-1);
-  }
-#endif
-
   // Prepare the map
 #if _WIN32
   HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, compressed_final_size, NULL);
@@ -430,6 +405,17 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   CloseHandle (fm);
 
 #else
+  // Allocate disk space for the entire file to prevent bus errors.
+  if (::posix_fallocate (fd, 0, compressed_final_size) != 0)
+  {
+    pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] posix_fallocate errno: %d strerror: %s\n", errno, strerror (errno));
+
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during posix_fallocate ()!");
+    return (-1);
+  }
+
   char *map = static_cast<char*> (mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1)) //MAP_FAILED)
   {
@@ -719,24 +705,14 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   CloseHandle (fm);
 
 #else
-  // Stretch the file size to the size of the data
-  off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
-  if (result < 0)
+  // Allocate disk space for the entire file to prevent bus errors.
+  if (::posix_fallocate (fd, 0, data_idx + data_size) != 0)
   {
     pcl_close (fd);
     resetLockingPermissions (file_name, file_lock);
-    PCL_ERROR ("[pcl::PCDWriter::writeBinary] lseek errno: %d strerror: %s\n", errno, strerror (errno));
-    
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during lseek ()!");
-    return (-1);
-  }
-  // Write a bogus entry so that the new file size comes in effect
-  result = static_cast<int> (::write (fd, "", 1));
-  if (result != 1)
-  {
-    pcl_close (fd);
-    resetLockingPermissions (file_name, file_lock);
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during write ()!");
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] posix_fallocate errno: %d strerror: %s\n", errno, strerror (errno));
+
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during posix_fallocate ()!");
     return (-1);
   }
 

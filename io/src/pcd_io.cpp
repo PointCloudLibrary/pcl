@@ -72,6 +72,7 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
   (void)file_name;
   (void)lock;
 #ifndef WIN32
+#ifndef NO_MANDATORY_LOCKING
   // Boost version 1.49 introduced permissions
 #if BOOST_VERSION >= 104900
   // Attempt to lock the file. 
@@ -93,6 +94,7 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
   }
 #endif
 #endif
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -103,6 +105,7 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
   (void)file_name;
   (void)lock;
 #ifndef WIN32
+#ifndef NO_MANDATORY_LOCKING
   // Boost version 1.49 introduced permissions
 #if BOOST_VERSION >= 104900
   (void)file_name;
@@ -116,6 +119,7 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
     PCL_DEBUG ("[pcl::PCDWriter::resetLockingPermissions] Permissions on %s could not be reset!\n", file_name.c_str ());
   }
   lock.unlock ();
+#endif
 #endif
 #endif
 }
@@ -1387,6 +1391,15 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
   // Compute the size of data
   data_size = cloud.width * cloud.height * fsize;
 
+  // If the data is too large the two 32 bit integers used to store the
+  // compressed and uncompressed size will overflow.
+  if (data_size * 3 / 2 > std::numeric_limits<uint32_t>::max ())
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] The input data exceeds the maximum size for compressed version 0.7 pcds of %l bytes.\n",
+               static_cast<size_t> (std::numeric_limits<uint32_t>::max ()) * 2 / 3);
+    return (-2);
+  }
+
   //////////////////////////////////////////////////////////////////////
   // Empty array holding only the valid data
   // data_size = nr_points * point_size 
@@ -1452,10 +1465,11 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
 {
   // Format output
   std::ostringstream oss;
-  if (writeBinaryCompressed (oss, cloud, origin, orientation))
+  int status = writeBinaryCompressed (oss, cloud, origin, orientation);
+  if (status)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during compression!");
-    return (-1);
+    return status;
   }
   std::string ostr = oss.str ();
 

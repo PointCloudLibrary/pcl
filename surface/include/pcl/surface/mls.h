@@ -60,7 +60,7 @@ namespace pcl
     enum ProjectionMethod
     {
       NONE,      /**< \brief Project to the mls plane. */
-      SIMPLE,    /**< \brief Project along the mls plans normal to the polynomial surface. */
+      SIMPLE,    /**< \brief Project along the mls plane normal to the polynomial surface. */
       ORTHOGONAL /**< \brief Project to the closest point on the polynonomial surface. */
     };
 
@@ -181,7 +181,7 @@ namespace pcl
      * \return The MLSProjectionResults for the input data.
      */
     inline MLSProjectionResults
-    projectPoint(const Eigen::Vector3d &pt, ProjectionMethod method, int required_neighbors = 0) const;
+    projectPoint (const Eigen::Vector3d &pt, ProjectionMethod method, int required_neighbors = 0) const;
 
     /**
      * \brief Project the query point used to generate the mls surface about using the specified method.
@@ -192,7 +192,7 @@ namespace pcl
      * \return The MLSProjectionResults for the input data.
      */
     inline MLSProjectionResults
-    projectQueryPoint(ProjectionMethod method, int required_neighbors = 0) const;
+    projectQueryPoint (ProjectionMethod method, int required_neighbors = 0) const;
 
     /** \brief Smooth a given point and its neighborghood using Moving Least Squares.
       * \param[in] index the index of the query point in the input cloud
@@ -232,17 +232,21 @@ namespace pcl
 
   };
 
-  /** \brief MovingLeastSquares represent an implementation of the MLS (Moving Least Squares) algorithm 
-    * for data smoothing and improved normal estimation. It also contains methods for upsampling the 
+  /** \brief MovingLeastSquares represent an implementation of the MLS (Moving Least Squares) algorithm
+    * for data smoothing and improved normal estimation. It also contains methods for upsampling the
     * resulting cloud based on the parametric fit.
-    * Reference paper: "Computing and Rendering Point Set Surfaces" by Marc Alexa, Johannes Behr, 
+    * Reference paper: "Computing and Rendering Point Set Surfaces" by Marc Alexa, Johannes Behr,
     * Daniel Cohen-Or, Shachar Fleishman, David Levin and Claudio T. Silva
     * www.sci.utah.edu/~shachar/Publications/crpss.pdf
-    * \author Zoltan Csaba Marton, Radu B. Rusu, Alexandru E. Ichim, Suat Gedikli
+    * \note There is a parallelized version of the processing step, using the OpenMP standard.
+    * Compared to the standard version, an overhead is incurred in terms of runtime and memory usage.
+    * The upsampling methods DISTINCT_CLOUD and VOXEL_GRID_DILATION are not parallelized completely,
+    * i.e. parts of the algorithm run on a single thread only.
+    * \author Zoltan Csaba Marton, Radu B. Rusu, Alexandru E. Ichim, Suat Gedikli, Robert Huitl
     * \ingroup surface
     */
   template <typename PointInT, typename PointOutT>
-  class MovingLeastSquares: public CloudSurfaceProcessing<PointInT, PointOutT>
+  class MovingLeastSquares : public CloudSurfaceProcessing<PointInT, PointOutT>
   {
     public:
       typedef boost::shared_ptr<MovingLeastSquares<PointInT, PointOutT> > Ptr;
@@ -303,6 +307,7 @@ namespace pcl
                               cache_mls_results_ (true),
                               mls_results_ (),
                               projection_method_ (MLSResult::SIMPLE),
+                              threads_ (1),
                               voxel_size_ (1.0),
                               dilation_iteration_num_ (0),
                               nr_coeff_ (),
@@ -339,7 +344,7 @@ namespace pcl
 
       /** \brief Set the order of the polynomial to be fit.
         * \param[in] order the order of the polynomial
-        * \note Setting order > 1 indicates using a plynomial fit.
+        * \note Setting order > 1 indicates using a polynomial fit.
         */
       inline void
       setPolynomialOrder (int order) { order_ = order; }
@@ -510,6 +515,15 @@ namespace pcl
       inline const std::vector<MLSResult>&
       getMLSResults () const { return (mls_results_); }
 
+      /** \brief Set the maximum number of threads to use
+      * \param threads the maximum number of hardware threads to use (0 sets the value to 1)
+      */
+      inline void
+      setNumberOfThreads (unsigned int threads = 1)
+      {
+        threads_ = threads;
+      }
+
       /** \brief Base method for surface reconstruction for all points given in <setInputCloud (), setIndices ()>
         * \param[out] output the resultant reconstructed surface model
         */
@@ -578,6 +592,9 @@ namespace pcl
       /** \brief Parameter that specifies the projection method to be used. */
       MLSResult::ProjectionMethod projection_method_;
 
+      /** \brief The maximum number of threads the scheduler should use. */
+      unsigned int threads_;
+
 
       /** \brief A minimalistic implementation of a voxel grid, necessary for the point cloud upsampling
         * \note Used only in the case of VOXEL_GRID_DILATION upsampling
@@ -615,7 +632,7 @@ namespace pcl
           getCellIndex (const Eigen::Vector3f &p, Eigen::Vector3i& index) const
           {
             for (int i = 0; i < 3; ++i)
-              index[i] = static_cast<Eigen::Vector3i::Scalar> ((p[i] - bounding_min_(i)) / voxel_size_);
+              index[i] = static_cast<Eigen::Vector3i::Scalar> ((p[i] - bounding_min_ (i)) / voxel_size_);
           }
 
           inline void
@@ -688,13 +705,13 @@ namespace pcl
         * \param[out] corresponding_input_indices the set of indices with each point in output having the corresponding point in input
         */
       void
-      addProjectedPointNormal(int index,
-                              const Eigen::Vector3d &point,
-                              const Eigen::Vector3d &normal,
-                              double curvature,
-                              PointCloudOut &projected_points,
-                              NormalCloud &projected_points_normals,
-                              PointIndices &corresponding_input_indices) const;
+      addProjectedPointNormal (int index,
+                               const Eigen::Vector3d &point,
+                               const Eigen::Vector3d &normal,
+                               double curvature,
+                               PointCloudOut &projected_points,
+                               NormalCloud &projected_points_normals,
+                               PointIndices &corresponding_input_indices) const;
 
 
       void
@@ -702,7 +719,7 @@ namespace pcl
                          PointOutT &point_out) const;
 
       /** \brief Abstract surface reconstruction method.
-        * \param[out] output the result of the reconstruction 
+        * \param[out] output the result of the reconstruction
         */
       virtual void
       performProcessing (PointCloudOut &output);
@@ -729,71 +746,26 @@ namespace pcl
       getClassName () const { return ("MovingLeastSquares"); }
 
     public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
-#ifdef _OPENMP
-  /** \brief MovingLeastSquaresOMP is a parallelized version of MovingLeastSquares, using the OpenMP standard.
-   * \note Compared to MovingLeastSquares, an overhead is incurred in terms of runtime and memory usage.
-   * \note The upsampling methods DISTINCT_CLOUD and VOXEL_GRID_DILATION are not parallelized completely, i.e. parts of the algorithm run on a single thread only.
-   * \author Robert Huitl
-   * \ingroup surface
-   */
+  /** \brief MovingLeastSquaresOMP implementation has been merged into MovingLeastSquares for better maintainability.
+  * \note Keeping this empty child class for backwards compatibility.
+  * \author Robert Huitl
+  * \ingroup surface
+  */
   template <typename PointInT, typename PointOutT>
-  class MovingLeastSquaresOMP: public MovingLeastSquares<PointInT, PointOutT>
+  class MovingLeastSquaresOMP : public MovingLeastSquares<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<MovingLeastSquaresOMP<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const MovingLeastSquaresOMP<PointInT, PointOutT> > ConstPtr;
-
-      using MovingLeastSquares<PointInT, PointOutT>::VOXEL_GRID_DILATION;
-      using MovingLeastSquares<PointInT, PointOutT>::DISTINCT_CLOUD;
-
-      typedef pcl::PointCloud<pcl::Normal> NormalCloud;
-      typedef pcl::PointCloud<pcl::Normal>::Ptr NormalCloudPtr;
-
-      typedef pcl::PointCloud<PointOutT> PointCloudOut;
-      typedef typename PointCloudOut::Ptr PointCloudOutPtr;
-      typedef typename PointCloudOut::ConstPtr PointCloudOutConstPtr;
-
       /** \brief Constructor for parallelized Moving Least Squares
-        * \param threads the maximum number of hardware threads to use (0 sets the value to 1)
-        */
-      MovingLeastSquaresOMP (unsigned int threads = 0) : threads_ (threads)
+      * \param threads the maximum number of hardware threads to use (0 sets the value to 1)
+      */
+      MovingLeastSquaresOMP (unsigned int threads = 1)
       {
-
+        this->setNumberOfThreads (threads);
       }
-
-      /** \brief Set the maximum number of threads to use
-        * \param threads the maximum number of hardware threads to use (0 sets the value to 1)
-        */
-      inline void
-      setNumberOfThreads (unsigned int threads = 0)
-      {
-        threads_ = threads;
-      }
-
-    protected:
-      using PCLBase<PointInT>::input_;
-      using PCLBase<PointInT>::indices_;
-      using MovingLeastSquares<PointInT, PointOutT>::normals_;
-      using MovingLeastSquares<PointInT, PointOutT>::corresponding_input_indices_;
-      using MovingLeastSquares<PointInT, PointOutT>::nr_coeff_;
-      using MovingLeastSquares<PointInT, PointOutT>::order_;
-      using MovingLeastSquares<PointInT, PointOutT>::compute_normals_;
-      using MovingLeastSquares<PointInT, PointOutT>::upsample_method_;
-      using MovingLeastSquares<PointInT, PointOutT>::cache_mls_results_;
-
-      /** \brief Abstract surface reconstruction method.
-        * \param[out] output the result of the reconstruction
-        */
-      virtual void
-      performProcessing (PointCloudOut &output);
-
-      /** \brief The maximum number of threads the scheduler should use. */
-      unsigned int threads_;
   };
-#endif
 }
 
 #ifdef PCL_NO_PRECOMPILE

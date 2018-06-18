@@ -50,7 +50,7 @@
 namespace pcl
 {
   /** \brief Correspondence represents a match between two entities (e.g., points, descriptors, etc). This is 
-    * represesented via the indices of a \a source point and a \a target point, and the distance between them.
+    * represented via the indices of a \a source point and a \a target point, and the distance between them.
     *
     * \author Dirk Holz, Radu B. Rusu, Bastian Steder
     * \ingroup common
@@ -104,7 +104,7 @@ namespace pcl
     * By default (true), vectors are internally sorted before determining their difference.
     * If the order of correspondences in \a correspondences_after is not different (has not been changed)
     * from the order in \b correspondences_before this pre-processing step can be disabled
-    * in order to gain efficiency. In order to disable pre-sorting set \a presorting_requered to false.
+    * in order to gain efficiency. In order to disable pre-sorting set \a presorting_required to false.
     */
   void
   getRejectedQueryIndices (const pcl::Correspondences &correspondences_before,
@@ -134,7 +134,7 @@ namespace pcl
 
   /**
     * \brief Representation of a (possible) correspondence between two points (e.g. from feature matching),
-    *        that encode complete 6DOF transoformations.
+    *        that encode complete 6DOF transformations.
     * \ingroup common
     */
   struct PointCorrespondence6D : public PointCorrespondence3D
