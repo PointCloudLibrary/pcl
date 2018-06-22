@@ -175,7 +175,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
 #else
   // Allocate disk space for the entire file to prevent bus errors.
-  if (::posix_fallocate (fd, 0, data_idx + data_size) != 0)
+  if (io::raw_fallocate (fd, data_idx + data_size) != 0)
   {
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
@@ -374,7 +374,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
 
 #else
   // Allocate disk space for the entire file to prevent bus errors.
-  if (::posix_fallocate (fd, 0, compressed_final_size) != 0)
+  if (io::raw_fallocate (fd, compressed_final_size) != 0)
   {
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
@@ -674,7 +674,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
 #else
   // Allocate disk space for the entire file to prevent bus errors.
-  if (::posix_fallocate (fd, 0, data_idx + data_size) != 0)
+  if (io::raw_fallocate (fd, data_idx + data_size) != 0)
   {
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
@@ -912,11 +912,10 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
     fs << result << "\n";
   }
   fs.close ();              // Close file
-  
+
   resetLockingPermissions (file_name, file_lock);
 
   return (0);
 }
 
 #endif  //#ifndef PCL_IO_PCD_IO_H_
-

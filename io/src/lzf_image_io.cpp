@@ -80,7 +80,7 @@ pcl::io::LZFImageWriter::saveImageBlob (const char* data,
     return (false);
 
   // Allocate disk space for the entire file to prevent bus errors.
-  if (::posix_fallocate (fd, 0, data_size) != 0)
+  if (io::raw_fallocate (fd, data_size) != 0)
   {
     raw_close (fd);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during posix_fallocate ()!");
