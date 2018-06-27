@@ -256,6 +256,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/debayer.h"
         "include/pcl/${SUBSYS_NAME}/file_io.h"
         "include/pcl/${SUBSYS_NAME}/auto_io.h"
+        "include/pcl/${SUBSYS_NAME}/low_level_io.h"
         "include/pcl/${SUBSYS_NAME}/lzf.h"
         "include/pcl/${SUBSYS_NAME}/lzf_image_io.h"
         "include/pcl/${SUBSYS_NAME}/io.h"
