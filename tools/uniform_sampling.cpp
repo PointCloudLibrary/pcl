@@ -53,14 +53,6 @@ using namespace pcl::console;
 
 double default_radius = 0.01;
 
-/** \brief File type for saving and loading files. */
-typedef enum FileType
-{
-  FT_PCD = 0,
-  FT_PLY = 1, /**< Polygon File Format. */
-  FT_VTK = 2  /**< VTK File Format. */
-} FileType;
-
 void
 printHelp (int, char **argv)
 {
@@ -79,8 +71,10 @@ loadCloud (const string &filename, pcl::PCLPointCloud2 &cloud)
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
 
   tt.tic ();
-  if (pcl::io::load (filename, cloud))
+  if (pcl::io::load (filename, cloud)) {
+    print_error ("Cannot found input file name (%s).\n", filename.c_str ());
     return (false);
+  }
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : ");
   print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
   print_info ("Available dimensions: "); print_value ("%s\n", getFieldsList (cloud).c_str ());
@@ -116,8 +110,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 }
 
 void
-saveCloud (const string &filename, const pcl::PCLPointCloud2 &output,
-           const FileType &output_file_type)
+saveCloud (const string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -126,19 +119,20 @@ saveCloud (const string &filename, const pcl::PCLPointCloud2 &output,
 
   PCDWriter w_pcd;
   PLYWriter w_ply;
-  switch (output_file_type)
+  std::string output_ext = boost::filesystem::extension (filename);
+  std::transform (output_ext.begin (), output_ext.end (), output_ext.begin (), ::tolower);
+
+  if (output_ext.compare (".pcd") == 0)
   {
-    case FT_PCD:
-      // w_pcd.writeBinaryCompressed (filename, output, translation, orientation);
-      w_pcd.writeBinaryCompressed (filename, output);
-      break;
-    case FT_PLY:
-      // w_ply.writeBinary (filename, output, translation, orientation);
-      w_ply.writeBinary (filename, output);
-      break;
-    case FT_VTK:
-      pcl::io::saveVTKFile (filename, output);
-      break;
+    w_pcd.writeBinaryCompressed (filename, output);
+  }
+  else if (output_ext.compare (".ply") == 0)
+  {
+    w_ply.writeBinary (filename, output);
+  }
+  else if (output_ext.compare (".vtk") == 0)
+  {
+    w_ply.writeBinary (filename, output);
   }
   
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
@@ -170,37 +164,8 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  // Check if the input point cloud exists
   std::string input_filename = argv[p_file_indices[0]];
-  ifstream ifile (input_filename.c_str ());
-  if (!ifile) {
-    print_error ("Cannot found input file name (%s).\n", input_filename.c_str ());
-    return (-1);
-  }
-
-  // Guess the output format
   std::string output_filename = argv[p_file_indices[1]];
-  std::string output_ext      = boost::filesystem::extension (output_filename);
-  std::transform (output_ext.begin (), output_ext.end (), output_ext.begin (), ::tolower);
-
-  FileType output_file_type;
-  if (output_ext.compare (".pcd") == 0)
-  {
-    output_file_type = FT_PCD;
-  }
-  else if (output_ext.compare (".ply") == 0)
-  {
-    output_file_type = FT_PLY;
-  }
-  else if (output_ext.compare (".vtk") == 0)
-  {
-    output_file_type = FT_VTK;
-  }
-  else
-  {
-    print_error ("The output filename extension (%s) is not supported.\n", output_ext.c_str ());
-    return (-1);
-  }
 
   // Command line parsing
   double radius = default_radius;
@@ -218,5 +183,5 @@ main (int argc, char** argv)
   compute (cloud, output, radius);
 
   // Save into the second file
-  saveCloud (output_filename, output, output_file_type);
+  saveCloud (output_filename, output);
 }
