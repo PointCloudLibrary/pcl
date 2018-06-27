@@ -40,6 +40,7 @@
 #define PCL_OCTREE_SEARCH_IMPL_H_
 
 #include <assert.h>
+#include <pcl/for_each_type.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> bool
@@ -87,7 +88,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::n
 
   if (k < 1)
     return 0;
-  
+
   unsigned int i;
   unsigned int result_count;
 
@@ -106,7 +107,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::n
 
   k_indices.resize (result_count);
   k_sqr_distances.resize (result_count);
-  
+
   for (i = 0; i < result_count; ++i)
   {
     k_indices [i] = point_candidates [i].point_idx_;
@@ -134,7 +135,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::a
 {
   assert(this->leaf_count_>0);
   assert (isFinite (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
-  
+
   OctreeKey key;
   key.x = key.y = key.z = 0;
 
@@ -178,6 +179,38 @@ template<typename PointT, typename LeafContainerT, typename BranchContainerT> in
 pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::radiusSearch (int index, const double radius,
                                                                            std::vector<int> &k_indices,
                                                                            std::vector<float> &k_sqr_distances,
+                                                                           unsigned int max_nn) const
+{
+  const PointT search_point = this->getPointByIndex (index);
+
+  return (radiusSearch (search_point, radius, k_indices, k_sqr_distances, max_nn));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafContainerT, typename BranchContainerT> int
+pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::radiusSearch (const PointT &p_q, const double radius,
+                                                                           boost::unordered_multimap<int, int> &k_indices,
+                                                                           boost::unordered_multimap<int, float> &k_sqr_distances,
+                                                                           unsigned int max_nn) const
+{
+  assert (isFinite (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  OctreeKey key;
+  key.x = key.y = key.z = 0;
+
+  k_indices.clear ();
+  k_sqr_distances.clear ();
+
+  getNeighborsWithinRadiusRecursive (p_q, radius * radius, this->root_node_, key, 1, k_indices, k_sqr_distances,
+                                     max_nn);
+
+  return (static_cast<int> (k_indices.size ()));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafContainerT, typename BranchContainerT> int
+pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::radiusSearch (int index, const double radius,
+                                                                           boost::unordered_multimap<int, int> &k_indices,
+                                                                           boost::unordered_multimap<int, float> &k_sqr_distances,
                                                                            unsigned int max_nn) const
 {
   const PointT search_point = this->getPointByIndex (index);
@@ -388,6 +421,94 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
           // add point to result vector
           k_indices.push_back (decoded_point_vector[i]);
           k_sqr_distances.push_back (squared_dist);
+
+          if (max_nn != 0 && k_indices.size () == static_cast<unsigned int> (max_nn))
+            return;
+        }
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafContainerT, typename BranchContainerT> void
+pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::getNeighborsWithinRadiusRecursive (
+    const PointT & point, const double radiusSquared, const BranchNode* node, const OctreeKey& key,
+    unsigned int tree_depth, boost::unordered_multimap<int, int>& k_indices, boost::unordered_multimap<int, float>& k_sqr_distances,
+    unsigned int max_nn) const
+{
+  typedef typename traits::fieldList<PointT>::type FieldList;
+  // child iterator
+  unsigned char child_idx;
+
+  // get spatial voxel information
+  double voxel_squared_diameter = this->getVoxelSquaredDiameter (tree_depth);
+
+  // iterate over all children
+  for (child_idx = 0; child_idx < 8; child_idx++)
+  {
+    if (!this->branchHasChild (*node, child_idx))
+      continue;
+
+    const OctreeNode* child_node;
+    child_node = this->getBranchChildPtr (*node, child_idx);
+
+    OctreeKey new_key;
+    PointT voxel_center;
+    float squared_dist;
+    int label = 0;
+
+    // generate new key for current branch voxel
+    new_key.x = (key.x << 1) + (!!(child_idx & (1 << 2)));
+    new_key.y = (key.y << 1) + (!!(child_idx & (1 << 1)));
+    new_key.z = (key.z << 1) + (!!(child_idx & (1 << 0)));
+
+    // generate voxel center point for voxel at key
+    this->genVoxelCenterFromOctreeKey (new_key, tree_depth, voxel_center);
+
+    // calculate distance to search point
+    squared_dist = pointSquaredDist (static_cast<const PointT&> (voxel_center), point);
+
+    // if distance is smaller than search radius
+    if (squared_dist + this->epsilon_
+        <= voxel_squared_diameter / 4.0 + radiusSquared + sqrt (voxel_squared_diameter * radiusSquared))
+    {
+
+      if (tree_depth < this->octree_depth_)
+      {
+        // we have not reached maximum tree depth
+        getNeighborsWithinRadiusRecursive (point, radiusSquared, static_cast<const BranchNode*> (child_node), new_key, tree_depth + 1,
+                                           k_indices, k_sqr_distances, max_nn);
+        if (max_nn != 0 && k_indices.size () == static_cast<unsigned int> (max_nn))
+          return;
+      }
+      else
+      {
+        // we reached leaf node level
+
+        size_t i;
+        const LeafNode* child_leaf = static_cast<const LeafNode*> (child_node);
+        std::vector<int> decoded_point_vector;
+
+        // decode leaf node into decoded_point_vector
+        (*child_leaf)->getPointIndices (decoded_point_vector);
+
+        // Linearly iterate over all decoded (unsorted) points
+        for (i = 0; i < decoded_point_vector.size (); i++)
+        {
+          const PointT& candidate_point = this->getPointByIndex (decoded_point_vector[i]);
+
+          // calculate point distance to search point
+          squared_dist = pointSquaredDist (candidate_point, point);
+
+          // check if a match is found
+          if (squared_dist > radiusSquared)
+            continue;
+
+          // add point to result unordered multimap
+          for_each_type<FieldList> (CopyIfFieldExists<PointT, int> (candidate_point, "label", label));
+          k_indices.emplace (label, decoded_point_vector[i]);
+          k_sqr_distances.emplace (label, squared_dist);
 
           if (max_nn != 0 && k_indices.size () == static_cast<unsigned int> (max_nn))
             return;
