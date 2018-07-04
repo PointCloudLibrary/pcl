@@ -36,11 +36,15 @@
  */
 
 #include <pcl/PCLPointCloud2.h>
-#include <pcl/io/pcd_io.h>
+#include <pcl/io/auto_io.h>
 #include <pcl/filters/uniform_sampling.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+#include <boost/filesystem.hpp>
+#include <algorithm>
+#include <string>
+#include <pcl/io/vtk_io.h>
 
 using namespace std;
 using namespace pcl;
@@ -49,13 +53,12 @@ using namespace pcl::console;
 
 double default_radius = 0.01;
 
-Eigen::Vector4f    translation;
-Eigen::Quaternionf orientation;
-
 void
 printHelp (int, char **argv)
 {
-  print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
+  print_error ("Syntax is: %s <input_point_cloud> <output_point_cloud> <options>\n", argv[0]);
+  print_info ("This tool rely on the file extensions to guess the good reader/writer.\n");
+  print_info ("The supported extension for the point cloud are .pcd .ply and .vtk\n");
   print_info ("  where options are:\n");
   print_info ("                     -radius X = use a leaf size of X,X,X to uniformly select 1 point per leaf (default: "); 
   print_value ("%f", default_radius); print_info (")\n");
@@ -68,9 +71,12 @@ loadCloud (const string &filename, pcl::PCLPointCloud2 &cloud)
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
 
   tt.tic ();
-  if (loadPCDFile (filename, cloud, translation, orientation) < 0)
+  if (pcl::io::load (filename, cloud)) {
+    print_error ("Cannot found input file name (%s).\n", filename.c_str ());
     return (false);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
+  }
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : ");
+  print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
   print_info ("Available dimensions: "); print_value ("%s\n", getFieldsList (cloud).c_str ());
 
   return (true);
@@ -96,7 +102,8 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   PointCloud<PointXYZ> output_;
   us.filter (output_);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output_.size()); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : ");
+  print_value ("%d", output_.size()); print_info (" points]\n");
 
   // Convert data back
   toPCLPointCloud2 (output_, output);
@@ -110,8 +117,23 @@ saveCloud (const string &filename, const pcl::PCLPointCloud2 &output)
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
 
-  PCDWriter w;
-  w.writeBinaryCompressed (filename, output, translation, orientation);
+  PCDWriter w_pcd;
+  PLYWriter w_ply;
+  std::string output_ext = boost::filesystem::extension (filename);
+  std::transform (output_ext.begin (), output_ext.end (), output_ext.begin (), ::tolower);
+
+  if (output_ext.compare (".pcd") == 0)
+  {
+    w_pcd.writeBinaryCompressed (filename, output);
+  }
+  else if (output_ext.compare (".ply") == 0)
+  {
+    w_ply.writeBinary (filename, output);
+  }
+  else if (output_ext.compare (".vtk") == 0)
+  {
+    w_ply.writeBinary (filename, output);
+  }
   
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
@@ -130,12 +152,20 @@ main (int argc, char** argv)
 
   // Parse the command line arguments for .pcd files
   vector<int> p_file_indices;
-  p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
+  vector<std::string> extension;
+  extension.push_back (".pcd");
+  extension.push_back (".ply");
+  extension.push_back (".vtk");
+  p_file_indices = parse_file_extension_argument (argc, argv, extension);
+
   if (p_file_indices.size () != 2)
   {
-    print_error ("Need one input PCD file and one output PCD file to continue.\n");
+    print_error ("Need one input file and one output file to continue.\n");
     return (-1);
   }
+
+  std::string input_filename = argv[p_file_indices[0]];
+  std::string output_filename = argv[p_file_indices[1]];
 
   // Command line parsing
   double radius = default_radius;
@@ -145,7 +175,7 @@ main (int argc, char** argv)
 
   // Load the first file
   pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
-  if (!loadCloud (argv[p_file_indices[0]], *cloud)) 
+  if (!loadCloud (input_filename, *cloud))
     return (-1);
 
   // Perform the keypoint estimation
@@ -153,6 +183,5 @@ main (int argc, char** argv)
   compute (cloud, output, radius);
 
   // Save into the second file
-  saveCloud (argv[p_file_indices[1]], output);
+  saveCloud (output_filename, output);
 }
-
