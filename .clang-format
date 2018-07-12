@@ -1,0 +1,48 @@
+---
+Language: Cpp
+ColumnLimit: 160 # From Eclipse code style file
+
+# Namespaces
+# If multiple namespaces are declared within header files, always use 2 spaces to indent them
+CompactNamespaces: false
+NamespaceIndentation: All
+
+# Classes
+AlwaysBreakTemplateDeclarations: true # The template parameters of a class should be declared on a different line
+BreakConstructorInitializers:  AfterColon
+SpaceAfterTemplateKeyword: true
+SpacesInAngles: false
+
+# Functions/Methods
+AlignAfterOpenBracket: Align
+AlwaysBreakAfterReturnType: All # The return type of each function declaration must be placed on a different line
+BinPackArguments: true
+BinPackParameters: true
+IndentWrappedFunctionNames: false
+SpaceBeforeParens: Always
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false
+
+# Braces
+# Braces, both open and close, go on their own lines
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+BreakBeforeBraces: Allman
+AllowShortCaseLabelsOnASingleLine: false
+
+# Spacing
+AccessModifierOffset: 0 # Access qualifiers (public, private and protected) are put at the indentation level of the class body
+IndentCaseLabels: true
+# The standard indentation for each block in PCL is 2 spaces
+ContinuationIndentWidth: 2
+IndentWidth: 2
+UseTab: Never
+
+# Miscellaneous
+BreakBeforeBinaryOperators: NonAssignment # When a long formula is broken across many lines, start each line with operator
+BreakBeforeTernaryOperators: true
+MaxEmptyLinesToKeep: 1
+SpaceBeforeAssignmentOperators: true
+SpacesInCStyleCastParentheses: false
+SpacesInSquareBrackets: false
