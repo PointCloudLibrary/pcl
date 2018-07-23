@@ -44,7 +44,6 @@
 #endif
 
 #include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
 #include <boost/random/uniform_int.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -54,5 +53,7 @@
 #include <boost/random/bernoulli_distribution.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+
+#include <thread>
 
 #endif //PCL_OUTOFCORE_BOOST_H_

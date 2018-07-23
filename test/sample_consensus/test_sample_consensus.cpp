@@ -38,7 +38,7 @@
 
 #include <gtest/gtest.h>
 
-#include <boost/thread.hpp>
+#include <thread>
 
 #include <pcl/sample_consensus/msac.h>
 #include <pcl/sample_consensus/lmeds.h>
@@ -96,37 +96,37 @@ TEST (SampleConsensus, InfiniteLoop)
   // Create the RANSAC object
   RandomSampleConsensus<PointXYZ> ransac (model, 0.03);
   sac_function = boost::bind (&RandomSampleConsensus<PointXYZ>::computeModel, &ransac, 0);
-  boost::thread thread1 (sac_function);
+  std::thread thread1 (sac_function);
   ASSERT_TRUE (thread1.timed_join (delay));
 
   // Create the LMSAC object
   LeastMedianSquares<PointXYZ> lmsac (model, 0.03);
   sac_function = boost::bind (&LeastMedianSquares<PointXYZ>::computeModel, &lmsac, 0);
-  boost::thread thread2 (sac_function);
+  std::thread thread2 (sac_function);
   ASSERT_TRUE (thread2.timed_join (delay));
 
   // Create the MSAC object
   MEstimatorSampleConsensus<PointXYZ> mesac (model, 0.03);
   sac_function = boost::bind (&MEstimatorSampleConsensus<PointXYZ>::computeModel, &mesac, 0);
-  boost::thread thread3 (sac_function);
+  std::thread thread3 (sac_function);
   ASSERT_TRUE (thread3.timed_join (delay));
 
   // Create the RRSAC object
   RandomizedRandomSampleConsensus<PointXYZ> rrsac (model, 0.03);
   sac_function = boost::bind (&RandomizedRandomSampleConsensus<PointXYZ>::computeModel, &rrsac, 0);
-  boost::thread thread4 (sac_function);
+  std::thread thread4 (sac_function);
   ASSERT_TRUE (thread4.timed_join (delay));
 
   // Create the RMSAC object
   RandomizedMEstimatorSampleConsensus<PointXYZ> rmsac (model, 0.03);
   sac_function = boost::bind (&RandomizedMEstimatorSampleConsensus<PointXYZ>::computeModel, &rmsac, 0);
-  boost::thread thread5 (sac_function);
+  std::thread thread5 (sac_function);
   ASSERT_TRUE (thread5.timed_join (delay));
 
   // Create the MLESAC object
   MaximumLikelihoodSampleConsensus<PointXYZ> mlesac (model, 0.03);
   sac_function = boost::bind (&MaximumLikelihoodSampleConsensus<PointXYZ>::computeModel, &mlesac, 0);
-  boost::thread thread6 (sac_function);
+  std::thread thread6 (sac_function);
   ASSERT_TRUE (thread6.timed_join (delay));
 }
 

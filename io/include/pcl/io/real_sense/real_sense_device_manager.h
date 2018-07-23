@@ -38,11 +38,12 @@
 #ifndef PCL_IO_REAL_SENSE_DEVICE_MANAGER_H
 #define PCL_IO_REAL_SENSE_DEVICE_MANAGER_H
 
-#include <boost/thread.hpp>
 #include <boost/utility.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
+
+#include <thread>
 
 #include <pcl/pcl_exports.h>
 

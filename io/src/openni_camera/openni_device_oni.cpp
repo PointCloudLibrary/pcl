@@ -97,7 +97,7 @@ openni_wrapper::DeviceONI::DeviceONI (
 
   player_.SetRepeat (repeat);
   if (streaming_)
-    player_thread_ = boost::thread (&DeviceONI::PlayerThreadFunction, this);
+    player_thread_ = std::thread (&DeviceONI::PlayerThreadFunction, this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

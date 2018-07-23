@@ -131,8 +131,8 @@ namespace pcl
       boost::asio::ip::udp::endpoint sender_endpoint_;
       boost::asio::io_service io_service_;
       boost::shared_ptr<boost::asio::ip::udp::socket> socket_;
-      boost::shared_ptr<boost::thread> socket_thread_;
-      boost::shared_ptr<boost::thread> consumer_thread_;
+      boost::shared_ptr<std::thread> socket_thread_;
+      boost::shared_ptr<std::thread> consumer_thread_;
 
       pcl::SynchronizedQueue<boost::shared_array<unsigned char> > packet_queue_;
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > point_cloud_xyzi_;

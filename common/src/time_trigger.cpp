@@ -49,7 +49,7 @@ pcl::TimeTrigger::TimeTrigger (double interval, const callback_type& callback)
 , condition_ ()
 , condition_mutex_ ()
 {
-  timer_thread_ = boost::thread (boost::bind (&TimeTrigger::thread_function, this));
+  timer_thread_ = std::thread (boost::bind (&TimeTrigger::thread_function, this));
   registerCallback (callback);
 }
 
@@ -63,7 +63,7 @@ pcl::TimeTrigger::TimeTrigger (double interval)
 , condition_ ()
 , condition_mutex_ ()
 {
-  timer_thread_ = boost::thread (boost::bind (&TimeTrigger::thread_function, this));
+  timer_thread_ = std::thread (boost::bind (&TimeTrigger::thread_function, this));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

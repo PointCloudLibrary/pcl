@@ -42,8 +42,10 @@
 #include <pcl/pcl_macros.h>
 #ifndef Q_MOC_RUN
 #include <boost/function.hpp>
-#include <boost/thread.hpp>
 #include <boost/signals2.hpp>
+#include <boost/thread.hpp>
+
+#include <thread>
 #endif
 
 namespace pcl
@@ -99,7 +101,7 @@ namespace pcl
       bool quit_;
       bool running_;
 
-      boost::thread timer_thread_;
+      std::thread timer_thread_;
       boost::condition_variable condition_;
       boost::mutex condition_mutex_;
   };

@@ -137,7 +137,7 @@ pcl::DavidSDKGrabber::start ()
 
   frequency_.reset ();
   running_ = true;
-  grabber_thread_ = boost::thread (&pcl::DavidSDKGrabber::processGrabbing, this);
+  grabber_thread_ = std::thread (&pcl::DavidSDKGrabber::processGrabbing, this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

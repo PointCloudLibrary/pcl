@@ -33,17 +33,15 @@
 #include <vtkProperty.h>
 #include <vtkSmartPointer.h>
 
-// Boost
-//#include <boost/date_time.hpp>
-//#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
+// C++
+#include <thread>
 
 // Forward Declarations
 
 boost::condition OutofcoreCloud::pcd_queue_ready;
 boost::mutex OutofcoreCloud::pcd_queue_mutex;
 
-boost::shared_ptr<boost::thread> OutofcoreCloud::pcd_reader_thread;
+boost::shared_ptr<std::thread> OutofcoreCloud::pcd_reader_thread;
 //MonitorQueue<std::string> OutofcoreCloud::pcd_queue;
 
 //std::map<std::string, vtkSmartPointer<vtkPolyData> > OutofcoreCloud::cloud_data_cache;
@@ -124,8 +122,8 @@ OutofcoreCloud::OutofcoreCloud (std::string name, boost::filesystem::path& tree_
   // Create the pcd reader thread once for all outofcore nodes
   if (OutofcoreCloud::pcd_reader_thread.get() == NULL)
   {
-//    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<boost::thread>(new boost::thread(&OutofcoreCloud::pcdReaderThread, this));
-    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<boost::thread>(new boost::thread(&OutofcoreCloud::pcdReaderThread));
+//    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<std::thread>(new std::thread(&OutofcoreCloud::pcdReaderThread, this));
+    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<std::thread>(new std::thread(&OutofcoreCloud::pcdReaderThread));
   }
 
 

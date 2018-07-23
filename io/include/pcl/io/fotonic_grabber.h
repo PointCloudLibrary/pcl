@@ -46,7 +46,7 @@
 #include <pcl/io/grabber.h>
 #include <pcl/common/synchronizer.h>
 
-#include <boost/thread.hpp>  
+#include <thread>
 
 #include <fz_api.h>
 
@@ -149,7 +149,7 @@ namespace pcl
 
       FZ_Device_Handle_t * fotonic_device_handle_;
 
-      boost::thread grabber_thread_;
+      std::thread grabber_thread_;
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW

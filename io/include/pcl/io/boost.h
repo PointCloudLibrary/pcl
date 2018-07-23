@@ -48,7 +48,6 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
-#include <boost/thread.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/bind.hpp>
@@ -81,5 +80,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
 #endif
+#include <thread>
 #endif    // _PCL_IO_BOOST_H_
 

@@ -131,10 +131,10 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   CloudViewer_impl (const std::string& window_name) :
     window_name_ (window_name), has_cloud_ (false), quit_ (false)
   {
-    viewer_thread_ = boost::thread (boost::ref (*this));
+    viewer_thread_ = std::thread (std::ref (*this));
     while (!viewer_)
     {
-      boost::thread::yield ();
+      std::this_thread::yield ();
     }
   }
 
@@ -153,7 +153,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
     }
     while (!cs->popped ())
     {
-      boost::thread::yield ();
+      std::this_thread::yield ();
     }
   }
 
@@ -249,7 +249,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   std::string window_name_;
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
   boost::mutex mtx_, spin_mtx_, c_mtx, once_mtx;
-  boost::thread viewer_thread_;
+  std::thread viewer_thread_;
   bool has_cloud_;
   bool quit_;
   std::list<boost::shared_ptr<cloud_show_base> > cloud_shows_;
@@ -335,7 +335,7 @@ pcl::visualization::CloudViewer::removeVisualizationCallable (const std::string 
 bool
 pcl::visualization::CloudViewer::wasStopped (int)
 {
-  boost::thread::yield (); //allow this to be called in a loop
+  std::this_thread::yield (); //allow this to be called in a loop
   return !impl_->viewer_;
 }
 

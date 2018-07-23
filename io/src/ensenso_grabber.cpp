@@ -205,7 +205,7 @@ pcl::EnsensoGrabber::start ()
 
   frequency_.reset ();
   running_ = true;
-  grabber_thread_ = boost::thread (&pcl::EnsensoGrabber::processGrabbing, this);
+  grabber_thread_ = std::thread (&pcl::EnsensoGrabber::processGrabbing, this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

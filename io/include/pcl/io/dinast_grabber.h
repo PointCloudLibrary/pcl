@@ -207,7 +207,7 @@ namespace pcl
       
       bool running_;
       
-      boost::thread capture_thread_;
+      std::thread capture_thread_;
       
       mutable boost::mutex capture_mutex_;
       boost::signals2::signal<sig_cb_dinast_point_cloud>* point_cloud_signal_;

@@ -48,7 +48,7 @@
 #include <pcl/io/boost.h>
 #include <pcl/exceptions.h>
 
-#include <boost/thread.hpp>
+#include <thread>
 
 #include <iostream>
 
@@ -123,7 +123,7 @@ pcl::FotonicGrabber::start ()
 
   running_ = true;
 
-  grabber_thread_ = boost::thread(&pcl::FotonicGrabber::processGrabbing, this); 
+  grabber_thread_ = std::thread(&pcl::FotonicGrabber::processGrabbing, this); 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

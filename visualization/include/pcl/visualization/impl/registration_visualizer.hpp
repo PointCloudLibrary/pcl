@@ -41,7 +41,7 @@ template<typename PointSource, typename PointTarget> void
 pcl::RegistrationVisualizer<PointSource, PointTarget>::startDisplay ()
 {
   // Create and start the rendering thread. This will open the display window.
-  viewer_thread_ = boost::thread (&pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay, this);
+  viewer_thread_ = std::thread (&pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay, this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

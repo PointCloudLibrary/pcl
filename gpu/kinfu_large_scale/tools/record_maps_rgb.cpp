@@ -319,11 +319,11 @@ main (int argc, char** argv)
   buff.setCapacity (buff_size);
   std::cout << "Starting the producer and consumer threads..." << std::endl;
   std::cout << "Press Ctrl-C to end" << std::endl;
-  boost::thread producer (grabAndSend);
+  std::thread producer (grabAndSend);
   boost::this_thread::sleep (boost::posix_time::seconds (2));
-  boost::thread consumer (receiveAndProcess);
-  boost::thread consumer2 (receiveAndProcess);
-  boost::thread consumer3 (receiveAndProcess);
+  std::thread consumer (receiveAndProcess);
+  std::thread consumer2 (receiveAndProcess);
+  std::thread consumer3 (receiveAndProcess);
   signal (SIGINT, ctrlC);
   producer.join ();
   {

@@ -548,9 +548,9 @@ namespace openni_wrapper
       boost::condition_variable image_condition_;
       boost::condition_variable depth_condition_;
       boost::condition_variable ir_condition_;
-      boost::thread image_thread_;
-      boost::thread depth_thread_;
-      boost::thread ir_thread_;
+      std::thread image_thread_;
+      std::thread depth_thread_;
+      std::thread ir_thread_;
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

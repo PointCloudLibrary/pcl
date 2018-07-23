@@ -98,7 +98,7 @@ namespace openni_wrapper
     static void __stdcall NewONIIRDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
 
     xn::Player player_;
-    boost::thread player_thread_;
+    std::thread player_thread_;
     mutable boost::mutex player_mutex_;
     boost::condition_variable player_condition_;
     bool streaming_;

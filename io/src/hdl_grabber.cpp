@@ -493,7 +493,7 @@ pcl::HDLGrabber::start ()
   if (isRunning ())
     return;
 
-  queue_consumer_thread_ = new boost::thread (boost::bind (&HDLGrabber::processVelodynePackets, this));
+  queue_consumer_thread_ = new std::thread (boost::bind (&HDLGrabber::processVelodynePackets, this));
 
   if (pcap_file_name_.empty ())
   {
@@ -523,12 +523,12 @@ pcl::HDLGrabber::start ()
       PCL_ERROR("[pcl::HDLGrabber::start] Unable to bind to socket! %s\n", e.what ());
       return;
     }
-    hdl_read_packet_thread_ = new boost::thread (boost::bind (&HDLGrabber::readPacketsFromSocket, this));
+    hdl_read_packet_thread_ = new std::thread (boost::bind (&HDLGrabber::readPacketsFromSocket, this));
   }
   else
   {
 #ifdef HAVE_PCAP
-    hdl_read_packet_thread_ = new boost::thread (boost::bind (&HDLGrabber::readPacketsFromPcap, this));
+    hdl_read_packet_thread_ = new std::thread (boost::bind (&HDLGrabber::readPacketsFromPcap, this));
 #endif // #ifdef HAVE_PCAP
   }
 }
@@ -542,7 +542,6 @@ pcl::HDLGrabber::stop ()
 
   if (hdl_read_packet_thread_ != NULL)
   {
-    hdl_read_packet_thread_->interrupt ();
     hdl_read_packet_thread_->join ();
     delete hdl_read_packet_thread_;
     hdl_read_packet_thread_ = NULL;
@@ -565,7 +564,7 @@ pcl::HDLGrabber::stop ()
 bool
 pcl::HDLGrabber::isRunning () const
 {
-  return (!hdl_data_.isEmpty () || (hdl_read_packet_thread_ != NULL && !hdl_read_packet_thread_->timed_join (boost::posix_time::milliseconds (10))));
+  return (!hdl_data_.isEmpty () || (hdl_read_packet_thread_ != NULL));
 }
 
 /////////////////////////////////////////////////////////////////////////////

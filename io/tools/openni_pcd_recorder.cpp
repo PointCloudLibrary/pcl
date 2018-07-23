@@ -249,7 +249,7 @@ class Producer
       : buf_ (buf),
         depth_mode_ (depth_mode)
     {
-      thread_.reset (new boost::thread (boost::bind (&Producer::grabAndSend, this)));
+      thread_.reset (new std::thread (boost::bind (&Producer::grabAndSend, this)));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -264,7 +264,7 @@ class Producer
   private:
     PCDBuffer<PointT> &buf_;
     openni_wrapper::OpenNIDevice::DepthMode depth_mode_;
-    boost::shared_ptr<boost::thread> thread_;
+    boost::shared_ptr<std::thread> thread_;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -308,7 +308,7 @@ class Consumer
     Consumer (PCDBuffer<PointT> &buf)
       : buf_ (buf)
     {
-      thread_.reset (new boost::thread (boost::bind (&Consumer::receiveAndProcess, this)));
+      thread_.reset (new std::thread (boost::bind (&Consumer::receiveAndProcess, this)));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -322,7 +322,7 @@ class Consumer
 
   private:
     PCDBuffer<PointT> &buf_;
-    boost::shared_ptr<boost::thread> thread_;
+    boost::shared_ptr<std::thread> thread_;
     PCDWriter writer_;
 };
 

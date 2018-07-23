@@ -172,7 +172,7 @@ pcl::RealSenseGrabber::start ()
         THROW_IO_EXCEPTION ("Invalid stream profile for PXC device");
       frequency_.reset ();
       is_running_ = true;
-      thread_ = boost::thread (&RealSenseGrabber::run, this);
+      thread_ = std::thread (&RealSenseGrabber::run, this);
     }
   }
 }

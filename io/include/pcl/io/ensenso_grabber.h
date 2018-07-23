@@ -47,8 +47,9 @@
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
 #include <pcl/io/boost.h>
-#include <boost/thread.hpp>
 #include <boost/lexical_cast.hpp> // TODO: Remove when setExtrinsicCalibration is fixed
+
+#include <thread>
 
 #include <pcl/io/grabber.h>
 #include <pcl/common/synchronizer.h>
@@ -437,7 +438,7 @@ namespace pcl
 
     protected:
       /** @brief Grabber thread */
-      boost::thread grabber_thread_;
+      std::thread grabber_thread_;
 
       /** @brief Boost point cloud signal */
       boost::signals2::signal<sig_cb_ensenso_point_cloud>* point_cloud_signal_;

@@ -294,8 +294,8 @@ namespace pcl
       boost::asio::io_service hdl_read_socket_service_;
       boost::asio::ip::udp::socket *hdl_read_socket_;
       std::string pcap_file_name_;
-      boost::thread *queue_consumer_thread_;
-      boost::thread *hdl_read_packet_thread_;
+      std::thread *queue_consumer_thread_;
+      std::thread *hdl_read_packet_thread_;
       bool terminate_read_packet_thread_;
       pcl::RGB laser_rgb_mapping_[HDL_MAX_NUM_LASERS];
       float min_distance_threshold_;

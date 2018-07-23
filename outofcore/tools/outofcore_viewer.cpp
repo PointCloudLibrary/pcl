@@ -38,6 +38,7 @@
 // C++
 #include <iostream>
 #include <string>
+#include <thread>
 
 // PCL
 #include <pcl/common/time.h>
@@ -131,7 +132,6 @@ typedef Eigen::aligned_allocator<PointT> AlignedPointT;
 // Boost
 #include <boost/date_time.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
 
 // Globals
 vtkSmartPointer<vtkRenderWindow> window;

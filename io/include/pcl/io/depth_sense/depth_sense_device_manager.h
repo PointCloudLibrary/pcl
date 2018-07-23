@@ -41,7 +41,7 @@
 #include <boost/utility.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/thread.hpp>
+#include <thread>
 
 #include <pcl/pcl_exports.h>
 
@@ -138,7 +138,7 @@ namespace pcl
           static boost::mutex mutex_;
 
           /// Thread where the grabbing takes place.
-          boost::thread depth_sense_thread_;
+          std::thread depth_sense_thread_;
 
           struct CapturedDevice
           {

@@ -60,10 +60,10 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/foreach.hpp>
-#ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
-#endif
 #include <boost/filesystem.hpp>
+
+#include <thread>
 #endif
 
 #endif    // PCL_VISUALIZATION_BOOST_H_

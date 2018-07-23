@@ -168,7 +168,7 @@ namespace pcl
       boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
 
       /** \brief The thread running the runDisplay() function. */
-      boost::thread viewer_thread_;
+      std::thread viewer_thread_;
 
       /** \brief The name of the registration method whose intermediate results are rendered. */
       std::string registration_method_name_;

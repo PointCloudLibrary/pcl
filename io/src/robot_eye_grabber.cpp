@@ -326,8 +326,8 @@ pcl::RobotEyeGrabber::start ()
 
   terminate_thread_ = false;
   resetPointCloud ();
-  consumer_thread_.reset(new boost::thread (boost::bind (&RobotEyeGrabber::consumerThreadLoop, this)));
-  socket_thread_.reset(new boost::thread (boost::bind (&RobotEyeGrabber::socketThreadLoop, this)));
+  consumer_thread_.reset(new std::thread (boost::bind (&RobotEyeGrabber::consumerThreadLoop, this)));
+  socket_thread_.reset(new std::thread (boost::bind (&RobotEyeGrabber::socketThreadLoop, this)));
 }
 
 /////////////////////////////////////////////////////////////////////////////
