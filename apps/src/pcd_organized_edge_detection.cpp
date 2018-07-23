@@ -213,7 +213,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   while (!viewer.wasStopped ())
   {
     viewer.spinOnce ();
-    boost::this_thread::sleep (boost::posix_time::microseconds (100));
+    std::this_thread::sleep_for (std::chrono::microseconds (100));
   }
 
   // Combine point clouds and edge labels

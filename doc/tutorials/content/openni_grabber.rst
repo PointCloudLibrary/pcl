@@ -68,7 +68,7 @@ So let's look at the code. From *visualization/tools/openni_viewer_simple.cpp*
               
           while (!viewer.wasStopped())
           {   
-            boost::this_thread::sleep (boost::posix_time::seconds (1));
+            std::this_thread::sleep_for (std::chrono::seconds (1));
           }   
 
           interface->stop (); 

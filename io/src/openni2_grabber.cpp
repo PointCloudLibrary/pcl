@@ -250,7 +250,7 @@ pcl::io::OpenNI2Grabber::start ()
   }
 
   // workaround, since the first frame is corrupted
-  //boost::this_thread::sleep (boost::posix_time::seconds (1));
+  //std::this_thread::sleep_for (std::chrono::seconds (1));
   unblock_signals ();
 }
 

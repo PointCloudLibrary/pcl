@@ -122,10 +122,10 @@ class OpenNIFastMesh
       while (!view->wasStopped ())
       //while (!viewer.wasStopped ())
       {
-        //boost::this_thread::sleep (boost::posix_time::milliseconds (1));
+        //std::this_thread::sleep_for (std::chrono::milliseconds (1));
         if (!cloud_ || !mtx_.try_lock ())
         {
-          boost::this_thread::sleep (boost::posix_time::milliseconds (1));
+          std::this_thread::sleep_for (std::chrono::milliseconds (1));
           continue;
         }
 

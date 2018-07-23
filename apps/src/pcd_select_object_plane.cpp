@@ -517,7 +517,7 @@ class ObjectSelection
           if (image_viewer_->wasStopped ())
             break;
         }
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for (std::chrono::microseconds (100));
       }
     }
     

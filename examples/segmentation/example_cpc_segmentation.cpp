@@ -594,7 +594,7 @@ CPCSegmentation Parameters: \n\
           viewer->addText ("Press d to show help", 5, 10, 12, textcolor, textcolor, textcolor, "help_text");
       }
 
-      boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+      std::this_thread::sleep_for (std::chrono::microseconds (100000));
     }
   }  /// END if (show_visualization)
 

@@ -135,7 +135,7 @@ viz_cb (pcl::visualization::PCLVisualizer& viz)
     
   if (!cloud_pass_)
     {
-      boost::this_thread::sleep (boost::posix_time::seconds (1));
+      std::this_thread::sleep_for (std::chrono::seconds (1));
       return;
    }
 
@@ -280,6 +280,6 @@ main (int argc, char** argv)
   //Start viewer and object tracking
   interface->start();
   while (!viewer_->wasStopped ())
-    boost::this_thread::sleep(boost::posix_time::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   interface->stop();
 }

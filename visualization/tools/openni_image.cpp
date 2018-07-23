@@ -323,7 +323,7 @@ class Writer
         if (save_data || toggle_one_frame_capture)
           writeToDisk (buf_.popFront ());
         else
-          boost::this_thread::sleep (boost::posix_time::microseconds (100));
+          std::this_thread::sleep_for (std::chrono::microseconds (100));
       }
 
       if (save_data && buf_.getSize () > 0)
@@ -418,7 +418,7 @@ class Driver
       
       while (!is_done)
       {
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+        std::this_thread::sleep_for (std::chrono::seconds (1));
       }
       grabber_.stop ();
       image_connection.disconnect ();
@@ -477,7 +477,7 @@ class Viewer
              !depth_image_viewer_->wasStopped () && 
              !is_done)
       {
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for (std::chrono::microseconds (100));
 
         if (!visualize)
         {

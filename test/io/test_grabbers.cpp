@@ -49,7 +49,7 @@ TEST (PCL, PCDGrabber)
   grabber.registerCallback (fxn);
   grabber.start ();
   // 1 second should be /plenty/ of time
-  boost::this_thread::sleep (boost::posix_time::microseconds (1E6));
+  std::this_thread::sleep_for (std::chrono::microseconds (1E6));
   grabber.stop ();
 
   //// Make sure they match
@@ -126,7 +126,7 @@ TEST (PCL, ImageGrabberTIFF)
     size_t niter = 0;
     while (!signal_received)
     {
-      boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      std::this_thread::sleep_for (std::chrono::microseconds (10000));
       if (++niter > 100)
       {
         ASSERT_TRUE (false);
@@ -206,7 +206,7 @@ TEST (PCL, ImageGrabberPCLZF)
     size_t niter = 0;
     while (!signal_received)
     {
-      boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      std::this_thread::sleep_for (std::chrono::microseconds (10000));
       if (++niter > 100)
       {
         ASSERT_TRUE (false);
@@ -286,7 +286,7 @@ TEST (PCL, ImageGrabberOMP)
     size_t niter = 0;
     while (!signal_received)
     {
-      boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      std::this_thread::sleep_for (std::chrono::microseconds (10000));
       if (++niter > 100)
       {
         ASSERT_TRUE (false);
@@ -395,7 +395,7 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
     size_t niter = 0;
     while (!signal_received)
     {
-      boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      std::this_thread::sleep_for (std::chrono::microseconds (10000));
       if (++niter > 100)
       {
         ASSERT_TRUE (false);
@@ -467,7 +467,7 @@ TEST (PCL, ImageGrabberSetIntrinsicsPCLZF)
     size_t niter = 0;
     while (!signal_received)
     {
-      boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      std::this_thread::sleep_for (std::chrono::microseconds (10000));
       if (++niter > 100)
       {
         ASSERT_TRUE (false);

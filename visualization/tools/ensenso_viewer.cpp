@@ -78,7 +78,7 @@ main (void)
 
   while (!viewer_ptr->wasStopped ())
   {
-    boost::this_thread::sleep (boost::posix_time::milliseconds (1000));
+    std::this_thread::sleep_for (std::chrono::milliseconds (1000));
     std::cout << "FPS: " << ensenso_ptr->getFramesPerSecond () << std::endl;
   }
 

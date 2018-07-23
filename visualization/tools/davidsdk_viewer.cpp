@@ -98,7 +98,7 @@ main (int argc,
 
   while (!viewer_ptr->wasStopped ())
   {
-    boost::this_thread::sleep (boost::posix_time::seconds (20));
+    std::this_thread::sleep_for (std::chrono::seconds (20));
     std::cout << "FPS: " << davidsdk_ptr->getFramesPerSecond () << std::endl;
   }
 

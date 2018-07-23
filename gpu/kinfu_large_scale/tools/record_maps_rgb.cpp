@@ -264,7 +264,7 @@ grabAndSend ()
   {
     if (is_done)
       break;
-    boost::this_thread::sleep (boost::posix_time::seconds (1));
+    std::this_thread::sleep_for (std::chrono::seconds (1));
   }
   interface->stop ();
 }
@@ -320,7 +320,7 @@ main (int argc, char** argv)
   std::cout << "Starting the producer and consumer threads..." << std::endl;
   std::cout << "Press Ctrl-C to end" << std::endl;
   std::thread producer (grabAndSend);
-  boost::this_thread::sleep (boost::posix_time::seconds (2));
+  std::this_thread::sleep_for (std::chrono::seconds (2));
   std::thread consumer (receiveAndProcess);
   std::thread consumer2 (receiveAndProcess);
   std::thread consumer3 (receiveAndProcess);

@@ -240,7 +240,7 @@ void run (const char* file_name, float voxel_size)
   {
     //main loop of the visualizer
     viz.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for (std::chrono::microseconds (100000));
   }
 }
 

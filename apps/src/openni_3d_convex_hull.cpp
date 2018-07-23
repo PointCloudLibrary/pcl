@@ -104,7 +104,7 @@ class OpenNI3DConvexHull
     {
       if (!cloud_ || !new_cloud_)
       {
-        boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
         return;
       }
 
@@ -143,7 +143,7 @@ class OpenNI3DConvexHull
       
       while (!viewer.wasStopped ())
       {
-        boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
       }
 
       interface->stop ();

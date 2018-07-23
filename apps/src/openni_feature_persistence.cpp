@@ -158,7 +158,7 @@ class OpenNIFeaturePersistence
       boost::mutex::scoped_lock lock (mtx_);
       if (!cloud_)
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         return;
       }
 
@@ -196,7 +196,7 @@ class OpenNIFeaturePersistence
 
       while (!viewer.wasStopped ())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
       }
 
       interface->stop ();

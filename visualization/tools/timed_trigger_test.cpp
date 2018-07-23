@@ -14,7 +14,7 @@ void callback ()
   double elapsed = pcl::getTime () - last_time;
   last_time = pcl::getTime ();
   cout << "global fn: " << pcl::getTime () - global_time << " :: " << elapsed << endl;
-  boost::this_thread::sleep(boost::posix_time::microseconds(1000));
+  std::this_thread::sleep_for(std::chrono::microseconds(1000));
 }
 
 class Dummy
@@ -35,10 +35,10 @@ int main ()
   Dummy dummy;
   global_time = pcl::getTime ();
   trigger.start ();
-  boost::this_thread::sleep(boost::posix_time::seconds(2));
+  std::this_thread::sleep_for(std::chrono::seconds(2));
   trigger.registerCallback ( boost::bind(&Dummy::myTimer, dummy));
-  boost::this_thread::sleep(boost::posix_time::seconds(3));
+  std::this_thread::sleep_for(std::chrono::seconds(3));
   trigger.setInterval (0.2);
-  boost::this_thread::sleep(boost::posix_time::seconds(2));
+  std::this_thread::sleep_for(std::chrono::seconds(2));
   return 0;
 }

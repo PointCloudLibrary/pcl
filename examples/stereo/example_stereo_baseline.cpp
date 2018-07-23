@@ -96,6 +96,6 @@ main(int argc, char **argv)
   {
     viewer->spinOnce (100);
     iv.spinOnce (100); // press 'q' to exit
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for (std::chrono::microseconds (100000));
   }
 }

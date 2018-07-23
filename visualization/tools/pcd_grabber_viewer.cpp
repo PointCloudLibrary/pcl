@@ -248,7 +248,7 @@ main (int argc, char** argv)
 
     if (!cloud_)
     {
-      boost::this_thread::sleep(boost::posix_time::microseconds(10000));
+      std::this_thread::sleep_for(std::chrono::microseconds(10000));
       continue;
     }
     else if (mutex_.try_lock ())

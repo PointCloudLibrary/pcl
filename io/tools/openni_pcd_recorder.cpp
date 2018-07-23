@@ -239,7 +239,7 @@ class Producer
       {
         if (is_done)
           break;
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+        std::this_thread::sleep_for (std::chrono::seconds (1));
       }
       interface->stop ();
     }
@@ -459,7 +459,7 @@ main (int argc, char** argv)
     PCDBuffer<PointXYZRGBA> buf;
     buf.setCapacity (buff_size);
     Producer<PointXYZRGBA> producer (buf, depth_mode);
-    boost::this_thread::sleep (boost::posix_time::seconds (2));
+    std::this_thread::sleep_for (std::chrono::seconds (2));
     Consumer<PointXYZRGBA> consumer (buf);
 
     signal (SIGINT, ctrlC);
@@ -472,7 +472,7 @@ main (int argc, char** argv)
     PCDBuffer<PointXYZ> buf;
     buf.setCapacity (buff_size);
     Producer<PointXYZ> producer (buf, depth_mode);
-    boost::this_thread::sleep (boost::posix_time::seconds (2));
+    std::this_thread::sleep_for (std::chrono::seconds (2));
     Consumer<PointXYZ> consumer (buf);
 
     signal (SIGINT, ctrlC);

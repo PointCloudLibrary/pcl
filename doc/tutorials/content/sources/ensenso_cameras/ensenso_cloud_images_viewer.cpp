@@ -137,7 +137,7 @@ main (void)
   while (!viewer_ptr->wasStopped ())
   {
     PCL_INFO("FPS: %f\n", ensenso_ptr->getFramesPerSecond ());
-    boost::this_thread::sleep (boost::posix_time::milliseconds (500));
+    std::this_thread::sleep_for (std::chrono::milliseconds (500));
   }
 
   ensenso_ptr->stop ();

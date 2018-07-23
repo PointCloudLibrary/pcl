@@ -142,7 +142,7 @@ pcl::visualization::PCLHistogramVisualizer::spin ()
       if ((*am_it).second.interactor_->stopped)
         return;
     }
-    boost::this_thread::sleep (boost::posix_time::seconds (1));
+    std::this_thread::sleep_for (std::chrono::seconds (1));
   }
   while (true);
 }
@@ -178,7 +178,7 @@ pcl::visualization::PCLHistogramVisualizer::spin ()
     spinOnce ();
     if (stopped_)
       break;
-    boost::this_thread::sleep (boost::posix_time::seconds (1));
+    std::this_thread::sleep_for (std::chrono::seconds (1));
   }
   while (true);
 }

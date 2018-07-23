@@ -268,7 +268,7 @@ class BRISKDemo
 
         cloud_viewer_.spinOnce ();
         image_viewer_.spinOnce ();
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for (std::chrono::microseconds (100));
       }
 
       grabber_.stop ();

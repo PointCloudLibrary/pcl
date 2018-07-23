@@ -387,7 +387,7 @@ class Player
                 played_time = bpt::microsec_clock::local_time() - pb_start;
                 bpt::time_duration sleep_time(blk_offset - played_time);
                 std::cerr << "Will sleep " << sleep_time << " until displaying block\n";
-                boost::this_thread::sleep(sleep_time);
+                std::this_thread::sleep_for(sleep_time);
                 viewer_.showCloud(cloud);
                 //viewer_.removePointCloud("1");
                 //viewer_.addPointCloud(cloud, "1");

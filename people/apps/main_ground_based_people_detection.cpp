@@ -145,7 +145,7 @@ int main (int argc, char** argv)
 
   // Wait for the first frame:
   while(!new_cloud_available_flag) 
-    boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   new_cloud_available_flag = false;
 
   cloud_mutex.lock ();    // for not overwriting the point cloud

@@ -168,7 +168,7 @@ class SimpleOpenNIViewer
 
       while (!outputFile_.fail())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
       }
 
       interface->stop ();
@@ -222,7 +222,7 @@ struct EventHelper
 
     while (!outputFile_.fail ())
     {
-      boost::this_thread::sleep(boost::posix_time::seconds(1));
+      std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
     interface->stop ();
@@ -466,7 +466,7 @@ main (int argc, char **argv)
 
         std::cout << "Disconnected!" << std::endl;
 
-        boost::this_thread::sleep(boost::posix_time::seconds(3));
+        std::this_thread::sleep_for(std::chrono::seconds(3));
 
       }
       catch (std::exception& e)

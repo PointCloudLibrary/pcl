@@ -194,7 +194,7 @@ class OpenNIGrabFrame
       // wait until user quits program with Ctrl-C, but no busy-waiting -> sleep (1);
       while (!visualizer_->wasStopped())
       {
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for (std::chrono::microseconds (100));
 
         visualizer_->spinOnce ();
         
@@ -213,7 +213,7 @@ class OpenNIGrabFrame
       }
       
       //while (!quit_)
-        //boost::this_thread::sleep (boost::posix_time::seconds (1));
+        //std::this_thread::sleep_for (std::chrono::seconds (1));
    
       // stop the grabber
       grabber_.stop ();

@@ -1018,7 +1018,7 @@ struct KinFuLSApp
         //~ cout << "In main loop" << endl;                  
       } 
       exit_ = true;
-      boost::this_thread::sleep (boost::posix_time::millisec (100));
+      std::this_thread::sleep_for (std::chrono::milliseconds (100));
 
       if (!triggered_capture)     
         capture_.stop (); // Stop stream

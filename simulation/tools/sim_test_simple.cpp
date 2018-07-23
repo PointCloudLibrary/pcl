@@ -413,7 +413,7 @@ void display ()
   while (!viewer->wasStopped ())
   {
     viewer->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for (std::chrono::microseconds (100000));
   }    
   
   // doesn't work:

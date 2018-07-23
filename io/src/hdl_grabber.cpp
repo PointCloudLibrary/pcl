@@ -721,7 +721,7 @@ pcl::HDLGrabber::readPacketsFromPcap ()
     usec_delay = ((header->ts.tv_sec - lasttime.tv_sec) * 1000000) +
     (header->ts.tv_usec - lasttime.tv_usec);
 
-    boost::this_thread::sleep (boost::posix_time::microseconds (usec_delay));
+    std::this_thread::sleep_for (std::chrono::microseconds (usec_delay));
 
     lasttime.tv_sec = header->ts.tv_sec;
     lasttime.tv_usec = header->ts.tv_usec;
