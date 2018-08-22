@@ -352,6 +352,11 @@ namespace pcl
     * \ingroup common
     */
   struct PointDEM;
+
+  /** \brief Members: float scurv[210]
+    * \ingroup common
+    */
+  struct SCurVSignature210;
 }
 
 /** @} */
@@ -704,6 +709,10 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointDEM,
     (float, height_variance, height_variance)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointDEM, pcl::_PointDEM)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SCurVSignature210,
+    (float[210], histogram, scurv)
+)
 
 namespace pcl 
 {

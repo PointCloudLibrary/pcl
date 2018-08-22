@@ -460,4 +460,11 @@ namespace pcl
     return (os);
   }
 
+  std::ostream& 
+  operator << (std::ostream& os, const SCurVSignature210& p)
+  {
+    for (int i = 0; i < 210; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 209 ? ", " : ")");
+    return (os);
+  }
 }

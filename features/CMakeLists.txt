@@ -64,6 +64,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/usc.h"
         "include/pcl/${SUBSYS_NAME}/boundary.h"
         "include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h"
+        "include/pcl/${SUBSYS_NAME}/scurv.h"
         )
 
     set(impl_incs
@@ -114,6 +115,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/usc.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/boundary.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/range_image_border_extractor.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/scurv.hpp"
         )
 
     set(srcs
@@ -156,6 +158,7 @@ if(build)
         src/3dsc.cpp
         src/usc.cpp
         src/range_image_border_extractor.cpp
+	  src/scurv.cpp
        )
 	
     if(MSVC)

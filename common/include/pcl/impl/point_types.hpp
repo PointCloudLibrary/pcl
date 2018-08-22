@@ -94,7 +94,8 @@
   (pcl::SHOT1344)               \
   (pcl::PointUV)                \
   (pcl::ReferenceFrame)         \
-  (pcl::PointDEM)
+  (pcl::PointDEM)               \
+  (pcl::SCurVSignature210)
 
 // Define all point types that include RGB data
 #define PCL_RGB_POINT_TYPES     \
@@ -155,7 +156,8 @@
   (pcl::GRSDSignature21)        \
   (pcl::ESFSignature640)        \
   (pcl::BRISKSignature512)      \
-  (pcl::Narf36)
+  (pcl::Narf36)                 \
+  (pcl::SCurVSignature210)
 
 namespace pcl
 {
@@ -1687,6 +1689,19 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.histogram[i] << (i < N-1 ? ", " : ")");
     return (os);
   }
+
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const SCurVSignature210& p);
+  /** \brief A point structure representing the Shape Curvature Values (SCurV).
+    * \ingroup common
+    */
+  struct SCurVSignature210
+  {
+    float histogram[210];
+    static int descriptorSize () { return 210; }
+
+    friend std::ostream& operator << (std::ostream& os, const SCurVSignature210& p);
+  };
 } // End namespace
 
 // Preserve API for PCL users < 1.4

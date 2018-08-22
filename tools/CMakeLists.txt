@@ -153,6 +153,9 @@ if (BUILD_tools)
   PCL_ADD_EXECUTABLE(pcl_grid_min "${SUBSYS_NAME}" grid_min.cpp)
   target_link_libraries(pcl_grid_min pcl_common pcl_io pcl_filters)
 
+  PCL_ADD_EXECUTABLE (pcl_scurv_estimation "${SUBSYS_NAME}" scurv_estimation.cpp)
+  target_link_libraries (pcl_scurv_estimation pcl_common pcl_io pcl_features pcl_kdtree)
+ 
   if(WITH_OPENNI)
     PCL_ADD_EXECUTABLE(pcl_oni2pcd "${SUBSYS_NAME}" oni2pcd.cpp)
     target_link_libraries(pcl_oni2pcd pcl_common pcl_io)

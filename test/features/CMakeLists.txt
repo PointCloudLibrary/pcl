@@ -105,6 +105,10 @@ if (build)
                  FILES test_gasd_estimation.cpp
                  LINK_WITH pcl_gtest pcl_io pcl_features
                  ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
+    PCL_ADD_TEST(feature_scurv_estimation test_scurv_estimation
+                 FILES test_scurv_estimation.cpp
+                 LINK_WITH pcl_gtest pcl_features pcl_io pcl_filters
+                 ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/milk.pcd")
     if (BUILD_keypoints)
       PCL_ADD_TEST(feature_brisk test_brisk
                    FILES test_brisk.cpp
