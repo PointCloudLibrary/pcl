@@ -146,6 +146,10 @@ endif()
 
 if(CMAKE_COMPILER_IS_MSVC)
   add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX /bigobj ${SSE_DEFINITIONS}")
+  if(NOT CMAKE_CL_64)
+    MESSAGE(WARNING "PCL_ONLY_CORE_POINT_TYPES was automatically set for 32Bit Visual Studio (issue 833, https://github.com/PointCloudLibrary/pcl/issues/833)")
+    add_definitions("-DPCL_ONLY_CORE_POINT_TYPES")
+  endif()
   if("${CMAKE_CXX_FLAGS}" STREQUAL "/DWIN32 /D_WINDOWS /W3 /GR /EHsc")	# Check against default flags
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS}")
 
