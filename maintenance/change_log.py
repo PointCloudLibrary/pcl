@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-'''
+"""
 Software License Agreement (BSD License)
 
  Point Cloud Library (PCL) - www.pointclouds.org
@@ -35,7 +35,7 @@ Software License Agreement (BSD License)
  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 
 import argparse
 from argparse import ArgumentParser
@@ -54,24 +54,24 @@ import requests
 def find_pcl_folder():
     folder = os.path.dirname(os.path.abspath(__file__))
     folder = pathlib.Path(folder).parent
-    return folder
+    return str(folder)
 
 
-def find_pr_list(start:str, end:str):
-    '''Returns all PR ids from a certain commit range. Inspired in
+def find_pr_list(start: str, end: str):
+    """Returns all PR ids from a certain commit range. Inspired in
     http://joey.aghion.com/find-the-github-pull-request-for-a-commit/
     https://stackoverflow.com/questions/36433572/how-does-ancestry-path-work-with-git-log#36437843
-    '''
+    """
 
     # Let git generate the proper pr history
-    cmd = 'git log --merges --oneline ' + start + '..' + end
+    cmd = "git log --merges --oneline " + start + ".." + end
     cmd = cmd.split()
     output = subprocess.run(cmd, cwd=FOLDER, stdout=subprocess.PIPE)
-    pr_commits = output.stdout.split(b'\n')
+    pr_commits = output.stdout.split(b"\n")
 
     # Fetch ids for all merge requests from PRS
-    pattern_re = re.compile('(\S+) Merge pull request #\d+ from (\S+)')
-    uid_re = re.compile('#\d+')
+    pattern_re = re.compile("(\S+) Merge pull request #\d+ from (\S+)")
+    uid_re = re.compile("#\d+")
 
     ids = []
     for pr in pr_commits:
@@ -82,18 +82,19 @@ def find_pr_list(start:str, end:str):
         if not pattern_re.fullmatch(pr_s):
             continue
 
-        #Extract PR uid
+        # Extract PR uid
         uid = int(uid_re.search(pr_s).group(0)[1:])
         ids.append(uid)
 
     return ids
 
+
 def fetch_pr_info(pr_ids, auth):
 
-    prs_url = 'https://api.github.com/repos/PointCloudLibrary/pcl/pulls/'
+    prs_url = "https://api.github.com/repos/PointCloudLibrary/pcl/pulls/"
     pr_info = []
 
-    sys.stdout.write('Fetching PR Info: {}%'.format(0))
+    sys.stdout.write("Fetching PR Info: {}%".format(0))
     sys.stdout.flush()
 
     for i, pr_id in enumerate(pr_ids):
@@ -102,28 +103,34 @@ def fetch_pr_info(pr_ids, auth):
         response = requests.get(prs_url + str(pr_id), auth=auth)
         data = response.json()
 
-
         if response.status_code != 200:
-            print("\nError: Failed to fetch PR info. Server reported '" \
-                + data['message'] + "'", file=sys.stderr)
+            print(
+                "\nError: Failed to fetch PR info. Server reported '"
+                + data["message"]
+                + "'",
+                file=sys.stderr,
+            )
             exit(code=1)
 
-        d = {'id': pr_id, 'title': data['title'], 'labels': data['labels'] }
+        d = {"id": pr_id, "title": data["title"], "labels": data["labels"]}
         pr_info.append(d)
 
         # import pdb; pdb.set_trace()
-        sys.stdout.write('\rFetching PR Info: {:0.2f}%'.format(100 * (i + 1) / len(pr_ids)))
+        sys.stdout.write(
+            "\rFetching PR Info: {:0.2f}%".format(100 * (i + 1) / len(pr_ids))
+        )
         sys.stdout.flush()
 
-    print('')
+    print("")
     return pr_info
 
+
 def extract_version(tag):
-    '''Finds the corresponding version from a provided tag.
+    """Finds the corresponding version from a provided tag.
     If the tag does not correspond to a suitable version tag, the original tag
     is returned
-    '''
-    version_re = re.compile('pcl-\S+')
+    """
+    version_re = re.compile("pcl-\S+")
     res = version_re.fullmatch(tag)
 
     # Not a usual version tag
@@ -135,62 +142,84 @@ def extract_version(tag):
 
 def generate_text_content(tag, pr_info):
 
-    module_order = (None, 'cmake', '2d', 'common','cuda', 'features', 'filters',
-                    'geometry', 'gpu', 'io', 'kdtree', 'keypoints', 'ml',
-                    'octree', 'outofcore', 'people', 'recognition',
-                    'registration', 'sample_consensus', 'search', 'segmentation',
-                    'simulation', 'stereo', 'surface',
-                    'apps', 'docs', 'tutorials', 'examples', 'tests', 'tools',
-                    'ci')
+    module_order = (
+        None,
+        "cmake",
+        "2d",
+        "common",
+        "cuda",
+        "features",
+        "filters",
+        "geometry",
+        "gpu",
+        "io",
+        "kdtree",
+        "keypoints",
+        "ml",
+        "octree",
+        "outofcore",
+        "people",
+        "recognition",
+        "registration",
+        "sample_consensus",
+        "search",
+        "segmentation",
+        "simulation",
+        "stereo",
+        "surface",
+        "apps",
+        "docs",
+        "tutorials",
+        "examples",
+        "tests",
+        "tools",
+        "ci",
+    )
 
     module_titles = {
-        None: 'Uncategorized',
-        '2d': 'libpcl_2d',
-        'apps': 'PCL Apps',
-        'cmake': 'CMake',
-        'ci': 'CI',
-        'common': 'libpcl_common',
-        'cuda': 'libpcl_cuda',
-        'docs': 'PCL Docs',
-        'examples': 'PCL Examples',
-        'features': 'libpcl_features',
-        'filters': 'libpcl_filters',
-        'gpu': 'libpcl_gpu',
-        'io': 'libpcl_io',
-        'kdtree': 'libpcl_kdtree',
-        'keypoints': 'libpcl_keypoints',
-        'ml': 'libpcl_ml',
-        'octree': 'libpcl_octree',
-        'outofcore': 'libpcl_outofcore',
-        'people': 'libpcl_people',
-        'recognition': 'libpcl_recognition',
-        'registration': 'libpcl_registration',
-        'sample_consensus': 'libpcl_sample_consensus',
-        'search': 'libpcl_search',
-        'segmentation': 'libpcl_segmentation',
-        'simulation': 'libpcl_simulation',
-        'stereo': 'libpcl_stereo',
-        'surface': 'libpcl_surface',
-        'tests': 'PCL Tests',
-        'tools': 'PCL Tools',
-        'tutorials': 'PCL Tutorials',
-        'visualization': 'libpcl_visualization'
+        None: "Uncategorized",
+        "2d": "libpcl_2d",
+        "apps": "PCL Apps",
+        "cmake": "CMake",
+        "ci": "CI",
+        "common": "libpcl_common",
+        "cuda": "libpcl_cuda",
+        "docs": "PCL Docs",
+        "examples": "PCL Examples",
+        "features": "libpcl_features",
+        "filters": "libpcl_filters",
+        "gpu": "libpcl_gpu",
+        "io": "libpcl_io",
+        "kdtree": "libpcl_kdtree",
+        "keypoints": "libpcl_keypoints",
+        "ml": "libpcl_ml",
+        "octree": "libpcl_octree",
+        "outofcore": "libpcl_outofcore",
+        "people": "libpcl_people",
+        "recognition": "libpcl_recognition",
+        "registration": "libpcl_registration",
+        "sample_consensus": "libpcl_sample_consensus",
+        "search": "libpcl_search",
+        "segmentation": "libpcl_segmentation",
+        "simulation": "libpcl_simulation",
+        "stereo": "libpcl_stereo",
+        "surface": "libpcl_surface",
+        "tests": "PCL Tests",
+        "tools": "PCL Tools",
+        "tutorials": "PCL Tutorials",
+        "visualization": "libpcl_visualization",
     }
 
-    changes_order = ('new-feature', 'api', 'abi', 'behavior')
+    changes_order = ("new-feature", "api", "abi", "behavior")
 
     changes_titles = {
-        'new-feature': 'New Features',
-        'api': 'API Changes',
-        'abi': 'ABI Changes',
-        'behavior': 'Behavior Changes'
+        "new-feature": "New Features",
+        "api": "API Changes",
+        "abi": "ABI Changes",
+        "behavior": "Behavior Changes",
     }
 
-    changes_labels = {
-        'breaks API': 'api',
-        'breaks ABI': 'abi',
-        'behavior': 'behavior'
-    }
+    changes_labels = {"breaks API": "api", "breaks ABI": "abi", "behavior": "behavior"}
 
     # change_log content
     clog = []
@@ -199,43 +228,51 @@ def generate_text_content(tag, pr_info):
     version = extract_version(tag)
 
     # Find the commit date for writting the Title
-    cmd = ('git log -1 --format=%ai ' + tag).split()
+    cmd = ("git log -1 --format=%ai " + tag).split()
     output = subprocess.run(cmd, cwd=FOLDER, stdout=subprocess.PIPE)
     date = output.stdout.split()[0].decode()
-    tokens = date.split('-')
-    clog += ['## *= ' + version + ' (' + tokens[2] + '.' + tokens[1] + '.' \
-         + tokens[0] + ') =*']
+    tokens = date.split("-")
+    clog += [
+        "## *= "
+        + version
+        + " ("
+        + tokens[2]
+        + "."
+        + tokens[1]
+        + "."
+        + tokens[0]
+        + ") =*"
+    ]
 
     # Map each PR into the approriate module and changes
     modules = defaultdict(list)
     changes = defaultdict(list)
-    module_re = re.compile('module: \S+')
-    changes_re = re.compile('changes: ')
-    feature_re = re.compile('new feature')
-
+    module_re = re.compile("module: \S+")
+    changes_re = re.compile("changes: ")
+    feature_re = re.compile("new feature")
 
     for pr in pr_info:
 
-        pr['modules'] = []
-        pr['changes'] = []
+        pr["modules"] = []
+        pr["changes"] = []
 
-        for label in pr['labels']:
-            if module_re.fullmatch(label['name']):
-                module = label['name'][8:]
-                pr['modules'].append(module)
+        for label in pr["labels"]:
+            if module_re.fullmatch(label["name"]):
+                module = label["name"][8:]
+                pr["modules"].append(module)
                 modules[module].append(pr)
 
-            elif changes_re.match(label['name']):
-                key = changes_labels[label['name'][9:]]
-                pr['changes'].append(key)
+            elif changes_re.match(label["name"]):
+                key = changes_labels[label["name"][9:]]
+                pr["changes"].append(key)
                 changes[key].append(pr)
 
-            elif feature_re.fullmatch(label['name']):
-                pr['changes'].append('new-feature')
-                changes['new-feature'].append(pr)
+            elif feature_re.fullmatch(label["name"]):
+                pr["changes"].append("new-feature")
+                changes["new-feature"].append(pr)
 
         # No labels defaults to section None
-        if not pr['modules']:
+        if not pr["modules"]:
             modules[None].append(pr)
             continue
 
@@ -246,19 +283,26 @@ def generate_text_content(tag, pr_info):
         if not changes[key]:
             continue
 
-        clog += ['\n### `' + changes_titles[key] + ':`\n']
+        clog += ["\n### `" + changes_titles[key] + ":`\n"]
 
         for pr in changes[key]:
-            prefix = ''.join(['[' + k + ']' for k in pr['modules']])
+            prefix = "".join(["[" + k + "]" for k in pr["modules"]])
             if prefix:
-                prefix = '**' + prefix + '** '
-            clog += ['* ' + prefix + pr['title'] + ' [[#' + str(pr['id']) \
-                     + ']]' + '(https://github.com/PointCloudLibrary/pcl/pull/'\
-                     + str(pr['id']) + ')']
-
+                prefix = "**" + prefix + "** "
+            clog += [
+                "* "
+                + prefix
+                + pr["title"]
+                + " [[#"
+                + str(pr["id"])
+                + "]]"
+                + "(https://github.com/PointCloudLibrary/pcl/pull/"
+                + str(pr["id"])
+                + ")"
+            ]
 
     # Traverse Modules and generate each section's content
-    clog += ['\n### `Modules:`']
+    clog += ["\n### `Modules:`"]
     for key in module_order:
 
         # Skip empty sections
@@ -266,48 +310,77 @@ def generate_text_content(tag, pr_info):
             continue
 
         # if key:
-        clog += ['\n#### `' + module_titles[key] + ':`\n']
+        clog += ["\n#### `" + module_titles[key] + ":`\n"]
 
         for pr in modules[key]:
-            prefix = ''.join(['[' + k + ']' for k in pr['changes']])
+            prefix = "".join(["[" + k + "]" for k in pr["changes"]])
             if prefix:
-                prefix = '**' + prefix + '** '
-            clog += ['* ' + prefix + pr['title'] + ' [[#' + str(pr['id']) \
-                     + ']]' + '(https://github.com/PointCloudLibrary/pcl/pull/'\
-                     + str(pr['id']) + ')']
-
+                prefix = "**" + prefix + "** "
+            clog += [
+                "* "
+                + prefix
+                + pr["title"]
+                + " [[#"
+                + str(pr["id"])
+                + "]]"
+                + "(https://github.com/PointCloudLibrary/pcl/pull/"
+                + str(pr["id"])
+                + ")"
+            ]
 
     return clog
 
+
 def parse_arguments():
 
-    parser = ArgumentParser(description='Generate a change log between two '
-        'revisions.\n\nCheck https://github.com/PointCloudLibrary/pcl/wiki/Preparing-Releases#creating-the-change-log '
-        'for some additional examples on how to use the tool.')
-    parser.add_argument('start', help='The start (exclusive) '
-        'revision/commit/tag to generate the log.')
-    parser.add_argument('end', nargs='?', default='HEAD', help='The end '
-        '(inclusive) revision/commit/tag to generate the log. '
-        '(Defaults to HEAD)')
-    parser.add_argument('--username', help='GitHub Account user name. If '
-        'specified it will perform requests with the provided credentials. '
+    parser = ArgumentParser(
+        description="Generate a change log between two "
+        "revisions.\n\nCheck https://github.com/PointCloudLibrary/pcl/wiki/Preparing-Releases#creating-the-change-log "
+        "for some additional examples on how to use the tool."
+    )
+    parser.add_argument(
+        "start",
+        help="The start (exclusive) " "revision/commit/tag to generate the log.",
+    )
+    parser.add_argument(
+        "end",
+        nargs="?",
+        default="HEAD",
+        help="The end "
+        "(inclusive) revision/commit/tag to generate the log. "
+        "(Defaults to HEAD)",
+    )
+    parser.add_argument(
+        "--username",
+        help="GitHub Account user name. If "
+        "specified it will perform requests with the provided credentials. "
         "This is often required in order to overcome GitHub API's request "
-        'limits.')
+        "limits.",
+    )
     meg = parser.add_mutually_exclusive_group()
-    meg.add_argument('--cache', nargs='?', const='pr_info.json', metavar='FILE',
+    meg.add_argument(
+        "--cache",
+        nargs="?",
+        const="pr_info.json",
+        metavar="FILE",
         help="Caches the PR info extracted from GitHub into a JSON file. "
-        "(Defaults to 'pr_info.json')")
-    meg.add_argument('--from-cache', nargs='?', const='pr_info.json',
-        metavar='FILE', help="Uses a previously generated PR info JSON cache "
-        "file to generate the change log. (Defaults to 'pr_info.json')")
+        "(Defaults to 'pr_info.json')",
+    )
+    meg.add_argument(
+        "--from-cache",
+        nargs="?",
+        const="pr_info.json",
+        metavar="FILE",
+        help="Uses a previously generated PR info JSON cache "
+        "file to generate the change log. (Defaults to 'pr_info.json')",
+    )
 
     # Parse arguments
     args = parser.parse_args()
     args.auth = None
 
     if args.username:
-        password = getpass.getpass(prompt='Password for ' + args.username \
-                                   + ': ',)
+        password = getpass.getpass(prompt="Password for " + args.username + ": ")
         args.auth = (args.username, password)
 
     return args
@@ -331,7 +404,7 @@ if not args.from_cache:
     # Generate pr objects with title, labels from ids
     pr_info = fetch_pr_info(prs, auth=args.auth)
     if args.cache:
-        with open(args.cache, 'w') as fp:
+        with open(args.cache, "w") as fp:
             fp.write(json.dumps(pr_info))
 else:
     # Load previously cached info
@@ -341,6 +414,4 @@ else:
 
 # Generate text content based on changes
 clog = generate_text_content(tag=args.end, pr_info=pr_info)
-print('\n'.join(clog))
-
-
+print("\n".join(clog))
