@@ -405,11 +405,15 @@ if not args.from_cache:
     pr_info = fetch_pr_info(prs, auth=args.auth)
     if args.cache:
         with open(args.cache, "w") as fp:
-            fp.write(json.dumps(pr_info))
+            d = {"start": args.start, "end": args.end, "pr_info": pr_info}
+            fp.write(json.dumps(d))
 else:
     # Load previously cached info
     with open(args.from_cache) as fp:
-        pr_info = json.loads(fp.read())
+        d = json.loads(fp.read())
+        pr_info = d["pr_info"]
+        args.start = d["start"]
+        args.end = d["start"]
 
 
 # Generate text content based on changes
