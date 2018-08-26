@@ -107,7 +107,7 @@ endif()
 
 # check for SSE flags
 include("${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake")
-if(PCL_ENABLE_SSE)
+if(PCL_ENABLE_SSE AND "${CMAKE_CXX_FLAGS}" STREQUAL "")
   PCL_CHECK_FOR_SSE()
 endif()
 
