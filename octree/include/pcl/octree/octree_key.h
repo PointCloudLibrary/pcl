@@ -140,7 +140,7 @@ namespace pcl
       }
 
       /* \brief maximum depth that can be addressed */
-      static const unsigned char maxDepth = static_cast<const unsigned char>(sizeof(uint32_t)*8);
+      static const unsigned char maxDepth = static_cast<unsigned char>(sizeof(uint32_t)*8);
 
       // Indices addressing a voxel at (X, Y, Z)
 
