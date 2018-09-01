@@ -131,7 +131,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
   // By default, assume that there are _no_ invalid (e.g., NaN) points
   //cloud.is_dense = true;
 
-  int nr_points = 0;
+  size_t nr_points = 0;
   std::string line;
 
   int specified_channel_count = 0;
