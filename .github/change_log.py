@@ -64,26 +64,34 @@ def find_pr_list(start: str, end: str):
     """
 
     # Let git generate the proper pr history
-    cmd = "git log --merges --oneline " + start + ".." + end
+    cmd = "git log --oneline " + start + ".." + end
     cmd = cmd.split()
     output = subprocess.run(cmd, cwd=FOLDER, stdout=subprocess.PIPE)
     pr_commits = output.stdout.split(b"\n")
 
     # Fetch ids for all merge requests from PRS
-    pattern_re = re.compile("(\S+) Merge pull request #\d+ from (\S+)")
-    uid_re = re.compile("#\d+")
+    merge_re = re.compile("\S+ Merge pull request #(\d+) from \S+")
+    squash_re = re.compile("\(#(\d+)\)")
 
     ids = []
     for pr in pr_commits:
 
         pr_s = str(pr)
 
-        # ignore if doesn't follow the usual pattern
-        if not pattern_re.fullmatch(pr_s):
-            continue
+        # Match agains usual pattern
+        uid = None
+        match = merge_re.fullmatch(pr_s)
+
+        # Match agains squash pattern
+        if not match:
+            match = squash_re.search(pr_s)
+
+            # Abort
+            if not match:
+                continue
 
         # Extract PR uid
-        uid = int(uid_re.search(pr_s).group(0)[1:])
+        uid = int(match.group(1))
         ids.append(uid)
 
     return ids
