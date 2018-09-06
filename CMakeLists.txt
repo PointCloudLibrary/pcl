@@ -151,6 +151,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_MSVC)
   add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES /bigobj ${SSE_DEFINITIONS}")
+
   if("${CMAKE_CXX_FLAGS}" STREQUAL "/DWIN32 /D_WINDOWS /W3 /GR /EHsc")	# Check against default flags
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS}")
 
@@ -159,17 +160,22 @@ if(CMAKE_COMPILER_IS_MSVC)
       SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
       SET(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG /OPT:REF")
       SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
-    endif(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
+    endif()
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
 
     if(MSVC_VERSION GREATER 1500 AND ${CMAKE_VERSION} VERSION_GREATER "2.8.6")
       include(ProcessorCount)
       ProcessorCount(N)
       if(NOT N EQUAL 0)
-        SET(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} /MP${N}")
+        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP${N}")
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP${N}")
       endif()
     endif()
+  endif()
+
+  if(CMAKE_GENERATOR STREQUAL "Ninja")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /FS")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FS")
   endif()
 endif()
 
