@@ -568,11 +568,14 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
             IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
             IMPORTED_LOCATION_RELEASE "${PCL_${COMPONENT}_LIBRARY}"
             IMPORTED_LOCATION_DEBUG "${PCL_${COMPONENT}_LIBRARY_DEBUG}"
+            IMPORTED_IMPLIB_RELEASE "${PCL_${COMPONENT}_LIBRARY}"
+            IMPORTED_IMPLIB_DEBUG "${PCL_${COMPONENT}_LIBRARY_DEBUG}"
         )
       else()
         set_target_properties(${pcl_component}
           PROPERTIES
             IMPORTED_LOCATION "${PCL_${COMPONENT}_LIBRARY}"
+            IMPORTED_IMPLIB "${PCL_${COMPONENT}_LIBRARY}"
         )
       endif()
       foreach(def ${PCL_DEFINITIONS})
