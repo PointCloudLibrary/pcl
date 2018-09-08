@@ -46,18 +46,30 @@ namespace pcl
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Obtain the difference between two aligned point clouds as another point cloud, given a distance threshold.
     * \param src the input point cloud source
-    * \param tgt the input point cloud target we need to obtain the difference against
     * \param threshold the distance threshold (tolerance) for point correspondences. (e.g., check if f a point p1 from 
     * src has a correspondence > threshold than a point p2 from tgt)
-    * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching built over \a tgt
+    * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching built over the target cloud
     * \param output the resultant output point cloud difference
     * \ingroup segmentation
     */
   template <typename PointT> 
   void getPointCloudDifference (
-      const pcl::PointCloud<PointT> &src, const pcl::PointCloud<PointT> &tgt, 
-      double threshold, const boost::shared_ptr<pcl::search::Search<PointT> > &tree,
+      const pcl::PointCloud<PointT> &src,
+      double threshold,
+      const boost::shared_ptr<pcl::search::Search<PointT> > &tree,
       pcl::PointCloud<PointT> &output);
+
+  template <typename PointT>
+  PCL_DEPRECATED("getPointCloudDifference() does not use the tgt parameter, thus it is deprecated and will be removed in future releases.")
+  inline void getPointCloudDifference (
+      const pcl::PointCloud<PointT> &src,
+      const pcl::PointCloud<PointT> & /* tgt */,
+      double threshold,
+      const boost::shared_ptr<pcl::search::Search<PointT> > &tree,
+      pcl::PointCloud<PointT> &output)
+  {
+    getPointCloudDifference<PointT> (src, threshold, tree, output);
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////
