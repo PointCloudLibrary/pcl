@@ -7,6 +7,8 @@ DOC_DIR=$BUILD_DIR/doc/doxygen/html
 TUTORIALS_DIR=$BUILD_DIR/doc/tutorials/html
 ADVANCED_DIR=$BUILD_DIR/doc/advanced/html
 
+RUN_CLANG_FORMAT_DIR=$PCL_DIR/run-clang-format
+
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
@@ -25,6 +27,19 @@ function before_install ()
       sudo ln -s ../../bin/ccache /usr/lib/ccache/clang++
     fi
   fi
+}
+
+function run_clang_format ()
+{
+  mkdir $RUN_CLANG_FORMAT_DIR
+  wget https://github.com/Sarcasm/run-clang-format/archive/master.zip  -O $RUN_CLANG_FORMAT_DIR/master.zip
+  unzip -d $RUN_CLANG_FORMAT_DIR $RUN_CLANG_FORMAT_DIR/master.zip run-clang-format-master/run-clang-format.py
+  result=python $RUN_CLANG_FORMAT_DIR/run-clang-format-master/run-clang-format.py -r \
+	  --clang-format-executable=clang-format-5.0 \
+	  --extensions='c,cpp,cu,cxx,h,hpp' \
+	  --exclude='**/3rdparty/*' \
+	  $PCL_DIR
+  exit $result
 }
 
 function build ()
@@ -302,6 +317,7 @@ function doc ()
 
 case $1 in
   before-install ) before_install;;
+  run-clang-format ) run_clang_format;;
   build ) build;;
   build-examples ) build_examples;;
   build-tools ) build_tools;;

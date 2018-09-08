@@ -6,6 +6,8 @@ addons:
   apt:
     sources:
       - sourceline: 'ppa:v-launchpad-jochen-sprickerhof-de/pcl'
+      - sourceline: deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main
+        key_url: 'http://apt.llvm.org/llvm-snapshot.gpg.key'
     packages:
       - cmake
       - libboost-filesystem1.54-dev
@@ -27,8 +29,10 @@ addons:
       - libglew-dev
       - libopenni-dev
       - python3-pip
+      - clang-format-5.0
 before_install:
   - bash .travis.sh before-install
+  - bash .travis.sh run-clang-format
 
 env:
   global:
