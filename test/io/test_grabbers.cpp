@@ -49,7 +49,7 @@ TEST (PCL, PCDGrabber)
   grabber.registerCallback (fxn);
   grabber.start ();
   // 1 second should be /plenty/ of time
-  boost::this_thread::sleep (boost::posix_time::microseconds (1E6));
+  boost::this_thread::sleep (boost::posix_time::seconds (1));
   grabber.stop ();
 
   //// Make sure they match
