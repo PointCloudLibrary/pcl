@@ -218,16 +218,33 @@ def generate_text_content(tag, pr_info):
         "visualization": "libpcl_visualization",
     }
 
-    changes_order = ("new-feature", "api", "abi", "behavior")
+    changes_order = ("new-feature", "deprecation", "removal", "behavior", "api", "abi")
 
     changes_titles = {
         "new-feature": "New Features",
-        "api": "API Changes",
-        "abi": "ABI Changes",
-        "behavior": "Behavior Changes",
+        "deprecation": "Deprecated",
+        "removal": "Removed",
+        "behavior": "Behavioral changes",
+        "api": "API changes",
+        "abi": "ABI changes",
     }
 
-    changes_labels = {"breaks API": "api", "breaks ABI": "abi", "behavior": "behavior"}
+    changes_description = {
+        "new-feature": "Newly added functionalities.",
+        "deprecation": "Deprecated code scheduled to be removed after two minor releases.",
+        "removal": "Removal of deprecated code.",
+        "behavior": "Changes in the expected default behavior.",
+        "api": "Changes to the API which didn't went through the proper deprecation and removal cycle.",
+        "abi": "Changes that cause ABI incompatibility but are still API compatible.",
+    }
+
+    changes_labels = {
+        "breaks API": "api",
+        "breaks ABI": "abi",
+        "behavior": "behavior",
+        "deprecation": "deprecation",
+        "removal": "removal",
+    }
 
     # change_log content
     clog = []
@@ -292,6 +309,8 @@ def generate_text_content(tag, pr_info):
             continue
 
         clog += ["\n### `" + changes_titles[key] + ":`\n"]
+
+        clog += ["*" + changes_description[key] + "*\n"]
 
         for pr in changes[key]:
             prefix = "".join(["[" + k + "]" for k in pr["modules"]])
