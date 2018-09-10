@@ -201,6 +201,12 @@ if(CMAKE_COMPILER_IS_CLANG)
   SET(CLANG_LIBRARIES "stdc++")
 endif()
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+  if("${CMAKE_CXX_FLAGS}" STREQUAL "")
+    SET(CMAKE_CXX_FLAGS "${SSE_FLAGS_STR}")
+  endif()
+endif()
+
 include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
 set(PCL_VERSION "1.8.1-dev" CACHE STRING "PCL version")
 DISSECT_VERSION()
