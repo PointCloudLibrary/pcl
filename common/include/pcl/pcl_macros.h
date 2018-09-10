@@ -415,7 +415,12 @@ log2f (float x)
 #endif
 
 #if defined (HAVE_MM_MALLOC)
-  #include <mm_malloc.h>
+  // Intel compiler defines an incompatible _mm_malloc signature
+  #if defined(__INTEL_COMPILER)
+    #include <malloc.h>
+  #else
+    #include <mm_malloc.h>
+  #endif
 #endif
 
 inline void*
