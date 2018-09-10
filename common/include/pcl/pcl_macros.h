@@ -321,18 +321,26 @@ log2f (float x)
   #define __has_extension(x) 0 // Compatibility with pre-3.0 compilers.
 #endif
 
-#if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) && ! defined(__clang__)) || defined(__INTEL_COMPILER)
-#define PCL_DEPRECATED(message) __attribute__ ((deprecated))
+// check Intel compiler first since it usually also defines __GNUC__, __clang__, etc.
+#if defined(__INTEL_COMPILER)
+  #define PCL_DEPRECATED(message) __attribute((deprecated))
 #endif
 
-// gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
-#if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) >= PCL_LINEAR_VERSION(4,5,0)) || (defined(__clang__) && __has_extension(attribute_deprecated_with_message))
-#define PCL_DEPRECATED(message) __attribute__ ((deprecated(message)))
-#endif
+// wrapper: skip remaining checks if defined by __INTEL_COMPILER branch
+#if !defined(PCL_DEPRECATED)
+  #if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) && ! defined(__clang__)) || defined(__INTEL_COMPILER)
+    #define PCL_DEPRECATED(message) __attribute__ ((deprecated))
+  #endif
 
-#ifdef _MSC_VER
-#define PCL_DEPRECATED(message) __declspec(deprecated(message))
-#endif
+  // gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
+  #if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) >= PCL_LINEAR_VERSION(4,5,0)) || (defined(__clang__) && __has_extension(attribute_deprecated_with_message))
+    #define PCL_DEPRECATED(message) __attribute__ ((deprecated(message)))
+  #endif
+
+  #ifdef _MSC_VER
+    #define PCL_DEPRECATED(message) __declspec(deprecated(message))
+  #endif
+#endif // PCL_DEPRECATED (via __INTEL_COMPILER)
 
 #ifndef PCL_DEPRECATED
 #pragma message("WARNING: You need to implement PCL_DEPRECATED for this compiler")
@@ -356,18 +364,26 @@ log2f (float x)
 //     NewClass() {}
 // };
 
-#if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) && ! defined(__clang__)) || defined(__INTEL_COMPILER)
-#define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated)) func
+// check Intel compiler first since it usually also defines __GNUC__, __clang__, etc.
+#if defined(__INTEL_COMPILER)
+  #define PCL_DEPRECATED_CLASS(func, message) __attribute((deprecated)) func
 #endif
 
-// gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
-#if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) >= PCL_LINEAR_VERSION(4,5,0)) || (defined(__clang__) && __has_extension(attribute_deprecated_with_message))
-#define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated(message))) func
-#endif
+// wrapper: skip remaining checks if defined by __INTEL_COMPILER branch
+#if !defined(PCL_DEPRECATED_CLASS)
+  #if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) && ! defined(__clang__)) || defined(__INTEL_COMPILER)
+    #define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated)) func
+  #endif
 
-#ifdef _MSC_VER
-#define PCL_DEPRECATED_CLASS(func, message) __declspec(deprecated(message)) func
-#endif
+  // gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
+  #if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) >= PCL_LINEAR_VERSION(4,5,0)) || (defined(__clang__) && __has_extension(attribute_deprecated_with_message))
+    #define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated(message))) func
+  #endif
+
+  #ifdef _MSC_VER
+    #define PCL_DEPRECATED_CLASS(func, message) __declspec(deprecated(message)) func
+  #endif
+#endif // PCL_DEPRECATED (via __INTEL_COMPILER)
 
 #ifndef PCL_DEPRECATED_CLASS
 #pragma message("WARNING: You need to implement PCL_DEPRECATED_CLASS for this compiler")
