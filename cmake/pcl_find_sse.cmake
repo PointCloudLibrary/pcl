@@ -12,18 +12,23 @@ macro(PCL_CHECK_FOR_SSE)
         endif()
     endif()
 
-    # Unfortunately we need to check for SSE to enable "-mfpmath=sse" alongside 
+    # Unfortunately we need to check for SSE to enable "-mfpmath=sse" alongside
     # "-march=native". The reason for this is that by default, 32bit architectures
     # tend to use the x87 FPU (which has 80 bit internal precision), thus leading
     # to different results than 64bit architectures which are using SSE2 (64 bit internal
-    # precision). One solution would be to use "-ffloat-store" on 32bit (see 
+    # precision). One solution would be to use "-ffloat-store" on 32bit (see
     # http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html), but that slows code down,
     # so the preferred solution is to try "-mpfmath=sse" first.
     include(CheckCXXSourceRuns)
     set(CMAKE_REQUIRED_FLAGS)
 
     check_cxx_source_runs("
-        #include <mm_malloc.h>
+        // Intel compiler defines an incompatible _mm_malloc signature
+        #if defined(__INTEL_COMPILER)
+            #include <malloc.h>
+        #else
+            #include <mm_malloc.h>
+        #endif
         int main()
         {
           void* mem = _mm_malloc (100, 16);
@@ -122,7 +127,7 @@ macro(PCL_CHECK_FOR_SSE)
     elseif(MSVC AND NOT CMAKE_CL_64)
         set(CMAKE_REQUIRED_FLAGS "/arch:SSE2")
     endif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
-    
+
     check_cxx_source_runs("
         #include <emmintrin.h>
         int main ()
