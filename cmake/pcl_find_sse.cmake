@@ -4,18 +4,9 @@ macro(PCL_CHECK_FOR_SSE)
     set(SSE_FLAGS)
     set(SSE_DEFINITIONS)
 
-    # Test CLANG
-    #if(CMAKE_COMPILER_IS_CLANG)
-    #  if(APPLE)
-    #    SET(SSE_FLAGS "${SSE_FLAGS} -march=native")
-    #  endif(APPLE)
-    #endif(CMAKE_COMPILER_IS_CLANG)
-
-    # Test GCC/G++
-    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-        execute_process(COMMAND ${CMAKE_CXX_COMPILER} "-dumpversion"
-                        OUTPUT_VARIABLE GCC_VERSION_STRING)
-        if(GCC_VERSION_STRING VERSION_GREATER 4.2 AND NOT APPLE AND NOT CMAKE_CROSSCOMPILING)
+    if(NOT CMAKE_CROSSCOMPILING)
+        # Test GCC/G++ and CLANG
+        if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
             list(APPEND SSE_FLAGS "-march=native")
             message(STATUS "Using CPU native flags for SSE optimization: ${SSE_FLAGS}")
         endif()
