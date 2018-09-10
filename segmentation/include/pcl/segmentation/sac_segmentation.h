@@ -301,6 +301,8 @@ namespace pcl
       /** \brief Class get name method. */
       virtual std::string 
       getClassName () const { return ("SACSegmentation"); }
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief @b SACSegmentationFromNormals represents the PCL nodelet segmentation class for Sample Consensus methods and

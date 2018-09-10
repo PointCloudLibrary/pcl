@@ -98,6 +98,8 @@ namespace pcl
         getEigenVector1 (Eigen::Matrix<real, dimension, 1>& eigen_vector1) const;
         
         //-----VARIABLES-----
+
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         
      protected:
         //-----METHODS-----

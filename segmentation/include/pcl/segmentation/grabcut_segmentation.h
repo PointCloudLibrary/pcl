@@ -286,6 +286,8 @@ namespace pcl
         uint32_t count_;
         /// small value to add to covariance matrix diagonal to avoid singular values
         float epsilon_;
+        public:
+          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
 
       /** Build the initial GMMs using the Orchard and Bouman color clustering algorithm */

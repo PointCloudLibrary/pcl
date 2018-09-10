@@ -182,6 +182,8 @@ namespace pcl
 
       /** \brief The sine of the angle*/
       double sin_angle_;
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

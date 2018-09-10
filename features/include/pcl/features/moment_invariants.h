@@ -104,6 +104,8 @@ namespace pcl
         */
       void 
       computeFeature (PointCloudOut &output);
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     private:
       /** \brief 16-bytes aligned placeholder for the XYZ centroid of a surface patch. */

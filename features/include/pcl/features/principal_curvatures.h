@@ -131,6 +131,8 @@ namespace pcl
       Eigen::Vector3f eigenvector_;
       /** \brief eigenvalues placeholder for a covariance matrix. */
       Eigen::Vector3f eigenvalues_;
+  public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

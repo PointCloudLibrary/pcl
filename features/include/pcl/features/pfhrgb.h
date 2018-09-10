@@ -94,6 +94,8 @@ namespace pcl
 
       /** \brief Float constant = 1.0 / (2.0 * M_PI) */
       float d_pi_;
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

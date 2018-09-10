@@ -135,6 +135,8 @@ namespace pcl
         */
       void
       applyFilter (PointCloud &output);
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

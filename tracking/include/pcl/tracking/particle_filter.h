@@ -499,6 +499,8 @@ namespace pcl
         
         /** \brief The flag which will be true if using change detection. */
         bool use_change_detector_;
+      public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }
