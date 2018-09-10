@@ -448,6 +448,20 @@ else(PCL_FIND_COMPONENTS)
   set(PCL_FIND_ALL 1)
 endif(PCL_FIND_COMPONENTS)
 
+# We do not need to find components that have been found already, e.g. during previous invocation
+# of find_package(PCL). Filter them out.
+foreach(component ${PCL_TO_FIND_COMPONENTS})
+  if(NOT TARGET pcl_${component})
+    list(APPEND _PCL_TO_FIND_COMPONENTS ${component})
+  endif()
+endforeach()
+set(PCL_TO_FIND_COMPONENTS ${_PCL_TO_FIND_COMPONENTS})
+unset(_PCL_TO_FIND_COMPONENTS)
+
+if(NOT PCL_TO_FIND_COMPONENTS)
+  return()
+endif()
+
 compute_dependencies(PCL_TO_FIND_COMPONENTS)
 
 # compute external dependencies per component
