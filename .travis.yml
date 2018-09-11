@@ -32,7 +32,6 @@ addons:
       - clang-format-5.0
 before_install:
   - bash .travis.sh before-install
-  - bash .travis.sh run-clang-format
 
 env:
   global:
@@ -62,6 +61,9 @@ env:
 
 jobs:
   include:
+    - stage: Format Check
+      env: TASK="format-check"
+      script:  bash .travis.sh $TASK
     - stage: Core Build
       env: TASK="build"
       compiler: gcc

@@ -317,7 +317,7 @@ function doc ()
 
 case $1 in
   before-install ) before_install;;
-  run-clang-format ) run_clang_format;;
+  format-check ) run_clang_format;;
   build ) build;;
   build-examples ) build_examples;;
   build-tools ) build_tools;;
