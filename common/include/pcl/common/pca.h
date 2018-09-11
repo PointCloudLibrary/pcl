@@ -270,8 +270,6 @@ namespace pcl
         */
       inline void
       reconstruct (const PointCloud& projection, PointCloud& input);
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     private:
       inline bool
       initCompute ();

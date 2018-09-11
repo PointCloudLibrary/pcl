@@ -175,8 +175,6 @@ namespace pcl
 
       /** \brief The maximum allowed difference between the line direction and the given axis. */
       double eps_angle_;
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
