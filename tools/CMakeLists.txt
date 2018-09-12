@@ -1,11 +1,12 @@
 set (SUBSYS_NAME tools)
 set (SUBSYS_DESC "Useful PCL-based command line tools")
 set (SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration recognition geometry keypoints ml)
+set (SUBSYS_OPT_DEPS visualization)
 set (DEFAULT ON)
 set (REASON "")
 
 PCL_SUBSYS_OPTION (BUILD_tools "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSYS_DEPEND (BUILD_tools "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
+PCL_SUBSYS_DEPEND (BUILD_tools "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${SUBSYS_OPT_DEPS})
 
 if (BUILD_tools)
 
@@ -210,8 +211,6 @@ if (BUILD_tools)
       target_link_libraries(pcl_vtk2pcd pcl_common pcl_io)
 
       if(BUILD_visualization)
-
-        PCL_SUBSYS_DEPEND(BUILD_tools "${SUBSYS_NAME}" DEPS visualization)
 
         PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_model_opps "${SUBSYS_NAME}" obj_rec_ransac_model_opps.cpp)
         target_link_libraries(pcl_obj_rec_ransac_model_opps pcl_common pcl_visualization pcl_recognition)
