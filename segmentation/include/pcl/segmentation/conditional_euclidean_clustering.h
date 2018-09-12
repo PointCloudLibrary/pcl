@@ -106,6 +106,23 @@ namespace pcl
       {
       }
 
+      /** \brief Provide a pointer to the search object.
+        * \param[in] tree a pointer to the spatial search object.
+        */
+      inline void 
+      setSearchMethod (const SearcherPtr &tree) 
+      { 
+        searcher_ = tree; 
+      }
+
+      /** \brief Get a pointer to the search method used. 
+       */
+      inline const SearcherPtr& 
+      getSearchMethod () const 
+      { 
+        return searcher_; 
+      }
+
       /** \brief Set the condition that needs to hold for neighboring points to be considered part of the same cluster.
         * \details Any two points within a certain distance from one another will need to evaluate this condition in order to be made part of the same cluster.
         * The distance can be set using setClusterTolerance().
