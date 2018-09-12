@@ -599,13 +599,23 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
         string(REGEX REPLACE "^-D" "" def3 "${def2}")
         list(APPEND definitions ${def3})
       endforeach()
-      set_target_properties(${pcl_component}
-        PROPERTIES
-          INTERFACE_COMPILE_DEFINITIONS "${definitions}"
-          INTERFACE_COMPILE_OPTIONS "${PCL_COMPILE_OPTIONS}"
-          INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS}"
-          INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES}"
-      )
+      if(CMAKE_VERSION VERSION_LESS 3.3)
+        set_target_properties(${pcl_component}
+          PROPERTIES
+            INTERFACE_COMPILE_DEFINITIONS "${definitions}"
+            INTERFACE_COMPILE_OPTIONS "${PCL_COMPILE_OPTIONS}"
+            INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS}"
+            INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES}"
+        )
+      else()
+        set_target_properties(${pcl_component}
+          PROPERTIES
+            INTERFACE_COMPILE_DEFINITIONS "${definitions}"
+            INTERFACE_COMPILE_OPTIONS "$<$<COMPILE_LANGUAGE:CXX>:${PCL_COMPILE_OPTIONS}>"
+            INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS}"
+            INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES}"
+        )
+      endif()
       set(PCL_${COMPONENT}_LIBRARIES ${pcl_component})
     endif()
   endif(PCL_${COMPONENT}_FOUND)
