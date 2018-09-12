@@ -47,7 +47,7 @@ namespace pcl
    * \ingroup filters
    */
   template<typename PointT>
-  class PlaneClipper3D : public Clipper3D<PointT>
+  class PCL_EXPORTS PlaneClipper3D : public Clipper3D<PointT>
   {
     public:
 
@@ -99,7 +99,7 @@ namespace pcl
 
     private:
       Eigen::Vector4f plane_params_;
-   public:
+    public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }

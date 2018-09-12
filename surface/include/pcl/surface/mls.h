@@ -55,7 +55,7 @@ namespace pcl
 {
 
   /** \brief Data structure used to store the results of the MLS fitting */
-  struct MLSResult
+  struct PCL_EXPORTS MLSResult
   {
     enum ProjectionMethod
     {

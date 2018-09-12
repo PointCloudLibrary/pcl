@@ -58,7 +58,7 @@ namespace pcl
     * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT = pcl::PrincipalCurvatures>
-  class PrincipalCurvaturesEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
+  class PCL_EXPORTS PrincipalCurvaturesEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
       typedef boost::shared_ptr<PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT> > Ptr;
@@ -131,8 +131,6 @@ namespace pcl
       Eigen::Vector3f eigenvector_;
       /** \brief eigenvalues placeholder for a covariance matrix. */
       Eigen::Vector3f eigenvalues_;
-  public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

@@ -8,7 +8,7 @@ namespace pcl
 {
   namespace face_detection
   {
-    class TrainingExample
+    class EIGEN_ALIGN16 TrainingExample
     {
       public:
         std::vector<boost::shared_ptr<pcl::IntegralImage2D<float, 1> > > iimages_; //also pointer to the respective integral image
@@ -19,6 +19,7 @@ namespace pcl
         //save pose head information
         Eigen::Vector3f trans_;
         Eigen::Vector3f rot_;
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     class FeatureType
@@ -68,7 +69,7 @@ namespace pcl
     };
 
     template<class FeatureType>
-    class RFTreeNode
+    class EIGEN_ALIGN16 RFTreeNode
     {
       public:
         float threshold;
@@ -83,7 +84,7 @@ namespace pcl
         float purity_;
         Eigen::Matrix3d covariance_trans_;
         Eigen::Matrix3d covariance_rot_;
-      public:
+
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
         void serialize(::std::ostream & stream) const

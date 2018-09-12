@@ -186,8 +186,6 @@ namespace pcl
         */
       void
       applyFilter (std::vector<int> &indices);
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     private:
       /** \brief The minimum point of the box. */
       Eigen::Vector4f min_pt_;
