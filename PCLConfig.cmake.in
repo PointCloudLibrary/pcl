@@ -18,6 +18,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Modules")
 macro(pcl_report_not_found _reason)
   unset(PCL_FOUND)
   unset(PCL_LIBRARIES)
+  unset(PCL_COMPONENTS)
   unset(PCL_INCLUDE_DIRS)
   unset(PCL_LIBRARY_DIRS)
   unset(PCL_DEFINITIONS)
@@ -448,10 +449,13 @@ else(PCL_FIND_COMPONENTS)
   set(PCL_FIND_ALL 1)
 endif(PCL_FIND_COMPONENTS)
 
+compute_dependencies(PCL_TO_FIND_COMPONENTS)
+
 # We do not need to find components that have been found already, e.g. during previous invocation
 # of find_package(PCL). Filter them out.
 foreach(component ${PCL_TO_FIND_COMPONENTS})
-  if(NOT TARGET pcl_${component})
+  string(TOUPPER "${component}" COMPONENT)
+  if(NOT PCL_${COMPONENT}_FOUND)
     list(APPEND _PCL_TO_FIND_COMPONENTS ${component})
   endif()
 endforeach()
@@ -461,8 +465,6 @@ unset(_PCL_TO_FIND_COMPONENTS)
 if(NOT PCL_TO_FIND_COMPONENTS)
   return()
 endif()
-
-compute_dependencies(PCL_TO_FIND_COMPONENTS)
 
 # compute external dependencies per component
 foreach(component ${PCL_TO_FIND_COMPONENTS})
@@ -561,7 +563,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
       if(PCL_${COMPONENT}_LIBRARY_DEBUG)
         list(APPEND PCL_LIBRARY_DIRS ${component_library_path_debug})
       endif()
-      list(APPEND PCL_LIBRARIES ${pcl_component})
+      list(APPEND PCL_COMPONENTS ${pcl_component})
       mark_as_advanced(PCL_${COMPONENT}_LIBRARY PCL_${COMPONENT}_LIBRARY_DEBUG)
     endif()
     # Append internal dependencies
@@ -575,7 +577,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
       endif(PCL_${INT_DEP}_FOUND)
     endforeach(int_dep)
     if(_is_header_only EQUAL -1)
-      add_library(${pcl_component} @PCL_LIB_TYPE@ IMPORTED GLOBAL)
+      add_library(${pcl_component} @PCL_LIB_TYPE@ IMPORTED)
       if(PCL_${COMPONENT}_LIBRARY_DEBUG)
         set_target_properties(${pcl_component}
           PROPERTIES
@@ -621,8 +623,8 @@ if(NOT "${PCL_DEFINITIONS}" STREQUAL "")
   list(REMOVE_DUPLICATES PCL_DEFINITIONS)
 endif(NOT "${PCL_DEFINITIONS}" STREQUAL "")
 
-pcl_remove_duplicate_libraries(PCL_LIBRARIES PCL_DEDUP_LIBRARIES)
-set(PCL_LIBRARIES ${PCL_DEDUP_LIBRARIES})
+pcl_remove_duplicate_libraries(PCL_COMPONENTS PCL_LIBRARIES)
+
 # Add 3rd party libraries, as user code might include our .HPP implementations
 list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${davidSDK_LIBRARIES} ${DSSDK_LIBRARIES} ${RSSDK_LIBRARIES} ${FLANN_LIBRARIES} ${VTK_LIBRARIES})
 
