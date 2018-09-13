@@ -257,7 +257,7 @@ function doc ()
   # Do not generate documentation for pull requests
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
   # Install sphinx
-  pip3 install --user sphinx pyparsing==2.1.9 sphinxcontrib-doxylink
+  pip3 install --user Jinja2==2.8.1 sphinx sphinxcontrib-doxylink
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DDOXYGEN_USE_SHORT_NAMES=OFF \
