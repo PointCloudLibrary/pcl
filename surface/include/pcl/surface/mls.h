@@ -650,7 +650,6 @@ namespace pcl
           Eigen::Vector4f bounding_min_, bounding_max_;
           uint64_t data_size_;
           float voxel_size_;
-        public:
           EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
 
