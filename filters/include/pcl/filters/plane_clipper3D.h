@@ -47,7 +47,7 @@ namespace pcl
    * \ingroup filters
    */
   template<typename PointT>
-  class PCL_EXPORTS PlaneClipper3D : public Clipper3D<PointT>
+  class PlaneClipper3D : public Clipper3D<PointT>
   {
     public:
 

@@ -251,7 +251,7 @@ namespace pcl
       };
 
       /** Helper class that fits a single Gaussian to color samples */
-      class PCL_EXPORTS GaussianFitter
+      class GaussianFitter
       {
         public:
         GaussianFitter (float epsilon = 0.0001)

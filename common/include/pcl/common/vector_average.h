@@ -50,7 +50,7 @@ namespace pcl
     * \ingroup common
     */
   template <typename real, int dimension>
-  class PCL_EXPORTS VectorAverage
+  class VectorAverage
   {
      public:
         //-----CONSTRUCTOR&DESTRUCTOR-----
