@@ -8,7 +8,7 @@ namespace pcl
 {
   namespace face_detection
   {
-    class EIGEN_ALIGN16 TrainingExample
+    class TrainingExample
     {
       public:
         std::vector<boost::shared_ptr<pcl::IntegralImage2D<float, 1> > > iimages_; //also pointer to the respective integral image
@@ -69,7 +69,7 @@ namespace pcl
     };
 
     template<class FeatureType>
-    class EIGEN_ALIGN16 RFTreeNode
+    class RFTreeNode
     {
       public:
         float threshold;
