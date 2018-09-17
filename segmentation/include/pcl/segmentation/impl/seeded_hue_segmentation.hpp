@@ -77,7 +77,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                       
     PointXYZRGB  p;
     p = cloud.points[i];
     PointXYZHSV h;
-    PointXYZRGBtoXYZHSV(p, h);
+    convertPointColor(p, h);
 
     while (sq_idx < static_cast<int> (seed_queue.size ()))
     {
@@ -99,7 +99,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                       
         PointXYZRGB  p_l;
         p_l = cloud.points[nn_indices[j]];
         PointXYZHSV h_l;
-        PointXYZRGBtoXYZHSV(p_l, h_l);
+        convertPointColor(p_l, h_l);
 
         if (fabs(h_l.h - h.h) < delta_hue)
         {
@@ -153,7 +153,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                       
     PointXYZRGB  p;
     p = cloud.points[i];
     PointXYZHSV h;
-    PointXYZRGBtoXYZHSV(p, h);
+    convertPointColor(p, h);
 
     while (sq_idx < static_cast<int> (seed_queue.size ()))
     {
@@ -174,7 +174,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                       
         PointXYZRGB  p_l;
         p_l = cloud.points[nn_indices[j]];
         PointXYZHSV h_l;
-        PointXYZRGBtoXYZHSV(p_l, h_l);
+        convertPointColor(p_l, h_l);
 
         if (fabs(h_l.h - h.h) < delta_hue)
         {
