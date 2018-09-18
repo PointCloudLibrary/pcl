@@ -185,8 +185,6 @@ namespace pcl
         bool depth_dependent_;
 
         Eigen::Vector3f z_axis_;
-      public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
   } // namespace experimental
 

@@ -109,6 +109,7 @@ namespace pcl
         */
       virtual Clipper3D<PointT>*
       clone () const = 0;
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

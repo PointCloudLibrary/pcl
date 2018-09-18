@@ -315,9 +315,6 @@ namespace pcl
         return (transform_);
       }
 
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     protected:
       /** \brief Sample of point indices into a separate PointCloud
         * \param output the resultant point cloud
