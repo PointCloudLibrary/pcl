@@ -1129,7 +1129,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
   // Close obj file
   fs.close ();
 
-  /* Write material defination for OBJ file*/
+  /* Write material definition for OBJ file*/
   // Open file
 
   std::ofstream m_fs;

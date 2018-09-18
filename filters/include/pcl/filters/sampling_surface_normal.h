@@ -144,7 +144,7 @@ namespace pcl
 
     private:
 
-      /** \brief @b CompareDim is a comparator object for sorting across a specific dimenstion (i,.e X, Y or Z)
+      /** \brief @b CompareDim is a comparator object for sorting across a specific dimension (i,.e X, Y or Z)
        */
       struct CompareDim
       {

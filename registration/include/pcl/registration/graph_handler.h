@@ -51,7 +51,7 @@ namespace pcl
   namespace registration
   {
     /** \brief @b GraphHandler class is a wrapper for a general SLAM graph
-      * The actual graph class must fulfil the following boost::graph concepts:
+      * The actual graph class must fulfill the following boost::graph concepts:
       * - BidirectionalGraph
       * - AdjacencyGraph
       * - VertexAndEdgeListGraph

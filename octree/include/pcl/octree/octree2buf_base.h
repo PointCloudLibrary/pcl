@@ -845,8 +845,8 @@ namespace pcl
          *  \param key_arg: reference to an octree key
          *  \param binary_tree_in_it_arg iterator of binary input data
          *  \param binary_tree_in_it_end_arg
-         *  \param leaf_container_vector_it_arg: iterator pointing to leaf containter pointers to be added to a leaf node
-         *  \param leaf_container_vector_it_end_arg: iterator pointing to leaf containter pointers pointing to last object in input container.
+         *  \param leaf_container_vector_it_arg: iterator pointing to leaf container pointers to be added to a leaf node
+         *  \param leaf_container_vector_it_end_arg: iterator pointing to leaf container pointers pointing to last object in input container.
          *  \param branch_reset_arg: Reset pointer array of current branch
          *  \param do_XOR_decoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          **/

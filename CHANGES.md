@@ -1917,7 +1917,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * Update: remove ciminpack dependency and rely on eigen for LM
 * Fixed a bug in ICP-NL by modifying `WarpPointRigid` to preserve the value of the 4th coordinate when warping; Re-enabled missing unit tests for ICP and ICP-NL
 * Added point-to-plane ICP
-* added nr_iterations_ and max_iterations_ to the initializer list (were mising)
+* added nr_iterations_ and max_iterations_ to the initializer list (were missing)
 * Fixed bugs in `WarpPointRigid3D` and `TransformationEstimationLM`
 * fixed a problem where if no correspondences would be found via `nearestKSearch`, the RANSAC-based rejection scheme would fail (thanks to James for reporting this)
 * changed the default LM implementation to use L2 instead of L2SQR

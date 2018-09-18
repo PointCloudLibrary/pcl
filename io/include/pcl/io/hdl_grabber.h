@@ -118,7 +118,7 @@ namespace pcl
       HDLGrabber (const std::string& correctionsFile = "",
                   const std::string& pcapFile = "");
 
-      /** \brief Constructor taking a pecified IP/port and an optional path to an HDL corrections file.
+      /** \brief Constructor taking a specified IP/port and an optional path to an HDL corrections file.
        * \param[in] ipAddress IP Address that should be used to listen for HDL packets
        * \param[in] port UDP Port that should be used to listen for HDL packets
        * \param[in] correctionsFile Path to a file which contains the correction parameters for the HDL.  This field is mandatory for the HDL-64, optional for the HDL-32

@@ -123,7 +123,7 @@ class CloudEditorWidget : public QGLWidget
     void
     cut ();
 
-    /// @brief Enters the mode where users are able to translate the selecte
+    /// @brief Enters the mode where users are able to translate the selected
     /// points.
     void
     transform ();

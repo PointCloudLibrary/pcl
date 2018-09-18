@@ -45,7 +45,7 @@
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/PolygonMesh.h>
 
-// Please do not add any functions tha depend on VTK structures to this file!
+// Please do not add any functions that depend on VTK structures to this file!
 // Use vtk_io_lib.h instead.
 
 namespace pcl

@@ -102,7 +102,7 @@ main (int argc, char** argv)
   }
   else
   {
-    std::cout << "\nNo *.pcd file given => Genarating example point cloud.\n\n";
+    std::cout << "\nNo *.pcd file given => Generating example point cloud.\n\n";
     for (float x=-0.5f; x<=0.5f; x+=0.01f)
     {
       for (float y=-0.5f; y<=0.5f; y+=0.01f)

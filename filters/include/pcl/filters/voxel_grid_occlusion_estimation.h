@@ -113,7 +113,7 @@ namespace pcl
                            const Eigen::Vector3i& in_target_voxel);
 
       /** \brief Computes the voxel coordinates (i, j, k) of all occluded
-        * voxels in the voxel gird.
+        * voxels in the voxel grid.
         * \param[out] occluded_voxels the coordinates (i, j, k) of all occluded voxels
         * \return 0 upon success and -1 if an error occurs
         */
