@@ -47,6 +47,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ascii_io.h>
+#include <pcl/io/obj_io.h>
 #include <fstream>
 #include <locale>
 #include <stdexcept>
@@ -806,6 +807,92 @@ TEST (PCL, ASCIIReader)
     EXPECT_FLOAT_EQ(cloud.points[i].intensity, rcloud.points[i].intensity);
   }
 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, OBJReader)
+{
+  std::ofstream fs;
+  fs.open ("test_obj.obj");
+  fs << "# Blender v2.79 (sub 4) OBJ File: ''\n"
+        "mtllib test_obj.mtl\n"
+        "o Cube_Cube.001\n"
+        "v -1.000000 -1.000000 1.000000\n"
+        "v -1.000000 1.000000 1.000000\n"
+        "v -1.000000 -1.000000 -1.000000\n"
+        "v -1.000000 1.000000 -1.000000\n"
+        "v 1.000000 -1.000000 1.000000\n"
+        "v 1.000000 1.000000 1.000000\n"
+        "v 1.000000 -1.000000 -1.000000\n"
+        "v 1.000000 1.000000 -1.000000\n"
+        "vn -1.0000 0.0000 0.0000\n"
+        "vn 0.0000 0.0000 -1.0000\n"
+        "vn 1.0000 0.0000 0.0000\n"
+        "vn 0.0000 0.0000 1.0000\n"
+        "vn 0.0000 -1.0000 0.0000\n"
+        "vn 0.0000 1.0000 0.0000\n"
+        "usemtl None\n"
+        "s off\n"
+        "f 1//1 2//1 4//1 3//1\n"
+        "f 3//2 4//2 8//2 7//2\n"
+        "f 7//3 8//3 6//3 5//3\n"
+        "f 5//4 6//4 2//4 1//4\n"
+        "f 3//5 7//5 5//5 1//5\n"
+        "f 8//6 4//6 2//6 6//6\n";
+
+  fs.close ();
+  fs.open ("test_obj.mtl");
+  fs << "# Blender MTL File: 'None'\n"
+        "# Material Count: 1\n"
+        "newmtl None\n"
+        "Ns 0\n"
+        "Ka 0.000000 0.000000 0.000000\n"
+        "Kd 0.8 0.8 0.8\n"
+        "Ks 0.8 0.8 0.8\n"
+        "d 1\n"
+        "illum 2\n";
+
+  fs.close ();
+
+  pcl::PCLPointCloud2 blob;
+  pcl::OBJReader objreader = pcl::OBJReader();
+  int res = objreader.read ("test_obj.obj", blob);
+  EXPECT_NE (int (res), -1);
+  EXPECT_EQ (blob.width, 8);
+  EXPECT_EQ (blob.height, 1);
+  EXPECT_EQ (blob.is_dense, true);
+  EXPECT_EQ (blob.data.size (), 8 * 6 * 4); // 8 verts, 6 values per vertex (vx,vy,vz,vnx,vny,vnz), 4 byte per value
+
+  // Check fields
+  EXPECT_EQ (blob.fields[0].name, "x");
+  EXPECT_EQ (blob.fields[0].offset, 0);
+  EXPECT_EQ (blob.fields[0].count, 1);
+  EXPECT_EQ (blob.fields[0].datatype, pcl::PCLPointField::FLOAT32);
+
+  EXPECT_EQ (blob.fields[1].name, "y");
+  EXPECT_EQ (blob.fields[1].offset, 4 * 1);
+  EXPECT_EQ (blob.fields[1].count, 1);
+  EXPECT_EQ (blob.fields[1].datatype, pcl::PCLPointField::FLOAT32);
+
+  EXPECT_EQ (blob.fields[2].name, "z");
+  EXPECT_EQ (blob.fields[2].offset, 4 * 2);
+  EXPECT_EQ (blob.fields[2].count, 1);
+  EXPECT_EQ (blob.fields[2].datatype, pcl::PCLPointField::FLOAT32);
+
+  EXPECT_EQ (blob.fields[3].name, "normal_x");
+  EXPECT_EQ (blob.fields[3].offset, 4 * 3);
+  EXPECT_EQ (blob.fields[3].count, 1);
+  EXPECT_EQ (blob.fields[3].datatype, pcl::PCLPointField::FLOAT32);
+
+  EXPECT_EQ (blob.fields[4].name, "normal_y");
+  EXPECT_EQ (blob.fields[4].offset, 4 * 4);
+  EXPECT_EQ (blob.fields[4].count, 1);
+  EXPECT_EQ (blob.fields[4].datatype, pcl::PCLPointField::FLOAT32);
+
+  EXPECT_EQ (blob.fields[5].name, "normal_z");
+  EXPECT_EQ (blob.fields[5].offset, 4 * 5);
+  EXPECT_EQ (blob.fields[5].count, 1);
+  EXPECT_EQ (blob.fields[5].datatype, pcl::PCLPointField::FLOAT32);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
