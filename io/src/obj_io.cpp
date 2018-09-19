@@ -374,7 +374,6 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   // bool material_found = false;
   std::vector<std::string> material_files;
   std::size_t nr_point = 0;
-  std::vector<std::string> st;
 
   try
   {
@@ -390,35 +389,40 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       sstream.imbue (std::locale::classic ());
       line = sstream.str ();
       boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      
       // Ignore comments
-      if (st.at (0) == "#")
+      if (line.at (0) == '#')
         continue;
 
-      // Vertex
-      if (st.at (0) == "v")
+      // Vertex, vertex texture or vertex normal
+      if (line.at (0) == 'v')
       {
-        ++nr_point;
-        continue;
-      }
+        // Vertex (v)
+        if ((line.at(1) == ' ')) {
+          ++nr_point;
+          continue;
+        }
 
-      // Vertex texture
-      if ((st.at (0) == "vt") && !vertex_texture_found)
-      {
-        vertex_texture_found = true;
-        continue;
-      }
+        // Vertex texture (vt)
+        else if ((line.at(1) == 't') && !vertex_texture_found)
+        {
+          vertex_texture_found = true;
+          continue;
+        }
 
-      // Vertex normal
-      if ((st.at (0) == "vn") && !vertex_normal_found)
-      {
-        vertex_normal_found = true;
-        continue;
+        // Vertex normal (vn)
+        else if ((line.at(1) == 'n') && !vertex_normal_found)
+        {
+          vertex_normal_found = true;
+          continue;
+        }
       }
 
       // Material library, skip for now!
-      if (st.at (0) == "mtllib")
+      if (line.substr (0, 6) == "mtllib")
       {
+        std::vector<std::string> st;
+        boost::split(st, line, boost::is_any_of("\t\r "), boost::token_compress_on);
         material_files.push_back (st.at (1));
         continue;
       }
