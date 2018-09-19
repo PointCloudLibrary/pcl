@@ -592,6 +592,10 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       // Vertex normal
       if (st[0] == "vn")
       {
+        if (normal_idx >= cloud.width) 
+        {
+          continue;
+        }
         try
         {
           for (int i = 1, f = normal_x_field; i < 4; ++i, ++f)
