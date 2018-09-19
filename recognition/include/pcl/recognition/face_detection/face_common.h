@@ -2,6 +2,7 @@
 #define FACE_DETECTOR_COMMON_H_
 
 #include <pcl/features/integral_image2D.h>
+#include <Eigen/Core>
 
 namespace pcl
 {
@@ -18,6 +19,7 @@ namespace pcl
         //save pose head information
         Eigen::Vector3f trans_;
         Eigen::Vector3f rot_;
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     class FeatureType
@@ -82,6 +84,8 @@ namespace pcl
         float purity_;
         Eigen::Matrix3d covariance_trans_;
         Eigen::Matrix3d covariance_rot_;
+
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
         void serialize(::std::ostream & stream) const
         {

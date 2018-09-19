@@ -186,7 +186,6 @@ namespace pcl
         */
       void
       applyFilter (std::vector<int> &indices);
-
     private:
       /** \brief The minimum point of the box. */
       Eigen::Vector4f min_pt_;

@@ -84,6 +84,7 @@ namespace pcl
       double v;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
       Eigen::Vector3d point;  /**< \brief The projected point. */
       Eigen::Vector3d normal; /**< \brief The projected point's normal. */
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     inline
@@ -219,7 +220,7 @@ namespace pcl
     float curvature;              /**< \brief The curvature at the query point. */
     int order;                    /**< \brief The order of the polynomial. If order > 1 then use polynomial fit */
     bool valid;                   /**< \brief If True, the mls results data is valid, otherwise False. */
-
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     private:
       /**
         * \brief The default weight function used when fitting a polynomial surface
@@ -649,6 +650,7 @@ namespace pcl
           Eigen::Vector4f bounding_min_, bounding_max_;
           uint64_t data_size_;
           float voxel_size_;
+          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
 
 
@@ -744,9 +746,6 @@ namespace pcl
       /** \brief Abstract class get name method. */
       std::string
       getClassName () const { return ("MovingLeastSquares"); }
-
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief MovingLeastSquaresOMP implementation has been merged into MovingLeastSquares for better maintainability.

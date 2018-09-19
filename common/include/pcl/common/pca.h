@@ -270,7 +270,6 @@ namespace pcl
         */
       inline void
       reconstruct (const PointCloud& projection, PointCloud& input);
-
     private:
       inline bool
       initCompute ();
