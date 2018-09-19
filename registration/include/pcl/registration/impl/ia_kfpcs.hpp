@@ -193,7 +193,7 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
   for (it_curr = it->begin (), it_curr_e = it->end (); it_curr != it_curr_e; it_curr++)
     candidates_.push_back (*it_curr);
 
-  // sort acoording to score value
+  // sort according to score value
   std::sort (candidates_.begin (), candidates_.end (), by_score ());
 
   // return here if no score was valid, i.e. all scores are FLT_MAX

@@ -298,7 +298,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
     delta_ *= mean_dist;
   }
 
-  // heuristic determination of number of trials to have high probabilty of finding a good solution
+  // heuristic determination of number of trials to have high probability of finding a good solution
   if (max_iterations_ == 0)
   {
     float first_est = std::log (small_error_) / std::log (1.0 - std::pow ((double) approx_overlap_, (double) min_iterations));

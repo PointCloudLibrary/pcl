@@ -520,7 +520,7 @@ namespace pcl
       /** \brief Flag to determine if voxel structure is searchable. */
       bool searchable_;
 
-      /** \brief Minimum points contained with in a voxel to allow it to be useable. */
+      /** \brief Minimum points contained with in a voxel to allow it to be usable. */
       int min_points_per_voxel_;
 
       /** \brief Minimum allowable ratio between eigenvalues to prevent singular covariance matrices. */

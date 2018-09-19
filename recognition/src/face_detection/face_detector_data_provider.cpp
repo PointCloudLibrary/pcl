@@ -431,7 +431,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
         te.wsize_ = w_size_;
 
         te.trans_ = center_point.getVector3fMap () - patch_center_point.getVector3fMap ();
-        te.trans_ *= 1000.f; //transform it to milimiters
+        te.trans_ *= 1000.f; //transform it to millimeters
         te.rot_ = ea;
         te.rot_ *= 57.2957795f; //transform it to degrees
 

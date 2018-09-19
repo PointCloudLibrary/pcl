@@ -76,7 +76,7 @@ class CommandQueue
     void
     execute (CommandPtr);
 
-    /// @brief Undoes the last command by poping the tail of the queue, invoke
+    /// @brief Undoes the last command by popping the tail of the queue, invoke
     /// the undo function of the command.
     void
     undo ();

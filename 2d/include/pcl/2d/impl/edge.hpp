@@ -352,7 +352,7 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeCanny (pcl::PointCloud<PointOutT> &out
   convolution_.filter (*smoothed_cloud);
   //PCL_ERROR ("Gaussian blur: %g\n", tt.toc ()); tt.tic ();
   
-  // Edge detection usign Sobel
+  // Edge detection using Sobel
   pcl::PointCloud<PointXYZIEdge>::Ptr edges (new pcl::PointCloud<PointXYZIEdge>);
   setInputCloud (smoothed_cloud);
   detectEdgeSobel (*edges);
@@ -431,7 +431,7 @@ pcl::Edge<PointInT, PointOutT>::canny (
   convolution_.filter (smoothed_cloud_y);
 
 
-  // Edge detection usign Sobel
+  // Edge detection using Sobel
   pcl::PointCloud<PointXYZIEdge>::Ptr edges (new pcl::PointCloud<PointXYZIEdge>);
   sobelMagnitudeDirection (smoothed_cloud_x, smoothed_cloud_y, *edges.get ());
 

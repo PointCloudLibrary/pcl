@@ -100,7 +100,7 @@ namespace pcl
     PCL_EXPORTS void
     savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned short>& cloud);
 
-    /** \brief Saves a PCLImage (formely ROS sensor_msgs::Image) to PNG file.
+    /** \brief Saves a PCLImage (formerly ROS sensor_msgs::Image) to PNG file.
       * \param[in] file_name the name of the file to write to disk
       * \param[in] image image to save
       * \ingroup io

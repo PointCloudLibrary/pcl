@@ -87,7 +87,7 @@ namespace pcl
     }
   };
 
-  /** \brief The structure initialize a model crated by the SVM (Support Vector Machines) classifier (pcl::SVMTrain)
+  /** \brief The structure initialize a model created by the SVM (Support Vector Machines) classifier (pcl::SVMTrain)
    */
   struct SVMModel: svm_model
   {

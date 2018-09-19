@@ -53,7 +53,7 @@ namespace pcl
     namespace grabcut
     {
       /** boost implementation of Boykov and Kolmogorov's maxflow algorithm doesn't support
-        * negative flows which makes it inappropriate for this conext.
+        * negative flows which makes it inappropriate for this context.
         * This implementation of Boykov and Kolmogorov's maxflow algorithm by Stephen Gould
         * <stephen.gould@anu.edu.au> in DARWIN under BSD does the trick however solwer than original
         * implementation.

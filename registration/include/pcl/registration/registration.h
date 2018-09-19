@@ -404,14 +404,14 @@ namespace pcl
 
       /** \brief Call the registration algorithm which estimates the transformation and returns the transformed source 
         * (input) as \a output.
-        * \param[out] output the resultant input transfomed point cloud dataset
+        * \param[out] output the resultant input transformed point cloud dataset
         */
       inline void
       align (PointCloudSource &output);
 
       /** \brief Call the registration algorithm which estimates the transformation and returns the transformed source 
         * (input) as \a output.
-        * \param[out] output the resultant input transfomed point cloud dataset
+        * \param[out] output the resultant input transformed point cloud dataset
         * \param[in] guess the initial gross estimation of the transformation
         */
       inline void 

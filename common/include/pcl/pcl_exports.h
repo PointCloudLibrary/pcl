@@ -36,7 +36,7 @@
 #define PCL_EXPORTS_H_
 
 // This header is created to include to NVCC compiled sources.
-// Header 'pcl_macros' is not suitable since it inludes <Eigen/Core>,
+// Header 'pcl_macros' is not suitable since it includes <Eigen/Core>,
 // which can't be eaten by nvcc (it's too weak)
 
 #if defined WIN32 || defined _WIN32 || defined WINCE || defined __MINGW32__

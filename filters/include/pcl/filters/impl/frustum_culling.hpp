@@ -83,7 +83,7 @@ pcl::FrustumCulling<PointT>::applyFilter (std::vector<int> &indices)
   Eigen::Vector4f pl_l; // left plane
 
   Eigen::Vector3f view = camera_pose_.block (0, 0, 3, 1);    // view vector for the camera  - first column of the rotation matrix
-  Eigen::Vector3f up = camera_pose_.block (0, 1, 3, 1);      // up vector for the camera    - second column of the rotation matix
+  Eigen::Vector3f up = camera_pose_.block (0, 1, 3, 1);      // up vector for the camera    - second column of the rotation matrix
   Eigen::Vector3f right = camera_pose_.block (0, 2, 3, 1);   // right vector for the camera - third column of the rotation matrix
   Eigen::Vector3f T = camera_pose_.block (0, 3, 3, 1);       // The (X, Y, Z) position of the camera w.r.t origin
 

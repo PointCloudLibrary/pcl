@@ -258,7 +258,7 @@ namespace pcl
 
         /** \brief Generate a universally unique identifier (UUID)
          *
-         * A mutex lock happens to ensure uniquness
+         * A mutex lock happens to ensure uniqueness
          *
          */
         static void
