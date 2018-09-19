@@ -594,6 +594,9 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       {
         if (normal_idx >= cloud.width) 
         {
+          if (normal_idx == cloud.width)
+            PCL_WARN ("[pcl:OBJReader] Too many vertex normals (expected %d), skipping remaining normals.\n", cloud.width, normal_idx + 1);
+          ++normal_idx;
           continue;
         }
         try
