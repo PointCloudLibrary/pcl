@@ -384,10 +384,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       if (line == "")
         continue;
 
-      // Tokenize the line
-      std::stringstream sstream (line);
-      sstream.imbue (std::locale::classic ());
-      line = sstream.str ();
+      // Trim the line
       boost::trim (line);
       
       // Ignore comments
