@@ -157,6 +157,8 @@ TEST (PCL, ComplexPCDFileASCII)
   EXPECT_EQ (val[30], 0); 
   EXPECT_EQ (val[31], 0); 
   EXPECT_EQ (val[32], 0); 
+
+  remove ("complex_ascii.pcd");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -256,6 +258,8 @@ TEST (PCL, AllTypesPCDFile)
   EXPECT_FLOAT_EQ (float (b8), -250.05f);
   memcpy (&b8, &blob.data[blob.fields[7].offset + sizeof (double)], sizeof (double));
   EXPECT_FLOAT_EQ (float (b8), -251.05f);
+
+  remove ("all_types.pcd");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -653,6 +657,10 @@ TEST (PCL, IO)
   EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromPCLPointCloud2 ()
   EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromPCLPointCloud2 ()
   EXPECT_FLOAT_EQ (cloud.points[0].intensity, first.intensity);  // test for fromPCLPointCloud2 ()
+
+  remove ("test_pcl_io_ascii.pcd");
+  remove ("test_pcl_io_binary.pcd");
+  remove ("test_pcl_io.pcd");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -721,6 +729,8 @@ TEST (PCL, PCDReaderWriter)
   EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].y, last.y);    // test for fromPCLPointCloud2 ()
   EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].z, last.z);    // test for fromPCLPointCloud2 ()
   EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].intensity, last.intensity); // test for fromPCLPointCloud2 ()
+
+  remove ("test_pcl_io.pcd");
 }
 
 TEST (PCL, PCDReaderWriterASCIIColorPrecision)
@@ -764,10 +774,13 @@ TEST (PCL, PCDReaderWriterASCIIColorPrecision)
     EXPECT_EQ (cloud[i].g, cloud_ascii[i].g);
     EXPECT_EQ (cloud[i].b, cloud_ascii[i].b);
   }
+
+  remove ("temp_binary_color.pcd");
+  remove ("temp_ascii_color.pcd");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, ASCIIReader)
+TEST (PCL, ASCIIRead)
 {
   PointCloud<PointXYZI> cloud, rcloud;
 
@@ -807,10 +820,11 @@ TEST (PCL, ASCIIReader)
     EXPECT_FLOAT_EQ(cloud.points[i].intensity, rcloud.points[i].intensity);
   }
 
+  remove ("test_pcd.txt");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, OBJReader)
+TEST(PCL, OBJRead)
 {
   std::ofstream fs;
   fs.open ("test_obj.obj");
@@ -831,6 +845,8 @@ TEST(PCL, OBJReader)
         "vn 0.0000 0.0000 1.0000\n"
         "vn 0.0000 -1.0000 0.0000\n"
         "vn 0.0000 1.0000 0.0000\n"
+        "# Redundant vertex normal to test error handling\n"
+        "vn 0.0000 0.0000 0.0000\n"
         "usemtl None\n"
         "s off\n"
         "f 1//1 2//1 4//1 3//1\n"
@@ -893,6 +909,9 @@ TEST(PCL, OBJReader)
   EXPECT_EQ (blob.fields[5].offset, 4 * 5);
   EXPECT_EQ (blob.fields[5].count, 1);
   EXPECT_EQ (blob.fields[5].datatype, pcl::PCLPointField::FLOAT32);
+
+  remove ("test_obj.obj");
+  remove ("test_obj.mtl");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -945,6 +964,8 @@ TEST (PCL, ExtendedIO)
     ASSERT_EQ (cloud.points[0].histogram[i], i);
     ASSERT_EQ (cloud.points[1].histogram[i], 33-i);
   }
+
+  remove ("v.pcd");
 }
 
 
@@ -1144,6 +1165,8 @@ TEST (PCL, LZFExtended)
     EXPECT_EQ (cloud2.points[i].normal_z, cloud.points[i].normal_z);
     EXPECT_EQ (cloud2.points[i].rgb, cloud.points[i].rgb);
   }
+
+  remove ("test_pcl_io_compressed.pcd");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1289,6 +1312,8 @@ TEST (PCL, Locale)
   catch (const std::exception&)
   {
   }
+
+  remove ("test_pcl_io_ascii.pcd");
 #endif
 }
 
