@@ -391,27 +391,27 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       boost::trim (line);
       
       // Ignore comments
-      if (line.at (0) == '#')
+      if (line[0] == '#')
         continue;
 
       // Vertex, vertex texture or vertex normal
-      if (line.at (0) == 'v')
+      if (line[0] == 'v')
       {
         // Vertex (v)
-        if ((line.at(1) == ' ')) {
+        if ((line[1] == ' ')) {
           ++nr_point;
           continue;
         }
 
         // Vertex texture (vt)
-        else if ((line.at(1) == 't') && !vertex_texture_found)
+        else if ((line[1] == 't') && !vertex_texture_found)
         {
           vertex_texture_found = true;
           continue;
         }
 
         // Vertex normal (vn)
-        else if ((line.at(1) == 'n') && !vertex_normal_found)
+        else if ((line[1] == 'n') && !vertex_normal_found)
         {
           vertex_normal_found = true;
           continue;
