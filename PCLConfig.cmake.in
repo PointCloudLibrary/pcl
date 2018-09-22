@@ -1,16 +1,25 @@
 # ------------------------------------------------------------------------------------
 # Helper to use PCL from outside project
 #
-# target_link_libraries(my_fabulous_target PCL_XXX_LIBRARIES) where XXX is the 
-# upper cased xxx from : 
+# target_link_libraries(my_fabulous_target PCL_XXX_LIBRARIES) where XXX is the
+# upper cased xxx from :
 # @PCLCONFIG_AVAILABLE_COMPONENTS_LIST@
 #
 # PCL_INCLUDE_DIRS is filled with PCL and available 3rdparty headers
 # PCL_LIBRARY_DIRS is filled with PCL components libraries install directory and
 # 3rdparty libraries paths
-# 
+#
 #                                   www.pointclouds.org
 #------------------------------------------------------------------------------------
+
+if(POLICY CMP0074)
+  # TODO: update *_ROOT variables to be PCL_*_ROOT or equivalent.
+  # CMP0074 directly affects how Find* modules work and *_ROOT variables.  Since
+  # this is a config file that will be consumed by parent projects with (likely)
+  # NEW behavior, we need to push a policy stack.
+  cmake_policy(PUSH)
+  cmake_policy(SET CMP0074 OLD)
+endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Modules")
 
@@ -36,7 +45,7 @@ macro(pcl_message)
   endif(NOT PCL_FIND_QUIETLY)
 endmacro(pcl_message)
 
-# Remove duplicate libraries    
+# Remove duplicate libraries
 macro(pcl_remove_duplicate_libraries _unfiltered_libraries _filtered_libraries)
   set(${_filtered_libraries})
   set(_debug_libraries)
@@ -263,7 +272,7 @@ endmacro(find_glew)
 # |--> _lib found ==> include the headers,
 # |                   link to its library directories or include _lib_USE_FILE
 # `--> _lib not found
-#                   |--> _lib is optional ==> disable it (thanks to the guardians) 
+#                   |--> _lib is optional ==> disable it (thanks to the guardians)
 #                   |                         and warn
 #                   `--> _lib is required
 #                                       |--> component is required explicitly ==> error
@@ -408,7 +417,7 @@ elseif(EXISTS "${PCL_DIR}/include/pcl/pcl_config.h")
   set(PCL_LIBRARY_DIRS "${PCL_DIR}/@LIB_INSTALL_DIR@")
   set(PCL_SOURCES_TREE "@CMAKE_SOURCE_DIR@")
 else(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")
-  pcl_report_not_found("PCL can not be found on this machine")  
+  pcl_report_not_found("PCL can not be found on this machine")
 endif(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")
 
 #set a suffix for debug libraries
@@ -442,7 +451,7 @@ if(PCL_FIND_COMPONENTS)
     set(PCL_TO_FIND_COMPONENTS ${pcl_all_components})
     set(PCL_FIND_ALL 1)
   else(PCL_FIND_COMPONENTS_LENGTH EQUAL PCL_NB_COMPONENTS)
-    set(PCL_TO_FIND_COMPONENTS ${PCL_FIND_COMPONENTS})    
+    set(PCL_TO_FIND_COMPONENTS ${PCL_FIND_COMPONENTS})
   endif(PCL_FIND_COMPONENTS_LENGTH EQUAL PCL_NB_COMPONENTS)
 else(PCL_FIND_COMPONENTS)
   set(PCL_TO_FIND_COMPONENTS ${pcl_all_components})
@@ -473,7 +482,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     endforeach(opt)
     foreach(ext ${pcl_${component}_ext_dep})
       find_external_library(${component} ${ext} REQUIRED)
-    endforeach(ext) 
+    endforeach(ext)
 endforeach(component)
 
 foreach(component ${PCL_TO_FIND_COMPONENTS})
@@ -483,8 +492,8 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
   pcl_message(STATUS "looking for PCL_${COMPONENT}")
 
   string(REGEX REPLACE "^cuda_(.*)$" "\\1" cuda_component "${component}")
-  string(REGEX REPLACE "^gpu_(.*)$" "\\1" gpu_component "${component}") 
-  
+  string(REGEX REPLACE "^gpu_(.*)$" "\\1" gpu_component "${component}")
+
   find_path(PCL_${COMPONENT}_INCLUDE_DIR
     NAMES pcl/${component}
           pcl/apps/${component}
@@ -495,7 +504,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     PATH_SUFFIXES
           ${component}/include
           apps/${component}/include
-          cuda/${cuda_component}/include 
+          cuda/${cuda_component}/include
           gpu/${gpu_component}/include
     DOC "path to ${component} headers"
     NO_DEFAULT_PATH)
@@ -506,7 +515,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
   else(PCL_${COMPONENT}_INCLUDE_DIR)
     #pcl_message("No include directory found for pcl_${component}.")
   endif(PCL_${COMPONENT}_INCLUDE_DIR)
-  
+
   # Skip find_library for header only modules
   list(FIND pcl_header_only_components ${component} _is_header_only)
   if(_is_header_only EQUAL -1)
@@ -514,19 +523,19 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
       HINTS ${PCL_LIBRARY_DIRS}
       DOC "path to ${pcl_component} library"
       NO_DEFAULT_PATH)
-    get_filename_component(${component}_library_path 
+    get_filename_component(${component}_library_path
       ${PCL_${COMPONENT}_LIBRARY}
       PATH)
     mark_as_advanced(PCL_${COMPONENT}_LIBRARY)
 
     find_library(PCL_${COMPONENT}_LIBRARY_DEBUG ${pcl_component}${PCL_DEBUG_SUFFIX}
-      HINTS ${PCL_LIBRARY_DIRS} 
+      HINTS ${PCL_LIBRARY_DIRS}
       DOC "path to ${pcl_component} library debug"
       NO_DEFAULT_PATH)
     mark_as_advanced(PCL_${COMPONENT}_LIBRARY_DEBUG)
 
     if(PCL_${COMPONENT}_LIBRARY_DEBUG)
-      get_filename_component(${component}_library_path_debug 
+      get_filename_component(${component}_library_path_debug
         ${PCL_${COMPONENT}_LIBRARY_DEBUG}
         PATH)
     endif(PCL_${COMPONENT}_LIBRARY_DEBUG)
@@ -541,9 +550,9 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
       PCL_${COMPONENT}_LIBRARY PCL_${COMPONENT}_INCLUDE_DIR)
   else(_is_header_only EQUAL -1)
     find_package_handle_standard_args(PCL_${COMPONENT} DEFAULT_MSG
-      PCL_${COMPONENT}_INCLUDE_DIR)  
+      PCL_${COMPONENT}_INCLUDE_DIR)
   endif(_is_header_only EQUAL -1)
-  
+
   if(PCL_${COMPONENT}_FOUND)
     if(NOT "${PCL_${COMPONENT}_INCLUDE_DIRS}" STREQUAL "")
       set(_filtered "")
@@ -573,7 +582,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
         list(APPEND PCL_${COMPONENT}_INCLUDE_DIRS ${PCL_${INT_DEP}_INCLUDE_DIRS})
         if(PCL_${INT_DEP}_LIBRARIES)
           list(APPEND PCL_${COMPONENT}_LINK_LIBRARIES "${PCL_${INT_DEP}_LIBRARIES}")
-        endif(PCL_${INT_DEP}_LIBRARIES) 
+        endif(PCL_${INT_DEP}_LIBRARIES)
       endif(PCL_${INT_DEP}_FOUND)
     endforeach(int_dep)
     if(_is_header_only EQUAL -1)
@@ -641,3 +650,6 @@ list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARI
 find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
 mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS PCL_LIBRARY_DIRS)
 
+if(POLICY CMP0074)
+  cmake_policy(POP)
+endif()
