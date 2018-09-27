@@ -242,6 +242,7 @@ namespace pcl
 
 
         /** \brief Search for points within rectangular search area
+         * Points exactly on the edges of the search rectangle are included.
          * \param[in] min_pt lower corner of search area
          * \param[in] max_pt upper corner of search area
          * \param[out] k_indices the resultant point indices
