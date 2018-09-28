@@ -177,7 +177,7 @@ like::
         Where to build binaries: C:/PCL_dependencies/flann-1.7.1-src/build
 
     Hit the "Configure" button. Proceed and be sure to choose the correct "Generator" on the next window. 
-    You can safley ignore any warning message about hdf5.    
+    You can safely ignore any warning message about hdf5.    
 
     Now, on my machine I had to manually set the `BUILD_PYTHON_BINDINGS`
     and `BUILD_MATLAB_BINDINGS` to OFF otherwise it would not continue to the next

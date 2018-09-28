@@ -116,11 +116,11 @@ YYY then XXX will be built but won't appear in the cache.
 
 You can also change the build type:
 
-* **Debug**: means that no optimization is done and all the debugging symbols are imbedded into the libraries file. This is plateform and compiler dependent. On Linux with gcc this is equivalent to running gcc with `-O0 -g -ggdb -Wall`
+* **Debug**: means that no optimization is done and all the debugging symbols are embedded into the libraries file. This is platform and compiler dependent. On Linux with gcc this is equivalent to running gcc with `-O0 -g -ggdb -Wall`
 
-* **Release**: the compiled code is optimized and no debug information will be print out. This will lead to `-O3` for gcc and `-O5` for clang
+* **Release**: the compiled code is optimized and no debug information will be printed out. This will lead to `-O3` for gcc and `-O5` for clang
 
-* **RelWithDebInfo**: the compiled code is optimized but debugging data is also imbedded in the libraries. This is a tradeoff between the two former ones.
+* **RelWithDebInfo**: the compiled code is optimized but debugging data is also embedded in the libraries. This is a tradeoff between the two former ones.
 
 * **MinSizeRel**: this, normally, results in the smallest libraries you can build. This is interesting when building for Android or a restricted memory/space system.
 

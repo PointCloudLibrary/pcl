@@ -20,7 +20,7 @@ PointCloud is a C++ class which contains the following data fields:
        that resemble an organized image (or matrix) like structure, where the
        data is split into rows and columns. Examples of such point clouds
        include data coming from stereo cameras or Time Of Flight cameras. The
-       advantages of a organized dataset is that by knowing the relationship
+       advantages of an organized dataset is that by knowing the relationship
        between adjacent points (e.g. pixels), nearest neighbor operations are
        much more efficient, thus speeding up the computation and lowering the
        costs of certain algorithms in PCL.
@@ -45,7 +45,7 @@ PointCloud is a C++ class which contains the following data fields:
 
       Example::
 
-        cloud.width = 640; // Image-like organized structure, with 640 rows and 480 columns,
+        cloud.width = 640; // Image-like organized structure, with 480 rows and 640 columns,
         cloud.height = 480; // thus 640*480=307200 points total in the dataset
 
       Example::

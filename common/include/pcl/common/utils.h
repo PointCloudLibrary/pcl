@@ -45,7 +45,7 @@ namespace pcl
 {
   namespace utils
   {
-    /** \brief Check if val1 and val2 are equals to an epsilon extent
+    /** \brief Check if val1 and val2 are equal to an epsilon extent
       * \param[in] val1 first number to check
       * \param[in] val2 second number to check
       * \param[in] eps epsilon
