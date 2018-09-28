@@ -57,7 +57,7 @@ pcl::SampleConsensusModelLine<PointT>::isSampleGood (const std::vector<int> &sam
       (input_->points[samples[0]].z != input_->points[samples[1]].z))
     return (true);
 
-  return (true);
+  return (false);
 }
 
 //////////////////////////////////////////////////////////////////////////
