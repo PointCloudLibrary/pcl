@@ -231,7 +231,7 @@ is usually the broadcast network IP Address (eg, 255.255.255.255 for a global br
 x.y.z.255 for a Class C Network [where x.y.z are the first three octets of a Class C network, such as
 192.168.1]).
 
-The Source IP Address, on the otherhand, indicates where the packet originated from.  Packets
+The Source IP Address, on the other hand, indicates where the packet originated from.  Packets
 can be hand-crafted for spoofing-type attacks (eg, pretending to come from somewhere they really
 didn't). The Reverse Path Filter attempts to detect these instances.  The default rule that it uses is
 that if a packet is received on Network Interface *A*, then if there is no **route** to the **Source IP Address**

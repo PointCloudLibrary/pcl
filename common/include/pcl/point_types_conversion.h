@@ -135,8 +135,8 @@ namespace pcl
     if (out.h < 0.f) out.h += 360.f;
   }
 
-  /** \brief Convert a XYZRGB point type to a XYZHSV
-    * \param[in] in the input XYZRGB point
+  /** \brief Convert a XYZRGBA point type to a XYZHSV
+    * \param[in] in the input XYZRGBA point
     * \param[out] out the output XYZHSV point
     * \todo include the A parameter but how?
     */
@@ -241,7 +241,7 @@ namespace pcl
     }
   }
 
-  /** \brief Convert a RGB point cloud to a Intensity
+  /** \brief Convert a RGB point cloud to an Intensity
     * \param[in] in the input RGB point cloud
     * \param[out] out the output Intensity point cloud
     */
@@ -259,7 +259,7 @@ namespace pcl
     }
   }
 
-  /** \brief Convert a RGB point cloud to a Intensity
+  /** \brief Convert a RGB point cloud to an Intensity
     * \param[in] in the input RGB point cloud
     * \param[out] out the output Intensity point cloud
     */
@@ -277,7 +277,7 @@ namespace pcl
     }
   }
 
-  /** \brief Convert a RGB point cloud to a Intensity
+  /** \brief Convert a RGB point cloud to an Intensity
     * \param[in] in the input RGB point cloud
     * \param[out] out the output Intensity point cloud
     */
