@@ -1335,9 +1335,9 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
       bool idxInResults;
       const PointXYZ& pt = cloudIn->points[i];
 
-      inBox = (pt.x > lowerBoxCorner (0)) && (pt.x < upperBoxCorner (0)) &&
-              (pt.y > lowerBoxCorner (1)) && (pt.y < upperBoxCorner (1)) &&
-              (pt.z > lowerBoxCorner (2)) && (pt.z < upperBoxCorner (2));
+      inBox = (pt.x >= lowerBoxCorner (0)) && (pt.x <= upperBoxCorner (0)) &&
+              (pt.y >= lowerBoxCorner (1)) && (pt.y <= upperBoxCorner (1)) &&
+              (pt.z >= lowerBoxCorner (2)) && (pt.z <= upperBoxCorner (2));
 
       idxInResults = false;
       for (j = 0; (j < k_indices.size ()) && (!idxInResults); ++j)
