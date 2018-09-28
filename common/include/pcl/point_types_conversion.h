@@ -82,7 +82,7 @@ namespace pcl
   PointRGBtoI (const RGB&    in,
                Intensity8u&  out)
   {
-    out.intensity = static_cast<uint8_t>(std::numeric_limits<uint8_t>::max() * 0.299f * static_cast <float> (in.r)
+    out.intensity = static_cast<uint8_t>(0.299f * static_cast <float> (in.r)
                       + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b));
   }
 
@@ -94,7 +94,7 @@ namespace pcl
   PointRGBtoI (const RGB&    in,
                Intensity32u& out)
   {
-    out.intensity = static_cast<uint32_t>(static_cast<float>(std::numeric_limits<uint32_t>::max()) * 0.299f * static_cast <float> (in.r)
+    out.intensity = static_cast<uint32_t>(0.299f * static_cast <float> (in.r)
                       + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b));
   }
 
