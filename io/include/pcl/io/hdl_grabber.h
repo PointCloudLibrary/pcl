@@ -263,12 +263,33 @@ namespace pcl
       uint16_t last_azimuth_;
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> > current_scan_xyz_, current_sweep_xyz_;
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > current_scan_xyzi_, current_sweep_xyzi_;
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> > current_scan_xyzrgba_, current_sweep_xyzrgba_;
+      union
+      {
+        PCL_DEPRECATED ("Use 'current_scan_xyzrgba_' instead")
+        boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> > current_scan_xyzrgb_;
+        boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> > current_scan_xyzrgba_;
+      };
+      union
+      {
+        PCL_DEPRECATED ("Use 'current_sweep_xyzrgba_' instead")
+        boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> > current_sweep_xyzrgb_;
+        boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> > current_sweep_xyzrgba_;
+      };
       boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyz>* sweep_xyz_signal_;
-      boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba>* sweep_xyzrgba_signal_;
+      union
+      {
+        PCL_DEPRECATED ("Use 'sweep_xyzrgba_signal_' instead")
+        boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba>* sweep_xyzrgb_signal_;
+        boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba>* sweep_xyzrgba_signal_;
+      };
       boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzi>* sweep_xyzi_signal_;
       boost::signals2::signal<sig_cb_velodyne_hdl_scan_point_cloud_xyz>* scan_xyz_signal_;
-      boost::signals2::signal<sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba>* scan_xyzrgba_signal_;
+      union
+      {
+        PCL_DEPRECATED ("Use 'scan_xyzrgba_signal_' instead")
+        boost::signals2::signal<sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba>* scan_xyzrgb_signal_;
+        boost::signals2::signal<sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba>* scan_xyzrgba_signal_;
+      };
       boost::signals2::signal<sig_cb_velodyne_hdl_scan_point_cloud_xyzi>* scan_xyzi_signal_;
 
       void
