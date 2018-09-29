@@ -95,8 +95,9 @@ namespace pcl
 
 
       bool use_cache_;
-      std::map<std::pair<std::string, int>, Eigen::Matrix4f, std::less<std::pair<std::string, int> >, Eigen::aligned_allocator<std::pair<std::pair<
-          std::string, int>, Eigen::Matrix4f> > > poses_cache_;
+      std::map<std::pair<std::string, int>, Eigen::Matrix4f,
+               std::less<std::pair<std::string, int> >,
+               Eigen::aligned_allocator<std::pair<const std::pair<std::string, int>, Eigen::Matrix4f> > > poses_cache_;
       std::map<std::pair<std::string, int>, Eigen::Vector3f > centroids_cache_;
 
       std::vector<int> indices_;
