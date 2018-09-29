@@ -116,6 +116,9 @@ TEST (PCL, PLYPolygonMeshIO)
       EXPECT_EQ (mesh_binary_pcl.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
     }
   }
+
+  remove ("test_mesh_ascii.ply");
+  remove ("test_mesh_binary.ply");
 }
 
 TEST (PCL, PLYPolygonMeshColoredIO)
@@ -276,6 +279,11 @@ TEST (PCL, PLYPolygonMeshColoredIO)
       EXPECT_EQ (mesh_rgba_binary_pcl.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
     }
   }
+
+  remove ("test_mesh_rgb_ascii.ply");
+  remove ("test_mesh_rgba_ascii.ply");
+  remove ("test_mesh_rgb_binary.ply");
+  remove ("test_mesh_rgba_binary.ply");
 }
 
 /* ---[ */
