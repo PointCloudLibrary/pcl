@@ -932,6 +932,8 @@ TEST (PCL, transformPlane)
   transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/7, Eigen::Vector3d::UnitY())
   * Eigen::AngleAxisd(M_PI/4, Eigen::Vector3d::UnitZ());
   test << 5.35315, 2.89914, 0.196848, -49.2788;
+  test /= test.head<3> ().norm ();
+
   tolerance = 1e-4;
 
   plane->values[0] = 5.4;
