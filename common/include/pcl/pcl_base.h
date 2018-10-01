@@ -61,8 +61,8 @@ namespace pcl
   typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
 
   /////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief PCL base class. Implements methods that are used by most PCL algorithms. 
-    * \ingroup common 
+  /** \brief PCL base class. Implements methods that are used by most PCL algorithms.
+    * \ingroup common
     */
   template <typename PointT>
   class PCLBase
@@ -77,7 +77,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       PCLBase ();
-      
+
       /** \brief Copy constructor. */
       PCLBase (const PCLBase& base);
 
@@ -87,15 +87,15 @@ namespace pcl
         input_.reset ();
         indices_.reset ();
       }
-      
+
       /** \brief Provide a pointer to the input dataset
         * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
-      virtual void 
+      virtual void
       setInputCloud (const PointCloudConstPtr &cloud);
 
       /** \brief Get a pointer to the input point cloud dataset. */
-      inline PointCloudConstPtr const 
+      inline PointCloudConstPtr const
       getInputCloud () const { return (input_); }
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
@@ -116,7 +116,7 @@ namespace pcl
       virtual void
       setIndices (const PointIndicesConstPtr &indices);
 
-      /** \brief Set the indices for the points laying within an interest region of 
+      /** \brief Set the indices for the points laying within an interest region of
         * the point cloud.
         * \note you shouldn't call this method on unorganized point clouds!
         * \param[in] row_start the offset on rows
@@ -124,15 +124,15 @@ namespace pcl
         * \param[in] nb_rows the number of rows to be considered row_start included
         * \param[in] nb_cols the number of columns to be considered col_start included
         */
-      virtual void 
+      virtual void
       setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols);
 
       /** \brief Get a pointer to the vector of indices used. */
-      inline IndicesPtr const 
+      inline IndicesPtr const
       getIndices () { return (indices_); }
 
       /** \brief Get a pointer to the vector of indices used. */
-      inline IndicesConstPtr const 
+      inline IndicesConstPtr const
       getIndices () const { return (indices_); }
 
       /** \brief Override PointCloud operator[] to shorten code
@@ -140,7 +140,7 @@ namespace pcl
         * or input_->points[(*indices_)[pos]]
         * \param[in] pos position in indices_ vector
         */
-      inline const PointT& operator[] (size_t pos) const 
+      inline const PointT& operator[] (size_t pos) const
       {
         return ((*input_)[(*indices_)[pos]]);
       }
@@ -158,19 +158,19 @@ namespace pcl
       /** \brief If no set of indices are given, we construct a set of fake indices that mimic the input PointCloud. */
       bool fake_indices_;
 
-      /** \brief This method should get called before starting the actual computation. 
+      /** \brief This method should get called before starting the actual computation.
         *
         * Internally, initCompute() does the following:
         *   - checks if an input dataset is given, and returns false otherwise
         *   - checks whether a set of input indices has been given. Returns true if yes.
         *   - if no input indices have been given, a fake set is created, which will be used until:
-        *     - either a new set is given via setIndices(), or 
+        *     - either a new set is given via setIndices(), or
         *     - a new cloud is given that has a different set of points. This will trigger an update on the set of fake indices
         */
       bool
       initCompute ();
 
-      /** \brief This method should get called after finishing the actual computation. 
+      /** \brief This method should get called after finishing the actual computation.
         */
       bool
       deinitCompute ();
@@ -193,7 +193,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       PCLBase ();
-     
+
       /** \brief destructor. */
       virtual ~PCLBase()
       {
@@ -204,12 +204,12 @@ namespace pcl
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
         */
-      void 
+      void
       setInputCloud (const PCLPointCloud2ConstPtr &cloud);
 
       /** \brief Get a pointer to the input point cloud dataset. */
-      inline PCLPointCloud2ConstPtr const 
-      getInputCloud () { return (input_); }
+      inline PCLPointCloud2ConstPtr const
+      getInputCloud () const { return (input_); }
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
         * \param[in] indices a pointer to the indices that represent the input data.
@@ -224,8 +224,8 @@ namespace pcl
       setIndices (const PointIndicesConstPtr &indices);
 
       /** \brief Get a pointer to the vector of indices used. */
-      inline IndicesPtr const 
-      getIndices () { return (indices_); }
+      inline IndicesPtr const
+      getIndices () const { return (indices_); }
 
     protected:
       /** \brief The input point cloud dataset. */
