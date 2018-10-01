@@ -229,7 +229,7 @@ Finally, the following code snippet will estimate a set of surface normals for a
      // cloud_normals->points.size () should have the same size as the input cloud_downsampled->points.size ()
    }
 
-.. [RusuDissertation] http://files.rbrusu.com/publications/RusuPhDThesis.pdf
+.. [RusuDissertation] http://mediatum.ub.tum.de/doc/800632/941254.pdf
 .. note::
     @PhDThesis{RusuDoctoralDissertation,
     author = {Radu Bogdan Rusu}, 
