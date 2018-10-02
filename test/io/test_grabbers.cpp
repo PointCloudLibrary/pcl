@@ -129,7 +129,9 @@ TEST (PCL, ImageGrabberTIFF)
       boost::this_thread::sleep (boost::posix_time::microseconds (10000));
       if (++niter > 100)
       {
-        ASSERT_TRUE (false);
+        #ifdef PCL_BUILT_WITH_VTK
+          FAIL ();
+        #endif
         return;
       }
     }
@@ -398,7 +400,9 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
       boost::this_thread::sleep (boost::posix_time::microseconds (10000));
       if (++niter > 100)
       {
-        ASSERT_TRUE (false);
+        #ifdef PCL_BUILT_WITH_VTK
+          FAIL ();
+        #endif
         return;
       }
     }
