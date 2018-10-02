@@ -265,7 +265,7 @@ namespace pcl
       inline const name operator+ (const name& lhs, const name& rhs)   \
       { name result = lhs; result += rhs; return (result); }           \
       inline const name operator+ (const float& scalar, const name& p) \
-      { name result = p; result += scalar; return (result); }          \
+      { float result = scalar; result +=p; return (result); }          \
       inline const name operator+ (const name& p, const float& scalar) \
       { name result = p; result += scalar; return (result); }          \
       inline const name&                                       \
@@ -283,7 +283,7 @@ namespace pcl
       inline const name operator- (const name& lhs, const name& rhs)   \
       { name result = lhs; result -= rhs; return (result); }           \
       inline const name operator- (const float& scalar, const name& p) \
-      { name result = p; result -= scalar; return (result); }          \
+      {float result = scalar; result -=p; return (result); }          \
       inline const name operator- (const name& p, const float& scalar) \
       { name result = p; result -= scalar; return (result); }          \
       inline const name&                                       \
@@ -293,7 +293,7 @@ namespace pcl
         return (p);                                            \
       }                                                        \
       inline const name operator* (const float& scalar, const name& p) \
-      { name result = p; result *= scalar; return (result); }          \
+      { float result = scalar; result *=p; return (result); }          \
       inline const name operator* (const name& p, const float& scalar) \
       { name result = p; result *= scalar; return (result); }          \
       inline const name&                                       \
@@ -303,7 +303,7 @@ namespace pcl
         return (p);                                            \
       }                                                        \
       inline const name operator/ (const float& scalar, const name& p) \
-      { name result = p; result /= scalar; return (result); }          \
+      { float result = scalar; result /=p; return (result); }          \
       inline const name operator/ (const name& p, const float& scalar) \
       { name result = p; result /= scalar; return (result); }          \
     }                                                          \
