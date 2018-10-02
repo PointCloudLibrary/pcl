@@ -298,6 +298,8 @@ namespace pcl
       {
         input_ = input;
       }
+
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 #include <pcl/2d/impl/edge.hpp>
