@@ -263,7 +263,40 @@ TEST (PCL, PFHEstimation)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, FPFHEstimation)
+
+// "Placeholder" for the type specialized test fixture
+template<typename T>
+struct FPFHTest;
+
+// Template specialization test for FPFHEstimation
+template<>
+struct FPFHTest<FPFHEstimation<PointXYZ, Normal, FPFHSignature33> >
+  : public ::testing::Test
+{
+  FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh;
+};
+
+// Template specialization test for FPFHEstimationOMP
+template<>
+struct FPFHTest<FPFHEstimationOMP<PointXYZ, Normal, FPFHSignature33> >
+  : public ::testing::Test
+{
+  // Default Constructor is defined to instantiate 4 threads
+  FPFHTest<FPFHEstimationOMP<PointXYZ, Normal, FPFHSignature33> > ()
+    : fpfh (4)
+  {}
+
+  FPFHEstimationOMP<PointXYZ, Normal, FPFHSignature33> fpfh;
+};
+
+// Types which will be instantiated
+typedef ::testing::Types<FPFHEstimation<PointXYZ, Normal, FPFHSignature33>,
+                         FPFHEstimationOMP<PointXYZ, Normal, FPFHSignature33> > FPFHEstimatorTypes;
+TYPED_TEST_CASE (FPFHTest, FPFHEstimatorTypes);
+
+// This is a copy of the old FPFHEstimation test which will now
+// be applied to both FPFHEstimation and FPFHEstimationOMP
+TYPED_TEST (FPFHTest, Estimation)
 {
   // Estimate normals first
   NormalEstimation<PointXYZ, Normal> n;
@@ -277,7 +310,8 @@ TEST (PCL, FPFHEstimation)
   // estimate
   n.compute (*normals);
 
-  FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh;
+  // Create reference
+  TypeParam& fpfh = this->fpfh;
   fpfh.setInputNormals (normals);
   EXPECT_EQ (fpfh.getInputNormals (), normals);
 
@@ -349,8 +383,8 @@ TEST (PCL, FPFHEstimation)
   EXPECT_NEAR (fpfh_histogram[15], 16.8062,  1e-2);
   EXPECT_NEAR (fpfh_histogram[16], 16.2767,  1e-2);
   EXPECT_NEAR (fpfh_histogram[17], 12.251 ,  1e-2);
-  //EXPECT_NEAR (fpfh_histogram[18], 10.354,  1e-1);
-  //EXPECT_NEAR (fpfh_histogram[19], 6.65578,  1e-2);
+  EXPECT_NEAR (fpfh_histogram[18], 10.354,   1e-2);
+  EXPECT_NEAR (fpfh_histogram[19], 6.65578,  1e-2);
   EXPECT_NEAR (fpfh_histogram[20], 6.1437 ,  1e-2);
   EXPECT_NEAR (fpfh_histogram[21], 5.83341,  1e-2);
   EXPECT_NEAR (fpfh_histogram[22], 1.08809,  1e-2);
@@ -397,8 +431,8 @@ TEST (PCL, FPFHEstimation)
   EXPECT_NEAR (fpfhs->points[0].histogram[15], 17.963 , 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[16], 18.2801, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[17], 14.2766, 1e-2);
-  //EXPECT_NEAR (fpfhs->points[0].histogram[18], 10.8542, 1e-2);
-  //EXPECT_NEAR (fpfhs->points[0].histogram[19], 6.07925, 1e-2);
+  EXPECT_NEAR (fpfhs->points[0].histogram[18], 10.8542, 1e-2);
+  EXPECT_NEAR (fpfhs->points[0].histogram[19], 6.07925, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[20], 5.28565, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[21], 4.73887, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[22], 0.56984, 1e-2);
@@ -421,83 +455,8 @@ TEST (PCL, FPFHEstimation)
 
   testIndicesAndSearchSurface<FPFHEstimation<PointXYZ, Normal, FPFHSignature33>, PointXYZ, Normal, FPFHSignature33>
   (cloud.makeShared (), normals, test_indices, 33);
-
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, FPFHEstimationOpenMP)
-{
-  // Estimate normals first
-  NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  // set parameters
-  n.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
-  n.setIndices (indicesptr);
-  n.setSearchMethod (tree);
-  n.setKSearch (10); // Use 10 nearest neighbors to estimate the normals
-  // estimate
-  n.compute (*normals);
-  FPFHEstimationOMP<PointXYZ, Normal, FPFHSignature33> fpfh (4); // instantiate 4 threads
-  fpfh.setInputNormals (normals);
-
-  // Object
-  PointCloud<FPFHSignature33>::Ptr fpfhs (new PointCloud<FPFHSignature33> ());
-
-  // set parameters
-  fpfh.setInputCloud (cloud.makeShared ());
-  fpfh.setNrSubdivisions (11, 11, 11);
-  fpfh.setIndices (indicesptr);
-  fpfh.setSearchMethod (tree);
-  fpfh.setKSearch (static_cast<int> (indices.size ()));
-
-  // estimate
-  fpfh.compute (*fpfhs);
-  EXPECT_EQ (fpfhs->points.size (), indices.size ());
-
-  EXPECT_NEAR (fpfhs->points[0].histogram[0],  1.58591, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[1],  1.68365, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[2],  6.71   , 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[3],  23.073, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[4],  33.3828, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[5],  20.4002, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[6],  7.31067, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[7],  1.02635, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[8],  0.48591, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[9],  1.47069, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[10], 2.87061, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[11], 1.78321, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[12], 4.30795, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[13], 7.05514, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[14], 9.37615, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[15], 17.963 , 1e-3);
-  //EXPECT_NEAR (fpfhs->points[0].histogram[16], 18.2801, 1e-3);
-  //EXPECT_NEAR (fpfhs->points[0].histogram[17], 14.2766, 1e-3);
-  //EXPECT_NEAR (fpfhs->points[0].histogram[18], 10.8542, 1e-3);
-  //EXPECT_NEAR (fpfhs->points[0].histogram[19], 6.07925, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[20], 5.28991, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[21], 4.73438, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[22], 0.56984, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[23], 3.29826, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[24], 5.28156, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[25], 5.26939, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[26], 3.13191, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[27], 1.74453, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[28], 9.41971, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[29], 21.5894, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[30], 24.6302, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[31], 17.7764, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[32], 7.28878, 1e-3);
-
-  // Test results when setIndices and/or setSearchSurface are used
-
-  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
-  for (size_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (static_cast<int> (i));
-
-  testIndicesAndSearchSurface<FPFHEstimationOMP<PointXYZ, Normal, FPFHSignature33>, PointXYZ, Normal, FPFHSignature33>
-  (cloud.makeShared (), normals, test_indices, 33);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, VFHEstimation)
