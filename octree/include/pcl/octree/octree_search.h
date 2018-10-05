@@ -39,6 +39,8 @@
 #ifndef PCL_OCTREE_SEARCH_H_
 #define PCL_OCTREE_SEARCH_H_
 
+#include <boost/unordered_map.hpp>
+
 #include <pcl/point_cloud.h>
 
 #include <pcl/octree/octree_pointcloud.h>
@@ -217,6 +219,47 @@ namespace pcl
         radiusSearch (int index, const double radius, std::vector<int> &k_indices,
                       std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const;
 
+        /** \brief Search for all neighbors of query point that are within a given radius.
+          * \param[in] cloud the point cloud data
+          * \param[in] index the index in \a cloud representing the query point
+          * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
+          * \param[out] k_indices the resultant indices of the neighboring points, separated by label (if available)
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, separated by label (if available)
+          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
+          * \return number of neighbors found in radius
+          */
+        int
+        radiusSearch (const PointCloud &cloud, int index, double radius, boost::unordered_multimap<int, int> &k_indices,
+                      boost::unordered_multimap<int, float> &k_sqr_distances, unsigned int max_nn = 0)
+        {
+          return (radiusSearch (cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
+        }
+
+        /** \brief Search for all neighbors of query point that are within a given radius.
+          * \param[in] p_q the given query point
+          * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
+          * \param[out] k_indices the resultant indices of the neighboring points, separated by label (if available)
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, separated by label (if available)
+          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
+          * \return number of neighbors found in radius
+          */
+        int
+        radiusSearch (const PointT &p_q, const double radius, boost::unordered_multimap<int, int> &k_indices,
+                      boost::unordered_multimap<int, float> &k_sqr_distances, unsigned int max_nn = 0) const;
+
+        /** \brief Search for all neighbors of query point that are within a given radius.
+          * \param[in] index index representing the query point in the dataset given by \a setInputCloud.
+          *        If indices were given in setInputCloud, index will be the position in the indices vector
+          * \param[in] radius radius of the sphere bounding all of p_q's neighbors
+          * \param[out] k_indices the resultant indices of the neighboring points, separated by label (if available)
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, separated by label (if available)
+          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
+          * \return number of neighbors found in radius
+          */
+        int
+        radiusSearch (int index, const double radius, boost::unordered_multimap<int, int> &k_indices,
+                      boost::unordered_multimap<int, float> &k_sqr_distances, unsigned int max_nn = 0) const;
+
         /** \brief Get a PointT vector of centers of all voxels that intersected by a ray (origin, direction).
           * \param[in] origin ray origin
           * \param[in] direction ray direction vector
@@ -364,6 +407,22 @@ namespace pcl
                                            const BranchNode* node, const OctreeKey& key,
                                            unsigned int tree_depth, std::vector<int>& k_indices,
                                            std::vector<float>& k_sqr_distances, unsigned int max_nn) const;
+
+       /** \brief Recursive search method that explores the octree and finds neighbors within a given radius
+         * \param[in] point query point
+         * \param[in] radiusSquared squared search radius
+         * \param[in] node current octree node to be explored
+         * \param[in] key octree key addressing a leaf node.
+         * \param[in] tree_depth current depth/level in the octree
+         * \param[out] k_indices unordered multimap of indices found to be neighbors of query point, keyed by labels (if available)
+         * \param[out] k_sqr_distances unordered multimap of squared distances of neighbors to query point, keyed by labels (if available)
+         * \param[in] max_nn maximum of neighbors to be found
+         */
+       void
+       getNeighborsWithinRadiusRecursive (const PointT& point, const double radiusSquared,
+                                          const BranchNode* node, const OctreeKey& key,
+                                          unsigned int tree_depth, boost::unordered_multimap<int, int>& k_indices,
+                                          boost::unordered_multimap<int, float>& k_sqr_distances, unsigned int max_nn) const;
 
         /** \brief Recursive search method that explores the octree and finds the K nearest neighbors
           * \param[in] point query point
