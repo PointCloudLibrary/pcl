@@ -111,7 +111,7 @@ namespace pcl
 
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const
-      getRemovedIndices ()
+      getRemovedIndices () const
       {
         return (removed_indices_);
       }
@@ -217,7 +217,7 @@ namespace pcl
 
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const
-      getRemovedIndices ()
+      getRemovedIndices () const
       {
         return (removed_indices_);
       }
