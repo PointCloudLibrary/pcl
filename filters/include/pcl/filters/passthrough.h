@@ -117,7 +117,7 @@ namespace pcl
         * \return The name of the field that will be used for filtering.
         */
       inline std::string const
-      getFilterFieldName ()
+      getFilterFieldName () const
       {
         return (filter_field_name_);
       }
@@ -139,7 +139,7 @@ namespace pcl
         * \param[out] limit_max The maximum allowed field value (default = FLT_MAX).
         */
       inline void
-      getFilterLimits (float &limit_min, float &limit_max)
+      getFilterLimits (float &limit_min, float &limit_max) const
       {
         limit_min = filter_limit_min_;
         limit_max = filter_limit_max_;
@@ -156,22 +156,22 @@ namespace pcl
         negative_ = limit_negative;
       }
 
-      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false). 
+      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \warning This method will be removed in the future. Use getNegative() instead.
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
       inline void
-      getFilterLimitsNegative (bool &limit_negative)
+      getFilterLimitsNegative (bool &limit_negative) const
       {
         limit_negative = negative_;
       }
 
-      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false). 
+      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \warning This method will be removed in the future. Use getNegative() instead.
         * \return true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
       inline bool
-      getFilterLimitsNegative ()
+      getFilterLimitsNegative () const
       {
         return (negative_);
       }
@@ -262,7 +262,7 @@ namespace pcl
 
       /** \brief Obtain the value of the internal \a keep_organized_ parameter. */
       inline bool
-      getKeepOrganized ()
+      getKeepOrganized () const
       {
         return (keep_organized_);
       }
@@ -290,7 +290,7 @@ namespace pcl
 
       /** \brief Get the name of the field used for filtering. */
       inline std::string const
-      getFilterFieldName ()
+      getFilterFieldName () const
       {
         return (filter_field_name_);
       }
@@ -306,12 +306,12 @@ namespace pcl
         filter_limit_max_ = limit_max;
       }
 
-      /** \brief Get the field filter limits (min/max) set by the user. The default values are -FLT_MAX, FLT_MAX. 
+      /** \brief Get the field filter limits (min/max) set by the user. The default values are -FLT_MAX, FLT_MAX.
         * \param[out] limit_min the minimum allowed field value
         * \param[out] limit_max the maximum allowed field value
         */
       inline void
-      getFilterLimits (double &limit_min, double &limit_max)
+      getFilterLimits (double &limit_min, double &limit_max) const
       {
         limit_min = filter_limit_min_;
         limit_max = filter_limit_max_;
@@ -327,20 +327,20 @@ namespace pcl
         filter_limit_negative_ = limit_negative;
       }
 
-      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false). 
+      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
       inline void
-      getFilterLimitsNegative (bool &limit_negative)
+      getFilterLimitsNegative (bool &limit_negative) const
       {
         limit_negative = filter_limit_negative_;
       }
 
-      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false). 
+      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \return true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
       inline bool
-      getFilterLimitsNegative ()
+      getFilterLimitsNegative () const
       {
         return (filter_limit_negative_);
       }
@@ -351,12 +351,12 @@ namespace pcl
 
     private:
       /** \brief Keep the structure of the data organized, by setting the
-        * filtered points to a user given value (NaN by default). 
+        * filtered points to a user given value (NaN by default).
         */
       bool keep_organized_;
 
       /** \brief User given value to be set to any filtered point. Casted to
-        * the correct field type. 
+        * the correct field type.
         */
       float user_filter_value_;
 
