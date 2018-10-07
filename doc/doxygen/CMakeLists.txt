@@ -1,5 +1,5 @@
 if(WITH_DOCS)
-  find_package(Doxygen)
+  find_package(Doxygen REQUIRED)
   if(DOXYGEN_FOUND)
     find_package(HTMLHelp)
   endif(DOXYGEN_FOUND)
