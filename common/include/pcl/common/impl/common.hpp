@@ -70,6 +70,14 @@ pcl::getAngle3D (const Eigen::Vector3f &v1, const Eigen::Vector3f &v2, const boo
 inline void
 pcl::getMeanStd (const std::vector<float> &values, double &mean, double &stddev)
 {
+  // throw an exception when there are less than two elements in vector `values` 
+  // to prevent divide by zero error. Then, let the program crash.
+  // Let the user explicity handle this exception as per his needs.
+  if(values.size() < 2 )
+  {
+    throw std::length_error("Input array must have atleast 2 elements.");
+  }
+  
   double sum = 0, sq_sum = 0;
 
   for (size_t i = 0; i < values.size (); ++i)
