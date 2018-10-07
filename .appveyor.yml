@@ -99,7 +99,6 @@ build_script:
           -DBUILD_tests_common=OFF
           -DBUILD_tests_features=OFF
           -DBUILD_tests_filters=OFF
-          -DPCL_ENABLE_SSE=OFF
           ..
   - cmake --build . --config %CONFIGURATION%
   - ctest -C %CONFIGURATION% -V
