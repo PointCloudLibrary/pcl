@@ -285,7 +285,7 @@ namespace pcl
         if (this->height > 1)
           return (points.at (row * this->width + column));
         else
-          throw UnorganizedPointCloudException("Can't use 2D indexing with an unorganized point cloud");
+          throw UnorganizedPointCloudException ("Can't use 2D indexing with an unorganized point cloud");
       }
 
       /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized
@@ -299,7 +299,7 @@ namespace pcl
         if (this->height > 1)
           return (points.at (row * this->width + column));
         else
-          throw UnorganizedPointCloudException("Can't use 2D indexing with an unorganized point cloud");
+          throw UnorganizedPointCloudException ("Can't use 2D indexing with an unorganized point cloud");
       }
 
       /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized
