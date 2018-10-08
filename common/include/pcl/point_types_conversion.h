@@ -371,7 +371,6 @@ namespace pcl
       for (size_t u = 0; u < width_; u++)
       {
         PointXYZRGBA pt;
-        pt.a = 0;
         float depth_ = depth.at (u, v).intensity;
 
         if (depth_ == 0)
