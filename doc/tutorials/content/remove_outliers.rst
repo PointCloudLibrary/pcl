@@ -18,7 +18,7 @@ editor, and place the following inside it:
 RadiusOutlierRemoval Background
 -------------------------------
 
-The picture below helps to visualize what the RadiusOutlierRemoval filter object does.  The user specifies a number of neighbors which every indice must have within a specified radius to remain in the PointCloud.  For example if 1 neighbor is specified, only the yellow point will be removed from the PointCloud.  If 2 neighbors are specified then both the yellow and green points will be removed from the PointCloud.
+The picture below helps to visualize what the RadiusOutlierRemoval filter object does.  The user specifies a number of neighbors which every index must have within a specified radius to remain in the PointCloud.  For example if 1 neighbor is specified, only the yellow point will be removed from the PointCloud.  If 2 neighbors are specified then both the yellow and green points will be removed from the PointCloud.
 
 .. image:: images/radius_outlier.png
 

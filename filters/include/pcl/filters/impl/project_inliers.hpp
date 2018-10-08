@@ -61,7 +61,7 @@ pcl::ProjectInliers<PointT>::applyFilter (PointCloud &output)
   // Initialize the Sample Consensus model and set its parameters
   if (!initSACModel (model_type_))
   {
-    PCL_ERROR ("[pcl::%s::segment] Error initializing the SAC model!\n", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::applyFilter] Error initializing the SAC model!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
