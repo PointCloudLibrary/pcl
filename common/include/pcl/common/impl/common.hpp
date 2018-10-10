@@ -71,15 +71,15 @@ inline void
 pcl::getMeanStd (const std::vector<float> &values, double &mean, double &stddev)
 {
   // throw an exception when the input array is empty
-  if(values.size() == 0 )
+  if (values.empty ())
   {
-    PCL_THROW_EXCEPTION(BadArgumentException, "Error : Input array must have at least 1 element."); 
+    PCL_THROW_EXCEPTION (BadArgumentException, "Input array must have at least 1 element."); 
   }
   
   // when the array has only one element, mean is the number itself and standard dev is 0
-  if(values.size() == 1)
+  if (values.size () == 1)
   {
-    mean = static_cast<double>(values.at(0));
+    mean = values.at (0);
     stddev = 0;
     return;
   }
