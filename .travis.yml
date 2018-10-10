@@ -1,32 +1,32 @@
 sudo: required
+dist: xenial
 language: cpp
 cache:
   ccache: true
 addons:
   apt:
-    sources:
-      - sourceline: 'ppa:v-launchpad-jochen-sprickerhof-de/pcl'
     packages:
       - cmake
-      - libboost-filesystem1.54-dev
-      - libboost-iostreams1.54-dev
-      - libboost-thread1.54-dev
-      - libboost-chrono1.54-dev
+      - libboost-filesystem-dev
+      - libboost-iostreams-dev
+      - libboost-thread-dev
+      - libboost-chrono-dev
       - libeigen3-dev
       - libgtest-dev
       - doxygen-latex
       - dvipng
       - libusb-1.0-0-dev
       - libqhull-dev
-      - libvtk5-dev
+      - libvtk6-dev
+      - libvtk6-qt-dev
       - libflann-dev
       - doxygen
-      - libqt4-dev
-      - libqt4-opengl-dev
-      - libvtk5-qt4-dev
+      - qtbase5-dev
+      - libqt5opengl5-dev
       - libglew-dev
       - libopenni-dev
       - python3-pip
+      - libproj-dev #missing dependency from vtk?
 before_install:
   - bash .travis.sh before-install
 
@@ -58,29 +58,12 @@ env:
 
 jobs:
   include:
-    - stage: Core Build
-      env: TASK="build"
-      compiler: gcc
-      script: bash .travis.sh $TASK
-    - env: TASK="build"
-      compiler: clang
-      script: bash .travis.sh $TASK
-    - stage: Extended Build and Tests
-      compiler: clang
-      env: TASK="build-examples"
-      script: bash .travis.sh $TASK
-    - compiler: clang
-      env: TASK="build-tools"
-      script: bash .travis.sh $TASK
-    - compiler: clang
-      env: TASK="build-apps"
-      script: bash .travis.sh $TASK
     - compiler: gcc
       env: TASK="doc"
       script: bash .travis.sh $TASK
-    - compiler: gcc
-      env: TASK="test-core"
+    - compiler: clang
+      env: TASK="build"
       script: bash .travis.sh $TASK
     - compiler: gcc
-      env: TASK="test-ext"
+      env: TASK="test"
       script: bash .travis.sh $TASK
