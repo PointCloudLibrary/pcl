@@ -3,6 +3,8 @@ dist: xenial
 language: cpp
 cache:
   ccache: true
+git:
+  depth: 1
 addons:
   apt:
     packages:
@@ -56,14 +58,18 @@ env:
     - secure: LNsNoBvqY/jYDoBjWCE5cM+f1H8xOwSBc/tbWZo6E/jPRjUOLzXSicMMUMrlVto+bFzSUT8OVajV3XmoRx+Qntzv6bDSAGjdycvHd2YZQPn8BYrsFtR4So7SsJkF9FlxzbiOXaiSRpwGn7TP/DO7Neubrr4IS2ef4nWowGrnCE8=
     - secure: PZivWbaCWFA2BFFY8n3UMxdEWjz7rBh568u9LF5LH3HgWADnfiwWzNriACqX9fhe7tSmDru5Bk978s+xPPAY9v24cfiDEX5a5MQ/XVr2rP48n3vlUDWERDhIodJ73F9F9GGZXToGdNz0MBUAHgiv7Lb0GYUfmOYzUJjWghngLBw=
 
+
 jobs:
   include:
-    - compiler: gcc
+    - name: "Documentation"
+      compiler: gcc
       env: TASK="doc"
       script: bash .travis.sh $TASK
-    - compiler: clang
+    - name: "Library, Examples, Tools, Apps"
+      compiler: clang
       env: TASK="build"
       script: bash .travis.sh $TASK
-    - compiler: gcc
+    - name: "Unit Tests"
+      compiler: gcc
       env: TASK="test"
       script: bash .travis.sh $TASK
