@@ -96,7 +96,6 @@ build_script:
           -DBUILD_global_tests=ON
           -DBUILD_simulation=OFF
           -DBUILD_tools=OFF
-          -DBUILD_tests_common=OFF
           -DBUILD_tests_features=OFF
           -DBUILD_tests_filters=OFF
           ..
