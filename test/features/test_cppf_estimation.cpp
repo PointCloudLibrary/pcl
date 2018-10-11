@@ -88,9 +88,9 @@ TEST (PCL, CPPFEstimation)
   EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].f10));
   EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].alpha_m));
 
-  EXPECT_NEAR (feature_cloud->points[2572].f1, 0.0669282, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[2572].f2, -0.1988939, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[2572].f3, 0.7856042, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[2572].f1, 0.0541298, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[2572].f2, -0.19163745, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[2572].f3, 0.7784869, 1e-4);
   EXPECT_NEAR (feature_cloud->points[2572].f4, 0.0533117, 1e-4);
   EXPECT_NEAR (feature_cloud->points[2572].f5, 0.1875000, 1e-4);
   EXPECT_NEAR (feature_cloud->points[2572].f6, 0.0733944, 1e-4);
@@ -98,7 +98,7 @@ TEST (PCL, CPPFEstimation)
   EXPECT_NEAR (feature_cloud->points[2572].f8, 0.2380952, 1e-4);
   EXPECT_NEAR (feature_cloud->points[2572].f9, 0.0619469, 1e-4);
   EXPECT_NEAR (feature_cloud->points[2572].f10, 0.4431372, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[2572].alpha_m, -1.852997, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[2572].alpha_m, -1.845316, 1e-4);
   
 }
 
