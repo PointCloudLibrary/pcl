@@ -346,7 +346,7 @@ endif()
 # Qhull
 option(WITH_QHULL "Include convex-hull operations" TRUE)
 if(WITH_QHULL)
-  if(NOT PCL_SHARED_LIBS)
+  if(NOT PCL_SHARED_LIBS OR ((WIN32 AND NOT MINGW) AND NOT PCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32))
     set(QHULL_USE_STATIC ON)
   endif()
   find_package(Qhull)
