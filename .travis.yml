@@ -1,32 +1,34 @@
 sudo: required
+dist: xenial
 language: cpp
 cache:
   ccache: true
+git:
+  depth: 1
 addons:
   apt:
-    sources:
-      - sourceline: 'ppa:v-launchpad-jochen-sprickerhof-de/pcl'
     packages:
       - cmake
-      - libboost-filesystem1.54-dev
-      - libboost-iostreams1.54-dev
-      - libboost-thread1.54-dev
-      - libboost-chrono1.54-dev
+      - libboost-filesystem-dev
+      - libboost-iostreams-dev
+      - libboost-thread-dev
+      - libboost-chrono-dev
       - libeigen3-dev
       - libgtest-dev
       - doxygen-latex
       - dvipng
       - libusb-1.0-0-dev
       - libqhull-dev
-      - libvtk5-dev
+      - libvtk6-dev
+      - libvtk6-qt-dev
       - libflann-dev
       - doxygen
-      - libqt4-dev
-      - libqt4-opengl-dev
-      - libvtk5-qt4-dev
+      - qtbase5-dev
+      - libqt5opengl5-dev
       - libglew-dev
       - libopenni-dev
       - python3-pip
+      - libproj-dev #missing dependency from vtk?
 before_install:
   - bash .travis.sh before-install
 
@@ -56,31 +58,18 @@ env:
     - secure: LNsNoBvqY/jYDoBjWCE5cM+f1H8xOwSBc/tbWZo6E/jPRjUOLzXSicMMUMrlVto+bFzSUT8OVajV3XmoRx+Qntzv6bDSAGjdycvHd2YZQPn8BYrsFtR4So7SsJkF9FlxzbiOXaiSRpwGn7TP/DO7Neubrr4IS2ef4nWowGrnCE8=
     - secure: PZivWbaCWFA2BFFY8n3UMxdEWjz7rBh568u9LF5LH3HgWADnfiwWzNriACqX9fhe7tSmDru5Bk978s+xPPAY9v24cfiDEX5a5MQ/XVr2rP48n3vlUDWERDhIodJ73F9F9GGZXToGdNz0MBUAHgiv7Lb0GYUfmOYzUJjWghngLBw=
 
+
 jobs:
   include:
-    - stage: Core Build
-      env: TASK="build"
+    - name: "Documentation"
       compiler: gcc
-      script: bash .travis.sh $TASK
-    - env: TASK="build"
-      compiler: clang
-      script: bash .travis.sh $TASK
-    - stage: Extended Build and Tests
-      compiler: clang
-      env: TASK="build-examples"
-      script: bash .travis.sh $TASK
-    - compiler: clang
-      env: TASK="build-tools"
-      script: bash .travis.sh $TASK
-    - compiler: clang
-      env: TASK="build-apps"
-      script: bash .travis.sh $TASK
-    - compiler: gcc
       env: TASK="doc"
       script: bash .travis.sh $TASK
-    - compiler: gcc
-      env: TASK="test-core"
+    - name: "Library, Examples, Tools, Apps"
+      compiler: clang
+      env: TASK="build"
       script: bash .travis.sh $TASK
-    - compiler: gcc
-      env: TASK="test-ext"
+    - name: "Unit Tests"
+      compiler: gcc
+      env: TASK="test"
       script: bash .travis.sh $TASK
