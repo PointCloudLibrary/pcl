@@ -125,8 +125,12 @@ pcl::DinastGrabber::setupDevice (int device_position, const int id_vendor, const
     sstream << "[pcl::DinastGrabber::setupDevice] libusb initialization failure, LIBUSB_ERROR: "<< ret;
     PCL_THROW_EXCEPTION (pcl::IOException, sstream.str ());
   }
-  
-  libusb_set_debug (context_, 3);
+
+  #if defined(LIBUSB_API_VERSION) && (LIBUSB_API_VERSION >= 0x01000106)
+    libusb_set_option (context_, LIBUSB_OPTION_LOG_LEVEL, 3);
+  #else
+    libusb_set_debug (context_, 3);
+  #endif
   libusb_device **devs = NULL;
   
   // Get the list of USB devices

@@ -373,7 +373,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
     }
   }
 
-  if (int (cloud.width * cloud.height) != nr_points)
+  if (cloud.width * cloud.height != nr_points)
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] HEIGHT (%d) x WIDTH (%d) != number of points (%d)\n", cloud.height, cloud.width, nr_points);
     return (-1);
