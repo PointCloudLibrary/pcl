@@ -73,3 +73,6 @@ jobs:
       compiler: gcc
       env: TASK="test"
       script: bash .travis.sh $TASK
+
+notifications:
+  email: false
