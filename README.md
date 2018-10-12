@@ -1,6 +1,6 @@
 # Point Cloud Library
 
-<img src="http://pointclouds.org/assets/images/contents/logos/pcl/pcl_horz_large_pos.png" align="center" height="100">
+<img src="pcl.png" align="center" height="100">
 
 Continuous integration
 ----------------------
