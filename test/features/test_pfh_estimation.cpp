@@ -37,9 +37,13 @@
  *
  */
 
+#include <pcl/pcl_config.h>
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  #define PCL_NO_PRECOMPILE
+#endif
+
 #include <gtest/gtest.h>
 #include <pcl/point_cloud.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/features/pfh.h>
 #include <pcl/features/fpfh.h>
 #include <pcl/features/fpfh_omp.h>
@@ -47,30 +51,32 @@
 #include <pcl/features/gfpfh.h>
 #include <pcl/io/pcd_io.h>
 
-using namespace pcl;
-using namespace pcl::io;
-using namespace std;
+typedef pcl::PointNormal PointT;
+typedef pcl::search::KdTree<PointT>::Ptr KdTreePtr;
+using pcl::PointCloud;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
-
-PointCloud<PointXYZ> cloud;
-vector<int> indices;
-KdTreePtr tree;
+static PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
+static std::vector<int> indices;
+static KdTreePtr tree;
 
 ///////////////////////////////////////////////////////////////////////////////////
-template <typename FeatureEstimation, typename PointT, typename NormalT, typename OutputT> void
+template<template<class, class, class> class FeatureEstimation, typename PointT, typename NormalT, typename OutputT> void
 testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
                              const typename PointCloud<NormalT>::Ptr & normals,
-                             const boost::shared_ptr<vector<int> > & indices, int ndims)
+                             const boost::shared_ptr<std::vector<int> > & indices, int ndims)
+
 {
+  typedef pcl::search::KdTree<PointT> KdTreeT;
+  typedef FeatureEstimation<PointT, NormalT, OutputT> FeatureEstimationT;
+
   //
   // Test setIndices and setSearchSurface
   //
   PointCloud<OutputT> full_output, output0, output1, output2;
 
   // Compute for all points and then subsample the results
-  FeatureEstimation est0;
-  est0.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
+  FeatureEstimationT est0;
+  est0.setSearchMethod (typename KdTreeT::Ptr (new KdTreeT));
   est0.setKSearch (10);
   est0.setInputCloud (points);
   est0.setInputNormals (normals);
@@ -80,8 +86,8 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
   // Compute with all points as "search surface" and the specified sub-cloud as "input"
   typename PointCloud<PointT>::Ptr subpoints (new PointCloud<PointT>);
   copyPointCloud (*points, *indices, *subpoints);
-  FeatureEstimation est1;
-  est1.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
+  FeatureEstimationT est1;
+  est1.setSearchMethod (typename KdTreeT::Ptr (new KdTreeT));
   est1.setKSearch (10);
   est1.setInputCloud (subpoints);
   est1.setSearchSurface (points);
@@ -89,8 +95,8 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
   est1.compute (output1);
 
   // Compute with all points as "input" and the specified indices
-  FeatureEstimation est2;
-  est2.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
+  FeatureEstimationT est2;
+  est2.setSearchMethod (typename KdTreeT::Ptr (new KdTreeT));
   est2.setKSearch (10);
   est2.setInputCloud (points);
   est2.setInputNormals (normals);
@@ -114,13 +120,13 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
   //
   PointCloud<OutputT> output3, output4;
 
-  boost::shared_ptr<vector<int> > indices2 (new vector<int> (0));
+  boost::shared_ptr<std::vector<int> > indices2 (new std::vector<int> (0));
   for (size_t i = 0; i < (indices->size ()/2); ++i)
     indices2->push_back (static_cast<int> (i));
 
   // Compute with all points as search surface + the specified sub-cloud as "input" but for only a subset of indices
-  FeatureEstimation est3;
-  est3.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
+  FeatureEstimationT est3;
+  est3.setSearchMethod (typename KdTreeT::Ptr (new KdTreeT));
   est3.setKSearch (10);
   est3.setSearchSurface (points);
   est3.setInputNormals (normals);
@@ -145,26 +151,16 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PFHEstimation)
 {
+  using pcl::PFHSignature125;
+
   float f1, f2, f3, f4;
 
-  // Estimate normals first
-  NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  // set parameters
-  n.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
-  n.setIndices (indicesptr);
-  n.setSearchMethod (tree);
-  n.setKSearch (10); // Use 10 nearest neighbors to estimate the normals
-  // estimate
-  n.compute (*normals);
-
-  PFHEstimation<PointXYZ, Normal, PFHSignature125> pfh;
-  pfh.setInputNormals (normals);
-  EXPECT_EQ (pfh.getInputNormals (), normals);
+  pcl::PFHEstimation<PointT, PointT, PFHSignature125> pfh;
+  pfh.setInputNormals (cloud);
+  EXPECT_EQ (pfh.getInputNormals (), cloud);
 
   // computePairFeatures
-  pfh.computePairFeatures (cloud, *normals, 0, 12, f1, f2, f3, f4);
+  pfh.computePairFeatures (*cloud, *cloud, 0, 12, f1, f2, f3, f4);
   EXPECT_NEAR (f1, -0.072575, 1e-4);
   EXPECT_NEAR (f2, -0.040221, 1e-4);
   EXPECT_NEAR (f3, 0.068133, 1e-4);
@@ -173,7 +169,7 @@ TEST (PCL, PFHEstimation)
   // computePointPFHSignature
   int nr_subdiv = 3;
   Eigen::VectorXf pfh_histogram (nr_subdiv * nr_subdiv * nr_subdiv);
-  pfh.computePointPFHSignature (cloud, *normals, indices, nr_subdiv, pfh_histogram);
+  pfh.computePointPFHSignature (*cloud, *cloud, indices, nr_subdiv, pfh_histogram);
   EXPECT_NEAR (pfh_histogram[0],  0.932506, 1e-2);
   EXPECT_NEAR (pfh_histogram[1],  2.32429 , 1e-2);
   EXPECT_NEAR (pfh_histogram[2],  0.357477, 1e-2);
@@ -208,9 +204,10 @@ TEST (PCL, PFHEstimation)
 
   // Object
   PointCloud<PFHSignature125>::Ptr pfhs (new PointCloud<PFHSignature125> ());
+  boost::shared_ptr<std::vector<int> > indicesptr (new std::vector<int> (indices));
 
   // set parameters
-  pfh.setInputCloud (cloud.makeShared ());
+  pfh.setInputCloud (cloud);
   pfh.setIndices (indicesptr);
   pfh.setSearchMethod (tree);
   pfh.setKSearch (static_cast<int> (indices.size ()));
@@ -254,39 +251,65 @@ TEST (PCL, PFHEstimation)
 
   // Test results when setIndices and/or setSearchSurface are used
 
-  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
-  for (size_t i = 0; i < cloud.size (); i+=3)
+  boost::shared_ptr<std::vector<int> > test_indices (new std::vector<int> (0));
+  for (size_t i = 0; i < cloud->size (); i+=3)
     test_indices->push_back (static_cast<int> (i));
 
-  testIndicesAndSearchSurface<PFHEstimation<PointXYZ, Normal, PFHSignature125>, PointXYZ, Normal, PFHSignature125>
-  (cloud.makeShared (), normals, test_indices, 125);
+  testIndicesAndSearchSurface<pcl::PFHEstimation, PointT, PointT, PFHSignature125>
+  (cloud, cloud, test_indices, 125);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, FPFHEstimation)
-{
-  // Estimate normals first
-  NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  // set parameters
-  n.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
-  n.setIndices (indicesptr);
-  n.setSearchMethod (tree);
-  n.setKSearch (10); // Use 10 nearest neighbors to estimate the normals
-  // estimate
-  n.compute (*normals);
 
-  FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh;
-  fpfh.setInputNormals (normals);
-  EXPECT_EQ (fpfh.getInputNormals (), normals);
+using pcl::FPFHEstimation;
+using pcl::FPFHEstimationOMP;
+using pcl::FPFHSignature33;
+
+// "Placeholder" for the type specialized test fixture
+template<typename T>
+struct FPFHTest;
+
+// Template specialization test for FPFHEstimation
+template<>
+struct FPFHTest<FPFHEstimation<PointT, PointT, FPFHSignature33> >
+  : public ::testing::Test
+{
+  FPFHEstimation<PointT, PointT, FPFHSignature33> fpfh;
+};
+
+// Template specialization test for FPFHEstimationOMP
+template<>
+struct FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >
+  : public ::testing::Test
+{
+  // Default Constructor is defined to instantiate 4 threads
+  FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> > ()
+    : fpfh (4)
+  {}
+
+  FPFHEstimationOMP<PointT, PointT, FPFHSignature33> fpfh;
+};
+
+// Types which will be instantiated
+typedef ::testing::Types<FPFHEstimation<PointT, PointT, FPFHSignature33>,
+                         FPFHEstimationOMP<PointT, PointT, FPFHSignature33> > FPFHEstimatorTypes;
+TYPED_TEST_CASE (FPFHTest, FPFHEstimatorTypes);
+
+// This is a copy of the old FPFHEstimation test which will now
+// be applied to both FPFHEstimation and FPFHEstimationOMP
+TYPED_TEST (FPFHTest, Estimation)
+{
+  // Create reference
+  TypeParam& fpfh = this->fpfh;
+  fpfh.setInputNormals (cloud);
+  EXPECT_EQ (fpfh.getInputNormals (), cloud);
 
   // computePointSPFHSignature
   int nr_subdiv = 11; // use the same number of bins for all three angular features
   Eigen::MatrixXf hist_f1 (indices.size (), nr_subdiv), hist_f2 (indices.size (), nr_subdiv), hist_f3 (indices.size (), nr_subdiv);
   hist_f1.setZero (); hist_f2.setZero (); hist_f3.setZero ();
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
-    fpfh.computePointSPFHSignature (cloud, *normals, i, i, indices, hist_f1, hist_f2, hist_f3);
+    fpfh.computePointSPFHSignature (*cloud, *cloud, i, i, indices, hist_f1, hist_f2, hist_f3);
 
   EXPECT_NEAR (hist_f1 (0, 0), 0.757576, 1e-4);
   EXPECT_NEAR (hist_f1 (0, 1), 0.757576, 1e-4);
@@ -327,7 +350,7 @@ TEST (PCL, FPFHEstimation)
   // weightPointSPFHSignature
   Eigen::VectorXf fpfh_histogram (nr_subdiv + nr_subdiv + nr_subdiv);
   fpfh_histogram.setZero ();
-  vector<float> dists (indices.size ());
+  std::vector<float> dists (indices.size ());
   for (size_t i = 0; i < dists.size (); ++i) dists[i] = static_cast<float> (i);
   fpfh.weightPointSPFHSignature (hist_f1, hist_f2, hist_f3, indices, dists, fpfh_histogram);
 
@@ -349,8 +372,8 @@ TEST (PCL, FPFHEstimation)
   EXPECT_NEAR (fpfh_histogram[15], 16.8062,  1e-2);
   EXPECT_NEAR (fpfh_histogram[16], 16.2767,  1e-2);
   EXPECT_NEAR (fpfh_histogram[17], 12.251 ,  1e-2);
-  //EXPECT_NEAR (fpfh_histogram[18], 10.354,  1e-1);
-  //EXPECT_NEAR (fpfh_histogram[19], 6.65578,  1e-2);
+  EXPECT_NEAR (fpfh_histogram[18], 10.354,   1e-2);
+  EXPECT_NEAR (fpfh_histogram[19], 6.65578,  1e-2);
   EXPECT_NEAR (fpfh_histogram[20], 6.1437 ,  1e-2);
   EXPECT_NEAR (fpfh_histogram[21], 5.83341,  1e-2);
   EXPECT_NEAR (fpfh_histogram[22], 1.08809,  1e-2);
@@ -367,9 +390,10 @@ TEST (PCL, FPFHEstimation)
 
   // Object
   PointCloud<FPFHSignature33>::Ptr fpfhs (new PointCloud<FPFHSignature33> ());
+  boost::shared_ptr<std::vector<int> > indicesptr (new std::vector<int> (indices));
 
   // set parameters
-  fpfh.setInputCloud (cloud.makeShared ());
+  fpfh.setInputCloud (cloud);
   fpfh.setNrSubdivisions (11, 11, 11);
   fpfh.setIndices (indicesptr);
   fpfh.setSearchMethod (tree);
@@ -397,8 +421,8 @@ TEST (PCL, FPFHEstimation)
   EXPECT_NEAR (fpfhs->points[0].histogram[15], 17.963 , 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[16], 18.2801, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[17], 14.2766, 1e-2);
-  //EXPECT_NEAR (fpfhs->points[0].histogram[18], 10.8542, 1e-2);
-  //EXPECT_NEAR (fpfhs->points[0].histogram[19], 6.07925, 1e-2);
+  EXPECT_NEAR (fpfhs->points[0].histogram[18], 10.8542, 1e-2);
+  EXPECT_NEAR (fpfhs->points[0].histogram[19], 6.07925, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[20], 5.28565, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[21], 4.73887, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[22], 0.56984, 1e-2);
@@ -415,116 +439,28 @@ TEST (PCL, FPFHEstimation)
 
   // Test results when setIndices and/or setSearchSurface are used
 
-  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
-  for (size_t i = 0; i < cloud.size (); i+=3)
+  boost::shared_ptr<std::vector<int> > test_indices (new std::vector<int> (0));
+  for (size_t i = 0; i < cloud->size (); i+=3)
     test_indices->push_back (static_cast<int> (i));
 
-  testIndicesAndSearchSurface<FPFHEstimation<PointXYZ, Normal, FPFHSignature33>, PointXYZ, Normal, FPFHSignature33>
-  (cloud.makeShared (), normals, test_indices, 33);
-
+  testIndicesAndSearchSurface<FPFHEstimation, PointT, PointT, FPFHSignature33>
+  (cloud, cloud, test_indices, 33);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, FPFHEstimationOpenMP)
-{
-  // Estimate normals first
-  NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  // set parameters
-  n.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
-  n.setIndices (indicesptr);
-  n.setSearchMethod (tree);
-  n.setKSearch (10); // Use 10 nearest neighbors to estimate the normals
-  // estimate
-  n.compute (*normals);
-  FPFHEstimationOMP<PointXYZ, Normal, FPFHSignature33> fpfh (4); // instantiate 4 threads
-  fpfh.setInputNormals (normals);
-
-  // Object
-  PointCloud<FPFHSignature33>::Ptr fpfhs (new PointCloud<FPFHSignature33> ());
-
-  // set parameters
-  fpfh.setInputCloud (cloud.makeShared ());
-  fpfh.setNrSubdivisions (11, 11, 11);
-  fpfh.setIndices (indicesptr);
-  fpfh.setSearchMethod (tree);
-  fpfh.setKSearch (static_cast<int> (indices.size ()));
-
-  // estimate
-  fpfh.compute (*fpfhs);
-  EXPECT_EQ (fpfhs->points.size (), indices.size ());
-
-  EXPECT_NEAR (fpfhs->points[0].histogram[0],  1.58591, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[1],  1.68365, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[2],  6.71   , 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[3],  23.073, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[4],  33.3828, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[5],  20.4002, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[6],  7.31067, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[7],  1.02635, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[8],  0.48591, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[9],  1.47069, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[10], 2.87061, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[11], 1.78321, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[12], 4.30795, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[13], 7.05514, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[14], 9.37615, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[15], 17.963 , 1e-3);
-  //EXPECT_NEAR (fpfhs->points[0].histogram[16], 18.2801, 1e-3);
-  //EXPECT_NEAR (fpfhs->points[0].histogram[17], 14.2766, 1e-3);
-  //EXPECT_NEAR (fpfhs->points[0].histogram[18], 10.8542, 1e-3);
-  //EXPECT_NEAR (fpfhs->points[0].histogram[19], 6.07925, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[20], 5.28991, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[21], 4.73438, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[22], 0.56984, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[23], 3.29826, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[24], 5.28156, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[25], 5.26939, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[26], 3.13191, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[27], 1.74453, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[28], 9.41971, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[29], 21.5894, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[30], 24.6302, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[31], 17.7764, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[32], 7.28878, 1e-3);
-
-  // Test results when setIndices and/or setSearchSurface are used
-
-  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
-  for (size_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (static_cast<int> (i));
-
-  testIndicesAndSearchSurface<FPFHEstimationOMP<PointXYZ, Normal, FPFHSignature33>, PointXYZ, Normal, FPFHSignature33>
-  (cloud.makeShared (), normals, test_indices, 33);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, VFHEstimation)
 {
-  // Estimate normals first
-  NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  // set parameters
-  n.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
-  n.setIndices (indicesptr);
-  n.setSearchMethod (tree);
-  n.setKSearch (10); // Use 10 nearest neighbors to estimate the normals
-  // estimate
-  n.compute (*normals);
-  VFHEstimation<PointXYZ, Normal, VFHSignature308> vfh;
-  vfh.setInputNormals (normals);
-
-  //  PointCloud<PointNormal> cloud_normals;
-  //  concatenateFields (cloud, normals, cloud_normals);
-  //  savePCDFile ("bun0_n.pcd", cloud_normals);
+  using pcl::VFHSignature308;
 
   // Object
+  pcl::VFHEstimation<PointT, PointT, VFHSignature308> vfh;
   PointCloud<VFHSignature308>::Ptr vfhs (new PointCloud<VFHSignature308> ());
+  boost::shared_ptr<std::vector<int> > indicesptr (new std::vector<int> (indices));
 
   // set parameters
-  vfh.setInputCloud (cloud.makeShared ());
+  vfh.setInputCloud (cloud);
+  vfh.setInputNormals (cloud);
   vfh.setIndices (indicesptr);
   vfh.setSearchMethod (tree);
 
@@ -539,6 +475,9 @@ TEST (PCL, VFHEstimation)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GFPFH)
 {
+  using pcl::PointXYZL;
+  using pcl::GFPFHSignature16;
+
   PointCloud<PointXYZL>::Ptr cloud (new PointCloud<PointXYZL>());
 
   const unsigned num_classes = 3;
@@ -561,7 +500,7 @@ TEST (PCL, GFPFH)
   cloud->width = static_cast<uint32_t> (cloud->points.size ());
   cloud->height = 1;
 
-  GFPFHEstimation<PointXYZL, PointXYZL, GFPFHSignature16> gfpfh;
+  pcl::GFPFHEstimation<PointXYZL, PointXYZL, GFPFHSignature16> gfpfh;
   gfpfh.setNumberOfClasses (num_classes);
   gfpfh.setOctreeLeafSize (2);
   gfpfh.setInputCloud (cloud);
@@ -585,21 +524,22 @@ main (int argc, char** argv)
   if (argc < 2)
   {
     std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
-    return (-1);
+    return (1);
   }
 
-  if (loadPCDFile<PointXYZ> (argv[1], cloud) < 0)
+  if (pcl::io::loadPCDFile<PointT> (argv[1], *cloud) < 0)
   {
     std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
-    return (-1);
+    return (1);
   }
 
-  indices.resize (cloud.points.size ());
-  for (size_t i = 0; i < indices.size (); ++i)
-    indices[i] = static_cast<int> (i);
 
-  tree.reset (new search::KdTree<PointXYZ> (false));
-  tree->setInputCloud (cloud.makeShared ());
+  indices.reserve (cloud->size ());
+  for (size_t i = 0; i < cloud->size (); ++i)
+    indices.push_back (static_cast<int> (i));
+
+  tree.reset (new pcl::search::KdTree<PointT> (false));
+  tree->setInputCloud (cloud);
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

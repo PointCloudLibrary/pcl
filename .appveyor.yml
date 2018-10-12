@@ -92,7 +92,6 @@ build_script:
           -DBUILD_global_tests=ON
           -DBUILD_simulation=OFF
           -DBUILD_tools=OFF
-          -DBUILD_tests_features=OFF
           ..
   - cmake --build . --config %CONFIGURATION%
   - ctest -C %CONFIGURATION% -V
