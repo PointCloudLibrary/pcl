@@ -556,25 +556,25 @@ TEST (PCL, eigen22f)
     // test if U * V * U^T = M
     r_result = r_vectors * r_eigenvalues.asDiagonal () * r_vectors.transpose ();
     r_error = r_result - r_matrix;
-    diff = r_error.cwiseAbs (). sum ();
+    diff = r_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     // test if the eigenvalues are orthonormal
     g_result = r_vectors * r_vectors.transpose ();
     g_error = g_result - RMatrix::Identity ();
-    diff = g_error.cwiseAbs (). sum ();
+    diff = g_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     // test if column major matrices are also calculated correctly
     eigen22 (c_matrix, c_vectors, c_eigenvalues);
     c_result = c_vectors * c_eigenvalues.asDiagonal () * c_vectors.transpose ();
     c_error = c_result - c_matrix;
-    diff = c_error.cwiseAbs (). sum ();
+    diff = c_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     g_result = c_vectors * c_vectors.transpose ();
     g_error = g_result - CMatrix::Identity ();
-    diff = g_error.cwiseAbs (). sum ();
+    diff = g_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
   }
 }
