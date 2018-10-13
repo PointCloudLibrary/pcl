@@ -99,14 +99,8 @@ function doc ()
   # update the remote url to git-ssh protocol for commit
   git remote set-url origin git@github.com:PointCloudLibrary/documentation.git
 
-  if [ -z "$id_rsa_{1..23}" ]; then echo 'No $id_rsa_{1..23} found !' ; exit 1; fi
-
-  echo -n $id_rsa_{1..23} >> ~/.ssh/travis_rsa_64
-  base64 --decode --ignore-garbage ~/.ssh/travis_rsa_64 > ~/.ssh/id_rsa
-
-  chmod 600 ~/.ssh/id_rsa
-
   echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+  mv .travis.key "$HOME/.ssh/id_ed25519"
 
   # Upload to GitHub if generation succeeded
   if [[ $? == 0 ]]; then
