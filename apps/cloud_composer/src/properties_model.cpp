@@ -111,7 +111,6 @@ pcl::cloud_composer::PropertiesModel::copyProperties (const PropertiesModel* to_
   for (int i=0; i < to_copy->rowCount (); ++i){
     QList <QStandardItem*> new_row;
     QStandardItem* parent = to_copy->item(i,0);
-    QModelIndex parent_index = to_copy->index(i,0);
     qDebug () << "Copying "<<parent->text()<< " cols ="<<to_copy->columnCount ();
     new_row.append (parent->clone ());
     for (int j=1; j < to_copy->columnCount (); ++j)
