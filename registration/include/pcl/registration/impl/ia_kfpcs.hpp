@@ -83,7 +83,7 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
 
   // generate a subset of indices of size ransac_iterations_ on which to evaluate candidates on
   std::size_t nr_indices = indices_->size ();
-  if (nr_indices < ransac_iterations_)
+  if (nr_indices < size_t (ransac_iterations_))
     indices_validation_ = indices_;
   else
     for (int i = 0; i < ransac_iterations_; i++)

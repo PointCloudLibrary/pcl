@@ -395,7 +395,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       if (line[0] == 'v')
       {
         // Vertex (v)
-        if ((line[1] == ' ')) {
+        if (line[1] == ' ') {
           ++nr_point;
           continue;
         }
