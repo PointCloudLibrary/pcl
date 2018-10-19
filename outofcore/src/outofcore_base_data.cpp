@@ -137,6 +137,9 @@ namespace pcl
     void
     OutofcoreOctreeBaseMetadata::serializeMetadataToDisk ()
     {
+      if (LOD_num_points_.empty ())
+        return;
+
       // Create JSON object
       boost::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
   
