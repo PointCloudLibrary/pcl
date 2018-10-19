@@ -70,11 +70,13 @@ namespace pcl
       typedef boost::shared_ptr<SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> > Ptr;
       typedef boost::shared_ptr<const SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> > ConstPtr;
       /** \brief Constructor */
-    SHOTLocalReferenceFrameEstimationOMP () : threads_ (0)
+    SHOTLocalReferenceFrameEstimationOMP ()
       {
         feature_name_ = "SHOTLocalReferenceFrameEstimationOMP";
+
+        setNumberOfThreads(0);
       }
-      
+
     /** \brief Empty destructor */
     virtual ~SHOTLocalReferenceFrameEstimationOMP () {}
 
@@ -82,7 +84,7 @@ namespace pcl
      * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
      */
      inline void
-     setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+     setNumberOfThreads (unsigned int nr_threads = 0) { nr_threads == 0 ? threads_ = omp_get_num_procs() : threads_ = nr_threads; }
 
     protected:
       using Feature<PointInT, PointOutT>::feature_name_;
