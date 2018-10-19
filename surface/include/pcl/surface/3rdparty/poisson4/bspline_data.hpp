@@ -84,6 +84,8 @@ namespace pcl
     {
       vvDotTable = dvDotTable = ddDotTable = NULL;
       valueTables = dValueTables = NULL;
+      baseFunctions = NULL;
+      baseBSplines = NULL;
       functionCount = sampleCount = 0;
     }
 
@@ -98,9 +100,14 @@ namespace pcl
 
         if(  valueTables ) delete[]  valueTables;
         if( dValueTables ) delete[] dValueTables;
+        
+        if( baseFunctions ) delete[] baseFunctions;
+        if(  baseBSplines ) delete[]  baseBSplines;
       }
       vvDotTable = dvDotTable = ddDotTable = NULL;
       valueTables = dValueTables=NULL;
+      baseFunctions = NULL;
+      baseBSplines = NULL;
       functionCount = 0;
     }
 
