@@ -19,41 +19,41 @@ endif(FLANN_USE_STATIC)
 
 find_package(PkgConfig QUIET)
 if (FLANN_FIND_VERSION)
-    pkg_check_modules(PC_FLANN flann>=${FLANN_FIND_VERSION})
+    pkg_check_modules(FLANN flann>=${FLANN_FIND_VERSION})
 else(FLANN_FIND_VERSION)
-    pkg_check_modules(PC_FLANN flann)
+    pkg_check_modules(FLANN flann)
 endif(FLANN_FIND_VERSION)
 
-set(FLANN_DEFINITIONS ${PC_FLANN_CFLAGS_OTHER})
+if(NOT FLANN_FOUND)
+    find_path(FLANN_INCLUDE_DIR flann/flann.hpp
+              HINTS "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
+              PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann"
+              PATH_SUFFIXES include)
 
-find_path(FLANN_INCLUDE_DIR flann/flann.hpp
-          HINTS ${PC_FLANN_INCLUDEDIR} ${PC_FLANN_INCLUDE_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-          PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann" 
-          PATH_SUFFIXES include)
+    find_library(FLANN_LIBRARY
+                 NAMES ${FLANN_RELEASE_NAME}
+                 HINTS "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
+                 PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann"
+                 PATH_SUFFIXES lib)
 
-find_library(FLANN_LIBRARY
-             NAMES ${FLANN_RELEASE_NAME}
-             HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-             PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann" 
-             PATH_SUFFIXES lib)
+    find_library(FLANN_LIBRARY_DEBUG
+                 NAMES ${FLANN_DEBUG_NAME} ${FLANN_RELEASE_NAME}
+                 HINTS "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
+                 PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann"
+                 PATH_SUFFIXES lib debug/lib)
 
-find_library(FLANN_LIBRARY_DEBUG 
-             NAMES ${FLANN_DEBUG_NAME} ${FLANN_RELEASE_NAME}
-             HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-             PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann" 
-             PATH_SUFFIXES lib debug/lib)
+    if(NOT FLANN_LIBRARY_DEBUG)
+      set(FLANN_LIBRARY_DEBUG ${FLANN_LIBRARY})
+    endif(NOT FLANN_LIBRARY_DEBUG)
 
-if(NOT FLANN_LIBRARY_DEBUG)
-  set(FLANN_LIBRARY_DEBUG ${FLANN_LIBRARY})
-endif(NOT FLANN_LIBRARY_DEBUG)
+    set(FLANN_INCLUDE_DIRS ${FLANN_INCLUDE_DIR})
+    set(FLANN_LIBRARIES optimized ${FLANN_LIBRARY} debug ${FLANN_LIBRARY_DEBUG})
 
-set(FLANN_INCLUDE_DIRS ${FLANN_INCLUDE_DIR})
-set(FLANN_LIBRARIES optimized ${FLANN_LIBRARY} debug ${FLANN_LIBRARY_DEBUG})
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(FLANN DEFAULT_MSG FLANN_LIBRARY FLANN_INCLUDE_DIR)
 
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(FLANN DEFAULT_MSG FLANN_LIBRARY FLANN_INCLUDE_DIR)
-
-mark_as_advanced(FLANN_LIBRARY FLANN_LIBRARY_DEBUG FLANN_INCLUDE_DIR)
+    mark_as_advanced(FLANN_LIBRARY FLANN_LIBRARY_DEBUG FLANN_INCLUDE_DIR)
+endif()
 
 if(FLANN_FOUND)
   message(STATUS "FLANN found (include: ${FLANN_INCLUDE_DIRS}, lib: ${FLANN_LIBRARIES})")
