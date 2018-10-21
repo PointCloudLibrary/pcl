@@ -105,8 +105,8 @@ namespace pcl
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      inline void
-      setNumberOfThreads (unsigned int nr_threads = 0) { nr_threads == 0 ? threads_ = omp_get_num_procs() : threads_ = nr_threads; }
+      void
+      setNumberOfThreads (unsigned int nr_threads = 0);
 
     private:
       /** \brief Estimate the Fast Point Feature Histograms (FPFH) descriptors at a set of points given by

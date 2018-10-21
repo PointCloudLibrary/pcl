@@ -47,6 +47,20 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
+pcl::FastBilateralFilterOMP<PointT>::setNumberOfThreads (unsigned int nr_threads)
+{
+  if (nr_threads == 0)
+#ifdef _OPENMP
+    threads_ = omp_get_num_procs();
+#else
+    threads_ = 1;
+#endif
+  else
+    threads_ = nr_threads;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
 pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 {
   if (!input_->isOrganized ())
