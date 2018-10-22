@@ -27,19 +27,19 @@ endif(FLANN_FIND_VERSION)
 if(NOT FLANN_FOUND)
     find_path(FLANN_INCLUDE_DIR flann/flann.hpp
               HINTS "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-              PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann"
+              PATHS "$ENV{PROGRAMFILES}/flann" "$ENV{PROGRAMW6432}/flann"
               PATH_SUFFIXES include)
 
     find_library(FLANN_LIBRARY
                  NAMES ${FLANN_RELEASE_NAME}
                  HINTS "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-                 PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann"
+                 PATHS "$ENV{PROGRAMFILES}/flann" "$ENV{PROGRAMW6432}/flann"
                  PATH_SUFFIXES lib)
 
     find_library(FLANN_LIBRARY_DEBUG
                  NAMES ${FLANN_DEBUG_NAME} ${FLANN_RELEASE_NAME}
                  HINTS "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-                 PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann"
+                 PATHS "$ENV{PROGRAMFILES}/flann" "$ENV{PROGRAMW6432}/flann"
                  PATH_SUFFIXES lib debug/lib)
 
     if(NOT FLANN_LIBRARY_DEBUG)
