@@ -102,6 +102,14 @@ elseif(MSVC)
   set(CMAKE_COMPILER_IS_MSVC 1)
 endif()
 
+# Create a variable with expected default CXX flags
+# This will be used further down the road to check if the user explicitly provided CXX flags
+if(CMAKE_COMPILER_IS_MSVC)
+  set(CMAKE_CXX_FLAGS_DEFAULT "/DWIN32 /D_WINDOWS /W3 /GR /EHsc")
+else()
+  set(CMAKE_CXX_FLAGS_DEFAULT "")
+endif()
+
 include("${PCL_SOURCE_DIR}/cmake/pcl_verbosity.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_options.cmake")
@@ -114,13 +122,13 @@ endif()
 
 # check for SSE flags
 include("${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake")
-if(PCL_ENABLE_SSE AND "${CMAKE_CXX_FLAGS}" STREQUAL "")
+if(PCL_ENABLE_SSE AND "${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
   PCL_CHECK_FOR_SSE()
 endif()
 
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
-  if("${CMAKE_CXX_FLAGS}" STREQUAL "")
+  if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
     SET(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS_STR}")
 
     # Enable -Wabi for GCC > 4.3, and -Wno-deprecated for GCC < 4.3
@@ -159,7 +167,7 @@ endif()
 if(CMAKE_COMPILER_IS_MSVC)
   add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES /bigobj ${SSE_DEFINITIONS}")
 
-  if("${CMAKE_CXX_FLAGS}" STREQUAL "/DWIN32 /D_WINDOWS /W3 /GR /EHsc")	# Check against default flags
+  if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS_STR}")
 
     # Add extra code generation/link optimizations
@@ -187,7 +195,7 @@ if(CMAKE_COMPILER_IS_MSVC)
 endif()
 
 if(CMAKE_COMPILER_IS_PATHSCALE)
-  if("${CMAKE_CXX_FLAGS}" STREQUAL "")
+  if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
     SET(CMAKE_CXX_FLAGS "-Wno-uninitialized -zerouv -pthread -mp")
   endif()
   if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "")
@@ -196,7 +204,7 @@ if(CMAKE_COMPILER_IS_PATHSCALE)
 endif()
 
 if(CMAKE_COMPILER_IS_CLANG)
-  if("${CMAKE_C_FLAGS}" STREQUAL "")
+  if("${CMAKE_C_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
     SET(CMAKE_C_FLAGS "-Qunused-arguments")
   endif()
   if("${CMAKE_CXX_FLAGS}" STREQUAL "")
