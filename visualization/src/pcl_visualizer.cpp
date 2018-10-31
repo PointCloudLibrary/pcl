@@ -3562,7 +3562,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
         for (std::size_t tc = 0; tc < mesh.tex_coordinates[t].size (); ++tc)
           coordinates->InsertNextTuple2 (-1.0, -1.0);
 
-    mapper->MapDataArrayToMultiTextureAttribute(tu,
+    mapper->MapDataArrayToMultiTextureAttribute(mesh.tex_materials[tex_id].tex_name.c_str(),
                                                 this_coordinates_name.c_str (),
                                                 vtkDataObject::FIELD_ASSOCIATION_POINTS);
     polydata->GetPointData ()->AddArray (coordinates);
