@@ -88,23 +88,7 @@ pcl::CovarianceSampling<PointT, PointNT>::computeConditionNumber ()
   if (!computeCovarianceMatrix (covariance_matrix))
     return (-1.);
 
-  Eigen::EigenSolver<Eigen::Matrix<double, 6, 6> > eigen_solver;
-  eigen_solver.compute (covariance_matrix, true);
-
-  Eigen::MatrixXcd complex_eigenvalues = eigen_solver.eigenvalues ();
-
-  double max_ev = -std::numeric_limits<double>::max (),
-      min_ev = std::numeric_limits<double>::max ();
-  for (size_t i = 0; i < 6; ++i)
-  {
-    if (real (complex_eigenvalues (i, 0)) > max_ev)
-      max_ev = real (complex_eigenvalues (i, 0));
-
-    if (real (complex_eigenvalues (i, 0)) < min_ev)
-      min_ev = real (complex_eigenvalues (i, 0));
-  }
-
-  return (max_ev / min_ev);
+  return computeConditionNumber (covariance_matrix);
 }
 
 
@@ -112,22 +96,9 @@ pcl::CovarianceSampling<PointT, PointNT>::computeConditionNumber ()
 template<typename PointT, typename PointNT> double
 pcl::CovarianceSampling<PointT, PointNT>::computeConditionNumber (const Eigen::Matrix<double, 6, 6> &covariance_matrix)
 {
-  Eigen::EigenSolver<Eigen::Matrix<double, 6, 6> > eigen_solver;
-  eigen_solver.compute (covariance_matrix, true);
-
-  Eigen::MatrixXcd complex_eigenvalues = eigen_solver.eigenvalues ();
-
-  double max_ev = -std::numeric_limits<double>::max (),
-      min_ev = std::numeric_limits<double>::max ();
-  for (size_t i = 0; i < 6; ++i)
-  {
-    if (real (complex_eigenvalues (i, 0)) > max_ev)
-      max_ev = real (complex_eigenvalues (i, 0));
-
-    if (real (complex_eigenvalues (i, 0)) < min_ev)
-      min_ev = real (complex_eigenvalues (i, 0));
-  }
-
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6> > solver (covariance_matrix, Eigen::EigenvaluesOnly);
+  const double max_ev = solver.eigenvalues (). maxCoeff ();
+  const double min_ev = solver.eigenvalues (). minCoeff ();
   return (max_ev / min_ev);
 }
 
@@ -158,31 +129,13 @@ pcl::CovarianceSampling<PointT, PointNT>::computeCovarianceMatrix (Eigen::Matrix
 template<typename PointT, typename PointNT> void
 pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled_indices)
 {
-  if (!initCompute ())
+  Eigen::Matrix<double, 6, 6> c_mat;
+  // Invokes initCompute()
+  if (!computeCovarianceMatrix (c_mat))
     return;
 
-  //--- Part A from the paper
-  // Set up matrix F
-  Eigen::Matrix<double, 6, Eigen::Dynamic> f_mat = Eigen::Matrix<double, 6, Eigen::Dynamic> (6, indices_->size ());
-  for (size_t p_i = 0; p_i < scaled_points_.size (); ++p_i)
-  {
-    f_mat.block<3, 1> (0, p_i) = scaled_points_[p_i].cross (
-                                     (*input_normals_)[(*indices_)[p_i]].getNormalVector3fMap ()).template cast<double> ();
-    f_mat.block<3, 1> (3, p_i) = (*input_normals_)[(*indices_)[p_i]].getNormalVector3fMap ().template cast<double> ();
-  }
-
-  // Compute the covariance matrix C and its 6 eigenvectors (initially complex, move them to a double matrix)
-  Eigen::Matrix<double, 6, 6> c_mat (f_mat * f_mat.transpose ());
-
-  Eigen::EigenSolver<Eigen::Matrix<double, 6, 6> > eigen_solver;
-  eigen_solver.compute (c_mat, true);
-  Eigen::MatrixXcd complex_eigenvectors = eigen_solver.eigenvectors ();
-
-  Eigen::Matrix<double, 6, 6> x;
-  for (size_t i = 0; i < 6; ++i)
-    for (size_t j = 0; j < 6; ++j)
-      x (i, j) = real (complex_eigenvectors (i, j));
-
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6> > solver (c_mat);
+  const Eigen::Matrix<double, 6, 6> x = solver.eigenvectors ();
 
   //--- Part B from the paper
   /// TODO figure out how to fill the candidate_indices - see subsequent paper paragraphs

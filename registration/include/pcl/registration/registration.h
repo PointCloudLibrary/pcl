@@ -124,7 +124,6 @@ namespace pcl
         , source_cloud_updated_ (true)
         , force_no_recompute_ (false)
         , force_no_recompute_reciprocal_ (false)
-        , update_visualizer_ (NULL)
         , point_representation_ ()
       {
       }
@@ -405,14 +404,14 @@ namespace pcl
 
       /** \brief Call the registration algorithm which estimates the transformation and returns the transformed source 
         * (input) as \a output.
-        * \param[out] output the resultant input transfomed point cloud dataset
+        * \param[out] output the resultant input transformed point cloud dataset
         */
       inline void
       align (PointCloudSource &output);
 
       /** \brief Call the registration algorithm which estimates the transformation and returns the transformed source 
         * (input) as \a output.
-        * \param[out] output the resultant input transfomed point cloud dataset
+        * \param[out] output the resultant input transformed point cloud dataset
         * \param[in] guess the initial gross estimation of the transformation
         */
       inline void 

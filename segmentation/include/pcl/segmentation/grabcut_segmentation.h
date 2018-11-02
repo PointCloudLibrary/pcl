@@ -53,7 +53,7 @@ namespace pcl
     namespace grabcut
     {
       /** boost implementation of Boykov and Kolmogorov's maxflow algorithm doesn't support
-        * negative flows which makes it inappropriate for this conext.
+        * negative flows which makes it inappropriate for this context.
         * This implementation of Boykov and Kolmogorov's maxflow algorithm by Stephen Gould
         * <stephen.gould@anu.edu.au> in DARWIN under BSD does the trick however solwer than original
         * implementation.
@@ -286,6 +286,7 @@ namespace pcl
         uint32_t count_;
         /// small value to add to covariance matrix diagonal to avoid singular values
         float epsilon_;
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
 
       /** Build the initial GMMs using the Orchard and Bouman color clustering algorithm */

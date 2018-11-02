@@ -106,13 +106,13 @@ pcl::Kmeans::computeCentroids()
   {
     num_points_in_cluster = 0;
 
-    // For earch PointId in this set
+    // For each PointId in this set
     BOOST_FOREACH(SetPoints::value_type pid, clusters_to_points_[cid])
     {
       Point p = data_[pid];
       //Point p = ps__.getPoint(pid);
       for (i=0; i<num_dimensions_; i++)
-        centroid[i] += p[i];	
+        centroid[i] += p[i];
       num_points_in_cluster++;
     }
     // if no point in the clusters, this goes to inf (correct!)

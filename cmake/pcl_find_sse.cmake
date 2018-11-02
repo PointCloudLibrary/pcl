@@ -4,35 +4,31 @@ macro(PCL_CHECK_FOR_SSE)
     set(SSE_FLAGS)
     set(SSE_DEFINITIONS)
 
-    # Test CLANG
-    #if(CMAKE_COMPILER_IS_CLANG)
-    #  if(APPLE)
-    #    SET(SSE_FLAGS "${SSE_FLAGS} -march=native")
-    #  endif(APPLE)
-    #endif(CMAKE_COMPILER_IS_CLANG)
-
-    # Test GCC/G++
-    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-        execute_process(COMMAND ${CMAKE_CXX_COMPILER} "-dumpversion"
-                        OUTPUT_VARIABLE GCC_VERSION_STRING)
-        if(GCC_VERSION_STRING VERSION_GREATER 4.2 AND NOT APPLE AND NOT CMAKE_CROSSCOMPILING)
-            SET(SSE_FLAGS "${SSE_FLAGS} -march=native")
+    if(NOT CMAKE_CROSSCOMPILING)
+        # Test GCC/G++ and CLANG
+        if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+            list(APPEND SSE_FLAGS "-march=native")
             message(STATUS "Using CPU native flags for SSE optimization: ${SSE_FLAGS}")
         endif()
     endif()
 
-    # Unfortunately we need to check for SSE to enable "-mfpmath=sse" alongside 
+    # Unfortunately we need to check for SSE to enable "-mfpmath=sse" alongside
     # "-march=native". The reason for this is that by default, 32bit architectures
     # tend to use the x87 FPU (which has 80 bit internal precision), thus leading
     # to different results than 64bit architectures which are using SSE2 (64 bit internal
-    # precision). One solution would be to use "-ffloat-store" on 32bit (see 
+    # precision). One solution would be to use "-ffloat-store" on 32bit (see
     # http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html), but that slows code down,
     # so the preferred solution is to try "-mpfmath=sse" first.
     include(CheckCXXSourceRuns)
     set(CMAKE_REQUIRED_FLAGS)
 
     check_cxx_source_runs("
-        #include <mm_malloc.h>
+        // Intel compiler defines an incompatible _mm_malloc signature
+        #if defined(__INTEL_COMPILER)
+            #include <malloc.h>
+        #else
+            #include <mm_malloc.h>
+        #endif
         int main()
         {
           void* mem = _mm_malloc (100, 16);
@@ -131,7 +127,7 @@ macro(PCL_CHECK_FOR_SSE)
     elseif(MSVC AND NOT CMAKE_CL_64)
         set(CMAKE_REQUIRED_FLAGS "/arch:SSE2")
     endif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
-    
+
     check_cxx_source_runs("
         #include <emmintrin.h>
         int main ()
@@ -169,27 +165,27 @@ macro(PCL_CHECK_FOR_SSE)
 
     if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
         if(HAVE_SSE4_2_EXTENSIONS)
-            SET(SSE_FLAGS "${SSE_FLAGS} -msse4.2 -mfpmath=sse")
+            list(APPEND SSE_FLAGS "-msse4.2" "-mfpmath=sse")
         elseif(HAVE_SSE4_1_EXTENSIONS)
-            SET(SSE_FLAGS "${SSE_FLAGS} -msse4.1 -mfpmath=sse")
+            list(APPEND SSE_FLAGS "-msse4.1" "-mfpmath=sse")
         elseif(HAVE_SSSE3_EXTENSIONS)
-            SET(SSE_FLAGS "${SSE_FLAGS} -mssse3 -mfpmath=sse")
+            list(APPEND SSE_FLAGS "-mssse3" "-mfpmath=sse")
         elseif(HAVE_SSE3_EXTENSIONS)
-            SET(SSE_FLAGS "${SSE_FLAGS} -msse3 -mfpmath=sse")
+            list(APPEND SSE_FLAGS "-msse3" "-mfpmath=sse")
         elseif(HAVE_SSE2_EXTENSIONS)
-            SET(SSE_FLAGS "${SSE_FLAGS} -msse2 -mfpmath=sse")
+            list(APPEND SSE_FLAGS "-msse2" "-mfpmath=sse")
         elseif(HAVE_SSE_EXTENSIONS)
-            SET(SSE_FLAGS "${SSE_FLAGS} -msse -mfpmath=sse")
+            list(APPEND SSE_FLAGS "-msse" "-mfpmath=sse")
         else()
             # Setting -ffloat-store to alleviate 32bit vs 64bit discrepancies on non-SSE
             # platforms.
-            set(SSE_FLAGS "-ffloat-store")
+            list(APPEND SSE_FLAGS "-ffloat-store")
         endif()
     elseif(MSVC AND NOT CMAKE_CL_64)
         if(HAVE_SSE2_EXTENSIONS)
-            SET(SSE_FLAGS "${SSE_FLAGS} /arch:SSE2")
+            list(APPEND SSE_FLAGS "/arch:SSE2")
         elseif(HAVE_SSE_EXTENSIONS)
-            SET(SSE_FLAGS "${SSE_FLAGS} /arch:SSE")
+            list(APPEND SSE_FLAGS "/arch:SSE")
         endif(HAVE_SSE2_EXTENSIONS)
     endif()
 
@@ -204,4 +200,5 @@ macro(PCL_CHECK_FOR_SSE)
             SET(SSE_DEFINITIONS "${SSE_DEFINITIONS} -D__SSE__")
         endif()
     endif()
+    string(REPLACE ";" " " SSE_FLAGS_STR "${SSE_FLAGS}")
 endmacro(PCL_CHECK_FOR_SSE)

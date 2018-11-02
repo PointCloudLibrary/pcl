@@ -46,7 +46,7 @@ And install the result::
 
   make -j2 install
 
-Or alternatively, if you did not change the  variable which declares where PCL should be installed, do::
+Or alternatively, if you did not change the variable which declares where PCL should be installed, do::
 
   sudo make -j2 install
 

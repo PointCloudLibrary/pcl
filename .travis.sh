@@ -27,51 +27,30 @@ function before_install ()
   fi
 }
 
-function build ()
-{
-  case $CC in
-    clang ) build_lib;;
-    gcc ) build_lib_core;;
-  esac
-}
-
-function build_lib ()
+function build_all ()
 {
   # A complete build
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
-        -DPCL_QT_VERSION=4 \
-        -DBUILD_simulation=ON \
-        -DBUILD_global_tests=OFF \
-        -DBUILD_examples=OFF \
-        -DBUILD_tools=OFF \
-        -DBUILD_apps=OFF \
-        $PCL_DIR
-  # Build
-  make -j2
-}
-
-function build_examples ()
-{
-  # A complete build
-  # Configure
-  mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
-        -DPCL_ONLY_CORE_POINT_TYPES=ON \
-        -DPCL_QT_VERSION=4 \
+        -DPCL_QT_VERSION=5 \
         -DBUILD_simulation=ON \
         -DBUILD_global_tests=OFF \
         -DBUILD_examples=ON \
-        -DBUILD_tools=OFF \
-        -DBUILD_apps=OFF \
+        -DBUILD_tools=ON \
+        -DBUILD_apps=ON \
+        -DBUILD_apps_3d_rec_framework=ON \
+        -DBUILD_apps_cloud_composer=ON \
+        -DBUILD_apps_in_hand_scanner=ON \
+        -DBUILD_apps_modeler=ON \
+        -DBUILD_apps_point_cloud_editor=ON \
         $PCL_DIR
   # Build
   make -j2
 }
 
-function build_tools ()
+function test_all ()
 {
   # A complete build
   # Configure
@@ -80,184 +59,22 @@ function build_tools ()
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_QT_VERSION=4 \
         -DBUILD_simulation=ON \
-        -DBUILD_global_tests=OFF \
-        -DBUILD_examples=OFF \
-        -DBUILD_tools=ON \
-        -DBUILD_apps=OFF \
-        $PCL_DIR
-  # Build
-  make -j2
-}
-
-function build_apps ()
-{
-  # A complete build
-  # Configure
-  mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
-        -DPCL_ONLY_CORE_POINT_TYPES=ON \
-        -DPCL_QT_VERSION=4 \
-        -DBUILD_simulation=OFF \
-        -DBUILD_outofcore=OFF \
-        -DBUILD_people=OFF \
-        -DBUILD_global_tests=OFF \
-        -DBUILD_examples=OFF \
-        -DBUILD_tools=OFF \
-        -DBUILD_apps=ON \
-        $PCL_DIR
-  # Build
-  make -j2
-}
-
-function build_lib_core ()
-{
-  # A reduced build, only pcl_common
-  # Configure
-  mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
-        -DPCL_ONLY_CORE_POINT_TYPES=ON \
-        -DBUILD_2d=OFF \
-        -DBUILD_features=OFF \
-        -DBUILD_filters=OFF \
-        -DBUILD_geometry=OFF \
-        -DBUILD_global_tests=OFF \
-        -DBUILD_io=OFF \
-        -DBUILD_kdtree=OFF \
-        -DBUILD_keypoints=OFF \
-        -DBUILD_ml=OFF \
-        -DBUILD_octree=OFF \
-        -DBUILD_outofcore=OFF \
-        -DBUILD_people=OFF \
-        -DBUILD_recognition=OFF \
-        -DBUILD_registration=OFF \
-        -DBUILD_sample_consensus=OFF \
-        -DBUILD_search=OFF \
-        -DBUILD_segmentation=OFF \
-        -DBUILD_stereo=OFF \
-        -DBUILD_surface=OFF \
-        -DBUILD_tools=OFF \
-        -DBUILD_tracking=OFF \
-        -DBUILD_visualization=OFF \
-        $PCL_DIR
-  # Build
-  make -j2
-}
-
-function test_core ()
-{
-  # Configure
-  mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
-        -DPCL_ONLY_CORE_POINT_TYPES=ON \
-        -DBUILD_tools=OFF \
-        -DBUILD_examples=OFF \
-        -DBUILD_apps=OFF \
-        -DBUILD_simulation=OFF \
-        -DBUILD_stereo=OFF \
-        -DBUILD_tracking=OFF \
         -DBUILD_global_tests=ON \
-        -DBUILD_2d=ON \
-        -DBUILD_features=ON \
-        -DBUILD_filters=ON \
-        -DBUILD_geometry=ON \
-        -DBUILD_io=ON \
-        -DBUILD_kdtree=ON \
-        -DBUILD_keypoints=ON \
-        -DBUILD_ml=OFF \
-        -DBUILD_octree=ON \
-        -DBUILD_outofcore=ON \
-        -DBUILD_people=OFF \
-        -DBUILD_recognition=OFF \
-        -DBUILD_registration=OFF \
-        -DBUILD_sample_consensus=ON \
-        -DBUILD_search=ON \
-        -DBUILD_segmentation=OFF \
-        -DBUILD_simulation=OFF \
-        -DBUILD_surface=OFF \
-        -DBUILD_visualization=ON \
-        -DBUILD_tests_2d=ON \
-        -DBUILD_tests_common=ON \
-        -DBUILD_tests_features=ON \
-        -DBUILD_tests_filters=OFF \
-        -DBUILD_tests_geometry=ON \
-        -DBUILD_tests_io=ON \
-        -DBUILD_tests_kdtree=ON \
-        -DBUILD_tests_keypoints=ON \
-        -DBUILD_tests_octree=ON \
-        -DBUILD_tests_outofcore=ON \
-        -DBUILD_tests_people=OFF \
-        -DBUILD_tests_recognition=OFF \
-        -DBUILD_tests_registration=OFF \
-        -DBUILD_tests_sample_consensus=ON \
-        -DBUILD_tests_search=ON \
-        -DBUILD_tests_segmentation=OFF \
-        -DBUILD_tests_surface=OFF \
-        -DBUILD_tests_visualization=ON \
+        -DBUILD_examples=OFF \
+        -DBUILD_tools=OFF \
+        -DBUILD_apps=OFF \
         $PCL_DIR
-  # Build and run tests
+  # Build
   make -j2 tests
 }
 
-function test_ext ()
-{
-  # Configure
-  mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
-        -DPCL_ONLY_CORE_POINT_TYPES=ON \
-        -DBUILD_tools=OFF \
-        -DBUILD_examples=OFF \
-        -DBUILD_apps=OFF \
-        -DBUILD_simulation=OFF \
-        -DBUILD_stereo=OFF \
-        -DBUILD_tracking=OFF \
-        -DBUILD_global_tests=ON \
-        -DBUILD_2d=ON \
-        -DBUILD_features=ON \
-        -DBUILD_filters=ON \
-        -DBUILD_geometry=ON \
-        -DBUILD_io=ON \
-        -DBUILD_kdtree=ON \
-        -DBUILD_keypoints=OFF \
-        -DBUILD_ml=ON \
-        -DBUILD_octree=ON \
-        -DBUILD_outofcore=OFF \
-        -DBUILD_people=ON \
-        -DBUILD_recognition=ON \
-        -DBUILD_registration=ON \
-        -DBUILD_sample_consensus=ON \
-        -DBUILD_search=ON \
-        -DBUILD_segmentation=ON \
-        -DBUILD_surface=ON \
-        -DBUILD_visualization=ON \
-        -DBUILD_tests_2d=OFF \
-        -DBUILD_tests_common=OFF \
-        -DBUILD_tests_features=OFF \
-        -DBUILD_tests_filters=ON \
-        -DBUILD_tests_geometry=OFF \
-        -DBUILD_tests_io=OFF \
-        -DBUILD_tests_kdtree=OFF \
-        -DBUILD_tests_keypoints=OFF \
-        -DBUILD_tests_octree=OFF \
-        -DBUILD_tests_outofcore=OFF \
-        -DBUILD_tests_people=ON \
-        -DBUILD_tests_recognition=ON \
-        -DBUILD_tests_registration=ON \
-        -DBUILD_tests_sample_consensus=OFF \
-        -DBUILD_tests_search=OFF \
-        -DBUILD_tests_segmentation=ON \
-        -DBUILD_tests_surface=ON \
-        -DBUILD_tests_visualization=OFF \
-        $PCL_DIR
-  # Build and run tests
-  make -j2 tests
-}
 
 function doc ()
 {
-  # Do not generate documentation for pull requests
-  if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
   # Install sphinx
-  pip3 install --user sphinx pyparsing==2.1.9 sphinxcontrib-doxylink
+  pip3 install --user setuptools
+  pip3 install --user Jinja2==2.8.1 sphinx sphinxcontrib-doxylink
+
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DDOXYGEN_USE_SHORT_NAMES=OFF \
@@ -269,6 +86,19 @@ function doc ()
   git config --global user.email "documentation@pointclouds.org"
   git config --global user.name "PointCloudLibrary (via TravisCI)"
 
+  cd $DOC_DIR
+  git clone https://github.com/PointCloudLibrary/documentation.git .
+
+  # Generate documentation and tutorials
+  cd $BUILD_DIR
+  make doc tutorials advanced
+
+  # Do not push documentation in pull requests
+  if [[ $TRAVIS_EVENT_TYPE == 'pull_request' ]] ; then exit; fi
+
+  # update the remote url to git-ssh protocol for commit
+  git remote set-url origin git@github.com:PointCloudLibrary/documentation.git
+
   if [ -z "$id_rsa_{1..23}" ]; then echo 'No $id_rsa_{1..23} found !' ; exit 1; fi
 
   echo -n $id_rsa_{1..23} >> ~/.ssh/travis_rsa_64
@@ -277,13 +107,6 @@ function doc ()
   chmod 600 ~/.ssh/id_rsa
 
   echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-
-  cd $DOC_DIR
-  git clone git@github.com:PointCloudLibrary/documentation.git .
-
-  # Generate documentation and tutorials
-  cd $BUILD_DIR
-  make doc tutorials advanced
 
   # Upload to GitHub if generation succeeded
   if [[ $? == 0 ]]; then
@@ -302,12 +125,8 @@ function doc ()
 
 case $1 in
   before-install ) before_install;;
-  build ) build;;
-  build-examples ) build_examples;;
-  build-tools ) build_tools;;
-  build-apps ) build_apps;;
-  test-core ) test_core;;
-  test-ext ) test_ext;;
+  build ) build_all;;
+  test ) test_all;;
   doc ) doc;;
 esac
 

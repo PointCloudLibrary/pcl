@@ -341,7 +341,7 @@ namespace pcl
     PCL_EXPORTS size_t 
     extractCloud (const PtrStep<short2>& volume, const float3& volume_size, PtrSz<PointType> output);
 
-    /** \brief Performs normals computation for given poins using tsdf volume
+    /** \brief Performs normals computation for given points using tsdf volume
       * \param[in] volume tsdf volume
       * \param[in] volume_size volume size
       * \param[in] input points where normals are computed

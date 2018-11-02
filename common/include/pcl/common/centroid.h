@@ -56,9 +56,9 @@ namespace pcl
   /** \brief Compute the 3D (X-Y-Z) centroid of a set of points and return it as a 3D vector.
     * \param[in] cloud_iterator an iterator over the input point cloud
     * \param[out] centroid the output centroid
-    * \return number of valid point used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
+    * \return number of valid points used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
     * \note if return value is 0, the centroid is not changed, thus not valid.
-    * The last compononent of the vector is set to 1, this allow to transform the centroid vector with 4x4 matrices.
+    * The last component of the vector is set to 1, this allows to transform the centroid vector with 4x4 matrices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -82,9 +82,9 @@ namespace pcl
   /** \brief Compute the 3D (X-Y-Z) centroid of a set of points and return it as a 3D vector.
     * \param[in] cloud the input point cloud
     * \param[out] centroid the output centroid
-    * \return number of valid point used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
+    * \return number of valid points used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
     * \note if return value is 0, the centroid is not changed, thus not valid.
-    * The last compononent of the vector is set to 1, this allow to transform the centroid vector with 4x4 matrices.
+    * The last component of the vector is set to 1, this allows to transform the centroid vector with 4x4 matrices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -110,9 +110,9 @@ namespace pcl
     * \param[in] cloud the input point cloud
     * \param[in] indices the point cloud indices that need to be used
     * \param[out] centroid the output centroid
-    * \return number of valid point used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
+    * \return number of valid points used to determine the centroid. In case of dense point clouds, this is the same as the size of input indices.
     * \note if return value is 0, the centroid is not changed, thus not valid.
-    * The last compononent of the vector is set to 1, this allow to transform the centroid vector with 4x4 matrices.
+    * The last component of the vector is set to 1, this allows to transform the centroid vector with 4x4 matrices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -141,9 +141,9 @@ namespace pcl
     * \param[in] cloud the input point cloud
     * \param[in] indices the point cloud indices that need to be used
     * \param[out] centroid the output centroid
-    * \return number of valid point used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
+    * \return number of valid points used to determine the centroid. In case of dense point clouds, this is the same as the size of input indices.
     * \note if return value is 0, the centroid is not changed, thus not valid.
-    * The last compononent of the vector is set to 1, this allow to transform the centroid vector with 4x4 matrices.
+    * The last component of the vector is set to 1, this allows to transform the centroid vector with 4x4 matrices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -171,11 +171,11 @@ namespace pcl
     * The result is returned as a Eigen::Matrix3f.
     * Note: the covariance matrix is not normalized with the number of
     * points. For a normalized covariance, please use
-    * computeNormalizedCovarianceMatrix.
+    * computeCovarianceMatrixNormalized.
     * \param[in] cloud the input point cloud
     * \param[in] centroid the centroid of the set of points in the cloud
     * \param[out] covariance_matrix the resultant 3x3 covariance matrix
-    * \return number of valid point used to determine the covariance matrix.
+    * \return number of valid points used to determine the covariance matrix.
     * In case of dense point clouds, this is the same as the size of input cloud.
     * \note if return value is 0, the covariance matrix is not changed, thus not valid.
     * \ingroup common
@@ -210,7 +210,7 @@ namespace pcl
     * \param[in] cloud the input point cloud
     * \param[in] centroid the centroid of the set of points in the cloud
     * \param[out] covariance_matrix the resultant 3x3 covariance matrix
-    * \return number of valid point used to determine the covariance matrix.
+    * \return number of valid points used to determine the covariance matrix.
     * In case of dense point clouds, this is the same as the size of input cloud.
     * \ingroup common
     */
@@ -239,13 +239,13 @@ namespace pcl
     * The result is returned as a Eigen::Matrix3f.
     * Note: the covariance matrix is not normalized with the number of
     * points. For a normalized covariance, please use
-    * computeNormalizedCovarianceMatrix.
+    * computeCovarianceMatrixNormalized.
     * \param[in] cloud the input point cloud
     * \param[in] indices the point cloud indices that need to be used
     * \param[in] centroid the centroid of the set of points in the cloud
     * \param[out] covariance_matrix the resultant 3x3 covariance matrix
-    * \return number of valid point used to determine the covariance matrix.
-    * In case of dense point clouds, this is the same as the size of input cloud.
+    * \return number of valid points used to determine the covariance matrix.
+    * In case of dense point clouds, this is the same as the size of input indices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -276,13 +276,13 @@ namespace pcl
     * The result is returned as a Eigen::Matrix3f.
     * Note: the covariance matrix is not normalized with the number of
     * points. For a normalized covariance, please use
-    * computeNormalizedCovarianceMatrix.
+    * computeCovarianceMatrixNormalized.
     * \param[in] cloud the input point cloud
     * \param[in] indices the point cloud indices that need to be used
     * \param[in] centroid the centroid of the set of points in the cloud
     * \param[out] covariance_matrix the resultant 3x3 covariance matrix
-    * \return number of valid point used to determine the covariance matrix.
-    * In case of dense point clouds, this is the same as the size of input cloud.
+    * \return number of valid points used to determine the covariance matrix.
+    * In case of dense point clouds, this is the same as the size of input indices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -320,8 +320,8 @@ namespace pcl
     * \param[in] indices the point cloud indices that need to be used
     * \param[in] centroid the centroid of the set of points in the cloud
     * \param[out] covariance_matrix the resultant 3x3 covariance matrix
-    * \return number of valid point used to determine the covariance matrix.
-    * In case of dense point clouds, this is the same as the size of input cloud.
+    * \return number of valid points used to determine the covariance matrix.
+    * In case of dense point clouds, this is the same as the size of input indices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -358,8 +358,8 @@ namespace pcl
     * \param[in] indices the point cloud indices that need to be used
     * \param[in] centroid the centroid of the set of points in the cloud
     * \param[out] covariance_matrix the resultant 3x3 covariance matrix
-    * \return number of valid point used to determine the covariance matrix.
-    * In case of dense point clouds, this is the same as the size of input cloud.
+    * \return number of valid points used to determine the covariance matrix.
+    * In case of dense point clouds, this is the same as the size of input indices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -387,14 +387,14 @@ namespace pcl
   }
 
   /** \brief Compute the normalized 3x3 covariance matrix and the centroid of a given set of points in a single loop.
-    * Normalized means that every entry has been divided by the number of entries in indices.
+    * Normalized means that every entry has been divided by the number of valid entries in the point cloud.
     * For small number of points, or if you want explicitly the sample-variance, scale the covariance matrix
     * with n / (n-1), where n is the number of points used to calculate the covariance matrix and is returned by this function.
     * \note This method is theoretically exact. However using float for internal calculations reduces the accuracy but increases the efficiency.
     * \param[in] cloud the input point cloud
     * \param[out] covariance_matrix the resultant 3x3 covariance matrix
     * \param[out] centroid the centroid of the set of points in the cloud
-    * \return number of valid point used to determine the covariance matrix.
+    * \return number of valid points used to determine the covariance matrix.
     * In case of dense point clouds, this is the same as the size of input cloud.
     * \ingroup common
     */
@@ -428,8 +428,8 @@ namespace pcl
     * \param[in] indices subset of points given by their indices
     * \param[out] covariance_matrix the resultant 3x3 covariance matrix
     * \param[out] centroid the centroid of the set of points in the cloud
-    * \return number of valid point used to determine the covariance matrix.
-    * In case of dense point clouds, this is the same as the size of input cloud.
+    * \return number of valid points used to determine the covariance matrix.
+    * In case of dense point clouds, this is the same as the size of input indices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -465,8 +465,8 @@ namespace pcl
     * \param[in] indices subset of points given by their indices
     * \param[out] centroid the centroid of the set of points in the cloud
     * \param[out] covariance_matrix the resultant 3x3 covariance matrix
-    * \return number of valid point used to determine the covariance matrix.
-    * In case of dense point clouds, this is the same as the size of input cloud.
+    * \return number of valid points used to determine the covariance matrix.
+    * In case of dense point clouds, this is the same as the size of input indices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -494,13 +494,13 @@ namespace pcl
   }
 
   /** \brief Compute the normalized 3x3 covariance matrix for a already demeaned point cloud.
-    * Normalized means that every entry has been divided by the number of entries in indices.
+    * Normalized means that every entry has been divided by the number of entries in the input point cloud.
     * For small number of points, or if you want explicitly the sample-variance, scale the covariance matrix
     * with n / (n-1), where n is the number of points used to calculate the covariance matrix and is returned by this function.
     * \note This method is theoretically exact. However using float for internal calculations reduces the accuracy but increases the efficiency.
     * \param[in] cloud the input point cloud
     * \param[out] covariance_matrix the resultant 3x3 covariance matrix
-    * \return number of valid point used to determine the covariance matrix.
+    * \return number of valid points used to determine the covariance matrix.
     * In case of dense point clouds, this is the same as the size of input cloud.
     * \ingroup common
     */
@@ -530,8 +530,8 @@ namespace pcl
     * \param[in] cloud the input point cloud
     * \param[in] indices subset of points given by their indices
     * \param[out] covariance_matrix the resultant 3x3 covariance matrix
-    * \return number of valid point used to determine the covariance matrix.
-    * In case of dense point clouds, this is the same as the size of input cloud.
+    * \return number of valid points used to determine the covariance matrix.
+    * In case of dense point clouds, this is the same as the size of input indices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -563,8 +563,8 @@ namespace pcl
     * \param[in] cloud the input point cloud
     * \param[in] indices subset of points given by their indices
     * \param[out] covariance_matrix the resultant 3x3 covariance matrix
-    * \return number of valid point used to determine the covariance matrix.
-    * In case of dense point clouds, this is the same as the size of input cloud.
+    * \return number of valid points used to determine the covariance matrix.
+    * In case of dense point clouds, this is the same as the size of input indices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int

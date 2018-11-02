@@ -110,7 +110,7 @@ namespace pcl
       setTriangles (const std::vector <pcl::Vertices>& triangles);
 
       /** \brief Returns the triangles of the mesh.
-        * \param[out] triangles triangles of tthe mesh
+        * \param[out] triangles triangles of the mesh
         */
       void
       getTriangles (std::vector <pcl::Vertices>& triangles) const;

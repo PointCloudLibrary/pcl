@@ -104,7 +104,6 @@ namespace pcl
         */
       void 
       computeFeature (PointCloudOut &output);
-
     private:
       /** \brief 16-bytes aligned placeholder for the XYZ centroid of a surface patch. */
       Eigen::Vector4f xyz_centroid_;

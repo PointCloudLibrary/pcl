@@ -31,6 +31,7 @@ if (build)
 	PCL_ADD_TEST(common_bearing_angle_image test_bearing_angle_image FILES test_bearing_angle_image.cpp LINK_WITH pcl_gtest pcl_common)
 
 	PCL_ADD_TEST(common_point_type_conversion test_common_point_type_conversion FILES test_point_type_conversion.cpp LINK_WITH pcl_gtest pcl_common)
+	PCL_ADD_TEST(common_colors test_colors FILES test_colors.cpp LINK_WITH pcl_gtest pcl_common)
 
   if(BUILD_io)
     PCL_ADD_TEST(common_centroid test_centroid

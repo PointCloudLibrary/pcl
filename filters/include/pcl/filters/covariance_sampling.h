@@ -117,7 +117,7 @@ namespace pcl
       /** \brief Compute the condition number of the input point cloud. The condition number is the ratio between the
         * largest and smallest eigenvalues of the 6x6 covariance matrix of the cloud. The closer this number is to 1.0,
         * the more stable the cloud is for ICP registration.
-        * \param[in] covariance_matrix user given covariance matrix
+        * \param[in] covariance_matrix user given covariance matrix. Assumed to be self adjoint/symmetric.
         * \return the condition number
         */
       static double

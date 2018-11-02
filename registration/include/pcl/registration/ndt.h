@@ -233,7 +233,7 @@ namespace pcl
       using Registration<PointSource, PointTarget>::update_visualizer_;
 
       /** \brief Estimate the transformation and returns the transformed source (input) as output.
-        * \param[out] output the resultant input transfomed point cloud dataset
+        * \param[out] output the resultant input transformed point cloud dataset
         */
       virtual void
       computeTransformation (PointCloudSource &output)
@@ -242,7 +242,7 @@ namespace pcl
       }
 
       /** \brief Estimate the transformation and returns the transformed source (input) as output.
-        * \param[out] output the resultant input transfomed point cloud dataset
+        * \param[out] output the resultant input transformed point cloud dataset
         * \param[in] guess the initial gross estimation of the transformation
         */
       virtual void

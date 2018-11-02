@@ -71,14 +71,10 @@ build_script:
   # These tests will fails on Windows.
   # Therefore, these tests are disabled until fixed.
   # AppVeyor Log : https://ci.appveyor.com/project/PointCloudLibrary/pcl/build/1.0.267
-  #   * test_2d
   #   * common_eigen
   #   * feature_rift_estimation
   #   * feature_cppf_estimation
   #   * feature_pfh_estimation
-  #   * filters_sampling
-  #   * io_grabbers
-  #   * registration_api
   - call "%VCVARSALL%" %ARCHITECTURE%
   - cd %APPVEYOR_BUILD_FOLDER%
   - mkdir build
@@ -90,18 +86,13 @@ build_script:
           -DVCPKG_APPLOCAL_DEPS=OFF
           -DPCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32=ON
           -DPCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32=ON
+          -DPCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32=ON
           -DPCL_NO_PRECOMPILE=OFF
           -DBUILD_apps=OFF
           -DBUILD_examples=OFF
           -DBUILD_global_tests=ON
           -DBUILD_simulation=OFF
           -DBUILD_tools=OFF
-          -DBUILD_tests_2d=OFF
-          -DBUILD_tests_common=OFF
-          -DBUILD_tests_features=OFF
-          -DBUILD_tests_filters=OFF
-          -DBUILD_tests_io=OFF
-          -DBUILD_tests_registration=OFF
           ..
   - cmake --build . --config %CONFIGURATION%
   - ctest -C %CONFIGURATION% -V

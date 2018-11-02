@@ -24,26 +24,17 @@ Now, let's break down the code piece by piece.
    :language: cpp
    :lines: 2-3
 
-pcl/io/pcd_io.h is the header that contains the definitions for PCD I/O
-operations, and pcl/point_types.h contains definitions for several PointT type
-structures (pcl::PointXYZ in our case).
+The first file is the header that contains the definitions for PCD I/O
+operations, and second one contains definitions for several point type
+structures, including ``pcl::PointXYZ`` that we will use.
 
 .. literalinclude:: sources/pcd_write/pcd_write.cpp
    :language: cpp
    :lines: 8
 
 describes the templated PointCloud structure that we will create. The type of
-each point is set to pcl::PointXYZ, which is:
-
-.. code-block:: cpp
-
-   // \brief A point structure representing Euclidean xyz coordinates.
-   struct PointXYZ
-   {
-     float x;
-     float y;
-     float z;
-   };
+each point is set to ``pcl::PointXYZ``, which is a structure that has ``x``,
+``y``, and ``z`` fields.
 
 The lines:
 

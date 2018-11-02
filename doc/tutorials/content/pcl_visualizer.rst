@@ -439,7 +439,7 @@ window. We must store the view port ID number that is passed back in the
 fifth parameter and use it in all other calls where we only want to
 affect that viewport.
 
-We also set the background colour of this viewport, give it a lable
+We also set the background colour of this viewport, give it a label
 based on what we are using the viewport to distinguish, and add our
 point cloud to it, using an RGB colour handler.
 

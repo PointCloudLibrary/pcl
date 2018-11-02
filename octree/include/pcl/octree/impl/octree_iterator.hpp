@@ -133,18 +133,16 @@ namespace pcl
         if ( (this->max_octree_depth_>=stack_entry.depth_) &&
              (stack_entry.node_->getNodeType () == BRANCH_NODE) )
         {
-          unsigned char child_idx;
-
           // current node is a branch node
           BranchNode* current_branch =
               static_cast<BranchNode*> (stack_entry.node_);
 
           // add all children to stack
-          for (child_idx = 0; child_idx < 8; ++child_idx)
+          for (int8_t i = 7; i >= 0; --i)
           {
+            const unsigned char child_idx = (unsigned char) i;
 
             // if child exist
-
             if (this->octree_->branchHasChild(*current_branch, child_idx))
             {
               // add child to stack

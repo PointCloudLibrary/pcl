@@ -139,9 +139,9 @@ namespace pcl
         if (u == 0.)
           return (0.5);
         y = u / 2.0;
-        if (y < -6.)
+        if (y < -3.)
           return (0.0);
-        if (y > 6.)
+        if (y > 3.)
           return (1.0);
         if (y < 0.0)
           y = - y;

@@ -124,7 +124,7 @@ namespace pcl
 
       /** \brief Generates code for computing the branch indices for the specified node and writes it to the specified stream.
         * \param[in] node The node for which the branch index estimation code is generated.
-        * \param[out] stream The destionation for the code.
+        * \param[out] stream The destination for the code.
         */
       virtual void 
       generateCodeForBranchIndexComputation (NodeType & node,
@@ -132,7 +132,7 @@ namespace pcl
 
       /** \brief Generates code for computing the output for the specified node and writes it to the specified stream.
         * \param[in] node The node for which the output estimation code is generated.
-        * \param[out] stream The destionation for the code.
+        * \param[out] stream The destination for the code.
         */
       virtual void 
       generateCodeForOutput (NodeType & node,

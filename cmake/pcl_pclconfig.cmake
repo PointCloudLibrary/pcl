@@ -11,10 +11,16 @@ set(PCLCONFIG_AVAILABLE_COMPONENTS_LIST)
 set(PCLCONFIG_INTERNAL_DEPENDENCIES)
 set(PCLCONFIG_EXTERNAL_DEPENDENCIES)
 set(PCLCONFIG_OPTIONAL_DEPENDENCIES)
-set(PCLCONFIG_SSE_DEFINITIONS "${SSE_FLAGS} ${SSE_DEFINITIONS}")
+set(PCLCONFIG_SSE_DEFINITIONS "${SSE_DEFINITIONS}")
+set(PCLCONFIG_SSE_COMPILE_OPTIONS ${SSE_FLAGS})
+
 foreach(_ss ${PCL_SUBSYSTEMS_MODULES})
     PCL_GET_SUBSYS_STATUS(_status ${_ss})
-    if(_status)
+
+    # do not include test targets
+    string(REGEX MATCH "^tests_" _is_test ${_ss})
+
+    if(_status AND NOT _is_test)
         set(PCLCONFIG_AVAILABLE_COMPONENTS "${PCLCONFIG_AVAILABLE_COMPONENTS} ${_ss}")
         set(PCLCONFIG_AVAILABLE_COMPONENTS_LIST "${PCLCONFIG_AVAILABLE_COMPONENTS_LIST}\n# - ${_ss}")
         GET_IN_MAP(_deps PCL_SUBSYS_DEPS ${_ss})
@@ -66,7 +72,7 @@ foreach(_ss ${PCL_SUBSYSTEMS_MODULES})
 	    endif (_sub_status)
 	  endforeach(_sub)
 	endif (${PCL_SUBSYS_SUBSYS})
-    endif(_status)
+    endif()
 endforeach(_ss)
 
 #Boost modules

@@ -159,7 +159,7 @@ if(build)
        )
 	
     if(MSVC)
-      # Workaround to aviod hitting the MSVC 4GB linker memory limit when building pcl_features.
+      # Workaround to avoid hitting the MSVC 4GB linker memory limit when building pcl_features.
       # Disable whole program optimization (/GL) and link-time code generation (/LTCG).
       string(REPLACE "/GL" "" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
       string(REPLACE "/LTCG" "" CMAKE_SHARED_LINKER_FLAGS_RELEASE ${CMAKE_SHARED_LINKER_FLAGS_RELEASE}) 

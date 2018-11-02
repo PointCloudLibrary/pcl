@@ -65,7 +65,7 @@ namespace pcl
       CloudGenerator ();
 
       /** Constructor with single generator to ensure all X, Y and Z values are within same range
-        * \param params paramteres for X, Y and Z values generation. Uniqueness is ensured through
+        * \param params parameters for X, Y and Z values generation. Uniqueness is ensured through
         * seed incrementation
         */
       CloudGenerator (const GeneratorParameters& params);

@@ -50,7 +50,7 @@ namespace pcl
     * \ingroup common
     */
   template <typename real, int dimension>
-  class VectorAverage 
+  class VectorAverage
   {
      public:
         //-----CONSTRUCTOR&DESTRUCTOR-----
@@ -96,8 +96,11 @@ namespace pcl
         /** Get the eigenvector corresponding to the smallest eigenvalue */
         inline void
         getEigenVector1 (Eigen::Matrix<real, dimension, 1>& eigen_vector1) const;
+
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         
         //-----VARIABLES-----
+
         
      protected:
         //-----METHODS-----

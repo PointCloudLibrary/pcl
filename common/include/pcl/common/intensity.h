@@ -44,7 +44,7 @@ namespace pcl
 {
   namespace common
   {
-    /** \brief Intensity field accessor provides access to the inetnsity filed of a PoinT
+    /** \brief Intensity field accessor provides access to the intensity filed of a PoinT
       * implementation for specific types should be done in \file pcl/common/impl/intensity.hpp
       */
     template<typename PointT>
@@ -78,7 +78,7 @@ namespace pcl
         p.intensity = intensity;
       }
       /** \brief subtract value from intensity field
-        * \param p point for which to modify inetnsity
+        * \param p point for which to modify intensity
         * \param[in] value value to be subtracted from point intensity
         */
       inline void
@@ -87,7 +87,7 @@ namespace pcl
         p.intensity -= value;
       }
       /** \brief add value to intensity field
-        * \param p point for which to modify inetnsity
+        * \param p point for which to modify intensity
         * \param[in] value value to be added to point intensity
         */
       inline void

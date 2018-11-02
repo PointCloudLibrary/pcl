@@ -239,7 +239,7 @@ saveOBJFile (const std::string &file_name,
   PCL_INFO ("Closing obj file\n");
   fs.close ();
 
-  /* Write material defination for OBJ file*/
+  /* Write material definition for OBJ file*/
   // Open file
   PCL_INFO ("Writing material files\n");
   //don't do it if no material to write
@@ -363,7 +363,7 @@ std::ifstream& GotoLine(std::ifstream& file, unsigned int num)
   return (file);
 }
 
-/** \brief Helper function that reads a camera file outputed by Kinfu */
+/** \brief Helper function that reads a camera file outputted by Kinfu */
 bool readCamPoseFile(std::string filename, pcl::TextureMapping<pcl::PointXYZ>::Camera &cam)
 {
   ifstream myReadFile;

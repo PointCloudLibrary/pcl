@@ -90,7 +90,7 @@ namespace pcl
 
       /** \brief Constructor for base SAC.
         * \param[in] model a Sample Consensus model
-        * \param[in] threshold distance to model threshol
+        * \param[in] threshold distance to model threshold
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensus (const SampleConsensusModelPtr &model, 

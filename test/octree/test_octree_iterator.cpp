@@ -884,14 +884,9 @@ struct OctreeBaseWalkThroughIteratorsTest : public testing::Test
 
 TEST_F (OctreeBaseWalkThroughIteratorsTest, LeafNodeDepthFirstIterator)
 {
-  // Depth first iterator seems to have a reverse order walk through: should be fixed
   OctreeT::LeafNodeDepthFirstIterator it = oct_a_.leaf_depth_begin ();
 
-  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (2u, 2u, 0u)); // depth: 2
-  EXPECT_EQ (it.getCurrentOctreeDepth (), 2u);
-  EXPECT_TRUE (it.isLeafNode ());
-  ++it;
-  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (1u, 0u, 0u)); // depth: 1
+  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (0u, 0u, 0u)); // depth: 1
   EXPECT_EQ (it.getCurrentOctreeDepth (), 1u);
   EXPECT_TRUE (it.isLeafNode ());
   ++it;
@@ -899,8 +894,12 @@ TEST_F (OctreeBaseWalkThroughIteratorsTest, LeafNodeDepthFirstIterator)
   EXPECT_EQ (it.getCurrentOctreeDepth (), 2u);
   EXPECT_TRUE (it.isLeafNode ());
   ++it;
-  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (0u, 0u, 0u)); // depth: 1
+  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (1u, 0u, 0u)); // depth: 1
   EXPECT_EQ (it.getCurrentOctreeDepth (), 1u);
+  EXPECT_TRUE (it.isLeafNode ());
+  ++it;
+  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (2u, 2u, 0u)); // depth: 2
+  EXPECT_EQ (it.getCurrentOctreeDepth (), 2u);
   EXPECT_TRUE (it.isLeafNode ());
   ++it;
   EXPECT_EQ (it, oct_a_.leaf_depth_end ());
@@ -931,22 +930,13 @@ TEST_F (OctreeBaseWalkThroughIteratorsTest, LeafNodeBreadthFirstIterator)
 
 TEST_F (OctreeBaseWalkThroughIteratorsTest, DepthFirstIterator)
 {
-  // Depth first iterator seems to have a reverse order walk through: should be fixed
   OctreeT::DepthFirstIterator it = oct_a_.depth_begin ();
 
   EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (0u, 0u, 0u)); // depth: 0
   EXPECT_EQ (it.getCurrentOctreeDepth (), 0u);
   EXPECT_TRUE (it.isBranchNode ());
   ++it;
-  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (1u, 1u, 0u)); // depth: 1
-  EXPECT_EQ (it.getCurrentOctreeDepth (), 1u);
-  EXPECT_TRUE (it.isBranchNode ());
-  ++it;
-  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (2u, 2u, 0u)); // depth: 2
-  EXPECT_EQ (it.getCurrentOctreeDepth (), 2u);
-  EXPECT_TRUE (it.isLeafNode ());
-  ++it;
-  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (1u, 0u, 0u)); // depth: 1
+  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (0u, 0u, 0u)); // depth: 1
   EXPECT_EQ (it.getCurrentOctreeDepth (), 1u);
   EXPECT_TRUE (it.isLeafNode ());
   ++it;
@@ -958,8 +948,16 @@ TEST_F (OctreeBaseWalkThroughIteratorsTest, DepthFirstIterator)
   EXPECT_EQ (it.getCurrentOctreeDepth (), 2u);
   EXPECT_TRUE (it.isLeafNode ());
   ++it;
-  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (0u, 0u, 0u)); // depth: 1
+  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (1u, 0u, 0u)); // depth: 1
   EXPECT_EQ (it.getCurrentOctreeDepth (), 1u);
+  EXPECT_TRUE (it.isLeafNode ());
+  ++it;
+  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (1u, 1u, 0u)); // depth: 1
+  EXPECT_EQ (it.getCurrentOctreeDepth (), 1u);
+  EXPECT_TRUE (it.isBranchNode ());
+  ++it;
+  EXPECT_EQ (it.getCurrentOctreeKey (), OctreeKey (2u, 2u, 0u)); // depth: 2
+  EXPECT_EQ (it.getCurrentOctreeDepth (), 2u);
   EXPECT_TRUE (it.isLeafNode ());
   ++it;
   EXPECT_EQ (it, oct_a_.depth_end ());

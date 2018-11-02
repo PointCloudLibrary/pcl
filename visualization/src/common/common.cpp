@@ -38,6 +38,7 @@
 #include <pcl/point_types.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/console/print.h>
+#include <pcl/common/colors.h>
 #include <stdlib.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -434,7 +435,23 @@ pcl::visualization::getColormapLUT (LookUpTableRepresentationProperties colormap
                                 red[2] * weight + white[2] * (1 - weight)  );
       }
       break;
-    } 
+    }
+
+    case PCL_VISUALIZER_LUT_VIRIDIS:
+    {
+      table->SetSaturationRange (1, 1);
+      table->SetAlphaRange (1, 1);
+      table->SetNumberOfTableValues (pcl::ViridisLUT::size ());
+      for (size_t i = 0; i < pcl::ViridisLUT::size (); i++)
+      {
+        pcl::RGB c = pcl::ViridisLUT::at (i);
+        table->SetTableValue (i, static_cast<double> (c.r) / 255.0,
+                                 static_cast<double> (c.g) / 255.0,
+                                 static_cast<double> (c.b) / 255.0);
+      }
+      break;
+    }
+
     default:
       PCL_WARN ("[pcl::visualization::getColormapLUT] Requested colormap type does not exist!\n");
       return false;

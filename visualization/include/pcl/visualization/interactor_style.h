@@ -107,9 +107,9 @@ namespace pcl
       */
     class PCL_EXPORTS PCLVisualizerInteractorStyle : public vtkInteractorStyleRubberBandPick
     {
-      typedef boost::shared_ptr<CloudActorMap> CloudActorMapPtr;
-
       public:
+        typedef boost::shared_ptr<CloudActorMap> CloudActorMapPtr;
+
         static PCLVisualizerInteractorStyle *New ();
 
         /** \brief Empty constructor. */

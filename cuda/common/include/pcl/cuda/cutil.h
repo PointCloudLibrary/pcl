@@ -849,7 +849,7 @@ extern "C" {
         exit(EXIT_FAILURE);                                                  \
     } } while(0);
 
-    //! Check if conditon is true (flexible assert)
+    //! Check if condition is true (flexible assert)
 #  define CUT_CONDITION( val)                                                \
     if( CUTFalse == cutCheckCondition( val, __FILE__, __LINE__)) {           \
         exit(EXIT_FAILURE);                                                  \
