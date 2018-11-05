@@ -381,11 +381,11 @@ openni_wrapper::OpenNIDevice::Init ()
 
     status = depth_generator_.GetIntProperty ("ShadowValue", shadow_value_);
     if (status != XN_STATUS_OK)
-      THROW_OPENNI_EXCEPTION ("reading the value for pixels in shadow regions failed. Reason: %s", xnGetStatusString (status));
+      shadow_value_ = 0;
 
     status = depth_generator_.GetIntProperty ("NoSampleValue", no_sample_value_);
     if (status != XN_STATUS_OK)
-      THROW_OPENNI_EXCEPTION ("reading the value for pixels with no depth estimation failed. Reason: %s", xnGetStatusString (status));
+      no_sample_value_ = 0;
 
     // baseline from cm -> meters
     baseline_ = static_cast<float> (baseline * 0.01);
