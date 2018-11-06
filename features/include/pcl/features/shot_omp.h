@@ -96,13 +96,16 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
 
       /** \brief Empty constructor. */
-      SHOTEstimationOMP (unsigned int nr_threads = 0) : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> (), threads_ (nr_threads)
-      { };
+      SHOTEstimationOMP (unsigned int nr_threads = 0) : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> ()
+      {
+        setNumberOfThreads(nr_threads);
+      };
+
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      inline void
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+      void
+      setNumberOfThreads (unsigned int nr_threads = 0);
 
     protected:
 
@@ -178,15 +181,16 @@ namespace pcl
       SHOTColorEstimationOMP (bool describe_shape = true,
                               bool describe_color = true,
                               unsigned int nr_threads = 0)
-        : SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> (describe_shape, describe_color), threads_ (nr_threads)
+        : SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> (describe_shape, describe_color)
       {
+        setNumberOfThreads(nr_threads);
       }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      inline void
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+      void
+      setNumberOfThreads (unsigned int nr_threads = 0);
 
     protected:
 

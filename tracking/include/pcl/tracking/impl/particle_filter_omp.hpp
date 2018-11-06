@@ -3,6 +3,21 @@
 
 #include <pcl/tracking/particle_filter_omp.h>
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename StateT> void
+pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::setNumberOfThreads (unsigned int nr_threads)
+{
+  if (nr_threads == 0)
+#ifdef _OPENMP
+    threads_ = omp_get_num_procs();
+#else
+    threads_ = 1;
+#endif
+  else
+    threads_ = nr_threads;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
 {
