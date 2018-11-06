@@ -54,8 +54,11 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    struct sortCorrespondencesByQueryIndex : public std::binary_function<pcl::Correspondence, pcl::Correspondence, bool>
+    struct sortCorrespondencesByQueryIndex
     {
+      typedef pcl::Correspondence first_argument_type;
+      typedef pcl::Correspondence second_argument_type;
+      typedef bool result_type;
       bool
       operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
@@ -67,8 +70,11 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    struct sortCorrespondencesByMatchIndex : public std::binary_function<pcl::Correspondence, pcl::Correspondence, bool>
+    struct sortCorrespondencesByMatchIndex
     {
+      typedef pcl::Correspondence first_argument_type;
+      typedef pcl::Correspondence second_argument_type;
+      typedef bool result_type;
       bool 
       operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
@@ -80,8 +86,11 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    struct sortCorrespondencesByDistance : public std::binary_function<pcl::Correspondence, pcl::Correspondence, bool>
+    struct sortCorrespondencesByDistance
     {
+      typedef pcl::Correspondence first_argument_type;
+      typedef pcl::Correspondence second_argument_type;
+      typedef bool result_type;
       bool 
       operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
@@ -93,8 +102,11 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    struct sortCorrespondencesByQueryIndexAndDistance : public std::binary_function<pcl::Correspondence, pcl::Correspondence, bool>
+    struct sortCorrespondencesByQueryIndexAndDistance
     {
+      typedef pcl::Correspondence first_argument_type;
+      typedef pcl::Correspondence second_argument_type;
+      typedef bool result_type;
       inline bool 
       operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
@@ -110,8 +122,11 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    struct sortCorrespondencesByMatchIndexAndDistance : public std::binary_function<pcl::Correspondence, pcl::Correspondence, bool>
+    struct sortCorrespondencesByMatchIndexAndDistance
     {
+      typedef pcl::Correspondence first_argument_type;
+      typedef pcl::Correspondence second_argument_type;
+      typedef bool result_type;
       inline bool 
       operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
