@@ -1,7 +1,6 @@
 jobs:
   - job: documentation
     displayName: Generate Documentation
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
     pool:
       vmImage: 'Ubuntu 16.04'
     variables:
@@ -17,11 +16,6 @@ jobs:
         inputs:
           versionSpec: '3.6'
           addToPath: true
-      - script: |
-          git config --global user.email "documentation@pointclouds.org"
-          git config --global user.name "PointCloudLibrary (via Azure Pipelines)"
-          echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-        displayName: 'Configure Git'
       - script: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -41,6 +35,9 @@ jobs:
       - script: cd $BUILD_DIR && make doc tutorials advanced
         displayName: 'Build Documentation'
       - script: |
+          git config --global user.email "documentation@pointclouds.org"
+          git config --global user.name "PointCloudLibrary (via Azure Pipelines)"
+          echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
           git clone git@github.com:PointCloudLibrary/documentation.git $DOC_DIR
           cd $DOC_DIR
           cp -r $BUILD_DIR/doc/tutorials/html/* tutorials
@@ -50,3 +47,4 @@ jobs:
           git commit --amend --reset-author -m 'Documentation for commit $(Build.SourceVersion)' -q
           git push --force
         displayName: 'Push Generated Documentation To GitHub'
+        condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
