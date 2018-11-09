@@ -207,8 +207,8 @@ macro(PCL_ADD_LIBRARY _name _component)
 	endif()
 
     set_target_properties(${_name} PROPERTIES
-        VERSION ${PCL_VERSION_PLAIN}
-        SOVERSION ${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}
+        VERSION ${PCL_VERSION}
+        SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
@@ -240,8 +240,8 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
     target_link_libraries(${_name} ${Boost_LIBRARIES})
 
     set_target_properties(${_name} PROPERTIES
-        VERSION ${PCL_VERSION_PLAIN}
-        SOVERSION ${PCL_MAJOR_VERSION}
+        VERSION ${PCL_VERSION}
+        SOVERSION ${PCL_VERSION_MAJOR}
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
@@ -468,14 +468,14 @@ macro(PCL_MAKE_PKGCONFIG _name _component _desc _pcl_deps _ext_deps _int_deps _c
     LIST_TO_STRING(_ext_deps_str "${_ext_deps}")
     set(PKG_EXTERNAL_DEPS ${_ext_deps_str})
     foreach(_dep ${_pcl_deps})
-      set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+      set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
     endforeach(_dep)
     set(PKG_INTERNAL_DEPS "")
     foreach(_dep ${_int_deps})
         set(PKG_INTERNAL_DEPS "${PKG_INTERNAL_DEPS} -l${_dep}")
     endforeach(_dep)
 
-    set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}.pc)
+    set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.pc)
     configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig.cmake.in ${_pc_file}
         @ONLY)
     install(FILES ${_pc_file} DESTINATION ${PKGCFG_INSTALL_DIR}
@@ -503,13 +503,13 @@ set(PKG_CFLAGS ${_cflags})
 LIST_TO_STRING(_ext_deps_str "${_ext_deps}")
 set(PKG_EXTERNAL_DEPS ${_ext_deps_str})
 foreach(_dep ${_pcl_deps})
-set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
 endforeach(_dep)
 set(PKG_INTERNAL_DEPS "")
 foreach(_dep ${_int_deps})
 set(PKG_INTERNAL_DEPS "${PKG_INTERNAL_DEPS} -l${_dep}")
 endforeach(_dep)
-set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}.pc)
+set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.pc)
 configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig-headeronly.cmake.in ${_pc_file} @ONLY)
 install(FILES ${_pc_file} DESTINATION ${PKGCFG_INSTALL_DIR}
 COMPONENT pcl_${_component})

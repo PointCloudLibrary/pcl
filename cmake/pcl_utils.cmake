@@ -59,19 +59,13 @@ endmacro(REMOVE_VTK_DEFINITIONS)
 ###############################################################################
 # Pull the component parts out of the version number.
 macro(DISSECT_VERSION)
-    # Find version components
-    string(REGEX REPLACE "^([0-9]+).*" "\\1"
-        PCL_MAJOR_VERSION "${PCL_VERSION}")
-    string(REGEX REPLACE "^[0-9]+\\.([0-9]+).*" "\\1"
-        PCL_MINOR_VERSION "${PCL_VERSION}")
-    string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
-        PCL_REVISION_VERSION "${PCL_VERSION}")
-    set(PCL_VERSION_PLAIN "${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}.${PCL_REVISION_VERSION}")
-    if(${PCL_VERSION} MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+-dev$")
+    # Detect if we're in a developlment version and generate pretty version string
+    if(${PCL_VERSION_TWEAK} EQUAL 99)
         set(PCL_DEV_VERSION 1)
-        set(PCL_VERSION_PLAIN "${PCL_VERSION_PLAIN}.99")
+        set(PCL_VERSION_PRETTY "${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.${PCL_VERSION_PATCH}-dev")
     else()
         set(PCL_DEV_VERSION 0)
+        set(PCL_VERSION_PRETTY "${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.${PCL_VERSION_PATCH}")
     endif()
 endmacro(DISSECT_VERSION)
 
@@ -105,18 +99,18 @@ macro(SET_INSTALL_DIRS)
   endif (NOT DEFINED LIB_INSTALL_DIR)
     if(NOT ANDROID)
       set(INCLUDE_INSTALL_ROOT
-          "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+          "include/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
     else(NOT ANDROID)
       set(INCLUDE_INSTALL_ROOT "include") # Android, don't put into subdir
     endif(NOT ANDROID)
     set(INCLUDE_INSTALL_DIR "${INCLUDE_INSTALL_ROOT}/pcl")
-    set(DOC_INSTALL_DIR "share/doc/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+    set(DOC_INSTALL_DIR "share/doc/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
     set(BIN_INSTALL_DIR "bin")
     set(PKGCFG_INSTALL_DIR "${LIB_INSTALL_DIR}/pkgconfig")
     if(WIN32 AND NOT MINGW)
         set(PCLCONFIG_INSTALL_DIR "cmake")
       else(WIN32 AND NOT MINGW)
-        set(PCLCONFIG_INSTALL_DIR "share/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+        set(PCLCONFIG_INSTALL_DIR "share/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
       endif(WIN32 AND NOT MINGW)
 endmacro(SET_INSTALL_DIRS)
 
