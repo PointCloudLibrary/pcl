@@ -65,7 +65,7 @@ is needed only to build PCL tests. We do not provide GTest installers. **optiona
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
-   build system (http://www.cmake.org/), at least version **2.8.7**. A Git client
+   build system (http://www.cmake.org/), at least version **3.1.0**. A Git client
    for Windows is also required to download the PCL source code.
 
 Downloading PCL source code
