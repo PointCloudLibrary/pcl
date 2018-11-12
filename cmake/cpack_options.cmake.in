@@ -1,14 +1,14 @@
 set(CPACK_PACKAGE_NAME "@PROJECT_NAME@")
 set(CPACK_PACKAGE_VENDOR "PointClouds.org")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Point Cloud Library (PCL)")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "@PROJECT_NAME@ @PCL_VERSION@")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "@PROJECT_NAME@ @PCL_VERSION_PRETTY@")
 set(CPACK_RESOURCE_FILE_LICENSE "@PROJECT_SOURCE_DIR@/LICENSE.txt")
 set(CPACK_RESOURCE_FILE_README "@PROJECT_SOURCE_DIR@/AUTHORS.txt")
 
 @PCL_CPACK_COMPONENTS@
 
 IF ((WIN32 OR UNIX) AND (CPACK_GENERATOR STREQUAL "NSIS"))
-    set(CPACK_NSIS_DISPLAY_NAME "@PROJECT_NAME@-@PCL_VERSION@")
+    set(CPACK_NSIS_DISPLAY_NAME "@PROJECT_NAME@-@PCL_VERSION_PRETTY@")
     set(CPACK_NSIS_MUI_ICON "@PROJECT_SOURCE_DIR@/cmake/images/pcl.ico")
     set(CPACK_NSIS_MUI_UNIICON "@PROJECT_SOURCE_DIR@/cmake/images/pcl.ico")
     set(CPACK_NSIS_HELP_LINK "http://www.pointclouds.org")
@@ -16,9 +16,9 @@ IF ((WIN32 OR UNIX) AND (CPACK_GENERATOR STREQUAL "NSIS"))
     set(CPACK_NSIS_MODIFY_PATH ON)
     set(CPACK_PACKAGE_EXECUTABLES @PCL_EXECUTABLES@)
     set(CPACK_NSIS_MENU_LINKS 
-            "share/doc/pcl-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@/tutorials/html/index.html" "Tutorials"
-            "share/doc/pcl-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@/tutorials/html/sources" "Tutorials sources"
-            "share/doc/pcl-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@/html/pcl-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@.chm" "Documentation"
+            "share/doc/pcl-@PCL_VERSION_MAJOR@.@PCL_VERSION_MINOR@/tutorials/html/index.html" "Tutorials"
+            "share/doc/pcl-@PCL_VERSION_MAJOR@.@PCL_VERSION_MINOR@/tutorials/html/sources" "Tutorials sources"
+            "share/doc/pcl-@PCL_VERSION_MAJOR@.@PCL_VERSION_MINOR@/html/pcl-@PCL_VERSION_MAJOR@.@PCL_VERSION_MINOR@.chm" "Documentation"
             "http://www.pointclouds.org" "PCL Website")
     #set(CPACK_NSIS_MENU_LINKS "share/doc/@PROJECT_NAME@/user_guide.pdf" "User's guide")
     #set(CPACK_NSIS_MENU_LINKS "share/doc/@PROJECT_NAME@/developer_guide.pdf" "Developer's guide")

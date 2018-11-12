@@ -1,10 +1,6 @@
 ### ---[ PCL global CMake
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
-if(POLICY CMP0048)
-  cmake_policy(SET CMP0048 OLD) # do not use VERSION option in project() command
-endif()
-
 if(POLICY CMP0054)
   cmake_policy(SET CMP0054 OLD) # Silent warnings about quoted variables
 endif()
@@ -23,7 +19,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
 endif()
 
-project(PCL)
+project(PCL VERSION 1.9.0.99)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 ### ---[ Find universal dependencies
@@ -202,7 +198,6 @@ if(CMAKE_COMPILER_IS_CLANG)
 endif()
 
 include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
-set(PCL_VERSION "1.9.0-dev" CACHE STRING "PCL version")
 DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()

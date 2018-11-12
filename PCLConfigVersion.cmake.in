@@ -1,6 +1,6 @@
 # Check whether the requested PACKAGE_FIND_VERSION is compatible
 
-set(PACKAGE_VERSION @PCL_VERSION_PLAIN@)
+set(PACKAGE_VERSION @PCL_VERSION@)
 
 # Check whether the requested PACKAGE_FIND_VERSION is compatible
 if("${PACKAGE_VERSION}" VERSION_LESS "${PACKAGE_FIND_VERSION}")

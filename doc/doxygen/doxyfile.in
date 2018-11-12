@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Point Cloud Library (PCL)"
-PROJECT_NUMBER         = @PCL_VERSION@
+PROJECT_NUMBER         = @PCL_VERSION_PRETTY@
 PROJECT_BRIEF          =
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = "@CMAKE_CURRENT_BINARY_DIR@"
@@ -178,7 +178,7 @@ DOCSET_BUNDLE_ID       = pointclouds.org
 DOCSET_PUBLISHER_ID    = pointclouds.org.Publisher
 DOCSET_PUBLISHER_NAME  = Point Cloud Library (PCL) Development Team
 GENERATE_HTMLHELP      = @DOCUMENTATION_HTML_HELP@
-CHM_FILE               = "pcl-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@.chm"
+CHM_FILE               = "pcl-@PCL_VERSION_MAJOR@.@PCL_VERSION_MINOR@.chm"
 HHC_LOCATION           = "@HTML_HELP_COMPILER@"
 GENERATE_CHI           = NO
 CHM_INDEX_ENCODING     = 
