@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_SAC_SEGMENTATION_H_
-#define PCL_SEGMENTATION_SAC_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
@@ -429,5 +428,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/sac_segmentation.hpp>
 #endif
-
-#endif  //#ifndef PCL_SEGMENTATION_SAC_SEGMENTATION_H_

@@ -33,8 +33,8 @@
 *
 *
 */
-#ifndef PCL_MODELER_PARAMETER_H_
-#define PCL_MODELER_PARAMETER_H_
+
+#pragma once
 
 #include <map>
 #include <string>
@@ -273,5 +273,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_PARAMETER_H_

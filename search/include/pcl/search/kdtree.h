@@ -37,8 +37,7 @@
  * $Id$
  */
 
-#ifndef PCL_SEARCH_KDTREE_H_
-#define PCL_SEARCH_KDTREE_H_
+#pragma once
 
 #include <pcl/search/search.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -178,6 +177,3 @@ namespace pcl
 #else
 #define PCL_INSTANTIATE_KdTree(T) template class PCL_EXPORTS pcl::search::KdTree<T>;
 #endif
-
-#endif    // PCL_SEARCH_KDTREE_H_
-

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_POISSON_H_
-#define PCL_SURFACE_POISSON_H_
+#pragma once
 
 #include <pcl/surface/reconstruction.h>
 
@@ -256,5 +255,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/poisson.hpp>
 #endif
-
-#endif  // PCL_SURFACE_POISSON_H_

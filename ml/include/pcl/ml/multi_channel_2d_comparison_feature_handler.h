@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_MULTI_CHANNEL_2D_COMPARISON_FEATURE_HANDLER_H_
-#define PCL_ML_MULTI_CHANNEL_2D_COMPARISON_FEATURE_HANDLER_H_
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -394,5 +393,3 @@ namespace pcl
   typedef ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator<float, 1, 0, true> ScaledDepth2DComparisonFeatureHandlerCCodeGenerator;
 
 }
-
-#endif

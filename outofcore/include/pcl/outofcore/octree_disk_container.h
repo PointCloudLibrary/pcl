@@ -37,8 +37,7 @@
  *  $Id: octree_disk_container.h 6927M 2012-08-24 13:26:40Z (local) $
  */
 
-#ifndef PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_H_
-#define PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_H_
+#pragma once
 
 // C++
 #include <vector>
@@ -301,5 +300,3 @@ namespace pcl
     };
   } //namespace outofcore
 } //namespace pcl
-
-#endif //PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_H_

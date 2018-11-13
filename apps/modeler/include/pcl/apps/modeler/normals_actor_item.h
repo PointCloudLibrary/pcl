@@ -33,8 +33,8 @@
  *
  *
  */
-#ifndef PCL_MODELER_NORMALS_ACTOR_ITEM_H_
-#define PCL_MODELER_NORMALS_ACTOR_ITEM_H_
+
+#pragma once
 
 #include <pcl/apps/modeler/channel_actor_item.h>
 #include <pcl/visualization/point_cloud_handlers.h>
@@ -81,5 +81,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_NORMALS_ACTOR_ITEM_H_

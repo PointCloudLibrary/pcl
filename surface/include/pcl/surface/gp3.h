@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_GP3_H_
-#define PCL_GP3_H_
+#pragma once
 
 // PCL includes
 #include <pcl/surface/reconstruction.h>
@@ -543,6 +542,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/gp3.hpp>
 #endif
-
-#endif  //#ifndef PCL_GP3_H_
-

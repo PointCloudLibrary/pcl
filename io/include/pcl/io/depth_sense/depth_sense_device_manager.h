@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_DEPTH_SENSE_DEVICE_MANAGER_H
-#define PCL_IO_DEPTH_SENSE_DEVICE_MANAGER_H
+#pragma once
 
 #include <boost/utility.hpp>
 #include <boost/shared_ptr.hpp>
@@ -156,6 +155,3 @@ namespace pcl
   } // namespace io
 
 } // namespace pcl
-
-#endif /* PCL_IO_DEPTH_SENSE_DEVICE_MANAGER_H */
-

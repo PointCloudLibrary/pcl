@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_SEARCH_OCTREE_H
-#define PCL_SEARCH_OCTREE_H
+#pragma once
 
 #include <pcl/search/search.h>
 #include <pcl/octree/octree_search.h>
@@ -289,5 +288,3 @@ namespace pcl
 #else
 #define PCL_INSTANTIATE_Octree(T) template class PCL_EXPORTS pcl::search::Octree<T>;
 #endif
-
-#endif    // PCL_SEARCH_OCTREE_H

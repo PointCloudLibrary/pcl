@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_SURFACE_NORMAL_MODALITY
-#define PCL_RECOGNITION_SURFACE_NORMAL_MODALITY
+#pragma once
 
 #include <pcl/recognition/quantizable_modality.h>
 #include <pcl/recognition/distance_map.h>
@@ -1639,6 +1638,3 @@ pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (const MaskMap & input,
     current_row -= width;
   }
 }
-
-
-#endif 

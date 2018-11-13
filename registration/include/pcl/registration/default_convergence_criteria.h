@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_H_
-#define PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_H_
+#pragma once
 
 #include <pcl/registration/eigen.h>
 #include <pcl/correspondence.h>
@@ -276,6 +275,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/default_convergence_criteria.hpp>
-
-#endif    // PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_H_
-

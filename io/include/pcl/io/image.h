@@ -33,9 +33,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+#pragma once
+
 #include <pcl/pcl_config.h>
-#ifndef PCL_IO_IMAGE_H_
-#define PCL_IO_IMAGE_H_
 
 #include <pcl/pcl_exports.h>
 #include <pcl/io/boost.h>
@@ -211,5 +212,3 @@ namespace pcl
 
   } // namespace
 }
-
-#endif //PCL_IO_IMAGE_H_

@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_PCL_VISUALIZER_VTK_H_
-#define PCL_PCL_VISUALIZER_VTK_H_
+
+#pragma once
 
 #if defined __GNUC__
 #pragma GCC system_header
@@ -183,6 +183,3 @@
 #define __DEPRECATED
 #undef __DEPRECATED_DISABLED__
 #endif
-
-#endif    // PCL_PCL_VISUALIZER_VTK_H_
-

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_MATCHING_CANDIDATE_H_
-#define PCL_REGISTRATION_MATCHING_CANDIDATE_H_
+#pragma once
 
 #include <pcl/registration/registration.h>
 #include <pcl/common/common.h>
@@ -99,6 +98,3 @@ namespace pcl
 
   };  // namespace registration
 }; // namespace pcl
-
-
-#endif // PCL_REGISTRATION_MATCHING_CANDIDATE_H_

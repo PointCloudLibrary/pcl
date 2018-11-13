@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_KMEANS_H_
-#define PCL_KMEANS_H_
+#pragma once
 
 #include <set>
 
@@ -205,5 +204,3 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
  };
 }
-
-#endif

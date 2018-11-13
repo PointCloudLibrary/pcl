@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KINFU_KINFUTRACKER_HPP_
-#define PCL_KINFU_KINFUTRACKER_HPP_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -458,5 +457,3 @@ namespace pcl
     }
   }
 };
-
-#endif /* PCL_KINFU_KINFUTRACKER_HPP_ */

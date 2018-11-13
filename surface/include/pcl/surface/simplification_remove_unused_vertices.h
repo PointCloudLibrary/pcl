@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
-#define PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
+#pragma once
 
 #include <pcl/surface/boost.h>
 #include <pcl/PolygonMesh.h>
@@ -79,5 +78,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_ */

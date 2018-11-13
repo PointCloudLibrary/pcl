@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_OBJ_REC_RANSAC_H_
-#define PCL_RECOGNITION_OBJ_REC_RANSAC_H_
+#pragma once
 
 #include <pcl/recognition/ransac_based/hypothesis.h>
 #include <pcl/recognition/ransac_based/model_library.h>
@@ -480,5 +479,3 @@ namespace pcl
     };
   } // namespace recognition
 } // namespace pcl
-
-#endif // PCL_RECOGNITION_OBJ_REC_RANSAC_H_

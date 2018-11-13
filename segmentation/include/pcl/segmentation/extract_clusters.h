@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_EXTRACT_CLUSTERS_H_
-#define PCL_EXTRACT_CLUSTERS_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 
@@ -424,5 +423,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/extract_clusters.hpp>
 #endif
-
-#endif  //#ifndef PCL_EXTRACT_CLUSTERS_H_

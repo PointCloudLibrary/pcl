@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_DT_FEATURE_HANDLER_H_
-#define PCL_ML_DT_FEATURE_HANDLER_H_
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -105,5 +104,3 @@ namespace pcl
   };
 
 }
-
-#endif

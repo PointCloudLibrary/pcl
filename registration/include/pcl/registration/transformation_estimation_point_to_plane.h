@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_H_
+
+#pragma once
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/transformation_estimation_lm.h>
@@ -96,6 +96,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_H_ */
-

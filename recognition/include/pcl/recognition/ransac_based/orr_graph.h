@@ -43,8 +43,7 @@
  *      Author: papazov
  */
 
-#ifndef PCL_RECOGNITION_ORR_GRAPH_H_
-#define PCL_RECOGNITION_ORR_GRAPH_H_
+#pragma once
 
 #include <vector>
 
@@ -221,5 +220,3 @@ namespace pcl
     };
   } // namespace recognition
 } // namespace pcl
-
-#endif /* PCL_RECOGNITION_ORR_GRAPH_H_ */

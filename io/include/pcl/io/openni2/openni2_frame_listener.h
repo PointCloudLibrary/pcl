@@ -35,8 +35,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_IO_OPENNI2_FRAME_LISTENER_H_
-#define PCL_IO_OPENNI2_FRAME_LISTENER_H_
+#pragma once
 
 #include <boost/function.hpp>
 
@@ -85,5 +84,3 @@ namespace pcl
     } // namespace
   }
 }
-
-#endif // PCL_IO_OPENNI2_FRAME_LISTENER_H_

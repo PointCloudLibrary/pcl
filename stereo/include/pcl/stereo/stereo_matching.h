@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_STEREO_H_
-#define PCL_STEREO_H_
+
+#pragma once
 
 #include <pcl/conversions.h>
 #include <pcl/point_types.h>
@@ -509,5 +509,3 @@ namespace pcl
       int smoothness_weak_;
   };
 }
-
-#endif

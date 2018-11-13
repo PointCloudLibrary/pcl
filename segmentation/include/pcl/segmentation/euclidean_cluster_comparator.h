@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_EUCLIDEAN_CLUSTER_COMPARATOR_H_
-#define PCL_SEGMENTATION_EUCLIDEAN_CLUSTER_COMPARATOR_H_
+#pragma once
 
 #include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/comparator.h>
@@ -277,5 +276,3 @@ namespace pcl
   class EuclideanClusterComparator<PointT, PointLT, deprecated::T>
     : public experimental::EuclideanClusterComparator<PointT, PointLT> {};
 }
-
-#endif // PCL_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_

@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_FILTERS_DON_H_
-#define PCL_FILTERS_DON_H_
+
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -141,5 +141,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/don.hpp>
 #endif
-
-#endif // PCL_FILTERS_DON_H_

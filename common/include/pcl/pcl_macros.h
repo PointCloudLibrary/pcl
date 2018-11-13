@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_MACROS_H_
-#define PCL_MACROS_H_
+#pragma once
 
 #include <pcl/pcl_config.h>
 #include <boost/cstdint.hpp>
@@ -438,5 +437,3 @@ aligned_free (void* ptr)
   #error aligned_free not supported on your platform
 #endif
 }
-
-#endif  //#ifndef PCL_MACROS_H_

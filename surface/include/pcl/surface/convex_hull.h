@@ -37,13 +37,12 @@
  *
  */
 
-#include <pcl/pcl_config.h>
-#ifdef HAVE_QHULL
+#pragma once
 
-#ifndef PCL_CONVEX_HULL_2D_H_
-#define PCL_CONVEX_HULL_2D_H_
+#ifdef HAVE_QHULL 
 
 // PCL includes
+#include <pcl/pcl_config.h>
 #include <pcl/surface/reconstruction.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/PolygonMesh.h>
@@ -275,5 +274,4 @@ namespace pcl
 #include <pcl/surface/impl/convex_hull.hpp>
 #endif
 
-#endif  //#ifndef PCL_CONVEX_HULL_2D_H_
 #endif

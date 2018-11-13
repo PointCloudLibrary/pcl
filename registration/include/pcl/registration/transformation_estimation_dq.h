@@ -36,8 +36,8 @@
  *
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_H_
+
+#pragma once
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/cloud_iterator.h>
@@ -138,5 +138,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/transformation_estimation_dq.hpp>
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_H_ */

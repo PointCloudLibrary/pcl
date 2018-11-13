@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_MESH_TRAITS_H
-#define PCL_GEOMETRY_MESH_TRAITS_H
+#pragma once
 
 #include <pcl/geometry/boost.h>
 
@@ -82,5 +81,3 @@ namespace pcl
     };
   } // End namespace geometry
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_MESH_TRAITS_H

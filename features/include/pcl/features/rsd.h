@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_RSD_H_
-#define PCL_RSD_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -234,5 +233,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/rsd.hpp>
 #endif
-
-#endif  //#ifndef PCL_RSD_H_

@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_DT_STATS_ESTIMATOR_H_
-#define PCL_ML_DT_STATS_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -141,5 +140,3 @@ namespace pcl
   };
 
 }
-
-#endif

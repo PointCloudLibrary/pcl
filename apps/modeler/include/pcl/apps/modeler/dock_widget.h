@@ -34,8 +34,7 @@
  *
  */
 
-#ifndef PCL_MODELER_DOCK_WIDGET_H_
-#define PCL_MODELER_DOCK_WIDGET_H_
+#pragma once
 
 #include <pcl/apps/modeler/qt.h>
 
@@ -60,5 +59,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_DOCK_WIDGET_H_

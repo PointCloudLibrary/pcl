@@ -32,8 +32,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_CUDA_PCL_CUDA_BASE_H_
-#define PCL_CUDA_PCL_CUDA_BASE_H_
+
+#pragma once
 
 #include <boost/shared_ptr.hpp>
 #include <pcl/cuda/point_cloud.h>
@@ -95,5 +95,3 @@ namespace cuda
   };
 } // namespace
 } // namespace
-
-#endif  //#ifndef PCL_PCL_BASE_H_

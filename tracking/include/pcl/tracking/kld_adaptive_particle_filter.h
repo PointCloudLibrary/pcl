@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_KLD_ADAPTIVE_PARTICLE_FILTER_H_
-#define PCL_TRACKING_KLD_ADAPTIVE_PARTICLE_FILTER_H_
+#pragma once
 
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/particle_filter.h>
@@ -213,6 +212,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/tracking/impl/kld_adaptive_particle_filter.hpp>
-#endif
-
 #endif

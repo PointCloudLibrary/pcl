@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_TIME_H_
-#define PCL_TIME_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
@@ -233,5 +232,3 @@ if (1) {\
 
 }  // end namespace
 /*@}*/
-
-#endif  //#ifndef PCL_NORMS_H_

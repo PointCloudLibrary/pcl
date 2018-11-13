@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_PLANAR_REFINEMENT_COMPARATOR_H_
-#define PCL_SEGMENTATION_PLANAR_REFINEMENT_COMPARATOR_H_
+#pragma once
 
 #include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/plane_coefficient_comparator.h>
@@ -219,5 +218,3 @@ namespace pcl
       using PlaneCoefficientComparator<PointT, PointNT>::z_axis_;
   };
 }
-
-#endif // PCL_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_

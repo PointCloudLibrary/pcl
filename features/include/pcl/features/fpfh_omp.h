@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FPFH_OMP_H_
-#define PCL_FPFH_OMP_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 #include <pcl/features/fpfh.h>
@@ -129,5 +128,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/fpfh_omp.hpp>
 #endif
-
-#endif  //#ifndef PCL_FPFH_OMP_H_

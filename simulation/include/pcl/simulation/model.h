@@ -1,5 +1,4 @@
-#ifndef PCL_MODEL_HPP_
-#define PCL_MODEL_HPP_
+#pragma once
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__)
 # define WIN32_LEAN_AND_MEAN 1
@@ -207,5 +206,3 @@ namespace pcl
     };
   } // namespace - simulation
 } // namespace - pcl
-
-#endif /* PCL_SIMULATION_MODEL_HPP_ */

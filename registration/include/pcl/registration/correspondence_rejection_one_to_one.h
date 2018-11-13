@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_ONE_TO_ONE_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_ONE_TO_ONE_H_
+
+#pragma once
 
 #include <pcl/registration/correspondence_rejection.h>
 
@@ -94,5 +94,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_rejection_one_to_one.hpp>
-
-#endif    // PCL_REGISTRATION_CORRESPONDENCE_REJECTION_ONE_TO_ONE_H_

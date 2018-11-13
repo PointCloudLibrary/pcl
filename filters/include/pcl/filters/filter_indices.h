@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_FILTER_INDICES_H_
-#define PCL_FILTERS_FILTER_INDICES_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
 
@@ -308,6 +307,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/filter_indices.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_FILTER_INDICES_H_
-

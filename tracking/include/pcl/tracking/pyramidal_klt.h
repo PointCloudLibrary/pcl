@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_TRACKING_PYRAMIDAL_KLT_H
-#define PCL_TRACKING_PYRAMIDAL_KLT_H
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/tracking/tracker.h>
@@ -374,4 +373,3 @@ namespace pcl
 }
 
 #include <pcl/tracking/impl/pyramidal_klt.hpp>
-#endif

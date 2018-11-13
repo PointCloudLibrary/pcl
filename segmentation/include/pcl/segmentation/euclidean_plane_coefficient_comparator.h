@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_EUCLIDEAN_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_
-#define PCL_EUCLIDEAN_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_
+#pragma once
 
 #include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/plane_coefficient_comparator.h>
@@ -97,5 +96,3 @@ namespace pcl
       }
   };
 }
-
-#endif // PCL_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_

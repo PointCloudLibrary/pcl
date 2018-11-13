@@ -37,8 +37,7 @@
  * @author: Koen Buys, Anatoly Baksheev
  */
 
-#ifndef PCL_GPU_PEOPLE_COLORMAP_H_
-#define PCL_GPU_PEOPLE_COLORMAP_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -91,4 +90,3 @@ namespace pcl
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl
-#endif //PCL_GPU_PEOPLE_COLORMAP_H_

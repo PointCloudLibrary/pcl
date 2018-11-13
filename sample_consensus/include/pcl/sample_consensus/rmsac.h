@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_RMSAC_H_
-#define PCL_SAMPLE_CONSENSUS_RMSAC_H_
+#pragma once
 
 #include <algorithm>
 #include <pcl/sample_consensus/sac.h>
@@ -120,5 +119,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/rmsac.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_RMSAC_H_

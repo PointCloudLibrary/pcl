@@ -36,9 +36,7 @@
  *  $Id$
  */
 
-
-#ifndef PCL_OUTOFCORE_METADATA_H_
-#define PCL_OUTOFCORE_METADATA_H_
+#pragma once
 
 #include <pcl/outofcore/boost.h>
 #include <vector>
@@ -94,5 +92,3 @@ namespace pcl
     
   }//namespace outofcore
 }//namespace pcl
-
-#endif //PCL_OUTOFCORE_METADATA_H_

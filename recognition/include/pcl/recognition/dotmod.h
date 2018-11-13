@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_DOTMOD
-#define PCL_RECOGNITION_DOTMOD
+#pragma once
 
 #include <vector>
 #include <cstddef>
@@ -127,5 +126,3 @@ namespace pcl
   };
 
 }
-
-#endif 

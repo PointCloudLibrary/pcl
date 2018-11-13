@@ -36,8 +36,7 @@
  * @authors: Cedric Cagniart, Koen Buys, Anatoly Baksheev
  */
 
-#ifndef PCL_GPU_PEOPLE_INTERNAL_H_
-#define PCL_GPU_PEOPLE_INTERNAL_H_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/utils/safe_call.hpp>
@@ -195,5 +194,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* PCL_GPU_PEOPLE_INTERNAL_H_ */

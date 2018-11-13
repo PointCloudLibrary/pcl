@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_LINEMOD
-#define PCL_RECOGNITION_LINEMOD
+#pragma once
 
 #include <vector>
 #include <cstddef>
@@ -475,5 +474,3 @@ namespace pcl
   };
 
 }
-
-#endif 

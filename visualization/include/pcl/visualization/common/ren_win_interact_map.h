@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_PCL_VISUALIZER_REN_WIN_INTERACT_MAP_H_
-#define PCL_PCL_VISUALIZER_REN_WIN_INTERACT_MAP_H_
+#pragma once
 
 #include <map>
 #include <string>
@@ -82,5 +81,3 @@ namespace pcl
     typedef std::map<std::string, RenWinInteract> RenWinInteractMap;
   }
 }
-
-#endif

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GFPFH_H_
-#define PCL_GFPFH_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -175,5 +174,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/gfpfh.hpp>
 #endif
-
-#endif  //#ifndef PCL_GFPFH_H_

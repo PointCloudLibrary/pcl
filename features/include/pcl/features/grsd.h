@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_GRSD_H_
-#define PCL_FEATURES_GRSD_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 #include <pcl/features/rsd.h>
@@ -147,5 +146,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/grsd.hpp>
 #endif
-
-#endif /* PCL_FEATURES_GRSD_H_ */

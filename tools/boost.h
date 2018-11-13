@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_TOOLS_BOOST_H_
-#define PCL_TOOLS_BOOST_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
@@ -59,5 +58,3 @@
 //#include <boost/uuid/uuid.hpp>
 //#include <boost/uuid/uuid_generators.hpp>
 #endif
-
-#endif    // PCL_TOOLS_BOOST_H_

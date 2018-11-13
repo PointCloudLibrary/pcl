@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_MOMENT_INVARIANTS_H_
-#define PCL_MOMENT_INVARIANTS_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -116,5 +115,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/moment_invariants.hpp>
 #endif
-
-#endif  //#ifndef PCL_MOMENT_INVARIANTS_H_

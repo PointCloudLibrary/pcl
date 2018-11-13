@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_ISS_3D_H_
-#define PCL_ISS_3D_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 
@@ -272,5 +271,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/iss_3d.hpp>
-
-#endif /* PCL_ISS_3D_H_ */

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_PROSAC_H_
-#define PCL_SAMPLE_CONSENSUS_PROSAC_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/sac_model.h>
@@ -102,5 +101,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/prosac.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_PROSAC_H_

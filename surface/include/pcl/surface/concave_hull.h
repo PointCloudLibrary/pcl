@@ -36,13 +36,12 @@
  * $Id$
  *
  */
+ 
+#pragma once
 
-#include <pcl/pcl_config.h>
 #ifdef HAVE_QHULL
 
-#ifndef PCL_CONCAVE_HULL_H
-#define PCL_CONCAVE_HULL_H
-
+#include <pcl/pcl_config.h>
 #include <pcl/surface/convex_hull.h>
 
 namespace pcl
@@ -212,5 +211,4 @@ namespace pcl
 #include <pcl/surface/impl/concave_hull.hpp>
 #endif
 
-#endif  //#ifndef PCL_CONCAVE_HULL
 #endif

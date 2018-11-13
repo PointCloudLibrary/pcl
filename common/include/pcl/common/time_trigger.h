@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_COMMON_TIME_TRIGGER_H_
-#define PCL_COMMON_TIME_TRIGGER_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #ifndef Q_MOC_RUN
@@ -104,5 +103,3 @@ namespace pcl
       boost::mutex condition_mutex_;
   };
 }
-
-#endif

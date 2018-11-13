@@ -33,8 +33,8 @@
  *
  *
  */
-#ifndef PCL_MODELER_CLOUD_MESH_H_
-#define PCL_MODELER_CLOUD_MESH_H_
+
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -117,5 +117,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_CLOUD_MESH_H_

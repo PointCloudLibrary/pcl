@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_PCL_BASE_H_
-#define PCL_PCL_BASE_H_
+
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header
@@ -259,5 +259,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/impl/pcl_base.hpp>
 #endif
-
-#endif  //#ifndef PCL_PCL_BASE_H_

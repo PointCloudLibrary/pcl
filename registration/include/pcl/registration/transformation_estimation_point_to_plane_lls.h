@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_LLS_H_ 
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_LLS_H_
+
+#pragma once
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/warp_point_rigid.h>
@@ -154,5 +154,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/transformation_estimation_point_to_plane_lls.hpp>
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_H_LLS_ */

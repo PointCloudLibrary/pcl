@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_NORMAL_SHOOTING_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_NORMAL_SHOOTING_H_
+#pragma once
 
 #include <pcl/registration/correspondence_types.h>
 #include <pcl/registration/correspondence_estimation.h>
@@ -217,5 +216,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_estimation_normal_shooting.hpp>
-
-#endif /* PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_NORMAL_SHOOTING_H_ */

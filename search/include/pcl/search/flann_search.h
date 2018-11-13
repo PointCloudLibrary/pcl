@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_SEARCH_FLANN_SEARCH_H_
-#define PCL_SEARCH_FLANN_SEARCH_H_
+#pragma once
 
 #include <pcl/search/search.h>
 #include <pcl/common/time.h>
@@ -370,6 +369,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_FlannSearch(T) template class PCL_EXPORTS pcl::search::FlannSearch<T>;
-
-#endif    // PCL_SEARCH_KDTREE_H_
-

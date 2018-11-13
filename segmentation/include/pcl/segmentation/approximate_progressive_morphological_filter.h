@@ -36,8 +36,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_APPROXIMATE_PROGRESSIVE_MORPHOLOGICAL_FILTER_H_
-#define PCL_APPROXIMATE_PROGRESSIVE_MORPHOLOGICAL_FILTER_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/search/search.h>
@@ -173,6 +172,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/approximate_progressive_morphological_filter.hpp>
 #endif
-
-#endif
-

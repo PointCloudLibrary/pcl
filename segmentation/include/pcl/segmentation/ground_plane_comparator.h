@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_GROUND_PLANE_COMPARATOR_H_
-#define PCL_SEGMENTATION_GROUND_PLANE_COMPARATOR_H_
+#pragma once
 
 #include <pcl/common/angles.h>
 #include <pcl/segmentation/comparator.h>
@@ -246,5 +245,3 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif // PCL_SEGMENTATION_GROUND_PLANE_COMPARATOR_H_

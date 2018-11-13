@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_OFFLINE_INTEGRATION_H
-#define PCL_APPS_IN_HAND_SCANNER_OFFLINE_INTEGRATION_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -223,5 +222,3 @@ namespace pcl
     };
   } // End namespace ihs
 } // End namespace pcl
-
-#endif // PCL_APPS_IN_HAND_SCANNER_OFFLINE_INTEGRATION_H

@@ -33,8 +33,8 @@
  *
  *
  */
-#ifndef PCL_CLOUD_VIEWER_H_
-#define PCL_CLOUD_VIEWER_H_
+
+#pragma once
 
 #include <pcl/visualization/pcl_visualizer.h> //pcl vis
 #include <boost/scoped_ptr.hpp> // scoped_ptr for pre-C++11
@@ -213,5 +213,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* CLOUD_VIEWER_H_ */

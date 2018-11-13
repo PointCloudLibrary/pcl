@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_PCL_VISUALIZER_H_
-#define PCL_PCL_VISUALIZER_H_
+
+#pragma once
 
 // PCL includes
 #include <pcl/correspondence.h>
@@ -2350,6 +2350,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/pcl_visualizer.hpp>
-
-#endif
-

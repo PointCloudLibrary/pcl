@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_TREE_BASE_H
-#define PCL_OCTREE_TREE_BASE_H
+#pragma once
 
 #include <vector>
 
@@ -679,6 +678,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/octree/impl/octree_base.hpp>
 #endif
-
-#endif
-

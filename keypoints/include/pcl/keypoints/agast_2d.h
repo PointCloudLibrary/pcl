@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_KEYPOINTS_AGAST_KEYPOINT_2D_H_
-#define PCL_KEYPOINTS_AGAST_KEYPOINT_2D_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -837,6 +836,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/agast_2d.hpp>
-
-#endif
-

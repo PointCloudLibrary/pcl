@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_RADIUS_OUTLIER_REMOVAL_H_
-#define PCL_FILTERS_RADIUS_OUTLIER_REMOVAL_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 #include <pcl/search/pcl_search.h>
@@ -269,6 +268,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/radius_outlier_removal.hpp>
 #endif
-
-#endif  // PCL_FILTERS_RADIUS_OUTLIER_REMOVAL_H_
-

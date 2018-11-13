@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_DISTANCES_H
-#define PCL_REGISTRATION_DISTANCES_H
+
+#pragma once
 
 #include <pcl/registration/eigen.h>
 #include <vector>
@@ -141,5 +141,3 @@ namespace pcl
     }
   }
 }
-
-#endif

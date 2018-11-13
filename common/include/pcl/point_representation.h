@@ -36,8 +36,8 @@
  * $Id$
  *
  */
-#ifndef PCL_POINT_REPRESENTATION_H_
-#define PCL_POINT_REPRESENTATION_H_
+
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/pcl_macros.h>
@@ -579,5 +579,3 @@ namespace pcl
       int start_dim_;
   };
 }
-
-#endif // #ifndef PCL_POINT_REPRESENTATION_H_

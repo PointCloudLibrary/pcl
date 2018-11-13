@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef PCL_OUTOFCORE_OCTREE_RAM_CONTAINER_H_
-#define PCL_OUTOFCORE_OCTREE_RAM_CONTAINER_H_
+#pragma once
 
 // C++
 #include <vector>
@@ -170,5 +169,3 @@ namespace pcl
     };
   }
 }
-
-#endif //PCL_OUTOFCORE_OCTREE_RAM_CONTAINER_H_

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_EDGE_MEASUREMENTS_H_
-#define PCL_EDGE_MEASUREMENTS_H_
+#pragma once
 
 namespace pcl
 {
@@ -69,5 +68,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_EDGE_MEASUREMENTS_H_

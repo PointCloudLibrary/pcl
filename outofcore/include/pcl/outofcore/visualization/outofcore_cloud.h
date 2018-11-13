@@ -1,5 +1,4 @@
-#ifndef PCL_OUTOFCORE_OUTOFCORE_CLOUD_H_
-#define PCL_OUTOFCORE_OUTOFCORE_CLOUD_H_
+#pragma once
 
 #include <stdint.h>
 
@@ -292,5 +291,3 @@ class OutofcoreCloud : public Object
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
-
-#endif

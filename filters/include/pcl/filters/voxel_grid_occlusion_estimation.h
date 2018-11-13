@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_VOXEL_GRID_OCCLUSION_ESTIMATION_H_
-#define PCL_FILTERS_VOXEL_GRID_OCCLUSION_ESTIMATION_H_
+#pragma once
 
 #include <pcl/filters/voxel_grid.h>
 
@@ -249,5 +248,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/voxel_grid_occlusion_estimation.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_VOXEL_GRID_OCCLUSION_ESTIMATION_H_

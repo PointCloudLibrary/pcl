@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_USC_H_
-#define PCL_FEATURES_USC_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -193,5 +192,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/usc.hpp>
 #endif
-
-#endif  //#ifndef PCL_USC_H_

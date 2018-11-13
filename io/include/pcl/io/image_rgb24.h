@@ -33,10 +33,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <pcl/pcl_config.h>
+ 
+#pragma once
 
-#ifndef PCL_IO_IMAGE_RGB_H_
-#define PCL_IO_IMAGE_RGB_H_
+#include <pcl/pcl_config.h>
 
 #include <pcl/pcl_macros.h>
 #include <boost/chrono.hpp>
@@ -87,5 +87,3 @@ namespace pcl
 
   } // namespace
 }
-
-#endif // PCL_IO_IMAGE_RGB_H_

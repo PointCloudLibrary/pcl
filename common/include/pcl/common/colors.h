@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_COMMON_COLORS_H
-#define PCL_COMMON_COLORS_H
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -85,6 +84,3 @@ namespace pcl
   typedef ColorLUT<pcl::LUT_VIRIDIS> ViridisLUT;
 
 }
-
-#endif /* PCL_COMMON_COLORS_H */
-

@@ -32,8 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_EXPORTS_H_
-#define PCL_EXPORTS_H_
+#pragma once
 
 // This header is created to include to NVCC compiled sources.
 // Header 'pcl_macros' is not suitable since it includes <Eigen/Core>,
@@ -48,5 +47,3 @@
 #else
     #define PCL_EXPORTS
 #endif
-
-#endif  //#ifndef PCL_EXPORTS_H_

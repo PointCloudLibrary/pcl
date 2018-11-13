@@ -33,8 +33,8 @@
 *
 *
 */
-#ifndef PCL_MODELER_PARAMETER_DIALOG_H_
-#define PCL_MODELER_PARAMETER_DIALOG_H_
+
+#pragma once
 
 #include <pcl/apps/modeler/qt.h>
 
@@ -111,5 +111,3 @@ namespace pcl
 
   }
 }
-
-#endif // PCL_MODELER_PARAMETER_DIALOG_H_

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_TIME_GPU_H_
-#define PCL_CUDA_TIME_GPU_H_
+#pragma once
 
 #include <cuda.h>
 #include <pcl/cuda/cutil_inline.h>
@@ -111,5 +110,3 @@ namespace pcl
     };
   } // namespace
 } // namespace
-
-#endif  //#ifndef PCL_CUDA_TIMER_H_

@@ -34,8 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_ORGANIZED_SEGMENTATION_DEMO_H_
-#define PCL_ORGANIZED_SEGMENTATION_DEMO_H_
+#pragma once
 
 #include <pcl/apps/organized_segmentation_demo_qt.h>
 
@@ -182,5 +181,3 @@ class OrganizedSegmentationDemo : public QMainWindow
     timeoutSlot();
 
 };
-
-#endif    // PCL_ORGANIZED_SEGMENTATION_DEMO_H_

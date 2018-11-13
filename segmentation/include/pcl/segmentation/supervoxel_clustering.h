@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_SUPERVOXEL_CLUSTERING_H_
-#define PCL_SEGMENTATION_SUPERVOXEL_CLUSTERING_H_
+#pragma once
 
 #include <pcl/features/normal_3d.h>
 #include <pcl/pcl_base.h>
@@ -541,6 +540,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/supervoxel_clustering.hpp>
-#endif
-
 #endif

@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_REGISTRATION_META_REGISTRATION_H_
-#define PCL_REGISTRATION_META_REGISTRATION_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/registration/registration.h>
@@ -127,5 +126,3 @@ namespace pcl {
 }
 
 #include <pcl/registration/impl/meta_registration.hpp>
-
-#endif /*PCL_REGISTRATION_META_REGISTRATION_H_*/

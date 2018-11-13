@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KINFU_INTERNAL_HPP_
-#define PCL_KINFU_INTERNAL_HPP_
+#pragma once
 
 #include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/gpu/kinfu_large_scale/device.h>
@@ -455,5 +454,3 @@ namespace pcl
     }
   }
 }
-
-#endif /* PCL_KINFU_INTERNAL_HPP_ */

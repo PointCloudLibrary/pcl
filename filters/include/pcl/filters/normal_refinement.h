@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_NORMAL_REFINEMENT_H_
-#define PCL_FILTERS_NORMAL_REFINEMENT_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
 
@@ -304,5 +303,3 @@ namespace pcl
 #else
 #define PCL_INSTANTIATE_NormalRefinement(T) template class PCL_EXPORTS pcl::NormalRefinement<T>;
 #endif
-
-#endif 

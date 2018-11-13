@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_PAIRWISE_POTENTIAL_H_
-#define PCL_PAIRWISE_POTENTIAL_H_
+#pragma once
 
 #include <vector>
 
@@ -84,5 +83,3 @@ namespace pcl
 
   };
 }
-
-#endif

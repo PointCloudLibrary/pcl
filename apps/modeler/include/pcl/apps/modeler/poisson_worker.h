@@ -34,8 +34,7 @@
  *
  */
 
-#ifndef PCL_MODELER_POISSON_WORKER_H_
-#define PCL_MODELER_POISSON_WORKER_H_
+#pragma once
 
 #include <pcl/apps/modeler/abstract_worker.h>
 
@@ -76,5 +75,3 @@ namespace pcl
 
   }
 }
-
-#endif // PCL_MODELER_POISSON_WORKER_H_

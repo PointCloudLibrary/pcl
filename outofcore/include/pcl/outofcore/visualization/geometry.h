@@ -1,5 +1,4 @@
-#ifndef PCL_OUTOFCORE_GEOMETRY_H_
-#define PCL_OUTOFCORE_GEOMETRY_H_
+#pragma once
 
 // C++
 #include <string>
@@ -39,5 +38,3 @@ public:
   }
 
 };
-
-#endif

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_EXTRACT_INDICES_H_
-#define PCL_FILTERS_EXTRACT_INDICES_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 
@@ -199,6 +198,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/extract_indices.hpp>
 #endif
-
-#endif  // PCL_FILTERS_EXTRACT_INDICES_H_
-

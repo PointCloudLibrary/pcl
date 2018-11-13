@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_RANDOM_SUBSAMPLE_H_
-#define PCL_FILTERS_RANDOM_SUBSAMPLE_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 #include <time.h>
@@ -239,5 +238,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/random_sample.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_RANDOM_SUBSAMPLE_H_

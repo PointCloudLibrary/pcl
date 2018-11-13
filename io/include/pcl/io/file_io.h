@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_FILE_IO_H_
-#define PCL_IO_FILE_IO_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/common/io.h>
@@ -391,5 +390,3 @@ namespace pcl
   }
 
 }
-
-#endif  //#ifndef PCL_IO_FILE_IO_H_

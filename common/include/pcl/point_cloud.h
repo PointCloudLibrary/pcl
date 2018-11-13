@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_POINT_CLOUD_H_
-#define PCL_POINT_CLOUD_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header
@@ -629,5 +628,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_PointCloud(T) template class PCL_EXPORTS pcl::PointCloud<T>;
-
-#endif  //#ifndef PCL_POINT_CLOUD_H_

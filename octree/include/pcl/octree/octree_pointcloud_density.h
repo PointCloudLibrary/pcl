@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_DENSITY_H
-#define PCL_OCTREE_DENSITY_H
+#pragma once
 
 #include <pcl/octree/octree_pointcloud.h>
 
@@ -157,6 +156,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_OctreePointCloudDensity(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudDensity<T>;
-
-#endif
-

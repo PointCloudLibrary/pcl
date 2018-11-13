@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_SORTING_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_SORTING_H_
+
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header
@@ -140,5 +140,3 @@ namespace pcl
 
   }
 }
-
-#endif /* PCL_REGISTRATION_CORRESPONDENCE_SORTING_H_ */

@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_CUDA_TIME_CPU_H_
-#define PCL_CUDA_TIME_CPU_H_
+#pragma once
 
 #include <iostream>
 #include <cmath>
@@ -136,5 +135,3 @@ inline pcl::cuda::ScopeTimeCPU::~ScopeTimeCPU ()
   double duration = end_time - start_time_;
   std::cerr << title_ << " took " << 1000 * duration << "ms. " << std::endl;
 }
-
-#endif  //#ifndef PCL_NORMS_H_

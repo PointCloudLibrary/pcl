@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEARCH_ORGANIZED_NEIGHBOR_SEARCH_H_
-#define PCL_SEARCH_ORGANIZED_NEIGHBOR_SEARCH_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -284,6 +283,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/search/impl/organized.hpp>
 #endif
-
-#endif
-

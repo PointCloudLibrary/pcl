@@ -37,8 +37,7 @@
  *  Email  : jpapon@gmail.com
  */
 
-#ifndef PCL_OCTREE_POINTCLOUD_ADJACENCY_CONTAINER_H_
-#define PCL_OCTREE_POINTCLOUD_ADJACENCY_CONTAINER_H_
+#pragma once
 
 namespace pcl
 { 
@@ -196,5 +195,3 @@ namespace pcl
     };
   }
 }
-
-#endif

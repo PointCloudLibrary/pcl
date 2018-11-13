@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_POINTCLOUD_H
-#define PCL_OCTREE_POINTCLOUD_H
+#pragma once
 
 #include <pcl/octree/octree_base.h>
 
@@ -550,6 +549,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/octree/impl/octree_pointcloud.hpp>
 #endif
-
-#endif
-

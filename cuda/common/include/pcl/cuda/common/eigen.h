@@ -87,8 +87,7 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef PCL_CUDA_EIGEN_H_
-#define PCL_CUDA_EIGEN_H_
+#pragma once
 
 #include <pcl/cuda/point_cloud.h>
 #include <pcl/cuda/cutil_math.h>
@@ -770,5 +769,3 @@ namespace pcl
   
   } // namespace
 } // namespace
-
-#endif  //#ifndef PCL_CUDA_EIGEN_H_

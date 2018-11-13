@@ -34,8 +34,7 @@
  *
  */
 
-#ifndef PCL_MODELER_SCENE_TREE_H_
-#define PCL_MODELER_SCENE_TREE_H_
+#pragma once
 
 #include <pcl/apps/modeler/qt.h>
 
@@ -140,5 +139,3 @@ namespace pcl
 }
 
 #include <pcl/apps/modeler/impl/scene_tree.hpp>
-
-#endif // PCL_MODELER_SCENE_TREE_H_

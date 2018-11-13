@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_GICP6D_H_
-#define PCL_GICP6D_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -206,5 +205,3 @@ namespace pcl
       MyPointRepresentation point_rep_;
   };
 }
-
-#endif //#ifndef PCL_GICP6D_H_

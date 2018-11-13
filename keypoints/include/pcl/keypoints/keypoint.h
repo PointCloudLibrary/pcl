@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KEYPOINT_H_
-#define PCL_KEYPOINT_H_
+#pragma once
 
 // PCL includes
 #include <pcl/pcl_base.h>
@@ -207,5 +206,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/keypoint.hpp>
-
-#endif  //#ifndef PCL_KEYPOINT_H_

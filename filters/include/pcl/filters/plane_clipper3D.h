@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef PCL_PLANE_CLIPPER3D_H_
-#define PCL_PLANE_CLIPPER3D_H_
+#pragma once
+
 #include "clipper3D.h"
 
 namespace pcl
@@ -103,5 +103,3 @@ namespace pcl
 }
 
 #include <pcl/filters/impl/plane_clipper3D.hpp>
-
-#endif // PCL_PLANE_CLIPPER3D_H_

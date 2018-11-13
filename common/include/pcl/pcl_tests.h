@@ -36,9 +36,7 @@
  * $Id$
  */
 
-
-#ifndef PCL_TEST_MACROS
-#define PCL_TEST_MACROS
+#pragma once
 
 #include <Eigen/Core>
 
@@ -314,5 +312,3 @@ namespace pcl
 #define EXPECT_METADATA_EQ(expected, actual)             \
   EXPECT_PRED_FORMAT2(::pcl::test::internal::MetaDataEQ, \
                       expected, actual)
-
-#endif

@@ -36,8 +36,8 @@
  * $Id$
  *
  */
-#ifndef PCL_PCL_VISUALIZER_SHAPES_H_
-#define PCL_PCL_VISUALIZER_SHAPES_H_
+
+#pragma once
 
 #include <pcl/ModelCoefficients.h>
 #include <pcl/point_cloud.h>
@@ -291,5 +291,3 @@ namespace pcl
 /*@}*/
 
 #include <pcl/visualization/common/impl/shapes.hpp>
-
-#endif

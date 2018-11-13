@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_KDTREE_KDTREE_FLANN_H_
-#define PCL_KDTREE_KDTREE_FLANN_H_
+#pragma once
 
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/kdtree/flann.h>
@@ -236,6 +235,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
-#endif
-
 #endif

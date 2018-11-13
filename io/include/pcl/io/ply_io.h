@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_IO_PLY_IO_H_
-#define PCL_IO_PLY_IO_H_
+#pragma once
 
 #include <pcl/io/boost.h>
 #include <pcl/io/file_io.h>
@@ -896,5 +895,3 @@ namespace pcl
     savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh &mesh);
   }
 }
-
-#endif  //#ifndef PCL_IO_PLY_IO_H_

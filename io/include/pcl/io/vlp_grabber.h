@@ -36,10 +36,9 @@
  *
  */
 
-#include "pcl/pcl_config.h"
+#pragma once
 
-#ifndef PCL_IO_VLP_GRABBER_H_
-#define PCL_IO_VLP_GRABBER_H_
+#include "pcl/pcl_config.h"
 
 #include <pcl/io/hdl_grabber.h>
 #include <pcl/io/grabber.h>
@@ -124,5 +123,3 @@ namespace pcl
 
   };
 }
-
-#endif /* PCL_IO_VLP_GRABBER_H_ */

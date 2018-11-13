@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_CONSOLE_PARSE_H_
-#define PCL_CONSOLE_PARSE_H_
+
+#pragma once
 
 #include <vector>
 #include <sstream>
@@ -368,6 +368,3 @@ namespace pcl
     parse_file_extension_argument (int argc, const char * const * argv, const std::string &ext);
   }
 }
-
-#endif      // PCL_CONSOLE_PARSE_H_
-

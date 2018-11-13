@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_VALIDATION_H_
-#define PCL_REGISTRATION_TRANSFORMATION_VALIDATION_H_
+
+#pragma once
 
 #include <pcl/correspondence.h>
 #include <pcl/features/feature.h>
@@ -127,5 +127,3 @@ namespace pcl
     };
   }
 }
-
-#endif    // PCL_REGISTRATION_TRANSFORMATION_VALIDATION_H_

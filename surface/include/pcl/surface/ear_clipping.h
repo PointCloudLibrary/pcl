@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_EAR_CLIPPING_H_
-#define PCL_SURFACE_EAR_CLIPPING_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/surface/processing.h>
@@ -124,5 +123,3 @@ namespace pcl
   };
 
 }
-
-#endif  // #ifndef PCL_SURFACE_EAR_CLIPPING_H_

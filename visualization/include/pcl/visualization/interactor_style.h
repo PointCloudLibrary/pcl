@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_PCL_VISUALIZER_INTERACTOR_STYLE_H_
-#define PCL_PCL_VISUALIZER_INTERACTOR_STYLE_H_
+
+#pragma once
 
 #include <pcl/console/print.h>
 #include <pcl/visualization/common/actor_map.h>
@@ -439,5 +439,3 @@ namespace pcl
     };
   }
 }
-
-#endif

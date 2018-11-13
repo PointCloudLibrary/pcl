@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_CONDITIONAL_EUCLIDEAN_CLUSTERING_H_
-#define PCL_SEGMENTATION_CONDITIONAL_EUCLIDEAN_CLUSTERING_H_
+#pragma once
 
 #include <boost/function.hpp>
 
@@ -266,6 +265,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/conditional_euclidean_clustering.hpp>
 #endif
-
-#endif  // PCL_SEGMENTATION_CONDITIONAL_EUCLIDEAN_CLUSTERING_H_
-
