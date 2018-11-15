@@ -34,19 +34,23 @@ endif(EXISTS "@CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_ROOT@")
 
 # remove pcl directory in share (removes all files in it!)
 # created by CMakeLists.txt for PCLConfig.cmake
-message(STATUS "Uninstalling \"@CMAKE_INSTALL_PREFIX@/@PCLCONFIG_INSTALL_DIR@\"")
 if(EXISTS "@CMAKE_INSTALL_PREFIX@/@PCLCONFIG_INSTALL_DIR@")
+  file(GLOB_RECURSE CMAKE_CONFIG_FOLDER_FILES FOLLOW_SYMLINKS
+       LIST_DIRECTORIES false
+       "@CMAKE_INSTALL_PREFIX@/@PCLCONFIG_INSTALL_DIR@/*")
+  list(LENGTH CMAKE_CONFIG_FOLDER_FILES CMAKE_CONFIG_FOLDER_FILES_NUMBER)
+  if(CMAKE_CONFIG_FOLDER_FILES_NUMBER EQUAL 0)
+    message(STATUS "Uninstalling \"@CMAKE_INSTALL_PREFIX@/@PCLCONFIG_INSTALL_DIR@\"")
     exec_program("@CMAKE_COMMAND@"
-        ARGS "-E remove_directory \"@CMAKE_INSTALL_PREFIX@/@PCLCONFIG_INSTALL_DIR@\""
-        OUTPUT_VARIABLE rm_out RETURN_VALUE rm_retval)
+                 ARGS "-E remove_directory \"@CMAKE_INSTALL_PREFIX@/@PCLCONFIG_INSTALL_DIR@\""
+                 OUTPUT_VARIABLE rm_out RETURN_VALUE rm_retval)
     if(NOT "${rm_retval}" STREQUAL 0)
-        message(FATAL_ERROR
-            "Problem when removing \"@CMAKE_INSTALL_PREFIX@/@PCLCONFIG_INSTALL_DIR@\"")
-    endif(NOT "${rm_retval}" STREQUAL 0)
+      message(FATAL_ERROR "Problem when removing \"@CMAKE_INSTALL_PREFIX@/@PCLCONFIG_INSTALL_DIR@\"")
+    endif()
+  endif()
 else(EXISTS "@CMAKE_INSTALL_PREFIX@/@PCLCONFIG_INSTALL_DIR@")
-    message(STATUS
-        "Directory \"@CMAKE_INSTALL_PREFIX@/@PCLCONFIG_INSTALL_DIR@\" does not exist.")
-endif(EXISTS "@CMAKE_INSTALL_PREFIX@/@PCLCONFIG_INSTALL_DIR@")
+  message(STATUS "Directory \"@CMAKE_INSTALL_PREFIX@/@PCLCONFIG_INSTALL_DIR@\" does not exist.")
+endif()
 
 # remove pcl directory in share/doc (removes all files in it!)
 if(@WITH_DOCS@)
