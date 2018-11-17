@@ -508,6 +508,128 @@ namespace pcl
       int smoothness_strong_;
       int smoothness_weak_;
   };
+
+  /** \brief Compact representation Stereo Matching class
+    *
+    * This class implements the Compact representation of per-pixel likelihood stereo matching algorithm.
+    * The algorithm is inspired by the paper:
+    * [2] D. Min et al., "A revisit to cost aggregation in stereo matching: How far can we reduce its computational redundancy?", ICCV 2011
+    * The algorithm is based on the Sum of Absolute Differences (SAD) matching function
+    * Only works with grayscale (single channel) rectified images
+    *
+    * \author Jilliam Diaz Barros (jilliam@ieee.org)
+    * \ingroup stereo
+    */
+  class PCL_EXPORTS CompactRepresentationStereoMatching : public GrayStereoMatching
+  {
+    public:
+      CompactRepresentationStereoMatching (void);
+      virtual ~CompactRepresentationStereoMatching (void)
+      {
+      };
+
+      /** \brief setter for the radius of the squared window
+        * \param[in] radius radius of the squared window used for cost aggregation through a compact representation of the per-pixel likelihood.
+        * The window side is equal to 2*radius + 1
+        */
+      void
+      setRadius (int radius)
+      {
+        radius_ = radius;
+      };
+
+      /** \brief setter for the radius of the kernel of the filter
+        * \param[in] filter_radius radius of the filter;
+        * The window side is equal to 2*filter_radius_ + 1
+        */
+      void
+      setFilterRadius (int filter_radius)
+      {
+        filter_radius_ = filter_radius;
+      };
+
+      /** \brief setter for the number of disparity candidates used for the compact representation
+        * \param[in] num_cand number of disparity candidates
+        */
+      void
+      setNumDispCandidates(int num_cand)
+      {
+        num_disp_candidates_ = num_cand;
+      };
+
+      /** \brief setter for the threshold value of Truncated Absolute Difference to limit the influence of outliers to the similatiry measure
+        * \param[in] thresh_tad threshold value of Truncated Absolute Difference
+        */
+      void
+      setThresholdTAD (int thresh_tad)
+      {
+        thresh_tad_ = thresh_tad;
+      };
+
+      /** \brief setter for the soft-thresholding in the cost-aggregation step
+        * \param[in] is_soft_thresh setting the boolean to true activates the soft-thresholding in the cost-aggregation step
+        */
+      void
+      setSoftThreshold (bool is_soft_thresh)
+      {
+        is_soft_thresh_ = is_soft_thresh;
+      };
+
+      /** \brief setter for the spatial bandwith used for cost aggregation based on adaptive weights
+        * \param[in] gamma_s spatial bandwith used for cost aggregation based on adaptive weights
+        */
+      void
+      setGammaS (int gamma_s)
+      {
+        gamma_s_ = gamma_s;
+      };
+
+      /** \brief setter for the color bandwith used for cost aggregation based on adaptive weights
+        * \param[in] gamma_c color bandwith used for cost aggregation based on adaptive weights
+        */
+      void
+      setGammaC (int gamma_c)
+      {
+        gamma_c_ = gamma_c;
+      };
+
+      /** \brief setter for the spatial sampling method
+        * \param[in] sampling_method sampling method (0: p-independent; 1: p-dependent)
+        */
+      void
+      setSamplingMethod (int sampling_method)
+      {
+        sampling_method_ = sampling_method;
+      };
+
+      /** \brief setter for the sampling ratio of matching window
+        * \param[in] sampling_ratio sampling ratio in the range [1, 4]
+        */
+      void
+      setSamplingRatio (int sampling_ratio)
+      {
+        sampling_ratio_ = sampling_ratio;
+      };
+
+    private:
+      virtual void
+      compute_impl (unsigned char* ref_img, unsigned char* trg_img);
+
+      //Toggle for the activation of the soft thresholding
+      bool is_soft_thresh_;
+
+      //Parameters for compact representation of cost aggregation
+      int radius_, filter_radius_, num_disp_candidates_, thresh_tad_;
+
+      //Parameters for spatial sampling of matching window
+      int sampling_ratio_;
+      int sampling_method_;
+
+      //Parameters for adaptive weight cost aggregation
+      double gamma_c_;
+      double gamma_s_;
+  };
+
 }
 
 #endif
