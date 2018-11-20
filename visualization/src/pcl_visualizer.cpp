@@ -3556,7 +3556,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
       else
         for (std::size_t tc = 0; tc < mesh.tex_coordinates[t].size (); ++tc)
           coordinates->InsertNextTuple2 (-1.0, -1.0);
-#if VTK_MAJOR_VERSION >= 8 && VTK_MINOR_VERSION >= 2
+#if (VTK_MAJOR_VERSION == 8 && VTK_MINOR_VERSION >= 2) || VTK_MAJOR_VERSION > 8
     mapper->MapDataArrayToMultiTextureAttribute(mesh.tex_materials[tex_id].tex_name.c_str(),
       this_coordinates_name.c_str(),
       vtkDataObject::FIELD_ASSOCIATION_POINTS);
