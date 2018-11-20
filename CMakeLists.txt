@@ -1,10 +1,6 @@
 ### ---[ PCL global CMake
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
-if(POLICY CMP0054)
-  cmake_policy(SET CMP0054 OLD) # Silent warnings about quoted variables
-endif()
-
 if(POLICY CMP0074)
   # TODO:
   # 1. Find*.cmake modules need to be individually verified.
