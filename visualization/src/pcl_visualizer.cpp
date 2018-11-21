@@ -3528,12 +3528,11 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
   std::size_t tex_id = 0;
   while (tex_id < last_tex_id)
   {
-#if VTK_MAJOR_VERSION < 9
-    int tu = vtkProperty::VTK_TEXTURE_UNIT_0 + tex_id;
+#if (VTK_MAJOR_VERSION == 8 && VTK_MINOR_VERSION >= 2) || VTK_MAJOR_VERSION > 8
+    const char *tu = mesh.tex_materials[tex_id].tex_name.c_str();
 #else
-    const char *tu = mesh.tex_materials[tex_id].tex_name.c_str ();
+    int tu = vtkProperty::VTK_TEXTURE_UNIT_0 + tex_id;
 #endif
-
     vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New ();
     if (textureFromTexMaterial (mesh.tex_materials[tex_id], texture))
     {
@@ -3561,10 +3560,10 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
       else
         for (std::size_t tc = 0; tc < mesh.tex_coordinates[t].size (); ++tc)
           coordinates->InsertNextTuple2 (-1.0, -1.0);
-
     mapper->MapDataArrayToMultiTextureAttribute(tu,
-                                                this_coordinates_name.c_str (),
-                                                vtkDataObject::FIELD_ASSOCIATION_POINTS);
+      this_coordinates_name.c_str(),
+      vtkDataObject::FIELD_ASSOCIATION_POINTS);
+    
     polydata->GetPointData ()->AddArray (coordinates);
     actor->GetProperty ()->SetTexture (tu, texture);
     ++tex_id;
