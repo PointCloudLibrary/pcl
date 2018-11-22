@@ -60,7 +60,7 @@ endmacro(REMOVE_VTK_DEFINITIONS)
 # Pull the component parts out of the version number.
 macro(DISSECT_VERSION)
     # Detect if we're in a developlment version and generate pretty version string
-    if(${PCL_VERSION_TWEAK} EQUAL 99)
+    if(PCL_VERSION_TWEAK EQUAL 99)
         set(PCL_DEV_VERSION 1)
         set(PCL_VERSION_PRETTY "${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.${PCL_VERSION_PATCH}-dev")
     else()
