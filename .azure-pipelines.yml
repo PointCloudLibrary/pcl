@@ -72,7 +72,7 @@ jobs:
             -DQt5Gui_DIR=/usr/local/opt/qt5/lib/cmake/Qt5Gui \
             -DQt5Widgets_DIR=/usr/local/opt/qt5/lib/cmake/Qt5Widgets \
             -DQt5Concurrent_DIR=/usr/local/opt/qt5/lib/cmake/Qt5Concurrent \
-            -DQt5OpenGL_DIR=/usr/local/opt/qt5/lib/cmake/Qt5OpenG \
+            -DQt5OpenGL_DIR=/usr/local/opt/qt5/lib/cmake/Qt5OpenGL \
             -DPCL_ONLY_CORE_POINT_TYPES=ON \
             -DPCL_QT_VERSION=5 \
             -DBUILD_simulation=ON \
@@ -84,7 +84,7 @@ jobs:
             -DBUILD_apps_cloud_composer=ON \
             -DBUILD_apps_in_hand_scanner=ON \
             -DBUILD_apps_modeler=ON \
-            -DBUILD_apps_point_cloud_editor=OFF
+            -DBUILD_apps_point_cloud_editor=ON
         displayName: 'CMake Configuration'
       - script: |
           cd $BUILD_DIR
