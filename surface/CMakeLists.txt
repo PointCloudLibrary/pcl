@@ -60,7 +60,6 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/factor.h"
         "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/function_data.h"
         "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/geometry.h"
-        "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/hash.h"
         "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/marching_cubes_poisson.h"
         "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/mat.h"
         "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/multi_grid_octree_data.h"

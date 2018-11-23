@@ -330,7 +330,6 @@ namespace pcl
     }
     template<class Real>
     int Triangulation<Real>::addTriangle(int p1,int p2,int p3){
-      hash_map<long long,int>::iterator iter;
       int tIdx,eIdx,p[3];
       p[0]=p1;
       p[1]=p2;
@@ -341,8 +340,7 @@ namespace pcl
       for(int i=0;i<3;i++)
       {
         long long e = EdgeIndex(p[i],p[(i+1)%3]);
-        iter=edgeMap.find(e);
-        if(iter==edgeMap.end())
+        if(edgeMap.count(e) == 0)
         {
           TriangulationEdge edge;
           edge.pIndex[0]=p[i];
