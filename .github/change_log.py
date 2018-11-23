@@ -175,6 +175,7 @@ def generate_text_content(tag, pr_info):
         "simulation",
         "stereo",
         "surface",
+        "visualization",
         "apps",
         "docs",
         "tutorials",
