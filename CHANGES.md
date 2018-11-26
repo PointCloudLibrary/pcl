@@ -1,5 +1,45 @@
 # ChangeList
 
+## *= 1.9.1 (26.11.2018) =*
+
+### `Modules:`
+
+#### `Uncategorized:`
+
+* Add missing visualization section from the changelog generation. [[#2634]](https://github.com/PointCloudLibrary/pcl/pull/2634)
+
+#### `CMake:`
+
+* Fix development version check on DISSECT_VERSION. [[#2633]](https://github.com/PointCloudLibrary/pcl/pull/2633)
+* Remove CMake policy CMP0054 setting. [[#2627]](https://github.com/PointCloudLibrary/pcl/pull/2627)
+* PCLConfig.cmake - POP policy-stack before return() [[#2626]](https://github.com/PointCloudLibrary/pcl/pull/2626)
+* Remove CMake config installation folder only when empty [[#2622]](https://github.com/PointCloudLibrary/pcl/pull/2622)
+* Downgrade grabber dependency message level to STATUS. [[#2620]](https://github.com/PointCloudLibrary/pcl/pull/2620)
+* Migrate CMake policy 0048 [[#2608]](https://github.com/PointCloudLibrary/pcl/pull/2608)
+* Bump CMake minimum version to 3.1. [[#2605]](https://github.com/PointCloudLibrary/pcl/pull/2605)
+* Bump version to 1.9.0-dev [[#2602]](https://github.com/PointCloudLibrary/pcl/pull/2602)
+* Search in $EIGEN_ROOT first while looking for Eigen [[#2592]](https://github.com/PointCloudLibrary/pcl/pull/2592)
+
+#### `libpcl_visualization:`
+
+* address conflict between visualization and VTK head [[#2612]](https://github.com/PointCloudLibrary/pcl/pull/2612)
+
+#### `PCL Tutorials:`
+
+* Bump CMake minimum version to 3.1. [[#2605]](https://github.com/PointCloudLibrary/pcl/pull/2605)
+
+#### `PCL Tests:`
+
+* Refactor `SHOTEstimation` and `SHOTColorEstimation` tests [[#2636]](https://github.com/PointCloudLibrary/pcl/pull/2636)
+
+#### `CI:`
+
+* Set up azure pipelines for macOS High Sierra [[#2635]](https://github.com/PointCloudLibrary/pcl/pull/2635)
+* Enable Windows builds on Azure Pipelines [[#2632]](https://github.com/PointCloudLibrary/pcl/pull/2632)
+* Add Ubuntu16.04 based build on Azure Pipelines [[#2611]](https://github.com/PointCloudLibrary/pcl/pull/2611)
+* Remove documentation job from Travis [[#2604]](https://github.com/PointCloudLibrary/pcl/pull/2604)
+
+
 ## *= 1.9.0 (06.11.2018) =*
 
 ### `New Features:`
@@ -368,6 +408,41 @@
 * **[api][deprecation][new-feature]** Add new mls projection method. Deprecated `MovingLeastSquares::setPolynomialFit()`. [[#1960]](https://github.com/PointCloudLibrary/pcl/pull/1960)
 * Avoid phantom surfces in marching cubes hoppe [[#1874]](https://github.com/PointCloudLibrary/pcl/pull/1874)
 * **[api]** Add ability to cache mls results [[#1952]](https://github.com/PointCloudLibrary/pcl/pull/1952)
+
+#### `libpcl_visualization:`
+
+* Made PCLVisualizerInteractorStyle::CloudActorMapPtr public. [[#2542]](https://github.com/PointCloudLibrary/pcl/pull/2542)
+* **[new-feature]** Add Viridis color LUT [[#2420]](https://github.com/PointCloudLibrary/pcl/pull/2420)
+* Update sha1 header inclusion for Boost 1.68+ [[#2373]](https://github.com/PointCloudLibrary/pcl/pull/2373)
+* Second change VTK version check in addTextureMesh [[#2322]](https://github.com/PointCloudLibrary/pcl/pull/2322)
+* Include missing `vtkTexture.h`. Follow up on #2291 [[#2316]](https://github.com/PointCloudLibrary/pcl/pull/2316)
+* Change VTK version check in `addTextureMesh` [[#2311]](https://github.com/PointCloudLibrary/pcl/pull/2311)
+* Remove depreciated VTK function MapDataArrayToMultiTextureAttribute [[#2291]](https://github.com/PointCloudLibrary/pcl/pull/2291)
+* Warn and skip adding normal cloud if it is empty [[#2265]](https://github.com/PointCloudLibrary/pcl/pull/2265)
+* **[api]** Fix access specifier in `PointCloudColorHandlerRGBAField` [[#2226]](https://github.com/PointCloudLibrary/pcl/pull/2226)
+* Check if color handler returns false [[#2209]](https://github.com/PointCloudLibrary/pcl/pull/2209)
+* Handle VTK legacy function (follow up to #2112) [[#2165]](https://github.com/PointCloudLibrary/pcl/pull/2165)
+* Travis merge test jobs. Expose VTK include directory for the visualization module. [[#2163]](https://github.com/PointCloudLibrary/pcl/pull/2163)
+* Small optimizations and fixes in PCLVisualizer [[#2112]](https://github.com/PointCloudLibrary/pcl/pull/2112)
+* Add another variant to `getPointCloudRenderingProperties()`  [[#2142]](https://github.com/PointCloudLibrary/pcl/pull/2142)
+* Restrict accepted types in `PCLVisualizer::addLine` signature [[#2134]](https://github.com/PointCloudLibrary/pcl/pull/2134)
+* Typo fix in error message. [[#2132]](https://github.com/PointCloudLibrary/pcl/pull/2132)
+* Fix add/remove of 3D text without custom viewport [[#2110]](https://github.com/PointCloudLibrary/pcl/pull/2110)
+* Add `octree` dependency to `visualization` [[#2115]](https://github.com/PointCloudLibrary/pcl/pull/2115)
+* Fix pcd_viewer color handling when invalid fields are present in pcd [[#2105]](https://github.com/PointCloudLibrary/pcl/pull/2105)
+* Add pcl visualizer interactor null guards [[#2104]](https://github.com/PointCloudLibrary/pcl/pull/2104)
+* Add remove text3d [[#2088]](https://github.com/PointCloudLibrary/pcl/pull/2088)
+* Replace auto_ptr with scoped_ptr [[#2037]](https://github.com/PointCloudLibrary/pcl/pull/2037)
+* **[removal]** Removal of deprecated code in filters, io, surface and visualization modules [[#2077]](https://github.com/PointCloudLibrary/pcl/pull/2077)
+* Suppress sign compare warnings [[#2068]](https://github.com/PointCloudLibrary/pcl/pull/2068)
+* **[new-feature]** Add overload to `PCLVisualizer::addText3D()` that allows specifying text orientation [[#2038]](https://github.com/PointCloudLibrary/pcl/pull/2038)
+* Add new constructors to PCLVisualizer [[#2004]](https://github.com/PointCloudLibrary/pcl/pull/2004)
+* Fix bug in PointCloudGeometryHandlerCustom [[#2001]](https://github.com/PointCloudLibrary/pcl/pull/2001)
+* Add missing PCL_EXPORTS in pcl_visualizer.h [[#1995]](https://github.com/PointCloudLibrary/pcl/pull/1995)
+* **[abi]** Add accessor for current rendering framerate in PCLVisualizer [[#1974]](https://github.com/PointCloudLibrary/pcl/pull/1974)
+* Allow changing LUT properties of a shape actor [[#1668]](https://github.com/PointCloudLibrary/pcl/pull/1668)
+* Fixed spelling and grammar errors [[#1959]](https://github.com/PointCloudLibrary/pcl/pull/1959)
+* Fixed error in documentation. [[#1957]](https://github.com/PointCloudLibrary/pcl/pull/1957)
 
 #### `PCL Apps:`
 
