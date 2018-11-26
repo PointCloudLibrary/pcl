@@ -471,12 +471,6 @@ int main (int argc, char** argv)
     return (-1);
   }
 
-  std::string object_file = "object.pcd", background_file = "background.pcd";
-  if (parsed_file_indices.size () >= 3)
-    background_file = argv[parsed_file_indices[2]];
-  if (parsed_file_indices.size () >= 2)
-    object_file = argv[parsed_file_indices[1]];
-
   pcl::PCDReader reader;
   // Test the header
   pcl::PCLPointCloud2 dummy;

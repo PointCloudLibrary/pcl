@@ -239,7 +239,7 @@ FittingCurve2dAPDM::addCPsOnClosestPointViolation (double max_error)
   //  m_data->interior_line_start.clear ();
   //  m_data->interior_line_end.clear ();
 
-  int nknots (0);
+  //int nknots (0);
 
   for (unsigned i = 0; i < elements.size () - 1; i++)
   {
@@ -265,7 +265,7 @@ FittingCurve2dAPDM::addCPsOnClosestPointViolation (double max_error)
         m_nurbs.InsertKnot (xi + 0.5 * dxi, 1);
         //        m_data->interior_line_start.push_back (p2);
         //        m_data->interior_line_end.push_back (p1);
-        nknots++;
+        //nknots++;
         inserted = true;
       }
     }
@@ -289,7 +289,7 @@ FittingCurve2dAPDM::addCPsOnClosestPointViolation (double max_error)
         m_nurbs.InsertKnot (xi, 1);
         //        m_data->interior_line_start.push_back (p2);
         //        m_data->interior_line_end.push_back (p1);
-        nknots++;
+        //nknots++;
       }
     }
 

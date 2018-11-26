@@ -116,7 +116,6 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
   std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> >::const_iterator curr_corner;
   int lastRowCorner_ind = 0, next_lastRowCorner_ind = 0;
   std::vector<int>::iterator nms_flags_p;
-  std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> >::iterator curr_corner_nms;
   int j;
   int num_corners_all = int (corners_all.size ());
   int n_max_corners = int (corners_nms.capacity ());
@@ -144,7 +143,6 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
   nms_flags.resize (num_corners_all);
 
   nms_flags_p = nms_flags.begin ();
-  curr_corner_nms = corners_nms.begin ();
 
   // set all flags to MAXIMUM
   for (j = num_corners_all; j > 0; j--)

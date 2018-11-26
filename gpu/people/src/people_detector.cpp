@@ -181,10 +181,7 @@ pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<PointTC>::Const
 
 int
 pcl::gpu::people::PeopleDetector::process ()
-{
-  int cols = cloud_device_.cols();
-  int rows = cloud_device_.rows();      
-  
+{  
   rdf_detector_->process(depth_device1_, cloud_host_, AREA_THRES);
 
   const RDFBodyPartsDetector::BlobMatrix& sorted = rdf_detector_->getBlobMatrix();
@@ -205,6 +202,7 @@ pcl::gpu::people::PeopleDetector::process ()
       shs5(cloud_host_, seed, &flowermat_host_.points[0]);
     }
     
+    int cols = cloud_device_.cols();
     fg_mask_.upload(flowermat_host_.points, cols);
     device::Dilatation::invoke(fg_mask_, kernelRect5x5_, fg_mask_grown_);
 
@@ -221,18 +219,18 @@ pcl::gpu::people::PeopleDetector::process ()
     {      
       Tree2 t2;
       buildTree(sorted2, cloud_host_, Neck, c, t2);
-      int par = 0;
+      /*int par = 0;
       for(int f = 0; f < NUM_PARTS; f++)
       {
-       /* if(t2.parts_lid[f] == NO_CHILD)
+        if(t2.parts_lid[f] == NO_CHILD)
         {
           cerr << "1;";
           par++;
         }
         else
-           cerr << "0;";*/
-      }
-      static int counter = 0; // TODO move this logging to PeopleApp
+           cerr << "0;";
+      }*/
+      //static int counter = 0; // TODO move this logging to PeopleApp
       //cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
       return 2;
     }
@@ -271,10 +269,7 @@ pcl::gpu::people::PeopleDetector::processProb (const pcl::PointCloud<PointTC>::C
 
 int
 pcl::gpu::people::PeopleDetector::processProb ()
-{
-  int cols = cloud_device_.cols();
-  int rows = cloud_device_.rows();
-
+{  
   PCL_DEBUG("[pcl::gpu::people::PeopleDetector::processProb] : (D) : called\n");
 
   // First iteration no tracking can take place
@@ -346,6 +341,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
       shs5(cloud_host_, seed, &flowermat_host_.points[0]);
     }
 
+    int cols = cloud_device_.cols();
     fg_mask_.upload(flowermat_host_.points, cols);
     device::Dilatation::invoke(fg_mask_, kernelRect5x5_, fg_mask_grown_);
 
@@ -374,20 +370,19 @@ pcl::gpu::people::PeopleDetector::processProb ()
     {
       Tree2 t2;
       buildTree(sorted2, cloud_host_, Neck, c, t2, person_attribs_);
-      int par = 0;
+      //int par = 0;
       for(int f = 0; f < NUM_PARTS; f++)
       {
         if(t2.parts_lid[f] == NO_CHILD)
         {
           cerr << "1;";
-          par++;
+          //par++;
         }
         else
            cerr << "0;";
       }
       std::cerr << std::endl;
-      static int counter = 0; // TODO move this logging to PeopleApp
-
+      //static int counter = 0; // TODO move this logging to PeopleApp
       //cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
       first_iteration_ = false;
       return 2;
