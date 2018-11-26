@@ -268,27 +268,8 @@ main (int argc, char **argv)
   triangleMapper->Update ();
   polydata1 = triangleMapper->GetInput ();
 
-  bool INTER_VIS = false;
-
-  if (INTER_VIS)
-  {
-    visualization::PCLVisualizer vis;
-    vis.addModelFromPolyData (polydata1, "mesh1", 0);
-    vis.setRepresentationToSurfaceForAllActors ();
-    vis.spin ();
-  }
-
   pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud_1 (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
   uniform_sampling (polydata1, SAMPLE_POINTS_, write_normals, write_colors, *cloud_1);
-
-  if (INTER_VIS)
-  {
-    visualization::PCLVisualizer vis_sampled;
-    vis_sampled.addPointCloud<pcl::PointXYZRGBNormal> (cloud_1);
-    if (write_normals)
-      vis_sampled.addPointCloudNormals<pcl::PointXYZRGBNormal> (cloud_1, 1, 0.02f, "cloud_normals");
-    vis_sampled.spin ();
-  }
 
   // Voxelgrid
   VoxelGrid<PointXYZRGBNormal> grid_;

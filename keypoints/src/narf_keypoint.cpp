@@ -591,42 +591,38 @@ NarfKeypoint::calculateSparseInterestImage ()
     else
     {
       // Reduce number of neighbors to go through by filtering close by points with the same angle
-      bool do_neighbor_size_reduction = true;
-      if (do_neighbor_size_reduction)
+      float min_distance_between_relevant_points = 0.25f * search_radius,
+            min_distance_between_relevant_points_squared = powf(min_distance_between_relevant_points, 2);
+      for (int angle_histogram_idx=0; angle_histogram_idx<angle_histogram_size; ++angle_histogram_idx)
       {
-        float min_distance_between_relevant_points = 0.25f * search_radius,
-              min_distance_between_relevant_points_squared = powf(min_distance_between_relevant_points, 2);
-        for (int angle_histogram_idx=0; angle_histogram_idx<angle_histogram_size; ++angle_histogram_idx)
+        std::vector<std::pair<int,float> >& relevent_point_indices = angle_elements[angle_histogram_idx];
+        std::sort(relevent_point_indices.begin(), relevent_point_indices.end(), secondPairElementIsGreater);
+        relevant_point_still_valid.clear();
+        relevant_point_still_valid.resize(relevent_point_indices.size(), true);
+        for (int rpi_idx1=0; rpi_idx1<int(relevent_point_indices.size ())-1; ++rpi_idx1)
         {
-          std::vector<std::pair<int,float> >& relevent_point_indices = angle_elements[angle_histogram_idx];
-          std::sort(relevent_point_indices.begin(), relevent_point_indices.end(), secondPairElementIsGreater);
-          relevant_point_still_valid.clear();
-          relevant_point_still_valid.resize(relevent_point_indices.size(), true);
-          for (int rpi_idx1=0; rpi_idx1<int(relevent_point_indices.size ())-1; ++rpi_idx1)
+          if (!relevant_point_still_valid[rpi_idx1])
+            continue;
+          const PointWithRange& relevant_point1 = range_image.getPoint (relevent_point_indices[rpi_idx1].first);
+          for (int rpi_idx2=rpi_idx1+1; rpi_idx2<int(relevent_point_indices.size ()); ++rpi_idx2)
           {
-            if (!relevant_point_still_valid[rpi_idx1])
+            if (!relevant_point_still_valid[rpi_idx2])
               continue;
-            const PointWithRange& relevant_point1 = range_image.getPoint (relevent_point_indices[rpi_idx1].first);
-            for (int rpi_idx2=rpi_idx1+1; rpi_idx2<int(relevent_point_indices.size ()); ++rpi_idx2)
-            {
-              if (!relevant_point_still_valid[rpi_idx2])
-                continue;
-              const PointWithRange& relevant_point2 = range_image.getPoint (relevent_point_indices[rpi_idx2].first);
-              float distance_squared = (relevant_point1.getVector3fMap ()-relevant_point2.getVector3fMap ()).norm ();
-              if (distance_squared > min_distance_between_relevant_points_squared)
-                continue;
-              relevant_point_still_valid[rpi_idx2] = false;
-            }
+            const PointWithRange& relevant_point2 = range_image.getPoint (relevent_point_indices[rpi_idx2].first);
+            float distance_squared = (relevant_point1.getVector3fMap ()-relevant_point2.getVector3fMap ()).norm ();
+            if (distance_squared > min_distance_between_relevant_points_squared)
+              continue;
+            relevant_point_still_valid[rpi_idx2] = false;
           }
-          int newPointIdx=0;
-          for (int oldPointIdx=0; oldPointIdx<int(relevant_point_still_valid.size()); ++oldPointIdx) {
-            if (relevant_point_still_valid[oldPointIdx])
-              relevent_point_indices[newPointIdx++] = relevent_point_indices[oldPointIdx];
-          }
-          relevent_point_indices.resize(newPointIdx);
         }
+        int newPointIdx=0;
+        for (int oldPointIdx=0; oldPointIdx<int(relevant_point_still_valid.size()); ++oldPointIdx) {
+          if (relevant_point_still_valid[oldPointIdx])
+            relevent_point_indices[newPointIdx++] = relevent_point_indices[oldPointIdx];
+        }
+        relevent_point_indices.resize(newPointIdx);
       }
-      
+
       // Caclulate interest values for neighbors
       for (size_t neighbors_idx=0; neighbors_idx<neighbors_within_radius_overhead.size (); ++neighbors_idx)
       {
