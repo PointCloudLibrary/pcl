@@ -517,7 +517,6 @@ TEST_F (OctreeBaseIteratorsForLoopTest, LeafNodeDepthFirstIterator)
   IteratorT it_a;
   IteratorT it_a_end = oct_a_.leaf_depth_end ();
 
-  unsigned int node_count = 0;
   unsigned int branch_count = 0;
   unsigned int leaf_count = 0;
 
@@ -534,10 +533,9 @@ TEST_F (OctreeBaseIteratorsForLoopTest, LeafNodeDepthFirstIterator)
     {
       leaf_count++;
     }
-    node_count++;
   }
 
-  // Check the node_count, branch_count and leaf_count values
+  // Check the branch_count and leaf_count values
   ASSERT_EQ (leaf_count, 64);
   ASSERT_EQ (branch_count, 0);
   ASSERT_EQ (oct_a_.getLeafCount (), leaf_count);
@@ -545,7 +543,6 @@ TEST_F (OctreeBaseIteratorsForLoopTest, LeafNodeDepthFirstIterator)
   // Iterate over the octree oct_a_ with a depth max of 1.
   // As oct_a_ has a depth level of 2, we should only iterate
   // over 9 branch node: the root node + 8 node at depth 1
-  node_count = 0;
   branch_count = 0;
   leaf_count = 0;
   unsigned int max_depth = 1;
@@ -561,10 +558,9 @@ TEST_F (OctreeBaseIteratorsForLoopTest, LeafNodeDepthFirstIterator)
     {
       leaf_count++;
     }
-    node_count++;
   }
 
-  // Check the node_count, branch_count and leaf_count values
+  // Check the branch_count and leaf_count values
   ASSERT_EQ (leaf_count, 0);
   ASSERT_EQ (branch_count, 0);
 }

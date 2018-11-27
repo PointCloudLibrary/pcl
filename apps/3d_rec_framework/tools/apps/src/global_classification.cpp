@@ -103,7 +103,6 @@ segmentAndClassify (typename pcl::rec_3d_framework::GlobalNNPipeline<DistT, Poin
       global.getCategory (categories);
       global.getConfidence (conf);
 
-      std::string category = categories[0];
       Eigen::Vector4f centroid;
       pcl::compute3DCentroid (*xyz_points, indices[i].indices, centroid);
       for (size_t kk = 0; kk < categories.size (); kk++)

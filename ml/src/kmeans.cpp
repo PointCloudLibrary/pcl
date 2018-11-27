@@ -133,7 +133,6 @@ pcl::Kmeans::kMeans ()
 {
   bool not_converged = true;
   bool move;
-  unsigned int num_iterations = 0;
   PointId pid;
   ClusterId cid, to_cluster;
   float d, min;
@@ -181,7 +180,6 @@ pcl::Kmeans::kMeans ()
         clusters_to_points_[to_cluster].insert(pid);
       }
     }
-    num_iterations++;
   } // end while
 }
 
