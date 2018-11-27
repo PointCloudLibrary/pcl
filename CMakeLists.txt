@@ -15,7 +15,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
 endif()
 
-project(PCL VERSION 1.9.1)
+project(PCL VERSION 1.9.1.99)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 ### ---[ Find universal dependencies
