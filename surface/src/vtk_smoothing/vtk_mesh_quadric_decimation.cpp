@@ -37,7 +37,7 @@
  */
 
 #include <pcl/surface/vtk_smoothing/vtk_mesh_quadric_decimation.h>
-#include <pcl/surface/vtk_smoothing/vtk_utils.h>
+#include <pcl/io/vtk_lib_io.h>
 
 #include <vtkVersion.h>
 #include <vtkQuadricDecimation.h>
@@ -55,7 +55,7 @@ void
 pcl::MeshQuadricDecimationVTK::performProcessing (pcl::PolygonMesh &output)
 {
   // Convert from PCL mesh representation to the VTK representation
-  VTKUtils::convertToVTK (*input_mesh_, vtk_polygons_);
+  pcl::io::mesh2vtk(*input_mesh_, vtk_polygons_);
 
   // Apply the VTK algorithm
   vtkSmartPointer<vtkQuadricDecimation> vtk_quadric_decimation_filter = vtkSmartPointer<vtkQuadricDecimation>::New();
@@ -66,5 +66,5 @@ pcl::MeshQuadricDecimationVTK::performProcessing (pcl::PolygonMesh &output)
   vtk_polygons_ = vtk_quadric_decimation_filter->GetOutput ();
 
   // Convert the result back to the PCL representation
-  VTKUtils::convertToPCL (vtk_polygons_, output);
+  pcl::io::vtk2mesh(vtk_polygons_, output);
 }
