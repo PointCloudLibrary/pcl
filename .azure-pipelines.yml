@@ -166,11 +166,15 @@ jobs:
           echo.set(VCPKG_BUILD_TYPE release)>> %VCPKG_DIR%\triplets\%PLATFORM%-windows.cmake
           %VCPKG_DIR%\bootstrap-vcpkg.bat
           %VCPKG_DIR%\vcpkg.exe version
-        displayName: Bootstrap vcpkg
+        displayName: 'Bootstrap vcpkg'
       - script: |
           %VCPKG_DIR%\vcpkg.exe install boost-system boost-filesystem boost-thread boost-date-time boost-iostreams boost-chrono boost-asio boost-dynamic-bitset boost-foreach boost-graph boost-interprocess boost-multi-array boost-ptr-container boost-random boost-signals2 eigen3 flann gtest qhull --triplet %PLATFORM%-windows
           %VCPKG_DIR%\vcpkg.exe list
-        displayName: Install Dependencies
+        displayName: 'Install Dependencies'
+      - script: |
+          rmdir %VCPKG_DIR%\downloads /S /Q
+          rmdir %VCPKG_DIR%\packages /S /Q
+        displayName: 'Free up space'
       - script: |
           call "%VCVARSALL%" %ARCHITECTURE%
           set PATH=%VCPKG_DIR%\installed\%PLATFORM%-windows\bin;%PATH%
