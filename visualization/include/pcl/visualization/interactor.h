@@ -34,8 +34,8 @@
  * $Id: interactor.h 2050 2011-08-12 15:26:19Z bouffa $
  *
  */
-#ifndef PCL_PCL_VISUALIZER_INTERACTOR_H_
-#define PCL_PCL_VISUALIZER_INTERACTOR_H_
+
+#pragma once
 
 #include <pcl/pcl_macros.h>
 
@@ -103,5 +103,3 @@ namespace pcl
     };
   }
 }
-
-#endif

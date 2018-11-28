@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_H_
-#define PCL_REGISTRATION_H_
+#pragma once
 
 // PCL includes
 #include <pcl/pcl_base.h>
@@ -610,5 +609,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/registration.hpp>
-
-#endif  //#ifndef PCL_REGISTRATION_H_

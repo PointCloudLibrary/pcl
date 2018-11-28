@@ -35,8 +35,8 @@
  *
  *
  */
-#ifndef PCL_COMMON_CONCATENATE_H_
-#define PCL_COMMON_CONCATENATE_H_
+
+#pragma once
 
 #include <pcl/conversions.h>
 
@@ -102,6 +102,3 @@ namespace pcl
 #    pragma warning(pop)
 #  endif
 #endif
-
-#endif // PCL_COMMON_CONCATENATE_H_
-

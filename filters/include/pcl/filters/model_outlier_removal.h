@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_FILTERS_MODEL_OUTLIER_REMOVAL_H_
-#define PCL_FILTERS_MODEL_OUTLIER_REMOVAL_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 #include <pcl/ModelCoefficients.h>
@@ -253,5 +252,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/model_outlier_removal.hpp>
 #endif
-
-#endif  // PCL_FILTERS_MODEL_OUTLIER_REMOVAL_H_

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_COLOR_GRADIENT_MODALITY
-#define PCL_RECOGNITION_COLOR_GRADIENT_MODALITY
+#pragma once
 
 #include <pcl/recognition/quantizable_modality.h>
 
@@ -1120,5 +1119,3 @@ erode (const pcl::MaskMap & mask_in,
     }
   }
 }
-
-#endif 

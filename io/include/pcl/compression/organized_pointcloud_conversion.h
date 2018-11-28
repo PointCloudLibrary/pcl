@@ -37,8 +37,7 @@
  * Authors: Julius Kammerl (julius@kammerl.de)
  */
 
-#ifndef PCL_ORGANIZED_CONVERSION_H_
-#define PCL_ORGANIZED_CONVERSION_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
@@ -582,6 +581,3 @@ namespace pcl
 
   }
 }
-
-
-#endif

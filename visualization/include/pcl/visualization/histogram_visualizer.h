@@ -36,8 +36,8 @@
  * $Id$
  *
  */
-#ifndef PCL_PCL_HISTOGRAM_VISUALIZER_H_
-#define PCL_PCL_HISTOGRAM_VISUALIZER_H_
+
+#pragma once
 
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/common/common.h>
@@ -265,5 +265,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/histogram_visualizer.hpp>
-
-#endif

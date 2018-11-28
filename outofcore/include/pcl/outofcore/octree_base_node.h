@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
-#define PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
+#pragma once
 
 #include <pcl/common/io.h>
 #include <pcl/PCLPointCloud2.h>
@@ -573,5 +572,3 @@ namespace pcl
     };
   }//namespace outofcore
 }//namespace pcl
-
-#endif //PCL_OUTOFCORE_OCTREE_BASE_NODE_H_

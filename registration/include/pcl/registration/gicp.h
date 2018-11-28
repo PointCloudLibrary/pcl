@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GICP_H_
-#define PCL_GICP_H_
+#pragma once
 
 #include <pcl/registration/icp.h>
 #include <pcl/registration/bfgs.h>
@@ -364,5 +363,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/gicp.hpp>
-
-#endif  //#ifndef PCL_GICP_H_

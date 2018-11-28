@@ -38,8 +38,7 @@
  * Author: Matteo Munaro
  */
 
-#ifndef PCL_PEOPLE_HEIGHT_MAP_2D_H_
-#define PCL_PEOPLE_HEIGHT_MAP_2D_H_
+#pragma once
 
 #include <pcl/people/person_cluster.h>
 #include <pcl/point_types.h>
@@ -206,4 +205,3 @@ namespace pcl
   } /* namespace people */
 } /* namespace pcl */
 #include <pcl/people/impl/height_map_2d.hpp>
-#endif /* PCL_PEOPLE_HEIGHT_MAP_2D_H_ */

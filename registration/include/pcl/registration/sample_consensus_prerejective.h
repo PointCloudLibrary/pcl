@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_SAMPLE_CONSENSUS_PREREJECTIVE_H_
-#define PCL_REGISTRATION_SAMPLE_CONSENSUS_PREREJECTIVE_H_
+#pragma once
 
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_svd.h>
@@ -316,5 +315,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/sample_consensus_prerejective.hpp>
-
-#endif

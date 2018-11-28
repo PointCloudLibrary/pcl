@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_NARF_H_
-#define PCL_NARF_H_
+#pragma once
 
 #include <pcl/features/eigen.h>
 #include <pcl/common/common_headers.h>
@@ -289,5 +288,3 @@ namespace pcl
 }  // end namespace pcl
 
 #include <pcl/features/impl/narf.hpp>
-
-#endif  //#ifndef PCL_NARF_H_

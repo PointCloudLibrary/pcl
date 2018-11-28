@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_TYPE_CONVERSIONS_H
-#define PCL_TYPE_CONVERSIONS_H
+#pragma once
 
 #include <limits>
 
@@ -394,6 +393,3 @@ namespace pcl
     out.height = height_;
   }
 }
-
-#endif //#ifndef PCL_TYPE_CONVERSIONS_H
-

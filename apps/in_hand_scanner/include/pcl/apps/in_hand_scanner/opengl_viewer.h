@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_OPENGL_VIEWER_H
-#define PCL_APPS_IN_HAND_SCANNER_OPENGL_VIEWER_H
+#pragma once
 
 #include <string>
 
@@ -452,5 +451,3 @@ namespace pcl
 // http://doc.qt.digia.com/qt/qmetatype.html#Q_DECLARE_METATYPE
 Q_DECLARE_METATYPE (pcl::ihs::OpenGLViewer::MeshRepresentation)
 Q_DECLARE_METATYPE (pcl::ihs::OpenGLViewer::Coloring)
-
-#endif // PCL_APPS_IN_HAND_SCANNER_OPENGL_VIEWER_H

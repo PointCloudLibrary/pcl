@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef PCL_FILTER_FIELD_VAL_CONDITION_H_
-#define PCL_FILTER_FIELD_VAL_CONDITION_H_
+#pragma once
+
 #include <pcl/common/eigen.h>
 #include <pcl/filters/filter.h>
 
@@ -690,5 +690,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/conditional_removal.hpp>
 #endif
-
-#endif 

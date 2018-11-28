@@ -39,8 +39,7 @@
  * @brief This file contains the function prototypes for the segmentation functions
  */
 
-#ifndef PCL_GPU_PEOPLE_LABEL_SEGMENT_H_
-#define PCL_GPU_PEOPLE_LABEL_SEGMENT_H_
+#pragma once
 
 // our headers
 #include "pcl/gpu/people/label_blob2.h"
@@ -397,5 +396,3 @@ namespace pcl
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl
-
-#endif //#ifndef LABELSKEL_SEGMENT_H

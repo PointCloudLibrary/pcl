@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_BOOST_H_
-#define PCL_SEGMENTATION_BOOST_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
@@ -57,5 +56,3 @@
   #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 #endif 
 #endif
-
-#endif    // PCL_SEGMENTATION_BOOST_H_

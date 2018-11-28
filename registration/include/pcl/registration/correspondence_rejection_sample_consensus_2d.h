@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_2D_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_2D_H_
+#pragma once
 
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
 
@@ -160,6 +159,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_rejection_sample_consensus_2d.hpp>
-
-#endif    // PCL_REGISTRATION_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_2D_H_
-

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_SHADOW_POINTS_FILTER_H_
-#define PCL_FILTERS_SHADOW_POINTS_FILTER_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 #include <time.h>
@@ -129,5 +128,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/shadowpoints.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_SHADOW_POINTS_FILTER_H_

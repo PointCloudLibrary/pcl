@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef PCL_CLIPPER3D_H_
-#define PCL_CLIPPER3D_H_
+#pragma once
+
 #include <pcl/point_cloud.h>
 #include <vector>
 #include <Eigen/StdVector>
@@ -112,5 +112,3 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif // PCL_CLIPPER3D_H_

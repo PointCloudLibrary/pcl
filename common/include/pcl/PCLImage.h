@@ -1,5 +1,5 @@
-#ifndef PCL_MESSAGE_IMAGE_H
-#define PCL_MESSAGE_IMAGE_H
+#pragma once
+
 #include <string>
 #include <vector>
 #include <ostream>
@@ -60,6 +60,3 @@ namespace pcl
     return (s);
   }
 } // namespace pcl
-
-#endif // PCL_MESSAGE_IMAGE_H
-

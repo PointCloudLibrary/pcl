@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_DISPARITY_TO_CLOUD_H_
-#define PCL_CUDA_DISPARITY_TO_CLOUD_H_
+#pragma once
 
 #include <pcl/cuda/point_cloud.h>
 #include <pcl/cuda/io/cloud_to_pcl.h>
@@ -153,5 +152,3 @@ namespace cuda
 
 } // namespace
 } // namespace
-
-#endif  //#ifndef PCL_CUDA_DISPARITY_TO_CLOUD_H_

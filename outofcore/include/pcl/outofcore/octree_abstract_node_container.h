@@ -36,8 +36,7 @@
  *  $Id: octree_abstract_node_container.h 6802M 2012-08-25 00:11:05Z (local) $
  */
 
-#ifndef PCL_OUTOFCORE_OCTREE_ABSTRACT_NODE_CONTAINER_H_
-#define PCL_OUTOFCORE_OCTREE_ABSTRACT_NODE_CONTAINER_H_
+#pragma once
 
 #include <vector>
 #include <string>
@@ -101,5 +100,3 @@ namespace pcl
     };
   }//namespace outofcore
 }//namespace pcl
-
-#endif //PCL_OUTOFCORE_OCTREE_ABSTRACT_CONTAINER_H_

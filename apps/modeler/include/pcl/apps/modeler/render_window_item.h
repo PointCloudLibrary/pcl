@@ -34,8 +34,7 @@
  *
  */
 
-#ifndef PCL_MODELER_RENDER_WINDOW_ITEM_H_
-#define PCL_MODELER_RENDER_WINDOW_ITEM_H_
+#pragma once
 
 #include <pcl/apps/modeler/qt.h>
 #include <pcl/apps/modeler/abstract_item.h>
@@ -94,5 +93,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_RENDER_WINDOW_ITEM_H_

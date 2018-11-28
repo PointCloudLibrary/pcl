@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_GASD_H_
-#define PCL_FEATURES_GASD_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 #include <pcl/common/common.h>
@@ -362,5 +361,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/gasd.hpp>
 #endif
-
-#endif  //#ifndef PCL_FEATURES_GASD_H_

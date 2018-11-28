@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_CHANGEDETECTOR_H
-#define PCL_OCTREE_CHANGEDETECTOR_H
+#pragma once
 
 #include <pcl/octree/octree_pointcloud.h>
 #include <pcl/octree/octree2buf_base.h>
@@ -110,6 +109,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_OctreePointCloudChangeDetector(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudChangeDetector<T>;
-
-#endif
-

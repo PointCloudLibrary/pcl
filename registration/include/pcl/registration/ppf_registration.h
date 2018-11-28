@@ -38,9 +38,7 @@
  *
  */
 
-
-#ifndef PCL_PPF_REGISTRATION_H_
-#define PCL_PPF_REGISTRATION_H_
+#pragma once
 
 #include <pcl/registration/boost.h>
 #include <pcl/registration/registration.h>
@@ -287,5 +285,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/ppf_registration.hpp>
-
-#endif // PCL_PPF_REGISTRATION_H_

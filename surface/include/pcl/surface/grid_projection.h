@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_GRID_PROJECTION_H_
-#define PCL_SURFACE_GRID_PROJECTION_H_
+#pragma once
 
 #include <pcl/surface/boost.h>
 #include <pcl/surface/reconstruction.h>
@@ -501,6 +500,3 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif  // PCL_SURFACE_GRID_PROJECTION_H_
- 

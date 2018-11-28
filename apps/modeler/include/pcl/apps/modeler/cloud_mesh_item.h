@@ -33,8 +33,8 @@
  *
  *
  */
-#ifndef PCL_MODELER_CLOUD_MESH_ITEM_H_
-#define PCL_MODELER_CLOUD_MESH_ITEM_H_
+
+#pragma once
 
 #include <pcl/apps/modeler/qt.h>
 #include <boost/shared_ptr.hpp>
@@ -108,5 +108,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_CLOUD_MESH_ITEM_H_

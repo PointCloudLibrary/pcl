@@ -35,10 +35,11 @@
  *
  */
 
-#ifndef PCL_2D_KERNEL_H_
-#define PCL_2D_KERNEL_H_
+#pragma once
+
 #include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
+
 namespace pcl
 {
   template<typename PointT>
@@ -240,5 +241,3 @@ namespace pcl
 }
 
 #include <pcl/2d/impl/kernel.hpp>
-
-#endif    // PCL_2D_KERNEL_H_

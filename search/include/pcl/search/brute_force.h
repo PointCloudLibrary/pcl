@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEARCH_BRUTE_FORCE_H_
-#define PCL_SEARCH_BRUTE_FORCE_H_
+#pragma once
 
 #include <pcl/search/search.h>
 
@@ -145,5 +144,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/search/impl/brute_force.hpp>
 #endif
-
-#endif    // PCL_SEARCH_BRUTE_FORCE_H_

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_VOXEL_GRID_COVARIANCE_H_
-#define PCL_VOXEL_GRID_COVARIANCE_H_
+#pragma once
 
 #include <pcl/filters/boost.h>
 #include <pcl/filters/voxel_grid.h>
@@ -543,5 +542,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/voxel_grid_covariance.hpp>
 #endif
-
-#endif  //#ifndef PCL_VOXEL_GRID_COVARIANCE_H_

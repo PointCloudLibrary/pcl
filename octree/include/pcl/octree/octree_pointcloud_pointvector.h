@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_POINT_VECTOR_H
-#define PCL_OCTREE_POINT_VECTOR_H
+#pragma once
 
 #include <pcl/octree/octree_pointcloud.h>
 
@@ -88,5 +87,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_OctreePointCloudPointVector(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudPointVector<T>;
-
-#endif

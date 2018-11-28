@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_MODELER_QT_H_
-#define PCL_MODELER_QT_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header
@@ -87,5 +86,3 @@
 #include <QStandardItemModel>
 #include <QStyledItemDelegate>
 #include <QVTKWidget.h>
-
-#endif // PCL_MODELER_QT_H_

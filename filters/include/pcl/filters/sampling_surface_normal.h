@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_SAMPLING_SURFACE_NORMAL_H_
-#define PCL_FILTERS_SAMPLING_SURFACE_NORMAL_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
 #include <time.h>
@@ -249,5 +248,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/sampling_surface_normal.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_SAMPLING_SURFACE_NORMAL_H_

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
-#define PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
+#pragma once
 
 #include <string>
 #include <sstream>
@@ -307,5 +306,3 @@ namespace pcl
 
 // http://doc.qt.digia.com/qt/qmetatype.html#Q_DECLARE_METATYPE
 Q_DECLARE_METATYPE (pcl::ihs::InHandScanner::RunningMode)
-
-#endif // PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H

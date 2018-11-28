@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_3POINT_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_3POINT_H_
+
+#pragma once
 
 #include <pcl/registration/transformation_estimation.h>
 
@@ -141,5 +141,3 @@ namespace pcl
 }; // namespace registration  
 
 #include <pcl/registration/impl/transformation_estimation_3point.hpp>
-
-#endif // PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_3POINT_H_

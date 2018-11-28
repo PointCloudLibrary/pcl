@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_POINT_CLOUD_IMAGE_EXTRACTORS_H_
-#define PCL_POINT_CLOUD_IMAGE_EXTRACTORS_H_
+
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/PCLImage.h>
@@ -436,5 +436,3 @@ namespace pcl
 }
 
 #include <pcl/io/impl/point_cloud_image_extractors.hpp>
-
-#endif  //#ifndef PCL_POINT_CLOUD_IMAGE_EXTRACTORS_H_

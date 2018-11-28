@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_SIFT_KEYPOINT_H_
-#define PCL_SIFT_KEYPOINT_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 
@@ -202,5 +201,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/sift_keypoint.hpp>
-
-#endif // #ifndef PCL_SIFT_KEYPOINT_H_

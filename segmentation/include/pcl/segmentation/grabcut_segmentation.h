@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_GRABCUT
-#define PCL_SEGMENTATION_GRABCUT
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_base.h>
@@ -480,5 +479,3 @@ namespace pcl
 }
 
 #include <pcl/segmentation/impl/grabcut_segmentation.hpp>
-
-#endif

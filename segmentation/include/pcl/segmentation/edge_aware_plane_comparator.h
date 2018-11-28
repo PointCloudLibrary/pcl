@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_EDGE_AWARE_PLANE_COMPARATOR_H_
-#define PCL_SEGMENTATION_EDGE_AWARE_PLANE_COMPARATOR_H_
+#pragma once
 
 #include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/plane_coefficient_comparator.h>
@@ -210,5 +209,3 @@ namespace pcl
       float euclidean_distance_threshold_;
   };
 }
-
-#endif // PCL_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_

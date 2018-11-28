@@ -1,5 +1,4 @@
-#ifndef PCL_OUTOFCORE_SCENE_H_
-#define PCL_OUTOFCORE_SCENE_H_
+#pragma once
 
 // PCL
 #include "camera.h"
@@ -86,5 +85,3 @@ private:
   boost::mutex render_mutex_;
 
 };
-
-#endif

@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_KDTREE_KDTREE_H_
-#define PCL_KDTREE_KDTREE_H_
+#pragma once
 
 #include <limits.h>
 #include <pcl/pcl_macros.h>
@@ -363,5 +362,3 @@ namespace pcl
       getName () const = 0;
   };
 }
-
-#endif  //#ifndef _PCL_KDTREE_KDTREE_H_

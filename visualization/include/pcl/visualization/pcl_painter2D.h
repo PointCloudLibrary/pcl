@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_VISUALUALIZATION_PCL_PAINTER2D_H_
-#define	PCL_VISUALUALIZATION_PCL_PAINTER2D_H_
+#pragma once
 
 #include <iostream>
 #include <map>
@@ -466,6 +465,3 @@ namespace pcl
 
   }
 }
-
-#endif	/* PCL_VISUALUALIZATION_PCL_PAINTER2D_H_ */
-

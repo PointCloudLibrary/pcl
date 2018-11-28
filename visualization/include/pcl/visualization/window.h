@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_VISUALIZER_WINDOW_H__
-#define	PCL_VISUALIZER_WINDOW_H__
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <boost/signals2/signal.hpp>
@@ -228,6 +227,3 @@ namespace pcl
     };
   }
 }
-
-#endif	/* __WINDOW_H__ */
-

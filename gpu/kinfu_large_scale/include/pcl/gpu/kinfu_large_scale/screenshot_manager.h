@@ -36,8 +36,7 @@
  *  Author: Francisco, Technical University Eindhoven, (f.j.mysurname.soriano <At > tue.nl)
  */
 
-#ifndef PCL_SCREENSHOT_MANAGER_H_
-#define PCL_SCREENSHOT_MANAGER_H_
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -103,5 +102,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_SCREENSHOT_MANAGER_H_

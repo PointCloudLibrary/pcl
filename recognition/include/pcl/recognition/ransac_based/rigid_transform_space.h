@@ -43,8 +43,7 @@
  *      Author: papazov
  */
 
-#ifndef PCL_RECOGNITION_RIGID_TRANSFORM_SPACE_H_
-#define PCL_RECOGNITION_RIGID_TRANSFORM_SPACE_H_
+#pragma once
 
 #include "simple_octree.h"
 #include "model_library.h"
@@ -410,5 +409,3 @@ namespace pcl
     }; // class RigidTransformSpace
   } // namespace recognition
 } // namespace pcl
-
-#endif /* PCL_RECOGNITION_RIGID_TRANSFORM_SPACE_H_ */

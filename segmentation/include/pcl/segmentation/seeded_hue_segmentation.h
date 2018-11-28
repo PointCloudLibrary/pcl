@@ -36,8 +36,7 @@
  * $id: $
  */
 
-#ifndef PCL_SEEDED_HUE_SEGMENTATION_H_
-#define PCL_SEEDED_HUE_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/point_types_conversion.h>
@@ -172,5 +171,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/seeded_hue_segmentation.hpp>
 #endif
-
-#endif  //#ifndef PCL_SEEDED_HUE_SEGMENTATION_H_

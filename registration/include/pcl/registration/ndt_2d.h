@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_NDT_2D_H_
-#define PCL_NDT_2D_H_
+#pragma once
 
 #include <pcl/registration/registration.h>
 
@@ -153,6 +152,3 @@ namespace pcl
 } // namespace pcl
 
 #include <pcl/registration/impl/ndt_2d.hpp>
-
-#endif // ndef PCL_NDT_2D_H_
-

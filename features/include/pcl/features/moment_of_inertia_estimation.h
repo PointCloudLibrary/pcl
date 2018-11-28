@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_MOMENT_OF_INERTIA_ESIMATION_H_
-#define PCL_MOMENT_OF_INERTIA_ESIMATION_H_
+#pragma once
 
 #include <vector>
 #include <math.h>
@@ -357,6 +356,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/moment_of_inertia_estimation.hpp>
-#endif
-
 #endif

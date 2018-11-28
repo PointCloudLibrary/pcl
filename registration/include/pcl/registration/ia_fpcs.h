@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_IA_FPCS_H_
-#define PCL_REGISTRATION_IA_FPCS_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/registration/registration.h>
@@ -566,5 +565,3 @@ namespace pcl
 }; // namespace pcl 
 
 #include <pcl/registration/impl/ia_fpcs.hpp>
-
-#endif // PCL_REGISTRATION_IA_FPCS_H_

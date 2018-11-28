@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_BOUNDARY_H_
-#define PCL_BOUNDARY_H_
+#pragma once
 
 #include <pcl/features/eigen.h>
 #include <pcl/features/feature.h>
@@ -183,5 +182,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/boundary.hpp>
 #endif
-
-#endif  //#ifndef PCL_BOUNDARY_H_

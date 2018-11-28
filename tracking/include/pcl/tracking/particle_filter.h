@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_PARTICLE_FILTER_H_
-#define PCL_TRACKING_PARTICLE_FILTER_H_
+#pragma once
 
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/tracker.h>
@@ -507,5 +506,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/tracking/impl/particle_filter.hpp>
 #endif
-
-#endif //PCL_TRACKING_PARTICLE_FILTER_H_

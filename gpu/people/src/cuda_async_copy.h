@@ -36,9 +36,7 @@
  * @authors: Anatoly Baksheev
  */
 
-
-#ifndef PCL_GPU_PEOPLE_CUDA_ASYNC_COPY_H_
-#define PCL_GPU_PEOPLE_CUDA_ASYNC_COPY_H_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/utils/safe_call.hpp>
@@ -104,6 +102,3 @@ namespace pcl
     using pcl::gpu::AsyncCopy;
   }
 }
-
-#endif /* PCL_GPU_PEOPLE_CUDA_ASYNC_COPY_H_ */
-

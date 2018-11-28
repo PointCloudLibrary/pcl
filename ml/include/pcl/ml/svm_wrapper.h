@@ -36,8 +36,7 @@
   *
   */
 
-#ifndef PCL_SVM_WRAPPER_H_
-#define PCL_SVM_WRAPPER_H_
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -533,5 +532,3 @@ namespace pcl
       };
   };
 }
-
-#endif // PCL_SVM_WRAPPER_H_

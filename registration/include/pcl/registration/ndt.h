@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_NDT_H_
-#define PCL_REGISTRATION_NDT_H_
+#pragma once
 
 #include <pcl/registration/registration.h>
 #include <pcl/filters/voxel_grid_covariance.h>
@@ -466,5 +465,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/ndt.hpp>
-
-#endif // PCL_REGISTRATION_NDT_H_

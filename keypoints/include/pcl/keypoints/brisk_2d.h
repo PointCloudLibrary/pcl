@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_KEYPOINTS_BRISK_KEYPOINT_2D_H_
-#define PCL_KEYPOINTS_BRISK_KEYPOINT_2D_H_
+#pragma once
 
 #include <pcl/keypoints/agast_2d.h>
 
@@ -483,5 +482,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/brisk_2d.hpp>
-
-#endif

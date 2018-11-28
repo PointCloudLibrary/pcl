@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_H_
-#define PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_H_
+#pragma once
 
 #include <pcl/outofcore/outofcore_iterator_base.h>
 namespace pcl
@@ -86,5 +85,3 @@ namespace pcl
     };
   }
 }
-
-#endif //PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_H_

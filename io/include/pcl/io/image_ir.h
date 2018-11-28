@@ -33,8 +33,8 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *
 */
-#ifndef PCL_IO_IMAGE_IR_H_
-#define PCL_IO_IMAGE_IR_H_
+
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/io/boost.h>
@@ -110,5 +110,3 @@ namespace pcl
 
   } // namespace
 }
-
-#endif // PCL_IO_IMAGE_IR_H_

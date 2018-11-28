@@ -38,9 +38,7 @@
  *
  */
 
-
-#ifndef PCL_WARP_POINT_RIGID_6D_H_
-#define PCL_WARP_POINT_RIGID_6D_H_
+#pragma once
 
 #include <pcl/registration/warp_point_rigid.h>
 
@@ -97,6 +95,3 @@ namespace pcl
     };
   }
 }
-
-#endif
-

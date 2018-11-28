@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_MIN_CUT_SEGMENTATION_H_
-#define PCL_MIN_CUT_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/segmentation/boost.h>
 #if (BOOST_VERSION >= 104400)
@@ -326,5 +325,4 @@ namespace pcl
 #include <pcl/segmentation/impl/min_cut_segmentation.hpp>
 #endif
 
-#endif
 #endif

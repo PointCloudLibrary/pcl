@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_SUSAN_KEYPOINT_H_
-#define PCL_SUSAN_KEYPOINT_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 #include <pcl/common/intensity.h>
@@ -200,5 +199,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/susan.hpp>
-
-#endif // #ifndef PCL_SUSAN_KEYPOINT_H_

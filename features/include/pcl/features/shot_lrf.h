@@ -37,8 +37,7 @@
  * $Id$
  */
 
-#ifndef PCL_FEATURES_SHOT_LRF_H_
-#define PCL_FEATURES_SHOT_LRF_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -108,6 +107,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/shot_lrf.hpp>
 #endif
-
-#endif    // PCL_FEATURES_SHOT_LRF_H_
-

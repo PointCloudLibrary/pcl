@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_UTILS
-#define PCL_UTILS
+#pragma once
 
 #include <limits>
 
@@ -58,5 +57,3 @@ namespace pcl
     }
   }
 }
-
-#endif

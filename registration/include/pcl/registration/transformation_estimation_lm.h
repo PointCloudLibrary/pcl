@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_H_
+
+#pragma once
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/warp_point_rigid.h>
@@ -351,6 +351,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/transformation_estimation_lm.hpp>
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_H_ */
-

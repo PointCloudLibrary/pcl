@@ -35,10 +35,9 @@
  *
  */
 
-#include <pcl/pcl_config.h>
+#pragma once
 
-#ifndef PCL_IO_PCD_GRABBER_H_
-#define PCL_IO_PCD_GRABBER_H_
+#include <pcl/pcl_config.h>
 
 #include <pcl/common/io.h>
 #include <pcl/io/grabber.h>
@@ -307,4 +306,3 @@ namespace pcl
 #endif
   }
 }
-#endif

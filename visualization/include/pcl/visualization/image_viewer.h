@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_H__
-#define	PCL_VISUALIZATION_IMAGE_VISUALIZER_H__
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -1065,6 +1064,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/image_viewer.hpp>
-
-#endif	/* __IMAGE_VISUALIZER_H__ */
-

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_IO_PCD_IO_H_
-#define PCL_IO_PCD_IO_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/io/file_io.h>
@@ -789,5 +788,3 @@ namespace pcl
 }
 
 #include <pcl/io/impl/pcd_io.hpp>
-
-#endif  //#ifndef PCL_IO_PCD_IO_H_

@@ -36,8 +36,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_SURFACE_NORMAL_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_SURFACE_NORMAL_H_
+
+#pragma once
 
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/point_cloud.h>
@@ -321,5 +321,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_rejection_surface_normal.hpp>
-
-#endif

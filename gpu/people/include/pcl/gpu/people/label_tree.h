@@ -39,8 +39,7 @@
  * @brief This file contains the function prototypes for the tree building functions.
  */
  
-#ifndef PCL_GPU_PEOPLE_LABEL_TREE_H_
-#define PCL_GPU_PEOPLE_LABEL_TREE_H_
+#pragma once
  
 // our headers
 #include "pcl/gpu/people/label_blob2.h"   //this one defines the blob structure
@@ -667,4 +666,3 @@ namespace pcl
     } //end namespace people
   } // end namespace gpu
 } // end namespace pcl
-#endif

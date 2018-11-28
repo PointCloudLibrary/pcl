@@ -34,8 +34,8 @@
  * $Id$
  *
  */
-#ifndef PCL_DISTANCES_H_
-#define PCL_DISTANCES_H_
+
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -198,6 +198,3 @@ namespace pcl
     return (std::sqrt (squaredEuclideanDistance (p1, p2)));
   }
 }
-/*@*/
-#endif  //#ifndef PCL_DISTANCES_H_
-

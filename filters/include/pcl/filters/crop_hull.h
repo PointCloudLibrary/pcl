@@ -35,8 +35,7 @@
   *
   */
 
-#ifndef PCL_FILTERS_CROP_HULL_H_
-#define PCL_FILTERS_CROP_HULL_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/Vertices.h>
@@ -239,5 +238,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/crop_hull.hpp>
 #endif
-
-#endif // ifndef PCL_FILTERS_CROP_HULL_H_

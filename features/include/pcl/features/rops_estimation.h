@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_ROPS_ESIMATION_H_
-#define PCL_ROPS_ESIMATION_H_
+#pragma once
 
 #include <pcl/PolygonMesh.h>
 #include <pcl/features/feature.h>
@@ -231,6 +230,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/rops_estimation.hpp>
-#endif
-
 #endif

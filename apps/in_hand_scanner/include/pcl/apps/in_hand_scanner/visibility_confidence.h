@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_VISIBILITY_CONFIDENCE_H
-#define PCL_APPS_IN_HAND_SCANNER_VISIBILITY_CONFIDENCE_H
+#pragma once
 
 #include <stdint.h>
 
@@ -86,5 +85,3 @@ namespace pcl
 
   } // End namespace ihs
 } // End namespace pcl
-
-#endif // PCL_APPS_IN_HAND_SCANNER_VISIBILITY_CONFIDENCE_H

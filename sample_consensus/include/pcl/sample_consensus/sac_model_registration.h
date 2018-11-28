@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_H_
+#pragma once
 
 #include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model.h>
@@ -331,5 +330,3 @@ namespace pcl
 }
 
 #include <pcl/sample_consensus/impl/sac_model_registration.hpp>
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_H_

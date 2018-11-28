@@ -5,8 +5,7 @@
  *      Author: Aitor Aldoma
  */
 
-#ifndef PCL_RF_FACE_UTILS_H_
-#define PCL_RF_FACE_UTILS_H_
+#pragma once
 
 #include "pcl/recognition/face_detection/face_common.h"
 #include <pcl/ml/feature_handler.h>
@@ -536,5 +535,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* PCL_RF_FACE_UTILS_H_ */

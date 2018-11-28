@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_2D_CONVOLUTION_H
-#define PCL_2D_CONVOLUTION_H
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/filters/filter.h>
@@ -156,4 +155,3 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZIEdge,
     (float, magnitude_x, magnitude_x)
     (float, magnitude_y, magnitude_y)
 )
-#endif // PCL_2D_CONVOLUTION_2D_H

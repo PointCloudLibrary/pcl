@@ -38,9 +38,7 @@
  *
  */
 
-
-#ifndef PCL_FILTERS_COVARIANCE_SAMPLING_H_
-#define PCL_FILTERS_COVARIANCE_SAMPLING_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 
@@ -167,6 +165,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/covariance_sampling.hpp>
 #endif
-
-
-#endif /* PCL_FILTERS_COVARIANCE_SAMPLING_H_ */

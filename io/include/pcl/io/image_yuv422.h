@@ -33,10 +33,10 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *
 */
-#include <pcl/pcl_config.h>
 
-#ifndef PCL_IO_IMAGE_YUV422_H_
-#define PCL_IO_IMAGE_YUV422_H_
+#pragma once
+
+#include <pcl/pcl_config.h>
 #include <pcl/pcl_macros.h>
 
 #include <pcl/io/image.h>
@@ -75,5 +75,3 @@ namespace pcl
 
   } // namespace
 }
-
-#endif // PCL_IO_IMAGE_YUV22_H_

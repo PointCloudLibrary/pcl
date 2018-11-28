@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_H_
+#pragma once
 
 #include <pcl/registration/correspondence_types.h>
 #include <pcl/registration/correspondence_sorting.h>
@@ -404,6 +403,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* PCL_REGISTRATION_CORRESPONDENCE_REJECTION_H_ */
-

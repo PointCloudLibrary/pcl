@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_PRINCIPAL_CURVATURES_H_
-#define PCL_PRINCIPAL_CURVATURES_H_
+#pragma once
 
 #include <pcl/features/eigen.h>
 #include <pcl/features/feature.h>
@@ -137,5 +136,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/principal_curvatures.hpp>
 #endif
-
-#endif  //#ifndef PCL_PRINCIPAL_CURVATURES_H_

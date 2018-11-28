@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_LUM_H_
-#define PCL_REGISTRATION_LUM_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/registration/eigen.h>
@@ -342,6 +341,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/registration/impl/lum.hpp>
 #endif
-
-#endif  // PCL_REGISTRATION_LUM_H_
-

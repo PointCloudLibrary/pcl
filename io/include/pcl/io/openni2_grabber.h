@@ -37,11 +37,10 @@
  *
  */
 
-#include <pcl/pcl_config.h>
+#pragma once
+ 
 #ifdef HAVE_OPENNI2
-
-#ifndef PCL_IO_OPENNI2_GRABBER_H_
-#define PCL_IO_OPENNI2_GRABBER_H_
+#include <pcl/pcl_config.h>
 
 #include <pcl/io/eigen.h>
 #include <pcl/io/boost.h>
@@ -504,5 +503,4 @@ namespace pcl
   } // namespace
 }
 
-#endif // PCL_IO_OPENNI2_GRABBER_H_
 #endif // HAVE_OPENNI2

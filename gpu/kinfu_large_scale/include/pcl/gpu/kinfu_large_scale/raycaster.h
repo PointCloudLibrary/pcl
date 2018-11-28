@@ -35,10 +35,7 @@
  *
  */
 
-
-#ifndef PCL_KINFU_TSDF_RAYCASTERLS_H_
-#define PCL_KINFU_TSDF_RAYCASTERLS_H_
-
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -159,5 +156,3 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     }
   }
 }
-
-#endif /* PCL_KINFU_TSDF_RAYCASTER_H_ */

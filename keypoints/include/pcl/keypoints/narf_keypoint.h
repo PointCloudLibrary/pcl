@@ -35,8 +35,7 @@
 
 /* \author Bastian Steder */
 
-#ifndef PCL_NARF_KEYPOINT_H_
-#define PCL_NARF_KEYPOINT_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
@@ -202,5 +201,3 @@ inline std::ostream&
 }
 
 }  // end namespace pcl
-
-#endif  //#ifndef PCL_NARF_KEYPOINT_H_

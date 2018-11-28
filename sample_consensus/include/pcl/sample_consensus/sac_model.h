@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_H_
+#pragma once
 
 #include <cfloat>
 #include <ctime>
@@ -681,5 +680,3 @@ namespace pcl
       const int m_data_points_;
   };
 }
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_H_

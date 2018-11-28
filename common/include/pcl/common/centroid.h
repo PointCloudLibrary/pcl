@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_COMMON_CENTROID_H_
-#define PCL_COMMON_CENTROID_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_traits.h>
@@ -1130,5 +1129,3 @@ namespace pcl
 }
 /*@}*/
 #include <pcl/common/impl/centroid.hpp>
-
-#endif  //#ifndef PCL_COMMON_CENTROID_H_

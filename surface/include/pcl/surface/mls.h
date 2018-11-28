@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_MLS_H_
-#define PCL_MLS_H_
+#pragma once
 
 // PCL includes
 #include <pcl/pcl_base.h>
@@ -770,5 +769,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/mls.hpp>
 #endif
-
-#endif  /* #ifndef PCL_MLS_H_ */

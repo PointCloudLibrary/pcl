@@ -1,5 +1,4 @@
-#ifndef PCL_OUTOFCORE_AXES_H_
-#define PCL_OUTOFCORE_AXES_H_
+#pragma once
 
 // C++
 #include <iostream>
@@ -93,6 +92,3 @@ private:
   vtkSmartPointer<vtkActor> axes_actor_;
 
 };
-
-#endif
-

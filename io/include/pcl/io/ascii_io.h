@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_ASCII_IO_H_
-#define PCL_IO_ASCII_IO_H_
+#pragma once
 
 #include <pcl/io/file_io.h>
 #include <pcl/PCLPointField.h>
@@ -164,9 +163,4 @@ namespace pcl
 	};
 }
 
-
-
-
 #include <pcl/io/impl/ascii_io.hpp>
-
-#endif    // PCL_IO_ASCII_IO_H_

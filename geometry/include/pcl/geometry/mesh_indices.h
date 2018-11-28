@@ -40,8 +40,7 @@
 
 // NOTE: This file has been created with 'pcl_src/geometry/include/pcl/geometry/mesh_indices.py'
 
-#ifndef PCL_GEOMETRY_MESH_INDICES_H
-#define PCL_GEOMETRY_MESH_INDICES_H
+#pragma once
 
 #include <iostream>
 
@@ -629,5 +628,3 @@ namespace pcl
     }
   } // End namespace geometry
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_MESH_INDICES_H

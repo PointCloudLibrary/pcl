@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_ORGANIZED_EDGE_DETECTION_H_
-#define PCL_FEATURES_ORGANIZED_EDGE_DETECTION_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
@@ -428,5 +427,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/organized_edge_detection.hpp>
 #endif
-
-#endif //#ifndef PCL_FEATURES_ORGANIZED_EDGE_DETECTION_H_

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_PFH_H_
-#define PCL_PFH_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -224,6 +223,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/pfh.hpp>
 #endif
-
-#endif  //#ifndef PCL_PFH_H_
-

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_TEST_GEOMETRY_TEST_MESH_COMMON_FUNCTIONS_H
-#define PCL_TEST_GEOMETRY_TEST_MESH_COMMON_FUNCTIONS_H
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -371,5 +370,3 @@ checkHalfEdge (const MeshT&                        mesh,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif // PCL_TEST_GEOMETRY_TEST_MESH_COMMON_FUNCTIONS_H

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_QUANTIZABLE_MODALITY
-#define PCL_FEATURES_QUANTIZABLE_MODALITY
+#pragma once
 
 #include <vector>
 #include <pcl/pcl_macros.h>
@@ -88,5 +87,3 @@ namespace pcl
                        std::vector<QuantizedMultiModFeature> & features) const = 0;
   };
 }
-
-#endif

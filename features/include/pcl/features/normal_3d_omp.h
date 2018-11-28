@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_NORMAL_3D_OMP_H_
-#define PCL_NORMAL_3D_OMP_H_
+#pragma once
 
 #include <pcl/features/normal_3d.h>
 
@@ -104,5 +103,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/normal_3d_omp.hpp>
 #endif
-
-#endif  //#ifndef PCL_NORMAL_3D_OMP_H_

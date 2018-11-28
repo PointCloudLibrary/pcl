@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_H_
-#define PCL_SAMPLE_CONSENSUS_H_
+#pragma once
 
 #include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/sac_model.h>
@@ -344,5 +343,3 @@ namespace pcl
       }
    };
 }
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_H_

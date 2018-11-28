@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_SAMPLE_CONSENSUS_RANSAC_H_
-#define PCL_CUDA_SAMPLE_CONSENSUS_RANSAC_H_
+#pragma once
 
 #include <pcl/cuda/sample_consensus/sac.h>
 #include <pcl/cuda/sample_consensus/sac_model.h>
@@ -175,6 +174,3 @@ namespace pcl
 
   } // namespace
 } // namespace
-
-#endif  //#ifndef PCL_CUDA_SAMPLE_CONSENSUS_RANSAC_H_
-

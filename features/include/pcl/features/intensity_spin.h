@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_INTENSITY_SPIN_H_
-#define PCL_INTENSITY_SPIN_H_
+
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -149,4 +149,6 @@ namespace pcl
 #include <pcl/features/impl/intensity_spin.hpp>
 #endif
 
-#endif // #ifndef PCL_INTENSITY_SPIN_H_
+
+
+

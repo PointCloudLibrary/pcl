@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef PCL_BOX_CLIPPER3D_H_
-#define PCL_BOX_CLIPPER3D_H_
+#pragma once
+
 #include "clipper3D.h"
 
 namespace pcl
@@ -123,5 +123,3 @@ namespace pcl
 }
 
 #include <pcl/filters/impl/box_clipper3D.hpp>
-
-#endif // PCL_BOX_CLIPPER3D_H_

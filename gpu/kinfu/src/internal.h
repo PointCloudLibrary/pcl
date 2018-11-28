@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KINFU_INTERNAL_HPP_
-#define PCL_KINFU_INTERNAL_HPP_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 //#include <pcl/gpu/utils/safe_call.hpp>
@@ -438,5 +437,3 @@ namespace pcl
     generateTriangles(const PtrStep<short2>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output);
   }
 }
-
-#endif /* PCL_KINFU_INTERNAL_HPP_ */

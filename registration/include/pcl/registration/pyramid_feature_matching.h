@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_PYRAMID_FEATURE_MATCHING_H_
-#define PCL_PYRAMID_FEATURE_MATCHING_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/point_representation.h>
@@ -198,5 +197,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/registration/impl/pyramid_feature_matching.hpp>
 #endif
-
-#endif    // PCL_PYRAMID_FEATURE_MATCHING_H_

@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_COMMON_CORRESPONDENCE_H_
-#define PCL_COMMON_CORRESPONDENCE_H_
+
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
@@ -159,5 +159,3 @@ namespace pcl
     return (pc1.distance > pc2.distance);
   }
 }
-
-#endif /* PCL_COMMON_CORRESPONDENCE_H_ */

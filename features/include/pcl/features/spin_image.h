@@ -37,8 +37,7 @@
  * $Id$
  */
 
-#ifndef PCL_SPIN_IMAGE_H_
-#define PCL_SPIN_IMAGE_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -283,6 +282,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/spin_image.hpp>
 #endif
-
-#endif  //#ifndef PCL_SPIN_IMAGE_H_
-

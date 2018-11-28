@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_BOARD_H_
-#define PCL_BOARD_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -365,5 +364,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/board.hpp>
 #endif
-
-#endif  //#ifndef PCL_BOARD_H_

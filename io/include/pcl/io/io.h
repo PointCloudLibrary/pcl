@@ -37,10 +37,6 @@
  *
  */
 
-#ifndef PCL_IO_IO_H_
-#define PCL_IO_IO_H_
+#pragma once
 
 #include <pcl/common/io.h>
-
-#endif  //#ifndef PCL_IO_IO_H_
-

@@ -37,8 +37,7 @@
  * $Id: feature.h 2784 2011-10-15 22:05:38Z aichim $
  */
 
-#ifndef PCL_INTEGRAL_IMAGE2D_H_
-#define PCL_INTEGRAL_IMAGE2D_H_
+#pragma once
 
 #include <vector>
 
@@ -341,6 +340,3 @@ namespace pcl
  }
 
 #include <pcl/features/impl/integral_image2D.hpp>
-
-#endif    // PCL_INTEGRAL_IMAGE2D_H_
-

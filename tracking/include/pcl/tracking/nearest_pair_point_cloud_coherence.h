@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
-#define PCL_TRACKING_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
+#pragma once
 
 #include <pcl/search/search.h>
 
@@ -95,6 +94,4 @@ namespace pcl
 // #include <pcl/tracking/impl/nearest_pair_point_cloud_coherence.hpp>
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/tracking/impl/nearest_pair_point_cloud_coherence.hpp>
-#endif
-
 #endif

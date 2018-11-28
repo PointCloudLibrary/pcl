@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_VISUALUALIZATION_PCL_PLOTTER_H_
-#define	PCL_VISUALUALIZATION_PCL_PLOTTER_H_
+
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -474,6 +474,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/pcl_plotter.hpp>
-
-#endif	/* PCL_VISUALUALIZATION_PCL_PLOTTER_H_ */
-

@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_CUDA_FILTER_H_
-#define PCL_CUDA_FILTER_H_
+#pragma once
 
 #include <pcl_cuda/pcl_cuda_base.h>
 #include <float.h>
@@ -176,5 +175,3 @@ namespace pcl_cuda
       getClassName () const { return (filter_name_); }
   };
 }
-
-#endif  //#ifndef PCL_FILTER_H_

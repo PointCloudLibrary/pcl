@@ -38,9 +38,7 @@
  *
  */
 
-
-#ifndef PCL_FILTERS_FAST_BILATERAL_OMP_H_
-#define PCL_FILTERS_FAST_BILATERAL_OMP_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
 #include <pcl/filters/fast_bilateral.h>
@@ -102,7 +100,3 @@ namespace pcl
 #else
 #define PCL_INSTANTIATE_FastBilateralFilterOMP(T) template class PCL_EXPORTS pcl::FastBilateralFilterOMP<T>;
 #endif
-
-
-#endif /* PCL_FILTERS_FAST_BILATERAL_OMP_H_ */
-

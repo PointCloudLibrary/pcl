@@ -35,8 +35,7 @@
  * $Id$
  */
 
-#ifndef PCL_SURFEL_SMOOTHING_H_
-#define PCL_SURFEL_SMOOTHING_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/search/pcl_search.h>
@@ -114,5 +113,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/surfel_smoothing.hpp>
 #endif
-
-#endif    // PCL_SURFEL_SMOOTHING_H_

@@ -37,9 +37,7 @@
  *
  */
 
-
-#ifndef PCL_SURFACE_BILATERAL_UPSAMPLING_H_
-#define PCL_SURFACE_BILATERAL_UPSAMPLING_H_
+#pragma once
 
 #include <pcl/surface/processing.h>
 
@@ -160,5 +158,3 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif /* PCL_SURFACE_BILATERAL_UPSAMPLING_H_ */

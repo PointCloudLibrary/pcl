@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_NODE_H
-#define PCL_OCTREE_NODE_H
+#pragma once
 
 #include <cstddef>
 
@@ -396,5 +395,3 @@ namespace pcl
       };
   }
 }
-
-#endif

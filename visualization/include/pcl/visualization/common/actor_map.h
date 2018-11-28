@@ -34,8 +34,8 @@
  * $Id$
  *
  */
-#ifndef PCL_PCL_VISUALIZER_ACTOR_MAP_H_
-#define PCL_PCL_VISUALIZER_ACTOR_MAP_H_
+
+#pragma once
 
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <vector>
@@ -106,5 +106,3 @@ namespace pcl
     typedef boost::shared_ptr<CoordinateActorMap> CoordinateActorMapPtr;
   }
 }
-
-#endif
