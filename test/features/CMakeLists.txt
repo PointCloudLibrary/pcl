@@ -20,6 +20,10 @@ if (build)
                LINK_WITH pcl_gtest pcl_features)
 
   if (BUILD_io)
+    PCL_ADD_TEST(feature_good_estimation test_good_estimation
+                 FILES test_good_estimation.cpp
+                 LINK_WITH pcl_gtest pcl_features pcl_io
+                 ARGUMENTS "${PCL_SOURCE_DIR}/test/milk.pcd")  
     PCL_ADD_TEST(feature_base test_base_feature
                  FILES test_base_feature.cpp
                  LINK_WITH pcl_gtest pcl_features pcl_io

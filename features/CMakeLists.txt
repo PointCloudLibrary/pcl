@@ -1,6 +1,6 @@
 set(SUBSYS_NAME features)
 set(SUBSYS_DESC "Point cloud features library")
-set(SUBSYS_DEPS common search kdtree octree filters 2d)
+set(SUBSYS_DEPS common sample_consensus search kdtree octree filters 2d)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
@@ -64,6 +64,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/usc.h"
         "include/pcl/${SUBSYS_NAME}/boundary.h"
         "include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h"
+        "include/pcl/${SUBSYS_NAME}/good.h"
         )
 
     set(impl_incs
@@ -114,6 +115,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/usc.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/boundary.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/range_image_border_extractor.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/good.hpp"
         )
 
     set(srcs
@@ -156,6 +158,7 @@ if(build)
         src/3dsc.cpp
         src/usc.cpp
         src/range_image_border_extractor.cpp
+        src/good.cpp
        )
 	
     if(MSVC)
