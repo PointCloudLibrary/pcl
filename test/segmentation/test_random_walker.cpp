@@ -230,7 +230,9 @@ TEST_P (RandomWalkerTest, GetPotentials)
   for (std::set<Color>::iterator it = g.colors.begin (); it != g.colors.end (); ++it)
     for (size_t i = 0; i < g.size; ++i)
       if (g.potentials.count (*it))
+      {
         EXPECT_NEAR (g.potentials[*it] (i), p (i, map[*it]), 0.01);
+      }
 }
 
 INSTANTIATE_TEST_CASE_P (VariousGraphs,
