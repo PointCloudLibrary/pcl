@@ -11,11 +11,11 @@ SET(SUBSUBSYS_DEPS common io visualization filters apps)
 if(NOT VTK_FOUND)
   set(DEFAULT AUTO_OFF)
   set(REASON "VTK was not found.")
-else(NOT VTK_FOUND)
+else()
   set(DEFAULT TRUE)
   set(REASON)
   include("${VTK_USE_FILE}")
-endif(NOT VTK_FOUND)
+endif()
 
 # QT4 Found?
 if(NOT QT4_FOUND)
@@ -24,7 +24,7 @@ if(NOT QT4_FOUND)
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
   set(DEFAULT TRUE)
   set(REASON)
-endif(NOT QT4_FOUND)
+endif()
 
 # QVTK?
 if(NOT VTK_USE_QVTK)
@@ -33,12 +33,12 @@ if(NOT VTK_USE_QVTK)
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
   set(DEFAULT TRUE)
   set(REASON)
-endif(NOT VTK_USE_QVTK)
+endif()
 
 #Default to not building for now
-if ("${DEFAULT}" STREQUAL "TRUE")
+if("${DEFAULT}" STREQUAL "TRUE")
   set(DEFAULT FALSE)
-endif ("${DEFAULT}" STREQUAL "TRUE")
+endif()
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS})
@@ -141,9 +141,9 @@ if(build)
     PCL_ADD_LIBRARY(pcl_cc_tool_interface "${SUBSUBSYS_NAME}" ${INTERFACE_SOURCES} ${INTERFACE_HEADERS_MOC})
     target_link_libraries(pcl_cc_tool_interface pcl_common ${QT_LIBRARIES})
 
-    IF(APPLE)
+    if(APPLE)
        SET_TARGET_PROPERTIES(pcl_cc_tool_interface PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-    ENDIF()
+    endif()
     
     include(ComposerTool.cmake REQUIRED)
     
@@ -195,4 +195,4 @@ if(build)
     set (VSP_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/supervoxels.h")
     define_composer_tool (supervoxels "${VSP_SOURCES}" "${VSP_HEADERS}" "${VSP_DEPS}")
 
-endif(build)
+endif()

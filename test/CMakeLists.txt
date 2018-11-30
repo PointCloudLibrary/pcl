@@ -39,4 +39,4 @@ if(build)
     add_subdirectory(sample_consensus)
     add_subdirectory(visualization)
 
-endif(build)
+endif()

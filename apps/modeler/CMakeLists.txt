@@ -7,12 +7,12 @@ set(REASON "")
 if(NOT VTK_FOUND)
   set(DEFAULT AUTO_OFF)
   set(REASON "VTK was not found.")
-else(NOT VTK_FOUND)
+else()
   set(DEFAULT TRUE)
   set(REASON)
   set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
   include("${VTK_USE_FILE}")
-endif(NOT VTK_FOUND)
+endif()
 
 # QT4 Found?
 if(NOT QT4_FOUND)
@@ -21,7 +21,7 @@ if(NOT QT4_FOUND)
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
   set(DEFAULT TRUE)
   set(REASON)
-endif(NOT QT4_FOUND)
+endif()
 
 # QVTK?
 if(NOT VTK_USE_QVTK)
@@ -30,10 +30,10 @@ if(NOT VTK_USE_QVTK)
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
   set(DEFAULT TRUE)
   set(REASON)
-endif(NOT VTK_USE_QVTK)
+endif()
 
 # Default to not building for now
-if (${DEFAULT} STREQUAL "TRUE")
+if(${DEFAULT} STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 
@@ -127,11 +127,11 @@ if(build)
   target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QVTK_LIBRARY} ${QT_LIBRARIES})
 
   # Put the ui in the windows project file
-  IF("${CMAKE_BUILD_TOOL}" MATCHES "msdev")
+  if("${CMAKE_BUILD_TOOL}" MATCHES "msdev")
     LIST(APPEND srcs ${uis})
-  ELSEIF("${CMAKE_BUILD_TOOL}" MATCHES "devenv")
+  elseif("${CMAKE_BUILD_TOOL}" MATCHES "devenv")
     LIST(APPEND srcs ${uis})
-  ENDIF("${CMAKE_BUILD_TOOL}" MATCHES "msdev")
+  endif()
 
   # Install include files
   PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs})
@@ -141,4 +141,4 @@ if(build)
 
   add_subdirectory(tools)
 
-endif(build)
+endif()

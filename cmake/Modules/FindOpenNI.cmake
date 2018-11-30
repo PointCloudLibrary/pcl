@@ -33,7 +33,7 @@ if(NOT WIN32)
   else()
     include_directories(SYSTEM ${USB_10_INCLUDE_DIR})
   endif()
-endif(NOT WIN32)
+endif()
 
 if(${CMAKE_VERSION} VERSION_LESS 2.8.2)
   pkg_check_modules(PC_OPENNI libopenni)
@@ -46,7 +46,7 @@ set(OPENNI_DEFINITIONS ${PC_OPENNI_CFLAGS_OTHER})
 set(OPENNI_SUFFIX)
 if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(OPENNI_SUFFIX 64)
-endif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+endif()
 
 # Add a hint so that it can find it without the pkg-config
 find_path(OPENNI_INCLUDE_DIR XnStatus.h

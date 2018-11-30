@@ -6,19 +6,19 @@ set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
     PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk pcap png vtk)
-else(WIN32)
+else()
     PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb-1.0)
-endif(WIN32)
+endif()
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(NOT WIN32)
   option(PCL_IO_ENABLE_MAND_LOCKING "Enables the use of mandatory locking on filesystems mounted using the mand option." ON)
   mark_as_advanced(PCL_IO_ENABLE_MAND_LOCKING)
-  if (NOT PCL_IO_ENABLE_MAND_LOCKING)
+  if(NOT PCL_IO_ENABLE_MAND_LOCKING)
     add_definitions(-DNO_MANDATORY_LOCKING)
-  endif(NOT PCL_IO_ENABLE_MAND_LOCKING)
-endif(NOT WIN32)
+  endif()
+endif()
 
 if(build)
     if(WITH_OPENNI2)
@@ -69,7 +69,7 @@ if(build)
         # Copy OpenNI2 redist directory to bin. Needed for driver modules. Only tested on Windows.
         if(MSVC)
             file(COPY ${OPENNI2_REDIST_DIR} DESTINATION ${CMAKE_BINARY_DIR}/bin PATTERN *.*)
-        endif(MSVC)
+        endif()
     endif()
 
     if(WITH_OPENNI)
@@ -175,9 +175,9 @@ if(build)
         set(DINAST_GRABBER_SOURCES
             src/dinast_grabber.cpp
            )
-    endif(LIBUSB_1_FOUND)
+    endif()
 
-    if (VTK_FOUND AND NOT ANDROID)
+    if(VTK_FOUND AND NOT ANDROID)
         set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
         include("${VTK_USE_FILE}")
         set(VTK_IO_INCLUDES
@@ -194,7 +194,7 @@ if(build)
         set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging vtkHybrid vtkGraphics vtkRendering vtkFiltering vtkVolumeRendering)
         # Indicates that we can rely on VTK to be present
         set(VTK_DEFINES -DPCL_BUILT_WITH_VTK)
-    endif ()
+    endif()
 
     set(PLY_SOURCES src/ply/ply_parser.cpp)
     set(PLY_INCLUDES
@@ -242,13 +242,13 @@ if(build)
       list(APPEND srcs
           src/libpng_wrapper.cpp
           )
-    endif(PNG_FOUND)
+    endif()
 
 	if(PCAP_FOUND)
 	  set(PCAP_DEFINES -DHAVE_PCAP)
           include_directories(${PCAP_INCLUDE_DIRS})
 	  add_definitions(${PCAP_DEFINES})
-	endif(PCAP_FOUND)
+	endif()
 
     set(incs
         "include/pcl/${SUBSYS_NAME}/boost.h"
@@ -306,7 +306,7 @@ if(build)
           include/pcl/compression/organized_pointcloud_compression.h
           )
       endif()
-    endif(PNG_FOUND)
+    endif()
 
     set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/ascii_io.hpp"
@@ -334,11 +334,11 @@ if(build)
     target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_LIBRARIES} )
     if(PNG_FOUND)
       target_link_libraries("${LIB_NAME}" ${PNG_LIBRARIES})
-    endif(PNG_FOUND)
+    endif()
 
     if(LIBUSB_1_FOUND)
       target_link_libraries("${LIB_NAME}" ${LIBUSB_1_LIBRARIES})
-    endif(LIBUSB_1_FOUND)
+    endif()
 
     if(WITH_OPENNI2)
       target_link_libraries(${LIB_NAME} ${OPENNI2_LIBRARIES})
@@ -352,7 +352,7 @@ if(build)
       target_link_libraries("${LIB_NAME}" ${FZAPI_LIBS})
       if(WIN32)
         target_link_libraries("${LIB_NAME}" Version.lib)
-      endif(WIN32)
+      endif()
     endif()
 
     if(WITH_ENSENSO)
@@ -371,9 +371,9 @@ if(build)
       target_link_libraries(${LIB_NAME} ${RSSDK_LIBRARIES})
     endif()
 
-    if (PCAP_FOUND)
+    if(PCAP_FOUND)
       target_link_libraries("${LIB_NAME}" ${PCAP_LIBRARIES})
-    endif(PCAP_FOUND)
+    endif()
 
     set(EXT_DEPS eigen3)
 
@@ -399,6 +399,6 @@ if(build)
 
     if(BUILD_tools)
         add_subdirectory(tools)
-    endif(BUILD_tools)
+    endif()
 
-endif(build)
+endif()

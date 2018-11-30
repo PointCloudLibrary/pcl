@@ -177,4 +177,4 @@ if(build)
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image ${range_image_incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image/impl ${range_image_incs_impl})
 
-endif(build)
+endif()

@@ -38,5 +38,5 @@ if(GLEW_FOUND)
 	    ${VTK_IO_TARGET_LINK_LIBRARIES}    
 	    pcl_simulation   pcl_common  pcl_io pcl_visualization pcl_simulation_io
 	    ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
-  endif(GLUT_FOUND)
-endif (GLEW_FOUND)
+  endif()
+endif()

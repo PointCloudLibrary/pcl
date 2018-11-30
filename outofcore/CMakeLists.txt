@@ -69,6 +69,6 @@ if(build)
 
     if(BUILD_tools)
         add_subdirectory(tools)
-    endif(BUILD_tools)
+    endif()
     
-endif(build)
+endif()

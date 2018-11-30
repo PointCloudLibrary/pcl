@@ -8,7 +8,7 @@
 
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} /usr /usr/local)
-endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+endif()
 if(APPLE)
   list(APPEND CMAKE_INCLUDE_PATH /opt/local)
   set(CMAKE_FIND_FRAMEWORK NEVER)
@@ -38,4 +38,4 @@ mark_as_advanced(GTEST_INCLUDE_DIR GTEST_SRC_DIR)
 
 if(GTEST_FOUND)
   message(STATUS "GTest found (include: ${GTEST_INCLUDE_DIRS}, src: ${GTEST_SRC_DIR})")
-endif(GTEST_FOUND)
+endif()

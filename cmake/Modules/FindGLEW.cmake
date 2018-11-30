@@ -10,9 +10,9 @@
 # Also defined, but not for general use are:
 #  GLEW_GLEW_LIBRARY = the full path to the glew library.
 
-IF (WIN32)
+if(WIN32)
 
-  IF(CYGWIN)
+  if(CYGWIN)
 
     FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h)
 
@@ -23,7 +23,7 @@ IF (WIN32)
     )
 
 
-  ELSE(CYGWIN)
+  else()
   
     FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
       $ENV{GLEW_ROOT}/include
@@ -36,26 +36,26 @@ IF (WIN32)
       ${OPENGL_LIBRARY_DIR}
     )
 
-  ENDIF(CYGWIN)
+  endif()
 
-ELSE (WIN32)
+else()
 
-  IF (APPLE)
+  if(APPLE)
 # These values for Apple could probably do with improvement.
-  if (${CMAKE_SYSTEM_VERSION} VERSION_LESS "13.0.0")
+  if(${CMAKE_SYSTEM_VERSION} VERSION_LESS "13.0.0")
     FIND_PATH( GLEW_INCLUDE_DIR glew.h
       /System/Library/Frameworks/GLEW.framework/Versions/A/Headers
       ${OPENGL_LIBRARY_DIR}
       )
     SET(GLEW_GLEW_LIBRARY "-framework GLEW" CACHE STRING "GLEW library for OSX")
-  else (${CMAKE_SYSTEM_VERSION} VERSION_LESS "13.0.0")
+  else()
     find_package(PkgConfig)
     pkg_check_modules(GLEW glew)
     SET(GLEW_GLEW_LIBRARY ${GLEW_LIBRARIES} CACHE STRING "GLEW library for OSX")
     SET(GLEW_INCLUDE_DIR ${GLEW_INCLUDEDIR} CACHE STRING "GLEW include dir for OSX")
-  endif (${CMAKE_SYSTEM_VERSION} VERSION_LESS "13.0.0")
+  endif()
     SET(GLEW_cocoa_LIBRARY "-framework Cocoa" CACHE STRING "Cocoa framework for OSX")
-  ELSE (APPLE)
+  else()
 
     FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
       /usr/include/GL
@@ -72,13 +72,13 @@ ELSE (WIN32)
       /usr/X11R6/lib
     )
 
-  ENDIF (APPLE)
+  endif()
 
-ENDIF (WIN32)
+endif()
 
 SET( GLEW_FOUND FALSE )
-IF(GLEW_INCLUDE_DIR)
-  IF(GLEW_GLEW_LIBRARY)
+if(GLEW_INCLUDE_DIR)
+  if(GLEW_GLEW_LIBRARY)
     # Is -lXi and -lXmu required on all platforms that have it?
     # If not, we need some way to figure out what platform we are on.
     SET( GLEW_LIBRARIES
@@ -91,21 +91,21 @@ IF(GLEW_INCLUDE_DIR)
     SET (GLEW_LIBRARY ${GLEW_LIBRARIES})
     SET (GLEW_INCLUDE_PATH ${GLEW_INCLUDE_DIR})
 
-  ENDIF(GLEW_GLEW_LIBRARY)
-ENDIF(GLEW_INCLUDE_DIR)
+  endif()
+endif()
 
-IF(GLEW_FOUND)
-  IF(NOT GLEW_FIND_QUIETLY)
+if(GLEW_FOUND)
+  if(NOT GLEW_FIND_QUIETLY)
     MESSAGE(STATUS "Found Glew: ${GLEW_LIBRARIES}")
-  ENDIF(NOT GLEW_FIND_QUIETLY)
-  IF(GLEW_GLEW_LIBRARY MATCHES glew32s)
+  endif()
+  if(GLEW_GLEW_LIBRARY MATCHES glew32s)
     ADD_DEFINITIONS(-DGLEW_STATIC)
-  ENDIF(GLEW_GLEW_LIBRARY MATCHES glew32s)
-ELSE(GLEW_FOUND)
-  IF(GLEW_FIND_REQUIRED)
+  endif()
+else()
+  if(GLEW_FIND_REQUIRED)
     MESSAGE(FATAL_ERROR "Could not find Glew")
-  ENDIF(GLEW_FIND_REQUIRED)
-ENDIF(GLEW_FOUND)
+  endif()
+endif()
 
 MARK_AS_ADVANCED(
   GLEW_INCLUDE_DIR

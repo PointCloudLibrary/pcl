@@ -14,7 +14,7 @@ elseif(NOT VTK_FOUND)
 elseif(NOT VTK_USE_QVTK)
   set(DEFAULT AUTO_OFF)
   set(REASON "VTK was not built with Qt support.")
-endif(VTK_FOUND AND VTK_USE_QVTK)
+endif()
 
 # Find QT
 if(NOT QT_USE_FILE)
@@ -23,7 +23,7 @@ if(NOT QT_USE_FILE)
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
   set(DEFAULT TRUE)
   set(REASON)
-endif(NOT QT_USE_FILE)
+endif()
 
 # FZAPI
 if(FZAPI_FOUND)
@@ -35,7 +35,7 @@ elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
 endif()
 
 # Default to not building for now
-if (${DEFAULT} STREQUAL "TRUE")
+if(${DEFAULT} STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 
@@ -93,11 +93,11 @@ if(build)
   target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search QVTK ${QT_LIBRARIES})
 
   # Put the ui in the windows project file
-  IF("${CMAKE_BUILD_TOOL}" MATCHES "msdev")
+  if("${CMAKE_BUILD_TOOL}" MATCHES "msdev")
     LIST(APPEND srcs ${uis})
-  ELSEIF("${CMAKE_BUILD_TOOL}" MATCHES "devenv")
+  elseif("${CMAKE_BUILD_TOOL}" MATCHES "devenv")
     LIST(APPEND srcs ${uis})
-  ENDIF("${CMAKE_BUILD_TOOL}" MATCHES "msdev")
+  endif()
 
   # Install include files
   PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs})
@@ -105,4 +105,4 @@ if(build)
 
   PCL_MAKE_PKGCONFIG("${EXE_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" "" "" "" "" "")
 
-endif(build)
+endif()

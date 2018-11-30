@@ -6,11 +6,11 @@ set(SUBSUBSYS_DEPS common geometry io filters sample_consensus segmentation visu
 if(NOT VTK_FOUND)
     set(DEFAULT AUTO_OFF)
     set(REASON "VTK was not found.")
-else(NOT VTK_FOUND)
+else()
     set(DEFAULT TRUE)
     set(REASON)
     include("${VTK_USE_FILE}")
-endif(NOT VTK_FOUND)
+endif()
 
 # OpenNI found?
 if(NOT WITH_OPENNI)
@@ -22,7 +22,7 @@ elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
 endif()
 
 # Default to not building for now
-if (${DEFAULT} STREQUAL "TRUE")
+if(${DEFAULT} STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 
@@ -100,4 +100,4 @@ if(build)
   
   add_subdirectory(tools)
 
-endif(build)
+endif()

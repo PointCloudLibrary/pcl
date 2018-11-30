@@ -49,4 +49,4 @@ if(build)
 
     add_subdirectory(tools)
 
-endif(build)
+endif()

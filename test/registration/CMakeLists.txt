@@ -8,7 +8,7 @@ set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
-if (build)
+if(build)
   PCL_ADD_TEST(registration_warp_api test_warps
              FILES test_warps.cpp 
              LINK_WITH pcl_gtest pcl_registration)
@@ -17,7 +17,7 @@ if (build)
                FILES test_correspondence_estimation.cpp
                LINK_WITH pcl_gtest pcl_registration pcl_features)
 
-  if (BUILD_io)
+  if(BUILD_io)
     PCL_ADD_TEST(a_registration_test test_registration
                  FILES test_registration.cpp
                  LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features pcl_search pcl_kdtree pcl_kdtree
@@ -42,5 +42,5 @@ if (build)
                  FILES test_kfpcs_ia.cpp test_kfpcs_ia_data.h
                  LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features pcl_search pcl_kdtree
                  ARGUMENTS "${PCL_SOURCE_DIR}/test/office1_keypoints.pcd" "${PCL_SOURCE_DIR}/test/office2_keypoints.pcd")
-  endif (BUILD_io)
-endif (build)
+  endif()
+endif()

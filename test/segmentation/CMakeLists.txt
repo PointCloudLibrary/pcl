@@ -8,7 +8,7 @@ set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
-if (build)
+if(build)
   # Random walker requires Eigen::Sparse module that is available since 3.1.0
   if(NOT ("${EIGEN_VERSION}" VERSION_LESS 3.1.0))
     PCL_ADD_TEST(random_walker test_random_walker
@@ -26,4 +26,4 @@ if (build)
              FILES test_non_linear.cpp
              LINK_WITH pcl_gtest pcl_common pcl_io pcl_sample_consensus pcl_segmentation pcl_kdtree pcl_search 
              ARGUMENTS "${PCL_SOURCE_DIR}/test/noisy_slice_displaced.pcd")
-endif (build)
+endif()

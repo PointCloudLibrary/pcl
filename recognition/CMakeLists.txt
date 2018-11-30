@@ -131,9 +131,9 @@ if(build)
         src/implicit_shape_model.cpp
         )
         
-    if (HAVE_METSLIB)
+    if(HAVE_METSLIB)
         set(metslib_incs "")
-    else(HAVE_METSLIB)
+    else()
         set(metslib_incs
             "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/abstract-search.hh"
             "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/local-search.hh"
@@ -145,7 +145,7 @@ if(build)
             "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/tabu-search.hh"
             "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/termination-criteria.hh"
             )
-    endif(HAVE_METSLIB)
+    endif()
 
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -166,8 +166,8 @@ if(build)
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/linemod" ${LINEMOD_INCLUDES})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/linemod" ${LINEMOD_IMPLS})
 
-    if (NOT HAVE_METSLIB)
+    if(NOT HAVE_METSLIB)
         PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/3rdparty/metslib" ${metslib_incs})
-    endif(NOT HAVE_METSLIB)
+    endif()
 
-endif(build)
+endif()

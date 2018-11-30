@@ -6,11 +6,11 @@ if(BUILD_surface_on_nurbs)
 	  if(NOT VTK_FOUND)
 	      set(DEFAULT FALSE)
 	      set(REASON "VTK was not found.")
-	  else(NOT VTK_FOUND)
+	  else()
 	      set(DEFAULT TRUE)
 	      set(REASON)
 	      include (${VTK_USE_FILE})
-	  endif(NOT VTK_FOUND)
+	  endif()
 	
     PCL_ADD_EXAMPLE(pcl_test_nurbs_fitting_surface
             FILES test_nurbs_fitting_surface.cpp
@@ -52,6 +52,6 @@ if(BUILD_surface_on_nurbs)
 #					FILES example_nurbs_fitting_topo.cpp
 #	                LINK_WITH pcl_common pcl_io pcl_surface pcl_visualization)
                 
-  endif(BUILD_visualization)
-endif(BUILD_surface_on_nurbs)
+  endif()
+endif()
 

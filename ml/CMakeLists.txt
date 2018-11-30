@@ -93,4 +93,4 @@ if(build)
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/ferns" ${ferns_impl_incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/svm" ${svm_impl_incs})
 
-endif(build)
+endif()

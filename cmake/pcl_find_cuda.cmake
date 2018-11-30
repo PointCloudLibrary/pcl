@@ -18,14 +18,14 @@ if(CUDA_FOUND)
     # compiler. So, here we will preemptively set CUDA_HOST_COMPILER to gcc if
     # that compiler exists in /usr/bin. This will not override an existing cache
     # value if the user has passed CUDA_HOST_COMPILER on the command line.
-    if (NOT DEFINED CUDA_HOST_COMPILER AND CMAKE_C_COMPILER_ID STREQUAL "Clang" AND EXISTS /usr/bin/gcc)
+    if(NOT DEFINED CUDA_HOST_COMPILER AND CMAKE_C_COMPILER_ID STREQUAL "Clang" AND EXISTS /usr/bin/gcc)
       set(CUDA_HOST_COMPILER /usr/bin/gcc CACHE FILEPATH "Host side compiler used by NVCC")
       message(STATUS "Setting CMAKE_HOST_COMPILER to /usr/bin/gcc instead of ${CMAKE_C_COMPILER}. See http://dev.pointclouds.org/issues/979")
     endif()
 
     # Send a warning if CUDA_HOST_COMPILER is set to a compiler that is known
     # to be unsupported.
-    if (CUDA_HOST_COMPILER STREQUAL CMAKE_C_COMPILER AND CMAKE_C_COMPILER_ID STREQUAL "Clang")
+    if(CUDA_HOST_COMPILER STREQUAL CMAKE_C_COMPILER AND CMAKE_C_COMPILER_ID STREQUAL "Clang")
       message(WARNING "CUDA_HOST_COMPILER is set to an unsupported compiler: ${CMAKE_C_COMPILER}. See http://dev.pointclouds.org/issues/979")
     endif()
   endif()

@@ -9,7 +9,7 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
 PCL_SET_SUBSYS_INCLUDE_DIR("${SUBSYS_NAME}" "${SUBSYS_PATH}")
 mark_as_advanced("BUILD_${SUBSYS_NAME}")
 
-if (build)
+if(build)
     FILE(GLOB incs include/pcl/gpu/features/*.hpp)
     FILE(GLOB srcs src/*.cpp src/*.hpp)
     FILE(GLOB cuda src/*.cu)

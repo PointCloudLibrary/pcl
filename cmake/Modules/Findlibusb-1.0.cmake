@@ -45,11 +45,11 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-if (LIBUSB_1_LIBRARIES AND LIBUSB_1_INCLUDE_DIRS)
+if(LIBUSB_1_LIBRARIES AND LIBUSB_1_INCLUDE_DIRS)
   # in cache already
   set(LIBUSB_FOUND TRUE)
   set(LIBUSB_1_FOUND TRUE)
-else (LIBUSB_1_LIBRARIES AND LIBUSB_1_INCLUDE_DIRS)
+else()
   find_path(LIBUSB_1_INCLUDE_DIR
             NAMES libusb-1.0/libusb.h
 	    PATHS /usr/include /usr/local/include /opt/local/include /sw/include 
@@ -67,4 +67,4 @@ else (LIBUSB_1_LIBRARIES AND LIBUSB_1_INCLUDE_DIRS)
 
   # show the LIBUSB_1_INCLUDE_DIRS and LIBUSB_1_LIBRARIES variables only in the advanced view
   mark_as_advanced(LIBUSB_1_INCLUDE_DIRS LIBUSB_1_LIBRARIES)
-endif (LIBUSB_1_LIBRARIES AND LIBUSB_1_INCLUDE_DIRS)
+endif()

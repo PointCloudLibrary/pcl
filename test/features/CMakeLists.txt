@@ -8,7 +8,7 @@ set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
-if (build)
+if(build)
   PCL_ADD_TEST(features_ptr test_features_ptr
                FILES test_ptr.cpp
                LINK_WITH pcl_gtest pcl_features)
@@ -19,7 +19,7 @@ if (build)
                FILES test_rift_estimation.cpp
                LINK_WITH pcl_gtest pcl_features)
 
-  if (BUILD_io)
+  if(BUILD_io)
     PCL_ADD_TEST(feature_base test_base_feature
                  FILES test_base_feature.cpp
                  LINK_WITH pcl_gtest pcl_features pcl_io
@@ -105,11 +105,11 @@ if (build)
                  FILES test_gasd_estimation.cpp
                  LINK_WITH pcl_gtest pcl_io pcl_features
                  ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
-    if (BUILD_keypoints)
+    if(BUILD_keypoints)
       PCL_ADD_TEST(feature_brisk test_brisk
                    FILES test_brisk.cpp
                    LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_filters pcl_keypoints pcl_common pcl_features pcl_search
                    ARGUMENTS "${PCL_SOURCE_DIR}/test/brisk_image_gt.pcd" "${PCL_SOURCE_DIR}/test/brisk_keypoints_gt.pcd" "${PCL_SOURCE_DIR}/test/brisk_descriptors_gt.pcd")
-    endif (BUILD_keypoints)
-  endif (BUILD_io)
-endif (build)
+    endif()
+  endif()
+endif()

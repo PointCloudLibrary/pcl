@@ -26,4 +26,4 @@ if(HDF5_FOUND)
   target_link_libraries(nearest_neighbors ${PCL_LIBRARIES} 
                                         ${Boost_LIBRARIES} ${FLANN_LIBRARIES} ${HDF5_hdf5_LIBRARY} 
                                         )
-endif(HDF5_FOUND)
+endif()
