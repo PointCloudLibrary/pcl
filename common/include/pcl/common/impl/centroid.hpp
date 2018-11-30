@@ -69,8 +69,11 @@ pcl::compute3DCentroid (ConstCloudIterator<PointT> &cloud_iterator,
     }
     ++cloud_iterator;
   }
-  centroid /= static_cast<Scalar> (cp);
-  centroid[3] = 1;
+  if (cp != 0)
+  {
+    centroid /= static_cast<Scalar> (cp);
+    centroid[3] = 1;
+  }
   return (cp);
 }
 
@@ -114,8 +117,11 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
       centroid[2] += cloud[i].z;
       ++cp;
     }
-    centroid /= static_cast<Scalar> (cp);
-    centroid[3] = 1;
+    if (cp != 0)
+    {
+      centroid /= static_cast<Scalar> (cp);
+      centroid[3] = 1;
+    }
 
     return (cp);
   }
@@ -160,8 +166,11 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
       centroid[2] += cloud[indices[i]].z;
       ++cp;
     }
-    centroid /= static_cast<Scalar> (cp);
-    centroid[3] = 1;
+    if (cp != 0)
+    {
+      centroid /= static_cast<Scalar> (cp);
+      centroid[3] = 1;
+    }
     return (cp);
   }
 }
@@ -239,9 +248,12 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       ++point_count;
     }
   }
-  covariance_matrix (1, 0) = covariance_matrix (0, 1);
-  covariance_matrix (2, 0) = covariance_matrix (0, 2);
-  covariance_matrix (2, 1) = covariance_matrix (1, 2);
+  if (point_count != 0)
+  {
+    covariance_matrix(1, 0) = covariance_matrix(0, 1);
+    covariance_matrix(2, 0) = covariance_matrix(0, 2);
+    covariance_matrix(2, 1) = covariance_matrix(1, 2);
+  }
 
   return (point_count);
 }
@@ -323,9 +335,12 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       ++point_count;
     }
   }
-  covariance_matrix (1, 0) = covariance_matrix (0, 1);
-  covariance_matrix (2, 0) = covariance_matrix (0, 2);
-  covariance_matrix (2, 1) = covariance_matrix (1, 2);
+  if (point_count != 0)
+  {
+    covariance_matrix(1, 0) = covariance_matrix(0, 1);
+    covariance_matrix(2, 0) = covariance_matrix(0, 2);
+    covariance_matrix(2, 1) = covariance_matrix(1, 2);
+  }
   return (static_cast<unsigned int> (point_count));
 }
 
@@ -530,10 +545,11 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       ++point_count;
     }
   }
-  accu /= static_cast<Scalar> (point_count);
+  
   if (point_count != 0)
   {
     //centroid.head<3> () = accu.tail<3> ();    -- does not compile with Clang 3.0
+    accu /= static_cast<Scalar> (point_count);
     centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
     centroid[3] = 1;
     covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];
@@ -597,21 +613,24 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
     }
   }
 
-  accu /= static_cast<Scalar> (point_count);
-  //Eigen::Vector3f vec = accu.tail<3> ();
-  //centroid.head<3> () = vec;//= accu.tail<3> ();
-  //centroid.head<3> () = accu.tail<3> ();    -- does not compile with Clang 3.0
-  centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
-  centroid[3] = 1;
-  covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];
-  covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];
-  covariance_matrix.coeffRef (2) = accu [2] - accu [6] * accu [8];
-  covariance_matrix.coeffRef (4) = accu [3] - accu [7] * accu [7];
-  covariance_matrix.coeffRef (5) = accu [4] - accu [7] * accu [8];
-  covariance_matrix.coeffRef (8) = accu [5] - accu [8] * accu [8];
-  covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);
-  covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);
-  covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);
+  if (point_count != 0)
+  {
+    accu /= static_cast<Scalar> (point_count);
+    //Eigen::Vector3f vec = accu.tail<3> ();
+    //centroid.head<3> () = vec;//= accu.tail<3> ();
+    //centroid.head<3> () = accu.tail<3> ();    -- does not compile with Clang 3.0
+    centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
+    centroid[3] = 1;
+    covariance_matrix.coeffRef(0) = accu[0] - accu[6] * accu[6];
+    covariance_matrix.coeffRef(1) = accu[1] - accu[6] * accu[7];
+    covariance_matrix.coeffRef(2) = accu[2] - accu[6] * accu[8];
+    covariance_matrix.coeffRef(4) = accu[3] - accu[7] * accu[7];
+    covariance_matrix.coeffRef(5) = accu[4] - accu[7] * accu[8];
+    covariance_matrix.coeffRef(8) = accu[5] - accu[8] * accu[8];
+    covariance_matrix.coeffRef(3) = covariance_matrix.coeff(1);
+    covariance_matrix.coeffRef(6) = covariance_matrix.coeff(2);
+    covariance_matrix.coeffRef(7) = covariance_matrix.coeff(5);
+  }
 
   return (static_cast<unsigned int> (point_count));
 }
