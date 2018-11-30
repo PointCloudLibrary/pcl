@@ -38,7 +38,7 @@ void printHelp (int, char **argv)
 
 
 // Output the simulated output to file:
-void write_sim_output(string fname_root){ 
+void write_sim_output(const string &fname_root){ 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out (new pcl::PointCloud<pcl::PointXYZRGB>);
 
   // Read Color Buffer from the GPU before creating PointCloud:

@@ -225,7 +225,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
   ph_global.spinOnce ();
 }
 
-void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
+void capture (Eigen::Isometry3d pose_in, const string &point_cloud_fname)
 {
   // No reference image - but this is kept for compatibility with range_test_v2:
   float* reference = new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
