@@ -1,10 +1,11 @@
 set(SUBSYS_NAME surface)
 set(SUBSYS_DESC "Point cloud surface library")
 set(SUBSYS_DEPS common search kdtree octree)
+set(SUBSYS_OPT_DEPS io qhull)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS qhull)
+PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${SUBSYS_OPT_DEPS})
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -25,7 +26,8 @@ if(build)
             )
     endif()
 
-    if(VTK_FOUND AND NOT ANDROID)
+    PCL_GET_SUBSYS_STATUS(IO_STATUS io)
+    if (IO_STATUS AND VTK_FOUND AND NOT ANDROID)
         set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
         include("${VTK_USE_FILE}")
 
@@ -45,7 +47,7 @@ if(build)
             src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp)
 
       set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES pcl_io vtkCommonCore vtkCommonDataModel vtkCommonExecutionModel vtkFiltersModeling)
-    endif()
+    endif(IO_STATUS AND VTK_FOUND AND NOT ANDROID)
 
     set(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS")
     if(BUILD_surface_on_nurbs)
@@ -170,7 +172,7 @@ if(build)
       PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/on_nurbs" ${ON_NURBS_INCLUDES})
     endif()
 
-    if(VTK_FOUND AND NOT ANDROID)
+    if (IO_STATUS AND VTK_FOUND AND NOT ANDROID)
       PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/vtk_smoothing" ${VTK_SMOOTHING_INCLUDES})
     endif()
     if(WIN32)

@@ -53,7 +53,7 @@ pcl::VTKUtils::convertToVTK (const pcl::PolygonMesh &triangles, vtkSmartPointer<
   }
 
   vtkSmartPointer<vtkPolyData> vtk_polygons;
-  mesh2vtk (triangles, vtk_polygons);
+  pcl::io::mesh2vtk (triangles, vtk_polygons);
 
   vtkSmartPointer<vtkTriangleFilter> vtk_triangles = vtkSmartPointer<vtkTriangleFilter>::New ();
   vtk_triangles->SetInputData (vtk_polygons);
@@ -68,7 +68,7 @@ pcl::VTKUtils::convertToVTK (const pcl::PolygonMesh &triangles, vtkSmartPointer<
 void
 pcl::VTKUtils::convertToPCL (vtkSmartPointer<vtkPolyData> &vtk_polygons, pcl::PolygonMesh &triangles)
 {
-  vtk2mesh (vtk_polygons, triangles);
+  pcl::io::vtk2mesh (vtk_polygons, triangles);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
