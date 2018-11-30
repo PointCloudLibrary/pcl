@@ -7,7 +7,7 @@ if(BUILD_visualization)
   PCL_ADD_EXAMPLE(pcl_example_region_growing FILES example_region_growing.cpp
 		                LINK_WITH pcl_common pcl_keypoints pcl_io pcl_segmentation)
 
-  ## Find VTK 
+  ## Find VTK
   if(VTK_FOUND)
     include(${VTK_USE_FILE})
     PCL_ADD_EXAMPLE(pcl_example_supervoxels FILES example_supervoxels.cpp

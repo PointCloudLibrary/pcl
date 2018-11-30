@@ -12,7 +12,7 @@ if(build)
     set(srcs src/octree_inst.cpp
     )
 
-    set(incs 
+    set(incs
         "include/pcl/${SUBSYS_NAME}/boost.h"
         "include/pcl/${SUBSYS_NAME}/octree_base.h"
         "include/pcl/${SUBSYS_NAME}/octree_container.h"
@@ -34,7 +34,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/octree_pointcloud_adjacency_container.h"
         )
 
-    set(impl_incs    
+    set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/octree_base.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/octree2buf_base.hpp"
@@ -50,7 +50,7 @@ if(build)
     target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
     PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "" "" "" "")
- 
+
     # Install include files
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})

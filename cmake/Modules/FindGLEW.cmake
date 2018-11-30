@@ -1,8 +1,8 @@
-# Copyright (c) 2009 Boudewijn Rempt <boud@valdyas.org>                                                                                          
-#                                                                                                                                                
-# Redistribution and use is allowed according to the terms of the BSD license.                                                                   
-# For details see the accompanying COPYING-CMAKE-SCRIPTS file. 
-# 
+# Copyright (c) 2009 Boudewijn Rempt <boud@valdyas.org>
+#
+# Redistribution and use is allowed according to the terms of the BSD license.
+# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
+#
 # - try to find glew library and include files
 #  GLEW_INCLUDE_DIR, where to find GL/glew.h, etc.
 #  GLEW_LIBRARIES, the libraries to link against
@@ -24,7 +24,7 @@ if(WIN32)
 
 
   else()
-  
+
     find_path( GLEW_INCLUDE_DIR GL/glew.h
       $ENV{GLEW_ROOT}/include
     )

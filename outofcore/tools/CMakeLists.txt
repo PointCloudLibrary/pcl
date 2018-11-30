@@ -14,10 +14,10 @@ else()
   set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
   include("${VTK_USE_FILE}")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-  
+
   if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.8")
     # pcl_outofcore_viewer uses some functions not present in vtk 5.8
-  
+
     set(srcs outofcore_viewer.cpp
            ../src/visualization/camera.cpp
            ../src/visualization/common.cpp
@@ -26,10 +26,10 @@ else()
            ../src/visualization/outofcore_cloud.cpp
            ../src/visualization/scene.cpp
            ../src/visualization/viewport.cpp)
-  
+
     # pcl_outofcore_viewer
     PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_outofcore_viewer "${SUBSYS_NAME}" ${srcs})
     target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_outofcore pcl_visualization pcl_octree pcl_filters)
-  
+
   endif()
 endif()

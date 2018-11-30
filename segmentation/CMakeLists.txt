@@ -9,7 +9,7 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
-    set(srcs 
+    set(srcs
         src/extract_clusters.cpp
         src/extract_polygonal_prism_data.cpp
         src/sac_segmentation.cpp
@@ -38,7 +38,7 @@ if(build)
        )
     endif()
 
-    set(incs 
+    set(incs
         "include/pcl/${SUBSYS_NAME}/boost.h"
         "include/pcl/${SUBSYS_NAME}/extract_clusters.h"
         "include/pcl/${SUBSYS_NAME}/extract_labeled_clusters.h"
@@ -85,7 +85,7 @@ if(build)
        )
     endif()
 
-    set(impl_incs 
+    set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/extract_clusters.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/extract_labeled_clusters.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/extract_polygonal_prism_data.hpp"

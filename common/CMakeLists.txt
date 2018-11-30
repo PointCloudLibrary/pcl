@@ -15,7 +15,7 @@ if(build)
         include/pcl/range_image/range_image_planar.h
         include/pcl/range_image/range_image_spherical.h
         )
-  
+
     set(range_image_incs_impl
         include/pcl/range_image/impl/range_image.hpp
         include/pcl/range_image/impl/range_image_planar.hpp
@@ -28,7 +28,7 @@ if(build)
         src/range_image_planar.cpp
         )
 
-    set(srcs 
+    set(srcs
         src/point_types.cpp
         src/pcl_base.cpp
         src/io.cpp
@@ -46,7 +46,7 @@ if(build)
         ${range_image_srcs}
         )
 
-    set(incs 
+    set(incs
         include/pcl/correspondence.h
         include/pcl/exceptions.h
         include/pcl/pcl_base.h
@@ -74,7 +74,7 @@ if(build)
         include/pcl/conversions.h
         )
 
-    set(common_incs 
+    set(common_incs
         include/pcl/common/boost.h
         include/pcl/common/angles.h
         include/pcl/common/bivariate_polynomial.h
@@ -139,24 +139,24 @@ if(build)
         include/pcl/common/impl/accumulators.hpp
         )
 
-    set(impl_incs 
+    set(impl_incs
         include/pcl/impl/pcl_base.hpp
         include/pcl/impl/instantiate.hpp
         include/pcl/impl/point_types.hpp
         include/pcl/impl/cloud_iterator.hpp
         )
 
-    set(tools_incs 
+    set(tools_incs
         include/pcl/console/parse.h
         include/pcl/console/print.h
         include/pcl/console/time.h
         )
-        
+
     set(kissfft_incs
         include/pcl/common/fft/_kiss_fft_guts.h
         include/pcl/common/fft/kiss_fft.h
         include/pcl/common/fft/kiss_fftr.h)
-        
+
     set(kissfft_srcs
         src/fft/kiss_fft.c
         src/fft/kiss_fftr.c)

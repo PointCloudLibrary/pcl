@@ -89,13 +89,13 @@ macro(PCL_MAKE_CPACK_INPUT)
         set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} doc")
         set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_DOC_GROUP \"PCL\")\n")
         set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_DOC_DISPLAY_NAME \"Documentation\")\n")
-        set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_DOC_DESCRIPTION \"API documentation and tutorials\")\n")	
+        set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_DOC_DESCRIPTION \"API documentation and tutorials\")\n")
     endif()
     # add PCLConfig
     set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} pclconfig")
     set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_GROUP \"PCL\")\n")
     set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_DISPLAY_NAME \"PCLConfig\")\n")
-    set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_DESCRIPTION \"Helper cmake configuration scripts used by find_package(PCL)\")\n")	
+    set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_DESCRIPTION \"Helper cmake configuration scripts used by find_package(PCL)\")\n")
 
     # add 3rdParty libs
     if(BUILD_all_in_one_installer)
@@ -105,7 +105,7 @@ macro(PCL_MAKE_CPACK_INPUT)
             string(TOUPPER ${dep} DEP)
             set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_${DEP}_GROUP \"ThirdParty\")")
             set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} ${dep}")
-        endforeach(dep)    
+        endforeach(dep)
     endif()
 
     set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENTS_ALL${CPACK_COMPONENTS_ALL})\n")
@@ -142,7 +142,7 @@ macro(PCL_CPACK_ADD_COMP_INFO _var _ss)
     endforeach(_dep)
     set(${_var}
         "${${_var}}set(CPACK_COMPONENT_PCL_${_comp_name}_DEPENDS ${_deps_str})\n")
-    set(${_var} 
+    set(${_var}
         "${${_var}}set(CPACK_COMPONENT_PCL_${_comp_name}_GROUP \"PCL\")\n")
 endmacro()
 

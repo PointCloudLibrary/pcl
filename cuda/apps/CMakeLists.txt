@@ -3,7 +3,7 @@ set(SUBSYS_DESC "Point cloud library CUDA apps")
 set(SUBSYS_DEPS cuda_common cuda_io cuda_features cuda_segmentation cuda_sample_consensus common io visualization geometry)
 
 # ---[ Point Cloud Library - pcl/cuda/apps
-# Find VTK 
+# Find VTK
 if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")

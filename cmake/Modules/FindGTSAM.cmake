@@ -39,7 +39,7 @@ else()
   string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_suffix)
   # build suffix of this project
   get_filename_component(my_build_name "${CMAKE_BINARY_DIR}" NAME)
-  
+
   set(gtsam_build_names "${my_build_name}/gtsam" "build-${build_type_suffix}/gtsam" "build/gtsam")
 endif()
 
@@ -81,7 +81,7 @@ endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GTSAM DEFAULT_MSG
                                   GTSAM_LIBS GTSAM_INCLUDE_DIR)
- 
+
 
 
 

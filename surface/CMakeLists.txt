@@ -24,12 +24,12 @@ if(build)
             src/convex_hull.cpp
             )
     endif()
-    
+
     if(VTK_FOUND AND NOT ANDROID)
         set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
         include("${VTK_USE_FILE}")
-        
-        set(VTK_SMOOTHING_INCLUDES 
+
+        set(VTK_SMOOTHING_INCLUDES
             "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk.h"
             "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_utils.h"
             "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_subdivision.h"
@@ -37,24 +37,24 @@ if(build)
             "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_laplacian.h"
             "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.h")
 
-        set(VTK_SMOOTHING_SOURCE 
+        set(VTK_SMOOTHING_SOURCE
             src/vtk_smoothing/vtk_utils.cpp
             src/vtk_smoothing/vtk_mesh_subdivision.cpp
             src/vtk_smoothing/vtk_mesh_quadric_decimation.cpp
             src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
             src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp)
-        
+
         if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "6.0")
             set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkGraphics)
         else()
             set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommonCore vtkCommonDataModel vtkCommonExecutionModel vtkFiltersModeling)
         endif()
     endif()
-    
+
     set(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS" )
     if(BUILD_surface_on_nurbs)
         include(src/3rdparty/opennurbs/openNURBS.cmake)
-        include(src/on_nurbs/on_nurbs.cmake) 
+        include(src/on_nurbs/on_nurbs.cmake)
     endif()
 
     set(POISSON_INCLUDES
@@ -89,9 +89,9 @@ if(build)
         src/3rdparty/poisson4/geometry.cpp
         src/3rdparty/poisson4/marching_cubes_poisson.cpp
         )
-   
-    set(srcs 
-        src/processing.cpp 
+
+    set(srcs
+        src/processing.cpp
         src/ear_clipping.cpp
         src/gp3.cpp
         src/grid_projection.cpp
@@ -112,7 +112,7 @@ if(build)
         ${ON_NURBS_SOURCES}
         )
 
-    set(incs 
+    set(incs
         "include/pcl/${SUBSYS_NAME}/boost.h"
         "include/pcl/${SUBSYS_NAME}/eigen.h"
         "include/pcl/${SUBSYS_NAME}/ear_clipping.h"
@@ -137,7 +137,7 @@ if(build)
       #  ${ON_NURBS_INCLUDES}
         )
 
-    set(impl_incs 
+    set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/gp3.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/grid_projection.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/marching_cubes.hpp"

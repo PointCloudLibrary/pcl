@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project("PCL_Tutorials")
 
-foreach(subdir 
+foreach(subdir
           cloud_viewer
           cluster_extraction
           concatenate_clouds
@@ -30,7 +30,7 @@ foreach(subdir
           openni_narf_keypoint_extraction
           openni_range_image_visualization
           passthrough
-          pcd_read 
+          pcd_read
           pcd_write
           pcl_visualizer
           planar_segmentation

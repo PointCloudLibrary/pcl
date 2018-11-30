@@ -56,7 +56,7 @@ if(build)
         # A custom interactor is necessary on VTK 5.4 and below
         list(APPEND srcs src/interactor.cpp)
     endif()
-    
+
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
         # PCLPainter2D uses some functions not present in vtk 5.6
         list(APPEND srcs
@@ -72,7 +72,7 @@ if(build)
       )
     endif()
 
-    set(incs 
+    set(incs
         "include/pcl/${SUBSYS_NAME}/eigen.h"
         "include/pcl/${SUBSYS_NAME}/boost.h"
         "include/pcl/${SUBSYS_NAME}/cloud_viewer.h"
@@ -101,7 +101,7 @@ if(build)
             )
     endif()
 
-    set(common_incs 
+    set(common_incs
         "include/pcl/${SUBSYS_NAME}/common/actor_map.h"
         "include/pcl/${SUBSYS_NAME}/common/common.h"
         "include/pcl/${SUBSYS_NAME}/common/io.h"
@@ -110,7 +110,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/common/float_image_utils.h"
         )
 
-    set(impl_incs 
+    set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/histogram_visualizer.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/pcl_visualizer.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/image_viewer.hpp"
@@ -129,7 +129,7 @@ if(build)
     set(common_impl_incs "include/pcl/${SUBSYS_NAME}/common/impl/shapes.hpp"
                          "include/pcl/${SUBSYS_NAME}/common/impl/common.hpp")
 
-    set(vtk_incs 
+    set(vtk_incs
         "include/pcl/${SUBSYS_NAME}/vtk/pcl_image_canvas_source_2d.h"
         "include/pcl/${SUBSYS_NAME}/vtk/pcl_context_item.h"
         "include/pcl/${SUBSYS_NAME}/vtk/vtkRenderWindowInteractorFix.h"
@@ -157,7 +157,7 @@ if(build)
     if(APPLE)
       target_link_libraries("${LIB_NAME}" "-framework Cocoa")
     endif()
-     
+
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
       target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree vtkCommon vtkWidgets vtkHybrid vtkFiltering vtkRendering ${OPENGL_LIBRARIES})
     else()
@@ -196,7 +196,7 @@ if(build)
     if(BUILD_TESTS)
         add_subdirectory(test)
     endif()
-    
+
     if(BUILD_tools)
         add_subdirectory(tools)
     endif()

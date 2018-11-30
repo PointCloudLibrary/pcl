@@ -16,7 +16,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/linemod/line_rgbd.hpp"
         )
 
-    set(incs 
+    set(incs
         "include/pcl/${SUBSYS_NAME}/boost.h"
         "include/pcl/${SUBSYS_NAME}/color_gradient_dot_modality.h"
         "include/pcl/${SUBSYS_NAME}/color_gradient_modality.h"
@@ -50,7 +50,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/ransac_based/bvh.h"
         )
 
-    set(ransac_based_incs 
+    set(ransac_based_incs
         "include/pcl/${SUBSYS_NAME}/ransac_based/auxiliary.h"
         "include/pcl/${SUBSYS_NAME}/ransac_based/hypothesis.h"
         "include/pcl/${SUBSYS_NAME}/ransac_based/model_library.h"
@@ -78,7 +78,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/face_detection/face_detector_data_provider.h"
         "include/pcl/${SUBSYS_NAME}/face_detection/rf_face_detector_trainer.h"
         "include/pcl/${SUBSYS_NAME}/face_detection/rf_face_utils.h"
-        ) 
+        )
 
     set(cg_incs
         "include/pcl/${SUBSYS_NAME}/cg/correspondence_grouping.h"
@@ -86,7 +86,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/cg/geometric_consistency.h"
         )
 
-    set(impl_incs 
+    set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/linemod/line_rgbd.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/ransac_based/simple_octree.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/ransac_based/voxel_structure.hpp"
@@ -130,7 +130,7 @@ if(build)
         src/face_detection/rf_face_detector_trainer.cpp
         src/implicit_shape_model.cpp
         )
-        
+
     if(HAVE_METSLIB)
         set(metslib_incs "")
     else()
@@ -158,7 +158,7 @@ if(build)
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/hv" ${hv_incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/cg" ${cg_incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/face_detection" ${face_detection_incs})
-    
+
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/ransac_based" ${ransac_based_impl_incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/hv" ${hv_impl_incs})

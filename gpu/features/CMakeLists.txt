@@ -13,9 +13,9 @@ if(build)
     FILE(GLOB incs include/pcl/gpu/features/*.hpp)
     FILE(GLOB srcs src/*.cpp src/*.hpp)
     FILE(GLOB cuda src/*.cu)
-    FILE(GLOB dev_incs include/pcl/gpu/features/device/*.h*)  
+    FILE(GLOB dev_incs include/pcl/gpu/features/device/*.h*)
     source_group("Header Files\\device" FILES ${dev_incs})
-    source_group("Source Files\\cuda" FILES ${cuda} )    
+    source_group("Source Files\\cuda" FILES ${cuda} )
     source_group("Source Files" FILES ${srcs} )
 
     FILE(GLOB srcs_utils src/utils/*.hpp)
@@ -33,6 +33,6 @@ if(build)
     # Install include files
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}" ${incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}/device" ${dev_incs})
-    
+
     add_subdirectory(test)
 endif()

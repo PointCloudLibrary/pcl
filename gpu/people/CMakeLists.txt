@@ -13,7 +13,7 @@ PCL_ADD_DOC("${SUBSYS_NAME}")
 if(build)
   REMOVE_VTK_DEFINITIONS()
   #find_package(OpenCV QUIET)
-  
+
   #find NPP
   unset(CUDA_npp_LIBRARY CACHE)
   if(${CUDA_VERSION} VERSION_LESS "5.5")
@@ -44,7 +44,7 @@ if(build)
   FILE(GLOB hdrs_cuda src/cuda/nvidia/*.h*)
 
   source_group("Source files\\cuda" FILES ${srcs_cuda} )
-  source_group("Source files" FILES ${srcs} )    
+  source_group("Source files" FILES ${srcs} )
 
   include_directories(${VTK_INCLUDE_DIRS}
                       "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/src/cuda" "${CMAKE_CURRENT_SOURCE_DIR}/src/cuda/nvidia")

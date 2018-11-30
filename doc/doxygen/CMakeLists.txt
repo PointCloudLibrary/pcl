@@ -49,7 +49,7 @@ if(DOXYGEN_FOUND)
             FILES_MATCHING PATTERN *.chm
             )
   else()
-    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html" 
+    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
             DESTINATION "${DOC_INSTALL_DIR}"
             COMPONENT doc
             PATTERN "*.md5" EXCLUDE

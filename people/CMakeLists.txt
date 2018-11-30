@@ -20,7 +20,7 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
-    set(incs 
+    set(incs
         "include/pcl/${SUBSYS_NAME}/ground_based_people_detection_app.h"
         "include/pcl/${SUBSYS_NAME}/head_based_subcluster.h"
         "include/pcl/${SUBSYS_NAME}/height_map_2d.h"
@@ -47,7 +47,7 @@ if(build)
     # Install include files
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
-    
+
     #SET_TARGET_PROPERTIES("${LIB_NAME}" PROPERTIES LINKER_LANGUAGE CXX)
 
     if(WITH_OPENNI)

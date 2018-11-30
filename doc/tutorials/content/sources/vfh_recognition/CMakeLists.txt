@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-# we need FindFLANN.cmake 
+# we need FindFLANN.cmake
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 project(vfh_cluster_classifier)
@@ -23,7 +23,7 @@ if(HDF5_FOUND)
                                  ${FLANN_LIBRARIES} ${HDF5_hdf5_LIBRARY})
 
   add_executable(nearest_neighbors nearest_neighbors.cpp)
-  target_link_libraries(nearest_neighbors ${PCL_LIBRARIES} 
-                                        ${Boost_LIBRARIES} ${FLANN_LIBRARIES} ${HDF5_hdf5_LIBRARY} 
+  target_link_libraries(nearest_neighbors ${PCL_LIBRARIES}
+                                        ${Boost_LIBRARIES} ${FLANN_LIBRARIES} ${HDF5_hdf5_LIBRARY}
                                         )
 endif()

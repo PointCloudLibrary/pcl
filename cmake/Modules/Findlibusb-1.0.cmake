@@ -11,7 +11,7 @@
 #  Copyright (c) 2006 Andreas Schneider <mail@cynapses.org>
 #
 #  (Changes for libusb) Copyright (c) 2008 Kyle Machulis <kyle@nonpolynomial.com>
-#  
+#
 #  Point Cloud Library (PCL) - www.pointclouds.org
 #  Copyright (c) 2012, Willow Garage, Inc. (use of FindPackageHandleStandardArgs)
 #
@@ -52,7 +52,7 @@ if(LIBUSB_1_LIBRARIES AND LIBUSB_1_INCLUDE_DIRS)
 else()
   find_path(LIBUSB_1_INCLUDE_DIR
             NAMES libusb-1.0/libusb.h
-	    PATHS /usr/include /usr/local/include /opt/local/include /sw/include 
+	    PATHS /usr/include /usr/local/include /opt/local/include /sw/include
 	    PATH_SUFFIXES libusb-1.0)
 
   find_library(LIBUSB_1_LIBRARY

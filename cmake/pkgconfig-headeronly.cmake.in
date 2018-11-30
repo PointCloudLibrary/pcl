@@ -8,5 +8,5 @@ Name: @PKG_NAME@
 Description: @PKG_DESC@
 Version: @PCL_VERSION@
 Requires: @PKG_EXTERNAL_DEPS@
-Libs: 
+Libs:
 Cflags: -I${includedir} @PKG_CFLAGS@

@@ -44,7 +44,7 @@ set(ON_NURBS_SOURCES
 	src/on_nurbs/sequential_fitter.cpp
 	src/on_nurbs/sparse_mat.cpp
 	src/on_nurbs/triangulation.cpp)
-	
+
 set(USE_UMFPACK 0 CACHE BOOL "Use UmfPack for solving sparse systems of equations (e.g. in surface/on_nurbs)" )
 if(USE_UMFPACK)
 	set(ON_NURBS_SOURCES ${ON_NURBS_SOURCES} src/on_nurbs/nurbs_solve_umfpack.cpp)

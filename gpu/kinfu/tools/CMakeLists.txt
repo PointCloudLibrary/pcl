@@ -11,7 +11,7 @@ if(WITH_OPENNI)
 	endif()
 
 	FILE(GLOB hdrs "*.h*")
-	include_directories(${VTK_INCLUDE_DIRS} ${OPENNI_INCLUDE_DIRS})       
+	include_directories(${VTK_INCLUDE_DIRS} ${OPENNI_INCLUDE_DIRS})
 
 	## KINECT FUSION
 	set(the_target pcl_kinfu_app)
@@ -21,7 +21,7 @@ if(WITH_OPENNI)
 
 	PCL_ADD_EXECUTABLE_OPT_BUNDLE("${the_target}" "${SUBSYS_NAME}" ${srcs} ${hdrs})
 	target_link_libraries("${the_target}" pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)
-  
+
 	if(OpenCV_FOUND)
 		target_link_libraries("${the_target}" ${OpenCV_LIBS})
 	endif()

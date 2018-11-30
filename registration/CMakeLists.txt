@@ -9,7 +9,7 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
-    set(incs 
+    set(incs
         "include/pcl/${SUBSYS_NAME}/eigen.h"
         "include/pcl/${SUBSYS_NAME}/boost.h"
         "include/pcl/${SUBSYS_NAME}/boost_graph.h"
@@ -77,7 +77,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/transformation_estimation_3point.h"
         )
 
-    set(impl_incs 
+    set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/default_convergence_criteria.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_normal_shooting.hpp"

@@ -9,7 +9,7 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
-    set(incs 
+    set(incs
         "include/pcl/${SUBSYS_NAME}/branch_estimator.h"
         "include/pcl/${SUBSYS_NAME}/feature_handler.h"
         "include/pcl/${SUBSYS_NAME}/multi_channel_2d_comparison_feature.h"
@@ -73,7 +73,7 @@ if(build)
 		#src/permutohedralORI.cpp
 		#src/filter.cpp
 		#src/util.cpp
-		#src/densecrfORI.cpp		
+		#src/densecrfORI.cpp
 		src/svm_wrapper.cpp
 		src/svm.cpp
 		src/kmeans.cpp

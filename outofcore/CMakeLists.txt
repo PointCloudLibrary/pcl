@@ -55,7 +55,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/visualization/viewport.h"
         )
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
-    
+
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
     PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${impl_incs} ${visualization_incs})
     #PCL_ADD_SSE_FLAGS("${LIB_NAME}")
@@ -70,5 +70,5 @@ if(build)
     if(BUILD_tools)
         add_subdirectory(tools)
     endif()
-    
+
 endif()

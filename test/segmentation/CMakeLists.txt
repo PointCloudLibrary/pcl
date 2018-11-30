@@ -24,6 +24,6 @@ if(build)
 
   PCL_ADD_TEST(test_non_linear test_non_linear
              FILES test_non_linear.cpp
-             LINK_WITH pcl_gtest pcl_common pcl_io pcl_sample_consensus pcl_segmentation pcl_kdtree pcl_search 
+             LINK_WITH pcl_gtest pcl_common pcl_io pcl_sample_consensus pcl_segmentation pcl_kdtree pcl_search
              ARGUMENTS "${PCL_SOURCE_DIR}/test/noisy_slice_displaced.pcd")
 endif()

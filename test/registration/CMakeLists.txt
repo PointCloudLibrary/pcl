@@ -10,7 +10,7 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS
 
 if(build)
   PCL_ADD_TEST(registration_warp_api test_warps
-             FILES test_warps.cpp 
+             FILES test_warps.cpp
              LINK_WITH pcl_gtest pcl_registration)
 
   PCL_ADD_TEST(correspondence_estimation test_correspondence_estimation
