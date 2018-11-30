@@ -43,8 +43,8 @@ if(build)
   FILE(GLOB hdrs include/pcl/gpu/people/*.h*)
   FILE(GLOB hdrs_cuda src/cuda/nvidia/*.h*)
 
-  source_group("Source files\\cuda" FILES ${srcs_cuda} )
-  source_group("Source files" FILES ${srcs} )
+  source_group("Source files\\cuda" FILES ${srcs_cuda})
+  source_group("Source files" FILES ${srcs})
 
   include_directories(${VTK_INCLUDE_DIRS}
                       "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/src/cuda" "${CMAKE_CURRENT_SOURCE_DIR}/src/cuda/nvidia")

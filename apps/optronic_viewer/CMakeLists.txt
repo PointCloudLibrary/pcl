@@ -74,7 +74,7 @@ if(build)
            src/filter_window.cpp
            src/main_window.cpp)
 
-  set(impl_incs )
+  set(impl_incs)
 
   # Qt stuff
 #  QT4_WRAP_UI(ui_srcs ${uis})

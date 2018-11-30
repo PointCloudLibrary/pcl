@@ -51,7 +51,7 @@ if(build)
         endif()
     endif()
 
-    set(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS" )
+    set(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS")
     if(BUILD_surface_on_nurbs)
         include(src/3rdparty/opennurbs/openNURBS.cmake)
         include(src/on_nurbs/on_nurbs.cmake)

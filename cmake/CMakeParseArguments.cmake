@@ -35,7 +35,7 @@
 #     set(options OPTIONAL FAST)
 #     set(oneValueArgs DESTINATION RENAME)
 #     set(multiValueArgs TARGETS CONFIGURATIONS)
-#     cmake_parse_arguments(MY_INSTALL "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+#     cmake_parse_arguments(MY_INSTALL "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 #     ...
 #
 # Assume my_install() has been called like this:

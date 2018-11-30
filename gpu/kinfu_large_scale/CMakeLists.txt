@@ -28,8 +28,8 @@ if(build)
 	#FILE(GLOB tsdf src/cuda/tsdf_volume.cu)
 	#FILE(GLOB est src/cuda/estimate_tranform.cu)
 
-	source_group("Source Files\\cuda" FILES ${cuda} )
-	source_group("Source Files" FILES ${srcs} )
+	source_group("Source Files\\cuda" FILES ${cuda})
+	source_group("Source Files" FILES ${srcs})
 
 	set(LIB_NAME "pcl_${SUBSYS_NAME}")
 	include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src" ${CUDA_INCLUDE_DIRS})

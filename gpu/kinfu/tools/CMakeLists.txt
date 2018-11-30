@@ -17,7 +17,7 @@ if(WITH_OPENNI)
 	set(the_target pcl_kinfu_app)
 	set(srcs kinfu_app.cpp capture.cpp evaluation.cpp)
 
-	source_group("Source Files" FILES ${srcs} )
+	source_group("Source Files" FILES ${srcs})
 
 	PCL_ADD_EXECUTABLE_OPT_BUNDLE("${the_target}" "${SUBSYS_NAME}" ${srcs} ${hdrs})
 	target_link_libraries("${the_target}" pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)
@@ -43,8 +43,8 @@ if(WITH_OPENNI)
 	#		set(the_target kinfu_app_sim)
 	#		set(srcs kinfu_app_sim.cpp capture.cpp evaluation.cpp)
 	#
-	#		source_group("Source Files" FILES ${srcs} )
-   	#			find_package( OpenCV REQUIRED )
+	#		source_group("Source Files" FILES ${srcs})
+   	#			find_package(OpenCV REQUIRED)
 	#		PCL_ADD_EXECUTABLE("${the_target}" "${SUBSYS_NAME}" ${srcs} ${hdrs})
 	#		target_link_libraries("${the_target}" pcl_common pcl_io
   	#			pcl_visualization pcl_kdtree  pcl_simulation  ${OpenCV_LIBS}

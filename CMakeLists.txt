@@ -62,7 +62,7 @@ mark_as_advanced(
     CMAKE_CXX_FLAGS_MAINTAINER
     CMAKE_C_FLAGS_MAINTAINER
     CMAKE_EXE_LINKER_FLAGS_MAINTAINER
-    CMAKE_SHARED_LINKER_FLAGS_MAINTAINER )
+    CMAKE_SHARED_LINKER_FLAGS_MAINTAINER)
 # Update the documentation string of CMAKE_BUILD_TYPE for GUIs
 set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Maintainer."

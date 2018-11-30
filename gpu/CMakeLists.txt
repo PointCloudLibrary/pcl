@@ -1,6 +1,6 @@
 set(SUBSYS_NAME gpu)
 set(SUBSYS_DESC "Point cloud GPU libraries")
-set(SUBSYS_DEPS )
+set(SUBSYS_DEPS)
 
 OPTION(BUILD_GPU "Build the GPU-related subsystems" ${DEFAULT})
 

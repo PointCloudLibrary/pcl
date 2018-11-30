@@ -14,9 +14,9 @@ if(WIN32)
 
   if(CYGWIN)
 
-    find_path( GLEW_INCLUDE_DIR GL/glew.h)
+    find_path(GLEW_INCLUDE_DIR GL/glew.h)
 
-    find_library( GLEW_GLEW_LIBRARY glew32
+    find_library(GLEW_GLEW_LIBRARY glew32
       ${OPENGL_LIBRARY_DIR}
       /usr/lib/w32api
       /usr/X11R6/lib
@@ -25,11 +25,11 @@ if(WIN32)
 
   else()
 
-    find_path( GLEW_INCLUDE_DIR GL/glew.h
+    find_path(GLEW_INCLUDE_DIR GL/glew.h
       $ENV{GLEW_ROOT}/include
     )
 
-    find_library( GLEW_GLEW_LIBRARY
+    find_library(GLEW_GLEW_LIBRARY
       NAMES glew glew32 glew32s
       PATHS
       $ENV{GLEW_ROOT}/lib
@@ -43,7 +43,7 @@ else()
   if(APPLE)
 # These values for Apple could probably do with improvement.
   if(${CMAKE_SYSTEM_VERSION} VERSION_LESS "13.0.0")
-    find_path( GLEW_INCLUDE_DIR glew.h
+    find_path(GLEW_INCLUDE_DIR glew.h
       /System/Library/Frameworks/GLEW.framework/Versions/A/Headers
       ${OPENGL_LIBRARY_DIR}
       )
@@ -57,7 +57,7 @@ else()
     set(GLEW_cocoa_LIBRARY "-framework Cocoa" CACHE STRING "Cocoa framework for OSX")
   else()
 
-    find_path( GLEW_INCLUDE_DIR GL/glew.h
+    find_path(GLEW_INCLUDE_DIR GL/glew.h
       /usr/include/GL
       /usr/openwin/share/include
       /usr/openwin/include
@@ -67,7 +67,7 @@ else()
       /opt/graphics/OpenGL/contrib/libglew
     )
 
-    find_library( GLEW_GLEW_LIBRARY GLEW
+    find_library(GLEW_GLEW_LIBRARY GLEW
       /usr/openwin/lib
       /usr/X11R6/lib
     )
@@ -76,16 +76,16 @@ else()
 
 endif()
 
-set( GLEW_FOUND FALSE )
+set(GLEW_FOUND FALSE)
 if(GLEW_INCLUDE_DIR)
   if(GLEW_GLEW_LIBRARY)
     # Is -lXi and -lXmu required on all platforms that have it?
     # If not, we need some way to figure out what platform we are on.
-    set( GLEW_LIBRARIES
+    set(GLEW_LIBRARIES
       ${GLEW_GLEW_LIBRARY}
       ${GLEW_cocoa_LIBRARY}
     )
-    set( GLEW_FOUND TRUE )
+    set(GLEW_FOUND TRUE)
 
 #The following deprecated settings are for backwards compatibility with CMake1.4
     set(GLEW_LIBRARY ${GLEW_LIBRARIES})

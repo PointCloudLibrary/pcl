@@ -23,8 +23,8 @@ if(GLEW_FOUND)
       pcl_simulation   pcl_common  pcl_io pcl_visualization
       ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
 
-    set(srcs simulation_io.cpp )
-    set(incs simulation_io.hpp )
+    set(srcs simulation_io.cpp)
+    set(incs simulation_io.hpp)
     set(LIB_NAME pcl_simulation_io)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME}
       ${srcs} ${incs} ${compression_incs} ${impl_incs}

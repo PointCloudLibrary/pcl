@@ -1,6 +1,6 @@
 set(SUBSYS_NAME cuda)
 set(SUBSYS_DESC "Point cloud CUDA libraries")
-set(SUBSYS_DEPS )
+set(SUBSYS_DEPS)
 
 OPTION(BUILD_CUDA "Build the CUDA-related subsystems" ${DEFAULT})
 

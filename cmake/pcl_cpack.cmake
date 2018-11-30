@@ -54,7 +54,7 @@ if(WIN32)
   # force CPACK_PACKAGE_INSTALL_REGISTRY_KEY because of a known limitation in cmake/cpack to be fixed in next releases
   # http://public.kitware.com/Bug/view.php?id=9094
   # This is to allow a 32bit and a 64bit of PCL to get installed on one system
-  set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${PROJECT_NAME} ${PCL_VERSION_PRETTY} ${win_system_name}" )
+  set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${PROJECT_NAME} ${PCL_VERSION_PRETTY} ${win_system_name}")
 endif()
 
 # dpkg
