@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(normal_distributions_transform)
 
-FIND_PACKAGE(PCL 1.5 REQUIRED)
+find_package(PCL 1.5 REQUIRED)
 
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})

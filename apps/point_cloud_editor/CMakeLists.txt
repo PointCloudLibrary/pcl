@@ -1,16 +1,16 @@
-SET(SUBSUBSYS_NAME point_cloud_editor)
-SET(SUBSUBSYS_DESC "Point Cloud Editor - Simple editor for 3D point clouds")
-SET(SUBSUBSYS_DEPS common filters io apps)
+set(SUBSUBSYS_NAME point_cloud_editor)
+set(SUBSUBSYS_DESC "Point Cloud Editor - Simple editor for 3D point clouds")
+set(SUBSUBSYS_DEPS common filters io apps)
 
-SET(MOC_INCS "include/pcl/apps/${SUBSUBSYS_NAME}/cloudEditorWidget.h"
+set(MOC_INCS "include/pcl/apps/${SUBSUBSYS_NAME}/cloudEditorWidget.h"
              "include/pcl/apps/${SUBSUBSYS_NAME}/mainWindow.h"
              "include/pcl/apps/${SUBSUBSYS_NAME}/denoiseParameterForm.h"
              "include/pcl/apps/${SUBSUBSYS_NAME}/statisticsDialog.h"
   )
 
-SET(RSRC resources/pceditor_resources.qrc)
+set(RSRC resources/pceditor_resources.qrc)
 
-SET(INCS ${MOC_INCS}
+set(INCS ${MOC_INCS}
          "include/pcl/apps/${SUBSUBSYS_NAME}/cloud.h"
          "include/pcl/apps/${SUBSUBSYS_NAME}/cloudTransformTool.h"
          "include/pcl/apps/${SUBSUBSYS_NAME}/command.h"
@@ -33,7 +33,7 @@ SET(INCS ${MOC_INCS}
          "include/pcl/apps/${SUBSUBSYS_NAME}/transformCommand.h"
   )
 
-SET(SRCS src/main.cpp
+set(SRCS src/main.cpp
          src/mainWindow.cpp
          src/commandQueue.cpp
          src/selection.cpp
@@ -57,20 +57,20 @@ SET(SRCS src/main.cpp
   )
 
 if(NOT QT4_FOUND)
-  SET(DEFAULT AUTO_OFF)
-  SET(REASON "Qt4 was not found.")
+  set(DEFAULT AUTO_OFF)
+  set(REASON "Qt4 was not found.")
 else()
-  SET(DEFAULT TRUE)
-  SET(REASON)
+  set(DEFAULT TRUE)
+  set(REASON)
 endif()
 
 # Find OpenGL
 if(NOT OPENGL_FOUND)
-  SET(DEFAULT AUTO_OFF)
-  SET(REASON "OpenGL was not found.")
+  set(DEFAULT AUTO_OFF)
+  set(REASON "OpenGL was not found.")
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  SET(DEFAULT TRUE)
-  SET(REASON)
+  set(DEFAULT TRUE)
+  set(REASON)
 endif()
 
 
@@ -84,8 +84,8 @@ PCL_SUBSUBSYS_DEPEND(BUILD "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${SUBSYS_DEPS})
 PCL_ADD_DOC(${SUBSUBSYS_NAME})
 
 if(BUILD)
-  INCLUDE("${QT_USE_FILE}")
-  SET(QT_USE_QTOPENGL TRUE)
+  include("${QT_USE_FILE}")
+  set(QT_USE_QTOPENGL TRUE)
   #QT4_WRAP_CPP(MOC_SRCS ${MOC_INCS})
   QT4_WRAP_CPP(MOC_SRCS ${MOC_INCS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
   QT4_ADD_RESOURCES(RESOURCES_SRCS ${RSRC})
@@ -95,7 +95,7 @@ if(BUILD)
                       "${QT_QTOPENGL_INCLUDE_DIR}"
 		      )
 
-  SET(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
+  set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
   PCL_ADD_EXECUTABLE("${EXE_NAME}"
                      "${SUBSUBSYS_NAME}"
 		     ${SRCS}

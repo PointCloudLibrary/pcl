@@ -52,7 +52,7 @@ if(build)
   include_directories(${OpenCV_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS})
 
   if(UNIX OR APPLE)
-    set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "-Xcompiler;-fPIC;")
+    set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "-Xcompiler;-fPIC;")
   endif()
   if(NOT UNIX OR APPLE)
     add_definitions(-DPCLAPI_EXPORTS)

@@ -23,7 +23,7 @@ if(build)
         list(APPEND PCL_EXAMPLES_SUBDIRS ${dir})
     endforeach(subdir)
     # Display the found subdirectories
-    message (STATUS "PCL_EXAMPLES_SUBDIRS ${PCL_EXAMPLES_SUBDIRS}")
+    message(STATUS "PCL_EXAMPLES_SUBDIRS ${PCL_EXAMPLES_SUBDIRS}")
     # Add the subdirectories
     foreach(subdir ${PCL_EXAMPLES_SUBDIRS})
     add_subdirectory(${subdir})

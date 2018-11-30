@@ -3,9 +3,9 @@
 #  string(REGEX REPLACE "-Wconversion(.+)" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 #endif()
 
-SET(SUBSUBSYS_NAME cloud_composer)
-SET(SUBSUBSYS_DESC "Cloud Composer - Application for Manipulating Point Clouds")
-SET(SUBSUBSYS_DEPS common io visualization filters apps)
+set(SUBSUBSYS_NAME cloud_composer)
+set(SUBSUBSYS_DESC "Cloud Composer - Application for Manipulating Point Clouds")
+set(SUBSUBSYS_DEPS common io visualization filters apps)
 
 # Find VTK 
 if(NOT VTK_FOUND)
@@ -99,12 +99,12 @@ if(build)
                   src/items/fpfh_item.cpp)
                   
     #Sources and headers for point selectors
-    set (selector_incs "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/point_selectors/interactor_style_switch.h"
+    set(selector_incs "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/point_selectors/interactor_style_switch.h"
                        "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/point_selectors/rectangular_frustum_selector.h"
                        "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/point_selectors/selected_trackball_interactor_style.h"
                        "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/point_selectors/click_trackball_interactor_style.h")
                        
-    set (selector_srcs src/point_selectors/interactor_style_switch.cpp
+    set(selector_srcs src/point_selectors/interactor_style_switch.cpp
                        src/point_selectors/selection_event.cpp
                        src/point_selectors/rectangular_frustum_selector.cpp
                        src/point_selectors/selected_trackball_interactor_style.cpp
@@ -131,7 +131,7 @@ if(build)
 
     #TOOL buildING SCRIPTS
     #Create subdirectory for plugin libs
-    set (CLOUD_COMPOSER_PLUGIN_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/cloud_composer_plugins")
+    set(CLOUD_COMPOSER_PLUGIN_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/cloud_composer_plugins")
     make_directory("${CLOUD_COMPOSER_PLUGIN_DIR}")
 
     set(INTERFACE_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tool_interface/abstract_tool.h")
@@ -148,51 +148,51 @@ if(build)
     include(ComposerTool.cmake REQUIRED)
     
     #FPFH Tool
-    set (FPFH_DEPS pcl_features pcl_kdtree pcl_filters)
-    set (FPFH_SOURCES tools/fpfh_estimation.cpp)
-    set (FPFH_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/fpfh_estimation.h")
+    set(FPFH_DEPS pcl_features pcl_kdtree pcl_filters)
+    set(FPFH_SOURCES tools/fpfh_estimation.cpp)
+    set(FPFH_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/fpfh_estimation.h")
     define_composer_tool (fpfh_estimation "${FPFH_SOURCES}" "${FPFH_HEADERS}" "${FPFH_DEPS}")
     
     #Normals Tool
-    set (NORMALS_DEPS pcl_features pcl_kdtree)
-    set (NORMALS_SOURCES tools/normal_estimation.cpp)
-    set (NORMALS_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/normal_estimation.h")
+    set(NORMALS_DEPS pcl_features pcl_kdtree)
+    set(NORMALS_SOURCES tools/normal_estimation.cpp)
+    set(NORMALS_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/normal_estimation.h")
     define_composer_tool (normal_estimation "${NORMALS_SOURCES}" "${NORMALS_HEADERS}" "${NORMALS_DEPS}")
 
     #Euclidean Clustering Tool
-    set (EC_DEPS pcl_segmentation pcl_kdtree)
-    set (EC_SOURCES tools/euclidean_clustering.cpp)
-    set (EC_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/euclidean_clustering.h")
+    set(EC_DEPS pcl_segmentation pcl_kdtree)
+    set(EC_SOURCES tools/euclidean_clustering.cpp)
+    set(EC_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/euclidean_clustering.h")
     define_composer_tool (euclidean_clustering "${EC_SOURCES}" "${EC_HEADERS}" "${EC_DEPS}")
     
     #Statistical Outlier Removal Tool
-    set (SOR_DEPS pcl_filters)
-    set (SOR_SOURCES tools/statistical_outlier_removal.cpp)
-    set (SOR_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/statistical_outlier_removal.h")
+    set(SOR_DEPS pcl_filters)
+    set(SOR_SOURCES tools/statistical_outlier_removal.cpp)
+    set(SOR_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/statistical_outlier_removal.h")
     define_composer_tool (statistical_outlier_removal "${SOR_SOURCES}" "${SOR_HEADERS}" "${SOR_DEPS}")
     
     #Vox Grid Downsample Tool
-    set (VOXDS_DEPS pcl_filters)
-    set (VOXDS_SOURCES tools/voxel_grid_downsample.cpp)
-    set (VOXDS_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/voxel_grid_downsample.h")
+    set(VOXDS_DEPS pcl_filters)
+    set(VOXDS_SOURCES tools/voxel_grid_downsample.cpp)
+    set(VOXDS_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/voxel_grid_downsample.h")
     define_composer_tool (voxel_grid_downsample "${VOXDS_SOURCES}" "${VOXDS_HEADERS}" "${VOXDS_DEPS}")
     
      #Organized Segmentation
-    set (OSEG_DEPS pcl_segmentation pcl_kdtree)
-    set (OSEG_SOURCES tools/organized_segmentation.cpp "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/impl/organized_segmentation.hpp")
-    set (OSEG_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/organized_segmentation.h")
+    set(OSEG_DEPS pcl_segmentation pcl_kdtree)
+    set(OSEG_SOURCES tools/organized_segmentation.cpp "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/impl/organized_segmentation.hpp")
+    set(OSEG_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/organized_segmentation.h")
     define_composer_tool (organized_segmentation "${OSEG_SOURCES}" "${OSEG_HEADERS}" "${OSEG_DEPS}")
     
         #Sanitize Cloud Tool
-    set (SAN_DEPS pcl_filters)
-    set (SAN_SOURCES tools/sanitize_cloud.cpp)
-    set (SAN_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/sanitize_cloud.h")
+    set(SAN_DEPS pcl_filters)
+    set(SAN_SOURCES tools/sanitize_cloud.cpp)
+    set(SAN_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/sanitize_cloud.h")
     define_composer_tool (sanitize_cloud "${SAN_SOURCES}" "${SAN_HEADERS}" "${SAN_DEPS}")
     
      #Supervoxels
-    set (VSP_DEPS pcl_octree pcl_segmentation)
-    set (VSP_SOURCES tools/supervoxels.cpp "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/impl/supervoxels.hpp")
-    set (VSP_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/supervoxels.h")
+    set(VSP_DEPS pcl_octree pcl_segmentation)
+    set(VSP_SOURCES tools/supervoxels.cpp "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/impl/supervoxels.hpp")
+    set(VSP_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/supervoxels.h")
     define_composer_tool (supervoxels "${VSP_SOURCES}" "${VSP_HEADERS}" "${VSP_DEPS}")
 
 endif()

@@ -9,7 +9,7 @@ if(BUILD_visualization)
 	else()
 	    set(DEFAULT TRUE)
 	    set(REASON)
-	    include (${VTK_USE_FILE})
+	    include(${VTK_USE_FILE})
 	endif()
 	
   PCL_ADD_EXAMPLE(pcl_example_sift_keypoint_estimation FILES example_sift_keypoint_estimation.cpp

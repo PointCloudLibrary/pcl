@@ -9,7 +9,7 @@ if(BUILD_surface_on_nurbs)
 	  else()
 	      set(DEFAULT TRUE)
 	      set(REASON)
-	      include (${VTK_USE_FILE})
+	      include(${VTK_USE_FILE})
 	  endif()
 	
     PCL_ADD_EXAMPLE(pcl_test_nurbs_fitting_surface

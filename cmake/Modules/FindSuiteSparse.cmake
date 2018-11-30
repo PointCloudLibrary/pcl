@@ -1,5 +1,5 @@
 
-FIND_PATH(CHOLMOD_INCLUDE_DIR NAMES cholmod.h amd.h camd.h
+find_path(CHOLMOD_INCLUDE_DIR NAMES cholmod.h amd.h camd.h
     PATHS
     /usr/include/suitesparse
     /usr/include/ufsparse
@@ -8,7 +8,7 @@ FIND_PATH(CHOLMOD_INCLUDE_DIR NAMES cholmod.h amd.h camd.h
     /sw/include/ufsparse
   )
 
-FIND_LIBRARY(CHOLMOD_LIBRARY NAMES cholmod
+find_library(CHOLMOD_LIBRARY NAMES cholmod
      PATHS
      /usr/lib
      /usr/local/lib
@@ -16,7 +16,7 @@ FIND_LIBRARY(CHOLMOD_LIBRARY NAMES cholmod
      /sw/lib
    )
 
-FIND_LIBRARY(AMD_LIBRARY NAMES SHARED NAMES amd
+find_library(AMD_LIBRARY NAMES SHARED NAMES amd
   PATHS
   /usr/lib
   /usr/local/lib
@@ -24,7 +24,7 @@ FIND_LIBRARY(AMD_LIBRARY NAMES SHARED NAMES amd
   /sw/lib
   )
 
-FIND_LIBRARY(CAMD_LIBRARY NAMES camd
+find_library(CAMD_LIBRARY NAMES camd
   PATHS
   /usr/lib
   /usr/local/lib
@@ -36,8 +36,8 @@ mark_as_advanced(FORCE CHOLMOD_INCLUDE_DIR CHOLMOD_LIBRARY AMD_LIBRARY CAMD_LIBR
 
 # Different platforms seemingly require linking against different sets of libraries
 if(CYGWIN)
-  FIND_PACKAGE(PkgConfig)
-  FIND_LIBRARY(COLAMD_LIBRARY NAMES colamd
+  find_package(PkgConfig)
+  find_library(COLAMD_LIBRARY NAMES colamd
     PATHS
     /usr/lib
     /usr/local/lib
@@ -48,13 +48,13 @@ if(CYGWIN)
 
   mark_as_advanced(FORCE COLAMD_LIBRARY CCOLAMD_LIBRARY LAPACK_LIBRARIES)
 
-  SET(CHOLMOD_LIBRARIES ${CHOLMOD_LIBRARY} ${AMD_LIBRARY} ${CAMD_LIBRARY} ${COLAMD_LIBRARY} ${CCOLAMD_LIBRARY} ${LAPACK_LIBRARIES})
+  set(CHOLMOD_LIBRARIES ${CHOLMOD_LIBRARY} ${AMD_LIBRARY} ${CAMD_LIBRARY} ${COLAMD_LIBRARY} ${CCOLAMD_LIBRARY} ${LAPACK_LIBRARIES})
 
 # MacPorts build of the SparseSuite requires linking against extra libraries
 
 elseif(APPLE)
 
-  FIND_LIBRARY(COLAMD_LIBRARY NAMES colamd
+  find_library(COLAMD_LIBRARY NAMES colamd
     PATHS
     /usr/lib
     /usr/local/lib
@@ -62,7 +62,7 @@ elseif(APPLE)
     /sw/lib
     )
 
-  FIND_LIBRARY(CCOLAMD_LIBRARY NAMES ccolamd
+  find_library(CCOLAMD_LIBRARY NAMES ccolamd
     PATHS
     /usr/lib
     /usr/local/lib
@@ -70,7 +70,7 @@ elseif(APPLE)
     /sw/lib
     )
 
-  FIND_LIBRARY(METIS_LIBRARY NAMES metis
+  find_library(METIS_LIBRARY NAMES metis
     PATHS
     /usr/lib
     /usr/local/lib
@@ -80,19 +80,19 @@ elseif(APPLE)
 
   mark_as_advanced(FORCE COLAMD_LIBRARY CCOLAMD_LIBRARY METIS_LIBRARY)
 
-  SET(CHOLMOD_LIBRARIES ${CHOLMOD_LIBRARY} ${AMD_LIBRARY} ${CAMD_LIBRARY} ${COLAMD_LIBRARY} ${CCOLAMD_LIBRARY} ${METIS_LIBRARY} "-framework Accelerate")
+  set(CHOLMOD_LIBRARIES ${CHOLMOD_LIBRARY} ${AMD_LIBRARY} ${CAMD_LIBRARY} ${COLAMD_LIBRARY} ${CCOLAMD_LIBRARY} ${METIS_LIBRARY} "-framework Accelerate")
 else()
-  SET(CHOLMOD_LIBRARIES ${CHOLMOD_LIBRARY} ${AMD_LIBRARY})
+  set(CHOLMOD_LIBRARIES ${CHOLMOD_LIBRARY} ${AMD_LIBRARY})
 endif()
 
 if(CHOLMOD_INCLUDE_DIR AND CHOLMOD_LIBRARIES)
-  SET(CHOLMOD_FOUND TRUE)
+  set(CHOLMOD_FOUND TRUE)
 else()
-  SET(CHOLMOD_FOUND FALSE)
+  set(CHOLMOD_FOUND FALSE)
 endif()
 
 # Look for csparse; note the difference in the directory specifications!
-FIND_PATH(CSPARSE_INCLUDE_DIR NAMES cs.h
+find_path(CSPARSE_INCLUDE_DIR NAMES cs.h
   PATHS
   /usr/include/suitesparse
   /usr/include
@@ -105,7 +105,7 @@ FIND_PATH(CSPARSE_INCLUDE_DIR NAMES cs.h
   /sw/include/ufsparse
   )
 
-FIND_LIBRARY(CSPARSE_LIBRARY NAMES cxsparse
+find_library(CSPARSE_LIBRARY NAMES cxsparse
   PATHS
   /usr/lib
   /usr/local/lib
@@ -116,7 +116,7 @@ FIND_LIBRARY(CSPARSE_LIBRARY NAMES cxsparse
 mark_as_advanced(FORCE CSPARSE_INCLUDE_DIR CSPARSE_LIBRARY)
 
 if(CSPARSE_INCLUDE_DIR AND CSPARSE_LIBRARY)
-  SET(CSPARSE_FOUND TRUE)
+  set(CSPARSE_FOUND TRUE)
 else()
-  SET(CSPARSE_FOUND FALSE)
+  set(CSPARSE_FOUND FALSE)
 endif()

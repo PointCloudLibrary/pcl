@@ -44,27 +44,27 @@ if(WIN32 AND NOT MINGW)
 endif()
 
 # ---[ special maintainer mode
-SET(CMAKE_CXX_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Weffc++ -Wno-long-long" CACHE STRING
+set(CMAKE_CXX_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Weffc++ -Wno-long-long" CACHE STRING
     "Flags used by the C++ compiler during maintainer builds."
     FORCE)
-SET(CMAKE_C_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Weffc++ -Wno-long-long" CACHE STRING
+set(CMAKE_C_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Weffc++ -Wno-long-long" CACHE STRING
     "Flags used by the C compiler during maintainer builds."
     FORCE)
-SET(CMAKE_EXE_LINKER_FLAGS_MAINTAINER
+set(CMAKE_EXE_LINKER_FLAGS_MAINTAINER
     "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
     "Flags used for linking binaries during maintainer builds."
     FORCE)
-SET(CMAKE_SHARED_LINKER_FLAGS_MAINTAINER
+set(CMAKE_SHARED_LINKER_FLAGS_MAINTAINER
     "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
     "Flags used by the shared libraries linker during maintainer builds."
     FORCE)
-MARK_AS_ADVANCED(
+mark_as_advanced(
     CMAKE_CXX_FLAGS_MAINTAINER
     CMAKE_C_FLAGS_MAINTAINER
     CMAKE_EXE_LINKER_FLAGS_MAINTAINER
     CMAKE_SHARED_LINKER_FLAGS_MAINTAINER )
 # Update the documentation string of CMAKE_BUILD_TYPE for GUIs
-SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
+set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Maintainer."
     FORCE)
 
@@ -106,34 +106,34 @@ endif()
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    SET(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS_STR}")
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS_STR}")
 
     # Enable -Wabi for GCC > 4.3, and -Wno-deprecated for GCC < 4.3
     # to disable a lot of warnings which are not fixable
     execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
     if(GCC_VERSION VERSION_GREATER 4.3)
       message(STATUS "-- GCC > 4.3 found, enabling -Wabi")
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi")
     else()
       message(STATUS "-- GCC < 4.3 found, enabling -Wno-deprecated")
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
     endif()
   endif()
 
   if(NOT ANDROID)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
   endif()
 
   if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed")
+    set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed")
   endif()
 
   if(WIN32)
     if(PCL_SHARED_LIBS)
-      SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--export-all-symbols -Wl,--enable-auto-import")
+      set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--export-all-symbols -Wl,--enable-auto-import")
       if(MINGW)
         add_definitions("-DBOOST_THREAD_USE_LIB")
-        SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-multiple-definition")
+        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-multiple-definition")
       endif()
     else()
       add_definitions("-DBOOST_LIB_DIAGNOSTIC -DBOOST_THREAD_USE_LIB")
@@ -145,13 +145,13 @@ if(CMAKE_COMPILER_IS_MSVC)
   add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES /bigobj ${SSE_DEFINITIONS}")
 
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS_STR}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS_STR}")
 
     # Add extra code generation/link optimizations
     if(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
-      SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
-      SET(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG /OPT:REF")
-      SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
+      set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
+      set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG /OPT:REF")
+      set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
     endif()
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
 
@@ -159,38 +159,38 @@ if(CMAKE_COMPILER_IS_MSVC)
       include(ProcessorCount)
       ProcessorCount(N)
       if(NOT N EQUAL 0)
-        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP${N}")
-        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP${N}")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP${N}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP${N}")
       endif()
     endif()
   endif()
 
   if(CMAKE_GENERATOR STREQUAL "Ninja")
-    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /FS")
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FS")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /FS")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FS")
   endif()
 endif()
 
 if(CMAKE_COMPILER_IS_PATHSCALE)
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    SET(CMAKE_CXX_FLAGS "-Wno-uninitialized -zerouv -pthread -mp")
+    set(CMAKE_CXX_FLAGS "-Wno-uninitialized -zerouv -pthread -mp")
   endif()
   if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "")
-    SET(CMAKE_SHARED_LINKER_FLAGS "-mp")
+    set(CMAKE_SHARED_LINKER_FLAGS "-mp")
   endif()
 endif()
 
 if(CMAKE_COMPILER_IS_CLANG)
   if("${CMAKE_C_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    SET(CMAKE_C_FLAGS "-Qunused-arguments")
+    set(CMAKE_C_FLAGS "-Qunused-arguments")
   endif()
   if("${CMAKE_CXX_FLAGS}" STREQUAL "")
-    SET(CMAKE_CXX_FLAGS "-ftemplate-depth=1024 -Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS_STR}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
+    set(CMAKE_CXX_FLAGS "-ftemplate-depth=1024 -Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS_STR}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
     if(APPLE AND WITH_CUDA AND CUDA_FOUND)
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
     endif()
   endif()
-  SET(CLANG_LIBRARIES "stdc++")
+  set(CLANG_LIBRARIES "stdc++")
 endif()
 
 include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
@@ -232,13 +232,13 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P
 # this is copy paste form http://www.itk.org/Wiki/CMake_RPATH_handling
 # in order to always make a full statement RPATH
 ###
-SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}" is_system_dir)
 if("${is_system_dir}" STREQUAL "-1")
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 endif()
 
 ### ---[ Find universal dependencies
@@ -383,7 +383,7 @@ if(WITH_VTK AND NOT ANDROID)
       endif()
       if(APPLE)
           option(VTK_USE_COCOA "Use Cocoa for VTK render windows" ON)
-          MARK_AS_ADVANCED(VTK_USE_COCOA)
+          mark_as_advanced(VTK_USE_COCOA)
       endif()
       if(${VTK_RENDERING_BACKEND} STREQUAL "OpenGL")
         set(VTK_RENDERING_BACKEND_OPENGL_VERSION "1")

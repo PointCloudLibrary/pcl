@@ -676,7 +676,7 @@ endmacro(PCL_SET_SUBSYS_INCLUDE_DIR)
 macro(PCL_GET_SUBSYS_INCLUDE_DIR _var _name)
     GET_IN_MAP(${_var} PCL_SUBSYS_INCLUDE ${_name})
     if(NOT ${_var})
-      set (${_var} ${_name})
+      set(${_var} ${_name})
     endif()
 endmacro(PCL_GET_SUBSYS_INCLUDE_DIR)
 
