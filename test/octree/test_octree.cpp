@@ -340,7 +340,10 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
 
       OctreeContainerPointIndices& container = it.getLeafContainer();
       if (it.getCurrentOctreeDepth () < octree.getTreeDepth ())
+      {
         ASSERT_LE (container.getSize (), leafAggSize);
+      }
+
 
       // add points from leaf node to indexVector
       container.getPointIndices (indexVector);

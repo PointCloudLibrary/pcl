@@ -745,7 +745,6 @@ TEST (PCL, eigen33f)
   const unsigned iterations = 1000000;
   bool r_failed;
   unsigned r_fail_count = 0;
-  unsigned c_fail_count = 0;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
