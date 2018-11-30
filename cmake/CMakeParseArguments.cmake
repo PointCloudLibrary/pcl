@@ -84,11 +84,11 @@ function(CMAKE_PARSE_ARGUMENTS prefix _optionNames _singleArgNames _multiArgName
   # first set all result variables to empty/FALSE
   foreach(arg_name ${_singleArgNames} ${_multiArgNames})
     set(${prefix}_${arg_name})
-  endforeach(arg_name)
+  endforeach()
 
   foreach(option ${_optionNames})
     set(${prefix}_${option} FALSE)
-  endforeach(option)
+  endforeach()
 
   set(${prefix}_UNPARSED_ARGUMENTS)
 
@@ -127,12 +127,12 @@ function(CMAKE_PARSE_ARGUMENTS prefix _optionNames _singleArgNames _multiArgName
       endif()
     endif()
 
-  endforeach(currentArg)
+  endforeach()
 
   # propagate the result variables to the caller:
   foreach(arg_name ${_singleArgNames} ${_multiArgNames} ${_optionNames})
     set(${prefix}_${arg_name}  ${${prefix}_${arg_name}} PARENT_SCOPE)
-  endforeach(arg_name)
+  endforeach()
   set(${prefix}_UNPARSED_ARGUMENTS ${${prefix}_UNPARSED_ARGUMENTS} PARENT_SCOPE)
 
 endfunction(CMAKE_PARSE_ARGUMENTS _options _singleArgs _multiArgs)

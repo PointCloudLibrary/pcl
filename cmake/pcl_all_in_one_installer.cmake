@@ -24,7 +24,7 @@ if(BUILD_all_in_one_installer)
             PATTERN "*/Uninstall.exe" EXCLUDE
         )
         list(APPEND PCL_3RDPARTY_COMPONENTS ${dep})
-    endforeach(dep)
+    endforeach()
 
     if(WITH_OPENNI)
         if(CMAKE_CL_64)

@@ -219,7 +219,7 @@ if(build)
   sort_relative(PCL_APPS_MODULES_NAMES_UNSORTED PCL_APPS_MODULES_NAMES PCL_APPS_MODULES_DIRS)
   foreach(subdir ${PCL_APPS_MODULES_DIRS})
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/${subdir}")
-  endforeach(subdir)
+  endforeach()
 
   if(QHULL_FOUND)
       set(incs

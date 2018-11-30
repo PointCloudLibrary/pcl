@@ -21,6 +21,6 @@ if(BUILD_GPU AND CUDA_FOUND)
 	sort_relative(PCL_GPU_MODULES_NAMES_UNSORTED PCL_GPU_MODULES_NAMES PCL_GPU_MODULES_DIRS)
 	foreach(subdir ${PCL_GPU_MODULES_DIRS})
 		add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/${subdir}")
-	endforeach(subdir)
+	endforeach()
 endif()
 

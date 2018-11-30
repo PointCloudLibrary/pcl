@@ -9,7 +9,7 @@ macro(LIST_TO_STRING _string _list)
     set(${_string})
     foreach(_item ${_list})
         set(${_string} "${${_string}} ${_item}")
-    endforeach(_item)
+    endforeach()
 endmacro()
 
 
@@ -25,7 +25,7 @@ macro(FILTER_LIST _list _pattern _output)
         if("${_item}" MATCHES ${_pattern})
             set(${_output} ${${_output}} ${_item})
         endif()
-    endforeach(_item)
+    endforeach()
 endmacro()
 
 
@@ -38,7 +38,7 @@ macro(PREFIX_LIST _output _prefix _list)
     set(${_output})
     foreach(_item ${_list})
         list(APPEND ${_output} "${_prefix}${_item}")
-    endforeach(_item)
+    endforeach()
 endmacro()
 
 ###############################################################################
@@ -154,7 +154,7 @@ macro(PROCESS_ARGUMENTS _sources_args _include_dirs_args _lib_dirs_args
         else()
             list(APPEND ${_current_dest} ${_arg})
         endif()
-    endforeach(_arg)
+    endforeach()
 endmacro()
 
 
@@ -303,7 +303,7 @@ macro(topological_sort LIST PREFIX SUFFIX)
                 list(LENGTH STACK STACK_LENGTH)
             endwhile(STACK_LENGTH GREATER 0)
         endif()
-    endforeach(VERTEX)
+    endforeach()
     # Somewhere a # slaps into the list so remove it
     list(REMOVE_ITEM ${LIST} "#")
 endmacro()
@@ -360,7 +360,7 @@ macro(fill_list _list _length _value)
   math(EXPR size "${${_length}} - 1")
   foreach(counter RANGE ${size})
     list(APPEND ${_list} ${_value})
-  endforeach(counter)
+  endforeach()
 endmacro()
 
 ##
@@ -414,7 +414,7 @@ macro(sort_relative _list _sorted_list _to_sort_relative)
     set_in_list(tmp_list sorted_position to_insert)
     # increment the counter
     math(EXPR counter "${counter} + 1")
-  endforeach(loop_var)
+  endforeach()
   # swap the temporary list and list to sort
   set(${_to_sort_relative} ${tmp_list})
 endmacro()

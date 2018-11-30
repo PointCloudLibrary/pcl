@@ -21,9 +21,9 @@ function(MAKE_DEP_GRAPH)
         GET_IN_MAP(_deps PCL_SUBSYS_DEPS ${_ss})
         foreach(_dep ${_deps})
             file(APPEND ${_dot_file} "  \"${_ss}\" -> \"${_dep}\";\n")
-        endforeach(_dep)
+        endforeach()
       endif()
-    endforeach(_ss)
+    endforeach()
 
     #file(APPEND ${_dot_file}
     #    "  \"test\" [style=\"filled\" fillcolor=\"#A3A27C\" shape=\"box\"];\n ")

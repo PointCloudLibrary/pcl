@@ -21,11 +21,11 @@ if(build)
         get_filename_component (name ${subdir} NAME)
         STRING(REGEX REPLACE ${name} "" dir ${absolute})
         list(APPEND PCL_EXAMPLES_SUBDIRS ${dir})
-    endforeach(subdir)
+    endforeach()
     # Display the found subdirectories
     message(STATUS "PCL_EXAMPLES_SUBDIRS ${PCL_EXAMPLES_SUBDIRS}")
     # Add the subdirectories
     foreach(subdir ${PCL_EXAMPLES_SUBDIRS})
     add_subdirectory(${subdir})
-    endforeach(subdir)
+    endforeach()
 endif()

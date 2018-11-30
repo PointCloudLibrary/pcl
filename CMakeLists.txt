@@ -217,7 +217,7 @@ if(WIN32)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG} "${PCL_OUTPUT_BIN_DIR}")
     # ---[ Windows requires DLLs (shared libraries) to be installed in the same directory as executables
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONFIG} "${PCL_OUTPUT_BIN_DIR}")
-  endforeach(config)
+  endforeach()
 else()
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PCL_OUTPUT_LIB_DIR}")
 endif()
@@ -441,7 +441,7 @@ topological_sort(PCL_MODULES_NAMES PCL_ _DEPENDS)
 sort_relative(PCL_MODULES_NAMES_UNSORTED PCL_MODULES_NAMES PCL_MODULES_DIRS)
 foreach(subdir ${PCL_MODULES_DIRS})
   add_subdirectory("${PCL_SOURCE_DIR}/${subdir}")
-endforeach(subdir)
+endforeach()
 
 ### ---[ Documentation
 add_subdirectory(doc)
