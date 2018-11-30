@@ -40,13 +40,13 @@ macro(pcl_report_not_found _reason)
     cmake_policy(POP)
   endif()
   return()
-endmacro(pcl_report_not_found)
+endmacro()
 
 macro(pcl_message)
   if(NOT PCL_FIND_QUIETLY)
     message(${ARGN})
   endif()
-endmacro(pcl_message)
+endmacro()
 
 # Remove duplicate libraries
 macro(pcl_remove_duplicate_libraries _unfiltered_libraries _filtered_libraries)
@@ -84,7 +84,7 @@ macro(pcl_remove_duplicate_libraries _unfiltered_libraries _filtered_libraries)
       endif()
     endif()
   endforeach(library)
-endmacro(pcl_remove_duplicate_libraries)
+endmacro()
 
 ### ---[ 3rd party libraries
 macro(find_boost)
@@ -123,7 +123,7 @@ macro(find_boost)
   if(WIN32 AND NOT MINGW)
     set(BOOST_DEFINITIONS ${BOOST_DEFINITIONS} -DBOOST_ALL_NO_LIB)
   endif()
-endmacro(find_boost)
+endmacro()
 
 #remove this as soon as eigen is shipped with FindEigen.cmake
 macro(find_eigen)
@@ -134,7 +134,7 @@ macro(find_eigen)
   endif()
   find_package(Eigen)
   set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS})
-endmacro(find_eigen)
+endmacro()
 
 #remove this as soon as qhull is shipped with FindQhull.cmake
 macro(find_qhull)
@@ -146,7 +146,7 @@ macro(find_qhull)
 
   set(QHULL_USE_STATIC @QHULL_USE_STATIC@)
   find_package(Qhull)
-endmacro(find_qhull)
+endmacro()
 
 #remove this as soon as libopenni is shipped with FindOpenni.cmake
 macro(find_openni)
@@ -160,7 +160,7 @@ macro(find_openni)
   endif()
 
   find_package(OpenNI)
-endmacro(find_openni)
+endmacro()
 
 #remove this as soon as libopenni2 is shipped with FindOpenni2.cmake
 macro(find_openni2)
@@ -174,7 +174,7 @@ macro(find_openni2)
   endif()
 
   find_package(OpenNI2)
-endmacro(find_openni2)
+endmacro()
 
 #remove this as soon as the Ensenso SDK is shipped with FindEnsenso.cmake
 macro(find_ensenso)
@@ -187,7 +187,7 @@ macro(find_ensenso)
   endif()
 
   find_package(Ensenso)
-endmacro(find_ensenso)
+endmacro()
 
 #remove this as soon as the davidSDK is shipped with FinddavidSDK.cmake
 macro(find_davidSDK)
@@ -200,7 +200,7 @@ macro(find_davidSDK)
   endif()
 
   find_package(davidSDK)
-endmacro(find_davidSDK)
+endmacro()
 
 macro(find_dssdk)
   if(PCL_FIND_QUIETLY)
@@ -211,7 +211,7 @@ macro(find_dssdk)
   endif()
 
   find_package(DSSDK)
-endmacro(find_dssdk)
+endmacro()
 
 macro(find_rssdk)
   if(PCL_FIND_QUIETLY)
@@ -222,7 +222,7 @@ macro(find_rssdk)
   endif()
 
   find_package(RSSDK)
-endmacro(find_rssdk)
+endmacro()
 
 #remove this as soon as flann is shipped with FindFlann.cmake
 macro(find_flann)
@@ -234,7 +234,7 @@ macro(find_flann)
 
   set(FLANN_USE_STATIC @FLANN_USE_STATIC@)
   find_package(FLANN)
-endmacro(find_flann)
+endmacro()
 
 macro(find_VTK)
   if(PCL_ALL_IN_ONE_INSTALLER AND NOT ANDROID)
@@ -249,7 +249,7 @@ macro(find_VTK)
   if(NOT ANDROID)
     find_package(VTK ${QUIET_})
   endif()
-endmacro(find_VTK)
+endmacro()
 
 macro(find_libusb)
   if(NOT WIN32)
@@ -263,11 +263,11 @@ macro(find_libusb)
       PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
     find_package_handle_standard_args(libusb-1.0 LIBUSB_1_LIBRARY LIBUSB_1_INCLUDE_DIR)
   endif()
-endmacro(find_libusb)
+endmacro()
 
 macro(find_glew)
   find_package(GLEW)
-endmacro(find_glew)
+endmacro()
 
 # Finds each component external libraries if any
 # The functioning is as following
@@ -344,10 +344,10 @@ macro(find_external_library _component _lib _is_optional)
       endif()
     endif()
   endif()
-endmacro(find_external_library)
+endmacro()
 
 macro(pcl_check_external_dependency _component)
-endmacro(pcl_check_external_dependency)
+endmacro()
 
 #flatten dependencies recursivity is great \o/
 macro(compute_dependencies TO_FIND_COMPONENTS)
@@ -375,7 +375,7 @@ macro(compute_dependencies TO_FIND_COMPONENTS)
       endforeach(dependency)
     endif()
   endforeach(component)
-endmacro(compute_dependencies)
+endmacro()
 
 ### ---[ Find PCL
 

@@ -32,7 +32,7 @@ macro(PCL_SUBSYS_OPTION _var _name _desc _default)
       endif()
     endif()
     PCL_ADD_SUBSYSTEM(${_name} ${_desc})
-endmacro(PCL_SUBSYS_OPTION)
+endmacro()
 
 ###############################################################################
 # Add an option to build a subsystem or not.
@@ -70,7 +70,7 @@ macro(PCL_SUBSUBSYS_OPTION _var _parent _name _desc _default)
     endif()
   endif()
   PCL_ADD_SUBSUBSYSTEM(${_parent} ${_name} ${_desc})
-endmacro(PCL_SUBSUBSYS_OPTION)
+endmacro()
 
 ###############################################################################
 # Make one subsystem depend on one or more other subsystems, and disable it if
@@ -123,7 +123,7 @@ macro(PCL_SUBSYS_DEPEND _var _name)
         endforeach(_dep)
         endif()
     endif()
-endmacro(PCL_SUBSYS_DEPEND)
+endmacro()
 
 ###############################################################################
 # Make one subsystem depend on one or more other subsystems, and disable it if
@@ -172,7 +172,7 @@ macro(PCL_SUBSUBSYS_DEPEND _var _parent _name)
         endforeach(_dep)
         endif()
     endif()
-endmacro(PCL_SUBSUBSYS_DEPEND)
+endmacro()
 
 ###############################################################################
 # Add a set of include files to install.
@@ -182,7 +182,7 @@ endmacro(PCL_SUBSUBSYS_DEPEND)
 macro(PCL_ADD_INCLUDES _component _subdir)
     install(FILES ${ARGN} DESTINATION ${INCLUDE_INSTALL_DIR}/${_subdir}
         COMPONENT pcl_${_component})
-endmacro(PCL_ADD_INCLUDES)
+endmacro()
 
 
 ###############################################################################
@@ -219,7 +219,7 @@ macro(PCL_ADD_LIBRARY _name _component)
         LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component})
 
-endmacro(PCL_ADD_LIBRARY)
+endmacro()
 
 
 ###############################################################################
@@ -251,7 +251,7 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
         RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
         LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component})
-endmacro(PCL_CUDA_ADD_LIBRARY)
+endmacro()
 
 
 ###############################################################################
@@ -280,7 +280,7 @@ macro(PCL_ADD_EXECUTABLE _name _component)
     set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
         COMPONENT pcl_${_component})
-endmacro(PCL_ADD_EXECUTABLE)
+endmacro()
 
 ###############################################################################
 # Add an executable target as a bundle when available and required
@@ -323,7 +323,7 @@ if(APPLE AND VTK_USE_COCOA)
 else()
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component})
 endif()
-endmacro(PCL_ADD_EXECUTABLE_OPT_BUNDLE)
+endmacro()
 
 
 ###############################################################################
@@ -349,7 +349,7 @@ macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
     set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
         COMPONENT pcl_${_component})
-endmacro(PCL_CUDA_ADD_EXECUTABLE)
+endmacro()
 
 ###############################################################################
 # Add a test target.
@@ -392,7 +392,7 @@ macro(PCL_ADD_TEST _name _exename)
     endif()
 
     add_dependencies(tests ${_exename})
-endmacro(PCL_ADD_TEST)
+endmacro()
 
 ###############################################################################
 # Add an example target.
@@ -414,7 +414,7 @@ macro(PCL_ADD_EXAMPLE _name)
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Examples")
     endif()
-endmacro(PCL_ADD_EXAMPLE)
+endmacro()
 
 ###############################################################################
 # Add compile flags to a target (because CMake doesn't provide something so
@@ -429,7 +429,7 @@ macro(PCL_ADD_CFLAGS _name _flags)
         set_target_properties(${_name} PROPERTIES
             COMPILE_FLAGS "${_current_flags} ${_flags}")
     endif()
-endmacro(PCL_ADD_CFLAGS)
+endmacro()
 
 
 ###############################################################################
@@ -445,7 +445,7 @@ macro(PCL_ADD_LINKFLAGS _name _flags)
         set_target_properties(${_name} PROPERTIES
             LINK_FLAGS "${_current_flags} ${_flags}")
     endif()
-endmacro(PCL_ADD_LINKFLAGS)
+endmacro()
 
 
 ###############################################################################
@@ -480,7 +480,7 @@ macro(PCL_MAKE_PKGCONFIG _name _component _desc _pcl_deps _ext_deps _int_deps _c
         @ONLY)
     install(FILES ${_pc_file} DESTINATION ${PKGCFG_INSTALL_DIR}
         COMPONENT pcl_${_component})
-endmacro(PCL_MAKE_PKGCONFIG)
+endmacro()
 
 ###############################################################################
 # Make a pkg-config file for a header-only library. 
@@ -513,7 +513,7 @@ set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_VERSION_MAJOR}.${PCL_VER
 configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig-headeronly.cmake.in ${_pc_file} @ONLY)
 install(FILES ${_pc_file} DESTINATION ${PKGCFG_INSTALL_DIR}
 COMPONENT pcl_${_component})
-endmacro(PCL_MAKE_PKGCONFIG_HEADER_ONLY)
+endmacro()
 
 
 ###############################################################################
@@ -542,7 +542,7 @@ macro(PCL_RESET_MAPS)
     set(PCL_SUBSYS_OPT_DEPS "" CACHE INTERNAL "A depends on B and C." FORCE)
     set(PCL_SUBSYSTEMS "" CACHE INTERNAL "Internal list of subsystems" FORCE)
     set(PCL_SUBSYS_DESC "" CACHE INTERNAL "Subsystem descriptions" FORCE)
-endmacro(PCL_RESET_MAPS)
+endmacro()
 
 
 ###############################################################################
@@ -555,7 +555,7 @@ macro(PCL_ADD_SUBSYSTEM _name _desc)
     set(PCL_SUBSYSTEMS ${_temp} CACHE INTERNAL "Internal list of subsystems"
         FORCE)
     SET_IN_GLOBAL_MAP(PCL_SUBSYS_DESC ${_name} ${_desc})
-endmacro(PCL_ADD_SUBSYSTEM)
+endmacro()
 
 ###############################################################################
 # Register a subsubsystem.
@@ -569,7 +569,7 @@ macro(PCL_ADD_SUBSUBSYSTEM _parent _name _desc)
   set(${PCL_PARENT_SUBSYS} ${_temp} CACHE INTERNAL "Internal list of ${_parenr} subsystems"
     FORCE)
   set_in_global_map(${PCL_PARENT_SUBSYS_DESC} ${_name} ${_desc})
-endmacro(PCL_ADD_SUBSUBSYSTEM)
+endmacro()
 
 
 ###############################################################################
@@ -585,7 +585,7 @@ macro(PCL_SET_SUBSYS_STATUS _name _status)
     endif()
     SET_IN_GLOBAL_MAP(PCL_SUBSYS_STATUS ${_name} ${_status})
     SET_IN_GLOBAL_MAP(PCL_SUBSYS_REASONS ${_name} ${_reason})
-endmacro(PCL_SET_SUBSYS_STATUS)
+endmacro()
 
 ###############################################################################
 # Set the status of a subsystem.
@@ -600,7 +600,7 @@ macro(PCL_SET_SUBSUBSYS_STATUS _parent _name _status)
     endif()
     SET_IN_GLOBAL_MAP(PCL_SUBSYS_STATUS ${_parent}_${_name} ${_status})
     SET_IN_GLOBAL_MAP(PCL_SUBSYS_REASONS ${_parent}_${_name} ${_reason})
-endmacro(PCL_SET_SUBSUBSYS_STATUS)
+endmacro()
 
 
 ###############################################################################
@@ -609,7 +609,7 @@ endmacro(PCL_SET_SUBSUBSYS_STATUS)
 # _name Name of the subsystem.
 macro(PCL_GET_SUBSYS_STATUS _var _name)
     GET_IN_MAP(${_var} PCL_SUBSYS_STATUS ${_name})
-endmacro(PCL_GET_SUBSYS_STATUS)
+endmacro()
 
 ###############################################################################
 # Get the status of a subsystem
@@ -617,7 +617,7 @@ endmacro(PCL_GET_SUBSYS_STATUS)
 # _name Name of the subsystem.
 macro(PCL_GET_SUBSUBSYS_STATUS _var _parent _name)
     GET_IN_MAP(${_var} PCL_SUBSYS_STATUS ${_parent}_${_name})
-endmacro(PCL_GET_SUBSUBSYS_STATUS)
+endmacro()
 
 
 ###############################################################################
@@ -631,7 +631,7 @@ macro(PCL_SET_SUBSYS_HYPERSTATUS _name _dependee _status)
     if(${ARGC} EQUAL 4)
         SET_IN_GLOBAL_MAP(PCL_SUBSYS_REASONS ${_dependee} ${ARGV3})
     endif()
-endmacro(PCL_SET_SUBSYS_HYPERSTATUS)
+endmacro()
 
 ###############################################################################
 # Get the hyperstatus of a subsystem and its dependee
@@ -651,13 +651,13 @@ macro(PCL_GET_SUBSYS_HYPERSTATUS _var _name)
             endif()
         endforeach(subsys)
     endif()
-endmacro(PCL_GET_SUBSYS_HYPERSTATUS)
+endmacro()
 
 ###############################################################################
 # Set the hyperstatus of a subsystem and its dependee
 macro(PCL_UNSET_SUBSYS_HYPERSTATUS _name _dependee)
     unset(PCL_SUBSYS_HYPERSTATUS_${_name}_${dependee})
-endmacro(PCL_UNSET_SUBSYS_HYPERSTATUS)
+endmacro()
 
 ###############################################################################
 # Set the include directory name of a subsystem.
@@ -666,7 +666,7 @@ endmacro(PCL_UNSET_SUBSYS_HYPERSTATUS)
 # ARGN[0] Reason for not building.
 macro(PCL_SET_SUBSYS_INCLUDE_DIR _name _includedir)
     SET_IN_GLOBAL_MAP(PCL_SUBSYS_INCLUDE ${_name} ${_includedir})
-endmacro(PCL_SET_SUBSYS_INCLUDE_DIR)
+endmacro()
 
 
 ###############################################################################
@@ -678,7 +678,7 @@ macro(PCL_GET_SUBSYS_INCLUDE_DIR _var _name)
     if(NOT ${_var})
       set(${_var} ${_name})
     endif()
-endmacro(PCL_GET_SUBSYS_INCLUDE_DIR)
+endmacro()
 
 
 ###############################################################################
@@ -727,7 +727,7 @@ macro(PCL_WRITE_STATUS_REPORT)
             message(STATUS "  ${_ss}: ${_reason}")
         endif()
     endforeach(_ss)
-endmacro(PCL_WRITE_STATUS_REPORT)
+endmacro()
 
 ##############################################################################
 # Collect subdirectories from dirname that contains filename and store them in
@@ -788,7 +788,7 @@ macro(PCL_DISABLE_DEPENDIES _subsys)
             set(BUILD_${dep} OFF CACHE BOOL "Disabled: ${_subsys} missing." FORCE)
         endforeach(dep)
     endif()
-endmacro(PCL_DISABLE_DEPENDIES subsys)
+endmacro()
 
 ########################################################################################
 # Macro to enable subsystem dependies
@@ -805,7 +805,7 @@ macro(PCL_ENABLE_DEPENDIES _subsys)
             endif()
         endforeach(dep)
     endif()
-endmacro(PCL_ENABLE_DEPENDIES subsys)
+endmacro()
 
 ########################################################################################
 # Macro to build subsystem centric documentation
@@ -843,7 +843,7 @@ macro (PCL_ADD_DOC _subsys)
       set_target_properties(${doc_subsys} PROPERTIES FOLDER "Documentation")
     endif()
   endif()
-endmacro(PCL_ADD_DOC)
+endmacro()
 
 ###############################################################################
 # Add a dependency for a grabber
@@ -867,7 +867,7 @@ macro(PCL_ADD_GRABBER_DEPENDENCY _name _description)
         include_directories(SYSTEM "${${_name_capitalized}_INCLUDE_DIRS}")
       endif()
     endif()
-endmacro(PCL_ADD_GRABBER_DEPENDENCY)
+endmacro()
 
 ###############################################################################
 # Set the dependencies for a specific test module on the provided variable
@@ -875,4 +875,4 @@ endmacro(PCL_ADD_GRABBER_DEPENDENCY)
 # _module The module name
 macro(PCL_SET_TEST_DEPENDENCIES _var _module)
     set(${_var} global_tests ${_module} ${PCL_SUBSYS_DEPS_${_module}})
-endmacro(PCL_SET_TEST_DEPENDENCIES)
+endmacro()

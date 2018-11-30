@@ -110,7 +110,7 @@ macro(PCL_MAKE_CPACK_INPUT)
 
     set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENTS_ALL${CPACK_COMPONENTS_ALL})\n")
     configure_file(${_cpack_cfg_in} ${PCL_CPACK_CFG_FILE} @ONLY)
-endmacro(PCL_MAKE_CPACK_INPUT)
+endmacro()
 
 
 macro(PCL_CPACK_MAKE_COMPS_OPTS _var _current)
@@ -125,7 +125,7 @@ macro(PCL_CPACK_MAKE_COMPS_OPTS _var _current)
         endif()
     endforeach(_ss)
     set(CPACK_COMPONENTS_ALL ${_comps_list})
-endmacro(PCL_CPACK_MAKE_COMPS_OPTS)
+endmacro()
 
 
 macro(PCL_CPACK_ADD_COMP_INFO _var _ss)
@@ -144,5 +144,5 @@ macro(PCL_CPACK_ADD_COMP_INFO _var _ss)
         "${${_var}}set(CPACK_COMPONENT_PCL_${_comp_name}_DEPENDS ${_deps_str})\n")
     set(${_var} 
         "${${_var}}set(CPACK_COMPONENT_PCL_${_comp_name}_GROUP \"PCL\")\n")
-endmacro(PCL_CPACK_ADD_COMP_INFO)
+endmacro()
 

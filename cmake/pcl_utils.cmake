@@ -10,7 +10,7 @@ macro(LIST_TO_STRING _string _list)
     foreach(_item ${_list})
         set(${_string} "${${_string}} ${_item}")
     endforeach(_item)
-endmacro(LIST_TO_STRING)
+endmacro()
 
 
 ###############################################################################
@@ -26,7 +26,7 @@ macro(FILTER_LIST _list _pattern _output)
             set(${_output} ${${_output}} ${_item})
         endif()
     endforeach(_item)
-endmacro(FILTER_LIST)
+endmacro()
 
 
 ###############################################################################
@@ -39,7 +39,7 @@ macro(PREFIX_LIST _output _prefix _list)
     foreach(_item ${_list})
         list(APPEND ${_output} "${_prefix}${_item}")
     endforeach(_item)
-endmacro(PREFIX_LIST)
+endmacro()
 
 ###############################################################################
 # Remove vtk definitions
@@ -54,7 +54,7 @@ macro(REMOVE_VTK_DEFINITIONS)
         endif()
     endforeach()
     remove_definitions(${_vtk_definitions})
-endmacro(REMOVE_VTK_DEFINITIONS)
+endmacro()
 
 ###############################################################################
 # Pull the component parts out of the version number.
@@ -67,7 +67,7 @@ macro(DISSECT_VERSION)
         set(PCL_DEV_VERSION 0)
         set(PCL_VERSION_PRETTY "${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.${PCL_VERSION_PATCH}")
     endif()
-endmacro(DISSECT_VERSION)
+endmacro()
 
 ###############################################################################
 # Get the operating system information. Generally, CMake does a good job of
@@ -83,7 +83,7 @@ macro(GET_OS_INFO)
     else()
         set(OS_IS_64BIT FALSE)
     endif()
-endmacro(GET_OS_INFO)
+endmacro()
 
 
 ###############################################################################
@@ -112,7 +112,7 @@ macro(SET_INSTALL_DIRS)
       else()
         set(PCLCONFIG_INSTALL_DIR "share/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
       endif()
-endmacro(SET_INSTALL_DIRS)
+endmacro()
 
 
 ###############################################################################
@@ -155,7 +155,7 @@ macro(PROCESS_ARGUMENTS _sources_args _include_dirs_args _lib_dirs_args
             list(APPEND ${_current_dest} ${_arg})
         endif()
     endforeach(_arg)
-endmacro(PROCESS_ARGUMENTS)
+endmacro()
 
 
 ###############################################################################
@@ -165,7 +165,7 @@ endmacro(PROCESS_ARGUMENTS)
 # _value The value.
 macro(SET_IN_MAP _map _key _value)
     set("${_map}_${_key}" "${_value}")
-endmacro(SET_IN_MAP)
+endmacro()
 
 
 ###############################################################################
@@ -175,7 +175,7 @@ endmacro(SET_IN_MAP)
 # _value The value.
 macro(SET_IN_GLOBAL_MAP _map _key _value)
     set("${_map}_${_key}" "${_value}" CACHE INTERNAL "Map value" FORCE)
-endmacro(SET_IN_GLOBAL_MAP)
+endmacro()
 
 
 ###############################################################################
@@ -185,7 +185,7 @@ endmacro(SET_IN_GLOBAL_MAP)
 # _key The key name.
 macro(GET_IN_MAP _dest _map _key)
     set(${_dest} ${${_map}_${_key}})
-endmacro(GET_IN_MAP)
+endmacro()
 
 ##########################################################################
 # This function were copied from boost-cmake project.                    #
@@ -306,7 +306,7 @@ macro(topological_sort LIST PREFIX SUFFIX)
     endforeach(VERTEX)
     # Somewhere a # slaps into the list so remove it
     list(REMOVE_ITEM ${LIST} "#")
-endmacro(topological_sort)
+endmacro()
 
 ##
 # Swaps 2 elements at _pos1 and _pos2 of a list
@@ -345,7 +345,7 @@ macro(swap_elements _list _pos1 _pos2)
       list(INSERT ${_list} ${pos2} ${element1})
     endif()
   endif()
-endmacro(swap_elements)
+endmacro()
 
 ##
 # Fills a list with _length x _value
@@ -361,7 +361,7 @@ macro(fill_list _list _length _value)
   foreach(counter RANGE ${size})
     list(APPEND ${_list} ${_value})
   endforeach(counter)
-endmacro(fill_list)
+endmacro()
 
 ##
 # Set the value at element a known position of a list
@@ -373,7 +373,7 @@ macro(set_in_list _list _position _value)
   list(INSERT ${_list} ${${_position}} ${${_value}})
   math(EXPR next "${${_position}} + 1")
   list(REMOVE_AT ${_list} ${next})
-endmacro(set_in_list)
+endmacro()
 
 ###
 # Sorts list B the same way list A was sorted by fetching the indices
@@ -417,7 +417,7 @@ macro(sort_relative _list _sorted_list _to_sort_relative)
   endforeach(loop_var)
   # swap the temporary list and list to sort
   set(${_to_sort_relative} ${tmp_list})
-endmacro(sort_relative)
+endmacro()
 
 
 ###############################################################################
