@@ -98,6 +98,16 @@ if(build)
 
   PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" "" "" "" "" "")
 
-  add_subdirectory(tools)
+  if(QHULL_FOUND)
+    add_executable(pcl_global_classification src/tools/global_classification.cpp)
+    target_link_libraries(pcl_global_classification pcl_apps pcl_3d_rec_framework pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
+  endif()
 
+  pcl_add_executable(pcl_local_or_mian ${SUBSUBSYS_NAME} src/tools/local_recognition_mian_dataset.cpp)
+  target_link_libraries(pcl_local_or_mian pcl_apps pcl_3d_rec_framework pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints)
+
+  # Add to the compound apps target
+  string(TOUPPER ${SUBSUBSYS_NAME} SUBSUBSYS_NAME_UPPER)
+  list(APPEND PCL_APPS_ALL_TARGETS ${PCL_${SUBSUBSYS_NAME_UPPER}_ALL_TARGETS})
+  set(PCL_APPS_ALL_TARGETS ${PCL_APPS_ALL_TARGETS} PARENT_SCOPE)
 endif()

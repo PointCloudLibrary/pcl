@@ -105,4 +105,7 @@ if(build)
 
   PCL_MAKE_PKGCONFIG("${EXE_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" "" "" "" "" "")
 
+  # Add to the compound apps target
+  list(APPEND PCL_APPS_ALL_TARGETS ${EXE_NAME})
+  set(PCL_APPS_ALL_TARGETS ${PCL_APPS_ALL_TARGETS} PARENT_SCOPE)
 endif()
