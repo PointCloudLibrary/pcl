@@ -326,6 +326,9 @@ if(APPLE AND VTK_USE_COCOA)
 else()
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component})
 endif()
+
+    string(TOUPPER ${_component} _component_upper)
+    list(APPEND PCL_${_component_upper}_ALL_TARGETS ${_name})
 endmacro()
 
 

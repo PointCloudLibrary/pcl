@@ -8,6 +8,9 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk
 
 if(build)
 
+  # to be filled with all targets the apps subsystem
+  set(PCL_APPS_ALL_TARGETS)
+
   include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
   PCL_ADD_EXECUTABLE(pcl_test_search_speed "${SUBSYS_NAME}" src/test_search.cpp)
@@ -239,5 +242,6 @@ if(build)
   PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
   PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
 
+  add_custom_target(${SUBSYS_NAME} DEPENDS ${PCL_APPS_ALL_TARGETS})
 endif()
 
