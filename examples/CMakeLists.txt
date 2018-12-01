@@ -8,6 +8,9 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 if(build)
+    # this variable will filled with all targets added with pcl_add_example
+    set(PCL_EXAMPLES_ALL_TARGETS)
+
     include_directories(${PCL_INCLUDE_DIRS})
     # This looks for all examples/XXX/CMakeLists.txt
     file (GLOB examples_sbudirs */CMakeLists.txt)
@@ -22,10 +25,10 @@ if(build)
         STRING(REGEX REPLACE ${name} "" dir ${absolute})
         list(APPEND PCL_EXAMPLES_SUBDIRS ${dir})
     endforeach()
-    # Display the found subdirectories
-    message(STATUS "PCL_EXAMPLES_SUBDIRS ${PCL_EXAMPLES_SUBDIRS}")
     # Add the subdirectories
     foreach(subdir ${PCL_EXAMPLES_SUBDIRS})
     add_subdirectory(${subdir})
     endforeach()
+
+    add_custom_target(${SUBSYS_NAME} DEPENDS ${PCL_EXAMPLES_ALL_TARGETS})
 endif()

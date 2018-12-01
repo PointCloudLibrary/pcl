@@ -410,6 +410,10 @@ macro(PCL_ADD_EXAMPLE _name)
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Examples")
     endif()
+
+    # add target to list of example targets created at the parent scope
+    list(APPEND PCL_EXAMPLES_ALL_TARGETS ${_name})
+    set(PCL_EXAMPLES_ALL_TARGETS "${PCL_EXAMPLES_ALL_TARGETS}" PARENT_SCOPE)
 endmacro()
 
 ###############################################################################
