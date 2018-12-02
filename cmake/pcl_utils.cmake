@@ -1,6 +1,3 @@
-# cmake_parse_arguments support for CMake 2.8.2 and older
-include(cmake/CMakeParseArguments.cmake)
-
 ###############################################################################
 # Turn a list into a string, with each item separated by spaces.
 # _string Name of the destination variable.
