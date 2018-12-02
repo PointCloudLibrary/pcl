@@ -225,7 +225,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
   ph_global.spinOnce ();
 }
 
-void capture (Eigen::Isometry3d pose_in, const string &point_cloud_fname)
+void capture (Eigen::Isometry3d pose_in)
 {
   // No reference image - but this is kept for compatibility with range_test_v2:
   float* reference = new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
@@ -397,7 +397,7 @@ void simulate_callback (const pcl::visualization::KeyboardEvent &event,
     std::stringstream ss2;
     ss2.precision(20);
     ss2 << "simulated_pcl_" << tic << ".pcd";
-    capture(init_pose,ss2.str());
+    capture(init_pose);
     cout << (getTime() -tic) << " sec\n";  
   }
 }
