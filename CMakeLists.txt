@@ -155,7 +155,7 @@ if(CMAKE_COMPILER_IS_MSVC)
     endif()
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
 
-    if(MSVC_VERSION GREATER 1500 AND ${CMAKE_VERSION} VERSION_GREATER "2.8.6")
+    if(MSVC_VERSION GREATER 1500)
       include(ProcessorCount)
       ProcessorCount(N)
       if(NOT N EQUAL 0)

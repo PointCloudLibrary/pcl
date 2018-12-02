@@ -385,11 +385,7 @@ macro(PCL_ADD_TEST _name _exename)
       set_target_properties(${_exename} PROPERTIES FOLDER "Tests")
     endif()
 
-    if(${CMAKE_VERSION} VERSION_LESS 2.8.4)
-      add_test(${_name} ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
-    else()
-      add_test(NAME ${_name} COMMAND ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
-    endif()
+    add_test(NAME ${_name} COMMAND ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
 
     add_dependencies(tests ${_exename})
 endmacro()
