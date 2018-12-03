@@ -977,7 +977,7 @@ struct KinFuApp
   }
 
   void
-  execute (int argc, char** argv, std::string plyfile)
+  execute (int argc, char** argv, const std::string &plyfile)
   {
     PtrStepSz<const unsigned short> depth;
     PtrStepSz<const KinfuTracker::PixelRGB> rgb24;

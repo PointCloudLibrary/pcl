@@ -15,7 +15,7 @@ pcl::DavidSDKGrabber::Ptr davidsdk_ptr;
  * @returns the OpenCV type
  */
 int
-getOpenCVType (std::string type)
+getOpenCVType (const std::string &type)
 {
   if (type == "CV_32FC1")
     return CV_32FC1;

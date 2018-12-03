@@ -158,7 +158,7 @@ vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, Poin
 //===============================================================================================================================
 
 void
-showHypothesisAsCoordinateFrame (Hypothesis& hypo, CallbackParameters* parameters, string frame_name)
+showHypothesisAsCoordinateFrame (Hypothesis& hypo, CallbackParameters* parameters, const string &frame_name)
 {
   float rot_col[3], x_dir[3], y_dir[3], z_dir[3], origin[3], scale = 2.0f*parameters->objrec_.getPairWidth ();
   pcl::ModelCoefficients coeffs; coeffs.values.resize (6);

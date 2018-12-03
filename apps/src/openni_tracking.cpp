@@ -509,7 +509,7 @@ public:
   }
   
   void extractSegmentCluster (const CloudConstPtr &cloud,
-                              const std::vector<pcl::PointIndices> cluster_indices,
+                              const std::vector<pcl::PointIndices> &cluster_indices,
                               const int segment_index,
                               Cloud &result)
   {
