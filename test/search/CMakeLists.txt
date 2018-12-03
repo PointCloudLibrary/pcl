@@ -8,7 +8,7 @@ set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
-if (build)
+if(build)
   PCL_ADD_TEST(kdtree_search test_kdtree_search
                 FILES test_kdtree.cpp
                 LINK_WITH pcl_gtest pcl_search pcl_kdtree)
@@ -24,10 +24,10 @@ if (build)
                 FILES test_octree.cpp
                 LINK_WITH pcl_gtest pcl_search pcl_octree pcl_common)
 
-  if (BUILD_io)
+  if(BUILD_io)
     PCL_ADD_TEST(search test_search
                  FILES test_search.cpp
                  LINK_WITH pcl_gtest pcl_search pcl_io pcl_kdtree
                  ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd")
-  endif (BUILD_io)
-endif (build)
+  endif()
+endif()

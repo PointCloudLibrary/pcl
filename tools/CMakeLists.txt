@@ -1,14 +1,14 @@
-set (SUBSYS_NAME tools)
-set (SUBSYS_DESC "Useful PCL-based command line tools")
-set (SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration recognition geometry keypoints ml)
-set (SUBSYS_OPT_DEPS visualization)
-set (DEFAULT ON)
-set (REASON "")
+set(SUBSYS_NAME tools)
+set(SUBSYS_DESC "Useful PCL-based command line tools")
+set(SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration recognition geometry keypoints ml)
+set(SUBSYS_OPT_DEPS visualization)
+set(DEFAULT ON)
+set(REASON "")
 
 PCL_SUBSYS_OPTION (BUILD_tools "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND (BUILD_tools "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${SUBSYS_OPT_DEPS})
 
-if (BUILD_tools)
+if(BUILD_tools)
 
   PCL_ADD_EXECUTABLE(pcl_sac_segmentation_plane "${SUBSYS_NAME}" sac_segmentation_plane.cpp)
   target_link_libraries(pcl_sac_segmentation_plane pcl_common pcl_io pcl_sample_consensus pcl_segmentation)
@@ -48,22 +48,22 @@ if (BUILD_tools)
 
   PCL_ADD_EXECUTABLE (pcl_vfh_estimation "${SUBSYS_NAME}" vfh_estimation.cpp)
   target_link_libraries (pcl_vfh_estimation pcl_common pcl_io pcl_features pcl_kdtree)
-  
+
   PCL_ADD_EXECUTABLE (pcl_spin_estimation "${SUBSYS_NAME}" spin_estimation.cpp)
   target_link_libraries (pcl_spin_estimation pcl_common pcl_io pcl_features pcl_kdtree)
 
   PCL_ADD_EXECUTABLE (pcl_voxel_grid "${SUBSYS_NAME}" voxel_grid.cpp)
   target_link_libraries (pcl_voxel_grid pcl_common pcl_io pcl_filters)
-	
+
   PCL_ADD_EXECUTABLE (pcl_passthrough_filter "${SUBSYS_NAME}" passthrough_filter.cpp)
   target_link_libraries (pcl_passthrough_filter pcl_common pcl_io pcl_filters)
-	
+
   PCL_ADD_EXECUTABLE (pcl_radius_filter "${SUBSYS_NAME}" radius_filter.cpp)
   target_link_libraries (pcl_radius_filter pcl_common pcl_io pcl_filters)
 
   PCL_ADD_EXECUTABLE (pcl_extract_feature "${SUBSYS_NAME}" extract_feature.cpp)
   target_link_libraries (pcl_extract_feature pcl_common pcl_io pcl_features pcl_kdtree)
-  
+
   PCL_ADD_EXECUTABLE (pcl_compute_cloud_error "${SUBSYS_NAME}" compute_cloud_error.cpp)
   target_link_libraries (pcl_compute_cloud_error pcl_common pcl_io pcl_kdtree pcl_search)
 
@@ -81,19 +81,19 @@ if (BUILD_tools)
     PCL_ADD_EXECUTABLE (pcl_add_gaussian_noise "${SUBSYS_NAME}" add_gaussian_noise.cpp)
     target_link_libraries (pcl_add_gaussian_noise pcl_common pcl_io)
   endif()
-  
+
   PCL_ADD_EXECUTABLE (pcl_outlier_removal "${SUBSYS_NAME}" outlier_removal.cpp)
   target_link_libraries (pcl_outlier_removal pcl_common pcl_io pcl_filters)
-  
+
   PCL_ADD_EXECUTABLE (pcl_mls_smoothing "${SUBSYS_NAME}" mls_smoothing.cpp)
   target_link_libraries (pcl_mls_smoothing pcl_common pcl_io pcl_surface pcl_filters)
-  
+
   PCL_ADD_EXECUTABLE (pcl_marching_cubes_reconstruction "${SUBSYS_NAME}" marching_cubes_reconstruction.cpp)
   target_link_libraries (pcl_marching_cubes_reconstruction pcl_common pcl_io pcl_surface)
 
   PCL_ADD_EXECUTABLE (pcl_gp3_surface "${SUBSYS_NAME}" gp3_surface.cpp)
   target_link_libraries (pcl_gp3_surface pcl_common pcl_io pcl_surface)
-  
+
   PCL_ADD_EXECUTABLE(pcl_icp "${SUBSYS_NAME}" icp.cpp)
   target_link_libraries(pcl_icp pcl_common pcl_io pcl_registration)
 
@@ -108,7 +108,7 @@ if (BUILD_tools)
 
   PCL_ADD_EXECUTABLE(pcl_ndt2d "${SUBSYS_NAME}" ndt2d.cpp)
   target_link_libraries(pcl_ndt2d pcl_common pcl_io pcl_registration)
-    
+
   PCL_ADD_EXECUTABLE(pcl_ndt3d "${SUBSYS_NAME}" ndt3d.cpp)
   target_link_libraries(pcl_ndt3d pcl_common pcl_io pcl_registration)
 
@@ -117,7 +117,7 @@ if (BUILD_tools)
 
   PCL_ADD_EXECUTABLE(pcl_concatenate_points_pcd "${SUBSYS_NAME}" concatenate_points_pcd.cpp)
   target_link_libraries(pcl_concatenate_points_pcd pcl_common pcl_io)
-  
+
   PCL_ADD_EXECUTABLE(pcl_poisson_reconstruction "${SUBSYS_NAME}" poisson_reconstruction.cpp)
   target_link_libraries(pcl_poisson_reconstruction pcl_common pcl_io pcl_surface)
 
@@ -129,7 +129,7 @@ if (BUILD_tools)
 
   PCL_ADD_EXECUTABLE(pcl_linemod_detection "${SUBSYS_NAME}" linemod_detection.cpp)
   target_link_libraries(pcl_linemod_detection pcl_common pcl_io pcl_recognition)
-  
+
   PCL_ADD_EXECUTABLE(pcl_fast_bilateral_filter "${SUBSYS_NAME}" fast_bilateral_filter.cpp)
   target_link_libraries(pcl_fast_bilateral_filter pcl_common pcl_io pcl_filters)
 
@@ -141,7 +141,7 @@ if (BUILD_tools)
 
   PCL_ADD_EXECUTABLE(pcl_morph "${SUBSYS_NAME}" morph.cpp)
   target_link_libraries(pcl_morph pcl_common pcl_io pcl_filters)
-  
+
   PCL_ADD_EXECUTABLE(pcl_progressive_morphological_filter "${SUBSYS_NAME}" progressive_morphological_filter.cpp)
   target_link_libraries(pcl_progressive_morphological_filter pcl_common pcl_io pcl_filters pcl_segmentation)
 
@@ -159,24 +159,24 @@ if (BUILD_tools)
     target_link_libraries(pcl_oni2pcd pcl_common pcl_io)
   endif()
 
-  if (QHULL_FOUND)
+  if(QHULL_FOUND)
     PCL_ADD_EXECUTABLE(pcl_crop_to_hull "${SUBSYS_NAME}" crop_to_hull.cpp)
     target_link_libraries(pcl_crop_to_hull pcl_common pcl_io pcl_filters pcl_surface)
 
     PCL_ADD_EXECUTABLE(pcl_compute_hull "${SUBSYS_NAME}" compute_hull.cpp)
     target_link_libraries(pcl_compute_hull pcl_common pcl_io pcl_surface)
-  endif (QHULL_FOUND)
+  endif()
 
   if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")
-  else(NOT VTK_FOUND)
+  else()
       set(DEFAULT TRUE)
       set(REASON)
       set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
       include("${VTK_USE_FILE}")
       include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-  
+
       PCL_ADD_EXECUTABLE(pcl_png2pcd "${SUBSYS_NAME}" png2pcd.cpp)
       target_link_libraries(pcl_png2pcd pcl_common pcl_io)
 
@@ -188,7 +188,7 @@ if (BUILD_tools)
 
       PCL_ADD_EXECUTABLE(pcl_tiff2pcd "${SUBSYS_NAME}" tiff2pcd.cpp)
       target_link_libraries(pcl_tiff2pcd pcl_common pcl_io)
-          
+
       PCL_ADD_EXECUTABLE(pcl_ply2vtk "${SUBSYS_NAME}" ply2vtk.cpp)
       target_link_libraries(pcl_ply2vtk pcl_common pcl_io)
 
@@ -241,22 +241,22 @@ if (BUILD_tools)
 
         PCL_ADD_EXECUTABLE(pcl_mesh2pcd "${SUBSYS_NAME}" mesh2pcd.cpp)
         target_link_libraries(pcl_mesh2pcd pcl_common pcl_io pcl_visualization pcl_filters ${VTK_LIBRARIES})
-        
+
         PCL_ADD_EXECUTABLE(pcl_mesh_sampling "${SUBSYS_NAME}" mesh_sampling.cpp)
         target_link_libraries(pcl_mesh_sampling pcl_common pcl_io pcl_visualization pcl_filters ${VTK_LIBRARIES})
-        
+
         PCL_ADD_EXECUTABLE(pcl_virtual_scanner "${SUBSYS_NAME}" virtual_scanner.cpp)
         target_link_libraries(pcl_virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization ${VTK_LIBRARIES})
 
         PCL_ADD_EXECUTABLE (pcl_voxel_grid_occlusion_estimation "${SUBSYS_NAME}" voxel_grid_occlusion_estimation.cpp)
         target_link_libraries (pcl_voxel_grid_occlusion_estimation pcl_common pcl_io pcl_filters pcl_visualization)
-        
+
         if(WITH_OPENNI)
           PCL_ADD_EXECUTABLE(pcl_openni_save_image "${SUBSYS_NAME}" openni_save_image.cpp)
-          target_link_libraries(pcl_openni_save_image pcl_common pcl_io pcl_visualization)  
+          target_link_libraries(pcl_openni_save_image pcl_common pcl_io pcl_visualization)
         endif()
-      endif(BUILD_visualization)
-  endif(NOT VTK_FOUND)
+      endif()
+  endif()
 
   PCL_ADD_EXECUTABLE (pcl_transform_point_cloud "${SUBSYS_NAME}" transform_point_cloud.cpp)
   target_link_libraries (pcl_transform_point_cloud pcl_common pcl_io pcl_registration)
@@ -271,7 +271,7 @@ if (BUILD_tools)
       PCL_ADD_EXECUTABLE(pcl_video "${SUBSYS_NAME}" pcl_video.cpp)
       target_link_libraries(pcl_video pcl_common pcl_io pcl_visualization
           ${Tide_LIBRARIES})
-  endif(Tide_FOUND)
-  
+  endif()
 
-endif (BUILD_tools)
+
+endif()

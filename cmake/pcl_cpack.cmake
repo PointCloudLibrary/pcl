@@ -7,7 +7,7 @@
 #find_program(RPM_PROGRAM rpm)
 #if(EXISTS ${RPM_PROGRAM})
 #  list(APPEND CPACK_GENERATOR "RPM")
-#endif(EXISTS ${RPM_PROGRAM})
+#endif()
 
 set(CPACK_PACKAGE_VERSION "${PCL_VERSION_PRETTY}")
 set(CPACK_PACKAGE_VERSION_MAJOR "${PCL_VERSION_MAJOR}")
@@ -20,7 +20,7 @@ if("${CMAKE_SYSTEM}" MATCHES "Linux")
   find_program(DPKG_PROGRAM dpkg)
   if(EXISTS ${DPKG_PROGRAM})
     list(APPEND CPACK_GENERATOR "DEB")
-  endif(EXISTS ${DPKG_PROGRAM})
+  endif()
 endif()
 
 # NSIS
@@ -29,14 +29,14 @@ if(WIN32)
   if(CMAKE_CL_64)
     set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
     set(win_system_name win64)
-  else(CMAKE_CL_64)
+  else()
     set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES32")
     set(win_system_name win32)
-  endif(CMAKE_CL_64)
+  endif()
   set(CPACK_NSIS_PACKAGE_NAME "${PROJECT_NAME}-${PCL_VERSION_PRETTY}")
   if(BUILD_all_in_one_installer)
     set(CPACK_NSIS_PACKAGE_NAME "${PROJECT_NAME}-${PCL_VERSION_PRETTY}-AllInOne")
-  endif(BUILD_all_in_one_installer)
+  endif()
   if(MSVC_VERSION EQUAL 1600)
     set(CPACK_NSIS_PACKAGE_NAME "${CPACK_NSIS_PACKAGE_NAME}-msvc2010-${win_system_name}")
   elseif(MSVC_VERSION EQUAL 1700)
@@ -54,7 +54,7 @@ if(WIN32)
   # force CPACK_PACKAGE_INSTALL_REGISTRY_KEY because of a known limitation in cmake/cpack to be fixed in next releases
   # http://public.kitware.com/Bug/view.php?id=9094
   # This is to allow a 32bit and a 64bit of PCL to get installed on one system
-  set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${PROJECT_NAME} ${PCL_VERSION_PRETTY} ${win_system_name}" )
+  set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${PROJECT_NAME} ${PCL_VERSION_PRETTY} ${win_system_name}")
 endif()
 
 # dpkg
@@ -63,7 +63,7 @@ if(APPLE)
                HINTS /Developer/Applications/Utilities)
   if(EXISTS ${PACKAGE_MAKER_PROGRAM})
     list(APPEND CPACK_GENERATOR "PackageMaker")
-  endif(EXISTS ${PACKAGE_MAKER_PROGRAM})
+  endif()
 endif()
 
 # By default, do not warn when built on machines using only VS Express:
@@ -89,13 +89,13 @@ macro(PCL_MAKE_CPACK_INPUT)
         set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} doc")
         set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_DOC_GROUP \"PCL\")\n")
         set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_DOC_DISPLAY_NAME \"Documentation\")\n")
-        set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_DOC_DESCRIPTION \"API documentation and tutorials\")\n")	
-    endif(WITH_DOCS)
+        set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_DOC_DESCRIPTION \"API documentation and tutorials\")\n")
+    endif()
     # add PCLConfig
     set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} pclconfig")
     set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_GROUP \"PCL\")\n")
     set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_DISPLAY_NAME \"PCLConfig\")\n")
-    set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_DESCRIPTION \"Helper cmake configuration scripts used by find_package(PCL)\")\n")	
+    set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_DESCRIPTION \"Helper cmake configuration scripts used by find_package(PCL)\")\n")
 
     # add 3rdParty libs
     if(BUILD_all_in_one_installer)
@@ -105,12 +105,12 @@ macro(PCL_MAKE_CPACK_INPUT)
             string(TOUPPER ${dep} DEP)
             set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_${DEP}_GROUP \"ThirdParty\")")
             set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} ${dep}")
-        endforeach(dep)    
-    endif(BUILD_all_in_one_installer)
+        endforeach()
+    endif()
 
     set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENTS_ALL${CPACK_COMPONENTS_ALL})\n")
     configure_file(${_cpack_cfg_in} ${PCL_CPACK_CFG_FILE} @ONLY)
-endmacro(PCL_MAKE_CPACK_INPUT)
+endmacro()
 
 
 macro(PCL_CPACK_MAKE_COMPS_OPTS _var _current)
@@ -122,10 +122,10 @@ macro(PCL_CPACK_MAKE_COMPS_OPTS _var _current)
         if(_status)
             set(_comps_list "${_comps_list} pcl_${_ss}")
             PCL_CPACK_ADD_COMP_INFO(${_var} ${_ss})
-        endif(_status)
-    endforeach(_ss)
+        endif()
+    endforeach()
     set(CPACK_COMPONENTS_ALL ${_comps_list})
-endmacro(PCL_CPACK_MAKE_COMPS_OPTS)
+endmacro()
 
 
 macro(PCL_CPACK_ADD_COMP_INFO _var _ss)
@@ -139,10 +139,10 @@ macro(PCL_CPACK_ADD_COMP_INFO _var _ss)
     GET_IN_MAP(_deps PCL_SUBSYS_DEPS ${_ss})
     foreach(_dep ${_deps})
         set(_deps_str "${_deps_str} pcl_${_dep}")
-    endforeach(_dep)
+    endforeach()
     set(${_var}
         "${${_var}}set(CPACK_COMPONENT_PCL_${_comp_name}_DEPENDS ${_deps_str})\n")
-    set(${_var} 
+    set(${_var}
         "${${_var}}set(CPACK_COMPONENT_PCL_${_comp_name}_GROUP \"PCL\")\n")
-endmacro(PCL_CPACK_ADD_COMP_INFO)
+endmacro()
 

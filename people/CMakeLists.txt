@@ -5,13 +5,13 @@ set(SUBSYS_DEPS common kdtree search features sample_consensus filters io visual
 if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")
-else(NOT VTK_FOUND)
+else()
     set(DEFAULT TRUE)
     set(REASON)
     set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
     include("${VTK_USE_FILE}")
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-endif(NOT VTK_FOUND)
+endif()
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
@@ -20,7 +20,7 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
-    set(incs 
+    set(incs
         "include/pcl/${SUBSYS_NAME}/ground_based_people_detection_app.h"
         "include/pcl/${SUBSYS_NAME}/head_based_subcluster.h"
         "include/pcl/${SUBSYS_NAME}/height_map_2d.h"
@@ -47,11 +47,11 @@ if(build)
     # Install include files
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
-    
+
     #SET_TARGET_PROPERTIES("${LIB_NAME}" PROPERTIES LINKER_LANGUAGE CXX)
 
     if(WITH_OPENNI)
         PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ground_based_rgbd_people_detector "${SUBSYS_NAME}" apps/main_ground_based_people_detection.cpp)
         target_link_libraries(pcl_ground_based_rgbd_people_detector pcl_common pcl_kdtree pcl_search pcl_features pcl_sample_consensus pcl_filters pcl_io pcl_visualization pcl_segmentation pcl_people)
     endif()
-endif(build)
+endif()

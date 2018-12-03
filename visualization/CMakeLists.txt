@@ -5,23 +5,23 @@ set(SUBSYS_DEPS common io kdtree geometry search octree)
 if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")
-else(NOT VTK_FOUND)
+else()
     set(DEFAULT TRUE)
     set(REASON)
     set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
     include("${VTK_USE_FILE}")
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-endif(NOT VTK_FOUND)
+endif()
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS vtk OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk)
 
-if (ANDROID)
-  set (build FALSE)
+if(ANDROID)
+  set(build FALSE)
   message("VTK was found, but cannot be compiled for Android. Please use VES instead.")
-endif ()
+endif()
 
-if (OPENGL_FOUND)
+if(OPENGL_FOUND)
   if(OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")
   endif()
@@ -55,15 +55,15 @@ if(build)
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
         # A custom interactor is necessary on VTK 5.4 and below
         list(APPEND srcs src/interactor.cpp)
-    endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
-    
+    endif()
+
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
         # PCLPainter2D uses some functions not present in vtk 5.6
         list(APPEND srcs
             src/pcl_painter2D.cpp
             src/pcl_plotter.cpp
             )
-    endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
+    endif()
 
     if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
       list(APPEND srcs
@@ -72,7 +72,7 @@ if(build)
       )
     endif()
 
-    set(incs 
+    set(incs
         "include/pcl/${SUBSYS_NAME}/eigen.h"
         "include/pcl/${SUBSYS_NAME}/boost.h"
         "include/pcl/${SUBSYS_NAME}/cloud_viewer.h"
@@ -99,9 +99,9 @@ if(build)
         list(APPEND incs
             "include/pcl/${SUBSYS_NAME}/pcl_plotter.h"
             )
-    endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
+    endif()
 
-    set(common_incs 
+    set(common_incs
         "include/pcl/${SUBSYS_NAME}/common/actor_map.h"
         "include/pcl/${SUBSYS_NAME}/common/common.h"
         "include/pcl/${SUBSYS_NAME}/common/io.h"
@@ -110,7 +110,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/common/float_image_utils.h"
         )
 
-    set(impl_incs 
+    set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/histogram_visualizer.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/pcl_visualizer.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/image_viewer.hpp"
@@ -123,13 +123,13 @@ if(build)
         list(APPEND impl_incs
             "include/pcl/${SUBSYS_NAME}/impl/pcl_plotter.hpp"
             )
-    endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
+    endif()
 
 
     set(common_impl_incs "include/pcl/${SUBSYS_NAME}/common/impl/shapes.hpp"
                          "include/pcl/${SUBSYS_NAME}/common/impl/common.hpp")
 
-    set(vtk_incs 
+    set(vtk_incs
         "include/pcl/${SUBSYS_NAME}/vtk/pcl_image_canvas_source_2d.h"
         "include/pcl/${SUBSYS_NAME}/vtk/pcl_context_item.h"
         "include/pcl/${SUBSYS_NAME}/vtk/vtkRenderWindowInteractorFix.h"
@@ -157,7 +157,7 @@ if(build)
     if(APPLE)
       target_link_libraries("${LIB_NAME}" "-framework Cocoa")
     endif()
-     
+
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
       target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree vtkCommon vtkWidgets vtkHybrid vtkFiltering vtkRendering ${OPENGL_LIBRARIES})
     else()
@@ -195,10 +195,10 @@ if(build)
 
     if(BUILD_TESTS)
         add_subdirectory(test)
-    endif(BUILD_TESTS)
-    
+    endif()
+
     if(BUILD_tools)
         add_subdirectory(tools)
-    endif(BUILD_tools)
+    endif()
 
-endif(build)
+endif()

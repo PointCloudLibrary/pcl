@@ -7,11 +7,11 @@ set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
-if (build)
+if(build)
 	PCL_ADD_TEST(a_octree_test test_octree
                 FILES test_octree.cpp
                 LINK_WITH pcl_gtest pcl_common)
 	PCL_ADD_TEST(a_octree_iterator_test test_octree_iterator
                 FILES test_octree_iterator.cpp
                 LINK_WITH pcl_gtest pcl_common pcl_octree)
-endif (build)
+endif()

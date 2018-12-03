@@ -11,7 +11,7 @@ PCL_ADD_DOC("${SUBSYS_NAME}")
 if(build)
 
     set(srcs
-        src/convolution_2d.cpp 
+        src/convolution_2d.cpp
         )
 
     set(incs
@@ -31,7 +31,7 @@ if(build)
         set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
         include("${VTK_USE_FILE}")
         set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging)
-    endif(${VTK_FOUND})
+    endif()
 
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" ${VTK_INCLUDE_DIRECTORIES})
 
@@ -41,5 +41,5 @@ if(build)
     #Install include files
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
-    
-endif(build)
+
+endif()

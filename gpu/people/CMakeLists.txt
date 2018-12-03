@@ -13,7 +13,7 @@ PCL_ADD_DOC("${SUBSYS_NAME}")
 if(build)
   REMOVE_VTK_DEFINITIONS()
   #find_package(OpenCV QUIET)
-  
+
   #find NPP
   unset(CUDA_npp_LIBRARY CACHE)
   if(${CUDA_VERSION} VERSION_LESS "5.5")
@@ -43,16 +43,16 @@ if(build)
   FILE(GLOB hdrs include/pcl/gpu/people/*.h*)
   FILE(GLOB hdrs_cuda src/cuda/nvidia/*.h*)
 
-  source_group("Source files\\cuda" FILES ${srcs_cuda} )
-  source_group("Source files" FILES ${srcs} )    
+  source_group("Source files\\cuda" FILES ${srcs_cuda})
+  source_group("Source files" FILES ${srcs})
 
   include_directories(${VTK_INCLUDE_DIRS}
                       "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/src/cuda" "${CMAKE_CURRENT_SOURCE_DIR}/src/cuda/nvidia")
   #include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/src/cuda")
   include_directories(${OpenCV_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS})
 
-  if (UNIX OR APPLE)
-    set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "-Xcompiler;-fPIC;")
+  if(UNIX OR APPLE)
+    set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "-Xcompiler;-fPIC;")
   endif()
   if(NOT UNIX OR APPLE)
     add_definitions(-DPCLAPI_EXPORTS)
@@ -70,4 +70,4 @@ if(build)
   PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}" ${hdrs} ${hdrs_cuda})
 
   add_subdirectory(tools)
-endif(build)
+endif()

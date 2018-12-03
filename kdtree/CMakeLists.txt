@@ -9,18 +9,18 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS flann)
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
-    set(srcs 
+    set(srcs
         src/kdtree_flann.cpp
         )
 
-    set(incs 
+    set(incs
         "include/pcl/${SUBSYS_NAME}/kdtree.h"
         "include/pcl/${SUBSYS_NAME}/io.h"
         "include/pcl/${SUBSYS_NAME}/flann.h"
         "include/pcl/${SUBSYS_NAME}/kdtree_flann.h"
         )
 
-    set(impl_incs 
+    set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/kdtree_flann.hpp"
         )
@@ -37,5 +37,5 @@ if(build)
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
 
-endif(build)
+endif()
 

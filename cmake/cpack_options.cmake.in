@@ -7,7 +7,7 @@ set(CPACK_RESOURCE_FILE_README "@PROJECT_SOURCE_DIR@/AUTHORS.txt")
 
 @PCL_CPACK_COMPONENTS@
 
-IF ((WIN32 OR UNIX) AND (CPACK_GENERATOR STREQUAL "NSIS"))
+if((WIN32 OR UNIX) AND (CPACK_GENERATOR STREQUAL "NSIS"))
     set(CPACK_NSIS_DISPLAY_NAME "@PROJECT_NAME@-@PCL_VERSION_PRETTY@")
     set(CPACK_NSIS_MUI_ICON "@PROJECT_SOURCE_DIR@/cmake/images/pcl.ico")
     set(CPACK_NSIS_MUI_UNIICON "@PROJECT_SOURCE_DIR@/cmake/images/pcl.ico")
@@ -15,7 +15,7 @@ IF ((WIN32 OR UNIX) AND (CPACK_GENERATOR STREQUAL "NSIS"))
     set(CPACK_NSIS_URL_INFO_ABOUT "http://www.pointclouds.org")
     set(CPACK_NSIS_MODIFY_PATH ON)
     set(CPACK_PACKAGE_EXECUTABLES @PCL_EXECUTABLES@)
-    set(CPACK_NSIS_MENU_LINKS 
+    set(CPACK_NSIS_MENU_LINKS
             "share/doc/pcl-@PCL_VERSION_MAJOR@.@PCL_VERSION_MINOR@/tutorials/html/index.html" "Tutorials"
             "share/doc/pcl-@PCL_VERSION_MAJOR@.@PCL_VERSION_MINOR@/tutorials/html/sources" "Tutorials sources"
             "share/doc/pcl-@PCL_VERSION_MAJOR@.@PCL_VERSION_MINOR@/html/pcl-@PCL_VERSION_MAJOR@.@PCL_VERSION_MINOR@.chm" "Documentation"
@@ -26,24 +26,24 @@ IF ((WIN32 OR UNIX) AND (CPACK_GENERATOR STREQUAL "NSIS"))
       # There is a bug in NSI that does not handle full unix paths properly. Make
       # sure there is at least one set of four (4) backlasshes.
       set(CPACK_PACKAGE_ICON "@PROJECT_SOURCE_DIR@/cmake/images\\\\pcl_horz_large_pos.bmp")
-    else(WIN32 AND NOT UNIX)
+    else()
       set(CPACK_PACKAGE_ICON "@PROJECT_SOURCE_DIR@/cmake/images/pcl_horz_large_pos.bmp")
-    endif(WIN32 AND NOT UNIX)
-ENDIF ()
+    endif()
+endif()
 
-IF (UNIX AND ((CPACK_GENERATOR STREQUAL "DEB") OR (CPACK_GENERATOR STREQUAL "RPM")))
+if(UNIX AND ((CPACK_GENERATOR STREQUAL "DEB") OR (CPACK_GENERATOR STREQUAL "RPM")))
     # define stuff for the DEB/RPM packages
     set(CPACK_PACKAGE_CONTACT "pcl-developers@pointclouds.org")
-ENDIF ()
+endif()
 
-IF (UNIX AND (CPACK_GENERATOR STREQUAL "DEB"))
-  SET(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-ENDIF ()
+if(UNIX AND (CPACK_GENERATOR STREQUAL "DEB"))
+  set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+endif()
 
-IF (APPLE AND (CPACK_GENERATOR STREQUAL "PackageMaker"))
+if(APPLE AND (CPACK_GENERATOR STREQUAL "PackageMaker"))
     # define stuff for the PackageMaker packages
     set(CPACK_OSX_PACKAGE_VERSION 10.5)
     set(CPACK_PACKAGE_CONTACT "pcl-developers@pointclouds.org")
     set(CPACK_SET_DESTDIR ON)
     set(CPACK_PACKAGING_INSTALL_PREFIX /usr/local)
-ENDIF ()
+endif()

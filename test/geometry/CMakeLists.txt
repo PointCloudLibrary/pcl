@@ -7,7 +7,7 @@ set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
-if (build)
+if(build)
   PCL_ADD_TEST(geometry_iterator test_iterator
                FILES test_iterator.cpp
                LINK_WITH pcl_gtest pcl_common)
@@ -52,4 +52,4 @@ if (build)
   PCL_ADD_TEST(geometry_triangle_mesh test_triangle_mesh
                FILES test_triangle_mesh.cpp
                LINK_WITH pcl_gtest)
-endif (build)
+endif()

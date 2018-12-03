@@ -8,7 +8,7 @@ set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
-if (build)
+if(build)
 	# Args: name, executable_name
 	PCL_ADD_TEST(common_test_wrappers test_wrappers FILES test_wrappers.cpp LINK_WITH pcl_gtest pcl_common)
 	PCL_ADD_TEST(common_test_macros test_macros FILES test_macros.cpp LINK_WITH pcl_gtest pcl_common)
@@ -39,4 +39,4 @@ if (build)
                  LINK_WITH pcl_gtest pcl_io
                  ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
   endif()
-endif (build)
+endif()

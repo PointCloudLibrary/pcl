@@ -9,14 +9,14 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
 PCL_SET_SUBSYS_INCLUDE_DIR("${SUBSYS_NAME}" "${SUBSYS_PATH}")
 mark_as_advanced("BUILD_${SUBSYS_NAME}")
 
-if (build)
+if(build)
     FILE(GLOB incs include/pcl/gpu/features/*.hpp)
     FILE(GLOB srcs src/*.cpp src/*.hpp)
     FILE(GLOB cuda src/*.cu)
-    FILE(GLOB dev_incs include/pcl/gpu/features/device/*.h*)  
+    FILE(GLOB dev_incs include/pcl/gpu/features/device/*.h*)
     source_group("Header Files\\device" FILES ${dev_incs})
-    source_group("Source Files\\cuda" FILES ${cuda} )    
-    source_group("Source Files" FILES ${srcs} )
+    source_group("Source Files\\cuda" FILES ${cuda})
+    source_group("Source Files" FILES ${srcs})
 
     FILE(GLOB srcs_utils src/utils/*.hpp)
     source_group("Source Files\\utils" FILES ${srcs_utils})
@@ -33,6 +33,6 @@ if (build)
     # Install include files
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}" ${incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}/device" ${dev_incs})
-    
+
     add_subdirectory(test)
 endif()

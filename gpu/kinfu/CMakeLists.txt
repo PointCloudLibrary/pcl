@@ -19,7 +19,7 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
 PCL_SET_SUBSYS_INCLUDE_DIR("${SUBSYS_NAME}" "${SUBSYS_PATH}")
 mark_as_advanced("BUILD_${SUBSYS_NAME}")
 
-if (build)
+if(build)
     REMOVE_VTK_DEFINITIONS()
     FILE(GLOB incs include/pcl/gpu/kinfu/*.h*)
     FILE(GLOB srcs src/*.cpp src/*.h*)
@@ -27,14 +27,14 @@ if (build)
     #FILE(GLOB tsdf src/cuda/tsdf_volume.cu)
     #FILE(GLOB est src/cuda/estimate_tranform.cu)
 
-    source_group("Source Files\\cuda" FILES ${cuda} )
-    source_group("Source Files" FILES ${srcs} )
+    source_group("Source Files\\cuda" FILES ${cuda})
+    source_group("Source Files" FILES ${srcs})
 
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src" ${CUDA_INCLUDE_DIRS})
 
-    if (UNIX OR APPLE)
-        set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "-Xcompiler;-fPIC;")
+    if(UNIX OR APPLE)
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "-Xcompiler;-fPIC;")
     endif()
 
     if(NOT UNIX OR APPLE)
@@ -73,7 +73,7 @@ if (build)
     # Install include files
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}" ${incs})
 
-    if (BUILD_visualization)
+    if(BUILD_visualization)
         add_subdirectory(test)
         add_subdirectory(tools)
     endif()

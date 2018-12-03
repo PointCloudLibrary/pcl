@@ -23,13 +23,13 @@ if(build)
             src/concave_hull.cpp
             src/convex_hull.cpp
             )
-    endif(QHULL_FOUND)
-    
-    if (VTK_FOUND AND NOT ANDROID)
+    endif()
+
+    if(VTK_FOUND AND NOT ANDROID)
         set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
         include("${VTK_USE_FILE}")
-        
-        set(VTK_SMOOTHING_INCLUDES 
+
+        set(VTK_SMOOTHING_INCLUDES
             "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk.h"
             "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_utils.h"
             "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_subdivision.h"
@@ -37,25 +37,25 @@ if(build)
             "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_laplacian.h"
             "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.h")
 
-        set(VTK_SMOOTHING_SOURCE 
+        set(VTK_SMOOTHING_SOURCE
             src/vtk_smoothing/vtk_utils.cpp
             src/vtk_smoothing/vtk_mesh_subdivision.cpp
             src/vtk_smoothing/vtk_mesh_quadric_decimation.cpp
             src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
             src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp)
-        
+
         if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "6.0")
             set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkGraphics)
-        else("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "6.0")
+        else()
             set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommonCore vtkCommonDataModel vtkCommonExecutionModel vtkFiltersModeling)
-        endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "6.0")
+        endif()
     endif()
-    
-    SET(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS" )
-    IF(BUILD_surface_on_nurbs)
+
+    set(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS")
+    if(BUILD_surface_on_nurbs)
         include(src/3rdparty/opennurbs/openNURBS.cmake)
-        include(src/on_nurbs/on_nurbs.cmake) 
-    ENDIF(BUILD_surface_on_nurbs)
+        include(src/on_nurbs/on_nurbs.cmake)
+    endif()
 
     set(POISSON_INCLUDES
         "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/allocator.h"
@@ -89,9 +89,9 @@ if(build)
         src/3rdparty/poisson4/geometry.cpp
         src/3rdparty/poisson4/marching_cubes_poisson.cpp
         )
-   
-    set(srcs 
-        src/processing.cpp 
+
+    set(srcs
+        src/processing.cpp
         src/ear_clipping.cpp
         src/gp3.cpp
         src/grid_projection.cpp
@@ -112,7 +112,7 @@ if(build)
         ${ON_NURBS_SOURCES}
         )
 
-    set(incs 
+    set(incs
         "include/pcl/${SUBSYS_NAME}/boost.h"
         "include/pcl/${SUBSYS_NAME}/eigen.h"
         "include/pcl/${SUBSYS_NAME}/ear_clipping.h"
@@ -137,7 +137,7 @@ if(build)
       #  ${ON_NURBS_INCLUDES}
         )
 
-    set(impl_incs 
+    set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/gp3.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/grid_projection.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/marching_cubes.hpp"
@@ -161,7 +161,7 @@ if(build)
     target_link_libraries("${LIB_NAME}" pcl_common pcl_search pcl_kdtree pcl_octree ${VTK_LIBRARIES} ${ON_NURBS_LIBRARIES})
     if(QHULL_FOUND)
       target_link_libraries("${LIB_NAME}" ${QHULL_LIBRARIES})
-    endif(QHULL_FOUND)
+    endif()
     PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
@@ -173,12 +173,12 @@ if(build)
       add_definitions(-DUNICODE -D_UNICODE)
       PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/3rdparty/opennurbs" ${OPENNURBS_INCLUDES})
       PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/on_nurbs" ${ON_NURBS_INCLUDES})
-    endif(BUILD_surface_on_nurbs)
+    endif()
 
-    if (VTK_FOUND AND NOT ANDROID)
+    if(VTK_FOUND AND NOT ANDROID)
       PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/vtk_smoothing" ${VTK_SMOOTHING_INCLUDES})
-    endif (VTK_FOUND AND NOT ANDROID)
+    endif()
     if(WIN32)
       target_link_libraries("${LIB_NAME}" Rpcrt4.lib)
-    endif(WIN32)
-endif(build)
+    endif()
+endif()
