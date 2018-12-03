@@ -31,13 +31,12 @@ if(build)
         )
 
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
-    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include"
-                        "${GLEW_INCLUDE_DIR}")
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
     PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs})
 
     target_link_libraries("${LIB_NAME}" pcl_common pcl_io
-                          ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
+                          ${OPENGL_LIBRARIES} GLEW::GLEW)
 
     set(EXT_DEPS eigen3)
     PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}"
