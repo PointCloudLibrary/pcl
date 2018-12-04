@@ -7,24 +7,9 @@
 # QVTK_LIBRARY - QVTK library.
 # if QVTK_FOUND then QVTK_INCLUDE_DIR is appended to VTK_INCLUDE_DIRS and
 # QVTK_LIBRARY is appended to QVTK_LIBRARY_DIR
-if(${VTK_MAJOR_VERSION} VERSION_LESS "6.0")
-  find_library(QVTK_LIBRARY QVTK HINTS ${VTK_DIR} ${VTK_DIR}/bin)
-  find_path(QVTK_INCLUDE_DIR QVTKWidget.h HINT ${VTK_INCLUDE_DIRS})
-  find_package_handle_standard_args(QVTK DEFAULT_MSG
-    QVTK_LIBRARY QVTK_INCLUDE_DIR)
-  if(NOT QVTK_FOUND)
-    set(VTK_USE_QVTK OFF)
-  else()
-    get_filename_component (QVTK_LIBRARY_DIR ${QVTK_LIBRARY} PATH)
-    set(VTK_LIBRARY_DIRS ${VTK_LIBRARY_DIRS} ${QVTK_LIBRARY_DIR})
-    set(VTK_INCLUDE_DIRS ${VTK_INCLUDE_DIRS} ${QVTK_INCLUDE_DIR})
-    set(VTK_USE_QVTK ON)
-  endif()
+if(";${VTK_MODULES_ENABLED};" MATCHES ";vtkGUISupportQt;" AND ";${VTK_MODULES_ENABLED};" MATCHES ";vtkRenderingQt;")
+  set(VTK_USE_QVTK ON)
+  set(QVTK_LIBRARY vtkRenderingQt vtkGUISupportQt)
 else()
-  if(";${VTK_MODULES_ENABLED};" MATCHES ";vtkGUISupportQt;" AND ";${VTK_MODULES_ENABLED};" MATCHES ";vtkRenderingQt;")
-    set(VTK_USE_QVTK ON)
-    set(QVTK_LIBRARY vtkRenderingQt vtkGUISupportQt)
-  else()
-    unset(QVTK_FOUND)
-  endif()
+  unset(QVTK_FOUND)
 endif()

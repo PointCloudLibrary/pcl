@@ -420,11 +420,7 @@ namespace pcl
           Execute (vtkObject*, unsigned long event_id, void* call_data);
 
           int right_timer_id;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-          PCLVisualizerInteractor *interactor;
-#else
           vtkRenderWindowInteractor *interactor;
-#endif
         };
         
         struct ExitCallback : public vtkCommand

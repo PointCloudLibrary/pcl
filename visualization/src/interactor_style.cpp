@@ -678,11 +678,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 #endif
         {
           vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
-#if VTK_MAJOR_VERSION < 6
-          mapper->SetInput (data);
-#else
           mapper->SetInputData (data);
-#endif
           // Modify the actor
           act->actor->SetMapper (mapper);
         }
@@ -728,11 +724,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
           vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
           mapper->SetScalarRange (minmax);
           mapper->SetScalarModeToUsePointData ();
-#if VTK_MAJOR_VERSION < 6
-          mapper->SetInput (data);
-#else
           mapper->SetInputData (data);
-#endif
           // Modify the actor
           act->actor->SetMapper (mapper);
         }

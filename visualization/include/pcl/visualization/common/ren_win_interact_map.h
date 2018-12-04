@@ -70,11 +70,8 @@ namespace pcl
 
         /** \brief The render window interactor. */
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
-#else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-#endif
+
         /** \brief The render window interactor style. */
         vtkSmartPointer<vtkInteractorStyleTrackballCamera> style_;
     };

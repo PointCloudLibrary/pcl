@@ -45,18 +45,12 @@
 #  include <vtkWin32RenderWindowInteractor.h>
 #else
 #include <vtkConfigure.h>
-#if (VTK_MAJOR_VERSION <= 5 && defined VTK_USE_COCOA) || defined __APPLE__
-#  include <vtkCocoaRenderWindowInteractor.h>
-#elif VTK_MAJOR_VERSION <= 5 && defined VTK_USE_CARBON
-#  include <vtkCarbonRenderWindowInteractor.h>
-#else
 // Stupid X.h defines Complex, Bool, Success globally (!)
 #  include <vtkXRenderWindowInteractor.h>
 #  undef Complex
 #  undef Bool
 #  undef Success
 #  undef Status
-#endif
 #endif
 
 namespace pcl
@@ -66,10 +60,6 @@ namespace pcl
     /** \brief The PCLVisualizer interactor */
 #ifdef _WIN32
     class PCL_EXPORTS PCLVisualizerInteractor : public vtkWin32RenderWindowInteractor
-#elif (VTK_MAJOR_VERSION <= 5 && defined VTK_USE_COCOA) || defined __APPLE__
-    class PCLVisualizerInteractor : public vtkCocoaRenderWindowInteractor
-#elif VTK_MAJOR_VERSION <= 5 && defined VTK_USE_CARBON
-    class PCLVisualizerInteractor : public vtkCarbonRenderWindowInteractor
 #else
     class PCLVisualizerInteractor : public vtkXRenderWindowInteractor
 #endif
@@ -82,24 +72,6 @@ namespace pcl
         
         bool stopped;
         int timer_id_;
-
-#if defined (_WIN32) && ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-        int BreakLoopFlag;                // if true quit the GetMessage loop
-
-        virtual void 
-        Start ();                         // Redefine the vtkWin32RenderWindowInteractor::Start method...
-
-        vtkGetMacro (BreakLoopFlag, int);
-
-        void 
-        SetBreakLoopFlag (int);           // Change the value of BreakLoopFlag
-
-        void 
-        BreakLoopFlagOff ();              // set BreakLoopFlag to 0
-        
-        void 
-        BreakLoopFlagOn ();               // set BreakLoopFlag to 1 (quit)
-#endif
     };
   }
 }
