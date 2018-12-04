@@ -18,7 +18,7 @@ if(POLICY CMP0074)
   # this is a config file that will be consumed by parent projects with (likely)
   # NEW behavior, we need to push a policy stack.
   cmake_policy(PUSH)
-  cmake_policy(SET CMP0074 OLD)
+  cmake_policy(SET CMP0074 NEW)
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Modules")

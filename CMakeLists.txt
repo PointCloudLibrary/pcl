@@ -2,10 +2,9 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
 if(POLICY CMP0074)
-  # TODO:
-  # 1. Find*.cmake modules need to be individually verified.
-  # 2. PCLConfig.cmake needs to be changed.
-  cmake_policy(SET CMP0074 OLD)
+  # 1. Remove with 3.12.4.
+  # 2. Remove search paths with *_ROOT since they will be automatically checked
+  cmake_policy(SET CMP0074 NEW)
 endif()
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
