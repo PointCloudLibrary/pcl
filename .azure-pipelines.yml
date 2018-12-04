@@ -168,9 +168,10 @@ jobs:
           %VCPKG_DIR%\vcpkg.exe version
         displayName: 'Bootstrap vcpkg'
       - script: |
-          %VCPKG_DIR%\vcpkg.exe install boost-system boost-filesystem boost-thread boost-date-time boost-iostreams boost-chrono boost-asio boost-dynamic-bitset boost-foreach boost-graph boost-interprocess boost-multi-array boost-ptr-container boost-random boost-signals2 eigen3 flann gtest qhull --triplet %PLATFORM%-windows
+          %VCPKG_DIR%\vcpkg.exe install boost-syste boost-filesystem boost-thread boost-date-time boost-iostreams boost-chrono boost-asio boost-dynamic-bitset boost-foreach boost-graph boost-interprocess boost-multi-array boost-ptr-container boost-random boost-signals2 eigen3 flann gtest qhull --triplet %PLATFORM%-windows
           %VCPKG_DIR%\vcpkg.exe list
         displayName: 'Install Dependencies'
+        failOnStderr: true
       - script: |
           rmdir %VCPKG_DIR%\downloads /S /Q
           rmdir %VCPKG_DIR%\packages /S /Q
