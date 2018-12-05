@@ -362,7 +362,12 @@ endif()
 # Find VTK
 option(WITH_VTK "Build VTK-Visualizations" TRUE)
 if(WITH_VTK AND NOT ANDROID)
-  find_package(VTK 6.2)
+  find_package(VTK)
+  if(VTK_FOUND AND ("${VTK_VERSION}" VERSION_LESS 6.2))
+    message(WARNING "The minimum required version of VTK is 6.2, but found ${VTK_VERSION}")
+    set(VTK_FOUND FALSE)
+  endif()
+
   if(VTK_FOUND)
     if(NOT DEFINED VTK_RENDERING_BACKEND)
       # On old VTK versions this variable does not exist. In this case it is
