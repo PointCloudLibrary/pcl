@@ -49,7 +49,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/io.h>
 
-class PCLVisualizerInteractor;
 class vtkRenderWindow;
 class vtkRenderWindowInteractor;
 class vtkContextView;

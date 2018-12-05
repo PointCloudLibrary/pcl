@@ -47,7 +47,6 @@ class vtkRenderer;
 class vtkRenderWindow;
 class vtkRenderWindowInteractor;
 class vtkInteractorStyleTrackballCamera;
-class PCLVisualizerInteractor;
 
 namespace pcl
 {

@@ -36,14 +36,14 @@
  *
  */
 
-#include <vtkVersion.h>
-#include <vtkImageViewer.h>
 #include <vtkCallbackCommand.h>
-#include <vtkRenderer.h>
 #include <vtkCamera.h>
-
 #include <vtkImageSlice.h>
 #include <vtkImageSliceMapper.h>
+#include <vtkImageViewer.h>
+#include <vtkObjectFactory.h> 
+#include <vtkRenderer.h>
+#include <vtkVersion.h>
 
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/common/float_image_utils.h>

@@ -41,7 +41,6 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/console/print.h>
-#include <pcl/visualization/interactor.h>
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/vtk/pcl_image_canvas_source_2d.h>
 #include <pcl/visualization/vtk/pcl_context_item.h>
@@ -52,6 +51,7 @@
 
 #include <vtkVersion.h>
 #include <vtkInteractorStyleImage.h>
+#include <vtkRenderWindowInteractor.h>
 
 class vtkImageSlice;
 class vtkContextActor;

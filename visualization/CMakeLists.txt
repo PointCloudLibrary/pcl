@@ -81,7 +81,6 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/mouse_event.h"
         "include/pcl/${SUBSYS_NAME}/window.h"
         "include/pcl/${SUBSYS_NAME}/range_image_visualizer.h"
-        "include/pcl/${SUBSYS_NAME}/interactor.h"
         "include/pcl/${SUBSYS_NAME}/vtk.h"
         "include/pcl/${SUBSYS_NAME}/simple_buffer_visualizer.h"
         "include/pcl/${SUBSYS_NAME}/pcl_plotter.h"
