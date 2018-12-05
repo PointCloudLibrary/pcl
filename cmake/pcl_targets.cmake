@@ -280,6 +280,9 @@ macro(PCL_ADD_EXECUTABLE _name _component)
     set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
         COMPONENT pcl_${_component})
+
+    string(TOUPPER ${_component} _component_upper)
+    list(APPEND PCL_${_component_upper}_ALL_TARGETS ${_name})
 endmacro()
 
 ###############################################################################
@@ -323,6 +326,9 @@ if(APPLE AND VTK_USE_COCOA)
 else()
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component})
 endif()
+
+    string(TOUPPER ${_component} _component_upper)
+    list(APPEND PCL_${_component_upper}_ALL_TARGETS ${_name})
 endmacro()
 
 
@@ -410,6 +416,10 @@ macro(PCL_ADD_EXAMPLE _name)
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Examples")
     endif()
+
+    # add target to list of example targets created at the parent scope
+    list(APPEND PCL_EXAMPLES_ALL_TARGETS ${_name})
+    set(PCL_EXAMPLES_ALL_TARGETS "${PCL_EXAMPLES_ALL_TARGETS}" PARENT_SCOPE)
 endmacro()
 
 ###############################################################################

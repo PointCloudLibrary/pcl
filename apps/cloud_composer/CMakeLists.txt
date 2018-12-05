@@ -195,4 +195,7 @@ if(build)
     set(VSP_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/supervoxels.h")
     define_composer_tool (supervoxels "${VSP_SOURCES}" "${VSP_HEADERS}" "${VSP_DEPS}")
 
+    # Add to the compound apps target
+    list(APPEND PCL_APPS_ALL_TARGETS ${EXE_NAME})
+    set(PCL_APPS_ALL_TARGETS ${PCL_APPS_ALL_TARGETS} PARENT_SCOPE)
 endif()

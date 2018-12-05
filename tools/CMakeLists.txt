@@ -10,6 +10,9 @@ PCL_SUBSYS_DEPEND (BUILD_tools "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${S
 
 if(BUILD_tools)
 
+  # to be filled with all targets the tools subsystem
+  set(PCL_TOOLS_ALL_TARGETS)
+
   PCL_ADD_EXECUTABLE(pcl_sac_segmentation_plane "${SUBSYS_NAME}" sac_segmentation_plane.cpp)
   target_link_libraries(pcl_sac_segmentation_plane pcl_common pcl_io pcl_sample_consensus pcl_segmentation)
 
@@ -273,5 +276,5 @@ if(BUILD_tools)
           ${Tide_LIBRARIES})
   endif()
 
-
+  add_custom_target(${SUBSYS_NAME} DEPENDS ${PCL_TOOLS_ALL_TARGETS})
 endif()
