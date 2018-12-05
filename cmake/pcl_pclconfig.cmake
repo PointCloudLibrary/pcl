@@ -4,6 +4,7 @@ list(REMOVE_ITEM PCL_SUBSYSTEMS_MODULES tools cuda_apps global_tests proctor exa
 
 
 file(GLOB PCLCONFIG_FIND_MODULES "${PCL_SOURCE_DIR}/cmake/Modules/*.cmake")
+list(REMOVE_ITEM PCLCONFIG_FIND_MODULES "${PCL_SOURCE_DIR}/cmake/Modules/FindGTestSource.cmake")
 install(FILES ${PCLCONFIG_FIND_MODULES} COMPONENT pclconfig DESTINATION ${PCLCONFIG_INSTALL_DIR}/Modules)
 
 set(PCLCONFIG_AVAILABLE_COMPONENTS)
