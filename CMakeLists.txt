@@ -236,10 +236,18 @@ else()
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PCL_OUTPUT_LIB_DIR}")
 endif()
 
+# Check if the current generator is an IDE.
+check_if_ide(CMAKE_GENERATOR_IS_IDE)
+
 # Add an "uninstall" target
+if(CMAKE_GENERATOR_IS_IDE)
+  set(UNINSTALL_TARGET_NAME UNINSTALL)
+else()
+  set(UNINSTALL_TARGET_NAME uninstall)
+endif()
 configure_file("${PCL_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
                "${PCL_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
-add_custom_target(uninstall "${CMAKE_COMMAND}" -P
+add_custom_target(${UNINSTALL_TARGET_NAME} "${CMAKE_COMMAND}" -P
                   "${PCL_BINARY_DIR}/uninstall_target.cmake")
 
 ###

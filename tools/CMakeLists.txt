@@ -335,4 +335,11 @@ if(Tide_FOUND)
     ${Tide_LIBRARIES})
 endif()
 
-add_custom_target(${SUBSYS_NAME} DEPENDS ${PCL_TOOLS_ALL_TARGETS})
+if(CMAKE_GENERATOR_IS_IDE)
+  set(SUBSYS_TARGET_NAME TOOLS_BUILD)
+else()
+  set(SUBSYS_TARGET_NAME ${SUBSYS_NAME})
+endif()
+add_custom_target(${SUBSYS_TARGET_NAME} DEPENDS ${PCL_TOOLS_ALL_TARGETS})
+set_target_properties(${SUBSYS_TARGET_NAME} PROPERTIES FOLDER "Tools")
+

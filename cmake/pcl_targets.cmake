@@ -211,9 +211,7 @@ macro(PCL_ADD_LIBRARY _name _component)
     VERSION ${PCL_VERSION}
     SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
     DEFINE_SYMBOL "PCLAPI_EXPORTS")
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
-  endif()
+  set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
   install(TARGETS ${_name}
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
@@ -242,9 +240,7 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
     VERSION ${PCL_VERSION}
     SOVERSION ${PCL_VERSION_MAJOR}
     DEFINE_SYMBOL "PCLAPI_EXPORTS")
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
-  endif()
+  set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
   install(TARGETS ${_name}
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
@@ -271,8 +267,12 @@ macro(PCL_ADD_EXECUTABLE _name _component)
                                               RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
   endif()
 
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
+  # Some app targets report are defined with subsys other than apps
+  # It's simpler check for tools and assume everythin else as an app
+  if(${_component} MATCHES "tools")
+    set_target_properties(${_name} PROPERTIES FOLDER "Tools")
+  else()
+    set_target_properties(${_name} PROPERTIES FOLDER "Apps")
   endif()
 
   set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
@@ -308,8 +308,12 @@ macro(PCL_ADD_EXECUTABLE_OPT_BUNDLE _name _component)
                                               RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
   endif()
 
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
+  # Some app targets report are defined with subsys other than apps
+  # It's simpler check for tools and assume everythin else as an app
+  if(${_component} MATCHES "tools")
+    set_target_properties(${_name} PROPERTIES FOLDER "Tools")
+  else()
+    set_target_properties(${_name} PROPERTIES FOLDER "Apps")
   endif()
 
   set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
@@ -339,9 +343,8 @@ macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
                                               RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
   endif()
 
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
-  endif()
+  # There's a single app.
+  set_target_properties(${_name} PROPERTIES FOLDER "Apps")
 
   set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
   install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
@@ -377,11 +380,8 @@ macro(PCL_ADD_TEST _name _exename)
 
   # must link explicitly against boost only on Windows
   target_link_libraries(${_exename} ${Boost_LIBRARIES})
-  #
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_exename} PROPERTIES FOLDER "Tests")
-  endif()
 
+  set_target_properties(${_exename} PROPERTIES FOLDER "Tests")
   add_test(NAME ${_name} COMMAND ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
 
   add_dependencies(tests ${_exename})
@@ -404,9 +404,7 @@ macro(PCL_ADD_EXAMPLE _name)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                               RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
   endif()
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_name} PROPERTIES FOLDER "Examples")
-  endif()
+  set_target_properties(${_name} PROPERTIES FOLDER "Examples")
 
   # add target to list of example targets created at the parent scope
   list(APPEND PCL_EXAMPLES_ALL_TARGETS ${_name})
@@ -795,9 +793,7 @@ macro (PCL_ADD_DOC _subsys)
     set(doxyfile "${CMAKE_CURRENT_BINARY_DIR}/doxyfile")
     configure_file("${PCL_SOURCE_DIR}/doc/doxygen/doxyfile.in" ${doxyfile})
     add_custom_target(${doc_subsys} ${DOXYGEN_EXECUTABLE} ${doxyfile})
-    if(USE_PROJECT_FOLDERS)
-      set_target_properties(${doc_subsys} PROPERTIES FOLDER "Documentation")
-    endif()
+    set_target_properties(${doc_subsys} PROPERTIES FOLDER "Documentation")
   endif()
 endmacro()
 
