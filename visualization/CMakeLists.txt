@@ -177,6 +177,3 @@ if(BUILD_TESTS)
   add_subdirectory(test)
 endif()
 
-if(BUILD_tools)
-  add_subdirectory(tools)
-endif()
