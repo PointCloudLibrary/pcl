@@ -66,11 +66,7 @@ pcl::modeler::PointsActorItem::initImpl()
   poly_data_->SetPoints(cloud_mesh_->getVtkPoints());
 
   vtkSmartPointer<vtkVertexGlyphFilter> vertex_glyph_filter = vtkSmartPointer<vtkVertexGlyphFilter>::New();
-#if VTK_MAJOR_VERSION < 6
-  vertex_glyph_filter->AddInput(poly_data_);
-#else
   vertex_glyph_filter->AddInputData (poly_data_);
-#endif
   vertex_glyph_filter->Update();
 
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New();

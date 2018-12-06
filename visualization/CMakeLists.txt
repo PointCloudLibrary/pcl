@@ -51,19 +51,9 @@ if(build)
         src/vtk/pcl_image_canvas_source_2d.cpp
         src/vtk/pcl_context_item.cpp
         src/vtk/vtkRenderWindowInteractorFix.cpp
+        src/pcl_painter2D.cpp
+        src/pcl_plotter.cpp
         )
-    if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
-        # A custom interactor is necessary on VTK 5.4 and below
-        list(APPEND srcs src/interactor.cpp)
-    endif()
-
-    if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
-        # PCLPainter2D uses some functions not present in vtk 5.6
-        list(APPEND srcs
-            src/pcl_painter2D.cpp
-            src/pcl_plotter.cpp
-            )
-    endif()
 
     if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
       list(APPEND srcs
@@ -91,15 +81,10 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/mouse_event.h"
         "include/pcl/${SUBSYS_NAME}/window.h"
         "include/pcl/${SUBSYS_NAME}/range_image_visualizer.h"
-        "include/pcl/${SUBSYS_NAME}/interactor.h"
         "include/pcl/${SUBSYS_NAME}/vtk.h"
         "include/pcl/${SUBSYS_NAME}/simple_buffer_visualizer.h"
+        "include/pcl/${SUBSYS_NAME}/pcl_plotter.h"
         )
-    if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
-        list(APPEND incs
-            "include/pcl/${SUBSYS_NAME}/pcl_plotter.h"
-            )
-    endif()
 
     set(common_incs
         "include/pcl/${SUBSYS_NAME}/common/actor_map.h"
@@ -118,13 +103,8 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/point_cloud_handlers.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/point_cloud_color_handlers.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/point_cloud_geometry_handlers.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/pcl_plotter.hpp"
         )
-    if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
-        list(APPEND impl_incs
-            "include/pcl/${SUBSYS_NAME}/impl/pcl_plotter.hpp"
-            )
-    endif()
-
 
     set(common_impl_incs "include/pcl/${SUBSYS_NAME}/common/impl/shapes.hpp"
                          "include/pcl/${SUBSYS_NAME}/common/impl/common.hpp")
@@ -158,11 +138,7 @@ if(build)
       target_link_libraries("${LIB_NAME}" "-framework Cocoa")
     endif()
 
-    if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
-      target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree vtkCommon vtkWidgets vtkHybrid vtkFiltering vtkRendering ${OPENGL_LIBRARIES})
-    else()
-      target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree ${VTK_LIBRARIES} ${OPENGL_LIBRARIES})
-    endif()
+    target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree ${VTK_LIBRARIES} ${OPENGL_LIBRARIES})
 
     set(EXT_DEPS "")
     if(WITH_OPENNI)

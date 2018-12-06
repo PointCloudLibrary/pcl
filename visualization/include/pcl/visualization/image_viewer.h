@@ -41,7 +41,6 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/console/print.h>
-#include <pcl/visualization/interactor.h>
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/vtk/pcl_image_canvas_source_2d.h>
 #include <pcl/visualization/vtk/pcl_context_item.h>
@@ -52,6 +51,7 @@
 
 #include <vtkVersion.h>
 #include <vtkInteractorStyleImage.h>
+#include <vtkRenderWindowInteractor.h>
 
 class vtkImageSlice;
 class vtkContextActor;
@@ -127,7 +127,6 @@ namespace pcl
         /** \brief Destructor. */
         virtual ~ImageViewer ();
        
-#if ((VTK_MAJOR_VERSION > 5) || ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 4)))
         /** \brief Set up the interactor style. By default the interactor style is set to
           * vtkInteractorStyleImage you can use this to set it to another type.
           * \param[in] style user set interactor style.
@@ -137,7 +136,7 @@ namespace pcl
         {
           interactor_->SetInteractorStyle (style);
         }
-#endif
+
         /** \brief Show a monochrome 2D image on screen.
           * \param[in] data the input data representing the image
           * \param[in] width the width of the image
@@ -563,11 +562,7 @@ namespace pcl
         {
           stopped_ = true;
           // This tends to close the window...
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-          interactor_->stopLoop ();
-#else
           interactor_->TerminateApp ();
-#endif
         }
 
         /** \brief Add a circle shape from a point and a radius
@@ -935,11 +930,7 @@ namespace pcl
             int timer_id = *static_cast<int*> (call_data);
             if (timer_id != right_timer_id)
               return;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-            window->interactor_->stopLoop ();
-#else
             window->interactor_->TerminateApp ();
-#endif
           }
           int right_timer_id;
           ImageViewer* window;
@@ -958,11 +949,7 @@ namespace pcl
             if (event_id != vtkCommand::ExitEvent)
               return;
             window->stopped_ = true;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-            window->interactor_->stopLoop ();
-#else
             window->interactor_->TerminateApp ();
-#endif
           }
           ImageViewer* window;
         };
@@ -991,11 +978,7 @@ namespace pcl
         boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
         boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)> keyboard_signal_;
         
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
-#else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-#endif
         vtkSmartPointer<vtkCallbackCommand> mouse_command_;
         vtkSmartPointer<vtkCallbackCommand> keyboard_command_;
 
@@ -1012,10 +995,9 @@ namespace pcl
         /** \brief The renderer. */
         vtkSmartPointer<vtkRenderer> ren_;
 
-#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
         /** \brief Global prop. This is the actual "actor". */
         vtkSmartPointer<vtkImageSlice> slice_;
-#endif
+
         /** \brief The interactor style. */
         vtkSmartPointer<ImageViewerInteractorStyle> interactor_style_;
 

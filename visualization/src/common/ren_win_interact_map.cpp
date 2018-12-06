@@ -41,7 +41,6 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkInteractorStyleTrackballCamera.h>
 
-#include <pcl/visualization/interactor.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
 
 //////////////////////////////////////////////////////////////////////////////

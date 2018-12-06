@@ -1976,11 +1976,7 @@ namespace pcl
         }
       protected:
         /** \brief The render window interactor. */
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
-#else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-#endif
       private:
         /** \brief Internal function for renderer setup
          * \param[in] vtk renderer
@@ -2057,13 +2053,12 @@ namespace pcl
         /** \brief The FPSCallback object for the current visualizer. */
         vtkSmartPointer<FPSCallback> update_fps_;
 
-#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         /** \brief Set to false if the interaction loop is running. */
         bool stopped_;
 
         /** \brief Global timer ID. Used in destructor only. */
         int timer_id_;
-#endif
+
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;

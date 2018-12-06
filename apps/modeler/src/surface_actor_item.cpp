@@ -71,11 +71,7 @@ pcl::modeler::SurfaceActorItem::initImpl()
   poly_data_->GetPointData ()->SetScalars (scalars);
 
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New();
-#if VTK_MAJOR_VERSION < 6
-  mapper->SetInput(poly_data_);
-#else
   mapper->SetInputData (poly_data_);
-#endif
 
   double minmax[2];
   scalars->GetRange(minmax);
