@@ -42,13 +42,6 @@ DAMAGE.
 #define MEMORY_ALLOCATOR_BLOCK_SIZE 1<<12
 #define SPLAT_ORDER 2
 
-#ifndef _MSC_VER
-namespace std
-{
-  using namespace __gnu_cxx;
-}
-#endif
-
 namespace pcl
 {
   namespace poisson
