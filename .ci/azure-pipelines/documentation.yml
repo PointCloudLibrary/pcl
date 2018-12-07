@@ -25,12 +25,14 @@ jobs:
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) \
-                   -DDOXYGEN_USE_SHORT_NAMES=OFF \
-                   -DSPHINX_HTML_FILE_SUFFIX=php \
-                   -DWITH_DOCS=ON \
-                   -DWITH_TUTORIALS=ON
+            -DDOXYGEN_USE_SHORT_NAMES=OFF \
+            -DSPHINX_HTML_FILE_SUFFIX=php \
+            -DWITH_DOCS=ON \
+            -DWITH_TUTORIALS=ON
         displayName: 'CMake Configuration'
-      - script: cd $BUILD_DIR && make doc tutorials advanced
+      - script: |
+          cd $BUILD_DIR
+          cmake --build . -- doc tutorials advanced
         displayName: 'Build Documentation'
       - script: |
           git config --global user.email "documentation@pointclouds.org"
@@ -46,5 +48,3 @@ jobs:
           git push --force
         displayName: 'Push Generated Documentation To GitHub'
         condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
-
-
