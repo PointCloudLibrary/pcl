@@ -10,8 +10,8 @@ jobs:
       vmImage: 'Ubuntu 16.04'
     container: doc
     variables:
-      BUILD_DIR: '$(Agent.WorkFolder)/build'
-      DOC_DIR: '$(Agent.WorkFolder)/documentation'
+      BUILD_DIR: '$(Agent.BuildDirectory)/build'
+      DOC_DIR: '$(Agent.BuildDirectory)/documentation'
     steps:
       - task: InstallSSHKey@0
         inputs:

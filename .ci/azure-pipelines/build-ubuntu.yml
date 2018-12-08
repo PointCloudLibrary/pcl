@@ -11,7 +11,7 @@ jobs:
       vmImage: 'Ubuntu 16.04'
     container: env1604
     variables:
-      BUILD_DIR: '$(Agent.WorkFolder)/build'
+      BUILD_DIR: '$(Agent.BuildDirectory)/build'
       CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi -O2'
     steps:
       - script: |
