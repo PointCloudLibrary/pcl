@@ -192,6 +192,7 @@ endmacro()
 # ARGN The source files for the library.
 macro(PCL_ADD_LIBRARY _name _component)
     add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
+    target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
     if((UNIX AND NOT ANDROID) OR MINGW)
