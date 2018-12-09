@@ -192,7 +192,7 @@ class OpenNIViewer
       
       grabber_.start ();
 
-      while (!cloud_viewer_->wasStopped () && (image_viewer_ && !image_viewer_->wasStopped ()))
+      while (!(cloud_viewer_->wasStopped () || (image_viewer_ && image_viewer_->wasStopped ())))
       {
         boost::shared_ptr<openni_wrapper::Image> image;
         CloudConstPtr cloud;
