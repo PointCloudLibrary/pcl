@@ -254,13 +254,13 @@ namespace pcl
         typedef OctreeLeafNodeDepthFirstIterator<OctreeT> LeafNodeIterator;
         typedef const OctreeLeafNodeDepthFirstIterator<OctreeT> ConstLeafNodeIterator;
 
-        PCL_DEPRECATED ("Please use leaf_depth_begin () instead.")
+        [[deprecated("use leaf_depth_begin() instead")]]
         LeafNodeIterator leaf_begin (unsigned int max_depth_arg = 0)
         {
           return LeafNodeIterator (this, max_depth_arg);
         };
 
-        PCL_DEPRECATED ("Please use leaf_depth_end () instead.")
+        [[deprecated("use leaf_depth_end() instead")]]
         const LeafNodeIterator leaf_end ()
         {
           return LeafNodeIterator ();

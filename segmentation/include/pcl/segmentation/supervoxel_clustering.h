@@ -189,7 +189,7 @@ namespace pcl
        */
       SupervoxelClustering (float voxel_resolution, float seed_resolution);
 
-      PCL_DEPRECATED ("SupervoxelClustering constructor with flag for using the single camera transform is deprecated. Default behavior is now to use the transform for organized clouds, and not use it for unorganized. To force use/disuse of the transform, use the setUseSingleCameraTransform(bool) function.")
+      [[deprecated("constructor with flag for using the single camera transform is deprecated. Default behavior is now to use the transform for organized clouds, and not use it for unorganized. Use setUseSingleCameraTransform() to override the defaults.")]]
       SupervoxelClustering (float voxel_resolution, float seed_resolution, bool);
 
       /** \brief This destructor destroys the cloud, normals and search method used for
@@ -273,7 +273,7 @@ namespace pcl
         * color(it's random). Points that are unlabeled will be black
         * \note This will expand the label_colors_ vector so that it can accommodate all labels
         */
-      PCL_DEPRECATED ("SupervoxelClustering::getColoredCloud is deprecated. Use the getLabeledCloud function instead. examples/segmentation/example_supervoxels.cpp shows how to use this to display and save with colorized labels.")
+      [[deprecated("use getLabeledCloud() instead. An example of how to display and save with colorized labels can be found in examples/segmentation/example_supervoxels.cpp")]]
       typename pcl::PointCloud<PointXYZRGBA>::Ptr
       getColoredCloud () const
       { 
@@ -298,7 +298,7 @@ namespace pcl
        * color(it's random). Points that are unlabeled will be black
        * \note This will expand the label_colors_ vector so that it can accommodate all labels
        */
-      PCL_DEPRECATED ("SupervoxelClustering::getColoredVoxelCloud is deprecated. Use the getLabeledVoxelCloud function instead. examples/segmentation/example_supervoxels.cpp shows how to use this to display and save with colorized labels.")
+      [[deprecated("use getLabeledVoxelCloud() instead. An example of how to display and save with colorized labels can be found in examples/segmentation/example_supervoxels.cpp")]]
       pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
       getColoredVoxelCloud () const
       {

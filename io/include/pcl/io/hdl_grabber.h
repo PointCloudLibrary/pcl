@@ -75,8 +75,8 @@ namespace pcl
                                                       float,
                                                       float);
 
-      typedef PCL_DEPRECATED ("Use 'sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba' instead")
-      sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb;
+      [[deprecated("use sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba instead")]]
+      typedef sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb;
 
       /** \brief Signal used for a single sector
        *         Represents 1 corrected packet from the HDL Velodyne with the returned intensity.
@@ -107,8 +107,8 @@ namespace pcl
       typedef void
       (sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
 
-      typedef PCL_DEPRECATED ("Use 'sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba' instead")
-      sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb;
+      [[deprecated("use sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba instead")]]
+      typedef sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb;
 
       /** \brief Constructor taking an optional path to an HDL corrections file.  The Grabber will listen on the default IP/port for data packets [192.168.3.255/2368]
        * \param[in] correctionsFile Path to a file which contains the correction parameters for the HDL.  This parameter is mandatory for the HDL-64, optional for the HDL-32
