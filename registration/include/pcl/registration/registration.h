@@ -172,6 +172,10 @@ namespace pcl
       void
       setCorrespondenceEstimation (const CorrespondenceEstimationPtr &ce) { correspondence_estimation_ = ce; }
 
+      /** \brief Get a pointer to the correspondence estimation object. */
+      inline CorrespondenceEstimationPtr
+      getCorrespondenceEstimation () { return (correspondence_estimation_); }
+
       /** \brief Provide a pointer to the input source 
         * (e.g., the point cloud that we want to align to the target)
         *
