@@ -74,9 +74,6 @@
 #include <vtkImageData.h>
 #include <vtkPolyDataNormals.h>
 
-// Please do not add any functions that depend on VTK structures to this file!
-// Use vtk_io_lib.h instead.
-
 namespace pcl
 {
   namespace io
