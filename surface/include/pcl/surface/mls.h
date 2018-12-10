@@ -356,7 +356,7 @@ namespace pcl
       /** \brief Sets whether the surface and normal are approximated using a polynomial, or only via tangent estimation.
         * \param[in] polynomial_fit set to true for polynomial fit
         */
-      PCL_DEPRECATED ("[pcl::surface::MovingLeastSquares::setPolynomialFit] setPolynomialFit is deprecated. Please use setPolynomialOrder instead.")
+      [[deprecated("use setPolynomialOrder() instead")]]
       inline void
       setPolynomialFit (bool polynomial_fit)
       {
@@ -374,7 +374,7 @@ namespace pcl
       }
 
       /** \brief Get the polynomial_fit value (true if the surface and normal are approximated using a polynomial). */
-      PCL_DEPRECATED ("[pcl::surface::MovingLeastSquares::getPolynomialFit] getPolynomialFit is deprecated. Please use getPolynomialOrder instead.")
+      [[deprecated("use getPolynomialOrder() instead")]]
       inline bool
       getPolynomialFit () const { return (order_ > 1); }
 

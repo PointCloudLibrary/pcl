@@ -116,7 +116,7 @@ namespace pcl
         * \param[in] p  a point type
         */
       template<typename PointT>
-      PCL_DEPRECATED ("Use setInputFields<PointT> () instead")
+      [[deprecated("use parameterless setInputFields<PointT>() instead")]]
       inline void setInputFields (const PointT p)
       {
         (void) p;
