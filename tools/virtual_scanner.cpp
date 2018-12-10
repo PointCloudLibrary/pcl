@@ -46,7 +46,7 @@
 #include <string>
 #include <pcl/register_point_struct.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/io/vtk_lib_io.h>
+#include <pcl/io/vtk_io.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/point_types.h>
 #include <pcl/console/parse.h>

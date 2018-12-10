@@ -181,14 +181,14 @@ if(build)
         set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
         include("${VTK_USE_FILE}")
         set(VTK_IO_INCLUDES
-            "include/pcl/${SUBSYS_NAME}/vtk_lib_io.h"
+            "include/pcl/${SUBSYS_NAME}/vtk_io.h"
             "include/pcl/${SUBSYS_NAME}/png_io.h"
            )
         set(VTK_IO_INCLUDES_IMPL
-            "include/pcl/${SUBSYS_NAME}/impl/vtk_lib_io.hpp"
+            "include/pcl/${SUBSYS_NAME}/impl/vtk_io.hpp"
            )
         set(VTK_IO_SOURCE
-            src/vtk_lib_io.cpp
+            src/vtk_io.cpp
             src/png_io.cpp
            )
         set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging vtkHybrid vtkGraphics vtkRendering vtkFiltering vtkVolumeRendering)
@@ -212,7 +212,6 @@ if(build)
         src/debayer.cpp
         src/pcd_grabber.cpp
         src/pcd_io.cpp
-        src/vtk_io.cpp
         src/ply_io.cpp
         src/ascii_io.cpp
         src/compression.cpp
@@ -264,7 +263,6 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/file_grabber.h"
         "include/pcl/${SUBSYS_NAME}/pcd_grabber.h"
         "include/pcl/${SUBSYS_NAME}/pcd_io.h"
-        "include/pcl/${SUBSYS_NAME}/vtk_io.h"
         "include/pcl/${SUBSYS_NAME}/ply_io.h"
         "include/pcl/${SUBSYS_NAME}/tar.h"
         "include/pcl/${SUBSYS_NAME}/obj_io.h"

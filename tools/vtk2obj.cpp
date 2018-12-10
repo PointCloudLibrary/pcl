@@ -39,7 +39,7 @@
 
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/io/vtk_lib_io.h>
+#include <pcl/io/vtk_io.h>
 #include <pcl/io/obj_io.h>
 
 using namespace pcl;

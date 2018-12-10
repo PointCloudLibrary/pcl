@@ -46,7 +46,7 @@
 #include <pcl/console/print.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ascii_io.h>
-#include <pcl/io/vtk_lib_io.h>
+#include <pcl/io/vtk_io.h>
 #include <fstream>
 #include <locale>
 #include <stdexcept>

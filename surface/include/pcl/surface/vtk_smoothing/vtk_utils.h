@@ -52,7 +52,7 @@ namespace pcl
         * \param[in] triangles PolygonMesh to be converted to vtkPolyData, stored in the object.
         * \param[out] triangles_out_vtk
         */
-      PCL_DEPRECATED("Use pcl::io::mesh2vtk instead")
+      [[deprecated]]
       static int
       convertToVTK (const pcl::PolygonMesh &triangles, vtkSmartPointer<vtkPolyData> &triangles_out_vtk);
 
@@ -60,7 +60,7 @@ namespace pcl
         * \param[in] vtk_polygons
         * \param[out] triangles the PolygonMesh to store the vtkPolyData in.
         */
-      PCL_DEPRECATED("Use pcl::io::vtk2mesh instead")
+      [[deprecated]]
       static void
       convertToPCL (vtkSmartPointer<vtkPolyData> &vtk_polygons, pcl::PolygonMesh &triangles);
 
@@ -69,7 +69,7 @@ namespace pcl
         * \param[out] mesh PCL Polygon Mesh to fill
         * \return Number of points in the point cloud of mesh.
         */
-      PCL_DEPRECATED("Use pcl::io::vtk2mesh instead")
+      [[deprecated]]
       static int
       vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMesh& mesh);
 
@@ -78,7 +78,7 @@ namespace pcl
         * \param[out] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
         * \return Number of points in the point cloud of mesh.
         */
-      PCL_DEPRECATED("Use pcl::io::mesh2vtk instead")
+      [[deprecated]]
       static int
       mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData> &poly_data);
   };

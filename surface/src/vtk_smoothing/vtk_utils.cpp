@@ -40,7 +40,7 @@
 #include <pcl/surface/vtk_smoothing/vtk_utils.h>
 #include <vtkVersion.h>
 #include <vtkTriangleFilter.h>
-#include <pcl/io/vtk_lib_io.h>
+#include <pcl/io/vtk_io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int

@@ -37,7 +37,7 @@
  */
 #include <pcl/console/print.h>
 #include <pcl/surface/vtk_smoothing/vtk_mesh_subdivision.h>
-#include <pcl/io/vtk_lib_io.h>
+#include <pcl/io/vtk_io.h>
 
 #include <vtkVersion.h>
 #include <vtkLinearSubdivisionFilter.h>
