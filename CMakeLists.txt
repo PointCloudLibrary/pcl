@@ -159,13 +159,14 @@ if(CMAKE_COMPILER_IS_MSVC)
     endif()
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
 
-    if(MSVC_VERSION GREATER 1500)
-      include(ProcessorCount)
-      ProcessorCount(N)
-      if(NOT N EQUAL 0)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP${N}")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP${N}")
-      endif()
+    include(ProcessorCount)
+    ProcessorCount(CPUCores)
+    set(MSVC_MP ${CPUCores} CACHE STRING "Number of simultaneously running compilers (0 = automatic detection by MSVC). See documentation of /MP flag.")
+    if(MSVC_MP EQUAL 0)
+      # MSVC_MP is 0 in case the information cannot be determined by ProcessorCount => fallback
+      add_compile_options("/MP")
+    elseif(MSVC_MP GREATER 1)
+      add_compile_options("/MP${MSVC_MP}")
     endif()
   endif()
 
