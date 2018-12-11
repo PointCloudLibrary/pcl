@@ -7,10 +7,17 @@ if(POLICY CMP0074)
   cmake_policy(SET CMP0074 NEW)
 endif()
 
-# Set target C++ standard
+# Set target C++ standard and required compiler features
 set(CMAKE_CXX_STANDARD 14 CACHE STRING "The target C++ standard. PCL requires C++14 or higher.")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+if(CMAKE_VERSION VERSION_LESS 3.8)
+  # CMake did not have cxx_std_14 compile feature prior to 3.8
+  # We use cxx_attribute_deprecated as a proxy because this feature is a part of c++14 standard
+  set(PCL_CXX_COMPILE_FEATURES cxx_attribute_deprecated)
+else()
+  set(PCL_CXX_COMPILE_FEATURES cxx_std_14)
+endif()
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
 
