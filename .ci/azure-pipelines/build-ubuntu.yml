@@ -21,6 +21,7 @@ jobs:
             -DPCL_ONLY_CORE_POINT_TYPES=ON \
             -DPCL_QT_VERSION=5 \
             -DBUILD_simulation=ON \
+            -DBUILD_surface_on_nurbs=ON \
             -DBUILD_global_tests=ON \
             -DBUILD_examples=ON \
             -DBUILD_tools=ON \
