@@ -47,10 +47,6 @@
 #include <pcl/point_traits.h>
 
 // VTK
-// Ignore warnings in the above headers
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
 #include <vtkVersion.h>
 #include <vtkFloatArray.h>
 #include <vtkPointData.h>

@@ -46,7 +46,7 @@ if(build)
             src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
             src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp)
 
-      set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES pcl_io vtkCommonCore vtkCommonDataModel vtkCommonExecutionModel vtkFiltersModeling)
+        set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES pcl_io vtkCommonCore vtkCommonDataModel vtkCommonExecutionModel vtkFiltersModeling)
     endif()
 
     set(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS")
@@ -172,7 +172,7 @@ if(build)
       PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/on_nurbs" ${ON_NURBS_INCLUDES})
     endif()
 
-    if (IO_STATUS AND VTK_FOUND AND NOT ANDROID)
+    if(IO_STATUS AND VTK_FOUND AND NOT ANDROID)
       PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/vtk_smoothing" ${VTK_SMOOTHING_INCLUDES})
     endif()
     if(WIN32)

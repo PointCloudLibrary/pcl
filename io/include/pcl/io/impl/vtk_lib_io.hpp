@@ -40,7 +40,7 @@
 
 #pragma once
 
-#warning The <pcl/io/vtk_lib_io.h> header is deprecated.please use \
-<pcl/io/vtk_io.h> instead.
+#warning The <pcl/io/impl/vtk_lib_io.hpp> header is deprecated.please use \
+<pcl/io/impl/vtk_io.hpp> instead.
 
-#include <pcl/io/vtk_io.h>
+#include <pcl/io/impl/vtk_io.hpp>

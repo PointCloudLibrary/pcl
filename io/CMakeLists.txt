@@ -187,6 +187,7 @@ if(build)
            )
         set(VTK_IO_INCLUDES_IMPL
             "include/pcl/${SUBSYS_NAME}/impl/vtk_io.hpp"
+            "include/pcl/${SUBSYS_NAME}/impl/vtk_lib_io.hpp"
            )
         set(VTK_IO_SOURCE
             src/vtk_io.cpp
