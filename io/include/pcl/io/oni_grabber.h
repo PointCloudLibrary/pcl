@@ -35,11 +35,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#pragma once
+
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
-
-#ifndef __PCL_IO_ONI_PLAYER__
-#define __PCL_IO_ONI_PLAYER__
 
 #include <pcl/io/eigen.h>
 #include <pcl/io/boost.h>
@@ -204,7 +203,4 @@ namespace pcl
   };
 
 } // namespace
-
-#endif // __PCL_IO_ONI_PLAYER__
 #endif // HAVE_OPENNI
-

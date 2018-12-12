@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef TOOLBOX_MODEL_H_
-#define TOOLBOX_MODEL_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/qt.h>
 
@@ -119,6 +118,3 @@ namespace pcl
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::ToolBoxModel);
 Q_DECLARE_METATYPE (QStandardItemModel*);
-
-#endif //TOOLBOX_MODEL_H_
-

@@ -19,8 +19,7 @@
 // device-specific poly data mappers, that actually do the mapping to the
 // rendering/graphics hardware/software.
 
-#ifndef __vtkVertexBufferObjectMapper_h
-#define __vtkVertexBufferObjectMapper_h
+#pragma once
 
 #include <pcl/pcl_exports.h>
 
@@ -133,5 +132,3 @@ private:
   vtkVertexBufferObjectMapper(const vtkVertexBufferObjectMapper&);  // Not implemented.
   void operator=(const vtkVertexBufferObjectMapper&);  // Not implemented.
 };
-
-#endif

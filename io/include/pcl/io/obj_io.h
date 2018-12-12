@@ -34,8 +34,8 @@
  *
  */
 
-#ifndef OBJ_IO_H_
-#define OBJ_IO_H_
+#pragma once
+
 #include <pcl/pcl_macros.h>
 #include <pcl/TextureMesh.h>
 #include <pcl/PolygonMesh.h>
@@ -343,5 +343,3 @@ namespace pcl
 
   }
 }
-
-#endif /* OBJ_IO_H_ */

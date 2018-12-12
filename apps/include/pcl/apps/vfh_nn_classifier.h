@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef VFHCLASSIFICATION_H_
-#define VFHCLASSIFICATION_H_
+#pragma once
 
 #include <fstream>
 #include <pcl/point_types.h>
@@ -265,5 +264,3 @@ namespace pcl
       }
   };
 }
-
-#endif /* VFHCLASSIFICATION_H_ */

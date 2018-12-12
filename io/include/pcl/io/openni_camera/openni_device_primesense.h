@@ -34,11 +34,10 @@
  *
  */
 
+#pragma once
+ 
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
-
-#ifndef __OPENNI_DEVICE_PRIMESENSE__
-#define __OPENNI_DEVICE_PRIMESENSE__
 
 #include "openni_device.h"
 #include "openni_driver.h"
@@ -70,4 +69,3 @@ protected:
 } // namespace
 
 #endif
-#endif // __OPENNI_DEVICE_PRIMESENSE__

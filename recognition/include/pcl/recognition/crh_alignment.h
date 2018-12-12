@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef CRH_ALIGNMENT_H_
-#define CRH_ALIGNMENT_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/features/crh.h>
@@ -271,5 +270,3 @@ namespace pcl
       }
     };
 }
-
-#endif /* CRH_ALIGNMENT_H_ */

@@ -39,8 +39,6 @@
  */
 
 #pragma once
-#ifndef __PCL_IO_IMAGE_GRABBER__
-#define __PCL_IO_IMAGE_GRABBER__
 
 #include "pcl/pcl_config.h"
 #include <pcl/io/grabber.h>
@@ -315,4 +313,3 @@ namespace pcl
     signal_->operator () (cloud);
   }
 }
-#endif

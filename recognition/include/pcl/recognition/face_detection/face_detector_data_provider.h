@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef FACE_DETECTOR_DATA_PROVIDER_H_
-#define FACE_DETECTOR_DATA_PROVIDER_H_
+#pragma once
 
 #include "pcl/common/common.h"
 #include "pcl/recognition/face_detection/face_common.h"
@@ -176,5 +175,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* FACE_DETECTOR_DATA_PROVIDER_H_ */

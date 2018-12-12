@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef OCTREE_COMPRESSION_H
-#define OCTREE_COMPRESSION_H
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
@@ -318,7 +317,3 @@ namespace pcl
   }
 
 }
-
-
-#endif
-

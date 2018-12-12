@@ -35,8 +35,7 @@
   *
   */
  
- #ifndef ORGANIZED_SEGMENTATION_H_
- #define ORGANIZED_SEGMENTATION_H_
+#pragma once
  
  #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
  #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
@@ -108,10 +107,3 @@
      
    }
  }
- 
- 
- 
- 
- 
- 
- #endif //ORGANIZED_SEGMENTATION_H_

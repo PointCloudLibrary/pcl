@@ -40,8 +40,7 @@
  * Implemented as inlinable functions to prevent any performance overhead.
  */
 
-#ifndef __PCL_IO_LOW_LEVEL_IO__
-#define __PCL_IO_LOW_LEVEL_IO__
+#pragma once
 
 #ifdef _WIN32
 # ifndef WIN32_LEAN_AND_MEAN
@@ -212,4 +211,3 @@ namespace pcl
 
   }
 }
-#endif // __PCL_IO_LOW_LEVEL_IO__

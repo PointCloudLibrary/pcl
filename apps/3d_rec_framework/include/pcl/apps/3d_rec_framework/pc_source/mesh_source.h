@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_MESH_SOURCE_H_
-#define REC_FRAMEWORK_MESH_SOURCE_H_
+#pragma once
 
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
 #include <pcl/apps/render_views_tesselated_sphere.h>
@@ -290,5 +289,3 @@ namespace pcl
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_MESH_SOURCE_H_ */

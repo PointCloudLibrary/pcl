@@ -35,11 +35,12 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#pragma once
+ 
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
-#ifndef __OPENNI_IMAGE_BAYER_GRBG__
-#define __OPENNI_IMAGE_BAYER_GRBG__
 #include <pcl/pcl_macros.h>
 #include "openni_image.h"
 
@@ -100,4 +101,3 @@ namespace openni_wrapper
 } // namespace
 
 #endif
-#endif // __OPENNI_IMAGE__

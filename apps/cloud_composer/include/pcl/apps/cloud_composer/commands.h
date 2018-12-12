@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef COMMANDS_H_
-#define COMMANDS_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/pcl_exports.h>
@@ -219,4 +218,3 @@ namespace pcl
 } 
 
 Q_DECLARE_METATYPE (ConstItemList);
-#endif //COMMANDS_H_

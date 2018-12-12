@@ -35,11 +35,9 @@
  *
  */
 
-#ifndef TRANSFORM_CLOUDS_H_
-#define TRANSFORM_CLOUDS_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
-
 
 namespace pcl
 {
@@ -67,5 +65,3 @@ namespace pcl
 
   }
 }
-
-#endif

@@ -35,14 +35,8 @@
  *
  */
 
-#ifndef SELECTED_TRACKBALL_STYLE_INTERACTOR_H_
-#define SELECTED_TRACKBALL_STYLE_INTERACTOR_H_
-
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 #include <pcl/apps/cloud_composer/qt.h>
-
-
-
 
 namespace pcl
 {
@@ -125,7 +119,3 @@ namespace pcl
   }
   
 }
-
-#endif // SELECTED_TRACKBALL_STYLE_INTERACTOR_H_
-        
-        

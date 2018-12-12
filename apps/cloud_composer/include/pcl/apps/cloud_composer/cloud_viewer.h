@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef CLOUD_VIEWER_H_
-#define CLOUD_VIEWER_H_
+#pragma once
 
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/apps/cloud_composer/project_model.h>
@@ -83,4 +82,3 @@ namespace pcl
     };
   }
 }
-#endif

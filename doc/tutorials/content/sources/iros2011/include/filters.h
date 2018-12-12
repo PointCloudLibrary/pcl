@@ -1,5 +1,4 @@
-#ifndef FILTERS_H
-#define FILTERS_H
+#pragma once
 
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/voxel_grid.h>
@@ -30,5 +29,3 @@ removeOutliers (const PointCloudPtr & input, float radius, int min_neighbors)
   PointCloudPtr inliers;
   return (inliers);
 }
-
-#endif

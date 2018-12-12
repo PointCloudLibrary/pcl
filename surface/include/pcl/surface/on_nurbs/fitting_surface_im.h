@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef NURBS_FITTING_SURFACE_IM_H
-#define NURBS_FITTING_SURFACE_IM_H
+#pragma once
 
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>
@@ -172,5 +171,3 @@ namespace pcl
     };
   }
 }
-
-#endif

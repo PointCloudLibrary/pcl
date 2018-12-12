@@ -9,8 +9,7 @@
  *
  */
  
-#ifndef _CUTIL_INLINE_FUNCTIONS_DRVAPI_H_
-#define _CUTIL_INLINE_FUNCTIONS_DRVAPI_H_
+#pragma once
 
 #include <stdio.h>
 #include <string.h>
@@ -379,6 +378,3 @@ inline bool cutilDrvCudaCapabilities(int major_version, int minor_version, int a
 {
 	return cutilDrvCudaDevCapabilities(major_version, minor_version, 0, argc, argv);
 }
-
-
-#endif // _CUTIL_INLINE_FUNCTIONS_DRVAPI_H_

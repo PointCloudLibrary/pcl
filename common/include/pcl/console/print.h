@@ -34,8 +34,8 @@
  * $Id$
  *
  */
-#ifndef TERMINAL_TOOLS_PRINT_H_
-#define TERMINAL_TOOLS_PRINT_H_
+
+#pragma once
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -247,5 +247,3 @@ namespace pcl
     print (VERBOSITY_LEVEL level, const char *format, ...);
   }
 } 
-
-#endif // TERMINAL_TOOLS_PRINT_H_

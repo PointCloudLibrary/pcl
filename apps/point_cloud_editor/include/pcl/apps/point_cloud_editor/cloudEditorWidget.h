@@ -38,8 +38,7 @@
 /// which are used for viewing and editing point clouds
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef CLOUD_EDITOR_WIDGET_H_
-#define CLOUD_EDITOR_WIDGET_H_
+#pragma once
 
 #include <QGLWidget>
 #include <boost/function.hpp>
@@ -311,4 +310,3 @@ class CloudEditorWidget : public QGLWidget
 
 
 };
-#endif // CLOUD_EDITOR_WIDGET_H_

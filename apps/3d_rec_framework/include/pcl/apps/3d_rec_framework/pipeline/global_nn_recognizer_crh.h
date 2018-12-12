@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_GLOBAL_RECOGNIZER_CRH_H_
-#define REC_FRAMEWORK_GLOBAL_RECOGNIZER_CRH_H_
+#pragma once
 
 #include <flann/flann.h>
 #include <pcl/common/common.h>
@@ -269,4 +268,3 @@ namespace pcl
     };
   }
 }
-#endif /* REC_FRAMEWORK_GLOBAL_PIPELINE_H_ */

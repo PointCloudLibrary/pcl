@@ -1,5 +1,4 @@
-#ifndef REGISTRATION_H
-#define REGISTRATION_H
+#pragma once
 
 #include "typedefs.h"
 
@@ -90,5 +89,3 @@ refineAlignment (const PointCloudPtr & source_points, const PointCloudPtr & targ
 
   return (icp.getFinalTransformation () * initial_alignment);
 }
-
-#endif

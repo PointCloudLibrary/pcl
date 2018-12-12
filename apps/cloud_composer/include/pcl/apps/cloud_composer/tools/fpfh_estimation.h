@@ -35,13 +35,10 @@
  *
  */
 
-#ifndef FPFH_ESTIMATION_H_
-#define FPFH_ESTIMATION_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
-
-
 
 namespace pcl
 {
@@ -107,10 +104,3 @@ namespace pcl
 
   }
 }
-
-
-
-
-
-
-#endif //FPFH_ESTIMATION_H_
