@@ -38,8 +38,7 @@
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
-#ifndef __PCL_IO_RANGECODING__
-#define __PCL_IO_RANGECODING__
+#pragma once
 
 #include <map>
 #include <iostream>
@@ -187,6 +186,3 @@ namespace pcl
 
 
 //#include "impl/entropy_range_coder.hpp"
-
-#endif
-

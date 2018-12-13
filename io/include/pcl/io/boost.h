@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _PCL_IO_BOOST_H_
-#define _PCL_IO_BOOST_H_
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header 
@@ -81,5 +80,3 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
 #endif
-#endif    // _PCL_IO_BOOST_H_
-

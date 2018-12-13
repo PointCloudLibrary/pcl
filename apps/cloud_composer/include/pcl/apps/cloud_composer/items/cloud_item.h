@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef CLOUD_ITEM_H_
-#define CLOUD_ITEM_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -187,5 +186,3 @@ Q_DECLARE_METATYPE (pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr);
 Q_DECLARE_METATYPE (pcl::PointCloud <pcl::PointXYZ>::Ptr);
 Q_DECLARE_METATYPE (pcl::PointCloud <pcl::PointXYZRGB>::Ptr);
 Q_DECLARE_METATYPE (pcl::PointCloud <pcl::PointXYZRGBA>::Ptr);
-
-#endif //CLOUD_ITEM_H_

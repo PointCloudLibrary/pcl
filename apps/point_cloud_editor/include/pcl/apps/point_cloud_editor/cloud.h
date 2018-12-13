@@ -39,8 +39,7 @@
 /// display.
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef CLOUD_H_
-#define CLOUD_H_
+#pragma once
 
 #include <QtGui/QColor>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -472,8 +471,3 @@ class Cloud : public Statistics
     /// The translations on x, y, and z axis on the selected points.
     float select_translate_x_, select_translate_y_, select_translate_z_;
 };
-#endif // CLOUD_H_
-
-
-
-

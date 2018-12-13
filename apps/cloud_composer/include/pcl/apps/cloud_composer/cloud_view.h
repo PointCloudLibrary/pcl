@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef CLOUD_VIEW_H_
-#define CLOUD_VIEW_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -151,5 +150,3 @@ namespace pcl
 }
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::CloudView);
-#endif
-

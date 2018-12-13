@@ -40,8 +40,7 @@
  *
  */
 
-#ifndef SIGNAL_MULTIPLEXER_H_
-#define SIGNAL_MULTIPLEXER_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/qt.h>
 
@@ -148,21 +147,3 @@ namespace pcl
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif // SIGNAL_MULTIPLEXER_H_

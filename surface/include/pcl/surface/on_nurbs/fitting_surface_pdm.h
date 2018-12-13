@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef NURBS_FITTING_PATCH_H
-#define NURBS_FITTING_PATCH_H
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
@@ -312,5 +311,3 @@ namespace pcl
 
   } // namespace on_nurbs
 } // namespace pcl
-
-#endif    // PATCHFITTING_H_

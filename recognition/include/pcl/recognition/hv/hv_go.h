@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef GO_H_
-#define GO_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
@@ -493,5 +492,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/recognition/impl/hv/hv_go.hpp>
 #endif
-
-#endif /* GO_H_ */

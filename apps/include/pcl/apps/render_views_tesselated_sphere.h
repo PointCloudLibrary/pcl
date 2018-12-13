@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef RENDER_VIEWS_TESSELATED_SPHERE_H_
-#define RENDER_VIEWS_TESSELATED_SPHERE_H_
+#pragma once
 
 #include <vtkSmartPointer.h>
 #include <vtkPolyData.h>
@@ -178,5 +177,3 @@ namespace pcl
 
   }
 }
-
-#endif /* RENDER_VIEWS_TESSELATED_SPHERE_H_ */

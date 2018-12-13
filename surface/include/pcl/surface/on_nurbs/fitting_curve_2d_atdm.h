@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef NURBS_FITTING_CURVE_2D_ATDM_H
-#define NURBS_FITTING_CURVE_2D_ATDM_H
+#pragma once
 
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>
@@ -109,5 +108,3 @@ namespace pcl
     };
   }
 }
-
-#endif

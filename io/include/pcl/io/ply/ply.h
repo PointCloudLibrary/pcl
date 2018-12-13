@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PLY_PLY_H
-#define PLY_PLY_H
+#pragma once
 
 #include <pcl/io/boost.h>
 #include <pcl/io/ply/byte_order.h>
@@ -100,4 +99,3 @@ namespace pcl
     } // namespace ply
   } // namespace io
 } // namespace pcl
-#endif // PCL_IO_PLY_PLY_H

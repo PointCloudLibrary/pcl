@@ -38,8 +38,7 @@
 /// copied from the cloud.
 /// @author Yue Li and Matthew Hielsberg
 
-#ifndef COPY_BUFFER_H_
-#define COPY_BUFFER_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
@@ -114,4 +113,3 @@ class CopyBuffer : public Statistics
     /// a cloud object holding all the copied points.
     Cloud buffer_; 
 };
-#endif // COPY_BUFFER_H_

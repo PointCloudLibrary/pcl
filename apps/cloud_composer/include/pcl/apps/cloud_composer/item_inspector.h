@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef ITEM_INSPECTOR_H_
-#define ITEM_INSPECTOR_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/project_model.h>
@@ -98,21 +97,3 @@ namespace pcl
     
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif

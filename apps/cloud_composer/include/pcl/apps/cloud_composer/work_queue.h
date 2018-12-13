@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef WORK_QUEUE_H_
-#define WORK_QUEUE_H_
+#pragma once
 
 #include "qt.h"
 
@@ -83,5 +82,3 @@ namespace pcl
     };
   }
 }
-
-#endif //WORK_QUEUE_H_

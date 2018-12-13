@@ -38,8 +38,7 @@
 /// displayed in a pop-up dialog.
 /// @author Yue Li and Matthew Hielsberg
 
-#ifndef STATISTICS_H_
-#define STATISTICS_H_
+#pragma once
 
 #include <vector>
 #include <string>
@@ -94,5 +93,3 @@ class Statistics
   private:
     static std::vector<Statistics*> stat_vec_;
 };
-
-#endif // STATISTICS_H_

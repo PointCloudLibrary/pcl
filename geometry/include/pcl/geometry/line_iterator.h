@@ -33,8 +33,8 @@
  *
  */
 
-#ifndef __PCL_LINE_ITERATOR__
-#define __PCL_LINE_ITERATOR__
+#pragma once
+
 #include "organized_index_iterator.h"
 
 namespace pcl
@@ -271,5 +271,3 @@ LineIterator::reset ()
 }
 
 } // namespace pcl
-
-#endif // __PCL_LINE_ITERATOR__

@@ -40,8 +40,7 @@
 /// http://pointclouds.org/documentation/tutorials/statistical_outlier.php
 /// @author Yue Li and Matthew Hielsberg
 
-#ifndef DENOISE_COMMAND_H_
-#define DENOISE_COMMAND_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -115,5 +114,3 @@ private:
   /// A selection object which backs up the indices of the noisy points removed.
   Selection removed_indices_;
 };
-
-#endif // DENOISE_COMMAND_H_

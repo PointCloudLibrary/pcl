@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef INTERACTOR_STYLE_SWITCH_H_
-#define INTERACTOR_STYLE_SWITCH_H_
+#pragma once
 
 #include <pcl/visualization/vtk.h>
 #include <pcl/visualization/interactor_style.h>
@@ -149,7 +148,3 @@ namespace pcl
   }
   
 }
-
-#endif // INTERACTOR_STYLE_SWITCH_H_
-        
-        

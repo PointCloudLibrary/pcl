@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef OUTOFCORE_IMPL_H_
-#define OUTOFCORE_IMPL_H_
+#pragma once
 
 #include <pcl/outofcore/outofcore.h>
 
@@ -49,6 +48,3 @@
 
 #include <pcl/outofcore/impl/octree_disk_container.hpp>
 #include <pcl/outofcore/impl/octree_ram_container.hpp>
-
-
-#endif //OUTOFCORE_IMPL_H_

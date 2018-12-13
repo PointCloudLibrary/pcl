@@ -37,8 +37,7 @@
 /// @details Tool for selecting and deselecting individual points in the cloud.
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef SELECT_1D_TOOL_H
-#define SELECT_1D_TOOL_H
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/toolInterface.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -107,4 +106,3 @@ class Select1DTool : public ToolInterface
     /// a shared pointer pointing to the cloud object
     CloudPtr cloud_ptr_;
 };
-#endif // SELECT_1D_TOOL_H

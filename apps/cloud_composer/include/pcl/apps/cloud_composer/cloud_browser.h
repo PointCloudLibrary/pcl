@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef CLOUD_BROWSER_H_
-#define CLOUD_BROWSER_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/qt.h>
 
@@ -79,21 +78,3 @@ namespace pcl
     
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif

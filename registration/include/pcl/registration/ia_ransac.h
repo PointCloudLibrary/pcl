@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef IA_RANSAC_H_
-#define IA_RANSAC_H_
+
+#pragma once
 
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_svd.h>
@@ -277,5 +277,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/ia_ransac.hpp>
-
-#endif  //#ifndef IA_RANSAC_H_

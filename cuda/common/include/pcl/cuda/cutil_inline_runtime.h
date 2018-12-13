@@ -9,8 +9,7 @@
  *
  */
  
-#ifndef _CUTIL_INLINE_FUNCTIONS_RUNTIME_H_
-#define _CUTIL_INLINE_FUNCTIONS_RUNTIME_H_
+#pragma once
 
 #ifdef _WIN32
 #ifdef _DEBUG // Do this only in debug mode...
@@ -484,5 +483,3 @@ inline bool cutilCudaCapabilities(int major_version, int minor_version, int argc
         return false;
     }
 }
-
-#endif // _CUTIL_INLINE_FUNCTIONS_RUNTIME_H_

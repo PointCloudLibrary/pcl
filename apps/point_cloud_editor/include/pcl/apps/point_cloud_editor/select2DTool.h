@@ -38,8 +38,7 @@
 /// functionalities to enable 2D selection.
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef SELECT_2D_TOOL_H_
-#define SELECT_2D_TOOL_H_
+#pragma once
 
 #include <qgl.h>
 #include <pcl/apps/point_cloud_editor/toolInterface.h>
@@ -149,4 +148,3 @@ class Select2DTool : public ToolInterface
     bool display_box_;
 
 };
-#endif // SELECT_2D_TOOL_H_

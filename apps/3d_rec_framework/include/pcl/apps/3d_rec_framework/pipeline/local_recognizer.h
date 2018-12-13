@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_LOCAL_RECOGNIZER_H_
-#define REC_FRAMEWORK_LOCAL_RECOGNIZER_H_
+#pragma once
 
 //#include <opencv2/opencv.hpp>
 #include <flann/flann.h>
@@ -350,5 +349,3 @@ namespace pcl
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_LOCAL_RECOGNIZER_H_ */

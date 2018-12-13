@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef NORMALS_ITEM_H_
-#define NORMALS_ITEM_H_
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <pcl/point_types.h>
@@ -84,5 +83,3 @@ namespace pcl
 
 Q_DECLARE_METATYPE (pcl::PointCloud<pcl::Normal>::Ptr);
 Q_DECLARE_METATYPE (pcl::PointCloud<pcl::Normal>::ConstPtr);
-
-#endif //NORMALS_ITEM_H_

@@ -38,8 +38,7 @@
 /// transformation matrix using inputs from the mouse.
 /// @author Yue Li and Matthew Hielsberg
 
-#ifndef CLOUD_TRANSFORM_TOOL_H_
-#define CLOUD_TRANSFORM_TOOL_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/toolInterface.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -146,4 +145,3 @@ class CloudTransformTool : public ToolInterface
     /// default translation factor
     static const float DEFAULT_TRANSLATE_FACTOR_;
 };
-#endif  //CLOUD_TRANSFORM_TOOL_H_

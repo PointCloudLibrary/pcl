@@ -35,12 +35,10 @@
  *
  */
 
-#ifndef VOXEL_GRID_DOWNSAMPLE_H_
-#define VOXEL_GRID_DOWNSAMPLE_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
-
 
 namespace pcl
 {
@@ -104,10 +102,3 @@ namespace pcl
 
   }
 }
-
-
-
-
-
-
-#endif //VOXEL_GRID_DOWNSAMPLE_H_

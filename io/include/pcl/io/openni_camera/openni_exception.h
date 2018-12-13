@@ -34,11 +34,10 @@
  *
  */
 
+#pragma once
+
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
-
-#ifndef __OPENNI_EXCEPTION__
-#define __OPENNI_EXCEPTION__
 
 #include <cstdarg>
 #include <cstdio>
@@ -136,5 +135,4 @@ namespace openni_wrapper
     throw OpenNIException (function_name, file_name, line_number, msg);
   }
 } // namespace openni_camera
-#endif
 #endif

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef NNCLASSIFICATION_H_
-#define NNCLASSIFICATION_H_
+#pragma once
 
 #include <cstdlib>
 #include <cfloat>
@@ -299,5 +298,3 @@ namespace pcl
       }
   };
 }
-
-#endif /* NNCLASSIFICATION_H_ */

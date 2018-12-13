@@ -31,11 +31,10 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+#pragma once
 
 #include <pcl/pcl_config.h>
-
-#ifndef __PCL_IO_GRABBER__
-#define __PCL_IO_GRABBER__
 
 // needed for the grabber interface / observers
 #include <map>
@@ -269,5 +268,3 @@ namespace pcl
   }
 
 } // namespace
-
-#endif

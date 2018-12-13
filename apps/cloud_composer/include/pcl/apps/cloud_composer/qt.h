@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef CLOUD_COMPOSER_QT_H_
-#define CLOUD_COMPOSER_QT_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header
@@ -70,6 +69,3 @@
 #include <QFileDialog>
 #include <QAction>
 #include <QGridLayout>
-
-
-#endif // CLOUD_COMPOSER_QT_H_

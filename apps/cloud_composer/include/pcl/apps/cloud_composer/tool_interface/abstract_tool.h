@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef ABSTRACT_TOOL_H_
-#define ABSTRACT_TOOL_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/commands.h>
@@ -185,6 +184,3 @@ namespace pcl
 
   }
 }
-
-
-#endif //ABSTRACT_TOOL_H_

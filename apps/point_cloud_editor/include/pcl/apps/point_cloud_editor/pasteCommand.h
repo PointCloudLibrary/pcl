@@ -38,9 +38,7 @@
 /// points in a cloud object as well as undo.
 /// @author  Yue Li and Matthew Hielsberg
 
-
-#ifndef PASTE_COMMAND_H_
-#define PASTE_COMMAND_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -106,4 +104,3 @@ class PasteCommand : public Command
     /// support undo, one only has to resize the cloud using this value.
     unsigned int prev_cloud_size_;
 };
-#endif // PASTE_COMMAND_H_

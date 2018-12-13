@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef FPFH_ITEM_H_
-#define FPFH_ITEM_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/fpfh.h>
@@ -85,5 +84,3 @@ namespace pcl
 
 Q_DECLARE_METATYPE (pcl::PointCloud<pcl::FPFHSignature33>::Ptr);
 Q_DECLARE_METATYPE (pcl::PointCloud<pcl::FPFHSignature33>::ConstPtr);
-
-#endif //NORMALS_ITEM_H_

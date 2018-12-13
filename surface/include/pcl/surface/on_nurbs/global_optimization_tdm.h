@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef NURBS_OPTIMIZATION_TDM_H
-#define NURBS_OPTIMIZATION_TDM_H
+#pragma once
 
 #include <pcl/surface/on_nurbs/global_optimization_pdm.h>
 
@@ -184,5 +183,3 @@ namespace pcl
 
   }
 }
-#endif
-

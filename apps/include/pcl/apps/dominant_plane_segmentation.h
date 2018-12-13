@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef DOMINANT_PLANE_SEGMENTATION_H_
-#define DOMINANT_PLANE_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/point_cloud.h>
@@ -286,5 +285,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/apps/impl/dominant_plane_segmentation.hpp>
 #endif
-
-#endif /* DOMINANT_PLANE_SEGMENTATION_H_ */

@@ -24,8 +24,7 @@
 // float and then uploaded.
 // DON'T PLAY WITH IT YET.
 
-#ifndef __vtkVertexBufferObject_h
-#define __vtkVertexBufferObject_h
+#pragma once
 
 #include <vector>
 
@@ -213,7 +212,3 @@ private:
   int GetDataTypeSize(int type);
   //ETX
 };
-
-#endif
-
-

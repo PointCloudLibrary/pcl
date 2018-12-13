@@ -37,8 +37,7 @@
 /// @details This tool provides the ability to transform the current selection.
 /// @author Yue Li and Matthew Hielsberg
 
-#ifndef SELECTION_TRANSFORM_TOOL_H_
-#define SELECTION_TRANSFORM_TOOL_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/toolInterface.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -162,4 +161,3 @@ class SelectionTransformTool : public ToolInterface
     BitMask modifiers_;
 
 };
-#endif // SELECTION_TRANSFORMER_H_
