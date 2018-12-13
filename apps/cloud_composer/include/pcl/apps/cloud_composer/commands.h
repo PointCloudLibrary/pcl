@@ -39,7 +39,6 @@
 #define COMMANDS_H_
 
 #include <pcl/apps/cloud_composer/qt.h>
-#include <pcl/pcl_exports.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 
 namespace pcl
@@ -56,7 +55,7 @@ namespace pcl
 
 
     
-    class PCL_EXPORTS CloudCommand : public QUndoCommand
+    class CloudCommand : public QUndoCommand
     {
       public: 
         CloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
@@ -119,7 +118,7 @@ namespace pcl
         int template_type_;
     };
     
-    class PCL_EXPORTS ModifyItemCommand : public CloudCommand
+    class ModifyItemCommand : public CloudCommand
     {
       public: 
         ModifyItemCommand (ConstItemList input_data, QUndoCommand* parent = 0);
@@ -138,7 +137,7 @@ namespace pcl
       
     };
     
-    class PCL_EXPORTS NewItemCloudCommand : public CloudCommand
+    class NewItemCloudCommand : public CloudCommand
     {
       public: 
         NewItemCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
@@ -155,7 +154,7 @@ namespace pcl
     };
     
 
-    class PCL_EXPORTS SplitCloudCommand : public CloudCommand
+    class SplitCloudCommand : public CloudCommand
     {
       public: 
         SplitCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
@@ -172,7 +171,7 @@ namespace pcl
 
     };  
     
-    class PCL_EXPORTS DeleteItemCommand : public CloudCommand
+    class DeleteItemCommand : public CloudCommand
     {
       public: 
         DeleteItemCommand (ConstItemList input_data, QUndoCommand* parent = 0);
@@ -188,7 +187,7 @@ namespace pcl
       private:
     };
     
-    class PCL_EXPORTS MergeCloudCommand : public CloudCommand
+    class MergeCloudCommand : public CloudCommand
     {
       public: 
         /** \brief Construct for a merge command

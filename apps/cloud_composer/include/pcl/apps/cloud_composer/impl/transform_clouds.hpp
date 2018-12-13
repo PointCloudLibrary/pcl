@@ -91,7 +91,7 @@ pcl::cloud_composer::TransformClouds::performTemplatedAction (QList <const Cloud
 }
 
 
-#define PCL_INSTANTIATE_performTemplatedAction(T) template PCL_EXPORTS void pcl::cloud_composer::TransformClouds::performTemplatedAction<T> (QList <const CloudComposerItem*>);
+#define PCL_INSTANTIATE_performTemplatedAction(T) template void pcl::cloud_composer::TransformClouds::performTemplatedAction<T> (QList <const CloudComposerItem*>);
 
 
 

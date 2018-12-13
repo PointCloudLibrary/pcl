@@ -63,7 +63,7 @@ namespace pcl
         AXIS = (1 << 5), 
       };
     }
-    class PCL_EXPORTS CloudItem : public CloudComposerItem
+    class CloudItem : public CloudComposerItem
     {
       public:
         

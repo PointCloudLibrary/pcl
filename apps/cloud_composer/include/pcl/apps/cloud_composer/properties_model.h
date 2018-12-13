@@ -41,7 +41,6 @@
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/common/boost.h> 
 
-
 namespace pcl
 {
   namespace cloud_composer

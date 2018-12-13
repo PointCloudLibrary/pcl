@@ -74,7 +74,7 @@ namespace pcl
         KD_TREE_SEARCH
       };
     };
-    class PCL_EXPORTS CloudComposerItem : public QStandardItem
+    class CloudComposerItem : public QStandardItem
     {
       public:  
         

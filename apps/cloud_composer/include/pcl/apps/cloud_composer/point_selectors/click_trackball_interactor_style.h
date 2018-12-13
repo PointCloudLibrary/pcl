@@ -49,7 +49,7 @@ namespace pcl
   namespace cloud_composer
   {
       
-    class PCL_EXPORTS ClickTrackballStyleInteractor : public vtkInteractorStyleTrackballActor
+    class ClickTrackballStyleInteractor : public vtkInteractorStyleTrackballActor
     {     
       public:
         static ClickTrackballStyleInteractor* New();

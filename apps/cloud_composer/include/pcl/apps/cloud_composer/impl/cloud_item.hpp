@@ -76,8 +76,8 @@ pcl::cloud_composer::CloudItem::createCloudItemFromTemplate (const QString name,
 }
 
 
-#define PCL_INSTANTIATE_createCloudItemFromTemplate(T) template PCL_EXPORTS pcl::cloud_composer::CloudItem* pcl::cloud_composer::CloudItem::createCloudItemFromTemplate<T>(const QString, typename PointCloud<PointT>::Ptr);
+#define PCL_INSTANTIATE_createCloudItemFromTemplate(T) template pcl::cloud_composer::CloudItem* pcl::cloud_composer::CloudItem::createCloudItemFromTemplate<T>(const QString, typename PointCloud<PointT>::Ptr);
 
-#define PCL_INSTANTIATE_printNumPoints(T) template PCL_EXPORTS void pcl::cloud_composer::CloudItem::getNumPoints<T>();
+#define PCL_INSTANTIATE_printNumPoints(T) template void pcl::cloud_composer::CloudItem::getNumPoints<T>();
 
 #endif

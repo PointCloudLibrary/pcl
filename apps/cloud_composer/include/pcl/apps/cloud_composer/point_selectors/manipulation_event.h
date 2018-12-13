@@ -48,7 +48,7 @@ namespace pcl
   {
       
     
-    class PCL_EXPORTS ManipulationEvent
+    class ManipulationEvent
     {
       
       public:
