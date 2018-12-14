@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_RIFT_H_
-#define PCL_RIFT_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -155,5 +154,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/rift.hpp>
 #endif
-
-#endif // #ifndef PCL_RIFT_H_

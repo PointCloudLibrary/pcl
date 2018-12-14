@@ -71,7 +71,7 @@ void removeText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
  * \param[in] field_name Fieldname to check
  * \return True if field has been found, false otherwise */
 bool
-hasField (const pcl::PCLPointCloud2 &pc2, const std::string field_name);
+hasField (const pcl::PCLPointCloud2 &pc2, const std::string &field_name);
 
 
 using namespace pcl;
@@ -559,7 +559,7 @@ void removeText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
 }
 
 bool
-hasField (const pcl::PCLPointCloud2 &pc2, const std::string field_name)
+hasField (const pcl::PCLPointCloud2 &pc2, const std::string &field_name)
 {
   for (size_t cf = 0; cf < pc2.fields.size (); ++cf)
     if (pc2.fields[cf].name == field_name)

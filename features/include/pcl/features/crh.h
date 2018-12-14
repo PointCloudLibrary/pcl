@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_CRH_H_
-#define PCL_FEATURES_CRH_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -141,5 +140,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/crh.hpp>
 #endif
-
-#endif  //#ifndef PCL_FEATURES_CRH_H_

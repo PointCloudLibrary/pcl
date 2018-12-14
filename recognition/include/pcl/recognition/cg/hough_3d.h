@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_HOUGH_3D_H_
-#define PCL_RECOGNITION_HOUGH_3D_H_
+#pragma once
 
 #include <pcl/recognition/cg/correspondence_grouping.h>
 #include <pcl/recognition/boost.h>
@@ -514,5 +513,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/recognition/impl/cg/hough_3d.hpp>
 #endif
-
-#endif // PCL_RECOGNITION_HOUGH_3D_H_

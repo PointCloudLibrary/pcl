@@ -31,11 +31,10 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+#pragma once
 
 #include <pcl/pcl_config.h>
-
-#ifndef __PCL_IO_GRABBER__
-#define __PCL_IO_GRABBER__
 
 // needed for the grabber interface / observers
 #include <map>
@@ -62,7 +61,7 @@ namespace pcl
       /** \brief Constructor. */
       Grabber () : signals_ (), connections_ (), shared_connections_ () {}
 
-      /** \brief virtual desctructor. */
+      /** \brief virtual destructor. */
       virtual inline ~Grabber () throw ();
 
       /** \brief registers a callback function/method to a signal with the corresponding signature
@@ -269,5 +268,3 @@ namespace pcl
   }
 
 } // namespace
-
-#endif

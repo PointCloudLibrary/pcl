@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_FILTERS_MODEL_OUTLIER_REMOVAL_H_
-#define PCL_FILTERS_MODEL_OUTLIER_REMOVAL_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 #include <pcl/ModelCoefficients.h>
@@ -228,7 +227,7 @@ namespace pcl
       /** \brief The model used to calculate distances */
       SampleConsensusModelPtr model_;
 
-      /** \brief The threshold used to seperate outliers (removed_indices) from inliers (indices) */
+      /** \brief The threshold used to separate outliers (removed_indices) from inliers (indices) */
       float thresh_;
 
       /** \brief The model coefficients */
@@ -253,5 +252,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/model_outlier_removal.hpp>
 #endif
-
-#endif  // PCL_FILTERS_MODEL_OUTLIER_REMOVAL_H_

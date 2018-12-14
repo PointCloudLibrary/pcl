@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef GO_H_
-#define GO_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
@@ -94,7 +93,7 @@ namespace pcl
           {
             solution_[index] = val;
             //update optimizer solution
-            cost_ = opt_->evaluateSolution (solution_, index); //this will udpate the cost function in opt_
+            cost_ = opt_->evaluateSolution (solution_, index); //this will update the cost function in opt_
           }
           void setSolution(std::vector<bool> & sol)
           {
@@ -447,6 +446,11 @@ namespace pcl
 
       void
       verify();
+      
+      void setResolutionOccupancyGrid(float r)
+      {
+        res_occupancy_grid_ = r;
+      }
 
       void setRadiusNormals(float r)
       {
@@ -488,5 +492,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/recognition/impl/hv/hv_go.hpp>
 #endif
-
-#endif /* GO_H_ */

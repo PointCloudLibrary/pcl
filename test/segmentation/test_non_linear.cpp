@@ -73,7 +73,7 @@ TEST (SACSegmentation, Segmentation)
   EXPECT_NEAR (sphere_coefficients->values[2], 1.24558,   1e-2);
   EXPECT_NEAR (sphere_coefficients->values[3], 0.0536238, 1e-2);
 
-  EXPECT_NEAR (static_cast<int> (inliers->indices.size ()), 3516, 10);
+  EXPECT_NEAR (static_cast<int> (inliers->indices.size ()), 3516, 15);
 }
 
 //* ---[ */

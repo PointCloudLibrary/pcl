@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_H_
+#pragma once
 
 #include <pcl/registration/correspondence_types.h>
 #include <pcl/registration/correspondence_sorting.h>
@@ -346,7 +345,7 @@ namespace pcl
         }
         
         /** \brief Get the correspondence score for a given pair of correspondent points based on 
-          * the angle betweeen the normals. The normmals for the in put and target clouds must be 
+          * the angle between the normals. The normmals for the in put and target clouds must be 
           * set before using this function
           * \param[in] corr Correspondent points
           */
@@ -404,6 +403,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* PCL_REGISTRATION_CORRESPONDENCE_REJECTION_H_ */
-

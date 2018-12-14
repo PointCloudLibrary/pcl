@@ -100,7 +100,7 @@ class HRCSSegmentation
     int smooth_strong;
 
   public:
-    HRCSSegmentation (std::vector<std::string> left_images, std::vector<std::string> right_images) :
+    HRCSSegmentation (const std::vector<std::string> &left_images, const std::vector<std::string> &right_images) :
       viewer (new pcl::visualization::PCLVisualizer ("3D Viewer")),
       image_viewer (new pcl::visualization::ImageViewer ("Image Viewer")),
       prev_cloud (new pcl::PointCloud<PointT>),

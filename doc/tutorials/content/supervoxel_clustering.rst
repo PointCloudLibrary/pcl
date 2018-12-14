@@ -21,7 +21,7 @@ Voxel Cloud Connectivity Segmentation (VCCS) is a recent "superpixel" method whi
    :scale: 50%
    :align: center
 
-   **From right to left, 6 (faces), 18 (faces,egdes), and 26 (faces, edges, vertices) adjacency**
+   **From right to left, 6 (faces), 18 (faces,edges), and 26 (faces, edges, vertices) adjacency**
 
 The adjacency graph of supervoxels (and the underlying voxels) is maintained efficiently within the octree by specifying that neighbors are voxels within R_voxel of one another, where R_voxel specifies the octree leaf resolution. This adjacency graph is used extensively for both the region growing used to generate the supervoxels, as well as determining adjacency of the resulting supervoxels themselves.
 
@@ -103,7 +103,7 @@ We are now ready to setup the supervoxel clustering. We use the class :pcl:`Supe
 
 .. important::
 
-  By default, the algorithm will use a special tranform compressing the depth in Z if your input cloud is organized (eg, from an RGBD sensor like the Kinect). You MUST set use_transform to false if you are using an organized cloud which doesn't have the camera at (0,0,0) and depth in positive Z. The transform is specifically designed to help improve Kinect data by increasing voxel bin size as distance from the camera increases. If your cloud is unorganized, this transform will not be used by default, but can be enabled by using setUseSingleCameraTransform(true). 
+  By default, the algorithm will use a special transform compressing the depth in Z if your input cloud is organized (eg, from an RGBD sensor like the Kinect). You MUST set use_transform to false if you are using an organized cloud which doesn't have the camera at (0,0,0) and depth in positive Z. The transform is specifically designed to help improve Kinect data by increasing voxel bin size as distance from the camera increases. If your cloud is unorganized, this transform will not be used by default, but can be enabled by using setUseSingleCameraTransform(true). 
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp

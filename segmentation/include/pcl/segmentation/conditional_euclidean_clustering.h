@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_CONDITIONAL_EUCLIDEAN_CLUSTERING_H_
-#define PCL_SEGMENTATION_CONDITIONAL_EUCLIDEAN_CLUSTERING_H_
+#pragma once
 
 #include <boost/function.hpp>
 
@@ -104,6 +103,23 @@ namespace pcl
           small_clusters_ (new pcl::IndicesClusters),
           large_clusters_ (new pcl::IndicesClusters)
       {
+      }
+
+      /** \brief Provide a pointer to the search object.
+        * \param[in] tree a pointer to the spatial search object.
+        */
+      inline void 
+      setSearchMethod (const SearcherPtr &tree) 
+      { 
+        searcher_ = tree; 
+      }
+
+      /** \brief Get a pointer to the search method used. 
+       */
+      inline const SearcherPtr& 
+      getSearchMethod () const 
+      { 
+        return searcher_; 
       }
 
       /** \brief Set the condition that needs to hold for neighboring points to be considered part of the same cluster.
@@ -249,6 +265,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/conditional_euclidean_clustering.hpp>
 #endif
-
-#endif  // PCL_SEGMENTATION_CONDITIONAL_EUCLIDEAN_CLUSTERING_H_
-

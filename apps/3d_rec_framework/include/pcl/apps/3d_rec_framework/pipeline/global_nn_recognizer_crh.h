@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_GLOBAL_RECOGNIZER_CRH_H_
-#define REC_FRAMEWORK_GLOBAL_RECOGNIZER_CRH_H_
+#pragma once
 
 #include <flann/flann.h>
 #include <pcl/common/common.h>
@@ -95,8 +94,9 @@ namespace pcl
 
 
       bool use_cache_;
-      std::map<std::pair<std::string, int>, Eigen::Matrix4f, std::less<std::pair<std::string, int> >, Eigen::aligned_allocator<std::pair<std::pair<
-          std::string, int>, Eigen::Matrix4f> > > poses_cache_;
+      std::map<std::pair<std::string, int>, Eigen::Matrix4f,
+               std::less<std::pair<std::string, int> >,
+               Eigen::aligned_allocator<std::pair<const std::pair<std::string, int>, Eigen::Matrix4f> > > poses_cache_;
       std::map<std::pair<std::string, int>, Eigen::Vector3f > centroids_cache_;
 
       std::vector<int> indices_;
@@ -268,4 +268,3 @@ namespace pcl
     };
   }
 }
-#endif /* REC_FRAMEWORK_GLOBAL_PIPELINE_H_ */

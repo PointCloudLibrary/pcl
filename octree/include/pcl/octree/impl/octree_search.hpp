@@ -97,7 +97,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::n
   OctreeKey key;
   key.x = key.y = key.z = 0;
 
-  // initalize smallest point distance in search with high value
+  // initialize smallest point distance in search with high value
   double smallest_dist = std::numeric_limits<double>::max ();
 
   getKNearestNeighborRecursive (p_q, k, this->root_node_, key, 1, smallest_dist, point_candidates);

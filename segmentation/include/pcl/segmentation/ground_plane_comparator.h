@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_GROUND_PLANE_COMPARATOR_H_
-#define PCL_SEGMENTATION_GROUND_PLANE_COMPARATOR_H_
+#pragma once
 
 #include <pcl/common/angles.h>
 #include <pcl/segmentation/comparator.h>
@@ -147,7 +146,7 @@ namespace pcl
       const std::vector<float>&
       getPlaneCoeffD () const
       {
-        return (plane_coeff_d_);
+        return (*plane_coeff_d_);
       }
 
       /** \brief Set the tolerance in radians for difference in normal direction between neighboring points, to be considered part of the same plane.
@@ -246,5 +245,3 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif // PCL_SEGMENTATION_GROUND_PLANE_COMPARATOR_H_

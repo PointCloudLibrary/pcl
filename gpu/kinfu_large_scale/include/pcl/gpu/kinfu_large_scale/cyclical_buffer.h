@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef PCL_CYCLICAL_BUFFER_IMPL_H_
-#define PCL_CYCLICAL_BUFFER_IMPL_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/gpu/kinfu_large_scale/tsdf_volume.h>
@@ -105,7 +103,7 @@ namespace pcl
           }
 
           /** \brief Check if shifting needs to be performed, returns true if so.
-              Shifting is considered needed if the target point is farther than distance_treshold_.
+              Shifting is considered needed if the target point is farther than distance_threshold_.
               The target point is located at distance_camera_point on the local Z axis of the camera.
             * \param[in] volume pointer to the TSDFVolume living in GPU
             * \param[in] cam_pose global pose of the camera in the world
@@ -270,5 +268,3 @@ namespace pcl
     }
   }
 }
-
-#endif // PCL_CYCLICAL_BUFFER_IMPL_H_

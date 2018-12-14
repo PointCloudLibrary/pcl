@@ -38,9 +38,7 @@
  *
  */
 
-
-#ifndef PCL_FILTERS_FAST_BILATERAL_H_
-#define PCL_FILTERS_FAST_BILATERAL_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
 
@@ -194,6 +192,3 @@ namespace pcl
 #else
 #define PCL_INSTANTIATE_FastBilateralFilter(T) template class PCL_EXPORTS pcl::FastBilateralFilter<T>;
 #endif
-
-
-#endif /* PCL_FILTERS_FAST_BILATERAL_H_ */

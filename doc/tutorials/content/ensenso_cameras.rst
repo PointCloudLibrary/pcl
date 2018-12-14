@@ -113,7 +113,7 @@ Extrinsic calibration
 
 If you want to perform extrinsic calibration of the sensor, please first make sure your EnsensoSDK version is greater than 1.3.
 A fully automated extrinsic calibration ROS package is available to help you calibrate the sensor mounted on a robot arm, 
-the package can be found in the `Institut Maupertuis repository <https://github.com/InstitutMaupertuis/ensenso_extrinsic_calibration>`_.
+the package can be found in the `Institut Maupertuis repository <https://gitlab.com/InstitutMaupertuis/ensenso_extrinsic_calibration>`_.
 
 The following video shows the automatic calibration procedure on a Fanuc R1000iA 80f industrial robot:
 

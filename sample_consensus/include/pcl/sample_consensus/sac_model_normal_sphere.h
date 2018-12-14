@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_NORMALSPHERE_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_NORMALSPHERE_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
@@ -136,16 +135,16 @@ namespace pcl
         * \return the resultant number of inliers
         */
       virtual int
-      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
-                           const double threshold);
+      countWithinDistance (const Eigen::VectorXf &model_coefficients,
+                           const double threshold) const;
 
       /** \brief Compute all distances from the cloud data to a given sphere model.
         * \param[in] model_coefficients the coefficients of a sphere model that we need to compute distances to
         * \param[out] distances the resultant estimated distances
         */
-      void 
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
-                           std::vector<double> &distances);
+      void
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients,
+                           std::vector<double> &distances) const;
 
       /** \brief Return an unique id for this model (SACMODEL_NORMAL_SPHERE). */
       inline pcl::SacModel 
@@ -161,7 +160,7 @@ namespace pcl
         * \param[in] model_coefficients the set of model coefficients
         */
       virtual bool
-      isModelValid (const Eigen::VectorXf &model_coefficients);
+      isModelValid (const Eigen::VectorXf &model_coefficients) const;
 
   };
 }
@@ -169,5 +168,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/sac_model_normal_sphere.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_NORMALSPHERE_H_

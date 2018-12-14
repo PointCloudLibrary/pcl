@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_SAC_SEGMENTATION_H_
-#define PCL_SEGMENTATION_SAC_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
@@ -370,7 +369,7 @@ namespace pcl
       getNormalDistanceWeight () const { return (distance_weight_); }
 
       /** \brief Set the minimum opning angle for a cone model.
-        * \param min_angle the opening angle which we need minumum to validate a cone model.
+        * \param min_angle the opening angle which we need minimum to validate a cone model.
         * \param max_angle the opening angle which we need maximum to validate a cone model.
         */
       inline void
@@ -380,7 +379,7 @@ namespace pcl
         max_angle_ = max_angle;
       }
  
-      /** \brief Get the opening angle which we need minumum to validate a cone model. */
+      /** \brief Get the opening angle which we need minimum to validate a cone model. */
       inline void
       getMinMaxOpeningAngle (double &min_angle, double &max_angle)
       {
@@ -429,5 +428,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/sac_segmentation.hpp>
 #endif
-
-#endif  //#ifndef PCL_SEGMENTATION_SAC_SEGMENTATION_H_

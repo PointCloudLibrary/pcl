@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_UNIFORM_SAMPLING_H_
-#define PCL_FILTERS_UNIFORM_SAMPLING_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
 #include <boost/unordered_map.hpp>
@@ -141,6 +140,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/uniform_sampling.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_UNIFORM_SAMPLING_H_
-

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SHOT_H_
-#define PCL_SHOT_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -409,5 +408,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/shot.hpp>
 #endif
-
-#endif  //#ifndef PCL_SHOT_H_

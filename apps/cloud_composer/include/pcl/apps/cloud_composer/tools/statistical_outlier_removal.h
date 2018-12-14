@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef STATISTICAL_OUTLIER_REMOVAL_H_
-#define STATISTICAL_OUTLIER_REMOVAL_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
@@ -104,10 +103,3 @@ namespace pcl
 
   }
 }
-
-
-
-
-
-
-#endif //STATISTICAL_OUTLIER_REMOVAL_H_

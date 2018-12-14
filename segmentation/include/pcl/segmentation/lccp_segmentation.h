@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_LCCP_SEGMENTATION_H_
-#define PCL_SEGMENTATION_LCCP_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
@@ -61,10 +60,10 @@ namespace pcl
     /** \brief Edge Properties stored in the adjacency graph.*/
     struct EdgeProperties
     {
-      /** \brief Desribes the difference of normals of the two supervoxels being connected*/
+      /** \brief Describes the difference of normals of the two supervoxels being connected*/
       float normal_difference;
       
-      /** \brief Desribes if a connection is convex or concave*/
+      /** \brief Describes if a connection is convex or concave*/
       bool is_convex;
       
       /** \brief Describes if a connection is valid for the segment growing. Usually convex connections are and concave connection are not. Due to k-concavity a convex connection can be invalidated*/
@@ -301,7 +300,7 @@ namespace pcl
       /** \brief Normal Threshold in degrees [0,180] used for merging */
       float concavity_tolerance_threshold_;
 
-      /** \brief Marks if valid grouping data (\ref sv_adjacency_list_, \ref sv_label_to_seg_label_map_, \ref processed_) is avaiable */
+      /** \brief Marks if valid grouping data (\ref sv_adjacency_list_, \ref sv_label_to_seg_label_map_, \ref processed_) is available */
       bool grouping_data_valid_;
       
       /** \brief Marks if supervoxels have been set by calling \ref setInputSupervoxels */
@@ -354,5 +353,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/lccp_segmentation.hpp>
 #endif
-
-#endif // PCL_SEGMENTATION_LCCP_SEGMENTATION_H_

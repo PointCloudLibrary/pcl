@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_TREE_BASE_H
-#define PCL_OCTREE_TREE_BASE_H
+#pragma once
 
 #include <vector>
 
@@ -104,7 +103,9 @@ namespace pcl
         friend class OctreeIteratorBase<OctreeT> ;
         friend class OctreeDepthFirstIterator<OctreeT> ;
         friend class OctreeBreadthFirstIterator<OctreeT> ;
-        friend class OctreeLeafNodeIterator<OctreeT> ;
+        friend class OctreeFixedDepthIterator<OctreeT> ;
+        friend class OctreeLeafNodeDepthFirstIterator<OctreeT> ;
+        friend class OctreeLeafNodeBreadthFirstIterator<OctreeT> ;
 
         // Octree default iterators
         typedef OctreeDepthFirstIterator<OctreeT> Iterator;
@@ -115,23 +116,42 @@ namespace pcl
           return Iterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
         };
 
-        const Iterator end (unsigned int max_depth_arg = 0u)
+        const Iterator end ()
         {
-          return Iterator (this, max_depth_arg? max_depth_arg : this->octree_depth_ , NULL);
+          return Iterator (this, 0, NULL);
         };
 
         // Octree leaf node iterators
-        typedef OctreeLeafNodeIterator<OctreeT> LeafNodeIterator;
-        typedef const OctreeLeafNodeIterator<OctreeT> ConstLeafNodeIterator;
+        // The previous deprecated names
+        // LeafNodeIterator and ConstLeafNodeIterator are deprecated.
+        // Please use LeafNodeDepthFirstIterator and ConstLeafNodeDepthFirstIterator instead.
+        typedef OctreeLeafNodeDepthFirstIterator<OctreeT> LeafNodeIterator;
+        typedef const OctreeLeafNodeDepthFirstIterator<OctreeT> ConstLeafNodeIterator;
 
+        [[deprecated("use leaf_depth_begin() instead")]]
         LeafNodeIterator leaf_begin (unsigned int max_depth_arg = 0u)
         {
           return LeafNodeIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
         };
 
-        const LeafNodeIterator leaf_end (unsigned int max_depth_arg = 0u)
+        [[deprecated("use leaf_depth_end() instead")]]
+        const LeafNodeIterator leaf_end ()
         {
-          return LeafNodeIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
+          return LeafNodeIterator (this, 0, NULL);
+        };
+
+        // The currently valide names
+        typedef OctreeLeafNodeDepthFirstIterator<OctreeT> LeafNodeDepthFirstIterator;
+        typedef const OctreeLeafNodeDepthFirstIterator<OctreeT> ConstLeafNodeDepthFirstIterator;
+
+        LeafNodeDepthFirstIterator leaf_depth_begin (unsigned int max_depth_arg = 0u)
+        {
+          return LeafNodeDepthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
+        };
+
+        const LeafNodeDepthFirstIterator leaf_depth_end ()
+        {
+          return LeafNodeDepthFirstIterator (this, 0, NULL);
         };
 
         // Octree depth-first iterators
@@ -143,9 +163,9 @@ namespace pcl
           return DepthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
         };
 
-        const DepthFirstIterator depth_end (unsigned int max_depth_arg = 0u)
+        const DepthFirstIterator depth_end ()
         {
-          return DepthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
+          return DepthFirstIterator (this, 0, NULL);
         };
 
         // Octree breadth-first iterators
@@ -157,11 +177,38 @@ namespace pcl
           return BreadthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
         };
 
-        const BreadthFirstIterator breadth_end (unsigned int max_depth_arg = 0u)
+        const BreadthFirstIterator breadth_end ()
         {
-          return BreadthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
+          return BreadthFirstIterator (this, 0, NULL);
         };
 
+        // Octree breadth iterators at a given depth
+        typedef OctreeFixedDepthIterator<OctreeT> FixedDepthIterator;
+        typedef const OctreeFixedDepthIterator<OctreeT> ConstFixedDepthIterator;
+
+        FixedDepthIterator fixed_depth_begin (unsigned int fixed_depth_arg = 0u)
+        {
+          return FixedDepthIterator (this, fixed_depth_arg);
+        };
+
+        const FixedDepthIterator fixed_depth_end ()
+        {
+          return FixedDepthIterator (this, 0, NULL);
+        };
+
+        // Octree leaf node iterators
+        typedef OctreeLeafNodeBreadthFirstIterator<OctreeT> LeafNodeBreadthFirstIterator;
+        typedef const OctreeLeafNodeBreadthFirstIterator<OctreeT> ConstLeafNodeBreadthFirstIterator;
+
+        LeafNodeBreadthFirstIterator leaf_breadth_begin (unsigned int max_depth_arg = 0u)
+        {
+          return LeafNodeBreadthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
+        };
+
+        const LeafNodeBreadthFirstIterator leaf_breadth_end ()
+        {
+          return LeafNodeBreadthFirstIterator (this, 0, NULL);
+        };
 
         /** \brief Empty constructor. */
         OctreeBase ();
@@ -344,7 +391,7 @@ namespace pcl
           return result;
         }
 
-        /** \brief Check for existance of a leaf node in the octree
+        /** \brief Check for existence of a leaf node in the octree
          *  \param key_arg: octree key addressing a leaf node.
          *  \return "true" if leaf node is found; "false" otherwise
          * */
@@ -631,6 +678,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/octree/impl/octree_base.hpp>
 #endif
-
-#endif
-

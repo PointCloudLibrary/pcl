@@ -61,7 +61,7 @@
 #include <pcl/registration/ppf_registration.h>
 #include <pcl/registration/ndt.h>
 #include <pcl/registration/sample_consensus_prerejective.h>
-// We need Histogram<2> to function, so we'll explicitely add kdtree_flann.hpp here
+// We need Histogram<2> to function, so we'll explicitly add kdtree_flann.hpp here
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 //(pcl::Histogram<2>)
 
@@ -268,7 +268,7 @@ TEST (PCL, JointIterativeClosestPoint)
   reg.setMaxCorrespondenceDistance (0.25); // Making sure the correspondence distance > the max translation
   // Add a median distance rejector
   pcl::registration::CorrespondenceRejectorMedianDistance::Ptr rej_med (new pcl::registration::CorrespondenceRejectorMedianDistance);
-  rej_med->setMedianFactor (4.0);
+  rej_med->setMedianFactor (8.0);
   reg.addCorrespondenceRejector (rej_med);
   // Also add a SaC rejector
   pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>::Ptr rej_samp (new pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>);

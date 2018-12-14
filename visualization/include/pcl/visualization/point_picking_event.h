@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_VISUALIZATION_POINT_PICKING_EVENT_H_
-#define PCL_VISUALIZATION_POINT_PICKING_EVENT_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <vector>
@@ -118,7 +117,7 @@ namespace pcl
         /** \brief For situations when multiple points are selected in a sequence, return the point coordinates.
           * \param[out] x1 the x coordinate of the first point that got selected by the user
           * \param[out] y1 the y coordinate of the first point that got selected by the user
-          * \param[out] z1 the z coordinate of the firts point that got selected by the user
+          * \param[out] z1 the z coordinate of the first point that got selected by the user
           * \param[out] x2 the x coordinate of the second point that got selected by the user
           * \param[out] y2 the y coordinate of the second point that got selected by the user
           * \param[out] z2 the z coordinate of the second point that got selected by the user
@@ -162,6 +161,3 @@ namespace pcl
     };
   } //namespace visualization
 } //namespace pcl
-
-#endif  /* PCL_VISUALIZATION_POINT_PICKING_EVENT_H_ */
-

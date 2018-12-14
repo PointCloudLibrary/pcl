@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEARCH_ORGANIZED_NEIGHBOR_SEARCH_H_
-#define PCL_SEARCH_ORGANIZED_NEIGHBOR_SEARCH_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -224,7 +223,10 @@ namespace pcl
             float dist_z = point.z - query.z;
             float squared_distance = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
             if (queue.size () < k)
+            {
               queue.push (Entry (index, squared_distance));
+              return queue.size () == k;
+            }
             else if (queue.top ().distance > squared_distance)
             {
               queue.pop ();
@@ -281,6 +283,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/search/impl/organized.hpp>
 #endif
-
-#endif
-

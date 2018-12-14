@@ -129,7 +129,7 @@ savePNGFile(const std::string& filename, const pcl::gpu::DeviceArray2D<T>& arr)
 template <typename T> void
 savePNGFile (const std::string& filename, const pcl::PointCloud<T>& cloud)
 {
-  pcl::io::savePNGFile(filename, cloud);
+  pcl::io::savePNGFile(filename, cloud, "rgb");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

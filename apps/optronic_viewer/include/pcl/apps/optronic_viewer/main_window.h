@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_APPS_OPTRONIC_VIEWER_MAIN_WINDOW_H_
-#define PCL_APPS_OPTRONIC_VIEWER_MAIN_WINDOW_H_
+#pragma once
 
 #include <boost/shared_ptr.hpp>
 
@@ -170,5 +169,3 @@ namespace pcl
     }
   }
 }
-
-#endif // PCL_APPS_OPTRONIC_VIEWER_MAIN_WINDOW_H_

@@ -1182,7 +1182,7 @@ bool ON_Curve::EvaluatePoint( const class ON_ObjRef& objref, ON_3dPoint& P ) con
         ON_3dPoint F1, F2;
         if ( ellipse.GetFoci(F1,F2) )
         {
-          P = ( F1.DistanceTo(Q) <= F1.DistanceTo(Q)) ? F1 : F2;
+          P = ( F1.DistanceTo(Q) <= F2.DistanceTo(Q)) ? F1 : F2;
           rc = true;
         }
       }

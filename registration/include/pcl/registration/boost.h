@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_BOOST_H_
-#define PCL_REGISTRATION_BOOST_H_
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header 
@@ -54,5 +53,3 @@
 #include <boost/make_shared.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
-
-#endif    // PCL_REGISTRATION_BOOST_H_

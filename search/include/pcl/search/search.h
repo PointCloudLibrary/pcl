@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_SEARCH_SEARCH_H_
-#define PCL_SEARCH_SEARCH_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/for_each_type.h>
@@ -428,5 +427,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/search/impl/search.hpp>
 #endif
-
-#endif  //#ifndef _PCL_SEARCH_SEARCH_H_

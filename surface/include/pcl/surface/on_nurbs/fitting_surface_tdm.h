@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef NURBS_FITTING_PATCH_TDM_H
-#define NURBS_FITTING_PATCH_TDM_H
+#pragma once
 
 #include <pcl/surface/on_nurbs/fitting_surface_pdm.h>
 
@@ -134,5 +133,3 @@ namespace pcl
 
   }
 }
-
-#endif /* NURBS_FITTING_PATCH_TDM_H */

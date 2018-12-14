@@ -70,6 +70,20 @@ pcl::getAngle3D (const Eigen::Vector3f &v1, const Eigen::Vector3f &v2, const boo
 inline void
 pcl::getMeanStd (const std::vector<float> &values, double &mean, double &stddev)
 {
+  // throw an exception when the input array is empty
+  if (values.empty ())
+  {
+    PCL_THROW_EXCEPTION (BadArgumentException, "Input array must have at least 1 element."); 
+  }
+  
+  // when the array has only one element, mean is the number itself and standard dev is 0
+  if (values.size () == 1)
+  {
+    mean = values.at (0);
+    stddev = 0;
+    return;
+  }
+  
   double sum = 0, sq_sum = 0;
 
   for (size_t i = 0; i < values.size (); ++i)

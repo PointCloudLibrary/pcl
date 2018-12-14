@@ -34,8 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_ORGANIZED_SEGMENTATION_DEMO_QT_H_
-#define PCL_ORGANIZED_SEGMENTATION_DEMO_QT_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header
@@ -46,5 +45,3 @@
 #include <QMainWindow>
 #include <QMutex>
 #include <QTimer>
-
-#endif  // PCL_ORGANIZED_SEGMENTATION_DEMO_QT_H_

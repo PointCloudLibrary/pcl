@@ -1,5 +1,4 @@
-#ifndef IO_H_
-#define IO_H_
+#pragma once
 
 #include "typedefs.h"
 
@@ -65,6 +64,3 @@ loadGlobalDescriptors (std::string filename)
   pcl::console::print_info ("Loaded %s (%lu points)\n", filename.c_str (), output->size ());
   return (output);
 }
-
-
-#endif

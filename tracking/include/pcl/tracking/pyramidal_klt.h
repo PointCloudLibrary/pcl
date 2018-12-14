@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_TRACKING_PYRAMIDAL_KLT_H
-#define PCL_TRACKING_PYRAMIDAL_KLT_H
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/tracking/tracker.h>
@@ -48,7 +47,7 @@ namespace pcl
   namespace tracking
   {
     /** Pyramidal Kanade Lucas Tomasi tracker.
-      * This is an implemntation of the Pyramidal Kanade Lucas Tomasi tracker that operates on
+      * This is an implementation of the Pyramidal Kanade Lucas Tomasi tracker that operates on
       * organized 3D keypoints with color/intensity information (this is the default behaviour but you
       * can alterate it by providing another operator as second template argument). It is an affine
       * tracker that iteratively computes the optical flow to find the best guess for a point p at t
@@ -196,12 +195,12 @@ namespace pcl
         inline void
         setPointsToTrack (const pcl::PointCloud<pcl::PointUV>::ConstPtr& points);
 
-        /// \brief \return a pointer to the points succesfully tracked.
+        /// \brief \return a pointer to the points successfully tracked.
         inline pcl::PointCloud<pcl::PointUV>::ConstPtr
         getTrackedPoints () const { return (keypoints_); };
 
         /** \brief \return the status of points to track.
-          * Status == 0  --> points succesfully tracked;
+          * Status == 0  --> points successfully tracked;
           * Status < 0   --> point is lost;
           * Status == -1 --> point is out of bond;
           * Status == -2 --> optical flow can not be computed for this point.
@@ -209,7 +208,7 @@ namespace pcl
         inline pcl::PointIndicesConstPtr
         getPointsToTrackStatus () const { return (keypoints_status_); }
 
-        /** \brief Return the computed transfromation from tracked points. */
+        /** \brief Return the computed transformation from tracked points. */
         Eigen::Affine3f
         getResult () const { return (motion_); }
 
@@ -279,7 +278,7 @@ namespace pcl
           * \param[out] win patch with interpolated intensity values
           * \param[out] grad_x_win patch with interpolated gradient along X values
           * \param[out] grad_y_win patch with interpolated gradient along Y values
-          * \param[out] covariance covariance matrix coefficents
+          * \param[out] covariance covariance matrix coefficients
           */
         virtual void
         spatialGradient (const FloatImage& img,
@@ -374,4 +373,3 @@ namespace pcl
 }
 
 #include <pcl/tracking/impl/pyramidal_klt.hpp>
-#endif

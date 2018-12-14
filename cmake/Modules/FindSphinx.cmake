@@ -12,7 +12,7 @@ find_package(PythonInterp)
 
 if(PYTHONINTERP_FOUND)
   get_filename_component(PYTHON_DIR "${PYTHON_EXECUTABLE}" PATH)
-endif(PYTHONINTERP_FOUND)
+endif()
 
 find_program(SPHINX_EXECUTABLE NAMES sphinx-build
              HINTS ${PC_SPHINX_EXECUTABLE} $ENV{SPHINX_DIR} ${PYTHON_DIR}/Scripts

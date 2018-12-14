@@ -1,5 +1,4 @@
-#ifndef PCL_OUTOFCORE_CAMERA_H_
-#define PCL_OUTOFCORE_CAMERA_H_
+#pragma once
 
 // C++
 #include <iostream>
@@ -149,5 +148,3 @@ private:
   double prevFocal_[3];
   double prevPos_[3];
 };
-
-#endif

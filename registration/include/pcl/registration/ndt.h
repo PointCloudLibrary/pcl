@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_NDT_H_
-#define PCL_REGISTRATION_NDT_H_
+#pragma once
 
 #include <pcl/registration/registration.h>
 #include <pcl/filters/voxel_grid_covariance.h>
@@ -233,7 +232,7 @@ namespace pcl
       using Registration<PointSource, PointTarget>::update_visualizer_;
 
       /** \brief Estimate the transformation and returns the transformed source (input) as output.
-        * \param[out] output the resultant input transfomed point cloud dataset
+        * \param[out] output the resultant input transformed point cloud dataset
         */
       virtual void
       computeTransformation (PointCloudSource &output)
@@ -242,7 +241,7 @@ namespace pcl
       }
 
       /** \brief Estimate the transformation and returns the transformed source (input) as output.
-        * \param[out] output the resultant input transfomed point cloud dataset
+        * \param[out] output the resultant input transformed point cloud dataset
         * \param[in] guess the initial gross estimation of the transformation
         */
       virtual void
@@ -348,7 +347,7 @@ namespace pcl
                            PointCloudSource &trans_cloud);
 
       /** \brief Update interval of possible step lengths for More-Thuente method, \f$ I \f$ in More-Thuente (1994)
-        * \note Updating Algorithm until some value satifies \f$ \psi(\alpha_k) \leq 0 \f$ and \f$ \phi'(\alpha_k) \geq 0 \f$
+        * \note Updating Algorithm until some value satisfies \f$ \psi(\alpha_k) \leq 0 \f$ and \f$ \phi'(\alpha_k) \geq 0 \f$
         * and Modified Updating Algorithm from then on [More, Thuente 1994].
         * \param[in,out] a_l first endpoint of interval \f$ I \f$, \f$ \alpha_l \f$ in Moore-Thuente (1994)
         * \param[in,out] f_l value at first endpoint, \f$ f_l \f$ in Moore-Thuente (1994), \f$ \psi(\alpha_l) \f$ for Update Algorithm and \f$ \phi(\alpha_l) \f$ for Modified Update Algorithm
@@ -368,7 +367,7 @@ namespace pcl
 
       /** \brief Select new trial value for More-Thuente method.
         * \note Trial Value Selection [More, Thuente 1994], \f$ \psi(\alpha_k) \f$ is used for \f$ f_k \f$ and \f$ g_k \f$
-        * until some value satifies the test \f$ \psi(\alpha_k) \leq 0 \f$ and \f$ \phi'(\alpha_k) \geq 0 \f$
+        * until some value satisfies the test \f$ \psi(\alpha_k) \leq 0 \f$ and \f$ \phi'(\alpha_k) \geq 0 \f$
         * then \f$ \phi(\alpha_k) \f$ is used from then on.
         * \note Interpolation Minimizer equations from Optimization Theory and Methods: Nonlinear Programming By Wenyu Sun, Ya-xiang Yuan (89-100).
         * \param[in] a_l first endpoint of interval \f$ I \f$, \f$ \alpha_l \f$ in Moore-Thuente (1994)
@@ -387,14 +386,14 @@ namespace pcl
                              double a_u, double f_u, double g_u,
                              double a_t, double f_t, double g_t);
 
-      /** \brief Auxilary function used to determin endpoints of More-Thuente interval.
+      /** \brief Auxiliary function used to determine endpoints of More-Thuente interval.
         * \note \f$ \psi(\alpha) \f$ in Equation 1.6 (Moore, Thuente 1994)
         * \param[in] a the step length, \f$ \alpha \f$ in More-Thuente (1994)
         * \param[in] f_a function value at step length a, \f$ \phi(\alpha) \f$ in More-Thuente (1994)
         * \param[in] f_0 initial function value, \f$ \phi(0) \f$ in Moore-Thuente (1994)
         * \param[in] g_0 initial function gradiant, \f$ \phi'(0) \f$ in More-Thuente (1994)
         * \param[in] mu the step length, constant \f$ \mu \f$ in Equation 1.1 [More, Thuente 1994]
-        * \return sufficent decrease value
+        * \return sufficient decrease value
         */
       inline double
       auxilaryFunction_PsiMT (double a, double f_a, double f_0, double g_0, double mu = 1.e-4)
@@ -402,12 +401,12 @@ namespace pcl
         return (f_a - f_0 - mu * g_0 * a);
       }
 
-      /** \brief Auxilary function derivative used to determin endpoints of More-Thuente interval.
+      /** \brief Auxiliary function derivative used to determine endpoints of More-Thuente interval.
         * \note \f$ \psi'(\alpha) \f$, derivative of Equation 1.6 (Moore, Thuente 1994)
         * \param[in] g_a function gradient at step length a, \f$ \phi'(\alpha) \f$ in More-Thuente (1994)
         * \param[in] g_0 initial function gradiant, \f$ \phi'(0) \f$ in More-Thuente (1994)
         * \param[in] mu the step length, constant \f$ \mu \f$ in Equation 1.1 [More, Thuente 1994]
-        * \return sufficent decrease derivative
+        * \return sufficient decrease derivative
         */
       inline double
       auxilaryFunction_dPsiMT (double g_a, double g_0, double mu = 1.e-4)
@@ -466,5 +465,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/ndt.hpp>
-
-#endif // PCL_REGISTRATION_NDT_H_

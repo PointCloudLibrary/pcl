@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_IO_DINAST_GRABBER_
-#define PCL_IO_DINAST_GRABBER_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -213,5 +212,3 @@ namespace pcl
       boost::signals2::signal<sig_cb_dinast_point_cloud>* point_cloud_signal_;
   };
 } //namespace pcl
-
-#endif // PCL_IO_DINAST_GRABBER_

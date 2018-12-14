@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_FILE_IO_H_
-#define PCL_IO_FILE_IO_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/common/io.h>
@@ -49,7 +48,7 @@
 namespace pcl
 {
   /** \brief Point Cloud Data (FILE) file format reader interface.
-    * Any (FILE) format file reader should implement its virtual methodes.
+    * Any (FILE) format file reader should implement its virtual methods.
     * \author Nizar Sallem
     * \ingroup io
     */
@@ -155,7 +154,7 @@ namespace pcl
   };
 
   /** \brief Point Cloud Data (FILE) file format writer.
-    * Any (FILE) format file reader should implement its virtual methodes
+    * Any (FILE) format file reader should implement its virtual methods
     * \author Nizar Sallem
     * \ingroup io
     */
@@ -221,9 +220,9 @@ namespace pcl
       }
   };
 
-  /** \brief insers a value of type Type (uchar, char, uint, int, float, double, ...) into a stringstream.
+  /** \brief inserts a value of type Type (uchar, char, uint, int, float, double, ...) into a stringstream.
     *
-    * If the value is NaN, it inserst "nan".
+    * If the value is NaN, it inserts "nan".
     *
     * \param[in] cloud the cloud to copy from
     * \param[in] point_index the index of the point
@@ -391,5 +390,3 @@ namespace pcl
   }
 
 }
-
-#endif  //#ifndef PCL_IO_FILE_IO_H_

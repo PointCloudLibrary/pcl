@@ -34,8 +34,7 @@
  * @author: Koen Buys
  */
 
-#ifndef PCL_GPU_PEOPLE_PERSON_H_
-#define PCL_GPU_PEOPLE_PERSON_H_
+#pragma once
 
 #include <iostream>
 #include <sstream>
@@ -171,4 +170,3 @@ namespace pcl
     }
   }
 }
-#endif // PCL_GPU_PEOPLE_PERSON_H_

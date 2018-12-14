@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_PCL_VISUALIZER_H_
-#define PCL_PCL_VISUALIZER_H_
+
+#pragma once
 
 // PCL includes
 #include <pcl/correspondence.h>
@@ -103,7 +103,8 @@ namespace pcl
           */
         PCLVisualizer (const std::string &name = "", const bool create_interactor = true);
 
-        /** \brief PCL Visualizer constructor.
+        /** \brief PCL Visualizer constructor. It looks through the passed argv arguments to find the "-cam *.cam" argument. 
+          *        If the search failed, the name for cam file is calculated with boost uuid. If there is no such file, camera is not initilalized.
           * \param[in] argc
           * \param[in] argv
           * \param[in] name the window name (empty by default)
@@ -1975,11 +1976,7 @@ namespace pcl
         }
       protected:
         /** \brief The render window interactor. */
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
-#else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-#endif
       private:
         /** \brief Internal function for renderer setup
          * \param[in] vtk renderer
@@ -2056,13 +2053,12 @@ namespace pcl
         /** \brief The FPSCallback object for the current visualizer. */
         vtkSmartPointer<FPSCallback> update_fps_;
 
-#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         /** \brief Set to false if the interaction loop is running. */
         bool stopped_;
 
         /** \brief Global timer ID. Used in destructor only. */
         int timer_id_;
-#endif
+
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;
@@ -2310,7 +2306,7 @@ namespace pcl
                                 vtkTexture* vtk_tex) const;
 
         /** \brief Get camera file for camera parameter saving/restoring from command line.
-          * Camera filename is calculated using sha1 value of all pathes of input .pcd files
+          * Camera filename is calculated using sha1 value of all paths of input .pcd files
           * \return empty string if failed.
           */
         std::string
@@ -2349,6 +2345,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/pcl_visualizer.hpp>
-
-#endif
-

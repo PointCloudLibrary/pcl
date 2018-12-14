@@ -504,7 +504,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
           if (neighbor_border_direction==NULL || index2==index)
             continue;
           
-          // Oposite directions?
+          // Opposite directions?
           float cos_angle = neighbor_border_direction->dot(*border_direction);
           if (cos_angle<min_cos_angle)
           {
@@ -593,8 +593,6 @@ void
 RangeImageBorderExtractor::blurSurfaceChanges ()
 {
   int blur_radius = 1;
-  if (blur_radius==0)
-    return;
   
   const RangeImage& range_image = *range_image_;
   

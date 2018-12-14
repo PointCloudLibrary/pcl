@@ -34,8 +34,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_IA_KFPCS_H_
-#define PCL_REGISTRATION_IA_KFPCS_H_
+#pragma once
 
 #include <pcl/registration/ia_fpcs.h>
 
@@ -258,5 +257,3 @@ namespace pcl
 }; // namespace pcl 
 
 #include <pcl/registration/impl/ia_kfpcs.hpp>
-
-#endif // PCL_REGISTRATION_IA_KFPCS_H_

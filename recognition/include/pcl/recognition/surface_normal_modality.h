@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_SURFACE_NORMAL_MODALITY
-#define PCL_RECOGNITION_SURFACE_NORMAL_MODALITY
+#pragma once
 
 #include <pcl/recognition/quantizable_modality.h>
 #include <pcl/recognition/distance_map.h>
@@ -372,7 +371,7 @@ namespace pcl
         return (filtered_quantized_surface_normals_); 
       }
 
-      /** \brief Returns a reference to the internal spreaded quantized map. */
+      /** \brief Returns a reference to the internal spread quantized map. */
       inline QuantizedMap &
       getSpreadedQuantizedMap () 
       { 
@@ -476,7 +475,7 @@ namespace pcl
       pcl::QuantizedMap quantized_surface_normals_;
       /** \brief Filtered quantized surface normals. */
       pcl::QuantizedMap filtered_quantized_surface_normals_;
-      /** \brief Spreaded quantized surface normals. */
+      /** \brief Spread quantized surface normals. */
       pcl::QuantizedMap spreaded_quantized_surface_normals_;
 
       /** \brief Map containing surface normal orientations. */
@@ -1639,6 +1638,3 @@ pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (const MaskMap & input,
     current_row -= width;
   }
 }
-
-
-#endif 

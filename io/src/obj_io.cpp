@@ -374,7 +374,6 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   // bool material_found = false;
   std::vector<std::string> material_files;
   std::size_t nr_point = 0;
-  std::vector<std::string> st;
 
   try
   {
@@ -385,40 +384,42 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       if (line == "")
         continue;
 
-      // Tokenize the line
-      std::stringstream sstream (line);
-      sstream.imbue (std::locale::classic ());
-      line = sstream.str ();
+      // Trim the line
       boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      
       // Ignore comments
-      if (st.at (0) == "#")
+      if (line[0] == '#')
         continue;
 
-      // Vertex
-      if (st.at (0) == "v")
+      // Vertex, vertex texture or vertex normal
+      if (line[0] == 'v')
       {
-        ++nr_point;
-        continue;
-      }
+        // Vertex (v)
+        if (line[1] == ' ') {
+          ++nr_point;
+          continue;
+        }
 
-      // Vertex texture
-      if ((st.at (0) == "vt") && !vertex_texture_found)
-      {
-        vertex_texture_found = true;
-        continue;
-      }
+        // Vertex texture (vt)
+        else if ((line[1] == 't') && !vertex_texture_found)
+        {
+          vertex_texture_found = true;
+          continue;
+        }
 
-      // Vertex normal
-      if ((st.at (0) == "vn") && !vertex_normal_found)
-      {
-        vertex_normal_found = true;
-        continue;
+        // Vertex normal (vn)
+        else if ((line[1] == 'n') && !vertex_normal_found)
+        {
+          vertex_normal_found = true;
+          continue;
+        }
       }
 
       // Material library, skip for now!
-      if (st.at (0) == "mtllib")
+      if (line.substr (0, 6) == "mtllib")
       {
+        std::vector<std::string> st;
+        boost::split(st, line, boost::is_any_of("\t\r "), boost::token_compress_on);
         material_files.push_back (st.at (1));
         continue;
       }
@@ -588,6 +589,13 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       // Vertex normal
       if (st[0] == "vn")
       {
+        if (normal_idx >= cloud.width) 
+        {
+          if (normal_idx == cloud.width)
+            PCL_WARN ("[pcl:OBJReader] Too many vertex normals (expected %d), skipping remaining normals.\n", cloud.width, normal_idx + 1);
+          ++normal_idx;
+          continue;
+        }
         try
         {
           for (int i = 1, f = normal_x_field; i < 4; ++i, ++f)
@@ -1129,7 +1137,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
   // Close obj file
   fs.close ();
 
-  /* Write material defination for OBJ file*/
+  /* Write material definition for OBJ file*/
   // Open file
 
   std::ofstream m_fs;

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_VOXEL_GRID_COVARIANCE_H_
-#define PCL_VOXEL_GRID_COVARIANCE_H_
+#pragma once
 
 #include <pcl/filters/boost.h>
 #include <pcl/filters/voxel_grid.h>
@@ -367,7 +366,7 @@ namespace pcl
 
       }
 
-      /** \brief Get the voxels surrounding point p, not including the voxel contating point p.
+      /** \brief Get the voxels surrounding point p, not including the voxel containing point p.
        * \note Only voxels containing a sufficient number of points are used (slower than radius search in practice).
        * \param[in] reference_point the point to get the leaf structure at
        * \param[out] neighbors
@@ -520,7 +519,7 @@ namespace pcl
       /** \brief Flag to determine if voxel structure is searchable. */
       bool searchable_;
 
-      /** \brief Minimum points contained with in a voxel to allow it to be useable. */
+      /** \brief Minimum points contained with in a voxel to allow it to be usable. */
       int min_points_per_voxel_;
 
       /** \brief Minimum allowable ratio between eigenvalues to prevent singular covariance matrices. */
@@ -543,5 +542,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/voxel_grid_covariance.hpp>
 #endif
-
-#endif  //#ifndef PCL_VOXEL_GRID_COVARIANCE_H_

@@ -74,7 +74,7 @@ namespace pcl
     OutofcoreOctreeDiskContainer<PointT>::rand_gen_ (static_cast<unsigned int> (std::time(NULL)));
 
     template<typename PointT>
-    boost::uuids::random_generator OutofcoreOctreeDiskContainer<PointT>::uuid_gen_ (&rand_gen_);
+    boost::uuids::basic_random_generator<boost::mt19937> OutofcoreOctreeDiskContainer<PointT>::uuid_gen_ (&rand_gen_);
 
     template<typename PointT>
     const uint64_t OutofcoreOctreeDiskContainer<PointT>::READ_BLOCK_SIZE_ = static_cast<uint64_t> (2e12);
@@ -245,7 +245,7 @@ namespace pcl
 
       if ((start + count) > size ())
       {
-        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Indicies out of range; start + count exceeds the size of the stored points\n", __FUNCTION__);
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Indices out of range; start + count exceeds the size of the stored points\n", __FUNCTION__);
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeDiskContainer] Outofcore Octree Exception: Read indices exceed range");
       }
 

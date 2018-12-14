@@ -152,19 +152,19 @@ if(build)
         src/grsd.cpp
         src/statistical_multiscale_interest_region_extraction.cpp
         src/vfh.cpp
-        src/esf.cpp        
+        src/esf.cpp
         src/3dsc.cpp
         src/usc.cpp
         src/range_image_border_extractor.cpp
        )
-	
+
     if(MSVC)
-      # Workaround to aviod hitting the MSVC 4GB linker memory limit when building pcl_features.
+      # Workaround to avoid hitting the MSVC 4GB linker memory limit when building pcl_features.
       # Disable whole program optimization (/GL) and link-time code generation (/LTCG).
       string(REPLACE "/GL" "" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
-      string(REPLACE "/LTCG" "" CMAKE_SHARED_LINKER_FLAGS_RELEASE ${CMAKE_SHARED_LINKER_FLAGS_RELEASE}) 
-    endif(MSVC)
-	
+      string(REPLACE "/LTCG" "" CMAKE_SHARED_LINKER_FLAGS_RELEASE ${CMAKE_SHARED_LINKER_FLAGS_RELEASE})
+    endif()
+
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
     PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${impl_incs})
     target_link_libraries("${LIB_NAME}" pcl_common pcl_search pcl_kdtree pcl_octree pcl_filters)
@@ -173,4 +173,4 @@ if(build)
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
 
-endif(build)
+endif()

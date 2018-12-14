@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_SHOT_LOCAL_ESTIMATOR_OMP_H_
-#define REC_FRAMEWORK_SHOT_LOCAL_ESTIMATOR_OMP_H_
+#pragma once
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/local_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
@@ -152,5 +151,3 @@ namespace pcl
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_SHOT_LOCAL_ESTIMATOR_OMP_H_ */

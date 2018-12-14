@@ -9,17 +9,7 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
-    set(incs 
-        "include/pcl/${SUBSYS_NAME}/dt/decision_forest.h"
-        "include/pcl/${SUBSYS_NAME}/dt/decision_forest_evaluator.h"
-        "include/pcl/${SUBSYS_NAME}/dt/decision_forest_trainer.h"
-        "include/pcl/${SUBSYS_NAME}/dt/decision_tree.h"
-        "include/pcl/${SUBSYS_NAME}/dt/decision_tree_evaluator.h"
-        "include/pcl/${SUBSYS_NAME}/dt/decision_tree_trainer.h"
-        "include/pcl/${SUBSYS_NAME}/dt/decision_tree_data_provider.h"
-        "include/pcl/${SUBSYS_NAME}/ferns/fern.h"
-        "include/pcl/${SUBSYS_NAME}/ferns/fern_evaluator.h"
-        "include/pcl/${SUBSYS_NAME}/ferns/fern_trainer.h"
+    set(incs
         "include/pcl/${SUBSYS_NAME}/branch_estimator.h"
         "include/pcl/${SUBSYS_NAME}/feature_handler.h"
         "include/pcl/${SUBSYS_NAME}/multi_channel_2d_comparison_feature.h"
@@ -42,15 +32,36 @@ if(build)
 	"include/pcl/${SUBSYS_NAME}/kmeans.h"
         )
 
-    set(impl_incs 
+    set(dt_incs
+        "include/pcl/${SUBSYS_NAME}/dt/decision_forest.h"
+        "include/pcl/${SUBSYS_NAME}/dt/decision_forest_evaluator.h"
+        "include/pcl/${SUBSYS_NAME}/dt/decision_forest_trainer.h"
+        "include/pcl/${SUBSYS_NAME}/dt/decision_tree.h"
+        "include/pcl/${SUBSYS_NAME}/dt/decision_tree_evaluator.h"
+        "include/pcl/${SUBSYS_NAME}/dt/decision_tree_trainer.h"
+        "include/pcl/${SUBSYS_NAME}/dt/decision_tree_data_provider.h"
+        )
+
+    set(ferns_incs
+        "include/pcl/${SUBSYS_NAME}/ferns/fern.h"
+        "include/pcl/${SUBSYS_NAME}/ferns/fern_evaluator.h"
+        "include/pcl/${SUBSYS_NAME}/ferns/fern_trainer.h"
+        )
+
+    set(dt_impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/dt/decision_forest_evaluator.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/dt/decision_forest_trainer.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/dt/decision_tree_evaluator.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/dt/decision_tree_trainer.hpp"
+        )
+
+    set(ferns_impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/ferns/fern_evaluator.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/ferns/fern_trainer.hpp"
+        )
+
+    set(svm_impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/svm/svm_wrapper.hpp"
-	#"include/pcl/${SUBSYS_NAME}/impl/kmeans.hpp"
         )
 
     set(srcs
@@ -62,7 +73,7 @@ if(build)
 		#src/permutohedralORI.cpp
 		#src/filter.cpp
 		#src/util.cpp
-		#src/densecrfORI.cpp		
+		#src/densecrfORI.cpp
 		src/svm_wrapper.cpp
 		src/svm.cpp
 		src/kmeans.cpp
@@ -76,5 +87,10 @@ if(build)
     PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
     # Install include files
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/dt" ${dt_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ferns" ${ferns_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/dt" ${dt_impl_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/ferns" ${ferns_impl_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/svm" ${svm_impl_incs})
 
-endif(build)
+endif()

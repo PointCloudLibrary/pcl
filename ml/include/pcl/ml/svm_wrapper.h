@@ -36,8 +36,7 @@
   *
   */
 
-#ifndef PCL_SVM_WRAPPER_H_
-#define PCL_SVM_WRAPPER_H_
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -87,7 +86,7 @@ namespace pcl
     }
   };
 
-  /** \brief The structure initialize a model crated by the SVM (Support Vector Machines) classifier (pcl::SVMTrain)
+  /** \brief The structure initialize a model created by the SVM (Support Vector Machines) classifier (pcl::SVMTrain)
    */
   struct SVMModel: svm_model
   {
@@ -533,5 +532,3 @@ namespace pcl
       };
   };
 }
-
-#endif // PCL_SVM_WRAPPER_H_

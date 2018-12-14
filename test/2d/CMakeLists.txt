@@ -24,4 +24,4 @@ if(build)
                          "${PCL_SOURCE_DIR}/test/2d/opening_binary.pcd"
                          "${PCL_SOURCE_DIR}/test/2d/closing_binary.pcd"
                          "${PCL_SOURCE_DIR}/test/2d/canny.pcd")
-endif(build)
+endif()

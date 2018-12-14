@@ -152,7 +152,7 @@ class TrajkovicDemo
           {
             cloud_viewer_.setPosition (0, 0);
             cloud_viewer_.setSize (cloud->width, cloud->height);
-            cloud_init = !cloud_init;
+            cloud_init = true;
           }
 
           if (!cloud_viewer_.updatePointCloud (cloud, "OpenNICloud"))
@@ -165,7 +165,7 @@ class TrajkovicDemo
           {
             image_viewer_.setPosition (cloud->width, 0);
             image_viewer_.setSize (cloud->width, cloud->height);
-            image_init = !image_init;
+            image_init = true;
           }
 
           image_viewer_.addRGBImage<PointT> (cloud);

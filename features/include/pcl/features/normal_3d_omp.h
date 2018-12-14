@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_NORMAL_3D_OMP_H_
-#define PCL_NORMAL_3D_OMP_H_
+#pragma once
 
 #include <pcl/features/normal_3d.h>
 
@@ -74,16 +73,18 @@ namespace pcl
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      NormalEstimationOMP (unsigned int nr_threads = 0) : threads_ (nr_threads)
+      NormalEstimationOMP (unsigned int nr_threads = 0)
       {
         feature_name_ = "NormalEstimationOMP";
+
+        setNumberOfThreads(nr_threads);
       }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      inline void 
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+      void
+      setNumberOfThreads (unsigned int nr_threads = 0);
 
     protected:
       /** \brief The number of threads the scheduler should use. */
@@ -94,7 +95,7 @@ namespace pcl
         * setSearchSurface () and the spatial locator in setSearchMethod ()
         * \param output the resultant point cloud model dataset that contains surface normals and curvatures
         */
-      void 
+      void
       computeFeature (PointCloudOut &output);
   };
 }
@@ -102,5 +103,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/normal_3d_omp.hpp>
 #endif
-
-#endif  //#ifndef PCL_NORMAL_3D_OMP_H_

@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_FEATURE_HISTOGRAM_H_
-#define PCL_FEATURE_HISTOGRAM_H_
+#pragma once
 
 #include <vector>
 
@@ -122,4 +121,3 @@ namespace pcl
       size_t number_of_bins_;
   };
 }
-#endif // PCL_FEATURE_HISTOGRAM_H_

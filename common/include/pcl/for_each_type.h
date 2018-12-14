@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FOR_EACH_TYPE_H_
-#define PCL_FOR_EACH_TYPE_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
@@ -105,5 +104,3 @@ namespace pcl
     typedef typename boost::mpl::remove_if<Sequence1, boost::mpl::not_<boost::mpl::contains<Sequence2, boost::mpl::_1> > >::type type; 
   }; 
 }
-
-#endif  //#ifndef PCL_FOR_EACH_TYPE_H_

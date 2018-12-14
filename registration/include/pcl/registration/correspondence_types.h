@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_TYPES_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_TYPES_H_
+
+#pragma once
 
 #include <pcl/correspondence.h>
 
@@ -50,7 +50,7 @@ namespace pcl
       * \param[in] correspondences list of correspondences
       * \param[out] mean the mean descriptor distance of correspondences
       * \param[out] stddev the standard deviation of descriptor distances.
-      * \note The sample varaiance is used to determine the standard deviation
+      * \note The sample variance is used to determine the standard deviation
       */
     inline void 
     getCorDistMeanStd (const pcl::Correspondences& correspondences, double &mean, double &stddev);
@@ -75,5 +75,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_types.hpp>
-
-#endif /* PCL_REGISTRATION_CORRESPONDENCE_TYPES_H_ */

@@ -497,25 +497,25 @@ TEST (PCL, eigen22d)
     // test if U * V * U^T = M
     r_result = r_vectors * r_eigenvalues.asDiagonal () * r_vectors.transpose ();
     r_error = r_result - r_matrix;
-    diff = r_error.cwiseAbs (). sum ();
+    diff = r_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     // test if the eigenvalues are orthonormal
     g_result = r_vectors * r_vectors.transpose ();
     g_error = g_result - RMatrix::Identity ();
-    diff = g_error.cwiseAbs (). sum ();
+    diff = g_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     // test if column major matrices are also calculated correctly
     eigen22 (c_matrix, c_vectors, c_eigenvalues);
     c_result = c_vectors * c_eigenvalues.asDiagonal () * c_vectors.transpose ();
     c_error = c_result - c_matrix;
-    diff = c_error.cwiseAbs (). sum ();
+    diff = c_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     g_result = c_vectors * c_vectors.transpose ();
     g_error = g_result - CMatrix::Identity ();
-    diff = g_error.cwiseAbs (). sum ();
+    diff = g_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
   }
 }
@@ -556,25 +556,25 @@ TEST (PCL, eigen22f)
     // test if U * V * U^T = M
     r_result = r_vectors * r_eigenvalues.asDiagonal () * r_vectors.transpose ();
     r_error = r_result - r_matrix;
-    diff = r_error.cwiseAbs (). sum ();
+    diff = r_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     // test if the eigenvalues are orthonormal
     g_result = r_vectors * r_vectors.transpose ();
     g_error = g_result - RMatrix::Identity ();
-    diff = g_error.cwiseAbs (). sum ();
+    diff = g_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     // test if column major matrices are also calculated correctly
     eigen22 (c_matrix, c_vectors, c_eigenvalues);
     c_result = c_vectors * c_eigenvalues.asDiagonal () * c_vectors.transpose ();
     c_error = c_result - c_matrix;
-    diff = c_error.cwiseAbs (). sum ();
+    diff = c_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     g_result = c_vectors * c_vectors.transpose ();
     g_error = g_result - CMatrix::Identity ();
-    diff = g_error.cwiseAbs (). sum ();
+    diff = g_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
   }
 }
@@ -607,7 +607,7 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
     val2 = val1;
     val3 = val1;
   }
-  // 1%: 2 values are equal but none is set explicitely to 0
+  // 1%: 2 values are equal but none is set explicitly to 0
   else if (test_case == 1)
   {
     val2 = val3;
@@ -744,14 +744,12 @@ TEST (PCL, eigen33f)
   const Scalar epsilon = 1e-3f;
   const unsigned iterations = 1000000;
   bool r_failed;
-  bool c_failed;
   unsigned r_fail_count = 0;
-  unsigned c_fail_count = 0;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
-    r_failed = c_failed = false;
+    r_failed = false;
     // generate test matrices
     generateSymPosMatrix3x3 (r_matrix);
     c_matrix = r_matrix;
@@ -781,17 +779,10 @@ TEST (PCL, eigen33f)
     c_result = c_vectors * c_eigenvalues.asDiagonal () * c_vectors.transpose ();
     c_error = c_result - c_matrix;
     diff = c_error.cwiseAbs (). sum ();
-    if (diff > epsilon)
-      c_failed = true;
 
     g_result = c_vectors * c_vectors.transpose ();
     g_error = g_result - CMatrix::Identity ();
     diff = g_error.cwiseAbs (). sum ();
-    if (diff > epsilon)
-      c_failed = true;
-
-    if(c_failed)
-      ++c_fail_count;
   }
 
   // less than 1% failure rate
@@ -932,6 +923,8 @@ TEST (PCL, transformPlane)
   transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/7, Eigen::Vector3d::UnitY())
   * Eigen::AngleAxisd(M_PI/4, Eigen::Vector3d::UnitZ());
   test << 5.35315, 2.89914, 0.196848, -49.2788;
+  test /= test.head<3> ().norm ();
+
   tolerance = 1e-4;
 
   plane->values[0] = 5.4;
@@ -1106,6 +1099,60 @@ TEST (PCL, transformBetween2CoordinateSystems)
   for (int i = 0; i < 3; i++)
   for (int j = 0; j < 3; j++)
   EXPECT_LE ((transformationd.matrix())(i,j) - test(i,j), tolerance);
+}
+
+TEST (PCL, getTransFromUnitVectors)
+{
+  Eigen::Vector3f xaxis (1, 0, 0), yaxis (0, 1, 0), zaxis (0, 0, 1);
+  Eigen::Affine3f trans;
+
+  trans = pcl::getTransFromUnitVectorsZY (zaxis, yaxis);
+  Eigen::Vector3f xaxistrans = trans * xaxis, yaxistrans = trans * yaxis, zaxistrans = trans * zaxis;
+  EXPECT_NEAR ((xaxistrans - xaxis).norm (), 0.0f,  1e-6);
+  EXPECT_NEAR ((yaxistrans - yaxis).norm (), 0.0f,  1e-6);
+  EXPECT_NEAR ((zaxistrans - zaxis).norm (), 0.0f,  1e-6);
+
+  trans = pcl::getTransFromUnitVectorsXY (xaxis, yaxis);
+  xaxistrans = trans * xaxis, yaxistrans = trans * yaxis, zaxistrans = trans * zaxis;
+  EXPECT_NEAR ((xaxistrans-xaxis).norm (), 0.0f,  1e-6);
+  EXPECT_NEAR ((yaxistrans-yaxis).norm (), 0.0f,  1e-6);
+  EXPECT_NEAR ((zaxistrans-zaxis).norm (), 0.0f,  1e-6);
+}
+
+TEST (PCL, getTransformation)
+{
+  const float rot_x = 2.8827f;
+  const float rot_y = -0.31190f;
+  const float rot_z = -0.93058f;
+
+  Eigen::Affine3f affine;
+  pcl::getTransformation (0, 0, 0, rot_x, rot_y, rot_z, affine);
+
+  EXPECT_NEAR (affine (0, 0),  0.56854731f, 1e-4); EXPECT_NEAR (affine (0, 1), -0.82217032f, 1e-4); EXPECT_NEAR (affine (0, 2), -0.028107658f, 1e-4);
+  EXPECT_NEAR (affine (1, 0), -0.76327348f, 1e-4); EXPECT_NEAR (affine (1, 1), -0.51445758f, 1e-4); EXPECT_NEAR (affine (1, 2), -0.39082864f, 1e-4);
+  EXPECT_NEAR (affine (2, 0),  0.30686751f, 1e-4); EXPECT_NEAR (affine (2, 1),  0.24365838f, 1e-4); EXPECT_NEAR (affine (2, 2), -0.920034f, 1e-4);
+}
+
+TEST (PCL, getTranslationAndEulerAngles)
+{
+  const float trans_x = 0.1f;
+  const float trans_y = 0.2f;
+  const float trans_z = 0.3f;
+  const float rot_x = 2.8827f;
+  const float rot_y = -0.31190f;
+  const float rot_z = -0.93058f;
+
+  Eigen::Affine3f affine;
+  pcl::getTransformation (trans_x, trans_y, trans_z, rot_x, rot_y, rot_z, affine);
+
+  float tx, ty, tz, rx, ry, rz;
+  pcl::getTranslationAndEulerAngles (affine, tx, ty, tz, rx, ry, rz);
+  EXPECT_NEAR (tx, trans_x, 1e-4);
+  EXPECT_NEAR (ty, trans_y, 1e-4);
+  EXPECT_NEAR (tz, trans_z, 1e-4);
+  EXPECT_NEAR (rx, rot_x, 1e-4);
+  EXPECT_NEAR (ry, rot_y, 1e-4);
+  EXPECT_NEAR (rz, rot_z, 1e-4);
 }
 
 /* ---[ */

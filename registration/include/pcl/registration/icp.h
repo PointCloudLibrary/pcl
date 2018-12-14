@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_ICP_H_
-#define PCL_ICP_H_
+#pragma once
 
 // PCL includes
 #include <pcl/sample_consensus/ransac.h>
@@ -335,5 +334,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/icp.hpp>
-
-#endif  //#ifndef PCL_ICP_H_

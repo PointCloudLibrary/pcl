@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_BRANCH_ESTIMATOR_H_
-#define PCL_ML_BRANCH_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/ml/stats_estimator.h>
@@ -145,5 +144,3 @@ namespace pcl
   };
 
 }
-
-#endif

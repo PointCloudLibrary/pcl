@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_UNIFORM_SAMPLING_H_
-#define REC_FRAMEWORK_UNIFORM_SAMPLING_H_
+#pragma once
 
 #include <vtkPolyData.h>
 #include <vtkTriangle.h>
@@ -162,5 +161,3 @@ namespace pcl
     }
   }
 }
-
-#endif /* REC_FRAMEWORK_UNIFORM_SAMPLING_H_ */

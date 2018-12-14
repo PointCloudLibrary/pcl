@@ -35,9 +35,7 @@
  *
  */
 
-#ifndef PROJECT_MODEL_H_
-#define PROJECT_MODEL_H_
-
+#pragma once
 
 #include <vtkSmartPointer.h>
 #include <vtkCamera.h>
@@ -209,6 +207,3 @@ namespace pcl
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::ProjectModel);
 Q_DECLARE_METATYPE (pcl::cloud_composer::interactor_styles::INTERACTOR_STYLES);
-
-#endif //PROJECT_MODEL_H
-

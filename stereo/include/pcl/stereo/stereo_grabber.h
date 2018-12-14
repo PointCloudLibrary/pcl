@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_STEREO_STEREO_GRABER_H_
-#define PCL_STEREO_STEREO_GRABER_H_
+#pragma once
 
 #include <pcl/io/grabber.h>
 #include <pcl/common/time_trigger.h>
@@ -171,4 +170,3 @@ namespace pcl
     signal_->operator () (cloud);
   }
 }
-#endif

@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_JOINT_ICP_H_
-#define PCL_JOINT_ICP_H_
+#pragma once
 
 // PCL includes
 #include <pcl/registration/icp.h>
@@ -227,7 +226,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/joint_icp.hpp>
-
-#endif  //#ifndef PCL_JOINT_ICP_H_
-
-

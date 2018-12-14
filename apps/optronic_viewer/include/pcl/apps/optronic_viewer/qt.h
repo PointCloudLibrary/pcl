@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_APPS_OPTRONIC_VIEWER_QT_H_
-#define PCL_APPS_OPTRONIC_VIEWER_QT_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header
@@ -97,5 +96,3 @@
 
 #include <QTimer>
 #include <QTime>
-
-#endif // PCL_APPS_OPTRONIC_VIEWER_QT_H_

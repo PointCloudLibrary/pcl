@@ -84,7 +84,7 @@ TEST (PCL, SHOTLocalReferenceFrameEstimation)
   EXPECT_TRUE (pcl_isnan (bunny_LRF.at (24).x_axis[0]));
 
   // Expected Results
-  // point 15: tanget disambiguation
+  // point 15: tangent disambiguation
   //float point_15_conf = 0;
   Eigen::Vector3f point_15_x (-0.849213f, 0.528016f, 0.00593846f);
   Eigen::Vector3f point_15_y (0.274564f, 0.451135f, -0.849171f);

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_CORRESPONDENCE_GROUPING_H_
-#define PCL_RECOGNITION_CORRESPONDENCE_GROUPING_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/correspondence.h>
@@ -198,5 +197,3 @@ namespace pcl
 }
 
 #include <pcl/recognition/impl/cg/correspondence_grouping.hpp>
-
-#endif // PCL_RECOGNITION_CORRESPONDENCE_GROUPING_H_

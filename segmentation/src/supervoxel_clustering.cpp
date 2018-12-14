@@ -63,7 +63,7 @@ namespace pcl
       data_.xyz_[0] += new_point.x;
       data_.xyz_[1] += new_point.y;
       data_.xyz_[2] += new_point.z;
-      //Separate sums for r,g,b since we cant sum in uchars
+      //Separate sums for r,g,b since we can't sum in uchars
       data_.rgb_[0] += static_cast<float> (new_point.r); 
       data_.rgb_[1] += static_cast<float> (new_point.g); 
       data_.rgb_[2] += static_cast<float> (new_point.b); 
@@ -78,7 +78,7 @@ namespace pcl
       data_.xyz_[0] += new_point.x;
       data_.xyz_[1] += new_point.y;
       data_.xyz_[2] += new_point.z;
-      //Separate sums for r,g,b since we cant sum in uchars
+      //Separate sums for r,g,b since we can't sum in uchars
       data_.rgb_[0] += static_cast<float> (new_point.r); 
       data_.rgb_[1] += static_cast<float> (new_point.g); 
       data_.rgb_[2] += static_cast<float> (new_point.b); 

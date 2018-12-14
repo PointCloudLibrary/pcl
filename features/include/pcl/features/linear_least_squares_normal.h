@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_LINEAR_LEAST_SQUARES_NORMAL_H_
-#define PCL_FEATURES_LINEAR_LEAST_SQUARES_NORMAL_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -147,6 +146,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/linear_least_squares_normal.hpp>
 #endif
-
-#endif 
-

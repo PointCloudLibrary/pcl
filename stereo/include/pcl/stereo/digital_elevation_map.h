@@ -33,8 +33,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef PCL_DIGITAL_ELEVATION_MAP_H_
-#define PCL_DIGITAL_ELEVATION_MAP_H_
+
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/stereo/disparity_map_converter.h>
@@ -136,5 +136,3 @@ namespace pcl
       size_t min_points_in_cell_;
   };
 }
-
-#endif // PCL_DIGITAL_ELEVATION_MAP_H_

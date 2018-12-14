@@ -37,8 +37,7 @@
  *  Email  : jpapon@gmail.com
  */
 
-#ifndef PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
-#define PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
+#pragma once
 
 #include <pcl/octree/boost.h>
 #include <pcl/octree/octree_pointcloud.h>
@@ -94,40 +93,6 @@ namespace pcl
         typedef pcl::PointCloud<PointT> PointCloud;
         typedef boost::shared_ptr<PointCloud> PointCloudPtr;
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
-
-        // Iterators are friends
-        friend class OctreeIteratorBase<OctreeAdjacencyT>;
-        friend class OctreeDepthFirstIterator<OctreeAdjacencyT>;
-        friend class OctreeBreadthFirstIterator<OctreeAdjacencyT>;
-        friend class OctreeLeafNodeIterator<OctreeAdjacencyT>;
-
-        // Octree default iterators
-        typedef OctreeDepthFirstIterator<OctreeAdjacencyT> Iterator;
-        typedef const OctreeDepthFirstIterator<OctreeAdjacencyT> ConstIterator;
-
-        Iterator depth_begin (unsigned int max_depth_arg = 0)
-        {
-          return Iterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
-        }
-
-        const Iterator depth_end (unsigned int max_depth_arg = 0)
-        {
-          return Iterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
-        }
-
-        // Octree leaf node iterators
-        typedef OctreeLeafNodeIterator<OctreeAdjacencyT> LeafNodeIterator;
-        typedef const OctreeLeafNodeIterator<OctreeAdjacencyT> ConstLeafNodeIterator;
-
-        LeafNodeIterator leaf_begin (unsigned int max_depth_arg = 0)
-        {
-          return LeafNodeIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
-        }
-
-        const LeafNodeIterator leaf_end (unsigned int max_depth_arg = 0)
-        {
-          return LeafNodeIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
-        }
 
         // BGL graph
         typedef boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, PointT, float> VoxelAdjacencyList;
@@ -261,6 +226,3 @@ namespace pcl
 
 // Note: Do not precompile this octree type because it is typically used with custom leaf containers.
 #include <pcl/octree/impl/octree_pointcloud_adjacency.hpp>
-
-#endif // PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
-

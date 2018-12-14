@@ -53,7 +53,7 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvarian
   // Estimate the XYZ centroid
   compute3DCentroid (cloud, indices, xyz_centroid_);
 
-  // Initalize the centralized moments
+  // Initialize the centralized moments
   float mu200 = 0, mu020 = 0, mu002 = 0, mu110 = 0, mu101 = 0, mu011  = 0;
 
   // Iterate over the nearest neighbors set
@@ -86,7 +86,7 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvarian
   // Estimate the XYZ centroid
   compute3DCentroid (cloud, xyz_centroid_);
 
-  // Initalize the centralized moments
+  // Initialize the centralized moments
   float mu200 = 0, mu020 = 0, mu002 = 0, mu110 = 0, mu101 = 0, mu011  = 0;
 
   // Iterate over the nearest neighbors set

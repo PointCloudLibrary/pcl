@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_VISUALUALIZATION_PCL_PAINTER2D_H_
-#define	PCL_VISUALUALIZATION_PCL_PAINTER2D_H_
+#pragma once
 
 #include <iostream>
 #include <map>
@@ -446,18 +445,10 @@ namespace pcl
               return;
 
             // Stop vtk loop and send notification to app to wake it up
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-            interactor->stopLoop ();
-#else
             interactor->TerminateApp ();
-#endif
           }
           int right_timer_id;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-          PCLVisualizerInteractor *interactor;
-#else
           vtkRenderWindowInteractor *interactor;
-#endif
         };
         
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
@@ -466,6 +457,3 @@ namespace pcl
 
   }
 }
-
-#endif	/* PCL_VISUALUALIZATION_PCL_PAINTER2D_H_ */
-

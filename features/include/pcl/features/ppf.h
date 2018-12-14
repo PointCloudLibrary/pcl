@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_PPF_H_
-#define PCL_PPF_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 #include <pcl/features/boost.h>
@@ -105,5 +104,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/ppf.hpp>
 #endif
-
-#endif // PCL_PPF_H_

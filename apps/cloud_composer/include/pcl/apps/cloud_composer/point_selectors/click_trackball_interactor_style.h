@@ -35,21 +35,17 @@
  *
  */
 
-#ifndef CLICK_TRACKBALL_STYLE_INTERACTOR_H_
-#define CLICK_TRACKBALL_STYLE_INTERACTOR_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 #include <pcl/apps/cloud_composer/qt.h>
-
-
-
 
 namespace pcl
 {
   namespace cloud_composer
   {
       
-    class PCL_EXPORTS ClickTrackballStyleInteractor : public vtkInteractorStyleTrackballActor
+    class ClickTrackballStyleInteractor : public vtkInteractorStyleTrackballActor
     {     
       public:
         static ClickTrackballStyleInteractor* New();
@@ -116,7 +112,3 @@ namespace pcl
   }
   
 }
-
-#endif // CLICK_TRACKBALL_STYLE_INTERACTOR_H_
-        
-        

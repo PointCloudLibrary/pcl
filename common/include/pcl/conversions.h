@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_CONVERSIONS_H_
-#define PCL_CONVERSIONS_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header
@@ -351,5 +350,3 @@ namespace pcl
     }
   }
 }
-
-#endif  //#ifndef PCL_CONVERSIONS_H_

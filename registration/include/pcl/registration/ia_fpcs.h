@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_IA_FPCS_H_
-#define PCL_REGISTRATION_IA_FPCS_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/registration/registration.h>
@@ -515,7 +514,7 @@ namespace pcl
       /** \brief Estimated squared metric overlap between source and target.
         * \note Internally calculated using the estimated overlap and the extent of the source cloud.
         * It is used to derive the minimum sampling distance of the base points as well as to calculated
-        * the number of trys to reliable find a correct mach.
+        * the number of tries to reliably find a correct match.
         */
       float max_base_diameter_sqr_;
 
@@ -566,5 +565,3 @@ namespace pcl
 }; // namespace pcl 
 
 #include <pcl/registration/impl/ia_fpcs.hpp>
-
-#endif // PCL_REGISTRATION_IA_FPCS_H_

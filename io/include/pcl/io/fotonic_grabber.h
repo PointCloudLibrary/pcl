@@ -35,11 +35,10 @@
  *
  */
 
+#pragma once
+
 #include <pcl/pcl_config.h>
 #ifdef HAVE_FZAPI
-
-#ifndef __PCL_IO_FOTONIC_GRABBER__
-#define __PCL_IO_FOTONIC_GRABBER__
 
 #include <pcl/io/eigen.h>
 #include <pcl/io/boost.h>
@@ -135,7 +134,7 @@ namespace pcl
       void
       setupDevice (const FZ_DEVICE_INFO& device_info, const Mode& depth_mode, const Mode& image_mode);
 
-      /** \brief Continously asks for data from the device and publishes it if available. */
+      /** \brief Continuously asks for data from the device and publishes it if available. */
       void
       processGrabbing ();
 
@@ -156,5 +155,4 @@ namespace pcl
   };
 
 } // namespace pcl
-#endif // __PCL_IO_FOTONIC_GRABBER__
 #endif // HAVE_FOTONIC

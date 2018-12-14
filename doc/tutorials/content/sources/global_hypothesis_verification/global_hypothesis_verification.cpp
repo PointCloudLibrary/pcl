@@ -96,6 +96,8 @@ float cg_size_ (0.01f);
 float cg_thresh_ (5.0f);
 int icp_max_iter_ (5);
 float icp_corr_distance_ (0.005f);
+float hv_resolution_ (0.005f);
+float hv_occupancy_grid_resolution_ (0.01f);
 float hv_clutter_reg_ (5.0f);
 float hv_inlier_th_ (0.005f);
 float hv_occlusion_th_ (0.01f);
@@ -436,7 +438,8 @@ main (int argc,
 
   GoHv.setSceneCloud (scene);  // Scene Cloud
   GoHv.addModels (registered_instances, true);  //Models to verify
-
+  GoHv.setResolution (hv_resolution_);
+  GoHv.setResolutionOccupancyGrid (hv_occupancy_grid_resolution_);
   GoHv.setInlierThreshold (hv_inlier_th_);
   GoHv.setOcclusionThreshold (hv_occlusion_th_);
   GoHv.setRegularizer (hv_regularizer_);

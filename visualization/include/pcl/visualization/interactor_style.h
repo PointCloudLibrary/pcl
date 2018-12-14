@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_PCL_VISUALIZER_INTERACTOR_STYLE_H_
-#define PCL_PCL_VISUALIZER_INTERACTOR_STYLE_H_
+
+#pragma once
 
 #include <pcl/console/print.h>
 #include <pcl/visualization/common/actor_map.h>
@@ -107,9 +107,9 @@ namespace pcl
       */
     class PCL_EXPORTS PCLVisualizerInteractorStyle : public vtkInteractorStyleRubberBandPick
     {
-      typedef boost::shared_ptr<CloudActorMap> CloudActorMapPtr;
-
       public:
+        typedef boost::shared_ptr<CloudActorMap> CloudActorMapPtr;
+
         static PCLVisualizerInteractorStyle *New ();
 
         /** \brief Empty constructor. */
@@ -355,7 +355,7 @@ namespace pcl
         /** \brief Get camera parameters from a string vector.
           * \param[in] camera A string vector:
           * Clipping Range, Focal Point, Position, ViewUp, Distance, Field of View Y, Window Size, Window Pos.
-          * Values in each string are seperated by a ','
+          * Values in each string are separated by a ','
           */
         bool
         getCameraParameters (const std::vector<std::string> &camera);
@@ -439,5 +439,3 @@ namespace pcl
     };
   }
 }
-
-#endif

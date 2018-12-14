@@ -293,13 +293,11 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     octree.enableDynamicDepth (leafAggSize);
     octree.addPointsFromInputCloud ();
 
-    unsigned int leaf_node_counter = 0;
     // iterate over tree
-    OctreePointCloudPointVector<PointXYZ>::LeafNodeIterator it2;
-    const OctreePointCloudPointVector<PointXYZ>::LeafNodeIterator it2_end = octree.leaf_end();
-    for (it2 = octree.leaf_begin(); it2 != it2_end; ++it2)
+    OctreePointCloudPointVector<PointXYZ>::LeafNodeDepthFirstIterator it2;
+    const OctreePointCloudPointVector<PointXYZ>::LeafNodeDepthFirstIterator it2_end = octree.leaf_depth_end();
+    for (it2 = octree.leaf_depth_begin(); it2 != it2_end; ++it2)
     {
-      ++leaf_node_counter;
       unsigned int depth = it2.getCurrentOctreeDepth ();
       ASSERT_TRUE ((depth == 1) || (depth == 6));
     }
@@ -326,14 +324,14 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     octree.addPointsFromInputCloud ();
 
     //  test iterator
-    OctreePointCloudPointVector<PointXYZ>::LeafNodeIterator it;
-    const OctreePointCloudPointVector<PointXYZ>::LeafNodeIterator it_end = octree.leaf_end();
+    OctreePointCloudPointVector<PointXYZ>::LeafNodeDepthFirstIterator it;
+    const OctreePointCloudPointVector<PointXYZ>::LeafNodeDepthFirstIterator it_end = octree.leaf_depth_end();
     unsigned int leaf_count = 0;
 
     std::vector<int> indexVector;
 
     // iterate over tree
-    for (it = octree.leaf_begin(); it != it_end; ++it)
+    for (it = octree.leaf_depth_begin(); it != it_end; ++it)
     {
       OctreeNode* node = it.getCurrentOctreeNode ();
 
@@ -342,7 +340,10 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
 
       OctreeContainerPointIndices& container = it.getLeafContainer();
       if (it.getCurrentOctreeDepth () < octree.getTreeDepth ())
+      {
         ASSERT_LE (container.getSize (), leafAggSize);
+      }
+
 
       // add points from leaf node to indexVector
       container.getPointIndices (indexVector);
@@ -902,13 +903,13 @@ TEST (PCL, Octree_Pointcloud_Iterator_Test)
   octreeA.addPointsFromInputCloud ();
 
   // instantiate iterator for octreeA
-  OctreePointCloud<PointXYZ>::LeafNodeIterator it1;
-  OctreePointCloud<PointXYZ>::LeafNodeIterator it1_end = octreeA.leaf_end();
+  OctreePointCloud<PointXYZ>::LeafNodeDepthFirstIterator it1;
+  OctreePointCloud<PointXYZ>::LeafNodeDepthFirstIterator it1_end = octreeA.leaf_depth_end();
 
   std::vector<int> indexVector;
   unsigned int leafNodeCounter = 0;
 
-  for (it1 = octreeA.leaf_begin(); it1 != it1_end; ++it1)
+  for (it1 = octreeA.leaf_depth_begin(); it1 != it1_end; ++it1)
   {
     it1.getLeafContainer().getPointIndices(indexVector);
     leafNodeCounter++;
@@ -1335,9 +1336,9 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
       bool idxInResults;
       const PointXYZ& pt = cloudIn->points[i];
 
-      inBox = (pt.x > lowerBoxCorner (0)) && (pt.x < upperBoxCorner (0)) &&
-              (pt.y > lowerBoxCorner (1)) && (pt.y < upperBoxCorner (1)) &&
-              (pt.z > lowerBoxCorner (2)) && (pt.z < upperBoxCorner (2));
+      inBox = (pt.x >= lowerBoxCorner (0)) && (pt.x <= upperBoxCorner (0)) &&
+              (pt.y >= lowerBoxCorner (1)) && (pt.y <= upperBoxCorner (1)) &&
+              (pt.z >= lowerBoxCorner (2)) && (pt.z <= upperBoxCorner (2));
 
       idxInResults = false;
       for (j = 0; (j < k_indices.size ()) && (!idxInResults); ++j)

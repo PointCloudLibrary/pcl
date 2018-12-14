@@ -130,7 +130,7 @@ pcl::BivariatePolynomialT<real>::deepCopy (const pcl::BivariatePolynomialT<real>
 template<typename real> void
 pcl::BivariatePolynomialT<real>::calculateGradient (bool forceRecalc)
 {
-  if (gradient_x!=NULL && !forceRecalc) 
+  if (gradient_x!=NULL && !forceRecalc) return;
   
   if (gradient_x == NULL)
     gradient_x = new pcl::BivariatePolynomialT<real> (degree-1);

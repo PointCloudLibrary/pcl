@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_BUFFERS_H
-#define PCL_IO_BUFFERS_H
+#pragma once
 
 #include <vector>
 #include <limits>
@@ -278,6 +277,3 @@ namespace pcl
 }
 
 #include <pcl/io/impl/buffers.hpp>
-
-#endif /* PCL_IO_BUFFERS_H */
-

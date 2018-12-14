@@ -235,7 +235,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
     // Estimate the transform from the samples to their corresponding points
     transformation_estimation_->estimateRigidTransformation (*input_, sample_indices, *target_, corresponding_indices, transformation_);
 
-    // Tranform the data and compute the error
+    // Transform the data and compute the error
     transformPointCloud (*input_, input_transformed, transformation_);
     error = computeErrorMetric (input_transformed, static_cast<float> (corr_dist_threshold_));
 

@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef PCL_FILTER_FIELD_VAL_CONDITION_H_
-#define PCL_FILTER_FIELD_VAL_CONDITION_H_
+#pragma once
+
 #include <pcl/common/eigen.h>
 #include <pcl/filters/filter.h>
 
@@ -141,7 +141,7 @@ namespace pcl
         * \param op the operator to use when making the comparison
         * \param compare_val the constant value to compare the field value too
         */
-      FieldComparison (std::string field_name, ComparisonOps::CompareOp op, double compare_val);
+      FieldComparison (const std::string &field_name, ComparisonOps::CompareOp op, double compare_val);
 
       /** \brief Copy constructor.
         * \param[in] src the field comparison object to copy into this
@@ -204,7 +204,7 @@ namespace pcl
         * \param op the operator to use when making the comparison
         * \param compare_val the constant value to compare the component value too
         */
-      PackedRGBComparison (std::string component_name, ComparisonOps::CompareOp op, double compare_val);
+      PackedRGBComparison (const std::string &component_name, ComparisonOps::CompareOp op, double compare_val);
 
       /** \brief Destructor. */
       virtual ~PackedRGBComparison () {}
@@ -251,7 +251,7 @@ namespace pcl
         * \param op the operator to use when making the comparison
         * \param compare_val the constant value to compare the component value too
         */
-      PackedHSIComparison (std::string component_name, ComparisonOps::CompareOp op, double compare_val);
+      PackedHSIComparison (const std::string &component_name, ComparisonOps::CompareOp op, double compare_val);
 
       /** \brief Destructor. */
       virtual ~PackedHSIComparison () {}
@@ -690,5 +690,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/conditional_removal.hpp>
 #endif
-
-#endif 

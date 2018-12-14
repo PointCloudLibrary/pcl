@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_POISSON_H_
-#define PCL_SURFACE_POISSON_H_
+#pragma once
 
 #include <pcl/surface/reconstruction.h>
 
@@ -138,7 +137,7 @@ namespace pcl
       inline void
       setSolverDivide (int solver_divide) { solver_divide_ = solver_divide; }
 
-      /** \brief Get the the depth at which a block Gauss-Seidel solver is used to solve the Laplacian equation */
+      /** \brief Get the depth at which a block Gauss-Seidel solver is used to solve the Laplacian equation */
       inline int
       getSolverDivide () { return solver_divide_; }
 
@@ -256,5 +255,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/poisson.hpp>
 #endif
-
-#endif  // PCL_SURFACE_POISSON_H_

@@ -380,7 +380,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
             {
               if (error_callback_)
               {
-                error_callback_ (line_number_, "parse error: unkonwn scalar type");
+                error_callback_ (line_number_, "parse error: unknown scalar type");
               }
               return false;
             }

@@ -35,9 +35,7 @@
  *
  */
 
-#ifndef CLOUD_COMPOSER_ITEM_H_
-#define CLOUD_COMPOSER_ITEM_H_
-
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -74,7 +72,7 @@ namespace pcl
         KD_TREE_SEARCH
       };
     };
-    class PCL_EXPORTS CloudComposerItem : public QStandardItem
+    class CloudComposerItem : public QStandardItem
     {
       public:  
         
@@ -168,14 +166,3 @@ namespace pcl
 typedef QList<const pcl::cloud_composer::CloudComposerItem*> ConstItemList;
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::CloudComposerItem);
-
-
-
-
-
-
-
-
-
-
-#endif //CLOUD_COMPOSER_ITEM_H_

@@ -67,7 +67,7 @@ pcl::SampleConsensusModelPlane<PointT>::isSampleGood (const std::vector<int> &sa
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
-      const std::vector<int> &samples, Eigen::VectorXf &model_coefficients)
+      const std::vector<int> &samples, Eigen::VectorXf &model_coefficients) const
 {
   // Need 3 samples
   if (samples.size () != sample_size_)
@@ -110,7 +110,7 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelPlane<PointT>::getDistancesToModel (
-      const Eigen::VectorXf &model_coefficients, std::vector<double> &distances)
+      const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) const
 {
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != model_size_)
@@ -181,7 +181,7 @@ pcl::SampleConsensusModelPlane<PointT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
-      const Eigen::VectorXf &model_coefficients, const double threshold)
+      const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != model_size_)
@@ -210,7 +210,7 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
-      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients)
+      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) const
 {
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != model_size_)
@@ -259,7 +259,7 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelPlane<PointT>::projectPoints (
-      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields)
+      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields) const
 {
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != model_size_)
@@ -343,7 +343,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelPlane<PointT>::doSamplesVerifyModel (
-      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold)
+      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != model_size_)

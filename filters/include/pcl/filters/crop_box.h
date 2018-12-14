@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_CROP_BOX_H_
-#define PCL_FILTERS_CROP_BOX_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/filters/filter_indices.h>
@@ -186,7 +185,6 @@ namespace pcl
         */
       void
       applyFilter (std::vector<int> &indices);
-
     private:
       /** \brief The minimum point of the box. */
       Eigen::Vector4f min_pt_;
@@ -345,5 +343,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/crop_box.hpp>
 #endif
-
-#endif  // PCL_FILTERS_CROP_BOX_H_

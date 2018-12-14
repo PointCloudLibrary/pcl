@@ -35,21 +35,17 @@
  *
  */
 
-#ifndef RECTANGULAR_FRUSTRUM_SELECTOR_H_
-#define RECTANGULAR_FRUSTRUM_SELECTOR_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 #include <pcl/apps/cloud_composer/qt.h>
-
-
-
 
 namespace pcl
 {
   namespace cloud_composer
   {
       
-    class PCL_EXPORTS RectangularFrustumSelector : public vtkInteractorStyleRubberBandPick
+    class RectangularFrustumSelector : public vtkInteractorStyleRubberBandPick
     {     
       public:
         static RectangularFrustumSelector* New();
@@ -94,7 +90,3 @@ namespace pcl
   }
   
 }
-
-#endif // RECTANGULAR_FRUSTRUM_SELECTOR_H_
-        
-        

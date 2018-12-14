@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_2D_EDGE_H
-#define PCL_2D_EDGE_H
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/2d/convolution.h>
@@ -76,7 +75,7 @@ namespace pcl
       /** \brief This function suppresses the edges which don't form a local maximum 
         * in the edge direction.
         * \param[in] edges point cloud containing all the edges
-        * \param[out] maxima point cloud containing the non-max supressed edges
+        * \param[out] maxima point cloud containing the non-max suppressed edges
         * \param[in] tLow
         */
       void
@@ -298,9 +297,8 @@ namespace pcl
       {
         input_ = input;
       }
+
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 #include <pcl/2d/impl/edge.hpp>
-
-#endif    // PCL_2D_EDGE_H 
-

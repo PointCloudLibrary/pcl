@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_TEXTURE_MAPPING_H_
-#define PCL_SURFACE_TEXTURE_MAPPING_H_
+#pragma once
 
 #include <pcl/surface/reconstruction.h>
 #include <pcl/common/transforms.h>
@@ -422,6 +421,3 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif /* TEXTURE_MAPPING_H_ */
-

@@ -183,11 +183,7 @@ pcl::io::savePolygonFileVTK (const std::string &file_name,
   pcl::io::mesh2vtk (mesh, poly_data);
 
   vtkSmartPointer<vtkPolyDataWriter> poly_writer = vtkSmartPointer<vtkPolyDataWriter>::New ();
-#if VTK_MAJOR_VERSION < 6
-  poly_writer->SetInput (poly_data);
-#else
   poly_writer->SetInputData (poly_data);
-#endif
 
   if (binary_format)
     poly_writer->SetFileTypeToBinary ();
@@ -209,11 +205,7 @@ pcl::io::savePolygonFilePLY (const std::string &file_name,
   pcl::io::mesh2vtk (mesh, poly_data);
 
   vtkSmartPointer<vtkPLYWriter> poly_writer = vtkSmartPointer<vtkPLYWriter>::New ();
-#if VTK_MAJOR_VERSION < 6
-  poly_writer->SetInput (poly_data);
-#else
   poly_writer->SetInputData (poly_data);
-#endif
 
   if (binary_format)
     poly_writer->SetFileTypeToBinary ();
@@ -235,11 +227,7 @@ pcl::io::savePolygonFileSTL (const std::string &file_name,
 
   pcl::io::mesh2vtk (mesh, poly_data);
   vtkSmartPointer<vtkSTLWriter> poly_writer = vtkSmartPointer<vtkSTLWriter>::New ();
-#if VTK_MAJOR_VERSION < 6
-  poly_writer->SetInput (poly_data);
-#else
   poly_writer->SetInputData (poly_data);
-#endif
 
   if (binary_format)
     poly_writer->SetFileTypeToBinary ();
@@ -288,17 +276,21 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   // Then the color information, if any
   vtkUnsignedCharArray* poly_colors = NULL;
   if (poly_data->GetPointData() != NULL)
+  {
     poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("Colors"));
 
-  // some applications do not save the name of scalars (including PCL's native vtk_io)
-  if (!poly_colors && poly_data->GetPointData () != NULL)
-    poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("scalars"));
+    // some applications do not save the name of scalars (including PCL's native vtk_io)
+    if (!poly_colors)
+      poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("scalars"));
 
-  if (!poly_colors && poly_data->GetPointData () != NULL)
-    poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("RGB"));
+    if (!poly_colors)
+      poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("RGB"));
 
-  // TODO: currently only handles rgb values with 3 components
-  if (poly_colors && (poly_colors->GetNumberOfComponents () == 3))
+    if (!poly_colors)
+      poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("RGBA"));
+  }
+
+  if (poly_colors && (poly_colors->GetNumberOfComponents () == 3 || poly_colors->GetNumberOfComponents () == 4))
   {
     pcl::PointCloud<pcl::RGB>::Ptr rgb_cloud (new pcl::PointCloud<pcl::RGB> ());
     rgb_cloud->points.resize (nr_points);
@@ -306,13 +298,15 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
     rgb_cloud->height = 1;
     rgb_cloud->is_dense = true;
 
-    unsigned char point_color[3];
+    unsigned char point_color[4] = {0, 0, 0, 255};
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); i++)
     {
       poly_colors->GetTupleValue (i, &point_color[0]);
-      rgb_cloud->points[i].r = point_color[0];
-      rgb_cloud->points[i].g = point_color[1];
-      rgb_cloud->points[i].b = point_color[2];
+      // individual component copy due to different memory layout
+      (*rgb_cloud)[i].r = point_color[0];
+      (*rgb_cloud)[i].g = point_color[1];
+      (*rgb_cloud)[i].b = point_color[2];
+      (*rgb_cloud)[i].a = point_color[3];
     }
 
     pcl::PCLPointCloud2 rgb_cloud2;
@@ -515,13 +509,7 @@ pcl::io::saveRangeImagePlanarFilePNG (
 {
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
   image->SetDimensions(range_image.width, range_image.height, 1);
-#if VTK_MAJOR_VERSION < 6
-  image->SetNumberOfScalarComponents(1);
-  image->SetScalarTypeToFloat();
-  image->AllocateScalars();
-#else
   image->AllocateScalars (VTK_FLOAT, 1);
-#endif
 
   int* dims = image->GetDimensions();
 
@@ -540,11 +528,7 @@ pcl::io::saveRangeImagePlanarFilePNG (
 
   vtkSmartPointer<vtkImageShiftScale> shiftScaleFilter = vtkSmartPointer<vtkImageShiftScale>::New();
   shiftScaleFilter->SetOutputScalarTypeToUnsignedChar();
-#if VTK_MAJOR_VERSION < 6
-  shiftScaleFilter->SetInputConnection(image->GetProducerPort());
-#else
   shiftScaleFilter->SetInputData (image);
-#endif
   shiftScaleFilter->SetShift(-1.0f * image->GetScalarRange()[0]); // brings the lower bound to 0
   shiftScaleFilter->SetScale(newRange/oldRange);
   shiftScaleFilter->Update();

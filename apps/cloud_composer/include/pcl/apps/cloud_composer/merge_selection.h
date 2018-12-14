@@ -35,11 +35,9 @@
  *
  */
 
-#ifndef MERGE_SELECTION_H_
-#define MERGE_SELECTION_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
-
 
 namespace pcl
 {
@@ -70,5 +68,3 @@ namespace pcl
 
   }
 }
-
-#endif

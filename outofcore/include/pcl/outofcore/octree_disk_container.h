@@ -37,8 +37,7 @@
  *  $Id: octree_disk_container.h 6927M 2012-08-24 13:26:40Z (local) $
  */
 
-#ifndef PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_H_
-#define PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_H_
+#pragma once
 
 // C++
 #include <vector>
@@ -258,7 +257,7 @@ namespace pcl
 
         /** \brief Generate a universally unique identifier (UUID)
          *
-         * A mutex lock happens to ensure uniquness
+         * A mutex lock happens to ensure uniqueness
          *
          */
         static void
@@ -296,10 +295,8 @@ namespace pcl
 
         static boost::mutex rng_mutex_;
         static boost::mt19937 rand_gen_;
-        static boost::uuids::random_generator uuid_gen_;
+        static boost::uuids::basic_random_generator<boost::mt19937> uuid_gen_;
 
     };
   } //namespace outofcore
 } //namespace pcl
-
-#endif //PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_H_

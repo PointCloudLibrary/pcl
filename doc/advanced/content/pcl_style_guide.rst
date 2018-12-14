@@ -50,23 +50,17 @@ same directory, in any other case the include statement is made with
 1.4. Defines & Macros
 ^^^^^^^^^^^^^^^^^^^^^
 
-Macros should all be **ALL_CAPITALS_AND_UNDERSCORED**. Defines for header type
-files also need a trailing underscore. Their naming should be mapped from their
-include name: ``pcl/filters/bilateral.h`` becomes ``PCL_FILTERS_BILATERAL_H_``.
-The ``#ifndef`` and ``#define`` lines should be placed just past the BSD license.
-The ``#endif`` goes all the way at the bottom and needs to have the define name in
-its comment, e.g:
+Macros should all be **ALL_CAPITALS_AND_UNDERSCORED**.
+
+Include guards are not implemented with defines, instead ``#pragma once`` should be used.
 
  .. code-block:: cpp
 
   // the license
-  
-  #ifndef PCL_MODULE_NAME_IMPL_FILE_NAME_HPP_
-  #define PCL_MODULE_NAME_IMPL_FILE_NAME_HPP_
-  
+
+  #pragma once
+
   // the code
-  
-  #endif // PCL_MODULE_NAME_IMPL_FILE_NAME_HPP_
 
 1.5. Namespaces
 ^^^^^^^^^^^^^^^

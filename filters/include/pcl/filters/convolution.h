@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_CONVOLUTION_H_
-#define PCL_FILTERS_CONVOLUTION_H_
+#pragma once
 
 #include <pcl/common/eigen.h>
 #include <pcl/common/point_operators.h>
@@ -65,8 +64,8 @@ namespace pcl
       * policies:
       * - Ignoring: elements at special locations are filled with zero
       * (default behaviour)
-      * - Mirroring: the missing rows or columns are obtained throug mirroring
-      * - Duplicating: the missing rows or columns are obtained throug
+      * - Mirroring: the missing rows or columns are obtained through mirroring
+      * - Duplicating: the missing rows or columns are obtained through
       * duplicating
       *
       * \author Nizar Sallem
@@ -235,5 +234,3 @@ namespace pcl
 }
 
 #include <pcl/filters/impl/convolution.hpp>
-
-#endif

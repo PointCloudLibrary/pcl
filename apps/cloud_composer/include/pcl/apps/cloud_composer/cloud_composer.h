@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef CLOUD_COMPOSER_H_
-#define CLOUD_COMPOSER_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/qt.h>
 
@@ -169,8 +168,3 @@ namespace pcl
     
   }
 }
-
-
-
-
-#endif // CLOUD_COMPOSER_H

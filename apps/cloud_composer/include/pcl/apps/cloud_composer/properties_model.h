@@ -35,12 +35,10 @@
  *
  */
 
-#ifndef PROPERTIES_MODEL_H_
-#define PROPERTIES_MODEL_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/common/boost.h> 
-
 
 namespace pcl
 {
@@ -92,5 +90,3 @@ namespace pcl
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::PropertiesModel);
 Q_DECLARE_METATYPE (pcl::cloud_composer::PropertiesModel*);
-
-#endif //PROPERTIES_MODEL_H_

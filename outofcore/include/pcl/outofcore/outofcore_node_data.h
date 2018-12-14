@@ -36,8 +36,7 @@
  *  $Id: outofcore_node_data.h 6915 2012-08-22 10:54:21Z stfox88 $
  */
 
-#ifndef PCL_OUTOFCORE_OCTREE_NODE_METADATA_H_
-#define PCL_OUTOFCORE_OCTREE_NODE_METADATA_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/outofcore/boost.h>
@@ -186,5 +185,3 @@ namespace pcl
     };
   }//namespace outofcore
 }//namespace pcl
-  
-#endif // PCL_OUTOFCORE_OCTREE_NODE_METADATA_H_

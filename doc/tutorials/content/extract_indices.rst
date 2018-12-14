@@ -44,7 +44,7 @@ needed to spend within the segmentation loop.
 
 
 The next block of code deals with the parametric segmentation. To keep the
-tutorial simple, its its explanation will be skipped for now. Please see the
+tutorial simple, its explanation will be skipped for now. Please see the
 **segmentation** tutorials (in particular :ref:`planar_segmentation`) for more
 information.
 

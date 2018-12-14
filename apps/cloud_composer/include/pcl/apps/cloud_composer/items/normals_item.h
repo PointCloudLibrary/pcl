@@ -35,10 +35,8 @@
  *
  */
 
-#ifndef NORMALS_ITEM_H_
-#define NORMALS_ITEM_H_
+#pragma once
 
-#include <pcl/pcl_exports.h>
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
 
@@ -49,7 +47,7 @@ namespace pcl
   namespace cloud_composer
   {
     
-    class PCL_EXPORTS NormalsItem : public CloudComposerItem
+    class NormalsItem : public CloudComposerItem
     {
       public:
 
@@ -84,5 +82,3 @@ namespace pcl
 
 Q_DECLARE_METATYPE (pcl::PointCloud<pcl::Normal>::Ptr);
 Q_DECLARE_METATYPE (pcl::PointCloud<pcl::Normal>::ConstPtr);
-
-#endif //NORMALS_ITEM_H_

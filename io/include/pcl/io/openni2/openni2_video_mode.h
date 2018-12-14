@@ -29,8 +29,7 @@
  *      Author: Julius Kammerl (jkammerl@willowgarage.com)
  */
 
-#ifndef PCL_IO_OPENNI2_VIDEO_MODE_H_
-#define PCL_IO_OPENNI2_VIDEO_MODE_H_
+#pragma once
 
 #include <cstddef>
 #include <ostream>
@@ -89,5 +88,3 @@ namespace pcl
     } // namespace
   }
 }
-
-#endif

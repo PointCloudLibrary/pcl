@@ -228,7 +228,7 @@ pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vecto
 		}
 		else
 		{
-		  PCL_INFO ("Extracted cube was empty, skiping this one.\n");
+		  PCL_INFO ("Extracted cube was empty, skipping this one.\n");
 		}
 		origin.z += cubeSide * step_increment;
 	  }

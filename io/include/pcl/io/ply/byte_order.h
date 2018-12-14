@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_IO_PLY_BYTE_ORDER_H
-#define PCL_IO_PLY_BYTE_ORDER_H
+#pragma once
 
 #include <boost/detail/endian.hpp>
 
@@ -49,7 +48,7 @@ namespace pcl
     namespace ply
     {
       /** \file byte_order.h
-        * defines byte shift operations and endianess.
+        * defines byte shift operations and endianness.
         * \author Ares Lagae as part of libply, Nizar Sallem
         * \ingroup io
         */
@@ -105,5 +104,3 @@ namespace pcl
     } // namespace ply
   } // namespace io
 } // namespace pcl
-
-#endif // PLY_BYTE_ORDER_H

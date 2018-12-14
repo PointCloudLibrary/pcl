@@ -1,7 +1,7 @@
 # Set PCL default verbosity level from cmake
 
 # User input default info
-set (PCL_VERBOSITY_LEVEL Info CACHE STRING "Set PCL verbosity level. Available options are: Always Error Warn Info Debug Verbose")
+set(PCL_VERBOSITY_LEVEL Info CACHE STRING "Set PCL verbosity level. Available options are: Always Error Warn Info Debug Verbose")
 
 if(${PCL_VERBOSITY_LEVEL} STREQUAL Info)
   set(VERBOSITY_LEVEL_INFO 1)
@@ -18,4 +18,4 @@ elseif(${PCL_VERBOSITY_LEVEL} STREQUAL Verbose)
 else()
 #  message(WARNING "Unknown verbosity level ${PCL_VERBOSITY_LEVEL}. Set to Info!")
   set(VERBOSITY_LEVEL_INFO)
-endif(${PCL_VERBOSITY_LEVEL} STREQUAL Info)
+endif()

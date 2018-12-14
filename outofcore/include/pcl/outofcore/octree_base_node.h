@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
-#define PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
+#pragma once
 
 #include <pcl/common/io.h>
 #include <pcl/PCLPointCloud2.h>
@@ -328,7 +327,7 @@ namespace pcl
          *
          * \param bb_min triple of x,y,z minima for bounding box
          * \param bb_max triple of x,y,z maxima for bounding box
-         * \param tree adress of the tree data structure that will hold this initial root node
+         * \param tree address of the tree data structure that will hold this initial root node
          * \param rootname Root directory for location of on-disk octree storage; if directory 
          * doesn't exist, it is created; if "rootname" is an existing file, 
          * 
@@ -573,5 +572,3 @@ namespace pcl
     };
   }//namespace outofcore
 }//namespace pcl
-
-#endif //PCL_OUTOFCORE_OCTREE_BASE_NODE_H_

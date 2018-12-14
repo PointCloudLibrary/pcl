@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_INTENSITY_GRADIENT_H_
-#define PCL_INTENSITY_GRADIENT_H_
+
+#pragma once
 
 #include <pcl/features/feature.h>
 #include <pcl/common/intensity.h>
@@ -115,5 +115,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/intensity_gradient.hpp>
 #endif
-
-#endif // #ifndef PCL_INTENSITY_GRADIENT_H_

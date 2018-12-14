@@ -138,7 +138,7 @@ TEST (CropBox, Filters)
   Eigen::Vector4f min_pt (-1.0f, -1.0f, -1.0f, 1.0f);
   Eigen::Vector4f max_pt (1.0f, 1.0f, 1.0f, 1.0f);
 
-  // Cropbox slighlty bigger then bounding box of points
+  // Cropbox slightly bigger then bounding box of points
   cropBoxFilter.setMin (min_pt);
   cropBoxFilter.setMax (max_pt);
 
@@ -298,7 +298,7 @@ TEST (CropBox, Filters)
   CropBox<PCLPointCloud2> cropBoxFilter2(true);
   cropBoxFilter2.setInputCloud (input2);
 
-  // Cropbox slighlty bigger then bounding box of points
+  // Cropbox slightly bigger then bounding box of points
   cropBoxFilter2.setMin (min_pt);
   cropBoxFilter2.setMax (max_pt);
 

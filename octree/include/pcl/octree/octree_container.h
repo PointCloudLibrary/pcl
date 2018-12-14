@@ -36,8 +36,7 @@
  * $Id: octree_nodes.h 5596 2012-04-17 15:09:31Z jkammerl $
  */
 
-#ifndef PCL_OCTREE_CONTAINER_H
-#define PCL_OCTREE_CONTAINER_H
+#pragma once
 
 #include <vector>
 #include <cstddef>
@@ -395,5 +394,3 @@ namespace pcl
 
   }
 }
-
-#endif

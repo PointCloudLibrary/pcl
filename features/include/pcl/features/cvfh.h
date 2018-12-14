@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_CVFH_H_
-#define PCL_FEATURES_CVFH_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 #include <pcl/features/vfh.h>
@@ -201,7 +200,7 @@ namespace pcl
         min_points_ = min;
       }
 
-      /** \brief Sets wether if the CVFH signatures should be normalized or not
+      /** \brief Sets whether if the CVFH signatures should be normalized or not
         * \param[in] normalize true if normalization is required, false otherwise 
         */
       inline void
@@ -227,7 +226,7 @@ namespace pcl
         */
       float leaf_size_;
 
-      /** \brief Wether to normalize the signatures or not. Default: false. */
+      /** \brief Whether to normalize the signatures or not. Default: false. */
       bool normalize_bins_;
 
       /** \brief Curvature threshold for removing normals. */
@@ -289,5 +288,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/cvfh.hpp>
 #endif
-
-#endif  //#ifndef PCL_FEATURES_CVFH_H_

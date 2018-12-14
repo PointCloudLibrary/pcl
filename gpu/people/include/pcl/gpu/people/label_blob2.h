@@ -39,8 +39,7 @@
  * @brief This file contains the Blob2 structure and the inline <<-operator for it
  */
 
-#ifndef PCL_GPU_PEOPLE_LABEL_BLOB2_H_
-#define PCL_GPU_PEOPLE_LABEL_BLOB2_H_
+#pragma once
 
 #include <pcl/PointIndices.h>
 #include <pcl/gpu/people/label_common.h>
@@ -52,7 +51,7 @@ namespace pcl
     namespace people
     {      
       /**
-       * @brief This structure containts all parameters to describe blobs and their parent/child relations
+       * @brief This structure contains all parameters to describe blobs and their parent/child relations
        * @todo: clean this out in the end, perhaps place the children in a separate struct
        */
       struct Blob2 
@@ -96,5 +95,3 @@ namespace pcl
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl
-
-#endif

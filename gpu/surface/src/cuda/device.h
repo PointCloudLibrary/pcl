@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_GPU_SURFACE_DEVICE_H_
-#define PCL_GPU_SURFACE_DEVICE_H_
+#pragma once
 
 #include "internal.h"
 #include <pcl/gpu/utils/device/vector_math.hpp>
@@ -86,5 +85,3 @@ namespace pcl
 
   }
 };
-
-#endif /* PCL_GPU_SURFACE_DEVICE_H_ */

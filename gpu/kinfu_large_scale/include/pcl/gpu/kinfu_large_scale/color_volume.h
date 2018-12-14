@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KINFU_COLOR_VOLUME_H_
-#define PCL_KINFU_COLOR_VOLUME_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
@@ -68,7 +67,7 @@ namespace pcl
           */
         ColorVolume(const TsdfVolume& tsdf, int max_weight = -1);
 
-        /** \brief Desctructor */
+        /** \brief Destructor */
         ~ColorVolume();
 
         /** \brief Resets color volume to uninitialized state */
@@ -109,5 +108,3 @@ namespace pcl
     }
   }
 }
-
-#endif /* PCL_KINFU_COLOR_VOLUME_H_ */

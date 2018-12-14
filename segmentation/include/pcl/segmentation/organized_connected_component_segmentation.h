@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_ORGANIZED_CONNECTED_COMPONENT_SEGMENTATION_H_
-#define PCL_SEGMENTATION_ORGANIZED_CONNECTED_COMPONENT_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
@@ -111,7 +110,7 @@ namespace pcl
       segment (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
       
       /** \brief Find the boundary points / contour of a connected component
-        * \param[in] start_idx the first (lowest) index of the connected component for which a boundary shoudl be returned
+        * \param[in] start_idx the first (lowest) index of the connected component for which a boundary should be returned
         * \param[in] labels the Label cloud produced by segmentation
         * \param[out] boundary_indices the indices of the boundary points for the label corresponding to start_idx
         */
@@ -151,5 +150,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/organized_connected_component_segmentation.hpp>
 #endif
-
-#endif //#ifndef PCL_ORGANIZED_CONNECTED_COMPONENT_SEGMENTATION_H_

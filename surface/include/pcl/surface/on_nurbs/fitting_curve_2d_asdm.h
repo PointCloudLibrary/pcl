@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef NURBS_FITTING_CURVE_2D_ASDM_H
-#define NURBS_FITTING_CURVE_2D_ASDM_H
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
@@ -112,5 +111,3 @@ namespace pcl
     };
   }
 }
-
-#endif

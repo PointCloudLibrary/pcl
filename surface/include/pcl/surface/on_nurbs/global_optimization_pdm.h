@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef NURBS_OPTIMIZATION_H
-#define NURBS_OPTIMIZATION_H
+#pragma once
 
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>
@@ -207,5 +206,3 @@ namespace pcl
 
   }
 }
-#endif
-

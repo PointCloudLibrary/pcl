@@ -62,7 +62,7 @@ performs a simple rigid transform on the pointcloud and again outputs the data v
    :language: cpp
    :lines: 37-39
 
-This creates an instance of an IterativeClosestPoint and gives it some useful information.  "icp.setInputCloud(cloud_in);" sets cloud_in as the PointCloud to begin from and "icp.setInputTarget(cloud_out);" sets cloud_out as the PointCloud which we want cloud_in to look like.
+This creates an instance of an IterativeClosestPoint and gives it some useful information.  "icp.setInputSource(cloud_in);" sets cloud_in as the PointCloud to begin from and "icp.setInputTarget(cloud_out);" sets cloud_out as the PointCloud which we want cloud_in to look like.
 
 Next,
 

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_H_
+#pragma once
 
 #include <string>
 
@@ -313,11 +312,11 @@ namespace pcl
         inline const std::string& 
         getClassName () const { return (corr_name_); }
 
-        /** \brief Internal computation initalization. */
+        /** \brief Internal computation initialization. */
         bool
         initCompute ();
         
-        /** \brief Internal computation initalization for reciprocal correspondences. */
+        /** \brief Internal computation initialization for reciprocal correspondences. */
         bool
         initComputeReciprocal ();
 
@@ -436,5 +435,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_estimation.hpp>
-
-#endif /* PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_H_ */

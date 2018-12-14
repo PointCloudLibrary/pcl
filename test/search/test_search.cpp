@@ -128,7 +128,7 @@ vector<int> unorganized_dense_cloud_query_indices;
 vector<int> unorganized_sparse_cloud_query_indices;
 vector<int> organized_sparse_query_indices;
 
-/** \briet test whether the result of a search containes unique point ids or not
+/** \briet test whether the result of a search contains unique point ids or not
   * @param indices resulting indices from a search
   * @param name name of the search method that returned these distances
   * @return true if indices are unique, false otherwise

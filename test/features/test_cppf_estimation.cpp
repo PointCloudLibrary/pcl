@@ -39,41 +39,24 @@
 
 #include <gtest/gtest.h>
 #include <pcl/point_cloud.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/features/cppf.h>
 #include <pcl/io/pcd_io.h>
 
-using namespace pcl;
-using namespace pcl::io;
-using namespace std;
+typedef pcl::PointXYZRGBNormal PointT;
+static pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
 
-typedef search::KdTree<PointXYZRGBA>::Ptr KdTreePtr;
-
-PointCloud<PointXYZRGBA> cloud;
-vector<int> indices;
-KdTreePtr tree;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, CPPFEstimation)
 {
-  // Estimate normals
-  NormalEstimation<PointXYZRGBA, Normal> normal_estimation;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  normal_estimation.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
-  normal_estimation.setIndices (indicesptr);
-  normal_estimation.setSearchMethod (tree);
-  normal_estimation.setKSearch (10); // Use 10 nearest neighbors to estimate the normals
-  normal_estimation.compute (*normals);
-
-  CPPFEstimation <PointXYZRGBA, Normal, CPPFSignature> cppf_estimation;
-  cppf_estimation.setInputCloud (cloud.makeShared ());
-  cppf_estimation.setInputNormals (normals);
-  PointCloud<CPPFSignature>::Ptr feature_cloud (new PointCloud<CPPFSignature> ());
+  pcl::CPPFEstimation <PointT, PointT, pcl::CPPFSignature> cppf_estimation;
+  cppf_estimation.setInputCloud (cloud);
+  cppf_estimation.setInputNormals (cloud);
+  pcl::PointCloud<pcl::CPPFSignature>::Ptr feature_cloud (new pcl::PointCloud<pcl::CPPFSignature> ());
   cppf_estimation.compute (*feature_cloud);
 
   // Check for size of output
-  EXPECT_EQ (feature_cloud->points.size (), indices.size () * cloud.points.size ());
+  EXPECT_EQ (feature_cloud->size (), cloud->size () * cloud->size ());
 
   // Now check for a few values in the feature cloud
   EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].f1));
@@ -88,9 +71,9 @@ TEST (PCL, CPPFEstimation)
   EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].f10));
   EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].alpha_m));
 
-  EXPECT_NEAR (feature_cloud->points[2572].f1, 0.0669282, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[2572].f1, 0.0568356, 1e-4);
   EXPECT_NEAR (feature_cloud->points[2572].f2, -0.1988939, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[2572].f3, 0.7856042, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[2572].f3, 0.7854938, 1e-4);
   EXPECT_NEAR (feature_cloud->points[2572].f4, 0.0533117, 1e-4);
   EXPECT_NEAR (feature_cloud->points[2572].f5, 0.1875000, 1e-4);
   EXPECT_NEAR (feature_cloud->points[2572].f6, 0.0733944, 1e-4);
@@ -98,8 +81,7 @@ TEST (PCL, CPPFEstimation)
   EXPECT_NEAR (feature_cloud->points[2572].f8, 0.2380952, 1e-4);
   EXPECT_NEAR (feature_cloud->points[2572].f9, 0.0619469, 1e-4);
   EXPECT_NEAR (feature_cloud->points[2572].f10, 0.4431372, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[2572].alpha_m, -1.852997, 1e-4);
-  
+  EXPECT_NEAR (feature_cloud->points[2572].alpha_m, -1.847514, 1e-4);
 }
 
 /* ---[ */
@@ -109,21 +91,14 @@ main (int argc, char** argv)
   if (argc < 2)
   {
     std::cerr << "No test file given. Please download `colored_cloud.pcd` and pass its path to the test." << std::endl;
-    return (-1);
+    return (1);
   }
 
-  if (loadPCDFile<PointXYZRGBA> (argv[1], cloud) < 0)
+  if (pcl::io::loadPCDFile<PointT> (argv[1], *cloud) < 0)
   {
     std::cerr << "Failed to read test file. Please download `colored_cloud.pcd` and pass its path to the test." << std::endl;
-    return (-1);
+    return (1);
   }
-
-  indices.resize (cloud.points.size ());
-  for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
-    indices[i] = i;
-
-  tree.reset (new search::KdTree<PointXYZRGBA> (false));
-  tree->setInputCloud (cloud.makeShared ());
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

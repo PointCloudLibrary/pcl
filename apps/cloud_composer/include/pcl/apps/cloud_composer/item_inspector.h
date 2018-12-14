@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef ITEM_INSPECTOR_H_
-#define ITEM_INSPECTOR_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/project_model.h>
@@ -74,7 +73,7 @@ namespace pcl
         /** \brief Stores the state of the current tree view in item_treestate_map_  */
         void 
         storeTreeState ();
-        /** \brief Retores the state of \param model 's view from item_treestate_map_  */
+        /** \brief Restores the state of \param model 's view from item_treestate_map_  */
         void
         restoreTreeState ();
         /** \brief Removes the extra tabs the item might have */
@@ -98,21 +97,3 @@ namespace pcl
     
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif

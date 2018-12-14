@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_IO_PLY_PLY_PARSER_H
-#define PCL_IO_PLY_PLY_PARSER_H
+#pragma once
 
 #include <fstream>
 #include <iostream>
@@ -726,5 +725,3 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
 #    pragma warning(pop)
 #  endif
 #endif
-
-#endif // PCL_IO_PLY_PLY_PARSER_H

@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_HSV_COLOR_COHERENCE_H_
-#define PCL_TRACKING_HSV_COLOR_COHERENCE_H_
+#pragma once
 
 #include <pcl/tracking/coherence.h>
 
@@ -95,10 +94,6 @@ namespace pcl
   }
 }
 
-// #include <pcl/tracking/impl/hsv_color_coherence.hpp>
-
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/tracking/impl/hsv_color_coherence.hpp>
-#endif
-
 #endif

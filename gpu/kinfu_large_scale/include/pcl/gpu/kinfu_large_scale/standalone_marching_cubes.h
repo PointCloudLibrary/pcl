@@ -35,8 +35,7 @@
  *
  */
  
- #ifndef PCL_STANDALONE_MARCHING_CUBES_H_
- #define PCL_STANDALONE_MARCHING_CUBES_H_
+#pragma once
 
 //General includes and I/O
 
@@ -169,6 +168,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_StandaloneMarchingCubes(PointT) template class PCL_EXPORTS pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>;
-
-#endif // PCL_STANDALONE_MARCHING_CUBES_H_
- 

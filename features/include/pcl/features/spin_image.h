@@ -37,8 +37,7 @@
  * $Id$
  */
 
-#ifndef PCL_SPIN_IMAGE_H_
-#define PCL_SPIN_IMAGE_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -68,7 +67,7 @@ namespace pcl
     * different than feature estimation methods that extend \ref
     * FeatureFromNormals, which match the normals with the search surface.
     *
-    * With the default paramters, pcl::Histogram<153> is a good choice for PointOutT.
+    * With the default parameters, pcl::Histogram<153> is a good choice for PointOutT.
     * Of course the dimension of this descriptor must change to match the number
     * of bins set by the parameters.
     *
@@ -283,6 +282,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/spin_image.hpp>
 #endif
-
-#endif  //#ifndef PCL_SPIN_IMAGE_H_
-

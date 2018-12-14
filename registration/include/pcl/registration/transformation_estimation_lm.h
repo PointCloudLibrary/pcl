@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_H_
+
+#pragma once
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/warp_point_rigid.h>
@@ -133,7 +133,7 @@ namespace pcl
           * \param[in] cloud_src the source point cloud dataset
           * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
           * \param[in] cloud_tgt the target point cloud dataset
-          * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from 
+          * \param[in] indices_tgt the vector of indices describing the correspondences of the interest points from 
           * \a indices_src
           * \param[out] transformation_matrix the resultant transformation matrix
           */
@@ -219,7 +219,7 @@ namespace pcl
         
         /** Base functor all the models that need non linear optimization must
           * define their own one and implement operator() (const Eigen::VectorXd& x, Eigen::VectorXd& fvec)
-          * or operator() (const Eigen::VectorXf& x, Eigen::VectorXf& fvec) dependening on the choosen _Scalar
+          * or operator() (const Eigen::VectorXf& x, Eigen::VectorXf& fvec) depending on the chosen _Scalar
           */
         template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
         struct Functor
@@ -234,7 +234,7 @@ namespace pcl
           typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,1> ValueType;
           typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
 
-          /** \brief Empty Construtor. */
+          /** \brief Empty Constructor. */
           Functor () : m_data_points_ (ValuesAtCompileTime) {}
 
           /** \brief Constructor
@@ -351,6 +351,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/transformation_estimation_lm.hpp>
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_H_ */
-

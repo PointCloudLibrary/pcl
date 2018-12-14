@@ -34,8 +34,7 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#ifndef COLOR_HANDLER_H_
-#define COLOR_HANDLER_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -99,6 +98,3 @@ namespace pcl
     };
   }
 }
-
-
-#endif /* COLOR_HANDLER_H_ */

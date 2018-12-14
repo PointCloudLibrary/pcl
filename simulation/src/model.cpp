@@ -144,7 +144,7 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMe
 	apoly.colors_[4*j + 0] = newcloud.points[pt].r/255.0f; // Red
 	apoly.colors_[4*j + 1] = newcloud.points[pt].g/255.0f; // Green
 	apoly.colors_[4*j + 2] = newcloud.points[pt].b/255.0f; // Blue
-	apoly.colors_[4*j + 3] = 1.0f; // transparancy? unnecessary?
+	apoly.colors_[4*j + 3] = 1.0f; // transparency? unnecessary?
       }
       polygons.push_back (apoly);
     }

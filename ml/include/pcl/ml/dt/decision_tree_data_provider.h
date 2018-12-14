@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef DECISION_TREE_DATA_PROVIDER_H_
-#define DECISION_TREE_DATA_PROVIDER_H_
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -70,5 +69,3 @@ namespace pcl
       getDatasetAndLabels(DataSet & data_set, std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples) = 0;
   };
 }
-
-#endif /* DECISION_TREE_DATA_PROVIDER_H_ */

@@ -12,7 +12,7 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
 PCL_SET_SUBSYS_INCLUDE_DIR("${SUBSYS_NAME}" "${SUBSYS_PATH}")
 
 
-if (build)
+if(build)
     set(incs
         include/pcl/cuda/segmentation/connected_components.h
         )

@@ -65,7 +65,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::isSampleGood (
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelCircle3D<PointT>::computeModelCoefficients (const std::vector<int> &samples, Eigen::VectorXf &model_coefficients)
+pcl::SampleConsensusModelCircle3D<PointT>::computeModelCoefficients (const std::vector<int> &samples, Eigen::VectorXf &model_coefficients) const
 {
   // Need 3 samples
   if (samples.size () != 3)
@@ -115,7 +115,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::computeModelCoefficients (const std::
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::SampleConsensusModelCircle3D<PointT>::getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances)
+pcl::SampleConsensusModelCircle3D<PointT>::getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) const
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -212,7 +212,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::SampleConsensusModelCircle3D<PointT>::countWithinDistance (
-    const Eigen::VectorXf &model_coefficients, const double threshold)
+    const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -253,9 +253,9 @@ pcl::SampleConsensusModelCircle3D<PointT>::countWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelCircle3D<PointT>::optimizeModelCoefficients (
-      const std::vector<int> &inliers, 
-      const Eigen::VectorXf &model_coefficients, 
-      Eigen::VectorXf &optimized_coefficients)
+      const std::vector<int> &inliers,
+      const Eigen::VectorXf &model_coefficients,
+      Eigen::VectorXf &optimized_coefficients) const
 {
   optimized_coefficients = model_coefficients;
 
@@ -273,9 +273,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::optimizeModelCoefficients (
     return;
   }
 
-  tmp_inliers_ = &inliers;
-
-  OptimizationFunctor functor (static_cast<int> (inliers.size ()), this);
+  OptimizationFunctor functor (this, inliers);
   Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm (num_diff);
   Eigen::VectorXd coeff;
@@ -292,7 +290,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::optimizeModelCoefficients (
 template <typename PointT> void
 pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
       const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients,
-      PointCloud &projected_points, bool copy_data_fields)
+      PointCloud &projected_points, bool copy_data_fields) const
 {
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 7)
@@ -393,9 +391,9 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelCircle3D<PointT>::doSamplesVerifyModel (
-      const std::set<int> &indices, 
-      const Eigen::VectorXf &model_coefficients, 
-      const double threshold)
+      const std::set<int> &indices,
+      const Eigen::VectorXf &model_coefficients,
+      const double threshold) const
 {
   // Needs a valid model coefficients
   if (model_coefficients.size () != 7)
@@ -437,7 +435,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::doSamplesVerifyModel (
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelCircle3D<PointT>::isModelValid (const Eigen::VectorXf &model_coefficients)
+pcl::SampleConsensusModelCircle3D<PointT>::isModelValid (const Eigen::VectorXf &model_coefficients) const
 {
   if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
     return (false);

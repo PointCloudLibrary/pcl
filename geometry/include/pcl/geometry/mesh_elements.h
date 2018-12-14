@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_MESH_ELEMENTS_H
-#define PCL_GEOMETRY_MESH_ELEMENTS_H
+#pragma once
 
 #include <pcl/geometry/mesh_indices.h>
 
@@ -186,5 +185,3 @@ namespace pcl
     };
   } // End namespace geometry
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_MESH_ELEMENTS_H

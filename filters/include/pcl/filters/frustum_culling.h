@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef PCL_FILTERS_FRUSTUM_CULLING_H_
-#define PCL_FILTERS_FRUSTUM_CULLING_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/filters/filter_indices.h>
@@ -237,6 +235,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/frustum_culling.hpp>
-#endif
-
 #endif

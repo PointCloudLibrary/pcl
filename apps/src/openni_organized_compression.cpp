@@ -105,7 +105,7 @@ do \
 }while(false)
 
 void
-print_usage (std::string msg)
+print_usage (const std::string &msg)
 {
   std::cerr << msg << std::endl;
   std::cout << usage << std::endl;

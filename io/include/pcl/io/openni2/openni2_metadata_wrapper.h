@@ -38,12 +38,10 @@
  */
 
 #pragma once
-#ifndef PCL_IO_OPENNI2_METADATA_WRAPPER_H_
-#define PCL_IO_OPENNI2_METADATA_WRAPPER_H_
-
-#include <pcl/pcl_config.h>
 
 #if defined(HAVE_OPENNI2)
+
+#include <pcl/pcl_config.h>
 
 #include <pcl/io/image_metadata_wrapper.h>
 #include <pcl/io/openni2/openni.h>
@@ -112,5 +110,3 @@ namespace pcl
   }
 }
 #endif // HAVE_OPENNI2
-
-#endif // PCL_IO_OPENNI2_METADATA_WRAPPER_H_

@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_INTEGRALIMAGE_BASED_NORMAL_ESTIMATOR_H_
-#define PCL_INTEGRALIMAGE_BASED_NORMAL_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -478,6 +477,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/integral_image_normal.hpp>
 #endif
-
-#endif
-

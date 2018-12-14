@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef SELECTION_EVENT_H_
-#define SELECTION_EVENT_H_
+#pragma once
 
 #include <pcl/visualization/vtk.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
@@ -48,7 +47,7 @@ namespace pcl
   {
     class RectangularFrustumSelector;  
     
-    class PCL_EXPORTS SelectionEvent
+    class SelectionEvent
     {
       
       public:
@@ -90,7 +89,3 @@ namespace pcl
   }
   
 }
-
-#endif // SELECTION_EVENT_H_
-        
-        

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_REGION_GROWING_RGB_H_
-#define PCL_REGION_GROWING_RGB_H_
+#pragma once
 
 #include <pcl/segmentation/region_growing.h>
 
@@ -280,6 +279,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/region_growing_rgb.hpp>
-#endif
-
 #endif

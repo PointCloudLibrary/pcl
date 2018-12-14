@@ -34,8 +34,7 @@
  *
  */
 
-#ifndef PCL_MODELER_ICP_REGISTRATION_WORKER_H_
-#define PCL_MODELER_ICP_REGISTRATION_WORKER_H_
+#pragma once
 
 #include <pcl/apps/modeler/abstract_worker.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
@@ -81,5 +80,3 @@ namespace pcl
 
   }
 }
-
-#endif // PCL_MODELER_ICP_REGISTRATION_WORKER_H_

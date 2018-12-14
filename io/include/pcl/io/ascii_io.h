@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_ASCII_IO_H_
-#define PCL_IO_ASCII_IO_H_
+#pragma once
 
 #include <pcl/io/file_io.h>
 #include <pcl/PCLPointField.h>
@@ -117,7 +116,7 @@ namespace pcl
         * \param[in] p  a point type
         */
       template<typename PointT>
-      PCL_DEPRECATED ("Use setInputFields<PointT> () instead")
+      [[deprecated("use parameterless setInputFields<PointT>() instead")]]
       inline void setInputFields (const PointT p)
       {
         (void) p;
@@ -125,7 +124,7 @@ namespace pcl
       }
 
 
-      /** \brief Set the Separting characters for the ascii point fields 2.
+      /** \brief Set the Separating characters for the ascii point fields 2.
         * \param[in] chars string of separating characters
         *  Sets the separating characters for the point fields.  The
         *  default separating characters are " \n\t,"
@@ -164,9 +163,4 @@ namespace pcl
 	};
 }
 
-
-
-
 #include <pcl/io/impl/ascii_io.hpp>
-
-#endif    // PCL_IO_ASCII_IO_H_

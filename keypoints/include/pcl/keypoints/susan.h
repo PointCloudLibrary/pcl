@@ -36,15 +36,14 @@
  * $Id$
  */
 
-#ifndef PCL_SUSAN_KEYPOINT_H_
-#define PCL_SUSAN_KEYPOINT_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 #include <pcl/common/intensity.h>
 
 namespace pcl
 {
-  /** \brief SUSANKeypoint implements a RGB-D extension of the SUSAN detector inluding normal 
+  /** \brief SUSANKeypoint implements a RGB-D extension of the SUSAN detector including normal 
     * directions variation in top of intensity variation. 
     * It is different from Harris in that it exploits normals directly so it is faster.  
     * Original paper "SUSAN — A New Approach to Low Level Image Processing", Smith,
@@ -200,5 +199,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/susan.hpp>
-
-#endif // #ifndef PCL_SUSAN_KEYPOINT_H_

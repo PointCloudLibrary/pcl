@@ -35,10 +35,9 @@
  *
  */
 
-#include "pcl/pcl_config.h"
+#pragma once
 
-#ifndef PCL_IO_ROBOT_EYE_GRABBER_H_
-#define PCL_IO_ROBOT_EYE_GRABBER_H_
+#include "pcl/pcl_config.h"
 
 #include <pcl/io/grabber.h>
 #include <pcl/io/impl/synchronized_queue.hpp>
@@ -148,5 +147,3 @@ namespace pcl
       void computeTimestamp (boost::uint32_t& timestamp, unsigned char* point_data);
   };
 }
-
-#endif /* PCL_IO_ROBOT_EYE_GRABBER_H_ */

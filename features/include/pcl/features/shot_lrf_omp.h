@@ -37,8 +37,7 @@
  * $Id$
  */
 
-#ifndef PCL_FEATURES_SHOT_LRF_OMP_H_
-#define PCL_FEATURES_SHOT_LRF_OMP_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -70,19 +69,21 @@ namespace pcl
       typedef boost::shared_ptr<SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> > Ptr;
       typedef boost::shared_ptr<const SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> > ConstPtr;
       /** \brief Constructor */
-    SHOTLocalReferenceFrameEstimationOMP () : threads_ (0)
+    SHOTLocalReferenceFrameEstimationOMP ()
       {
         feature_name_ = "SHOTLocalReferenceFrameEstimationOMP";
+
+        setNumberOfThreads(0);
       }
-      
+
     /** \brief Empty destructor */
     virtual ~SHOTLocalReferenceFrameEstimationOMP () {}
 
     /** \brief Initialize the scheduler and set the number of threads to use.
      * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
      */
-     inline void
-     setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+    void
+    setNumberOfThreads (unsigned int nr_threads = 0);
 
     protected:
       using Feature<PointInT, PointOutT>::feature_name_;
@@ -112,6 +113,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/shot_lrf_omp.hpp>
 #endif
-
-#endif    // PCL_FEATURES_SHOT_LRF_H_
-

@@ -34,8 +34,7 @@
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
-#ifndef __PCL_IO_LIBPNG_WRAPPER__
-#define __PCL_IO_LIBPNG_WRAPPER__
+#pragma once
 
 #include <vector>
 #include <pcl/common/common.h>
@@ -136,7 +135,3 @@ namespace pcl
                       unsigned int& channels_arg);
   }
 }
-
-
-#endif
-

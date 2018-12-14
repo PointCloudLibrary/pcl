@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_GPU_SURFACE_INTERNAL_H_
-#define PCL_GPU_SURFACE_INTERNAL_H_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 #include <cuda_runtime.h>
@@ -66,7 +65,7 @@ namespace pcl
 	  public:
 		  FacetStream(size_t buffer_size);
 
-          // indeces: in each col indeces of vertexes for sigle facet
+          // indeces: in each col indeces of vertexes for single facet
 		  DeviceArray2D<int>  verts_inds;		  
 
 		  DeviceArray<int> head_points;		  
@@ -120,5 +119,3 @@ namespace pcl
 	  void pack_hull(const DeviceArray<PointType>& points, const DeviceArray<int>& indeces, DeviceArray<PointType>& output);
   }
 }
-
-#endif /* PCL_GPU_SURFACE_INTERNAL_H_ */ 

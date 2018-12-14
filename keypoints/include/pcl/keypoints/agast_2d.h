@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_KEYPOINTS_AGAST_KEYPOINT_2D_H_
-#define PCL_KEYPOINTS_AGAST_KEYPOINT_2D_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -159,7 +158,7 @@ namespace pcl
             nr_max_keypoints_ = nr_max_keypoints;
           }
 
-          /** \brief Get the maximum nuber of keypoints to return, as set by the user. */
+          /** \brief Get the maximum number of keypoints to return, as set by the user. */
           inline unsigned int 
           getMaxKeypoints ()
           {
@@ -641,7 +640,7 @@ namespace pcl
         nr_max_keypoints_ = nr_max_keypoints;
       }
 
-      /** \brief Get the maximum nuber of keypoints to return, as set by the user. */
+      /** \brief Get the maximum number of keypoints to return, as set by the user. */
       inline unsigned int 
       getMaxKeypoints ()
       {
@@ -837,6 +836,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/agast_2d.hpp>
-
-#endif
-

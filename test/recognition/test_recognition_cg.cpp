@@ -130,12 +130,17 @@ TEST (PCL, Hough3DGrouping)
   clusterer.setSceneRf (scene_rf);
   clusterer.setModelSceneCorrespondences (model_scene_corrs_);
   clusterer.setHoughBinSize (0.03);
-  clusterer.setHoughThreshold (25);
+  clusterer.setHoughThreshold (10);
   EXPECT_TRUE (clusterer.recognize (rototranslations));
 
   //Assertions
-  EXPECT_EQ (rototranslations.size (), 1);
-  EXPECT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-2);
+  ASSERT_GE (rototranslations.size (), 1);
+
+  // Pick transformation with lowest error
+  double min_rms_e = std::numeric_limits<double>::max ();
+  for (size_t i = 0; i < rototranslations.size (); ++i)
+    min_rms_e = std::min (min_rms_e, computeRmsE (model_, scene_, rototranslations[i]));
+  EXPECT_LT (min_rms_e, 1E-2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

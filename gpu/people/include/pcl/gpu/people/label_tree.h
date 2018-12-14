@@ -39,8 +39,7 @@
  * @brief This file contains the function prototypes for the tree building functions.
  */
  
-#ifndef PCL_GPU_PEOPLE_LABEL_TREE_H_
-#define PCL_GPU_PEOPLE_LABEL_TREE_H_
+#pragma once
  
 // our headers
 #include "pcl/gpu/people/label_blob2.h"   //this one defines the blob structure
@@ -70,7 +69,7 @@ namespace pcl
     namespace people    
     {           
      /**
-       * @brief This structure containts all parameters to describe the segmented tree
+       * @brief This structure contains all parameters to describe the segmented tree
        */
       struct Tree2 
       {
@@ -222,7 +221,7 @@ namespace pcl
        * @param[in] parent_label this is the part label that indicates the row
        * @param[in] child_label  this is the part label that indicates the childs needed to be investigated
        * @param[in] child_number the number of this child in the parent, some parents have multiple childs
-       * @return zero if successfull
+       * @return zero if successful
        * @todo once we have good evaluation function reconsider best_value
        **/
       inline int
@@ -281,7 +280,7 @@ namespace pcl
        * @param[in] child_label  this is the part label that indicates the childs needed to be investigated
        * @param[in] child_number the number of this child in the parent, some parents have multiple childs
        * @param person_attribs
-       * @return zero if successfull
+       * @return zero if successful
        * @todo once we have good evaluation function reconsider best_value
        **/
       inline int
@@ -667,4 +666,3 @@ namespace pcl
     } //end namespace people
   } // end namespace gpu
 } // end namespace pcl
-#endif

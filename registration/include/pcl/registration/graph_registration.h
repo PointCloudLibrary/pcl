@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GRAPH_REGISTRATION_H_
-#define PCL_GRAPH_REGISTRATION_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/registration/graph_handler.h>
@@ -123,5 +122,3 @@ namespace pcl
       computeRegistration () = 0;
   };
 }
-
-#endif // PCL_GRAPH_REGISTRATION_H_

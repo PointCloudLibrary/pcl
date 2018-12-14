@@ -44,8 +44,7 @@
  *      Author: papazov
  */
 
-#ifndef TRIMMED_ICP_H_
-#define TRIMMED_ICP_H_
+#pragma once
 
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -182,6 +181,3 @@ namespace pcl
     };
   } // namespace recognition
 } // namespace pcl
-
-
-#endif /* TRIMMED_ICP_H_ */

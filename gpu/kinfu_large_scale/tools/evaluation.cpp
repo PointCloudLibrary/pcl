@@ -85,9 +85,7 @@ Evaluation::Evaluation(const std::string& folder) : folder_(folder), visualizati
   string rgb_file = folder_ + "rgb.txt";
   
   readFile(depth_file, depth_stamps_and_filenames_);
-  readFile(rgb_file, rgb_stamps_and_filenames_);  
-
-  string associated_file = folder_ + "associated.txt";
+  readFile(rgb_file, rgb_stamps_and_filenames_);
 }
 
 void Evaluation::setMatchFile(const std::string& file)

@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_OCCUPANCY_H
-#define PCL_OCTREE_OCCUPANCY_H
+#pragma once
 
 #include <pcl/octree/octree_pointcloud.h>
 
@@ -127,6 +126,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_OctreePointCloudOccupancy(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudOccupancy<T>;
-
-#endif
-

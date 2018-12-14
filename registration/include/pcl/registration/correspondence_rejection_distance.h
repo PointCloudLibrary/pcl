@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_DISTANCE_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_DISTANCE_H_
+
+#pragma once
 
 #include <pcl/registration/correspondence_rejection.h>
 
@@ -206,5 +206,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_rejection_distance.hpp>
-
-#endif /* PCL_REGISTRATION_CORRESPONDENCE_REJECTION_DISTANCE_H_ */

@@ -60,8 +60,7 @@ do \
 }while(false)
 
 
-int default_polynomial_order = 2;
-bool default_use_polynomial_fit = false;
+int default_polynomial_order = 0;
 double default_search_radius = 0.0,
     default_sqr_gauss_param = 0.0;
 
@@ -90,15 +89,13 @@ class OpenNISmoothing
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
     OpenNISmoothing (double search_radius, bool sqr_gauss_param_set, double sqr_gauss_param,
-                     bool use_polynomial_fit, int polynomial_order,
-                     const std::string& device_id = "")
+                     int polynomial_order, const std::string& device_id = "")
     : viewer ("PCL OpenNI MLS Smoothing")
     , device_id_(device_id)
     {
       // Start 4 threads
       smoother_.setSearchRadius (search_radius);
       if (sqr_gauss_param_set) smoother_.setSqrGaussParam (sqr_gauss_param);
-      smoother_.setPolynomialFit (use_polynomial_fit);
       smoother_.setPolynomialOrder (polynomial_order);
 
       typename pcl::search::KdTree<PointType>::Ptr tree (new typename pcl::search::KdTree<PointType> ());
@@ -179,8 +176,7 @@ usage (char ** argv)
             << "where options are:\n"
             << "                     -search_radius X = sphere radius to be used for finding the k-nearest neighbors used for fitting (default: " << default_search_radius << ")\n"
             << "                     -sqr_gauss_param X = parameter used for the distance based weighting of neighbors (recommended = search_radius^2) (default: " << default_sqr_gauss_param << ")\n"
-            << "                     -use_polynomial_fit X = decides whether the surface and normal are approximated using a polynomial or only via tangent estimation (default: " << default_use_polynomial_fit << ")\n"
-            << "                     -polynomial_order X = order of the polynomial to be fit (implicitly, use_polynomial_fit = 1) (default: " << default_polynomial_order << ")\n";
+            << "                     -polynomial_order X = order of the polynomial to be fit (0 means tangent estimation) (default: " << default_polynomial_order << ")\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
   if (driver.getNumberDevices () > 0)
@@ -220,26 +216,23 @@ main (int argc, char ** argv)
   double sqr_gauss_param = default_sqr_gauss_param;
   bool sqr_gauss_param_set = true;
   int polynomial_order = default_polynomial_order;
-  bool use_polynomial_fit = default_use_polynomial_fit;
 
   pcl::console::parse_argument (argc, argv, "-search_radius", search_radius);
   if (pcl::console::parse_argument (argc, argv, "-sqr_gauss_param", sqr_gauss_param) == -1)
     sqr_gauss_param_set = false;
-  if (pcl::console::parse_argument (argc, argv, "-polynomial_order", polynomial_order) == -1 )
-    use_polynomial_fit = true;
-  pcl::console::parse_argument (argc, argv, "-use_polynomial_fit", use_polynomial_fit);
+  pcl::console::parse_argument (argc, argv, "-polynomial_order", polynomial_order);
 
   pcl::OpenNIGrabber grabber (arg);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
   {
     OpenNISmoothing<pcl::PointXYZRGBA> v (search_radius, sqr_gauss_param_set, sqr_gauss_param, 
-                                          use_polynomial_fit, polynomial_order, arg);
+                                          polynomial_order, arg);
     v.run ();
   }
   else
   {
     OpenNISmoothing<pcl::PointXYZ> v (search_radius, sqr_gauss_param_set, sqr_gauss_param,
-                                      use_polynomial_fit, polynomial_order, arg);
+                                      polynomial_order, arg);
     v.run ();
   }
 

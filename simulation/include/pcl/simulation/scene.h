@@ -5,8 +5,7 @@
  *      Author: Hordur Johannsson
  */
 
-#ifndef PCL_SIMULATION_SCENE_HPP_
-#define PCL_SIMULATION_SCENE_HPP_
+#pragma once
 
 #include <boost/shared_ptr.hpp>
 
@@ -44,5 +43,3 @@ namespace pcl
   
   } // namespace - simulation
 } // namespace - pcl
-
-#endif

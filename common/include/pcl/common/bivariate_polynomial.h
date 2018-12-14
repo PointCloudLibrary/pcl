@@ -36,8 +36,8 @@
  * $Id$
  *
  */
-#ifndef BIVARIATE_POLYNOMIAL_H
-#define BIVARIATE_POLYNOMIAL_H
+
+#pragma once
 
 #include <fstream>
 #include <iostream>
@@ -70,7 +70,7 @@ namespace pcl
       void
       setDegree (int new_degree);
 
-      /** How many parametes has a bivariate polynomial with this degree */
+      /** How many parameters has a bivariate polynomial with this degree */
       unsigned int
       getNoOfParameters () const { return getNoOfParametersFromDegree (degree);}
 
@@ -108,7 +108,7 @@ namespace pcl
       void
       readBinary (const char* filename);
       
-      /** How many parametes has a bivariate polynomial of the given degree */
+      /** How many parameters has a bivariate polynomial of the given degree */
       static unsigned int
       getNoOfParametersFromDegree (int n) { return ((n+2)* (n+1))/2;}
 
@@ -139,5 +139,3 @@ namespace pcl
 }  // end namespace
 
 #include <pcl/common/impl/bivariate_polynomial.hpp>
-
-#endif

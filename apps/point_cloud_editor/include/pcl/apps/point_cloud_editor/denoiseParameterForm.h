@@ -38,9 +38,7 @@
 /// to PCL's denoising filter.
 /// @author  Yue Li and Matthew Hielsberg
 
-
-#ifndef DENOISE_PARAMETER_FORM_H_
-#define DENOISE_PARAMETER_FORM_H_
+#pragma once
 
 #include <QLineEdit>
 #include <QDialog>
@@ -112,5 +110,3 @@ class DenoiseParameterForm : public QDialog
     /// The flag indicating whether the OK button was pressed
     bool ok_;
 };
-
-#endif // DENOISE_PARAMETER_FORM_H_

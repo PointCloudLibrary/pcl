@@ -58,7 +58,7 @@ The programmer can decide to loop over any or all of the steps.
 .. image:: images/registration/block_diagram_single_iteration.jpg
     :align: center
 
-The computational steps for two datasets are straighforward:
+The computational steps for two datasets are straightforward:
 
   * from a set of points, identify **interest points** (i.e., **keypoints**) that best represent the scene in both datasets;
   * at each keypoint, compute a **feature descriptor**;

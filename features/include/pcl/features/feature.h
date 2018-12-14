@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURE_H_
-#define PCL_FEATURE_H_
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header 
@@ -496,5 +495,3 @@ namespace pcl
 }
 
 #include <pcl/features/impl/feature.hpp>
-
-#endif  //#ifndef PCL_FEATURE_H_

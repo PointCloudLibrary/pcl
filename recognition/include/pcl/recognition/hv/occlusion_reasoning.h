@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RECOGNITION_OCCLUSION_REASONING_H_
-#define PCL_RECOGNITION_OCCLUSION_REASONING_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/common/transforms.h>
@@ -214,5 +213,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/recognition/impl/hv/occlusion_reasoning.hpp>
 #endif
-
-#endif /* PCL_RECOGNITION_OCCLUSION_REASONING_H_ */

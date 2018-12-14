@@ -53,7 +53,6 @@
 #include <fstream>
 #include <sstream>
 
-#include <pcl/visualization/interactor.h>
 #include <pcl/visualization/pcl_plotter.h>
 #include <pcl/common/common_headers.h>
 
@@ -124,11 +123,7 @@ pcl::visualization::PCLPlotter::addPlotData (
   //adding to chart
   //vtkPlot *line = chart_->AddPlot(vtkChart::LINE);
   vtkPlot *line = chart_->AddPlot (type);
-#if VTK_MAJOR_VERSION < 6
-  line->SetInput (table, 0, 1);
-#else
   line->SetInputData (table, 0, 1);
-#endif
   line->SetWidth (1);
 
   if (color == NULL)    //color automatically based on the ColorScheme
@@ -693,11 +688,7 @@ pcl::visualization::PCLPlotter::ExitMainLoopTimerCallback::Execute (
     return;
 
   // Stop vtk loop and send notification to app to wake it up
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-  interactor->stopLoop ();
-#else
   interactor->TerminateApp ();
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

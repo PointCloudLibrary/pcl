@@ -38,8 +38,7 @@
 /// points from the cloud and filling the copy buffer.
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef CUT_COMMAND_H_
-#define CUT_COMMAND_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -110,5 +109,3 @@ class CutCommand : public Command
     CopyBuffer cut_cloud_buffer_;
 
 };
-
-#endif // CUT_COMMAND_H_

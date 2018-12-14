@@ -39,8 +39,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_LOCAL_MAXIMUM_H_
-#define PCL_FILTERS_LOCAL_MAXIMUM_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 #include <pcl/search/pcl_search.h>
@@ -128,6 +127,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/local_maximum.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_LOCAL_MAXIMUM_H_
-

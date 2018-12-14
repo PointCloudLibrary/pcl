@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GICP_H_
-#define PCL_GICP_H_
+#pragma once
 
 #include <pcl/registration/icp.h>
 #include <pcl/registration/bfgs.h>
@@ -179,7 +178,7 @@ namespace pcl
         * \param[in] cloud_src the source point cloud dataset
         * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
         * \param[in] cloud_tgt the target point cloud dataset
-        * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
+        * \param[in] indices_tgt the vector of indices describing the correspondences of the interest points from \a indices_src
         * \param[out] transformation_matrix the resultant transformation matrix
         */
       void
@@ -253,7 +252,7 @@ namespace pcl
       int k_correspondences_;
 
       /** \brief The epsilon constant for gicp paper; this is NOT the convergence 
-        * tolerence 
+        * tolerance 
         * default: 0.001
         */
       double gicp_epsilon_;
@@ -293,7 +292,7 @@ namespace pcl
       int max_inner_iterations_;
 
       /** \brief compute points covariances matrices according to the K nearest 
-        * neighbors. K is set via setCorrespondenceRandomness() methode.
+        * neighbors. K is set via setCorrespondenceRandomness() method.
         * \param cloud pointer to point cloud
         * \param tree KD tree performer for nearest neighbors search
         * \param[out] cloud_covariances covariances matrices for each point in the cloud
@@ -364,5 +363,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/gicp.hpp>
-
-#endif  //#ifndef PCL_GICP_H_

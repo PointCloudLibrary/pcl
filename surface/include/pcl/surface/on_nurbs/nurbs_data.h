@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef NURBS_DATA_H
-#define NURBS_DATA_H
+#pragma once
 
 #include <vector>
 #include <list>
@@ -209,6 +208,3 @@ namespace pcl
 
   }
 }
-
-#endif
-

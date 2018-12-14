@@ -36,8 +36,7 @@
  *  $Id$
  */
 
-#ifndef PCL_OUTOFCORE_OCTREE_BASE_METADATA_H_
-#define PCL_OUTOFCORE_OCTREE_BASE_METADATA_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/outofcore/boost.h>
@@ -219,5 +218,3 @@ namespace pcl
     };
   }//namespace outofcore
 }//namespace pcl
-  
-#endif // PCL_OUTOFCORE_OCTREE_BASE_METADATA_H_

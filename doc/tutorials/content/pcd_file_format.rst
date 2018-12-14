@@ -123,7 +123,7 @@ As of version 0.7, the PCD header contains the following entries:
 
   Example::
 
-    WIDTH 640       # Image-like organized structure, with 640 rows and 480 columns,
+    WIDTH 640       # Image-like organized structure, with 480 rows and 640 columns,
     HEIGHT 480      # thus 640*480=307200 points total in the dataset
 
   Example::

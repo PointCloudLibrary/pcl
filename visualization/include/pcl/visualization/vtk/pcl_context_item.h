@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_VISUALIZATION_PCL_CONTEXT_ITEM_H_
-#define	PCL_VISUALIZATION_PCL_CONTEXT_ITEM_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <vtkContextItem.h>
@@ -170,5 +169,3 @@ namespace pcl
     }
   }
 }
-
-#endif

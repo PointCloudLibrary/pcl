@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_3DSC_H_
-#define PCL_FEATURES_3DSC_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/boost.h>
@@ -238,5 +237,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/3dsc.hpp>
 #endif
-
-#endif  //#ifndef PCL_3DSC_H_

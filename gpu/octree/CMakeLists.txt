@@ -9,7 +9,7 @@ mark_as_advanced("BUILD_${SUBSYS_NAME}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
 PCL_SET_SUBSYS_INCLUDE_DIR("${SUBSYS_NAME}" "${SUBSYS_PATH}")
 
-if(build) 
+if(build)
 	FILE(GLOB incs include/pcl/gpu/octree/*.hpp)
 	FILE(GLOB srcs src/*.cpp src/*.hpp src/*.cu)
 	source_group("Source Files" FILES ${srcs})
@@ -30,7 +30,7 @@ if(build)
 	set(EXT_DEPS "")
 	#set(EXT_DEPS CUDA)
 	PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
-	
+
 	# Install include files
 	PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}" ${incs})
 

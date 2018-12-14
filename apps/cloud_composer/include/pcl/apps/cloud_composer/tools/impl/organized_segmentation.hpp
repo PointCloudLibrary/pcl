@@ -175,7 +175,7 @@
  }
  
  
- #define PCL_INSTANTIATE_performTemplatedAction(T) template PCL_EXPORTS void pcl::cloud_composer::OrganizedSegmentationTool::performTemplatedAction<T> (QList <const CloudComposerItem*>);
+ #define PCL_INSTANTIATE_performTemplatedAction(T) template void pcl::cloud_composer::OrganizedSegmentationTool::performTemplatedAction<T> (QList <const CloudComposerItem*>);
  
  
  

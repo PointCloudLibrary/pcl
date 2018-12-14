@@ -505,7 +505,7 @@ costFunction3 (float ref_val,float depth_val)
   { // working range
     float min_dist = abs (ref_val - 0.7253f/(1.0360f - (depth_val)));
 
-    int lup = static_cast<int> (ceil (min_dist*100)); // has resulution of 0.01m
+    int lup = static_cast<int> (ceil (min_dist*100)); // has resolution of 0.01m
     if (lup > 300)
     { // implicitly this caps the cost if there is a hole in the model
       lup = 300;
@@ -520,7 +520,7 @@ costFunction4(float ref_val,float depth_val)
 {
   float disparity_diff = abs( ( -0.7253f/ref_val +1.0360f ) -  depth_val );
 
-  int top_lup = static_cast<int> (ceil (disparity_diff*300)); // has resulution of 0.001m
+  int top_lup = static_cast<int> (ceil (disparity_diff*300)); // has resolution of 0.001m
   if (top_lup > 300)
   {
     top_lup =300;
@@ -529,7 +529,7 @@ costFunction4(float ref_val,float depth_val)
 
   // bottom:
   //bottom = bottom_lookup(   round(mu*1000+1));
-  int bottom_lup = static_cast<int> (ceil( (depth_val) * 300)); // has resulution of 0.001m
+  int bottom_lup = static_cast<int> (ceil( (depth_val) * 300)); // has resolution of 0.001m
   if (bottom_lup > 300)
   {
     bottom_lup =300;
@@ -539,7 +539,7 @@ costFunction4(float ref_val,float depth_val)
   float proportion = 0.999f;
   float lhood = proportion + (1-proportion)*(top/bottom);
 
-  // safety fix thats seems to be required due to opengl ayschronizate
+  // safety fix that seems to be required due to opengl asynchronization
   // ask hordur about this
   if (bottom == 0)
   {
@@ -651,7 +651,7 @@ void
 pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
   bool make_global,
   const Eigen::Isometry3d & pose,
-  bool organized)
+  bool organized) const
 {
   // TODO: check if this works for for rows/cols >1  and for width&height != 640x480
   // i.e. multiple tiled images
@@ -762,7 +762,7 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
 }
 
 void
-pcl::simulation::RangeLikelihood::getRangeImagePlanar(pcl::RangeImagePlanar &rip)
+pcl::simulation::RangeLikelihood::getRangeImagePlanar(pcl::RangeImagePlanar &rip) const
 {
   rip.setDepthImage (depth_buffer_,
     camera_width_,camera_height_, camera_fx_,camera_fy_,
@@ -1053,7 +1053,7 @@ RangeLikelihood::render (const std::vector<Eigen::Isometry3d, Eigen::aligned_all
 }
 
 const float*
-RangeLikelihood::getDepthBuffer ()
+RangeLikelihood::getDepthBuffer () const
 {
   if (depth_buffer_dirty_)
   {
@@ -1073,7 +1073,7 @@ RangeLikelihood::getDepthBuffer ()
 }
 
 const uint8_t*
-RangeLikelihood::getColorBuffer ()
+RangeLikelihood::getColorBuffer () const
 {
   // It's only possible to read the color buffer if it
   // was rendered in the first place.
@@ -1105,7 +1105,7 @@ RangeLikelihood::getColorBuffer ()
 
 // The scores are in score_texture_
 const float*
-RangeLikelihood::getScoreBuffer ()
+RangeLikelihood::getScoreBuffer () const
 {
   if (score_buffer_dirty_ && !compute_likelihood_on_cpu_)
   {

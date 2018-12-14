@@ -238,10 +238,10 @@ void pcl::device::VFHEstimationImpl::compute(DeviceArray<VFHSignature308>& featu
     cudaSafeCall( cudaGetDeviceProperties(&prop, device) );
     
     int total = static_cast<int> (indices.empty() ? points.size() : indices.size());
-    int total_lenght_in_blocks = (total + VfhDevice::CTA_SIZE - 1) / VfhDevice::CTA_SIZE;
+    int total_length_in_blocks = (total + VfhDevice::CTA_SIZE - 1) / VfhDevice::CTA_SIZE;
 
     int block = VfhDevice::CTA_SIZE;
-    int grid =  min(total_lenght_in_blocks, prop.multiProcessorCount * prop.maxThreadsPerMultiProcessor / VfhDevice::CTA_SIZE);
+    int grid =  min(total_length_in_blocks, prop.multiProcessorCount * prop.maxThreadsPerMultiProcessor / VfhDevice::CTA_SIZE);
 
     DeviceArray2D<float> global_buffer(grid, VfhDevice::FSize);
     

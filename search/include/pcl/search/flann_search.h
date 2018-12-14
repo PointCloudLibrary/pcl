@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_SEARCH_FLANN_SEARCH_H_
-#define PCL_SEARCH_FLANN_SEARCH_H_
+#pragma once
 
 #include <pcl/search/search.h>
 #include <pcl/common/time.h>
@@ -319,7 +318,7 @@ namespace pcl
         {
           point_representation_ = point_representation;
           dim_ = point_representation->getNumberOfDimensions ();
-          if (input_) // re-create the tree, since point_represenation might change things such as the scaling of the point clouds.
+          if (input_) // re-create the tree, since point_representation might change things such as the scaling of the point clouds.
             setInputCloud (input_, indices_);
         }
 
@@ -370,6 +369,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_FlannSearch(T) template class PCL_EXPORTS pcl::search::FlannSearch<T>;
-
-#endif    // PCL_SEARCH_KDTREE_H_
-

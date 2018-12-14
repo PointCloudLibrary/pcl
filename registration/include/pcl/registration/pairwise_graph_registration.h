@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_PAIRWISE_GRAPH_REGISTRATION_H_
-#define PCL_PAIRWISE_GRAPH_REGISTRATION_H_
+#pragma once
 
 #include <pcl/registration/graph_registration.h>
 #include <pcl/registration/registration.h>
@@ -114,5 +113,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/pairwise_graph_registration.hpp>
-
-#endif // PCL_PAIRWISE_GRAPH_REGISTRATION_H_

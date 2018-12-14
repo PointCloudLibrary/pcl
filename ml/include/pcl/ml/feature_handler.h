@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_DT_FEATURE_HANDLER_H_
-#define PCL_ML_DT_FEATURE_HANDLER_H_
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -96,7 +95,7 @@ namespace pcl
 
       /** \brief Generates evaluation code for the specified feature and writes it to the specified stream.
         * \param[in] feature The feature for which code is generated.
-        * \param[out] stream The destionation for the code.
+        * \param[out] stream The destination for the code.
         */
       virtual void 
       generateCodeForEvaluation (const FeatureType & feature,
@@ -105,5 +104,3 @@ namespace pcl
   };
 
 }
-
-#endif

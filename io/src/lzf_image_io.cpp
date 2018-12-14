@@ -35,6 +35,7 @@
  *
  */
 #include <pcl/console/time.h>
+#include <pcl/io/low_level_io.h>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/io/lzf.h>
 #include <pcl/console/print.h>
@@ -43,19 +44,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-
-#ifdef _WIN32
-# include <io.h>
-# include <windows.h>
-# define pcl_open                    _open
-# define pcl_close(fd)               _close(fd)
-# define pcl_lseek(fd,offset,origin) _lseek(fd,offset,origin)
-#else
-# include <sys/mman.h>
-# define pcl_open                    open
-# define pcl_close(fd)               close(fd)
-# define pcl_lseek(fd,offset,origin) lseek(fd,offset,origin)
-#endif
 
 #define LZF_HEADER_SIZE 37
 
@@ -87,40 +75,34 @@ pcl::io::LZFImageWriter::saveImageBlob (const char* data,
   UnmapViewOfFile (map);
   CloseHandle (h_native_file);
 #else
-  int fd = pcl_open (filename.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
+  int fd = raw_open (filename.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
   if (fd < 0)
     return (false);
-  // Stretch the file size to the size of the data
-  off_t result = pcl_lseek (fd, data_size - 1, SEEK_SET);
-  if (result < 0)
+
+  // Allocate disk space for the entire file to prevent bus errors.
+  if (io::raw_fallocate (fd, data_size) != 0)
   {
-    pcl_close (fd);
-    return (false);
-  }
-  // Write a bogus entry so that the new file size comes in effect
-  result = static_cast<int> (::write (fd, "", 1));
-  if (result != 1)
-  {
-    pcl_close (fd);
+    raw_close (fd);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during posix_fallocate ()!");
     return (false);
   }
 
-  char *map = static_cast<char*> (mmap (0, data_size, PROT_WRITE, MAP_SHARED, fd, 0));
+  char *map = static_cast<char*> (::mmap (0, data_size, PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
-    pcl_close (fd);
+    raw_close (fd);
     return (false);
   }
 
   // Copy the data
   memcpy (&map[0], data, data_size);
 
-  if (munmap (map, (data_size)) == -1)
+  if (::munmap (map, (data_size)) == -1)
   {
-    pcl_close (fd);
+    raw_close (fd);
     return (false);
   }
-  pcl_close (fd);
+  raw_close (fd);
 #endif
   return (true);
 }
@@ -385,7 +367,7 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
     return (false);
   }
   // Open for reading
-  int fd = pcl_open (filename.c_str (), O_RDONLY);
+  int fd = raw_open (filename.c_str (), O_RDONLY);
   if (fd == -1)
   {
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] Failure to open file %s\n", filename.c_str () );
@@ -393,15 +375,15 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
   }
 
   // Seek to the end of file to get the filesize
-  off_t data_size = pcl_lseek (fd, 0, SEEK_END);
+  long data_size = raw_lseek (fd, 0, SEEK_END);
   if (data_size < 0)
   {
-    pcl_close (fd);
+    raw_close (fd);
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] lseek errno: %d strerror: %s\n", errno, strerror (errno));
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] Error during lseek ()!\n");
     return (false);
   }
-  pcl_lseek (fd, 0, SEEK_SET);
+  raw_lseek (fd, 0, SEEK_SET);
 
 #ifdef _WIN32
   // As we don't know the real size of data (compressed or not), 
@@ -413,15 +395,15 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
   if (map == NULL)
   {
     CloseHandle (fm);
-    pcl_close (fd);
+    raw_close (fd);
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] Error mapping view of file, %s\n", filename.c_str ());
     return (false);
   }
 #else
-  char *map = static_cast<char*> (mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0));
+  char *map = static_cast<char*> (::mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
-    pcl_close (fd);
+    raw_close (fd);
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] Error preparing mmap for PCLZF file.\n");
     return (false);
   }
@@ -437,7 +419,7 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
   UnmapViewOfFile (map);
   CloseHandle (fm);
 #else
-    munmap (map, data_size);
+    ::munmap (map, data_size);
 #endif
     return (false);
   }
@@ -459,7 +441,7 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
   UnmapViewOfFile (map);
   CloseHandle (fm);
 #else
-    munmap (map, data_size);
+    ::munmap (map, data_size);
 #endif
     return (false);
   }
@@ -473,12 +455,12 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
   UnmapViewOfFile (map);
   CloseHandle (fm);
 #else
-  if (munmap (map, data_size) == -1)
+  if (::munmap (map, data_size) == -1)
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] Munmap failure\n");
 #endif
-  pcl_close (fd);
+  raw_close (fd);
 
-  data_size = off_t (compressed_size);      // We only care about this from here on
+  data_size = compressed_size;      // We only care about this from here on
   return (true);
 }
 

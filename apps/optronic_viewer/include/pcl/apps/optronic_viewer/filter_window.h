@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_APPS_OPTRONIC_VIEWER_FILTER_WINDOW_H_
-#define PCL_APPS_OPTRONIC_VIEWER_FILTER_WINDOW_H_
+#pragma once
 
 #include <boost/shared_ptr.hpp>
 
@@ -81,7 +80,7 @@ namespace pcl
         virtual void next ();
 
       Q_SIGNALS:
-        /** \brief Ommitted when a filter is created. */
+        /** \brief Omitted when a filter is created. */
         void filterCreated ();
 
       protected:
@@ -116,5 +115,3 @@ namespace pcl
     }
   }
 }
-
-#endif // PCL_APPS_OPTRONIC_VIEWER_FILTER_WINDOW_H_

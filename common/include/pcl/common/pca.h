@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_PCA_H
-#define PCL_PCA_H
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
@@ -270,7 +269,6 @@ namespace pcl
         */
       inline void
       reconstruct (const PointCloud& projection, PointCloud& input);
-
     private:
       inline bool
       initCompute ();
@@ -285,6 +283,3 @@ namespace pcl
 } // namespace pcl
 
 #include <pcl/common/impl/pca.hpp>
-
-#endif // PCL_PCA_H
-

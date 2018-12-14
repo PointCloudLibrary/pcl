@@ -32,7 +32,7 @@ elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
 endif()
 
 # Default to not building for now
-if (${DEFAULT} STREQUAL "TRUE")
+if(${DEFAULT} STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 
@@ -137,4 +137,7 @@ if(build)
   pcl_add_executable_opt_bundle(pcl_offline_integration "${SUBSUBSYS_NAME}" ${OI_SRCS} ${OI_INCS})
   target_link_libraries(pcl_offline_integration ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} ${QT_LIBRARIES})
 
+  # Add to the compound apps target
+  list(APPEND PCL_APPS_ALL_TARGETS ${PCL_IN_HAND_SCANNER_ALL_TARGETS})
+  set(PCL_APPS_ALL_TARGETS ${PCL_APPS_ALL_TARGETS} PARENT_SCOPE)
 endif()

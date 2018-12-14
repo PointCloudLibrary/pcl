@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_POINT_XY_32I_H_
-#define PCL_ML_POINT_XY_32I_H_
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -92,5 +91,3 @@ namespace pcl
   };
 
 }
-
-#endif

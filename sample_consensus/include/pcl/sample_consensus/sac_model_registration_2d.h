@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_2D_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_2D_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model_registration.h>
 
@@ -112,7 +111,7 @@ namespace pcl
         */
       void
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances);
+                           std::vector<double> &distances) const;
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param[in] model_coefficients the 4x4 transformation matrix
@@ -132,7 +131,7 @@ namespace pcl
         */
       virtual int
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold);
+                           const double threshold) const;
 
       /** \brief Set the camera projection matrix. 
         * \param[in] projection_matrix the camera projection matrix 
@@ -221,6 +220,3 @@ namespace pcl
 }
 
 #include <pcl/sample_consensus/impl/sac_model_registration_2d.hpp>
-
-#endif    // PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_2D_H_
-

@@ -1,5 +1,4 @@
-#ifndef PCL_GPU_TRACKING_PARTICLE_FILTER_H_
-#define PCL_GPU_TRACKING_PARTICLE_FILTER_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
@@ -148,5 +147,3 @@ namespace pcl
 		};
   }
 }
-
-#endif // PCL_GPU_TRACKING_PARTICLE_FILTER_H_

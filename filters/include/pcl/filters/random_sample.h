@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_RANDOM_SUBSAMPLE_H_
-#define PCL_FILTERS_RANDOM_SUBSAMPLE_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 #include <time.h>
@@ -232,7 +231,6 @@ namespace pcl
       unifRand ()
       {
         return (static_cast<float> (rand () / double (RAND_MAX)));
-        //return (((214013 * seed_ + 2531011) >> 16) & 0x7FFF);
       }
    };
 }
@@ -240,5 +238,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/random_sample.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_RANDOM_SUBSAMPLE_H_

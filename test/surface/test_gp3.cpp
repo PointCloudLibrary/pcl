@@ -226,7 +226,7 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
     //tex_material.tex_Ns = 0.0f;
     //tex_material.tex_illum = 2;
 
-    //// set texture material paramaters
+    //// set texture material parameters
     //tm.setTextureMaterials(tex_material);
 
     //// set texture files

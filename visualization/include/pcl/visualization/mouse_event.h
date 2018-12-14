@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_VISUALIZATION_MOUSE_EVENT_H_
-#define	PCL_VISUALIZATION_MOUSE_EVENT_H_
+#pragma once
 
 #include <pcl/visualization/keyboard_event.h>
 
@@ -208,6 +207,3 @@ namespace pcl
 
   } //namespace visualization
 } //namespace pcl
-
-#endif	/* PCL_VISUALIZATION_MOUSE_EVENT_H_ */
-

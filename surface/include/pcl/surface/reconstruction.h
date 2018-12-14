@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_RECONSTRUCTION_H_
-#define PCL_SURFACE_RECONSTRUCTION_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/PolygonMesh.h>
@@ -244,6 +243,3 @@ namespace pcl
 }
 
 #include <pcl/surface/impl/reconstruction.hpp>
-
-#endif  // PCL_SURFACE_RECONSTRUCTION_H_
-

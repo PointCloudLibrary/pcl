@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_CPC_SEGMENTATION_H_
-#define PCL_SEGMENTATION_CPC_SEGMENTATION_H_
+#pragma once
 
 // common includes
 #include <pcl/pcl_base.h>
@@ -157,7 +156,7 @@ namespace pcl
       /** \brief Use clean cutting */
       bool use_clean_cutting_;
       
-      /** \brief Interations for RANSAC */
+      /** \brief Iterations for RANSAC */
       uint32_t ransac_itrs_;
      
       
@@ -284,5 +283,3 @@ namespace pcl
   #include <pcl/sample_consensus/impl/sac_model_plane.hpp>
   #include <pcl/segmentation/impl/extract_clusters.hpp>  
 #endif // PCL_NO_PRECOMPILE / PCL_ONLY_CORE_POINT_TYPES
-
-#endif // PCL_SEGMENTATION_CPC_SEGMENTATION_H_

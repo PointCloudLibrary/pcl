@@ -38,8 +38,7 @@
 /// which are used for viewing and editing point clouds
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef CLOUD_EDITOR_WIDGET_H_
-#define CLOUD_EDITOR_WIDGET_H_
+#pragma once
 
 #include <QGLWidget>
 #include <boost/function.hpp>
@@ -123,7 +122,7 @@ class CloudEditorWidget : public QGLWidget
     void
     cut ();
 
-    /// @brief Enters the mode where users are able to translate the selecte
+    /// @brief Enters the mode where users are able to translate the selected
     /// points.
     void
     transform ();
@@ -311,4 +310,3 @@ class CloudEditorWidget : public QGLWidget
 
 
 };
-#endif // CLOUD_EDITOR_WIDGET_H_

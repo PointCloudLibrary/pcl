@@ -34,17 +34,15 @@
 ///
 
 /// @file   transformCommand.h
-/// @details a TransfromCommand object provides transformation and undo
+/// @details a TransformCommand object provides transformation and undo
 /// functionalities.  // XXX - transformation of what?
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef TRANSFORM_COMMAND_H_
-#define TRANSFORM_COMMAND_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
-
 
 class TransformCommand : public Command
 {
@@ -115,5 +113,3 @@ class TransformCommand : public Command
     /// The center of the cloud used by this command
     float cloud_center_[XYZ_SIZE];
 };
-
-#endif // TRANSFORM_COMMAND_H_

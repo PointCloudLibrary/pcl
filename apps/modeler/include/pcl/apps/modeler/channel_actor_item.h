@@ -33,8 +33,8 @@
  *
  *
  */
-#ifndef PCL_MODELER_CHANNEL_ACTOR_ITEM_H_
-#define PCL_MODELER_CHANNEL_ACTOR_ITEM_H_
+
+#pragma once
 
 #include <vtkSmartPointer.h>
 #include <boost/shared_ptr.hpp>
@@ -100,5 +100,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_CHANNEL_ACTOR_ITEM_H_

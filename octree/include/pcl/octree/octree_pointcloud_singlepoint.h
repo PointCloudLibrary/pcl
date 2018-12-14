@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_SINGLE_POINT_H
-#define PCL_OCTREE_SINGLE_POINT_H
+#pragma once
 
 #include <pcl/octree/octree_pointcloud.h>
 
@@ -89,5 +88,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_OctreePointCloudSinglePoint(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudSinglePoint<T>;
-
-#endif

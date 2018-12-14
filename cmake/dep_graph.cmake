@@ -9,21 +9,21 @@ function(MAKE_DEP_GRAPH)
          NOT _ss STREQUAL "tools" AND
          NOT _ss STREQUAL "test" AND
          NOT _ss STREQUAL "python" AND
-         NOT _ss STREQUAL "documentation") 
+         NOT _ss STREQUAL "documentation")
         PCL_GET_SUBSYS_STATUS(_status ${_ss})
         if(_status)
             file(APPEND ${_dot_file}
                 "  \"${_ss}\" [style=\"filled\" fillcolor=\"#008000\" shape=\"box\"];\n ")
-        else(_status)
+        else()
             file(APPEND ${_dot_file}
                 "  \"${_ss}\" [style=\"filled\" fillcolor=\"#D40000\" shape=\"box\"];\n ")
-        endif(_status)
+        endif()
         GET_IN_MAP(_deps PCL_SUBSYS_DEPS ${_ss})
         foreach(_dep ${_deps})
             file(APPEND ${_dot_file} "  \"${_ss}\" -> \"${_dep}\";\n")
-        endforeach(_dep)
+        endforeach()
       endif()
-    endforeach(_ss)
+    endforeach()
 
     #file(APPEND ${_dot_file}
     #    "  \"test\" [style=\"filled\" fillcolor=\"#A3A27C\" shape=\"box\"];\n ")
