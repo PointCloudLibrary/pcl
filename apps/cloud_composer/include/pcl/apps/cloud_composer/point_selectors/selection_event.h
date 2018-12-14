@@ -47,7 +47,7 @@ namespace pcl
   {
     class RectangularFrustumSelector;  
     
-    class PCL_EXPORTS SelectionEvent
+    class SelectionEvent
     {
       
       public:

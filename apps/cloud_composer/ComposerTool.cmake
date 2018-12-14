@@ -19,11 +19,10 @@ function(define_composer_tool TOOL_NAME TOOL_SOURCES TOOL_HEADERS DEPS)
   add_definitions(-DQT_NO_DEBUG)
   add_definitions(-DQT_SHARED)
 
-  add_dependencies(${TOOL_TARGET} pcl_cc_tool_interface ${DEPS})
   target_link_libraries(${TOOL_TARGET} pcl_cc_tool_interface pcl_common pcl_io ${DEPS} ${QT_LIBRARIES})
 
   if(APPLE)
-    SET_TARGET_PROPERTIES(${TOOL_TARGET} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+    set_target_properties(${TOOL_TARGET} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
   endif()
 
-endfunction(define_composer_tool TOOL_NAME TOOL_SOURCES TOOL_HEADERS DEPS)
+endfunction()

@@ -45,7 +45,7 @@ namespace pcl
   namespace cloud_composer
   {
       
-    class PCL_EXPORTS RectangularFrustumSelector : public vtkInteractorStyleRubberBandPick
+    class RectangularFrustumSelector : public vtkInteractorStyleRubberBandPick
     {     
       public:
         static RectangularFrustumSelector* New();

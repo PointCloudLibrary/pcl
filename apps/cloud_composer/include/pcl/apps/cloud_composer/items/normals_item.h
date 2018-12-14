@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <pcl/pcl_exports.h>
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
 
@@ -48,7 +47,7 @@ namespace pcl
   namespace cloud_composer
   {
     
-    class PCL_EXPORTS NormalsItem : public CloudComposerItem
+    class NormalsItem : public CloudComposerItem
     {
       public:
 
