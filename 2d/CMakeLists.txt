@@ -33,7 +33,7 @@ if(build)
         set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging)
     endif()
 
-    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" ${VTK_INCLUDE_DIRECTORIES})
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
     PCL_MAKE_PKGCONFIG_HEADER_ONLY("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
