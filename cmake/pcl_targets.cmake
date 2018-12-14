@@ -808,7 +808,7 @@ macro (PCL_ADD_DOC _subsys)
     endif()
     if(NOT "${dependencies}" STREQUAL "")
       set(STRIPPED_HEADERS "${PCL_SOURCE_DIR}/${dependencies}/include")
-      string(REPLACE ";" "/include \\\n\t\t\t\t\t\t\t\t\t\t\t\t ${PCL_SOURCE_DIR}/"
+      string(REPLACE ";" "/include \\\n                         ${PCL_SOURCE_DIR}/"
              STRIPPED_HEADERS "${STRIPPED_HEADERS}")
     endif()
     set(DOC_SOURCE_DIR "\"${CMAKE_CURRENT_SOURCE_DIR}\"\\")
