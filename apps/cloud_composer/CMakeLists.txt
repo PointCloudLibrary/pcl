@@ -17,10 +17,10 @@ else()
   include("${VTK_USE_FILE}")
 endif()
 
-# QT4 Found?
-if(NOT QT4_FOUND)
+# QT5 Found?
+if(NOT QT5_FOUND)
   set(DEFAULT AUTO_OFF)
-  set(REASON "Qt4 was not found.")
+  set(REASON "Qt5 was not found.")
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
   set(DEFAULT TRUE)
   set(REASON)
@@ -87,9 +87,9 @@ if(build)
     # Build pcl_cc_tool_interface as static library, to fix issue mentioned in #2708
     set(PCL_LIB_TYPE_ORIGIN ${PCL_LIB_TYPE})
     set(PCL_LIB_TYPE STATIC)
-    QT4_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+    QT5_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
     PCL_ADD_LIBRARY(pcl_cc_tool_interface "${SUBSUBSYS_NAME}" ${INTERFACE_HEADERS} ${INTERFACE_SOURCES} ${INTERFACE_HEADERS_MOC})
-    target_link_libraries(pcl_cc_tool_interface pcl_common pcl_filters pcl_search pcl_visualization ${VTK_LIBRARIES} ${QT_LIBRARIES})
+    target_link_libraries(pcl_cc_tool_interface pcl_common pcl_filters pcl_search pcl_visualization ${VTK_LIBRARIES} Qt5::Widgets)
     set(PCL_LIB_TYPE ${PCL_LIB_TYPE_ORIGIN})
 
     if(APPLE)
@@ -139,13 +139,13 @@ if(build)
     set(uis src/cloud_composer_main_window.ui)
     set(resources resources/resources.qrc)
 
-    QT4_WRAP_UI(cloud_composer_ui ${uis})
-    QT4_WRAP_CPP(cloud_composer_moc ${incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-    QT4_ADD_RESOURCES(resource_srcs ${resources})
+    QT5_WRAP_UI(cloud_composer_ui ${uis})
+    QT5_WRAP_CPP(cloud_composer_moc ${incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+    QT5_ADD_RESOURCES(resource_srcs ${resources})
 
     set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
     PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${impl_incs})
-    target_link_libraries("${EXE_NAME}" pcl_cc_tool_interface pcl_common pcl_io pcl_visualization pcl_filters ${QVTK_LIBRARY} ${QT_LIBRARIES})
+    target_link_libraries("${EXE_NAME}" pcl_cc_tool_interface pcl_common pcl_io pcl_visualization pcl_filters ${QVTK_LIBRARY} Qt5::Widgets)
 
     # Install include files
     PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs} ${item_incs} ${selector_incs})

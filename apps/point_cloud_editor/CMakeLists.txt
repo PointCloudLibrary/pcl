@@ -56,10 +56,11 @@ set(SRCS src/main.cpp
          src/denoiseParameterForm.cpp
   )
 
-if(NOT QT4_FOUND)
+# QT5 Found?
+if(NOT QT5_FOUND)
   set(DEFAULT AUTO_OFF)
-  set(REASON "Qt4 was not found.")
-else()
+  set(REASON "Qt5 was not found.")
+elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
   set(DEFAULT TRUE)
   set(REASON)
 endif()
@@ -84,15 +85,11 @@ PCL_SUBSUBSYS_DEPEND(BUILD "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${SUBSYS_DEPS})
 PCL_ADD_DOC(${SUBSUBSYS_NAME})
 
 if(BUILD)
-  include("${QT_USE_FILE}")
-  set(QT_USE_QTOPENGL TRUE)
-  #QT4_WRAP_CPP(MOC_SRCS ${MOC_INCS})
-  QT4_WRAP_CPP(MOC_SRCS ${MOC_INCS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-  QT4_ADD_RESOURCES(RESOURCES_SRCS ${RSRC})
+  QT5_WRAP_CPP(MOC_SRCS ${MOC_INCS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+  QT5_ADD_RESOURCES(RESOURCES_SRCS ${RSRC})
 
-  INCLUDE_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}"
+  include_directories("${CMAKE_CURRENT_BINARY_DIR}"
                       "${CMAKE_CURRENT_SOURCE_DIR}/include"
-                      "${QT_QTOPENGL_INCLUDE_DIR}"
 		      )
 
   set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
@@ -104,9 +101,9 @@ if(BUILD)
 		     ${INCS}
 		     )
 
-  TARGET_LINK_LIBRARIES("${EXE_NAME}"
-                        ${QT_LIBRARIES}
-                        ${QT_QTOPENGL_LIBRARY}
+  target_link_libraries("${EXE_NAME}"
+                        Qt5::Widgets
+                        Qt5::OpenGL
                         ${OPENGL_LIBRARIES}
                         ${BOOST_LIBRARIES}
                         pcl_common
