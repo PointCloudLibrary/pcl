@@ -4,7 +4,7 @@ function(define_composer_tool TOOL_NAME TOOL_SOURCES TOOL_HEADERS DEPS)
   project(pcl_cc_tool_${TOOL_NAME})
 
   #message("Making plugin " pcl_cc_tool_${TOOL_NAME})
-  QT4_WRAP_CPP(TOOL_HEADERS_MOC ${TOOL_HEADERS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+  QT5_WRAP_CPP(TOOL_HEADERS_MOC ${TOOL_HEADERS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   set(TOOL_TARGET pcl_cc_tool_${TOOL_NAME})
   # message("Files:"  ${TOOL_SOURCES} ${TOOL_HEADERS_MOC})
   PCL_ADD_LIBRARY(${TOOL_TARGET} ${SUBSYS_NAME} ${TOOL_SOURCES} ${TOOL_HEADERS} ${TOOL_HEADERS_MOC})
@@ -19,7 +19,7 @@ function(define_composer_tool TOOL_NAME TOOL_SOURCES TOOL_HEADERS DEPS)
   add_definitions(-DQT_NO_DEBUG)
   add_definitions(-DQT_SHARED)
 
-  target_link_libraries(${TOOL_TARGET} pcl_cc_tool_interface pcl_common pcl_io ${DEPS} ${QT_LIBRARIES})
+  target_link_libraries(${TOOL_TARGET} pcl_cc_tool_interface pcl_common pcl_io ${DEPS} Qt5::Widgets)
 
   if(APPLE)
     set_target_properties(${TOOL_TARGET} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")

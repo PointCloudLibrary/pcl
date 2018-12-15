@@ -29,13 +29,3 @@ target_link_libraries (pcl_people_pcd_prob pcl_common pcl_filters pcl_kdtree pcl
 
 #PCL_ADD_EXECUTABLE(people_pcd_person "${SUBSYS_NAME}" people_pcd_person.cpp)
 #target_link_libraries (people_pcd_person pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization)
-
-#if(VTK_FOUND)
-#  if(QT4_FOUND AND VTK_USE_QVTK)
-#    QT4_WRAP_UI(people_proc_ui people_proc/people_proc.ui)
-#    QT4_WRAP_CPP(people_proc_moc people_proc/people_proc.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-#    PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_people_proc "${SUBSYS_NAME}" ${people_proc_ui} ${people_proc_moc} people_proc/people_proc.cpp)
-#    target_link_libraries(pcl_people_proc pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface pcl_gpu_people QVTK ${QT_LIBRARIES})
-#
-#  endif()
-#endif()

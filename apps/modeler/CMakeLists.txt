@@ -14,10 +14,10 @@ else()
   include("${VTK_USE_FILE}")
 endif()
 
-# QT4 Found?
-if(NOT QT4_FOUND)
+# QT5 Found?
+if(NOT QT5_FOUND)
   set(DEFAULT AUTO_OFF)
-  set(REASON "Qt4 was not found.")
+  set(REASON "Qt5 was not found.")
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
   set(DEFAULT TRUE)
   set(REASON)
@@ -112,9 +112,9 @@ if(build)
                 "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/impl/scene_tree.hpp")
 
   # Qt stuff
-  QT4_WRAP_UI(ui_srcs ${uis})
-  QT4_WRAP_CPP(moc_srcs ${moc_incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-  QT4_ADD_RESOURCES(resource_srcs ${resources})
+  QT5_WRAP_UI(ui_srcs ${uis})
+  QT5_WRAP_CPP(moc_srcs ${moc_incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+  QT5_ADD_RESOURCES(resource_srcs ${resources})
 
   # Organize files
   SOURCE_GROUP("Resources" FILES ${uis} ${resources} ${EXE_ICON})
@@ -124,7 +124,7 @@ if(build)
   # Generate executable
   set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
   PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${ui_srcs} ${moc_srcs} ${resource_srcs} ${srcs} ${incs} ${impl_incs})
-  target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QVTK_LIBRARY} ${QT_LIBRARIES})
+  target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QVTK_LIBRARY} Qt5::Widgets)
 
   # Put the ui in the windows project file
   if("${CMAKE_BUILD_TOOL}" MATCHES "msdev")
