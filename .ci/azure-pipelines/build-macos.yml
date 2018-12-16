@@ -28,7 +28,6 @@ jobs:
             -DQt5Concurrent_DIR=/usr/local/opt/qt5/lib/cmake/Qt5Concurrent \
             -DQt5OpenGL_DIR=/usr/local/opt/qt5/lib/cmake/Qt5OpenGL \
             -DPCL_ONLY_CORE_POINT_TYPES=ON \
-            -DPCL_QT_VERSION=5 \
             -DBUILD_simulation=ON \
             -DBUILD_surface_on_nurbs=ON \
             -DBUILD_global_tests=ON \
