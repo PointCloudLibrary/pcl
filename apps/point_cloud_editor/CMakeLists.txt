@@ -57,7 +57,7 @@ set(SRCS src/main.cpp
   )
 
 # QT5 Found?
-if(NOT QT5_FOUND)
+if(NOT Qt5_FOUND)
   set(DEFAULT AUTO_OFF)
   set(REASON "Qt5 was not found.")
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")

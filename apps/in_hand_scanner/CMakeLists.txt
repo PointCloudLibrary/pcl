@@ -5,7 +5,7 @@ set(SUBSUBSYS_LIBS pcl_common pcl_features pcl_io pcl_kdtree)
 
 ################################################################################
 # QT5 Found?
-if(NOT QT5_FOUND)
+if(NOT Qt5_FOUND)
   set(DEFAULT AUTO_OFF)
   set(REASON "Qt5 was not found.")
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
@@ -116,7 +116,7 @@ if(build)
 
   set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
   pcl_add_executable_opt_bundle("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${SRCS} ${INCS} ${IMPL_INCS})
-  target_link_libraries("${EXE_NAME}" ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} Qt5::Widgets)
+  target_link_libraries("${EXE_NAME}" ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} Qt5::Widgets Qt5::OpenGL)
 
   pcl_add_includes("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${INCS})
   pcl_add_includes("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}/impl" ${IMPL_INCS})
@@ -128,7 +128,7 @@ if(build)
   list(APPEND OI_SRCS "${MOC_OPENGL_VIEWER_SRC}" "${MOC_OFFLINE_INTEGRATION_SRC}")
 
   pcl_add_executable_opt_bundle(pcl_offline_integration "${SUBSUBSYS_NAME}" ${OI_SRCS} ${OI_INCS})
-  target_link_libraries(pcl_offline_integration ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} Qt5::Widgets)
+  target_link_libraries(pcl_offline_integration ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} Qt5::Widgets Qt5::OpenGL)
 
   # Add to the compound apps target
   list(APPEND PCL_APPS_ALL_TARGETS ${PCL_IN_HAND_SCANNER_ALL_TARGETS})

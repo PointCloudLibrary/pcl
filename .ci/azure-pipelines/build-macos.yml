@@ -22,13 +22,8 @@ jobs:
             -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
             -DGTEST_SRC_DIR="$GOOGLE_TEST_DIR/googletest" \
             -DGTEST_INCLUDE_DIR="$GOOGLE_TEST_DIR/googletest/include" \
-            -DQt5Core_DIR=/usr/local/opt/qt5/lib/cmake/Qt5Core \
-            -DQt5Gui_DIR=/usr/local/opt/qt5/lib/cmake/Qt5Gui \
-            -DQt5Widgets_DIR=/usr/local/opt/qt5/lib/cmake/Qt5Widgets \
-            -DQt5Concurrent_DIR=/usr/local/opt/qt5/lib/cmake/Qt5Concurrent \
-            -DQt5OpenGL_DIR=/usr/local/opt/qt5/lib/cmake/Qt5OpenGL \
+            -DQt5_DIR=/usr/local/opt/qt5/lib/cmake/Qt5 \
             -DPCL_ONLY_CORE_POINT_TYPES=ON \
-            -DPCL_QT_VERSION=5 \
             -DBUILD_simulation=ON \
             -DBUILD_surface_on_nurbs=ON \
             -DBUILD_global_tests=ON \
