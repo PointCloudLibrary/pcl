@@ -47,7 +47,7 @@
 #include <pcl/PCLPointCloud2.h>
 
 #include <pcl/io/pcd_io.h>
-#include <pcl/io/vtk_lib_io.h>
+#include <pcl/io/vtk_io.h>
 #include <pcl/pcl_macros.h>
 
 #include <pcl/console/print.h>

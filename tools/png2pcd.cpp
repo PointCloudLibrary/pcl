@@ -51,7 +51,7 @@
 #include <pcl/console/time.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/io/vtk_lib_io.h>
+#include <pcl/io/vtk_io.h>
 
 #define RED_MULTIPLIER 0.299
 #define GREEN_MULTIPLIER 0.587
