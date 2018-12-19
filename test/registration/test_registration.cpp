@@ -59,8 +59,8 @@
 #include <pcl/registration/pyramid_feature_matching.h>
 #include <pcl/features/ppf.h>
 #include <pcl/registration/ppf_registration.h>
-#include <pcl/registration/ndt.h>
 #include <pcl/registration/sample_consensus_prerejective.h>
+#include <pcl/filters/voxel_grid.h>
 // We need Histogram<2> to function, so we'll explicitly add kdtree_flann.hpp here
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 //(pcl::Histogram<2>)
@@ -589,51 +589,6 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
     reg.align (output);
     EXPECT_EQ (int (output.points.size ()), int (src->points.size ()));
     EXPECT_LT (reg.getFitnessScore (), 0.003);
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, NormalDistributionsTransform)
-{
-  typedef PointNormal PointT;
-  PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
-  copyPointCloud (cloud_source, *src);
-  PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);
-  copyPointCloud (cloud_target, *tgt);
-  PointCloud<PointT> output;
-
-  NormalDistributionsTransform<PointT, PointT> reg;
-  reg.setStepSize (0.05);
-  reg.setResolution (0.025f);
-  reg.setInputSource (src);
-  reg.setInputTarget (tgt);
-  reg.setMaximumIterations (50);
-  reg.setTransformationEpsilon (1e-8);
-  // Register
-  reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-  EXPECT_LT (reg.getFitnessScore (), 0.001);
-
-  // Check again, for all possible caching schemes
-  for (int iter = 0; iter < 4; iter++)
-  {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
-    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
-    // Ensure that, when force_cache is not set, we are robust to the wrong input
-    if (force_cache)
-      tree->setInputCloud (tgt);
-    reg.setSearchMethodTarget (tree, force_cache);
-
-    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
-    if (force_cache_reciprocal)
-      tree_recip->setInputCloud (src);
-    reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
-
-    // Register
-    reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-    EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
 }
 
