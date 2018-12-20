@@ -20,8 +20,18 @@ if(build)
   if(BUILD_io)
     PCL_ADD_TEST(a_registration_test test_registration
                  FILES test_registration.cpp
-                 LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features pcl_search pcl_kdtree pcl_kdtree
+                 LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features pcl_search pcl_kdtree
                  ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/bun4.pcd" "${PCL_SOURCE_DIR}/test/milk_color.pcd")
+
+    PCL_ADD_TEST(ndt test_ndt
+                 FILES test_ndt.cpp
+                 LINK_WITH pcl_gtest pcl_io pcl_registration
+                 ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/bun4.pcd")
+
+    PCL_ADD_TEST(sac_ia test_sac_ia
+                 FILES test_sac_ia.cpp
+                 LINK_WITH pcl_gtest pcl_io pcl_registration
+                 ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/bun4.pcd")
 
     PCL_ADD_TEST(registration_api test_registration_api
                  FILES test_registration_api.cpp test_registration_api_data.h
