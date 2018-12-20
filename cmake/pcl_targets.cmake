@@ -8,30 +8,30 @@ include(${PROJECT_SOURCE_DIR}/cmake/pcl_utils.cmake)
 # _default The default value (TRUE or FALSE)
 # ARGV5 The reason for disabling if the default is FALSE.
 macro(PCL_SUBSYS_OPTION _var _name _desc _default)
-    set(_opt_name "BUILD_${_name}")
-    PCL_GET_SUBSYS_HYPERSTATUS(subsys_status ${_name})
-    if(NOT ("${subsys_status}" STREQUAL "AUTO_OFF"))
-      option(${_opt_name} ${_desc} ${_default})
-      if((NOT ${_default} AND NOT ${_opt_name}) OR ("${_default}" STREQUAL "AUTO_OFF"))
-        set(${_var} FALSE)
-        if(${ARGC} GREATER 4)
-          set(_reason ${ARGV4})
-        else()
-          set(_reason "Disabled by default.")
-        endif()
-        PCL_SET_SUBSYS_STATUS(${_name} FALSE ${_reason})
-        PCL_DISABLE_DEPENDIES(${_name})
-      elseif(NOT ${_opt_name})
-        set(${_var} FALSE)
-        PCL_SET_SUBSYS_STATUS(${_name} FALSE "Disabled manually.")
-        PCL_DISABLE_DEPENDIES(${_name})
+  set(_opt_name "BUILD_${_name}")
+  PCL_GET_SUBSYS_HYPERSTATUS(subsys_status ${_name})
+  if(NOT ("${subsys_status}" STREQUAL "AUTO_OFF"))
+    option(${_opt_name} ${_desc} ${_default})
+    if((NOT ${_default} AND NOT ${_opt_name}) OR ("${_default}" STREQUAL "AUTO_OFF"))
+      set(${_var} FALSE)
+      if(${ARGC} GREATER 4)
+        set(_reason ${ARGV4})
       else()
-        set(${_var} TRUE)
-        PCL_SET_SUBSYS_STATUS(${_name} TRUE)
-        PCL_ENABLE_DEPENDIES(${_name})
+        set(_reason "Disabled by default.")
       endif()
+      PCL_SET_SUBSYS_STATUS(${_name} FALSE ${_reason})
+      PCL_DISABLE_DEPENDIES(${_name})
+    elseif(NOT ${_opt_name})
+      set(${_var} FALSE)
+      PCL_SET_SUBSYS_STATUS(${_name} FALSE "Disabled manually.")
+      PCL_DISABLE_DEPENDIES(${_name})
+    else()
+      set(${_var} TRUE)
+      PCL_SET_SUBSYS_STATUS(${_name} TRUE)
+      PCL_ENABLE_DEPENDIES(${_name})
     endif()
-    PCL_ADD_SUBSYSTEM(${_name} ${_desc})
+  endif()
+  PCL_ADD_SUBSYSTEM(${_name} ${_desc})
 endmacro()
 
 ###############################################################################
@@ -80,49 +80,49 @@ endmacro()
 # _name The name of the subsystem.
 # ARGN The subsystems and external libraries to depend on.
 macro(PCL_SUBSYS_DEPEND _var _name)
-    set(options)
-    set(oneValueArgs)
-    set(multiValueArgs DEPS EXT_DEPS OPT_DEPS)
-    cmake_parse_arguments(SUBSYS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  set(options)
+  set(oneValueArgs)
+  set(multiValueArgs DEPS EXT_DEPS OPT_DEPS)
+  cmake_parse_arguments(SUBSYS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  if(SUBSYS_DEPS)
+    SET_IN_GLOBAL_MAP(PCL_SUBSYS_DEPS ${_name} "${SUBSYS_DEPS}")
+  endif()
+  if(SUBSYS_EXT_DEPS)
+    SET_IN_GLOBAL_MAP(PCL_SUBSYS_EXT_DEPS ${_name} "${SUBSYS_EXT_DEPS}")
+  endif()
+  if(SUBSYS_OPT_DEPS)
+    SET_IN_GLOBAL_MAP(PCL_SUBSYS_OPT_DEPS ${_name} "${SUBSYS_OPT_DEPS}")
+  endif()
+  GET_IN_MAP(subsys_status PCL_SUBSYS_HYPERSTATUS ${_name})
+  if(${_var} AND (NOT ("${subsys_status}" STREQUAL "AUTO_OFF")))
     if(SUBSYS_DEPS)
-        SET_IN_GLOBAL_MAP(PCL_SUBSYS_DEPS ${_name} "${SUBSYS_DEPS}")
+      foreach(_dep ${SUBSYS_DEPS})
+        PCL_GET_SUBSYS_STATUS(_status ${_dep})
+        if(NOT _status)
+          set(${_var} FALSE)
+          PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires ${_dep}.")
+        else()
+          PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
+          include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
+        endif()
+      endforeach()
     endif()
     if(SUBSYS_EXT_DEPS)
-        SET_IN_GLOBAL_MAP(PCL_SUBSYS_EXT_DEPS ${_name} "${SUBSYS_EXT_DEPS}")
+      foreach(_dep ${SUBSYS_EXT_DEPS})
+        string(TOUPPER "${_dep}_found" EXT_DEP_FOUND)
+        if(NOT ${EXT_DEP_FOUND} AND (NOT (${EXT_DEP_FOUND} STREQUAL "TRUE")))
+          set(${_var} FALSE)
+          PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires external library ${_dep}.")
+        endif()
+      endforeach()
     endif()
     if(SUBSYS_OPT_DEPS)
-        SET_IN_GLOBAL_MAP(PCL_SUBSYS_OPT_DEPS ${_name} "${SUBSYS_OPT_DEPS}")
+      foreach(_dep ${SUBSYS_OPT_DEPS})
+        PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
+        include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
+      endforeach()
     endif()
-    GET_IN_MAP(subsys_status PCL_SUBSYS_HYPERSTATUS ${_name})
-    if(${_var} AND (NOT ("${subsys_status}" STREQUAL "AUTO_OFF")))
-        if(SUBSYS_DEPS)
-        foreach(_dep ${SUBSYS_DEPS})
-            PCL_GET_SUBSYS_STATUS(_status ${_dep})
-            if(NOT _status)
-                set(${_var} FALSE)
-                PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires ${_dep}.")
-            else()
-                PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
-                include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
-            endif()
-        endforeach()
-        endif()
-        if(SUBSYS_EXT_DEPS)
-        foreach(_dep ${SUBSYS_EXT_DEPS})
-            string(TOUPPER "${_dep}_found" EXT_DEP_FOUND)
-            if(NOT ${EXT_DEP_FOUND} AND (NOT (${EXT_DEP_FOUND} STREQUAL "TRUE")))
-                set(${_var} FALSE)
-                PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires external library ${_dep}.")
-            endif()
-        endforeach()
-        endif()
-        if(SUBSYS_OPT_DEPS)
-        foreach(_dep ${SUBSYS_OPT_DEPS})
-            PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
-            include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
-        endforeach()
-        endif()
-    endif()
+  endif()
 endmacro()
 
 ###############################################################################
@@ -134,44 +134,44 @@ endmacro()
 # _name The name of the subsubsystem.
 # ARGN The subsystems and external libraries to depend on.
 macro(PCL_SUBSUBSYS_DEPEND _var _parent _name)
-    set(options)
-    set(parentArg)
-    set(nameArg)
-    set(multiValueArgs DEPS EXT_DEPS OPT_DEPS)
-    cmake_parse_arguments(SUBSYS "${options}" "${parentArg}" "${nameArg}" "${multiValueArgs}" ${ARGN})
+  set(options)
+  set(parentArg)
+  set(nameArg)
+  set(multiValueArgs DEPS EXT_DEPS OPT_DEPS)
+  cmake_parse_arguments(SUBSYS "${options}" "${parentArg}" "${nameArg}" "${multiValueArgs}" ${ARGN})
+  if(SUBSUBSYS_DEPS)
+    SET_IN_GLOBAL_MAP(PCL_SUBSYS_DEPS ${_parent}_${_name} "${SUBSUBSYS_DEPS}")
+  endif()
+  if(SUBSUBSYS_EXT_DEPS)
+    SET_IN_GLOBAL_MAP(PCL_SUBSYS_EXT_DEPS ${_parent}_${_name} "${SUBSUBSYS_EXT_DEPS}")
+  endif()
+  if(SUBSUBSYS_OPT_DEPS)
+    SET_IN_GLOBAL_MAP(PCL_SUBSYS_OPT_DEPS ${_parent}_${_name} "${SUBSUBSYS_OPT_DEPS}")
+  endif()
+  GET_IN_MAP(subsys_status PCL_SUBSYS_HYPERSTATUS ${_parent}_${_name})
+  if(${_var} AND (NOT ("${subsys_status}" STREQUAL "AUTO_OFF")))
     if(SUBSUBSYS_DEPS)
-        SET_IN_GLOBAL_MAP(PCL_SUBSYS_DEPS ${_parent}_${_name} "${SUBSUBSYS_DEPS}")
+      foreach(_dep ${SUBSUBSYS_DEPS})
+        PCL_GET_SUBSYS_STATUS(_status ${_dep})
+        if(NOT _status)
+          set(${_var} FALSE)
+          PCL_SET_SUBSYS_STATUS(${_parent}_${_name} FALSE "Requires ${_dep}.")
+        else()
+          PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
+          include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
+        endif()
+      endforeach()
     endif()
     if(SUBSUBSYS_EXT_DEPS)
-        SET_IN_GLOBAL_MAP(PCL_SUBSYS_EXT_DEPS ${_parent}_${_name} "${SUBSUBSYS_EXT_DEPS}")
-    endif()
-    if(SUBSUBSYS_OPT_DEPS)
-        SET_IN_GLOBAL_MAP(PCL_SUBSYS_OPT_DEPS ${_parent}_${_name} "${SUBSUBSYS_OPT_DEPS}")
-    endif()
-    GET_IN_MAP(subsys_status PCL_SUBSYS_HYPERSTATUS ${_parent}_${_name})
-    if(${_var} AND (NOT ("${subsys_status}" STREQUAL "AUTO_OFF")))
-        if(SUBSUBSYS_DEPS)
-        foreach(_dep ${SUBSUBSYS_DEPS})
-            PCL_GET_SUBSYS_STATUS(_status ${_dep})
-            if(NOT _status)
-                set(${_var} FALSE)
-                PCL_SET_SUBSYS_STATUS(${_parent}_${_name} FALSE "Requires ${_dep}.")
-            else()
-                PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
-                include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
-            endif()
-        endforeach()
+      foreach(_dep ${SUBSUBSYS_EXT_DEPS})
+        string(TOUPPER "${_dep}_found" EXT_DEP_FOUND)
+        if(NOT ${EXT_DEP_FOUND} AND (NOT ("${EXT_DEP_FOUND}" STREQUAL "TRUE")))
+          set(${_var} FALSE)
+          PCL_SET_SUBSYS_STATUS(${_parent}_${_name} FALSE "Requires external library ${_dep}.")
         endif()
-        if(SUBSUBSYS_EXT_DEPS)
-        foreach(_dep ${SUBSUBSYS_EXT_DEPS})
-            string(TOUPPER "${_dep}_found" EXT_DEP_FOUND)
-            if(NOT ${EXT_DEP_FOUND} AND (NOT ("${EXT_DEP_FOUND}" STREQUAL "TRUE")))
-                set(${_var} FALSE)
-                PCL_SET_SUBSYS_STATUS(${_parent}_${_name} FALSE "Requires external library ${_dep}.")
-            endif()
-        endforeach()
-        endif()
+      endforeach()
     endif()
+  endif()
 endmacro()
 
 ###############################################################################
@@ -180,10 +180,10 @@ endmacro()
 # _subdir The sub-directory for these include files.
 # ARGN The include files.
 macro(PCL_ADD_INCLUDES _component _subdir)
-    install(FILES ${ARGN} DESTINATION ${INCLUDE_INSTALL_DIR}/${_subdir}
-        COMPONENT pcl_${_component})
+  install(FILES ${ARGN}
+          DESTINATION ${INCLUDE_INSTALL_DIR}/${_subdir}
+          COMPONENT pcl_${_component})
 endmacro()
-
 
 ###############################################################################
 # Add a library target.
@@ -191,37 +191,35 @@ endmacro()
 # _component The part of PCL that this library belongs to.
 # ARGN The source files for the library.
 macro(PCL_ADD_LIBRARY _name _component)
-    add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
-    target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
-    # must link explicitly against boost.
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
-    if((UNIX AND NOT ANDROID) OR MINGW)
-      target_link_libraries(${_name} m)
-    endif()
+  add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
+  target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
+  # must link explicitly against boost.
+  target_link_libraries(${_name} ${Boost_LIBRARIES})
+  if((UNIX AND NOT ANDROID) OR MINGW)
+    target_link_libraries(${_name} m)
+  endif()
 
-    if(MINGW)
-      target_link_libraries(${_name} gomp)
-    endif()
+  if(MINGW)
+    target_link_libraries(${_name} gomp)
+  endif()
 
-	if(MSVC)
-	  target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
-	endif()
+  if(MSVC)
+    target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
+  endif()
 
-    set_target_properties(${_name} PROPERTIES
-        VERSION ${PCL_VERSION}
-        SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
-        DEFINE_SYMBOL "PCLAPI_EXPORTS")
-    if(USE_PROJECT_FOLDERS)
-      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
-    endif()
+  set_target_properties(${_name} PROPERTIES
+    VERSION ${PCL_VERSION}
+    SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
+    DEFINE_SYMBOL "PCLAPI_EXPORTS")
+  if(USE_PROJECT_FOLDERS)
+    set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+  endif()
 
-    install(TARGETS ${_name}
-        RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
-        LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component}
-        ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component})
-
+  install(TARGETS ${_name}
+          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
+          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component}
+          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component})
 endmacro()
-
 
 ###############################################################################
 # Add a cuda library target.
@@ -229,31 +227,30 @@ endmacro()
 # _component The part of PCL that this library belongs to.
 # ARGN The source files for the library.
 macro(PCL_CUDA_ADD_LIBRARY _name _component)
-    REMOVE_VTK_DEFINITIONS()
-    if(PCL_SHARED_LIBS)
-        # to overcome a limitation in cuda_add_library, we add manually PCLAPI_EXPORTS macro
-        cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -DPCLAPI_EXPORTS)
-    else()
-        cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
-    endif()
+  REMOVE_VTK_DEFINITIONS()
+  if(PCL_SHARED_LIBS)
+    # to overcome a limitation in cuda_add_library, we add manually PCLAPI_EXPORTS macro
+    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -DPCLAPI_EXPORTS)
+  else()
+    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
+  endif()
 
-    # must link explicitly against boost.
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
+  # must link explicitly against boost.
+  target_link_libraries(${_name} ${Boost_LIBRARIES})
 
-    set_target_properties(${_name} PROPERTIES
-        VERSION ${PCL_VERSION}
-        SOVERSION ${PCL_VERSION_MAJOR}
-        DEFINE_SYMBOL "PCLAPI_EXPORTS")
-    if(USE_PROJECT_FOLDERS)
-      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
-    endif()
+  set_target_properties(${_name} PROPERTIES
+    VERSION ${PCL_VERSION}
+    SOVERSION ${PCL_VERSION_MAJOR}
+    DEFINE_SYMBOL "PCLAPI_EXPORTS")
+  if(USE_PROJECT_FOLDERS)
+    set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+  endif()
 
-    install(TARGETS ${_name}
-        RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
-        LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component}
-        ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component})
+  install(TARGETS ${_name}
+          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
+          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component}
+          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component})
 endmacro()
-
 
 ###############################################################################
 # Add an executable target.
@@ -261,29 +258,29 @@ endmacro()
 # _component The part of PCL that this library belongs to.
 # ARGN the source files for the library.
 macro(PCL_ADD_EXECUTABLE _name _component)
-    add_executable(${_name} ${ARGN})
-    # must link explicitly against boost.
-    if(UNIX AND NOT ANDROID)
-      target_link_libraries(${_name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
-    else()
-      target_link_libraries(${_name} ${Boost_LIBRARIES})
-    endif()
+  add_executable(${_name} ${ARGN})
+  # must link explicitly against boost.
+  if(UNIX AND NOT ANDROID)
+    target_link_libraries(${_name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
+  else()
+    target_link_libraries(${_name} ${Boost_LIBRARIES})
+  endif()
 
-    if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
-                                                RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    endif()
+  if(WIN32 AND MSVC)
+    set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+                                              RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
+  endif()
 
-    if(USE_PROJECT_FOLDERS)
-      set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
-    endif()
+  if(USE_PROJECT_FOLDERS)
+    set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
+  endif()
 
-    set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
-    install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-        COMPONENT pcl_${_component})
+  set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
+  install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+          COMPONENT pcl_${_component})
 
-    string(TOUPPER ${_component} _component_upper)
-    list(APPEND PCL_${_component_upper}_ALL_TARGETS ${_name})
+  string(TOUPPER ${_component} _component_upper)
+  list(APPEND PCL_${_component_upper}_ALL_TARGETS ${_name})
 endmacro()
 
 ###############################################################################
@@ -293,45 +290,38 @@ endmacro()
 # _bundle
 # ARGN the source files for the library.
 macro(PCL_ADD_EXECUTABLE_OPT_BUNDLE _name _component)
-if(APPLE AND VTK_USE_COCOA)
+  if(APPLE AND VTK_USE_COCOA)
     add_executable(${_name} MACOSX_BUNDLE ${ARGN})
-else()
+  else()
     add_executable(${_name} ${ARGN})
-endif()
+  endif()
 
-    # must link explicitly against boost.
-    if(UNIX AND NOT ANDROID)
-      target_link_libraries(${_name} ${Boost_LIBRARIES} pthread)
-    else()
-      target_link_libraries(${_name} ${Boost_LIBRARIES})
-    endif()
+  # must link explicitly against boost.
+  if(UNIX AND NOT ANDROID)
+    target_link_libraries(${_name} ${Boost_LIBRARIES} pthread)
+  else()
+    target_link_libraries(${_name} ${Boost_LIBRARIES})
+  endif()
 
-    if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
-                                                RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    endif()
+  if(WIN32 AND MSVC)
+    set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+                                              RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
+  endif()
 
-    if(USE_PROJECT_FOLDERS)
-      set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
-    endif()
+  if(USE_PROJECT_FOLDERS)
+    set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
+  endif()
 
-    set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
-#    message(STATUS "COMMAND ${CMAKE_COMMAND} -E create_symlink \"${_name}.app/Contents/MacOS/${_name}\" \"${_name}\"")
-if(APPLE AND VTK_USE_COCOA)
-#     add_custom_command(TARGET ${_name}
-#                         POST_BUILD
-#                         COMMAND ${CMAKE_COMMAND} -E create_symlink ${PCL_OUTPUT_BIN_DIR}/${_name}.app/Contents/MacOS/${_name} ${PCL_OUTPUT_BIN_DIR}/${_name}
-# #			WORKING_DIRECTORY
-#                         COMMENT "Creating an alias for ${_name}.app to ${_name}")
+  set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
+  if(APPLE AND VTK_USE_COCOA)
     install(TARGETS ${_name} BUNDLE DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component})
-else()
+  else()
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component})
-endif()
+  endif()
 
-    string(TOUPPER ${_component} _component_upper)
-    list(APPEND PCL_${_component_upper}_ALL_TARGETS ${_name})
+  string(TOUPPER ${_component} _component_upper)
+  list(APPEND PCL_${_component_upper}_ALL_TARGETS ${_name})
 endmacro()
-
 
 ###############################################################################
 # Add an executable target.
@@ -339,23 +329,23 @@ endmacro()
 # _component The part of PCL that this library belongs to.
 # ARGN the source files for the library.
 macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
-    REMOVE_VTK_DEFINITIONS()
-    cuda_add_executable(${_name} ${ARGN})
-    # must link explicitly against boost.
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
+  REMOVE_VTK_DEFINITIONS()
+  cuda_add_executable(${_name} ${ARGN})
+  # must link explicitly against boost.
+  target_link_libraries(${_name} ${Boost_LIBRARIES})
 
-    if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
-                                                RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    endif()
+  if(WIN32 AND MSVC)
+    set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+                                              RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
+  endif()
 
-    if(USE_PROJECT_FOLDERS)
-      set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
-    endif()
+  if(USE_PROJECT_FOLDERS)
+    set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
+  endif()
 
-    set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
-    install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-        COMPONENT pcl_${_component})
+  set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
+  install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+          COMPONENT pcl_${_component})
 endmacro()
 
 ###############################################################################
@@ -367,34 +357,34 @@ endmacro()
 #    ARGUMENTS Arguments for test executable
 #    LINK_WITH link test executable with libraries
 macro(PCL_ADD_TEST _name _exename)
-    set(options)
-    set(oneValueArgs)
-    set(multiValueArgs FILES ARGUMENTS LINK_WITH)
-    cmake_parse_arguments(PCL_ADD_TEST "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-    add_executable(${_exename} ${PCL_ADD_TEST_FILES})
-    if(NOT WIN32)
-      set_target_properties(${_exename} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-    endif()
-    #target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
-    target_link_libraries(${_exename} ${PCL_ADD_TEST_LINK_WITH} ${CLANG_LIBRARIES})
+  set(options)
+  set(oneValueArgs)
+  set(multiValueArgs FILES ARGUMENTS LINK_WITH)
+  cmake_parse_arguments(PCL_ADD_TEST "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  add_executable(${_exename} ${PCL_ADD_TEST_FILES})
+  if(NOT WIN32)
+    set_target_properties(${_exename} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+  endif()
+  #target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
+  target_link_libraries(${_exename} ${PCL_ADD_TEST_LINK_WITH} ${CLANG_LIBRARIES})
 
-    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      target_link_libraries(${_exename} pthread)
-    elseif(UNIX AND NOT ANDROID)
-      # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
-      target_link_libraries(${_exename} pthread)
-    endif()
+  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    target_link_libraries(${_exename} pthread)
+  elseif(UNIX AND NOT ANDROID)
+    # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
+    target_link_libraries(${_exename} pthread)
+  endif()
 
-    # must link explicitly against boost only on Windows
-    target_link_libraries(${_exename} ${Boost_LIBRARIES})
-    #
-    if(USE_PROJECT_FOLDERS)
-      set_target_properties(${_exename} PROPERTIES FOLDER "Tests")
-    endif()
+  # must link explicitly against boost only on Windows
+  target_link_libraries(${_exename} ${Boost_LIBRARIES})
+  #
+  if(USE_PROJECT_FOLDERS)
+    set_target_properties(${_exename} PROPERTIES FOLDER "Tests")
+  endif()
 
-    add_test(NAME ${_name} COMMAND ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
+  add_test(NAME ${_name} COMMAND ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
 
-    add_dependencies(tests ${_exename})
+  add_dependencies(tests ${_exename})
 endmacro()
 
 ###############################################################################
@@ -404,23 +394,23 @@ endmacro()
 #    FILES the source files for the example
 #    LINK_WITH link example executable with libraries
 macro(PCL_ADD_EXAMPLE _name)
-    set(options)
-    set(oneValueArgs)
-    set(multiValueArgs FILES LINK_WITH)
-    cmake_parse_arguments(PCL_ADD_EXAMPLE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-    add_executable(${_name} ${PCL_ADD_EXAMPLE_FILES})
-    target_link_libraries(${_name} ${PCL_ADD_EXAMPLE_LINK_WITH} ${CLANG_LIBRARIES})
-    if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
-                                                RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    endif()
-    if(USE_PROJECT_FOLDERS)
-      set_target_properties(${_name} PROPERTIES FOLDER "Examples")
-    endif()
+  set(options)
+  set(oneValueArgs)
+  set(multiValueArgs FILES LINK_WITH)
+  cmake_parse_arguments(PCL_ADD_EXAMPLE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  add_executable(${_name} ${PCL_ADD_EXAMPLE_FILES})
+  target_link_libraries(${_name} ${PCL_ADD_EXAMPLE_LINK_WITH} ${CLANG_LIBRARIES})
+  if(WIN32 AND MSVC)
+    set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+                                              RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
+  endif()
+  if(USE_PROJECT_FOLDERS)
+    set_target_properties(${_name} PROPERTIES FOLDER "Examples")
+  endif()
 
-    # add target to list of example targets created at the parent scope
-    list(APPEND PCL_EXAMPLES_ALL_TARGETS ${_name})
-    set(PCL_EXAMPLES_ALL_TARGETS "${PCL_EXAMPLES_ALL_TARGETS}" PARENT_SCOPE)
+  # add target to list of example targets created at the parent scope
+  list(APPEND PCL_EXAMPLES_ALL_TARGETS ${_name})
+  set(PCL_EXAMPLES_ALL_TARGETS "${PCL_EXAMPLES_ALL_TARGETS}" PARENT_SCOPE)
 endmacro()
 
 ###############################################################################
@@ -429,15 +419,13 @@ endmacro()
 # _name The target name.
 # _flags The new compile flags to be added, as a string.
 macro(PCL_ADD_CFLAGS _name _flags)
-    get_target_property(_current_flags ${_name} COMPILE_FLAGS)
-    if(NOT _current_flags)
-        set_target_properties(${_name} PROPERTIES COMPILE_FLAGS ${_flags})
-    else()
-        set_target_properties(${_name} PROPERTIES
-            COMPILE_FLAGS "${_current_flags} ${_flags}")
-    endif()
+  get_target_property(_current_flags ${_name} COMPILE_FLAGS)
+  if(NOT _current_flags)
+    set_target_properties(${_name} PROPERTIES COMPILE_FLAGS ${_flags})
+  else()
+    set_target_properties(${_name} PROPERTIES COMPILE_FLAGS "${_current_flags} ${_flags}")
+  endif()
 endmacro()
-
 
 ###############################################################################
 # Add link flags to a target (because CMake doesn't provide something so
@@ -445,15 +433,13 @@ endmacro()
 # _name The target name.
 # _flags The new link flags to be added, as a string.
 macro(PCL_ADD_LINKFLAGS _name _flags)
-    get_target_property(_current_flags ${_name} LINK_FLAGS)
-    if(NOT _current_flags)
-        set_target_properties(${_name} PROPERTIES LINK_FLAGS ${_flags})
-    else()
-        set_target_properties(${_name} PROPERTIES
-            LINK_FLAGS "${_current_flags} ${_flags}")
-    endif()
+  get_target_property(_current_flags ${_name} LINK_FLAGS)
+  if(NOT _current_flags)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS ${_flags})
+  else()
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS "${_current_flags} ${_flags}")
+  endif()
 endmacro()
-
 
 ###############################################################################
 # Make a pkg-config file for a library. Do not include general PCL stuff in the
@@ -466,27 +452,26 @@ endmacro()
 # _int_deps Internal dependencies, as a list.
 # _cflags Compiler flags necessary to build with the library.
 # _lib_flags Linker flags necessary to link to the library.
-macro(PCL_MAKE_PKGCONFIG _name _component _desc _pcl_deps _ext_deps _int_deps _cflags
-        _lib_flags)
-    set(PKG_NAME ${_name})
-    set(PKG_DESC ${_desc})
-    set(PKG_CFLAGS ${_cflags})
-    set(PKG_LIBFLAGS ${_lib_flags})
-    LIST_TO_STRING(_ext_deps_str "${_ext_deps}")
-    set(PKG_EXTERNAL_DEPS ${_ext_deps_str})
-    foreach(_dep ${_pcl_deps})
-      set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
-    endforeach()
-    set(PKG_INTERNAL_DEPS "")
-    foreach(_dep ${_int_deps})
-        set(PKG_INTERNAL_DEPS "${PKG_INTERNAL_DEPS} -l${_dep}")
-    endforeach()
+macro(PCL_MAKE_PKGCONFIG _name _component _desc _pcl_deps _ext_deps _int_deps _cflags _lib_flags)
+  set(PKG_NAME ${_name})
+  set(PKG_DESC ${_desc})
+  set(PKG_CFLAGS ${_cflags})
+  set(PKG_LIBFLAGS ${_lib_flags})
+  LIST_TO_STRING(_ext_deps_str "${_ext_deps}")
+  set(PKG_EXTERNAL_DEPS ${_ext_deps_str})
+  foreach(_dep ${_pcl_deps})
+    set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
+  endforeach()
+  set(PKG_INTERNAL_DEPS "")
+  foreach(_dep ${_int_deps})
+    set(PKG_INTERNAL_DEPS "${PKG_INTERNAL_DEPS} -l${_dep}")
+  endforeach()
 
-    set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.pc)
-    configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig.cmake.in ${_pc_file}
-        @ONLY)
-    install(FILES ${_pc_file} DESTINATION ${PKGCFG_INSTALL_DIR}
-        COMPONENT pcl_${_component})
+  set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.pc)
+  configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig.cmake.in ${_pc_file} @ONLY)
+  install(FILES ${_pc_file}
+          DESTINATION ${PKGCFG_INSTALL_DIR}
+          COMPONENT pcl_${_component})
 endmacro()
 
 ###############################################################################
@@ -503,25 +488,25 @@ endmacro()
 # _int_deps Internal dependencies, as a list.
 # _cflags Compiler flags necessary to build with the library.
 macro(PCL_MAKE_PKGCONFIG_HEADER_ONLY _name _component _desc _pcl_deps _ext_deps _int_deps _cflags)
-set(PKG_NAME ${_name})
-set(PKG_DESC ${_desc})
-set(PKG_CFLAGS ${_cflags})
-#set(PKG_LIBFLAGS ${_lib_flags})
-LIST_TO_STRING(_ext_deps_str "${_ext_deps}")
-set(PKG_EXTERNAL_DEPS ${_ext_deps_str})
-foreach(_dep ${_pcl_deps})
-set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
-endforeach()
-set(PKG_INTERNAL_DEPS "")
-foreach(_dep ${_int_deps})
-set(PKG_INTERNAL_DEPS "${PKG_INTERNAL_DEPS} -l${_dep}")
-endforeach()
-set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.pc)
-configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig-headeronly.cmake.in ${_pc_file} @ONLY)
-install(FILES ${_pc_file} DESTINATION ${PKGCFG_INSTALL_DIR}
-COMPONENT pcl_${_component})
+  set(PKG_NAME ${_name})
+  set(PKG_DESC ${_desc})
+  set(PKG_CFLAGS ${_cflags})
+  #set(PKG_LIBFLAGS ${_lib_flags})
+  LIST_TO_STRING(_ext_deps_str "${_ext_deps}")
+  set(PKG_EXTERNAL_DEPS ${_ext_deps_str})
+  foreach(_dep ${_pcl_deps})
+    set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
+  endforeach()
+  set(PKG_INTERNAL_DEPS "")
+  foreach(_dep ${_int_deps})
+    set(PKG_INTERNAL_DEPS "${PKG_INTERNAL_DEPS} -l${_dep}")
+  endforeach()
+  set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.pc)
+  configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig-headeronly.cmake.in ${_pc_file} @ONLY)
+  install(FILES ${_pc_file}
+          DESTINATION ${PKGCFG_INSTALL_DIR}
+          COMPONENT pcl_${_component})
 endmacro()
-
 
 ###############################################################################
 # PRIVATE
@@ -529,39 +514,34 @@ endmacro()
 ###############################################################################
 # Reset the subsystem status map.
 macro(PCL_RESET_MAPS)
-    foreach(_ss ${PCL_SUBSYSTEMS})
-        string(TOUPPER "PCL_${_ss}_SUBSYS" PCL_SUBSYS_SUBSYS)
-	if(${PCL_SUBSYS_SUBSYS})
-            string(TOUPPER "PCL_${_ss}_SUBSYS_DESC" PCL_PARENT_SUBSYS_DESC)
-	    set(${PCL_SUBSYS_SUBSYS_DESC} "" CACHE INTERNAL "" FORCE)
-	    set(${PCL_SUBSYS_SUBSYS} "" CACHE INTERNAL "" FORCE)
-	endif()
-    endforeach()
+  foreach(_ss ${PCL_SUBSYSTEMS})
+    string(TOUPPER "PCL_${_ss}_SUBSYS" PCL_SUBSYS_SUBSYS)
+    if(${PCL_SUBSYS_SUBSYS})
+      string(TOUPPER "PCL_${_ss}_SUBSYS_DESC" PCL_PARENT_SUBSYS_DESC)
+      set(${PCL_SUBSYS_SUBSYS_DESC} "" CACHE INTERNAL "" FORCE)
+      set(${PCL_SUBSYS_SUBSYS} "" CACHE INTERNAL "" FORCE)
+    endif()
+  endforeach()
 
-    set(PCL_SUBSYS_HYPERSTATUS "" CACHE INTERNAL
-        "To Build Or Not To Build, That Is The Question." FORCE)
-    set(PCL_SUBSYS_STATUS "" CACHE INTERNAL
-        "To build or not to build, that is the question." FORCE)
-    set(PCL_SUBSYS_REASONS "" CACHE INTERNAL
-        "But why?" FORCE)
-    set(PCL_SUBSYS_DEPS "" CACHE INTERNAL "A depends on B and C." FORCE)
-    set(PCL_SUBSYS_EXT_DEPS "" CACHE INTERNAL "A depends on B and C." FORCE)
-    set(PCL_SUBSYS_OPT_DEPS "" CACHE INTERNAL "A depends on B and C." FORCE)
-    set(PCL_SUBSYSTEMS "" CACHE INTERNAL "Internal list of subsystems" FORCE)
-    set(PCL_SUBSYS_DESC "" CACHE INTERNAL "Subsystem descriptions" FORCE)
+  set(PCL_SUBSYS_HYPERSTATUS "" CACHE INTERNAL "To Build Or Not To Build, That Is The Question." FORCE)
+  set(PCL_SUBSYS_STATUS "" CACHE INTERNAL "To build or not to build, that is the question." FORCE)
+  set(PCL_SUBSYS_REASONS "" CACHE INTERNAL "But why?" FORCE)
+  set(PCL_SUBSYS_DEPS "" CACHE INTERNAL "A depends on B and C." FORCE)
+  set(PCL_SUBSYS_EXT_DEPS "" CACHE INTERNAL "A depends on B and C." FORCE)
+  set(PCL_SUBSYS_OPT_DEPS "" CACHE INTERNAL "A depends on B and C." FORCE)
+  set(PCL_SUBSYSTEMS "" CACHE INTERNAL "Internal list of subsystems" FORCE)
+  set(PCL_SUBSYS_DESC "" CACHE INTERNAL "Subsystem descriptions" FORCE)
 endmacro()
-
 
 ###############################################################################
 # Register a subsystem.
 # _name Subsystem name.
 # _desc Description of the subsystem
 macro(PCL_ADD_SUBSYSTEM _name _desc)
-    set(_temp ${PCL_SUBSYSTEMS})
-    list(APPEND _temp ${_name})
-    set(PCL_SUBSYSTEMS ${_temp} CACHE INTERNAL "Internal list of subsystems"
-        FORCE)
-    SET_IN_GLOBAL_MAP(PCL_SUBSYS_DESC ${_name} ${_desc})
+  set(_temp ${PCL_SUBSYSTEMS})
+  list(APPEND _temp ${_name})
+  set(PCL_SUBSYSTEMS ${_temp} CACHE INTERNAL "Internal list of subsystems" FORCE)
+  SET_IN_GLOBAL_MAP(PCL_SUBSYS_DESC ${_name} ${_desc})
 endmacro()
 
 ###############################################################################
@@ -573,11 +553,9 @@ macro(PCL_ADD_SUBSUBSYSTEM _parent _name _desc)
   string(TOUPPER "PCL_${_parent}_SUBSYS_DESC" PCL_PARENT_SUBSYS_DESC)
   set(_temp ${${PCL_PARENT_SUBSYS}})
   list(APPEND _temp ${_name})
-  set(${PCL_PARENT_SUBSYS} ${_temp} CACHE INTERNAL "Internal list of ${_parenr} subsystems"
-    FORCE)
+  set(${PCL_PARENT_SUBSYS} ${_temp} CACHE INTERNAL "Internal list of ${_parenr} subsystems" FORCE)
   set_in_global_map(${PCL_PARENT_SUBSYS_DESC} ${_name} ${_desc})
 endmacro()
-
 
 ###############################################################################
 # Set the status of a subsystem.
@@ -585,13 +563,13 @@ endmacro()
 # _status TRUE if being built, FALSE otherwise.
 # ARGN[0] Reason for not building.
 macro(PCL_SET_SUBSYS_STATUS _name _status)
-    if(${ARGC} EQUAL 3)
-        set(_reason ${ARGV2})
-    else()
-        set(_reason "No reason")
-    endif()
-    SET_IN_GLOBAL_MAP(PCL_SUBSYS_STATUS ${_name} ${_status})
-    SET_IN_GLOBAL_MAP(PCL_SUBSYS_REASONS ${_name} ${_reason})
+  if(${ARGC} EQUAL 3)
+    set(_reason ${ARGV2})
+  else()
+    set(_reason "No reason")
+  endif()
+  SET_IN_GLOBAL_MAP(PCL_SUBSYS_STATUS ${_name} ${_status})
+  SET_IN_GLOBAL_MAP(PCL_SUBSYS_REASONS ${_name} ${_reason})
 endmacro()
 
 ###############################################################################
@@ -600,22 +578,21 @@ endmacro()
 # _status TRUE if being built, FALSE otherwise.
 # ARGN[0] Reason for not building.
 macro(PCL_SET_SUBSUBSYS_STATUS _parent _name _status)
-    if(${ARGC} EQUAL 4)
-        set(_reason ${ARGV2})
-    else()
-        set(_reason "No reason")
-    endif()
-    SET_IN_GLOBAL_MAP(PCL_SUBSYS_STATUS ${_parent}_${_name} ${_status})
-    SET_IN_GLOBAL_MAP(PCL_SUBSYS_REASONS ${_parent}_${_name} ${_reason})
+  if(${ARGC} EQUAL 4)
+    set(_reason ${ARGV2})
+  else()
+    set(_reason "No reason")
+  endif()
+  SET_IN_GLOBAL_MAP(PCL_SUBSYS_STATUS ${_parent}_${_name} ${_status})
+  SET_IN_GLOBAL_MAP(PCL_SUBSYS_REASONS ${_parent}_${_name} ${_reason})
 endmacro()
-
 
 ###############################################################################
 # Get the status of a subsystem
 # _var Destination variable.
 # _name Name of the subsystem.
 macro(PCL_GET_SUBSYS_STATUS _var _name)
-    GET_IN_MAP(${_var} PCL_SUBSYS_STATUS ${_name})
+  GET_IN_MAP(${_var} PCL_SUBSYS_STATUS ${_name})
 endmacro()
 
 ###############################################################################
@@ -626,7 +603,6 @@ macro(PCL_GET_SUBSUBSYS_STATUS _var _parent _name)
     GET_IN_MAP(${_var} PCL_SUBSYS_STATUS ${_parent}_${_name})
 endmacro()
 
-
 ###############################################################################
 # Set the hyperstatus of a subsystem and its dependee
 # _name Subsystem name.
@@ -634,10 +610,10 @@ endmacro()
 # _status AUTO_OFF to disable AUTO_ON to enable
 # ARGN[0] Reason for not building.
 macro(PCL_SET_SUBSYS_HYPERSTATUS _name _dependee _status)
-    SET_IN_GLOBAL_MAP(PCL_SUBSYS_HYPERSTATUS ${_name}_${_dependee} ${_status})
-    if(${ARGC} EQUAL 4)
-        SET_IN_GLOBAL_MAP(PCL_SUBSYS_REASONS ${_dependee} ${ARGV3})
-    endif()
+  SET_IN_GLOBAL_MAP(PCL_SUBSYS_HYPERSTATUS ${_name}_${_dependee} ${_status})
+  if(${ARGC} EQUAL 4)
+    SET_IN_GLOBAL_MAP(PCL_SUBSYS_REASONS ${_dependee} ${ARGV3})
+  endif()
 endmacro()
 
 ###############################################################################
@@ -647,23 +623,23 @@ endmacro()
 # _var OUT hyperstatus
 # ARGN[0] Reason for not building.
 macro(PCL_GET_SUBSYS_HYPERSTATUS _var _name)
-    set(${_var} "AUTO_ON")
-    if(${ARGC} EQUAL 3)
-        GET_IN_MAP(${_var} PCL_SUBSYS_HYPERSTATUS ${_name}_${ARGV2})
-    else()
-        foreach(subsys ${PCL_SUBSYS_DEPS_${_name}})
-            if("${PCL_SUBSYS_HYPERSTATUS_${subsys}_${_name}}" STREQUAL "AUTO_OFF")
-                set(${_var} "AUTO_OFF")
-                break()
-            endif()
-        endforeach()
-    endif()
+  set(${_var} "AUTO_ON")
+  if(${ARGC} EQUAL 3)
+    GET_IN_MAP(${_var} PCL_SUBSYS_HYPERSTATUS ${_name}_${ARGV2})
+  else()
+    foreach(subsys ${PCL_SUBSYS_DEPS_${_name}})
+      if("${PCL_SUBSYS_HYPERSTATUS_${subsys}_${_name}}" STREQUAL "AUTO_OFF")
+        set(${_var} "AUTO_OFF")
+        break()
+      endif()
+    endforeach()
+  endif()
 endmacro()
 
 ###############################################################################
 # Set the hyperstatus of a subsystem and its dependee
 macro(PCL_UNSET_SUBSYS_HYPERSTATUS _name _dependee)
-    unset(PCL_SUBSYS_HYPERSTATUS_${_name}_${dependee})
+  unset(PCL_SUBSYS_HYPERSTATUS_${_name}_${dependee})
 endmacro()
 
 ###############################################################################
@@ -672,68 +648,66 @@ endmacro()
 # _includedir Name of subdirectory for includes
 # ARGN[0] Reason for not building.
 macro(PCL_SET_SUBSYS_INCLUDE_DIR _name _includedir)
-    SET_IN_GLOBAL_MAP(PCL_SUBSYS_INCLUDE ${_name} ${_includedir})
+  SET_IN_GLOBAL_MAP(PCL_SUBSYS_INCLUDE ${_name} ${_includedir})
 endmacro()
-
 
 ###############################################################################
 # Get the include directory name of a subsystem - return _name if not set
 # _var Destination variable.
 # _name Name of the subsystem.
 macro(PCL_GET_SUBSYS_INCLUDE_DIR _var _name)
-    GET_IN_MAP(${_var} PCL_SUBSYS_INCLUDE ${_name})
-    if(NOT ${_var})
-      set(${_var} ${_name})
-    endif()
+  GET_IN_MAP(${_var} PCL_SUBSYS_INCLUDE ${_name})
+  if(NOT ${_var})
+    set(${_var} ${_name})
+  endif()
 endmacro()
-
 
 ###############################################################################
 # Write a report on the build/not-build status of the subsystems
 macro(PCL_WRITE_STATUS_REPORT)
-    message(STATUS "The following subsystems will be built:")
-    foreach(_ss ${PCL_SUBSYSTEMS})
-        PCL_GET_SUBSYS_STATUS(_status ${_ss})
-        if(_status)
-	    set(message_text "  ${_ss}")
-	    string(TOUPPER "PCL_${_ss}_SUBSYS" PCL_SUBSYS_SUBSYS)
-	    if(${PCL_SUBSYS_SUBSYS})
-	        set(will_build)
-		foreach(_sub ${${PCL_SUBSYS_SUBSYS}})
-		    PCL_GET_SUBSYS_STATUS(_sub_status ${_ss}_${_sub})
-		    if(_sub_status)
-		        set(will_build "${will_build}\n       |_ ${_sub}")
-		    endif()
-		endforeach()
-		if(NOT ("${will_build}" STREQUAL ""))
-		  set(message_text  "${message_text}\n       building: ${will_build}")
-		endif()
-		set(wont_build)
-		foreach(_sub ${${PCL_SUBSYS_SUBSYS}})
-		    PCL_GET_SUBSYS_STATUS(_sub_status ${_ss}_${_sub})
-		    PCL_GET_SUBSYS_HYPERSTATUS(_sub_hyper_status ${_ss}_${sub})
-		    if(NOT _sub_status OR ("${_sub_hyper_status}" STREQUAL "AUTO_OFF"))
-		        GET_IN_MAP(_reason PCL_SUBSYS_REASONS ${_ss}_${_sub})
-		        set(wont_build "${wont_build}\n       |_ ${_sub}: ${_reason}")
-		    endif()
-		endforeach()
-		if(NOT ("${wont_build}" STREQUAL ""))
-		    set(message_text  "${message_text}\n       not building: ${wont_build}")
-		endif()
-	    endif()
-	    message(STATUS "${message_text}")
+  message(STATUS "The following subsystems will be built:")
+  foreach(_ss ${PCL_SUBSYSTEMS})
+    PCL_GET_SUBSYS_STATUS(_status ${_ss})
+    if(_status)
+      set(message_text "  ${_ss}")
+      string(TOUPPER "PCL_${_ss}_SUBSYS" PCL_SUBSYS_SUBSYS)
+      if(${PCL_SUBSYS_SUBSYS})
+        set(will_build)
+        foreach(_sub ${${PCL_SUBSYS_SUBSYS}})
+          PCL_GET_SUBSYS_STATUS(_sub_status ${_ss}_${_sub})
+          if(_sub_status)
+            set(will_build "${will_build}\n       |_ ${_sub}")
+          endif()
+        endforeach()
+        if(NOT ("${will_build}" STREQUAL ""))
+          set(message_text  "${message_text}\n       building: ${will_build}")
         endif()
-    endforeach()
+        set(wont_build)
+        foreach(_sub ${${PCL_SUBSYS_SUBSYS}})
+          PCL_GET_SUBSYS_STATUS(_sub_status ${_ss}_${_sub})
+          PCL_GET_SUBSYS_HYPERSTATUS(_sub_hyper_status ${_ss}_${sub})
+          if(NOT _sub_status OR ("${_sub_hyper_status}" STREQUAL "AUTO_OFF"))
+            GET_IN_MAP(_reason PCL_SUBSYS_REASONS ${_ss}_${_sub})
+            set(wont_build "${wont_build}\n       |_ ${_sub}: ${_reason}")
+          endif()
+        endforeach()
+        if(NOT ("${wont_build}" STREQUAL ""))
+          set(message_text  "${message_text}\n       not building: ${wont_build}")
+        endif()
+      endif()
+      message(STATUS "${message_text}")
+    endif()
+  endforeach()
 
-    message(STATUS "The following subsystems will not be built:")
-    foreach(_ss ${PCL_SUBSYSTEMS})
-        PCL_GET_SUBSYS_STATUS(_status ${_ss})
-        PCL_GET_SUBSYS_HYPERSTATUS(_hyper_status ${_ss})
-        if(NOT _status OR ("${_hyper_status}" STREQUAL "AUTO_OFF"))
-            GET_IN_MAP(_reason PCL_SUBSYS_REASONS ${_ss})
-            message(STATUS "  ${_ss}: ${_reason}")
-        endif()
-    endforeach()
+  message(STATUS "The following subsystems will not be built:")
+  foreach(_ss ${PCL_SUBSYSTEMS})
+    PCL_GET_SUBSYS_STATUS(_status ${_ss})
+    PCL_GET_SUBSYS_HYPERSTATUS(_hyper_status ${_ss})
+    if(NOT _status OR ("${_hyper_status}" STREQUAL "AUTO_OFF"))
+       GET_IN_MAP(_reason PCL_SUBSYS_REASONS ${_ss})
+       message(STATUS "  ${_ss}: ${_reason}")
+    endif()
+  endforeach()
 endmacro()
 
 ##############################################################################
@@ -747,71 +721,71 @@ endmacro()
 # varname OUT list of subdirectories containing filename
 # exception_list OPTIONAL and contains list of subdirectories not to account
 macro(collect_subproject_directory_names dirname filename names dirs)
-    file(GLOB globbed RELATIVE "${dirname}" "${dirname}/*/${filename}")
-    if(${ARGC} GREATER 4)
-        set(exclusion_list ${ARGN})
-        foreach(file ${globbed})
-            get_filename_component(dir ${file} PATH)
-            list(FIND exclusion_list ${dir} excluded)
-            if(excluded EQUAL -1)
-                set(${dirs} ${${dirs}} ${dir})
-            endif()
-        endforeach()
-    else()
-        foreach(file ${globbed})
-            get_filename_component(dir ${file} PATH)
-            set(${dirs} ${${dirs}} ${dir})
-        endforeach()
-    endif()
-    foreach(subdir ${${dirs}})
-        file(STRINGS ${dirname}/${subdir}/CMakeLists.txt name REGEX "[setSET ]+\\(.*SUBSYS_NAME .*\\)$")
-        string(REGEX REPLACE "[setSET ]+\\(.*SUBSYS_NAME[ ]+([A-Za-z0-9_]+)[ ]*\\)" "\\1" name "${name}")
-        set(${names} ${${names}} ${name})
-        file(STRINGS ${dirname}/${subdir}/CMakeLists.txt DEPENDENCIES REGEX "set.*SUBSYS_DEPS .*\\)")
-        string(REGEX REPLACE "set.*SUBSYS_DEPS" "" DEPENDENCIES "${DEPENDENCIES}")
-        string(REPLACE ")" "" DEPENDENCIES "${DEPENDENCIES}")
-        string(STRIP "${DEPENDENCIES}" DEPENDENCIES)
-        string(REPLACE " " ";" DEPENDENCIES "${DEPENDENCIES}")
-        if(NOT("${DEPENDENCIES}" STREQUAL ""))
-            list(REMOVE_ITEM DEPENDENCIES "#")
-            string(TOUPPER "PCL_${name}_DEPENDS" SUBSYS_DEPENDS)
-            set(${SUBSYS_DEPENDS} ${DEPENDENCIES})
-            foreach(dependee ${DEPENDENCIES})
-                string(TOUPPER "PCL_${dependee}_DEPENDIES" SUBSYS_DEPENDIES)
-                set(${SUBSYS_DEPENDIES} ${${SUBSYS_DEPENDIES}} ${name})
-            endforeach()
-        endif()
+  file(GLOB globbed RELATIVE "${dirname}" "${dirname}/*/${filename}")
+  if(${ARGC} GREATER 4)
+    set(exclusion_list ${ARGN})
+    foreach(file ${globbed})
+      get_filename_component(dir ${file} PATH)
+      list(FIND exclusion_list ${dir} excluded)
+      if(excluded EQUAL -1)
+        set(${dirs} ${${dirs}} ${dir})
+      endif()
     endforeach()
+  else()
+    foreach(file ${globbed})
+      get_filename_component(dir ${file} PATH)
+      set(${dirs} ${${dirs}} ${dir})
+    endforeach()
+  endif()
+  foreach(subdir ${${dirs}})
+    file(STRINGS ${dirname}/${subdir}/CMakeLists.txt name REGEX "[setSET ]+\\(.*SUBSYS_NAME .*\\)$")
+    string(REGEX REPLACE "[setSET ]+\\(.*SUBSYS_NAME[ ]+([A-Za-z0-9_]+)[ ]*\\)" "\\1" name "${name}")
+    set(${names} ${${names}} ${name})
+    file(STRINGS ${dirname}/${subdir}/CMakeLists.txt DEPENDENCIES REGEX "set.*SUBSYS_DEPS .*\\)")
+    string(REGEX REPLACE "set.*SUBSYS_DEPS" "" DEPENDENCIES "${DEPENDENCIES}")
+    string(REPLACE ")" "" DEPENDENCIES "${DEPENDENCIES}")
+    string(STRIP "${DEPENDENCIES}" DEPENDENCIES)
+    string(REPLACE " " ";" DEPENDENCIES "${DEPENDENCIES}")
+    if(NOT("${DEPENDENCIES}" STREQUAL ""))
+      list(REMOVE_ITEM DEPENDENCIES "#")
+      string(TOUPPER "PCL_${name}_DEPENDS" SUBSYS_DEPENDS)
+      set(${SUBSYS_DEPENDS} ${DEPENDENCIES})
+      foreach(dependee ${DEPENDENCIES})
+        string(TOUPPER "PCL_${dependee}_DEPENDIES" SUBSYS_DEPENDIES)
+        set(${SUBSYS_DEPENDIES} ${${SUBSYS_DEPENDIES}} ${name})
+      endforeach()
+    endif()
+  endforeach()
 endmacro()
 
 ########################################################################################
 # Macro to disable subsystem dependies
 # _subsys IN subsystem name
 macro(PCL_DISABLE_DEPENDIES _subsys)
-    string(TOUPPER "pcl_${_subsys}_dependies" PCL_SUBSYS_DEPENDIES)
-    if(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
-        foreach(dep ${${PCL_SUBSYS_DEPENDIES}})
-            PCL_SET_SUBSYS_HYPERSTATUS(${_subsys} ${dep} AUTO_OFF "Disabled: ${_subsys} missing.")
-            set(BUILD_${dep} OFF CACHE BOOL "Disabled: ${_subsys} missing." FORCE)
-        endforeach()
-    endif()
+  string(TOUPPER "pcl_${_subsys}_dependies" PCL_SUBSYS_DEPENDIES)
+  if(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
+    foreach(dep ${${PCL_SUBSYS_DEPENDIES}})
+      PCL_SET_SUBSYS_HYPERSTATUS(${_subsys} ${dep} AUTO_OFF "Disabled: ${_subsys} missing.")
+      set(BUILD_${dep} OFF CACHE BOOL "Disabled: ${_subsys} missing." FORCE)
+    endforeach()
+  endif()
 endmacro()
 
 ########################################################################################
 # Macro to enable subsystem dependies
 # _subsys IN subsystem name
 macro(PCL_ENABLE_DEPENDIES _subsys)
-    string(TOUPPER "pcl_${_subsys}_dependies" PCL_SUBSYS_DEPENDIES)
-    if(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
-        foreach(dep ${${PCL_SUBSYS_DEPENDIES}})
-            PCL_GET_SUBSYS_HYPERSTATUS(dependee_status ${_subsys} ${dep})
-            if("${dependee_status}" STREQUAL "AUTO_OFF")
-                PCL_SET_SUBSYS_HYPERSTATUS(${_subsys} ${dep} AUTO_ON)
-                GET_IN_MAP(desc PCL_SUBSYS_DESC ${dep})
-                set(BUILD_${dep} ON CACHE BOOL "${desc}" FORCE)
-            endif()
-        endforeach()
-    endif()
+  string(TOUPPER "pcl_${_subsys}_dependies" PCL_SUBSYS_DEPENDIES)
+  if(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
+    foreach(dep ${${PCL_SUBSYS_DEPENDIES}})
+      PCL_GET_SUBSYS_HYPERSTATUS(dependee_status ${_subsys} ${dep})
+      if("${dependee_status}" STREQUAL "AUTO_OFF")
+        PCL_SET_SUBSYS_HYPERSTATUS(${_subsys} ${dep} AUTO_ON)
+        GET_IN_MAP(desc PCL_SUBSYS_DESC ${dep})
+        set(BUILD_${dep} ON CACHE BOOL "${desc}" FORCE)
+      endif()
+    endforeach()
+  endif()
 endmacro()
 
 ########################################################################################
@@ -862,18 +836,18 @@ endmacro()
 # package with the given name is made. If it is not successful, then the
 # "WITH_NAME" option is coerced to FALSE.
 macro(PCL_ADD_GRABBER_DEPENDENCY _name _description)
-    string(TOUPPER ${_name} _name_capitalized)
-    option(WITH_${_name_capitalized} "${_description}" TRUE)
-    if(WITH_${_name_capitalized})
-      find_package(${_name})
-      if(NOT ${_name_capitalized}_FOUND)
-        set(WITH_${_name_capitalized} FALSE CACHE BOOL "${_description}" FORCE)
-        message(STATUS "${_description}: not building because ${_name} not found")
-      else()
-        set(HAVE_${_name_capitalized} TRUE)
-        include_directories(SYSTEM "${${_name_capitalized}_INCLUDE_DIRS}")
-      endif()
+  string(TOUPPER ${_name} _name_capitalized)
+  option(WITH_${_name_capitalized} "${_description}" TRUE)
+  if(WITH_${_name_capitalized})
+    find_package(${_name})
+    if(NOT ${_name_capitalized}_FOUND)
+      set(WITH_${_name_capitalized} FALSE CACHE BOOL "${_description}" FORCE)
+      message(STATUS "${_description}: not building because ${_name} not found")
+    else()
+      set(HAVE_${_name_capitalized} TRUE)
+      include_directories(SYSTEM "${${_name_capitalized}_INCLUDE_DIRS}")
     endif()
+  endif()
 endmacro()
 
 ###############################################################################
@@ -881,5 +855,5 @@ endmacro()
 # _var The variable to be filled with the dependencies
 # _module The module name
 macro(PCL_SET_TEST_DEPENDENCIES _var _module)
-    set(${_var} global_tests ${_module} ${PCL_SUBSYS_DEPS_${_module}})
+  set(${_var} global_tests ${_module} ${PCL_SUBSYS_DEPS_${_module}})
 endmacro()
