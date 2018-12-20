@@ -472,21 +472,21 @@ FunctionEnd
 !insertmacro StrStr "un."
 
 Function Trim ; Added by Pelaca
-	Exch $R1
-	Push $R2
-Loop:
-	StrCpy $R2 "$R1" 1 -1
-	StrCmp "$R2" " " RTrim
-	StrCmp "$R2" "$\n" RTrim
-	StrCmp "$R2" "$\r" RTrim
-	StrCmp "$R2" ";" RTrim
-	GoTo Done
-RTrim:
-	StrCpy $R1 "$R1" -1
-	Goto Loop
-Done:
-	Pop $R2
-	Exch $R1
+    Exch $R1
+    Push $R2
+  Loop:
+    StrCpy $R2 "$R1" 1 -1
+    StrCmp "$R2" " " RTrim
+    StrCmp "$R2" "$\n" RTrim
+    StrCmp "$R2" "$\r" RTrim
+    StrCmp "$R2" ";" RTrim
+    GoTo Done
+  RTrim:
+    StrCpy $R1 "$R1" -1
+    Goto Loop
+  Done:
+    Pop $R2
+    Exch $R1
 FunctionEnd
 
 Function ConditionalAddToRegisty

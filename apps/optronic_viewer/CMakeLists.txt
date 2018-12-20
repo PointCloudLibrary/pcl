@@ -44,68 +44,56 @@ PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS
 
 PCL_ADD_DOC("${SUBSUBSYS_NAME}")
 
-if(build)
-
-  include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-  # Set Qt files and resources here
-#  set(uis main_window.ui)
-  set(moc_incs "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
-               "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/filter_window.h"
-               "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/openni_grabber.h")
-#           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/scene_tree.h"
-#           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/parameter_dialog.h"
-#           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/thread_controller.h"
-#           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/abstract_worker.h"
-#           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/cloud_mesh_item_updater.h")
-
-#  set(resources resources/resources.qrc)
-
-#  set(incs ${moc_incs})
-  set(incs "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/qt.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/openni_grabber.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/cloud_filter.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/filter_window.h")
-
-  set(srcs src/main.cpp
-           src/cloud_filter.cpp
-           src/openni_grabber.cpp
-           src/filter_window.cpp
-           src/main_window.cpp)
-
-  set(impl_incs)
-
-  # Qt stuff
-#  QT5_WRAP_UI(ui_srcs ${uis})
-  QT5_WRAP_CPP(moc_srcs ${moc_incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-#  QT5_ADD_RESOURCES(resource_srcs ${resources})
-
-  # Organize files
-#  SOURCE_GROUP("Resources" FILES ${uis} ${resources} ${EXE_ICON})
-#  SOURCE_GROUP("Generated" FILES ${ui_srcs} ${moc_srcs} ${resource_srcs} ${RCS_SOURCES})
-#  SET_SOURCE_FILES_PROPERTIES(${srcs} PROPERTIES OBJECT_DEPENDS "${ui_srcs}")
-
-  # Generate executable
-  set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
-#  PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${ui_srcs} ${moc_srcs} ${resource_srcs} ${srcs} ${incs} ${impl_incs})
-  PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${moc_srcs} ${srcs} ${incs} ${impl_incs})
-  target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search QVTK Qt5::Widgets)
-
-  # Put the ui in the windows project file
-  if("${CMAKE_BUILD_TOOL}" MATCHES "msdev")
-    LIST(APPEND srcs ${uis})
-  elseif("${CMAKE_BUILD_TOOL}" MATCHES "devenv")
-    LIST(APPEND srcs ${uis})
-  endif()
-
-  # Install include files
-  PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs})
-  PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}/impl" ${impl_incs})
-
-  PCL_MAKE_PKGCONFIG("${EXE_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" "" "" "" "" "")
-
-  # Add to the compound apps target
-  list(APPEND PCL_APPS_ALL_TARGETS ${EXE_NAME})
-  set(PCL_APPS_ALL_TARGETS ${PCL_APPS_ALL_TARGETS} PARENT_SCOPE)
+if(NOT build)
+  return()
 endif()
+
+include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+# Set Qt files and resources here
+set(moc_incs
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/filter_window.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/openni_grabber.h"
+)
+
+set(incs
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/qt.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/openni_grabber.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/cloud_filter.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/filter_window.h"
+)
+
+set(srcs
+  src/main.cpp
+  src/cloud_filter.cpp
+  src/openni_grabber.cpp
+  src/filter_window.cpp
+  src/main_window.cpp
+)
+
+set(impl_incs)
+
+# Qt stuff
+QT5_WRAP_CPP(moc_srcs ${moc_incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+
+# Generate executable
+set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
+PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${moc_srcs} ${srcs} ${incs} ${impl_incs})
+target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search QVTK Qt5::Widgets)
+
+# Put the ui in the windows project file
+if(("${CMAKE_BUILD_TOOL}" MATCHES "msdev") OR("${CMAKE_BUILD_TOOL}" MATCHES "devenv"))
+  list(APPEND srcs ${uis})
+endif()
+
+# Install include files
+PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs})
+PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}/impl" ${impl_incs})
+
+PCL_MAKE_PKGCONFIG("${EXE_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" "" "" "" "" "")
+
+# Add to the compound apps target
+list(APPEND PCL_APPS_ALL_TARGETS ${EXE_NAME})
+set(PCL_APPS_ALL_TARGETS ${PCL_APPS_ALL_TARGETS} PARENT_SCOPE)
