@@ -48,11 +48,14 @@ source_group("Source files\\cuda" FILES ${srcs_cuda})
 source_group("Source files" FILES ${srcs})
 
 include_directories(
-  ${VTK_INCLUDE_DIRS}
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
   "${CMAKE_CURRENT_SOURCE_DIR}/src"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/cuda"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/cuda/nvidia"
+)
+
+include_directories(SYSTEM
+  ${VTK_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
   ${CUDA_INCLUDE_DIRS}
 )

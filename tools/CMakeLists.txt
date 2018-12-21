@@ -270,7 +270,7 @@ target_link_libraries (pcl_transform_from_viewpoint pcl_common pcl_io pcl_regist
 
 find_package(tide QUIET)
 if(Tide_FOUND)
-  include_directories(${Tide_INCLUDE_DIRS})
+  include_directories(SYSTEM ${Tide_INCLUDE_DIRS})
   add_definitions(${Tide_DEFINITIONS})
   PCL_ADD_EXECUTABLE(pcl_video "${SUBSYS_NAME}" pcl_video.cpp)
   target_link_libraries(pcl_video pcl_common pcl_io pcl_visualization

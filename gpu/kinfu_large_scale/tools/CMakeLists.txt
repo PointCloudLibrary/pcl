@@ -14,7 +14,7 @@ else()
 endif()
 
 file(GLOB hdrs "*.h*")
-include_directories(${VTK_INCLUDE_DIRS})
+include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
 
 ## STANDALONE TEXTURE MAPPING
 set(the_target pcl_kinfu_largeScale_texture_output)

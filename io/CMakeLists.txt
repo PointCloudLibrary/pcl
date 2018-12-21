@@ -249,7 +249,7 @@ endif()
 
 if(PCAP_FOUND)
   set(PCAP_DEFINES -DHAVE_PCAP)
-  include_directories(${PCAP_INCLUDE_DIRS})
+  include_directories(SYSTEM ${PCAP_INCLUDE_DIRS})
   add_definitions(${PCAP_DEFINES})
 endif()
 

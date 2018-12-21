@@ -23,4 +23,5 @@ get_filename_component(INC7 "${DIR}/../../../octree/include" REALPATH)
 
 file(GLOB test_src *.cpp *.hpp)
 list(APPEND test_src ${pcl_gtest_sources})
-include_directories("${INC1}" "${INC2}" "${INC3}" "${INC4}" "${INC5}" "${INC6}" "${INC7}" ${VTK_INCLUDE_DIRS})
+include_directories("${INC1}" "${INC2}" "${INC3}" "${INC4}" "${INC5}" "${INC6}" "${INC7}")
+include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
