@@ -42,20 +42,12 @@
 
 inline cudaError cutilDeviceSynchronize()
 {
-#if CUDART_VERSION >= 4000
 	return cudaDeviceSynchronize();
-#else
-	return cudaThreadSynchronize();
-#endif
 }
 
 inline cudaError cutilDeviceReset()
 {
-#if CUDART_VERSION >= 4000
 	return cudaDeviceReset();
-#else
-	return cudaThreadExit();
-#endif
 }
 
 inline void __cutilCondition(int val, char *file, int line) 
