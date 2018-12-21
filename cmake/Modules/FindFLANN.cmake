@@ -53,6 +53,11 @@ if(NOT FLANN_FOUND)
     find_package_handle_standard_args(FLANN DEFAULT_MSG FLANN_LIBRARY FLANN_INCLUDE_DIR)
 
     mark_as_advanced(FLANN_LIBRARY FLANN_LIBRARY_DEBUG FLANN_INCLUDE_DIR)
+else()
+    find_library(FLANN_LIBRARY
+                 NAMES ${FLANN_RELEASE_NAME}
+                 PATHS ${FLANN_LIBRARY_DIRS})
+    set(FLANN_LIBRARIES ${FLANN_LIBRARY})
 endif()
 
 if(FLANN_FOUND)
