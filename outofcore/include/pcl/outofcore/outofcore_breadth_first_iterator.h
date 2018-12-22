@@ -64,7 +64,7 @@ namespace pcl
         explicit
         OutofcoreBreadthFirstIterator (OctreeDisk& octree_arg);
 
-        virtual
+        
         ~OutofcoreBreadthFirstIterator ();
       
         OutofcoreBreadthFirstIterator&
@@ -78,8 +78,8 @@ namespace pcl
           return (_Tmp);
         }
 
-        virtual inline void
-        reset ()
+        inline void
+        reset () override
         {
           OutofcoreIteratorBase<PointT, ContainerT>::reset();
 

@@ -48,7 +48,7 @@ public:
   
   static vtkVertexBufferObject* New();
   vtkTypeMacro(vtkVertexBufferObject, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get/Set the context. Context must be a vtkOpenGLRenderWindow.

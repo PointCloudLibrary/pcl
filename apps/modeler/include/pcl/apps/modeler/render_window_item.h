@@ -73,18 +73,18 @@ namespace pcl
         CloudMeshItem*
         addPointCloud(CloudMesh::PointCloudPtr cloud);
 
-        virtual std::string
-        getItemName() const {return "Render Window Item";}
+        std::string
+        getItemName() const override {return "Render Window Item";}
 
       protected:
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
+        void
+        prepareContextMenu(QMenu* menu) const override;
 
-        virtual void
-        prepareProperties(ParameterDialog* parameter_dialog);
+        void
+        prepareProperties(ParameterDialog* parameter_dialog) override;
 
-        virtual void
-        setProperties();
+        void
+        setProperties() override;
 
       private:
         RenderWindow*     render_window_;

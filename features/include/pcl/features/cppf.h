@@ -108,7 +108,7 @@ namespace pcl
         * the input cloud);
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
   };
 }
 

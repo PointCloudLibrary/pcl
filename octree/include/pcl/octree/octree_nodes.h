@@ -111,21 +111,21 @@ namespace pcl
         }
 
         /** \brief Empty deconstructor. */
-        virtual
+        
         ~OctreeLeafNode ()
         {
         }
 
         /** \brief Method to perform a deep copy of the octree */
-        virtual OctreeLeafNode<ContainerT>*
-        deepCopy () const
+        OctreeLeafNode<ContainerT>*
+        deepCopy () const override
         {
           return new OctreeLeafNode<ContainerT> (*this);
         }
 
         /** \brief Get the type of octree node. Returns LEAVE_NODE type */
-        virtual node_type_t
-        getNodeType () const
+        node_type_t
+        getNodeType () const override
         {
           return LEAF_NODE;
         }
@@ -240,14 +240,14 @@ namespace pcl
         }
 
         /** \brief Octree deep copy method */
-        virtual OctreeBranchNode*
-        deepCopy () const
+        OctreeBranchNode*
+        deepCopy () const override
         {
           return (new OctreeBranchNode<ContainerT> (*this));
         }
 
         /** \brief Empty deconstructor. */
-        virtual
+        
         ~OctreeBranchNode ()
         {
         }
@@ -318,8 +318,8 @@ namespace pcl
         }*/
 
         /** \brief Get the type of octree node. Returns LEAVE_NODE type */
-        virtual node_type_t
-        getNodeType () const
+        node_type_t
+        getNodeType () const override
         {
           return BRANCH_NODE;
         }

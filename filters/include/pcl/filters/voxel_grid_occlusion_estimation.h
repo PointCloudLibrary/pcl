@@ -74,7 +74,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~VoxelGridOcclusionEstimation ()
+      ~VoxelGridOcclusionEstimation ()
       {
       }
 

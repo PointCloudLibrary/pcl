@@ -111,7 +111,7 @@ namespace pcl
 
       //build conflict graph
       //non-maxima supression
-      void verify();
+      void verify() override;
   };
 }
 

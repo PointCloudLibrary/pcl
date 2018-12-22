@@ -63,7 +63,7 @@ namespace pcl
         typedef typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
 
         TransformationEstimationDualQuaternion () {};
-        virtual ~TransformationEstimationDualQuaternion () {};
+        ~TransformationEstimationDualQuaternion () {};
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using
           * dual quaternion optimization
@@ -75,7 +75,7 @@ namespace pcl
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using
           * dual quaternion optimization
@@ -89,7 +89,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using
           * dual quaternion optimization
@@ -105,7 +105,7 @@ namespace pcl
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const std::vector<int> &indices_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using
           * dual quaternion optimization
@@ -119,7 +119,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const pcl::Correspondences &correspondences,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
       protected:
 

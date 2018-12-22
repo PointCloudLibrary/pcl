@@ -126,7 +126,7 @@ namespace pcl
         * \param output the resultant point cloud that contains the GRSD feature
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
     private:
 

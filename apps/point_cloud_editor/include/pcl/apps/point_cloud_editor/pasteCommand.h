@@ -65,11 +65,11 @@ class PasteCommand : public Command
     /// updates the selection object to point to the newly pasted points.  This
     /// also updates the selection object to point to the newly pasted points.
     void
-    execute ();
+    execute () override;
 
     /// @brief Removes the points that were pasted to the cloud.
     void
-    undo ();
+    undo () override;
 
   private:
     /// @brief Default constructor - object is not default constructable

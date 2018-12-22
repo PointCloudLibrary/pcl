@@ -196,7 +196,7 @@ namespace pcl
 	        * This function returns the particle that represents the transform between the reference point cloud at the 
           * beginning and the best guess about its location in the most recent frame.
 	        */
-        virtual inline StateT getResult () const { return representative_state_; }
+        inline StateT getResult () const override { return representative_state_; }
         
         /** \brief Convert a state to affine transformation from the world coordinates frame.
           * \param[in] particle an instance of StateT.
@@ -350,7 +350,7 @@ namespace pcl
 
         
         /** \brief This method should get called before starting the actual computation. */
-        virtual bool initCompute ();
+        bool initCompute () override;
         
         /** \brief Weighting phase of particle filter method. Calculate the likelihood of all of the particles and set the weights. */
         virtual void weight ();
@@ -370,7 +370,7 @@ namespace pcl
         void initParticles (bool reset);
         
         /** \brief Track the pointcloud using particle filter method. */
-        virtual void computeTracking ();
+        void computeTracking () override;
         
         /** \brief Implementation of "sample with replacement" using Walker's alias method.
             about Walker's alias method, you can check the paper below:

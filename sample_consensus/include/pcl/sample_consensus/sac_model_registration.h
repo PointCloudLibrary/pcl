@@ -110,13 +110,13 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~SampleConsensusModelRegistration () {}
+      ~SampleConsensusModelRegistration () {}
 
       /** \brief Provide a pointer to the input dataset
         * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
-      inline virtual void
-      setInputCloud (const PointCloudConstPtr &cloud)
+      inline void
+      setInputCloud (const PointCloudConstPtr &cloud) override
       {
         SampleConsensusModel<PointT>::setInputCloud (cloud);
         computeOriginalIndexMapping ();
@@ -158,7 +158,7 @@ namespace pcl
         */
       bool
       computeModelCoefficients (const std::vector<int> &samples,
-                                Eigen::VectorXf &model_coefficients) const;
+                                Eigen::VectorXf &model_coefficients) const override;
 
       /** \brief Compute all distances from the transformed points to their correspondences
         * \param[in] model_coefficients the 4x4 transformation matrix
@@ -166,7 +166,7 @@ namespace pcl
         */
       void
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances) const;
+                           std::vector<double> &distances) const override;
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param[in] model_coefficients the 4x4 transformation matrix
@@ -176,7 +176,7 @@ namespace pcl
       void
       selectWithinDistance (const Eigen::VectorXf &model_coefficients,
                             const double threshold,
-                            std::vector<int> &inliers);
+                            std::vector<int> &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers.
         *
@@ -184,9 +184,9 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      virtual int
+      int
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold) const;
+                           const double threshold) const override;
 
       /** \brief Recompute the 4x4 transformation using the given inlier set
         * \param[in] inliers the data inliers found as supporting the model
@@ -196,26 +196,26 @@ namespace pcl
       void
       optimizeModelCoefficients (const std::vector<int> &inliers,
                                  const Eigen::VectorXf &model_coefficients,
-                                 Eigen::VectorXf &optimized_coefficients) const;
+                                 Eigen::VectorXf &optimized_coefficients) const override;
 
       void
       projectPoints (const std::vector<int> &,
                      const Eigen::VectorXf &,
-                     PointCloud &, bool = true) const
+                     PointCloud &, bool = true) const override
       {
       };
 
       bool
       doSamplesVerifyModel (const std::set<int> &,
                             const Eigen::VectorXf &,
-                            const double) const
+                            const double) const override
       {
         return (false);
       }
 
       /** \brief Return an unique id for this model (SACMODEL_REGISTRATION). */
       inline pcl::SacModel
-      getModelType () const { return (SACMODEL_REGISTRATION); }
+      getModelType () const override { return (SACMODEL_REGISTRATION); }
 
     protected:
       using SampleConsensusModel<PointT>::sample_size_;
@@ -225,8 +225,8 @@ namespace pcl
         * indices.
         * \param[in] samples the resultant index samples
         */
-      virtual bool
-      isSampleGood (const std::vector<int> &samples) const;
+      bool
+      isSampleGood (const std::vector<int> &samples) const override;
 
       /** \brief Computes an "optimal" sample distance threshold based on the
         * principal directions of the input cloud.

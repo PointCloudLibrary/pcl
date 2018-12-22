@@ -146,7 +146,7 @@ namespace pcl
         * \return true if the clustering had been successful or false if errors have occurred.
         */ 
       void
-      clusterCorrespondences (std::vector<Correspondences> &model_instances);
+      clusterCorrespondences (std::vector<Correspondences> &model_instances) override;
   };
 }
 

@@ -103,7 +103,7 @@ namespace pcl
       FPCSInitialAlignment ();
 
       /** \brief Destructor. */
-      virtual ~FPCSInitialAlignment ()
+      ~FPCSInitialAlignment ()
       {};
 
 
@@ -308,8 +308,8 @@ namespace pcl
         * \param output the transformed input point cloud dataset using the rigid transformation found
         * \param guess The computed transforamtion
         */
-      virtual void
-      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);
+      void
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess) override;
 
 
       /** \brief Internal computation initialization. */

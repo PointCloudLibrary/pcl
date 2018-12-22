@@ -281,7 +281,7 @@ namespace pcl
         * \param output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
       
     private:
       /** \brief indices of neighboring points */

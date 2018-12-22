@@ -136,7 +136,7 @@ namespace pcl
     protected:
       /** \brief This is an over-ride function for the pcl::Filter interface. */
       void 
-      applyFilter (pcl::PointCloud<PointT> &) {}
+      applyFilter (pcl::PointCloud<PointT> &) override {}
 
     private:
       BOUNDARY_OPTIONS_ENUM boundary_options_;

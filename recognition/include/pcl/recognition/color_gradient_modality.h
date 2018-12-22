@@ -94,7 +94,7 @@ namespace pcl
       /** \brief Constructor. */
       ColorGradientModality ();
       /** \brief Destructor. */
-      virtual ~ColorGradientModality ();
+      ~ColorGradientModality ();
   
       /** \brief Sets the threshold for the gradient magnitude which is used when quantizing the data.
         *        Gradients with a smaller magnitude are ignored. 
@@ -143,14 +143,14 @@ namespace pcl
 
       /** \brief Returns a reference to the internally computed quantized map. */
       inline QuantizedMap &
-      getQuantizedMap () 
+      getQuantizedMap () override 
       { 
         return (filtered_quantized_color_gradients_);
       }
   
       /** \brief Returns a reference to the internally computed spread quantized map. */
       inline QuantizedMap &
-      getSpreadedQuantizedMap () 
+      getSpreadedQuantizedMap () override 
       { 
         return (spreaded_filtered_quantized_color_gradients_);
       }
@@ -171,7 +171,7 @@ namespace pcl
         */
       void
       extractFeatures (const MaskMap & mask, size_t nr_features, size_t modalityIndex,
-                       std::vector<QuantizedMultiModFeature> & features) const;
+                       std::vector<QuantizedMultiModFeature> & features) const override;
   
       /** \brief Extracts all possible features from the modality within the specified mask.
         * \param[in] mask defines the areas where features are searched in. 
@@ -181,13 +181,13 @@ namespace pcl
         */
       void
       extractAllFeatures (const MaskMap & mask, size_t nr_features, size_t modalityIndex,
-                          std::vector<QuantizedMultiModFeature> & features) const;
+                          std::vector<QuantizedMultiModFeature> & features) const override;
   
       /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
         * \param cloud the const boost shared pointer to a PointCloud message
         */
-      virtual void 
-      setInputCloud (const typename PointCloudIn::ConstPtr & cloud) 
+      void 
+      setInputCloud (const typename PointCloudIn::ConstPtr & cloud) override 
       { 
         input_ = cloud;
       }

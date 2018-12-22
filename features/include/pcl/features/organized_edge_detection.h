@@ -81,7 +81,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedEdgeBase */
-      virtual
+      
       ~OrganizedEdgeBase ()
       {
       }
@@ -210,7 +210,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedEdgeFromRGB */
-      virtual
+      
       ~OrganizedEdgeFromRGB ()
       {
       }
@@ -301,7 +301,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedEdgeFromNormals */
-      virtual
+      
       ~OrganizedEdgeFromNormals ()
       {
       }
@@ -410,7 +410,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedEdgeFromRGBNormals */
-      virtual
+      
       ~OrganizedEdgeFromRGBNormals ()
       {
       }

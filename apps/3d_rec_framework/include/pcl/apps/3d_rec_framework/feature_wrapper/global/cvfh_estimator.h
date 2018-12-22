@@ -52,7 +52,7 @@ namespace pcl
       void
       estimate (PointInTPtr & in, PointInTPtr & processed,
                 typename pcl::PointCloud<FeatureT>::CloudVectorType & signatures,
-                std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
+                std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids) override
       {
 
         if (!normal_estimator_)
@@ -150,7 +150,7 @@ namespace pcl
       }
 
       bool
-      computedNormals ()
+      computedNormals () override
       {
         return true;
       }

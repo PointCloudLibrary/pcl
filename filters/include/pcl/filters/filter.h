@@ -106,7 +106,7 @@ namespace pcl
       }
 
       /** \brief Empty destructor */
-      virtual ~Filter () {}
+      ~Filter () {}
 
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const
@@ -212,7 +212,7 @@ namespace pcl
       }
 
       /** \brief Empty destructor */
-      virtual ~Filter () {}
+      ~Filter () {}
 
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const

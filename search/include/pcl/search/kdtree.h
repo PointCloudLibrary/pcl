@@ -92,7 +92,7 @@ namespace pcl
         KdTree (bool sorted = true); 
 
         /** \brief Destructor for KdTree. */
-        virtual
+        
         ~KdTree ()
         {
         }
@@ -114,7 +114,7 @@ namespace pcl
           * \param[in] sorted_results set to true if the radius search results should be sorted
           */
         void 
-        setSortedResults (bool sorted_results);
+        setSortedResults (bool sorted_results) override;
         
         /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
           * \param[in] eps precision (error bound) for nearest neighbors searches
@@ -135,7 +135,7 @@ namespace pcl
           */
         void
         setInputCloud (const PointCloudConstPtr& cloud, 
-                       const IndicesConstPtr& indices = IndicesConstPtr ());
+                       const IndicesConstPtr& indices = IndicesConstPtr ()) override;
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] point the given query point
@@ -148,7 +148,7 @@ namespace pcl
         int
         nearestKSearch (const PointT &point, int k, 
                         std::vector<int> &k_indices, 
-                        std::vector<float> &k_sqr_distances) const;
+                        std::vector<float> &k_sqr_distances) const override;
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
           * \param[in] point the given query point
@@ -164,7 +164,7 @@ namespace pcl
         radiusSearch (const PointT& point, double radius, 
                       std::vector<int> &k_indices, 
                       std::vector<float> &k_sqr_distances,
-                      unsigned int max_nn = 0) const;
+                      unsigned int max_nn = 0) const override;
       protected:
         /** \brief A pointer to the internal KdTree object. */
         KdTreePtr tree_;

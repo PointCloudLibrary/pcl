@@ -382,7 +382,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~MarchingCubes ();
+      ~MarchingCubes ();
 
 
       /** \brief Method that sets the iso level of the surface to be extracted.
@@ -500,21 +500,21 @@ namespace pcl
                          Eigen::Vector3i &index3d);
 
       /** \brief Class get name method. */
-      std::string getClassName () const { return ("MarchingCubes"); }
+      std::string getClassName () const override { return ("MarchingCubes"); }
 
       /** \brief Extract the surface.
         * \param[out] output the resultant polygonal mesh
         */
-       virtual void
-       performReconstruction (pcl::PolygonMesh &output);
+       void
+       performReconstruction (pcl::PolygonMesh &output) override;
 
        /** \brief Extract the surface.
          * \param[out] points the points of the extracted mesh
          * \param[out] polygons the connectivity between the point of the extracted mesh.
          */
-       virtual void
+       void
        performReconstruction (pcl::PointCloud<PointNT> &points,
-                              std::vector<pcl::Vertices> &polygons);
+                              std::vector<pcl::Vertices> &polygons) override;
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW

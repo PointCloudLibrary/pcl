@@ -333,10 +333,10 @@ namespace pcl
         , initialized_ (false)
       {}
       /// Destructor
-      virtual ~GrabCut () {};
+      ~GrabCut () {};
       // /// Set input cloud
       void
-      setInputCloud (const PointCloudConstPtr& cloud);
+      setInputCloud (const PointCloudConstPtr& cloud) override;
       /// Set background points, foreground points = points \ background points
       void
       setBackgroundPoints (const PointCloudConstPtr& background_points);

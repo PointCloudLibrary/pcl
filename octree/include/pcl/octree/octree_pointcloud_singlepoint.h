@@ -78,7 +78,7 @@ namespace pcl
         }
 
         /** \brief Empty class constructor. */
-        virtual ~OctreePointCloudSinglePoint ()
+        ~OctreePointCloudSinglePoint ()
         {
         }
 

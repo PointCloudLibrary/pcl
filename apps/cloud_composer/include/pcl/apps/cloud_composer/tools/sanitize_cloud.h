@@ -49,13 +49,13 @@ namespace pcl
       Q_OBJECT
     public:
       SanitizeCloudTool (PropertiesModel* parameter_model, QObject* parent);
-      virtual ~SanitizeCloudTool ();
+      ~SanitizeCloudTool ();
       
-      virtual QList <CloudComposerItem*>
-      performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE);
+      QList <CloudComposerItem*>
+      performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override;
       
-      inline virtual QString
-      getToolName () const { return "Sanitize Cloud Tool";}
+      inline QString
+      getToolName () const override { return "Sanitize Cloud Tool";}
       };
       
       
@@ -68,31 +68,31 @@ namespace pcl
 #endif
       public:
         ModifyItemTool*
-        createTool (PropertiesModel* parameter_model, QObject* parent = 0) 
+        createTool (PropertiesModel* parameter_model, QObject* parent = 0) override 
         {
           return new SanitizeCloudTool(parameter_model, parent);
         }
         
         PropertiesModel*
-        createToolParameterModel (QObject* parent);
+        createToolParameterModel (QObject* parent) override;
         
-        inline virtual QString 
-        getPluginName () const { return "Sanitize Cloud";}
+        inline QString 
+        getPluginName () const override { return "Sanitize Cloud";}
         
-        virtual QString 
-        getToolGroupName () const { return "Filters";}
+        QString 
+        getToolGroupName () const override { return "Filters";}
         
-        virtual QString
-        getIconName () const { return ":/sanitize_cloud.png"; }
+        QString
+        getIconName () const override { return ":/sanitize_cloud.png"; }
         
-        inline virtual CloudComposerItem::ItemType
-        getInputItemType () const
+        inline CloudComposerItem::ItemType
+        getInputItemType () const override
         {
           return CloudComposerItem::CLOUD_ITEM;
         }
         
-        inline virtual QList <CloudComposerItem::ItemType>
-        getRequiredInputChildrenTypes () const 
+        inline QList <CloudComposerItem::ItemType>
+        getRequiredInputChildrenTypes () const override 
         {
           return QList <CloudComposerItem::ItemType> ();
         }

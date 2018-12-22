@@ -404,12 +404,12 @@ class OutofcoreTest : public testing::Test
 
     OutofcoreTest () : smallest_voxel_dim () {}
 
-    virtual void SetUp ()
+    void SetUp () override
     {
       smallest_voxel_dim = 3.0f;
     }
 
-    virtual void TearDown ()
+    void TearDown () override
     {
 
     }

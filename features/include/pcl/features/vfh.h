@@ -226,12 +226,12 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the VFH feature estimates
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
     protected:
       /** \brief This method should get called before starting the actual computation. */
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief Placeholder for the f1 histogram. */
       Eigen::VectorXf hist_f1_;

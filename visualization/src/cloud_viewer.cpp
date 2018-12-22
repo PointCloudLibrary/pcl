@@ -77,10 +77,10 @@ namespace pcl
       popped_ = true;
     }
 
-    virtual void pop ();
+    void pop () override;
     
-    virtual bool
-    popped () const
+    bool
+    popped () const override
     {
       return popped_;
     }

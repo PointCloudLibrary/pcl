@@ -61,11 +61,11 @@ class DeleteCommand : public Command
   protected:
     /// @brief Removes the selected points and maintains a backup for undo.
     void 
-    execute ();
+    execute () override;
     
     /// @brief Returns the deleted points to the cloud, Order is not preserved.
     void 
-    undo ();
+    undo () override;
 
   private:
     /// @brief Default constructor - object is not default constructable

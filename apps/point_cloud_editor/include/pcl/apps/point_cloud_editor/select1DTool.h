@@ -58,14 +58,14 @@ class Select1DTool : public ToolInterface
     /// @brief Does nothing for 1D selection.
     /// @sa end
     void
-    start (int, int, BitMask, BitMask)
+    start (int, int, BitMask, BitMask) override
     {
     }
   
     /// @brief Does nothing for 1D selection.
     /// @sa end
     void
-    update (int, int, BitMask, BitMask)
+    update (int, int, BitMask, BitMask) override
     {
     }
 
@@ -85,11 +85,11 @@ class Select1DTool : public ToolInterface
     /// @param buttons The state of the mouse buttons.  All interaction with
     /// this tool requires the LEFT mouse button.  All others are ignored.
     void
-    end (int x, int y, BitMask modifiers, BitMask buttons);
+    end (int x, int y, BitMask modifiers, BitMask buttons) override;
 
     /// @brief This function does nothing.
     void
-    draw () const
+    draw () const override
     {
     }
 

@@ -358,7 +358,7 @@ namespace pcl
   {
     public:
       GrayStereoMatching (void);
-      virtual ~GrayStereoMatching (void);
+      ~GrayStereoMatching (void);
 
       /** \brief stereo processing, it computes a disparity map stored internally by the class
         *
@@ -367,8 +367,8 @@ namespace pcl
         * \param[in] width number of elements per row for both input arrays
         * \param[in] height number of elements per column for both input arrays
         */
-      virtual void 
-      compute (unsigned char* ref_img, unsigned char* trg_img, int width, int height);
+      void 
+      compute (unsigned char* ref_img, unsigned char* trg_img, int width, int height) override;
 
       /** \brief stereo processing, it computes a disparity map stored internally by the class
         *
@@ -377,17 +377,17 @@ namespace pcl
         * \param[in] trg point cloud of pcl::RGB type containing the pixels of the target image (right image)
         * the pcl::RGB triplets are automatically converted to grayscale upon call of the method
         */
-      virtual void
-      compute (pcl::PointCloud<pcl::RGB> &ref, pcl::PointCloud<pcl::RGB> &trg);
+      void
+      compute (pcl::PointCloud<pcl::RGB> &ref, pcl::PointCloud<pcl::RGB> &trg) override;
     protected:
-      virtual void 
-      compute_impl (unsigned char* ref_img, unsigned char* trg_img) = 0;
+      void 
+      compute_impl (unsigned char* ref_img, unsigned char* trg_img) override = 0;
 
-      virtual void 
-      preProcessing (unsigned char *img, unsigned char *pp_img);
+      void 
+      preProcessing (unsigned char *img, unsigned char *pp_img) override;
 
-      virtual void 
-      imgFlip (unsigned char * & img);
+      void 
+      imgFlip (unsigned char * & img) override;
   };
 
   /** \brief Block based (or fixed window) Stereo Matching class
@@ -406,7 +406,7 @@ namespace pcl
   {
     public:
       BlockBasedStereoMatching (void);
-      virtual ~BlockBasedStereoMatching (void) 
+      ~BlockBasedStereoMatching (void) 
       {
       };
 
@@ -420,8 +420,8 @@ namespace pcl
         radius_ = radius;
       };
     private:
-      virtual void 
-      compute_impl (unsigned char* ref_img, unsigned char* trg_img);
+      void 
+      compute_impl (unsigned char* ref_img, unsigned char* trg_img) override;
 
       int radius_;
   };
@@ -444,7 +444,7 @@ namespace pcl
     public:
       AdaptiveCostSOStereoMatching (void);
 
-      virtual ~AdaptiveCostSOStereoMatching (void) 
+      ~AdaptiveCostSOStereoMatching (void) 
       {
       };
 
@@ -495,8 +495,8 @@ namespace pcl
       };
 
     private:
-      virtual void 
-      compute_impl (unsigned char* ref_img, unsigned char* trg_img);
+      void 
+      compute_impl (unsigned char* ref_img, unsigned char* trg_img) override;
 
       int radius_;
 

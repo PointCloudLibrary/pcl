@@ -129,7 +129,7 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains the PFH feature estimates
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief Return the dominant label of a set of points. */
       uint32_t

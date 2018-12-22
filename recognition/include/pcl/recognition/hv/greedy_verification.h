@@ -172,7 +172,7 @@ namespace pcl
 
       /** \brief Starts verification */
       void
-      verify ();
+      verify () override;
     };
 }
 

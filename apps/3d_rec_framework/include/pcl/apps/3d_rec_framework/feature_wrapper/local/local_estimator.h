@@ -157,7 +157,7 @@ namespace pcl
         }
 
         void
-        compute (PointInTPtr & keypoints)
+        compute (PointInTPtr & keypoints) override
         {
           keypoints.reset (new pcl::PointCloud<PointInT>);
 

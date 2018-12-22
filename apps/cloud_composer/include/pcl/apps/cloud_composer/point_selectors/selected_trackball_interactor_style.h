@@ -51,7 +51,7 @@ namespace pcl
         
         SelectedTrackballStyleInteractor ();
         
-        virtual ~SelectedTrackballStyleInteractor ();
+        ~SelectedTrackballStyleInteractor ();
                
         /** \brief Pass a pointer to the actor map
           * \param[in] actors the actor map that will be used with this style
@@ -70,27 +70,27 @@ namespace pcl
         setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { renderers_ = rens; }
 
         /** \brief Function called on left mouse button click, ie, beginning of trackball */
-        virtual void
-        OnLeftButtonDown ();
+        void
+        OnLeftButtonDown () override;
         
-        virtual void
-        OnRightButtonDown ();
+        void
+        OnRightButtonDown () override;
         
         /** \brief Function called on left mouse button release, ie, end of trackball*/
-        virtual void
-        OnLeftButtonUp ();
+        void
+        OnLeftButtonUp () override;
         
-        virtual void
-        OnRightButtonUp ();
+        void
+        OnRightButtonUp () override;
 
-        virtual void 
-        Rotate();
-        virtual void 
-        Spin();
-        virtual void 
-        Pan();
-        virtual void 
-        UniformScale();
+        void 
+        Rotate() override;
+        void 
+        Spin() override;
+        void 
+        Pan() override;
+        void 
+        UniformScale() override;
         
         /** \brief Event emitted once a valid selection has been made */
         int manipulation_complete_event_;

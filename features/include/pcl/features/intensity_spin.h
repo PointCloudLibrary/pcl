@@ -132,7 +132,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the intensity-domain spin image features
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
     
       /** \brief The number of distance bins in the descriptor. */
       int nr_distance_bins_;

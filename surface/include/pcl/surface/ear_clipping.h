@@ -68,13 +68,13 @@ namespace pcl
 
       /** \brief This method should get called before starting the actual computation. */
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief The actual surface reconstruction method. 
         * \param[out] output the output polygonal mesh 
         */
       void
-      performProcessing (pcl::PolygonMesh &output);
+      performProcessing (pcl::PolygonMesh &output) override;
 
       /** \brief Triangulate one polygon. 
         * \param[in] vertices the set of vertices

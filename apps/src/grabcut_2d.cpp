@@ -43,7 +43,7 @@ class GrabCutHelper : public pcl::GrabCut<pcl::PointXYZRGB>
   {  }
 
   void
-  setInputCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud);
+  setInputCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) override;
   void
   setBackgroundPointsIndices (const pcl::PointIndices::ConstPtr& point_indices);
   void
@@ -51,11 +51,11 @@ class GrabCutHelper : public pcl::GrabCut<pcl::PointXYZRGB>
   void
   setTrimap(int x1, int y1, int x2, int y2, const pcl::segmentation::grabcut::TrimapValue& t);
   void
-  refine ();
+  refine () override;
   int
-  refineOnce ();
+  refineOnce () override;
   void
-  fitGMMs ();
+  fitGMMs () override;
   void
   display (int display_type);
   void

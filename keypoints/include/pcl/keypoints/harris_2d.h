@@ -134,9 +134,9 @@ namespace pcl
 
     protected:
       bool 
-      initCompute ();
+      initCompute () override;
       void 
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
       /** \brief gets the corner response for valid input points*/
       void 
       responseHarris (PointCloudOut &output) const;

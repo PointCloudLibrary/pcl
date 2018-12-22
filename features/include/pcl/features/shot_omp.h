@@ -114,11 +114,11 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains the SHOT feature estimates
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief This method should get called before starting the actual computation. */
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief The number of threads the scheduler should use. */
       unsigned int threads_;
@@ -199,11 +199,11 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains the SHOT feature estimates
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief This method should get called before starting the actual computation. */
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief The number of threads the scheduler should use. */
       unsigned int threads_;

@@ -122,14 +122,14 @@ namespace pcl
       };
 
       /** \brief Empty destructor */
-      virtual ~JointIterativeClosestPoint () {}
+      ~JointIterativeClosestPoint () {}
 
 
       /** \brief Provide a pointer to the input source 
         * (e.g., the point cloud that we want to align to the target)
         */
-      virtual void
-      setInputSource (const PointCloudSourceConstPtr& /*cloud*/)
+      void
+      setInputSource (const PointCloudSourceConstPtr& /*cloud*/) override
       {
         PCL_WARN ("[pcl::%s::setInputSource] Warning; JointIterativeClosestPoint expects multiple clouds. Please use addInputSource.", 
             getClassName ().c_str ());
@@ -152,8 +152,8 @@ namespace pcl
       /** \brief Provide a pointer to the input target 
         * (e.g., the point cloud that we want to align to the target)
         */
-      virtual void
-      setInputTarget (const PointCloudTargetConstPtr& /*cloud*/)
+      void
+      setInputTarget (const PointCloudTargetConstPtr& /*cloud*/) override
       {
         PCL_WARN ("[pcl::%s::setInputTarget] Warning; JointIterativeClosestPoint expects multiple clouds. Please use addInputTarget.", 
             getClassName ().c_str ());
@@ -211,12 +211,12 @@ namespace pcl
         * \param output the transformed input point cloud dataset using the rigid transformation found
         * \param guess the initial guess of the transformation to compute
         */
-      virtual void 
-      computeTransformation (PointCloudSource &output, const Matrix4 &guess);
+      void 
+      computeTransformation (PointCloudSource &output, const Matrix4 &guess) override;
       
       /** \brief Looks at the Estimators and Rejectors and determines whether their blob-setter methods need to be called */
       void
-      determineRequiredBlobData ();
+      determineRequiredBlobData () override;
 
       std::vector<PointCloudSourceConstPtr> sources_;
       std::vector<PointCloudTargetConstPtr> targets_;

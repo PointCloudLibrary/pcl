@@ -109,7 +109,7 @@ namespace pcl
         }
       
         /** \brief Empty destructor */
-        virtual ~DefaultConvergenceCriteria () {}
+        ~DefaultConvergenceCriteria () {}
 
         /** \brief Set the maximum number of iterations that the internal rotation, 
           * translation, and MSE differences are allowed to be similar. 
@@ -188,8 +188,8 @@ namespace pcl
 
 
         /** \brief Check if convergence has been reached. */
-        virtual bool
-        hasConverged ();
+        bool
+        hasConverged () override;
 
         /** \brief Return the convergence state after hasConverged () */
         ConvergenceState

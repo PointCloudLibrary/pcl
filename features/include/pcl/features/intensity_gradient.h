@@ -86,7 +86,7 @@ namespace pcl
         *  \param output the resultant point cloud that contains the intensity gradient vectors
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief Estimate the intensity gradient around a given point based on its spatial neighborhood of points
         * \param cloud a point cloud dataset containing XYZI coordinates (Cartesian coordinates + intensity)

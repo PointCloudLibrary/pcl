@@ -57,15 +57,15 @@ namespace openni_wrapper
     friend class OpenNIDriver;
   public:
     DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
-    virtual ~DeviceXtionPro () throw ();
+    ~DeviceXtionPro () throw ();
     //virtual void setImageOutputMode (const XnMapOutputMode& output_mode);
 
   protected:
-    virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
+    boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
     void enumAvailableModes () throw ();
-    virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
+    bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw () override;
 
-    virtual void startDepthStream ();
+    void startDepthStream () override;
   } ;
 } // namespace
 

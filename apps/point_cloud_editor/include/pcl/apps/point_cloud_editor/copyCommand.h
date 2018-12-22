@@ -70,7 +70,7 @@ class CopyCommand : public Command
     /// @pre Assumes the constructor was given appropriate pointers to the
     /// required objects.
     void
-    execute ()
+    execute () override
     {
       if (!cloud_ptr_)
         return;
@@ -79,7 +79,7 @@ class CopyCommand : public Command
 
     /// @brief undo is not supported for this command.
     void
-    undo ()
+    undo () override
     {
       assert(false);
     }

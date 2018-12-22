@@ -99,7 +99,7 @@ namespace pcl
       }
 
       /** \brief Destructor for PlaneCoefficientComparator. */
-      virtual
+      
       ~PlaneRefinementComparator ()
       {
       }
@@ -178,8 +178,8 @@ namespace pcl
         * \param[in] idx1 The index of the first point.
         * \param[in] idx2 The index of the second point.
         */
-      virtual bool
-      compare (int idx1, int idx2) const
+      bool
+      compare (int idx1, int idx2) const override
       {
         int current_label = labels_->points[idx1].label;
         int next_label = labels_->points[idx2].label;

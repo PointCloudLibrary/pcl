@@ -23,7 +23,7 @@ protected:
 
 public:
 
-  virtual
+  
   ~Geometry () { }
 
 public:

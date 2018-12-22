@@ -183,8 +183,8 @@ namespace pcl
           ExitMainLoopTimerCallback (const ExitMainLoopTimerCallback& src);
           ExitMainLoopTimerCallback& operator = (const ExitMainLoopTimerCallback& src);
 
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void* call_data);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void* call_data) override;
 
           int right_timer_id;
           Window* window;
@@ -201,8 +201,8 @@ namespace pcl
           ExitCallback (const ExitCallback &src);
           ExitCallback& operator = (const ExitCallback &src);
  
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void*) override;
 
           Window* window;
         };

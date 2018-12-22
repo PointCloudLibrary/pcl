@@ -80,7 +80,7 @@ namespace pcl
         * \param[out] output the resultant polygonal mesh
         */
       void
-      performReconstruction (pcl::PolygonMesh &output);
+      performReconstruction (pcl::PolygonMesh &output) override;
 
       /** \brief Create the surface.
         * \param[out] points the vertex positions of the resulting mesh
@@ -88,7 +88,7 @@ namespace pcl
         */
       void
       performReconstruction (pcl::PointCloud<PointNT> &points,
-                             std::vector<pcl::Vertices> &polygons);
+                             std::vector<pcl::Vertices> &polygons) override;
 
       /** \brief Set the maximum depth of the tree that will be used for surface reconstruction.
         * \note Running at depth d corresponds to solving on a voxel grid whose resolution is no larger than
@@ -217,7 +217,7 @@ namespace pcl
     protected:
       /** \brief Class get name method. */
       std::string
-      getClassName () const { return ("Poisson"); }
+      getClassName () const override { return ("Poisson"); }
 
     private:
       int depth_;

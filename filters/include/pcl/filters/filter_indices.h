@@ -93,7 +93,7 @@ namespace pcl
       }
 
       /** \brief Empty virtual destructor. */
-      virtual
+      
       ~FilterIndices ()
       {
       }
@@ -186,8 +186,8 @@ namespace pcl
       applyFilter (std::vector<int> &indices) = 0;
 
       /** \brief Abstract filter method for point cloud. */
-      virtual void
-      applyFilter (PointCloud &output) = 0;
+      void
+      applyFilter (PointCloud &output) override = 0;
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,7 +218,7 @@ namespace pcl
       }
 
       /** \brief Empty virtual destructor. */
-      virtual
+      
       ~FilterIndices ()
       {
       }
@@ -299,8 +299,8 @@ namespace pcl
       applyFilter (std::vector<int> &indices) = 0;
 
       /** \brief Abstract filter method for point cloud. */
-      virtual void
-      applyFilter (PCLPointCloud2 &output) = 0;
+      void
+      applyFilter (PCLPointCloud2 &output) override = 0;
   };
 }
 

@@ -104,7 +104,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~SUSANKeypoint () {}
+      ~SUSANKeypoint () {}
 
       /** \brief set the radius for normal estimation and non maxima supression.
         * \param[in] radius
@@ -135,8 +135,8 @@ namespace pcl
       void 
       setNormals (const PointCloudNConstPtr &normals);
 
-      virtual void
-      setSearchSurface (const PointCloudInConstPtr &cloud);
+      void
+      setSearchSurface (const PointCloudInConstPtr &cloud) override;
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
@@ -160,10 +160,10 @@ namespace pcl
     
     protected:
       bool
-      initCompute ();
+      initCompute () override;
 
       void 
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
       /** \brief return true if a point lies within the line between the nucleus and the centroid
         * \param[in] nucleus coordinate of the nucleus
         * \param[in] centroid of the SUSAN

@@ -66,7 +66,7 @@ namespace pcl
         * \param[out] output cloud containing centroids of voxels containing a sufficient number of points
         */
       void 
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
   };
 }

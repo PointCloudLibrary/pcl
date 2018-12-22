@@ -75,7 +75,7 @@ namespace pcl
       /** Constructor */
       NarfDescriptor (const RangeImage* range_image=NULL, const std::vector<int>* indices=NULL);
       /** Destructor */
-      virtual ~NarfDescriptor();
+      ~NarfDescriptor();
       
       // =====METHODS=====
       //! Set input data
@@ -98,8 +98,8 @@ namespace pcl
       
       // =====PROTECTED METHODS=====
       /** Implementation of abstract derived function */
-      virtual void 
-      computeFeature (PointCloudOut& output);
+      void 
+      computeFeature (PointCloudOut& output) override;
   };
 
 }  // namespace end

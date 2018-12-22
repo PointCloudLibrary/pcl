@@ -102,7 +102,7 @@ namespace pcl
         * \param output the resultant point cloud model histogram that contains the ESF feature estimates
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief ... */
       int

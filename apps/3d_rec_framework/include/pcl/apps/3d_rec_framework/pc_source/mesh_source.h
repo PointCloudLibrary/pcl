@@ -254,7 +254,7 @@ namespace pcl
          * \brief Creates the model representation of the training set, generating views if needed
          */
         void
-        generate (std::string & training_dir)
+        generate (std::string & training_dir) override
         {
 
           //create training dir fs if not existent

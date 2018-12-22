@@ -80,7 +80,7 @@ namespace pcl
       /** \brief This destructor destroys the cloud, normals and search method used for
         * finding KNN. In other words it frees memory.
         */
-      virtual
+      
       ~RegionGrowing ();
 
       /** \brief Get the minimum number of points that a cluster needs to contain in order to be considered valid. */

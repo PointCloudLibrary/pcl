@@ -35,11 +35,11 @@ namespace pcl
       
     protected:
       /** \brief This method should get called before starting the actual computation. */
-      virtual bool initCompute ();
+      bool initCompute () override;
       
       /** \brief compute the nearest pairs and compute coherence using point_coherences_ */
-      virtual void
-      computeCoherence (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices, float &w_j);
+      void
+      computeCoherence (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices, float &w_j) override;
 
       typename boost::shared_ptr<pcl::search::Octree<PointInT> > search_;
     };

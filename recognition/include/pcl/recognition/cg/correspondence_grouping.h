@@ -62,7 +62,7 @@ namespace pcl
       CorrespondenceGrouping () : scene_ (), model_scene_corrs_ () {}
 
       /** \brief destructor. */
-      virtual ~CorrespondenceGrouping() 
+      ~CorrespondenceGrouping() 
       {
         scene_.reset ();
         model_scene_corrs_.reset ();

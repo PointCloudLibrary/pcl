@@ -80,7 +80,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~BOARDLocalReferenceFrameEstimation () {}
+      ~BOARDLocalReferenceFrameEstimation () {}
 
       //Getters/Setters
 
@@ -254,8 +254,8 @@ namespace pcl
       /** \brief Abstract feature estimation method.
         * \param[out] output the resultant features
         */
-      virtual void
-      computeFeature (PointCloudOut &output);
+      void
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief Given an axis (with origin axis_origin), return the orthogonal axis directed to point.
         *

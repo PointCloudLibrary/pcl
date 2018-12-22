@@ -111,7 +111,7 @@ namespace pcl
       /** Constructor */
       RangeImageBorderExtractor (const RangeImage* range_image=NULL);
       /** Destructor */
-      virtual ~RangeImageBorderExtractor ();
+      ~RangeImageBorderExtractor ();
       
       // =====METHODS=====
       /** \brief Provide a pointer to the range image
@@ -349,8 +349,8 @@ namespace pcl
       blurSurfaceChanges ();
       
       /** \brief Implementation of abstract derived function */
-      virtual void
-      computeFeature (PointCloudOut &output);
+      void
+      computeFeature (PointCloudOut &output) override;
   };
 }  // namespace end
 #if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3

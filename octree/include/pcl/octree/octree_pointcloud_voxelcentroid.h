@@ -60,7 +60,7 @@ namespace pcl
         }
 
         /** \brief Empty class deconstructor. */
-        virtual ~OctreePointCloudVoxelCentroidContainer ()
+        ~OctreePointCloudVoxelCentroidContainer ()
         {
         }
 
@@ -74,7 +74,7 @@ namespace pcl
         /** \brief Equal comparison operator - set to false
          */
          // param[in] OctreePointCloudVoxelCentroidContainer to compare with
-        virtual bool operator==(const OctreeContainerBase&) const
+        bool operator==(const OctreeContainerBase&) const override
         {
           return ( false );
         }
@@ -112,8 +112,8 @@ namespace pcl
         }
 
         /** \brief Reset leaf container. */
-        virtual void 
-        reset ()
+        void 
+        reset () override
         {
           using namespace pcl::common;
 
@@ -157,7 +157,7 @@ namespace pcl
         }
 
         /** \brief Empty class deconstructor. */
-        virtual
+        
         ~OctreePointCloudVoxelCentroid ()
         {
         }
@@ -165,8 +165,8 @@ namespace pcl
         /** \brief Add DataT object to leaf node at octree key.
           * \param pointIdx_arg
           */
-        virtual void 
-        addPointIdx (const int pointIdx_arg)
+        void 
+        addPointIdx (const int pointIdx_arg) override
         {
           OctreeKey key;
 

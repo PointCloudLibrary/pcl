@@ -172,7 +172,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains boundary point estimates
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief The decision boundary (angle threshold) that marks points as boundary or regular. (default \f$\pi / 2.0\f$) */
       float angle_threshold_;

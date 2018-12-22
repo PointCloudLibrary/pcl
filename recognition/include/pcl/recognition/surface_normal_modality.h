@@ -330,7 +330,7 @@ namespace pcl
       /** \brief Constructor. */
       SurfaceNormalModality ();
       /** \brief Destructor. */
-      virtual ~SurfaceNormalModality ();
+      ~SurfaceNormalModality ();
 
       /** \brief Sets the spreading size.
         * \param[in] spreading_size the spreading size.
@@ -366,14 +366,14 @@ namespace pcl
 
       /** \brief Returns a reference to the internal quantized map. */
       inline QuantizedMap &
-      getQuantizedMap () 
+      getQuantizedMap () override 
       { 
         return (filtered_quantized_surface_normals_); 
       }
 
       /** \brief Returns a reference to the internal spread quantized map. */
       inline QuantizedMap &
-      getSpreadedQuantizedMap () 
+      getSpreadedQuantizedMap () override 
       { 
         return (spreaded_quantized_surface_normals_); 
       }
@@ -394,7 +394,7 @@ namespace pcl
         */
       void 
       extractFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index,
-                       std::vector<QuantizedMultiModFeature> & features) const;
+                       std::vector<QuantizedMultiModFeature> & features) const override;
 
       /** \brief Extracts all possible features from the modality within the specified mask.
         * \param[in] mask defines the areas where features are searched in. 
@@ -404,13 +404,13 @@ namespace pcl
         */
       void 
       extractAllFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index,
-                          std::vector<QuantizedMultiModFeature> & features) const;
+                          std::vector<QuantizedMultiModFeature> & features) const override;
 
       /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
         * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
-      virtual void 
-      setInputCloud (const typename PointCloudIn::ConstPtr & cloud) 
+      void 
+      setInputCloud (const typename PointCloudIn::ConstPtr & cloud) override 
       { 
         input_ = cloud;
       }

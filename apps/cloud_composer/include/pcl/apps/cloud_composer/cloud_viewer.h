@@ -58,7 +58,7 @@ namespace pcl
       public:
         
         CloudViewer (QWidget* parent = 0);
-        virtual ~CloudViewer();
+        ~CloudViewer();
         ProjectModel* getModel () const;
 
       public Q_SLOTS:

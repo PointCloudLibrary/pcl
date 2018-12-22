@@ -77,14 +77,14 @@ namespace pcl
         static ImageViewerInteractorStyle *New ();
         ImageViewerInteractorStyle ();
 
-        virtual void OnMouseWheelForward () {}
-        virtual void OnMouseWheelBackward () {}
-        virtual void OnMiddleButtonDown () {}
-        virtual void OnRightButtonDown () {}
-        virtual void OnLeftButtonDown ();
+        void OnMouseWheelForward () override {}
+        void OnMouseWheelBackward () override {}
+        void OnMiddleButtonDown () override {}
+        void OnRightButtonDown () override {}
+        void OnLeftButtonDown () override;
 
-        virtual void
-        OnChar ();
+        void
+        OnChar () override;
 
         void
         adjustCamera (vtkImageData *image, vtkRenderer *ren);
@@ -922,8 +922,8 @@ namespace pcl
           {
             return (new ExitMainLoopTimerCallback);
           }
-          virtual void 
-          Execute (vtkObject* vtkNotUsed (caller), unsigned long event_id, void* call_data)
+          void 
+          Execute (vtkObject* vtkNotUsed (caller), unsigned long event_id, void* call_data) override
           {
             if (event_id != vtkCommand::TimerEvent)
               return;
@@ -943,8 +943,8 @@ namespace pcl
           {
             return (new ExitCallback);
           }
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*)
+          void 
+          Execute (vtkObject*, unsigned long event_id, void*) override
           {
             if (event_id != vtkCommand::ExitEvent)
               return;

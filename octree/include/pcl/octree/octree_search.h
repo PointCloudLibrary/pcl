@@ -84,7 +84,7 @@ namespace pcl
         }
 
         /** \brief Empty class destructor. */
-        virtual
+        
         ~OctreePointCloudSearch ()
         {
         }

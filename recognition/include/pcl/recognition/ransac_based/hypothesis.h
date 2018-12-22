@@ -95,7 +95,7 @@ namespace pcl
         {
         }
 
-        virtual ~Hypothesis (){}
+        ~Hypothesis (){}
 
         const Hypothesis&
         operator =(const Hypothesis& src)

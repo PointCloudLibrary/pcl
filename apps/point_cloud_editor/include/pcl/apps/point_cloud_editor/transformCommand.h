@@ -65,11 +65,11 @@ class TransformCommand : public Command
     // Transforms the coorindates of the selected points according to the transform
     // matrix.
     void
-    execute ();
+    execute () override;
 
     // Restore the coordinates of the transformed points.
     void
-    undo ();
+    undo () override;
 
   private:
     /// @brief Copy constructor  - object is not copy-constructable

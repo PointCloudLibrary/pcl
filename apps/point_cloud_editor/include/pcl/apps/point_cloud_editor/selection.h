@@ -186,7 +186,7 @@ class Selection : public Statistics
 
     /// @brief Get the statistics of the selected points in string.
     std::string
-    getStat () const;
+    getStat () const override;
 
   private:
     /// @brief Default constructor - object is not default constructable

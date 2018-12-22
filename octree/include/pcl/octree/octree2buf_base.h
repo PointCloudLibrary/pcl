@@ -87,13 +87,13 @@ namespace pcl
         }
 
         /** \brief Empty constructor. */
-        virtual ~BufferedBranchNode ()
+        ~BufferedBranchNode ()
         {
         }
 
         /** \brief Method to perform a deep copy of the octree */
-        virtual BufferedBranchNode*
-        deepCopy () const
+        BufferedBranchNode*
+        deepCopy () const override
         {
           return new BufferedBranchNode (*this);
         }
@@ -134,7 +134,7 @@ namespace pcl
         }
 
         /** \brief Get the type of octree node. Returns LEAVE_NODE type */
-        virtual node_type_t getNodeType () const
+        node_type_t getNodeType () const override
         {
           return BRANCH_NODE;
         }

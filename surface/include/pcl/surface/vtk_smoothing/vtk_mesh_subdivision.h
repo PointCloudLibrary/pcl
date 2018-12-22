@@ -76,7 +76,7 @@ namespace pcl
 
     protected:
       void
-      performProcessing (pcl::PolygonMesh &output);
+      performProcessing (pcl::PolygonMesh &output) override;
 
     private:
       MeshSubdivisionVTKFilterType filter_type_;

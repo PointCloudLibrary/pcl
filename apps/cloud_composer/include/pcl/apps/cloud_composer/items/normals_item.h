@@ -55,20 +55,20 @@ namespace pcl
                      pcl::PointCloud<pcl::Normal>::Ptr normals_ptr,
                      double radius);
         NormalsItem (const NormalsItem& to_copy);
-        virtual ~NormalsItem ();
+        ~NormalsItem ();
         
-        inline virtual int 
-        type () const { return NORMALS_ITEM; }
+        inline int 
+        type () const override { return NORMALS_ITEM; }
 
-        virtual NormalsItem*
-        clone () const;
+        NormalsItem*
+        clone () const override;
         
-        virtual void 
-        paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        void 
+        paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const override;
         
         /** \brief Remove from View function - removes the normal cloud from a PCLVisualizer object*/
-        virtual void
-        removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        void
+        removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const override;
         
       private:
         pcl::PointCloud<pcl::Normal>::Ptr normals_ptr_;

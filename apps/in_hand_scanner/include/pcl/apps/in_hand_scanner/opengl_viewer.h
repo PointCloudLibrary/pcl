@@ -236,12 +236,12 @@ namespace pcl
         setVisibilityConfidenceNormalization (const float vis_conf_norm);
 
         /** \see http://doc.qt.digia.com/qt/qwidget.html#minimumSizeHint-prop */
-        virtual QSize
-        minimumSizeHint () const;
+        QSize
+        minimumSizeHint () const override;
 
         /** \see http://doc.qt.digia.com/qt/qwidget.html#sizeHint-prop */
-        virtual QSize
-        sizeHint () const;
+        QSize
+        sizeHint () const override;
 
         /** \brief Set the scaling factor to convert from meters to the unit of the drawn files. */
         void
@@ -321,8 +321,8 @@ namespace pcl
         /** \see http://doc.qt.digia.com/qt/qwidget.html#paintEvent
           * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
           */
-        virtual void
-        paintEvent (QPaintEvent* event);
+        void
+        paintEvent (QPaintEvent* event) override;
 
       private:
 
@@ -364,7 +364,7 @@ namespace pcl
 
         /** \see http://doc.qt.digia.com/qt/qglwidget.html#initializeGL */
         void
-        initializeGL ();
+        initializeGL () override;
 
         /** \see http://www.opengl.org/sdk/docs/man/xhtml/glViewport.xml */
         void
@@ -372,19 +372,19 @@ namespace pcl
 
         /** \see http://doc.qt.digia.com/qt/qglwidget.html#resizeGL */
         void
-        resizeGL (int w, int h);
+        resizeGL (int w, int h) override;
 
         /** \see http://doc.qt.digia.com/qt/qwidget.html#mousePressEvent */
         void
-        mousePressEvent (QMouseEvent* event);
+        mousePressEvent (QMouseEvent* event) override;
 
         /** \see http://doc.qt.digia.com/qt/qwidget.html#mouseMoveEvent */
         void
-        mouseMoveEvent (QMouseEvent* event);
+        mouseMoveEvent (QMouseEvent* event) override;
 
         /** \see http://doc.qt.digia.com/qt/qwidget.html#wheelEvent */
         void
-        wheelEvent (QWheelEvent* event);
+        wheelEvent (QWheelEvent* event) override;
 
         ////////////////////////////////////////////////////////////////////////
         // Members

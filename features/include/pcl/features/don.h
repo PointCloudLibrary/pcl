@@ -86,7 +86,7 @@ namespace pcl
         feature_name_ = "DifferenceOfNormalsEstimation";
       }
 
-      virtual ~DifferenceOfNormalsEstimation ()
+      ~DifferenceOfNormalsEstimation ()
       {
         //
       }
@@ -115,15 +115,15 @@ namespace pcl
        * Computes the DoN vector for each point in the input point cloud and outputs the vector cloud to the given output.
        * @param output the cloud to output the DoN vector cloud to.
        */
-      virtual void
-      computeFeature (PointCloudOut &output);
+      void
+      computeFeature (PointCloudOut &output) override;
 
       /**
        * Initialize for computation of features.
        * @return true if parameters (input normals, input) are sufficient to perform computation.
        */
-      virtual bool
-      initCompute ();
+      bool
+      initCompute () override;
     private:
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
         * \param[out] output the output point cloud

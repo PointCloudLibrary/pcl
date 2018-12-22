@@ -79,8 +79,8 @@ namespace pcl
         virtual
         ~TriangleMeshModel ();
 
-        virtual void
-        draw ();
+        void
+        draw () override;
 
       private:
         GLuint vbo_;
@@ -95,7 +95,7 @@ namespace pcl
       public:
         PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg);
         virtual ~PolygonMeshModel();
-        virtual void draw();
+        void draw() override;
 
         typedef boost::shared_ptr<PolygonMeshModel> Ptr;
         typedef boost::shared_ptr<const PolygonMeshModel> ConstPtr;
@@ -128,8 +128,8 @@ namespace pcl
         virtual
         ~PointCloudModel ();
 
-        virtual void
-        draw();
+        void
+        draw() override;
 
       private:
         float* vertices_;

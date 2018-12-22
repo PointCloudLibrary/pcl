@@ -86,7 +86,7 @@ namespace pcl
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
     protected:
       /** \brief The number of threads the scheduler should use. */

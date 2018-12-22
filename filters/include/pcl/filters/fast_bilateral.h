@@ -72,7 +72,7 @@ namespace pcl
       { }
       
       /** \brief Empty destructor */
-      virtual ~FastBilateralFilter () {}
+      ~FastBilateralFilter () {}
 
       /** \brief Set the standard deviation of the Gaussian used by the bilateral filter for
         * the spatial neighborhood/window.
@@ -104,8 +104,8 @@ namespace pcl
       /** \brief Filter the input data and store the results into output.
         * \param[out] output the resultant point cloud
         */
-      virtual void
-      applyFilter (PointCloud &output);
+      void
+      applyFilter (PointCloud &output) override;
 
     protected:
       float sigma_s_;

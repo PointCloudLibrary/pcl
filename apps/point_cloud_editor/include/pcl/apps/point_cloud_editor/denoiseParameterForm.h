@@ -86,11 +86,11 @@ class DenoiseParameterForm : public QDialog
     /// @brief Accepts and stores the current user inputs, and turns off the
     /// dialog box.
     void
-    accept ();
+    accept () override;
 
     /// @brief Rejects the current inputs, and turns off the dialog box.
     void
-    reject ();
+    reject () override;
 
   private:
     /// The line for entering the mean

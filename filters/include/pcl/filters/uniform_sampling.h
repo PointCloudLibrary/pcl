@@ -86,7 +86,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~UniformSampling ()
+      ~UniformSampling ()
       {
         leaves_.clear();
       }
@@ -133,7 +133,7 @@ namespace pcl
         * \param[out] output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
   };
 }
 

@@ -144,13 +144,13 @@ namespace pcl
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (Cloud &output);
+      applyFilter (Cloud &output) override;
 
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (std::vector<int> &indices) override;
 
       static bool
       sort_dot_list_function (std::pair<int, double> a,

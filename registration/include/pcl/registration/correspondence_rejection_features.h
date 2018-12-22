@@ -74,7 +74,7 @@ namespace pcl
         }
 
         /** \brief Empty destructor. */
-        virtual ~CorrespondenceRejectorFeatures () {}
+        ~CorrespondenceRejectorFeatures () {}
 
         /** \brief Get a list of valid correspondences after rejection from the original set of correspondences
           * \param[in] original_correspondences the set of initial correspondences given
@@ -82,7 +82,7 @@ namespace pcl
           */
         void 
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
-                                     pcl::Correspondences& remaining_correspondences);
+                                     pcl::Correspondences& remaining_correspondences) override;
 
         /** \brief Provide a pointer to a cloud of feature descriptors associated with the source point cloud
           * \param[in] source_feature a cloud of feature descriptors associated with the source point cloud
@@ -141,7 +141,7 @@ namespace pcl
           * \param[out] correspondences the set of resultant correspondences.
           */
         inline void 
-        applyRejection (pcl::Correspondences &correspondences)
+        applyRejection (pcl::Correspondences &correspondences) override
         {
           getRemainingCorrespondences (*input_correspondences_, correspondences);
         }
@@ -187,7 +187,7 @@ namespace pcl
             }
       
             /** \brief Empty destructor */
-            virtual ~FeatureContainer () {}
+            ~FeatureContainer () {}
 
             inline void 
             setSourceFeature (const FeatureCloudConstPtr &source_features)
@@ -219,8 +219,8 @@ namespace pcl
               thresh_ = thresh;
             }
 
-            virtual inline bool 
-            isValid ()
+            inline bool 
+            isValid () override
             {
               if (!source_features_ || !target_features_)
                 return (false);
@@ -242,8 +242,8 @@ namespace pcl
               * \param[in] index the index to check in the list of correspondences
               * \return score the resultant computed score
               */
-            virtual inline double
-            getCorrespondenceScore (int index)
+            inline double
+            getCorrespondenceScore (int index) override
             {
               // If no feature representation was given, reset to the default implementation for FeatureT
               if (!feature_representation_)
@@ -275,8 +275,8 @@ namespace pcl
               * \param[in] index the index to check in the list of correspondences
               * \return true if the correspondence is good, false otherwise
               */
-            virtual inline bool
-            isCorrespondenceValid (int index)
+            inline bool
+            isCorrespondenceValid (int index) override
             {
               if (getCorrespondenceScore (index) < thresh_ * thresh_)
                 return (true);

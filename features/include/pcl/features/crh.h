@@ -133,7 +133,7 @@ namespace pcl
        * \param[out] output the resultant point cloud with a CRH histogram
        */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
   };
 }
 

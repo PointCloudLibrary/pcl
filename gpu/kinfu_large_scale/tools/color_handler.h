@@ -63,8 +63,8 @@ namespace pcl
         capable_ = true;
       }
             
-      virtual bool 
-      getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+      bool 
+      getColor (vtkSmartPointer<vtkDataArray> &scalars) const override
       {
         if (!capable_)
           return (false);
@@ -92,8 +92,8 @@ namespace pcl
       }
     
     private:
-      virtual std::string getFieldName () const { return ("rgb"); }    
-      virtual inline std::string getName () const { return ("PointCloudColorHandlerRGBHack"); }
+      std::string getFieldName () const override { return ("rgb"); }    
+      inline std::string getName () const override { return ("PointCloudColorHandlerRGBHack"); }
       RgbCloudConstPtr rgb_;    
     };
   }

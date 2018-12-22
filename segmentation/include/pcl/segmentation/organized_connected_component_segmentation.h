@@ -84,7 +84,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedConnectedComponentSegmentation. */
-      virtual
+      
       ~OrganizedConnectedComponentSegmentation ()
       {
       }

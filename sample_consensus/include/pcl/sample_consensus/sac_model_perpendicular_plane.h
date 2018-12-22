@@ -111,7 +111,7 @@ namespace pcl
       }
 
       /** \brief Empty destructor */
-      virtual ~SampleConsensusModelPerpendicularPlane () {}
+      ~SampleConsensusModelPerpendicularPlane () {}
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
         * \param[in] ax the axis along which we need to search for a plane perpendicular to
@@ -142,7 +142,7 @@ namespace pcl
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
                             const double threshold, 
-                            std::vector<int> &inliers);
+                            std::vector<int> &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers. 
         * 
@@ -150,9 +150,9 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      virtual int
+      int
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold) const;
+                           const double threshold) const override;
 
       /** \brief Compute all distances from the cloud data to a given plane model.
         * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
@@ -160,11 +160,11 @@ namespace pcl
         */
       void
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances) const;
+                           std::vector<double> &distances) const override;
 
       /** \brief Return an unique id for this model (SACMODEL_PERPENDICULAR_PLANE). */
       inline pcl::SacModel 
-      getModelType () const { return (SACMODEL_PERPENDICULAR_PLANE); }
+      getModelType () const override { return (SACMODEL_PERPENDICULAR_PLANE); }
 
     protected:
       using SampleConsensusModel<PointT>::sample_size_;
@@ -173,8 +173,8 @@ namespace pcl
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      virtual bool
-      isModelValid (const Eigen::VectorXf &model_coefficients) const;
+      bool
+      isModelValid (const Eigen::VectorXf &model_coefficients) const override;
 
       /** \brief The axis along which we need to search for a plane perpendicular to. */
       Eigen::Vector3f axis_;

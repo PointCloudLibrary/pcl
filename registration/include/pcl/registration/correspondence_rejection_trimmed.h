@@ -79,7 +79,7 @@ namespace pcl
         }
 
         /** \brief Destructor. */
-        virtual ~CorrespondenceRejectorTrimmed () {}
+        ~CorrespondenceRejectorTrimmed () {}
 
         /** \brief Set the expected ratio of overlap between point clouds (in
           * terms of correspondences).
@@ -113,7 +113,7 @@ namespace pcl
           */
         void
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences,
-                                     pcl::Correspondences& remaining_correspondences);
+                                     pcl::Correspondences& remaining_correspondences) override;
 
       protected:
 
@@ -121,7 +121,7 @@ namespace pcl
           * \param[out] correspondences the set of resultant correspondences.
           */
         inline void 
-        applyRejection (pcl::Correspondences &correspondences)
+        applyRejection (pcl::Correspondences &correspondences) override
         {
           getRemainingCorrespondences (*input_correspondences_, correspondences);
         }

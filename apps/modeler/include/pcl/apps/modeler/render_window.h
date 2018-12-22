@@ -53,8 +53,8 @@ namespace pcl
         RenderWindow(RenderWindowItem* render_window_item, QWidget *parent = 0, Qt::WindowFlags flags = 0);
         ~RenderWindow();
 
-        virtual QSize
-        sizeHint() const {return QSize(512, 512);}
+        QSize
+        sizeHint() const override {return QSize(512, 512);}
 
         void
         setActive(bool flag);
@@ -82,7 +82,7 @@ namespace pcl
 
       protected:
         void
-        focusInEvent(QFocusEvent * event);
+        focusInEvent(QFocusEvent * event) override;
 
       private:
         void

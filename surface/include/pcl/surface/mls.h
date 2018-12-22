@@ -317,7 +317,7 @@ namespace pcl
                               {};
 
       /** \brief Empty destructor */
-      virtual ~MovingLeastSquares () {}
+      ~MovingLeastSquares () {}
 
 
       /** \brief Set whether the algorithm should also store the normals computed
@@ -528,7 +528,7 @@ namespace pcl
         * \param[out] output the resultant reconstructed surface model
         */
       void
-      process (PointCloudOut &output);
+      process (PointCloudOut &output) override;
 
 
       /** \brief Get the set of indices with each point in output having the
@@ -722,8 +722,8 @@ namespace pcl
       /** \brief Abstract surface reconstruction method.
         * \param[out] output the result of the reconstruction
         */
-      virtual void
-      performProcessing (PointCloudOut &output);
+      void
+      performProcessing (PointCloudOut &output) override;
 
       /** \brief Perform upsampling for the distinct-cloud and voxel-grid methods
         * \param[out] output the result of the reconstruction

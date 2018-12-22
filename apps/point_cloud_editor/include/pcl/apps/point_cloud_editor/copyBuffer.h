@@ -100,7 +100,7 @@ class CopyBuffer : public Statistics
         
     /// @brief Get the statistics of the copied points in string.
     std::string
-    getStat () const;
+    getStat () const override;
 
     /// @brief Returns true if the buffer is empty, false otherwise
     bool

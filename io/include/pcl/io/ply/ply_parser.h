@@ -332,7 +332,7 @@ namespace pcl
             {}
             bool parse (class ply_parser& ply_parser, 
                         format_type format, 
-                        std::istream& istream) 
+                        std::istream& istream) override 
             { 
               return ply_parser.parse_scalar_property<scalar_type> (format, istream, callback); 
             }
@@ -358,7 +358,7 @@ namespace pcl
             {}
             bool parse (class ply_parser& ply_parser, 
                         format_type format, 
-                        std::istream& istream) 
+                        std::istream& istream) override 
             { 
               return ply_parser.parse_list_property<size_type, scalar_type> (format, 
                                                                              istream,

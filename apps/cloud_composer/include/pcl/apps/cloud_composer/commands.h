@@ -59,17 +59,17 @@ namespace pcl
       public: 
         CloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
         
-        virtual
+        
         ~CloudCommand ();
         
         virtual bool
         runCommand (AbstractTool* tool) = 0;
 
-        virtual void 
-        undo ()  = 0;
+        void 
+        undo ()  override = 0;
         
-        virtual void
-        redo () = 0;
+        void
+        redo () override = 0;
         
         //QList <CloudComposerItem*> 
        // executeToolOnTemplateCloud (AbstractTool* tool, ConstItemList &input_data);
@@ -122,14 +122,14 @@ namespace pcl
       public: 
         ModifyItemCommand (ConstItemList input_data, QUndoCommand* parent = 0);
     
-        virtual bool
-        runCommand (AbstractTool* tool);
+        bool
+        runCommand (AbstractTool* tool) override;
         
-        virtual void
-        undo ();
+        void
+        undo () override;
       
-        virtual void
-        redo ();
+        void
+        redo () override;
       private: 
         
       
@@ -141,14 +141,14 @@ namespace pcl
       public: 
         NewItemCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
       
-        virtual bool
-        runCommand (AbstractTool* tool);
+        bool
+        runCommand (AbstractTool* tool) override;
         
-        virtual void
-        undo ();
+        void
+        undo () override;
       
-        virtual void
-        redo ();
+        void
+        redo () override;
 
     };
     
@@ -158,14 +158,14 @@ namespace pcl
       public: 
         SplitCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
       
-        virtual bool
-        runCommand (AbstractTool* tool);
+        bool
+        runCommand (AbstractTool* tool) override;
         
-        virtual void
-        undo ();
+        void
+        undo () override;
       
-        virtual void
-        redo ();
+        void
+        redo () override;
       private:
 
     };  
@@ -175,14 +175,14 @@ namespace pcl
       public: 
         DeleteItemCommand (ConstItemList input_data, QUndoCommand* parent = 0);
       
-        virtual bool
-        runCommand (AbstractTool* tool);
+        bool
+        runCommand (AbstractTool* tool) override;
         
-        virtual void
-        undo ();
+        void
+        undo () override;
       
-        virtual void
-        redo ();
+        void
+        redo () override;
       private:
     };
     
@@ -195,14 +195,14 @@ namespace pcl
          */
         MergeCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
       
-        virtual bool
-        runCommand (AbstractTool* tool);
+        bool
+        runCommand (AbstractTool* tool) override;
         
-        virtual void
-        undo ();
+        void
+        undo () override;
       
-        virtual void
-        redo ();
+        void
+        redo () override;
         
         inline void
         setSelectedIndicesMap( const QMap <CloudItem*, pcl::PointIndices::Ptr > selected_item_index_map)
