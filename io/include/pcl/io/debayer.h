@@ -38,7 +38,7 @@
 #pragma once
 
 #include <pcl/pcl_exports.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace pcl
 {

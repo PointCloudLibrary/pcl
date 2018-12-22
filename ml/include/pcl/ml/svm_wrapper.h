@@ -38,11 +38,11 @@
 
 #pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
+#include <cerrno>
 #include <iostream>
 #include <fstream>
 #include <pcl/common/eigen.h>

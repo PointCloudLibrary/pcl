@@ -41,7 +41,7 @@
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 #include <limits>
 

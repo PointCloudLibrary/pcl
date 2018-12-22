@@ -39,14 +39,14 @@
 #ifndef _LIBSVM_HPP_
 #define _LIBSVM_HPP_
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <float.h>
-#include <string.h>
-#include <stdarg.h>
-#include <limits.h>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <cfloat>
+#include <cstring>
+#include <cstdarg>
+#include <climits>
 #include <pcl/ml/svm.h>
 #include <iostream>
 int libsvm_version = LIBSVM_VERSION;

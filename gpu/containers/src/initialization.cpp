@@ -38,7 +38,7 @@
 #include <pcl/gpu/utils/safe_call.hpp>
 
 #include "cuda.h"
-#include <stdio.h>
+#include <cstdio>
 
 #define HAVE_CUDA
 //#include <pcl_config.h>

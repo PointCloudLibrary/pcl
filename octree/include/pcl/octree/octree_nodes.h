@@ -40,7 +40,7 @@
 
 #include <cstddef>
 
-#include <assert.h>
+#include <cassert>
 
 #include <Eigen/Core>
 

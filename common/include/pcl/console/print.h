@@ -37,8 +37,8 @@
 
 #pragma once
 
-#include <stdio.h>
-#include <stdarg.h>
+#include <cstdio>
+#include <cstdarg>
 
 #include <pcl/pcl_exports.h>
 #include <pcl/pcl_config.h>

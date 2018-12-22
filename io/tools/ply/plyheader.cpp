@@ -39,9 +39,9 @@
 
 #include <fstream>
 #include <iostream>
-#include <string.h>
+#include <cstring>
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 
 /** \file plheader extracts and prints out the header of a PLY file
   * 

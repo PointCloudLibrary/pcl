@@ -46,9 +46,9 @@
 
 #include <iostream>
 #include <vector>
-#include <stdio.h>
+#include <cstdio>
 #include <sstream>
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 

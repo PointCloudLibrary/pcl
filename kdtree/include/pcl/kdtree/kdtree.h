@@ -38,7 +38,7 @@
 
 #pragma once
 
-#include <limits.h>
+#include <climits>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>

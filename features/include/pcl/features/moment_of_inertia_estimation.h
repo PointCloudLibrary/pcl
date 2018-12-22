@@ -40,7 +40,7 @@
 #pragma once
 
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include <pcl/features/feature.h>
 #include <pcl/PointIndices.h>
 

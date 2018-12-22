@@ -42,7 +42,7 @@
 
 #include <cfloat>
 #include <ctime>
-#include <limits.h>
+#include <climits>
 #include <set>
 
 #include <pcl/console/print.h>

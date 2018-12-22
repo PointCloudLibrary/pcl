@@ -47,13 +47,11 @@
 
 #include "compression_profiles.h"
 
+#include <cstdio>
+#include <cstring>
+#include <iostream>
 #include <iterator>
-#include <iostream>
 #include <vector>
-#include <string.h>
-#include <iostream>
-#include <stdio.h>
-#include <string.h>
 
 using namespace pcl::octree;
 
