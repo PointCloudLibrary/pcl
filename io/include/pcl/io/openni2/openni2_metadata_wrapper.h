@@ -59,38 +59,38 @@ namespace pcl
             : metadata_(metadata)
           {}
 
-          virtual inline const void*
-          getData () const
+          inline const void*
+          getData () const override
           {
             return (metadata_.getData ());
           }
 
-          virtual inline unsigned
-          getDataSize () const
+          inline unsigned
+          getDataSize () const override
           {
             return (metadata_.getDataSize ());
           }
 
-          virtual inline unsigned
-          getWidth () const
+          inline unsigned
+          getWidth () const override
           {
             return (metadata_.getWidth ());
           }
 
-          virtual inline unsigned
-          getHeight () const
+          inline unsigned
+          getHeight () const override
           {
             return (metadata_.getHeight ());
           }
 
-          virtual inline unsigned
-          getFrameID () const
+          inline unsigned
+          getFrameID () const override
           {
             return (metadata_.getFrameIndex ());
           }
 
-          virtual inline uint64_t
-          getTimestamp () const
+          inline uint64_t
+          getTimestamp () const override
           {
             return (metadata_.getTimestamp ());
           }

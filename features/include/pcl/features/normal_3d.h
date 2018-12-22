@@ -268,7 +268,7 @@ namespace pcl
       };
       
       /** \brief Empty destructor */
-      virtual ~NormalEstimation () {}
+      ~NormalEstimation () {}
 
       /** \brief Compute the Least-Squares plane fit for a given set of points, using their indices,
         * and return the estimated plane parameters together with the surface curvature.
@@ -328,8 +328,8 @@ namespace pcl
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
         */
-      virtual inline void 
-      setInputCloud (const PointCloudConstPtr &cloud)
+      inline void 
+      setInputCloud (const PointCloudConstPtr &cloud) override
       {
         input_ = cloud;
         if (use_sensor_origin_)
@@ -399,7 +399,7 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains surface normals and curvatures
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief Values describing the viewpoint ("pinhole" camera model assumed). For per point viewpoints, inherit
         * from NormalEstimation and provide your own computeFeature (). By default, the viewpoint is set to 0,0,0. */

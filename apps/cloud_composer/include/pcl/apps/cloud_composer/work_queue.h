@@ -59,7 +59,7 @@ namespace pcl
       Q_OBJECT
       public:
         WorkQueue (QObject* parent = 0);  
-        virtual ~WorkQueue();  
+        ~WorkQueue();  
       public Q_SLOTS:
         void
         enqueueNewAction (AbstractTool* new_tool, ConstItemList input_data);

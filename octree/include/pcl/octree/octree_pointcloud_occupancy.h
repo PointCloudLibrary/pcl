@@ -83,7 +83,7 @@ namespace pcl
         }
 
         /** \brief Empty class constructor. */
-        virtual
+        
         ~OctreePointCloudOccupancy ()
         {
         }

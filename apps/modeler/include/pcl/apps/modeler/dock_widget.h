@@ -52,8 +52,8 @@ namespace pcl
         void
         setFocusBasedStyle(bool focused);
       protected:
-        virtual void
-        focusInEvent ( QFocusEvent * event );
+        void
+        focusInEvent ( QFocusEvent * event ) override;
 
       private:
     };

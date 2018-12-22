@@ -65,7 +65,7 @@ namespace pcl
     public:
       ToolBoxModel (QTreeView* tool_view = 0, QTreeView* parameter_view = 0, QObject *parent = 0);
       ToolBoxModel (const ToolBoxModel& to_copy);
-      virtual ~ToolBoxModel ();
+      ~ToolBoxModel ();
       
       void
       addTool (ToolFactory* tool_factory);

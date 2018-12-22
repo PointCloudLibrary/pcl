@@ -84,7 +84,7 @@ namespace pcl
       }
       
       /** \brief Destructor for RGBPlaneCoefficientComparator. */
-      virtual
+      
       ~RGBPlaneCoefficientComparator ()
       {
       }
@@ -110,7 +110,7 @@ namespace pcl
         * \param[in] idx2 The index of the second point.
         */
       bool
-      compare (int idx1, int idx2) const
+      compare (int idx1, int idx2) const override
       {
         float dx = input_->points[idx1].x - input_->points[idx2].x;
         float dy = input_->points[idx1].y - input_->points[idx2].y;

@@ -53,27 +53,27 @@ namespace pcl
                         const vtkSmartPointer<vtkRenderWindow>& render_window);
         ~NormalsActorItem ();
 
-        virtual std::string
-        getItemName() const {return "Points Actor Item";}
+        std::string
+        getItemName() const override {return "Points Actor Item";}
 
       protected:
         void
         createNormalLines();
 
-        virtual void
-        initImpl();
+        void
+        initImpl() override;
 
-        virtual void
-        updateImpl();
+        void
+        updateImpl() override;
 
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
+        void
+        prepareContextMenu(QMenu* menu) const override;
 
-        virtual void
-        prepareProperties(ParameterDialog* parameter_dialog);
+        void
+        prepareProperties(ParameterDialog* parameter_dialog) override;
 
-        virtual void
-        setProperties();
+        void
+        setProperties() override;
 
       private:
         double    level_;

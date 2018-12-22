@@ -171,7 +171,7 @@ namespace pcl
         //shuffle file and get the first num_images_ as requested by a tree
         //extract positive and negative samples
         //create training examples and labels
-        void getDatasetAndLabels(DataSet & data_set, std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples);
+        void getDatasetAndLabels(DataSet & data_set, std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples) override;
     };
   }
 }

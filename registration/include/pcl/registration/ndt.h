@@ -96,13 +96,13 @@ namespace pcl
       NormalDistributionsTransform ();
       
       /** \brief Empty destructor */
-      virtual ~NormalDistributionsTransform () {}
+      ~NormalDistributionsTransform () {}
 
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to).
         * \param[in] cloud the input point cloud target
         */
       inline void
-      setInputTarget (const PointCloudTargetConstPtr &cloud)
+      setInputTarget (const PointCloudTargetConstPtr &cloud) override
       {
         Registration<PointSource, PointTarget>::setInputTarget (cloud);
         init ();
@@ -244,8 +244,8 @@ namespace pcl
         * \param[out] output the resultant input transformed point cloud dataset
         * \param[in] guess the initial gross estimation of the transformation
         */
-      virtual void
-      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess);
+      void
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess) override;
 
       /** \brief Initiate covariance voxel structure. */
       void inline

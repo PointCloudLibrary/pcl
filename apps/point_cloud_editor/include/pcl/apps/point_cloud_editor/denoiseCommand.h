@@ -70,11 +70,11 @@ public:
 protected:
   /// @brief Runs the denois algorithm to remove all the outliers.
   void
-  execute ();
+  execute () override;
 
   /// @brief Adds the removed noisy points back to the cloud
   void
-  undo ();
+  undo () override;
 
 private:
   /// @brief Default Constructor

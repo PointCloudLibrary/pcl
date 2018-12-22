@@ -83,7 +83,7 @@ class TestMeshCirculators : public ::testing::Test
     //  \ / \ /  //
     //   3 - 4   //
     void
-    SetUp ()
+    SetUp () override
     {
       for (int i=0; i<7; ++i) mesh_.addVertex ();
 

@@ -233,7 +233,7 @@ namespace pcl
         * \param output the resultant point cloud message
         */
       void 
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Write a single point from the hash to the output cloud
         */

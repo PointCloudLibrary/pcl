@@ -128,7 +128,7 @@ namespace pcl
       }
 
       /** \brief destructor. */
-      virtual ~Registration () {}
+      ~Registration () {}
 
       /** \brief Provide a pointer to the transformation estimation object.
         * (e.g., SVD, point to plane etc.) 

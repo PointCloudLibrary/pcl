@@ -92,8 +92,8 @@ namespace pcl
             openni::OpenNI::removeDeviceStateChangedListener (this);
           }
 
-          virtual void
-          onDeviceStateChanged (const openni::DeviceInfo* pInfo, openni::DeviceState state)
+          void
+          onDeviceStateChanged (const openni::DeviceInfo* pInfo, openni::DeviceState state) override
           {
             switch (state)
             {
@@ -109,8 +109,8 @@ namespace pcl
             }
           }
 
-          virtual void
-          onDeviceConnected (const openni::DeviceInfo* pInfo)
+          void
+          onDeviceConnected (const openni::DeviceInfo* pInfo) override
           {
             boost::mutex::scoped_lock l (device_mutex_);
 
@@ -121,8 +121,8 @@ namespace pcl
             device_set_.insert (device_info_wrapped);
           }
 
-          virtual void
-          onDeviceDisconnected (const openni::DeviceInfo* pInfo)
+          void
+          onDeviceDisconnected (const openni::DeviceInfo* pInfo) override
           {
             boost::mutex::scoped_lock l (device_mutex_);
 

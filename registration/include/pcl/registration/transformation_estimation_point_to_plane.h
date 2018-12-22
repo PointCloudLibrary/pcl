@@ -71,11 +71,11 @@ namespace pcl
         typedef Eigen::Matrix<Scalar, 4, 1> Vector4;
 
         TransformationEstimationPointToPlane () {};
-        virtual ~TransformationEstimationPointToPlane () {};
+        ~TransformationEstimationPointToPlane () {};
 
       protected:
-        virtual Scalar
-        computeDistance (const PointSource &p_src, const PointTarget &p_tgt) const
+        Scalar
+        computeDistance (const PointSource &p_src, const PointTarget &p_tgt) const override
         {
           // Compute the point-to-plane distance
           Vector4 s (p_src.x, p_src.y, p_src.z, 0);
@@ -84,8 +84,8 @@ namespace pcl
           return ((s - t).dot (n));
         }
 
-        virtual Scalar
-        computeDistance (const Vector4 &p_src, const PointTarget &p_tgt) const
+        Scalar
+        computeDistance (const Vector4 &p_src, const PointTarget &p_tgt) const override
         {
           // Compute the point-to-plane distance
           Vector4 t (p_tgt.x, p_tgt.y, p_tgt.z, 0);

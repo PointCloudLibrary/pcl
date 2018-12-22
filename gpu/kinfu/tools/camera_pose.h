@@ -88,7 +88,7 @@ class CameraPoseWriter : public CameraPoseProcessor
     }
 
     void
-    processPose (const Eigen::Affine3f &pose)
+    processPose (const Eigen::Affine3f &pose) override
     {
       if (out_stream_.good ())
       {

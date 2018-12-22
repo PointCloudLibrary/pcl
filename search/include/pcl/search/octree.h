@@ -98,7 +98,7 @@ namespace pcl
         }
 
         /** \brief Empty Destructor. */
-        virtual
+        
         ~Octree ()
         {
         }
@@ -120,7 +120,7 @@ namespace pcl
           * \param[in] indices the point indices subset that is to be used from \a cloud 
           */
         inline void
-        setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr& indices)
+        setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr& indices) override
         {
           tree_->deleteTree ();
           tree_->setInputCloud (cloud, indices);
@@ -140,7 +140,7 @@ namespace pcl
           */
         inline int
         nearestKSearch (const PointCloud &cloud, int index, int k, std::vector<int> &k_indices,
-                        std::vector<float> &k_sqr_distances) const
+                        std::vector<float> &k_sqr_distances) const override
         {
           return (tree_->nearestKSearch (cloud, index, k, k_indices, k_sqr_distances));
         }
@@ -155,7 +155,7 @@ namespace pcl
           */
         inline int
         nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices,
-                        std::vector<float> &k_sqr_distances) const
+                        std::vector<float> &k_sqr_distances) const override
         {
           return (tree_->nearestKSearch (point, k, k_indices, k_sqr_distances));
         }
@@ -172,7 +172,7 @@ namespace pcl
           * \return number of neighbors found
           */
         inline int
-        nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
+        nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const override
         {
           return (tree_->nearestKSearch (index, k, k_indices, k_sqr_distances));
         }
@@ -192,7 +192,7 @@ namespace pcl
                       double radius,
                       std::vector<int> &k_indices, 
                       std::vector<float> &k_sqr_distances, 
-                      unsigned int max_nn = 0) const
+                      unsigned int max_nn = 0) const override
         {
           tree_->radiusSearch (cloud, index, radius, k_indices, k_sqr_distances, max_nn);
           if (sorted_results_)
@@ -213,7 +213,7 @@ namespace pcl
                       double radius, 
                       std::vector<int> &k_indices,
                       std::vector<float> &k_sqr_distances, 
-                      unsigned int max_nn = 0) const
+                      unsigned int max_nn = 0) const override
         {
           tree_->radiusSearch (p_q, radius, k_indices, k_sqr_distances, max_nn);
           if (sorted_results_)
@@ -232,7 +232,7 @@ namespace pcl
          */
         inline int
         radiusSearch (int index, double radius, std::vector<int> &k_indices,
-                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
+                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const override
         {
           tree_->radiusSearch (index, radius, k_indices, k_sqr_distances, max_nn);
           if (sorted_results_)

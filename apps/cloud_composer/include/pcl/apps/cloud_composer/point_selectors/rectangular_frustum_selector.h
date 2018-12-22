@@ -53,7 +53,7 @@ namespace pcl
         
         RectangularFrustumSelector ();
         
-        virtual ~RectangularFrustumSelector ();
+        ~RectangularFrustumSelector ();
                
         /** \brief Pass a pointer to the actor map
           * \param[in] actors the actor map that will be used with this style
@@ -72,8 +72,8 @@ namespace pcl
         setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { renderers_ = rens; }
 
         /** \brief Function called on left mouse button release, ie, end of rectangular drag */
-        virtual void
-        OnLeftButtonUp ();
+        void
+        OnLeftButtonUp () override;
 
         /** \brief Event emitted once a valid selection has been made */
         int selection_complete_event_;

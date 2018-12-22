@@ -68,13 +68,13 @@ namespace pcl
         WarpPointRigid3D () : WarpPointRigid<PointSourceT, PointTargetT, Scalar> (3) {}
       
         /** \brief Empty destructor */
-        virtual ~WarpPointRigid3D () {}
+        ~WarpPointRigid3D () {}
 
         /** \brief Set warp parameters. 
           * \param[in] p warp parameters (tx ty rz)
           */
-        virtual void 
-        setParam (const VectorX & p)
+        void 
+        setParam (const VectorX & p) override
         {
           assert (p.rows () == this->getDimension ());
           Matrix4 &trans = this->transform_matrix_;

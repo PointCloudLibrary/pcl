@@ -111,7 +111,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the principal curvature estimates
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
     private:
       /** \brief A pointer to the input dataset that contains the point normals of the XYZ dataset. */

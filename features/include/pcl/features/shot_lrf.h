@@ -74,7 +74,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~SHOTLocalReferenceFrameEstimation () {}
+      ~SHOTLocalReferenceFrameEstimation () {}
 
     protected:
       using Feature<PointInT, PointOutT>::feature_name_;
@@ -99,8 +99,8 @@ namespace pcl
       /** \brief Feature estimation method.
         * \param[out] output the resultant features
         */
-      virtual void
-      computeFeature (PointCloudOut &output);
+      void
+      computeFeature (PointCloudOut &output) override;
   };
 }
 

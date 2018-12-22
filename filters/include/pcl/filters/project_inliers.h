@@ -90,7 +90,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~ProjectInliers () {}
+      ~ProjectInliers () {}
 
       /** \brief The type of model to use (user given parameter).
         * \param model the model type (check \a model_types.h)
@@ -145,7 +145,7 @@ namespace pcl
         * \param output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
     private:
       /** \brief A pointer to the vector of model coefficients. */
@@ -194,7 +194,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~ProjectInliers () {}
+      ~ProjectInliers () {}
 
       /** \brief The type of model to use (user given parameter).
         * \param[in] model the model type (check \a model_types.h)
@@ -273,7 +273,7 @@ namespace pcl
       ModelCoefficientsConstPtr model_;
 
       void
-      applyFilter (PCLPointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output) override;
 
     private:
       /** \brief The model that needs to be segmented. */

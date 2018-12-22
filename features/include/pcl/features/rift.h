@@ -138,7 +138,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the RIFT feature estimates
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief The intensity gradient of the input point cloud data*/
       PointCloudGradientConstPtr gradient_;

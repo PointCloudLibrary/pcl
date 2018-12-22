@@ -243,7 +243,7 @@ namespace pcl
         }
       
         /** \brief Empty destructor */
-        virtual ~DataContainer () {}
+        ~DataContainer () {}
 
         /** \brief Provide a source point cloud dataset (must contain XYZ
           * data!), used to compute the correspondence distance.  
@@ -317,7 +317,7 @@ namespace pcl
           * \param[in] index index of the point in the input cloud
           */
         inline double 
-        getCorrespondenceScore (int index)
+        getCorrespondenceScore (int index) override
         {
           if ( target_cloud_updated_ && !force_no_recompute_ )
           {
@@ -335,7 +335,7 @@ namespace pcl
           * \param[in] corr Correspondent points
           */
         inline double 
-        getCorrespondenceScore (const pcl::Correspondence &corr)
+        getCorrespondenceScore (const pcl::Correspondence &corr) override
         {
           // Get the source and the target feature from the list
           const PointT &src = input_->points[corr.index_query];
@@ -350,7 +350,7 @@ namespace pcl
           * \param[in] corr Correspondent points
           */
         inline double
-        getCorrespondenceScoreFromNormals (const pcl::Correspondence &corr)
+        getCorrespondenceScoreFromNormals (const pcl::Correspondence &corr) override
         {
           //assert ( (input_normals_->points.size () != 0) && (target_normals_->points.size () != 0) && "Normals are not set for the input and target point clouds");
           assert (input_normals_ && target_normals_ && "Normals are not set for the input and target point clouds");

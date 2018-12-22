@@ -76,7 +76,7 @@ namespace pcl
                    bool make_templated_cloud = true);
         
         CloudItem (const CloudItem& to_copy);
-        virtual ~CloudItem ();
+        ~CloudItem ();
         
         /** \brief This creates a CloudItem from a templated cloud type */
         template <typename PointT>
@@ -87,27 +87,27 @@ namespace pcl
          *    WARNING : This function modifies "this" - it sets up the templated type if you request one when it doesn't exist yet!
          *      It had to remain const because it is virtual, and we need to keep run-time polymorphism
          */        
-        virtual QVariant
-        data (int role = Qt::UserRole +1) const;
+        QVariant
+        data (int role = Qt::UserRole +1) const override;
         
         /** \brief Virtual data setter which calls QStandardItem::data; used to ensure that template_cloud_set_ is set 
          *         when a templated cloud is added */
-        virtual void
-        setData ( const QVariant & value, int role = Qt::UserRole + 1 );
+        void
+        setData ( const QVariant & value, int role = Qt::UserRole + 1 ) override;
         
-        inline virtual int 
-        type () const { return CLOUD_ITEM; }
+        inline int 
+        type () const override { return CLOUD_ITEM; }
 
-        virtual CloudItem*
-        clone () const;
+        CloudItem*
+        clone () const override;
         
         /** \brief Paint View function - puts this cloud item into a PCLVisualizer object*/
-        virtual void
-        paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        void
+        paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const override;
         
         /** \brief Remove from View function - removes this cloud from a PCLVisualizer object*/
-        virtual void
-        removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        void
+        removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const override;
         
         /** \brief Initializes and stores a templated PointCloud object with point type matching the blob */
         void
@@ -119,8 +119,8 @@ namespace pcl
         template <typename PointT> void
         printNumPoints () const;        
         
-        virtual bool
-        isSanitized () const { return is_sanitized_; }
+        bool
+        isSanitized () const override { return is_sanitized_; }
       private:
         
         //These are just stored for convenience 

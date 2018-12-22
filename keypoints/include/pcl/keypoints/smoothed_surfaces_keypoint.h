@@ -110,11 +110,11 @@ namespace pcl
       setInputScale (float input_scale) { input_scale_ = input_scale; }
 
       void
-      detectKeypoints (PointCloudT &output);
+      detectKeypoints (PointCloudT &output) override;
 
     protected:
       bool
-      initCompute ();
+      initCompute () override;
 
     private:
       float neighborhood_constant_;

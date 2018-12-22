@@ -107,14 +107,14 @@ namespace pcl
       MinCutSegmentation ();
 
       /** \brief Destructor that frees memory. */
-      virtual
+      
       ~MinCutSegmentation ();
 
       /** \brief This method simply sets the input point cloud.
         * \param[in] cloud the const boost shared pointer to a PointCloud
         */
-      virtual void
-      setInputCloud (const PointCloudConstPtr &cloud);
+      void
+      setInputCloud (const PointCloudConstPtr &cloud) override;
 
       /** \brief Returns normalization value for binary potentials. For more information see the article. */
       double

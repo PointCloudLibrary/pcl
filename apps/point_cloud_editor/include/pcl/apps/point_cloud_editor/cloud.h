@@ -372,7 +372,7 @@ class Cloud : public Statistics
 
     /// @brief Get statistics of the selected points in string.
     std::string
-    getStat () const;
+    getStat () const override;
 
     /// Default Point Size
     static const float DEFAULT_POINT_DISPLAY_SIZE_;

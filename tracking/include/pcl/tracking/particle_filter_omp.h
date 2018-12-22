@@ -82,7 +82,7 @@ namespace pcl
       /** \brief weighting phase of particle filter method.
           calculate the likelihood of all of the particles and set the weights.
         */
-      virtual void weight ();
+      void weight () override;
 
     };
   }

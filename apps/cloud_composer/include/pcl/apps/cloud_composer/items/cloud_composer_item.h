@@ -87,10 +87,10 @@ namespace pcl
 
         CloudComposerItem (const QString name = "default item");
         CloudComposerItem (const CloudComposerItem& to_copy);
-        virtual ~CloudComposerItem ();
+        ~CloudComposerItem ();
         
-        inline virtual int 
-        type () const { return CLOUD_COMPOSER_ITEM; }
+        inline int 
+        type () const override { return CLOUD_COMPOSER_ITEM; }
       
         /** \brief Convenience function to get Item's ID String */
         inline QString
@@ -107,8 +107,8 @@ namespace pcl
         void 
         addChild (CloudComposerItem* item_arg);
         
-        virtual CloudComposerItem*
-        clone () const;
+        CloudComposerItem*
+        clone () const override;
 
      //   /** \brief Convenience function which pulls out a cloud Ptr of type CloudPtrT */
     //    template <typename CloudPtrT>

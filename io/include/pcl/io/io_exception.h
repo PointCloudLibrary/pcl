@@ -67,13 +67,13 @@ namespace pcl
           unsigned line_number,
           const std::string& message);
 
-        virtual ~IOException () throw ();
+        ~IOException () throw ();
 
         IOException&
         operator= (const IOException& exception);
 
-        virtual const char*
-        what () const throw ();
+        const char*
+        what () const throw () override;
 
         const std::string&
         getFunctionName () const;

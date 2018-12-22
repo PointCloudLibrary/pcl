@@ -101,7 +101,7 @@ namespace pcl
         * \param[out] output the result point cloud
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
     protected:
       int window_size_;

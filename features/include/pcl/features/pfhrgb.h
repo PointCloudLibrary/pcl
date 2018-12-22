@@ -76,7 +76,7 @@ namespace pcl
 
     protected:
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
     private:
       /** \brief The number of subdivisions for each angular feature interval. */

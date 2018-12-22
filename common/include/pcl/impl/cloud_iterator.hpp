@@ -200,47 +200,47 @@ namespace pcl
       {
       }
 
-      void operator ++ ()
+      void operator ++ () override
       {
         ++iterator_;
       }
 
-      void operator ++ (int)
+      void operator ++ (int) override
       {
         iterator_++;
       }
 
-      const PointT& operator* () const
+      const PointT& operator* () const override
       {
         return (*iterator_);
       }
 
-      const PointT* operator-> () const
+      const PointT* operator-> () const override
       {
         return (&(*iterator_));
       }
 
-      unsigned getCurrentPointIndex () const
+      unsigned getCurrentPointIndex () const override
       {
         return (unsigned (iterator_ - cloud_.begin ()));
       }
 
-      unsigned getCurrentIndex () const
+      unsigned getCurrentIndex () const override
       {
         return (unsigned (iterator_ - cloud_.begin ()));
       }
 
-      size_t size () const
+      size_t size () const override
       {
         return cloud_.size ();
       }
 
-      void reset ()
+      void reset () override
       {
         iterator_ = cloud_.begin ();
       }
 
-      bool isValid () const
+      bool isValid () const override
       {
         return (iterator_ != cloud_.end ());
       }
@@ -272,49 +272,49 @@ namespace pcl
       {
       }
 
-      virtual ~ConstIteratorIdx () {}
+      ~ConstIteratorIdx () {}
 
-      void operator ++ ()
+      void operator ++ () override
       {
         ++iterator_;
       }
 
-      void operator ++ (int)
+      void operator ++ (int) override
       {
         iterator_++;
       }
 
-      const PointT& operator* () const
+      const PointT& operator* () const override
       {
         return (cloud_.points[*iterator_]);
       }
 
-      const PointT* operator-> () const
+      const PointT* operator-> () const override
       {
         return (&(cloud_.points [*iterator_]));
       }
 
-      unsigned getCurrentPointIndex () const
+      unsigned getCurrentPointIndex () const override
       {
         return (unsigned (*iterator_));
       }
 
-      unsigned getCurrentIndex () const
+      unsigned getCurrentIndex () const override
       {
         return (unsigned (iterator_ - indices_.begin ()));
       }
 
-      size_t size () const
+      size_t size () const override
       {
         return indices_.size ();
       }
 
-      void reset ()
+      void reset () override
       {
         iterator_ = indices_.begin ();
       }
 
-      bool isValid () const
+      bool isValid () const override
       {
         return (iterator_ != indices_.end ());
       }

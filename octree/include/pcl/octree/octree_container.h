@@ -145,7 +145,7 @@ namespace pcl
       }
 
       /** \brief Empty deconstructor. */
-      virtual
+      
       ~OctreeContainerEmpty ()
       {
       }
@@ -160,15 +160,15 @@ namespace pcl
       /** \brief Abstract get size of container (number of DataT objects)
        * \return number of DataT elements in leaf node container.
        */
-      virtual size_t
-      getSize () const
+      size_t
+      getSize () const override
       {
         return 0;
       }
 
       /** \brief Abstract reset leaf node implementation. */
-      virtual void
-      reset ()
+      void
+      reset () override
       {
 
       }
@@ -220,7 +220,7 @@ namespace pcl
         }
 
         /** \brief Empty deconstructor. */
-        virtual
+        
         ~OctreeContainerPointIndex ()
         {
         }
@@ -235,8 +235,8 @@ namespace pcl
         /** \brief Equal comparison operator
          * \param[in] other OctreeContainerBase to compare with
          */
-        virtual bool
-        operator== (const OctreeContainerBase& other) const
+        bool
+        operator== (const OctreeContainerBase& other) const override
         {
           const OctreeContainerPointIndex* otherConDataT = dynamic_cast<const OctreeContainerPointIndex*> (&other);
 
@@ -275,14 +275,14 @@ namespace pcl
          * \return number of DataT elements in leaf node container.
          */
         size_t
-        getSize () const
+        getSize () const override
         {
           return data_<0 ? 0 : 1;
         }
 
         /** \brief Reset leaf node memory to zero. */
-        virtual void
-        reset ()
+        void
+        reset () override
         {
           data_ = -1;
         }
@@ -312,7 +312,7 @@ namespace pcl
         }
 
         /** \brief Empty deconstructor. */
-        virtual
+        
         ~OctreeContainerPointIndices ()
         {
         }
@@ -327,8 +327,8 @@ namespace pcl
         /** \brief Equal comparison operator
          * \param[in] other OctreeContainerDataTVector to compare with
          */
-        virtual bool
-        operator== (const OctreeContainerBase& other) const
+        bool
+        operator== (const OctreeContainerBase& other) const override
         {
           const OctreeContainerPointIndices* otherConDataTVec = dynamic_cast<const OctreeContainerPointIndices*> (&other);
 
@@ -375,14 +375,14 @@ namespace pcl
          * \return number of point indices in container.
          */
         size_t
-        getSize () const
+        getSize () const override
         {
           return leafDataTVector_.size ();
         }
 
         /** \brief Reset leaf node. Clear DataT vector.*/
-        virtual void
-        reset ()
+        void
+        reset () override
         {
           leafDataTVector_.clear ();
         }

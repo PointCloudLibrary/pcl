@@ -181,7 +181,7 @@ namespace pcl
 
     protected:
       void
-      performProcessing (pcl::PolygonMesh &output);
+      performProcessing (pcl::PolygonMesh &output) override;
 
     private:
       vtkSmartPointer<vtkPolyData> vtk_polygons_;

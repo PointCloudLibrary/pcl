@@ -68,7 +68,7 @@ namespace pcl
       public:
         ProjectModel (QObject *parent = 0);
         ProjectModel (const ProjectModel& to_copy);
-        virtual ~ProjectModel ();
+        ~ProjectModel ();
         
         ProjectModel (QString project_name, QObject *parent = 0);
         

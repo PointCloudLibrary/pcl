@@ -119,7 +119,7 @@ namespace pcl
         OctreePointCloudAdjacency (const double resolution_arg);
 
         /** \brief Empty class destructor. */
-        virtual ~OctreePointCloudAdjacency ()
+        ~OctreePointCloudAdjacency ()
         {
         }
 
@@ -175,8 +175,8 @@ namespace pcl
           * \param[in] point_idx_arg The index representing the point in the dataset given by setInputCloud() to be added
           *
           * \note This virtual implementation allows the use of a transform function to compute keys. */
-         virtual void
-         addPointIdx (const int point_idx_arg);
+         void
+         addPointIdx (const int point_idx_arg) override;
 
         /** \brief Fills in the neighbors fields for new voxels.
           *

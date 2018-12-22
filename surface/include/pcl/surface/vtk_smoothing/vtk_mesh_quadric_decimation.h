@@ -72,7 +72,7 @@ namespace pcl
 
     protected:
       void
-      performProcessing (pcl::PolygonMesh &output);
+      performProcessing (pcl::PolygonMesh &output) override;
 
     private:
       float target_reduction_factor_;

@@ -195,7 +195,7 @@ namespace pcl
       /** \brief This destructor destroys the cloud, normals and search method used for
         * finding neighbors. In other words it frees memory.
         */
-      virtual
+      
       ~SupervoxelClustering ();
 
       /** \brief Set the resolution of the octree voxels */
@@ -249,8 +249,8 @@ namespace pcl
       /** \brief This method sets the cloud to be supervoxelized
        * \param[in] cloud The cloud to be supervoxelize
        */
-      virtual void
-      setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud);
+      void
+      setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud) override;
 
       /** \brief This method sets the normals to be used for supervoxels (should be same size as input cloud)
       * \param[in] normal_cloud The input normals                         

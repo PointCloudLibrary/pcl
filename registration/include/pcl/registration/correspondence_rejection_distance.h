@@ -76,7 +76,7 @@ namespace pcl
         }
       
         /** \brief Empty destructor */
-        virtual ~CorrespondenceRejectorDistance () {}
+        ~CorrespondenceRejectorDistance () {}
 
         /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
           * \param[in] original_correspondences the set of initial correspondences given
@@ -84,7 +84,7 @@ namespace pcl
           */
         void
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
-                                     pcl::Correspondences& remaining_correspondences);
+                                     pcl::Correspondences& remaining_correspondences) override;
 
         /** \brief Set the maximum distance used for thresholding in correspondence rejection.
           * \param[in] distance Distance to be used as maximum distance between correspondences. 
@@ -138,12 +138,12 @@ namespace pcl
 
         /** \brief See if this rejector requires source points */
         bool
-        requiresSourcePoints () const
+        requiresSourcePoints () const override
         { return (true); }
 
         /** \brief Blob method for setting the source cloud */
         void
-        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
         { 
           PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
           fromPCLPointCloud2 (*cloud2, *cloud);
@@ -152,12 +152,12 @@ namespace pcl
         
         /** \brief See if this rejector requires a target cloud */
         bool
-        requiresTargetPoints () const
+        requiresTargetPoints () const override
         { return (true); }
 
         /** \brief Method for setting the target cloud */
         void
-        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
         { 
           PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
           fromPCLPointCloud2 (*cloud2, *cloud);
@@ -186,7 +186,7 @@ namespace pcl
           * \param[out] correspondences the set of resultant correspondences.
           */
         inline void 
-        applyRejection (pcl::Correspondences &correspondences)
+        applyRejection (pcl::Correspondences &correspondences) override
         {
           getRemainingCorrespondences (*input_correspondences_, correspondences);
         }

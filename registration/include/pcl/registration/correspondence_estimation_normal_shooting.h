@@ -119,7 +119,7 @@ namespace pcl
         }
 
         /** \brief Empty destructor */
-        virtual ~CorrespondenceEstimationNormalShooting () {}
+        ~CorrespondenceEstimationNormalShooting () {}
 
         /** \brief Set the normals computed on the source point cloud
           * \param[in] normals the normals computed for the source cloud
@@ -135,12 +135,12 @@ namespace pcl
 
         /** \brief See if this rejector requires source normals */
         bool
-        requiresSourceNormals () const
+        requiresSourceNormals () const override
         { return (true); }
 
         /** \brief Blob method for setting the source normals */
         void
-        setSourceNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
+        setSourceNormals (pcl::PCLPointCloud2::ConstPtr cloud2) override
         { 
           NormalsPtr cloud (new PointCloudNormals);
           fromPCLPointCloud2 (*cloud2, *cloud);
@@ -154,7 +154,7 @@ namespace pcl
           */
         void 
         determineCorrespondences (pcl::Correspondences &correspondences,
-                                  double max_distance = std::numeric_limits<double>::max ());
+                                  double max_distance = std::numeric_limits<double>::max ()) override;
 
         /** \brief Determine the reciprocal correspondences between input and target cloud.
           * A correspondence is considered reciprocal if both Src_i has Tgt_i as a 
@@ -163,9 +163,9 @@ namespace pcl
           * \param[out] correspondences the found correspondences (index of query and target point, distance)
           * \param[in] max_distance maximum allowed distance between correspondences
           */
-        virtual void 
+        void 
         determineReciprocalCorrespondences (pcl::Correspondences &correspondences,
-                                            double max_distance = std::numeric_limits<double>::max ());
+                                            double max_distance = std::numeric_limits<double>::max ()) override;
 
         /** \brief Set the number of nearest neighbours to be considered in the target 
           * point cloud. By default, we use k = 10 nearest neighbors.
@@ -183,8 +183,8 @@ namespace pcl
         getKSearch () const { return (k_); }
 
         /** \brief Clone and cast to CorrespondenceEstimationBase */
-        virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > 
-        clone () const
+        boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > 
+        clone () const override
         {
           Ptr copy (new CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar> (*this));
           return (copy);

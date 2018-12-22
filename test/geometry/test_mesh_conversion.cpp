@@ -64,7 +64,7 @@ class TestMeshConversion : public ::testing::Test
     //  / \       |    |   \       /  //
     // 3 - 4      9 - 10    13 - 14   //
     void
-    SetUp ()
+    SetUp () override
     {
       // Vertices
       pcl::PointXYZRGBNormal pt;

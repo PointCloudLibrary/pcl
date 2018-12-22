@@ -102,7 +102,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the moment invariants
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
     private:
       /** \brief 16-bytes aligned placeholder for the XYZ centroid of a surface patch. */
       Eigen::Vector4f xyz_centroid_;

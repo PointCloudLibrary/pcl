@@ -87,7 +87,7 @@ namespace pcl
       /** \brief Convert the point cloud into voxel data.
         */
       void
-      voxelizeData ();
+      voxelizeData () override;
 
 
       /** \brief Set the off-surface points displacement value.

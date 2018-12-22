@@ -61,17 +61,17 @@ namespace openni_wrapper
       } DebayeringMethod;
 
       ImageBayerGRBG (boost::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) throw ();
-      virtual ~ImageBayerGRBG () throw ();
+      ~ImageBayerGRBG () throw ();
 
-      inline virtual Encoding
-      getEncoding () const
+      inline Encoding
+      getEncoding () const override
       {
         return (BAYER_GRBG);
       }
 
-      virtual void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const;
-      virtual void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const;
-      virtual bool isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const;
+      void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const override;
+      void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const override;
+      bool isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const override;
       inline void setDebayeringMethod (const DebayeringMethod& method) throw ();
       inline DebayeringMethod getDebayeringMethod () const throw ();
       inline static bool resizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height);

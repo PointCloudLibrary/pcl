@@ -84,10 +84,10 @@ namespace pcl
         vtkTypeMacro(InteractorStyleSwitch, vtkInteractorStyle);
         
         InteractorStyleSwitch();
-        virtual ~InteractorStyleSwitch();
+        ~InteractorStyleSwitch();
   
         void 
-        SetInteractor(vtkRenderWindowInteractor *iren);
+        SetInteractor(vtkRenderWindowInteractor *iren) override;
         
         vtkGetObjectMacro(current_style_, vtkInteractorStyle);
         
@@ -107,13 +107,13 @@ namespace pcl
         getInteractorStyle (const interactor_styles::INTERACTOR_STYLES interactor_style) const 
           { return name_to_style_map_.value (interactor_style); }
         
-        virtual 
-        void SetDefaultRenderer(vtkRenderer*);
-        virtual 
-        void SetCurrentRenderer(vtkRenderer*);
         
-        virtual void
-        OnLeave ();
+        void SetDefaultRenderer(vtkRenderer*) override;
+        
+        void SetCurrentRenderer(vtkRenderer*) override;
+        
+        void
+        OnLeave () override;
                   
       protected:
         void 

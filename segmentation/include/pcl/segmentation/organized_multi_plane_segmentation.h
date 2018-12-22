@@ -99,7 +99,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedMultiPlaneSegmentation. */
-      virtual
+      
       ~OrganizedMultiPlaneSegmentation ()
       {
       }

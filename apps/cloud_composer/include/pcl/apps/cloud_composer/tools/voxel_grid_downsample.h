@@ -49,13 +49,13 @@ namespace pcl
       Q_OBJECT
       public:
         VoxelGridDownsampleTool (PropertiesModel* parameter_model, QObject* parent);
-        virtual ~VoxelGridDownsampleTool ();
+        ~VoxelGridDownsampleTool ();
         
-        virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE);
+        QList <CloudComposerItem*>
+        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override;
       
-        inline virtual QString
-        getToolName () const { return "Voxel Grid Downsample Tool";}
+        inline QString
+        getToolName () const override { return "Voxel Grid Downsample Tool";}
     };
 
     
@@ -68,31 +68,31 @@ namespace pcl
 #endif
       public:
         ModifyItemTool*
-        createTool (PropertiesModel* parameter_model, QObject* parent = 0) 
+        createTool (PropertiesModel* parameter_model, QObject* parent = 0) override 
         {
             return new VoxelGridDownsampleTool(parameter_model, parent);
         }
         
         PropertiesModel*
-        createToolParameterModel (QObject* parent);
+        createToolParameterModel (QObject* parent) override;
         
-        inline virtual QString 
-        getPluginName () const { return "Voxel Grid Downsample";}
+        inline QString 
+        getPluginName () const override { return "Voxel Grid Downsample";}
         
-        virtual QString 
-        getToolGroupName () const { return "Filters";}
+        QString 
+        getToolGroupName () const override { return "Filters";}
         
-        virtual QString
-        getIconName () const { return ":/voxel_grid_downsample.png"; }
+        QString
+        getIconName () const override { return ":/voxel_grid_downsample.png"; }
         
-        inline virtual CloudComposerItem::ItemType
-        getInputItemType () const
+        inline CloudComposerItem::ItemType
+        getInputItemType () const override
         {
           return CloudComposerItem::CLOUD_ITEM;
         }
         
-        inline virtual QList <CloudComposerItem::ItemType>
-        getRequiredInputChildrenTypes () const 
+        inline QList <CloudComposerItem::ItemType>
+        getRequiredInputChildrenTypes () const override 
         {
           return QList <CloudComposerItem::ItemType> ();
         }

@@ -69,7 +69,7 @@ namespace pcl
       ROPSEstimation ();
 
       /** \brief Virtual destructor. */
-      virtual
+      
       ~ROPSEstimation ();
 
       /** \brief Allows to set the number of partition bins that is used for distribution matrix calculation.
@@ -119,8 +119,8 @@ namespace pcl
       /** \brief Abstract feature estimation method.
         * \param[out] output the resultant features
         */
-      virtual void
-      computeFeature (PointCloudOut& output);
+      void
+      computeFeature (PointCloudOut& output) override;
 
       /** \brief This method simply builds the list of triangles for every point.
         * The list of triangles for each point consists of indices of triangles it belongs to.

@@ -130,7 +130,7 @@ namespace pcl
         }
 
         /** \brief Empty deconstructor. */
-        virtual
+        
         ~OctreePointCloudCompression ()
         {
         }
@@ -169,8 +169,8 @@ namespace pcl
         /** \brief Add point at index from input pointcloud dataset to octree
          * \param[in] pointIdx_arg the index representing the point in the dataset given by \a setInputCloud to be added
          */
-        virtual void
-        addPointIdx (const int pointIdx_arg)
+        void
+        addPointIdx (const int pointIdx_arg) override
         {
           ++object_count_;
           OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::addPointIdx(pointIdx_arg);
@@ -247,15 +247,15 @@ namespace pcl
           * \param leaf_arg: reference to new leaf node
           * \param key_arg: octree key of new leaf node
          */
-        virtual void
-        serializeTreeCallback (LeafT &leaf_arg, const OctreeKey& key_arg);
+        void
+        serializeTreeCallback (LeafT &leaf_arg, const OctreeKey& key_arg) override;
 
         /** \brief Decode leaf nodes information during deserialization
          * \param key_arg octree key of new leaf node
          */
         // param leaf_arg reference to new leaf node
-        virtual void
-        deserializeTreeCallback (LeafT&, const OctreeKey& key_arg);
+        void
+        deserializeTreeCallback (LeafT&, const OctreeKey& key_arg) override;
 
 
         /** \brief Pointer to output point cloud dataset. */

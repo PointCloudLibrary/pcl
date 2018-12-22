@@ -58,7 +58,7 @@ struct OctreeIteratorBaseTest : public testing::Test
 
 
   // methods
-  virtual void SetUp ()
+  void SetUp () override
   {
     octree_.setTreeDepth (2); //can have at most 8^2 leaves
   }
@@ -108,7 +108,7 @@ struct OctreeIteratorTest : public OctreeIteratorBaseTest
   // methods
   OctreeIteratorTest () : it_ (&octree_, tree_depth_) {}
 
-  virtual void SetUp ()
+  void SetUp () override
   {
     // Set up my octree
     octree_.setTreeDepth (tree_depth_); //can have at most 8 leaves
@@ -210,7 +210,7 @@ struct OctreeBaseBeginEndIteratorsTest : public testing::Test
   typedef OctreeBase<int> OctreeT;
 
   // Methods
-  void SetUp ()
+  void SetUp () override
   {
     // Set tree depth
     oct_a_.setTreeDepth (2);
@@ -836,7 +836,7 @@ struct OctreeBaseWalkThroughIteratorsTest : public testing::Test
   typedef OctreeBase<int> OctreeT;
 
   // Methods
-  void SetUp ()
+  void SetUp () override
   {
     // Create manually an irregular octree.
     // Graphically, this octree appears as follows:
@@ -1212,7 +1212,7 @@ struct OctreePointCloudAdjacencyBeginEndIteratorsTest
     , oct_b_ (1)
   {}
 
-  void SetUp ()
+  void SetUp () override
   {
     // Replicable results
     std::srand (42);
@@ -1460,7 +1460,7 @@ struct OctreePointCloudSierpinskiTest
     , depth_ (7)
   {}
 
-  void SetUp ()
+  void SetUp () override
   {
     // Create a point cloud which points are inside Sierpinski fractal voxel at the deepest level
     // https://en.wikipedia.org/wiki/Sierpinski_triangle

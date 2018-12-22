@@ -65,7 +65,7 @@ class StatisticsDialog : public QDialog
     void update ();
     
   private Q_SLOTS:
-    void accept ();
+    void accept () override;
     
   private:
     /// The button box.

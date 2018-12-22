@@ -118,8 +118,8 @@ public:
     camera_->SetClippingRange (near_value, far_value);
   }
 
-  virtual void
-  render (vtkRenderer* renderer);
+  void
+  render (vtkRenderer* renderer) override;
 
   // Methods
   // -----------------------------------------------------------------------------

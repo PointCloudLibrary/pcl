@@ -86,8 +86,8 @@ namespace pcl
         virtual void
         updateImpl() = 0;
 
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
+        void
+        prepareContextMenu(QMenu* menu) const override;
 
         boost::shared_ptr<CloudMesh>      cloud_mesh_;
         vtkSmartPointer<vtkPolyData>      poly_data_;

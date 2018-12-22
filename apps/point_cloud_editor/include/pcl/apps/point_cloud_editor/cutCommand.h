@@ -65,12 +65,12 @@ class CutCommand : public Command
     /// @pre Assumes the constructor was given appropriate pointers to the
     /// required objects.
     void
-    execute ();
+    execute () override;
 
     /// @brief Returns the cut points to the cloud.  This does not reconstruct
     /// the original ordering of the point cloud.
     void
-    undo ();
+    undo () override;
 
   private:
     /// @brief Default constructor - object is not default constructable

@@ -52,17 +52,17 @@ namespace pcl
         ~PoissonReconstructionWorker(void);
 
       protected:
-        virtual std::string
-        getName () const {return ("Poisson Reconstruction");}
+        std::string
+        getName () const override {return ("Poisson Reconstruction");}
 
-        virtual void
-        initParameters (CloudMeshItem*) {}
+        void
+        initParameters (CloudMeshItem*) override {}
 
-        virtual void
-        setupParameters();
+        void
+        setupParameters() override;
 
-        virtual void
-        processImpl(CloudMeshItem* cloud_mesh_item);
+        void
+        processImpl(CloudMeshItem* cloud_mesh_item) override;
 
       private:
         IntParameter*     depth_;

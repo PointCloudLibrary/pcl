@@ -61,11 +61,11 @@ namespace pcl
           OpenNI2FrameListener (StreamCallbackFunction cb)
             : callback_(cb) {}
 
-          virtual ~OpenNI2FrameListener ()
+          ~OpenNI2FrameListener ()
           { };
 
           inline void
-          onNewFrame (openni::VideoStream& stream)
+          onNewFrame (openni::VideoStream& stream) override
           {
             if (callback_)
               callback_(stream);

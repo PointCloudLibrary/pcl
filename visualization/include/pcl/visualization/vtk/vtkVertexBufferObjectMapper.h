@@ -47,7 +47,7 @@ public:
 
   // Description:
   // This calls RenderPiece (in a for loop is streaming is necessary).
-  virtual void Render(vtkRenderer *ren, vtkActor *act);
+  void Render(vtkRenderer *ren, vtkActor *act) override;
 
   // Description:
   // Specify the input data to map.
@@ -63,13 +63,13 @@ public:
 
   // Description:
   // Update that sets the update piece first.
-  void Update();
+  void Update() override;
 
   // Description:
   // Return bounding box (array of six doubles) of data expressed as
   // (xmin,xmax, ymin,ymax, zmin,zmax).
-  virtual double *GetBounds();
-  virtual void GetBounds(double bounds[6]) 
+  double *GetBounds() override;
+  void GetBounds(double bounds[6]) override 
     {this->Superclass::GetBounds(bounds);};
   
   // Description:
@@ -120,7 +120,7 @@ protected:
 
   vtkSmartPointer<vtkShaderProgram2> program;
 
-  virtual int FillInputPortInformation(int, vtkInformation*);
+  int FillInputPortInformation(int, vtkInformation*) override;
 
   void createShaders(vtkOpenGLRenderWindow* win);
   void createVBOs(vtkRenderWindow* win);

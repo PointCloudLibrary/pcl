@@ -52,17 +52,17 @@ namespace pcl
         ~StatisticalOutlierRemovalWorker(void);
 
       protected:
-        virtual std::string
-        getName () const {return ("Statistical Outlier Removal");}
+        std::string
+        getName () const override {return ("Statistical Outlier Removal");}
 
-        virtual void
-        initParameters(CloudMeshItem* cloud_mesh_item);
+        void
+        initParameters(CloudMeshItem* cloud_mesh_item) override;
 
-        virtual void
-        setupParameters();
+        void
+        setupParameters() override;
 
-        virtual void
-        processImpl(CloudMeshItem* cloud_mesh_item);
+        void
+        processImpl(CloudMeshItem* cloud_mesh_item) override;
 
       private:
         IntParameter* mean_k_;

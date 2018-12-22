@@ -75,7 +75,7 @@ namespace pcl
       }
       
       /** \brief Destructor. */
-      virtual ~PlanarRegion () {}
+      ~PlanarRegion () {}
 
       /** \brief Constructor for PlanarRegion.
         * \param[in] centroid the centroid of the region.

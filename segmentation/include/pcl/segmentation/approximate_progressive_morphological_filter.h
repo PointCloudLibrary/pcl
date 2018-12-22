@@ -69,7 +69,7 @@ namespace pcl
       /** \brief Constructor that sets default values for member variables. */
       ApproximateProgressiveMorphologicalFilter ();
 
-      virtual
+      
       ~ApproximateProgressiveMorphologicalFilter ();
 
       /** \brief Get the maximum window size to be used in filtering ground returns. */

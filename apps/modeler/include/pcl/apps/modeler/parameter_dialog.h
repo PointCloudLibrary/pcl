@@ -52,7 +52,7 @@ namespace pcl
         ~ParameterModel() {}
 
         Qt::ItemFlags
-        flags ( const QModelIndex & index ) const
+        flags ( const QModelIndex & index ) const override
         {
           return (index.column() == 0)?(Qt::ItemIsEnabled | Qt::ItemIsSelectable):QStandardItemModel::flags(index);
         }
@@ -68,8 +68,8 @@ namespace pcl
         void
         addParameter(Parameter* parameter);
 
-        virtual int
-        exec();
+        int
+        exec() override;
 
       protected:
         std::map<std::string, Parameter*>       name_parameter_map_;
@@ -87,20 +87,20 @@ namespace pcl
         ParameterDelegate(std::map<std::string, Parameter*>& parameterMap, QObject *parent = 0);
 
         QWidget *
-        createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+        createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
         void
-        setEditorData(QWidget *editor, const QModelIndex &index) const;
+        setEditorData(QWidget *editor, const QModelIndex &index) const override;
 
         void
-        setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+        setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
 
         void
-        updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+        updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
       protected:
         void
-        initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const;
+        initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const override;
 
       private:
         Parameter*

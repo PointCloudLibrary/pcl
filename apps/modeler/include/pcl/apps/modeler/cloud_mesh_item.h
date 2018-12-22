@@ -79,21 +79,21 @@ namespace pcl
         void
         updateChannels();
 
-        virtual std::string
-        getItemName() const {return "Cloud Mesh Item";}
+        std::string
+        getItemName() const override {return "Cloud Mesh Item";}
 
         void
         updateRenderWindow();
 
       protected:
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
+        void
+        prepareContextMenu(QMenu* menu) const override;
 
-        virtual void
-        prepareProperties(ParameterDialog* parameter_dialog);
+        void
+        prepareProperties(ParameterDialog* parameter_dialog) override;
 
-        virtual void
-        setProperties();
+        void
+        setProperties() override;
 
       private:
         std::string                           filename_;

@@ -127,33 +127,33 @@ namespace pcl
                   const std::string& correctionsFile = "");
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-      virtual
+      
       ~HDLGrabber () throw ();
 
       /** \brief Starts processing the Velodyne packets, either from the network or PCAP file. */
-      virtual void
-      start ();
+      void
+      start () override;
 
       /** \brief Stops processing the Velodyne packets, either from the network or PCAP file */
-      virtual void
-      stop ();
+      void
+      stop () override;
 
       /** \brief Obtains the name of this I/O Grabber
        *  \return The name of the grabber
        */
-      virtual std::string
-      getName () const;
+      std::string
+      getName () const override;
 
       /** \brief Check if the grabber is still running.
        *  \return TRUE if the grabber is running, FALSE otherwise
        */
-      virtual bool
-      isRunning () const;
+      bool
+      isRunning () const override;
 
       /** \brief Returns the number of frames per second.
        */
-      virtual float
-      getFramesPerSecond () const;
+      float
+      getFramesPerSecond () const override;
 
       /** \brief Allows one to filter packets based on the SOURCE IP address and PORT
        *         This can be used, for instance, if multiple HDL LIDARs are on the same network

@@ -152,10 +152,10 @@ namespace pcl
 
     protected:
       bool
-      initCompute ();
+      initCompute () override;
 
       void
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
 
     private:
       /** Return a const reference to the normal at (i,j) if it is finite else return

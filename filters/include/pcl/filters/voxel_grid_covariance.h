@@ -514,7 +514,7 @@ namespace pcl
       /** \brief Filter cloud and initializes voxel structure.
        * \param[out] output cloud containing centroids of voxels containing a sufficient number of points
        */
-      void applyFilter (PointCloud &output);
+      void applyFilter (PointCloud &output) override;
 
       /** \brief Flag to determine if voxel structure is searchable. */
       bool searchable_;

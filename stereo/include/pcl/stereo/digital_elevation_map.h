@@ -87,7 +87,7 @@ namespace pcl
       /** \brief DigitalElevationMapBuilder constructor. */
       DigitalElevationMapBuilder ();
       /** \brief Empty destructor. */
-      virtual ~DigitalElevationMapBuilder ();
+      ~DigitalElevationMapBuilder ();
 
       /** \brief Set resolution of the DEM.
         * \param[in] resolution_column the column resolution.
@@ -124,7 +124,7 @@ namespace pcl
         * \param[out] out_cloud the variable to return the resulting cloud.
         */
       void 
-      compute (pcl::PointCloud<PointDEM> &out_cloud);
+      compute (pcl::PointCloud<PointDEM> &out_cloud) override;
 
     protected:
       /** \brief Column resolution of the DEM. */

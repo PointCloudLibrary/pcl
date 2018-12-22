@@ -76,8 +76,8 @@ namespace pcl
           , z_axis_ ()
         {}
 
-        virtual void
-        setInputCloud (const PointCloudConstPtr& cloud)
+        void
+        setInputCloud (const PointCloudConstPtr& cloud) override
         {
           input_ = cloud;
           Eigen::Matrix3f rot = input_->sensor_orientation_.toRotationMatrix ();
@@ -130,8 +130,8 @@ namespace pcl
           * \param idx1 The first index for the comparison
           * \param idx2 The second index for the comparison
           */
-        virtual bool
-        compare (int idx1, int idx2) const
+        bool
+        compare (int idx1, int idx2) const override
         {
           if (labels_ && exclude_labels_)
           {

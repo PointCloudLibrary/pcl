@@ -77,7 +77,7 @@ namespace pcl
         }
 
         /** \brief Empty class constructor. */
-        virtual ~OctreePointCloudChangeDetector ()
+        ~OctreePointCloudChangeDetector ()
         {
         }
 

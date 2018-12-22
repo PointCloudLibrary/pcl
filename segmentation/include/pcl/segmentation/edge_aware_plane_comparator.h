@@ -92,7 +92,7 @@ namespace pcl
       }
 
       /** \brief Destructor for PlaneCoefficientComparator. */
-      virtual
+      
       ~EdgeAwarePlaneComparator ()
       {
       }
@@ -168,7 +168,7 @@ namespace pcl
         * \param[in] idx2 The index of the second point.
         */
       bool
-      compare (int idx1, int idx2) const
+      compare (int idx1, int idx2) const override
       {
         // Note: there are two distance thresholds here that make sense to scale with depth.
         // dist_threshold is on the perpendicular distance to the plane, as in plane comparator

@@ -137,11 +137,11 @@ namespace pcl
       /** \brief Method that does the actual processing on the input cloud.
         * \param[out] output the container of the resulting upsampled cloud */
       void
-      process (pcl::PointCloud<PointOutT> &output);
+      process (pcl::PointCloud<PointOutT> &output) override;
 
     protected:
       void
-      performProcessing (pcl::PointCloud<PointOutT> &output);
+      performProcessing (pcl::PointCloud<PointOutT> &output) override;
 
       /** \brief Computes the distance for depth and RGB.
         * \param[out] val_exp_depth distance values for depth

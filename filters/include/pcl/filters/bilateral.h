@@ -80,7 +80,7 @@ namespace pcl
         * \param[out] output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Compute the intensity average for a single point
         * \param[in] pid the point index to compute the weight for

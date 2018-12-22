@@ -157,13 +157,13 @@ namespace pcl
         * \param[out] output The resultant point cloud.
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Filtered results are indexed by an indices array.
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices)
+      applyFilter (std::vector<int> &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -268,11 +268,11 @@ namespace pcl
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;
 
-      virtual void
-      applyFilter (std::vector<int> &indices);
+      void
+      applyFilter (std::vector<int> &indices) override;
 
-      virtual void
-      applyFilter (PCLPointCloud2 &output);
+      void
+      applyFilter (PCLPointCloud2 &output) override;
 
       /**
        * \brief Compute the statistical values used in both applyFilter methods.

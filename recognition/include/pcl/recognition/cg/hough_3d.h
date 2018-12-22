@@ -179,7 +179,7 @@ namespace pcl
         * \param[in] cloud the const boost shared pointer to a PointCloud message.
         */
       inline void
-      setInputCloud (const PointCloudConstPtr &cloud)
+      setInputCloud (const PointCloudConstPtr &cloud) override
       {
         PCLBase<PointModelT>::setInputCloud (cloud);
         needs_training_ = true;
@@ -218,7 +218,7 @@ namespace pcl
         * \param[in] scene the const boost shared pointer to a PointCloud message.
         */
       inline void
-      setSceneCloud (const SceneCloudConstPtr &scene)
+      setSceneCloud (const SceneCloudConstPtr &scene) override
       {
         scene_ = scene;
         hough_space_initialized_ = false;
@@ -257,7 +257,7 @@ namespace pcl
         * \param[in] corrs the correspondences between the model and the scene.
         */
       inline void
-      setModelSceneCorrespondences (const CorrespondencesConstPtr &corrs)
+      setModelSceneCorrespondences (const CorrespondencesConstPtr &corrs) override
       {
         model_scene_corrs_ = corrs;
         hough_space_initialized_ = false;
@@ -484,7 +484,7 @@ namespace pcl
         * \return true if the clustering had been successful or false if errors have occurred.
         */ 
       void
-      clusterCorrespondences (std::vector<Correspondences> &model_instances);
+      clusterCorrespondences (std::vector<Correspondences> &model_instances) override;
 
       /*  \brief Finds the transformation matrix between the input and the scene cloud for a set of correspondences using a RANSAC algorithm.
         * \param[in] the scene cloud in which the PointSceneT has been converted to PointModelT.

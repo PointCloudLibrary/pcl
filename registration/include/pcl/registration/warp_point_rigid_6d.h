@@ -68,14 +68,14 @@ namespace pcl
         WarpPointRigid6D () : WarpPointRigid<PointSourceT, PointTargetT, Scalar> (6) {}
       
         /** \brief Empty destructor */
-        virtual ~WarpPointRigid6D () {}
+        ~WarpPointRigid6D () {}
 
         /** \brief Set warp parameters. 
           * \note Assumes the quaternion parameters are normalized. 
           * \param[in] p warp parameters (tx ty tz qx qy qz)
           */
-        virtual void 
-        setParam (const VectorX& p)
+        void 
+        setParam (const VectorX& p) override
         {
           assert (p.rows () == this->getDimension ());
 

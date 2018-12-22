@@ -57,17 +57,17 @@ namespace pcl
                      pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr,
                      double radius);
         FPFHItem (const FPFHItem& to_copy);
-        virtual ~FPFHItem ();
+        ~FPFHItem ();
         
-        inline virtual int 
-        type () const { return FPFH_ITEM; }
+        inline int 
+        type () const override { return FPFH_ITEM; }
 
-        virtual FPFHItem*
-        clone () const;
+        FPFHItem*
+        clone () const override;
         
         /** \brief Inspector additional tabs paint function - get the histogram plot widget*/
-        virtual QMap <QString, QWidget*>
-        getInspectorTabs ();
+        QMap <QString, QWidget*>
+        getInspectorTabs () override;
         
       private:
         pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr_;

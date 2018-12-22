@@ -85,7 +85,7 @@ namespace pcl
       /** \brief Convert the point cloud into voxel data.
         */
       void
-      voxelizeData ();
+      voxelizeData () override;
 
       /** \brief Method that sets the distance for ignoring voxels which are far from point cloud.
         * If the distance is negative, then the distance functions would be calculated in all voxels;

@@ -80,7 +80,7 @@ namespace openni_wrapper
     /**
      * @brief virtual Destructor that never throws an exception
      */
-    virtual ~OpenNIException () throw ();
+    ~OpenNIException () throw ();
 
     /**
      * @brief Assignment operator to allow copying the message of another exception variable.
@@ -93,7 +93,7 @@ namespace openni_wrapper
      * @brief virtual method, derived from std::exception
      * @return the message of the exception.
      */
-    virtual const char* what () const throw ();
+    const char* what () const throw () override;
 
     /**
      * @return the function name in which the exception was created.

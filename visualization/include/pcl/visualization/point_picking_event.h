@@ -59,10 +59,10 @@ namespace pcl
         PointPickingCallback () : x_ (0), y_ (0), z_ (0), idx_ (-1), pick_first_ (false) {}
       
         /** \brief Empty destructor */
-        virtual ~PointPickingCallback () {}
+        ~PointPickingCallback () {}
 
-        virtual void
-        Execute (vtkObject *caller, unsigned long eventid, void*);
+        void
+        Execute (vtkObject *caller, unsigned long eventid, void*) override;
 
         int
         performSinglePick (vtkRenderWindowInteractor *iren);

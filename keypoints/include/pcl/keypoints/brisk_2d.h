@@ -95,7 +95,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~BriskKeypoint2D ()
+      ~BriskKeypoint2D ()
       {
       }
 
@@ -214,11 +214,11 @@ namespace pcl
     protected:
       /** \brief Initializes everything and checks whether input data is fine. */
       bool 
-      initCompute ();
+      initCompute () override;
 
       /** \brief Detects the keypoints. */
       void 
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
 
     private:
       /** \brief Intensity field accessor. */

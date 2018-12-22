@@ -229,12 +229,12 @@ namespace pcl
 
     protected:
       /** \brief This method should get called before starting the actual computation. */
-      virtual bool
-      initCompute ();
+      bool
+      initCompute () override;
 
       /** \brief This method should get called after the actual computation is ended. */
-      virtual bool
-      deinitCompute ();
+      bool
+      deinitCompute () override;
 
       /** \brief Estimate the LRF descriptor for a given point based on its spatial neighborhood of 3D points with normals
         * \param[in] index the index of the point in input_
@@ -247,8 +247,8 @@ namespace pcl
       /** \brief Abstract feature estimation method.
       * \param[out] output the resultant features
       */
-      virtual void
-      computeFeature (PointCloudOut &output);
+      void
+      computeFeature (PointCloudOut &output) override;
 
 
     private:

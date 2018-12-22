@@ -59,7 +59,7 @@ namespace pcl
       CloudView (QWidget* parent = 0);
       CloudView (const CloudView& to_copy);
       CloudView (ProjectModel* model, QWidget* parent = 0);
-      virtual ~CloudView ();
+      ~CloudView ();
       
       void 
       setModel (ProjectModel* new_model);
@@ -115,9 +115,9 @@ namespace pcl
       
     protected:
       void
-      paintEvent (QPaintEvent* event);
+      paintEvent (QPaintEvent* event) override;
       void 
-      resizeEvent (QResizeEvent* event);
+      resizeEvent (QResizeEvent* event) override;
       //   void scrollContentsBy (int dx, int dy);
       
       

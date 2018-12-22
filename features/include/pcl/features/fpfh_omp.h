@@ -114,7 +114,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the FPFH feature estimates
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
     public:
       /** \brief The number of subdivisions for each angular feature interval. */

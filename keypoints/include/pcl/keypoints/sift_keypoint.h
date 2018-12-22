@@ -131,14 +131,14 @@ namespace pcl
 
     protected:
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief Detect the SIFT keypoints for a set of points given in setInputCloud () using the spatial locator in 
         * setSearchMethod ().
         * \param output the resultant cloud of keypoints
         */
       void 
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
 
     private:
       /** \brief Detect the SIFT keypoints for a given point cloud for a single octave.

@@ -189,31 +189,31 @@ class CloudEditorWidget : public QGLWidget
   protected:  
     /// initializes GL
     void
-    initializeGL ();
+    initializeGL () override;
 
     /// the rendering function.
     void
-    paintGL ();
+    paintGL () override;
 
     /// resizes widget
     void
-    resizeGL (int width, int height);
+    resizeGL (int width, int height) override;
 
     /// mouse press control
     void
-    mousePressEvent (QMouseEvent *event);
+    mousePressEvent (QMouseEvent *event) override;
 
     /// mouse move control
     void
-    mouseMoveEvent (QMouseEvent *event);
+    mouseMoveEvent (QMouseEvent *event) override;
 
     /// mouse release control
     void
-    mouseReleaseEvent (QMouseEvent *event);
+    mouseReleaseEvent (QMouseEvent *event) override;
 
     /// key press control
     void
-    keyPressEvent (QKeyEvent *event);
+    keyPressEvent (QKeyEvent *event) override;
 
   private:
     

@@ -66,7 +66,7 @@ class CloudTransformTool : public ToolInterface
     /// @param buttons The state of the mouse buttons.  This function does not
     /// make use of this parameter.
     void
-    start (int x, int y, BitMask modifiers, BitMask buttons);
+    start (int x, int y, BitMask modifiers, BitMask buttons) override;
 
     /// @brief Updates the transform matrix of this object with mouse screen
     /// coordinates and key modifiers.
@@ -87,20 +87,20 @@ class CloudTransformTool : public ToolInterface
     /// @param buttons The LEFT mouse button must be pressed for any transform
     /// to be generated.  All other buttons are ignored.
     void
-    update (int x, int y, BitMask modifiers, BitMask buttons);
+    update (int x, int y, BitMask modifiers, BitMask buttons) override;
 
     /// @brief Updates the transform matrix of this object with mouse screen
     /// coordinates and key modifiers. Then right multiplies the cloud_matrix_
     /// matrix of the cloud object with the transform matrix of this object.
     /// @details This function is not required by this tool
     void
-    end (int, int, BitMask, BitMask)
+    end (int, int, BitMask, BitMask) override
     {
     }
 
     /// @brief This function does nothing for this cloud transform tool.
     void
-    draw() const
+    draw() const override
     {
     }
 

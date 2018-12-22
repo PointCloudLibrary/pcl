@@ -221,13 +221,13 @@ namespace pcl
        *  \return true if all the checks are passed, false otherwise
         */
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief Detect the keypoints by performing the EVD of the scatter matrix.
         * \param[out] output the resultant cloud of keypoints
         */
       void
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
 
 
       /** \brief The radius of the spherical neighborhood used to compute the scatter matrix.*/

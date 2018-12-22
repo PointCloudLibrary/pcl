@@ -88,7 +88,7 @@ namespace pcl
 
     private:
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
   };
 }
 

@@ -89,7 +89,7 @@ namespace pcl
 
         // In hand scanner
         void runningModeChanged (const RunningMode mode);
-        void keyPressEvent (QKeyEvent* event);
+        void keyPressEvent (QKeyEvent* event) override;
 
         // Input data processing.
         void setXMin (const int x_min);

@@ -65,34 +65,34 @@ namespace pcl
       DinastGrabber (const int device_position=1);
 
       /** \brief Destructor. It never throws. */
-      virtual ~DinastGrabber () throw ();
+      ~DinastGrabber () throw ();
 
       /** \brief Check if the grabber is running
         * \return true if grabber is running / streaming. False otherwise.
         */
-      virtual bool 
-      isRunning () const;
+      bool 
+      isRunning () const override;
       
       /** \brief Returns the name of the concrete subclass, DinastGrabber.
         * \return DinastGrabber.
         */
-      virtual std::string
-      getName () const
+      std::string
+      getName () const override
       { return (std::string ("DinastGrabber")); }
       
       /** \brief Start the data acquisition process.
         */
-      virtual void
-      start ();
+      void
+      start () override;
 
       /** \brief Stop the data acquisition process.
         */
-      virtual void
-      stop ();
+      void
+      stop () override;
       
       /** \brief Obtain the number of frames per second (FPS). */
-      virtual float 
-      getFramesPerSecond () const;
+      float 
+      getFramesPerSecond () const override;
 
       /** \brief Get the version number of the currently opened device
         */

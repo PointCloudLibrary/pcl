@@ -83,7 +83,7 @@ namespace pcl
         OctreePointCloud (const double resolution_arg);
 
         /** \brief Empty deconstructor. */
-        virtual
+        
         ~OctreePointCloud ();
 
         // public typedefs

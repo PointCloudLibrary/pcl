@@ -149,7 +149,7 @@ namespace pcl
 
     protected:
       void
-      computeFeature (FeatureCloud &output);
+      computeFeature (FeatureCloud &output) override;
 
     private:
       float scale_h_;

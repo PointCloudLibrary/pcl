@@ -60,7 +60,7 @@ namespace pcl
       /** Constructor */
       BearingAngleImage ();
       /** Destructor */
-      virtual ~BearingAngleImage ();
+      ~BearingAngleImage ();
 
     public:
       /** \brief Reset all values to an empty Bearing Angle image */

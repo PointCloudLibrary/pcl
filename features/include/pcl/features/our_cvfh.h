@@ -371,7 +371,7 @@ namespace pcl
        * feature estimates
        */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief Region growing method using Euclidean distances and neighbors normals to 
        * add points to a region.

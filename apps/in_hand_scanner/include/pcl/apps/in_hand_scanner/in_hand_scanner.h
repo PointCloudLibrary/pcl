@@ -185,7 +185,7 @@ namespace pcl
 
         /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
         void
-        keyPressEvent (QKeyEvent* event);
+        keyPressEvent (QKeyEvent* event) override;
 
       private:
 
@@ -236,7 +236,7 @@ namespace pcl
           * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
           */
         void
-        paintEvent (QPaintEvent* event);
+        paintEvent (QPaintEvent* event) override;
 
         /** \brief Draw text over the opengl scene.
           * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
