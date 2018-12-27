@@ -121,16 +121,6 @@ endif()
 source_group("Image Headers" FILES ${IMAGE_INCLUDES})
 source_group("Image Sources" FILES ${IMAGE_SOURCES})
 
-if(WITH_FZAPI)
-  set(FZAPI_GRABBER_INCLUDES
-    include/pcl/io/fotonic_grabber.h
-  )
-
-  set(FZAPI_GRABBER_SOURCES
-    src/fotonic_grabber.cpp
-  )
-endif()
-
 if(WITH_ENSENSO)
   set(ENSENSO_GRABBER_INCLUDES
     include/pcl/io/ensenso_grabber.h
@@ -234,7 +224,6 @@ set(srcs
   ${OPENNI2_GRABBER_SOURCES}
   ${IMAGE_SOURCES}
   ${DINAST_GRABBER_SOURCES}
-  ${FZAPI_GRABBER_SOURCES}
   ${ENSENSO_GRABBER_SOURCES}
   ${DAVIDSDK_GRABBER_SOURCES}
   ${DSSDK_GRABBER_SOURCES}
@@ -257,6 +246,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/boost.h"
   "include/pcl/${SUBSYS_NAME}/eigen.h"
   "include/pcl/${SUBSYS_NAME}/debayer.h"
+  "include/pcl/${SUBSYS_NAME}/fotonic_grabber.h"
   "include/pcl/${SUBSYS_NAME}/file_io.h"
   "include/pcl/${SUBSYS_NAME}/auto_io.h"
   "include/pcl/${SUBSYS_NAME}/low_level_io.h"
@@ -284,7 +274,6 @@ set(incs
   ${OPENNI2_GRABBER_INCLUDES}
   ${IMAGE_INCLUDES}
   ${DINAST_GRABBER_INCLUDES}
-  ${FZAPI_GRABBER_INCLUDES}
   ${ENSENSO_GRABBER_INCLUDES}
   ${DAVIDSDK_GRABBER_INCLUDES}
   ${DSSDK_GRABBER_INCLUDES}

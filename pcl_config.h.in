@@ -32,8 +32,6 @@
 
 #cmakedefine HAVE_CUDA 1
 
-#cmakedefine HAVE_FZAPI 1
-
 #cmakedefine HAVE_ENSENSO 1
 
 #cmakedefine HAVE_DAVIDSDK 1
