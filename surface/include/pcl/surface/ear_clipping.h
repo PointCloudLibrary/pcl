@@ -83,11 +83,12 @@ namespace pcl
       void
       triangulate (const Vertices& vertices, PolygonMesh& output);
 
-      /** \brief Compute the signed area of a polygon. 
-        * \param[in] vertices the vertices representing the polygon 
+      /** \brief Triangulate one polygon, assume the vertices are clockwise. 
+        * \param[in] vertices the set of vertices
+        * \param[out] output the resultant polygonal mesh
         */
-      float
-      area (const std::vector<uint32_t>& vertices);
+      size_t
+      triangulate (std::vector<uint32_t>& vertices, PolygonMesh& output);
 
       /** \brief Check if the triangle (u,v,w) is an ear. 
         * \param[in] u the first triangle vertex 
