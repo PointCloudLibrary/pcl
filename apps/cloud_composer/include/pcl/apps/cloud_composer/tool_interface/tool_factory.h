@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
 class QAction;

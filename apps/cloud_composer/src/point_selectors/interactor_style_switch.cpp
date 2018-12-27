@@ -4,6 +4,8 @@
 #include <pcl/apps/cloud_composer/point_selectors/click_trackball_interactor_style.h>
 #include <pcl/visualization/interactor_style.h>
 
+#include <QDebug>
+
 namespace pcl
 {
   namespace cloud_composer

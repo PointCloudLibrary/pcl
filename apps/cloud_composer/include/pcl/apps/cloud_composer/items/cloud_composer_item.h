@@ -39,11 +39,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/properties_model.h>
-
-
-
 
 static QStringList ITEM_TYPES_STRINGS(QStringList() 
       << "Cloud Composer Item"

@@ -42,7 +42,7 @@
 
 #pragma once
 
-#include <pcl/apps/cloud_composer/qt.h>
+#include <QPointer>
 
 namespace pcl
 {

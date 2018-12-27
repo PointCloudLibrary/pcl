@@ -37,7 +37,8 @@
 
 #pragma once
 
-#include <pcl/apps/cloud_composer/qt.h>
+#include <QStandardItemModel>
+
 #include <pcl/common/boost.h> 
 
 namespace pcl

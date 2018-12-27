@@ -1,8 +1,6 @@
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
-
-
+#include <QDebug>
 
 pcl::cloud_composer::CloudComposerItem::CloudComposerItem (QString name)
   : QStandardItem(name)
@@ -16,10 +14,8 @@ pcl::cloud_composer::CloudComposerItem::CloudComposerItem (QString name)
   this->setData (QVariant::fromValue (properties_), ItemDataRole::PROPERTIES); 
   this->setData (QVariant (item_id), ItemDataRole::ITEM_ID);
   
-  this->setForeground (QBrush (Qt::black));
-  
+  this->setForeground (QBrush (Qt::black));  
 }
-
 
 pcl::cloud_composer::CloudComposerItem::~CloudComposerItem ()
 {

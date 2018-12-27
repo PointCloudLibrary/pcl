@@ -37,10 +37,15 @@
 
 #pragma once
 
-#include <pcl/apps/cloud_composer/qt.h>
+#include <QWidget>
+
+#include <vtkEventQtSlotConnect.h>
+
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
-#include <vtkEventQtSlotConnect.h>
+
+class QItemSelection;
+class QStandardItem;
 
 namespace pcl
 {

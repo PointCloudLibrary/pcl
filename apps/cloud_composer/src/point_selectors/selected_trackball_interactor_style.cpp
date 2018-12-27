@@ -1,6 +1,9 @@
 #include <pcl/apps/cloud_composer/point_selectors/selected_trackball_interactor_style.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 
+#include <QDebug>
+#include <QItemSelectionModel>
+
 namespace pcl
 {
   namespace cloud_composer
@@ -12,8 +15,7 @@ namespace pcl
 pcl::cloud_composer::SelectedTrackballStyleInteractor::SelectedTrackballStyleInteractor ()
   : vtkInteractorStyleTrackballActor ()
 {
-  manipulation_complete_event_ = interactor_events::MANIPULATION_COMPLETE_EVENT;
-  
+  manipulation_complete_event_ = interactor_events::MANIPULATION_COMPLETE_EVENT;  
 }
 
 pcl::cloud_composer::SelectedTrackballStyleInteractor::~SelectedTrackballStyleInteractor ()
@@ -55,8 +57,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::OnLeftButtonDown ()
 {
   vtkInteractorStyleTrackballActor::OnLeftButtonDown();
   
-  setSelectedActors ();
- 
+  setSelectedActors (); 
 }
 
 void
@@ -64,8 +65,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::OnRightButtonDown ()
 {
   vtkInteractorStyleTrackballActor::OnRightButtonDown();
   
-  setSelectedActors ();
-  
+  setSelectedActors ();  
 }
 
 void
@@ -80,8 +80,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::OnLeftButtonUp ()
     vtkSmartPointer<vtkMatrix4x4> end_matrix = vtkSmartPointer<vtkMatrix4x4>::New ();
     actor->GetMatrix (end_matrix);
     manip_event->addManipulation (id, start_matrix_map_.value (id), end_matrix);
-    this->InvokeEvent (this->manipulation_complete_event_, manip_event);
-    
+    this->InvokeEvent (this->manipulation_complete_event_, manip_event);    
   }
 }
 
@@ -97,8 +96,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::OnRightButtonUp ()
     vtkSmartPointer<vtkMatrix4x4> end_matrix = vtkSmartPointer<vtkMatrix4x4>::New ();
     actor->GetMatrix (end_matrix);
     manip_event->addManipulation (id, start_matrix_map_.value (id), end_matrix);
-    this->InvokeEvent (this->manipulation_complete_event_, manip_event);
-    
+    this->InvokeEvent (this->manipulation_complete_event_, manip_event);    
   }
 }
 
@@ -112,7 +110,6 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Rotate ()
   
   vtkRenderWindowInteractor *rwi = this->Interactor;
   vtkCamera *cam = this->CurrentRenderer->GetActiveCamera();
-  
   
   // First get the origin of the assembly
   double *obj_center = this->InteractionProp->GetCenter();
@@ -202,8 +199,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Rotate ()
     this->CurrentRenderer->ResetCameraClippingRange();
   }
     
-  rwi->Render();
-    
+  rwi->Render();    
 }
 
 void
@@ -386,5 +382,4 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::UniformScale ()
   }
   
   rwi->Render();
-
 }

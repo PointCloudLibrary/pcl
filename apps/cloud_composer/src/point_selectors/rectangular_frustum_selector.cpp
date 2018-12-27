@@ -1,6 +1,8 @@
 #include <pcl/apps/cloud_composer/point_selectors/rectangular_frustum_selector.h>
 #include <pcl/apps/cloud_composer/point_selectors/selection_event.h>
 
+#include <QDebug>
+
 namespace pcl
 {
   namespace cloud_composer
