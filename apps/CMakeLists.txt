@@ -188,7 +188,7 @@ endif() # VTK_FOUND
 # OpenGL and GLUT
 if(OPENGL_FOUND AND GLUT_FOUND)
   if(NOT WIN32)
-    include_directories("${OPENGL_INCLUDE_DIR}")
+    include_directories(SYSTEM "${OPENGL_INCLUDE_DIR}")
   endif()
   PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_grabcut_2d "${SUBSYS_NAME}" src/grabcut_2d.cpp)
   target_link_libraries (pcl_grabcut_2d pcl_common pcl_io pcl_segmentation pcl_search GLUT::GLUT ${OPENGL_LIBRARIES})

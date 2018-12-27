@@ -13,7 +13,7 @@ add_definitions(${PCL_DEFINITIONS})
 find_package(HDF5 REQUIRED)
 find_package(FLANN REQUIRED)
 
-include_directories(
+include_directories(SYSTEM
   ${FLANN_INCLUDE_DIRS}
   ${HDF5_INCLUDE_DIR}
 )

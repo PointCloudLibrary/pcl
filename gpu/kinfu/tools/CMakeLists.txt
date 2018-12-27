@@ -14,7 +14,7 @@ else()
 endif()
 
 file(GLOB hdrs "*.h*")
-include_directories(${VTK_INCLUDE_DIRS} ${OPENNI_INCLUDE_DIRS})
+include_directories(SYSTEM ${VTK_INCLUDE_DIRS} ${OPENNI_INCLUDE_DIRS})
 
 ## KINECT FUSION
 set(the_target pcl_kinfu_app)

@@ -26,7 +26,7 @@ source_group("Source Files\\cuda" FILES ${cuda})
 list(APPEND srcs ${utils} ${cuda})
 
 
-include_directories(${VTK_INCLUDE_DIRS})
+include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/src/cuda")

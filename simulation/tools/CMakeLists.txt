@@ -5,7 +5,7 @@ if(NOT (GLEW_FOUND AND GLUT_FOUND))
   return()
 endif()
 
-include_directories(${VTK_INCLUDE_DIRS})
+include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
 
 PCL_ADD_EXECUTABLE(pcl_sim_viewer ${SUBSYS_NAME} sim_viewer.cpp)
 target_link_libraries (pcl_sim_viewer

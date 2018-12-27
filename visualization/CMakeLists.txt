@@ -23,7 +23,7 @@ endif()
 
 if(OPENGL_FOUND)
   if(OPENGL_INCLUDE_DIR)
-    include_directories("${OPENGL_INCLUDE_DIR}")
+    include_directories(SYSTEM "${OPENGL_INCLUDE_DIR}")
   endif()
   if(OPENGL_DEFINITIONS)
     add_definitions("${OPENGL_DEFINITIONS}")
@@ -136,7 +136,7 @@ endif()
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs} ${vtk_incs})
 
-target_include_directories("${LIB_NAME}" PUBLIC ${VTK_INCLUDE_DIRS})
+target_include_directories("${LIB_NAME}" SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
 
 # apple workaround (continued)
 if(APPLE)
