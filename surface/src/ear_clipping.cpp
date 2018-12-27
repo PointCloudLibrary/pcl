@@ -66,7 +66,7 @@ pcl::EarClipping::performProcessing (PolygonMesh& output)
 void
 pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
 {
-  const int n_vertices = static_cast<const int> (vertices.vertices.size ());
+  const size_t n_vertices = static_cast<size_t> (vertices.vertices.size ());
 
   if (n_vertices < 3)
     return;
@@ -77,11 +77,9 @@ pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
   }
 
   std::vector<uint32_t> remaining_vertices (n_vertices);
-  if (area (vertices.vertices) > 0) // clockwise?
-    remaining_vertices = vertices.vertices;
-  else
-    for (int v = 0; v < n_vertices; v++)
-      remaining_vertices[v] = vertices.vertices[n_vertices - 1 - v];
+
+  // put the clockwise check in the isEar() to fix complex situation's decompose bug
+  remaining_vertices = vertices.vertices;
 
   // Avoid closed loops.
   if (remaining_vertices.front () == remaining_vertices.back ())
@@ -157,12 +155,13 @@ pcl::EarClipping::isEar (int u, int v, int w, const std::vector<uint32_t>& verti
   p_w = points_->points[vertices[w]].getVector3fMap();
 
   const float eps = 1e-15f;
-  Eigen::Vector3f p_uv, p_uw;
-  p_uv = p_v - p_u;
-  p_uw = p_w - p_u;
+  Eigen::Vector3f p_vu, p_vw;
+  p_vu = p_u - p_v;
+  p_vw = p_w - p_v;
 
-  // Avoid flat triangles.
-  if ((p_uv.cross(p_uw)).norm() < eps)
+  // Avoid flat triangles and concave vertex
+  Eigen::Vector3f cross = p_vu.cross(p_vw);
+  if ((cross[2] > 0) != (cross.norm() < eps))
     return (false);
 
   Eigen::Vector3f p;
