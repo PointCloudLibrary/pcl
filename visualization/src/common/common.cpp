@@ -460,6 +460,36 @@ pcl::visualization::getColormapLUT (LookUpTableRepresentationProperties colormap
   return true;
 }
 
+pcl::visualization::Camera::Camera ()
+{
+  // Set default camera clipping range to something meaningful
+  clip[0] = 0.01;
+  clip[1] = 1000.01;
+
+  // Look straight along the z-axis
+  focal[0] = 0.0;
+  focal[1] = 0.0;
+  focal[2] = 1.0;
+
+  // Position the camera at the origin
+  pos[0] = 0.0;
+  pos[1] = 0.0;
+  pos[2] = 0.0;
+
+  // Set the up-vector of the camera to be the y-axis
+  view[0] = 0.0;
+  view[1] = 1.0;
+  view[2] = 0.0;
+
+  // Set the camera field of view to about
+  fovy = 0.8575;
+
+  window_pos[0] = 0;
+  window_pos[1] = 0;
+  window_size[0] = 1;
+  window_size[1] = 1;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::Camera::computeViewMatrix (Eigen::Matrix4d &view_mat) const

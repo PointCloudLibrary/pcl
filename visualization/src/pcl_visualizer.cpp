@@ -1904,32 +1904,9 @@ void
 pcl::visualization::PCLVisualizer::initCameraParameters ()
 {
   Camera camera_temp;
-  // Set default camera parameters to something meaningful
-  camera_temp.clip[0] = 0.01;
-  camera_temp.clip[1] = 1000.01;
 
-  // Look straight along the z-axis
-  camera_temp.focal[0] = 0.;
-  camera_temp.focal[1] = 0.;
-  camera_temp.focal[2] = 1.;
-
-  // Position the camera at the origin
-  camera_temp.pos[0] = 0.;
-  camera_temp.pos[1] = 0.;
-  camera_temp.pos[2] = 0.;
-
-  // Set the up-vector of the camera to be the y-axis
-  camera_temp.view[0] = 0.;
-  camera_temp.view[1] = 1.;
-  camera_temp.view[2] = 0.;
-
-  // Set the camera field of view to about
-  camera_temp.fovy = 0.8575;
-
-  int scr_size_x = win_->GetScreenSize ()[0];
-  int scr_size_y = win_->GetScreenSize ()[1];
-  camera_temp.window_size[0] = scr_size_x / 2;
-  camera_temp.window_size[1] = scr_size_y / 2;
+  camera_temp.window_size[0] = win_->GetScreenSize ()[0] / 2;
+  camera_temp.window_size[1] = win_->GetScreenSize ()[1] / 2;
 
   setCameraParameters (camera_temp);
 }

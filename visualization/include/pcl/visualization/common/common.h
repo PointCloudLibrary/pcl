@@ -148,6 +148,11 @@ namespace pcl
     class PCL_EXPORTS Camera
     {
       public:
+        /** Construct a camera with meaningful default values.
+          * The camera is positioned at origin, looks along z-axis and has up-vector along y-axis. Window position and
+          * size are initialized with (0, 0) and (1, 1) respectively. */
+        Camera ();
+
         /** \brief Focal point or lookAt.
           * \note The view direction can be obtained by (focal-pos).normalized ()
           */
