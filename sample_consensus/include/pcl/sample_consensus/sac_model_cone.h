@@ -42,7 +42,7 @@
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/common.h>
 #include <pcl/common/distances.h>
-#include <limits.h>
+#include <climits>
 
 namespace pcl
 {

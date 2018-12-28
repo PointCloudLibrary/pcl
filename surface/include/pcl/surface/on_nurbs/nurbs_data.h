@@ -39,7 +39,7 @@
 
 #include <vector>
 #include <list>
-#include <stdio.h>
+#include <cstdio>
 
 #undef Success
 #include <Eigen/StdVector>

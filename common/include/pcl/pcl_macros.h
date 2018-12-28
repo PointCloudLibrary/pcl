@@ -66,12 +66,12 @@ namespace pcl
 #endif
 
 #include <iostream>
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
-#include <math.h>
+#include <cmath>
 
 // MSCV doesn't have std::{isnan,isfinite}
 #if defined _WIN32 && defined _MSC_VER
@@ -167,15 +167,6 @@ pcl_round (float number)
 #else
 #define pcl_lrint(x) (static_cast<long int>(pcl_round(x)))
 #define pcl_lrintf(x) (static_cast<long int>(pcl_round(x)))
-#endif
-
-
-#ifdef _WIN32
-__inline float
-log2f (float x)
-{
-  return (static_cast<float> (logf (x) * M_LOG2E));
-}
 #endif
 
 #ifdef WIN32

@@ -51,8 +51,8 @@
 #include <pcl/common/transforms.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/common/io.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <pcl/surface/qhull.h>
 
 //////////////////////////////////////////////////////////////////////////

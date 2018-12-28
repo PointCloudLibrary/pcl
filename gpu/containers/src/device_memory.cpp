@@ -38,7 +38,7 @@
 #include <pcl/gpu/utils/safe_call.hpp>
 
 #include "cuda_runtime_api.h"
-#include "assert.h"
+#include <cassert>
 
 #define HAVE_CUDA
 //#include <pcl_config.h>

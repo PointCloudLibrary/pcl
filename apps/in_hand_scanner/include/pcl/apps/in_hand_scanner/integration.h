@@ -40,7 +40,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <pcl/pcl_exports.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>

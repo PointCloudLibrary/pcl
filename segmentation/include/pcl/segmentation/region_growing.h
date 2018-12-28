@@ -44,8 +44,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <list>
-#include <math.h>
-#include <time.h>
+#include <cmath>
+#include <ctime>
 
 namespace pcl
 {

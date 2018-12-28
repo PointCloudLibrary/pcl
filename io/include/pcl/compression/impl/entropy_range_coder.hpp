@@ -46,9 +46,9 @@
 #include <map>
 #include <iostream>
 #include <vector>
-#include <string.h>
+#include <cstring>
 #include <algorithm>
-#include <stdio.h>
+#include <cstdio>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 unsigned long

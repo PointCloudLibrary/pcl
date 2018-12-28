@@ -54,7 +54,7 @@
 #include <string>
 #include <vector>
 #include <limits>
-#include <assert.h>
+#include <cassert>
 
 namespace pcl
 {

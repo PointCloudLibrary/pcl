@@ -39,7 +39,7 @@
 #include <cstring>
 #include <climits>
 #include <pcl/console/print.h>
-#include <errno.h>
+#include <cerrno>
 
 /*
  * Size of hashtable is (1 << HLOG) * sizeof (char *)

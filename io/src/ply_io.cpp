@@ -39,7 +39,7 @@
 #include <fcntl.h>
 #include <string>
 #include <map>
-#include <stdlib.h>
+#include <cstdlib>
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 #include <pcl/io/ply_io.h>

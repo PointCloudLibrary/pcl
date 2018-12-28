@@ -1,5 +1,5 @@
 #include <GL/glew.h>
-#include <time.h>
+#include <ctime>
 
 #include <pcl/pcl_config.h>
 #ifdef OPENGL_IS_A_FRAMEWORK

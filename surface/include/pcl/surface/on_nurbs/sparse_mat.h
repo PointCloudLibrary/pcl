@@ -39,7 +39,7 @@
 
 #include <vector>
 #include <map>
-#include <stdio.h>
+#include <cstdio>
 
 namespace pcl
 {

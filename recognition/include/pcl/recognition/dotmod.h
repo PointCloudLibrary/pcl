@@ -39,7 +39,7 @@
 
 #include <vector>
 #include <cstddef>
-#include <string.h>
+#include <cstring>
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/dot_modality.h>
 #include <pcl/recognition/dense_quantized_multi_mod_template.h>

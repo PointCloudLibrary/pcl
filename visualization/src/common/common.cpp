@@ -39,7 +39,7 @@
 #include <pcl/visualization/common/common.h>
 #include <pcl/console/print.h>
 #include <pcl/common/colors.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

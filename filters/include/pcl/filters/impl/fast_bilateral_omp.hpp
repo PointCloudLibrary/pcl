@@ -43,7 +43,7 @@
 #include <pcl/filters/fast_bilateral_omp.h>
 #include <pcl/common/io.h>
 #include <pcl/console/time.h>
-#include <assert.h>
+#include <cassert>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

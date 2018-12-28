@@ -40,7 +40,7 @@
 #include <fstream>
 #include <fcntl.h>
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 #include <pcl/io/boost.h>
 #include <pcl/common/io.h>
 #include <pcl/io/low_level_io.h>

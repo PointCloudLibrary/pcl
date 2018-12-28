@@ -40,7 +40,7 @@
 
 #include <vector>
 
-#include <stdio.h>
+#include <cstdio>
 
 using namespace std;
 

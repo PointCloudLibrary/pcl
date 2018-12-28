@@ -41,7 +41,7 @@
 
 #include <pcl/people/hog.h>
 
-#include <string.h>
+#include <cstring>
 
 #if defined(__SSE2__)
 #include <pcl/sse.h>

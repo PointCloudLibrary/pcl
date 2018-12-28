@@ -46,7 +46,7 @@
 #include <string>
 #include <cmath>
 #include <algorithm>
-#include <stdio.h>
+#include <cstdio>
 #include <boost/cstdint.hpp>
 
 namespace pcl
