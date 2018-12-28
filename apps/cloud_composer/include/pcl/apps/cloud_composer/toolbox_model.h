@@ -37,12 +37,17 @@
 
 #pragma once
 
-#include <pcl/apps/cloud_composer/qt.h>
+#include <QSet>
+#include <QStandardItemModel>
 
-enum TOOLBOX_ROLES 
-{ 
+class QItemSelection;
+class QItemSelectionModel;
+class QTreeView;
+
+enum TOOLBOX_ROLES
+{
   FACTORY = Qt::UserRole,
-  PARAMETER_MODEL, 
+  PARAMETER_MODEL,
   ALLOWED_INPUT_ITEM_TYPES,
   REQUIRED_INPUT_CHILDREN_TYPES
 };
@@ -75,7 +80,7 @@ namespace pcl
       
       /** \brief Enables/Disables Tools based on currently selected items from model */
       void
-      updateEnabledTools (const QItemSelection current_selection);
+      updateEnabledTools (const QItemSelection& current_selection);
       
       void
       enableAllTools ();
@@ -110,8 +115,7 @@ namespace pcl
       QItemSelectionModel* selection_model_;
       QSet <QStandardItem*> tool_items;
       
-      ProjectModel* project_model_;
-      
+      ProjectModel* project_model_;      
     };
   }
 }

@@ -43,6 +43,7 @@
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 #include <pcl/visualization/pcl_plotter.h>
 
+class QVTKWidget;
 
 namespace pcl
 {
@@ -76,9 +77,7 @@ namespace pcl
         QVTKWidget *qvtk_;
         QWidget *hist_page_;
     };
-    
-    
-    
+
   }
 }
 

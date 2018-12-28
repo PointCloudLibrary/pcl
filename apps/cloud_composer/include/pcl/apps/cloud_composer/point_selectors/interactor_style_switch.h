@@ -37,17 +37,15 @@
 
 #pragma once
 
+#include <QMap>
+
 #include <pcl/visualization/vtk.h>
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/common/actor_map.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-#include <pcl/apps/cloud_composer/qt.h>
-
-
-
-
+class QVTKWidget;
 
 namespace pcl
 {

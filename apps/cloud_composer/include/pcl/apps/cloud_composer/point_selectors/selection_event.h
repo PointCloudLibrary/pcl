@@ -39,7 +39,6 @@
 
 #include <pcl/visualization/vtk.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
-#include <pcl/apps/cloud_composer/qt.h>
 
 namespace pcl
 {

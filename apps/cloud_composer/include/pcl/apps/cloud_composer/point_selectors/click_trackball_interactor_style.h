@@ -38,7 +38,6 @@
 #pragma once
 
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
-#include <pcl/apps/cloud_composer/qt.h>
 
 namespace pcl
 {

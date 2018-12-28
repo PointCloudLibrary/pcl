@@ -1,11 +1,11 @@
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/filters/passthrough.h>
-
 
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
+
+#include <QMessageBox>
 
 pcl::cloud_composer::CloudItem::CloudItem (QString name,
                                            pcl::PCLPointCloud2::Ptr cloud_ptr,

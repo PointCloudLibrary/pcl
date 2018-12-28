@@ -109,7 +109,6 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/merge_selection.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/project_model.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/properties_model.h"
-  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/qt.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/signal_multiplexer.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/toolbox_model.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/transform_clouds.h"

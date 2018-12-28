@@ -1,4 +1,3 @@
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/work_queue.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 

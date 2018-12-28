@@ -37,8 +37,6 @@
 
 #pragma once
 
-#include <pcl/apps/cloud_composer/qt.h>
-
 //PCL
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>

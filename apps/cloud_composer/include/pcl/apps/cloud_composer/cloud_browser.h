@@ -37,7 +37,8 @@
 
 #pragma once
 
-#include <pcl/apps/cloud_composer/qt.h>
+#include <QStyledItemDelegate>
+#include <QTreeView>
 
 class QItemSelectionModel;
 

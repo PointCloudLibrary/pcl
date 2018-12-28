@@ -1,9 +1,11 @@
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/toolbox_model.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
+
+#include <QMessageBox>
+#include <QTreeView>
 
 pcl::cloud_composer::ToolBoxModel::ToolBoxModel (QTreeView* tool_view, QTreeView* parameter_view_, QObject* parent)
 : QStandardItemModel (parent)
@@ -40,8 +42,7 @@ pcl::cloud_composer::ToolBoxModel::addTool (ToolFactory* tool_factory)
   group_item->appendRow (new_tool_item); 
   //Expand the view for this tool group
   QModelIndex group_index = this->indexFromItem(group_item);
-  tool_view_->setExpanded (group_index, true);
-  
+  tool_view_->setExpanded (group_index, true);  
 }
 
 void
@@ -152,7 +153,7 @@ pcl::cloud_composer::ToolBoxModel::modelChanged ()
   updateEnabledTools (project_model_->getSelectionModel ()->selection ());  
 }
 void
-pcl::cloud_composer::ToolBoxModel::updateEnabledTools (const QItemSelection current_selection)
+pcl::cloud_composer::ToolBoxModel::updateEnabledTools (const QItemSelection& current_selection)
 {
   //qDebug () << "UPDATING ENABLED TOOLS!";
   QModelIndexList current_indices = current_selection.indexes ();

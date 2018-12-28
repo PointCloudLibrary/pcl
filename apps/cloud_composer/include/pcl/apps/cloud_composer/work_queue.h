@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include "qt.h"
+#include <QQueue>
 
 #include <pcl/apps/cloud_composer/commands.h>
 

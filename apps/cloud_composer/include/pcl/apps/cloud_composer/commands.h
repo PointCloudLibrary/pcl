@@ -37,8 +37,9 @@
 
 #pragma once
 
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
+
+#include <QUndoCommand>
 
 namespace pcl
 {
