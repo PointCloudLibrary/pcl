@@ -35,6 +35,9 @@
  *
  */
 
+#include <vtkCamera.h>
+#include <vtkRenderWindow.h>
+
 #include <pcl/point_types.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/console/print.h>
@@ -488,6 +491,26 @@ pcl::visualization::Camera::Camera ()
   window_pos[1] = 0;
   window_size[0] = 1;
   window_size[1] = 1;
+}
+
+pcl::visualization::Camera::Camera (vtkCamera& camera)
+{
+  camera.GetFocalPoint (focal);
+  camera.GetPosition (pos);
+  camera.GetViewUp (view);
+  camera.GetClippingRange (clip);
+  fovy = camera.GetViewAngle () / 180.0 * M_PI;
+}
+
+pcl::visualization::Camera::Camera (vtkCamera& camera, vtkRenderWindow& window)
+: Camera (camera)
+{
+  int *win_pos = window.GetPosition ();
+  int *win_size = window.GetSize ();
+  window_pos[0] = win_pos[0];
+  window_pos[1] = win_pos[1];
+  window_size[0] = win_size[0];
+  window_size[1] = win_size[1];
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

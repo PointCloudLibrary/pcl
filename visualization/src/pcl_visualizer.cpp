@@ -2021,25 +2021,7 @@ pcl::visualization::PCLVisualizer::getCameras (std::vector<pcl::visualization::C
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
   while ((renderer = rens_->GetNextItem ()) != NULL)
-  {
-    cameras.emplace_back();
-    cameras.back ().pos[0] = renderer->GetActiveCamera ()->GetPosition ()[0];
-    cameras.back ().pos[1] = renderer->GetActiveCamera ()->GetPosition ()[1];
-    cameras.back ().pos[2] = renderer->GetActiveCamera ()->GetPosition ()[2];
-    cameras.back ().focal[0] = renderer->GetActiveCamera ()->GetFocalPoint ()[0];
-    cameras.back ().focal[1] = renderer->GetActiveCamera ()->GetFocalPoint ()[1];
-    cameras.back ().focal[2] = renderer->GetActiveCamera ()->GetFocalPoint ()[2];
-    cameras.back ().clip[0] = renderer->GetActiveCamera ()->GetClippingRange ()[0];
-    cameras.back ().clip[1] = renderer->GetActiveCamera ()->GetClippingRange ()[1];
-    cameras.back ().view[0] = renderer->GetActiveCamera ()->GetViewUp ()[0];
-    cameras.back ().view[1] = renderer->GetActiveCamera ()->GetViewUp ()[1];
-    cameras.back ().view[2] = renderer->GetActiveCamera ()->GetViewUp ()[2];
-    cameras.back ().fovy = renderer->GetActiveCamera ()->GetViewAngle () / 180.0 * M_PI;
-    cameras.back ().window_size[0] = renderer->GetRenderWindow ()->GetSize ()[0];
-    cameras.back ().window_size[1] = renderer->GetRenderWindow ()->GetSize ()[1];
-    cameras.back ().window_pos[0] = 0;
-    cameras.back ().window_pos[1] = 0;
-  }
+    cameras.emplace_back (*renderer->GetActiveCamera (), *renderer->GetRenderWindow ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

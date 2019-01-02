@@ -37,6 +37,7 @@
  */
 
 #include <list>
+#include <pcl/common/angles.h>
 #include <pcl/visualization/common/io.h>
 #include <pcl/visualization/interactor_style.h>
 #include <vtkVersion.h>
@@ -165,18 +166,9 @@ pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters (pcl::visu
 {
   FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
 
-  vtkSmartPointer<vtkCamera> cam = Interactor->GetRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
-  cam->GetClippingRange (camera.clip);
-  cam->GetFocalPoint (camera.focal);
-  cam->GetPosition (camera.pos);
-  cam->GetViewUp (camera.view);
-  camera.fovy = cam->GetViewAngle () / 180.0 * M_PI;
-  int *win_pos = Interactor->GetRenderWindow ()->GetPosition ();
-  int *win_size = Interactor->GetRenderWindow ()->GetSize ();
-  camera.window_pos[0] = win_pos[0];
-  camera.window_pos[1] = win_pos[1];
-  camera.window_size[0] = win_size[0];
-  camera.window_size[1] = win_size[1];
+  auto window = Interactor->GetRenderWindow ();
+  auto cam = window->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
+  camera = Camera (*cam, *window);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -867,21 +859,15 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     // display current camera settings/parameters
     case 'c': case 'C':
     {
-      vtkSmartPointer<vtkCamera> cam = Interactor->GetRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
-      double clip[2], focal[3], pos[3], view[3];
-      cam->GetClippingRange (clip);
-      cam->GetFocalPoint (focal);
-      cam->GetPosition (pos);
-      cam->GetViewUp (view);
-      int *win_pos = Interactor->GetRenderWindow ()->GetPosition ();
-      int *win_size = Interactor->GetRenderWindow ()->GetSize ();
-      std::cerr <<  "Clipping plane [near,far] "  << clip[0] << ", " << clip[1] << endl <<
-                    "Focal point [x,y,z] " << focal[0] << ", " << focal[1] << ", " << focal[2] << endl <<
-                    "Position [x,y,z] " << pos[0] << ", " << pos[1] << ", " << pos[2] << endl <<
-                    "View up [x,y,z] " << view[0]  << ", " << view[1]  << ", " << view[2] << endl <<
-                    "Camera view angle [degrees] " << cam->GetViewAngle () << endl <<
-                    "Window size [x,y] " << win_size[0] << ", " << win_size[1] << endl <<
-                    "Window position [x,y] " << win_pos[0] << ", " << win_pos[1] << endl;
+      Camera cam;
+      getCameraParameters (cam);
+      std::cerr <<  "Clipping plane [near,far] "  << cam.clip[0] << ", " << cam.clip[1] << endl <<
+                    "Focal point [x,y,z] " << cam.focal[0] << ", " << cam.focal[1] << ", " << cam.focal[2] << endl <<
+                    "Position [x,y,z] " << cam.pos[0] << ", " << cam.pos[1] << ", " << cam.pos[2] << endl <<
+                    "View up [x,y,z] " << cam.view[0]  << ", " << cam.view[1]  << ", " << cam.view[2] << endl <<
+                    "Camera view angle [degrees] " << rad2deg (cam.fovy) << endl <<
+                    "Window size [x,y] " << cam.window_size[0] << ", " << cam.window_size[1] << endl <<
+                    "Window position [x,y] " << cam.window_pos[0] << ", " << cam.window_pos[1] << endl;
       break;
     }
     case '=':
