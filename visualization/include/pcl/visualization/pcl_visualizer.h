@@ -2001,11 +2001,13 @@ namespace pcl
          */
         void setDefaultWindowSizeAndPos ();
 
-        /** \brief Internal function for setting up camera parameters
-         * \param[in] argc
-         * \param[in] argv
+        /** \brief Set up camera parameters.
+         *
+         * Parses command line arguments to find camera parameters (either explicit numbers or a path to a .cam file).
+         * If not found, will generate a unique .cam file path (based on the rest of command line arguments) and try
+         * to load that. If it is also not found, just set the defaults.
          */
-        void setupCamera (int &argc, char **argv);
+        void setupCamera (int argc, char **argv);
 
         struct PCL_EXPORTS ExitMainLoopTimerCallback : public vtkCommand
         {

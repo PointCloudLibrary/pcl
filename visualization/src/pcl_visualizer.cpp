@@ -415,7 +415,7 @@ void pcl::visualization::PCLVisualizer::setDefaultWindowSizeAndPos ()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-void pcl::visualization::PCLVisualizer::setupCamera (int &argc, char **argv)
+void pcl::visualization::PCLVisualizer::setupCamera (int argc, char **argv)
 {
   initCameraParameters ();
 
