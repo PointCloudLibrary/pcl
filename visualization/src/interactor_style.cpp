@@ -162,13 +162,21 @@ pcl::visualization::PCLVisualizerInteractorStyle::saveCameraParameters (const st
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters (pcl::visualization::Camera &camera)
+pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters (pcl::visualization::Camera &camera, int viewport) const
 {
-  FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
-
-  auto window = Interactor->GetRenderWindow ();
-  auto cam = window->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
-  camera = Camera (*cam, *window);
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  int i = 0;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    if (viewport++ == i)
+    {
+      auto window = Interactor->GetRenderWindow ();
+      auto cam = renderer->GetActiveCamera ();
+      camera = Camera (*cam, *window);
+      break;
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

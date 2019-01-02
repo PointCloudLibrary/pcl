@@ -1882,11 +1882,9 @@ namespace pcl
         void
         saveCameraParameters (const std::string &file);
 
-        /** \brief Get camera parameters and save them to a pcl::visualization::Camera.
-          * \param[out] camera the name of the pcl::visualization::Camera
-          */
+        /** \brief Get camera parameters of a given viewport (0 means default viewport). */
         void
-        getCameraParameters (Camera &camera);
+        getCameraParameters (Camera &camera, int viewport = 0) const;
 
         /** \brief Return a pointer to the underlying VTK Render Window used. */
         vtkSmartPointer<vtkRenderWindow>

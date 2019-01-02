@@ -464,9 +464,9 @@ pcl::visualization::PCLVisualizer::saveCameraParameters (const std::string &file
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::getCameraParameters (pcl::visualization::Camera &camera)
+pcl::visualization::PCLVisualizer::getCameraParameters (pcl::visualization::Camera &camera, int viewport) const
 {
-  style_->getCameraParameters (camera);
+  style_->getCameraParameters (camera, viewport);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
