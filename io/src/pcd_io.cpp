@@ -602,7 +602,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
 
     // Unpack the xxyyzz to xyz
     std::vector<char*> pters (fields.size ());
-    int toff = 0;
+    size_t toff = 0;
     for (size_t i = 0; i < pters.size (); ++i)
     {
       pters[i] = &buf[toff];
