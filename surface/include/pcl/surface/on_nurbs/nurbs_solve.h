@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef _NURBS_SOLVE_H_
-#define _NURBS_SOLVE_H_
+#pragma once
 
 #undef Success
 #include <Eigen/Dense>
@@ -135,5 +134,3 @@ namespace pcl
 
   }
 }
-
-#endif

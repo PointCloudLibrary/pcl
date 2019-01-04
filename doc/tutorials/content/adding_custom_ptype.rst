@@ -375,7 +375,7 @@ addition, the type that you want, might already be defined for you.
 * `PointWithRange` - float x, y, z (union with float point[4]), range;
 
   Similar to `PointXYZI`, except `range` contains a measure of the distance
-  from the acqusition viewpoint to the point in the world.
+  from the acquisition viewpoint to the point in the world.
 
 .. code-block:: cpp
 

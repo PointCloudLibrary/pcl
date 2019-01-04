@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_ORGANIZED_POINT_COMPRESSION_H_
-#define PCL_ORGANIZED_POINT_COMPRESSION_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
@@ -151,5 +150,3 @@ namespace pcl
     const char* OrganizedPointCloudCompression<PointT>::frameHeaderIdentifier_ = "<PCL-ORG-COMPRESSED>";
   }
 }
-
-#endif

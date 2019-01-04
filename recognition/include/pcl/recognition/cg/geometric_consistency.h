@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_GEOMETRIC_CONSISTENCY_H_
-#define PCL_RECOGNITION_GEOMETRIC_CONSISTENCY_H_
+#pragma once
 
 #include <pcl/recognition/cg/correspondence_grouping.h>
 #include <pcl/point_cloud.h>
@@ -147,12 +146,10 @@ namespace pcl
         * \return true if the clustering had been successful or false if errors have occurred.
         */ 
       void
-      clusterCorrespondences (std::vector<Correspondences> &model_instances);
+      clusterCorrespondences (std::vector<Correspondences> &model_instances) override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/recognition/impl/cg/geometric_consistency.hpp>
 #endif
-
-#endif // PCL_RECOGNITION_GEOMETRIC_CONSISTENCY_H_

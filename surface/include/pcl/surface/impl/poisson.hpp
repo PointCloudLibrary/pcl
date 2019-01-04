@@ -54,7 +54,7 @@
 
 #define MEMORY_ALLOCATOR_BLOCK_SIZE 1<<12
 
-#include <stdarg.h>
+#include <cstdarg>
 #include <string>
 
 using namespace pcl;

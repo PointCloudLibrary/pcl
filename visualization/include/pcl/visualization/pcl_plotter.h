@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_VISUALUALIZATION_PCL_PLOTTER_H_
-#define	PCL_VISUALUALIZATION_PCL_PLOTTER_H_
+
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -49,7 +49,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/io.h>
 
-class PCLVisualizerInteractor;
 class vtkRenderWindow;
 class vtkRenderWindowInteractor;
 class vtkContextView;
@@ -416,15 +415,11 @@ namespace pcl
           {
             return (new ExitMainLoopTimerCallback);
           }
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void* call_data);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void* call_data) override;
 
           int right_timer_id;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-          PCLVisualizerInteractor *interactor;
-#else
           vtkRenderWindowInteractor *interactor;
-#endif
         };
         
         struct ExitCallback : public vtkCommand
@@ -433,8 +428,8 @@ namespace pcl
           {
             return new ExitCallback;
           }
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void*) override;
 
           PCLPlotter *plotter;
         };
@@ -474,6 +469,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/pcl_plotter.hpp>
-
-#endif	/* PCL_VISUALUALIZATION_PCL_PLOTTER_H_ */
-

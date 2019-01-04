@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_KLD_ADAPTIVE_PARTICLE_FILTER_OMP_H_
-#define PCL_TRACKING_KLD_ADAPTIVE_PARTICLE_FILTER_OMP_H_
+#pragma once
 
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/kld_adaptive_particle_filter.h>
@@ -46,7 +45,7 @@ namespace pcl
       using KLDAdaptiveParticleFilterTracker<PointInT, StateT>::calcBoundingBox;
 
       typedef Tracker<PointInT, StateT> BaseClass;
-      
+
       typedef typename Tracker<PointInT, StateT>::PointCloudIn PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
@@ -65,19 +64,20 @@ namespace pcl
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
-        */      
+        */
       KLDAdaptiveParticleFilterOMPTracker (unsigned int nr_threads = 0)
       : KLDAdaptiveParticleFilterTracker<PointInT, StateT> ()
-      , threads_ (nr_threads)
       {
         tracker_name_ = "KLDAdaptiveParticleFilterOMPTracker";
+
+        setNumberOfThreads(nr_threads);
       }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      inline void
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+      void
+      setNumberOfThreads (unsigned int nr_threads = 0);
 
     protected:
       /** \brief The number of threads the scheduler should use. */
@@ -86,7 +86,7 @@ namespace pcl
       /** \brief weighting phase of particle filter method.
           calculate the likelihood of all of the particles and set the weights.
         */
-      virtual void weight ();
+      void weight () override;
 
     };
   }
@@ -95,6 +95,4 @@ namespace pcl
 //#include <pcl/tracking/impl/particle_filter_omp.hpp>
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/tracking/impl/kld_adaptive_particle_filter_omp.hpp>
-#endif
-
 #endif

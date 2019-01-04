@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_RANSAC_BASED_AUX_H_
-#define PCL_RECOGNITION_RANSAC_BASED_AUX_H_
+#pragma once
 
 #include <cmath>
 #include <cstdlib>
@@ -463,5 +462,3 @@ namespace pcl
     } // namespace aux
   } // namespace recognition
 } // namespace pcl
-
-#endif // AUX_H_

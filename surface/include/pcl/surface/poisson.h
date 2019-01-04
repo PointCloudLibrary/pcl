@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_POISSON_H_
-#define PCL_SURFACE_POISSON_H_
+#pragma once
 
 #include <pcl/surface/reconstruction.h>
 
@@ -81,7 +80,7 @@ namespace pcl
         * \param[out] output the resultant polygonal mesh
         */
       void
-      performReconstruction (pcl::PolygonMesh &output);
+      performReconstruction (pcl::PolygonMesh &output) override;
 
       /** \brief Create the surface.
         * \param[out] points the vertex positions of the resulting mesh
@@ -89,7 +88,7 @@ namespace pcl
         */
       void
       performReconstruction (pcl::PointCloud<PointNT> &points,
-                             std::vector<pcl::Vertices> &polygons);
+                             std::vector<pcl::Vertices> &polygons) override;
 
       /** \brief Set the maximum depth of the tree that will be used for surface reconstruction.
         * \note Running at depth d corresponds to solving on a voxel grid whose resolution is no larger than
@@ -138,7 +137,7 @@ namespace pcl
       inline void
       setSolverDivide (int solver_divide) { solver_divide_ = solver_divide; }
 
-      /** \brief Get the the depth at which a block Gauss-Seidel solver is used to solve the Laplacian equation */
+      /** \brief Get the depth at which a block Gauss-Seidel solver is used to solve the Laplacian equation */
       inline int
       getSolverDivide () { return solver_divide_; }
 
@@ -218,7 +217,7 @@ namespace pcl
     protected:
       /** \brief Class get name method. */
       std::string
-      getClassName () const { return ("Poisson"); }
+      getClassName () const override { return ("Poisson"); }
 
     private:
       int depth_;
@@ -256,5 +255,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/poisson.hpp>
 #endif
-
-#endif  // PCL_SURFACE_POISSON_H_

@@ -342,7 +342,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   std::sort (index_vector.begin (), index_vector.end (), std::less<cloud_point_index_idx> ());
 
   // Third pass: count output cells
-  // we need to skip all the same, adjacenent idx values
+  // we need to skip all the same, adjacent idx values
   unsigned int total = 0;
   unsigned int index = 0;
   // first_and_last_indices_vector[i] represents the index in index_vector of the first point in

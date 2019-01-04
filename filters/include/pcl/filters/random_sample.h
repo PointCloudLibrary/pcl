@@ -35,12 +35,11 @@
  *
  */
 
-#ifndef PCL_FILTERS_RANDOM_SUBSAMPLE_H_
-#define PCL_FILTERS_RANDOM_SUBSAMPLE_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
-#include <time.h>
-#include <limits.h>
+#include <ctime>
+#include <climits>
 
 namespace pcl
 {
@@ -128,13 +127,13 @@ namespace pcl
         * \param output the resultant point cloud
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Sample of point indices
         * \param indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (std::vector<int> &indices) override;
 
       /** \brief Return a random number fast using a LCG (Linear Congruential Generator) algorithm.
         * See http://software.intel.com/en-us/articles/fast-random-number-generator-on-the-intel-pentiumr-4-processor/ for more information.
@@ -217,13 +216,13 @@ namespace pcl
         * \param output the resultant point cloud
         */
       void
-      applyFilter (PCLPointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output) override;
 
       /** \brief Sample of point indices
         * \param indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (std::vector<int> &indices) override;
 
       /** \brief Return a random number fast using a LCG (Linear Congruential Generator) algorithm.
         * See http://software.intel.com/en-us/articles/fast-random-number-generator-on-the-intel-pentiumr-4-processor/ for more information.
@@ -239,5 +238,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/random_sample.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_RANDOM_SUBSAMPLE_H_

@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef IA_RANSAC_H_
-#define IA_RANSAC_H_
+
+#pragma once
 
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_svd.h>
@@ -114,10 +114,10 @@ namespace pcl
         private:
           TruncatedError () {}
         public:
-          virtual ~TruncatedError () {}
+          ~TruncatedError () {}
 
           TruncatedError (float threshold) : threshold_ (threshold) {}
-          virtual float operator () (float e) const
+          float operator () (float e) const override
           { 
             if (e <= threshold_)
               return (e / threshold_);
@@ -248,8 +248,8 @@ namespace pcl
         * \param output the transformed input point cloud dataset using the rigid transformation found
         * \param guess The computed transforamtion
         */
-      virtual void 
-      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);
+      void 
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess) override;
 
       /** \brief The source point cloud's feature descriptors. */
       FeatureCloudConstPtr input_features_;
@@ -277,5 +277,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/ia_ransac.hpp>
-
-#endif  //#ifndef IA_RANSAC_H_

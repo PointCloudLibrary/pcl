@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KINFU_INTERNAL_HPP_
-#define PCL_KINFU_INTERNAL_HPP_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 //#include <pcl/gpu/utils/safe_call.hpp>
@@ -341,7 +340,7 @@ namespace pcl
     PCL_EXPORTS size_t 
     extractCloud (const PtrStep<short2>& volume, const float3& volume_size, PtrSz<PointType> output);
 
-    /** \brief Performs normals computation for given poins using tsdf volume
+    /** \brief Performs normals computation for given points using tsdf volume
       * \param[in] volume tsdf volume
       * \param[in] volume_size volume size
       * \param[in] input points where normals are computed
@@ -438,5 +437,3 @@ namespace pcl
     generateTriangles(const PtrStep<short2>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output);
   }
 }
-
-#endif /* PCL_KINFU_INTERNAL_HPP_ */

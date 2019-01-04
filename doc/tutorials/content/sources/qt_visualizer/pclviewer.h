@@ -1,5 +1,4 @@
-#ifndef PCLVIEWER_H
-#define PCLVIEWER_H
+#pragma once
 
 #include <iostream>
 
@@ -61,5 +60,3 @@ private:
   Ui::PCLViewer *ui;
 
 };
-
-#endif // PCLVIEWER_H

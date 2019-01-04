@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_IO_PCD_IO_H_
-#define PCL_IO_PCD_IO_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/io/file_io.h>
@@ -144,7 +143,7 @@ namespace pcl
       int 
       readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version,
-                  int &data_type, unsigned int &data_idx, const int offset = 0);
+                  int &data_type, unsigned int &data_idx, const int offset = 0) override;
 
 
       /** \brief Read a point cloud data header from a PCD file. 
@@ -232,7 +231,7 @@ namespace pcl
         */
       int 
       read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
-            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version, const int offset = 0);
+            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version, const int offset = 0) override;
 
       /** \brief Read a point cloud data from a PCD (PCD_V6) and store it into a pcl/PCLPointCloud2.
         * 
@@ -452,7 +451,7 @@ namespace pcl
       write (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
              const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
-             const bool binary = false)
+             const bool binary = false) override
       {
         if (binary)
           return (writeBinary (file_name, cloud, origin, orientation));
@@ -789,5 +788,3 @@ namespace pcl
 }
 
 #include <pcl/io/impl/pcd_io.hpp>
-
-#endif  //#ifndef PCL_IO_PCD_IO_H_

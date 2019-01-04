@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef PCL_GPU_SURFACE_CONVEX_HULL_HPP_
-#define PCL_GPU_SURFACE_CONVEX_HULL_HPP_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -74,5 +72,3 @@ namespace pcl
 	};
   }
 }
-
-#endif /* PCL_GPU_SURFACE_CONVEX_HULL_HPP_*/ 

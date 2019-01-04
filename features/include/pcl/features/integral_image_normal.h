@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_INTEGRALIMAGE_BASED_NORMAL_ESTIMATOR_H_
-#define PCL_INTEGRALIMAGE_BASED_NORMAL_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -139,7 +138,7 @@ namespace pcl
       }
 
       /** \brief Destructor **/
-      virtual ~IntegralImageNormalEstimation ();
+      ~IntegralImageNormalEstimation ();
 
       /** \brief Set the regions size which is considered for normal estimation.
         * \param[in] width the width of the search rectangle
@@ -231,8 +230,8 @@ namespace pcl
        /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
          * \param[in] cloud the const boost shared pointer to a PointCloud message
          */
-      virtual inline void
-      setInputCloud (const typename PointCloudIn::ConstPtr &cloud)
+      inline void
+      setInputCloud (const typename PointCloudIn::ConstPtr &cloud) override
       {
         input_ = cloud;
         if (!cloud->isOrganized ())
@@ -320,7 +319,7 @@ namespace pcl
         * \param[out] output the resultant normals
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief Computes the normal for the complete cloud.
         * \param[in] distance_map distance map
@@ -449,7 +448,7 @@ namespace pcl
       
       /** \brief This method should get called before starting the actual computation. */
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief Internal initialization method for COVARIANCE_MATRIX estimation. */
       void
@@ -478,6 +477,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/integral_image_normal.hpp>
 #endif
-
-#endif
-

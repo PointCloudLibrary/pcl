@@ -1,5 +1,4 @@
-#ifndef PLC_GPU_PEOPLE_PERSON_ATTRIBS_H_
-#define PLC_GPU_PEOPLE_PERSON_ATTRIBS_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -46,5 +45,3 @@ namespace pcl
     }
   }
 }
-
-#endif /* PLC_GPU_PEOPLE_PERSON_ATTRIBS_H_ */

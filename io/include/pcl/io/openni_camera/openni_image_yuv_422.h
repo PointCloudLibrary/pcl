@@ -33,11 +33,12 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#pragma once
+ 
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
-#ifndef __OPENNI_IMAGE_YUV422__
-#define __OPENNI_IMAGE_YUV422__
 #include <pcl/pcl_macros.h>
 #include "openni_image.h"
 
@@ -54,17 +55,17 @@ namespace openni_wrapper
   {
   public:
     ImageYUV422 (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ();
-    virtual ~ImageYUV422 () throw ();
+    ~ImageYUV422 () throw ();
 
-    inline virtual Encoding
-    getEncoding () const
+    inline Encoding
+    getEncoding () const override
     {
       return (YUV422);
     }
 
-    virtual bool isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const;
-    virtual void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const;
-    virtual void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const;
+    bool isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const override;
+    void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const override;
+    void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const override;
     inline static bool resizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height);
   } ;
 
@@ -76,4 +77,3 @@ namespace openni_wrapper
 } // namespace
 
 #endif
-#endif // __OPENNI_IMAGE__

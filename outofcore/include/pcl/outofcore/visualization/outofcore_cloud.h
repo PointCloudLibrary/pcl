@@ -1,7 +1,6 @@
-#ifndef PCL_OUTOFCORE_OUTOFCORE_CLOUD_H_
-#define PCL_OUTOFCORE_OUTOFCORE_CLOUD_H_
+#pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 // PCL
 //#include <pcl/common/time.h>
@@ -100,8 +99,8 @@ class OutofcoreCloud : public Object
        this->timestamp = timestamp;
       }
 
-      virtual size_t
-      sizeOf() const
+      size_t
+      sizeOf() const override
       {
         return item->GetActualMemorySize();
       }
@@ -265,8 +264,8 @@ class OutofcoreCloud : public Object
       std::cout << "Decreasing lod pixel threshold: " << lod_pixel_threshold_ << endl;
     }
 
-    virtual void
-    render (vtkRenderer* renderer);
+    void
+    render (vtkRenderer* renderer) override;
 
   private:
 
@@ -292,5 +291,3 @@ class OutofcoreCloud : public Object
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
-
-#endif

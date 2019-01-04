@@ -35,8 +35,7 @@
 
 /* \author Bastian Steder */
 
-#ifndef PCL_NARF_KEYPOINT_H_
-#define PCL_NARF_KEYPOINT_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
@@ -117,7 +116,7 @@ class PCL_EXPORTS NarfKeypoint : public Keypoint<PointWithRange, int>
     
     // =====CONSTRUCTOR & DESTRUCTOR=====
     NarfKeypoint (RangeImageBorderExtractor* range_image_border_extractor=NULL, float support_size=-1.0f);
-    virtual ~NarfKeypoint ();
+    ~NarfKeypoint ();
     
     // =====PUBLIC METHODS=====
     //! Erase all data calculated for the current range image
@@ -175,8 +174,8 @@ class PCL_EXPORTS NarfKeypoint : public Keypoint<PointWithRange, int>
     //void
       //blurInterestImage ();
     //! Detect key points
-    virtual void
-      detectKeypoints (PointCloudOut& output);
+    void
+      detectKeypoints (PointCloudOut& output) override;
     
     // =====PROTECTED MEMBER VARIABLES=====
     using BaseClass::name_;
@@ -202,5 +201,3 @@ inline std::ostream&
 }
 
 }  // end namespace pcl
-
-#endif  //#ifndef PCL_NARF_KEYPOINT_H_

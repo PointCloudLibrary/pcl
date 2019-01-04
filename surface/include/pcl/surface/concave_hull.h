@@ -36,13 +36,12 @@
  * $Id$
  *
  */
+ 
+#pragma once
 
-#include <pcl/pcl_config.h>
 #ifdef HAVE_QHULL
 
-#ifndef PCL_CONCAVE_HULL_H
-#define PCL_CONCAVE_HULL_H
-
+#include <pcl/pcl_config.h>
 #include <pcl/surface/convex_hull.h>
 
 namespace pcl
@@ -77,7 +76,7 @@ namespace pcl
       };
       
       /** \brief Empty destructor */
-      virtual ~ConcaveHull () {}
+      ~ConcaveHull () {}
 
       /** \brief Compute a concave hull for all points given 
         *
@@ -165,7 +164,7 @@ namespace pcl
     protected:
       /** \brief Class get name method. */
       std::string
-      getClassName () const
+      getClassName () const override
       {
         return ("ConcaveHull");
       }
@@ -181,11 +180,11 @@ namespace pcl
       performReconstruction (PointCloud &points, 
                              std::vector<pcl::Vertices> &polygons);
 
-      virtual void
-      performReconstruction (PolygonMesh &output);
+      void
+      performReconstruction (PolygonMesh &output) override;
 
-      virtual void
-      performReconstruction (std::vector<pcl::Vertices> &polygons);
+      void
+      performReconstruction (std::vector<pcl::Vertices> &polygons) override;
 
       /** \brief The method accepts facets only if the distance from any vertex to the facet->center 
         * (center of the voronoi cell) is smaller than alpha 
@@ -212,5 +211,4 @@ namespace pcl
 #include <pcl/surface/impl/concave_hull.hpp>
 #endif
 
-#endif  //#ifndef PCL_CONCAVE_HULL
 #endif

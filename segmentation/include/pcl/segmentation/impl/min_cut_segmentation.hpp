@@ -43,7 +43,7 @@
 #include <pcl/segmentation/min_cut_segmentation.h>
 #include <pcl/search/search.h>
 #include <pcl/search/kdtree.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <cmath>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

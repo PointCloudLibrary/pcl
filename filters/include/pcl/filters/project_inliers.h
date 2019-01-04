@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_PROJECT_INLIERS_H_
-#define PCL_FILTERS_PROJECT_INLIERS_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/filters/filter.h>
@@ -91,7 +90,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~ProjectInliers () {}
+      ~ProjectInliers () {}
 
       /** \brief The type of model to use (user given parameter).
         * \param model the model type (check \a model_types.h)
@@ -146,7 +145,7 @@ namespace pcl
         * \param output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
     private:
       /** \brief A pointer to the vector of model coefficients. */
@@ -195,7 +194,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~ProjectInliers () {}
+      ~ProjectInliers () {}
 
       /** \brief The type of model to use (user given parameter).
         * \param[in] model the model type (check \a model_types.h)
@@ -274,7 +273,7 @@ namespace pcl
       ModelCoefficientsConstPtr model_;
 
       void
-      applyFilter (PCLPointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output) override;
 
     private:
       /** \brief The model that needs to be segmented. */
@@ -288,5 +287,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/project_inliers.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_PROJECT_INLIERS_H_

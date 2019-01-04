@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_COMMON_H_
-#define PCL_COMMON_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <cfloat>
@@ -204,5 +203,3 @@ namespace pcl
 }
 /*@}*/
 #include <pcl/common/impl/common.hpp>
-
-#endif  //#ifndef PCL_COMMON_H_

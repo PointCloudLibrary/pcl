@@ -286,11 +286,11 @@ int main(int argc, char** argv)
   if(find_switch (argc, argv, "--help") || find_switch (argc, argv, "-h"))
     return print_help(), 0;
 
-  bool saveProb = 1;
+  bool saveProb = true;
   parse_argument (argc, argv, "-prob", saveProb);
 
-  bool debugOutput = 0;
-  parse_argument (argc, argv, "-debug", saveProb);
+  bool debugOutput = false;
+  parse_argument (argc, argv, "-debug", debugOutput);
   if(debugOutput)
     setVerbosityLevel(L_DEBUG);
  

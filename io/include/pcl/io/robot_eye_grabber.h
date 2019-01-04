@@ -35,10 +35,9 @@
  *
  */
 
-#include "pcl/pcl_config.h"
+#pragma once
 
-#ifndef PCL_IO_ROBOT_EYE_GRABBER_H_
-#define PCL_IO_ROBOT_EYE_GRABBER_H_
+#include "pcl/pcl_config.h"
 
 #include <pcl/io/grabber.h>
 #include <pcl/io/impl/synchronized_queue.hpp>
@@ -71,28 +70,28 @@ namespace pcl
       RobotEyeGrabber (const boost::asio::ip::address& ipAddress, unsigned short port=443);
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-      virtual ~RobotEyeGrabber () throw ();
+      ~RobotEyeGrabber () throw ();
 
       /** \brief Starts the RobotEye grabber.
        * The grabber runs on a separate thread, this call will return without blocking. */
-      virtual void start ();
+      void start () override;
 
       /** \brief Stops the RobotEye grabber. */
-      virtual void stop ();
+      void stop () override;
 
       /** \brief Obtains the name of this I/O Grabber
        *  \return The name of the grabber
        */
-      virtual std::string getName () const;
+      std::string getName () const override;
 
       /** \brief Check if the grabber is still running.
        *  \return TRUE if the grabber is running, FALSE otherwise
        */
-      virtual bool isRunning () const;
+      bool isRunning () const override;
 
       /** \brief Returns the number of frames per second.
        */
-      virtual float getFramesPerSecond () const;
+      float getFramesPerSecond () const override;
 
       /** \brief Set/get ip address of the sensor that sends the data.
        * The default is address_v4::any ().
@@ -148,5 +147,3 @@ namespace pcl
       void computeTimestamp (boost::uint32_t& timestamp, unsigned char* point_data);
   };
 }
-
-#endif /* PCL_IO_ROBOT_EYE_GRABBER_H_ */

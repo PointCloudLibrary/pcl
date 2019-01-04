@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GFPFH_H_
-#define PCL_GFPFH_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -130,7 +129,7 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains the PFH feature estimates
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief Return the dominant label of a set of points. */
       uint32_t
@@ -175,5 +174,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/gfpfh.hpp>
 #endif
-
-#endif  //#ifndef PCL_GFPFH_H_

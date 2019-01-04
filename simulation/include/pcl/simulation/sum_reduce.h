@@ -5,8 +5,7 @@
  *
  */
 
-#ifndef PCL_SIMULATION_SUM_REDUCE
-#define PCL_SIMULATION_SUM_REDUCE
+#pragma once
 
 #include <GL/glew.h>
 
@@ -62,5 +61,3 @@ namespace pcl
     };
   } // namespace - simulation
 } // namespace - pcl
-
-#endif /* PCL_SIMULATION_SUM_REDUCE */

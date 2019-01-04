@@ -1,5 +1,4 @@
-#ifndef OBJECT_RECOGNITION_H_
-#define OBJECT_RECOGNITION_H_
+#pragma once
 
 #include "typedefs.h"
 #include "load_clouds.h"
@@ -10,7 +9,6 @@
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/kdtree/kdtree_flann.h>
-
 
 struct ObjectRecognitionParameters
 {
@@ -198,5 +196,3 @@ class ObjectRecognition
     GlobalDescriptorsPtr descriptors_;
     pcl::KdTreeFLANN<GlobalDescriptorT>::Ptr kdtree_;
 };
-
-#endif

@@ -43,10 +43,6 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
 
-#if (PCL_LINEAR_VERSION(VTK_MAJOR_VERSION,VTK_MINOR_VERSION,0)<=PCL_LINEAR_VERSION(5,4,0))
-  #define DISPLAY_IMAGE
-#endif
-
 using pcl::console::print_error;
 using pcl::console::print_info;
 using pcl::console::print_value;

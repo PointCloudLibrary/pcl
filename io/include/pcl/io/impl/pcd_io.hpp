@@ -43,7 +43,7 @@
 #include <fstream>
 #include <fcntl.h>
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 #include <pcl/console/print.h>
 #include <pcl/io/boost.h>
 #include <pcl/io/low_level_io.h>

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_QUANTIZED_MAP
-#define PCL_FEATURES_QUANTIZED_MAP
+#pragma once
 
 #include <vector>
 #include <pcl/pcl_macros.h>
@@ -151,5 +150,3 @@ namespace pcl
     
   };
 }
-
-#endif   

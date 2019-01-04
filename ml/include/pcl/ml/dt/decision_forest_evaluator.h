@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_DT_DECISION_FOREST_EVALUATOR_H_
-#define PCL_ML_DT_DECISION_FOREST_EVALUATOR_H_
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -106,5 +105,3 @@ namespace pcl
 }
 
 #include <pcl/ml/impl/dt/decision_forest_evaluator.hpp>
-
-#endif

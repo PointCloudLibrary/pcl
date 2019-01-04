@@ -36,9 +36,9 @@
  */
 
 // Stdlib
-#include <stdlib.h>
+#include <cstdlib>
 #include <cmath>
-#include <limits.h>
+#include <climits>
 
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>

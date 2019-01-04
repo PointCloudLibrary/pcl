@@ -37,7 +37,7 @@
 /// @details the implementation of class CloudEditorWidget.
 /// @author  Yue Li and Matthew Hielsberg
 
-#include <ctype.h>
+#include <cctype>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMouseEvent>

@@ -35,15 +35,19 @@
  *
  */
 
-#ifndef TOOLBOX_MODEL_H_
-#define TOOLBOX_MODEL_H_
+#pragma once
 
-#include <pcl/apps/cloud_composer/qt.h>
+#include <QSet>
+#include <QStandardItemModel>
 
-enum TOOLBOX_ROLES 
-{ 
+class QItemSelection;
+class QItemSelectionModel;
+class QTreeView;
+
+enum TOOLBOX_ROLES
+{
   FACTORY = Qt::UserRole,
-  PARAMETER_MODEL, 
+  PARAMETER_MODEL,
   ALLOWED_INPUT_ITEM_TYPES,
   REQUIRED_INPUT_CHILDREN_TYPES
 };
@@ -66,7 +70,7 @@ namespace pcl
     public:
       ToolBoxModel (QTreeView* tool_view = 0, QTreeView* parameter_view = 0, QObject *parent = 0);
       ToolBoxModel (const ToolBoxModel& to_copy);
-      virtual ~ToolBoxModel ();
+      ~ToolBoxModel ();
       
       void
       addTool (ToolFactory* tool_factory);
@@ -76,7 +80,7 @@ namespace pcl
       
       /** \brief Enables/Disables Tools based on currently selected items from model */
       void
-      updateEnabledTools (const QItemSelection current_selection);
+      updateEnabledTools (const QItemSelection& current_selection);
       
       void
       enableAllTools ();
@@ -111,14 +115,10 @@ namespace pcl
       QItemSelectionModel* selection_model_;
       QSet <QStandardItem*> tool_items;
       
-      ProjectModel* project_model_;
-      
+      ProjectModel* project_model_;      
     };
   }
 }
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::ToolBoxModel);
 Q_DECLARE_METATYPE (QStandardItemModel*);
-
-#endif //TOOLBOX_MODEL_H_
-

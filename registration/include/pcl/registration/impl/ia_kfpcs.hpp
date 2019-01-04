@@ -83,7 +83,7 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
 
   // generate a subset of indices of size ransac_iterations_ on which to evaluate candidates on
   std::size_t nr_indices = indices_->size ();
-  if (nr_indices < ransac_iterations_)
+  if (nr_indices < size_t (ransac_iterations_))
     indices_validation_ = indices_;
   else
     for (int i = 0; i < ransac_iterations_; i++)
@@ -193,7 +193,7 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
   for (it_curr = it->begin (), it_curr_e = it->end (); it_curr != it_curr_e; it_curr++)
     candidates_.push_back (*it_curr);
 
-  // sort acoording to score value
+  // sort according to score value
   std::sort (candidates_.begin (), candidates_.end (), by_score ());
 
   // return here if no score was valid, i.e. all scores are FLT_MAX

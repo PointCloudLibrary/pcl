@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_RIFT_H_
-#define PCL_RIFT_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -139,7 +138,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the RIFT feature estimates
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief The intensity gradient of the input point cloud data*/
       PointCloudGradientConstPtr gradient_;
@@ -155,5 +154,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/rift.hpp>
 #endif
-
-#endif // #ifndef PCL_RIFT_H_

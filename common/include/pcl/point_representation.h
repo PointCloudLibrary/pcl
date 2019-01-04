@@ -36,8 +36,8 @@
  * $Id$
  *
  */
-#ifndef PCL_POINT_REPRESENTATION_H_
-#define PCL_POINT_REPRESENTATION_H_
+
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/pcl_macros.h>
@@ -195,7 +195,7 @@ namespace pcl
         trivial_ = true;
       }
 
-      virtual ~DefaultPointRepresentation () {}
+      ~DefaultPointRepresentation () {}
 
       inline Ptr
       makeShared () const
@@ -203,8 +203,8 @@ namespace pcl
         return (Ptr (new DefaultPointRepresentation<PointDefault> (*this)));
       }
 
-      virtual void
-      copyToFloatArray (const PointDefault &p, float * out) const
+      void
+      copyToFloatArray (const PointDefault &p, float * out) const override
       {
         // If point type is unknown, treat it as a struct/array of floats
         const float* ptr = reinterpret_cast<const float*> (&p);
@@ -306,8 +306,8 @@ namespace pcl
         return (Ptr (new DefaultFeatureRepresentation<PointDefault> (*this)));
       }
 
-      virtual void
-      copyToFloatArray (const PointDefault &p, float * out) const
+      void
+      copyToFloatArray (const PointDefault &p, float * out) const override
       {
         pcl::for_each_type <FieldList> (NdCopyPointFunctor (p, out));
       }
@@ -324,8 +324,8 @@ namespace pcl
         trivial_ = true;
       }
 
-      virtual void
-      copyToFloatArray (const PointXYZ &p, float * out) const
+      void
+      copyToFloatArray (const PointXYZ &p, float * out) const override
       {
         out[0] = p.x;
         out[1] = p.y;
@@ -344,8 +344,8 @@ namespace pcl
         trivial_ = true;
       }
 
-      virtual void
-      copyToFloatArray (const PointXYZI &p, float * out) const
+      void
+      copyToFloatArray (const PointXYZI &p, float * out) const override
       {
         out[0] = p.x;
         out[1] = p.y;
@@ -365,8 +365,8 @@ namespace pcl
         trivial_ = true;
       }
 
-      virtual void
-      copyToFloatArray (const PointNormal &p, float * out) const
+      void
+      copyToFloatArray (const PointNormal &p, float * out) const override
       {
         out[0] = p.x;
         out[1] = p.y;
@@ -395,8 +395,8 @@ namespace pcl
         trivial_ = true;
       }
 
-      virtual void
-      copyToFloatArray (const PPFSignature &p, float * out) const
+      void
+      copyToFloatArray (const PPFSignature &p, float * out) const override
       {
         out[0] = p.f1;
         out[1] = p.f2;
@@ -441,8 +441,8 @@ namespace pcl
         trivial_=false;
       }
 
-      virtual void
-      copyToFloatArray (const Narf36 &p, float * out) const
+      void
+      copyToFloatArray (const Narf36 &p, float * out) const override
       {
         for (int i = 0; i < nr_dimensions_; ++i)
           out[i] = p.descriptor[i];
@@ -463,8 +463,8 @@ namespace pcl
         nr_dimensions_ = 1980;
       }
 
-      virtual void
-      copyToFloatArray (const ShapeContext1980 &p, float * out) const
+      void
+      copyToFloatArray (const ShapeContext1980 &p, float * out) const override
       {
         for (int i = 0; i < nr_dimensions_; ++i)
           out[i] = p.descriptor[i];
@@ -481,8 +481,8 @@ namespace pcl
         nr_dimensions_ = 1960;
       }
 
-      virtual void
-      copyToFloatArray (const UniqueShapeContext1960 &p, float * out) const
+      void
+      copyToFloatArray (const UniqueShapeContext1960 &p, float * out) const override
       {
         for (int i = 0; i < nr_dimensions_; ++i)
           out[i] = p.descriptor[i];
@@ -499,8 +499,8 @@ namespace pcl
         nr_dimensions_ = 352;
       }
 
-      virtual void
-      copyToFloatArray (const SHOT352 &p, float * out) const
+      void
+      copyToFloatArray (const SHOT352 &p, float * out) const override
       {
         for (int i = 0; i < nr_dimensions_; ++i)
           out[i] = p.descriptor[i];
@@ -517,8 +517,8 @@ namespace pcl
         nr_dimensions_ = 1344;
       }
 
-      virtual void
-      copyToFloatArray (const SHOT1344 &p, float * out) const
+      void
+      copyToFloatArray (const SHOT1344 &p, float * out) const override
       {
         for (int i = 0; i < nr_dimensions_; ++i)
           out[i] = p.descriptor[i];
@@ -579,5 +579,3 @@ namespace pcl
       int start_dim_;
   };
 }
-
-#endif // #ifndef PCL_POINT_REPRESENTATION_H_

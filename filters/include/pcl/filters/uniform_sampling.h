@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_UNIFORM_SAMPLING_H_
-#define PCL_FILTERS_UNIFORM_SAMPLING_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
 #include <boost/unordered_map.hpp>
@@ -87,7 +86,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~UniformSampling ()
+      ~UniformSampling ()
       {
         leaves_.clear();
       }
@@ -134,13 +133,10 @@ namespace pcl
         * \param[out] output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/uniform_sampling.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_UNIFORM_SAMPLING_H_
-

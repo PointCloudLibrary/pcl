@@ -32,8 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RANGE_IMAGE_SPHERICAL_H_
-#define PCL_RANGE_IMAGE_SPHERICAL_H_
+#pragma once
 
 #include <pcl/range_image/range_image.h>
 
@@ -110,5 +109,3 @@ namespace pcl
 
 
 #include <pcl/range_image/impl/range_image_spherical.hpp>  // Definitions of templated and inline functions
-
-#endif  //#ifndef PCL_RANGE_IMAGE_SPHERICAL_H_

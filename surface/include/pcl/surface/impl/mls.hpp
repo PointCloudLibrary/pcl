@@ -283,8 +283,6 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
   // Compute the number of coefficients
   nr_coeff_ = (order_ + 1) * (order_ + 2) / 2;
 
-  size_t mls_result_index = 0;
-
 #ifdef _OPENMP
   // (Maximum) number of threads
   const unsigned int threads = threads_ == 0 ? 1 : threads_;
@@ -324,6 +322,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
         // Get a plane approximating the local surface's tangent and project point onto it
         const int index = (*indices_)[cp];
 
+        size_t mls_result_index = 0;
         if (cache_mls_results_)
           mls_result_index = index; // otherwise we give it a dummy location.
 

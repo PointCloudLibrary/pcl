@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_ROPS_ESIMATION_H_
-#define PCL_ROPS_ESIMATION_H_
+#pragma once
 
 #include <pcl/PolygonMesh.h>
 #include <pcl/features/feature.h>
@@ -70,7 +69,7 @@ namespace pcl
       ROPSEstimation ();
 
       /** \brief Virtual destructor. */
-      virtual
+      
       ~ROPSEstimation ();
 
       /** \brief Allows to set the number of partition bins that is used for distribution matrix calculation.
@@ -110,7 +109,7 @@ namespace pcl
       setTriangles (const std::vector <pcl::Vertices>& triangles);
 
       /** \brief Returns the triangles of the mesh.
-        * \param[out] triangles triangles of tthe mesh
+        * \param[out] triangles triangles of the mesh
         */
       void
       getTriangles (std::vector <pcl::Vertices>& triangles) const;
@@ -120,8 +119,8 @@ namespace pcl
       /** \brief Abstract feature estimation method.
         * \param[out] output the resultant features
         */
-      virtual void
-      computeFeature (PointCloudOut& output);
+      void
+      computeFeature (PointCloudOut& output) override;
 
       /** \brief This method simply builds the list of triangles for every point.
         * The list of triangles for each point consists of indices of triangles it belongs to.
@@ -231,6 +230,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/rops_estimation.hpp>
-#endif
-
 #endif

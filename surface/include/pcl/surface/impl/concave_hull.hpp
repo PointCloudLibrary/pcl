@@ -51,8 +51,8 @@
 #include <pcl/common/transforms.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/common/io.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <pcl/surface/qhull.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -242,7 +242,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   int max_vertex_id = 0;
   FORALLvertices
   {
-    if (vertex->id + 1 > max_vertex_id)
+    if (vertex->id + 1 > unsigned (max_vertex_id))
       max_vertex_id = vertex->id + 1;
   }
 

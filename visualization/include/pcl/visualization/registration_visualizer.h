@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_VISUALIZER_H_
-#define PCL_REGISTRATION_VISUALIZER_H_
+#pragma once
 
 // PCL
 #include <pcl/registration/registration.h>
@@ -206,5 +205,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/registration_visualizer.hpp>
-
-#endif  //#ifndef PCL_REGISTRATION_VISUALIZER_H_

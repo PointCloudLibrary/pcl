@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_PCL_VISUALIZER_COMMON_IO_H_
-#define PCL_PCL_VISUALIZER_COMMON_IO_H_
+
+#pragma once
 
 #include <pcl/visualization/common/actor_map.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -70,5 +70,3 @@ namespace pcl
     savePointData (vtkPolyData* data, const std::string &out_file, const boost::shared_ptr<CloudActorMap> &actors);
   }
 }
-
-#endif

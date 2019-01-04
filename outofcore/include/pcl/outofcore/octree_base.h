@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef PCL_OUTOFCORE_OUTOFCOREOCTREEBASE_H_
-#define PCL_OUTOFCORE_OUTOFCOREOCTREEBASE_H_
+#pragma once
 
 #include <pcl/outofcore/boost.h>
 #include <pcl/common/io.h>
@@ -662,6 +661,3 @@ namespace pcl
     };
   }
 }
-
-  
-#endif // PCL_OUTOFCORE_OUTOFCOREOCTREEBASE_H_

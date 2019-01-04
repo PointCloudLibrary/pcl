@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_LOCAL_RECOGNIZER_H_
-#define REC_FRAMEWORK_LOCAL_RECOGNIZER_H_
+#pragma once
 
 //#include <opencv2/opencv.hpp>
 #include <flann/flann.h>
@@ -88,8 +87,9 @@ namespace pcl
         std::vector<int> indices_;
 
         bool use_cache_;
-        std::map<std::pair<std::string, int>, Eigen::Matrix4f, std::less<std::pair<std::string, int> >, Eigen::aligned_allocator<std::pair<std::pair<
-            std::string, int>, Eigen::Matrix4f> > > poses_cache_;
+        std::map<std::pair<std::string, int>, Eigen::Matrix4f,
+                 std::less<std::pair<std::string, int> >,
+                 Eigen::aligned_allocator<std::pair<const std::pair<std::string, int>, Eigen::Matrix4f> > > poses_cache_;
         std::map<std::pair<std::string, int>, typename pcl::PointCloud<PointInT>::Ptr> keypoints_cache_;
 
         float threshold_accept_model_hypothesis_;
@@ -349,5 +349,3 @@ namespace pcl
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_LOCAL_RECOGNIZER_H_ */

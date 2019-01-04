@@ -1,5 +1,4 @@
-#ifndef OPENNI_CAPTURE_H
-#define OPENNI_CAPTURE_H
+#pragma once
 
 #include "typedefs.h"
 
@@ -30,5 +29,3 @@ protected:
   bool use_trigger_, trigger_;
   boost::mutex mutex_;
 };
-
-#endif

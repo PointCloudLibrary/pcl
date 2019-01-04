@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_PCA_H
-#define PCL_PCA_H
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
@@ -124,7 +123,7 @@ namespace pcl
         * \param cloud the const boost shared pointer to a PointCloud message
         */
       inline void 
-      setInputCloud (const PointCloudConstPtr &cloud) 
+      setInputCloud (const PointCloudConstPtr &cloud) override 
       { 
         Base::setInputCloud (cloud);
         compute_done_ = false;
@@ -133,8 +132,8 @@ namespace pcl
       /** \brief Provide a pointer to the vector of indices that represents the input data.
         * \param[in] indices a pointer to the indices that represent the input data.
         */
-      virtual void
-      setIndices (const IndicesPtr &indices)
+      void
+      setIndices (const IndicesPtr &indices) override
       {
         Base::setIndices (indices);
         compute_done_ = false;
@@ -143,8 +142,8 @@ namespace pcl
       /** \brief Provide a pointer to the vector of indices that represents the input data.
         * \param[in] indices a pointer to the indices that represent the input data.
         */
-      virtual void
-      setIndices (const IndicesConstPtr &indices)
+      void
+      setIndices (const IndicesConstPtr &indices) override
       {
         Base::setIndices (indices);
         compute_done_ = false;
@@ -153,8 +152,8 @@ namespace pcl
       /** \brief Provide a pointer to the vector of indices that represents the input data.
         * \param[in] indices a pointer to the indices that represent the input data.
         */
-      virtual void
-      setIndices (const PointIndicesConstPtr &indices)
+      void
+      setIndices (const PointIndicesConstPtr &indices) override
       {
         Base::setIndices (indices);
         compute_done_ = false;
@@ -168,8 +167,8 @@ namespace pcl
         * \param[in] nb_rows the number of rows to be considered row_start included
         * \param[in] nb_cols the number of columns to be considered col_start included
         */
-      virtual void
-      setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols)
+      void
+      setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols) override
       {
         Base::setIndices (row_start, col_start, nb_rows, nb_cols);
         compute_done_ = false;
@@ -270,7 +269,6 @@ namespace pcl
         */
       inline void
       reconstruct (const PointCloud& projection, PointCloud& input);
-
     private:
       inline bool
       initCompute ();
@@ -285,6 +283,3 @@ namespace pcl
 } // namespace pcl
 
 #include <pcl/common/impl/pca.hpp>
-
-#endif // PCL_PCA_H
-

@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_PPF_H_
-#define PCL_PPF_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 #include <pcl/features/boost.h>
@@ -98,12 +97,10 @@ namespace pcl
         * the input cloud);
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/ppf.hpp>
 #endif
-
-#endif // PCL_PPF_H_

@@ -77,10 +77,10 @@ namespace pcl
       popped_ = true;
     }
 
-    virtual void pop ();
+    void pop () override;
     
-    virtual bool
-    popped () const
+    bool
+    popped () const override
     {
       return popped_;
     }
@@ -174,11 +174,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     using namespace pcl::visualization;
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-    viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_));
-#else
     viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_, true));
-#endif
     viewer_->setBackgroundColor (0.1, 0.1, 0.1);
     viewer_->addCoordinateSystem (0.1, "global");
 

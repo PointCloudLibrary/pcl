@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_APPS_OPENNI_PASSTHROUGH_3D_
-#define PCL_APPS_OPENNI_PASSTHROUGH_3D_
+#pragma once
 
 // PCL
 #include <pcl/apps/openni_passthrough_qt.h>
@@ -116,5 +115,3 @@ class OpenNIPassthrough : public QMainWindow
     void 
     valueChanged (int new_value);
 };
-
-#endif    // PCL_APPS_OPENNI_PASSTHROUGH_3D_

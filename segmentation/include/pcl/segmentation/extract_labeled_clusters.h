@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_EXTRACT_LABELED_CLUSTERS_H_
-#define PCL_EXTRACT_LABELED_CLUSTERS_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/search/pcl_search.h>
@@ -189,5 +188,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/extract_labeled_clusters.hpp>
 #endif
-
-#endif  //#ifndef PCL_EXTRACT_LABELED_CLUSTERS_H_

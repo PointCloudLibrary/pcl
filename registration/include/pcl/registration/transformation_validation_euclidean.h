@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_H_
-#define PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_H_
+
+#pragma once
 
 #include <pcl/point_representation.h>
 #include <pcl/search/kdtree.h>
@@ -265,6 +265,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/transformation_validation_euclidean.hpp>
-
-#endif    // PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_H_
-

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_GAUSSIAN_KERNEL
-#define PCL_GAUSSIAN_KERNEL
+#pragma once
 
 #include <sstream>
 #include <pcl/common/eigen.h>
@@ -262,5 +261,3 @@ namespace pcl
 }
 
 #include <pcl/common/impl/gaussian.hpp>
-
-#endif // PCL_GAUSSIAN_KERNEL

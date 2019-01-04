@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_EXTRACT_INDICES_H_
-#define PCL_FILTERS_EXTRACT_INDICES_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 
@@ -117,13 +116,13 @@ namespace pcl
         * \param[out] output The resultant point cloud.
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Filtered results are indexed by an indices array.
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices)
+      applyFilter (std::vector<int> &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -186,19 +185,16 @@ namespace pcl
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (PCLPointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output) override;
 
       /** \brief Extract point indices
         * \param indices the resultant indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (std::vector<int> &indices) override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/extract_indices.hpp>
 #endif
-
-#endif  // PCL_FILTERS_EXTRACT_INDICES_H_
-

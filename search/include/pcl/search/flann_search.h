@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_SEARCH_FLANN_SEARCH_H_
-#define PCL_SEARCH_FLANN_SEARCH_H_
+#pragma once
 
 #include <pcl/search/search.h>
 #include <pcl/common/time.h>
@@ -156,13 +155,13 @@ namespace pcl
             KdTreeIndexCreator (unsigned int max_leaf_size=15) : max_leaf_size_ (max_leaf_size){}
       
             /** \brief Empty destructor */
-            virtual ~KdTreeIndexCreator () {}
+            ~KdTreeIndexCreator () {}
 
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
             * \return The FLANN index.
             */
-            virtual IndexPtr createIndex (MatrixConstPtr data);
+            IndexPtr createIndex (MatrixConstPtr data) override;
           private:
             unsigned int max_leaf_size_;
         };
@@ -215,7 +214,7 @@ namespace pcl
         FlannSearch (bool sorted = true, FlannIndexCreatorPtr creator = FlannIndexCreatorPtr (new KdTreeIndexCreator ()));
 
         /** \brief Destructor for FlannSearch. */
-        virtual
+        
         ~FlannSearch ();
 
 
@@ -258,8 +257,8 @@ namespace pcl
           * \param[in] cloud the const boost shared pointer to a PointCloud message
           * \param[in] indices the point indices subset that is to be used from \a cloud
           */
-        virtual void
-        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices = IndicesConstPtr ());
+        void
+        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices = IndicesConstPtr ()) override;
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] point the given query point
@@ -270,7 +269,7 @@ namespace pcl
           * \return number of neighbors found
           */
         int
-        nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const;
+        nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const override;
 
 
         /** \brief Search for the k-nearest neighbors for the given query point.
@@ -280,9 +279,9 @@ namespace pcl
           * \param[out] k_indices the resultant indices of the neighboring points, k_indices[i] corresponds to the neighbors of the query point i
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, k_sqr_distances[i] corresponds to the neighbors of the query point i
           */
-        virtual void
+        void
         nearestKSearch (const PointCloud& cloud, const std::vector<int>& indices, int k, 
-                        std::vector< std::vector<int> >& k_indices, std::vector< std::vector<float> >& k_sqr_distances) const;
+                        std::vector< std::vector<int> >& k_indices, std::vector< std::vector<float> >& k_sqr_distances) const override;
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
           * \param[in] point the given query point
@@ -297,7 +296,7 @@ namespace pcl
         int
         radiusSearch (const PointT& point, double radius, 
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
-                      unsigned int max_nn = 0) const;
+                      unsigned int max_nn = 0) const override;
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] cloud the point cloud data
@@ -307,9 +306,9 @@ namespace pcl
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, k_sqr_distances[i] corresponds to the neighbors of the query point i
           * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
           */
-        virtual void
+        void
         radiusSearch (const PointCloud& cloud, const std::vector<int>& indices, double radius, std::vector< std::vector<int> >& k_indices,
-                std::vector< std::vector<float> >& k_sqr_distances, unsigned int max_nn=0) const;
+                std::vector< std::vector<float> >& k_sqr_distances, unsigned int max_nn=0) const override;
 
         /** \brief Provide a pointer to the point representation to use to convert points into k-D vectors.
           * \param[in] point_representation the const boost shared pointer to a PointRepresentation
@@ -319,7 +318,7 @@ namespace pcl
         {
           point_representation_ = point_representation;
           dim_ = point_representation->getNumberOfDimensions ();
-          if (input_) // re-create the tree, since point_represenation might change things such as the scaling of the point clouds.
+          if (input_) // re-create the tree, since point_representation might change things such as the scaling of the point clouds.
             setInputCloud (input_, indices_);
         }
 
@@ -370,6 +369,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_FlannSearch(T) template class PCL_EXPORTS pcl::search::FlannSearch<T>;
-
-#endif    // PCL_SEARCH_KDTREE_H_
-

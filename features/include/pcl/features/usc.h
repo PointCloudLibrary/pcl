@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_USC_H_
-#define PCL_FEATURES_USC_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -92,7 +91,7 @@ namespace pcl
         search_radius_ = 2.0;
       }
 
-      virtual ~UniqueShapeContext() { }
+      ~UniqueShapeContext() { }
 
       /** \return The number of bins along the azimuth. */
       inline size_t
@@ -146,14 +145,14 @@ namespace pcl
       computePointDescriptor (size_t index, std::vector<float> &desc);
 
       /** \brief Initialize computation by allocating all the intervals and the volume lookup table. */
-      virtual bool
-      initCompute ();
+      bool
+      initCompute () override;
 
       /** \brief The actual feature computation.
         * \param[out] output the resultant features
         */
-      virtual void
-      computeFeature (PointCloudOut &output);
+      void
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief values of the radii interval. */
       std::vector<float> radii_interval_;
@@ -193,5 +192,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/usc.hpp>
 #endif
-
-#endif  //#ifndef PCL_USC_H_

@@ -38,9 +38,7 @@
 /// point cloud that have been identifed by the selection tools.
 /// @author  Yue Li and Matthew Hielsberg
 
-
-#ifndef SELECTION_H_
-#define SELECTION_H_
+#pragma once
 
 #include <set>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -188,7 +186,7 @@ class Selection : public Statistics
 
     /// @brief Get the statistics of the selected points in string.
     std::string
-    getStat () const;
+    getStat () const override;
 
   private:
     /// @brief Default constructor - object is not default constructable
@@ -202,5 +200,3 @@ class Selection : public Statistics
     /// A set of unique indices that have been selected in the cloud.
     std::set<unsigned int> selected_indices_;
 };
-
-#endif // SELECTION_H_

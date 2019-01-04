@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef SEQUENTIAL_FITTER_H
-#define SEQUENTIAL_FITTER_H
+#pragma once
 
 //#include <opencv2/core/core.hpp>
 //#include "v4r/TomGine/tgTomGine.h"
@@ -224,5 +223,3 @@ namespace pcl
 
   }
 }
-
-#endif

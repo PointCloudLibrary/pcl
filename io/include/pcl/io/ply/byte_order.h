@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_IO_PLY_BYTE_ORDER_H
-#define PCL_IO_PLY_BYTE_ORDER_H
+#pragma once
 
 #include <boost/detail/endian.hpp>
 
@@ -105,5 +104,3 @@ namespace pcl
     } // namespace ply
   } // namespace io
 } // namespace pcl
-
-#endif // PLY_BYTE_ORDER_H

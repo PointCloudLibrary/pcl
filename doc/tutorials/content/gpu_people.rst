@@ -13,7 +13,7 @@ has been presented on ICRA2012 and IROS2012 and an official reference for a jour
 
 This shows how to detect people with an Primesense device, the full version 
 working on oni and pcd files can be found in the git master.
-The code assumes a organised and projectable pointcloud, and should work with other 
+The code assumes an organised and projectable pointcloud, and should work with other 
 sensors then the Primesense device.
 
   .. image:: images/gpu/people/ss26_1.jpg

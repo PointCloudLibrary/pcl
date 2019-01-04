@@ -37,8 +37,7 @@
  * $Id$
  */
 
-#ifndef PCL_SPIN_IMAGE_H_
-#define PCL_SPIN_IMAGE_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -123,7 +122,7 @@ namespace pcl
                            unsigned int min_pts_neighb = 0);
       
       /** \brief Empty destructor */
-      virtual ~SpinImageEstimation () {}
+      ~SpinImageEstimation () {}
 
       /** \brief Sets spin-image resolution.
         * 
@@ -245,15 +244,15 @@ namespace pcl
         * setInputWithNormals() using the surface in setSearchSurfaceWithNormals() and the spatial locator 
         * \param[out] output the resultant point cloud that contains the Spin Image feature estimates
         */
-      virtual void 
-      computeFeature (PointCloudOut &output); 
+      void 
+      computeFeature (PointCloudOut &output) override; 
 
       /** \brief initializes computations specific to spin-image.
         * 
         * \return true iff input data and initialization are correct
         */
-      virtual bool
-      initCompute ();
+      bool
+      initCompute () override;
 
       /** \brief Computes a spin-image for the point of the scan. 
         * \param[in] index the index of the reference point in the input cloud
@@ -283,6 +282,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/spin_image.hpp>
 #endif
-
-#endif  //#ifndef PCL_SPIN_IMAGE_H_
-

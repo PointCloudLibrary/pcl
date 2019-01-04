@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef TERMINAL_TOOLS_TIME_H_
-#define TERMINAL_TOOLS_TIME_H_
+
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
@@ -91,5 +91,3 @@ namespace pcl
     };
   } 
 }
-
-#endif

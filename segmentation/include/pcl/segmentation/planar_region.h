@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_PLANAR_REGION_H_
-#define PCL_SEGMENTATION_PLANAR_REGION_H_
+#pragma once
 
 #include <pcl/segmentation/region_3d.h>
 #include <pcl/geometry/planar_polygon.h>
@@ -76,7 +75,7 @@ namespace pcl
       }
       
       /** \brief Destructor. */
-      virtual ~PlanarRegion () {}
+      ~PlanarRegion () {}
 
       /** \brief Constructor for PlanarRegion.
         * \param[in] centroid the centroid of the region.
@@ -107,5 +106,3 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif //PCL_SEGMENTATION_PLANAR_REGION_H_

@@ -43,8 +43,7 @@
  *      Author: papazov
  */
 
-#ifndef PCL_RECOGNITION_ORR_OCTREE_H_
-#define PCL_RECOGNITION_ORR_OCTREE_H_
+#pragma once
 
 #include "auxiliary.h"
 #include <pcl/point_types.h>
@@ -488,5 +487,3 @@ namespace pcl
     };
   } // namespace recognition
 } // namespace pcl
-
-#endif /* PCL_RECOGNITION_ORR_OCTREE_H_ */

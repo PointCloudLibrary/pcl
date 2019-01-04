@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENT_DIFFERENCES_H_
-#define PCL_SEGMENT_DIFFERENCES_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/search/pcl_search.h>
@@ -60,15 +59,15 @@ namespace pcl
       pcl::PointCloud<PointT> &output);
 
   template <typename PointT>
-  PCL_DEPRECATED("getPointCloudDifference() does not use the tgt parameter, thus it is deprecated and will be removed in future releases.")
+  [[deprecated("tgt parameter is not used; it is deprecated and will be removed in future releases")]]
   inline void getPointCloudDifference (
       const pcl::PointCloud<PointT> &src,
-      const pcl::PointCloud<PointT> &tgt,
+      const pcl::PointCloud<PointT> & /* tgt */,
       double threshold,
       const boost::shared_ptr<pcl::search::Search<PointT> > &tree,
       pcl::PointCloud<PointT> &output)
   {
-    getPointCloudDifference<PointT> (src, pcl::PointCloud<PointT>(), threshold, tree, output);
+    getPointCloudDifference<PointT> (src, threshold, tree, output);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -170,5 +169,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/segment_differences.hpp>
 #endif
-
-#endif  //#ifndef PCL_SEGMENT_DIFFERENCES_H_

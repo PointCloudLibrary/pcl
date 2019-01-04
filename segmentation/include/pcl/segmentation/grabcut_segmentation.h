@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_GRABCUT
-#define PCL_SEGMENTATION_GRABCUT
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_base.h>
@@ -53,7 +52,7 @@ namespace pcl
     namespace grabcut
     {
       /** boost implementation of Boykov and Kolmogorov's maxflow algorithm doesn't support
-        * negative flows which makes it inappropriate for this conext.
+        * negative flows which makes it inappropriate for this context.
         * This implementation of Boykov and Kolmogorov's maxflow algorithm by Stephen Gould
         * <stephen.gould@anu.edu.au> in DARWIN under BSD does the trick however solwer than original
         * implementation.
@@ -286,6 +285,7 @@ namespace pcl
         uint32_t count_;
         /// small value to add to covariance matrix diagonal to avoid singular values
         float epsilon_;
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
 
       /** Build the initial GMMs using the Orchard and Bouman color clustering algorithm */
@@ -333,10 +333,10 @@ namespace pcl
         , initialized_ (false)
       {}
       /// Destructor
-      virtual ~GrabCut () {};
+      ~GrabCut () {};
       // /// Set input cloud
       void
-      setInputCloud (const PointCloudConstPtr& cloud);
+      setInputCloud (const PointCloudConstPtr& cloud) override;
       /// Set background points, foreground points = points \ background points
       void
       setBackgroundPoints (const PointCloudConstPtr& background_points);
@@ -479,5 +479,3 @@ namespace pcl
 }
 
 #include <pcl/segmentation/impl/grabcut_segmentation.hpp>
-
-#endif

@@ -36,8 +36,7 @@
  *  $Id$
  */
 
-#ifndef PCL_OUTOFCORE_OCTREE_BASE_METADATA_H_
-#define PCL_OUTOFCORE_OCTREE_BASE_METADATA_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/outofcore/boost.h>
@@ -125,16 +124,16 @@ namespace pcl
         setMetadataFilename (const boost::filesystem::path& path_to_metadata);
                 
         /** \brief Writes the data to a JSON file located at \ref metadata_filename_ */
-        virtual void 
-        serializeMetadataToDisk ();
+        void 
+        serializeMetadataToDisk () override;
 
         /** \brief Loads the data from a JSON file located at \ref metadata_filename_ */
         virtual int
         loadMetadataFromDisk ();
         /** \brief Loads the data from a JSON file located at \ref metadata_filename_ */
         
-        virtual int
-        loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata);
+        int
+        loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata) override;
 
         /** \brief Returns the name of the tree; this is not the same as the filename */
         virtual std::string
@@ -214,10 +213,8 @@ namespace pcl
         std::vector<boost::uint64_t> LOD_num_points_;
 
         /** \brief Writes the JSON metadata to a string */
-        virtual void
-        writeMetadataString (std::vector<char>& buf);
+        void
+        writeMetadataString (std::vector<char>& buf) override;
     };
   }//namespace outofcore
 }//namespace pcl
-  
-#endif // PCL_OUTOFCORE_OCTREE_BASE_METADATA_H_

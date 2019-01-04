@@ -43,13 +43,11 @@
  *      Author: papazov
  */
 
-#ifndef ORR_OCTREE_ZPROJECTION_H_
-#define ORR_OCTREE_ZPROJECTION_H_
+#pragma once
 
 #include "orr_octree.h"
 #include <pcl/pcl_exports.h>
 #include <set>
-
 
 namespace pcl
 {
@@ -211,6 +209,3 @@ namespace pcl
     };
   } // namespace recognition
 } // namespace pcl
-
-
-#endif /* ORR_OCTREE_ZPROJECTION_H_ */

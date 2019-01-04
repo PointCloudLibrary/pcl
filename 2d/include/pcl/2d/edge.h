@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_2D_EDGE_H
-#define PCL_2D_EDGE_H
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/2d/convolution.h>
@@ -298,9 +297,8 @@ namespace pcl
       {
         input_ = input;
       }
+
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 #include <pcl/2d/impl/edge.hpp>
-
-#endif    // PCL_2D_EDGE_H 
-

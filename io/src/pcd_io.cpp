@@ -40,7 +40,7 @@
 #include <fstream>
 #include <fcntl.h>
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 #include <pcl/io/boost.h>
 #include <pcl/common/io.h>
 #include <pcl/io/low_level_io.h>
@@ -131,7 +131,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
   // By default, assume that there are _no_ invalid (e.g., NaN) points
   //cloud.is_dense = true;
 
-  int nr_points = 0;
+  size_t nr_points = 0;
   std::string line;
 
   int specified_channel_count = 0;
@@ -373,7 +373,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
     }
   }
 
-  if (int (cloud.width * cloud.height) != nr_points)
+  if (cloud.width * cloud.height != nr_points)
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] HEIGHT (%d) x WIDTH (%d) != number of points (%d)\n", cloud.height, cloud.width, nr_points);
     return (-1);
@@ -602,7 +602,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
 
     // Unpack the xxyyzz to xyz
     std::vector<char*> pters (fields.size ());
-    int toff = 0;
+    size_t toff = 0;
     for (size_t i = 0; i < pters.size (); ++i)
     {
       pters[i] = &buf[toff];
@@ -1405,7 +1405,7 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
   //   pters[3] = &only_valid_data[offset_of_plane_RGB];
   //
   std::vector<char*> pters (fields.size ());
-  int toff = 0;
+  size_t toff = 0;
   for (size_t i = 0; i < pters.size (); ++i)
   {
     pters[i] = &only_valid_data[toff];

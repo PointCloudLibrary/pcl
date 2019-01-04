@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_NARF_DESCRIPTOR_H_
-#define PCL_NARF_DESCRIPTOR_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -76,7 +75,7 @@ namespace pcl
       /** Constructor */
       NarfDescriptor (const RangeImage* range_image=NULL, const std::vector<int>* indices=NULL);
       /** Destructor */
-      virtual ~NarfDescriptor();
+      ~NarfDescriptor();
       
       // =====METHODS=====
       //! Set input data
@@ -99,13 +98,11 @@ namespace pcl
       
       // =====PROTECTED METHODS=====
       /** Implementation of abstract derived function */
-      virtual void 
-      computeFeature (PointCloudOut& output);
+      void 
+      computeFeature (PointCloudOut& output) override;
   };
 
 }  // namespace end
 #if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
 #pragma GCC diagnostic warning "-Weffc++"
 #endif
-
-#endif  //#ifndef PCL_NARF_DESCRIPTOR_H_

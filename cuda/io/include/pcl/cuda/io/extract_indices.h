@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_EXTRACT_INDICES_H_
-#define PCL_CUDA_EXTRACT_INDICES_H_
+#pragma once
 
 #include <pcl/cuda/point_cloud.h>
 
@@ -81,6 +80,3 @@ namespace cuda
                     typename Storage<char4>::type &colors);
 } // namespace 
 } // namespace
-
-#endif  //#ifndef PCL_CUDA_EXTRACT_INDICES_H_
-

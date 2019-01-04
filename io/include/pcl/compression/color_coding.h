@@ -35,16 +35,13 @@
  *
  */
 
-#ifndef COLOR_COMPRESSION_H
-#define COLOR_COMPRESSION_H
+#pragma once
 
+#include <cstdio>
+#include <cstring>
+#include <iostream>
 #include <iterator>
-#include <iostream>
 #include <vector>
-#include <string.h>
-#include <iostream>
-#include <stdio.h>
-#include <string.h>
 
 namespace pcl
 {
@@ -416,5 +413,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_ColorCoding(T) template class PCL_EXPORTS pcl::octree::ColorCoding<T>;
-
-#endif

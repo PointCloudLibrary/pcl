@@ -142,15 +142,15 @@ pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2>::getColo
   unsigned char* colors = new unsigned char[nr_points * 3];
 
   pcl::RGB rgb_data;
-  int point_offset = cloud_->fields[field_idx_].offset;
-  int j = 0;
+  size_t point_offset = cloud_->fields[field_idx_].offset;
+  size_t j = 0;
   
   // If XYZ present, check if the points are invalid
   int x_idx = pcl::getFieldIndex (*cloud_, "x");
   if (x_idx != -1)
   {
     float x_data, y_data, z_data;
-    int x_point_offset = cloud_->fields[x_idx].offset;
+    size_t x_point_offset = cloud_->fields[x_idx].offset;
     
     // Color every point
     for (vtkIdType cp = 0; cp < nr_points; ++cp, 

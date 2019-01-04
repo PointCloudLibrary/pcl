@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef FACE_DETECTOR_DATA_PROVIDER_H_
-#define FACE_DETECTOR_DATA_PROVIDER_H_
+#pragma once
 
 #include "pcl/common/common.h"
 #include "pcl/recognition/face_detection/face_common.h"
@@ -172,9 +171,7 @@ namespace pcl
         //shuffle file and get the first num_images_ as requested by a tree
         //extract positive and negative samples
         //create training examples and labels
-        void getDatasetAndLabels(DataSet & data_set, std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples);
+        void getDatasetAndLabels(DataSet & data_set, std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples) override;
     };
   }
 }
-
-#endif /* FACE_DETECTOR_DATA_PROVIDER_H_ */

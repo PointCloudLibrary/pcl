@@ -35,21 +35,16 @@
  *
  */
 
-#ifndef RECTANGULAR_FRUSTRUM_SELECTOR_H_
-#define RECTANGULAR_FRUSTRUM_SELECTOR_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
-#include <pcl/apps/cloud_composer/qt.h>
-
-
-
 
 namespace pcl
 {
   namespace cloud_composer
   {
       
-    class PCL_EXPORTS RectangularFrustumSelector : public vtkInteractorStyleRubberBandPick
+    class RectangularFrustumSelector : public vtkInteractorStyleRubberBandPick
     {     
       public:
         static RectangularFrustumSelector* New();
@@ -57,7 +52,7 @@ namespace pcl
         
         RectangularFrustumSelector ();
         
-        virtual ~RectangularFrustumSelector ();
+        ~RectangularFrustumSelector ();
                
         /** \brief Pass a pointer to the actor map
           * \param[in] actors the actor map that will be used with this style
@@ -76,8 +71,8 @@ namespace pcl
         setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { renderers_ = rens; }
 
         /** \brief Function called on left mouse button release, ie, end of rectangular drag */
-        virtual void
-        OnLeftButtonUp ();
+        void
+        OnLeftButtonUp () override;
 
         /** \brief Event emitted once a valid selection has been made */
         int selection_complete_event_;
@@ -94,7 +89,3 @@ namespace pcl
   }
   
 }
-
-#endif // RECTANGULAR_FRUSTRUM_SELECTOR_H_
-        
-        

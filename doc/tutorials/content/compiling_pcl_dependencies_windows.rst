@@ -59,7 +59,7 @@ compile a series of 3rd party library dependencies:
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
-   build system (http://www.cmake.org/), at least version **2.8.3**. A Git
+   build system (http://www.cmake.org/), at least version **3.1.0**. A Git
    client for Windows is also required to download the PCL source code.
    
 Building dependencies
@@ -177,7 +177,7 @@ like::
         Where to build binaries: C:/PCL_dependencies/flann-1.7.1-src/build
 
     Hit the "Configure" button. Proceed and be sure to choose the correct "Generator" on the next window. 
-    You can safley ignore any warning message about hdf5.    
+    You can safely ignore any warning message about hdf5.    
 
     Now, on my machine I had to manually set the `BUILD_PYTHON_BINDINGS`
     and `BUILD_MATLAB_BINDINGS` to OFF otherwise it would not continue to the next

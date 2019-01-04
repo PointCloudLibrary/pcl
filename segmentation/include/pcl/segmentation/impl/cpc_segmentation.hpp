@@ -182,7 +182,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
     {
       Eigen::Vector3f plane_normal (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
       // Cut the connections.
-      // We only interate through the points which are within the support (when we are local, otherwise all points in the segment).
+      // We only iterate through the points which are within the support (when we are local, otherwise all points in the segment).
       // We also just actually cut when the edge goes through the plane. This is why we check the planedistance
       std::vector<pcl::PointIndices> cluster_indices;
       pcl::EuclideanClusterExtraction<WeightSACPointType> euclidean_clusterer;

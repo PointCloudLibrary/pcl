@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_PLANE_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_PLANE_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
@@ -176,7 +175,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~SampleConsensusModelPlane () {}
+      ~SampleConsensusModelPlane () {}
 
       /** \brief Check whether the given index samples can form a valid plane model, compute the model coefficients from
         * these samples and store them internally in model_coefficients_. The plane coefficients are:
@@ -186,7 +185,7 @@ namespace pcl
         */
       bool
       computeModelCoefficients (const std::vector<int> &samples,
-                                Eigen::VectorXf &model_coefficients) const;
+                                Eigen::VectorXf &model_coefficients) const override;
 
       /** \brief Compute all distances from the cloud data to a given plane model.
         * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
@@ -194,7 +193,7 @@ namespace pcl
         */
       void
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances) const;
+                           std::vector<double> &distances) const override;
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
@@ -204,7 +203,7 @@ namespace pcl
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
                             const double threshold, 
-                            std::vector<int> &inliers);
+                            std::vector<int> &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers. 
         * 
@@ -212,9 +211,9 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      virtual int
+      int
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold) const;
+                           const double threshold) const override;
 
       /** \brief Recompute the plane coefficients using the given inlier set and return them to the user.
         * @note: these are the coefficients of the plane model after refinement (e.g. after SVD)
@@ -225,7 +224,7 @@ namespace pcl
       void
       optimizeModelCoefficients (const std::vector<int> &inliers,
                                  const Eigen::VectorXf &model_coefficients,
-                                 Eigen::VectorXf &optimized_coefficients) const;
+                                 Eigen::VectorXf &optimized_coefficients) const override;
 
       /** \brief Create a new point cloud with inliers projected onto the plane model.
         * \param[in] inliers the data inliers that we want to project on the plane model
@@ -237,7 +236,7 @@ namespace pcl
       projectPoints (const std::vector<int> &inliers,
                      const Eigen::VectorXf &model_coefficients,
                      PointCloud &projected_points,
-                     bool copy_data_fields = true) const;
+                     bool copy_data_fields = true) const override;
 
       /** \brief Verify whether a subset of indices verifies the given plane model coefficients.
         * \param[in] indices the data indices that need to be tested against the plane model
@@ -247,11 +246,11 @@ namespace pcl
       bool
       doSamplesVerifyModel (const std::set<int> &indices,
                             const Eigen::VectorXf &model_coefficients,
-                            const double threshold) const;
+                            const double threshold) const override;
 
       /** \brief Return an unique id for this model (SACMODEL_PLANE). */
       inline pcl::SacModel 
-      getModelType () const { return (SACMODEL_PLANE); }
+      getModelType () const override { return (SACMODEL_PLANE); }
 
     protected:
       using SampleConsensusModel<PointT>::sample_size_;
@@ -262,13 +261,11 @@ namespace pcl
         * indices.
         * \param[in] samples the resultant index samples
         */
-      virtual bool
-      isSampleGood (const std::vector<int> &samples) const;
+      bool
+      isSampleGood (const std::vector<int> &samples) const override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/sac_model_plane.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_PLANE_H_

@@ -41,7 +41,7 @@
 #define PCL_SVM_WRAPPER_HPP_
 
 #include <pcl/ml/svm_wrapper.h>
-#include <assert.h>
+#include <cassert>
 #include <fstream>
 
 

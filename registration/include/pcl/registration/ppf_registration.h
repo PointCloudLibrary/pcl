@@ -38,9 +38,7 @@
  *
  */
 
-
-#ifndef PCL_PPF_REGISTRATION_H_
-#define PCL_PPF_REGISTRATION_H_
+#pragma once
 
 #include <pcl/registration/boost.h>
 #include <pcl/registration/registration.h>
@@ -238,13 +236,13 @@ namespace pcl
        * \param cloud the input point cloud target
        */
       void
-      setInputTarget (const PointCloudTargetConstPtr &cloud);
+      setInputTarget (const PointCloudTargetConstPtr &cloud) override;
 
 
     private:
       /** \brief Method that calculates the transformation between the input_ and target_ point clouds, based on the PPF features */
       void
-      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess) override;
 
 
       /** \brief the search method that is going to be used to find matching feature pairs */
@@ -287,5 +285,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/ppf_registration.hpp>
-
-#endif // PCL_PPF_REGISTRATION_H_

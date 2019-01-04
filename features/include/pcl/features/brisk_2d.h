@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_BRISK_2D_H_
-#define PCL_FEATURES_BRISK_2D_H_
+#pragma once
 
 // PCL includes
 #include <pcl/features/feature.h>
@@ -262,5 +261,3 @@ namespace pcl
 }
 
 #include <pcl/features/impl/brisk_2d.hpp>
-
-#endif  //#ifndef PCL_FEATURES_BRISK_2D_H_

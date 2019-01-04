@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_APPS_OPTRONIC_VIEWER_CLOUD_FILTER_H_
-#define PCL_APPS_OPTRONIC_VIEWER_CLOUD_FILTER_H_
+#pragma once
 
 #include <pcl/apps/optronic_viewer/qt.h>
 #include <boost/shared_ptr.hpp>
@@ -445,5 +444,3 @@ namespace pcl
     }
   }
 }
-
-#endif // PCL_APPS_OPTRONIC_VIEWER_CLOUD_FILTER_H_

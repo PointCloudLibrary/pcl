@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RANGE_IMAGE_H_
-#define PCL_RANGE_IMAGE_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_macros.h>
@@ -72,7 +71,7 @@ namespace pcl
       /** Constructor */
       PCL_EXPORTS RangeImage ();
       /** Destructor */
-      PCL_EXPORTS virtual ~RangeImage ();
+      PCL_EXPORTS ~RangeImage ();
       
       // =====STATIC VARIABLES=====
       /** The maximum number of openmp threads that can be used in this class */
@@ -840,5 +839,3 @@ namespace pcl
 
 
 #include <pcl/range_image/impl/range_image.hpp>  // Definitions of templated and inline functions
-
-#endif  //#ifndef PCL_RANGE_IMAGE_H_

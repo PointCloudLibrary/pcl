@@ -37,9 +37,7 @@
 /// @details A set of useful typedefs, forward declarations and constants.
 /// @author  Yue Li and Matthew Hielsberg
 
-
-#ifndef LOCAL_TYPES_H_
-#define LOCAL_TYPES_H_
+#pragma once
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
@@ -191,7 +189,3 @@ const float DISPLAY_Z_TRANSLATION = -2.0f;
 
 /// The radius of the trackball given as a percentage of the screen width
 const float TRACKBALL_RADIUS_SCALE = 0.4f;
-
-
-
-#endif // LOCAL_TYPES_H_

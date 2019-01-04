@@ -33,8 +33,8 @@
  *
  *
  */
-#ifndef PCL_MODELER_CLOUD_MESH_ITEM_H_
-#define PCL_MODELER_CLOUD_MESH_ITEM_H_
+
+#pragma once
 
 #include <pcl/apps/modeler/qt.h>
 #include <boost/shared_ptr.hpp>
@@ -79,21 +79,21 @@ namespace pcl
         void
         updateChannels();
 
-        virtual std::string
-        getItemName() const {return "Cloud Mesh Item";}
+        std::string
+        getItemName() const override {return "Cloud Mesh Item";}
 
         void
         updateRenderWindow();
 
       protected:
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
+        void
+        prepareContextMenu(QMenu* menu) const override;
 
-        virtual void
-        prepareProperties(ParameterDialog* parameter_dialog);
+        void
+        prepareProperties(ParameterDialog* parameter_dialog) override;
 
-        virtual void
-        setProperties();
+        void
+        setProperties() override;
 
       private:
         std::string                           filename_;
@@ -108,5 +108,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_CLOUD_MESH_ITEM_H_

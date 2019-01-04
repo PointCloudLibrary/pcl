@@ -39,7 +39,7 @@
 #ifndef PCL_OCTREE_SEARCH_IMPL_H_
 #define PCL_OCTREE_SEARCH_IMPL_H_
 
-#include <assert.h>
+#include <cassert>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> bool

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_NORMAL_3D_H_
-#define PCL_CUDA_NORMAL_3D_H_
+#pragma once
 
 #include <pcl/pcl_exports.h>
 
@@ -200,7 +199,3 @@ namespace pcl
 
   } // namespace
 } // namespace
-
-#endif  
-
-

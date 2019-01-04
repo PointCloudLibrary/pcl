@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_SAMPLE_CONSENSUS_MODEL_H_
-#define PCL_CUDA_SAMPLE_CONSENSUS_MODEL_H_
+#pragma once
 
 #include <float.h>
 #include <thrust/sequence.h>
@@ -419,5 +418,3 @@ namespace pcl
   //  };
   } // namespace_
 } // namespace_
-
-#endif  //#ifndef PCL_CUDA_SAMPLE_CONSENSUS_MODEL_H_

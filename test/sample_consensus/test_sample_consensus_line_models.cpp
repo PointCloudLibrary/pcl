@@ -40,6 +40,7 @@
 
 #include <pcl/pcl_tests.h>
 
+#include <pcl/common/common.h>
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_line.h>
 #include <pcl/sample_consensus/sac_model_parallel_line.h>
@@ -132,9 +133,11 @@ TEST (SampleConsensusModelParallelLine, RANSAC)
   cloud.points[15].getVector3fMap () << -1.05f,  5.01f,  5.0f;
 
   // Create a shared line model pointer directly
+  const double eps = 0.1; //angle eps in radians
+  const Eigen::Vector3f axis (0, 0, 1);
   SampleConsensusModelParallelLinePtr model (new SampleConsensusModelParallelLine<PointXYZ> (cloud.makeShared ()));
-  model->setAxis (Eigen::Vector3f (0, 0, 1));
-  model->setEpsAngle (0.1);
+  model->setAxis (axis);
+  model->setEpsAngle (eps);
 
   // Create the RANSAC object
   RandomSampleConsensus<PointXYZ> sac (model, 0.1);
@@ -154,9 +157,11 @@ TEST (SampleConsensusModelParallelLine, RANSAC)
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ (6, coeff.size ());
-  EXPECT_NEAR (0, coeff[3], 1e-4);
-  EXPECT_NEAR (0, coeff[4], 1e-4);
-  EXPECT_NEAR (1, coeff[5], 1e-4);
+
+  // Make sure the returned direction respects the angular constraint
+  double angle_diff = getAngle3D (axis, coeff.tail<3> ());
+  angle_diff = std::min (angle_diff, M_PI - angle_diff);
+  EXPECT_GT (eps, angle_diff);
 
   // Projection tests
   PointCloud<PointXYZ> proj_points;

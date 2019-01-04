@@ -1,5 +1,4 @@
-#ifndef PCL_VISUALIZATION_SIMPLE_BUFF_H
-#define PCL_VISUALIZATION_SIMPLE_BUFF_H
+#pragma once
 
 #include <pcl/visualization/histogram_visualizer.h>
 
@@ -224,5 +223,3 @@ namespace pcl
     };    
   }  
 }
-
-#endif // PCL_VISUALIZATION_SIMPLE_BUFF_H

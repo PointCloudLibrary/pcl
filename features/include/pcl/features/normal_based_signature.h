@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef PCL_NORMAL_BASED_SIGNATURE_H_
-#define PCL_NORMAL_BASED_SIGNATURE_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -150,7 +149,7 @@ namespace pcl
 
     protected:
       void
-      computeFeature (FeatureCloud &output);
+      computeFeature (FeatureCloud &output) override;
 
     private:
       float scale_h_;
@@ -161,5 +160,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/normal_based_signature.hpp>
 #endif
-
-#endif /* PCL_NORMAL_BASED_SIGNATURE_H_ */

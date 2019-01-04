@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_TREE_2BUF_BASE_H
-#define PCL_OCTREE_TREE_2BUF_BASE_H
+#pragma once
 
 #include <vector>
 
@@ -88,13 +87,13 @@ namespace pcl
         }
 
         /** \brief Empty constructor. */
-        virtual ~BufferedBranchNode ()
+        ~BufferedBranchNode ()
         {
         }
 
         /** \brief Method to perform a deep copy of the octree */
-        virtual BufferedBranchNode*
-        deepCopy () const
+        BufferedBranchNode*
+        deepCopy () const override
         {
           return new BufferedBranchNode (*this);
         }
@@ -135,7 +134,7 @@ namespace pcl
         }
 
         /** \brief Get the type of octree node. Returns LEAVE_NODE type */
-        virtual node_type_t getNodeType () const
+        node_type_t getNodeType () const override
         {
           return BRANCH_NODE;
         }
@@ -255,13 +254,13 @@ namespace pcl
         typedef OctreeLeafNodeDepthFirstIterator<OctreeT> LeafNodeIterator;
         typedef const OctreeLeafNodeDepthFirstIterator<OctreeT> ConstLeafNodeIterator;
 
-        PCL_DEPRECATED ("Please use leaf_depth_begin () instead.")
+        [[deprecated("use leaf_depth_begin() instead")]]
         LeafNodeIterator leaf_begin (unsigned int max_depth_arg = 0)
         {
           return LeafNodeIterator (this, max_depth_arg);
         };
 
-        PCL_DEPRECATED ("Please use leaf_depth_end () instead.")
+        [[deprecated("use leaf_depth_end() instead")]]
         const LeafNodeIterator leaf_end ()
         {
           return LeafNodeIterator ();
@@ -845,8 +844,8 @@ namespace pcl
          *  \param key_arg: reference to an octree key
          *  \param binary_tree_in_it_arg iterator of binary input data
          *  \param binary_tree_in_it_end_arg
-         *  \param leaf_container_vector_it_arg: iterator pointing to leaf containter pointers to be added to a leaf node
-         *  \param leaf_container_vector_it_end_arg: iterator pointing to leaf containter pointers pointing to last object in input container.
+         *  \param leaf_container_vector_it_arg: iterator pointing to leaf container pointers to be added to a leaf node
+         *  \param leaf_container_vector_it_end_arg: iterator pointing to leaf container pointers pointing to last object in input container.
          *  \param branch_reset_arg: Reset pointer array of current branch
          *  \param do_XOR_decoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          **/
@@ -962,6 +961,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/octree/impl/octree2buf_base.hpp>
 #endif
-
-#endif
-

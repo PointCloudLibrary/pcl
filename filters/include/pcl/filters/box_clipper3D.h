@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef PCL_BOX_CLIPPER3D_H_
-#define PCL_BOX_CLIPPER3D_H_
+#pragma once
+
 #include "clipper3D.h"
 
 namespace pcl
@@ -88,25 +88,25 @@ namespace pcl
       /**
         * \brief virtual destructor
         */
-      virtual ~BoxClipper3D () throw ();
+      ~BoxClipper3D () throw ();
 
-      virtual bool
-      clipPoint3D (const PointT& point) const;
+      bool
+      clipPoint3D (const PointT& point) const override;
 
-      virtual bool
-      clipLineSegment3D (PointT& from, PointT& to) const;
+      bool
+      clipLineSegment3D (PointT& from, PointT& to) const override;
 
-      virtual void
-      clipPlanarPolygon3D (std::vector<PointT, Eigen::aligned_allocator<PointT> >& polygon) const;
+      void
+      clipPlanarPolygon3D (std::vector<PointT, Eigen::aligned_allocator<PointT> >& polygon) const override;
 
-      virtual void
-      clipPlanarPolygon3D (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& polygon, std::vector<PointT, Eigen::aligned_allocator<PointT> >& clipped_polygon) const;
+      void
+      clipPlanarPolygon3D (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& polygon, std::vector<PointT, Eigen::aligned_allocator<PointT> >& clipped_polygon) const override;
 
-      virtual void
-      clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, std::vector<int>& clipped, const std::vector<int>& indices = std::vector<int> ()) const;
+      void
+      clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, std::vector<int>& clipped, const std::vector<int>& indices = std::vector<int> ()) const override;
 
-      virtual Clipper3D<PointT>*
-      clone () const;
+      Clipper3D<PointT>*
+      clone () const override;
 
     protected:
       float getDistance (const PointT& point) const;
@@ -123,5 +123,3 @@ namespace pcl
 }
 
 #include <pcl/filters/impl/box_clipper3D.hpp>
-
-#endif // PCL_BOX_CLIPPER3D_H_

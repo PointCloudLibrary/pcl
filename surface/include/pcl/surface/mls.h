@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_MLS_H_
-#define PCL_MLS_H_
+#pragma once
 
 // PCL includes
 #include <pcl/pcl_base.h>
@@ -84,6 +83,7 @@ namespace pcl
       double v;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
       Eigen::Vector3d point;  /**< \brief The projected point. */
       Eigen::Vector3d normal; /**< \brief The projected point's normal. */
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     inline
@@ -219,7 +219,7 @@ namespace pcl
     float curvature;              /**< \brief The curvature at the query point. */
     int order;                    /**< \brief The order of the polynomial. If order > 1 then use polynomial fit */
     bool valid;                   /**< \brief If True, the mls results data is valid, otherwise False. */
-
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     private:
       /**
         * \brief The default weight function used when fitting a polynomial surface
@@ -317,7 +317,7 @@ namespace pcl
                               {};
 
       /** \brief Empty destructor */
-      virtual ~MovingLeastSquares () {}
+      ~MovingLeastSquares () {}
 
 
       /** \brief Set whether the algorithm should also store the normals computed
@@ -356,7 +356,7 @@ namespace pcl
       /** \brief Sets whether the surface and normal are approximated using a polynomial, or only via tangent estimation.
         * \param[in] polynomial_fit set to true for polynomial fit
         */
-      PCL_DEPRECATED ("[pcl::surface::MovingLeastSquares::setPolynomialFit] setPolynomialFit is deprecated. Please use setPolynomialOrder instead.")
+      [[deprecated("use setPolynomialOrder() instead")]]
       inline void
       setPolynomialFit (bool polynomial_fit)
       {
@@ -374,7 +374,7 @@ namespace pcl
       }
 
       /** \brief Get the polynomial_fit value (true if the surface and normal are approximated using a polynomial). */
-      PCL_DEPRECATED ("[pcl::surface::MovingLeastSquares::getPolynomialFit] getPolynomialFit is deprecated. Please use getPolynomialOrder instead.")
+      [[deprecated("use getPolynomialOrder() instead")]]
       inline bool
       getPolynomialFit () const { return (order_ > 1); }
 
@@ -528,7 +528,7 @@ namespace pcl
         * \param[out] output the resultant reconstructed surface model
         */
       void
-      process (PointCloudOut &output);
+      process (PointCloudOut &output) override;
 
 
       /** \brief Get the set of indices with each point in output having the
@@ -649,6 +649,7 @@ namespace pcl
           Eigen::Vector4f bounding_min_, bounding_max_;
           uint64_t data_size_;
           float voxel_size_;
+          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
 
 
@@ -721,8 +722,8 @@ namespace pcl
       /** \brief Abstract surface reconstruction method.
         * \param[out] output the result of the reconstruction
         */
-      virtual void
-      performProcessing (PointCloudOut &output);
+      void
+      performProcessing (PointCloudOut &output) override;
 
       /** \brief Perform upsampling for the distinct-cloud and voxel-grid methods
         * \param[out] output the result of the reconstruction
@@ -744,9 +745,6 @@ namespace pcl
       /** \brief Abstract class get name method. */
       std::string
       getClassName () const { return ("MovingLeastSquares"); }
-
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief MovingLeastSquaresOMP implementation has been merged into MovingLeastSquares for better maintainability.
@@ -771,5 +769,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/mls.hpp>
 #endif
-
-#endif  /* #ifndef PCL_MLS_H_ */

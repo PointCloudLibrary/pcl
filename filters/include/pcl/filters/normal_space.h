@@ -35,13 +35,12 @@
  *
  */
 
-#ifndef PCL_FILTERS_NORMAL_SUBSAMPLE_H_
-#define PCL_FILTERS_NORMAL_SUBSAMPLE_H_
+#pragma once
 
 #include <pcl/filters/boost.h>
 #include <pcl/filters/filter_indices.h>
-#include <time.h>
-#include <limits.h>
+#include <ctime>
+#include <climits>
 
 namespace pcl
 {
@@ -170,13 +169,13 @@ namespace pcl
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (std::vector<int> &indices) override;
 
       bool
       initCompute ();
@@ -205,5 +204,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/normal_space.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_NORMAL_SPACE_SUBSAMPLE_H_

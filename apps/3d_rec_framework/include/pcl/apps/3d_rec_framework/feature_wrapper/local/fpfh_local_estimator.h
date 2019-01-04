@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_FPFH_LOCAL_ESTIMATOR_H_
-#define REC_FRAMEWORK_FPFH_LOCAL_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/local_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
@@ -30,7 +29,7 @@ namespace pcl
 
       public:
         bool
-        estimate (PointInTPtr & in, PointInTPtr & processed, PointInTPtr & keypoints, FeatureTPtr & signatures)
+        estimate (PointInTPtr & in, PointInTPtr & processed, PointInTPtr & keypoints, FeatureTPtr & signatures) override
         {
 
           if (!normal_estimator_)
@@ -89,5 +88,3 @@ namespace pcl
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_FPFH_LOCAL_ESTIMATOR_H_ */

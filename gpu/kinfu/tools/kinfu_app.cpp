@@ -130,8 +130,8 @@ namespace pcl
           * \return true if the operation was successful (the handler is capable and 
           * the input cloud was given as a valid pointer), false otherwise
           */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+        bool
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const override
         {
           if (!capable_ || !cloud_)
             return (false);
@@ -159,10 +159,10 @@ namespace pcl
         }
 
       private:
-        virtual std::string 
-        getFieldName () const { return ("additional rgb"); }
-        virtual std::string 
-        getName () const { return ("PointCloudColorHandlerRGBCloud"); }
+        std::string 
+        getFieldName () const override { return ("additional rgb"); }
+        std::string 
+        getName () const override { return ("PointCloudColorHandlerRGBCloud"); }
         
         RgbCloudConstPtr rgb_;
     };
@@ -1255,7 +1255,7 @@ main (int argc, char* argv[])
     {
       triggered_capture = true;
       bool repeat = false; // Only run ONI file once
-      capture.reset (new pcl::ONIGrabber (oni_file, repeat, ! triggered_capture));
+      capture.reset (new pcl::ONIGrabber (oni_file, repeat, false));
     }
     else if (pc::parse_argument (argc, argv, "-pcd", pcd_dir) > 0)
     {

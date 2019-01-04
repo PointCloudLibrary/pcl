@@ -136,7 +136,7 @@ saveCloud (const std::string &filename, const Cloud &output)
 
 int
 batchProcess (const vector<string> &pcd_files, string &output_dir,
-              float resolution, std::string method)
+              float resolution, const std::string &method)
 {
   vector<string> st;
   for (size_t i = 0; i < pcd_files.size (); ++i)

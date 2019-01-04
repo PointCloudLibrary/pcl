@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_VOXEL_STRUCTURE_H_
-#define PCL_RECOGNITION_VOXEL_STRUCTURE_H_
+#pragma once
 
 #include <cstdlib>
 
@@ -167,5 +166,3 @@ namespace pcl
 } // namespace pcl
 
 #include <pcl/recognition/impl/ransac_based/voxel_structure.hpp>
-
-#endif // PCL_RECOGNITION_VOXEL_STRUCTURE_H_

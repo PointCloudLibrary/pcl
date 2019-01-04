@@ -40,8 +40,6 @@
  */
 
 #pragma once
-#ifndef PCL_IO_FILE_GRABBER_H_
-#define PCL_IO_FILE_GRABBER_H_
 
 #include <pcl/point_cloud.h>
 
@@ -88,5 +86,3 @@ namespace pcl
     }
   };
 }
-#endif//PCL_IO_FILE_GRABBER_H_
-

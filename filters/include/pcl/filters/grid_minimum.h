@@ -39,8 +39,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_VOXEL_GRID_MINIMUM_H_
-#define PCL_FILTERS_VOXEL_GRID_MINIMUM_H_
+#pragma once
 
 #include <pcl/filters/boost.h>
 #include <pcl/filters/filter.h>
@@ -79,7 +78,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~GridMinimum ()
+      ~GridMinimum ()
       {
       }
 
@@ -109,13 +108,13 @@ namespace pcl
         * \param[out] output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Filtered results are indexed by an indices array.
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices)
+      applyFilter (std::vector<int> &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -132,6 +131,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/grid_minimum.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_VOXEL_GRID_MINIMUM_H_
-

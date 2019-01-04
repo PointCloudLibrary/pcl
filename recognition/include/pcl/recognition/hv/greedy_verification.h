@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RECOGNITION_HV_GREEDY_H_
-#define PCL_RECOGNITION_HV_GREEDY_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
@@ -173,12 +172,10 @@ namespace pcl
 
       /** \brief Starts verification */
       void
-      verify ();
+      verify () override;
     };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/recognition/impl/hv/greedy_verification.hpp>
 #endif
-
-#endif /* PCL_RECOGNITION_HV_GREEDY_H_ */

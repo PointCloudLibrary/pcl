@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_POINT_CLOUD_IMAGE_EXTRACTORS_H_
-#define PCL_POINT_CLOUD_IMAGE_EXTRACTORS_H_
+
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/PCLImage.h>
@@ -167,7 +167,7 @@ namespace pcl
         }
 
         /** \brief Destructor. */
-        virtual ~PointCloudImageExtractorWithScaling () {}
+        ~PointCloudImageExtractorWithScaling () {}
 
         /** \brief Set scaling method. */
         inline void
@@ -185,8 +185,8 @@ namespace pcl
 
       protected:
 
-        virtual bool
-        extractImpl (const PointCloud& cloud, pcl::PCLImage& image) const;
+        bool
+        extractImpl (const PointCloud& cloud, pcl::PCLImage& image) const override;
 
         std::string field_name_;
         ScalingMethod scaling_method_;
@@ -212,12 +212,12 @@ namespace pcl
         PointCloudImageExtractorFromNormalField () {}
 
         /** \brief Destructor. */
-        virtual ~PointCloudImageExtractorFromNormalField () {}
+        ~PointCloudImageExtractorFromNormalField () {}
 
       protected:
 
-        virtual bool
-        extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const;
+        bool
+        extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const override;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -239,12 +239,12 @@ namespace pcl
         PointCloudImageExtractorFromRGBField () {}
 
         /** \brief Destructor. */
-        virtual ~PointCloudImageExtractorFromRGBField () {}
+        ~PointCloudImageExtractorFromRGBField () {}
 
       protected:
 
-        virtual bool
-        extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const;
+        bool
+        extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const override;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -284,7 +284,7 @@ namespace pcl
         }
 
         /** \brief Destructor. */
-        virtual ~PointCloudImageExtractorFromLabelField () {}
+        ~PointCloudImageExtractorFromLabelField () {}
 
         /** \brief Set color mapping mode. */
         inline void
@@ -295,8 +295,8 @@ namespace pcl
 
       protected:
 
-        virtual bool
-        extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const;
+        bool
+        extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const override;
 
         // Members derived from the base class
         using PointCloudImageExtractor<PointT>::paint_nans_with_black_;
@@ -339,7 +339,7 @@ namespace pcl
         }
 
         /** \brief Destructor. */
-        virtual ~PointCloudImageExtractorFromZField () {}
+        ~PointCloudImageExtractorFromZField () {}
 
       protected:
         // Members derived from the base class
@@ -381,7 +381,7 @@ namespace pcl
         }
 
         /** \brief Destructor. */
-        virtual ~PointCloudImageExtractorFromCurvatureField () {}
+        ~PointCloudImageExtractorFromCurvatureField () {}
 
       protected:
         // Members derived from the base class
@@ -423,7 +423,7 @@ namespace pcl
         }
 
         /** \brief Destructor. */
-        virtual ~PointCloudImageExtractorFromIntensityField () {}
+        ~PointCloudImageExtractorFromIntensityField () {}
 
       protected:
         // Members derived from the base class
@@ -436,5 +436,3 @@ namespace pcl
 }
 
 #include <pcl/io/impl/point_cloud_image_extractors.hpp>
-
-#endif  //#ifndef PCL_POINT_CLOUD_IMAGE_EXTRACTORS_H_

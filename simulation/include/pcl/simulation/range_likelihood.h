@@ -1,5 +1,4 @@
-#ifndef PCL_RANGE_LIKELIHOOD
-#define PCL_RANGE_LIKELIHOOD
+#pragma once
 
 #include <GL/glew.h>
 
@@ -107,7 +106,7 @@ namespace pcl
                                        float &camera_fx_in,
                                        float &camera_fy_in,
                                        float &camera_cx_in,
-                                       float &camera_cy_in)
+                                       float &camera_cy_in) const
         {
           camera_width_in = camera_width_;
           camera_height_in = camera_height_;
@@ -124,23 +123,23 @@ namespace pcl
         void setSigma (double sigma_in){  sigma_ = sigma_in;	}
         void setFloorProportion (double floor_proportion_in){  floor_proportion_ = floor_proportion_in;}
 
-        int getRows () {return rows_;}
-        int getCols () {return cols_;}
-        int getRowHeight () {return row_height_;}
-        int getColWidth () {return col_width_;}
-        int getWidth () {return width_;}
-        int getHeight () {return height_;}
+        int getRows () const {return rows_;}
+        int getCols () const {return cols_;}
+        int getRowHeight () const {return row_height_;}
+        int getColWidth () const {return col_width_;}
+        int getWidth () const {return width_;}
+        int getHeight () const {return height_;}
 
         // Convenience function to return simulated RGB-D PointCloud
         // Two modes:
         // global=false - PointCloud is as would be captured by an RGB-D camera [default]
         // global=true  - PointCloud is transformed into the model/world frame using the camera pose
         void getPointCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
-              bool make_global, const Eigen::Isometry3d & pose, bool organized = false);
+              bool make_global, const Eigen::Isometry3d & pose, bool organized = false) const;
 
         // Convenience function to return RangeImagePlanar containing
         // simulated RGB-D:
-        void getRangeImagePlanar (pcl::RangeImagePlanar &rip);
+        void getRangeImagePlanar (pcl::RangeImagePlanar &rip) const;
 
         // Add various types of noise to simulated RGB-D data
         void addNoise ();
@@ -156,19 +155,19 @@ namespace pcl
         setUseColor(bool use_color) { use_color_ = use_color; }
 
         const uint8_t*
-        getColorBuffer ();
+        getColorBuffer () const;
 
         const float*
-        getDepthBuffer ();
+        getDepthBuffer () const;
 
         const float*
-        getScoreBuffer ();
+        getScoreBuffer () const;
 
         float 
-        getZNear (){ return z_near_; }
+        getZNear () const { return z_near_; }
         
         float 
-        getZFar (){ return z_far_; }
+        getZFar () const { return z_far_; }
         
         void 
         setZNear (float z){ z_near_ = z; }
@@ -228,9 +227,10 @@ namespace pcl
         float z_near_;
         float z_far_;
 
-        bool depth_buffer_dirty_;
-        bool color_buffer_dirty_;
-        bool score_buffer_dirty_;
+        // For caching only, not part of observable state.
+        mutable bool depth_buffer_dirty_;
+        mutable bool color_buffer_dirty_;
+        mutable bool score_buffer_dirty_;
 	
 	int which_cost_function_;
 	double floor_proportion_;
@@ -268,5 +268,3 @@ namespace pcl
   } // namespace - simulation
 
 } // namespace - pcl
-
-#endif

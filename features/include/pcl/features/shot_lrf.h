@@ -37,8 +37,7 @@
  * $Id$
  */
 
-#ifndef PCL_FEATURES_SHOT_LRF_H_
-#define PCL_FEATURES_SHOT_LRF_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -75,7 +74,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~SHOTLocalReferenceFrameEstimation () {}
+      ~SHOTLocalReferenceFrameEstimation () {}
 
     protected:
       using Feature<PointInT, PointOutT>::feature_name_;
@@ -100,14 +99,11 @@ namespace pcl
       /** \brief Feature estimation method.
         * \param[out] output the resultant features
         */
-      virtual void
-      computeFeature (PointCloudOut &output);
+      void
+      computeFeature (PointCloudOut &output) override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/shot_lrf.hpp>
 #endif
-
-#endif    // PCL_FEATURES_SHOT_LRF_H_
-

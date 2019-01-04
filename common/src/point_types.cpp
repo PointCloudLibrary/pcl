@@ -71,6 +71,13 @@ namespace pcl
   }
 
   std::ostream&
+  operator << (std::ostream& os, const Intensity32u& p)
+  {
+    os << "( " << p.intensity << " )";
+    return (os);
+  }
+
+  std::ostream&
   operator << (std::ostream& os, const PointXYZI& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.intensity << ")";

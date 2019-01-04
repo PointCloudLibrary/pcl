@@ -1,11 +1,8 @@
 /*
- * Software License Agreement  (BSD License)
+ * Software License Agreement (BSD License)
  *
- *  Point Cloud Library  (PCL) - www.pointclouds.org
- *  Copyright (c) 2012, Jeremie Papon.
- *  Copyright (c) 2012-, Open Perception, Inc.
- *
- *  All rights reserved.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2018-, Open Perception, Inc.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -26,50 +23,39 @@
  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES  (INCLUDING,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
-#ifndef CLOUD_COMPOSER_QT_H_
-#define CLOUD_COMPOSER_QT_H_
+#include <gtest/gtest.h>
 
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
+#include <pcl/pcl_tests.h>
+#include <pcl/common/colors.h>
 
-#include <QObject>
-#include <QDebug>
-#include <QQueue>
-#include <QMainWindow>
-#include <QMetaType>
-#include <QDir>
-#include <Qt>
-#include <QAbstractItemView>
-#include <QVTKWidget.h>
-#include <QTabWidget>
-#include <QUndoCommand>
-#include <QTreeView>
-#include <QStandardItemModel>
-#include <QItemSelectionModel>
-#include <QModelIndex>
-#include <QVariant>
-#include <QUndoStack>
-#include <QtGui>
-#include <QFileInfo>
-#include <QThread>
-#include <QMessageBox>
-#include <QPair>
-#include <QStyledItemDelegate>
-#include <QUndoGroup>
-#include <QFileDialog>
-#include <QAction>
-#include <QGridLayout>
+TEST (ColorLUT, Glasbey)
+{
+  ASSERT_EQ (pcl::GlasbeyLUT::size (), 256);
+  ASSERT_RGB_EQ (pcl::GlasbeyLUT::at (0), pcl::RGB (77, 175, 74));
+  ASSERT_RGB_EQ (pcl::GlasbeyLUT::at (255), pcl::RGB (117, 143, 207));
+}
 
+TEST (ColorLUT, Viridis)
+{
+  ASSERT_EQ (pcl::ViridisLUT::size (), 256);
+  ASSERT_RGB_EQ (pcl::ViridisLUT::at (0), pcl::RGB (68, 1, 84));
+  ASSERT_RGB_EQ (pcl::ViridisLUT::at (255), pcl::RGB (254, 231, 36));
+}
 
-#endif // CLOUD_COMPOSER_QT_H_
+int
+main (int argc, char** argv)
+{
+  testing::InitGoogleTest (&argc, argv);
+  return (RUN_ALL_TESTS ());
+}
+

@@ -36,7 +36,7 @@ where :math:`$r_s, r_l \in \mathbb{R}$`, :math:`$r_s<r_l$`, and :math:`$\mathbf{
 
 The primary motivation behind DoN is the observation that surface normals estimated at any given radius reflect the underlying geometry of the surface at the scale of the support radius. Although there are many different methods of estimating the surface normals, normals are always estimated with a support radius (or via a fixed number of neighbours). This support radius determines the scale in the surface structure which the normal represents. 
 
-The above diagram illustrates this effect in 1D. Normals, :math:`$\mathbf{\hat{n}}$`, and tangents, :math:`$T$`, estimated with a small support radius :math:`$r_s$` are affected by small-scale surface structure (and similarly by noise). On the other hand, normals and tangent planes estimated with a large support radius $r_l$ are less affected by small-scale structure, and represent the geometry of larger scale surface structures. In fact a similair set of features is seen in the DoN feature vectors for real-world street curbs in a LiDAR image shown below.
+The above diagram illustrates this effect in 1D. Normals, :math:`$\mathbf{\hat{n}}$`, and tangents, :math:`$T$`, estimated with a small support radius :math:`$r_s$` are affected by small-scale surface structure (and similarly by noise). On the other hand, normals and tangent planes estimated with a large support radius $r_l$ are less affected by small-scale structure, and represent the geometry of larger scale surface structures. In fact a similar set of features is seen in the DoN feature vectors for real-world street curbs in a LiDAR image shown below.
 
 .. figure:: images/don_curb_closeup_small.jpg
    :align: center
@@ -166,7 +166,7 @@ In this example we will do a simple magnitude threshold, looking for objects of 
 
 .. literalinclude:: sources/don_segmentation/don_segmentation.cpp
    :language: cpp
-   :lines: 131-145
+   :lines: 131-146
 
 After we apply the filter we are left with a reduced pointcloud consisting of the points with a strong response with the given scale parameters.
 

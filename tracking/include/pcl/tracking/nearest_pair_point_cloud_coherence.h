@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
-#define PCL_TRACKING_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
+#pragma once
 
 #include <pcl/search/search.h>
 
@@ -57,8 +56,8 @@ namespace pcl
         /** \brief add a PointCoherence to the PointCloudCoherence.
           * \param[in] cloud coherence a pointer to PointCoherence.
           */
-        virtual inline void
-        setTargetCloud (const PointCloudInConstPtr &cloud)
+        inline void
+        setTargetCloud (const PointCloudInConstPtr &cloud) override
         {
           new_target_ = true;
           PointCloudCoherence<PointInT>::setTargetCloud (cloud);
@@ -73,7 +72,7 @@ namespace pcl
         using PointCloudCoherence<PointInT>::point_coherences_;
 
         /** \brief This method should get called before starting the actual computation. */
-        virtual bool initCompute ();
+        bool initCompute () override;
 
         /** \brief A flag which is true if target_input_ is updated */
         bool new_target_;
@@ -85,8 +84,8 @@ namespace pcl
         double maximum_distance_;
         
         /** \brief compute the nearest pairs and compute coherence using point_coherences_ */
-        virtual void
-        computeCoherence (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices, float &w_j);
+        void
+        computeCoherence (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices, float &w_j) override;
 
     };
   }
@@ -95,6 +94,4 @@ namespace pcl
 // #include <pcl/tracking/impl/nearest_pair_point_cloud_coherence.hpp>
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/tracking/impl/nearest_pair_point_cloud_coherence.hpp>
-#endif
-
 #endif

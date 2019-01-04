@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_POLYGON_MESH_H
-#define PCL_GEOMETRY_POLYGON_MESH_H
+#pragma once
 
 #include <pcl/geometry/mesh_base.h>
 
@@ -199,5 +198,3 @@ namespace pcl
     };
   } // End namespace geom
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_POLYGON_MESH_H

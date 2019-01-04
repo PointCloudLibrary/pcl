@@ -43,8 +43,7 @@
  *      Author: papazov
  */
 
-#ifndef PCL_RECOGNITION_BVH_H_
-#define PCL_RECOGNITION_BVH_H_
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <cstring>
@@ -312,5 +311,3 @@ namespace pcl
     };
   } // namespace recognition
 } // namespace pcl
-
-#endif /* PCL_RECOGNITION_BVH_H_ */

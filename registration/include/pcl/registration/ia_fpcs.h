@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_IA_FPCS_H_
-#define PCL_REGISTRATION_IA_FPCS_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/registration/registration.h>
@@ -104,7 +103,7 @@ namespace pcl
       FPCSInitialAlignment ();
 
       /** \brief Destructor. */
-      virtual ~FPCSInitialAlignment ()
+      ~FPCSInitialAlignment ()
       {};
 
 
@@ -309,8 +308,8 @@ namespace pcl
         * \param output the transformed input point cloud dataset using the rigid transformation found
         * \param guess The computed transforamtion
         */
-      virtual void
-      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);
+      void
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess) override;
 
 
       /** \brief Internal computation initialization. */
@@ -566,5 +565,3 @@ namespace pcl
 }; // namespace pcl 
 
 #include <pcl/registration/impl/ia_fpcs.hpp>
-
-#endif // PCL_REGISTRATION_IA_FPCS_H_

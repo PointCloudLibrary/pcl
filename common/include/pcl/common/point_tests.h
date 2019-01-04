@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_COMMON_POINT_TESTS_H_
-#define PCL_COMMON_POINT_TESTS_H_
+#pragma once
 
 #ifdef _MSC_VER
 #include <Eigen/src/StlSupport/details.h>
@@ -109,6 +108,3 @@ namespace pcl
     return (pcl_isfinite (n.normal_x) && pcl_isfinite (n.normal_y) && pcl_isfinite (n.normal_z));
   }
 }
-
-#endif    // PCL_COMMON_POINT_TESTS_H_
-

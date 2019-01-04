@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
-#define PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
+#pragma once
 
 #include <string>
 #include <sstream>
@@ -186,7 +185,7 @@ namespace pcl
 
         /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
         void
-        keyPressEvent (QKeyEvent* event);
+        keyPressEvent (QKeyEvent* event) override;
 
       private:
 
@@ -237,7 +236,7 @@ namespace pcl
           * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
           */
         void
-        paintEvent (QPaintEvent* event);
+        paintEvent (QPaintEvent* event) override;
 
         /** \brief Draw text over the opengl scene.
           * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
@@ -307,5 +306,3 @@ namespace pcl
 
 // http://doc.qt.digia.com/qt/qmetatype.html#Q_DECLARE_METATYPE
 Q_DECLARE_METATYPE (pcl::ihs::InHandScanner::RunningMode)
-
-#endif // PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H

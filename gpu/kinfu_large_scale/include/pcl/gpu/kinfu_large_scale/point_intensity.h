@@ -34,14 +34,12 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+#pragma once
 
 #include <iostream>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-
-
-#ifndef PCL_KINFU_POINT_INTENSITY_
-#define PCL_KINFU_POINT_INTENSITY_
 
 struct EIGEN_ALIGN16 PointIntensity
 {
@@ -60,5 +58,3 @@ struct EIGEN_ALIGN16 PointIntensity
 POINT_CLOUD_REGISTER_POINT_STRUCT(
     PointIntensity,
     (float, intensity, intensity) )
-
-#endif

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_LCCP_SEGMENTATION_H_
-#define PCL_SEGMENTATION_LCCP_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
@@ -354,5 +353,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/lccp_segmentation.hpp>
 #endif
-
-#endif // PCL_SEGMENTATION_LCCP_SEGMENTATION_H_

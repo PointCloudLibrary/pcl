@@ -34,8 +34,7 @@
  *
  */
 
-#ifndef PCL_MODELER_ABSTRACT_ITEM_H_
-#define PCL_MODELER_ABSTRACT_ITEM_H_
+#pragma once
 
 #include <string>
 
@@ -82,5 +81,3 @@ namespace pcl
 
   }
 }
-
-#endif // PCL_MODELER_ABSTRACT_ITEM_H_

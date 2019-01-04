@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_CVFH_H_
-#define PCL_FEATURES_CVFH_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 #include <pcl/features/vfh.h>
@@ -255,7 +254,7 @@ namespace pcl
         * feature estimates
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief Region growing method using Euclidean distances and neighbors normals to 
         * add points to a region.
@@ -289,5 +288,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/cvfh.hpp>
 #endif
-
-#endif  //#ifndef PCL_FEATURES_CVFH_H_

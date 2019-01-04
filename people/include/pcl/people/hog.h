@@ -38,8 +38,7 @@
  * Non-SSE version of the code provided by Matteo Munaro, Stefano Ghidoni and Stefano Michieletto
  */
 
-#ifndef PCL_PEOPLE_HOG_H_
-#define PCL_PEOPLE_HOG_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 
@@ -186,4 +185,3 @@ namespace pcl
     };
   } /* namespace people */
 } /* namespace pcl */
-#endif /* PCL_PEOPLE_HOG_H_ */

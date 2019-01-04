@@ -342,8 +342,39 @@ testSHOTLocalReferenceFrame (const typename PointCloud<PointT>::Ptr & points,
   checkDesc<OutputT> (output, output2);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, SHOTShapeEstimation)
+// "Placeholder" for the type specialized test fixture
+template<typename T>
+struct SHOTShapeTest;
+
+// Template specialization test for SHOTEstimation
+template<>
+struct SHOTShapeTest<SHOTEstimation<PointXYZ, Normal, SHOT352> >
+  : public ::testing::Test
+{
+  SHOTEstimation<PointXYZ, Normal, SHOT352> shot;
+};
+
+// Template specialization test for SHOTEstimationOMP
+template<>
+struct SHOTShapeTest<SHOTEstimationOMP<PointXYZ, Normal, SHOT352> >
+  : public ::testing::Test
+{
+  // Default Constructor is defined to instantiate 4 threads
+  SHOTShapeTest<SHOTEstimationOMP<PointXYZ, Normal, SHOT352> > ()
+    : shot (4)
+  {}
+
+  SHOTEstimationOMP<PointXYZ, Normal, SHOT352> shot;
+};
+
+// Types which will be instantiated
+typedef ::testing::Types<SHOTEstimation<PointXYZ, Normal, SHOT352>,
+                         SHOTEstimationOMP<PointXYZ, Normal, SHOT352> > SHOTEstimatorTypes;
+TYPED_TEST_CASE (SHOTShapeTest, SHOTEstimatorTypes);
+
+// This is a copy of the old SHOTShapeEstimation test which will now
+// be applied to both SHOTEstimation and SHOTEstimationOMP
+TYPED_TEST (SHOTShapeTest, Estimation)
 {
   // Estimate normals first
   double mr = 0.002;
@@ -399,7 +430,7 @@ TEST (PCL, SHOTShapeEstimation)
 */
 
   // SHOT352
-  SHOTEstimation<PointXYZ, Normal, SHOT352> shot352;
+  TypeParam& shot352 = this->shot;
   shot352.setInputNormals (normals);
   EXPECT_EQ (shot352.getInputNormals (), normals);
   shot352.setRadiusSearch (20 * mr);
@@ -437,8 +468,8 @@ TEST (PCL, SHOTShapeEstimation)
   //testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
   //testSHOTLocalReferenceFrame<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
 
-  testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZ, Normal, SHOT352>, PointXYZ, Normal, SHOT352> (cloud.makeShared (), normals, test_indices);
-  testSHOTLocalReferenceFrame<SHOTEstimation<PointXYZ, Normal, SHOT352>, PointXYZ, Normal, SHOT352> (cloud.makeShared (), normals, test_indices);
+  testSHOTIndicesAndSearchSurface<TypeParam, PointXYZ, Normal, SHOT352> (cloud.makeShared (), normals, test_indices);
+  testSHOTLocalReferenceFrame<TypeParam, PointXYZ, Normal, SHOT352> (cloud.makeShared (), normals, test_indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -498,8 +529,40 @@ TEST (PCL, GenericSHOTShapeEstimation)
   testSHOTLocalReferenceFrame<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices, shapeStep_);
 }
 */
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, SHOTShapeAndColorEstimation)
+
+// "Placeholder" for the type specialized test fixture
+template<typename T>
+struct SHOTShapeAndColorTest;
+
+// Template specialization test for SHOTColorEstimation
+template<>
+struct SHOTShapeAndColorTest<SHOTColorEstimation<PointXYZRGBA, Normal, SHOT1344> >
+  : public ::testing::Test
+{
+  SHOTColorEstimation<PointXYZRGBA, Normal, SHOT1344> shot;
+};
+
+// Template specialization test for SHOTColorEstimationOMP
+template<>
+struct SHOTShapeAndColorTest<SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> >
+  : public ::testing::Test
+{
+  // Default Constructor is defined to instantiate 4 threads
+  SHOTShapeAndColorTest<SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> > ()
+    : shot (true, true, 4)
+  {}
+
+  SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> shot;
+};
+
+// Types which will be instantiated
+typedef ::testing::Types<SHOTColorEstimation<PointXYZRGBA, Normal, SHOT1344>,
+                         SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> > SHOTColorEstimatorTypes;
+TYPED_TEST_CASE (SHOTShapeAndColorTest, SHOTColorEstimatorTypes);
+
+// This is a copy of the old SHOTShapeAndColorEstimation test which will now
+// be applied to both SHOTColorEstimation and SHOTColorEstimationOMP
+TYPED_TEST (SHOTShapeAndColorTest, Estimation)
 {
   double mr = 0.002;
   // Estimate normals first
@@ -572,7 +635,7 @@ TEST (PCL, SHOTShapeAndColorEstimation)
 */
 
   // SHOT1344
-  SHOTColorEstimation<PointXYZRGBA, Normal, SHOT1344> shot1344 (true, true);
+  TypeParam& shot1344 = this->shot;
   shot1344.setInputNormals (normals);
   EXPECT_EQ (shot1344.getInputNormals (), normals);
 
@@ -618,228 +681,8 @@ TEST (PCL, SHOTShapeAndColorEstimation)
   //testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
   //testSHOTLocalReferenceFrame<SHOTEstimation<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
 
-  testSHOTIndicesAndSearchSurface<SHOTColorEstimation<PointXYZRGBA, Normal, SHOT1344>, PointXYZRGBA, Normal, SHOT1344> (cloudWithColors.makeShared (), normals, test_indices);
-  testSHOTLocalReferenceFrame<SHOTColorEstimation<PointXYZRGBA, Normal, SHOT1344>, PointXYZRGBA, Normal, SHOT1344> (cloudWithColors.makeShared (), normals, test_indices);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, SHOTShapeEstimationOpenMP)
-{
-  // Estimate normals first
-  double mr = 0.002;
-#ifdef _OPENMP
-  NormalEstimationOMP<PointXYZ, Normal> n (omp_get_max_threads ());
-#else
-  NormalEstimationOMP<PointXYZ, Normal> n;
-#endif
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  // set parameters
-  n.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
-  n.setIndices (indicesptr);
-  n.setSearchMethod (tree);
-  n.setRadiusSearch (20 * mr);
-  n.compute (*normals);
-
-/*
-  SHOTEstimationOMP<PointXYZ, Normal, SHOT> shot;
-  shot.setInputNormals (normals);
-  EXPECT_EQ (shot.getInputNormals (), normals);
-
-  shot.setRadiusSearch ( 20 * mr);
-
-  // Object
-  PointCloud<SHOT>::Ptr shots (new PointCloud<SHOT>);
-
-  // set parameters
-  shot.setInputCloud (cloud.makeShared ());
-  shot.setIndices (indicesptr);
-  shot.setSearchMethod (tree);
-
-  // estimate
-  shot.compute (*shots);
-  EXPECT_EQ (shots->points.size (), indices.size ());
-
-  EXPECT_NEAR (shots->points[103].descriptor[9 ], 0.0072018504, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[10], 0.0023103887, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[11], 0.0024724449, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[19], 0.0031367359, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[20], 0.17439659, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[21], 0.070665278, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[42], 0.013304681, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[53], 0.0073520984, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[54], 0.013584172, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[55], 0.0050609680, 1e-4);
-*/
-
-  // SHOT352
-  SHOTEstimationOMP<PointXYZ, Normal, SHOT352> shot352;
-  shot352.setInputNormals (normals);
-  EXPECT_EQ (shot352.getInputNormals (), normals);
-
-  shot352.setRadiusSearch ( 20 * mr);
-
-  // Object
-  PointCloud<SHOT352>::Ptr shots352 (new PointCloud<SHOT352>);
-
-  // set parameters
-  shot352.setInputCloud (cloud.makeShared ());
-  shot352.setIndices (indicesptr);
-  shot352.setSearchMethod (tree);
-
-  // estimate
-  shot352.compute (*shots352);
-  EXPECT_EQ (shots352->points.size (), indices.size ());
-
-  EXPECT_NEAR (shots352->points[103].descriptor[9 ], 0.0072018504, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[10], 0.0023103887, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[11], 0.0024724449, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[19], 0.0031367359, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[20], 0.17439659, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[21], 0.06542316, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[42], 0.013304681, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[53], 0.0073520984, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[54], 0.013584172, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[55], 0.0050609680, 1e-4);
-
-  // Test results when setIndices and/or setSearchSurface are used
-  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
-  for (size_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (static_cast<int> (i));
-
-  //testSHOTIndicesAndSearchSurface<SHOTEstimationOMP<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
-  //testSHOTLocalReferenceFrame<SHOTEstimationOMP<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
-
-  testSHOTIndicesAndSearchSurface<SHOTEstimationOMP<PointXYZ, Normal, SHOT352>, PointXYZ, Normal, SHOT352> (cloud.makeShared (), normals, test_indices);
-  testSHOTLocalReferenceFrame<SHOTEstimationOMP<PointXYZ, Normal, SHOT352>, PointXYZ, Normal, SHOT352> (cloud.makeShared (), normals, test_indices);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
-{
-  double mr = 0.002;
-  // Estimate normals first
-  NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  // set parameters
-  n.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
-  n.setIndices (indicesptr);
-  n.setSearchMethod (tree);
-  n.setRadiusSearch (20 * mr);
-  n.compute (*normals);
-
-  search::KdTree<PointXYZRGBA>::Ptr rgbaTree;
-
-  rgbaTree.reset (new search::KdTree<PointXYZRGBA> (false));
-
-  // Create fake point cloud with colors
-  PointCloud<PointXYZRGBA> cloudWithColors;
-  for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
-  {
-    PointXYZRGBA p;
-    p.x = cloud.points[i].x;
-    p.y = cloud.points[i].y;
-    p.z = cloud.points[i].z;
-
-    p.rgba = ( (i%255) << 16 ) + ( ( (255 - i ) %255) << 8) + ( ( i*37 ) %255);
-    cloudWithColors.push_back(p);
-  }
-
-/*
-  // Object
-  SHOTEstimationOMP<PointXYZRGBA, Normal, SHOT> shot (true, true, -1);
-  shot.setInputNormals (normals);
-
-  EXPECT_EQ (shot.getInputNormals (), normals);
-
-  shot.setRadiusSearch ( 20 * mr);
-
-  rgbaTree->setInputCloud (cloudWithColors.makeShared ());
-
-  PointCloud<SHOT>::Ptr shots (new PointCloud<SHOT> ());
-
-  shot.setInputCloud (cloudWithColors.makeShared ());
-  shot.setIndices (indicesptr);
-  shot.setSearchMethod (rgbaTree);
-
-  // estimate
-  shot.compute (*shots);
-  EXPECT_EQ (shots->points.size (), indices.size ());
-
-  EXPECT_NEAR (shots->points[103].descriptor[10], 0.0020453099, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[11], 0.0021887729, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[21], 0.062557608, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[42], 0.011778189, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[53], 0.0065085669, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[54], 0.012025614, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[55], 0.0044803056, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[64], 0.064429596, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[65], 0.046486385, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[86], 0.011518310, 1e-5);
-
-  EXPECT_NEAR (shots->points[103].descriptor[357], 0.0020453099, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[360], 0.0027993850, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[386], 0.045115642, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[387], 0.059068538, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[389], 0.0047547864, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[453], 0.0051176427, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[481], 0.0053625242, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[482], 0.012025614, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[511], 0.0057367259, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[512], 0.048357654, 1e-5);
-*/
-
-  // SHOT1344
-  SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> shot1344 (true, true);
-  shot1344.setInputNormals (normals);
-
-  EXPECT_EQ (shot1344.getInputNormals (), normals);
-
-  shot1344.setRadiusSearch ( 20 * mr);
-
-  PointCloud<SHOT1344>::Ptr shots1344 (new PointCloud<SHOT1344> ());
-
-  shot1344.setInputCloud (cloudWithColors.makeShared ());
-  shot1344.setIndices (indicesptr);
-  shot1344.setSearchMethod (rgbaTree);
-
-  // estimate
-  shot1344.compute (*shots1344);
-  EXPECT_EQ (shots1344->points.size (), indices.size ());
-
-  EXPECT_NEAR (shots1344->points[103].descriptor[10], 0.0020453099, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[11], 0.0021887729, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[21], 0.057930067, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[42], 0.011778189, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[53], 0.0065085669, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[54], 0.012025614, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[55], 0.0044803056, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[64], 0.0644530654, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[65], 0.0465045683, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[86], 0.011518310, 1e-5);
-
-  EXPECT_NEAR (shots1344->points[103].descriptor[357], 0.0020453099, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[360], 0.0027993850, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[386], 0.0451327376, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[387], 0.0544394031, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[389], 0.0047547864, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[453], 0.0051176427, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[481], 0.0053625242, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[482], 0.012025614, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[511], 0.0057367259, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[512], 0.048375979, 1e-5);
-
-  // Test results when setIndices and/or setSearchSurface are used
-  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
-  for (size_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (static_cast<int> (i));
-
-  //testSHOTIndicesAndSearchSurface<SHOTEstimationOMP<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
-  //testSHOTLocalReferenceFrame<SHOTEstimationOMP<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
-
-  testSHOTIndicesAndSearchSurface<SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344>, PointXYZRGBA, Normal, SHOT1344> (cloudWithColors.makeShared (), normals, test_indices);
-  testSHOTLocalReferenceFrame<SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344>, PointXYZRGBA, Normal, SHOT1344> (cloudWithColors.makeShared (), normals, test_indices);
+  testSHOTIndicesAndSearchSurface<TypeParam, PointXYZRGBA, Normal, SHOT1344> (cloudWithColors.makeShared (), normals, test_indices);
+  testSHOTLocalReferenceFrame<TypeParam, PointXYZRGBA, Normal, SHOT1344> (cloudWithColors.makeShared (), normals, test_indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

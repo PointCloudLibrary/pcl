@@ -35,23 +35,31 @@
  *
  */
 
-#ifndef PCL_COMMON_COLORS_H
-#define PCL_COMMON_COLORS_H
+#pragma once
 
 #include <pcl/pcl_macros.h>
+#include <pcl/point_types.h>
 
 namespace pcl
 {
 
-  struct RGB;
-
   PCL_EXPORTS RGB
   getRandomColor (double min = 0.2, double max = 2.8);
 
-  /** Color lookup table consisting of 256 colors structured in a maximally
-    * discontinuous manner. Generated using the method of Glasbey et al.
-    * (see https://github.com/taketwo/glasbey) */
-  class PCL_EXPORTS GlasbeyLUT
+  enum ColorLUTName
+  {
+    /** Color lookup table consisting of 256 colors structured in a maximally
+      * discontinuous manner. Generated using the method of Glasbey et al.
+      * (see https://github.com/taketwo/glasbey) */
+    LUT_GLASBEY,
+    /** A perceptually uniform colormap created by Stéfan van der Walt and
+      * Nathaniel Smith for the Python matplotlib library.
+      * (see https://youtu.be/xAoljeRJ3lU for background and overview) */
+    LUT_VIRIDIS,
+  };
+
+  template <ColorLUTName T>
+  class ColorLUT
   {
 
     public:
@@ -72,7 +80,7 @@ namespace pcl
 
   };
 
+  typedef ColorLUT<pcl::LUT_GLASBEY> GlasbeyLUT;
+  typedef ColorLUT<pcl::LUT_VIRIDIS> ViridisLUT;
+
 }
-
-#endif /* PCL_COMMON_COLORS_H */
-

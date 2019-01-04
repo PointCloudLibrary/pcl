@@ -1,5 +1,4 @@
-#ifndef PCL_FOR_EIGEN_BFGS_H
-#define PCL_FOR_EIGEN_BFGS_H
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header 
@@ -614,5 +613,3 @@ BFGS<FunctorType>::lineSearch(Scalar rho, Scalar sigma,
   }
   return BFGSSpace::Success;
 }
-#endif // PCL_FOR_EIGEN_BFGS_H
-

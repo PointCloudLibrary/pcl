@@ -497,25 +497,25 @@ TEST (PCL, eigen22d)
     // test if U * V * U^T = M
     r_result = r_vectors * r_eigenvalues.asDiagonal () * r_vectors.transpose ();
     r_error = r_result - r_matrix;
-    diff = r_error.cwiseAbs (). sum ();
+    diff = r_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     // test if the eigenvalues are orthonormal
     g_result = r_vectors * r_vectors.transpose ();
     g_error = g_result - RMatrix::Identity ();
-    diff = g_error.cwiseAbs (). sum ();
+    diff = g_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     // test if column major matrices are also calculated correctly
     eigen22 (c_matrix, c_vectors, c_eigenvalues);
     c_result = c_vectors * c_eigenvalues.asDiagonal () * c_vectors.transpose ();
     c_error = c_result - c_matrix;
-    diff = c_error.cwiseAbs (). sum ();
+    diff = c_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     g_result = c_vectors * c_vectors.transpose ();
     g_error = g_result - CMatrix::Identity ();
-    diff = g_error.cwiseAbs (). sum ();
+    diff = g_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
   }
 }
@@ -556,25 +556,25 @@ TEST (PCL, eigen22f)
     // test if U * V * U^T = M
     r_result = r_vectors * r_eigenvalues.asDiagonal () * r_vectors.transpose ();
     r_error = r_result - r_matrix;
-    diff = r_error.cwiseAbs (). sum ();
+    diff = r_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     // test if the eigenvalues are orthonormal
     g_result = r_vectors * r_vectors.transpose ();
     g_error = g_result - RMatrix::Identity ();
-    diff = g_error.cwiseAbs (). sum ();
+    diff = g_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     // test if column major matrices are also calculated correctly
     eigen22 (c_matrix, c_vectors, c_eigenvalues);
     c_result = c_vectors * c_eigenvalues.asDiagonal () * c_vectors.transpose ();
     c_error = c_result - c_matrix;
-    diff = c_error.cwiseAbs (). sum ();
+    diff = c_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     g_result = c_vectors * c_vectors.transpose ();
     g_error = g_result - CMatrix::Identity ();
-    diff = g_error.cwiseAbs (). sum ();
+    diff = g_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
   }
 }
@@ -744,14 +744,12 @@ TEST (PCL, eigen33f)
   const Scalar epsilon = 1e-3f;
   const unsigned iterations = 1000000;
   bool r_failed;
-  bool c_failed;
   unsigned r_fail_count = 0;
-  unsigned c_fail_count = 0;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
-    r_failed = c_failed = false;
+    r_failed = false;
     // generate test matrices
     generateSymPosMatrix3x3 (r_matrix);
     c_matrix = r_matrix;
@@ -781,17 +779,10 @@ TEST (PCL, eigen33f)
     c_result = c_vectors * c_eigenvalues.asDiagonal () * c_vectors.transpose ();
     c_error = c_result - c_matrix;
     diff = c_error.cwiseAbs (). sum ();
-    if (diff > epsilon)
-      c_failed = true;
 
     g_result = c_vectors * c_vectors.transpose ();
     g_error = g_result - CMatrix::Identity ();
     diff = g_error.cwiseAbs (). sum ();
-    if (diff > epsilon)
-      c_failed = true;
-
-    if(c_failed)
-      ++c_fail_count;
   }
 
   // less than 1% failure rate
@@ -932,6 +923,8 @@ TEST (PCL, transformPlane)
   transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/7, Eigen::Vector3d::UnitY())
   * Eigen::AngleAxisd(M_PI/4, Eigen::Vector3d::UnitZ());
   test << 5.35315, 2.89914, 0.196848, -49.2788;
+  test /= test.head<3> ().norm ();
+
   tolerance = 1e-4;
 
   plane->values[0] = 5.4;

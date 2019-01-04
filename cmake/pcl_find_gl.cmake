@@ -6,15 +6,15 @@
 find_package(OpenGL QUIET REQUIRED)
 
 if(APPLE AND OPENGL_FOUND)
-  if ("${OPENGL_INCLUDE_DIR}" MATCHES "\\.framework")
+  if("${OPENGL_INCLUDE_DIR}" MATCHES "\\.framework")
     set(OPENGL_IS_A_FRAMEWORK TRUE)
-  endif ("${OPENGL_INCLUDE_DIR}" MATCHES "\\.framework")
-endif(APPLE AND OPENGL_FOUND)
+  endif()
+endif()
 
 find_package(GLUT QUIET)
 
 if(APPLE AND GLUT_FOUND)
-  if ("${GLUT_INCLUDE_DIR}" MATCHES "\\.framework")
+  if("${GLUT_INCLUDE_DIR}" MATCHES "\\.framework")
     set(GLUT_IS_A_FRAMEWORK TRUE)
-  endif ("${GLUT_INCLUDE_DIR}" MATCHES "\\.framework")
-endif(APPLE AND GLUT_FOUND)
+  endif()
+endif()

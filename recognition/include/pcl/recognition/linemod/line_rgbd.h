@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_LINEMOD_LINE_RGBD
-#define PCL_RECOGNITION_LINEMOD_LINE_RGBD
+#pragma once
 
 #include <pcl/recognition/linemod.h>
 #include <pcl/recognition/color_gradient_modality.h>
@@ -316,5 +315,3 @@ namespace pcl
 }
 
 #include <pcl/recognition/impl/linemod/line_rgbd.hpp>
-
-#endif  

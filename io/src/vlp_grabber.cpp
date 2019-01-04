@@ -101,7 +101,6 @@ pcl::VLPGrabber::getDefaultNetworkAddress ()
 void
 pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
 {
-  static uint32_t scan_counter = 0;
   static uint32_t sweep_counter = 0;
   if (sizeof(HDLLaserReturn) != 3)
     return;
@@ -109,8 +108,6 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
   time_t system_time;
   time (&system_time);
   time_t velodyne_time = (system_time & 0x00000000ffffffffl) << 32 | dataPacket->gpsTimestamp;
-
-  scan_counter++;
 
   double interpolated_azimuth_delta;
 

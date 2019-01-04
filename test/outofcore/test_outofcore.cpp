@@ -404,12 +404,12 @@ class OutofcoreTest : public testing::Test
 
     OutofcoreTest () : smallest_voxel_dim () {}
 
-    virtual void SetUp ()
+    void SetUp () override
     {
       smallest_voxel_dim = 3.0f;
     }
 
-    virtual void TearDown ()
+    void TearDown () override
     {
 
     }
@@ -491,7 +491,6 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
 
   //(Case 4): Load existing tree from disk
   octree_disk octree_from_disk (filename_otreeB, true);
-  vector<uint64_t> numPoints = octree_from_disk.getNumPointsVector ();
   EXPECT_EQ (numPts , octree_from_disk.getNumPointsAtDepth (octree_from_disk.getDepth ())) << "Failure to count the number of points in a tree already existing on disk\n";
 }
 

@@ -35,13 +35,13 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#pragma once
+ 
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
-#ifndef __OPENNI_SHIFT_TO_DEPTH_CONVERSION
-#define __OPENNI_SHIFT_TO_DEPTH_CONVERSION
-
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 #include <limits>
 
@@ -122,4 +122,3 @@ namespace openni_wrapper
 }
 
 #endif
-#endif //__OPENNI_SHIFT_TO_DEPTH_CONVERSION

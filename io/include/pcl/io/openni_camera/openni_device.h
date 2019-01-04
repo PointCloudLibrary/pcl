@@ -35,11 +35,11 @@
  *
  */
 
+#pragma once
+
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
-#ifndef __OPENNI_IDEVICE_H__
-#define __OPENNI_IDEVICE_H__
 #include <map>
 #include <vector>
 #include <utility>
@@ -610,5 +610,4 @@ namespace openni_wrapper
   }
 
 }
-#endif // __OPENNI_IDEVICE_H__
 #endif // HAVE_OPENNI

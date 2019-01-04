@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
-#define PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
+#pragma once
 
 #include <pcl/common/io.h>
 #include <pcl/PCLPointCloud2.h>
@@ -125,7 +124,7 @@ namespace pcl
         OutofcoreOctreeBaseNode (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &root_name);
 
         /** \brief Will recursively delete all children calling recFreeChildrein */
-        virtual
+        
         ~OutofcoreOctreeBaseNode ();
 
         //query
@@ -246,8 +245,8 @@ namespace pcl
         virtual int
         read (pcl::PCLPointCloud2::Ptr &output_cloud);
 
-        virtual inline node_type_t
-        getNodeType () const
+        inline node_type_t
+        getNodeType () const override
         {
           if(this->getNumChildren () > 0)
           {
@@ -259,9 +258,9 @@ namespace pcl
           }
         }
         
-        virtual
+        
         OutofcoreOctreeBaseNode* 
-        deepCopy () const
+        deepCopy () const override
         {
           OutofcoreOctreeBaseNode* res = NULL;
           PCL_THROW_EXCEPTION (PCLException, "Not implemented\n");
@@ -573,5 +572,3 @@ namespace pcl
     };
   }//namespace outofcore
 }//namespace pcl
-
-#endif //PCL_OUTOFCORE_OCTREE_BASE_NODE_H_

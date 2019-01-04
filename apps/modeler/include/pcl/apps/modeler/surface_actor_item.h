@@ -33,8 +33,8 @@
  *
  *
  */
-#ifndef PCL_MODELER_SURFACE_ACTOR_ITEM_H_
-#define PCL_MODELER_SURFACE_ACTOR_ITEM_H_
+
+#pragma once
 
 #include <pcl/apps/modeler/channel_actor_item.h>
 #include <pcl/visualization/point_cloud_handlers.h>
@@ -61,28 +61,26 @@ namespace pcl
                         const vtkSmartPointer<vtkRenderWindow>& render_window);
         ~SurfaceActorItem ();
 
-        virtual std::string
-        getItemName() const {return "Points Actor Item";}
+        std::string
+        getItemName() const override {return "Points Actor Item";}
 
       protected:
-        virtual void
-        initImpl();
+        void
+        initImpl() override;
 
-        virtual void
-        updateImpl();
+        void
+        updateImpl() override;
 
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
+        void
+        prepareContextMenu(QMenu* menu) const override;
 
-        virtual void
-        prepareProperties(ParameterDialog* parameter_dialog);
+        void
+        prepareProperties(ParameterDialog* parameter_dialog) override;
 
-        virtual void
-        setProperties();
+        void
+        setProperties() override;
 
       private:
     };
   }
 }
-
-#endif // PCL_MODELER_SURFACE_ACTOR_ITEM_H_

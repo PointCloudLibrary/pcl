@@ -33,8 +33,8 @@
  *
  */
 
-#ifndef __PCL_LINE_ITERATOR__
-#define __PCL_LINE_ITERATOR__
+#pragma once
+
 #include "organized_index_iterator.h"
 
 namespace pcl
@@ -62,13 +62,13 @@ class LineIterator : public OrganizedIndexIterator
     LineIterator (unsigned x_start, unsigned y_start, unsigned x_end, unsigned y_end, unsigned width, const Neighborhood& neighborhood = Neighbor8);
     
     /** \brief Destructor*/
-    virtual ~LineIterator ();
+    ~LineIterator ();
     
-    virtual void operator ++ ();
-    virtual unsigned getRowIndex () const;
-    virtual unsigned getColumnIndex () const;
-    virtual bool isValid () const;
-    virtual void reset ();
+    void operator ++ () override;
+    unsigned getRowIndex () const override;
+    unsigned getColumnIndex () const override;
+    bool isValid () const override;
+    void reset () override;
   protected:
     /** \brief initializes the variables for the Bresenham algorithm
       * \param[in] neighborhood connectivity to the neighborhood. Either 4 or 8
@@ -271,5 +271,3 @@ LineIterator::reset ()
 }
 
 } // namespace pcl
-
-#endif // __PCL_LINE_ITERATOR__

@@ -125,8 +125,6 @@ main (int argc, char **argv)
     polydata1 = readerQuery->GetOutput ();
   }
 
-  bool INTER_VIS = false;
-
   visualization::PCLVisualizer vis;
   vis.addModelFromPolyData (polydata1, "mesh1", 0);
   vis.setRepresentationToSurfaceForAllActors ();
@@ -146,19 +144,6 @@ main (int argc, char **argv)
     pose_inverse = poses[i].inverse ();
     transformPointCloud (views_xyz[i], *cloud, pose_inverse);
     aligned_clouds.push_back (cloud);
-  }
-
-  if (INTER_VIS)
-  {
-    visualization::PCLVisualizer vis2 ("visualize");
-
-    for (size_t i = 0; i < aligned_clouds.size (); i++)
-    {
-      std::stringstream name;
-      name << "cloud_" << i;
-      vis2.addPointCloud (aligned_clouds[i], name.str ());
-      vis2.spin ();
-    }
   }
 
   // Fuse clouds

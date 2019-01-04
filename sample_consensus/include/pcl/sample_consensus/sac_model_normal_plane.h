@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_NORMALPLANE_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_NORMALPLANE_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
@@ -124,7 +123,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~SampleConsensusModelNormalPlane () {}
+      ~SampleConsensusModelNormalPlane () {}
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
@@ -134,7 +133,7 @@ namespace pcl
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
                             const double threshold, 
-                            std::vector<int> &inliers);
+                            std::vector<int> &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers. 
         * 
@@ -142,9 +141,9 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      virtual int
+      int
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold) const;
+                           const double threshold) const override;
 
       /** \brief Compute all distances from the cloud data to a given plane model.
         * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
@@ -152,11 +151,11 @@ namespace pcl
         */
       void
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances) const;
+                           std::vector<double> &distances) const override;
 
       /** \brief Return an unique id for this model (SACMODEL_NORMAL_PLANE). */
       inline pcl::SacModel 
-      getModelType () const { return (SACMODEL_NORMAL_PLANE); }
+      getModelType () const override { return (SACMODEL_NORMAL_PLANE); }
 
     	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -169,5 +168,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/sac_model_normal_plane.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_NORMALPLANE_H_

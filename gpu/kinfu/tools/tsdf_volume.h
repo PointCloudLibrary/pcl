@@ -34,9 +34,7 @@
  *  $Id: tsdf_volume.h 6459 2012-07-18 07:50:37Z dpb $
  */
 
-
-#ifndef TSDF_VOLUME_H_
-#define TSDF_VOLUME_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -241,11 +239,11 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   //   template <typename PointT> void
   //   createFromCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, const Intr &intr);
 
-    /** \brief Retunrs the 3D voxel coordinate */
+    /** \brief Returns the 3D voxel coordinate */
     template <typename PointT> void
     getVoxelCoord (const PointT &point, Eigen::Vector3i &voxel_coord)  const;
 
-    /** \brief Retunrs the 3D voxel coordinate and point offset wrt. to the voxel center (in mm) */
+    /** \brief Returns the 3D voxel coordinate and point offset wrt. to the voxel center (in mm) */
     template <typename PointT> void
     getVoxelCoordAndOffset (const PointT &point, Eigen::Vector3i &voxel_coord, Eigen::Vector3f &offset) const;
 
@@ -296,5 +294,3 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 }
-
-#endif /* TSDF_VOLUME_H_ */

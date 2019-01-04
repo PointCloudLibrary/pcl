@@ -65,7 +65,7 @@ is needed only to build PCL tests. We do not provide GTest installers. **optiona
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
-   build system (http://www.cmake.org/), at least version **2.8.7**. A Git client
+   build system (http://www.cmake.org/), at least version **3.1.0**. A Git client
    for Windows is also required to download the PCL source code.
 
 Downloading PCL source code
@@ -162,7 +162,7 @@ Let's check whether CMake did actually find the needed third party dependencies 
 
 - **Eigen** : 
 
-	Eigen is a header-only library, thus, we need only **EIGEN_INCLUDE_DIR** to be set. Hopefully, CMake did fing Eigen.
+	Eigen is a header-only library, thus, we need only **EIGEN_INCLUDE_DIR** to be set. Hopefully, CMake did find Eigen.
 
 	.. image:: images/windows/cmake_eigen_include_dir.png
 		:alt: Eigen include dir
@@ -278,7 +278,7 @@ Building the "ALL_BUILD" project will build everything.
 Installing PCL
 --------------
 
-To install the built libraries and executbles, you need to build the "INSTALL" project in the solution explorer. 
+To install the built libraries and executables, you need to build the "INSTALL" project in the solution explorer. 
 This utility project will copy PCL headers, libraries and executable to the directory defined by the **CMAKE_INSTALL_PREFIX** 
 CMake variable.
 

@@ -38,7 +38,7 @@
 #include <pcl/geometry/line_iterator.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <math.h>
+#include <cmath>
 
 using namespace pcl;
 

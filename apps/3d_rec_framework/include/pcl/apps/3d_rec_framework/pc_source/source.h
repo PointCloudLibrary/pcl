@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_VIEWS_SOURCE_H_
-#define REC_FRAMEWORK_VIEWS_SOURCE_H_
+#pragma once
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
@@ -297,5 +296,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* REC_FRAMEWORK_VIEWS_SOURCE_H_ */

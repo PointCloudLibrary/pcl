@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_POINT_TRAITS_H_
-#define PCL_POINT_TRAITS_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header
@@ -353,5 +352,3 @@ namespace pcl
     value = *reinterpret_cast<const ValT*>(data_ptr);
   }
 }
-
-#endif  //#ifndef PCL_POINT_TRAITS_H_

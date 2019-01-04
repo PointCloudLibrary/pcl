@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_ICP_NL_H_
-#define PCL_ICP_NL_H_
+#pragma once
 
 // PCL includes
 #include <pcl/registration/icp.h>
@@ -89,5 +88,3 @@ namespace pcl
       }
   };
 }
-
-#endif  //#ifndef PCL_ICP_NL_H_

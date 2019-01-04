@@ -593,8 +593,6 @@ void
 RangeImageBorderExtractor::blurSurfaceChanges ()
 {
   int blur_radius = 1;
-  if (blur_radius==0)
-    return;
   
   const RangeImage& range_image = *range_image_;
   

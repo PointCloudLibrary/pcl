@@ -248,7 +248,7 @@ class OpenNIViewer
           {
             image_viewer_->setPosition (0, 0);
             image_viewer_->setSize (cloud->width, cloud->height);
-            image_init = !image_init;
+            image_init = true;
           }
 
           if (image->getEncoding() == openni_wrapper::Image::RGB)

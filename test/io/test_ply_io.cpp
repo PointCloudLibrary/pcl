@@ -111,7 +111,7 @@ struct PLYTest : public ::testing::Test
   PLYTest () : mesh_file_ply_("ply_file.ply")
   {}
 
-  virtual
+  
   ~PLYTest () { remove (mesh_file_ply_.c_str ()); }
 
   std::string mesh_file_ply_;
@@ -119,7 +119,7 @@ struct PLYTest : public ::testing::Test
 
 struct PLYColorTest : public PLYTest
 {
-  void SetUp ()
+  void SetUp () override
   {
     // Test colors from ply_benchmark.ply
     clr_1_.r = 255;

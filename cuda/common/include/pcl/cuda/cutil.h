@@ -23,8 +23,7 @@
 
 /* CUda UTility Library */
 
-#ifndef _CUTIL_H_
-#define _CUTIL_H_
+#pragma once
 
 #ifdef _WIN32
 #   pragma warning( disable : 4996 ) // disable deprecated warning 
@@ -849,7 +848,7 @@ extern "C" {
         exit(EXIT_FAILURE);                                                  \
     } } while(0);
 
-    //! Check if conditon is true (flexible assert)
+    //! Check if condition is true (flexible assert)
 #  define CUT_CONDITION( val)                                                \
     if( CUTFalse == cutCheckCondition( val, __FILE__, __LINE__)) {           \
         exit(EXIT_FAILURE);                                                  \
@@ -951,5 +950,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif  // #ifdef _DEBUG (else branch)
-
-#endif  // #ifndef _CUTIL_H_

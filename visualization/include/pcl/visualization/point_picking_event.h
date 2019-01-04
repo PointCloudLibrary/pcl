@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_VISUALIZATION_POINT_PICKING_EVENT_H_
-#define PCL_VISUALIZATION_POINT_PICKING_EVENT_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <vector>
@@ -60,10 +59,10 @@ namespace pcl
         PointPickingCallback () : x_ (0), y_ (0), z_ (0), idx_ (-1), pick_first_ (false) {}
       
         /** \brief Empty destructor */
-        virtual ~PointPickingCallback () {}
+        ~PointPickingCallback () {}
 
-        virtual void
-        Execute (vtkObject *caller, unsigned long eventid, void*);
+        void
+        Execute (vtkObject *caller, unsigned long eventid, void*) override;
 
         int
         performSinglePick (vtkRenderWindowInteractor *iren);
@@ -162,6 +161,3 @@ namespace pcl
     };
   } //namespace visualization
 } //namespace pcl
-
-#endif  /* PCL_VISUALIZATION_POINT_PICKING_EVENT_H_ */
-

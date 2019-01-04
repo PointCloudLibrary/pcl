@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_H_
+
+#pragma once
 
 #include <pcl/correspondence.h>
 #include <pcl/common/transforms.h>
@@ -125,5 +125,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_H_ */

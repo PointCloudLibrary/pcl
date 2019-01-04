@@ -318,8 +318,8 @@ void ICCVTutorial<FeatureType>::filterCorrespondences ()
   }
   
   pcl::registration::CorrespondenceRejectorSampleConsensus<pcl::PointXYZI> rejector;
-  rejector.setInputCloud(source_keypoints_);
-  rejector.setTargetCloud(target_keypoints_);
+  rejector.setInputSource(source_keypoints_);
+  rejector.setInputTarget(target_keypoints_);
   rejector.setInputCorrespondences(correspondences_);
   rejector.getCorrespondences(*correspondences_);
   cout << "OK" << endl;

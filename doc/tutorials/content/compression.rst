@@ -144,25 +144,25 @@ The following compression profiles are available:
 	
 	- **LOW_RES_ONLINE_COMPRESSION_WITH_COLOR** 1 cubic centimeter resolution, color, fast online encoding
 	
-	- **MED_RES_ONLINE_COMPRESSION_WITHOUT_COLOR** 5 cubic milimeter resolution, no color, fast online encoding
+	- **MED_RES_ONLINE_COMPRESSION_WITHOUT_COLOR** 5 cubic millimeter resolution, no color, fast online encoding
 	
-	- **MED_RES_ONLINE_COMPRESSION_WITH_COLOR** 5 cubic milimeter resolution, color, fast online encoding
+	- **MED_RES_ONLINE_COMPRESSION_WITH_COLOR** 5 cubic millimeter resolution, color, fast online encoding
 	
-	- **HIGH_RES_ONLINE_COMPRESSION_WITHOUT_COLOR** 1 cubic milimeter resolution, no color, fast online encoding
+	- **HIGH_RES_ONLINE_COMPRESSION_WITHOUT_COLOR** 1 cubic millimeter resolution, no color, fast online encoding
 	
-	- **HIGH_RES_ONLINE_COMPRESSION_WITH_COLOR** 1 cubic milimeter resolution, color, fast online encoding
+	- **HIGH_RES_ONLINE_COMPRESSION_WITH_COLOR** 1 cubic millimeter resolution, color, fast online encoding
 
 	- **LOW_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR** 1 cubic centimeter resolution, no color, efficient offline encoding
 	
 	- **LOW_RES_OFFLINE_COMPRESSION_WITH_COLOR** 1 cubic centimeter resolution, color, efficient offline encoding
 	
-	- **MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR** 5 cubic milimeter resolution, no color, efficient offline encoding
+	- **MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR** 5 cubic millimeter resolution, no color, efficient offline encoding
 	
-	- **MED_RES_OFFLINE_COMPRESSION_WITH_COLOR** 5 cubic milimeter resolution, color, efficient offline encoding
+	- **MED_RES_OFFLINE_COMPRESSION_WITH_COLOR** 5 cubic millimeter resolution, color, efficient offline encoding
 	
-	- **HIGH_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR** 1 cubic milimeter resolution, no color, efficient offline encoding
+	- **HIGH_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR** 1 cubic millimeter resolution, no color, efficient offline encoding
 	
-	- **HIGH_RES_OFFLINE_COMPRESSION_WITH_COLOR** 1 cubic milimeter resolution, color, efficient offline encoding
+	- **HIGH_RES_OFFLINE_COMPRESSION_WITH_COLOR** 1 cubic millimeter resolution, color, efficient offline encoding
 	
 	- **MANUAL_CONFIGURATION** enables manual configuration for advanced parametrization
  
@@ -198,9 +198,9 @@ The advanced parametrization is explained in the following:
 	  decreased compression performance. This enables a trade-off between high frame/update rates and compression efficiency.
 	  
 	- **doVoxelGridDownDownSampling_arg**: If activated, only the hierarchical octree data structure is encoded. The decoder generated points at the voxel centers. In this
-	  way, the point cloud becomes downsampled during compression while archieving high compression performance. 
+	  way, the point cloud becomes downsampled during compression while achieving high compression performance. 
 	  
-	- **iFrameRate_arg**: The point cloud compression scheme differentially encodes point clouds.  In this way, differences between the incoming point cloud and the previously encoded pointcloud is encoded in order to archive maximum compression performance. The iFrameRate_arg allows to specify the rate of frames in the stream at which incoming point clouds are **not** differentially encoded (similar to I/P-frames in video coding).   
+	- **iFrameRate_arg**: The point cloud compression scheme differentially encodes point clouds.  In this way, differences between the incoming point cloud and the previously encoded pointcloud is encoded in order to achieve maximum compression performance. The iFrameRate_arg allows to specify the rate of frames in the stream at which incoming point clouds are **not** differentially encoded (similar to I/P-frames in video coding).   
 	    
 	- **doColorEncoding_arg**: This option enables color component encoding.   	 
 	

@@ -38,8 +38,6 @@
  */
 
 #pragma once
-#ifndef PCL_IO_IMAGE_METADATA_WRAPPER_H_
-#define PCL_IO_IMAGE_METADATA_WRAPPER_H_
 
 #include <pcl/pcl_config.h>
 #include <pcl/pcl_macros.h>
@@ -79,5 +77,3 @@ namespace pcl
 
   } // namespace
 }
-
-#endif // PCL_IO_IMAGE_METADATA_WRAPPER_H_

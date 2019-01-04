@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_CONVOLUTION_3D_H
-#define PCL_FILTERS_CONVOLUTION_3D_H
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/filters/boost.h>
@@ -288,5 +287,3 @@ namespace pcl
 }
 
 #include <pcl/filters/impl/convolution_3d.hpp>
-
-#endif // PCL_FILTERS_CONVOLUTION_3D_H

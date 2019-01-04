@@ -2,6 +2,7 @@
 #include <pcl/apps/cloud_composer/point_selectors/manipulation_event.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 
+#include <QDebug>
 
 namespace pcl
 {

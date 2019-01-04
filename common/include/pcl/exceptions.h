@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_EXCEPTIONS_H_
-#define PCL_EXCEPTIONS_H_
+
+#pragma once
 
 #include <stdexcept>
 #include <sstream>
@@ -263,7 +263,3 @@ namespace pcl
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   };
 }
-
-
-
-#endif

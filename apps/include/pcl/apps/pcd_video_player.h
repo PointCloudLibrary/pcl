@@ -37,7 +37,7 @@
 #include <ui_pcd_video_player.h>
 
 #include <iostream>
-#include <time.h>
+#include <ctime>
 
 // QT4
 #include <QMainWindow>

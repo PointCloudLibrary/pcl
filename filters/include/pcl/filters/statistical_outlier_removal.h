@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_STATISTICAL_OUTLIER_REMOVAL_H_
-#define PCL_FILTERS_STATISTICAL_OUTLIER_REMOVAL_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 #include <pcl/search/pcl_search.h>
@@ -158,13 +157,13 @@ namespace pcl
         * \param[out] output The resultant point cloud.
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Filtered results are indexed by an indices array.
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices)
+      applyFilter (std::vector<int> &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -269,11 +268,11 @@ namespace pcl
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;
 
-      virtual void
-      applyFilter (std::vector<int> &indices);
+      void
+      applyFilter (std::vector<int> &indices) override;
 
-      virtual void
-      applyFilter (PCLPointCloud2 &output);
+      void
+      applyFilter (PCLPointCloud2 &output) override;
 
       /**
        * \brief Compute the statistical values used in both applyFilter methods.
@@ -288,6 +287,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/statistical_outlier_removal.hpp>
 #endif
-
-#endif  // PCL_FILTERS_STATISTICAL_OUTLIER_REMOVAL_H_
-
