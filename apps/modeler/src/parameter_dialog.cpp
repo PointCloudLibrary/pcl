@@ -40,6 +40,13 @@
 #include <cassert>
 #include <fstream>
 
+#include <QCheckBox>
+#include <QColorDialog>
+#include <QGridLayout>
+#include <QHeaderView>
+#include <QPushButton>
+#include <QTableView>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::ParameterDialog::addParameter(pcl::modeler::Parameter* parameter)

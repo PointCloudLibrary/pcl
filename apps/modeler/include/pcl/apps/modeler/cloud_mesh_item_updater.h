@@ -36,7 +36,7 @@
 
 #pragma once
 
-#include <pcl/apps/modeler/qt.h>
+#include <QObject>
 
 namespace pcl
 {

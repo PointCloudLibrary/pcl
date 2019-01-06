@@ -40,8 +40,12 @@
 #include <string>
 
 #include <boost/any.hpp>
-#include <pcl/apps/modeler/qt.h>
 
+#include <QColor>
+#include <QVariant>
+
+class QAbstractItemModel;
+class QWidget;
 
 namespace pcl
 {
