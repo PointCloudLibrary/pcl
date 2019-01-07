@@ -262,7 +262,7 @@ namespace pcl
 
           //get models in directory
           std::vector < std::string > files;
-          std::string start = "";
+          std::string start;
           std::string ext = std::string ("ply");
           bf::path dir = path_;
           getModelsInDirectory (dir, start, files, ext);
