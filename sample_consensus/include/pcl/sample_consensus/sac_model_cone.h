@@ -301,9 +301,6 @@ namespace pcl
       double min_angle_;
       double max_angle_;
 
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic ignored "-Weffc++"
-#endif
       /** \brief Functor for the optimization function */
       struct OptimizationFunctor : pcl::Functor<float>
       {
@@ -352,9 +349,6 @@ namespace pcl
         const pcl::SampleConsensusModelCone<PointT, PointNT> *model_;
         const std::vector<int> &indices_;
       };
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic warning "-Weffc++"
-#endif
   };
 }
 

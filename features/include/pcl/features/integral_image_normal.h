@@ -43,9 +43,6 @@
 #include <pcl/features/feature.h>
 #include <pcl/features/integral_image2D.h>
 
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic ignored "-Weffc++"
-#endif
 namespace pcl
 {
   /** \brief Surface normal estimation on organized data using integral images.
@@ -470,9 +467,6 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic warning "-Weffc++"
-#endif
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/integral_image_normal.hpp>
