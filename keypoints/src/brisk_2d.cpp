@@ -1578,9 +1578,9 @@ pcl::keypoints::brisk::Layer::halfsample (
   assert (floor (double (srcheight) / 2.0) == dstheight);
 
   // mask needed later:
-  register __m128i mask = _mm_set_epi32 (0x00FF00FF, 0x00FF00FF, 0x00FF00FF, 0x00FF00FF);
+  __m128i mask = _mm_set_epi32 (0x00FF00FF, 0x00FF00FF, 0x00FF00FF, 0x00FF00FF);
   // to be added in order to make successive averaging correct:
-  register __m128i ones = _mm_set_epi32 (0x11111111, 0x11111111, 0x11111111, 0x11111111);
+  __m128i ones = _mm_set_epi32 (0x11111111, 0x11111111, 0x11111111, 0x11111111);
 
   // data pointers:
   const __m128i* p1 = reinterpret_cast<const __m128i*> (&srcimg[0]);
@@ -1742,10 +1742,10 @@ pcl::keypoints::brisk::Layer::twothirdsample (
   assert (floor (double (srcheight) / 3.0 * 2.0) == dstheight);
 
   // masks:
-  register __m128i mask1 = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),12,char(0x80),10,char(0x80),7,char(0x80),4,char(0x80),1);
-  register __m128i mask2 = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),12,char(0x80),10,char(0x80),7,char(0x80),4,char(0x80),1,char(0x80));
-  register __m128i mask = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),14,12,11,9,8,6,5,3,2,0);
-  register __m128i store_mask = _mm_set_epi8 (0x0,0x0,0x0,0x0,0x0,0x0,char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80));
+  __m128i mask1 = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),12,char(0x80),10,char(0x80),7,char(0x80),4,char(0x80),1);
+  __m128i mask2 = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),12,char(0x80),10,char(0x80),7,char(0x80),4,char(0x80),1,char(0x80));
+  __m128i mask = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),14,12,11,9,8,6,5,3,2,0);
+  __m128i store_mask = _mm_set_epi8 (0x0,0x0,0x0,0x0,0x0,0x0,char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80));
 
   // data pointers:
   const unsigned char* p1 = &srcimg[0];
