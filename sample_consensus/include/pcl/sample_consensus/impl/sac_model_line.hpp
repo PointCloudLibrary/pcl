@@ -49,13 +49,16 @@
 template <typename PointT> bool
 pcl::SampleConsensusModelLine<PointT>::isSampleGood (const std::vector<int> &samples) const
 {
+  // Make sure that the two sample points are not identical
   if (
       (input_->points[samples[0]].x != input_->points[samples[1]].x)
-    &&
+    ||
       (input_->points[samples[0]].y != input_->points[samples[1]].y)
-    &&
+    ||
       (input_->points[samples[0]].z != input_->points[samples[1]].z))
+  {
     return (true);
+  }
 
   return (false);
 }
