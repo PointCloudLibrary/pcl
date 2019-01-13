@@ -36,7 +36,9 @@
 
 #pragma once
 
-#include <pcl/apps/modeler/qt.h>
+#include <QDialog>
+#include <QStandardItemModel>
+#include <QStyledItemDelegate>
 
 namespace pcl
 {

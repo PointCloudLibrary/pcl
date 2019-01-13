@@ -36,7 +36,8 @@
 
 #pragma once
 
-#include <pcl/apps/modeler/qt.h>
+#include <QTreeWidgetItem>
+
 #include <pcl/apps/modeler/abstract_item.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
 
