@@ -360,7 +360,7 @@ endif()
 
 option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
-  find_package(Qt5 COMPONENTS OpenGL Widgets QUIET)
+  find_package(Qt5 COMPONENTS Concurrent OpenGL Widgets QUIET)
 endif()
 
 # Find VTK

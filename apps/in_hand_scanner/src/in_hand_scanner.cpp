@@ -44,9 +44,7 @@
 #include <QtCore>
 #include <QKeyEvent>
 #include <QPainter>
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#include <QtConcurrent/QtConcurrent>
-#endif
+#include <QtConcurrent>
 
 #include <pcl/exceptions.h>
 #include <pcl/common/time.h>

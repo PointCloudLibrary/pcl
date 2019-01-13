@@ -2,12 +2,7 @@
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/filters/passthrough.h>
 
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  Q_EXPORT_PLUGIN2(cloud_composer_sanitize_cloud_tool, pcl::cloud_composer::SanitizeCloudToolFactory)
-#else
-  Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
-#endif
+Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
 
 pcl::cloud_composer::SanitizeCloudTool::SanitizeCloudTool (PropertiesModel* parameter_model, QObject* parent)
 : ModifyItemTool (parameter_model, parent)

@@ -4,11 +4,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/point_types.h>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  Q_EXPORT_PLUGIN2(cloud_composer_normal_estimation_tool, pcl::cloud_composer::NormalEstimationToolFactory)
-#else
-  Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
-#endif
+Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
 
 pcl::cloud_composer::NormalEstimationTool::NormalEstimationTool (PropertiesModel* parameter_model, QObject* parent)
   : NewItemTool (parameter_model, parent)
