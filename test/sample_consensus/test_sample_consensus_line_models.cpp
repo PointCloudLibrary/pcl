@@ -107,6 +107,48 @@ TEST (SampleConsensusModelLine, RANSAC)
   EXPECT_XYZ_NEAR (PointXYZ (16.0, 17.0, 18.0), proj_points.points[5], 1e-4);
 }
 
+TEST (SampleConsensusModelLine, OnGroundPlane)
+{
+  PointCloud<PointXYZ> cloud;
+  cloud.points.resize (10);
+
+  // All the points are on the ground plane (z=0).
+  // The line is parallel to the x axis, so all the inlier points have the same z and y coordinates.
+  cloud.points[0].getVector3fMap () <<  0.0f,  0.0f,  0.0f;
+  cloud.points[1].getVector3fMap () <<  1.0f,  0.0f,  0.0f;
+  cloud.points[2].getVector3fMap () <<  2.0f,  0.0f,  0.0f;
+  cloud.points[3].getVector3fMap () <<  3.0f,  0.0f,  0.0f;
+  cloud.points[4].getVector3fMap () <<  4.0f,  0.0f,  0.0f;
+  cloud.points[5].getVector3fMap () <<  5.0f,  0.0f,  0.0f;
+  // Outliers
+  cloud.points[6].getVector3fMap () <<  2.1f,  2.0f,  0.0f;
+  cloud.points[7].getVector3fMap () <<  5.0f,  4.1f,  0.0f;
+  cloud.points[8].getVector3fMap () <<  0.4f,  1.3f,  0.0f;
+  cloud.points[9].getVector3fMap () <<  3.3f,  0.1f,  0.0f;
+
+  // Create a shared line model pointer directly
+  SampleConsensusModelLinePtr model (new SampleConsensusModelLine<PointXYZ> (cloud.makeShared ()));
+
+  // Create the RANSAC object
+  RandomSampleConsensus<PointXYZ> sac (model, 0.001);
+
+  // Algorithm tests
+  bool result = sac.computeModel ();
+  ASSERT_TRUE (result);
+
+  std::vector<int> inliers;
+  sac.getInliers (inliers);
+  EXPECT_EQ (6, inliers.size ());
+
+  Eigen::VectorXf coeff;
+  sac.getModelCoefficients (coeff);
+  EXPECT_EQ (6, coeff.size ());
+
+  EXPECT_NE (0, coeff[3]);
+  EXPECT_NEAR (0, coeff[4], 1e-4);
+  EXPECT_NEAR (0, coeff[5], 1e-4);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SampleConsensusModelParallelLine, RANSAC)
 {
