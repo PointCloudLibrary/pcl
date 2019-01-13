@@ -205,7 +205,7 @@ namespace pcl
 
         PointT temp;
         //open our file
-        FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
+        FILE* f = fopen (disk_storage_filename_->c_str (), "rbe");
         assert (f != NULL);
 
         //seek the right length; 
@@ -331,7 +331,7 @@ namespace pcl
         }
         std::sort (offsets.begin (), offsets.end ());
 
-        FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
+        FILE* f = fopen (disk_storage_filename_->c_str (), "rbe");
         assert (f != NULL);
         PointT p;
         char* loc = reinterpret_cast<char*> (&p);
@@ -430,7 +430,7 @@ namespace pcl
         }
         std::sort (offsets.begin (), offsets.end ());
 
-        FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
+        FILE* f = fopen (disk_storage_filename_->c_str (), "rbe");
         assert (f != NULL);
         PointT p;
         char* loc = reinterpret_cast<char*> (&p);

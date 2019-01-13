@@ -294,7 +294,7 @@ bool
 pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
 {
   int elements, max_index, inst_max_index, i, j;
-  FILE *fp = fopen (filename, "r");
+  FILE *fp = fopen (filename, "re");
   svm_node *x_space_;
   char *endptr;
   char *idx, *val, *label;
