@@ -44,7 +44,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/array.hpp>
-#include <boost/bind.hpp>
 #include <boost/math/special_functions.hpp>
 #ifdef HAVE_PCAP
 #include <pcap.h>
@@ -493,7 +492,7 @@ pcl::HDLGrabber::start ()
   if (isRunning ())
     return;
 
-  queue_consumer_thread_ = new boost::thread (boost::bind (&HDLGrabber::processVelodynePackets, this));
+  queue_consumer_thread_ = new boost::thread ([this]() { processVelodynePackets (); });
 
   if (pcap_file_name_.empty ())
   {
@@ -511,7 +510,7 @@ pcl::HDLGrabber::start ()
         }
         hdl_read_socket_ = new udp::socket (hdl_read_socket_service_, udp_listener_endpoint_);
       }
-      catch (const std::exception& bind)
+      catch (const std::exception&)
       {
         delete hdl_read_socket_;
         hdl_read_socket_ = new udp::socket (hdl_read_socket_service_, udp::endpoint (boost::asio::ip::address_v4::any (), udp_listener_endpoint_.port ()));
@@ -523,12 +522,12 @@ pcl::HDLGrabber::start ()
       PCL_ERROR("[pcl::HDLGrabber::start] Unable to bind to socket! %s\n", e.what ());
       return;
     }
-    hdl_read_packet_thread_ = new boost::thread (boost::bind (&HDLGrabber::readPacketsFromSocket, this));
+    hdl_read_packet_thread_ = new boost::thread ([this]() { readPacketsFromSocket (); });
   }
   else
   {
 #ifdef HAVE_PCAP
-    hdl_read_packet_thread_ = new boost::thread (boost::bind (&HDLGrabber::readPacketsFromPcap, this));
+    hdl_read_packet_thread_ = new boost::thread ([this]() { readPacketsFromPcap (); });
 #endif // #ifdef HAVE_PCAP
   }
 }

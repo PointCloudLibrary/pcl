@@ -112,7 +112,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , running_ (false)
   , pcd_files_ ()
   , pcd_iterator_ ()
-  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), boost::bind (&PCDGrabberImpl::trigger, this))
+  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this]() { trigger (); })
   , next_cloud_ ()
   , origin_ ()
   , orientation_ ()
@@ -138,7 +138,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , running_ (false)
   , pcd_files_ ()
   , pcd_iterator_ ()
-  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), boost::bind (&PCDGrabberImpl::trigger, this))
+  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this]() { trigger (); })
   , next_cloud_ ()
   , origin_ ()
   , orientation_ ()
@@ -395,7 +395,7 @@ pcl::PCDGrabberBase::start ()
   }
   else // manual trigger
   {
-    boost::thread non_blocking_call (boost::bind (&PCDGrabberBase::PCDGrabberImpl::trigger, impl_));
+    boost::thread non_blocking_call ([this]() { impl_->trigger (); });
   }
 }
 
@@ -416,7 +416,7 @@ pcl::PCDGrabberBase::trigger ()
 {
   if (impl_->frames_per_second_ > 0)
     return;
-  boost::thread non_blocking_call (boost::bind (&PCDGrabberBase::PCDGrabberImpl::trigger, impl_));
+  boost::thread non_blocking_call ([this]() { impl_->trigger (); });
 
 //  impl_->trigger ();
 }

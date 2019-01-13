@@ -112,7 +112,13 @@ pcl::io::OpenNI2Grabber::OpenNI2Grabber (const std::string& device_id, const Mod
   point_cloud_signal_    = createSignal<sig_cb_openni_point_cloud> ();
   point_cloud_i_signal_  = createSignal<sig_cb_openni_point_cloud_i> ();
   ir_depth_image_signal_ = createSignal<sig_cb_openni_ir_depth_image> ();
-  ir_sync_.addCallback (boost::bind (&OpenNI2Grabber::irDepthImageCallback, this, _1, _2));
+
+  {
+    auto f = [this](const IRImage::Ptr &ir_image, const DepthImage::Ptr &depth_image, unsigned int, unsigned int)
+    { irDepthImageCallback (ir_image, depth_image); };
+
+    ir_sync_.addCallback (f);
+  }
 
   if (device_->hasColorSensor ())
   {
@@ -121,13 +127,23 @@ pcl::io::OpenNI2Grabber::OpenNI2Grabber (const std::string& device_id, const Mod
     image_depth_image_signal_ = createSignal<sig_cb_openni_image_depth_image> ();
     point_cloud_rgb_signal_   = createSignal<sig_cb_openni_point_cloud_rgb> ();
     point_cloud_rgba_signal_  = createSignal<sig_cb_openni_point_cloud_rgba> ();
-    rgb_sync_.addCallback (boost::bind (&OpenNI2Grabber::imageDepthImageCallback, this, _1, _2));
+
+    auto f = [this](const Image::Ptr &image, const DepthImage::Ptr &depth_image, unsigned int, unsigned int)
+    { imageDepthImageCallback (image, depth_image); };
+
+    rgb_sync_.addCallback (f);
   }
 
   // callbacks from the sensor to the grabber
-  device_->setColorCallback (boost::bind (&OpenNI2Grabber::processColorFrame, this, _1));
-  device_->setDepthCallback (boost::bind (&OpenNI2Grabber::processDepthFrame, this, _1));
-  device_->setIRCallback (boost::bind (&OpenNI2Grabber::processIRFrame, this, _1));
+  auto color_callback = [this](openni::VideoStream& stream) { processColorFrame (stream); };
+
+  auto depth_callback = [this](openni::VideoStream& stream) { processDepthFrame (stream); };
+
+  auto ir_callback = [this](openni::VideoStream& stream) { processIRFrame (stream); };
+
+  device_->setColorCallback (color_callback);
+  device_->setDepthCallback (depth_callback);
+  device_->setIRCallback (ir_callback);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

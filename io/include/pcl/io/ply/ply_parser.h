@@ -102,7 +102,7 @@ namespace pcl
           struct scalar_property_definition_callback_type
           {
             typedef typename scalar_property_callback_type<ScalarType>::type scalar_property_callback_type;
-            typedef boost::function<scalar_property_callback_type (const std::string&, const std::string&)> type;
+            typedef std::function<scalar_property_callback_type (const std::string&, const std::string&)> type;
           };
        
           typedef boost::mpl::vector<int8, int16, int32, uint8, uint16, uint32, float32, float64> scalar_types;

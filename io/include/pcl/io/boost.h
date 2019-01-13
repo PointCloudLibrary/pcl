@@ -50,7 +50,7 @@
 #include <boost/thread.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/bind.hpp>
+//#include <boost/bind.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/function.hpp>
 #include <boost/tuple/tuple.hpp>

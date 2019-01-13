@@ -64,15 +64,15 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
     cloud_->row_step = 0;
     vertex_count_ = 0;
     return (boost::tuple<boost::function<void ()>, boost::function<void ()> > (
-              boost::bind (&pcl::PLYReader::vertexBeginCallback, this),
-              boost::bind (&pcl::PLYReader::vertexEndCallback, this)));
+      [this]() { return vertexBeginCallback (); },
+      [this]() { return vertexEndCallback (); }));
   }
   else if ((element_name == "face") && polygons_)
   {
     polygons_->reserve (count);
     return (boost::tuple<boost::function<void ()>, boost::function<void ()> > (
-            boost::bind (&pcl::PLYReader::faceBeginCallback, this),
-            boost::bind (&pcl::PLYReader::faceEndCallback, this)));
+      [this]() { return faceBeginCallback (); },
+      [this]() { return faceEndCallback (); }));
   }
   else if (element_name == "camera")
   {
@@ -83,8 +83,8 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
   {
     range_grid_->reserve (count);
     return (boost::tuple<boost::function<void ()>, boost::function<void ()> > (
-              boost::bind (&pcl::PLYReader::rangeGridBeginCallback, this),
-              boost::bind (&pcl::PLYReader::rangeGridEndCallback, this)));
+      [this]() { return rangeGridBeginCallback (); },
+      [this]() { return rangeGridEndCallback (); }));
   }
   else
   {
@@ -132,67 +132,67 @@ namespace pcl
   {
     if (element_name == "vertex")
     {
-      appendScalarProperty<pcl::io::ply::float32> (property_name, 1);
-      return (boost::bind (&pcl::PLYReader::vertexScalarPropertyCallback<pcl::io::ply::float32>, this, _1));
+      appendScalarProperty<pcl::io::ply::float32> (property_name, 1);    
+      return ([this](pcl::io::ply::float32 v) { vertexScalarPropertyCallback (v); });
     }
     else if (element_name == "camera")
     {
       if (property_name == "view_px")
       {
-        return boost::bind (&pcl::PLYReader::originXCallback, this, _1);
+        return [this](pcl::io::ply::float32 v) { originXCallback (v); };
       }
       else if (property_name == "view_py")
       {
-        return boost::bind (&pcl::PLYReader::originYCallback, this, _1);
+        return [this](pcl::io::ply::float32 v) { originYCallback (v); };
       }
       else if (property_name == "view_pz")
       {
-        return boost::bind (&pcl::PLYReader::originZCallback, this, _1);
+        return [this](pcl::io::ply::float32 v) { originZCallback (v); };
       }
       else if (property_name == "x_axisx")
       {
-        return boost::bind (&pcl::PLYReader::orientationXaxisXCallback, this, _1);
+        return [this](pcl::io::ply::float32 v) { orientationXaxisXCallback (v); };
       }
       else if (property_name == "x_axisy")
       {
-        return boost::bind (&pcl::PLYReader::orientationXaxisYCallback, this, _1);
+        return [this](pcl::io::ply::float32 v) { orientationXaxisYCallback (v); };
       }
       else if (property_name == "x_axisz")
       {
-        return boost::bind (&pcl::PLYReader::orientationXaxisZCallback, this, _1);
+        return [this](pcl::io::ply::float32 v) { orientationXaxisZCallback (v); };
       }
       else if (property_name == "y_axisx")
       {
-        return boost::bind (&pcl::PLYReader::orientationYaxisXCallback, this, _1);
+        return [this](pcl::io::ply::float32 v) { orientationYaxisXCallback (v); };
       }
       else if (property_name == "y_axisy")
       {
-        return boost::bind (&pcl::PLYReader::orientationYaxisYCallback, this, _1);
+        return [this](pcl::io::ply::float32 v) { orientationYaxisYCallback (v); };
       }
       else if (property_name == "y_axisz")
       {
-        return boost::bind (&pcl::PLYReader::orientationYaxisZCallback, this, _1);
+        return [this](pcl::io::ply::float32 v) { orientationYaxisZCallback (v); };
       }
       else if (property_name == "z_axisx")
       {
-        return boost::bind (&pcl::PLYReader::orientationZaxisXCallback, this, _1);
+        return [this](pcl::io::ply::float32 v) { orientationZaxisXCallback (v); };
       }
       else if (property_name == "z_axisy")
       {
-        return boost::bind (&pcl::PLYReader::orientationZaxisYCallback, this, _1);
+        return [this](pcl::io::ply::float32 v) { orientationZaxisYCallback (v); };
       }
       else if (property_name == "z_axisz")
       {
-        return boost::bind (&pcl::PLYReader::orientationZaxisZCallback, this, _1);
+        return [this](pcl::io::ply::float32 v) { orientationZaxisZCallback (v); };
       }
       else
       {
-        return (0);
+        return 0;
       }
     }
     else
     {
-      return (0);
+      return 0;
     }
   }
 
@@ -206,22 +206,22 @@ namespace pcl
       {
         if ((property_name == "red") || (property_name == "diffuse_red"))
           appendScalarProperty<pcl::io::ply::float32> ("rgb");
-        return boost::bind (&pcl::PLYReader::vertexColorCallback, this, property_name, _1);
+        return [this, property_name](pcl::io::ply::uint8 v) { vertexColorCallback (property_name, v); };
       }
       else if (property_name == "alpha")
       {
         amendProperty ("rgb", "rgba", pcl::PCLPointField::UINT32);
-        return boost::bind (&pcl::PLYReader::vertexAlphaCallback, this, _1);
+        return [this](pcl::io::ply::uint8 v) { vertexAlphaCallback (v); };
       }
       else if (property_name == "intensity")
       {
         appendScalarProperty<pcl::io::ply::float32> (property_name);
-        return boost::bind (&pcl::PLYReader::vertexIntensityCallback, this, _1);
+        return [this](pcl::io::ply::uint8 v) { vertexIntensityCallback (v); };
       }
       else
       {
         appendScalarProperty<pcl::io::ply::uint8> (property_name);
-        return boost::bind (&pcl::PLYReader::vertexScalarPropertyCallback<pcl::io::ply::uint8>, this, _1);
+        return [this](pcl::io::ply::uint8 v) { vertexScalarPropertyCallback (v); };
       }
     }
     else
@@ -234,23 +234,23 @@ namespace pcl
     if (element_name == "vertex")
     {
       appendScalarProperty<pcl::io::ply::int32> (property_name, 1);
-      return (boost::bind (&pcl::PLYReader::vertexScalarPropertyCallback<pcl::io::ply::int32>, this, _1));
+      return [this](pcl::io::ply::int32 v) { vertexScalarPropertyCallback (v); };
     }
     if (element_name == "camera")
     {
       if (property_name == "viewportx")
       {
-        return boost::bind (&pcl::PLYReader::cloudWidthCallback, this, _1);
+        return [this](pcl::io::ply::int32 v) { cloudWidthCallback (v); };
       }
       else if (property_name == "viewporty")
       {
-        return boost::bind (&pcl::PLYReader::cloudHeightCallback, this, _1);
+        return [this](pcl::io::ply::int32 v) { cloudHeightCallback (v); };
       }
       else
-        return (0);
+        return 0;
     }
     else
-      return (0);
+      return 0;
   }
 
   template <typename Scalar> boost::function<void (Scalar)>
@@ -259,9 +259,9 @@ namespace pcl
     if (element_name == "vertex")
     {
       appendScalarProperty<Scalar> (property_name, 1);
-      return (boost::bind (&pcl::PLYReader::vertexScalarPropertyCallback<Scalar>, this, _1));
+      return [this](Scalar v) { vertexScalarPropertyCallback (v); };
     }
-    return (0);
+    return 0;
   }
 
   template<typename T> inline
@@ -323,17 +323,17 @@ namespace pcl
     if ((element_name == "range_grid") && (property_name == "vertex_indices" || property_name == "vertex_index"))
     {
       return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (
-        boost::bind (&pcl::PLYReader::rangeGridVertexIndicesBeginCallback, this, _1),
-        boost::bind (&pcl::PLYReader::rangeGridVertexIndicesElementCallback, this, _1),
-        boost::bind (&pcl::PLYReader::rangeGridVertexIndicesEndCallback, this)
+        [this](pcl::io::ply::uint8 v) { rangeGridVertexIndicesBeginCallback (v); },
+        [this](pcl::io::ply::int32 v) { rangeGridVertexIndicesElementCallback (v); },
+        [this]() { rangeGridVertexIndicesEndCallback (); }
       );
     }
     else if ((element_name == "face") && (property_name == "vertex_indices" || property_name == "vertex_index") && polygons_)
     {
       return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (
-        boost::bind (&pcl::PLYReader::faceVertexIndicesBeginCallback, this, _1),
-        boost::bind (&pcl::PLYReader::faceVertexIndicesElementCallback, this, _1),
-        boost::bind (&pcl::PLYReader::faceVertexIndicesEndCallback, this)
+        [this](pcl::io::ply::uint8 v) { faceVertexIndicesBeginCallback (v); },
+        [this](pcl::io::ply::int32 v) { faceVertexIndicesElementCallback (v); },
+        [this]() { faceVertexIndicesEndCallback (); }
       );
     }
     else if (element_name == "vertex")
@@ -350,9 +350,9 @@ namespace pcl
         cloud_->point_step = static_cast<uint32_t> (std::numeric_limits<uint32_t>::max ());
       do_resize_ = true;
       return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (
-                                                                                                      boost::bind (&pcl::PLYReader::vertexListPropertyBeginCallback<pcl::io::ply::uint8>, this, property_name, _1),
-        boost::bind (&pcl::PLYReader::vertexListPropertyContentCallback<pcl::io::ply::int32>, this, _1),
-        boost::bind (&pcl::PLYReader::vertexListPropertyEndCallback, this)
+        [this, property_name](pcl::io::ply::uint8 v) { vertexListPropertyBeginCallback (property_name, v); },
+        [this](pcl::io::ply::int32 v) { vertexListPropertyContentCallback (v); },
+        [this]() { vertexListPropertyEndCallback (); }
       );
     }
     else
@@ -379,9 +379,9 @@ namespace pcl
         cloud_->point_step = static_cast<uint32_t> (std::numeric_limits<uint32_t>::max ());
       do_resize_ = true;
       return boost::tuple<boost::function<void (SizeType)>, boost::function<void (ContentType)>, boost::function<void ()> > (
-        boost::bind (&pcl::PLYReader::vertexListPropertyBeginCallback<SizeType>, this, property_name, _1),
-        boost::bind (&pcl::PLYReader::vertexListPropertyContentCallback<ContentType>, this, _1),
-        boost::bind (&pcl::PLYReader::vertexListPropertyEndCallback, this)
+        [this, property_name](SizeType v) { vertexListPropertyBeginCallback (property_name, v); },
+        [this](ContentType v) { vertexListPropertyContentCallback (v); },
+        [this]() { vertexListPropertyEndCallback (); }
       );
     }
     else
@@ -537,36 +537,68 @@ bool
 pcl::PLYReader::parse (const std::string& istream_filename)
 {
   pcl::io::ply::ply_parser ply_parser;
+  
+  ply_parser.info_callback ([this, &istream_filename](std::size_t line_number, const std::string& message) 
+  { infoCallback (istream_filename, line_number, message); });
+  ply_parser.warning_callback ([this, &istream_filename](std::size_t line_number, const std::string& message)
+  { warningCallback (istream_filename, line_number, message); });
+  ply_parser.error_callback ([this, &istream_filename](std::size_t line_number, const std::string& message)
+  { errorCallback (istream_filename, line_number, message); });
 
-  ply_parser.info_callback (boost::bind (&pcl::PLYReader::infoCallback, this, boost::ref (istream_filename), _1, _2));
-  ply_parser.warning_callback (boost::bind (&pcl::PLYReader::warningCallback, this, boost::ref (istream_filename), _1, _2));
-  ply_parser.error_callback (boost::bind (&pcl::PLYReader::errorCallback, this, boost::ref (istream_filename), _1, _2));
+  ply_parser.obj_info_callback ([this](const std::string& line) { objInfoCallback (line); });
+  ply_parser.element_definition_callback ([this](const std::string& element_name, std::size_t count) 
+  { return elementDefinitionCallback (element_name, count); });
+  ply_parser.end_header_callback ([this]() { return endHeaderCallback (); });
 
-  ply_parser.obj_info_callback (boost::bind (&pcl::PLYReader::objInfoCallback, this, _1));
-  ply_parser.element_definition_callback (boost::bind (&pcl::PLYReader::elementDefinitionCallback, this, _1, _2));
-  ply_parser.end_header_callback (boost::bind (&pcl::PLYReader::endHeaderCallback, this));
+
 
   pcl::io::ply::ply_parser::scalar_property_definition_callbacks_type scalar_property_definition_callbacks;
-  pcl::io::ply::ply_parser::at<pcl::io::ply::float64> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::float64>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::float32> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::float32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::int8> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::int8>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::uint8>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::int32> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::int32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::uint32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::int16> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::int16>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::uint16>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::float64> (scalar_property_definition_callbacks) =
+    [this](const std::string& element_name, const std::string& property_name) { return scalarPropertyDefinitionCallback<pcl::io::ply::float64> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::float32> (scalar_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name) { return scalarPropertyDefinitionCallback<pcl::io::ply::float32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::int8> (scalar_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name) { return scalarPropertyDefinitionCallback<pcl::io::ply::int8> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8> (scalar_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name) { return scalarPropertyDefinitionCallback<pcl::io::ply::uint8> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::int32> (scalar_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name) { return scalarPropertyDefinitionCallback<pcl::io::ply::int32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32> (scalar_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name) { return scalarPropertyDefinitionCallback<pcl::io::ply::uint32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::int16> (scalar_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name) { return scalarPropertyDefinitionCallback<pcl::io::ply::int16> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16> (scalar_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name) { return scalarPropertyDefinitionCallback<pcl::io::ply::uint16> (element_name, property_name); };
   ply_parser.scalar_property_definition_callbacks (scalar_property_definition_callbacks);
 
   pcl::io::ply::ply_parser::list_property_definition_callbacks_type list_property_definition_callbacks;
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int32> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint8, pcl::io::ply::int32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::float64> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::float64>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::float32> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::float32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint32> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::uint32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int32> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::int32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint16> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::uint16>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int16> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::int16>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint8> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::uint8>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int8> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::int8>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int32> (list_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name) 
+  { return listPropertyDefinitionCallback<pcl::io::ply::uint8, pcl::io::ply::int32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::float64> (list_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name)
+  { return listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::float64> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::float32> (list_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name)
+  { return listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::float32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint32> (list_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name)
+  { return listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::uint32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int32> (list_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name)
+  { return listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::int32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint16> (list_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name)
+  { return listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::uint16> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int16> (list_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name)
+  { return listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::int16> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint8> (list_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name)
+  { return listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::uint8> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int8> (list_property_definition_callbacks) = 
+    [this](const std::string& element_name, const std::string& property_name)
+  { return listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::int8> (element_name, property_name); };
   ply_parser.list_property_definition_callbacks (list_property_definition_callbacks);
 
   return ply_parser.parse (istream_filename);
