@@ -157,7 +157,8 @@ class SimpleVLPViewer
       cloud_viewer_->registerKeyboardCallback (&SimpleVLPViewer::keyboard_callback, *this);
 
       boost::function<void
-      (const CloudConstPtr&)> cloud_cb = boost::bind (&SimpleVLPViewer::cloud_callback, this, _1);
+      (const CloudConstPtr&)> cloud_cb = [this](const CloudConstPtr& cloud)
+      { cloud_callback (cloud); };
       boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
 
       grabber_.start ();

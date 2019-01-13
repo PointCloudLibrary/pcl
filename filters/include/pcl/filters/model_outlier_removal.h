@@ -185,7 +185,7 @@ namespace pcl
       template <typename T> void
       setThresholdFunction (bool (T::*thresh_function) (double), T& instance)
       {
-        setThresholdFunction (boost::bind (thresh_function, boost::ref (instance), _1));
+        setThresholdFunction ([&instance, thresh_function](double v) { return (instance.*thresh_function)(v); });
       }
 
     protected:

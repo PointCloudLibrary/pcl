@@ -676,12 +676,12 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(boost:
 
     //sort neighborhood indices by id
     std::sort (neighborhood_indices.begin (), neighborhood_indices.end (),
-        boost::bind (&std::pair<int, int>::first, _1) < boost::bind (&std::pair<int, int>::first, _2));
+               [](const std::pair<int, int>& op1, const std::pair<int, int>& op2) { return op1.first < op2.first; });
 
     //erase duplicated unexplained points
     neighborhood_indices.erase (
         std::unique (neighborhood_indices.begin (), neighborhood_indices.end (),
-            boost::bind (&std::pair<int, int>::first, _1) == boost::bind (&std::pair<int, int>::first, _2)), neighborhood_indices.end ());
+      [](const std::pair<int, int>& op1, const std::pair<int, int>& op2) { return op1.first == op2.first; }), neighborhood_indices.end ());
 
     //sort explained points
     std::vector<int> exp_idces (recog_model->explained_);

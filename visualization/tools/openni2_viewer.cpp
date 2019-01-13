@@ -183,7 +183,8 @@ public:
     cloud_viewer_->registerMouseCallback (&OpenNI2Viewer::mouse_callback, *this);
     cloud_viewer_->registerKeyboardCallback (&OpenNI2Viewer::keyboard_callback, *this);
     cloud_viewer_->setCameraFieldOfView (1.02259994f);
-    boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&OpenNI2Viewer::cloud_callback, this, _1);
+    
+   boost::function<void (const CloudConstPtr&) > cloud_cb = [this](const CloudConstPtr& cloud) { cloud_callback (cloud); };
     boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
 
     boost::signals2::connection image_connection;
@@ -192,7 +193,9 @@ public:
       image_viewer_.reset (new pcl::visualization::ImageViewer ("PCL OpenNI image"));
       image_viewer_->registerMouseCallback (&OpenNI2Viewer::mouse_callback, *this);
       image_viewer_->registerKeyboardCallback (&OpenNI2Viewer::keyboard_callback, *this);
-      boost::function<void (const boost::shared_ptr<pcl::io::openni2::Image>&) > image_cb = boost::bind (&OpenNI2Viewer::image_callback, this, _1);
+
+      boost::function<void (const boost::shared_ptr<pcl::io::openni2::Image>&) > image_cb =
+        [this] (const boost::shared_ptr<pcl::io::openni2::Image>& image) { return image_callback (image); };
       image_connection = grabber_.registerCallback (image_cb);
     }
 

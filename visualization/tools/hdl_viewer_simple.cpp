@@ -144,12 +144,9 @@ class SimpleHDLViewer
       cloud_viewer_->setCameraClipDistances (0.0, 50.0);
       //cloud_viewer_->registerMouseCallback(&SimpleHDLViewer::mouse_callback, *this);
       //cloud_viewer_->registerKeyboardCallback (&SimpleHDLViewer::keyboard_callback, *this);
-
-      //boost::function<void(const CloudConstPtr&, float, float)> cloud_cb = boost::bind(&SimpleHDLViewer::cloud_callback, this, _1, _2, _3);
-      boost::function<void (const CloudConstPtr&)> cloud_cb = boost::bind (
-          &SimpleHDLViewer::cloud_callback, this, _1);
-      boost::signals2::connection cloud_connection = grabber_.registerCallback (
-          cloud_cb);
+      
+       boost::function<void (const CloudConstPtr&)> cloud_cb = [this](const CloudConstPtr& cloud) { cloud_callback (cloud); };
+      boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
 
       grabber_.start ();
 

@@ -143,10 +143,12 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
     {
       search_parameter_ = search_radius_;
       // Declare the search locator definition
-      int (KdTree::*radiusSearchSurface)(const PointCloudIn &cloud, int index, double radius,
-                                         std::vector<int> &k_indices, std::vector<float> &k_distances,
-                                         unsigned int max_nn) const = &pcl::search::Search<PointInT>::radiusSearch;
-      search_method_surface_ = boost::bind (radiusSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5, 0);
+
+      search_method_surface_ = [this](const PointCloudIn &cloud, int index, double radius,
+                    std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
+      {
+        return tree_->radiusSearch (cloud, index, radius, k_indices, k_sqr_distances, 0);
+      };
     }
   }
   else
@@ -154,10 +156,13 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
     if (k_ != 0) // Use the nearestKSearch () function
     {
       search_parameter_ = k_;
+
       // Declare the search locator definition
-      int (KdTree::*nearestKSearchSurface)(const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices,
-                                           std::vector<float> &k_distances) const = &KdTree::nearestKSearch;
-      search_method_surface_ = boost::bind (nearestKSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5);
+      search_method_surface_ = [this](const PointCloudIn &cloud, int index, double k, std::vector<int> & k_indices,
+                                      std::vector<float> & k_sqr_distances)
+      {
+        return tree_->nearestKSearch (cloud, index, static_cast<int>(k), k_indices, k_sqr_distances);
+      };
     }
     else
     {

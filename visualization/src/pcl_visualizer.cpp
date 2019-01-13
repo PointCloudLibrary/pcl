@@ -494,7 +494,7 @@ pcl::visualization::PCLVisualizer::registerPointPickingCallback (boost::function
 boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie)
 {
-  return (registerPointPickingCallback (boost::bind (callback, _1, cookie)));
+  return (registerPointPickingCallback ([callback, cookie](const pcl::visualization::PointPickingEvent& e) { (*callback)(e, cookie); }));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -508,7 +508,7 @@ pcl::visualization::PCLVisualizer::registerAreaPickingCallback (boost::function<
 boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie)
 {
-  return (registerAreaPickingCallback (boost::bind (callback, _1, cookie)));
+  return (registerAreaPickingCallback ([callback, cookie](const pcl::visualization::AreaPickingEvent& e) { (*callback)(e, cookie); }));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

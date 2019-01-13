@@ -189,7 +189,7 @@ pcl::SupervoxelClustering<PointT>::prepareForSegmentation ()
   //double prep_start = timer_.getTime ();
   if ( (use_default_transform_behaviour_ && input_->isOrganized ())
        || (!use_default_transform_behaviour_ && use_single_camera_transform_))
-      adjacency_octree_->setTransformFunction (boost::bind (&SupervoxelClustering::transformFunction, this, _1));
+      adjacency_octree_->setTransformFunction ([this](PointT& p) { transformFunction (p); });
 
   adjacency_octree_->addPointsFromInputCloud ();
   //double prep_end = timer_.getTime ();

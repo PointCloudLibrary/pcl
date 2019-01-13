@@ -36,7 +36,7 @@ int main ()
   global_time = pcl::getTime ();
   trigger.start ();
   boost::this_thread::sleep(boost::posix_time::seconds(2));
-  trigger.registerCallback ( boost::bind(&Dummy::myTimer, dummy));
+  trigger.registerCallback ([&dummy]() { dummy.myTimer (); });
   boost::this_thread::sleep(boost::posix_time::seconds(3));
   trigger.setInterval (0.2);
   boost::this_thread::sleep(boost::posix_time::seconds(2));

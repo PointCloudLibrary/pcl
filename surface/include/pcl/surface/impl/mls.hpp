@@ -47,7 +47,6 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/geometry.h>
-#include <boost/bind.hpp>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -777,10 +776,10 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
     {
       // Note: The max_sq_radius parameter is only used if weight_func was not defined
       double max_sq_radius = 1;
-      if (weight_func == 0)
+      if (weight_func == nullptr)
       {
-        max_sq_radius = search_radius * search_radius;
-        weight_func = boost::bind (&pcl::MLSResult::computeMLSWeight, this, _1, max_sq_radius);
+        max_sq_radius = search_radius * search_radius; 
+        weight_func = [this, max_sq_radius](const double sq_dist) { return computeMLSWeight (sq_dist, max_sq_radius); };
       }
 
       // Allocate matrices and vectors to hold the data used for the polynomial fit

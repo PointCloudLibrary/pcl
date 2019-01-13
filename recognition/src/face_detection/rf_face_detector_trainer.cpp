@@ -196,7 +196,8 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
         uncertainty.emplace_back (votes_indices[i][j], uncertainties_[votes_indices[i][j]]);
       }
 
-      std::sort (uncertainty.begin (), uncertainty.end (), boost::bind (&std::pair<int, float>::second, _1) < boost::bind (&std::pair<int, float>::second, _2));
+      std::sort (uncertainty.begin (), uncertainty.end (), 
+                 [](const std::pair<int, float>& op1, const std::pair<int, float>& op2) { return op1.second < op2.second; });
 
       Eigen::Vector3f rot;
       rot.setZero ();

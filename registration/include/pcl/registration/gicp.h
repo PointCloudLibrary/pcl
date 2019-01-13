@@ -116,8 +116,14 @@ namespace pcl
         transformation_epsilon_ = 5e-4;
         corr_dist_threshold_ = 5.;
         rigid_transformation_estimation_ = 
-          boost::bind (&GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationBFGS, 
-                       this, _1, _2, _3, _4, _5); 
+          [this] (const PointCloudSource &cloud_src,
+                  const std::vector<int> &indices_src,
+                  const PointCloudTarget &cloud_tgt,
+                  const std::vector<int> &indices_tgt,
+                  Eigen::Matrix4f &transformation_matrix)
+        {
+          estimateRigidTransformationBFGS (cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
+        };
       }
 
       /** \brief Provide a pointer to the input dataset
@@ -354,7 +360,7 @@ namespace pcl
         const GeneralizedIterativeClosestPoint *gicp_;
       };
       
-      boost::function<void(const pcl::PointCloud<PointSource> &cloud_src,
+      std::function<void(const pcl::PointCloud<PointSource> &cloud_src,
                            const std::vector<int> &src_indices,
                            const pcl::PointCloud<PointTarget> &cloud_tgt,
                            const std::vector<int> &tgt_indices,

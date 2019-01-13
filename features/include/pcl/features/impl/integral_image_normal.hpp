@@ -457,6 +457,15 @@ sumArea (int start_x, int start_y, int end_x, int end_y, const int width, const 
   }
 }
 
+template <typename T, typename F>
+void
+sumArea (int start_x, int start_y, int end_x, int end_y, const int width, const int height,
+  const F & f, T & result)
+{
+  boost::function<T (unsigned, unsigned, unsigned, unsigned)> func = f;
+  sumArea (start_x, start_y, end_x, end_y, width, height, func, result);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirror (
@@ -479,7 +488,11 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     const int end_y = start_y + rect_height_;
 
     unsigned count = 0;
-    sumArea<unsigned>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFiniteElementsCountSE, &integral_image_XYZ_, _1, _2, _3, _4), count);
+    auto GetFiniteElementsCountSE = [this](unsigned a, unsigned b, unsigned c, unsigned d)
+    { 
+      return integral_image_XYZ_.getFiniteElementsCountSE (a, b, c, d); 
+    };
+    sumArea(start_x, start_y, end_x, end_y, width, height, GetFiniteElementsCountSE, count);
     
     // no valid points within the rectangular region?
     if (count == 0)
@@ -507,8 +520,14 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     so_elements[4] = 0;
     so_elements[5] = 0;
 
-    sumArea<typename IntegralImage2D<float, 3>::ElementType>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFirstOrderSumSE, &integral_image_XYZ_, _1, _2, _3, _4), tmp_center);
-    sumArea<typename IntegralImage2D<float, 3>::SecondOrderType>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getSecondOrderSumSE, &integral_image_XYZ_, _1, _2, _3, _4), so_elements);
+    auto GetFirstOrderSumSE = [this](unsigned a, unsigned b, unsigned c, unsigned d)
+    { return integral_image_XYZ_.getFirstOrderSumSE (a, b, c, d); };
+
+    auto GetSecondOrderSumSE = [this](unsigned a, unsigned b, unsigned c, unsigned d)
+    { return integral_image_XYZ_.getSecondOrderSumSE (a, b, c, d); };
+
+    sumArea(start_x, start_y, end_x, end_y, width, height, GetFirstOrderSumSE, tmp_center);
+    sumArea(start_x, start_y, end_x, end_y, width, height, GetSecondOrderSumSE, so_elements);
 
     center[0] = float (tmp_center[0]);
     center[1] = float (tmp_center[1]);
@@ -549,8 +568,18 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     unsigned count_x = 0;
     unsigned count_y = 0;
 
-    sumArea<unsigned>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFiniteElementsCountSE, &integral_image_DX_, _1, _2, _3, _4), count_x);
-    sumArea<unsigned>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFiniteElementsCountSE, &integral_image_DY_, _1, _2, _3, _4), count_y);
+    auto GetFiniteElementsCountSE_DX = [this](unsigned a, unsigned b, unsigned c, unsigned d)
+    {
+      return integral_image_DX_.getFiniteElementsCountSE (a, b, c, d);
+    };
+
+    auto GetFiniteElementsCountSE_DY = [this](unsigned a, unsigned b, unsigned c, unsigned d)
+    {
+      return integral_image_DY_.getFiniteElementsCountSE (a, b, c, d);
+    };
+
+    sumArea(start_x, start_y, end_x, end_y, width, height, GetFiniteElementsCountSE_DX, count_x);
+    sumArea(start_x, start_y, end_x, end_y, width, height, GetFiniteElementsCountSE_DY, count_y);
 
 
     if (count_x == 0 || count_y == 0)
@@ -561,9 +590,18 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     Eigen::Vector3d gradient_x (0, 0, 0);
     Eigen::Vector3d gradient_y (0, 0, 0);
 
-    sumArea<typename IntegralImage2D<float, 3>::ElementType>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFirstOrderSumSE, &integral_image_DX_, _1, _2, _3, _4), gradient_x);
-    sumArea<typename IntegralImage2D<float, 3>::ElementType>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFirstOrderSumSE, &integral_image_DY_, _1, _2, _3, _4), gradient_y);
+    auto GetFirstOrderSumSE_DX = [this](unsigned a, unsigned b, unsigned c, unsigned d)
+    {
+      return integral_image_DX_.getFirstOrderSumSE (a, b, c, d);
+    };
 
+    auto GetFirstOrderSumSE_DY = [this](unsigned a, unsigned b, unsigned c, unsigned d)
+    {
+      return integral_image_DY_.getFirstOrderSumSE (a, b, c, d);
+    };
+
+    sumArea(start_x, start_y, end_x, end_y, width, height, GetFirstOrderSumSE_DX, gradient_x);
+    sumArea(start_x, start_y, end_x, end_y, width, height, GetFirstOrderSumSE_DY, gradient_y);
 
     Eigen::Vector3d normal_vector = gradient_y.cross (gradient_x);
     double normal_length = normal_vector.squaredNorm ();
@@ -642,10 +680,15 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     unsigned count_U_z = 0;
     unsigned count_D_z = 0;
 
-    sumArea<unsigned>(start_x_L, start_y_L, end_x_L, end_y_L, width, height, boost::bind(&IntegralImage2D<float, 1>::getFiniteElementsCountSE, &integral_image_depth_, _1, _2, _3, _4), count_L_z);
-    sumArea<unsigned>(start_x_R, start_y_R, end_x_R, end_y_R, width, height, boost::bind(&IntegralImage2D<float, 1>::getFiniteElementsCountSE, &integral_image_depth_, _1, _2, _3, _4), count_R_z);
-    sumArea<unsigned>(start_x_U, start_y_U, end_x_U, end_y_U, width, height, boost::bind(&IntegralImage2D<float, 1>::getFiniteElementsCountSE, &integral_image_depth_, _1, _2, _3, _4), count_U_z);
-    sumArea<unsigned>(start_x_D, start_y_D, end_x_D, end_y_D, width, height, boost::bind(&IntegralImage2D<float, 1>::getFiniteElementsCountSE, &integral_image_depth_, _1, _2, _3, _4), count_D_z);
+    auto GetFiniteElementsCountSE = [this](unsigned a, unsigned b, unsigned c, unsigned d)
+    {
+      return integral_image_depth_.getFiniteElementsCountSE (a, b, c, d);
+    };
+
+    sumArea(start_x_L, start_y_L, end_x_L, end_y_L, width, height, GetFiniteElementsCountSE, count_L_z);
+    sumArea(start_x_R, start_y_R, end_x_R, end_y_R, width, height, GetFiniteElementsCountSE, count_R_z);
+    sumArea(start_x_U, start_y_U, end_x_U, end_y_U, width, height, GetFiniteElementsCountSE, count_U_z);
+    sumArea(start_x_D, start_y_D, end_x_D, end_y_D, width, height, GetFiniteElementsCountSE, count_D_z);
 
     if (count_L_z == 0 || count_R_z == 0 || count_U_z == 0 || count_D_z == 0)
     {
@@ -658,10 +701,15 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     float mean_U_z = 0;
     float mean_D_z = 0;
 
-    sumArea<float>(start_x_L, start_y_L, end_x_L, end_y_L, width, height, boost::bind(&IntegralImage2D<float, 1>::getFirstOrderSumSE, &integral_image_depth_, _1, _2, _3, _4), mean_L_z);
-    sumArea<float>(start_x_R, start_y_R, end_x_R, end_y_R, width, height, boost::bind(&IntegralImage2D<float, 1>::getFirstOrderSumSE, &integral_image_depth_, _1, _2, _3, _4), mean_R_z);
-    sumArea<float>(start_x_U, start_y_U, end_x_U, end_y_U, width, height, boost::bind(&IntegralImage2D<float, 1>::getFirstOrderSumSE, &integral_image_depth_, _1, _2, _3, _4), mean_U_z);
-    sumArea<float>(start_x_D, start_y_D, end_x_D, end_y_D, width, height, boost::bind(&IntegralImage2D<float, 1>::getFirstOrderSumSE, &integral_image_depth_, _1, _2, _3, _4), mean_D_z);
+    auto GetFirstOrderSumSE = [this](unsigned a, unsigned b, unsigned c, unsigned d)
+    {
+      return integral_image_depth_.getFirstOrderSumSE (a, b, c, d);
+    };
+
+    sumArea(start_x_L, start_y_L, end_x_L, end_y_L, width, height, GetFirstOrderSumSE, mean_L_z);
+    sumArea(start_x_R, start_y_R, end_x_R, end_y_R, width, height, GetFirstOrderSumSE, mean_R_z);
+    sumArea(start_x_U, start_y_U, end_x_U, end_y_U, width, height, GetFirstOrderSumSE, mean_U_z);
+    sumArea(start_x_D, start_y_D, end_x_D, end_y_D, width, height, GetFirstOrderSumSE, mean_D_z);
 
     mean_L_z /= float (count_L_z);
     mean_R_z /= float (count_R_z);

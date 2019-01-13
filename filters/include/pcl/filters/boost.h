@@ -53,6 +53,6 @@
 #include <boost/mpl/size.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/fusion/sequence/intrinsic/at_key.hpp>
-#include <boost/bind.hpp>
+//#include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include <boost/optional.hpp>

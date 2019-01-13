@@ -75,16 +75,20 @@ pcl::Keypoint<PointInT, PointOutT>::initCompute ()
       if (surface_ == input_)       // if the two surfaces are the same
       {
         // Declare the search locator definition
-        int (KdTree::*radiusSearch)(int index, double radius, std::vector<int> &k_indices,
-                                     std::vector<float> &k_distances, unsigned int max_nn) const = &KdTree::radiusSearch;
-        search_method_ = boost::bind (radiusSearch, boost::ref (tree_), _1, _2, _3, _4, 0);
+        search_method_ = [this](int index, double radius, std::vector<int> &k_indices,
+                                     std::vector<float> &k_distances)
+        {
+          return tree_->radiusSearch (index, radius, k_indices, k_distances, 0);
+        };
       }
       else
       {
         // Declare the search locator definition
-        int (KdTree::*radiusSearchSurface)(const PointCloudIn &cloud, int index, double radius, std::vector<int> &k_indices,
-                                            std::vector<float> &k_distances, unsigned int max_nn) const = &KdTree::radiusSearch;
-        search_method_surface_ = boost::bind (radiusSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5, 0);
+        search_method_surface_ = [this](const PointCloudIn &cloud, int index, double radius, std::vector<int> &k_indices,
+                             std::vector<float> &k_distances)
+        {
+          return tree_->radiusSearch (cloud, index, radius, k_indices, k_distances, 0);
+        };
       }
     }
   }
@@ -96,14 +100,19 @@ pcl::Keypoint<PointInT, PointOutT>::initCompute ()
       if (surface_ == input_)       // if the two surfaces are the same
       {
         // Declare the search locator definition
-        int (KdTree::*nearestKSearch)(int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) const = &KdTree::nearestKSearch;
-        search_method_ = boost::bind (nearestKSearch, boost::ref (tree_), _1, _2, _3, _4);
+        search_method_ = [this](int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances)
+        {
+          return tree_->nearestKSearch (index, k, k_indices, k_distances);
+        };
       }
       else
       {
         // Declare the search locator definition
-        int (KdTree::*nearestKSearchSurface)(const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) const = &KdTree::nearestKSearch;
-        search_method_surface_ = boost::bind (nearestKSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5);
+        search_method_surface_ = [this](const PointCloudIn &cloud, int index, int k, 
+                                        std::vector<int> &k_indices, std::vector<float> &k_distances)
+        {
+          return tree_->nearestKSearch (cloud, index, k, k_indices, k_distances);
+        };
       }
     }
     else

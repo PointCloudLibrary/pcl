@@ -86,8 +86,12 @@ namespace pcl
 
         // Create the local callback function and bind it to the local function responsible for updating
         // the local buffers
-        update_visualizer_ = boost::bind (&RegistrationVisualizer<PointSource, PointTarget>::updateIntermediateCloud,
-                                          this, _1, _2, _3, _4);
+
+        update_visualizer_ = [this] (const pcl::PointCloud<PointSource> &cloud_src,
+                const std::vector<int> &indices_src,
+                const pcl::PointCloud<PointTarget> &cloud_tgt,
+                const std::vector<int> &indices_tgt)
+        { updateIntermediateCloud (cloud_src, indices_src, cloud_tgt, indices_tgt); };
 
         // Register the local callback function to the registration algorithm callback function
         registration.registerVisualizationCallback (this->update_visualizer_);
