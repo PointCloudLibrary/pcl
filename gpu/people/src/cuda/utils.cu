@@ -54,7 +54,7 @@ void pcl::device::colorLMap(const Labels& labels, const DeviceArray<uchar4>& map
   colorKernel<<< grid, block >>>( labels, rgba );
 
   cudaSafeCall( cudaGetLastError() );
-  cudaSafeCall( cudaThreadSynchronize() );  
+  cudaSafeCall( cudaDeviceSynchronize() );  
 }
 
 void pcl::device::mixedColorMap(const Labels& labels, const DeviceArray<uchar4>& map, const Image& rgba, Image& output)
@@ -170,7 +170,7 @@ void pcl::device::prepareForeGroundDepth(const Depth& depth1, Mask& inverse_mask
   fgDepthKernel<<< grid, block >>>( depth1, inverse_mask, depth2 );
 
   cudaSafeCall( cudaGetLastError() );
-  cudaSafeCall( cudaThreadSynchronize() );
+  cudaSafeCall( cudaDeviceSynchronize() );
 }
 
 

@@ -83,7 +83,7 @@ namespace pcl
         {
           CUT_CHECK_ERROR ("dude");
           // Measure time needed to copy data
-          cutilSafeCall (cudaThreadSynchronize ());
+          cutilSafeCall (cudaDeviceSynchronize ());
           cutilSafeCall (cudaEventRecord (end_, 0));
           cutilSafeCall (cudaEventSynchronize (end_));
           cutilSafeCall (cudaEventElapsedTime (&elapsed_time_, start_, end_));
