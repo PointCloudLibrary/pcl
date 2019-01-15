@@ -142,6 +142,9 @@ namespace pcl
       requires_normals_ = false;
     }
 
+    virtual
+    ~HypothesisVerification() = default;
+
     bool getRequiresNormals() {
       return requires_normals_;
     }
