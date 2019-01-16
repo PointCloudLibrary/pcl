@@ -46,5 +46,5 @@ int main( int argc, char** argv )
 
   pcl::modeler::MainWindow::getInstance().show();
 
-  return app.exec();
+  return QApplication::exec();
 }

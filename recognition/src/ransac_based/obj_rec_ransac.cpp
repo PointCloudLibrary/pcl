@@ -256,7 +256,7 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
     const float *scene_n2 = (*pair).n2_;
 
     // Use normals and points to compute a hash table key
-    this->compute_oriented_point_pair_signature (scene_p1, scene_n1, scene_p2, scene_n2, hash_table_key);
+    pcl::recognition::ObjRecRANSAC::compute_oriented_point_pair_signature (scene_p1, scene_n1, scene_p2, scene_n2, hash_table_key);
     // Get the cell and its neighbors based on 'key'
     int num_neigh_cells = model_library_.getHashTable ().getNeighbors (hash_table_key, neigh_cells);
 

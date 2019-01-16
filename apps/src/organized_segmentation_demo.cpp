@@ -469,5 +469,5 @@ main (int argc, char ** argv)
   
   OrganizedSegmentationDemo seg_demo (grabber);
   seg_demo.show();
-  return (app.exec ());
+  return (QApplication::exec ());
 }

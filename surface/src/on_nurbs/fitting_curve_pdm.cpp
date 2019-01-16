@@ -93,7 +93,7 @@ FittingCurve::refine ()
 {
   std::vector<double> xi;
 
-  std::vector<double> elements = this->getElementVector (m_nurbs);
+  std::vector<double> elements = pcl::on_nurbs::FittingCurve::getElementVector (m_nurbs);
 
   for (unsigned i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
