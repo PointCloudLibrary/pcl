@@ -522,7 +522,7 @@ NCV_EXPORTS NCVStatus memSegCopyHelper2D(void *dst, Ncv32u dstPitch, NCVMemoryTy
 template <class T>
 class NCVVector
 {
-    NCVVector(const NCVVector &);
+    NCVVector(const NCVVector &) = delete;
 
 public:
 
@@ -585,9 +585,9 @@ protected:
 template <class T>
 class NCVVectorAlloc : public NCVVector<T>
 {
-    NCVVectorAlloc();
-    NCVVectorAlloc(const NCVVectorAlloc &);
-    NCVVectorAlloc& operator=(const NCVVectorAlloc<T>&);	
+    NCVVectorAlloc() = delete;
+    NCVVectorAlloc(const NCVVectorAlloc &) = delete;
+    NCVVectorAlloc& operator=(const NCVVectorAlloc<T>&) = delete;	
 
 public:
 
@@ -645,8 +645,8 @@ private:
 template <class T>
 class NCVVectorReuse : public NCVVector<T>
 {
-    NCVVectorReuse();
-    NCVVectorReuse(const NCVVectorReuse &);
+    NCVVectorReuse() = delete;
+    NCVVectorReuse(const NCVVectorReuse &) = delete;
 
 public:
 
@@ -694,7 +694,7 @@ private:
 template <class T>
 class NCVMatrix
 {
-    NCVMatrix(const NCVMatrix &);
+    NCVMatrix(const NCVMatrix &) = delete;
 
 public:
 
@@ -800,9 +800,9 @@ protected:
 template <class T>
 class NCVMatrixAlloc : public NCVMatrix<T>
 {
-    NCVMatrixAlloc();
-    NCVMatrixAlloc(const NCVMatrixAlloc &);
-    NCVMatrixAlloc& operator=(const NCVMatrixAlloc &);
+    NCVMatrixAlloc() = delete;
+    NCVMatrixAlloc(const NCVMatrixAlloc &) = delete;
+    NCVMatrixAlloc& operator=(const NCVMatrixAlloc &) = delete;
 public:
 
     NCVMatrixAlloc(INCVMemAllocator &allocator, Ncv32u width, Ncv32u height, Ncv32u pitch=0)
@@ -875,8 +875,8 @@ private:
 template <class T>
 class NCVMatrixReuse : public NCVMatrix<T>
 {
-    NCVMatrixReuse();
-    NCVMatrixReuse(const NCVMatrixReuse &);
+    NCVMatrixReuse() = delete;
+    NCVMatrixReuse(const NCVMatrixReuse &) = delete;
 
 public:
 

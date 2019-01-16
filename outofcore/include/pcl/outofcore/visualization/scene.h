@@ -15,9 +15,9 @@ private:
   static Scene *instance_;
 
   Scene ();
-  Scene (const Scene& op);
+  Scene (const Scene& op) = delete;
   Scene&
-  operator= (const Scene& op);
+  operator= (const Scene& op) = delete;
 
 public:
 

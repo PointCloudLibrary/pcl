@@ -142,8 +142,8 @@ class PCDBuffer
     }
 
   private:
-    PCDBuffer (const PCDBuffer&); // Disabled copy constructor
-    PCDBuffer& operator = (const PCDBuffer&); // Disabled assignment operator
+    PCDBuffer (const PCDBuffer&) = delete; // Disabled copy constructor
+    PCDBuffer& operator = (const PCDBuffer&) = delete; // Disabled assignment operator
 
     boost::mutex bmutex_;
     boost::condition_variable buff_empty_;
