@@ -142,10 +142,10 @@ class PeoplePCDApp
 
     PeoplePCDApp (pcl::Grabber& capture, bool write)
       : capture_(capture),
+        cloud_cb_(true),
         write_ (write),
         exit_(false),
         time_ms_(0),
-        cloud_cb_(true),
         counter_(0),
         final_view_("Final labeling"),
         depth_view_("Depth")
