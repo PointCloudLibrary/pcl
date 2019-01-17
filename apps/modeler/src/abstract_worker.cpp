@@ -48,7 +48,7 @@ pcl::modeler::AbstractWorker::AbstractWorker(const QList<CloudMeshItem*>& cloud_
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::AbstractWorker::~AbstractWorker(void)
+pcl::modeler::AbstractWorker::~AbstractWorker()
 {
   parameter_dialog_->deleteLater();
 }

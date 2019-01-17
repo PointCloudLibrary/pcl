@@ -65,7 +65,7 @@ namespace pcl
       Q_OBJECT
       public:
         ParameterDialog(const std::string& title, QWidget* parent=0);
-        ~ParameterDialog(void){}
+        ~ParameterDialog(){}
 
         void
         addParameter(Parameter* parameter);

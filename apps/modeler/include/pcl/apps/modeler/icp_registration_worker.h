@@ -50,7 +50,7 @@ namespace pcl
     {
       public:
         ICPRegistrationWorker(CloudMesh::PointCloudPtr cloud, const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
-        ~ICPRegistrationWorker(void);
+        ~ICPRegistrationWorker();
 
       protected:
         std::string

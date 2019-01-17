@@ -50,7 +50,7 @@ pcl::modeler::ThreadController::ThreadController()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ThreadController::~ThreadController(void)
+pcl::modeler::ThreadController::~ThreadController()
 {
   MainWindow::getInstance().slotOnWorkerFinished();
 }

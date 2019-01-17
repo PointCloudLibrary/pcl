@@ -51,7 +51,7 @@ namespace pcl
 
       public:
         AbstractWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
-        ~AbstractWorker(void);
+        ~AbstractWorker();
 
         int
         exec();

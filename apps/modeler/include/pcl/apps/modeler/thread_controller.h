@@ -51,7 +51,7 @@ namespace pcl
 
       public:
         ThreadController();
-        ~ThreadController(void);
+        ~ThreadController();
 
         bool
         runWorker(AbstractWorker* worker);
