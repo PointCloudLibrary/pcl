@@ -126,8 +126,8 @@ class MapsBuffer
     }
   
   private:
-    MapsBuffer (const MapsBuffer&); // Disabled copy constructor
-    MapsBuffer& operator =(const MapsBuffer&); // Disabled assignment operator
+    MapsBuffer (const MapsBuffer&) = delete; // Disabled copy constructor
+    MapsBuffer& operator =(const MapsBuffer&) = delete; // Disabled assignment operator
 
     boost::mutex bmutex_;
     boost::condition_variable buff_empty_;

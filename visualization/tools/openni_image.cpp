@@ -246,8 +246,8 @@ class Buffer
     }
 
 	private:
-		Buffer (const Buffer&);            // Disabled copy constructor
-		Buffer& operator =(const Buffer&); // Disabled assignment operator
+		Buffer (const Buffer&) = delete;            // Disabled copy constructor
+		Buffer& operator =(const Buffer&) = delete; // Disabled assignment operator
 		
     boost::mutex bmutex_;
 		boost::condition_variable buff_empty_;
