@@ -507,7 +507,6 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, con
     int sq_idx = 0;
     seed_queue.push_back (i);
 
-    PointT p = cloud.points[i];
     float h = hue[i];    
 
     while (sq_idx < (int)seed_queue.size ())
