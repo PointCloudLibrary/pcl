@@ -221,7 +221,7 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, co
     }
 
     // Save the sampled point pair
-    output.push_back (OrientedPointPair (p1, n1, p2, n2));
+    output.emplace_back(p1, n1, p2, n2);
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
     ++num_of_opps;
@@ -598,11 +598,10 @@ pcl::recognition::ObjRecRANSAC::filterGraphOfConflictingHypotheses (ORRGraph<Hyp
   // The ON nodes correspond to accepted solutions
   for ( list<ORRGraph<Hypothesis*>::Node*>::iterator it = on_nodes.begin () ; it != on_nodes.end () ; ++it )
   {
-    recognized_objects.push_back (
-      ObjRecRANSAC::Output ((*it)->getData ()->obj_model_->getObjectName (),
+    recognized_objects.emplace_back((*it)->getData ()->obj_model_->getObjectName (),
                             (*it)->getData ()->rigid_transform_,
                             (*it)->getData ()->match_confidence_,
-                            (*it)->getData ()->obj_model_->getUserData ())
+                            (*it)->getData ()->obj_model_->getUserData ()
     );
   }
 

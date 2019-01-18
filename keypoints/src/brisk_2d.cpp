@@ -74,15 +74,15 @@ pcl::keypoints::brisk::ScaleSpace::constructPyramid (
   pyramid_.clear ();
 
   // fill the pyramid
-  pyramid_.push_back (pcl::keypoints::brisk::Layer (std::vector<unsigned char> (image), width, height));
+  pyramid_.emplace_back(std::vector<unsigned char> (image), width, height);
   if (layers_ > 1)
-    pyramid_.push_back (pcl::keypoints::brisk::Layer (pyramid_.back (), pcl::keypoints::brisk::Layer::CommonParams::TWOTHIRDSAMPLE));
+    pyramid_.emplace_back(pyramid_.back (), pcl::keypoints::brisk::Layer::CommonParams::TWOTHIRDSAMPLE);
   const int octaves2 = layers_;
 
   for (int i = 2; i < octaves2; i += 2)
   {
-    pyramid_.push_back (pcl::keypoints::brisk::Layer (pyramid_[i-2], pcl::keypoints::brisk::Layer::CommonParams::HALFSAMPLE));
-    pyramid_.push_back (pcl::keypoints::brisk::Layer (pyramid_[i-1], pcl::keypoints::brisk::Layer::CommonParams::HALFSAMPLE));
+    pyramid_.emplace_back(pyramid_[i-2], pcl::keypoints::brisk::Layer::CommonParams::HALFSAMPLE);
+    pyramid_.emplace_back(pyramid_[i-1], pcl::keypoints::brisk::Layer::CommonParams::HALFSAMPLE);
   }
 }
 
@@ -140,7 +140,7 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
                               delta_x, delta_y);
 
       // store:
-      keypoints.push_back (pcl::PointWithScale (point.u + delta_x, point.v + delta_y, 0.0f, basic_size_, -1, max, 0));
+      keypoints.emplace_back(point.u + delta_x, point.v + delta_y, 0.0f, basic_size_, -1, max, 0);
     }
     return;
   }
@@ -186,13 +186,13 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
                                 delta_x, delta_y);
 
         // store:
-        keypoints.push_back (pcl::PointWithScale ((point.u + delta_x) * l.getScale () + l.getOffset (),     // x
+        keypoints.emplace_back((point.u + delta_x) * l.getScale () + l.getOffset (),     // x
                                                   (point.v + delta_y) * l.getScale () + l.getOffset (),     // y
                                                   0.0f,                                           // z
                                                   basic_size_ * l.getScale (),                         // size
                                                   -1,                                             // angle
                                                   max,                                            // response
-                                                  i));                                            // octave
+                                                  i);                                            // octave
       }
     }
     else
@@ -218,7 +218,7 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
         // finally store the detected keypoint:
         if (score > float (threshold_))
         {
-          keypoints.push_back (pcl::PointWithScale (x, y, 0.0f, basic_size_ * scale, -1, score, i));
+          keypoints.emplace_back(x, y, 0.0f, basic_size_ * scale, -1, score, i);
         }
       }
     }

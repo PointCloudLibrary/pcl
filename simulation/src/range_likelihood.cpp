@@ -302,10 +302,10 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
 
   likelihood_program_->link ();
 
-  vertices_.push_back (Eigen::Vector3f (-1.0,  1.0, 0.0));
-  vertices_.push_back (Eigen::Vector3f ( 1.0,  1.0, 0.0));
-  vertices_.push_back (Eigen::Vector3f ( 1.0, -1.0, 0.0));
-  vertices_.push_back (Eigen::Vector3f (-1.0, -1.0, 0.0));
+  vertices_.emplace_back(-1.0,  1.0, 0.0);
+  vertices_.emplace_back( 1.0,  1.0, 0.0);
+  vertices_.emplace_back( 1.0, -1.0, 0.0);
+  vertices_.emplace_back(-1.0, -1.0, 0.0);
 
   glGenBuffers (1, &quad_vbo_);
   glBindBuffer (GL_ARRAY_BUFFER, quad_vbo_);

@@ -208,7 +208,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
 
       if (st[0] == "newmtl")
       {
-        materials_.push_back (pcl::TexMaterial ());
+        materials_.emplace_back();
         materials_.back ().tex_name = st[1];
         continue;
       }
@@ -442,7 +442,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   int field_offset = 0;
   for (int i = 0; i < 3; ++i, field_offset += 4)
   {
-    cloud.fields.push_back (pcl::PCLPointField ());
+    cloud.fields.emplace_back();
     cloud.fields[i].offset   = field_offset;
     cloud.fields[i].datatype = pcl::PCLPointField::FLOAT32;
     cloud.fields[i].count    = 1;
@@ -457,7 +457,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
     std::string normals_names[3] = { "normal_x", "normal_y", "normal_z" };
     for (int i = 0; i < 3; ++i, field_offset += 4)
     {
-      cloud.fields.push_back (pcl::PCLPointField ());
+      cloud.fields.emplace_back();
       pcl::PCLPointField& last = cloud.fields.back ();
       last.name     = normals_names[i];
       last.offset   = field_offset;
@@ -756,9 +756,9 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
           for (std::size_t i = 1; i < st.size (); ++i)
             c[i-1] = boost::lexical_cast<float> (st[i]);
           if (c[2] == 0)
-            coordinates.push_back (Eigen::Vector2f (c[0], c[1]));
+            coordinates.emplace_back(c[0], c[1]);
           else
-            coordinates.push_back (Eigen::Vector2f (c[0]/c[2], c[1]/c[2]));
+            coordinates.emplace_back(c[0]/c[2], c[1]/c[2]);
           ++vt_idx;
         }
         catch (const boost::bad_lexical_cast &e)
@@ -771,8 +771,8 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
       // Material
       if (st[0] == "usemtl")
       {
-        mesh.tex_polygons.push_back (std::vector<pcl::Vertices> ());
-        mesh.tex_materials.push_back (pcl::TexMaterial ());
+        mesh.tex_polygons.emplace_back();
+        mesh.tex_materials.emplace_back();
         for (std::size_t i = 0; i < companions_.size (); ++i)
         {
           std::vector<pcl::TexMaterial>::const_iterator mat_it = companions_[i].getMaterial (st[1]);

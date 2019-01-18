@@ -47,11 +47,11 @@ TEST (PCL, VectorAverage_mean)
 {
   std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > points;
   std::vector<Eigen::Vector3f::Scalar, Eigen::aligned_allocator<Eigen::Vector3f::Scalar> > weights;
-  points.push_back (Eigen::Vector3f (-0.558191f, 0.180822f, -0.809769f));
+  points.emplace_back(-0.558191f, 0.180822f, -0.809769f);
   weights.push_back (0.160842f);
-  points.push_back (Eigen::Vector3f (-0.510641f, 0.290673f, -0.809169f));
+  points.emplace_back(-0.510641f, 0.290673f, -0.809169f);
   weights.push_back (0.526732f);
-  points.push_back (Eigen::Vector3f (-0.440713f, 0.385624f, -0.810597f));
+  points.emplace_back(-0.440713f, 0.385624f, -0.810597f);
   weights.push_back (0.312427f);
   
   Eigen::Vector3f correct_mean (0.0f, 0.0f, 0.0f);

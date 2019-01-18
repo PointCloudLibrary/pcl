@@ -329,7 +329,7 @@ main (int argc, char** argv)
 
   if (shadings.size () != p_file_indices.size () && shadings.size () > 0)
     for (size_t i = shadings.size (); i < p_file_indices.size (); ++i)
-      shadings.push_back ("flat");
+      shadings.emplace_back("flat");
 
   // Create the PCLVisualizer object
   boost::shared_ptr<pcl::visualization::PCLPlotter> ph;

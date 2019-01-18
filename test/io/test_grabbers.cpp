@@ -550,7 +550,7 @@ int
   {
     CloudT::Ptr cloud (new CloudT);
     pcl::io::loadPCDFile (pcd_files_[i], *cloud); 
-    pcds_.push_back (cloud);
+    pcds_.emplace_back(cloud);
   }
 
   testing::InitGoogleTest (&argc, argv);

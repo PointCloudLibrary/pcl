@@ -99,7 +99,7 @@ openni_wrapper::OpenNIDriver::updateDeviceList ()
   for (xn::NodeInfoList::Iterator nodeIt = node_info_list.Begin (); nodeIt != node_info_list.End (); ++nodeIt)
   {
     connection_string_map_[(*nodeIt).GetCreationInfo ()] = static_cast<unsigned int> (device_context_.size ());
-    device_context_.push_back (DeviceContext (*nodeIt));
+    device_context_.emplace_back(*nodeIt);
   }
 
   // enumerate depth nodes

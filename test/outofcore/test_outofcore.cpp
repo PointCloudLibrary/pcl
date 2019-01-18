@@ -755,7 +755,7 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
   point_cloud.height = 1;
 
   for (size_t i=0; i < numPts; i++)
-    point_cloud.points.push_back (PointT (static_cast<float>(rand () % 10), static_cast<float>(rand () % 10), static_cast<float>(rand () % 10)));
+    point_cloud.points.emplace_back(static_cast<float>(rand () % 10), static_cast<float>(rand () % 10), static_cast<float>(rand () % 10));
 
 
   pcl::PCLPointCloud2::Ptr input_cloud (new pcl::PCLPointCloud2 ());

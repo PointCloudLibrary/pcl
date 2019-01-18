@@ -258,7 +258,7 @@ ply_to_raw_converter::vertex_z (pcl::io::ply::float32 z)
 void
 ply_to_raw_converter::vertex_end ()
 {
-  vertices_.push_back (boost::tuple<pcl::io::ply::float32, pcl::io::ply::float32, pcl::io::ply::float32 > (vertex_x_, vertex_y_, vertex_z_));
+  vertices_.emplace_back(vertex_x_, vertex_y_, vertex_z_);
 }
 
 void

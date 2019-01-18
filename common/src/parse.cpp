@@ -482,7 +482,7 @@ pcl::console::parse_multiple_arguments (int argc, const char * const * argv, con
     // Search for the string
     if ((strcmp (argv[i], str) == 0) && (++i < argc))
     {
-      values.push_back (std::string (argv[i]));
+      values.emplace_back(argv[i]);
     }
   }
   if (values.size () == 0)

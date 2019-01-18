@@ -549,7 +549,7 @@ pcl::ihs::OpenGLViewer::addMesh (const CloudXYZRGBNormalConstPtr& cloud, const s
             ind_v_2 = addVertex (pt_2, vertices, indices [ind_o_2]);
             ind_v_3 = addVertex (pt_3, vertices, indices [ind_o_3]);
 
-            triangles.push_back (FaceVertexMesh::Triangle (ind_v_1, ind_v_2, ind_v_3));
+            triangles.emplace_back(ind_v_1, ind_v_2, ind_v_3);
           }
         }
         if (!boost::math::isnan (pt_0.x)) // 0-1-3 is valid
@@ -562,7 +562,7 @@ pcl::ihs::OpenGLViewer::addMesh (const CloudXYZRGBNormalConstPtr& cloud, const s
             ind_v_3 = addVertex (pt_3, vertices, indices [ind_o_3]);
             ind_v_0 = addVertex (pt_0, vertices, indices [ind_o_0]);
 
-            triangles.push_back (FaceVertexMesh::Triangle (ind_v_1, ind_v_3, ind_v_0));
+            triangles.emplace_back(ind_v_1, ind_v_3, ind_v_0);
           }
         }
       }

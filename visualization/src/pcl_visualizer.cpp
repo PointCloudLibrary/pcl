@@ -2044,7 +2044,7 @@ pcl::visualization::PCLVisualizer::getCameras (std::vector<pcl::visualization::C
   vtkRenderer* renderer = NULL;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
-    cameras.push_back (Camera ());
+    cameras.emplace_back();
     cameras.back ().pos[0] = renderer->GetActiveCamera ()->GetPosition ()[0];
     cameras.back ().pos[1] = renderer->GetActiveCamera ()->GetPosition ()[1];
     cameras.back ().pos[2] = renderer->GetActiveCamera ()->GetPosition ()[2];

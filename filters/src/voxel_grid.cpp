@@ -340,7 +340,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       int ijk2 = static_cast<int> (floor (pt[2] * inverse_leaf_size_[2]) - min_b_[2]);
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.push_back (cloud_point_index_idx (idx, static_cast<unsigned int> (cp)));
+      index_vector.emplace_back(idx, static_cast<unsigned int> (cp));
 
       xyz_offset += input_->point_step;
     }
@@ -370,7 +370,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       int ijk2 = static_cast<int> (floor (pt[2] * inverse_leaf_size_[2]) - min_b_[2]);
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.push_back (cloud_point_index_idx (idx, static_cast<unsigned int> (cp)));
+      index_vector.emplace_back(idx, static_cast<unsigned int> (cp));
       xyz_offset += input_->point_step;
     }
   }

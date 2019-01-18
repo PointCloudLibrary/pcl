@@ -184,7 +184,7 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
     // update with texture mapping
     // set 2 texture for 2 mesh
     std::vector<std::string> tex_files;
-    tex_files.push_back("tex4.jpg");
+    tex_files.emplace_back("tex4.jpg");
 
     // initialize texture mesh
     TextureMesh tex_mesh;

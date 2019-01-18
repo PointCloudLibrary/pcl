@@ -160,7 +160,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.push_back (cloud_point_index_idx (static_cast<unsigned int> (idx), cp));
+      index_vector.emplace_back(static_cast<unsigned int> (idx), cp);
     }
   }
   // No distance filtering, process all data
@@ -184,7 +184,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.push_back (cloud_point_index_idx (static_cast<unsigned int> (idx), cp));
+      index_vector.emplace_back(static_cast<unsigned int> (idx), cp);
     }
   }
 

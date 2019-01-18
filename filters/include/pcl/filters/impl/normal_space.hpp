@@ -194,7 +194,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   std::vector<std::list <int> > normals_hg;
   normals_hg.reserve (n_bins);
   for (unsigned int i = 0; i < n_bins; i++)
-    normals_hg.push_back (std::list<int> ());
+    normals_hg.emplace_back();
 
   for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
   {
@@ -208,7 +208,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   std::vector<std::vector<std::list<int>::iterator> > random_access (normals_hg.size ());
   for (unsigned int i = 0; i < normals_hg.size (); i++)
   {
-    random_access.push_back (std::vector<std::list<int>::iterator> ());
+    random_access.emplace_back();
     random_access[i].resize (normals_hg[i].size ());
 
     unsigned int j = 0;

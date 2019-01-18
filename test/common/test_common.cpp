@@ -187,7 +187,7 @@ TEST (PCL, PointCloud)
   for (uint32_t i = 0; i < cloud.width*cloud.height; ++i)
   {
     float j = static_cast<float> (i);
-    cloud.points.push_back (PointXYZ (3.0f * j + 0.0f, 3.0f * j + 1.0f, 3.0f * j + 2.0f));
+    cloud.points.emplace_back(3.0f * j + 0.0f, 3.0f * j + 1.0f, 3.0f * j + 2.0f);
   }
 
   Eigen::MatrixXf mat_xyz1 = cloud.getMatrixXfMap ();

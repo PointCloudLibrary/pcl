@@ -142,9 +142,9 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
 
   // The models to be loaded
   list<string> model_names;
-  model_names.push_back (string ("tum_amicelli_box"));
-  model_names.push_back (string ("tum_rusk_box"));
-  model_names.push_back (string ("tum_soda_bottle"));
+  model_names.emplace_back("tum_amicelli_box");
+  model_names.emplace_back("tum_rusk_box");
+  model_names.emplace_back("tum_soda_bottle");
 
   list<PointCloud<PointXYZ>::Ptr> model_points_list;
   list<PointCloud<Normal>::Ptr> model_normals_list;

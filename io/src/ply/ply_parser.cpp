@@ -209,7 +209,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
                                                                 count, 
                                                                 boost::get<0>(element_callbacks), 
                                                                 boost::get<1>(element_callbacks)));
-        elements.push_back (boost::shared_ptr<element>(element_ptr));
+        elements.emplace_back(element_ptr);
         current_element_ = element_ptr.get ();
       }
 

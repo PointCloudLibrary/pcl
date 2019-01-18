@@ -74,7 +74,7 @@ init ()
   for (float z = -0.5f; z <= 0.5f; z += resolution)
     for (float y = -0.5f; y <= 0.5f; y += resolution)
       for (float x = -0.5f; x <= 0.5f; x += resolution)
-        cloud.points.push_back (MyPoint (x, y, z));
+        cloud.points.emplace_back(x, y, z);
   cloud.width  = static_cast<uint32_t> (cloud.points.size ());
   cloud.height = 1;
 
@@ -83,9 +83,9 @@ init ()
   srand (static_cast<unsigned int> (time (NULL)));
   // Randomly create a new point cloud
   for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
-    cloud_big.points.push_back (MyPoint (static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
+    cloud_big.points.emplace_back(static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
                                          static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
-                                         static_cast<float> (1024 * rand () / (RAND_MAX + 1.0))));
+                                         static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,16 +226,16 @@ class MyPointRepresentationXY : public PointRepresentation<MyPoint>
 TEST (PCL, KdTreeFLANN_setPointRepresentation)
 {
   PointCloud<MyPoint>::Ptr random_cloud (new PointCloud<MyPoint> ());
-  random_cloud->points.push_back (MyPoint (86.6f, 42.1f, 92.4f));
-  random_cloud->points.push_back (MyPoint (63.1f, 18.4f, 22.3f));
-  random_cloud->points.push_back (MyPoint (35.5f, 72.5f, 37.3f));
-  random_cloud->points.push_back (MyPoint (99.7f, 37.0f,  8.7f));
-  random_cloud->points.push_back (MyPoint (22.4f, 84.1f, 64.0f));
-  random_cloud->points.push_back (MyPoint (65.2f, 73.4f, 18.0f));
-  random_cloud->points.push_back (MyPoint (60.4f, 57.1f,  4.5f));
-  random_cloud->points.push_back (MyPoint (38.7f, 17.6f, 72.3f));
-  random_cloud->points.push_back (MyPoint (14.2f, 95.7f, 34.7f));
-  random_cloud->points.push_back (MyPoint ( 2.5f, 26.5f, 66.0f));
+  random_cloud->points.emplace_back(86.6f, 42.1f, 92.4f);
+  random_cloud->points.emplace_back(63.1f, 18.4f, 22.3f);
+  random_cloud->points.emplace_back(35.5f, 72.5f, 37.3f);
+  random_cloud->points.emplace_back(99.7f, 37.0f,  8.7f);
+  random_cloud->points.emplace_back(22.4f, 84.1f, 64.0f);
+  random_cloud->points.emplace_back(65.2f, 73.4f, 18.0f);
+  random_cloud->points.emplace_back(60.4f, 57.1f,  4.5f);
+  random_cloud->points.emplace_back(38.7f, 17.6f, 72.3f);
+  random_cloud->points.emplace_back(14.2f, 95.7f, 34.7f);
+  random_cloud->points.emplace_back( 2.5f, 26.5f, 66.0f);
 
   KdTreeFLANN<MyPoint> kdtree;
   kdtree.setInputCloud (random_cloud);
