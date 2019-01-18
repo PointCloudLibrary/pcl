@@ -181,7 +181,7 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
   return;
 }
 
-void print_usage(void)
+void print_usage()
 {
   PCL_INFO("usage: convert -rgb <rgb_path> -depth <depth_path> -out <output_path> options\n");
   PCL_INFO("This program converts rgb and depth tiff files to pcd files");

@@ -46,7 +46,7 @@
 #include "pcl/stereo/stereo_matching.h"
 
 //////////////////////////////////////////////////////////////////////////////
-pcl::StereoMatching::StereoMatching (void)
+pcl::StereoMatching::StereoMatching ()
 {
   disp_map_ = NULL;
   disp_map_trg_ = NULL;
@@ -73,7 +73,7 @@ pcl::StereoMatching::StereoMatching (void)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-pcl::StereoMatching::~StereoMatching (void)
+pcl::StereoMatching::~StereoMatching ()
 {
   if ( disp_map_ != NULL)
   {

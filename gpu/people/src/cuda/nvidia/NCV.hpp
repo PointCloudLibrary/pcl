@@ -358,7 +358,7 @@ typedef Ncv32u NCVStatus;
 
 typedef struct _NcvTimer *NcvTimer;
 
-NCV_EXPORTS NcvTimer ncvStartTimer(void);
+NCV_EXPORTS NcvTimer ncvStartTimer();
 
 NCV_EXPORTS double ncvEndQueryTimerUs(NcvTimer t);
 
@@ -423,12 +423,12 @@ public:
     virtual NCVStatus alloc(NCVMemSegment &seg, size_t size) = 0;
     virtual NCVStatus dealloc(NCVMemSegment &seg) = 0;
 
-    virtual NcvBool isInitialized(void) const = 0;
-    virtual NcvBool isCounting(void) const = 0;
+    virtual NcvBool isInitialized() const = 0;
+    virtual NcvBool isCounting() const = 0;
     
-    virtual NCVMemoryType memType(void) const = 0;
-    virtual Ncv32u alignment(void) const = 0;
-    virtual size_t maxSize(void) const = 0;
+    virtual NCVMemoryType memType() const = 0;
+    virtual Ncv32u alignment() const = 0;
+    virtual size_t maxSize() const = 0;
 };
 
 inline INCVMemAllocator::~INCVMemAllocator() {}
@@ -451,12 +451,12 @@ public:
     virtual NCVStatus alloc(NCVMemSegment &seg, size_t size);
     virtual NCVStatus dealloc(NCVMemSegment &seg);
 
-    virtual NcvBool isInitialized(void) const;
-    virtual NcvBool isCounting(void) const;
+    virtual NcvBool isInitialized() const;
+    virtual NcvBool isCounting() const;
 
-    virtual NCVMemoryType memType(void) const;
-    virtual Ncv32u alignment(void) const;
-    virtual size_t maxSize(void) const;
+    virtual NCVMemoryType memType() const;
+    virtual Ncv32u alignment() const;
+    virtual size_t maxSize() const;
 
 private:
 
@@ -484,12 +484,12 @@ public:
     virtual NCVStatus alloc(NCVMemSegment &seg, size_t size);
     virtual NCVStatus dealloc(NCVMemSegment &seg);
 
-    virtual NcvBool isInitialized(void) const;
-    virtual NcvBool isCounting(void) const;
+    virtual NcvBool isInitialized() const;
+    virtual NcvBool isCounting() const;
 
-    virtual NCVMemoryType memType(void) const;
-    virtual Ncv32u alignment(void) const;
-    virtual size_t maxSize(void) const;
+    virtual NCVMemoryType memType() const;
+    virtual Ncv32u alignment() const;
+    virtual size_t maxSize() const;
 
 private:
 

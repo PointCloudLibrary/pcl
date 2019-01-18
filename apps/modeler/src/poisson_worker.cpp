@@ -51,7 +51,7 @@ pcl::modeler::PoissonReconstructionWorker::PoissonReconstructionWorker(const QLi
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::PoissonReconstructionWorker::~PoissonReconstructionWorker(void)
+pcl::modeler::PoissonReconstructionWorker::~PoissonReconstructionWorker()
 {
   delete depth_;
   delete solver_divide_;
