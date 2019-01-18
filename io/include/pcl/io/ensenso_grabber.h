@@ -47,7 +47,6 @@
 #include <Eigen/StdVector>
 #include <pcl/io/boost.h>
 #include <boost/thread.hpp>
-#include <boost/lexical_cast.hpp> // TODO: Remove when setExtrinsicCalibration is fixed
 
 #include <pcl/io/grabber.h>
 #include <pcl/common/synchronizer.h>

@@ -48,7 +48,6 @@
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/containers/kernel_containers.h>
 #include <pcl/gpu/kinfu_large_scale/pixel_rgb.h> 
-#include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp> 
 //#include <boost/graph/buffer_concepts.hpp>
 
