@@ -145,6 +145,9 @@ namespace pcl
         load_views_ = true;
       }
 
+      virtual
+      ~Source() = default;
+
       float
       getScale ()
       {

@@ -43,6 +43,7 @@ namespace pcl
 {
   struct cloud_show_base
   {
+    virtual ~cloud_show_base() = default;
     virtual void pop () = 0;
     virtual bool popped () const = 0;
     typedef boost::shared_ptr<cloud_show_base> Ptr;
