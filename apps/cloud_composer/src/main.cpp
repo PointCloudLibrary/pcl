@@ -9,5 +9,5 @@ main (int argc, char ** argv)
   
   pcl::cloud_composer::ComposerMainWindow cc;
   cc.show ();
-  return (app.exec ());
+  return (QApplication::exec ());
 }

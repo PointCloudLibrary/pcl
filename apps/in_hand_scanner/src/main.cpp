@@ -48,5 +48,5 @@ main (int argc, char** argv)
   QApplication app (argc, argv);
   pcl::ihs::MainWindow mw;
   mw.show ();
-  return (app.exec ());
+  return (QApplication::exec ());
 }

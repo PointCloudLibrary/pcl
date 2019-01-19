@@ -325,11 +325,11 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
     if (!boost::filesystem::is_directory (itr->status ()) 
         && isValidExtension (extension))
     {
-      if (basename.find ("rgb") < basename.npos)
+      if (basename.find ("rgb") < std::string::npos)
       {
         rgb_image_files_.push_back (pathname);
       }
-      else if (basename.find ("depth") < basename.npos)
+      else if (basename.find ("depth") < std::string::npos)
       {
         depth_image_files_.push_back (pathname);
       }
@@ -374,7 +374,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
     if (!boost::filesystem::is_directory (itr->status ())
         && isValidExtension (extension))
     {
-      if (basename.find ("depth") < basename.npos)
+      if (basename.find ("depth") < std::string::npos)
       {
         depth_image_files_.push_back (pathname);
       }
@@ -395,7 +395,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
     if (!boost::filesystem::is_directory (itr->status ())
         && isValidExtension (extension))
     {
-      if (basename.find ("rgb") < basename.npos)
+      if (basename.find ("rgb") < std::string::npos)
       {
         rgb_image_files_.push_back (pathname);
       }
@@ -442,9 +442,9 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
     if (!boost::filesystem::is_directory (itr->status ()) 
         && isValidExtension (extension))
     {
-      if (basename.find ("rgb") < basename.npos)
+      if (basename.find ("rgb") < std::string::npos)
         rgb_pclzf_files_.push_back (pathname);
-      else if (basename.find ("depth") < basename.npos)
+      else if (basename.find ("depth") < std::string::npos)
         depth_pclzf_files_.push_back (pathname);
       else
         xml_files_.push_back (pathname);
@@ -816,25 +816,25 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getVtkImage (
   // Check extension to generate the proper reader
   int retval;
   std::string upper = boost::algorithm::to_upper_copy (filename);
-  if (upper.find (".TIFF") < upper.npos)
+  if (upper.find (".TIFF") < std::string::npos)
   {
     vtkSmartPointer<vtkTIFFReader> tiff_reader = vtkSmartPointer<vtkTIFFReader>::New ();
     retval = tiff_reader->CanReadFile (filename.c_str ());
     reader = tiff_reader;
   }
-  else if (upper.find (".PNG") < upper.npos)
+  else if (upper.find (".PNG") < std::string::npos)
   {
     vtkSmartPointer<vtkPNGReader> png_reader = vtkSmartPointer<vtkPNGReader>::New ();
     retval = png_reader->CanReadFile (filename.c_str ());
     reader = png_reader;
   }
-  else if (upper.find (".JPG") < upper.npos || upper.find (".JPEG") < upper.npos)
+  else if (upper.find (".JPG") < std::string::npos || upper.find (".JPEG") < std::string::npos)
   {
     vtkSmartPointer<vtkJPEGReader> jpg_reader = vtkSmartPointer<vtkJPEGReader>::New ();
     retval = jpg_reader->CanReadFile (filename.c_str ());
     reader = jpg_reader;
   }
-  else if (upper.find (".PPM") < upper.npos)
+  else if (upper.find (".PPM") < std::string::npos)
   {
     vtkSmartPointer<vtkPNMReader> ppm_reader = vtkSmartPointer<vtkPNMReader>::New ();
     retval = ppm_reader->CanReadFile (filename.c_str ());

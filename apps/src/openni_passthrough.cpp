@@ -141,5 +141,5 @@ main (int argc, char ** argv)
 
   OpenNIPassthrough v (grabber);
   v.show ();
-  return (app.exec ());
+  return (QApplication::exec ());
 }

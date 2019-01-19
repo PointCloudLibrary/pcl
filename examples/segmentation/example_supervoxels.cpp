@@ -299,7 +299,7 @@ main (int argc, char ** argv)
   std::cout << "Found " << supervoxel_clusters.size () << " Supervoxels!\n";
   PointLCloudT::Ptr labeled_voxel_cloud = super.getLabeledVoxelCloud ();
   PointCloudT::Ptr voxel_centroid_cloud = super.getVoxelCentroidCloud ();
-  PointNCloudT::Ptr sv_normal_cloud = super.makeSupervoxelNormalCloud (supervoxel_clusters);
+  PointNCloudT::Ptr sv_normal_cloud = pcl::SupervoxelClustering<PointT>::makeSupervoxelNormalCloud (supervoxel_clusters);
   PointLCloudT::Ptr full_labeled_cloud = super.getLabeledCloud ();
   
   std::cout << "Getting supervoxel adjacency\n";
@@ -311,7 +311,7 @@ main (int argc, char ** argv)
   super.refineSupervoxels (3, refined_supervoxel_clusters);
 
   PointLCloudT::Ptr refined_labeled_voxel_cloud = super.getLabeledVoxelCloud ();
-  PointNCloudT::Ptr refined_sv_normal_cloud = super.makeSupervoxelNormalCloud (refined_supervoxel_clusters);
+  PointNCloudT::Ptr refined_sv_normal_cloud = pcl::SupervoxelClustering<PointT>::makeSupervoxelNormalCloud (refined_supervoxel_clusters);
   PointLCloudT::Ptr refined_full_labeled_cloud = super.getLabeledCloud ();
   
   // THESE ONLY MAKE SENSE FOR ORGANIZED CLOUDS

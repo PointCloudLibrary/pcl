@@ -291,5 +291,5 @@ main (int argc, char** argv)
 
   man_reg.show();
 
-  return (app.exec());
+  return (QApplication::exec());
 }

@@ -50,5 +50,5 @@ main (int argc, char** argv)
   pcl::ihs::OfflineIntegration oi;
   QTimer::singleShot(0, &oi, SLOT (start ()));
   oi.show ();
-  return (app.exec ());
+  return (QApplication::exec ());
 }
