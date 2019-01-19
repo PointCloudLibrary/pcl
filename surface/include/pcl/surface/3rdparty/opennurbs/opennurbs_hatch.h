@@ -14,8 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#ifndef OPENNURBS_HATCH_H_INCLUDED
-#define OPENNURBS_HATCH_H_INCLUDED
+#pragma once
 
 /*
   class ON_HatchLoop
@@ -829,5 +828,3 @@ protected:
   class ON_HatchExtra* HatchExtension();
 
 };
-
-#endif

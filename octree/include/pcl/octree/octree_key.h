@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_OCTREE_KEY_H
-#define PCL_OCTREE_KEY_H
+#pragma once
 
 namespace pcl
 {
@@ -159,5 +158,3 @@ namespace pcl
     };
   }
 }
-
-#endif

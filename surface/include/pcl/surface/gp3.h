@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_GP3_H_
-#define PCL_GP3_H_
+#pragma once
 
 // PCL includes
 #include <pcl/surface/reconstruction.h>
@@ -423,13 +422,13 @@ namespace pcl
         * \param[out] output the resultant polygonal mesh
         */
       void 
-      performReconstruction (pcl::PolygonMesh &output);
+      performReconstruction (pcl::PolygonMesh &output) override;
 
       /** \brief The actual surface reconstruction method.
         * \param[out] polygons the resultant polygons, as a set of vertices. The Vertices structure contains an array of point indices.
         */
       void 
-      performReconstruction (std::vector<pcl::Vertices> &polygons);
+      performReconstruction (std::vector<pcl::Vertices> &polygons) override;
 
       /** \brief The actual surface reconstruction method.
         * \param[out] polygons the resultant polygons, as a set of vertices. The Vertices structure contains an array of point indices.
@@ -439,7 +438,7 @@ namespace pcl
 
       /** \brief Class get name method. */
       std::string 
-      getClassName () const { return ("GreedyProjectionTriangulation"); }
+      getClassName () const override { return ("GreedyProjectionTriangulation"); }
 
       /** \brief Forms a new triangle by connecting the current neighbor to the query point 
         * and the previous neighbor
@@ -543,6 +542,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/gp3.hpp>
 #endif
-
-#endif  //#ifndef PCL_GP3_H_
-

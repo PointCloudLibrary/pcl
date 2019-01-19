@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KINFU_TSDF_MARCHING_CUBES_H_
-#define PCL_KINFU_TSDF_MARCHING_CUBES_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
@@ -102,5 +101,3 @@ namespace pcl
     }
   }
 }
-
-#endif /* PCL_KINFU_MARCHING_CUBES_H_ */

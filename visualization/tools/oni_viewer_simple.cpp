@@ -158,7 +158,7 @@ usage(char ** argv)
 int
 main(int argc, char ** argv)
 {
-  std::string arg("");
+  std::string arg;
 
   unsigned frame_rate = 0;
   if (argc >= 2)

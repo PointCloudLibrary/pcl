@@ -35,8 +35,8 @@
  *
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_2D_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_2D_H_
+
+#pragma once
 
 #include <pcl/registration/transformation_estimation.h>
 
@@ -151,5 +151,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/transformation_estimation_2D.hpp>
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_2D_H_ */

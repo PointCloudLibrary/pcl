@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_SAMPLE_CONSENSUS_MSAC_H_
-#define PCL_CUDA_SAMPLE_CONSENSUS_MSAC_H_
+#pragma once
 
 #include <pcl_cuda/sample_consensus/sac.h>
 #include <pcl_cuda/sample_consensus/sac_model.h>
@@ -92,6 +91,3 @@ namespace pcl_cuda
       computeModel (int debug_verbosity_level = 0);
   };
 }
-
-#endif  //#ifndef PCL_CUDA_SAMPLE_CONSENSUS_MSAC_H_
-

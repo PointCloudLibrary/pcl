@@ -82,7 +82,7 @@ loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 
 void
 compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointCloud2::ConstPtr &cloud_target,
-         pcl::PCLPointCloud2 &output, std::string correspondence_type)
+         pcl::PCLPointCloud2 &output, const std::string &correspondence_type)
 {
   // Estimate
   TicToc tt;

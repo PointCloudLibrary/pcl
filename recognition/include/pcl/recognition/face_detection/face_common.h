@@ -1,5 +1,4 @@
-#ifndef FACE_DETECTOR_COMMON_H_
-#define FACE_DETECTOR_COMMON_H_
+#pragma once
 
 #include <pcl/features/integral_image2D.h>
 #include <Eigen/Core>
@@ -163,4 +162,3 @@ namespace pcl
     };
   }
 }
-#endif /* FACE_DETECTOR_COMMON_H_ */

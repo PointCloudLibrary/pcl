@@ -1,5 +1,4 @@
-#ifndef PCL_OUTOFCORE_GRID_H_
-#define PCL_OUTOFCORE_GRID_H_
+#pragma once
 
 // C++
 #include <iostream>
@@ -50,5 +49,3 @@ private:
   vtkSmartPointer<vtkActor> grid_actor_;
 
 };
-
-#endif

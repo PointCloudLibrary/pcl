@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_COMMON_IO_H_
-#define PCL_COMMON_IO_H_
+#pragma once
 
 #include <string>
 #include <pcl/pcl_base.h>
@@ -532,6 +531,3 @@ namespace pcl
 }
 
 #include <pcl/common/impl/io.hpp>
-
-#endif  //#ifndef PCL_COMMON_IO_H_
-

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_PLANAR_REFINEMENT_COMPARATOR_H_
-#define PCL_SEGMENTATION_PLANAR_REFINEMENT_COMPARATOR_H_
+#pragma once
 
 #include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/plane_coefficient_comparator.h>
@@ -100,7 +99,7 @@ namespace pcl
       }
 
       /** \brief Destructor for PlaneCoefficientComparator. */
-      virtual
+      
       ~PlaneRefinementComparator ()
       {
       }
@@ -179,8 +178,8 @@ namespace pcl
         * \param[in] idx1 The index of the first point.
         * \param[in] idx2 The index of the second point.
         */
-      virtual bool
-      compare (int idx1, int idx2) const
+      bool
+      compare (int idx1, int idx2) const override
       {
         int current_label = labels_->points[idx1].label;
         int next_label = labels_->points[idx2].label;
@@ -219,5 +218,3 @@ namespace pcl
       using PlaneCoefficientComparator<PointT, PointNT>::z_axis_;
   };
 }
-
-#endif // PCL_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_

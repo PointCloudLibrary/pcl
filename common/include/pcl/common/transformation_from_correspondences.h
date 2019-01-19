@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_TRANSFORMATION_FROM_CORRESPONDENCES_H
-#define PCL_TRANSFORMATION_FROM_CORRESPONDENCES_H
+#pragma once
 
 #include <pcl/common/eigen.h>
 
@@ -96,6 +95,3 @@ namespace pcl
 }  // END namespace
 
 #include <pcl/common/impl/transformation_from_correspondences.hpp>
-
-#endif  // #ifndef PCL_TRANSFORMATION_FROM_CORRESPONDENCES_H
-

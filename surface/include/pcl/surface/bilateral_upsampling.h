@@ -37,9 +37,7 @@
  *
  */
 
-
-#ifndef PCL_SURFACE_BILATERAL_UPSAMPLING_H_
-#define PCL_SURFACE_BILATERAL_UPSAMPLING_H_
+#pragma once
 
 #include <pcl/surface/processing.h>
 
@@ -139,11 +137,11 @@ namespace pcl
       /** \brief Method that does the actual processing on the input cloud.
         * \param[out] output the container of the resulting upsampled cloud */
       void
-      process (pcl::PointCloud<PointOutT> &output);
+      process (pcl::PointCloud<PointOutT> &output) override;
 
     protected:
       void
-      performProcessing (pcl::PointCloud<PointOutT> &output);
+      performProcessing (pcl::PointCloud<PointOutT> &output) override;
 
       /** \brief Computes the distance for depth and RGB.
         * \param[out] val_exp_depth distance values for depth
@@ -160,5 +158,3 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif /* PCL_SURFACE_BILATERAL_UPSAMPLING_H_ */

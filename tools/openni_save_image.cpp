@@ -228,7 +228,7 @@ usage (char ** argv)
 int
 main(int argc, char ** argv)
 {
-  std::string device_id ("");
+  std::string device_id;
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   pcl::OpenNIGrabber::Mode depth_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   

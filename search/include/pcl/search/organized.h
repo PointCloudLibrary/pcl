@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEARCH_ORGANIZED_NEIGHBOR_SEARCH_H_
-#define PCL_SEARCH_ORGANIZED_NEIGHBOR_SEARCH_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -97,7 +96,7 @@ namespace pcl
         }
 
         /** \brief Empty deconstructor. */
-        virtual ~OrganizedNeighbor () {}
+        ~OrganizedNeighbor () {}
 
         /** \brief Test whether this search-object is valid (input is organized AND from projective device)
           *        User should use this method after setting the input cloud, since setInput just prints an error 
@@ -125,8 +124,8 @@ namespace pcl
           * \param[in] cloud the const boost shared pointer to a PointCloud message
           * \param[in] indices the const boost shared pointer to PointIndices
           */
-        virtual void
-        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices = IndicesConstPtr ())
+        void
+        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices = IndicesConstPtr ()) override
         {
           input_ = cloud;
           
@@ -161,7 +160,7 @@ namespace pcl
                       double radius,
                       std::vector<int> &k_indices,
                       std::vector<float> &k_sqr_distances,
-                      unsigned int max_nn = 0) const;
+                      unsigned int max_nn = 0) const override;
 
         /** \brief estimated the projection matrix from the input cloud. */
         void 
@@ -180,7 +179,7 @@ namespace pcl
         nearestKSearch (const PointT &p_q,
                         int k,
                         std::vector<int> &k_indices,
-                        std::vector<float> &k_sqr_distances) const;
+                        std::vector<float> &k_sqr_distances) const override;
 
         /** \brief projects a point into the image
           * \param[in] p point in 3D World Coordinate Frame to be projected onto the image plane
@@ -284,6 +283,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/search/impl/organized.hpp>
 #endif
-
-#endif
-

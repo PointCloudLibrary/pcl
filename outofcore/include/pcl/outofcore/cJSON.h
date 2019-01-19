@@ -20,8 +20,7 @@
   THE SOFTWARE.
 */
 
-#ifndef cJSON__h
-#define cJSON__h
+#pragma once
 
 #include <pcl/pcl_macros.h>
 
@@ -131,6 +130,4 @@ PCLAPI(void) cJSON_ReplaceItemInObject(cJSON *object,const char *string,cJSON *n
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

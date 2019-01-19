@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTER_POINT_STRUCT_H_
-#define PCL_REGISTER_POINT_STRUCT_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header
@@ -363,5 +362,3 @@ namespace pcl
 #if defined _MSC_VER
   #pragma warning (pop)
 #endif
-
-#endif  //#ifndef PCL_REGISTER_POINT_STRUCT_H_

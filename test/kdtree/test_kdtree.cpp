@@ -216,7 +216,7 @@ class MyPointRepresentationXY : public PointRepresentation<MyPoint>
       this->nr_dimensions_ = 2;
     }
 
-    void copyToFloatArray (const MyPoint &p, float *out) const
+    void copyToFloatArray (const MyPoint &p, float *out) const override
     {
       out[0] = p.x;
       out[1] = p.y;

@@ -41,9 +41,9 @@
 #include <zlib.h>
 
 #include <vector>
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cassert>
 
 
 // user defined I/O callback methods for libPNG

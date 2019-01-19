@@ -40,7 +40,7 @@
 
 #include <vector>
 
-#include <stdio.h>
+#include <cstdio>
 
 using namespace std;
 
@@ -293,13 +293,11 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     octree.enableDynamicDepth (leafAggSize);
     octree.addPointsFromInputCloud ();
 
-    unsigned int leaf_node_counter = 0;
     // iterate over tree
     OctreePointCloudPointVector<PointXYZ>::LeafNodeDepthFirstIterator it2;
     const OctreePointCloudPointVector<PointXYZ>::LeafNodeDepthFirstIterator it2_end = octree.leaf_depth_end();
     for (it2 = octree.leaf_depth_begin(); it2 != it2_end; ++it2)
     {
-      ++leaf_node_counter;
       unsigned int depth = it2.getCurrentOctreeDepth ();
       ASSERT_TRUE ((depth == 1) || (depth == 6));
     }
@@ -342,7 +340,10 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
 
       OctreeContainerPointIndices& container = it.getLeafContainer();
       if (it.getCurrentOctreeDepth () < octree.getTreeDepth ())
+      {
         ASSERT_LE (container.getSize (), leafAggSize);
+      }
+
 
       // add points from leaf node to indexVector
       container.getPointIndices (indexVector);

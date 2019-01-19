@@ -40,6 +40,13 @@
 #include <cassert>
 #include <fstream>
 
+#include <QCheckBox>
+#include <QColorDialog>
+#include <QGridLayout>
+#include <QHeaderView>
+#include <QPushButton>
+#include <QTableView>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::ParameterDialog::addParameter(pcl::modeler::Parameter* parameter)
@@ -96,11 +103,7 @@ pcl::modeler::ParameterDialog::exec()
   tableView.setItemDelegate(&parameterDelegate);
 
   tableView.horizontalHeader()->setStretchLastSection(true);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
   tableView.horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-#else
-  tableView.horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-#endif
   tableView.setShowGrid(true);
   tableView.verticalHeader()->hide();
   tableView.setSelectionBehavior(QAbstractItemView::SelectRows);

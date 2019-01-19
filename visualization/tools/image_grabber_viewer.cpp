@@ -44,10 +44,6 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/pcd_io.h>
 
-#if (PCL_LINEAR_VERSION(VTK_MAJOR_VERSION,VTK_MINOR_VERSION,0)<=PCL_LINEAR_VERSION(5,4,0))
-  #define DISPLAY_IMAGE
-#endif
-
 using pcl::console::print_error;
 using pcl::console::print_info;
 using pcl::console::print_value;
@@ -194,7 +190,7 @@ main (int argc, char** argv)
   bool use_pclzf = (pcl::console::find_argument (argc, argv, "-pclzf") != -1);
 
   std::cout << "fps: " << frames_per_second << " , repeat: " << repeat << std::endl;
-  std::string path = "";
+  std::string path;
   pcl::console::parse_argument (argc, argv, "-dir", path);
   std::cout << "path: " << path << std::endl;
   if (path != "" && boost::filesystem::exists (path))

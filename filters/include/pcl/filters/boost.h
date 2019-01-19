@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_BOOST_H_
-#define PCL_FILTERS_BOOST_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
@@ -57,5 +56,3 @@
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include <boost/optional.hpp>
-
-#endif    // PCL_FILTERS_BOOST_H_

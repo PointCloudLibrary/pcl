@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_VOXEL_GRID_MAP_H_
-#define PCL_FILTERS_VOXEL_GRID_MAP_H_
+#pragma once
 
 #include <pcl/filters/boost.h>
 #include <pcl/filters/filter.h>
@@ -213,7 +212,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~VoxelGrid ()
+      ~VoxelGrid ()
       {
       }
 
@@ -493,7 +492,7 @@ namespace pcl
         * \param[out] output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
   };
 
   /** \brief VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
@@ -540,7 +539,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~VoxelGrid ()
+      ~VoxelGrid ()
       {
       }
 
@@ -846,12 +845,10 @@ namespace pcl
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (PCLPointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output) override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/voxel_grid.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_VOXEL_GRID_MAP_H_

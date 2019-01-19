@@ -326,8 +326,8 @@ write_rgb_image(const uint8_t* rgb_buffer)
 void
 depthBufferToMM(const float* depth_buffer,unsigned short* depth_img)
 {
-  int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
- // unsigned short * depth_img = new unsigned short[npixels ];
+  //int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
+  //unsigned short * depth_img = new unsigned short[npixels ];
   for (int y = 0; y <  480; ++y)
   {
     for (int x = 0; x < 640; ++x)
@@ -410,7 +410,6 @@ capture (Eigen::Isometry3d pose_in,unsigned short* depth_buffer_mm,const uint8_t
 
   std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses;
   std::vector<float> scores;
-  int n = 1;
   poses.push_back (pose_in);
   // HACK: mfallon modified computeLikelihoods to only call render()  (which is currently private)
   // need to make render public and use it.
@@ -976,7 +975,7 @@ struct KinFuApp
   }
 
   void
-  execute (int argc, char** argv, std::string plyfile)
+  execute (int argc, char** argv, const std::string &plyfile)
   {
     PtrStepSz<const unsigned short> depth;
     PtrStepSz<const KinfuTracker::PixelRGB> rgb24;

@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_MACROS_H_
-#define PCL_MACROS_H_
+#pragma once
 
 #include <pcl/pcl_config.h>
 #include <boost/cstdint.hpp>
@@ -67,12 +66,12 @@ namespace pcl
 #endif
 
 #include <iostream>
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
-#include <math.h>
+#include <cmath>
 
 // MSCV doesn't have std::{isnan,isfinite}
 #if defined _WIN32 && defined _MSC_VER
@@ -170,15 +169,6 @@ pcl_round (float number)
 #define pcl_lrintf(x) (static_cast<long int>(pcl_round(x)))
 #endif
 
-
-#ifdef _WIN32
-__inline float
-log2f (float x)
-{
-  return (static_cast<float> (logf (x) * M_LOG2E));
-}
-#endif
-
 #ifdef WIN32
 #define pcl_sleep(x) Sleep(1000*(x))
 #else
@@ -233,32 +223,6 @@ log2f (float x)
 #define SET_ARRAY(var, value, size) { for (int i = 0; i < static_cast<int> (size); ++i) var[i]=value; }
 #endif
 
-/* //This is copy/paste from http://gcc.gnu.org/wiki/Visibility */
-/* #if defined _WIN32 || defined __CYGWIN__ */
-/*   #ifdef BUILDING_DLL */
-/*     #ifdef __GNUC__ */
-/* #define DLL_PUBLIC __attribute__((dllexport)) */
-/*     #else */
-/* #define DLL_PUBLIC __declspec(dllexport) // Note: actually gcc seems to also supports this syntax. */
-/*     #endif */
-/*   #else */
-/*     #ifdef __GNUC__ */
-/* #define DLL_PUBLIC __attribute__((dllimport)) */
-/*     #else */
-/* #define DLL_PUBLIC __declspec(dllimport) // Note: actually gcc seems to also supports this syntax. */
-/*     #endif */
-/*   #endif */
-/*   #define DLL_LOCAL */
-/* #else */
-/*   #if __GNUC__ >= 4 */
-/* #define DLL_PUBLIC __attribute__ ((visibility("default"))) */
-/* #define DLL_LOCAL  __attribute__ ((visibility("hidden"))) */
-/*   #else */
-/*     #define DLL_PUBLIC */
-/*     #define DLL_LOCAL */
-/*   #endif */
-/* #endif */
-
 #ifndef PCL_EXTERN_C
     #ifdef __cplusplus
         #define PCL_EXTERN_C extern "C"
@@ -307,65 +271,9 @@ log2f (float x)
   #define PCL_PRAGMA_WARNING
 #endif
 
-
-// Macro to deprecate old functions
-//
-// Usage:
-// don't use me any more
-// PCL_DEPRECATED(void OldFunc(int a, float b), "Use newFunc instead, this functions will be gone in the next major release");
-// use me instead
-// void NewFunc(int a, double b);
-
 //for clang cf. http://clang.llvm.org/docs/LanguageExtensions.html
 #ifndef __has_extension
   #define __has_extension(x) 0 // Compatibility with pre-3.0 compilers.
-#endif
-
-// check Intel compiler first since it usually also defines __GNUC__, __clang__, etc.
-#if defined(__INTEL_COMPILER)
-  #define PCL_DEPRECATED(message) __attribute((deprecated))
-#elif (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) && ! defined(__clang__)) || defined(__INTEL_COMPILER)
-  #define PCL_DEPRECATED(message) __attribute__ ((deprecated))
-// gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
-#elif (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) >= PCL_LINEAR_VERSION(4,5,0)) || (defined(__clang__) && __has_extension(attribute_deprecated_with_message))
-  #define PCL_DEPRECATED(message) __attribute__ ((deprecated(message)))
-#elif defined(_MSC_VER)
-  #define PCL_DEPRECATED(message) __declspec(deprecated(message))
-#else
-  #pragma message("WARNING: You need to implement PCL_DEPRECATED for this compiler")
-  #define PCL_DEPRECATED(message)
-#endif
-
-
-// Macro to deprecate old classes/structs
-//
-// Usage:
-// don't use me any more
-// class PCL_DEPRECATED_CLASS(OldClass, "Use newClass instead, this class will be gone in the next major release")
-// {
-//   public:
-//     OldClass() {}
-// };
-// use me instead
-// class NewFunc
-// {
-//   public:
-//     NewClass() {}
-// };
-
-// check Intel compiler first since it usually also defines __GNUC__, __clang__, etc.
-#if defined(__INTEL_COMPILER)
-  #define PCL_DEPRECATED_CLASS(func, message) __attribute((deprecated)) func
-#elif (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) && ! defined(__clang__)) || defined(__INTEL_COMPILER)
-  #define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated)) func
-// gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
-#elif (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) >= PCL_LINEAR_VERSION(4,5,0)) || (defined(__clang__) && __has_extension(attribute_deprecated_with_message))
-  #define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated(message))) func
-#elif defined(_MSC_VER)
-  #define PCL_DEPRECATED_CLASS(func, message) __declspec(deprecated(message)) func
-#else
-  #pragma message("WARNING: You need to implement PCL_DEPRECATED_CLASS for this compiler")
-  #define PCL_DEPRECATED_CLASS(func) func
 #endif
 
 #if defined (__GNUC__) || defined (__PGI) || defined (__IBMCPP__) || defined (__SUNPRO_CC)
@@ -438,5 +346,3 @@ aligned_free (void* ptr)
   #error aligned_free not supported on your platform
 #endif
 }
-
-#endif  //#ifndef PCL_MACROS_H_

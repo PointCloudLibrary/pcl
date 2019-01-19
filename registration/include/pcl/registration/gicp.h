@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GICP_H_
-#define PCL_GICP_H_
+#pragma once
 
 #include <pcl/registration/icp.h>
 #include <pcl/registration/bfgs.h>
@@ -125,7 +124,7 @@ namespace pcl
         * \param cloud the const boost shared pointer to a PointCloud message
         */
       inline void
-      setInputSource (const PointCloudSourceConstPtr &cloud)
+      setInputSource (const PointCloudSourceConstPtr &cloud) override
       {
 
         if (cloud->points.empty ())
@@ -157,7 +156,7 @@ namespace pcl
         * \param[in] target the input point cloud target
         */
       inline void 
-      setInputTarget (const PointCloudTargetConstPtr &target)
+      setInputTarget (const PointCloudTargetConstPtr &target) override
       {
         pcl::IterativeClosestPoint<PointSource, PointTarget>::setInputTarget(target);
         target_covariances_.reset ();
@@ -324,7 +323,7 @@ namespace pcl
         * \param guess the initial guess of the transformation to compute
         */
       void 
-      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess);
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess) override;
 
       /** \brief Search for the closest nearest neighbor of a given point.
         * \param query the point to search a nearest neighbour for
@@ -348,9 +347,9 @@ namespace pcl
       {
         OptimizationFunctorWithIndices (const GeneralizedIterativeClosestPoint* gicp)
           : BFGSDummyFunctor<double,6> (), gicp_(gicp) {}
-        double operator() (const Vector6d& x);
-        void  df(const Vector6d &x, Vector6d &df);
-        void fdf(const Vector6d &x, double &f, Vector6d &df);
+        double operator() (const Vector6d& x) override;
+        void  df(const Vector6d &x, Vector6d &df) override;
+        void fdf(const Vector6d &x, double &f, Vector6d &df) override;
 
         const GeneralizedIterativeClosestPoint *gicp_;
       };
@@ -364,5 +363,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/gicp.hpp>
-
-#endif  //#ifndef PCL_GICP_H_

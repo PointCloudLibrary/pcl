@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_SAC_SEGMENTATION_H_
-#define PCL_SEGMENTATION_SAC_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
@@ -102,7 +101,7 @@ namespace pcl
       }
 
       /** \brief Empty destructor. */
-      virtual ~SACSegmentation () { /*srv_.reset ();*/ };
+      ~SACSegmentation () { /*srv_.reset ();*/ };
 
       /** \brief The type of model to use (user given parameter).
         * \param[in] model the model type (check \a model_types.h)
@@ -417,17 +416,15 @@ namespace pcl
       /** \brief Initialize the Sample Consensus model and set its parameters.
         * \param[in] model_type the type of SAC model that is to be used
         */
-      virtual bool 
-      initSACModel (const int model_type);
+      bool 
+      initSACModel (const int model_type) override;
 
       /** \brief Class get name method. */
-      virtual std::string 
-      getClassName () const { return ("SACSegmentationFromNormals"); }
+      std::string 
+      getClassName () const override { return ("SACSegmentationFromNormals"); }
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/sac_segmentation.hpp>
 #endif
-
-#endif  //#ifndef PCL_SEGMENTATION_SAC_SEGMENTATION_H_

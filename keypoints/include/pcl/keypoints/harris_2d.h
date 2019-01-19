@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_HARRIS_KEYPOINT_2D_H_
-#define PCL_HARRIS_KEYPOINT_2D_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 #include <pcl/common/intensity.h>
@@ -135,9 +134,9 @@ namespace pcl
 
     protected:
       bool 
-      initCompute ();
+      initCompute () override;
       void 
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
       /** \brief gets the corner response for valid input points*/
       void 
       responseHarris (PointCloudOut &output) const;
@@ -194,5 +193,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/harris_2d.hpp>
-
-#endif // #ifndef PCL_HARRIS_KEYPOINT_2D_H_

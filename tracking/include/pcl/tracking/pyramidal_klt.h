@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_TRACKING_PYRAMIDAL_KLT_H
-#define PCL_TRACKING_PYRAMIDAL_KLT_H
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/tracking/tracker.h>
@@ -96,7 +95,7 @@ namespace pcl
         }
 
         /// Destructor
-        virtual ~PyramidalKLTTracker () {}
+        ~PyramidalKLTTracker () {}
 
         /** \brief Set the number of pyramid levels
           * \param levels desired number of pyramid levels
@@ -211,15 +210,15 @@ namespace pcl
 
         /** \brief Return the computed transformation from tracked points. */
         Eigen::Affine3f
-        getResult () const { return (motion_); }
+        getResult () const override { return (motion_); }
 
         /// \brief \return initialization state
         bool
         getInitialized () const { return (initialized_); }
 
       protected:
-        virtual bool
-        initCompute ();
+        bool
+        initCompute () override;
 
         /** \brief compute Scharr derivatives of a source cloud.
           * \param[in]  src the image for which gradients are to be computed
@@ -320,8 +319,8 @@ namespace pcl
                std::vector<int>& status,
                Eigen::Affine3f& motion) const;
 
-        virtual void
-        computeTracking ();
+        void
+        computeTracking () override;
 
         /// \brief input pyranid at t-1
         std::vector<FloatImageConstPtr> ref_pyramid_;
@@ -374,4 +373,3 @@ namespace pcl
 }
 
 #include <pcl/tracking/impl/pyramidal_klt.hpp>
-#endif

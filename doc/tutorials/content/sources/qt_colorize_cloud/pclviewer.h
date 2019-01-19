@@ -1,5 +1,4 @@
-#ifndef PCLVIEWER_H
-#define PCLVIEWER_H
+#pragma once
 
 // Qt
 #include <QMainWindow>
@@ -89,5 +88,3 @@ class PCLViewer : public QMainWindow
     /** @brief ui pointer */
     Ui::PCLViewer *ui;
 };
-
-#endif // PCLVIEWER_H

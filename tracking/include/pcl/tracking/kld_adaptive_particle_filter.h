@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_KLD_ADAPTIVE_PARTICLE_FILTER_H_
-#define PCL_TRACKING_KLD_ADAPTIVE_PARTICLE_FILTER_H_
+#pragma once
 
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/particle_filter.h>
@@ -186,15 +185,15 @@ namespace pcl
       insertIntoBins (std::vector<int> bin, std::vector<std::vector<int> > &B);
             
       /** \brief This method should get called before starting the actual computation. */
-      virtual bool 
-      initCompute ();
+      bool 
+      initCompute () override;
 
       /** \brief resampling phase of particle filter method.
           sampling the particles according to the weights calculated in weight method.
           in particular, "sample with replacement" is archieved by walker's alias method.
         */
-      virtual void 
-      resample ();
+      void 
+      resample () override;
 
       /** \brief the maximum number of the particles. */
       unsigned int maximum_particle_number_;
@@ -213,6 +212,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/tracking/impl/kld_adaptive_particle_filter.hpp>
-#endif
-
 #endif

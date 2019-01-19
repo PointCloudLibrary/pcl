@@ -43,9 +43,9 @@
 #include <iterator>
 #include <iostream>
 #include <vector>
-#include <string.h>
+#include <cstring>
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 
 namespace pcl
 {

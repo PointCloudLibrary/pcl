@@ -1,4 +1,3 @@
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/commands.h>
@@ -8,6 +7,11 @@
 #include <pcl/apps/cloud_composer/merge_selection.h>
 #include <pcl/apps/cloud_composer/transform_clouds.h>
 
+#include <QAction>
+#include <QFileDialog>
+#include <QItemSelectionModel>
+#include <QMessageBox>
+#include <QThread>
 
 pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   : QStandardItemModel (parent)

@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_2D_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_2D_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model_registration.h>
 
@@ -221,6 +220,3 @@ namespace pcl
 }
 
 #include <pcl/sample_consensus/impl/sac_model_registration_2d.hpp>
-
-#endif    // PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_2D_H_
-

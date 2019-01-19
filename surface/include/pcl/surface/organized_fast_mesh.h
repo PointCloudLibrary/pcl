@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_ORGANIZED_FAST_MESH_H_
-#define PCL_SURFACE_ORGANIZED_FAST_MESH_H_
+#pragma once
 
 #include <pcl/common/angles.h>
 #include <pcl/surface/reconstruction.h>
@@ -104,7 +103,7 @@ namespace pcl
       };
 
       /** \brief Destructor. */
-      virtual ~OrganizedFastMesh () {};
+      ~OrganizedFastMesh () {};
 
       /** \brief Set a maximum edge length. 
         * Using not only the scalar \a a, but also \a b and \a c, allows for using a distance threshold in the form of:
@@ -279,8 +278,8 @@ namespace pcl
       /** \brief Create the surface.
         * \param[out] polygons the resultant polygons, as a set of vertices. The Vertices structure contains an array of point indices.
         */
-      virtual void
-      performReconstruction (std::vector<pcl::Vertices> &polygons);
+      void
+      performReconstruction (std::vector<pcl::Vertices> &polygons) override;
 
       /** \brief Create the surface.
         *
@@ -290,7 +289,7 @@ namespace pcl
         * \param[out] output the resultant polygonal mesh
         */
       void
-      performReconstruction (pcl::PolygonMesh &output);
+      performReconstruction (pcl::PolygonMesh &output) override;
 
       /** \brief Add a new triangle to the current polygon mesh
         * \param[in] a index of the first vertex
@@ -488,5 +487,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/organized_fast_mesh.hpp>
 #endif
-
-#endif  // PCL_SURFACE_ORGANIZED_FAST_MESH_H_

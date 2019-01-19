@@ -36,10 +36,9 @@
  *
  */
 
-#include "pcl/pcl_config.h"
+#pragma once
 
-#ifndef PCL_IO_VLP_GRABBER_H_
-#define PCL_IO_VLP_GRABBER_H_
+#include "pcl/pcl_config.h"
 
 #include <pcl/io/hdl_grabber.h>
 #include <pcl/io/grabber.h>
@@ -71,14 +70,14 @@ namespace pcl
                   const uint16_t port);
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-      virtual
+      
       ~VLPGrabber () throw ();
 
       /** \brief Obtains the name of this I/O Grabber
        *  \return The name of the grabber
        */
-      virtual std::string
-      getName () const;
+      std::string
+      getName () const override;
 
       /** \brief Allows one to customize the colors used by each laser.
        * \param[in] color RGB color to set
@@ -100,8 +99,8 @@ namespace pcl
 
       /** \brief Returns the maximum number of lasers
       */
-      virtual uint8_t
-      getMaximumNumberOfLasers () const;
+      uint8_t
+      getMaximumNumberOfLasers () const override;
 
     protected:
       static const uint8_t VLP_MAX_NUM_LASERS = 16;
@@ -110,11 +109,11 @@ namespace pcl
     private:
       pcl::RGB laser_rgb_mapping_[VLP_MAX_NUM_LASERS];
 
-      virtual void
-      toPointClouds (HDLDataPacket *dataPacket);
+      void
+      toPointClouds (HDLDataPacket *dataPacket) override;
 
       boost::asio::ip::address
-      getDefaultNetworkAddress ();
+      getDefaultNetworkAddress () override;
 
       void
       initializeLaserMapping ();
@@ -124,5 +123,3 @@ namespace pcl
 
   };
 }
-
-#endif /* PCL_IO_VLP_GRABBER_H_ */

@@ -28,8 +28,7 @@
  *
  */
 
-#ifndef PCL_IO_OPENNI2_DEVICE_H_
-#define PCL_IO_OPENNI2_DEVICE_H_
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include "openni.h"
@@ -330,5 +329,3 @@ namespace pcl
     } // namespace
   }
 }
-
-#endif // PCL_IO_OPENNI2_DEVICE_H_

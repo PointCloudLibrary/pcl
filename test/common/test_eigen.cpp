@@ -744,14 +744,12 @@ TEST (PCL, eigen33f)
   const Scalar epsilon = 1e-3f;
   const unsigned iterations = 1000000;
   bool r_failed;
-  bool c_failed;
   unsigned r_fail_count = 0;
-  unsigned c_fail_count = 0;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
-    r_failed = c_failed = false;
+    r_failed = false;
     // generate test matrices
     generateSymPosMatrix3x3 (r_matrix);
     c_matrix = r_matrix;
@@ -781,17 +779,10 @@ TEST (PCL, eigen33f)
     c_result = c_vectors * c_eigenvalues.asDiagonal () * c_vectors.transpose ();
     c_error = c_result - c_matrix;
     diff = c_error.cwiseAbs (). sum ();
-    if (diff > epsilon)
-      c_failed = true;
 
     g_result = c_vectors * c_vectors.transpose ();
     g_error = g_result - CMatrix::Identity ();
     diff = g_error.cwiseAbs (). sum ();
-    if (diff > epsilon)
-      c_failed = true;
-
-    if(c_failed)
-      ++c_fail_count;
   }
 
   // less than 1% failure rate

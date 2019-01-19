@@ -33,20 +33,16 @@ if(NOT WIN32)
   else()
     include_directories(SYSTEM ${USB_10_INCLUDE_DIR})
   endif()
-endif(NOT WIN32)
-
-if(${CMAKE_VERSION} VERSION_LESS 2.8.2)
-  pkg_check_modules(PC_OPENNI2 libopenni2)
-else()
-  pkg_check_modules(PC_OPENNI2 QUIET libopenni2)
 endif()
+
+pkg_check_modules(PC_OPENNI2 QUIET libopenni2)
 
 set(OPENNI2_DEFINITIONS ${PC_OPENNI_CFLAGS_OTHER})
 
 set(OPENNI2_SUFFIX)
 if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(OPENNI2_SUFFIX 64)
-endif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+endif()
 
 find_path(OPENNI2_INCLUDE_DIR OpenNI.h
           PATHS "$ENV{OPENNI2_INCLUDE${OPENNI2_SUFFIX}}"  # Win64 needs '64' suffix

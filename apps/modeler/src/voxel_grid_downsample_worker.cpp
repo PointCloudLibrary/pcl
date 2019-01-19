@@ -54,7 +54,7 @@ pcl::modeler::VoxelGridDownampleWorker::VoxelGridDownampleWorker(const QList<Clo
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::VoxelGridDownampleWorker::~VoxelGridDownampleWorker(void)
+pcl::modeler::VoxelGridDownampleWorker::~VoxelGridDownampleWorker()
 {
   delete leaf_size_x_;
   delete leaf_size_y_;

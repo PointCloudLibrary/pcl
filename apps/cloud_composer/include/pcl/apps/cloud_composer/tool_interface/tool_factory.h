@@ -35,10 +35,8 @@
  *
  */
 
-#ifndef TOOL_FACTORY_H_
-#define TOOL_FACTORY_H_
+#pragma once
 
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
 class QAction;
@@ -95,5 +93,3 @@ Q_DECLARE_METATYPE (pcl::cloud_composer::ToolFactory*);
 
 Q_DECLARE_INTERFACE(pcl::cloud_composer::ToolFactory,
                     "cloud_composer.ToolFactory/1.0")
-
-#endif //TOOL_FACTORY_H_

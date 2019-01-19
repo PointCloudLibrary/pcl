@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_TYPE_CONVERSIONS_H
-#define PCL_TYPE_CONVERSIONS_H
+#pragma once
 
 #include <limits>
 
@@ -46,10 +45,10 @@
 
 namespace pcl
 {
-  // r,g,b, i values are from 0 to 1
+  // r,g,b, i values are from 0 to 255
   // h = [0,360]
   // s, v values are from 0 to 1
-  // if s = 0 > h = -1 (undefined)
+  // if s = 0 => h = 0
 
   /** \brief Convert a XYZRGB point type to a XYZI
     * \param[in] in the input XYZRGB point 
@@ -153,7 +152,7 @@ namespace pcl
     if (max == 0) // division by zero
     {
       out.s = 0.f;
-      out.h = 0.f; // h = -1.f;
+      out.h = 0.f;
       return;
     }
 
@@ -394,6 +393,3 @@ namespace pcl
     out.height = height_;
   }
 }
-
-#endif //#ifndef PCL_TYPE_CONVERSIONS_H
-

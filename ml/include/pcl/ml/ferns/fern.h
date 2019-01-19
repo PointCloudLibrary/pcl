@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_FERNS_FERN
-#define PCL_ML_FERNS_FERN
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -211,5 +210,3 @@ namespace pcl
 
 
 }
-
-#endif

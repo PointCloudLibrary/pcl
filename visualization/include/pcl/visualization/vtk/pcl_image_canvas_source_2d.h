@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_VTK_IMAGE_CANVAS_SOURCE_2D_H_
-#define PCL_VTK_IMAGE_CANVAS_SOURCE_2D_H_
+
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <vtkImageCanvasSource2D.h>
@@ -58,5 +58,3 @@ namespace pcl
     };
   }
 }
-
-#endif      // PCL_VTK_IMAGE_CANVAS_SOURCE_2D_H_

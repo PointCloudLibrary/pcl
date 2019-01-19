@@ -29,8 +29,7 @@
  *      Author: Julius Kammerl (jkammerl@willowgarage.com)
  */
 
-#ifndef PCL_IO_OPENNI2_TIME_FILTER_H_
-#define PCL_IO_OPENNI2_TIME_FILTER_H_
+#pragma once
 
 #include <deque>
 
@@ -70,5 +69,3 @@ namespace pcl
     } // namespace
   }
 }
-
-#endif // PCL_IO_OPENNI2_TIME_FILTER_H_

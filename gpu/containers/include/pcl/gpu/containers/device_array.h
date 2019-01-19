@@ -34,8 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_CONTAINER_DEVICE_ARRAY_HPP_
-#define PCL_GPU_CONTAINER_DEVICE_ARRAY_HPP_
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <pcl/gpu/containers/device_memory.h>
@@ -267,5 +266,3 @@ namespace pcl
 }
 
 #include <pcl/gpu/containers/impl/device_array.hpp>
-
-#endif /* PCL_GPU_CONTAINER_DEVICE_ARRAY_HPP_ */

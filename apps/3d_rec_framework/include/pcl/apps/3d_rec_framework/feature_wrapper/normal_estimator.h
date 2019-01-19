@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_NORMAL_ESTIMATOR_H_
-#define REC_FRAMEWORK_NORMAL_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
@@ -296,5 +295,3 @@ namespace pcl
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_NORMAL_ESTIMATOR_H_ */

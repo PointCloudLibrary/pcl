@@ -38,7 +38,7 @@
 #include <pcl/gpu/utils/safe_call.hpp>
 
 #include "cuda_runtime_api.h"
-#include "assert.h"
+#include <cassert>
 
 #define HAVE_CUDA
 //#include <pcl_config.h>
@@ -77,24 +77,12 @@ bool pcl::gpu::DeviceMemory2D::empty() const { throw_nogpu(); }
 //////////////////////////    XADD    ///////////////////////////////
 
 #ifdef __GNUC__
-    
-    #if __GNUC__*10 + __GNUC_MINOR__ >= 42
-
-        #if !defined WIN32 && (defined __i486__ || defined __i586__ || defined __i686__ || defined __MMX__ || defined __SSE__  || defined __ppc__)
-            #define CV_XADD __sync_fetch_and_add
-        #else
-            #include <ext/atomicity.h>
-            #define CV_XADD __gnu_cxx::__exchange_and_add
-        #endif
-    #else
-        #include <bits/atomicity.h>
-        #if __GNUC__*10 + __GNUC_MINOR__ >= 34
-            #define CV_XADD __gnu_cxx::__exchange_and_add
-        #else
-            #define CV_XADD __exchange_and_add
-        #endif
+  #if !defined WIN32 && (defined __i486__ || defined __i586__ || defined __i686__ || defined __MMX__ || defined __SSE__  || defined __ppc__)
+    #define CV_XADD __sync_fetch_and_add
+  #else
+    #include <ext/atomicity.h>
+    #define CV_XADD __gnu_cxx::__exchange_and_add
   #endif
-    
 #elif defined WIN32 || defined _WIN32
     #include <intrin.h>
     #define CV_XADD(addr,delta) _InterlockedExchangeAdd((long volatile*)(addr), (delta))

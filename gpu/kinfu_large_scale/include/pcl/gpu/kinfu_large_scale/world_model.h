@@ -36,8 +36,7 @@
  *  Author: Raphael Favier, Technical University Eindhoven, (r.mysurname <aT> tue.nl)
  */
 
-#ifndef PCL_WORLD_MODEL_H_
-#define PCL_WORLD_MODEL_H_
+#pragma once
 
 #include <pcl/common/impl/common.hpp>
 #include <pcl/filters/extract_indices.h>
@@ -180,5 +179,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_WORLD_MODEL_H_

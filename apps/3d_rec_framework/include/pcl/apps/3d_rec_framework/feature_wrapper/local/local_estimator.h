@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_LOCAL_ESTIMATOR_H_
-#define REC_FRAMEWORK_LOCAL_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
 #include <pcl/filters/uniform_sampling.h>
@@ -158,7 +157,7 @@ namespace pcl
         }
 
         void
-        compute (PointInTPtr & keypoints)
+        compute (PointInTPtr & keypoints) override
         {
           keypoints.reset (new pcl::PointCloud<PointInT>);
 
@@ -522,5 +521,3 @@ namespace pcl
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_LOCAL_ESTIMATOR_H_ */

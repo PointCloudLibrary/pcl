@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_POINT_CLOUD_SPRING_H_
-#define PCL_POINT_CLOUD_SPRING_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 
@@ -128,5 +127,3 @@ namespace pcl
 }
 
 #include <pcl/common/impl/spring.hpp>
-
-#endif

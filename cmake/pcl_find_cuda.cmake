@@ -6,29 +6,11 @@ if(MSVC)
 endif()
 
 set(CUDA_FIND_QUIETLY TRUE)
-find_package(CUDA)
+find_package(CUDA 7.5)
 
 if(CUDA_FOUND)
   message(STATUS "Found CUDA Toolkit v${CUDA_VERSION_STRING}")
   set(HAVE_CUDA TRUE)
-
-  if(${CUDA_VERSION_STRING} VERSION_LESS "7.5")
-    # Recent versions of cmake set CUDA_HOST_COMPILER to CMAKE_C_COMPILER which
-    # on OSX defaults to clang (/usr/bin/cc), but this is not a supported cuda
-    # compiler. So, here we will preemptively set CUDA_HOST_COMPILER to gcc if
-    # that compiler exists in /usr/bin. This will not override an existing cache
-    # value if the user has passed CUDA_HOST_COMPILER on the command line.
-    if (NOT DEFINED CUDA_HOST_COMPILER AND CMAKE_C_COMPILER_ID STREQUAL "Clang" AND EXISTS /usr/bin/gcc)
-      set(CUDA_HOST_COMPILER /usr/bin/gcc CACHE FILEPATH "Host side compiler used by NVCC")
-      message(STATUS "Setting CMAKE_HOST_COMPILER to /usr/bin/gcc instead of ${CMAKE_C_COMPILER}. See http://dev.pointclouds.org/issues/979")
-    endif()
-
-    # Send a warning if CUDA_HOST_COMPILER is set to a compiler that is known
-    # to be unsupported.
-    if (CUDA_HOST_COMPILER STREQUAL CMAKE_C_COMPILER AND CMAKE_C_COMPILER_ID STREQUAL "Clang")
-      message(WARNING "CUDA_HOST_COMPILER is set to an unsupported compiler: ${CMAKE_C_COMPILER}. See http://dev.pointclouds.org/issues/979")
-    endif()
-  endif()
 
   # CUDA_ARCH_BIN is a space separated list of versions to include in output so-file. So you can set CUDA_ARCH_BIN = 10 11 12 13 20
   # Also user can specify virtual arch in parenthesis to limit instructions set,
@@ -47,19 +29,11 @@ if(CUDA_FOUND)
   elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "9.1")
     set(__cuda_arch_bin "3.0 3.5 5.0 5.2 5.3 6.0 6.1 7.0 7.2")
   elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "9.0")
-    set(__cuda_arch_bin "3.0 3.5 5.0 5.2 5.3 6.0 6.1 7.0")  
+    set(__cuda_arch_bin "3.0 3.5 5.0 5.2 5.3 6.0 6.1 7.0")
   elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "8.0")
     set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5 5.0 5.2 5.3 6.0 6.1")
-  elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "6.5")
-    set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5 5.0 5.2")
-  elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "6.0")
-    set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5 5.0")
-  elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "5.0")
-    set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5")
-  elseif(${CUDA_VERSION_STRING} VERSION_GREATER "4.1")
-    set(__cuda_arch_bin "2.0 2.1(2.0) 3.0")
   else()
-    set(__cuda_arch_bin "2.0 2.1(2.0)")
+    set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5 5.0 5.2")
   endif()
 
   set(CUDA_ARCH_BIN ${__cuda_arch_bin} CACHE STRING "Specify 'real' GPU architectures to build binaries for, BIN(PTX) format is supported")

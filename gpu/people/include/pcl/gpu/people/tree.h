@@ -37,8 +37,7 @@
  * @authors: Cedric Cagniart, Koen Buys
  */
 
-#ifndef PCL_GPU_PEOPLE_TREE_H_
-#define PCL_GPU_PEOPLE_TREE_H_
+#pragma once
 
 #include "label_common.h"
 #include <boost/cstdint.hpp> 
@@ -137,4 +136,3 @@ namespace pcl
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl
-#endif  // PCL_GPU_PEOPLE_TREES_TREE_H_

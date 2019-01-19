@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef PCL_MULTISCALE_FEATURE_PERSISTENCE_H_
-#define PCL_MULTISCALE_FEATURE_PERSISTENCE_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/features/feature.h>
@@ -77,7 +76,7 @@ namespace pcl
       MultiscaleFeaturePersistence ();
       
       /** \brief Empty destructor */
-      virtual ~MultiscaleFeaturePersistence () {}
+      ~MultiscaleFeaturePersistence () {}
 
       /** \brief Method that calls computeFeatureAtScale () for each scale parameter */
       void
@@ -205,5 +204,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/multiscale_feature_persistence.hpp>
 #endif
-
-#endif /* PCL_MULTISCALE_FEATURE_PERSISTENCE_H_ */

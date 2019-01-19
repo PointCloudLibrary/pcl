@@ -35,17 +35,11 @@
  *
  */
 
-#ifndef CLOUD_COMPOSER_ITEM_H_
-#define CLOUD_COMPOSER_ITEM_H_
-
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/properties_model.h>
-
-
-
 
 static QStringList ITEM_TYPES_STRINGS(QStringList() 
       << "Cloud Composer Item"
@@ -74,7 +68,7 @@ namespace pcl
         KD_TREE_SEARCH
       };
     };
-    class PCL_EXPORTS CloudComposerItem : public QStandardItem
+    class CloudComposerItem : public QStandardItem
     {
       public:  
         
@@ -89,10 +83,10 @@ namespace pcl
 
         CloudComposerItem (const QString name = "default item");
         CloudComposerItem (const CloudComposerItem& to_copy);
-        virtual ~CloudComposerItem ();
+        ~CloudComposerItem ();
         
-        inline virtual int 
-        type () const { return CLOUD_COMPOSER_ITEM; }
+        inline int 
+        type () const override { return CLOUD_COMPOSER_ITEM; }
       
         /** \brief Convenience function to get Item's ID String */
         inline QString
@@ -109,8 +103,8 @@ namespace pcl
         void 
         addChild (CloudComposerItem* item_arg);
         
-        virtual CloudComposerItem*
-        clone () const;
+        CloudComposerItem*
+        clone () const override;
 
      //   /** \brief Convenience function which pulls out a cloud Ptr of type CloudPtrT */
     //    template <typename CloudPtrT>
@@ -168,14 +162,3 @@ namespace pcl
 typedef QList<const pcl::cloud_composer::CloudComposerItem*> ConstItemList;
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::CloudComposerItem);
-
-
-
-
-
-
-
-
-
-
-#endif //CLOUD_COMPOSER_ITEM_H_

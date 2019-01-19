@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_BILATERAL_H_
-#define PCL_FILTERS_BILATERAL_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
 #include <pcl/search/pcl_search.h>
@@ -81,7 +80,7 @@ namespace pcl
         * \param[out] output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Compute the intensity average for a single point
         * \param[in] pid the point index to compute the weight for
@@ -146,5 +145,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/bilateral.hpp>
 #endif
-
-#endif // PCL_FILTERS_BILATERAL_H_

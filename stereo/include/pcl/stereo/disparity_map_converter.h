@@ -33,8 +33,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef PCL_DISPARITY_MAP_CONVERTER_H_
-#define PCL_DISPARITY_MAP_CONVERTER_H_
+
+#pragma once
 
 #include <cstring>
 #include <vector>
@@ -252,5 +252,3 @@ namespace pcl
 }
 
 #include <pcl/stereo/impl/disparity_map_converter.hpp>
-
-#endif // PCL_DISPARITY_MAP_CONVERTER_H_

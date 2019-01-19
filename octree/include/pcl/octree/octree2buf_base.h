@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_TREE_2BUF_BASE_H
-#define PCL_OCTREE_TREE_2BUF_BASE_H
+#pragma once
 
 #include <vector>
 
@@ -88,13 +87,13 @@ namespace pcl
         }
 
         /** \brief Empty constructor. */
-        virtual ~BufferedBranchNode ()
+        ~BufferedBranchNode ()
         {
         }
 
         /** \brief Method to perform a deep copy of the octree */
-        virtual BufferedBranchNode*
-        deepCopy () const
+        BufferedBranchNode*
+        deepCopy () const override
         {
           return new BufferedBranchNode (*this);
         }
@@ -135,7 +134,7 @@ namespace pcl
         }
 
         /** \brief Get the type of octree node. Returns LEAVE_NODE type */
-        virtual node_type_t getNodeType () const
+        node_type_t getNodeType () const override
         {
           return BRANCH_NODE;
         }
@@ -255,13 +254,13 @@ namespace pcl
         typedef OctreeLeafNodeDepthFirstIterator<OctreeT> LeafNodeIterator;
         typedef const OctreeLeafNodeDepthFirstIterator<OctreeT> ConstLeafNodeIterator;
 
-        PCL_DEPRECATED ("Please use leaf_depth_begin () instead.")
+        [[deprecated("use leaf_depth_begin() instead")]]
         LeafNodeIterator leaf_begin (unsigned int max_depth_arg = 0)
         {
           return LeafNodeIterator (this, max_depth_arg);
         };
 
-        PCL_DEPRECATED ("Please use leaf_depth_end () instead.")
+        [[deprecated("use leaf_depth_end() instead")]]
         const LeafNodeIterator leaf_end ()
         {
           return LeafNodeIterator ();
@@ -962,6 +961,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/octree/impl/octree2buf_base.hpp>
 #endif
-
-#endif
-

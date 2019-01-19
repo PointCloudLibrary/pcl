@@ -45,6 +45,20 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
+pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::setNumberOfThreads (unsigned int nr_threads)
+{
+  if (nr_threads == 0)
+#ifdef _OPENMP
+    threads_ = omp_get_num_procs();
+#else
+    threads_ = 1;
+#endif
+  else
+    threads_ = nr_threads;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   std::vector<int> spfh_indices_vec;

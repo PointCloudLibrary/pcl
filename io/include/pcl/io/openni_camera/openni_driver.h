@@ -34,11 +34,11 @@
  *
  */
 
+#pragma once
+
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
-#ifndef OPENNI_OPENNI_H_
-#define OPENNI_OPENNI_H_
 #include <string>
 #include <vector>
 #include <map>
@@ -247,5 +247,4 @@ namespace openni_wrapper
     return static_cast<unsigned> (device_context_.size ());
   }
 } // namespace
-#endif
 #endif

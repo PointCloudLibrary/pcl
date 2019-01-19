@@ -1,5 +1,4 @@
-#ifndef PCL_MODEL_HPP_
-#define PCL_MODEL_HPP_
+#pragma once
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__)
 # define WIN32_LEAN_AND_MEAN 1
@@ -80,8 +79,8 @@ namespace pcl
         virtual
         ~TriangleMeshModel ();
 
-        virtual void
-        draw ();
+        void
+        draw () override;
 
       private:
         GLuint vbo_;
@@ -96,7 +95,7 @@ namespace pcl
       public:
         PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg);
         virtual ~PolygonMeshModel();
-        virtual void draw();
+        void draw() override;
 
         typedef boost::shared_ptr<PolygonMeshModel> Ptr;
         typedef boost::shared_ptr<const PolygonMeshModel> ConstPtr;
@@ -129,8 +128,8 @@ namespace pcl
         virtual
         ~PointCloudModel ();
 
-        virtual void
-        draw();
+        void
+        draw() override;
 
       private:
         float* vertices_;
@@ -207,5 +206,3 @@ namespace pcl
     };
   } // namespace - simulation
 } // namespace - pcl
-
-#endif /* PCL_SIMULATION_MODEL_HPP_ */

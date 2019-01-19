@@ -34,10 +34,10 @@
  *
  */
 
-#ifndef PCL_MODELER_RENDER_WINDOW_ITEM_H_
-#define PCL_MODELER_RENDER_WINDOW_ITEM_H_
+#pragma once
 
-#include <pcl/apps/modeler/qt.h>
+#include <QTreeWidgetItem>
+
 #include <pcl/apps/modeler/abstract_item.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
 
@@ -74,18 +74,18 @@ namespace pcl
         CloudMeshItem*
         addPointCloud(CloudMesh::PointCloudPtr cloud);
 
-        virtual std::string
-        getItemName() const {return "Render Window Item";}
+        std::string
+        getItemName() const override {return "Render Window Item";}
 
       protected:
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
+        void
+        prepareContextMenu(QMenu* menu) const override;
 
-        virtual void
-        prepareProperties(ParameterDialog* parameter_dialog);
+        void
+        prepareProperties(ParameterDialog* parameter_dialog) override;
 
-        virtual void
-        setProperties();
+        void
+        setProperties() override;
 
       private:
         RenderWindow*     render_window_;
@@ -94,5 +94,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_RENDER_WINDOW_ITEM_H_

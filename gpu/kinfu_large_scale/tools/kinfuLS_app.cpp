@@ -419,8 +419,6 @@ struct SceneCloudView
     // create a 5-point visual for each camera
     pcl::PointXYZ p1, p2, p3, p4, p5;
     p1.x=0; p1.y=0; p1.z=0;
-    double angleX = RAD2DEG (2.0 * atan (width / (2.0*focal)));
-    double angleY = RAD2DEG (2.0 * atan (height / (2.0*focal)));
     double dist = 0.75;
     double minX, minY, maxX, maxY;
     maxX = dist*tan (atan (width / (2.0*focal)));
@@ -1275,7 +1273,7 @@ main (int argc, char* argv[])
     {
       triggered_capture = true;
       bool repeat = false; // Only run ONI file once
-      capture.reset (new pcl::ONIGrabber (oni_file, repeat, !triggered_capture));
+      capture.reset (new pcl::ONIGrabber (oni_file, repeat, false));
     }
     else if (pc::parse_argument (argc, argv, "-pcd", pcd_dir) > 0)
     {

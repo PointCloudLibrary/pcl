@@ -14,10 +14,10 @@ set(QHULL_MAJOR_VERSION 6)
 if(QHULL_USE_STATIC)
   set(QHULL_RELEASE_NAME qhullstatic)
   set(QHULL_DEBUG_NAME qhullstatic_d)
-else(QHULL_USE_STATIC)
+else()
   set(QHULL_RELEASE_NAME qhull_p qhull${QHULL_MAJOR_VERSION} qhull)
   set(QHULL_DEBUG_NAME qhull_p_d qhull${QHULL_MAJOR_VERSION}_d qhull_d${QHULL_MAJOR_VERSION} qhull_d)
-endif(QHULL_USE_STATIC)
+endif()
 
 find_file(QHULL_HEADER
           NAMES libqhull/libqhull.h qhull.h
@@ -37,9 +37,9 @@ if(QHULL_HEADER)
     get_filename_component(QHULL_INCLUDE_DIR ${QHULL_HEADER} PATH)
     get_filename_component(QHULL_INCLUDE_DIR ${QHULL_INCLUDE_DIR} PATH)
   endif()
-else(QHULL_HEADER)
+else()
   set(QHULL_INCLUDE_DIR "QHULL_INCLUDE_DIR-NOTFOUND")
-endif(QHULL_HEADER)
+endif()
 
 find_library(QHULL_LIBRARY
              NAMES ${QHULL_RELEASE_NAME}
@@ -57,7 +57,7 @@ find_library(QHULL_LIBRARY_DEBUG
 
 if(NOT QHULL_LIBRARY_DEBUG)
   set(QHULL_LIBRARY_DEBUG ${QHULL_LIBRARY})
-endif(NOT QHULL_LIBRARY_DEBUG)
+endif()
 
 get_filename_component(QHULL_LIBRARY_DEBUG_NAME "${QHULL_LIBRARY_DEBUG}" NAME)
 
@@ -88,7 +88,7 @@ if(QHULL_FOUND)
     add_definitions("-Dqh_QHpointer")
     if(MSVC)
       add_definitions("-Dqh_QHpointer_dllimport")
-    endif(MSVC)
-  endif(NOT QHULL_USE_STATIC)
+    endif()
+  endif()
   message(STATUS "QHULL found (include: ${QHULL_INCLUDE_DIRS}, lib: ${QHULL_LIBRARIES})")
-endif(QHULL_FOUND)
+endif()

@@ -166,7 +166,7 @@ In this example we will do a simple magnitude threshold, looking for objects of 
 
 .. literalinclude:: sources/don_segmentation/don_segmentation.cpp
    :language: cpp
-   :lines: 131-145
+   :lines: 131-146
 
 After we apply the filter we are left with a reduced pointcloud consisting of the points with a strong response with the given scale parameters.
 

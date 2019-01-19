@@ -35,15 +35,11 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RANGE_IMAGE_BORDER_EXTRACTOR_H_
-#define PCL_RANGE_IMAGE_BORDER_EXTRACTOR_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
 
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic ignored "-Weffc++"
-#endif
 namespace pcl
 {
   // FORWARD DECLARATIONS:
@@ -112,7 +108,7 @@ namespace pcl
       /** Constructor */
       RangeImageBorderExtractor (const RangeImage* range_image=NULL);
       /** Destructor */
-      virtual ~RangeImageBorderExtractor ();
+      ~RangeImageBorderExtractor ();
       
       // =====METHODS=====
       /** \brief Provide a pointer to the range image
@@ -350,14 +346,9 @@ namespace pcl
       blurSurfaceChanges ();
       
       /** \brief Implementation of abstract derived function */
-      virtual void
-      computeFeature (PointCloudOut &output);
+      void
+      computeFeature (PointCloudOut &output) override;
   };
 }  // namespace end
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic warning "-Weffc++"
-#endif
 
 #include <pcl/features/impl/range_image_border_extractor.hpp>  // Definitions of templated and inline functions
-
-#endif  //#ifndef PCL_RANGE_IMAGE_BORDER_EXTRACTOR_H_

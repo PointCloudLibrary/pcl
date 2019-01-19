@@ -38,8 +38,7 @@
 /// points from the cloud and filling the copy buffer.
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef CUT_COMMAND_H_
-#define CUT_COMMAND_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -66,12 +65,12 @@ class CutCommand : public Command
     /// @pre Assumes the constructor was given appropriate pointers to the
     /// required objects.
     void
-    execute ();
+    execute () override;
 
     /// @brief Returns the cut points to the cloud.  This does not reconstruct
     /// the original ordering of the point cloud.
     void
-    undo ();
+    undo () override;
 
   private:
     /// @brief Default constructor - object is not default constructable
@@ -110,5 +109,3 @@ class CutCommand : public Command
     CopyBuffer cut_cloud_buffer_;
 
 };
-
-#endif // CUT_COMMAND_H_

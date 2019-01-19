@@ -87,7 +87,7 @@ template <typename PointXYZT, typename PointRGBT> bool
 pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, const size_t object_id)
 {
   // Open the file
-  int ltm_fd = pcl_open (file_name.c_str (), O_RDONLY);
+  int ltm_fd = pcl_open (file_name.c_str (), O_RDONLY | O_CLOEXEC);
   if (ltm_fd == -1)
     return (false);
   

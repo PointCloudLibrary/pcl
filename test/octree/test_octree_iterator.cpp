@@ -58,7 +58,7 @@ struct OctreeIteratorBaseTest : public testing::Test
 
 
   // methods
-  virtual void SetUp ()
+  void SetUp () override
   {
     octree_.setTreeDepth (2); //can have at most 8^2 leaves
   }
@@ -108,7 +108,7 @@ struct OctreeIteratorTest : public OctreeIteratorBaseTest
   // methods
   OctreeIteratorTest () : it_ (&octree_, tree_depth_) {}
 
-  virtual void SetUp ()
+  void SetUp () override
   {
     // Set up my octree
     octree_.setTreeDepth (tree_depth_); //can have at most 8 leaves
@@ -210,7 +210,7 @@ struct OctreeBaseBeginEndIteratorsTest : public testing::Test
   typedef OctreeBase<int> OctreeT;
 
   // Methods
-  void SetUp ()
+  void SetUp () override
   {
     // Set tree depth
     oct_a_.setTreeDepth (2);
@@ -517,7 +517,6 @@ TEST_F (OctreeBaseIteratorsForLoopTest, LeafNodeDepthFirstIterator)
   IteratorT it_a;
   IteratorT it_a_end = oct_a_.leaf_depth_end ();
 
-  unsigned int node_count = 0;
   unsigned int branch_count = 0;
   unsigned int leaf_count = 0;
 
@@ -534,10 +533,9 @@ TEST_F (OctreeBaseIteratorsForLoopTest, LeafNodeDepthFirstIterator)
     {
       leaf_count++;
     }
-    node_count++;
   }
 
-  // Check the node_count, branch_count and leaf_count values
+  // Check the branch_count and leaf_count values
   ASSERT_EQ (leaf_count, 64);
   ASSERT_EQ (branch_count, 0);
   ASSERT_EQ (oct_a_.getLeafCount (), leaf_count);
@@ -545,7 +543,6 @@ TEST_F (OctreeBaseIteratorsForLoopTest, LeafNodeDepthFirstIterator)
   // Iterate over the octree oct_a_ with a depth max of 1.
   // As oct_a_ has a depth level of 2, we should only iterate
   // over 9 branch node: the root node + 8 node at depth 1
-  node_count = 0;
   branch_count = 0;
   leaf_count = 0;
   unsigned int max_depth = 1;
@@ -561,10 +558,9 @@ TEST_F (OctreeBaseIteratorsForLoopTest, LeafNodeDepthFirstIterator)
     {
       leaf_count++;
     }
-    node_count++;
   }
 
-  // Check the node_count, branch_count and leaf_count values
+  // Check the branch_count and leaf_count values
   ASSERT_EQ (leaf_count, 0);
   ASSERT_EQ (branch_count, 0);
 }
@@ -840,7 +836,7 @@ struct OctreeBaseWalkThroughIteratorsTest : public testing::Test
   typedef OctreeBase<int> OctreeT;
 
   // Methods
-  void SetUp ()
+  void SetUp () override
   {
     // Create manually an irregular octree.
     // Graphically, this octree appears as follows:
@@ -1216,7 +1212,7 @@ struct OctreePointCloudAdjacencyBeginEndIteratorsTest
     , oct_b_ (1)
   {}
 
-  void SetUp ()
+  void SetUp () override
   {
     // Replicable results
     std::srand (42);
@@ -1464,7 +1460,7 @@ struct OctreePointCloudSierpinskiTest
     , depth_ (7)
   {}
 
-  void SetUp ()
+  void SetUp () override
   {
     // Create a point cloud which points are inside Sierpinski fractal voxel at the deepest level
     // https://en.wikipedia.org/wiki/Sierpinski_triangle

@@ -1,6 +1,3 @@
-# cmake_parse_arguments support for CMake 2.8.2 and older
-include (cmake/CMakeParseArguments.cmake)
-
 ###############################################################################
 # Turn a list into a string, with each item separated by spaces.
 # _string Name of the destination variable.
@@ -9,8 +6,8 @@ macro(LIST_TO_STRING _string _list)
     set(${_string})
     foreach(_item ${_list})
         set(${_string} "${${_string}} ${_item}")
-    endforeach(_item)
-endmacro(LIST_TO_STRING)
+    endforeach()
+endmacro()
 
 
 ###############################################################################
@@ -24,9 +21,9 @@ macro(FILTER_LIST _list _pattern _output)
     foreach(_item ${_list})
         if("${_item}" MATCHES ${_pattern})
             set(${_output} ${${_output}} ${_item})
-        endif("${_item}" MATCHES ${_pattern})
-    endforeach(_item)
-endmacro(FILTER_LIST)
+        endif()
+    endforeach()
+endmacro()
 
 
 ###############################################################################
@@ -38,8 +35,8 @@ macro(PREFIX_LIST _output _prefix _list)
     set(${_output})
     foreach(_item ${_list})
         list(APPEND ${_output} "${_prefix}${_item}")
-    endforeach(_item)
-endmacro(PREFIX_LIST)
+    endforeach()
+endmacro()
 
 ###############################################################################
 # Remove vtk definitions
@@ -54,26 +51,20 @@ macro(REMOVE_VTK_DEFINITIONS)
         endif()
     endforeach()
     remove_definitions(${_vtk_definitions})
-endmacro(REMOVE_VTK_DEFINITIONS)
+endmacro()
 
 ###############################################################################
 # Pull the component parts out of the version number.
 macro(DISSECT_VERSION)
-    # Find version components
-    string(REGEX REPLACE "^([0-9]+).*" "\\1"
-        PCL_MAJOR_VERSION "${PCL_VERSION}")
-    string(REGEX REPLACE "^[0-9]+\\.([0-9]+).*" "\\1"
-        PCL_MINOR_VERSION "${PCL_VERSION}")
-    string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
-        PCL_REVISION_VERSION "${PCL_VERSION}")
-    set(PCL_VERSION_PLAIN "${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}.${PCL_REVISION_VERSION}")
-    if(${PCL_VERSION} MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+-dev$")
+    # Detect if we're in a developlment version and generate pretty version string
+    if(PCL_VERSION_TWEAK EQUAL 99)
         set(PCL_DEV_VERSION 1)
-        set(PCL_VERSION_PLAIN "${PCL_VERSION_PLAIN}.99")
+        set(PCL_VERSION_PRETTY "${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.${PCL_VERSION_PATCH}-dev")
     else()
         set(PCL_DEV_VERSION 0)
+        set(PCL_VERSION_PRETTY "${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.${PCL_VERSION_PATCH}")
     endif()
-endmacro(DISSECT_VERSION)
+endmacro()
 
 ###############################################################################
 # Get the operating system information. Generally, CMake does a good job of
@@ -86,10 +77,10 @@ macro(GET_OS_INFO)
     string(REGEX MATCH "Linux" OS_IS_LINUX ${CMAKE_SYSTEM_NAME})
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(OS_IS_64BIT TRUE)
-    else(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    else()
         set(OS_IS_64BIT FALSE)
-    endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
-endmacro(GET_OS_INFO)
+    endif()
+endmacro()
 
 
 ###############################################################################
@@ -100,25 +91,25 @@ endmacro(GET_OS_INFO)
 # subdirectory named after the library in question (e.g.
 # "registration/blorgle.h")
 macro(SET_INSTALL_DIRS)
-  if (NOT DEFINED LIB_INSTALL_DIR)
+  if(NOT DEFINED LIB_INSTALL_DIR)
     set(LIB_INSTALL_DIR "lib")
-  endif (NOT DEFINED LIB_INSTALL_DIR)
+  endif()
     if(NOT ANDROID)
       set(INCLUDE_INSTALL_ROOT
-          "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
-    else(NOT ANDROID)
+          "include/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
+    else()
       set(INCLUDE_INSTALL_ROOT "include") # Android, don't put into subdir
-    endif(NOT ANDROID)
+    endif()
     set(INCLUDE_INSTALL_DIR "${INCLUDE_INSTALL_ROOT}/pcl")
-    set(DOC_INSTALL_DIR "share/doc/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+    set(DOC_INSTALL_DIR "share/doc/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
     set(BIN_INSTALL_DIR "bin")
     set(PKGCFG_INSTALL_DIR "${LIB_INSTALL_DIR}/pkgconfig")
     if(WIN32 AND NOT MINGW)
         set(PCLCONFIG_INSTALL_DIR "cmake")
-      else(WIN32 AND NOT MINGW)
-        set(PCLCONFIG_INSTALL_DIR "share/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
-      endif(WIN32 AND NOT MINGW)
-endmacro(SET_INSTALL_DIRS)
+      else()
+        set(PCLCONFIG_INSTALL_DIR "share/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
+      endif()
+endmacro()
 
 
 ###############################################################################
@@ -157,11 +148,11 @@ macro(PROCESS_ARGUMENTS _sources_args _include_dirs_args _lib_dirs_args
             set(_current_dest ${_cflags_args})
         elseif(_arg STREQUAL "IDL")
             set(_current_dest ${_idl_args})
-        else(_arg STREQUAL "SOURCES")
+        else()
             list(APPEND ${_current_dest} ${_arg})
-        endif(_arg STREQUAL "SOURCES")
-    endforeach(_arg)
-endmacro(PROCESS_ARGUMENTS)
+        endif()
+    endforeach()
+endmacro()
 
 
 ###############################################################################
@@ -171,7 +162,7 @@ endmacro(PROCESS_ARGUMENTS)
 # _value The value.
 macro(SET_IN_MAP _map _key _value)
     set("${_map}_${_key}" "${_value}")
-endmacro(SET_IN_MAP)
+endmacro()
 
 
 ###############################################################################
@@ -181,7 +172,7 @@ endmacro(SET_IN_MAP)
 # _value The value.
 macro(SET_IN_GLOBAL_MAP _map _key _value)
     set("${_map}_${_key}" "${_value}" CACHE INTERNAL "Map value" FORCE)
-endmacro(SET_IN_GLOBAL_MAP)
+endmacro()
 
 
 ###############################################################################
@@ -191,7 +182,7 @@ endmacro(SET_IN_GLOBAL_MAP)
 # _key The key name.
 macro(GET_IN_MAP _dest _map _key)
     set(${_dest} ${${_map}_${_key}})
-endmacro(GET_IN_MAP)
+endmacro()
 
 ##########################################################################
 # This function were copied from boost-cmake project.                    #
@@ -204,8 +195,8 @@ endmacro(GET_IN_MAP)
 # See accompanying file LICENSE_1_0.txt or copy at                       #
 #   http://www.boost.org/LICENSE_1_0.txt                                 #
 ##########################################################################
-# Perform a reverse topological sort on the given LIST. 
-#   
+# Perform a reverse topological sort on the given LIST.
+#
 #   topological_sort(my_list "MY_" "_EDGES")
 #
 # LIST is the name of a variable containing a list of elements to be
@@ -227,7 +218,7 @@ endmacro(GET_IN_MAP)
 # using the following variables:
 #
 #     MY_A_EDGES     b
-#     MY_B_EDGES     
+#     MY_B_EDGES
 #     MY_C_EDGES     a b
 #
 #  With the involcation of topological_sort shown above and these
@@ -247,9 +238,9 @@ macro(topological_sort LIST PREFIX SUFFIX)
 
         # If we haven't already processed this vertex, start a depth-first
         # search from where.
-        if (NOT FOUND_${UPPER_VERTEX})
+        if(NOT FOUND_${UPPER_VERTEX})
             # Push this vertex onto the stack with all of its outgoing edges
-            string(REPLACE ";" " " NEW_ELEMENT 
+            string(REPLACE ";" " " NEW_ELEMENT
                 "${VERTEX};${${PREFIX}${UPPER_VERTEX}${SUFFIX}}")
             list(APPEND STACK ${NEW_ELEMENT})
 
@@ -277,7 +268,7 @@ macro(topological_sort LIST PREFIX SUFFIX)
                     list(REMOVE_AT OUT_EDGES 0)
 
                     string(TOUPPER ${TARGET} UPPER_TARGET)
-                    if (NOT FOUND_${UPPER_TARGET})
+                    if(NOT FOUND_${UPPER_TARGET})
                         # We have not seen the target before, so we will traverse
                         # its outgoing edges before coming back to our
                         # source. This is the key to the depth-first traversal.
@@ -287,16 +278,16 @@ macro(topological_sort LIST PREFIX SUFFIX)
 
                         # Push the remaining edges for the current vertex onto the
                         # stack
-                        string(REPLACE ";" " " NEW_ELEMENT 
+                        string(REPLACE ";" " " NEW_ELEMENT
                             "${SOURCE};${OUT_EDGES}")
                         list(APPEND STACK ${NEW_ELEMENT})
 
                         # Setup the new source and outgoing edges
                         set(SOURCE ${TARGET})
                         string(TOUPPER ${SOURCE} UPPER_SOURCE)
-                        set(OUT_EDGES 
+                        set(OUT_EDGES
                             ${${PREFIX}${UPPER_SOURCE}${SUFFIX}})
-                    endif(NOT FOUND_${UPPER_TARGET})
+                    endif()
 
                     list(LENGTH OUT_EDGES OUT_DEGREE)
                 endwhile (OUT_DEGREE GREATER 0)
@@ -308,11 +299,11 @@ macro(topological_sort LIST PREFIX SUFFIX)
                 # Check the length of the stack
                 list(LENGTH STACK STACK_LENGTH)
             endwhile(STACK_LENGTH GREATER 0)
-        endif (NOT FOUND_${UPPER_VERTEX})
-    endforeach(VERTEX)
+        endif()
+    endforeach()
     # Somewhere a # slaps into the list so remove it
     list(REMOVE_ITEM ${LIST} "#")
-endmacro(topological_sort)
+endmacro()
 
 ##
 # Swaps 2 elements at _pos1 and _pos2 of a list
@@ -331,10 +322,10 @@ macro(swap_elements _list _pos1 _pos2)
     if(${_pos1} GREATER ${_pos2})
       set(pos1 ${${_pos2}})
       set(pos2 ${${_pos1}})
-    else(${_pos1} GREATER ${_pos2})
+    else()
       set(pos1 ${${_pos1}})
-      set(pos2 ${${_pos2}})   
-    endif(${_pos1} GREATER ${_pos2})
+      set(pos2 ${${_pos2}})
+    endif()
 
     list(GET ${_list} ${pos1} element1)
     math(EXPR distance "${pos2} - ${pos1}")
@@ -346,12 +337,12 @@ macro(swap_elements _list _pos1 _pos2)
       list(INSERT ${_list} ${pos2} ${element1})
       math(EXPR pos2 "${pos2} + 1")
       list(REMOVE_AT ${_list} ${pos2})
-    else(distance GREATER 1)
+    else()
       list(REMOVE_AT ${_list} ${pos1})
       list(INSERT ${_list} ${pos2} ${element1})
-    endif(distance GREATER 1)
-  endif(NOT (${_pos1} EQUAL ${_pos2}))
-endmacro(swap_elements)
+    endif()
+  endif()
+endmacro()
 
 ##
 # Fills a list with _length x _value
@@ -362,12 +353,12 @@ endmacro(swap_elements)
 macro(fill_list _list _length _value)
   if(${_length} LESS 1)
     message(FATAL_ERROR "${_length} must be at least equal to 1")
-  endif(${_length} LESS 1)
+  endif()
   math(EXPR size "${${_length}} - 1")
   foreach(counter RANGE ${size})
     list(APPEND ${_list} ${_value})
-  endforeach(counter)
-endmacro(fill_list)
+  endforeach()
+endmacro()
 
 ##
 # Set the value at element a known position of a list
@@ -379,11 +370,11 @@ macro(set_in_list _list _position _value)
   list(INSERT ${_list} ${${_position}} ${${_value}})
   math(EXPR next "${${_position}} + 1")
   list(REMOVE_AT ${_list} ${next})
-endmacro(set_in_list)
+endmacro()
 
 ###
 # Sorts list B the same way list A was sorted by fetching the indices
-# _list [IN] original list A 
+# _list [IN] original list A
 # _sorted_list [IN] list A after sorting
 # _to_sort_relative [IN/OUT] list B
 ##
@@ -400,11 +391,11 @@ macro(sort_relative _list _sorted_list _to_sort_relative)
     message(STATUS "Original list: ${${_list}}")
     message(STATUS "Sorted list: ${${_sorted_list}}")
     message(FATAL_ERROR "size mismatch between ${_sorted_list} (length ${sorted_list_length}) and ${_list} (length ${list_length})")
-  endif(NOT (list_length EQUAL sorted_list_length))
+  endif()
 
   if(NOT (list_length EQUAL to_sort_list_length))
     message(FATAL_ERROR "size mismatch between ${_to_sort_relative} ${to_sort_list_length} and ${_list} ${list_length}")
-  endif(NOT (list_length EQUAL to_sort_list_length))
+  endif()
   # unset the temporary list to avoid surprises (I had some them and were hard to find)
   unset(tmp_list)
   # fill it with a dummy value
@@ -420,10 +411,10 @@ macro(sort_relative _list _sorted_list _to_sort_relative)
     set_in_list(tmp_list sorted_position to_insert)
     # increment the counter
     math(EXPR counter "${counter} + 1")
-  endforeach(loop_var)
+  endforeach()
   # swap the temporary list and list to sort
   set(${_to_sort_relative} ${tmp_list})
-endmacro(sort_relative)
+endmacro()
 
 
 ###############################################################################
@@ -445,8 +436,8 @@ function(find_python_module module)
     if(NOT _${module}_status)
       set(PY_${module_upper} ${_${module}_location} CACHE STRING
         "Location of Python module ${module}")
-    endif(NOT _${module}_status)
-  endif(NOT PY_${module_upper})
+    endif()
+  endif()
   find_package_handle_standard_args(PY_${module} DEFAULT_MSG PY_${module_upper})
 endfunction(find_python_module)
 

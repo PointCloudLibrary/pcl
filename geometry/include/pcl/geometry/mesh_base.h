@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_MESH_BASE_H
-#define PCL_GEOMETRY_MESH_BASE_H
+#pragma once
 
 #include <vector>
 
@@ -2151,5 +2150,3 @@ namespace pcl
     };
   } // End namespace geometry
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_MESH_BASE_H

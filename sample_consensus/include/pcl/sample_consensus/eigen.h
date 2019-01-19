@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_EIGEN_H_
-#define PCL_SAMPLE_CONSENSUS_EIGEN_H_
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header 
@@ -46,5 +45,3 @@
 
 #include <Eigen/Core>
 #include <unsupported/Eigen/NonLinearOptimization>
-
-#endif    // PCL_SAMPLE_CONSENSUS_EIGEN_H_

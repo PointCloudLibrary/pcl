@@ -40,7 +40,7 @@
 #include <cstring>
 #include <vector>
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 
 void
 pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices)

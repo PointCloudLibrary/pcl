@@ -9,8 +9,7 @@
  *
  */
  
-#ifndef _CUTIL_INLINE_FUNCTIONS_RUNTIME_H_
-#define _CUTIL_INLINE_FUNCTIONS_RUNTIME_H_
+#pragma once
 
 #ifdef _WIN32
 #ifdef _DEBUG // Do this only in debug mode...
@@ -43,20 +42,12 @@
 
 inline cudaError cutilDeviceSynchronize()
 {
-#if CUDART_VERSION >= 4000
 	return cudaDeviceSynchronize();
-#else
-	return cudaThreadSynchronize();
-#endif
 }
 
 inline cudaError cutilDeviceReset()
 {
-#if CUDART_VERSION >= 4000
 	return cudaDeviceReset();
-#else
-	return cudaThreadExit();
-#endif
 }
 
 inline void __cutilCondition(int val, char *file, int line) 
@@ -484,5 +475,3 @@ inline bool cutilCudaCapabilities(int major_version, int minor_version, int argc
         return false;
     }
 }
-
-#endif // _CUTIL_INLINE_FUNCTIONS_RUNTIME_H_

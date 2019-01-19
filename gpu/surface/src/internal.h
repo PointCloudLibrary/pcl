@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_GPU_SURFACE_INTERNAL_H_
-#define PCL_GPU_SURFACE_INTERNAL_H_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 #include <cuda_runtime.h>
@@ -120,5 +119,3 @@ namespace pcl
 	  void pack_hull(const DeviceArray<PointType>& points, const DeviceArray<int>& indeces, DeviceArray<PointType>& output);
   }
 }
-
-#endif /* PCL_GPU_SURFACE_INTERNAL_H_ */ 

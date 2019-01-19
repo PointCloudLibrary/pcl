@@ -1,5 +1,4 @@
-#ifndef PCL_RANGE_LIKELIHOOD
-#define PCL_RANGE_LIKELIHOOD
+#pragma once
 
 #include <GL/glew.h>
 
@@ -269,5 +268,3 @@ namespace pcl
   } // namespace - simulation
 
 } // namespace - pcl
-
-#endif

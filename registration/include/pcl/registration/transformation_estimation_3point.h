@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_3POINT_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_3POINT_H_
+
+#pragma once
 
 #include <pcl/registration/transformation_estimation.h>
 
@@ -70,7 +70,7 @@ namespace pcl
         {};
 
         /** \brief Destructor */
-        virtual ~TransformationEstimation3Point () 
+        ~TransformationEstimation3Point () 
         {};
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
@@ -78,11 +78,11 @@ namespace pcl
           * \param[in] cloud_tgt the target point cloud dataset
           * \param[out] transformation_matrix the resultant transformation matrix
           */
-        virtual void
+        void
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
           * \param[in] cloud_src the source point cloud dataset
@@ -90,12 +90,12 @@ namespace pcl
           * \param[in] cloud_tgt the target point cloud dataset
           * \param[out] transformation_matrix the resultant transformation matrix
           */
-        virtual void
+        void
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
           * \param[in] cloud_src the source point cloud dataset
@@ -104,13 +104,13 @@ namespace pcl
           * \param[in] indices_tgt the vector of indices describing the correspondences of the interest points from \a indices_src
           * \param[out] transformation_matrix the resultant transformation matrix
           */
-        virtual void
+        void
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const std::vector<int> &indices_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
           * \param[in] cloud_src the source point cloud dataset
@@ -118,12 +118,12 @@ namespace pcl
           * \param[in] correspondences the vector of correspondences between source and target point cloud
           * \param[out] transformation_matrix the resultant transformation matrix
           */
-        virtual void
+        void
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const pcl::Correspondences &correspondences,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         protected:
 
@@ -141,5 +141,3 @@ namespace pcl
 }; // namespace registration  
 
 #include <pcl/registration/impl/transformation_estimation_3point.hpp>
-
-#endif // PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_3POINT_H_

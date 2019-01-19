@@ -45,7 +45,7 @@ namespace pcl
 template<class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
 void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::initialize(std::string & data_dir)
 {
-  std::string start = "";
+  std::string start;
   std::string ext = std::string ("pcd");
   bf::path dir = data_dir;
 

@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_ISS_3D_H_
-#define PCL_ISS_3D_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 
@@ -222,13 +221,13 @@ namespace pcl
        *  \return true if all the checks are passed, false otherwise
         */
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief Detect the keypoints by performing the EVD of the scatter matrix.
         * \param[out] output the resultant cloud of keypoints
         */
       void
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
 
 
       /** \brief The radius of the spherical neighborhood used to compute the scatter matrix.*/
@@ -272,5 +271,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/iss_3d.hpp>
-
-#endif /* PCL_ISS_3D_H_ */

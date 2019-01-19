@@ -38,7 +38,7 @@
 /// @author Yue Li and Matthew Hielsberg
 
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 #include <pcl/apps/point_cloud_editor/common.h>
 #include <pcl/apps/point_cloud_editor/cloudTransformTool.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>

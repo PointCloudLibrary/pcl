@@ -38,8 +38,7 @@
 /// buffer with the current selection.  The
 /// @author Yue Li and Matthew Hielsberg
 
-#ifndef COPY_COMMAND_H_
-#define COPY_COMMAND_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -71,7 +70,7 @@ class CopyCommand : public Command
     /// @pre Assumes the constructor was given appropriate pointers to the
     /// required objects.
     void
-    execute ()
+    execute () override
     {
       if (!cloud_ptr_)
         return;
@@ -80,7 +79,7 @@ class CopyCommand : public Command
 
     /// @brief undo is not supported for this command.
     void
-    undo ()
+    undo () override
     {
       assert(false);
     }
@@ -114,4 +113,3 @@ class CopyCommand : public Command
     /// a shared pointer pointing to the cloud
     ConstCloudPtr cloud_ptr_;
 };
-#endif //COPY_COMMAND_H_

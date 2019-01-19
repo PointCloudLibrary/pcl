@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTER_H_
-#define PCL_FILTER_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/common/io.h>
@@ -107,7 +106,7 @@ namespace pcl
       }
 
       /** \brief Empty destructor */
-      virtual ~Filter () {}
+      ~Filter () {}
 
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const
@@ -213,7 +212,7 @@ namespace pcl
       }
 
       /** \brief Empty destructor */
-      virtual ~Filter () {}
+      ~Filter () {}
 
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const
@@ -269,5 +268,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/filter.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTER_H_

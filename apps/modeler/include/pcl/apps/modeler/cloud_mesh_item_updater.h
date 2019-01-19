@@ -33,10 +33,10 @@
  *
  *
  */
-#ifndef PCL_MODELER_CLOUD_MESH_ITEM_UPDATER_H_
-#define PCL_MODELER_CLOUD_MESH_ITEM_UPDATER_H_
 
-#include <pcl/apps/modeler/qt.h>
+#pragma once
+
+#include <QObject>
 
 namespace pcl
 {
@@ -61,5 +61,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_CLOUD_MESH_ITEM_UPDATER_H_

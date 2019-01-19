@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_H_
+
+#pragma once
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/cloud_iterator.h>
@@ -69,7 +69,7 @@ namespace pcl
           use_umeyama_ (use_umeyama)
         {}
 
-        virtual ~TransformationEstimationSVD () {};
+        ~TransformationEstimationSVD () {};
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -80,7 +80,7 @@ namespace pcl
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -93,7 +93,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -108,7 +108,7 @@ namespace pcl
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const std::vector<int> &indices_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -121,7 +121,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const pcl::Correspondences &correspondences,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
       protected:
 
@@ -157,5 +157,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/transformation_estimation_svd.hpp>
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_H_ */

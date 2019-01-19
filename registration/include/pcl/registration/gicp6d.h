@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_GICP6D_H_
-#define PCL_GICP6D_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -121,7 +120,7 @@ namespace pcl
        * \param[in] cloud the input point cloud source
        */
       void
-      setInputSource (const PointCloudSourceConstPtr& cloud);
+      setInputSource (const PointCloudSourceConstPtr& cloud) override;
 
       /** \brief Provide a pointer to the input target
        * (e.g., the point cloud that we want to align the input source to)
@@ -129,7 +128,7 @@ namespace pcl
        * \param[in] cloud the input point cloud target
        */
       void
-      setInputTarget (const PointCloudTargetConstPtr& target);
+      setInputTarget (const PointCloudTargetConstPtr& target) override;
 
     protected:
 
@@ -139,7 +138,7 @@ namespace pcl
        */
       void
       computeTransformation (PointCloudSource& output,
-          const Eigen::Matrix4f& guess);
+          const Eigen::Matrix4f& guess) override;
 
       /** \brief Search for the closest nearest neighbor of a given point.
        * \param query the point to search a nearest neighbour for
@@ -178,7 +177,7 @@ namespace pcl
             trivial_ = false;
           }
 
-          virtual
+          
           ~MyPointRepresentation ()
           {
           }
@@ -189,8 +188,8 @@ namespace pcl
             return Ptr (new MyPointRepresentation (*this));
           }
 
-          virtual void
-          copyToFloatArray (const PointXYZLAB &p, float * out) const
+          void
+          copyToFloatArray (const PointXYZLAB &p, float * out) const override
           {
             // copy all of the six values
             out[0] = p.x;
@@ -206,5 +205,3 @@ namespace pcl
       MyPointRepresentation point_rep_;
   };
 }
-
-#endif //#ifndef PCL_GICP6D_H_

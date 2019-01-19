@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_PFH_H_
-#define PCL_PFH_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -190,7 +189,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the PFH feature estimates
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief The number of subdivisions for each angular feature interval. */
       int nr_subdiv_;
@@ -224,6 +223,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/pfh.hpp>
 #endif
-
-#endif  //#ifndef PCL_PFH_H_
-

@@ -291,8 +291,6 @@ void showCameras (pcl::texture_mapping::CameraVector cams, pcl::PointCloud<pcl::
     // create a 5-point visual for each camera
     pcl::PointXYZ p1, p2, p3, p4, p5;
     p1.x=0; p1.y=0; p1.z=0;
-    double angleX = RAD2DEG (2.0 * atan (width / (2.0*focal)));
-    double angleY = RAD2DEG (2.0 * atan (height / (2.0*focal)));
     double dist = 0.75;
     double minX, minY, maxX, maxY;
     maxX = dist*tan (atan (width / (2.0*focal)));
@@ -375,7 +373,6 @@ bool readCamPoseFile(std::string filename, pcl::TextureMapping<pcl::PointXYZ>::C
   }
   myReadFile.seekg(ios::beg);
 
-  char current_line[1024];
   double val;
   
   // go to line 2 to read translations
@@ -450,7 +447,6 @@ main (int argc, char** argv)
   
   const boost::filesystem::path base_dir (".");
   std::string extension (".txt");
-  int cpt_cam = 0;
   for (boost::filesystem::directory_iterator it (base_dir); it != boost::filesystem::directory_iterator (); ++it)
   {
     if(boost::filesystem::is_regular_file (it->status ()) && boost::filesystem::extension (it->path ()) == extension)
@@ -459,7 +455,6 @@ main (int argc, char** argv)
       readCamPoseFile(it->path ().string (), cam);
       cam.texture_file = boost::filesystem::basename (it->path ()) + ".png";
       my_cams.push_back (cam);
-      cpt_cam++ ;
     }
   }
   PCL_INFO ("\tLoaded %d textures.\n", my_cams.size ());

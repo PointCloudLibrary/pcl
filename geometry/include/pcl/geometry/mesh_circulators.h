@@ -40,8 +40,7 @@
 
 // NOTE: This file has been created with 'pcl_src/geometry/include/pcl/geometry/mesh_circulators.py'
 
-#ifndef PCL_GEOMETRY_MESH_CIRCULATORS_H
-#define PCL_GEOMETRY_MESH_CIRCULATORS_H
+#pragma once
 
 #include <pcl/geometry/boost.h>
 #include <pcl/geometry/mesh_indices.h>
@@ -911,5 +910,3 @@ namespace pcl
     };
   } // End namespace geometry
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_MESH_CIRCULATORS_H

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_ML_PERMUTOHEDRAL_H_
-#define PCL_ML_PERMUTOHEDRAL_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
@@ -269,5 +268,3 @@ namespace pcl
   };*/
 
 }
-
-#endif

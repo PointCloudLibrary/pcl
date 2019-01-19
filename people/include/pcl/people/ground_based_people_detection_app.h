@@ -38,8 +38,7 @@
  * Author: Matteo Munaro
  */
 
-#ifndef PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_H_
-#define PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
@@ -372,4 +371,3 @@ namespace pcl
   } /* namespace people */
 } /* namespace pcl */
 #include <pcl/people/impl/ground_based_people_detection_app.hpp>
-#endif /* PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_H_ */

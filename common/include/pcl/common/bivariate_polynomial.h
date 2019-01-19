@@ -36,8 +36,8 @@
  * $Id$
  *
  */
-#ifndef BIVARIATE_POLYNOMIAL_H
-#define BIVARIATE_POLYNOMIAL_H
+
+#pragma once
 
 #include <fstream>
 #include <iostream>
@@ -139,5 +139,3 @@ namespace pcl
 }  // end namespace
 
 #include <pcl/common/impl/bivariate_polynomial.hpp>
-
-#endif

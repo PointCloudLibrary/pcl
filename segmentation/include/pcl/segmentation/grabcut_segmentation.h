@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_GRABCUT
-#define PCL_SEGMENTATION_GRABCUT
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_base.h>
@@ -334,10 +333,10 @@ namespace pcl
         , initialized_ (false)
       {}
       /// Destructor
-      virtual ~GrabCut () {};
+      ~GrabCut () {};
       // /// Set input cloud
       void
-      setInputCloud (const PointCloudConstPtr& cloud);
+      setInputCloud (const PointCloudConstPtr& cloud) override;
       /// Set background points, foreground points = points \ background points
       void
       setBackgroundPoints (const PointCloudConstPtr& background_points);
@@ -480,5 +479,3 @@ namespace pcl
 }
 
 #include <pcl/segmentation/impl/grabcut_segmentation.hpp>
-
-#endif

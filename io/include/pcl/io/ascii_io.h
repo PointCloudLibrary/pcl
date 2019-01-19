@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_ASCII_IO_H_
-#define PCL_IO_ASCII_IO_H_
+#pragma once
 
 #include <pcl/io/file_io.h>
 #include <pcl/PCLPointField.h>
@@ -55,7 +54,7 @@ namespace pcl
   {
     public:
       ASCIIReader ();
-      virtual ~ASCIIReader ();
+      ~ASCIIReader ();
       using FileReader::read;
 
       /* Load only the meta information (number of points, their types, etc),
@@ -78,10 +77,10 @@ namespace pcl
         * add a 512 byte header in front of the actual file, so set the offset
         * to the next byte after the header (e.g., 513).
         */
-      virtual int
+      int
       readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
-                  int &file_version, int &data_type, unsigned int &data_idx, const int offset = 0) ;
+                  int &file_version, int &data_type, unsigned int &data_idx, const int offset = 0) override ;
 
 
       /** \brief Read a point cloud data from a FILE file and store it into a pcl/PCLPointCloud2.
@@ -96,10 +95,10 @@ namespace pcl
         * add a 512 byte header in front of the actual file, so set the offset
         * to the next byte after the header (e.g., 513).
         */
-      virtual int
+      int
       read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &file_version,
-            const int offset = 0);
+            const int offset = 0) override;
 
       /** \brief Set the ascii file point fields.
         */
@@ -117,7 +116,7 @@ namespace pcl
         * \param[in] p  a point type
         */
       template<typename PointT>
-      PCL_DEPRECATED ("Use setInputFields<PointT> () instead")
+      [[deprecated("use parameterless setInputFields<PointT>() instead")]]
       inline void setInputFields (const PointT p)
       {
         (void) p;
@@ -164,9 +163,4 @@ namespace pcl
 	};
 }
 
-
-
-
 #include <pcl/io/impl/ascii_io.hpp>
-
-#endif    // PCL_IO_ASCII_IO_H_

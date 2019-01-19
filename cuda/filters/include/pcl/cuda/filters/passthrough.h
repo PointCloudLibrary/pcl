@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_CUDA_FILTERS_PASSTHROUGH_H_
-#define PCL_CUDA_FILTERS_PASSTHROUGH_H_
+#pragma once
 
 #include <pcl_cuda/filters/filter.h>
 #include <thrust/count.h>
@@ -201,5 +200,3 @@ namespace pcl_cuda
       bool zip_;
   };
 }
-
-#endif  //#ifndef PCL_FILTERS_PASSTHROUGH_H_

@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_MIN_CUT_SEGMENTATION_H_
-#define PCL_MIN_CUT_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/segmentation/boost.h>
 #if (BOOST_VERSION >= 104400)
@@ -108,14 +107,14 @@ namespace pcl
       MinCutSegmentation ();
 
       /** \brief Destructor that frees memory. */
-      virtual
+      
       ~MinCutSegmentation ();
 
       /** \brief This method simply sets the input point cloud.
         * \param[in] cloud the const boost shared pointer to a PointCloud
         */
-      virtual void
-      setInputCloud (const PointCloudConstPtr &cloud);
+      void
+      setInputCloud (const PointCloudConstPtr &cloud) override;
 
       /** \brief Returns normalization value for binary potentials. For more information see the article. */
       double
@@ -326,5 +325,4 @@ namespace pcl
 #include <pcl/segmentation/impl/min_cut_segmentation.hpp>
 #endif
 
-#endif
 #endif

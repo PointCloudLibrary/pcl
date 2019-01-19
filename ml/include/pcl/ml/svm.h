@@ -36,9 +36,7 @@
   *
   */
 
-
-#ifndef _LIBSVM_H_
-#define _LIBSVM_H_
+#pragma once
 
 #define LIBSVM_VERSION 311
 
@@ -161,5 +159,3 @@ extern "C"
 }
 
 #endif
-
-#endif /* _LIBSVM_H_ */

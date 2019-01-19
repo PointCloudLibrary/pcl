@@ -35,12 +35,11 @@
  *
  */
 
-#ifndef PCL_FILTERS_SAMPLING_SURFACE_NORMAL_H_
-#define PCL_FILTERS_SAMPLING_SURFACE_NORMAL_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
-#include <time.h>
-#include <limits.h>
+#include <ctime>
+#include <climits>
 
 namespace pcl
 {
@@ -140,7 +139,7 @@ namespace pcl
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
     private:
 
@@ -249,5 +248,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/sampling_surface_normal.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_SAMPLING_SURFACE_NORMAL_H_

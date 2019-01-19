@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_POINT_CLOUD_ITERATOR_H_
-#define PCL_POINT_CLOUD_ITERATOR_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
@@ -189,5 +188,3 @@ namespace pcl
 } // namespace pcl
 
 #include <pcl/impl/cloud_iterator.hpp>
-
-#endif    // PCL_POINT_CLOUD_ITERATOR_H_

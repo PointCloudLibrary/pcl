@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_VFH_ESTIMATOR_H_
-#define REC_FRAMEWORK_VFH_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/global/global_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
@@ -28,7 +27,7 @@ namespace pcl
         void
         estimate (PointInTPtr & in, PointInTPtr & processed,
                   typename pcl::PointCloud<FeatureT>::CloudVectorType & signatures,
-                  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
+                  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids) override
         {
 
           if (!normal_estimator_)
@@ -64,12 +63,10 @@ namespace pcl
         }
 
         bool
-        computedNormals ()
+        computedNormals () override
         {
           return true;
         }
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_VFH_ESTIMATOR_H_ */

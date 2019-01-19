@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_MULTIPLE_DATA_2D_EXAMPLE_INDEX_H_
-#define PCL_ML_MULTIPLE_DATA_2D_EXAMPLE_INDEX_H_
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -59,5 +58,3 @@ namespace pcl
   };
 
 }
-
-#endif

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_SAMPLE_CONSENSUS_PREREJECTIVE_H_
-#define PCL_REGISTRATION_SAMPLE_CONSENSUS_PREREJECTIVE_H_
+#pragma once
 
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_svd.h>
@@ -131,7 +130,7 @@ namespace pcl
       };
       
       /** \brief Destructor */
-      virtual ~SampleConsensusPrerejective ()
+      ~SampleConsensusPrerejective ()
       {
       }
 
@@ -276,7 +275,7 @@ namespace pcl
         * \param guess The computed transformation
         */
       void 
-      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess) override;
 
       /** \brief Obtain the fitness of a transformation
         * The following metrics are calculated, based on
@@ -316,5 +315,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/sample_consensus_prerejective.hpp>
-
-#endif

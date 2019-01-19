@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_MESH_SOURCE_H_
-#define REC_FRAMEWORK_MESH_SOURCE_H_
+#pragma once
 
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
 #include <pcl/apps/render_views_tesselated_sphere.h>
@@ -255,7 +254,7 @@ namespace pcl
          * \brief Creates the model representation of the training set, generating views if needed
          */
         void
-        generate (std::string & training_dir)
+        generate (std::string & training_dir) override
         {
 
           //create training dir fs if not existent
@@ -263,7 +262,7 @@ namespace pcl
 
           //get models in directory
           std::vector < std::string > files;
-          std::string start = "";
+          std::string start;
           std::string ext = std::string ("ply");
           bf::path dir = path_;
           getModelsInDirectory (dir, start, files, ext);
@@ -290,5 +289,3 @@ namespace pcl
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_MESH_SOURCE_H_ */

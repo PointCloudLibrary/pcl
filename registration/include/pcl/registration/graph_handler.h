@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GRAPH_HANDLER_H_
-#define PCL_GRAPH_HANDLER_H_
+#pragma once
 
 #include <pcl/registration/vertex_estimates.h>
 #include <pcl/registration/edge_measurements.h>
@@ -212,5 +211,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_GRAPH_HANDLER_H_

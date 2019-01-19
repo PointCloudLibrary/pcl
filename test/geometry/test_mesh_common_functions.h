@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_TEST_GEOMETRY_TEST_MESH_COMMON_FUNCTIONS_H
-#define PCL_TEST_GEOMETRY_TEST_MESH_COMMON_FUNCTIONS_H
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -54,7 +53,7 @@ const unsigned int max_number_boundary_vertices = 100;
 
 /** \brief Check if the faces of the mesh are equal to the reference faces (defined by a vector of vertices). */
 template <class MeshT> bool
-hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> faces, const bool verbose = false)
+hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> &faces, const bool verbose = false)
 {
   typedef typename MeshT::VertexAroundFaceCirculator VAFC;
   typedef typename MeshT::VertexIndices              VertexIndices;
@@ -115,7 +114,7 @@ hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> f
  *  \note This method assumes that the vertex data is of type 'int'.
  */
 template <class MeshT> bool
-hasFaces (const MeshT& mesh, const std::vector <std::vector <int> > faces, const bool verbose = false)
+hasFaces (const MeshT& mesh, const std::vector <std::vector <int> > &faces, const bool verbose = false)
 {
   typedef typename MeshT::VertexAroundFaceCirculator VAFC;
   typedef typename MeshT::FaceIndex                  FaceIndex;
@@ -294,7 +293,7 @@ isCircularPermutation (const ContainerT& expected, const ContainerT& actual, con
 
 /** \brief Check if both the inner and outer input vector are a circular permutation. */
 template <class ContainerT> bool
-isCircularPermutationVec (const std::vector <ContainerT> expected, const std::vector <ContainerT> actual, const bool verbose = false)
+isCircularPermutationVec (const std::vector <ContainerT> &expected, const std::vector <ContainerT> &actual, const bool verbose = false)
 {
   const unsigned int n = static_cast<unsigned int> (expected.size ());
   EXPECT_EQ (n, actual.size ());
@@ -371,5 +370,3 @@ checkHalfEdge (const MeshT&                        mesh,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif // PCL_TEST_GEOMETRY_TEST_MESH_COMMON_FUNCTIONS_H

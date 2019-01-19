@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_PCL_VISUALIZER_REN_WIN_INTERACT_MAP_H_
-#define PCL_PCL_VISUALIZER_REN_WIN_INTERACT_MAP_H_
+#pragma once
 
 #include <map>
 #include <string>
@@ -48,7 +47,6 @@ class vtkRenderer;
 class vtkRenderWindow;
 class vtkRenderWindowInteractor;
 class vtkInteractorStyleTrackballCamera;
-class PCLVisualizerInteractor;
 
 namespace pcl
 {
@@ -71,16 +69,11 @@ namespace pcl
 
         /** \brief The render window interactor. */
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
-#else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-#endif
+
         /** \brief The render window interactor style. */
         vtkSmartPointer<vtkInteractorStyleTrackballCamera> style_;
     };
     typedef std::map<std::string, RenWinInteract> RenWinInteractMap;
   }
 }
-
-#endif

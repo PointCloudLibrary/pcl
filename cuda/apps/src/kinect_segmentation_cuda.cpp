@@ -225,7 +225,7 @@ class Segmentation
           normals = computeFastPointNormals<Storage> (data);
         else
           normals = computePointNormals<Storage> (data->points.begin (), data->points.end (), focallength, data, radius_cm / 100.0f, nr_neighbors);
-        cudaThreadSynchronize ();
+        cudaDeviceSynchronize ();
       }
 
       // retrieve normals as an image..

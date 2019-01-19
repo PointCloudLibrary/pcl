@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_MESH_CONVERSION_H
-#define PCL_GEOMETRY_MESH_CONVERSION_H
+#pragma once
 
 #include <pcl/PolygonMesh.h>
 #include <pcl/conversions.h>
@@ -130,5 +129,3 @@ namespace pcl
     }
   } // End namespace geometry
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_MESH_CONVERSION_H

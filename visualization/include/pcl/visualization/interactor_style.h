@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_PCL_VISUALIZER_INTERACTOR_STYLE_H_
-#define PCL_PCL_VISUALIZER_INTERACTOR_STYLE_H_
+
+#pragma once
 
 #include <pcl/console/print.h>
 #include <pcl/visualization/common/actor_map.h>
@@ -122,7 +122,7 @@ namespace pcl
         {}
       
         /** \brief Empty destructor */
-        virtual ~PCLVisualizerInteractorStyle () {}
+        ~PCLVisualizerInteractorStyle () {}
 
         // this macro defines Superclass, the isA functionality and the safe downcast method
         vtkTypeMacro (PCLVisualizerInteractorStyle, vtkInteractorStyleRubberBandPick);
@@ -310,39 +310,39 @@ namespace pcl
         boost::signals2::signal<void (const pcl::visualization::AreaPickingEvent&)> area_picking_signal_;
 
         /** \brief Interactor style internal method. Gets called whenever a key is pressed. */
-        virtual void 
-        OnChar ();
+        void 
+        OnChar () override;
 
         // Keyboard events
-        virtual void 
-        OnKeyDown ();
-        virtual void 
-        OnKeyUp ();
+        void 
+        OnKeyDown () override;
+        void 
+        OnKeyUp () override;
         
         // mouse button events
-        virtual void 	
-        OnMouseMove ();
-        virtual void 	
-        OnLeftButtonDown ();
-        virtual void 	
-        OnLeftButtonUp ();
-        virtual void 	
-        OnMiddleButtonDown ();
-        virtual void 	
-        OnMiddleButtonUp ();
-        virtual void 	
-        OnRightButtonDown ();
-        virtual void 	
-        OnRightButtonUp ();
-        virtual void 	
-        OnMouseWheelForward ();
-        virtual void 	
-        OnMouseWheelBackward ();
+        void 	
+        OnMouseMove () override;
+        void 	
+        OnLeftButtonDown () override;
+        void 	
+        OnLeftButtonUp () override;
+        void 	
+        OnMiddleButtonDown () override;
+        void 	
+        OnMiddleButtonUp () override;
+        void 	
+        OnRightButtonDown () override;
+        void 	
+        OnRightButtonUp () override;
+        void 	
+        OnMouseWheelForward () override;
+        void 	
+        OnMouseWheelBackward () override;
         
         // mouse move event
         /** \brief Interactor style internal method. Gets called periodically if a timer is set. */
-        virtual void 
-        OnTimer ();
+        void 
+        OnTimer () override;
 
         /** \brief Interactor style internal method. Zoom in. */
         void 
@@ -432,12 +432,10 @@ namespace pcl
         bool init_;
 
         /** \brief Interactor style internal method. Gets called whenever a key is pressed. */
-        void OnKeyDown ();
+        void OnKeyDown () override;
 
         /** \brief Interactor style internal method. Gets called periodically if a timer is set. */
-        void OnTimer ();
+        void OnTimer () override;
     };
   }
 }
-
-#endif

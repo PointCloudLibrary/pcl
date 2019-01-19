@@ -40,7 +40,7 @@
 #include <fstream>
 #include <fcntl.h>
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 #include <pcl/io/boost.h>
 #include <pcl/common/io.h>
 #include <pcl/io/low_level_io.h>
@@ -602,7 +602,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
 
     // Unpack the xxyyzz to xyz
     std::vector<char*> pters (fields.size ());
-    int toff = 0;
+    size_t toff = 0;
     for (size_t i = 0; i < pters.size (); ++i)
     {
       pters[i] = &buf[toff];
@@ -1405,7 +1405,7 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
   //   pters[3] = &only_valid_data[offset_of_plane_RGB];
   //
   std::vector<char*> pters (fields.size ());
-  int toff = 0;
+  size_t toff = 0;
   for (size_t i = 0; i < pters.size (); ++i)
   {
     pters[i] = &only_valid_data[toff];

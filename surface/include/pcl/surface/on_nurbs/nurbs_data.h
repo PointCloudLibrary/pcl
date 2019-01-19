@@ -35,12 +35,11 @@
  *
  */
 
-#ifndef NURBS_DATA_H
-#define NURBS_DATA_H
+#pragma once
 
 #include <vector>
 #include <list>
-#include <stdio.h>
+#include <cstdio>
 
 #undef Success
 #include <Eigen/StdVector>
@@ -209,6 +208,3 @@ namespace pcl
 
   }
 }
-
-#endif
-

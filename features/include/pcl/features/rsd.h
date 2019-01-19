@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_RSD_H_
-#define PCL_RSD_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -211,7 +210,7 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains the RSD feature estimates (r_min and r_max values)
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief The list of full distance-angle histograms for all points. */
       boost::shared_ptr<std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > > histograms_;
@@ -234,5 +233,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/rsd.hpp>
 #endif
-
-#endif  //#ifndef PCL_RSD_H_

@@ -89,7 +89,12 @@ TEST (SampleConsensus, InfiniteLoop)
     cloud.points[idx].z = 0.0;
   }
 
+#if defined(DEBUG) || defined(_DEBUG)
+  boost::posix_time::time_duration delay (0, 0, 15, 0);
+#else
   boost::posix_time::time_duration delay (0, 0, 1, 0);
+#endif
+
   boost::function<bool ()> sac_function;
   SampleConsensusModelSpherePtr model (new SampleConsensusModelSphere<PointXYZ> (cloud.makeShared ()));
 

@@ -33,15 +33,19 @@
 *
 *
 */
-#ifndef PCL_MODELER_PARAMETER_H_
-#define PCL_MODELER_PARAMETER_H_
+
+#pragma once
 
 #include <map>
 #include <string>
 
 #include <boost/any.hpp>
-#include <pcl/apps/modeler/qt.h>
 
+#include <QColor>
+#include <QVariant>
+
+class QAbstractItemModel;
+class QWidget;
 
 namespace pcl
 {
@@ -52,7 +56,7 @@ namespace pcl
       public:
         Parameter(const std::string& name, const std::string& description, const boost::any& value):
           name_(name), description_(description), default_value_(value), current_value_(value){}
-        ~Parameter(void) {}
+        ~Parameter() {}
 
         const std::string&
         getName() const {return name_;}
@@ -103,21 +107,21 @@ namespace pcl
 
         operator bool() const {return boost::any_cast<bool>(current_value_);}
 
-        virtual std::string
-        valueTip();
+        std::string
+        valueTip() override;
 
-        virtual QWidget*
-        createEditor(QWidget *parent);
+        QWidget*
+        createEditor(QWidget *parent) override;
 
-        virtual void
-        setEditorData(QWidget *editor);
+        void
+        setEditorData(QWidget *editor) override;
 
-        virtual std::pair<QVariant, int>
-        toModelData();
+        std::pair<QVariant, int>
+        toModelData() override;
 
       protected:
-        virtual void
-        getEditorData(QWidget *editor);
+        void
+        getEditorData(QWidget *editor) override;
     };
 
     class IntParameter : public Parameter
@@ -129,17 +133,17 @@ namespace pcl
 
         operator int() const {return boost::any_cast<int>(current_value_);}
 
-        virtual std::string
-        valueTip();
+        std::string
+        valueTip() override;
 
-        virtual QWidget*
-        createEditor(QWidget *parent);
+        QWidget*
+        createEditor(QWidget *parent) override;
 
-        virtual void
-        setEditorData(QWidget *editor);
+        void
+        setEditorData(QWidget *editor) override;
 
-        virtual std::pair<QVariant, int>
-        toModelData();
+        std::pair<QVariant, int>
+        toModelData() override;
 
         void
         setLow(int low)
@@ -160,8 +164,8 @@ namespace pcl
         }
 
       protected:
-        virtual void
-        getEditorData(QWidget *editor);
+        void
+        getEditorData(QWidget *editor) override;
 
         int     low_;
         int     high_;
@@ -178,21 +182,21 @@ namespace pcl
 
         operator T() const {return boost::any_cast<T>(current_value_);}
 
-        virtual std::string
-        valueTip();
+        std::string
+        valueTip() override;
 
-        virtual QWidget*
-        createEditor(QWidget *parent);
+        QWidget*
+        createEditor(QWidget *parent) override;
 
-        virtual void
-        setEditorData(QWidget *editor);
+        void
+        setEditorData(QWidget *editor) override;
 
-        virtual std::pair<QVariant, int>
-        toModelData();
+        std::pair<QVariant, int>
+        toModelData() override;
 
       protected:
-        virtual void
-        getEditorData(QWidget *editor);
+        void
+        getEditorData(QWidget *editor) override;
 
         const std::map<T, std::string> candidates_;
     };
@@ -206,17 +210,17 @@ namespace pcl
 
         operator double() const {return boost::any_cast<double>(current_value_);}
 
-        virtual std::string
-        valueTip();
+        std::string
+        valueTip() override;
 
-        virtual QWidget*
-        createEditor(QWidget *parent);
+        QWidget*
+        createEditor(QWidget *parent) override;
 
-        virtual void
-        setEditorData(QWidget *editor);
+        void
+        setEditorData(QWidget *editor) override;
 
-        virtual std::pair<QVariant, int>
-        toModelData();
+        std::pair<QVariant, int>
+        toModelData() override;
 
         void
         setLow(double low)
@@ -237,8 +241,8 @@ namespace pcl
         }
 
       protected:
-        virtual void
-        getEditorData(QWidget *editor);
+        void
+        getEditorData(QWidget *editor) override;
 
         double  low_;
         double  high_;
@@ -254,24 +258,22 @@ namespace pcl
 
         operator QColor() const {return boost::any_cast<QColor>(current_value_);}
 
-        virtual std::string
-        valueTip();
+        std::string
+        valueTip() override;
 
-        virtual QWidget*
-        createEditor(QWidget *parent);
+        QWidget*
+        createEditor(QWidget *parent) override;
 
-        virtual void
-        setEditorData(QWidget *editor);
+        void
+        setEditorData(QWidget *editor) override;
 
-        virtual std::pair<QVariant, int>
-        toModelData();
+        std::pair<QVariant, int>
+        toModelData() override;
 
       protected:
-        virtual void
-        getEditorData(QWidget *editor);
+        void
+        getEditorData(QWidget *editor) override;
 
     };
   }
 }
-
-#endif // PCL_MODELER_PARAMETER_H_

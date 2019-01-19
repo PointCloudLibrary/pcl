@@ -35,10 +35,9 @@
  *
  */
 
-#include <pcl/pcl_config.h>
+#pragma once
 
-#ifndef PCL_IO_PCD_GRABBER_H_
-#define PCL_IO_PCD_GRABBER_H_
+#include <pcl/pcl_config.h>
 
 #include <pcl/common/io.h>
 #include <pcl/io/grabber.h>
@@ -95,15 +94,15 @@ namespace pcl
       }
 
       /** \brief Virtual destructor. */
-      virtual ~PCDGrabberBase () throw ();
+      ~PCDGrabberBase () throw ();
 
       /** \brief Starts playing the list of PCD files if frames_per_second is > 0. Otherwise it works as a trigger: publishes only the next PCD file in the list. */
-      virtual void 
-      start ();
+      void 
+      start () override;
       
       /** \brief Stops playing the list of PCD files if frames_per_second is > 0. Otherwise the method has no effect. */
-      virtual void 
-      stop ();
+      void 
+      stop () override;
       
       /** \brief Triggers a callback with new data */
       virtual void 
@@ -112,20 +111,20 @@ namespace pcl
       /** \brief Indicates whether the grabber is streaming or not.
         * \return true if grabber is started and hasn't run out of PCD files.
         */
-      virtual bool 
-      isRunning () const;
+      bool 
+      isRunning () const override;
       
       /** \return The name of the grabber */
-      virtual std::string 
-      getName () const;
+      std::string 
+      getName () const override;
       
       /** \brief Rewinds to the first PCD file in the list.*/
       virtual void 
       rewind ();
 
       /** \brief Returns the frames_per_second. 0 if grabber is trigger-based */
-      virtual float 
-      getFramesPerSecond () const;
+      float 
+      getFramesPerSecond () const override;
 
       /** \brief Returns whether the repeat flag is on */
       bool 
@@ -160,22 +159,22 @@ namespace pcl
       PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second = 0, bool repeat = false);
       
       /** \brief Virtual destructor. */
-      virtual ~PCDGrabber () throw ()
+      ~PCDGrabber () throw ()
       {
         stop ();
       }
     
       // Inherited from FileGrabber
       const boost::shared_ptr< const pcl::PointCloud<PointT> >
-      operator[] (size_t idx) const;
+      operator[] (size_t idx) const override;
 
       // Inherited from FileGrabber
       size_t
-      size () const;
+      size () const override;
     protected:
 
-      virtual void 
-      publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation, const std::string& file_name) const;
+      void 
+      publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation, const std::string& file_name) const override;
       
       boost::signals2::signal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>* signal_;
       boost::signals2::signal<void (const std::string&)>* file_name_signal_;
@@ -307,4 +306,3 @@ namespace pcl
 #endif
   }
 }
-#endif

@@ -319,11 +319,7 @@ private:
       wk_cubeSource->SetBounds (x - s, x + s, y - s, y + s, z - s, z + s);
       wk_cubeSource->Update ();
 
-#if VTK_MAJOR_VERSION < 6
-      appendFilter->AddInput (wk_cubeSource->GetOutput ());
-#else
       appendFilter->AddInputData (wk_cubeSource->GetOutput ());
-#endif
     }
 
     // Remove any duplicate points

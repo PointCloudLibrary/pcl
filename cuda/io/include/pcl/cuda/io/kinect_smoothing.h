@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_KINECT_SMOOTHING_H_
-#define PCL_CUDA_KINECT_SMOOTHING_H_
+#pragma once
 
 #include <pcl/io/openni_camera/openni_image.h>
 #include <thrust/tuple.h>
@@ -293,6 +292,3 @@ namespace pcl
 
   } // namespace
 } // namespace
-
-#endif
-

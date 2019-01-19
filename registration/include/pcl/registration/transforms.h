@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMS_H_
-#define PCL_REGISTRATION_TRANSFORMS_H_
+
+#pragma once
 
 #include <pcl/common/transforms.h>
-
-#endif // PCL_REGISTRATION_TRANSFORMS_H_

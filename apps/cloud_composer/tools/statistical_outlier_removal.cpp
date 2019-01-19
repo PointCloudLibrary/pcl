@@ -4,11 +4,7 @@
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/point_types.h>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  Q_EXPORT_PLUGIN2(cloud_composer_statistical_outlier_removal_tool, pcl::cloud_composer::StatisticalOutlierRemovalToolFactory)
-#else
-  Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
-#endif
+Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
 
 pcl::cloud_composer::StatisticalOutlierRemovalTool::StatisticalOutlierRemovalTool (PropertiesModel* parameter_model, QObject* parent)
   : ModifyItemTool (parameter_model, parent)

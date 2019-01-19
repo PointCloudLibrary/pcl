@@ -120,7 +120,7 @@ namespace pcl
       }
     };
 
-#if not defined(__AVX__)
+#if !defined(__AVX__)
 
     /** Optimized version for double-precision transform using SSE2 intrinsics. */
     template<>

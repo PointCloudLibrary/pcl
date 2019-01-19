@@ -42,6 +42,7 @@
 #include <pcl/apps/modeler/render_window_item.h>
 
 #include <QFileInfo>
+#include <QSettings>
 #include <vtkActor.h>
 #include <vtkRenderer.h>
 

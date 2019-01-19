@@ -34,8 +34,7 @@
  *
  */
 
-#ifndef PCL_CRF_NORMAL_SEGMENTATION_H_
-#define PCL_CRF_NORMAL_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 
@@ -78,6 +77,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/crf_normal_segmentation.hpp>
-#endif
-
 #endif

@@ -61,13 +61,13 @@ using namespace pcl;
 
 void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
                      vtkSmartPointer<vtkImageData>  rgb_data,
-                     std::string                    time,
+                     const std::string&             time,
                      float                          focal_length,
                      bool                           format,
                      bool                           color,
                      bool                           depth,
                      bool                           use_output_path,
-                     std::string                    output_path)
+                     const std::string&             output_path)
 {
   // Retrieve the entries from the image data and copy them into the output RGB cloud
   int rgb_components = rgb_data->GetNumberOfScalarComponents();
@@ -181,7 +181,7 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
   return;
 }
 
-void print_usage(void)
+void print_usage()
 {
   PCL_INFO("usage: convert -rgb <rgb_path> -depth <depth_path> -out <output_path> options\n");
   PCL_INFO("This program converts rgb and depth tiff files to pcd files");

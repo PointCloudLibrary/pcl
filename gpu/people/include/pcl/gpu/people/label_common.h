@@ -37,8 +37,7 @@
  * @author: Koen Buys
  */
 
-#ifndef PCL_GPU_PEOPLE_LABEL_COMMON_H_
-#define PCL_GPU_PEOPLE_LABEL_COMMON_H_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 #include <cuda_runtime.h> // for float4, uchar4, delete this in future
@@ -282,5 +281,3 @@ inline std::ostream& operator << (std::ostream& os, const part_t& p)
   return (os);
 }
  **/
-
-#endif

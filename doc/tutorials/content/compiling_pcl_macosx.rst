@@ -44,7 +44,7 @@ Required
 
 The following libraries are **Required** to build PCL.
 
-- **CMake** version >= 2.8.3 (http://www.cmake.org)
+- **CMake** version >= 3.1.0 (http://www.cmake.org)
    Cross-platform, open-source build system.
 
    .. note::

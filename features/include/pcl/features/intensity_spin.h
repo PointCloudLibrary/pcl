@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_INTENSITY_SPIN_H_
-#define PCL_INTENSITY_SPIN_H_
+
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -132,7 +132,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the intensity-domain spin image features
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
     
       /** \brief The number of distance bins in the descriptor. */
       int nr_distance_bins_;
@@ -149,4 +149,6 @@ namespace pcl
 #include <pcl/features/impl/intensity_spin.hpp>
 #endif
 
-#endif // #ifndef PCL_INTENSITY_SPIN_H_
+
+
+

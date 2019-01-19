@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_KDTREE_FLANN_H_
-#define PCL_KDTREE_FLANN_H_
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header 
@@ -52,7 +51,3 @@
 #if defined _MSC_VER
 #  pragma warning(default: 4267)
 #endif
-
-#endif    // PCL_KDTREE_FLANN_H_
-
-

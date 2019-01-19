@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_3DSC_H_
-#define PCL_FEATURES_3DSC_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/boost.h>
@@ -116,7 +115,7 @@ namespace pcl
           rng_->base ().seed (12345u);
       }
 
-      virtual ~ShapeContext3DEstimation() {}
+      ~ShapeContext3DEstimation() {}
 
       //inline void
       //setAzimuthBins (size_t bins) { azimuth_bins_ = bins; }
@@ -163,7 +162,7 @@ namespace pcl
     protected:
       /** \brief Initialize computation by allocating all the intervals and the volume lookup table. */
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief Estimate a descriptor for a given point.
         * \param[in] index the index of the point to estimate a descriptor for
@@ -180,7 +179,7 @@ namespace pcl
         * \param[out] output the resultant feature
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief Values of the radii interval */
       std::vector<float> radii_interval_;
@@ -238,5 +237,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/3dsc.hpp>
 #endif
-
-#endif  //#ifndef PCL_3DSC_H_

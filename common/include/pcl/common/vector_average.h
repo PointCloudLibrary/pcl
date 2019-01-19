@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_COMMON_VECTOR_AVERAGE_H
-#define PCL_COMMON_VECTOR_AVERAGE_H
+#pragma once
 
 #include <pcl/common/eigen.h>
 
@@ -117,6 +116,3 @@ namespace pcl
 }  // END namespace
 
 #include <pcl/common/impl/vector_average.hpp>
-
-#endif  // #ifndef PCL_VECTOR_AVERAGE_H
-

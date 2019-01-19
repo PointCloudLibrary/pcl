@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_DEPTH_SENSE_GRABBER_H
-#define PCL_IO_DEPTH_SENSE_GRABBER_H
+#pragma once
 
 #include <pcl/io/grabber.h>
 #include <pcl/point_cloud.h>
@@ -150,6 +149,3 @@ namespace pcl
   };
 
 }
-
-#endif /* PCL_IO_DEPTH_SENSE_GRABBER_H */
-

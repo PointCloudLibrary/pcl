@@ -34,8 +34,8 @@
  * $Id$
  *
  */
-#ifndef PCL_PCL_VISUALIZER_COMMON_H_
-#define PCL_PCL_VISUALIZER_COMMON_H_
+
+#pragma once
 
 #if defined __GNUC__
 #pragma GCC system_header
@@ -213,5 +213,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/common/impl/common.hpp>
-
-#endif

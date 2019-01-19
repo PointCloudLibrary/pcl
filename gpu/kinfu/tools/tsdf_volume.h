@@ -34,9 +34,7 @@
  *  $Id: tsdf_volume.h 6459 2012-07-18 07:50:37Z dpb $
  */
 
-
-#ifndef TSDF_VOLUME_H_
-#define TSDF_VOLUME_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -296,5 +294,3 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 }
-
-#endif /* TSDF_VOLUME_H_ */

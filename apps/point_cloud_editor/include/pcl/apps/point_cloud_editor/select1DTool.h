@@ -37,8 +37,7 @@
 /// @details Tool for selecting and deselecting individual points in the cloud.
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef SELECT_1D_TOOL_H
-#define SELECT_1D_TOOL_H
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/toolInterface.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -59,14 +58,14 @@ class Select1DTool : public ToolInterface
     /// @brief Does nothing for 1D selection.
     /// @sa end
     void
-    start (int, int, BitMask, BitMask)
+    start (int, int, BitMask, BitMask) override
     {
     }
   
     /// @brief Does nothing for 1D selection.
     /// @sa end
     void
-    update (int, int, BitMask, BitMask)
+    update (int, int, BitMask, BitMask) override
     {
     }
 
@@ -86,11 +85,11 @@ class Select1DTool : public ToolInterface
     /// @param buttons The state of the mouse buttons.  All interaction with
     /// this tool requires the LEFT mouse button.  All others are ignored.
     void
-    end (int x, int y, BitMask modifiers, BitMask buttons);
+    end (int x, int y, BitMask modifiers, BitMask buttons) override;
 
     /// @brief This function does nothing.
     void
-    draw () const
+    draw () const override
     {
     }
 
@@ -107,4 +106,3 @@ class Select1DTool : public ToolInterface
     /// a shared pointer pointing to the cloud object
     CloudPtr cloud_ptr_;
 };
-#endif // SELECT_1D_TOOL_H

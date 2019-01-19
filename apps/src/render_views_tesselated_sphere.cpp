@@ -13,12 +13,8 @@
 #include <vtkLoopSubdivisionFilter.h>
 #include <vtkTriangle.h>
 #include <vtkTransform.h>
-#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>4)
 #include <vtkHardwareSelector.h>
 #include <vtkSelectionNode.h>
-#else 
-#include <vtkVisibleCellSelector.h>
-#endif
 #include <vtkSelection.h>
 #include <vtkCellArray.h>
 #include <vtkTransformFilter.h>
@@ -61,11 +57,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
   vtkSmartPointer<vtkTransformFilter> trans_filter_center = vtkSmartPointer<vtkTransformFilter>::New ();
   trans_filter_center->SetTransform (trans_center);
-#if VTK_MAJOR_VERSION < 6
-  trans_filter_center->SetInput (polydata_);
-#else
   trans_filter_center->SetInputData (polydata_);
-#endif
   trans_filter_center->Update ();
 
   vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
@@ -117,15 +109,10 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
   vtkSmartPointer<vtkLoopSubdivisionFilter> subdivide = vtkSmartPointer<vtkLoopSubdivisionFilter>::New ();
   subdivide->SetNumberOfSubdivisions (tesselation_level_);
   subdivide->SetInputConnection (ico->GetOutputPort ());
-#if VTK_MAJOR_VERSION>=6
   subdivide->Update();
-#endif
 
   // Get camera positions
   vtkPolyData *sphere = subdivide->GetOutput ();
-#if VTK_MAJOR_VERSION<6
-  sphere->Update ();
-#endif
 
   std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > cam_positions;
   if (!use_vertices_)
@@ -386,36 +373,6 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
       /////////////////////////////////////
       // * Select visible cells (triangles)
       /////////////////////////////////////
-#if (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION<6)
-      vtkSmartPointer<vtkVisibleCellSelector> selector = vtkSmartPointer<vtkVisibleCellSelector>::New ();
-      vtkSmartPointer<vtkIdTypeArray> selection = vtkSmartPointer<vtkIdTypeArray>::New ();
-
-      selector->SetRenderer (renderer);
-      selector->SetArea (0, 0, resolution_ - 1, resolution_ - 1);
-      selector->Select ();
-      selector->GetSelectedIds (selection);
-
-      double visible_area = 0;
-      for (int sel_id = 3; sel_id < (selection->GetNumberOfTuples () * selection->GetNumberOfComponents ()); sel_id
-          += selection->GetNumberOfComponents ())
-      {
-        int id_mesh = int (selection->GetValue (sel_id));
-
-        if (id_mesh >= polydata->GetNumberOfCells ())
-          continue;
-
-        vtkCell * cell = polydata->GetCell (id_mesh);
-        vtkTriangle* triangle = dynamic_cast<vtkTriangle*> (cell);
-        double p0[3];
-        double p1[3];
-        double p2[3];
-        triangle->GetPoints ()->GetPoint (0, p0);
-        triangle->GetPoints ()->GetPoint (1, p1);
-        triangle->GetPoints ()->GetPoint (2, p2);
-        visible_area += vtkTriangle::TriangleArea (p0, p1, p2);
-      }
-
-#else 
       vtkSmartPointer<vtkHardwareSelector> hardware_selector = vtkSmartPointer<vtkHardwareSelector>::New ();
       hardware_selector->ClearBuffers();
       vtkSmartPointer<vtkSelection> hdw_selection = vtkSmartPointer<vtkSelection>::New ();
@@ -443,7 +400,6 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
         area = vtkTriangle::TriangleArea (p0, p1, p2);
         visible_area += area;
       }
-#endif
 
       entropies_.push_back (float (visible_area / totalArea));
     }

@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_POINT_TRAITS_H_
-#define PCL_POINT_TRAITS_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header
@@ -49,9 +48,6 @@
 #include <boost/type_traits/remove_all_extents.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/assert.hpp>
-#if PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) == PCL_LINEAR_VERSION(4,4,3)
-#include <boost/mpl/bool.hpp>
-#endif
 
 // This is required for the workaround at line 109
 #ifdef _MSC_VER
@@ -353,5 +349,3 @@ namespace pcl
     value = *reinterpret_cast<const ValT*>(data_ptr);
   }
 }
-
-#endif  //#ifndef PCL_POINT_TRAITS_H_

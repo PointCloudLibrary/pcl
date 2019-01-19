@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_METRICS_H_
-#define REC_FRAMEWORK_METRICS_H_
+#pragma once
 
 #include <cmath>
 #include <cstdlib>
@@ -133,5 +132,3 @@ namespace Metrics
         }
     };
 }
-
-#endif /* REC_FRAMEWORK_METRICS_H_ */

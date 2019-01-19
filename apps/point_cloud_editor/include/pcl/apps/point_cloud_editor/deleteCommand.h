@@ -38,8 +38,7 @@
 /// from the cloud as well as the ability to undo the removal.
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef DELETE_COMMAND_H_
-#define DELETE_COMMAND_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -62,11 +61,11 @@ class DeleteCommand : public Command
   protected:
     /// @brief Removes the selected points and maintains a backup for undo.
     void 
-    execute ();
+    execute () override;
     
     /// @brief Returns the deleted points to the cloud, Order is not preserved.
     void 
-    undo ();
+    undo () override;
 
   private:
     /// @brief Default constructor - object is not default constructable
@@ -102,5 +101,3 @@ class DeleteCommand : public Command
     /// a copy buffer which backs up the points deleted from the cloud.
     CopyBuffer deleted_cloud_buffer_;
 };
-
-#endif // DELETE_COMMAND_H_

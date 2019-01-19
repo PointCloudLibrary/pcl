@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_H_
-#define PCL_REGISTRATION_H_
+#pragma once
 
 // PCL includes
 #include <pcl/pcl_base.h>
@@ -129,7 +128,7 @@ namespace pcl
       }
 
       /** \brief destructor. */
-      virtual ~Registration () {}
+      ~Registration () {}
 
       /** \brief Provide a pointer to the transformation estimation object.
         * (e.g., SVD, point to plane etc.) 
@@ -610,5 +609,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/registration.hpp>
-
-#endif  //#ifndef PCL_REGISTRATION_H_

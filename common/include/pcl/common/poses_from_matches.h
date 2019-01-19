@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_POSES_FROM_MATCHES_H_
-#define PCL_POSES_FROM_MATCHES_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/correspondence.h>
@@ -128,5 +127,3 @@ namespace pcl
   };
 
 }  // end namespace pcl
-
-#endif  //#ifndef PCL_POSES_FROM_MATCHES_H_

@@ -174,11 +174,7 @@ void update (CallbackParameters* params)
   vtkSmartPointer<vtkHedgeHog> vtk_hh = vtkSmartPointer<vtkHedgeHog>::New ();
   vtk_hh->SetVectorModeToUseNormal ();
   vtk_hh->SetScaleFactor (0.5f*params->objrec_.getPairWidth ());
-#if VTK_MAJOR_VERSION < 6
-  vtk_hh->SetInput (vtk_opps);
-#else
   vtk_hh->SetInputData (vtk_opps);
-#endif
   vtk_hh->Update ();
 
   // The lines

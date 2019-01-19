@@ -34,7 +34,6 @@
  *
  */
 
-#include <pcl/apps/modeler/qt.h>
 #include <pcl/apps/modeler/main_window.h>
 
 extern int qInitResources_resources();

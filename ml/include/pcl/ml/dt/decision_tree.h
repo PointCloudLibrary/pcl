@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_DT_DECISION_TREE
-#define PCL_ML_DT_DECISION_TREE
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -101,5 +100,3 @@ namespace pcl
 
 
 }
-
-#endif
