@@ -47,6 +47,9 @@
 #include <emmintrin.h>
 #endif
 
+const int pcl::keypoints::brisk::Layer::CommonParams::HALFSAMPLE = 0;
+const int pcl::keypoints::brisk::Layer::CommonParams::TWOTHIRDSAMPLE = 1;
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // construct telling the octaves number:
 pcl::keypoints::brisk::ScaleSpace::ScaleSpace (int octaves)
@@ -186,13 +189,13 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
                                 delta_x, delta_y);
 
         // store:
-        keypoints.emplace_back((point.u + delta_x) * l.getScale () + l.getOffset (),     // x
-                                                  (point.v + delta_y) * l.getScale () + l.getOffset (),     // y
-                                                  0.0f,                                           // z
-                                                  basic_size_ * l.getScale (),                         // size
-                                                  -1,                                             // angle
-                                                  max,                                            // response
-                                                  i);                                            // octave
+        keypoints.emplace_back((point.u + delta_x) * l.getScale () + l.getOffset (),  // x
+                               (point.v + delta_y) * l.getScale () + l.getOffset (),  // y
+                               0.0f,                                                  // z
+                               basic_size_ * l.getScale (),                           // size
+                               -1,                                                    // angle
+                               max,                                                   // response
+                               i);                                                    // octave
       }
     }
     else
