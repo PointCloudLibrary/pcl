@@ -40,7 +40,6 @@
 #include <iostream>
 #include <pcl/common/io.h>
 #include <pcl/io/boost.h>
-#include <boost/lexical_cast.hpp>
 #include <pcl/console/time.h>
 
 pcl::MTLReader::MTLReader ()

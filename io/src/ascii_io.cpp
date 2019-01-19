@@ -39,7 +39,6 @@
 #include <istream>
 #include <fstream>
 #include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/cstdint.hpp>
 
 //////////////////////////////////////////////////////////////////////////////

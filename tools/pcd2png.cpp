@@ -43,8 +43,6 @@
  *
  */
 
-#include <boost/lexical_cast.hpp>
-
 #include <pcl/console/time.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>

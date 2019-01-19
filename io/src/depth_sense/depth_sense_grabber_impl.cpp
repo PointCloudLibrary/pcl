@@ -35,8 +35,6 @@
  *
  */
 
-#include <boost/lexical_cast.hpp>
-
 #include <pcl/common/io.h>
 #include <pcl/io/depth_sense_grabber.h>
 #include <pcl/io/depth_sense/depth_sense_grabber_impl.h>

@@ -180,7 +180,7 @@ saveCloud (const std::string &filename, std::vector<FeatureT, Eigen::aligned_all
     for (size_t i = 0; i < output.size (); i++)
     {
       std::string fname (filename);
-      std::string s = boost::lexical_cast<std::string>( static_cast<int> (i) );
+      std::string s = std::to_string(static_cast<int> (i) );
       fname = fname + "_" + s + ".pcd";
 
       print_highlight ("Saving "); print_value ("%s ", fname.c_str ());
