@@ -149,7 +149,7 @@ pcl::ASCIIReader::read (
   while (std::getline (ifile, line))
   {
     boost::algorithm::trim (line);
-    if (line.find_first_not_of ("#") != 0) 
+    if (line.find_first_not_of ('#') != 0) 
       continue;   //skip comment lines
 
    std::vector<std::string> tokens;

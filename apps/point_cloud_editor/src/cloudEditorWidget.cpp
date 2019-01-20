@@ -90,7 +90,7 @@ CloudEditorWidget::~CloudEditorWidget ()
 void
 CloudEditorWidget::loadFile(const std::string &filename)
 {
-  std::string ext = filename.substr(filename.find_last_of(".")+1);
+  std::string ext = filename.substr(filename.find_last_of('.')+1);
   FileLoadMap::iterator it = cloud_load_func_map_.find(ext);
   if (it != cloud_load_func_map_.end())
     (it->second)(this, filename);

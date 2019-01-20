@@ -57,7 +57,7 @@
 int
 pcl::io::loadPolygonFile (const std::string &file_name, pcl::PolygonMesh& mesh)
 {
-  std::string extension = file_name.substr (file_name.find_last_of (".") + 1);
+  std::string extension = file_name.substr (file_name.find_last_of ('.') + 1);
 
   if (extension == "pcd") // no Polygon, but only a point cloud
   {
@@ -87,7 +87,7 @@ pcl::io::savePolygonFile (const std::string &file_name,
                           const bool binary_format)
 {
   // TODO: what about sensor position and orientation?!?!?!?
-  std::string extension = file_name.substr (file_name.find_last_of (".") + 1);
+  std::string extension = file_name.substr (file_name.find_last_of ('.') + 1);
   if (extension == "pcd")  // no Polygon, but only a point cloud
     return (pcl::io::savePCDFile (file_name, mesh.cloud, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), binary_format) == 0);
   else if (extension == "vtk")
