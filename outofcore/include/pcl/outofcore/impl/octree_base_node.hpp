@@ -519,7 +519,7 @@ namespace pcl
         if(hasUnloadedChildren ())
           loadChildren (false);
 
-      if( skip_bb_check == false )
+      if( !skip_bb_check )
       {
 
         //indices to store the points for each bin
@@ -666,7 +666,7 @@ namespace pcl
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataAtMaxDepth (const pcl::PCLPointCloud2::Ptr input_cloud, const bool skip_bb_check)
     {
       //this assumes data is already in the correct bin
-      if(skip_bb_check == true)
+      if(skip_bb_check)
       {
         PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Adding %u points at max depth, %u\n",__FUNCTION__, input_cloud->width*input_cloud->height, this->depth_);
         

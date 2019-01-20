@@ -469,13 +469,13 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
               int f = ffn_[nnIdx[doubleEdges[j].index]];
               if ((f != nnIdx[i]) && (f != R_))
                 visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].first, Eigen::Vector2f::Zero());
-              if (visibility == false)
+              if (!visibility)
                 break;
 
               int s = sfn_[nnIdx[doubleEdges[j].index]];
               if ((s != nnIdx[i]) && (s != R_))
                 visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].second, Eigen::Vector2f::Zero());
-              if (visibility == false)
+              if (!visibility)
                 break;
             }
           }

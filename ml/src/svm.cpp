@@ -1132,7 +1132,7 @@ void Solver::do_shrinking()
     }
   }
 
-  if (unshrink == false && Gmax1 + Gmax2 <= eps*10)
+  if (!unshrink && Gmax1 + Gmax2 <= eps*10)
   {
     unshrink = true;
     reconstruct_gradient();
@@ -1407,7 +1407,7 @@ void Solver_NU::do_shrinking()
     }
   }
 
-  if (unshrink == false && max (Gmax1 + Gmax2, Gmax3 + Gmax4) <= eps*10)
+  if (!unshrink && max (Gmax1 + Gmax2, Gmax3 + Gmax4) <= eps*10)
   {
     unshrink = true;
     reconstruct_gradient();

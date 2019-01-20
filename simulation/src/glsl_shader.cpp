@@ -140,8 +140,7 @@ pcl::simulation::gllib::Program::link ()
   glLinkProgram (program_id_);
   printProgramInfoLog (program_id_);
 
-  if (getGLError () != GL_NO_ERROR) return false;
-  return true;
+  return getGLError () == GL_NO_ERROR;
 }
 
 void pcl::simulation::gllib::Program::use ()

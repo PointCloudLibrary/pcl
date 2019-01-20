@@ -199,9 +199,6 @@ pcl::cloud_composer::CloudItem::checkIfFinite ()
   pass_filter.setKeepOrganized (false);
   pass_filter.filter (*cloud_filtered);
   
-  if (cloud_filtered->data.size() == cloud_blob_ptr_->data.size ())
-    return true;
-  
-  return false;
+  return cloud_filtered->data.size() == cloud_blob_ptr_->data.size ();
 
 }

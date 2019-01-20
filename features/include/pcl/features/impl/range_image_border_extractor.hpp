@@ -395,10 +395,7 @@ bool RangeImageBorderExtractor::calculateMainPrincipalCurvature(int x, int y, in
         //angle1 = acosf(surface_structure_[y*range_image_->width+x-1]->normal.dot(local_surface->normal));
   //magnitude = angle2-angle1;
 
-  if (!pcl_isfinite(magnitude))
-    return false;
-  
-  return true;
+  return pcl_isfinite(magnitude);
 }
 
 }  // namespace end

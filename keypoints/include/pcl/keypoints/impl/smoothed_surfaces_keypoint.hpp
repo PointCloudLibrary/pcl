@@ -136,9 +136,9 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
               is_min_other_scale = false;
           }
 
-        if (is_min == true && is_min_other_scale == false)
+        if (is_min && !is_min_other_scale)
           passed_min = false;
-        if (is_max == true && is_max_other_scale == false)
+        if (is_max && !is_max_other_scale)
           passed_max = false;
 
         if (!passed_min && !passed_max)

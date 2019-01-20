@@ -461,9 +461,7 @@ RangeImage::isValid (int index) const
 bool 
 RangeImage::isObserved (int x, int y) const
 {
-  if (!isInImage (x,y) || (pcl_isinf (getPoint (x,y).range)&&getPoint (x,y).range<0.0f))
-    return false;
-  return true;
+  return !(!isInImage (x,y) || (pcl_isinf (getPoint (x,y).range)&&getPoint (x,y).range<0.0f));
 }
 
 /////////////////////////////////////////////////////////////////////////

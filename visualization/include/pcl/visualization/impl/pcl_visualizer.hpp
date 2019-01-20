@@ -1151,11 +1151,11 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end () && overwrite == false)
+  if (am_it != shape_actor_map_->end () && !overwrite)
   {
     PCL_WARN ("[addCorrespondences] A set of correspondences with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
-  } else if (am_it == shape_actor_map_->end () && overwrite == true)
+  } else if (am_it == shape_actor_map_->end () && overwrite)
   {
     overwrite = false; // Correspondences doesn't exist, add them instead of updating them
   }

@@ -187,10 +187,7 @@ SequentialFitter::is_back_facing (const Eigen::Vector3d &v0, const Eigen::Vector
   e2 = v2 - v0;
 
   Eigen::Vector3d z (m_extrinsic (0, 2), m_extrinsic (1, 2), m_extrinsic (2, 2));
-  if (z.dot (e1.cross (e2)) > 0.0)
-    return true;
-  else
-    return false;
+  return z.dot (e1.cross (e2)) > 0.0;
 }
 
 /********************************************************************************/

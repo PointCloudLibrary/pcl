@@ -185,7 +185,7 @@ saveMesh (pcl::PolygonMesh& input,
     }
 
     PCL_INFO ("Saving file %s as %s.\n", output_file.c_str (), (output_type == ASCII) ? "ASCII" : "binary");
-    if (!pcl::io::savePolygonFile (output_file, input, (output_type == ASCII) ? false : true))
+    if (!pcl::io::savePolygonFile (output_file, input, output_type != ASCII))
       return (false);
   }
 

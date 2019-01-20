@@ -102,10 +102,7 @@ namespace pcl
 
         bool check_inside(int col, int row, int min_col, int max_col, int min_row, int max_row)
         {
-          if (col >= min_col && col <= max_col && row >= min_row && row <= max_row)
-            return true;
-
-          return false;
+          return col >= min_col && col <= max_col && row >= min_row && row <= max_row;
         }
 
         template<class PointInT>

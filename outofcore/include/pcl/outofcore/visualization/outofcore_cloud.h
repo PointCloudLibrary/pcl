@@ -71,11 +71,7 @@ class OutofcoreCloud : public Object
 
       bool operator< (const PcdQueueItem& rhs) const
       {
-       if (coverage < rhs.coverage)
-       {
-         return true;
-       }
-       return false;
+       return coverage < rhs.coverage;
       }
 
       std::string pcd_file;

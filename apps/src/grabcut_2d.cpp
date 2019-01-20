@@ -327,7 +327,7 @@ motion_callback (int x, int y)
 {
   y = height - y;
 
-  if (box == true)
+  if (box)
   {
     xend = x; yend = y;
     glutPostRedisplay ();

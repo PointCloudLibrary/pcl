@@ -261,12 +261,7 @@ namespace pcl
         dir << base_dir << "/" << m.class_ << "/" << m.id_ << "/" << descr_name;
         bf::path desc_dir = dir.str ();
         std::cout << dir.str () << std::endl;
-        if (bf::exists (desc_dir))
-        {
-          return true;
-        }
-
-        return false;
+        return bf::exists (desc_dir);
       }
 
       std::string
