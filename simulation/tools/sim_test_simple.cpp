@@ -442,7 +442,7 @@ void display ()
 //     //t.tv_nsec = (time_t)(20000000); // short sleep
 //     t.tv_nsec = (time_t)(0);  // long sleep - normal speed
 //     nanosleep (&t, NULL);
-    write_file_ = 0;
+    write_file_ = false;
   }
 }
 
@@ -469,7 +469,7 @@ on_keyboard (unsigned char key, int, int)
   else if (key == 'p' || key == 'P')
     paused_ = !paused_;
   else if (key == 'v' || key == 'V')
-    write_file_ = 1;
+    write_file_ = true;
   
   // Use glutGetModifiers for modifiers
   // GLUT_ACTIVE_SHIFT, GLUT_ACTIVE_CTRL, GLUT_ACTIVE_ALT

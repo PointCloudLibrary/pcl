@@ -379,7 +379,7 @@ int main(int argc, char** argv)
   pcl::gpu::setDevice (device);
   pcl::gpu::printShortCudaDeviceInfo (device);
   
-  bool write = 0;
+  bool write = false;
   pc::parse_argument (argc, argv, "-w", write);
 
   // selecting data source

@@ -700,10 +700,10 @@ namespace pcl
       if (boost::filesystem::extension (path_name) != OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension)
       {
         PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBase] Wrong root node file extension: %s. The tree must have a root node ending in %s\n", boost::filesystem::extension (path_name).c_str (), OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension.c_str () );
-        return (0);
+        return (false);
       }
 
-      return (1);
+      return (true);
     }
 
     ////////////////////////////////////////////////////////////////////////////////

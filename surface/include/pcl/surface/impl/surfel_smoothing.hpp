@@ -125,7 +125,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothCloudIteration (PointCloudInPtr &ou
     // find minimum along the normal
     float e_residual;
     smoothed_point = interm_cloud_->points[i].getVector4fMap ();
-    while (1)
+    while (true)
     {
       e_residual = 0.0f;
       smoothed_point(3) = 0.0f;

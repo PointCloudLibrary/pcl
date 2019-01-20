@@ -162,11 +162,11 @@ namespace pcl
                                   int                               child_number)
       {
         if(sorted[label].size() == 0)
-          return 0;
+          return false;
         for(size_t i = 0; i < sorted[label].size(); i++)
           if((sorted[label][i].child_id[child_number] != NO_CHILD) && (sorted[label][i].child_id[child_number] != LEAF))
-            return 1;
-        return 0;
+            return true;
+        return false;
       }
 
       /**
