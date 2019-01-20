@@ -349,7 +349,7 @@ namespace pcl
         // reconstruct point cloud
         OrganizedConversion<PointT>::convert (disparityData,
                                               colorData,
-                                              static_cast<bool>(png_channels==1),
+                                              (png_channels == 1),
                                               cloud_width,
                                               cloud_height,
                                               focalLength,

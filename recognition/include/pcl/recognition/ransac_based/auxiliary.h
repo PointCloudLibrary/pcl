@@ -56,9 +56,9 @@ namespace pcl
       compareOrderedPairs (const std::pair<T,T>& a, const std::pair<T,T>& b)
       {
         if ( a.first == b.first )
-          return static_cast<bool> (a.second < b.second);
+          return a.second < b.second;
 
-        return static_cast<bool> (a.first < b.first);
+        return a.first < b.first;
       }
 
       template<typename T> T

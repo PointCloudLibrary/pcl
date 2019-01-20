@@ -375,7 +375,7 @@ namespace pcl
           assert(this->leaf_count_==0);
           max_objs_per_leaf_ = maxObjsPerLeaf;
 
-          this->dynamic_depth_enabled_ = static_cast<bool> (max_objs_per_leaf_>0);
+          this->dynamic_depth_enabled_ = max_objs_per_leaf_ > 0;
         }
 
 
