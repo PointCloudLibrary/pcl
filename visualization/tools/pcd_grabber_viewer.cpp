@@ -207,7 +207,7 @@ main (int argc, char** argv)
     }
     else
     {
-      std::cout << "Neither a pcd file given using the \"-file\" option, nor given a directory containing pcd files using the \"-dir\" option." << std::endl;
+      std::cout << R"(Neither a pcd file given using the "-file" option, nor given a directory containing pcd files using the "-dir" option.)" << std::endl;
     }
 
     // Sort the read files by name
