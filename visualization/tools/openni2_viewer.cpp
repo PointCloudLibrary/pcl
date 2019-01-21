@@ -291,7 +291,7 @@ boost::shared_ptr<pcl::visualization::ImageViewer> img;
 int
 main (int argc, char** argv)
 {
-  std::string device_id ("");
+  std::string device_id;
   pcl::io::OpenNI2Grabber::Mode depth_mode = pcl::io::OpenNI2Grabber::OpenNI_Default_Mode;
   pcl::io::OpenNI2Grabber::Mode image_mode = pcl::io::OpenNI2Grabber::OpenNI_Default_Mode;
   bool xyz = false;

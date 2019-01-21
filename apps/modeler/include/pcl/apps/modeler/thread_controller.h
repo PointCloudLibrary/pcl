@@ -36,7 +36,7 @@
 
 #pragma once
 
-#include <pcl/apps/modeler/qt.h>
+#include <QObject>
 
 namespace pcl
 {
@@ -51,7 +51,7 @@ namespace pcl
 
       public:
         ThreadController();
-        ~ThreadController(void);
+        ~ThreadController();
 
         bool
         runWorker(AbstractWorker* worker);

@@ -115,7 +115,7 @@ main (int argc, char **argv)
   std::cout << argv[pcd_indices[0]] << " width: " << model->width << " height: " << model->height << std::endl;
 
   std::string result_filename (argv[pcd_indices[0]]);
-  result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
+  result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
   try
   {
     pcl::io::savePCDFile (result_filename.c_str (), *model);
@@ -166,7 +166,7 @@ main (int argc, char **argv)
     try
     {
       std::string result_filename (argv[pcd_indices[i]]);
-      result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
+      result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
       pcl::io::savePCDFileBinary (result_filename.c_str (), *tmp);
       std::cout << "saving result to " << result_filename << std::endl;
     }

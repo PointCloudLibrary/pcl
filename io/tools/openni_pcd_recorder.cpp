@@ -142,8 +142,8 @@ class PCDBuffer
     }
 
   private:
-    PCDBuffer (const PCDBuffer&); // Disabled copy constructor
-    PCDBuffer& operator = (const PCDBuffer&); // Disabled assignment operator
+    PCDBuffer (const PCDBuffer&) = delete; // Disabled copy constructor
+    PCDBuffer& operator = (const PCDBuffer&) = delete; // Disabled assignment operator
 
     boost::mutex bmutex_;
     boost::condition_variable buff_empty_;
@@ -378,7 +378,7 @@ main (int argc, char** argv)
 {
   print_highlight ("PCL OpenNI Recorder for saving buffered PCD (binary compressed to disk). See %s -h for options.\n", argv[0]);
 
-  std::string device_id ("");
+  std::string device_id;
   int buff_size = BUFFER_SIZE;
 
   if (argc >= 2)

@@ -36,10 +36,11 @@
 
 #pragma once
 
+#include <QTreeWidgetItem>
+
 #include <vtkSmartPointer.h>
 #include <boost/shared_ptr.hpp>
 #include <pcl/common/eigen.h>
-#include <pcl/apps/modeler/qt.h>
 #include <pcl/apps/modeler/abstract_item.h>
 
 class vtkActor;

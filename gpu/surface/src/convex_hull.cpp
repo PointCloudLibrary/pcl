@@ -91,8 +91,6 @@ pcl::gpu::PseudoConvexHull3D::reconstruct (const Cloud &cloud, DeviceArray2D<int
 
   ps.computeInitalSimplex();
 
-  device::InitalSimplex simplex = ps.simplex;
-
   fs.setInitialFacets(ps.simplex);
   ps.initalClassify();
     

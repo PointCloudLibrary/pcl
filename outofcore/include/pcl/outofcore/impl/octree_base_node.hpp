@@ -271,7 +271,7 @@ namespace pcl
       
       for(size_t i=0; i<8; i++)
       {
-        boost::filesystem::path child_path = this->node_metadata_->getDirectoryPathname () / boost::filesystem::path (boost::lexical_cast<std::string> (i));
+        boost::filesystem::path child_path = this->node_metadata_->getDirectoryPathname () / boost::filesystem::path (std::to_string(i));
         if (boost::filesystem::exists (child_path))
           child_count++;
       }
@@ -316,7 +316,7 @@ namespace pcl
         //check all 8 possible child directories
         for (int i = 0; i < 8; i++)
         {
-          boost::filesystem::path child_dir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (boost::lexical_cast<std::string> (i));
+          boost::filesystem::path child_dir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (std::to_string(i));
           //if the directory exists and the child hasn't been created (set to 0 by this node's constructor)
           if (boost::filesystem::exists (child_dir) && this->children_[i] == 0)
           {
@@ -915,7 +915,7 @@ namespace pcl
       childbb_min[0] = start[0] + static_cast<double> (x) * step[0];
       childbb_max[0] = start[0] + static_cast<double> (x + 1) * step[0];
 
-      boost::filesystem::path childdir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (boost::lexical_cast<std::string> (idx));
+      boost::filesystem::path childdir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (std::to_string(idx));
       children_[idx] = new OutofcoreOctreeBaseNode<ContainerT, PointT> (childbb_min, childbb_max, childdir.string ().c_str (), this);
 
       num_children_++;

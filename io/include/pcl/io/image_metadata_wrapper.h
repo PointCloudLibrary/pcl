@@ -55,6 +55,9 @@ namespace pcl
       public:
         typedef boost::shared_ptr<FrameWrapper> Ptr;
 
+        virtual
+        ~FrameWrapper() = default;
+
         virtual const void*
         getData () const = 0;
 

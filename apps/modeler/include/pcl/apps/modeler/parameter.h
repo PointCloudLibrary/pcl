@@ -40,8 +40,12 @@
 #include <string>
 
 #include <boost/any.hpp>
-#include <pcl/apps/modeler/qt.h>
 
+#include <QColor>
+#include <QVariant>
+
+class QAbstractItemModel;
+class QWidget;
 
 namespace pcl
 {
@@ -52,7 +56,7 @@ namespace pcl
       public:
         Parameter(const std::string& name, const std::string& description, const boost::any& value):
           name_(name), description_(description), default_value_(value), current_value_(value){}
-        ~Parameter(void) {}
+        ~Parameter() {}
 
         const std::string&
         getName() const {return name_;}

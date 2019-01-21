@@ -117,18 +117,7 @@ endif()
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS_STR}")
-
-    # Enable -Wabi for GCC > 4.3, and -Wno-deprecated for GCC < 4.3
-    # to disable a lot of warnings which are not fixable
-    execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
-    if(GCC_VERSION VERSION_GREATER 4.3)
-      message(STATUS "-- GCC > 4.3 found, enabling -Wabi")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi")
-    else()
-      message(STATUS "-- GCC < 4.3 found, enabling -Wno-deprecated")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
-    endif()
+    set(CMAKE_CXX_FLAGS "-Wabi -Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS_STR}")
   endif()
 
   if(NOT ANDROID)
@@ -254,10 +243,7 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 endif()
 
 ### ---[ Find universal dependencies
-# the gcc-4.2.1 coming with MacOS X is not compatible with the OpenMP pragmas we use, so disabling OpenMP for it
-if((NOT APPLE) OR (NOT CMAKE_COMPILER_IS_GNUCXX) OR (GCC_VERSION VERSION_GREATER 4.2.1) OR (CMAKE_COMPILER_IS_CLANG))
-  find_package(OpenMP)
-endif()
+find_package(OpenMP)
 if(OPENMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
@@ -297,6 +283,7 @@ if(NOT PCL_SHARED_LIBS OR ((WIN32 AND NOT MINGW) AND NOT PCL_BUILD_WITH_FLANN_DY
 endif()
 find_package(FLANN 1.7.0 REQUIRED)
 include_directories(SYSTEM ${FLANN_INCLUDE_DIRS})
+link_directories(${FLANN_LIBRARY_DIRS})
 
 # libusb-1.0
 option(WITH_LIBUSB "Build USB RGBD-Camera drivers" TRUE)
@@ -359,7 +346,7 @@ endif()
 
 option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
-  find_package(Qt5 COMPONENTS OpenGL Widgets QUIET)
+  find_package(Qt5 COMPONENTS Concurrent OpenGL Widgets QUIET)
 endif()
 
 # Find VTK

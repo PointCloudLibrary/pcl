@@ -172,7 +172,7 @@ main (int argc, char** argv)
   bool repeat = (pcl::console::find_argument (argc, argv, "-repeat") != -1);
 
   std::cout << "fps: " << frames_per_second << " , repeat: " << repeat << std::endl;
-  std::string path = "";
+  std::string path;
   pcl::console::parse_argument (argc, argv, "-file", path);
   std::cout << "path: " << path << std::endl;
   if (path != "" && boost::filesystem::exists (path))
@@ -207,7 +207,7 @@ main (int argc, char** argv)
     }
     else
     {
-      std::cout << "Neither a pcd file given using the \"-file\" option, nor given a directory containing pcd files using the \"-dir\" option." << std::endl;
+      std::cout << R"(Neither a pcd file given using the "-file" option, nor given a directory containing pcd files using the "-dir" option.)" << std::endl;
     }
 
     // Sort the read files by name

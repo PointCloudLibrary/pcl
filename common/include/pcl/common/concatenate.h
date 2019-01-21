@@ -44,12 +44,7 @@
 // be able to fix them anyway
 #ifdef BUILD_Maintainer
 #  if defined __GNUC__
-#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#      pragma GCC diagnostic ignored "-Weffc++"
-#      pragma GCC diagnostic ignored "-pedantic"
-#    else
-#      pragma GCC system_header 
-#    endif
+#    pragma GCC system_header 
 #  elif defined _MSC_VER
 #    pragma warning(push, 1)
 #  endif

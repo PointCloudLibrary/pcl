@@ -36,7 +36,7 @@ else()
 endif()
 
 set(STRIPPED_HEADERS "${PCL_SOURCE_DIR}/${PCL_MODULES_NAMES}/include")
-string(REPLACE ";" "/include \\\n\t\t\t\t\t\t\t\t\t\t\t\t ${PCL_SOURCE_DIR}/" STRIPPED_HEADERS "${STRIPPED_HEADERS}")
+string(REPLACE ";" "/include \\\n                         ${PCL_SOURCE_DIR}/" STRIPPED_HEADERS "${STRIPPED_HEADERS}")
 set(DOC_SOURCE_DIR "\"${PCL_SOURCE_DIR}\"\\")
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html")
 set(doxyfile "${CMAKE_CURRENT_BINARY_DIR}/doxyfile")

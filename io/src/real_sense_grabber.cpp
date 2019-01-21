@@ -35,8 +35,6 @@
  *
  */
 
-#include <boost/lexical_cast.hpp>
-
 #include <pxcimage.h>
 #include <pxccapture.h>
 #include <pxcprojection.h>

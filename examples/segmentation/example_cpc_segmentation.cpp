@@ -211,7 +211,7 @@ CPCSegmentation Parameters: \n\
   bool save_binary_pcd = pcl::console::find_switch (argc, argv, "-bin");
 
   /// Create variables needed for preparations
-  std::string outputname ("");
+  std::string outputname;
   pcl::PointCloud<PointT>::Ptr input_cloud_ptr (new pcl::PointCloud<PointT>);
   pcl::PointCloud<pcl::Normal>::Ptr input_normals_ptr (new pcl::PointCloud<pcl::Normal>);
   bool has_normals = false;

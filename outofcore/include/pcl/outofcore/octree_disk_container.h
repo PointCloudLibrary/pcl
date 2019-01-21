@@ -221,9 +221,9 @@ namespace pcl
         {
           if (boost::filesystem::exists (*disk_storage_filename_))
           {
-            FILE* fxyz = fopen (path.string ().c_str (), "w");
+            FILE* fxyz = fopen (path.string ().c_str (), "we");
 
-            FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
+            FILE* f = fopen (disk_storage_filename_->c_str (), "rbe");
             assert (f != NULL);
 
             uint64_t num = size ();

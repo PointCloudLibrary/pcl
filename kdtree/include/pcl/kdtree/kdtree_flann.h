@@ -216,7 +216,7 @@ namespace pcl
       /** \brief mapping between internal and external indices. */
       std::vector<int> index_mapping_;
       
-      /** \brief whether the mapping bwwteen internal and external indices is identity */
+      /** \brief whether the mapping between internal and external indices is identity */
       bool identity_mapping_;
 
       /** \brief Tree dimensionality (i.e. the number of dimensions per point). */

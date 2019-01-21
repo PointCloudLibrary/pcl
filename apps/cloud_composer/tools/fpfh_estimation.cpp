@@ -7,12 +7,7 @@
 #include <pcl/point_types.h>
 #include <pcl/filters/filter.h>
 
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  Q_EXPORT_PLUGIN2(cloud_composer_fpfh_estimation_tool, pcl::cloud_composer::FPFHEstimationToolFactory)
-#else
-  Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
-#endif
+Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
 
 pcl::cloud_composer::FPFHEstimationTool::FPFHEstimationTool (PropertiesModel* parameter_model, QObject* parent)
   : NewItemTool (parameter_model, parent)

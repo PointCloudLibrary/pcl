@@ -42,6 +42,9 @@ namespace pcl
         float radius_;
 
       public:
+        virtual
+        ~KeypointExtractor() = default;
+
         void
         setInputCloud (PointInTPtr & input)
         {
@@ -417,6 +420,9 @@ namespace pcl
           keypoint_extractor_.clear ();
         }
 
+        virtual
+        ~LocalEstimator() = default;
+
         void
         setAdaptativeMLS (bool b)
         {
@@ -452,71 +458,6 @@ namespace pcl
         {
           support_radius_ = r;
         }
-
-        /*void
-         setFilterPlanar (bool b)
-         {
-         filter_planar_ = b;
-         }
-
-         void
-         filterPlanar (PointInTPtr & input, KeypointCloud & keypoints_cloud)
-         {
-         pcl::PointCloud<int> filtered_keypoints;
-         //create a search object
-         typename pcl::search::Search<PointInT>::Ptr tree;
-         if (input->isOrganized ())
-         tree.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
-         else
-         tree.reset (new pcl::search::KdTree<PointInT> (false));
-         tree->setInputCloud (input);
-
-         //std::vector<int> nn_indices;
-         //std::vector<float> nn_distances;
-
-         neighborhood_indices_.reset (new std::vector<std::vector<int> >);
-         neighborhood_indices_->resize (keypoints_cloud.points.size ());
-         neighborhood_dist_.reset (new std::vector<std::vector<float> >);
-         neighborhood_dist_->resize (keypoints_cloud.points.size ());
-
-         filtered_keypoints.points.resize (keypoints_cloud.points.size ());
-         int good = 0;
-
-         //#pragma omp parallel for num_threads(8)
-         for (size_t i = 0; i < keypoints_cloud.points.size (); i++)
-         {
-
-         if (tree->radiusSearch (keypoints_cloud[i], support_radius_, (*neighborhood_indices_)[good], (*neighborhood_dist_)[good]))
-         {
-
-         EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
-         Eigen::Vector4f xyz_centroid;
-         EIGEN_ALIGN16 Eigen::Vector3f eigenValues;
-         EIGEN_ALIGN16 Eigen::Matrix3f eigenVectors;
-
-         //compute planarity of the region
-         computeMeanAndCovarianceMatrix (*input, (*neighborhood_indices_)[good], covariance_matrix, xyz_centroid);
-         pcl::eigen33 (covariance_matrix, eigenVectors, eigenValues);
-
-         float eigsum = eigenValues.sum ();
-         if (!pcl_isfinite(eigsum))
-         {
-         PCL_ERROR("Eigen sum is not finite\n");
-         }
-
-         if ((fabs (eigenValues[0] - eigenValues[1]) < 1.5e-4) || (eigsum != 0 && fabs (eigenValues[0] / eigsum) > 1.e-2))
-         {
-         //region is not planar, add to filtered keypoint
-         keypoints_cloud.points[good] = keypoints_cloud.points[i];
-         good++;
-         }
-         }
-         }
-
-         neighborhood_indices_->resize (good);
-         neighborhood_dist_->resize (good);
-         keypoints_cloud.points.resize (good);
-         }*/
 
       };
   }

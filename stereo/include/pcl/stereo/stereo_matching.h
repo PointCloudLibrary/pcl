@@ -63,9 +63,9 @@ namespace pcl
   class PCL_EXPORTS StereoMatching
   {
     public:
-      StereoMatching(void);
+      StereoMatching();
 
-      virtual ~StereoMatching(void);
+      virtual ~StereoMatching();
 
       /** \brief setter for number of disparity candidates (disparity range)
         *
@@ -357,8 +357,8 @@ namespace pcl
   class PCL_EXPORTS GrayStereoMatching : public StereoMatching
   {
     public:
-      GrayStereoMatching (void);
-      ~GrayStereoMatching (void);
+      GrayStereoMatching ();
+      ~GrayStereoMatching ();
 
       /** \brief stereo processing, it computes a disparity map stored internally by the class
         *
@@ -405,8 +405,8 @@ namespace pcl
   class PCL_EXPORTS BlockBasedStereoMatching : public GrayStereoMatching
   {
     public:
-      BlockBasedStereoMatching (void);
-      ~BlockBasedStereoMatching (void) 
+      BlockBasedStereoMatching ();
+      ~BlockBasedStereoMatching () 
       {
       };
 
@@ -442,9 +442,9 @@ namespace pcl
   class PCL_EXPORTS AdaptiveCostSOStereoMatching : public GrayStereoMatching
   {
     public:
-      AdaptiveCostSOStereoMatching (void);
+      AdaptiveCostSOStereoMatching ();
 
-      ~AdaptiveCostSOStereoMatching (void) 
+      ~AdaptiveCostSOStereoMatching () 
       {
       };
 

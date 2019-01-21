@@ -227,10 +227,6 @@ namespace pcl
       isSampleGood(const std::vector<int> &samples) const override;
 
     private:
-
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic ignored "-Weffc++"
-#endif
       struct OptimizationFunctor : pcl::Functor<float>
       {
         /** Functor constructor
@@ -266,9 +262,6 @@ namespace pcl
         const pcl::SampleConsensusModelSphere<PointT> *model_;
         const std::vector<int> &indices_;
       };
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic warning "-Weffc++"
-#endif
    };
 }
 

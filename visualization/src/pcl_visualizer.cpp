@@ -4512,7 +4512,7 @@ pcl::visualization::PCLVisualizer::textureFromTexMaterial (const pcl::TexMateria
     boost::filesystem::path parent_dir = full_path.parent_path ();
     std::string upper_filename = tex_mat.tex_file;
     boost::to_upper (upper_filename);
-    std::string real_name = "";
+    std::string real_name;
 
     try
     {

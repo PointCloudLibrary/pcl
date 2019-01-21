@@ -58,7 +58,7 @@ pcl::modeler::ICPRegistrationWorker::ICPRegistrationWorker(CloudMesh::PointCloud
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ICPRegistrationWorker::~ICPRegistrationWorker(void)
+pcl::modeler::ICPRegistrationWorker::~ICPRegistrationWorker()
 {
 }
 

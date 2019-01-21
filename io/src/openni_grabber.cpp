@@ -539,10 +539,10 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
 
   cloud->points.resize (cloud->height * cloud->width);
 
-  register float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
-  register float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
-  register float centerX = ((float)cloud->width - 1.f) / 2.f;
-  register float centerY = ((float)cloud->height - 1.f) / 2.f;
+  float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
+  float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
+  float centerX = ((float)cloud->width - 1.f) / 2.f;
+  float centerY = ((float)cloud->height - 1.f) / 2.f;
 
   if (pcl_isfinite (depth_focal_length_x_))
     constant_x =  1.0f / static_cast<float> (depth_focal_length_x_);
@@ -565,7 +565,7 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   // we have to use Data, since operator[] uses assert -> Debug-mode very slow!
-  register const unsigned short* depth_map = depth_image->getDepthMetaData ().Data ();
+  const unsigned short* depth_map = depth_image->getDepthMetaData ().Data ();
   if (depth_image->getWidth() != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     if (depth_buffer_size_ < depth_width_ * depth_height_)
@@ -577,10 +577,10 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
     depth_map = depth_buffer_.get ();
   }
 
-  register int depth_idx = 0;
+  int depth_idx = 0;
   for (unsigned int v = 0; v < depth_height_; ++v)
   {
-    for (register unsigned int u = 0; u < depth_width_; ++u, ++depth_idx)
+    for (unsigned int u = 0; u < depth_width_; ++u, ++depth_idx)
     {
       pcl::PointXYZ& pt = cloud->points[depth_idx];
       // Check for invalid measurements
@@ -616,10 +616,10 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   cloud->points.resize (cloud->height * cloud->width);
 
   //float constant = 1.0f / device_->getImageFocalLength (depth_width_);
-  register float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
-  register float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
-  register float centerX = ((float)cloud->width - 1.f) / 2.f;
-  register float centerY = ((float)cloud->height - 1.f) / 2.f;
+  float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
+  float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
+  float centerX = ((float)cloud->width - 1.f) / 2.f;
+  float centerY = ((float)cloud->height - 1.f) / 2.f;
 
   if (pcl_isfinite (depth_focal_length_x_))
     constant_x =  1.0f / static_cast<float> (depth_focal_length_x_);
@@ -633,7 +633,7 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   if (pcl_isfinite (depth_principal_point_y_))
     centerY =  static_cast<float> (depth_principal_point_y_);
 
-  register const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
+  const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight() != depth_height_)
   {
     if (depth_buffer_size_ < depth_width_ * depth_height_)
@@ -674,7 +674,7 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   int point_idx = 0;
   for (unsigned int v = 0; v < depth_height_; ++v, point_idx += skip)
   {
-    for (register unsigned int u = 0; u < depth_width_; ++u, ++value_idx, point_idx += step)
+    for (unsigned int u = 0; u < depth_width_; ++u, ++value_idx, point_idx += step)
     {
       PointT& pt = cloud->points[point_idx];
       /// @todo Different values for these cases
@@ -731,10 +731,10 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
   cloud->points.resize (cloud->height * cloud->width);
 
   //float constant = 1.0f / device_->getImageFocalLength (cloud->width);
-  register float constant_x = 1.0f / device_->getImageFocalLength (cloud->width);
-  register float constant_y = 1.0f / device_->getImageFocalLength (cloud->width);
-  register float centerX = ((float)cloud->width - 1.f) / 2.f;
-  register float centerY = ((float)cloud->height - 1.f) / 2.f;
+  float constant_x = 1.0f / device_->getImageFocalLength (cloud->width);
+  float constant_y = 1.0f / device_->getImageFocalLength (cloud->width);
+  float centerX = ((float)cloud->width - 1.f) / 2.f;
+  float centerY = ((float)cloud->height - 1.f) / 2.f;
 
   if (pcl_isfinite (rgb_focal_length_x_))
     constant_x =  1.0f / static_cast<float> (rgb_focal_length_x_);
@@ -748,8 +748,8 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
   if (pcl_isfinite (rgb_principal_point_y_))
     centerY = static_cast<float>(rgb_principal_point_y_);
 
-  register const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
-  register const XnIRPixel* ir_map = ir_image->getMetaData ().Data ();
+  const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
+  const XnIRPixel* ir_map = ir_image->getMetaData ().Data ();
 
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
@@ -767,12 +767,12 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
     ir_map = ir_buffer_.get ();
   }
 
-  register int depth_idx = 0;
+  int depth_idx = 0;
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   for (unsigned int v = 0; v < depth_height_; ++v)
   {
-    for (register unsigned int u = 0; u < depth_width_; ++u, ++depth_idx)
+    for (unsigned int u = 0; u < depth_width_; ++u, ++depth_idx)
     {
       pcl::PointXYZI& pt = cloud->points[depth_idx];
       /// @todo Different values for these cases

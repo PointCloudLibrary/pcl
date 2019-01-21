@@ -36,7 +36,6 @@
 
 #pragma once
 
-#include <pcl/apps/modeler/qt.h>
 #include <boost/shared_ptr.hpp>
 
 #include <ui_main_window.h>

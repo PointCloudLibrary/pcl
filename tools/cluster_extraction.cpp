@@ -136,7 +136,7 @@ saveCloud (const std::string &filename, const std::vector<pcl::PCLPointCloud2::P
 
   for (size_t i = 0; i < output.size (); i++)
   {
-    std::string clustername = basename + boost::lexical_cast<std::string>(i) + ".pcd";
+    std::string clustername = basename + std::to_string(i) + ".pcd";
     print_highlight ("Saving "); print_value ("%s ", clustername.c_str ());
 
     pcl::io::savePCDFile (clustername, *(output[i]), translation, orientation, false);

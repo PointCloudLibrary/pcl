@@ -3087,7 +3087,7 @@ static const char *kernel_type_table[] =
 
 int svm_save_model (const char *model_file_name, const svm_model *model)
 {
-  FILE *fp = fopen (model_file_name, "w");
+  FILE *fp = fopen (model_file_name, "we");
 
   if (fp == NULL)
     return -1;
@@ -3233,7 +3233,7 @@ static char* readline (FILE *input)
 
 svm_model *svm_load_model (const char *model_file_name)
 {
-  FILE *fp = fopen (model_file_name, "rb");
+  FILE *fp = fopen (model_file_name, "rbe");
 
   if (fp == NULL)
     return NULL;

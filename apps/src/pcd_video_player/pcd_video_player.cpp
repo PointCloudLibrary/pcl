@@ -308,5 +308,5 @@ main (int argc, char** argv)
 
   VideoPlayer.show ();
 
-  return (app.exec ());
+  return (QApplication::exec ());
 }

@@ -217,7 +217,7 @@ int main(int argc, char ** argv)
   if (test_directory.compare ("") != 0)
   {
     //recognize all files in directory...
-    std::string start = "";
+    std::string start;
     std::string ext = std::string ("pcd");
     bf::path dir = test_directory;
 

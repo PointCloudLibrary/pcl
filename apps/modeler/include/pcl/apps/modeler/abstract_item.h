@@ -54,8 +54,8 @@ namespace pcl
     class AbstractItem
     {
       public:
-        AbstractItem(void);
-        ~AbstractItem(void);
+        AbstractItem();
+        ~AbstractItem();
 
         void
         showContextMenu(const QPoint* position);

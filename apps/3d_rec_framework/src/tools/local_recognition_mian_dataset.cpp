@@ -100,7 +100,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
     //read mians scenes
     bf::path ply_files_dir = scenes_dir;
     std::vector < std::string > files;
-    std::string start = "";
+    std::string start;
     getScenesInDirectory (ply_files_dir, start, files);
 
     std::sort (files.begin (), files.end (), sortFiles);
@@ -314,10 +314,10 @@ float CG_THRESHOLD_ = 0.005f;
 int
 main (int argc, char ** argv)
 {
-  std::string path = "";
+  std::string path;
   std::string desc_name = "shot_omp";
   std::string training_dir = "trained_models/";
-  std::string mians_scenes = "";
+  std::string mians_scenes;
   int force_retrain = 0;
   int icp_iterations = 20;
   int use_cache = 1;
@@ -366,7 +366,7 @@ main (int argc, char ** argv)
   else
   {
     std::vector < std::string > files;
-    std::string start = "";
+    std::string start;
     std::string ext = std::string ("ply");
     bf::path dir = models_dir_path;
     getModelsInDirectory (dir, start, files, ext);

@@ -37,6 +37,11 @@
 #include <pcl/apps/modeler/scene_tree.h>
 
 #include <set>
+
+#include <QContextMenuEvent>
+#include <QFileDialog>
+#include <QMessageBox>
+
 #include <pcl/apps/modeler/main_window.h>
 #include <pcl/apps/modeler/render_window.h>
 #include <pcl/apps/modeler/render_window_item.h>

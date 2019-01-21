@@ -1456,8 +1456,7 @@ NCVStatus ncvGrowDetectionsVector_device(NCVVector<Ncv32u> &pixelMask,
     ncvAssertReturn(rectWidth > 0 && rectHeight > 0 && curScale > 0, NCV_INVALID_ROI);
     ncvAssertReturn(curScale > 0, NCV_INVALID_SCALE);
     ncvAssertReturn(totalMaxDetections <= hypotheses.length() &&
-                    numPixelMaskDetections <= pixelMask.length() &&
-                    totalMaxDetections <= totalMaxDetections, NCV_INCONSISTENT_INPUT);
+                    numPixelMaskDetections <= pixelMask.length(), NCV_INCONSISTENT_INPUT);
 
     NCVStatus ncvStat = NCV_SUCCESS;
     Ncv32u numDetsToCopy = numPixelMaskDetections;
@@ -2032,8 +2031,7 @@ NCVStatus ncvGrowDetectionsVector_host(NCVVector<Ncv32u> &pixelMask,
     ncvAssertReturn(rectWidth > 0 && rectHeight > 0 && curScale > 0, NCV_INVALID_ROI);
     ncvAssertReturn(curScale > 0, NCV_INVALID_SCALE);
     ncvAssertReturn(totalMaxDetections <= hypotheses.length() &&
-                    numPixelMaskDetections <= pixelMask.length() &&
-                    totalMaxDetections <= totalMaxDetections, NCV_INCONSISTENT_INPUT);
+                    numPixelMaskDetections <= pixelMask.length(), NCV_INCONSISTENT_INPUT);
 
     NCVStatus ncvStat = NCV_SUCCESS;
     Ncv32u numDetsToCopy = numPixelMaskDetections;

@@ -49,7 +49,7 @@ namespace pcl
     {
       public:
         PoissonReconstructionWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
-        ~PoissonReconstructionWorker(void);
+        ~PoissonReconstructionWorker();
 
       protected:
         std::string

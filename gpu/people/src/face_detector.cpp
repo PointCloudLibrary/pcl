@@ -452,7 +452,7 @@ pcl::gpu::people::FaceDetector::ncvHaarLoadFromFile_host(const std::string &file
 
     NCVStatus ncv_return_status;
 
-    std::string fext = filename.substr(filename.find_last_of(".") + 1);
+    std::string fext = filename.substr(filename.find_last_of('.') + 1);
     std::transform(fext.begin(), fext.end(), fext.begin(), ::tolower);
 
     std::vector<HaarStage64> haar_stages;
@@ -497,7 +497,7 @@ pcl::gpu::people::FaceDetector::ncvHaarGetClassifierSize(const std::string &file
     size_t readCount;
     NCVStatus ncv_return_status;
 
-    std::string fext = filename.substr(filename.find_last_of(".") + 1);
+    std::string fext = filename.substr(filename.find_last_of('.') + 1);
     std::transform(fext.begin(), fext.end(), fext.begin(), ::tolower);
 
     if (fext == "nvbin")
@@ -731,21 +731,21 @@ pcl::gpu::people::FaceDetector::process(pcl::PointCloud<pcl::RGB>& cloud_in,
   PCL_DEBUG("[pcl::gpu::people::FaceDetector::process] : (D) : called\n");
   cols_ = cloud_in.width; rows_ = cloud_in.height;
 
-  // TODO do something with the NCVStatus return value
-  NCVStatus status = NCVprocess(cloud_in,
-                                cloud_out,
-                                haar_clas_casc_descr_,
-                                *haar_stages_dev_,
-                                *haar_nodes_dev_,
-                                *haar_features_dev_,
-                                *haar_stages_host_,
-                                *gpu_allocator_,
-                                *cpu_allocator_,
-                                cuda_dev_prop_,
-                                cloud_in.width,
-                                cloud_in.height,
-                                filter_rects_,
-                                largest_object_);
+  // TODO do something with the NCVprocess return value
+  NCVprocess(cloud_in,
+             cloud_out,
+             haar_clas_casc_descr_,
+             *haar_stages_dev_,
+             *haar_nodes_dev_,
+             *haar_features_dev_,
+             *haar_stages_host_,
+             *gpu_allocator_,
+             *cpu_allocator_,
+             cuda_dev_prop_,
+             cloud_in.width,
+             cloud_in.height,
+             filter_rects_,
+             largest_object_);
 
 }
 

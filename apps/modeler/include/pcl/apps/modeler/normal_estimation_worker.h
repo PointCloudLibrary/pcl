@@ -48,7 +48,7 @@ namespace pcl
     {
       public:
         NormalEstimationWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent = 0);
-        ~NormalEstimationWorker(void);
+        ~NormalEstimationWorker();
 
       protected:
         std::string

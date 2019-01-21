@@ -68,7 +68,6 @@ set(resources
 
 set(incs
   ${moc_incs}
-  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/qt.h"
 
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/dock_widget.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/abstract_item.h"

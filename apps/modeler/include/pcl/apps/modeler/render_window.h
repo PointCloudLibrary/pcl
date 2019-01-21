@@ -36,8 +36,9 @@
 
 #pragma once
 
-#include <pcl/apps/modeler/qt.h>
 #include <vtkSmartPointer.h>
+
+#include <QVTKWidget.h>
 
 class vtkCubeAxesActor;
 
