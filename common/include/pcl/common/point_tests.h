@@ -52,7 +52,7 @@ namespace pcl
   template <typename PointT> inline bool
   isFinite (const PointT &pt)
   {
-    return (pcl_isfinite (pt.x) && pcl_isfinite (pt.y) && pcl_isfinite (pt.z));
+    return (std::isfinite (pt.x) && std::isfinite (pt.y) && std::isfinite (pt.z));
   }
 
 #ifdef _MSC_VER
@@ -91,20 +91,20 @@ namespace pcl
   template <> inline bool
   isFinite<pcl::PointXY> (const pcl::PointXY &p)
   {
-    return (pcl_isfinite (p.x) && pcl_isfinite (p.y));
+    return (std::isfinite (p.x) && std::isfinite (p.y));
   }
 
   // specification for pcl::BorderDescription
   template <> inline bool
   isFinite<pcl::BorderDescription> (const pcl::BorderDescription &p)
   {
-    return (pcl_isfinite (p.x) && pcl_isfinite (p.y));
+    return (std::isfinite (p.x) && std::isfinite (p.y));
   }
 
   // specification for pcl::Normal
   template <> inline bool
   isFinite<pcl::Normal> (const pcl::Normal &n)
   {
-    return (pcl_isfinite (n.normal_x) && pcl_isfinite (n.normal_y) && pcl_isfinite (n.normal_z));
+    return (std::isfinite (n.normal_x) && std::isfinite (n.normal_y) && std::isfinite (n.normal_z));
   }
 }

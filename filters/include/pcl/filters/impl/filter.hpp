@@ -71,9 +71,9 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   {
     for (size_t i = 0; i < cloud_in.points.size (); ++i)
     {
-      if (!pcl_isfinite (cloud_in.points[i].x) ||
-          !pcl_isfinite (cloud_in.points[i].y) ||
-          !pcl_isfinite (cloud_in.points[i].z))
+      if (!std::isfinite (cloud_in.points[i].x) ||
+          !std::isfinite (cloud_in.points[i].y) ||
+          !std::isfinite (cloud_in.points[i].z))
         continue;
       cloud_out.points[j] = cloud_in.points[i];
       index[j] = static_cast<int>(i);
@@ -114,9 +114,9 @@ pcl::removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
   for (size_t i = 0; i < cloud_in.points.size (); ++i)
   {
-    if (!pcl_isfinite (cloud_in.points[i].normal_x) ||
-        !pcl_isfinite (cloud_in.points[i].normal_y) ||
-        !pcl_isfinite (cloud_in.points[i].normal_z))
+    if (!std::isfinite (cloud_in.points[i].normal_x) ||
+        !std::isfinite (cloud_in.points[i].normal_y) ||
+        !std::isfinite (cloud_in.points[i].normal_z))
       continue;
     cloud_out.points[j] = cloud_in.points[i];
     index[j] = static_cast<int>(i);

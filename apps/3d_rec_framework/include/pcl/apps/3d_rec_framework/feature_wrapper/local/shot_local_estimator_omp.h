@@ -126,7 +126,7 @@ namespace pcl
             int NaNs = 0;
             for (int i = 0; i < size_feat; i++)
             {
-              if (!pcl_isfinite(shots->points[k].descriptor[i]))
+              if (!std::isfinite(shots->points[k].descriptor[i]))
                 NaNs++;
             }
 

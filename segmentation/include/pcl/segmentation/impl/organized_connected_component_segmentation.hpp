@@ -128,7 +128,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   unsigned int clust_id = 0;
   
   //First pixel
-  if (pcl_isfinite (input_->points[0].x))
+  if (std::isfinite (input_->points[0].x))
   {
     labels[0].label = clust_id++;
     run_ids.push_back (labels[0].label );
@@ -137,7 +137,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   // First row
   for (int colIdx = 1; colIdx < static_cast<int> (input_->width); ++colIdx)
   {
-    if (!pcl_isfinite (input_->points[colIdx].x))
+    if (!std::isfinite (input_->points[colIdx].x))
       continue;
     else if (compare_->compare (colIdx, colIdx - 1 ))
     {
@@ -156,7 +156,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   for (size_t rowIdx = 1; rowIdx < input_->height; ++rowIdx, previous_row = current_row, current_row += input_->width)
   {
     // First pixel
-    if (pcl_isfinite (input_->points[current_row].x))
+    if (std::isfinite (input_->points[current_row].x))
     {
       if (compare_->compare (current_row, previous_row))
       {
@@ -172,7 +172,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
     // Rest of row
     for (int colIdx = 1; colIdx < static_cast<int> (input_->width); ++colIdx)
     {
-      if (pcl_isfinite (input_->points[current_row + colIdx].x))
+      if (std::isfinite (input_->points[current_row + colIdx].x))
       {
         if (compare_->compare (current_row + colIdx, current_row + colIdx - 1))
         {

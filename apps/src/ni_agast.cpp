@@ -221,7 +221,7 @@ class AGASTDemo
       {
         const PointT &pt = (*cloud)(static_cast<long unsigned int> (keypoints->points[i].u), 
                                     static_cast<long unsigned int> (keypoints->points[i].v));
-        if (!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y) || !pcl_isfinite (pt.z))
+        if (!std::isfinite (pt.x) || !std::isfinite (pt.y) || !std::isfinite (pt.z))
           continue;
 
         keypoints3d.points[j].x = pt.x;

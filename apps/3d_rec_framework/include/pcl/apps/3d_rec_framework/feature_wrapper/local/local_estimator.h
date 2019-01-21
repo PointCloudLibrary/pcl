@@ -122,7 +122,7 @@ namespace pcl
               pcl::eigen33 (covariance_matrix, eigenVectors, eigenValues);
 
               float eigsum = eigenValues.sum ();
-              if (!pcl_isfinite(eigsum))
+              if (!std::isfinite(eigsum))
               {
                 PCL_ERROR("Eigen sum is not finite\n");
               }

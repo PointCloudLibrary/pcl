@@ -457,7 +457,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointClo
 //       tree_->radiusSearch (corner, search_radius_, nn_indices, nn_dists);
 //       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
 //       {
-//         if (!pcl_isfinite (normals_->points[*iIt].normal_x))
+//         if (!std::isfinite (normals_->points[*iIt].normal_x))
 //           continue;
 
 //         nnT = normals_->points[*iIt].getNormalVector3fMap () * normals_->points[*iIt].getNormalVector3fMap ().transpose();

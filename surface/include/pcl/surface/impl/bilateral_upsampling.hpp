@@ -116,7 +116,7 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
 
             float val_exp_rgb = val_exp_rgb_vector (d_color);
 
-            if (pcl_isfinite (input_->points[y_w*input_->width + x_w].z))
+            if (std::isfinite (input_->points[y_w*input_->width + x_w].z))
             {
               sum += val_exp_depth * val_exp_rgb * input_->points[y_w*input_->width + x_w].z;
               norm_sum += val_exp_depth * val_exp_rgb;

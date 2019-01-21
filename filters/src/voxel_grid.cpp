@@ -74,9 +74,9 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
     memcpy (&pt[1], &cloud->data[xyz_offset[1]], sizeof (float));
     memcpy (&pt[2], &cloud->data[xyz_offset[2]], sizeof (float));
     // Check if the point is invalid
-    if (!pcl_isfinite (pt[0]) || 
-        !pcl_isfinite (pt[1]) || 
-        !pcl_isfinite (pt[2]))
+    if (!std::isfinite (pt[0]) || 
+        !std::isfinite (pt[1]) || 
+        !std::isfinite (pt[2]))
     {
       xyz_offset += cloud->point_step;
       continue;
@@ -157,9 +157,9 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
     memcpy (&pt[1], &cloud->data[xyz_offset[1]], sizeof (float));
     memcpy (&pt[2], &cloud->data[xyz_offset[2]], sizeof (float));
     // Check if the point is invalid
-    if (!pcl_isfinite (pt[0]) || 
-        !pcl_isfinite (pt[1]) || 
-        !pcl_isfinite (pt[2]))
+    if (!std::isfinite (pt[0]) || 
+        !std::isfinite (pt[1]) || 
+        !std::isfinite (pt[2]))
     {
       xyz_offset += cloud->point_step;
       continue;
@@ -327,9 +327,9 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof (float));
 
       // Check if the point is invalid
-      if (!pcl_isfinite (pt[0]) || 
-          !pcl_isfinite (pt[1]) || 
-          !pcl_isfinite (pt[2]))
+      if (!std::isfinite (pt[0]) || 
+          !std::isfinite (pt[1]) || 
+          !std::isfinite (pt[2]))
       {
         xyz_offset += input_->point_step;
         continue;
@@ -357,9 +357,9 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof (float));
 
       // Check if the point is invalid
-      if (!pcl_isfinite (pt[0]) || 
-          !pcl_isfinite (pt[1]) || 
-          !pcl_isfinite (pt[2]))
+      if (!std::isfinite (pt[0]) || 
+          !std::isfinite (pt[1]) || 
+          !std::isfinite (pt[2]))
       {
         xyz_offset += input_->point_step;
         continue;

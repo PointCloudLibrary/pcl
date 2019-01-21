@@ -55,7 +55,7 @@ pcl::visualization::FloatImageUtils::getColorForFloat (float value, unsigned cha
     r = 150;  g = 200;  b = 150;  // -INFINITY
     return;
   }
-  if (!pcl_isfinite (value)) 
+  if (!std::isfinite (value)) 
   {
     r = 200;  g = 150;  b = 150;  // -INFINITY
     return;
@@ -120,7 +120,7 @@ pcl::visualization::FloatImageUtils::getColorForAngle (float value, unsigned cha
     r = 150;  g = 200;  b = 150;  // -INFINITY
     return;
   }
-  if (!pcl_isfinite (value)) 
+  if (!std::isfinite (value)) 
   {
     r = 200;  g = 150;  b = 150;  // -INFINITY
     return;
@@ -175,7 +175,7 @@ pcl::visualization::FloatImageUtils::getVisualImage (const float* float_image, i
     for (int i=0; i<size; ++i) 
     {
       float value = float_image[i];
-      if (!pcl_isfinite(value)) continue;
+      if (!std::isfinite(value)) continue;
       if (recalculateMinValue)  min_value = (std::min)(min_value, value);
       if (recalculateMaxValue)  max_value = (std::max)(max_value, value);
     }
@@ -188,7 +188,7 @@ pcl::visualization::FloatImageUtils::getVisualImage (const float* float_image, i
     unsigned char& r=*(dataPtr++), & g=*(dataPtr++), & b=*(dataPtr++);
     float value = float_image[i];
     
-    if (!pcl_isfinite(value)) 
+    if (!std::isfinite(value)) 
     {
       getColorForFloat(value, r, g, b);
       continue;

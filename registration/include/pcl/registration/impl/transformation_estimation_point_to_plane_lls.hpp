@@ -156,15 +156,15 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
   // Approximate as a linear least squares problem
   while (source_it.isValid () && target_it.isValid ())
   {
-    if (!pcl_isfinite (source_it->x) ||
-        !pcl_isfinite (source_it->y) ||
-        !pcl_isfinite (source_it->z) ||
-        !pcl_isfinite (target_it->x) ||
-        !pcl_isfinite (target_it->y) ||
-        !pcl_isfinite (target_it->z) ||
-        !pcl_isfinite (target_it->normal_x) ||
-        !pcl_isfinite (target_it->normal_y) ||
-        !pcl_isfinite (target_it->normal_z))
+    if (!std::isfinite (source_it->x) ||
+        !std::isfinite (source_it->y) ||
+        !std::isfinite (source_it->z) ||
+        !std::isfinite (target_it->x) ||
+        !std::isfinite (target_it->y) ||
+        !std::isfinite (target_it->z) ||
+        !std::isfinite (target_it->normal_x) ||
+        !std::isfinite (target_it->normal_y) ||
+        !std::isfinite (target_it->normal_z))
     {
       ++target_it;
       ++source_it;    

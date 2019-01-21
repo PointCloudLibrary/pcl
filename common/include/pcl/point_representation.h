@@ -109,7 +109,7 @@ namespace pcl
 
           for (int i = 0; i < nr_dimensions_; ++i)
           {
-            if (!pcl_isfinite (temp[i]))
+            if (!std::isfinite (temp[i]))
             {
               is_valid = false;
               break;
@@ -123,7 +123,7 @@ namespace pcl
 
           for (int i = 0; i < nr_dimensions_; ++i)
           {
-            if (!pcl_isfinite (temp[i]))
+            if (!std::isfinite (temp[i]))
             {
               is_valid = false;
               break;

@@ -176,7 +176,7 @@ Narf::extractDescriptor (int descriptor_size)
 
       int cell_x = static_cast<int> (pcl_lrint (beam_point_cell_x)), cell_y = static_cast<int> (pcl_lrint (beam_point_cell_y));
       beam_value = surface_patch_[cell_y*surface_patch_pixel_size_ + cell_x];
-      if (!pcl_isfinite(beam_value))
+      if (!std::isfinite(beam_value))
       {
         if (beam_value > 0.0f)
           beam_value = max_dist;

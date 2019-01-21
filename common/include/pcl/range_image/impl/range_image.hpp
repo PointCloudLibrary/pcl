@@ -447,14 +447,14 @@ RangeImage::isInImage (int x, int y) const
 bool 
 RangeImage::isValid (int x, int y) const
 {
-  return isInImage (x,y) && pcl_isfinite (getPoint (x,y).range);
+  return isInImage (x,y) && std::isfinite (getPoint (x,y).range);
 }
 
 /////////////////////////////////////////////////////////////////////////
 bool 
 RangeImage::isValid (int index) const
 {
-  return pcl_isfinite (getPoint (index).range);
+  return std::isfinite (getPoint (index).range);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -755,7 +755,7 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
 
 //inline float RangeImage::getSurfaceChange (const PointWithRange& point, const PointWithRange& neighbor1, const PointWithRange& neighbor2) const
 //{
-  //if (!pcl_isfinite (point.range) || (!pcl_isfinite (neighbor1.range)&&neighbor1.range<0) || (!pcl_isfinite (neighbor2.range)&&neighbor2.range<0))
+  //if (!std::isfinite (point.range) || (!std::isfinite (neighbor1.range)&&neighbor1.range<0) || (!std::isfinite (neighbor2.range)&&neighbor2.range<0))
     //return -std::numeric_limits<float>::infinity ();
   //if (std::isinf (neighbor1.range))
   //{
@@ -861,7 +861,7 @@ RangeImage::getAverageEuclideanDistance (int x, int y, int offset_x, int offset_
     int x1=x+i*offset_x,     y1=y+i*offset_y;
     int x2=x+ (i+1)*offset_x, y2=y+ (i+1)*offset_y;
     float pixel_distance = getEuclideanDistanceSquared (x1,y1,x2,y2);
-    if (!pcl_isfinite (pixel_distance))
+    if (!std::isfinite (pixel_distance))
     {
       //std::cout << x<<","<<y<<"->"<<x2<<","<<y2<<": "<<pixel_distance<<"\n";
       if (i==0)
@@ -905,7 +905,7 @@ RangeImage::getNormal (int x, int y, int radius, Eigen::Vector3f& normal, int st
       if (!isInImage (x2, y2))
         continue;
       const PointWithRange& point = getPoint (x2, y2);
-      if (!pcl_isfinite (point.range))
+      if (!std::isfinite (point.range))
         continue;
       vector_average.add (Eigen::Vector3f (point.x, point.y, point.z));
     }
@@ -1050,7 +1050,7 @@ float
 RangeImage::getSquaredDistanceOfNthNeighbor (int x, int y, int radius, int n, int step_size) const
 {
   const PointWithRange& point = getPoint (x, y);
-  if (!pcl_isfinite (point.range))
+  if (!std::isfinite (point.range))
     return -std::numeric_limits<float>::infinity ();
   
   int blocksize = static_cast<int> (pow (static_cast<double> (2.0 * radius + 1.0), 2.0));
@@ -1105,7 +1105,7 @@ RangeImage::getCurvature (int x, int y, int radius, int step_size) const
       if (!isInImage (x2, y2))
         continue;
       const PointWithRange& point = getPoint (x2, y2);
-      if (!pcl_isfinite (point.range))
+      if (!std::isfinite (point.range))
         continue;
       vector_average.add (Eigen::Vector3f (point.x, point.y, point.z));
     }
@@ -1127,7 +1127,7 @@ RangeImage::getAverageViewPoint (const PointCloudTypeWithViewpoints& point_cloud
   for (unsigned int point_idx=0; point_idx<point_cloud.points.size (); ++point_idx)
   {
     const typename PointCloudTypeWithViewpoints::PointType& point = point_cloud.points[point_idx];
-    if (!pcl_isfinite (point.vp_x) || !pcl_isfinite (point.vp_y) || !pcl_isfinite (point.vp_z))
+    if (!std::isfinite (point.vp_x) || !std::isfinite (point.vp_y) || !std::isfinite (point.vp_z))
       continue;
     average_viewpoint[0] += point.vp_x;
     average_viewpoint[1] += point.vp_y;
@@ -1245,7 +1245,7 @@ RangeImage::integrateFarRanges (const PointCloudType& far_ranges)
       if (!isInImage (x, y))
         continue;
       PointWithRange& image_point = getPoint (x, y);
-      if (!pcl_isfinite (image_point.range))
+      if (!std::isfinite (image_point.range))
         image_point.range = std::numeric_limits<float>::infinity ();
     }
   }

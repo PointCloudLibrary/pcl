@@ -206,7 +206,7 @@ namespace pcl
               int j = 0;
               for (size_t i = 0; i < out->points.size (); ++i)
               {
-                if (!pcl_isfinite (out->points[i].x) || !pcl_isfinite (out->points[i].y) || !pcl_isfinite (out->points[i].z))
+                if (!std::isfinite (out->points[i].x) || !std::isfinite (out->points[i].y) || !std::isfinite (out->points[i].z))
                   continue;
 
                 out->points[j] = out->points[i];
@@ -243,8 +243,8 @@ namespace pcl
             int j = 0;
             for (size_t i = 0; i < normals->points.size (); ++i)
             {
-              if (!pcl_isfinite (normals->points[i].normal_x) || !pcl_isfinite (normals->points[i].normal_y)
-                  || !pcl_isfinite (normals->points[i].normal_z))
+              if (!std::isfinite (normals->points[i].normal_x) || !std::isfinite (normals->points[i].normal_y)
+                  || !std::isfinite (normals->points[i].normal_z))
                 continue;
 
               normals->points[j] = normals->points[i];
@@ -267,8 +267,8 @@ namespace pcl
             bool NaNs = false;
             for (size_t i = 0; i < normals->points.size (); ++i)
             {
-              if (pcl_isfinite (normals->points[i].normal_x) && pcl_isfinite (normals->points[i].normal_y)
-                  && pcl_isfinite (normals->points[i].normal_z))
+              if (std::isfinite (normals->points[i].normal_x) && std::isfinite (normals->points[i].normal_y)
+                  && std::isfinite (normals->points[i].normal_z))
                 continue;
 
               NaNs = true;

@@ -2026,7 +2026,7 @@ namespace pcl
         local_pt.y = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + y_offset]));
         local_pt.z = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + z_offset]));
 
-        if (!pcl_isfinite (local_pt.x) || !pcl_isfinite (local_pt.y) || !pcl_isfinite (local_pt.z))
+        if (!std::isfinite (local_pt.x) || !std::isfinite (local_pt.y) || !std::isfinite (local_pt.z))
           continue;
 
         if(!this->pointInBoundingBox (local_pt))

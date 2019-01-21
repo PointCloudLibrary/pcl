@@ -222,7 +222,7 @@ main (int argc, char** argv)
 
   for (size_t i = 0; i < scene_descriptors_->size (); ++i)
   {
-    if ( pcl_isfinite( scene_descriptors_->at (i).descriptor[0] ) )
+    if ( std::isfinite( scene_descriptors_->at (i).descriptor[0] ) )
     {
       vector<int> neigh_indices (1);
       vector<float> neigh_sqr_dists (1);

@@ -298,7 +298,7 @@ namespace pcl
   {
     Type value;
     memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
-    if (!pcl_isfinite (value))
+    if (!std::isfinite (value))
       return (false);
     return (true);
   }

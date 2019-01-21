@@ -257,9 +257,9 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
     // If the point is not finite, set the descriptor to NaN and continue
     const PointRFT& current_frame = (*frames_)[point_index];
     if (!isFinite ((*input_)[(*indices_)[point_index]]) ||
-        !pcl_isfinite (current_frame.x_axis[0]) ||
-        !pcl_isfinite (current_frame.y_axis[0]) ||
-        !pcl_isfinite (current_frame.z_axis[0])  )
+        !std::isfinite (current_frame.x_axis[0]) ||
+        !std::isfinite (current_frame.y_axis[0]) ||
+        !std::isfinite (current_frame.z_axis[0])  )
     {
       for (size_t i = 0; i < descriptor_length_; ++i)
         output[point_index].descriptor[i] = std::numeric_limits<float>::quiet_NaN ();

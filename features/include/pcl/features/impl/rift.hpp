@@ -73,7 +73,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
 
     float gradient_magnitude = gradient_vector.norm ();
     float gradient_angle_from_center = acosf (gradient_vector.dot ((point - p0).normalized ()) / gradient_magnitude);
-    if (!pcl_isfinite (gradient_angle_from_center))
+    if (!std::isfinite (gradient_angle_from_center))
       gradient_angle_from_center = 0.0;
 
     // Normalize distance and angle values to: 0.0 <= d,g < nr_distances_bins,nr_gradient_bins

@@ -1148,7 +1148,7 @@ TEST (VoxelGrid_XYZNormal, Filters)
           voxel.normal_y = std::numeric_limits<float>::quiet_NaN ();
           voxel.normal_z = std::numeric_limits<float>::quiet_NaN ();
         }
-        else if (pcl_isfinite (point.normal_x))
+        else if (std::isfinite (point.normal_x))
         {
           float norm = 1.0f / sqrt (point.normal_x * point.normal_x + point.normal_y * point.normal_y + point.normal_z * point.normal_z );
           point.normal_x *= norm;
@@ -1195,7 +1195,7 @@ TEST (VoxelGrid_XYZNormal, Filters)
         EXPECT_EQ (voxel.y, point.y);
         EXPECT_EQ (voxel.z, point.z);
 
-        if (pcl_isfinite(voxel.normal_x) || pcl_isfinite (point.normal_x))
+        if (std::isfinite(voxel.normal_x) || std::isfinite (point.normal_x))
         {
           EXPECT_EQ (voxel.normal_x, point.normal_x);
           EXPECT_EQ (voxel.normal_y, point.normal_y);
@@ -1231,7 +1231,7 @@ TEST (VoxelGrid_XYZNormal, Filters)
         EXPECT_EQ (voxel.y, point.y);
         EXPECT_EQ (voxel.z, point.z);
 
-        if (pcl_isfinite(voxel.normal_x) || pcl_isfinite (point.normal_x))
+        if (std::isfinite(voxel.normal_x) || std::isfinite (point.normal_x))
         {
           EXPECT_EQ (voxel.normal_x, point.normal_x);
           EXPECT_EQ (voxel.normal_y, point.normal_y);
@@ -1592,9 +1592,9 @@ TEST (ConditionalRemoval, Filters)
   int num_not_nan = 0;
   for (size_t i = 0; i < output.points.size (); i++)
   {
-    if (pcl_isfinite (output.points[i].x) &&
-        pcl_isfinite (output.points[i].y) &&
-        pcl_isfinite (output.points[i].z))
+    if (std::isfinite (output.points[i].x) &&
+        std::isfinite (output.points[i].y) &&
+        std::isfinite (output.points[i].z))
     num_not_nan++;
   }
 
@@ -1629,9 +1629,9 @@ TEST (ConditionalRemoval, Filters)
   num_not_nan = 0;
   for (size_t i = 0; i < output.points.size (); i++)
   {
-    if (pcl_isfinite (output.points[i].x) &&
-        pcl_isfinite (output.points[i].y) &&
-        pcl_isfinite (output.points[i].z))
+    if (std::isfinite (output.points[i].x) &&
+        std::isfinite (output.points[i].y) &&
+        std::isfinite (output.points[i].z))
     num_not_nan++;
   }
 
@@ -1697,9 +1697,9 @@ TEST (ConditionalRemovalSetIndices, Filters)
   int num_not_nan = 0;
   for (size_t i = 0; i < output.points.size (); i++)
   {
-    if (pcl_isfinite (output.points[i].x) &&
-        pcl_isfinite (output.points[i].y) &&
-        pcl_isfinite (output.points[i].z))
+    if (std::isfinite (output.points[i].x) &&
+        std::isfinite (output.points[i].y) &&
+        std::isfinite (output.points[i].z))
       num_not_nan++;
   }
 
@@ -1747,9 +1747,9 @@ TEST (ConditionalRemovalSetIndices, Filters)
   num_not_nan = 0;
   for (size_t i = 0; i < output.points.size (); i++)
   {
-    if (pcl_isfinite (output.points[i].x) &&
-        pcl_isfinite (output.points[i].y) &&
-        pcl_isfinite (output.points[i].z))
+    if (std::isfinite (output.points[i].x) &&
+        std::isfinite (output.points[i].y) &&
+        std::isfinite (output.points[i].z))
       num_not_nan++;
   }
 
@@ -2266,7 +2266,7 @@ TEST (NormalRefinement, Filters)
     if ((fabsf (calci.normal_x) + fabsf (calci.normal_y) + fabsf (calci.normal_z)) > 0.0f)
     {
       tmp = 1.0f - (calci.normal_x * a + calci.normal_y * b + calci.normal_z * c);
-      if (pcl_isfinite (tmp))
+      if (std::isfinite (tmp))
       {
         errs_est.push_back (tmp);
         err_est_mean += tmp;
@@ -2278,7 +2278,7 @@ TEST (NormalRefinement, Filters)
     if ((fabsf (refinedi.normal_x) + fabsf (refinedi.normal_y) + fabsf (refinedi.normal_z)) > 0.0f)
     {
       tmp = 1.0f - (refinedi.normal_x * a + refinedi.normal_y * b + refinedi.normal_z * c);
-      if (pcl_isfinite(tmp))
+      if (std::isfinite(tmp))
       {
         errs_refined.push_back (tmp);
         err_refined_mean += tmp;

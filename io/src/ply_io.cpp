@@ -267,7 +267,7 @@ namespace pcl
   template<typename Scalar> void
   PLYReader::vertexScalarPropertyCallback (Scalar value)
   {
-    if (!pcl_isfinite (value))
+    if (!std::isfinite (value))
       cloud_->is_dense = false;
 
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
@@ -294,7 +294,7 @@ namespace pcl
   template<typename ContentType> void
   PLYReader::vertexListPropertyContentCallback (ContentType value)
   {
-    if (!pcl_isfinite (value))
+    if (!std::isfinite (value))
       cloud_->is_dense = false;
 
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
@@ -1118,7 +1118,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
               // Test if x-coordinate is NaN, thus an invalid point
               if ("x" == cloud.fields[d].name)
               {
-                if (!pcl_isfinite(value))
+                if (!std::isfinite(value))
                   is_valid_line = false;
               }
               line << value;
@@ -1227,7 +1227,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
       {
         float value;
         memcpy(&value, &cloud.data[i * point_size + cloud.fields[xfield].offset], sizeof(float));
-        if (pcl_isfinite(value))
+        if (std::isfinite(value))
         {
           rangegrid[i] = valid_points;
           ++valid_points;

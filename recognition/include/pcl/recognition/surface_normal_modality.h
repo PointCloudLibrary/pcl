@@ -736,7 +736,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
     for (int col_index = 0; col_index < width; ++col_index)
     {
       const float value = input_->points[row_index*width + col_index].z;
-      if (pcl_isfinite (value))
+      if (std::isfinite (value))
       {
         lp_depth[row_index*width + col_index] = static_cast<unsigned short> (value * 1000.0f);
       }

@@ -107,7 +107,7 @@ namespace pcl
       const NormalT& pointi = cloud[k_indices[i]];
       
       // Accumulate if not NaN
-      if (pcl_isfinite (pointi.normal_x) && pcl_isfinite (pointi.normal_y) && pcl_isfinite (pointi.normal_z))
+      if (std::isfinite (pointi.normal_x) && std::isfinite (pointi.normal_y) && std::isfinite (pointi.normal_z))
       {
         const float& weighti = weights[i];
         nx += weighti * pointi.normal_x;
@@ -118,7 +118,7 @@ namespace pcl
     
     // Normalize if norm valid and non-zero
     const float norm = std::sqrt (nx * nx + ny * ny + nz * nz);
-    if (pcl_isfinite (norm) && norm > std::numeric_limits<float>::epsilon ())
+    if (std::isfinite (norm) && norm > std::numeric_limits<float>::epsilon ())
     {
       point.normal_x = nx / norm;
       point.normal_y = ny / norm;
