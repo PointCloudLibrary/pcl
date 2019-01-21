@@ -33,8 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: test_scurv_estimation.cpp 4747 2012-02-26 20:51:51Z svn $
- *
  */
 
 #include <gtest/gtest.h>
@@ -43,58 +41,56 @@
 #include <pcl/features/scurv.h>
 #include <pcl/io/pcd_io.h>
 
-using namespace pcl;
-using namespace pcl::io;
-using namespace std;
-
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
-typedef PointCloud<PointXYZ>::Ptr CloudPtr;
-
-PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
-vector<int> indices;
-
-float leaf_size_ = 0.005f;
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, SCurVEstimation)
 {
+  // Create cloud
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
-  // Estimate normals first
-  NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+  // Fill in the cloud data
+  cloud->width    = 100;
+  cloud->height   = 1;
+  cloud->is_dense = false;
+  cloud->points.resize (cloud->width * cloud->height);
+  for (size_t i = 0; i < cloud->points.size (); ++i)
+  {
+    cloud->points[i].x = i;
+    cloud->points[i].y = i*i - i;
+    cloud->points[i].z = i*i + i;
+  }
+
+  // Estimate normals
+  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> n;
+  pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal> ());
   n.setInputCloud (cloud);
-  //n.setSearchMethod (tree);
-  n.setRadiusSearch (leaf_size_ * 4); //2cm to estimate normals
+  n.setRadiusSearch (200.0f);
   n.compute (*normals);
 
-  SCurVEstimation<PointXYZ, Normal, SCurVSignature210> scurv;
+  pcl::SCurVEstimation<pcl::PointXYZ, pcl::Normal> scurv;
+  scurv.setKSearch(6);
+  scurv.setSearchMethod (pcl::search::KdTree<pcl::PointXYZ>::Ptr (new pcl::search::KdTree<pcl::PointXYZ>));
   scurv.setInputCloud (cloud);
   scurv.setInputNormals (normals);
 
-  // Object
-  PointCloud<SCurVSignature210>::Ptr scurvs (new PointCloud<SCurVSignature210> ());
+  // SCurVSignature object
+  pcl::PointCloud<pcl::SCurVSignature210>::Ptr scurvs (new pcl::PointCloud<pcl::SCurVSignature210> ());
 
   // estimate
   scurv.compute (*scurvs);
-  EXPECT_EQ (static_cast<int>(scurvs->points.size ()), 1);
+
+  // compare results
+  EXPECT_EQ (scurvs->points.size (), 1u);
+  int results[210] = {6,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,5,2,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,1,2,2,0,0,0,0,0,0,0,0,0,1,0,1,1,0,2,1,0,0,0,0,0,0,1,0,3,3,0,0,0,0,0,0,1,1,0,8,0,0,0,0,0,0,0,4,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  for (size_t i = 0; i < 210; ++i)
+  {
+    EXPECT_EQ (scurvs->points[0].histogram[i], results[i]);
+  } 
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  if (argc < 3)
-  {
-    std::cerr << "No test file given. Please download `milk.pcd` pass its path to the test." << std::endl;
-    return (-1);
-  }
-
-  if (loadPCDFile<PointXYZ> (argv[1], *cloud) < 0)
-  {
-    std::cerr << "Failed to read test file. Please download `milk.pcd` and pass its path to the test." << std::endl;
-    return (-1);
-  }
-
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }

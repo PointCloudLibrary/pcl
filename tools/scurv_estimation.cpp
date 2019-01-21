@@ -33,8 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
 #include <pcl/PCLPointCloud2.h>
@@ -44,102 +42,112 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 
-using namespace pcl;
-using namespace pcl::io;
-using namespace pcl::console;
-
-void
-printHelp (int, char **argv)
-{
-  print_error ("Syntax is: %s input.pcd output.pcd\n", argv[0]);
-}
+pcl::SCurVEstimation<pcl::PointNormal, pcl::PointNormal> scurv;
 
 bool
-loadCloud (const std::string &filename, PointCloud<PointNormal> &cloud)
+loadCloud (const std::string &filename, pcl::PointCloud<pcl::PointNormal> &cloud)
 {
-  TicToc tt;
-  print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
+  pcl::console::TicToc tt;
+  pcl::console::print_highlight ("Loading "); pcl::console::print_value ("%s ", filename.c_str ());
 
   tt.tic ();
-  if (loadPCDFile<PointNormal> (filename, cloud) < 0)
+  if (pcl::io::loadPCDFile<pcl::PointNormal> (filename, cloud) < 0)
     return (false);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
-  print_info ("Available dimensions: "); print_value ("%s\n", getFieldsList (cloud).c_str ());
+  pcl::console::print_info ("[done, ");
+  pcl::console::print_value ("%g", tt.toc ());
+  pcl::console::print_info (" ms : ");
+  pcl::console::print_value ("%d", cloud.points.size()); pcl::console::print_info (" points]\n");
+  pcl::console::print_info ("Available dimensions: "); pcl::console::print_value ("%s\n", getFieldsList (cloud).c_str ());
 
   // Check if the dataset has normals
   std::vector<pcl::PCLPointField> fields;
   if (getFieldIndex (cloud, "normal_x", fields) == -1)
   {
-    print_error ("The input dataset does not contain normal information!\n");
+    pcl::console::print_error ("The input dataset does not contain normal information!\n");
     return (false);
   }
   return (true);
 }
 
 void
-compute (const PointCloud<PointNormal>::Ptr &input, PointCloud<SCurVSignature210> &output)
+compute (const pcl::PointCloud<pcl::PointNormal>::Ptr &input, pcl::PointCloud<pcl::SCurVSignature210> &output)
 {
   // Estimate
-  TicToc tt;
+  pcl::console::TicToc tt;
   tt.tic ();
   
-  print_highlight (stderr, "Computing ");
+  pcl::console::print_highlight (stdout, "Computing with %d-nearest neighbors ", scurv.getKSearch());
 
-  SCurVEstimation<PointNormal, PointNormal, SCurVSignature210> scurv;
-  scurv.setSearchMethod (search::KdTree<PointNormal>::Ptr (new search::KdTree<PointNormal>));
+  scurv.setSearchMethod (pcl::search::KdTree<pcl::PointNormal>::Ptr (new pcl::search::KdTree<pcl::PointNormal>));
   scurv.setInputCloud (input);
   scurv.setInputNormals (input);
-  
+ 
   scurv.compute (output);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+  pcl::console::print_info ("[done, ");
+  pcl::console::print_value ("%g", tt.toc ());
+  pcl::console::print_info (" ms : ");
+  pcl::console::print_value ("%d", output.points.size());
+  pcl::console::print_info (" points]\n");
 }
 
 void
-saveCloud (const std::string &filename, const PointCloud<SCurVSignature210> &output)
+saveCloud (const std::string &filename, const pcl::PointCloud<pcl::SCurVSignature210> &output)
 {
-  TicToc tt;
+  pcl::console::TicToc tt;
   tt.tic ();
 
-  print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
+  pcl::console::print_highlight ("Saving "); pcl::console::print_value ("%s ", filename.c_str ());
   
-  io::savePCDFile (filename, output, false);
+  pcl::io::savePCDFile (filename, output, false);
   
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+  pcl::console::print_info ("[done, ");
+  pcl::console::print_value ("%g", tt.toc ());
+  pcl::console::print_info (" ms : ");
+  pcl::console::print_value ("%d", output.points.size());
+  pcl::console::print_info (" points]\n");
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  print_info ("Estimate SCurV (210) descriptors using pcl::SCurVEstimation. For more information, use: %s -h\n", argv[0]);
+  pcl::console::print_info ("Estimate SCurV (210) descriptors using pcl::SCurVEstimation. For more information, use: %s -h\n", argv[0]);
   bool help = false;
-  parse_argument (argc, argv, "-h", help);
+  pcl::console::parse_argument (argc, argv, "-h", help);
   if (argc < 3 || help)
   {
-    printHelp (argc, argv);
-    return (-1);
+    pcl::console::print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
+    pcl::console::print_info ("  where options are:\n");
+    pcl::console::print_info ("                     -k X      = use a fixed number of X-nearest neighbors around each point (default: "); 
+    pcl::console::print_value ("%d", scurv.getKSearch()); 
+    pcl::console::print_info (")\n"); 
+    return 1;
   }
 
   // Parse the command line arguments for .pcd files
-  std::vector<int> p_file_indices;
-  p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
+  const std::vector<int> p_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
   if (p_file_indices.size () != 2)
   {
-    print_error ("Need one input PCD file and one output PCD file to continue.\n");
-    return (-1);
+    pcl::console::print_error ("Need one input PCD file and one output PCD file to continue.\n");
+    return 1;
   }
 
+  int k;
+  pcl::console::parse_argument (argc, argv, "-k", k);
+  if ( k > 1 )
+    scurv.setKSearch(k);
+
   // Load the first file
-  PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal>);
+  pcl::PointCloud<pcl::PointNormal>::Ptr cloud (new pcl::PointCloud<pcl::PointNormal>);
   if (!loadCloud (argv[p_file_indices[0]], *cloud)) 
-    return (-1);
+    return 1;
 
   // Perform the feature estimation
-  PointCloud<SCurVSignature210> output;
+  pcl::PointCloud<pcl::SCurVSignature210> output;
   compute (cloud, output);
 
   // Save into the second file
   saveCloud (argv[p_file_indices[1]], output);
+  return 0;
 }
-

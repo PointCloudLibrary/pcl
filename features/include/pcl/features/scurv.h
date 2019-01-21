@@ -33,15 +33,11 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pfh.hpp 5027 2012-03-12 03:10:45Z rusu $
- *
  */
 #ifndef PCL_SCURV_H_
 #define PCL_SCURV_H_
 
 #include <pcl/features/feature.h>
-#define GRIDSIZE 64
-#define GRIDSIZE_H GRIDSIZE/2
 #include <vector>
 
 namespace pcl
@@ -56,92 +52,97 @@ namespace pcl
     * \ingroup features
     */
 
-  template <typename PointInT, typename PointNT,  typename PointOutT = pcl::SCurVSignature210>
-  class SCurVEstimation: public FeatureFromNormals<PointInT, PointNT, PointOutT>
+  template <typename PointInT, typename PointNT>
+  class SCurVEstimation: public FeatureFromNormals<PointInT, PointNT, SCurVSignature210>
   {
     public:
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::k_;
-      using Feature<PointInT, PointOutT>::search_radius_;
-      using Feature<PointInT, PointOutT>::input_;
-      using Feature<PointInT, PointOutT>::surface_;
-      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-	typedef boost::shared_ptr<SCurVEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const SCurVEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+      typedef typename Feature<PointInT, SCurVSignature210>::PointCloudIn PointCloudIn;
 
-      /** \brief Empty constructor. */
-      SCurVEstimation () : lut_ (), local_cloud_ ()
+      typedef boost::shared_ptr<SCurVEstimation<PointInT, PointNT> > Ptr;
+      typedef boost::shared_ptr<const SCurVEstimation<PointInT, PointNT> > ConstPtr;
+
+      /** \brief Default constructor. */
+      SCurVEstimation ()
       {
         feature_name_ = "SCurVEstimation";
-        lut_.resize (GRIDSIZE);
-        for (int i = 0; i < GRIDSIZE; ++i)
-        {
-          lut_[i].resize (GRIDSIZE);
-          for (int j = 0; j < GRIDSIZE; ++j)
-            lut_[i][j].resize (GRIDSIZE);
-        }
-        //lut_.resize (boost::extents[GRIDSIZE][GRIDSIZE][GRIDSIZE]);
-        search_radius_ = 0;
-        k_ = 5;
+        k_ = 19;
       }
 
-      /** \brief ... */
+      /** \brief Compute SCurV signature.
+        * \param[out] output the resultant point cloud model dataset containing the estimated feature
+        */
       void
-      compute (PointCloudOut &output);
+      compute (PointCloud<SCurVSignature210> &output);
 
     protected:
-      /** \brief ... */
+      using Feature<PointInT, SCurVSignature210>::feature_name_;
+      using Feature<PointInT, SCurVSignature210>::getClassName;
+      using Feature<PointInT, SCurVSignature210>::input_;
+      using Feature<PointInT, SCurVSignature210>::k_;
+      using FeatureFromNormals<PointInT, PointNT, SCurVSignature210>::normals_;
+
+      /** \brief Control point to be used for Piecewise Cubic Hermite Interpolating Polynomial (PCHIP)
+        * \param[in] x the x value of control point
+        * \param[in] f the functional value in control point
+        * \param[in] d the derivative value in control point
+        */
+      struct 
+      HermitePoint {
+        double x;
+        double f;
+        double d;
+      };
+
+      /** \brief Estimate the SCurV descriptor at a set of points given by <setInputCloud (), setInputNormals ()>
+        * \param[out] output the resultant point cloud model dataset that contains the SCurV feature estimates
+        */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (pcl::PointCloud<pcl::SCurVSignature210> &output);
 
-      /** \brief ... */
+      /** \brief Scale normalization of cloud based on range values
+        * \param[out] output the resultant scale normalized point cloud
+        * \param[in] min_range the minimum value of range to be scaled to
+        * \param[in] max_range the maximum value of range to be scaled to
+        */
       void
-      computeSCurV (PointCloudIn &pc, std::vector<float> &hist);
+      normalizeScale (pcl::PointCloud<pcl::PointNormal> &cloud, int min_range, int max_range);
       
-      /** \brief ... */
-      void
-      normalize2D (pcl::PointCloud<pcl::PointNormal> &cloudToBeNormalized, int min_range, int max_range);
-      
-      /** \brief ... */
-      void
-      positioningAtCenter (pcl::PointCloud<pcl::PointNormal> &cloudToBeNormalized);
-
-      /** \brief ... */
-      bool
-      compare (int index1, int index2, std::vector<double> &data);
-	
-      /** \brief ... */
-	double
-      uvalue (double x, double low, double high);
-
-      /** \brief ... */
+      /** \brief return scale normalized value of x
+        * \param[in] x the value to be normalized
+        * \param[in] low the minimum of range
+        * \param[in] hihg the maximum of range
+        */
       double
-      HermiteDerivativeInterpolate (double x1, double x2, double f1, double f2, double d1, double d2, double xi);
+      getNormalizedValue (double x, double low, double high);
 
-      /** \brief ... */
-      Eigen::MatrixXd
-      svd_orthoBasisForTheNullSpace (const Eigen::MatrixXd &theMatrix);
-
-      /** \brief ... */
+      /** \brief Return the value of Piecewise Cubic Hermite Interpolating Polynomial (PCHIP) in xi between control points point1 and point2
+        * \param[in] point1 the left control point
+        * \param[in] point2 the right control point
+        * \param[in] xi the x value in which to compute the function value
+        */
       double
-      pchst (double arg1, double arg2);
+      getHermiteDerivativeInterpolation (HermitePoint point1, HermitePoint point2, double xi);
 
-      /** \brief ... */
+      /** \brief Piecewise Cubic Hermite Interpolating Polynomial (PCHIP) sign-testing routine.
+        * This routine essentially computes the sign of arg1 * arg2.
+	* The object is to do this without multiplying arg1 * arg2, to avoid possible over/underflow problems.
+        * \param[in] arg1
+        * \param[in] arg2
+        */
+      double
+      signMultiplied (double arg1, double arg2);
+
+      /** \brief Set derivatives of Piecewise Cubic Hermite Interpolating Polynomial (PCHIP) control points
+        * \param[in] n the count of control points
+        * \param[in] x the vector of x values of all control points
+        * \param[in] f the vector of functional values of all control points
+        * \param[out] d the vector of derivative values of all control points
+        */
       void
-      spline_pchip_set (int n, std::vector<double> x, std::vector<double> f, std::vector<double> &d);
+      setSplinePchip (int n, std::vector<double> x, std::vector<double> f, std::vector<double> &d);
 
-    private:
-
-      /** \brief ... */
-      std::vector<std::vector<std::vector<int> > > lut_;
-      
-      /** \brief ... */
-      PointCloudIn local_cloud_;
   };
 }
 
