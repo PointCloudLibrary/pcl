@@ -134,7 +134,7 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
       float d =  depth_data->GetScalarComponentAsFloat(u,v,0,0);
       depth_point.intensity = d;
 
-      if(d != 0 && !pcl_isnan(d) && !pcl_isnan(d))
+      if(d != 0 && !std::isnan(d) && !std::isnan(d))
       {
         xyzrgba_point.z = d * 0.001f;
         xyzrgba_point.x = static_cast<float> (u) * d * 0.001f * constant;

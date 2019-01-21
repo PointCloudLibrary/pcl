@@ -599,7 +599,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals ()
       const float py = input_->points[index].y;
       const float pz = input_->points[index].z;
 
-      if (pcl_isnan(px) || pz > 2.0f) 
+      if (std::isnan(px) || pz > 2.0f) 
       {
         surface_normals_.points[index].normal_x = bad_point;
         surface_normals_.points[index].normal_y = bad_point;
@@ -632,7 +632,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals ()
           const float qy = input_->points[index2].y;
           const float qz = input_->points[index2].z;
 
-          if (pcl_isnan(qx)) continue;
+          if (std::isnan(qx)) continue;
 
           const float delta = qz - pz;
           const float i = qx - px;
@@ -1044,7 +1044,7 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
         //const float ny = surface_normals_ (col_index, row_index).normal_y;
         //const float nz = surface_normals_ (col_index, row_index).normal_z;
 
-        if (quantized_value != 0)// && !(pcl_isnan (nx) || pcl_isnan (ny) || pcl_isnan (nz)))
+        if (quantized_value != 0)// && !(std::isnan (nx) || std::isnan (ny) || std::isnan (nz)))
         {
           const int distance_map_index = map[quantized_value];
 
@@ -1315,7 +1315,7 @@ pcl::SurfaceNormalModality<PointInT>::extractAllFeatures (
         //const float ny = surface_normals_ (col_index, row_index).normal_y;
         //const float nz = surface_normals_ (col_index, row_index).normal_z;
 
-        if (quantized_value != 0)// && !(pcl_isnan (nx) || pcl_isnan (ny) || pcl_isnan (nz)))
+        if (quantized_value != 0)// && !(std::isnan (nx) || std::isnan (ny) || std::isnan (nz)))
         {
           const int distance_map_index = map[quantized_value];
 
@@ -1377,7 +1377,7 @@ pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
       const float normal_y = surface_normals_ (col_index, row_index).normal_y;
       const float normal_z = surface_normals_ (col_index, row_index).normal_z;
 
-      if (pcl_isnan(normal_x) || pcl_isnan(normal_y) || pcl_isnan(normal_z) || normal_z > 0)
+      if (std::isnan(normal_x) || std::isnan(normal_y) || std::isnan(normal_z) || normal_z > 0)
       {
         quantized_surface_normals_ (col_index, row_index) = 0;
         continue;

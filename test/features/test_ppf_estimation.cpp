@@ -76,11 +76,11 @@ TEST (PCL, PPFEstimation)
   EXPECT_EQ (feature_cloud->points.size (), indices.size () * cloud.points.size ());
 
   // Now check for a few values in the feature cloud
-  EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].f1));
-  EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].f2));
-  EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].f3));
-  EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].f4));
-  EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].alpha_m));
+  EXPECT_TRUE (std::isnan (feature_cloud->points[0].f1));
+  EXPECT_TRUE (std::isnan (feature_cloud->points[0].f2));
+  EXPECT_TRUE (std::isnan (feature_cloud->points[0].f3));
+  EXPECT_TRUE (std::isnan (feature_cloud->points[0].f4));
+  EXPECT_TRUE (std::isnan (feature_cloud->points[0].alpha_m));
 
   EXPECT_NEAR (feature_cloud->points[15127].f1, -2.51637, 1e-4);
   EXPECT_NEAR (feature_cloud->points[15127].f2, -0.00365916, 1e-4);

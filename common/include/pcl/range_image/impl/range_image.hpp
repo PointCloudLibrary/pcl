@@ -774,7 +774,7 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
         //d3_squared = squaredEuclideanDistance (neighbor1, neighbor2);
   //float cos_surface_change = (d1_squared + d2_squared - d3_squared)/ (2.0f*d1*d2),
         //surface_change = acosf (cos_surface_change);
-  //if (pcl_isnan (surface_change))
+  //if (std::isnan (surface_change))
     //surface_change = static_cast<float> (M_PI);
   ////std::cout << PVARN (point)<<PVARN (neighbor1)<<PVARN (neighbor2)<<PVARN (cos_surface_change)<<PVARN (surface_change)<<PVARN (d1)<<PVARN (d2)<<PVARN (d1_squared)<<PVARN (d2_squared)<<PVARN (d3_squared);
 

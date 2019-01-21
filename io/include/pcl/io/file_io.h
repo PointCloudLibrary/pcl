@@ -241,7 +241,7 @@ namespace pcl
   {
     Type value;
     memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
-    if (pcl_isnan (value))
+    if (std::isnan (value))
       stream << "nan";
     else
       stream << boost::numeric_cast<Type>(value);
@@ -256,7 +256,7 @@ namespace pcl
   {
     int8_t value;
     memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (int8_t)], sizeof (int8_t));
-    if (pcl_isnan (value))
+    if (std::isnan (value))
       stream << "nan";
     else
       // Numeric cast doesn't give us what we want for int8_t
@@ -272,7 +272,7 @@ namespace pcl
   {
     uint8_t value;
     memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (uint8_t)], sizeof (uint8_t));
-    if (pcl_isnan (value))
+    if (std::isnan (value))
       stream << "nan";
     else
       // Numeric cast doesn't give us what we want for uint8_t

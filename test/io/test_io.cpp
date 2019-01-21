@@ -1299,9 +1299,9 @@ TEST (PCL, Locale)
     EXPECT_EQ (cloud2.is_dense, false);
     EXPECT_EQ (cloud2.points.size (), cloud.points.size ());
   
-    EXPECT_TRUE (pcl_isnan(cloud2.points[0].x));
-    EXPECT_TRUE (pcl_isnan(cloud2.points[0].y));
-    EXPECT_TRUE (pcl_isnan(cloud2.points[0].z));
+    EXPECT_TRUE (std::isnan(cloud2.points[0].x));
+    EXPECT_TRUE (std::isnan(cloud2.points[0].y));
+    EXPECT_TRUE (std::isnan(cloud2.points[0].z));
     for (size_t i = 1; i < cloud2.points.size (); ++i)
     {
       ASSERT_FLOAT_EQ (cloud2.points[i].x, cloud.points[i].x);

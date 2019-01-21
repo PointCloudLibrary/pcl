@@ -197,9 +197,9 @@ TEST (ExtractIndices, Filters)
   EXPECT_EQ (output.points[0].x, cloud->points[0].x);
   EXPECT_EQ (output.points[0].y, cloud->points[0].y);
   EXPECT_EQ (output.points[0].z, cloud->points[0].z);
-  EXPECT_TRUE (pcl_isnan(output.points[1].x));
-  EXPECT_TRUE (pcl_isnan(output.points[1].y));
-  EXPECT_TRUE (pcl_isnan(output.points[1].z));
+  EXPECT_TRUE (std::isnan(output.points[1].x));
+  EXPECT_TRUE (std::isnan(output.points[1].y));
+  EXPECT_TRUE (std::isnan(output.points[1].z));
 
   ei2.setNegative (true);
   ei2.setKeepOrganized (true);
@@ -211,9 +211,9 @@ TEST (ExtractIndices, Filters)
   EXPECT_EQ (output.width, cloud->width);
   EXPECT_EQ (output.height, cloud->height);
 
-  EXPECT_TRUE (pcl_isnan(output.points[0].x));
-  EXPECT_TRUE (pcl_isnan(output.points[0].y));
-  EXPECT_TRUE (pcl_isnan(output.points[0].z));
+  EXPECT_TRUE (std::isnan(output.points[0].x));
+  EXPECT_TRUE (std::isnan(output.points[0].y));
+  EXPECT_TRUE (std::isnan(output.points[0].z));
   EXPECT_EQ (output.points[1].x, cloud->points[1].x);
   EXPECT_EQ (output.points[1].y, cloud->points[1].y);
   EXPECT_EQ (output.points[1].z, cloud->points[1].z);
@@ -389,12 +389,12 @@ TEST (PassThrough, Filters)
   EXPECT_EQ (output.height, cloud->height);
   EXPECT_EQ (bool (output.is_dense), false); // NaN was set as a user filter value
 
-  EXPECT_TRUE (pcl_isnan (output.points[0].x));
-  EXPECT_TRUE (pcl_isnan (output.points[0].y));
-  EXPECT_TRUE (pcl_isnan (output.points[0].z));
-  EXPECT_TRUE (pcl_isnan (output.points[41].x));
-  EXPECT_TRUE (pcl_isnan (output.points[41].y));
-  EXPECT_TRUE (pcl_isnan (output.points[41].z));
+  EXPECT_TRUE (std::isnan (output.points[0].x));
+  EXPECT_TRUE (std::isnan (output.points[0].y));
+  EXPECT_TRUE (std::isnan (output.points[0].z));
+  EXPECT_TRUE (std::isnan (output.points[41].x));
+  EXPECT_TRUE (std::isnan (output.points[41].y));
+  EXPECT_TRUE (std::isnan (output.points[41].z));
 
   pt.setFilterLimitsNegative (true);
   pt.filter (output);
@@ -536,13 +536,13 @@ TEST (PassThrough, Filters)
   EXPECT_EQ (output.height, cloud->height);
   EXPECT_EQ (bool (output.is_dense), false); // NaN was set as a user filter value
 
-  EXPECT_TRUE (pcl_isnan (output.points[0].x));
-  EXPECT_TRUE (pcl_isnan (output.points[0].y));
-  EXPECT_TRUE (pcl_isnan (output.points[0].z));
+  EXPECT_TRUE (std::isnan (output.points[0].x));
+  EXPECT_TRUE (std::isnan (output.points[0].y));
+  EXPECT_TRUE (std::isnan (output.points[0].z));
 
-  EXPECT_TRUE (pcl_isnan (output.points[41].x));
-  EXPECT_TRUE (pcl_isnan (output.points[41].y));
-  EXPECT_TRUE (pcl_isnan (output.points[41].z));
+  EXPECT_TRUE (std::isnan (output.points[41].x));
+  EXPECT_TRUE (std::isnan (output.points[41].y));
+  EXPECT_TRUE (std::isnan (output.points[41].z));
 
   pt2.setFilterLimitsNegative (true);
   pt2.filter (output_blob);
@@ -1843,7 +1843,7 @@ TEST (ShadowPoints, Filters)
   spfilter.setKeepOrganized (true);
   spfilter.filter (output);
   EXPECT_EQ (output.size (), input->size ());
-  EXPECT_TRUE (pcl_isnan (output.at (input->size () - 1).x));
+  EXPECT_TRUE (std::isnan (output.at (input->size () - 1).x));
   removed = spfilter.getRemovedIndices ();
   EXPECT_EQ (int (removed->size ()), 1);
 
@@ -1927,9 +1927,9 @@ TEST (FrustumCulling, Filters)
   EXPECT_EQ (output->size (), input->size ());
   for (size_t i = 0; i < output->size (); i++)
   {
-    EXPECT_TRUE (pcl_isnan (output->at (i).x));
-    EXPECT_TRUE (pcl_isnan (output->at (i).y));
-    EXPECT_TRUE (pcl_isnan (output->at (i).z));
+    EXPECT_TRUE (std::isnan (output->at (i).x));
+    EXPECT_TRUE (std::isnan (output->at (i).y));
+    EXPECT_TRUE (std::isnan (output->at (i).z));
   }
   removed = fc.getRemovedIndices ();
   EXPECT_EQ (removed->size (), input->size ());

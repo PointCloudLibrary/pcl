@@ -102,7 +102,7 @@ namespace pcl
         if (depth == 0 | isnan(depth) | isinf(depth))
           return 0;
 #else
-        if (depth == 0 | pcl_isnan(depth) | std::isinf(depth))
+        if (depth == 0 | std::isnan(depth) | std::isinf(depth))
           return 0;
 #endif
         int xIdx = idx % width_;
@@ -176,7 +176,7 @@ namespace pcl
         if (depth == 0 | isnan(depth) | isinf(depth))
           return 0.0f;
 #else
-        if (depth == 0 | pcl_isnan(depth) | std::isinf(depth))
+        if (depth == 0 | std::isnan(depth) | std::isinf(depth))
           return 0.0f;
 #endif
         int xIdx = idx % width_;
@@ -247,7 +247,7 @@ namespace pcl
         if (disparity == 0 | isnan(disparity) | isinf(disparity))
           return make_float3 (0,0,0);
 #else
-        if (disparity == 0 | pcl_isnan(disparity) | std::isinf(disparity))
+        if (disparity == 0 | std::isnan(disparity) | std::isinf(disparity))
           return make_float3 (0,0,0);
 #endif
         int xIdx = idx % width_;

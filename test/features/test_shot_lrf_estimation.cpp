@@ -81,7 +81,7 @@ TEST (PCL, SHOTLocalReferenceFrameEstimation)
 
   // NaN result for point 24
   //EXPECT_EQ (numeric_limits<float>::max (), bunny_LRF.at (24).confidence);
-  EXPECT_TRUE (pcl_isnan (bunny_LRF.at (24).x_axis[0]));
+  EXPECT_TRUE (std::isnan (bunny_LRF.at (24).x_axis[0]));
 
   // Expected Results
   // point 15: tangent disambiguation

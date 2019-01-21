@@ -67,7 +67,7 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
   const float py = input_->points[index].y;
   const float pz = input_->points[index].z;
 
-  if (pcl_isnan (px)) 
+  if (std::isnan (px)) 
   {
     normal.normal_x = bad_point;
     normal.normal_y = bad_point;
@@ -101,7 +101,7 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
       const float qy = input_->points[index2].y;
       const float qz = input_->points[index2].z;
 
-      if (pcl_isnan (qx)) continue;
+      if (std::isnan (qx)) continue;
 
       const float delta = qz - pz;
       const float i = qx - px;
@@ -182,7 +182,7 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
       const float py = input_->points[index].y;
       const float pz = input_->points[index].z;
 
-      if (pcl_isnan(px)) continue;
+      if (std::isnan(px)) continue;
 
       //float depthDependentSmoothingSize = smoothingSize + pz / 10.0f;
 
@@ -212,7 +212,7 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
           const float qy = input_->points[index2].y;
           const float qz = input_->points[index2].z;
 
-          if (pcl_isnan(qx)) continue;
+          if (std::isnan(qx)) continue;
 
           const float delta = qz - pz;
           const float i = qx - px;

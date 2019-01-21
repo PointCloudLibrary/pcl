@@ -191,7 +191,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
             }
           }
 
-          if (!pcl_isnan (corr_depth))
+          if (!std::isnan (corr_depth))
           {
             // Found a corresponding point
             float dist = curr_depth - corr_depth;

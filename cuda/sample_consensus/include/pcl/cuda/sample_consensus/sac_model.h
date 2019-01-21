@@ -75,7 +75,7 @@ namespace pcl
 #ifdef __CUDACC__
             return (isnan (pt.x) | isnan (pt.y) | isnan (pt.z)) == 1; 
 #else
-            return (pcl_isnan (pt.x) | pcl_isnan (pt.y) | pcl_isnan (pt.z)) == 1;
+            return (std::isnan (pt.x) | std::isnan (pt.y) | std::isnan (pt.z)) == 1;
 #endif
         }
     };
