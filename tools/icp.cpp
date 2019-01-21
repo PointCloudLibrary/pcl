@@ -112,7 +112,7 @@ main (int argc, char **argv)
     std::cout << iicp.getAbsoluteTransform () << std::endl;
 
     std::string result_filename (argv[pcd_indices[i]]);
-    result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
+    result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
     pcl::io::savePCDFileBinary (result_filename.c_str (), *tmp);
     std::cout << "saving result to " << result_filename << std::endl;
   }

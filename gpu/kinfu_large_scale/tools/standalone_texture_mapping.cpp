@@ -75,7 +75,7 @@ saveOBJFile (const std::string &file_name,
   fs.open (file_name.c_str ());
 
   // Define material file
-  std::string mtl_file_name = file_name.substr (0, file_name.find_last_of (".")) + ".mtl";
+  std::string mtl_file_name = file_name.substr (0, file_name.find_last_of ('.')) + ".mtl";
   // Strip path for "mtllib" command
   std::string mtl_file_name_nopath = mtl_file_name;
   mtl_file_name_nopath.erase (0, mtl_file_name.find_last_of ('/') + 1);

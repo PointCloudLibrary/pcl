@@ -284,7 +284,7 @@ pcl::ihs::OfflineIntegration::load (const std::string&    filename,
   // Load the transformation.
   std::string fn_transform = filename;
 
-  size_t pos = fn_transform.find_last_of (".");
+  size_t pos = fn_transform.find_last_of ('.');
   if (pos == std::string::npos || pos == (fn_transform.size () - 1))
   {
     std::cerr << "ERROR in offline_integration.cpp: No file extension\n";
