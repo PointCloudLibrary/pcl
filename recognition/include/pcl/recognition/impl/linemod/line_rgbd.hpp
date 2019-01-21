@@ -43,19 +43,6 @@
 #include <fcntl.h>
 #include <pcl/point_cloud.h>
 #include <limits>
-#ifdef _WIN32
-# include <io.h>
-# include <windows.h>
-# define pcl_open                    _open
-# define pcl_close(fd)               _close(fd)
-# define pcl_lseek(fd,offset,origin) _lseek(fd,offset,origin)
-#else
-#include <unistd.h>
-# include <sys/mman.h>
-# define pcl_open                    open
-# define pcl_close(fd)               close(fd)
-# define pcl_lseek(fd,offset,origin) lseek(fd,offset,origin)
-#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointXYZT, typename PointRGBT> bool
@@ -87,7 +74,7 @@ template <typename PointXYZT, typename PointRGBT> bool
 pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, const size_t object_id)
 {
   // Open the file
-  int ltm_fd = pcl_open (file_name.c_str (), O_RDONLY | O_CLOEXEC);
+  int ltm_fd = io::raw_open(file_name.c_str (), O_RDONLY);
   if (ltm_fd == -1)
     return (false);
   
@@ -151,12 +138,12 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
       delete [] buffer;
     }
 
-    if (static_cast<int> (pcl_lseek (ltm_fd, ltm_offset, SEEK_SET)) < 0)
+    if (io::raw_lseek(ltm_fd, ltm_offset, SEEK_SET) < 0)
       break;
   }
 
   // Close the file
-  pcl_close (ltm_fd);
+  io::raw_close(ltm_fd);
 
   // Compute 3D bounding boxes from the template point clouds
   bounding_boxes_.resize (template_point_clouds_.size ());
