@@ -276,7 +276,7 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
         if (counters[neighbor_array_pos]==0)
         {
           float& neighbor_range = points[neighbor_array_pos].range;
-          neighbor_range = (pcl_isinf (neighbor_range) ? range_of_current_point : (std::min) (neighbor_range, range_of_current_point));
+          neighbor_range = (std::isinf (neighbor_range) ? range_of_current_point : (std::min) (neighbor_range, range_of_current_point));
           top= (std::min) (top, n_y); right= (std::max) (right, n_x); bottom= (std::max) (bottom, n_y); left= (std::min) (left, n_x);
         }
       }
@@ -410,7 +410,7 @@ RangeImage::getRangeDifference (const Eigen::Vector3f& point) const
   if (!isInImage (image_x, image_y))
     return -std::numeric_limits<float>::infinity ();
   float image_point_range = getPoint (image_x, image_y).range;
-  if (pcl_isinf (image_point_range))
+  if (std::isinf (image_point_range))
   {
     if (image_point_range > 0.0f)
       return std::numeric_limits<float>::infinity ();
@@ -461,7 +461,7 @@ RangeImage::isValid (int index) const
 bool 
 RangeImage::isObserved (int x, int y) const
 {
-  return !(!isInImage (x,y) || (pcl_isinf (getPoint (x,y).range)&&getPoint (x,y).range<0.0f));
+  return !(!isInImage (x,y) || (std::isinf (getPoint (x,y).range) && getPoint (x,y).range < 0.0f));
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -469,7 +469,7 @@ bool
 RangeImage::isMaxRange (int x, int y) const
 {
   float range = getPoint (x,y).range;
-  return pcl_isinf (range) && range>0.0f;
+  return std::isinf (range) && range>0.0f;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -616,19 +616,19 @@ RangeImage::getImpactAngle (int x1, int y1, int x2, int y2) const
 /////////////////////////////////////////////////////////////////////////
 float 
 RangeImage::getImpactAngle (const PointWithRange& point1, const PointWithRange& point2) const {
-  if ( (pcl_isinf (point1.range)&&point1.range<0) || (pcl_isinf (point2.range)&&point2.range<0))
+  if ( (std::isinf (point1.range)&&point1.range<0) || (std::isinf (point2.range)&&point2.range<0))
     return -std::numeric_limits<float>::infinity ();
   
   float r1 = (std::min) (point1.range, point2.range),
         r2 = (std::max) (point1.range, point2.range);
   float impact_angle = static_cast<float> (0.5f * M_PI);
   
-  if (pcl_isinf (r2)) 
+  if (std::isinf (r2)) 
   {
-    if (r2 > 0.0f && !pcl_isinf (r1))
+    if (r2 > 0.0f && !std::isinf (r1))
       impact_angle = 0.0f;
   }
-  else if (!pcl_isinf (r1)) 
+  else if (!std::isinf (r1)) 
   {
     float r1Sqr = r1*r1,
           r2Sqr = r2*r2,
@@ -650,7 +650,7 @@ float
 RangeImage::getAcutenessValue (const PointWithRange& point1, const PointWithRange& point2) const
 {
   float impact_angle = getImpactAngle (point1, point2);
-  if (pcl_isinf (impact_angle))
+  if (std::isinf (impact_angle))
     return -std::numeric_limits<float>::infinity ();
   float ret = 1.0f - float (fabs (impact_angle)/ (0.5f*M_PI));
   if (impact_angle < 0.0f)
@@ -757,14 +757,14 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
 //{
   //if (!pcl_isfinite (point.range) || (!pcl_isfinite (neighbor1.range)&&neighbor1.range<0) || (!pcl_isfinite (neighbor2.range)&&neighbor2.range<0))
     //return -std::numeric_limits<float>::infinity ();
-  //if (pcl_isinf (neighbor1.range))
+  //if (std::isinf (neighbor1.range))
   //{
-    //if (pcl_isinf (neighbor2.range))
+    //if (std::isinf (neighbor2.range))
       //return 0.0f;
     //else
       //return acosf ( (Eigen::Vector3f (point.x, point.y, point.z)-getSensorPos ()).normalized ().dot ( (Eigen::Vector3f (neighbor2.x, neighbor2.y, neighbor2.z)-Eigen::Vector3f (point.x, point.y, point.z)).normalized ()));
   //}
-  //if (pcl_isinf (neighbor2.range))
+  //if (std::isinf (neighbor2.range))
     //return acosf ( (Eigen::Vector3f (point.x, point.y, point.z)-getSensorPos ()).normalized ().dot ( (Eigen::Vector3f (neighbor1.x, neighbor1.y, neighbor1.z)-Eigen::Vector3f (point.x, point.y, point.z)).normalized ()));
   
   //float d1_squared = squaredEuclideanDistance (point, neighbor1),
@@ -803,7 +803,7 @@ RangeImage::get1dPointAverage (int x, int y, int delta_x, int delta_y, int no_of
   //MEASURE_FUNCTION_TIME;
   float weight_sum = 1.0f;
   average_point = getPoint (x,y);
-  if (pcl_isinf (average_point.range))
+  if (std::isinf (average_point.range))
   {
     if (average_point.range>0.0f)  // The first point is max range -> return a max range point
       return;
@@ -843,9 +843,9 @@ RangeImage::getEuclideanDistanceSquared (int x1, int y1, int x2, int y2) const
     return -std::numeric_limits<float>::infinity ();
   const PointWithRange& point1 = getPoint (x1,y1),
                       & point2 = getPoint (x2,y2);
-  if (pcl_isinf (point1.range) && pcl_isinf (point2.range))
+  if (std::isinf (point1.range) && std::isinf (point2.range))
     return 0.0f;
-  if (pcl_isinf (point1.range) || pcl_isinf (point2.range))
+  if (std::isinf (point1.range) || std::isinf (point2.range))
     return std::numeric_limits<float>::infinity ();
   return squaredEuclideanDistance (point1, point2);
 }
@@ -924,7 +924,7 @@ float
 RangeImage::getNormalBasedAcutenessValue (int x, int y, int radius) const
 {
   float impact_angle = getImpactAngleBasedOnLocalNormal (x, y, radius);
-  if (pcl_isinf (impact_angle))
+  if (std::isinf (impact_angle))
     return -std::numeric_limits<float>::infinity ();
   float ret = 1.0f - static_cast<float> ( (impact_angle / (0.5f * M_PI)));
   //std::cout << PVARAC (impact_angle)<<PVARN (ret);

@@ -278,7 +278,7 @@ RangeImage::recalculate3DPointPositions ()
     for (int x = 0; x < static_cast<int> (width); ++x) 
     {
       PointWithRange& point = points[y*width + x];
-      if (!pcl_isinf (point.range)) 
+      if (!std::isinf (point.range)) 
         calculate3DPoint (static_cast<float> (x), static_cast<float> (y), point.range, point);
     }
   }
@@ -312,7 +312,7 @@ RangeImage::getIntegralImage (float*& integral_image, int*& valid_points_num_ima
       integral_pixel = getPoint (x, y).range;
       int& valid_points_num = * (valid_points_num_image_ptr++);
       valid_points_num = 1;
-      if (pcl_isinf (integral_pixel))
+      if (std::isinf (integral_pixel))
       {
         integral_pixel = 0.0f;
         valid_points_num = 0;
@@ -346,7 +346,7 @@ void
 RangeImage::setUnseenToMaxRange ()
 {
   for (unsigned int i=0; i<points.size (); ++i)
-    if (pcl_isinf (points[i].range))
+    if (std::isinf (points[i].range))
       points[i].range = std::numeric_limits<float>::infinity ();
 }
 
@@ -587,7 +587,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
             float new_value = cell1_z + u* (cell3_z-cell1_z) + v* (cell2_z-cell1_z);
             
             float& value = surface_patch[cell_y*pixel_size + cell_x];
-            if (pcl_isinf (value))
+            if (std::isinf (value))
               value = new_value;
             else
               value = (std::min) (value, new_value);
@@ -604,7 +604,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
     {
       int index= cell_y*pixel_size + cell_x;
       float& value = surface_patch[index];
-      if (!pcl_isinf (value))
+      if (!std::isinf (value))
         continue;
       
       // Go through immediate neighbors
@@ -644,7 +644,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
               continue;
             int index2 = cell2_y*pixel_size + cell2_x;
             float& neighbor_value = surface_patch[index2];
-            if (pcl_isinf (neighbor_value) && neighbor_value<0)
+            if (std::isinf (neighbor_value) && neighbor_value<0)
               neighbor_value = std::numeric_limits<float>::infinity ();
           }
         }
@@ -789,7 +789,7 @@ RangeImage::getRangeImageWithSmoothedSurface (int radius, RangeImage& smoothed_r
     for (int x=0; x<int (width); ++x)
     {
       PointWithRange& point = smoothed_range_image.getPoint (x, y);
-      if (pcl_isinf (point.range))
+      if (std::isinf (point.range))
         continue;
       Eigen::Vector3f normal, mean, eigen_values;
       float used_squared_max_distance;

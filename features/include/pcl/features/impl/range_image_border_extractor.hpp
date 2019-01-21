@@ -74,7 +74,7 @@ float RangeImageBorderExtractor::getNeighborDistanceChangeScore(
   const PointWithRange& point = range_image_->getPoint(x, y);
   PointWithRange neighbor;
   range_image_->get1dPointAverage(x+offset_x, y+offset_y, offset_x, offset_y, pixel_radius, neighbor);
-  if (pcl_isinf(neighbor.range))
+  if (std::isinf(neighbor.range))
   {
     if (neighbor.range < 0.0f)
       return 0.0f;
@@ -99,7 +99,7 @@ float RangeImageBorderExtractor::getNeighborDistanceChangeScore(
 //{
   //PointWithRange neighbor;
   //range_image_->get1dPointAverage(x+offset_x, y+offset_y, offset_x, offset_y, parameters_.pixel_radius_borders, neighbor);
-  //if (pcl_isinf(neighbor.range))
+  //if (std::isinf(neighbor.range))
   //{
     //if (neighbor.range < 0.0f)
       //return 0.0f;

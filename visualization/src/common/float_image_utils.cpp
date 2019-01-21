@@ -45,7 +45,7 @@ using std::cerr;
 void 
 pcl::visualization::FloatImageUtils::getColorForFloat (float value, unsigned char& r, unsigned char& g, unsigned char& b) 
 {
-  if (pcl_isinf (value)) 
+  if (std::isinf (value)) 
   {
     if (value > 0.0f) 
     {
@@ -110,7 +110,7 @@ pcl::visualization::FloatImageUtils::getColorForFloat (float value, unsigned cha
 void 
 pcl::visualization::FloatImageUtils::getColorForAngle (float value, unsigned char& r, unsigned char& g, unsigned char& b) 
 {
-  if (pcl_isinf (value)) 
+  if (std::isinf (value)) 
   {
     if (value > 0.0f) 
     {
@@ -165,8 +165,8 @@ pcl::visualization::FloatImageUtils::getVisualImage (const float* float_image, i
   unsigned char* data = new unsigned char[arraySize];
   unsigned char* dataPtr = data;
   
-  bool recalculateMinValue = pcl_isinf (min_value),
-       recalculateMaxValue = pcl_isinf (max_value);
+  bool recalculateMinValue = std::isinf (min_value),
+       recalculateMaxValue = std::isinf (max_value);
   if (recalculateMinValue) min_value = std::numeric_limits<float>::infinity ();
   if (recalculateMaxValue) max_value = -std::numeric_limits<float>::infinity ();
   
