@@ -494,60 +494,42 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
           {
             int8_t value;
             memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (int8_t), sizeof (int8_t));
-            if (std::isnan (value))
-              stream << "nan";
-            else
-              stream << boost::numeric_cast<uint32_t>(value);
+            stream << boost::numeric_cast<int32_t>(value);
             break;
           }
           case pcl::PCLPointField::UINT8:
           {
             uint8_t value;
             memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (uint8_t), sizeof (uint8_t));
-            if (std::isnan (value))
-              stream << "nan";
-            else
-              stream << boost::numeric_cast<uint32_t>(value);
+            stream << boost::numeric_cast<uint32_t>(value);
             break;
           }
           case pcl::PCLPointField::INT16:
           {
             int16_t value;
             memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (int16_t), sizeof (int16_t));
-            if (std::isnan (value))
-              stream << "nan";
-            else
-              stream << boost::numeric_cast<int16_t>(value);
+            stream << boost::numeric_cast<int16_t>(value);
             break;
           }
           case pcl::PCLPointField::UINT16:
           {
             uint16_t value;
             memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (uint16_t), sizeof (uint16_t));
-            if (std::isnan (value))
-              stream << "nan";
-            else
-              stream << boost::numeric_cast<uint16_t>(value);
+            stream << boost::numeric_cast<uint16_t>(value);
             break;
           }
           case pcl::PCLPointField::INT32:
           {
             int32_t value;
             memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (int32_t), sizeof (int32_t));
-            if (std::isnan (value))
-              stream << "nan";
-            else
-              stream << boost::numeric_cast<int32_t>(value);
+            stream << boost::numeric_cast<int32_t>(value);
             break;
           }
           case pcl::PCLPointField::UINT32:
           {
             uint32_t value;
             memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (uint32_t), sizeof (uint32_t));
-            if (std::isnan (value))
-              stream << "nan";
-            else
-              stream << boost::numeric_cast<uint32_t>(value);
+            stream << boost::numeric_cast<uint32_t>(value);
             break;
           }
           case pcl::PCLPointField::FLOAT32:
@@ -561,10 +543,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
             {
               uint32_t value;
               memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (float), sizeof (float));
-              if (std::isnan (value))
-                stream << "nan";
-              else
-                stream << boost::numeric_cast<uint32_t>(value);
+              stream << boost::numeric_cast<uint32_t>(value);
               break;
             }
             else
@@ -803,60 +782,42 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
           {
             int8_t value;
             memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (int8_t), sizeof (int8_t));
-            if (std::isnan (value))
-              stream << "nan";
-            else
-              stream << boost::numeric_cast<uint32_t>(value);
+            stream << boost::numeric_cast<int32_t>(value);
             break;
           }
           case pcl::PCLPointField::UINT8:
           {
             uint8_t value;
             memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (uint8_t), sizeof (uint8_t));
-            if (std::isnan (value))
-              stream << "nan";
-            else
-              stream << boost::numeric_cast<uint32_t>(value);
+            stream << boost::numeric_cast<uint32_t>(value);
             break;
           }
           case pcl::PCLPointField::INT16:
           {
             int16_t value;
             memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (int16_t), sizeof (int16_t));
-            if (std::isnan (value))
-              stream << "nan";
-            else
-              stream << boost::numeric_cast<int16_t>(value);
+            stream << boost::numeric_cast<int16_t>(value);
             break;
           }
           case pcl::PCLPointField::UINT16:
           {
             uint16_t value;
             memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (uint16_t), sizeof (uint16_t));
-            if (std::isnan (value))
-              stream << "nan";
-            else
-              stream << boost::numeric_cast<uint16_t>(value);
+            stream << boost::numeric_cast<uint16_t>(value);
             break;
           }
           case pcl::PCLPointField::INT32:
           {
             int32_t value;
             memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (int32_t), sizeof (int32_t));
-            if (std::isnan (value))
-              stream << "nan";
-            else
-              stream << boost::numeric_cast<int32_t>(value);
+            stream << boost::numeric_cast<int32_t>(value);
             break;
           }
           case pcl::PCLPointField::UINT32:
           {
             uint32_t value;
             memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (uint32_t), sizeof (uint32_t));
-            if (std::isnan (value))
-              stream << "nan";
-            else
-              stream << boost::numeric_cast<uint32_t>(value);
+            stream << boost::numeric_cast<uint32_t>(value);
             break;
           }
           case pcl::PCLPointField::FLOAT32:
@@ -870,10 +831,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
             {
               uint32_t value;
               memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (float), sizeof (float));
-              if (std::isnan (value))
-                stream << "nan";
-              else
-                stream << boost::numeric_cast<uint32_t>(value);
+              stream << boost::numeric_cast<uint32_t>(value);
             }
             else
             {

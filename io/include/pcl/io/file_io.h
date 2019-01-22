@@ -231,7 +231,8 @@ namespace pcl
     * \param[in] fields_count the current fields count
     * \param[out] stream the ostringstream to copy into
     */
-  template <typename Type> inline void
+  template <typename Type> inline
+  std::enable_if_t<std::is_floating_point<Type>::value>
   copyValueString (const pcl::PCLPointCloud2 &cloud,
                    const unsigned int point_index, 
                    const int point_size, 
@@ -244,8 +245,23 @@ namespace pcl
     if (std::isnan (value))
       stream << "nan";
     else
-      stream << boost::numeric_cast<Type>(value);
+      stream << value;
   }
+
+  template <typename Type> inline
+  std::enable_if_t<std::is_integral<Type>::value>
+  copyValueString (const pcl::PCLPointCloud2 &cloud,
+                   const unsigned int point_index, 
+                   const int point_size, 
+                   const unsigned int field_idx, 
+                   const unsigned int fields_count, 
+                   std::ostream &stream)
+  {
+    Type value;
+    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
+    stream << value;
+  }
+
   template <> inline void
   copyValueString<int8_t> (const pcl::PCLPointCloud2 &cloud,
                            const unsigned int point_index, 
@@ -256,12 +272,10 @@ namespace pcl
   {
     int8_t value;
     memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (int8_t)], sizeof (int8_t));
-    if (std::isnan (value))
-      stream << "nan";
-    else
-      // Numeric cast doesn't give us what we want for int8_t
-      stream << boost::numeric_cast<int>(value);
+    //Cast to int to prevent value is handled as char
+    stream << boost::numeric_cast<int>(value);
   }
+
   template <> inline void
   copyValueString<uint8_t> (const pcl::PCLPointCloud2 &cloud,
                             const unsigned int point_index, 
@@ -272,11 +286,8 @@ namespace pcl
   {
     uint8_t value;
     memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (uint8_t)], sizeof (uint8_t));
-    if (std::isnan (value))
-      stream << "nan";
-    else
-      // Numeric cast doesn't give us what we want for uint8_t
-      stream << boost::numeric_cast<int>(value);
+    //Cast to unsigned int to prevent value is handled as char
+    stream << boost::numeric_cast<unsigned int>(value);
   }
 
   /** \brief Check whether a given value of type Type (uchar, char, uint, int, float, double, ...) is finite or not
@@ -289,7 +300,8 @@ namespace pcl
     *
     * \return true if the value is finite, false otherwise
     */
-  template <typename Type> inline bool
+  template <typename Type> inline
+  std::enable_if_t<std::is_floating_point<Type>::value, bool>
   isValueFinite (const pcl::PCLPointCloud2 &cloud,
                  const unsigned int point_index, 
                  const int point_size, 
@@ -298,9 +310,18 @@ namespace pcl
   {
     Type value;
     memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
-    if (!std::isfinite (value))
-      return (false);
-    return (true);
+    return std::isfinite (value);
+  }
+
+  template <typename Type> inline
+  std::enable_if_t<std::is_integral<Type>::value, bool>
+  isValueFinite (const pcl::PCLPointCloud2 &cloud,
+                 const unsigned int point_index, 
+                 const int point_size, 
+                 const unsigned int field_idx, 
+                 const unsigned int fields_count)
+  {
+    return true;
   }
 
   /** \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string

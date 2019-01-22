@@ -264,11 +264,25 @@ namespace pcl
     return (0);
   }
 
+  template<typename T> inline
+  std::enable_if_t<std::is_floating_point<T>::value>
+  unsetDenseFlagIfNotFinite(T value, PCLPointCloud2* cloud)
+  {
+    //MSVC is missing bool std::isfinite(IntegralType arg); variant, so we implement an own template specialization for this
+    if (!std::isfinite(value))
+      cloud->is_dense = false;
+  }
+
+  template<typename T> inline
+  std::enable_if_t<std::is_integral<T>::value>
+  unsetDenseFlagIfNotFinite(T value, PCLPointCloud2* cloud)
+  {
+  }
+
   template<typename Scalar> void
   PLYReader::vertexScalarPropertyCallback (Scalar value)
   {
-    if (!std::isfinite (value))
-      cloud_->is_dense = false;
+    unsetDenseFlagIfNotFinite(value, cloud_);
 
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
             &value,
@@ -294,8 +308,7 @@ namespace pcl
   template<typename ContentType> void
   PLYReader::vertexListPropertyContentCallback (ContentType value)
   {
-    if (!std::isfinite (value))
-      cloud_->is_dense = false;
+    unsetDenseFlagIfNotFinite(value, cloud_);
 
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
             &value,
