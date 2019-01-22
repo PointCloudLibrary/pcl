@@ -32,14 +32,14 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  * $Id$
  *
  */
 
 #pragma once
 
-#include <boost/detail/endian.hpp>
+#include <boost/predef/other/endian.h>
 
 namespace pcl
 {
@@ -57,16 +57,16 @@ namespace pcl
       {
         little_endian_byte_order,
         big_endian_byte_order,
-#if defined(BOOST_BIG_ENDIAN)
+#if BOOST_ENDIAN_BIG_BYTE
         host_byte_order = big_endian_byte_order,
-#elif defined(BOOST_LITTLE_ENDIAN)
+#elif BOOST_ENDIAN_LITTLE_BYTE
         host_byte_order = little_endian_byte_order,
 #else
 #error "unable to determine system endianness"
 #endif
         network_byte_order = big_endian_byte_order
       };
-      
+
       template <std::size_t N>
       void swap_byte_order (char* bytes);
 
