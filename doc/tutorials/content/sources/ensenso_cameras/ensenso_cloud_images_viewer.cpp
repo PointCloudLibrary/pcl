@@ -28,7 +28,7 @@ typedef pcl::PointCloud<PointT> PointCloudT;
 typedef std::pair<pcl::PCLImage, pcl::PCLImage> PairOfImages;
 
 /** @brief CloudViewer pointer */
-boost::shared_ptr<pcl::visualization::CloudViewer> viewer_ptr;
+pcl::visualization::CloudViewer::Ptr viewer_ptr;
 
 /** @brief Pair of Ensenso images */
 pcl::EnsensoGrabber::Ptr ensenso_ptr;
