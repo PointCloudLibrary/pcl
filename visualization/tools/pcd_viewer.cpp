@@ -331,8 +331,8 @@ main (int argc, char** argv)
     for (size_t i = shadings.size (); i < p_file_indices.size (); ++i)
       shadings.push_back ("flat");
 
-  // Create the PCLVisualizer object
-  boost::shared_ptr<pcl::visualization::PCLPlotter> ph;
+  // Create the PCLPlotter object
+  pcl::visualization::PCLPlotter::Ptr ph;
   // Using min_p, max_p to set the global Y min/max range for the histogram
   float min_p = FLT_MAX; float max_p = -FLT_MAX;
 
