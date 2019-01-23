@@ -203,16 +203,16 @@ int main(int argc, char ** argv)
     exit(-1);
   }
 
-  bool verbose = 0;
+  bool verbose = false;
   pcl::console::parse_argument (argc, argv, "-v", verbose);
 
-  bool format = 0;
+  bool format = false;
   pcl::console::parse_argument (argc, argv, "-b", format);
 
-  bool color = 0;
+  bool color = false;
   pcl::console::parse_argument (argc, argv, "-c", format);
 
-  bool depth = 0;
+  bool depth = false;
   pcl::console::parse_argument (argc, argv, "-d", format);
 
   std::string rgb_path_, depth_path_, output_path_;

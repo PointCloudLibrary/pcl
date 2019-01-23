@@ -3260,7 +3260,7 @@ svm_model *svm_load_model (const char *model_file_name)
 
   char cmd[81];
 
-  while (1)
+  while (true)
   {
     int res = fscanf (fp, "%80s", cmd);
 
@@ -3413,7 +3413,7 @@ svm_model *svm_load_model (const char *model_file_name)
                               if (res > 0 && strcmp (cmd, "SV") == 0)
                               {
                                 //std::cout << cmd << std::endl;
-                                while (1)
+                                while (true)
                                 {
                                   int c = getc (fp);
 
@@ -3450,7 +3450,7 @@ svm_model *svm_load_model (const char *model_file_name)
   {
     p = strtok (line, ":");
 
-    while (1)
+    while (true)
     {
       p = strtok (NULL, ":");
 
@@ -3498,7 +3498,7 @@ svm_model *svm_load_model (const char *model_file_name)
 
     int jj = 0;
 
-    while (1)
+    while (true)
     {
       idx = strtok (NULL, ":");
       val = strtok (NULL, " \t");

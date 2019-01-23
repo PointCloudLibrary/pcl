@@ -75,7 +75,7 @@ class PCL_EXPORTS NarfKeypoint : public Keypoint<PointWithRange, int>
                      optimal_distance_to_high_surface_change(0.25), min_interest_value(0.45f),
                      min_surface_change_score(0.2f), optimal_range_image_patch_size(10),
                      distance_for_additional_points(0.0f), add_points_on_straight_edges(false),
-                     do_non_maximum_suppression(true), no_of_polynomial_approximations_per_point(0),
+                     do_non_maximum_suppression(true), no_of_polynomial_approximations_per_point(false),
                      max_no_of_threads(1), use_recursive_scale_reduction(false),
                      calculate_sparse_interest_image(true) {}
       

@@ -99,7 +99,7 @@ pcl::io::savePolygonFile (const std::string &file_name,
   else
   {
     PCL_ERROR ("[pcl::io::savePolygonFile]: Unsupported file type (%s)\n", extension.c_str ());
-    return (0);
+    return (false);
   }
 }
 

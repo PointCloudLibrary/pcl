@@ -143,7 +143,7 @@ namespace pcl
         boost::filesystem::directory_iterator directory_it_end; //empty constructor creates end of iterator
 
         //flag to test if the desired metadata file was found
-        bool b_loaded = 0;
+        bool b_loaded = false;
 
         for (boost::filesystem::directory_iterator directory_it (node_metadata_->getDirectoryPathname ()); directory_it != directory_it_end; ++directory_it)
         {

@@ -415,7 +415,7 @@ namespace pcl
         for (y = 2; y < height_b; y++)
         {                    
           x = 1;
-          while (1)              
+          while (true)              
           {                  
       homogeneous:
       {
@@ -2497,7 +2497,7 @@ namespace pcl
         int_fast16_t offset10 = s_offset10;
         int_fast16_t offset11 = s_offset11;
 
-        while (1)
+        while (true)
         {
           const T2 cb = *p + T2 (b_test);
           const T2 c_b = *p - T2 (b_test);
@@ -6357,7 +6357,7 @@ namespace pcl
         for (y = 1; y < ysize_b; y++)
         {
           x = 0;
-          while (1)
+          while (true)
           { 
       homogeneous:
       {
@@ -7114,7 +7114,7 @@ namespace pcl
         int_fast16_t offset6 = s_offset6;
         int_fast16_t offset7 = s_offset7;
 
-        while (1)
+        while (true)
         {
           const T2 cb = *p + T2 (b_test);
           const T2 c_b = *p - T2 (b_test);
@@ -7609,7 +7609,7 @@ namespace pcl
         for (y = 3; y < ysize_b; y++)
         {
           x = 2;
-          while (1)
+          while (true)
           {
             x++;
             if (x > xsize_b)
@@ -9715,7 +9715,7 @@ namespace pcl
         int_fast16_t offset14 = s_offset14;
         int_fast16_t offset15 = s_offset15;
 
-        while (1)
+        while (true)
         {
           const T2 cb = *p + T2 (b_test);
           const T2 c_b = *p - T2 (b_test);

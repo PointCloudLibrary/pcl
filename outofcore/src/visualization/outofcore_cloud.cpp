@@ -261,7 +261,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
           cloud_actor->SetMapper (mapper);
           cloud_actor->GetProperty ()->SetColor (0.0, 0.0, 1.0);
           cloud_actor->GetProperty ()->SetPointSize (1);
-          cloud_actor->GetProperty ()->SetLighting (0);
+          cloud_actor->GetProperty ()->SetLighting (false);
 
           cloud_actors_map_[pcd_file] = cloud_actor;
         }

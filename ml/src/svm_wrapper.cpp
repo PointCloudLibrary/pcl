@@ -217,10 +217,10 @@ pcl::SVM::adaptInputToLibSVM (std::vector<SVMData> training_set, svm_problem &pr
     if (pcl_isfinite (training_set[i].label) && labelled_training_set_)
     {
       prob.y[i] = training_set[i].label;
-      labelled_training_set_ = 1;
+      labelled_training_set_ = true;
     }
     else
-      labelled_training_set_ = 0;
+      labelled_training_set_ = false;
 
     prob.x[i] = Malloc (struct svm_node, training_set[i].SV.size() + 1);
 
@@ -248,7 +248,7 @@ pcl::SVMTrain::trainClassifier ()
   {
     // to be sure to have loaded the training set
     PCL_ERROR ("[pcl::%s::trainClassifier] Training data not set!\n", getClassName ().c_str ());
-    return 0;
+    return false;
   }
   
   scaleFactors (training_set_, scaling_);
@@ -280,14 +280,14 @@ pcl::SVMTrain::trainClassifier ()
     if (out == NULL)
     {
       PCL_ERROR ("[pcl::%s::trainClassifier] Error taining the classifier model.\n", getClassName ().c_str ());
-      return 0;
+      return false;
     }
     model_ = *out;
     model_.scaling = scaling_.obj;
     free (out);
   }
 
-  return 1;
+  return true;
 }
 
 bool
@@ -302,7 +302,7 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
   if (fp == NULL)
   {
     PCL_ERROR ("[pcl::%s] Can't open input file %s.\n", getClassName ().c_str (), filename);
-    return 0;
+    return false;
   }
 
   elements = 0;
@@ -319,7 +319,7 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
     ++elements;
     // features
 
-    while (1)
+    while (true)
     {
       // split the next element
       p = strtok (NULL, " \t");
@@ -341,7 +341,7 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
 
   max_index = 0;
   j = 0;
-  bool isUnlabelled = 0;
+  bool isUnlabelled = false;
 
   for (i = 0;i < prob.l;i++)
   {
@@ -364,7 +364,7 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
         if (label == NULL) // empty line
           exitInputError (i + 1);
 
-        labelled_training_set_ = 1;
+        labelled_training_set_ = true;
 
         prob.y[i] = strtod (label, &endptr);
 
@@ -375,8 +375,8 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
       }
       else
       {
-        isUnlabelled = 1;
-        labelled_training_set_ = 0;
+        isUnlabelled = true;
+        labelled_training_set_ = false;
         i = -1;
         rewind (fp);
         continue;
@@ -386,7 +386,7 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
 //    idx=strtok(line,": \t\n");
     int k = 0;
 
-    while (1)
+    while (true)
     {
       if (k++ == 0 && isUnlabelled)
         idx = strtok (line_, ": \t\n");
@@ -437,23 +437,23 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
       if (prob.x[i][0].index != 0)
       {
 	PCL_ERROR ("[pcl::%s] Wrong input format: first column must be 0:sample_serial_number.\n", getClassName ().c_str () );
-        return 0;
+        return false;
       }
 
       if (int (prob.x[i][0].value) <= 0 || int (prob.x[i][0].value) > max_index)
       {
 	PCL_ERROR ("[pcl::%s] Wrong input format: sample_serial_number out of range.\n", getClassName ().c_str () );
-        return 0;
+        return false;
       }
     }
   fclose (fp);
 
-  return 1;
+  return true;
 }
 
 
 bool
-pcl::SVM::saveProblem (const char *filename, bool labelled = 0)
+pcl::SVM::saveProblem (const char *filename, bool labelled = false)
 {
   assert (training_set_.size() > 0);
   std::ofstream myfile;
@@ -462,7 +462,7 @@ pcl::SVM::saveProblem (const char *filename, bool labelled = 0)
   if (!myfile.is_open())
   {
     PCL_ERROR ("[pcl::%s] Can't open/create file %s.\n", getClassName ().c_str (), filename);
-    return 0;
+    return false;
   }
     
 
@@ -485,16 +485,16 @@ pcl::SVM::saveProblem (const char *filename, bool labelled = 0)
   myfile.close();
 
   //std::cout << " * " << filename << " saved" << std::endl;
-  return 1;
+  return true;
 }
 
 bool
-pcl::SVM::saveProblemNorm (const char *filename, svm_problem prob_, bool labelled = 0)
+pcl::SVM::saveProblemNorm (const char *filename, svm_problem prob_, bool labelled = false)
 {
   if (prob_.l == 0)
   {
     PCL_ERROR ("[pcl::%s] Can't save file %s. Input data not set.\n", getClassName ().c_str (), filename);
-    return 0;
+    return false;
   }
 
   std::ofstream myfile;
@@ -504,7 +504,7 @@ pcl::SVM::saveProblemNorm (const char *filename, svm_problem prob_, bool labelle
   if (!myfile.is_open())
   {
     PCL_ERROR ("[pcl::%s] Can't open/create file %s.\n", getClassName ().c_str (), filename);
-    return 0;
+    return false;
   }
 
   for (int j = 0; j < prob_.l ; j++)
@@ -527,7 +527,7 @@ pcl::SVM::saveProblemNorm (const char *filename, svm_problem prob_, bool labelle
   myfile.close();
 
   //std::cout << " * " << filename << " saved" << std::endl;
-  return 1;
+  return true;
 }
 
 bool
@@ -538,7 +538,7 @@ pcl::SVMClassify::loadClassifierModel (const char *filename)
   if (out == NULL)
   {
     PCL_ERROR ("[pcl::%s::loadClassifierModel] Can't open classifier model %s.\n", getClassName ().c_str (), filename);
-    return 0;
+    return false;
   }
   
   model_ = *out;
@@ -547,7 +547,7 @@ pcl::SVMClassify::loadClassifierModel (const char *filename)
   if (model_.l == 0)
   {
     PCL_ERROR ("[pcl::%s::loadClassifierModel] Can't open classifier model %s.\n", getClassName ().c_str (), filename);
-    return 0;
+    return false;
   }
 
   scaling_.obj = model_.scaling;
@@ -559,7 +559,7 @@ pcl::SVMClassify::loadClassifierModel (const char *filename)
 
   scaling_.max = i;
 
-  return 1;
+  return true;
 }
 
 bool
@@ -568,19 +568,19 @@ pcl::SVMClassify::classificationTest ()
   if (model_.l == 0)
   {
     PCL_ERROR ("[pcl::%s::classificationTest] Classifier model has no data.\n", getClassName ().c_str ());
-    return 0;
+    return false;
   }
   
   if (prob_.l == 0)
   {
     PCL_ERROR ("[pcl::%s::classificationTest] Input dataset has no data.\n", getClassName ().c_str ());
-    return 0;
+    return false;
   }
   
   if (!labelled_training_set_)
   {
     PCL_ERROR ("[pcl::%s::classificationTest] Input dataset is not labelled.\n", getClassName ().c_str ());
-    return 0;
+    return false;
   }  
 
   if (predict_probability_)
@@ -588,7 +588,7 @@ pcl::SVMClassify::classificationTest ()
     if (svm_check_probability_model (&model_) == 0)
     {
       PCL_WARN ("[pcl::%s::classificationTest] Classifier model does not support probabiliy estimates. Automatically disabled.\n", getClassName ().c_str ());
-      predict_probability_ = 0;
+      predict_probability_ = false;
     }
   }
   else
@@ -694,13 +694,13 @@ pcl::SVMClassify::classification ()
   if (model_.l == 0)
   {
     PCL_ERROR ("[pcl::%s::classification] Classifier model has no data.\n", getClassName ().c_str ());
-    return 0;
+    return false;
   }
   
   if (prob_.l == 0)
   {
     PCL_ERROR ("[pcl::%s::classification] Input dataset has no data.\n", getClassName ().c_str ());
-    return 0;
+    return false;
   }
   
 
@@ -709,7 +709,7 @@ pcl::SVMClassify::classification ()
     if (svm_check_probability_model (&model_) == 0)
     {
       PCL_WARN ("[pcl::%s::classification] Classifier model does not support probabiliy estimates. Automatically disabled.\n", getClassName ().c_str ());
-      predict_probability_ = 0;
+      predict_probability_ = false;
     }
   }
   else
@@ -792,7 +792,7 @@ pcl::SVMClassify::classification (pcl::SVMData in)
     if (svm_check_probability_model (&model_) == 0)
     {
       PCL_WARN ("[pcl::%s::classification] Classifier model does not support probabiliy estimates. Automatically disabled.\n", getClassName ().c_str ());
-      predict_probability_ = 0;
+      predict_probability_ = false;
     }
   }
   else
@@ -874,7 +874,7 @@ pcl::SVMClassify::scaleProblem (svm_problem &input, svm_scaling scaling)
   {
     int j = 0;
 
-    while (1)
+    while (true)
     {
       if (input.x[i][j].index == -1)
         break;
