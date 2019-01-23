@@ -330,7 +330,7 @@ namespace pcl
       current_field.name = property_name;
       current_field.offset = cloud_->point_step;
       current_field.datatype = pcl::traits::asEnum<pcl::io::ply::int32>::value;
-      current_field.count = std::numeric_limits<pcl::io::ply::uint8>::max ();
+      current_field.count = 1u;
       if (current_field.count * sizeof (pcl::io::ply::int32) + cloud_->point_step < std::numeric_limits<uint32_t>::max ())
           cloud_->point_step += static_cast<uint32_t> (current_field.count * sizeof (pcl::io::ply::int32));
       else
