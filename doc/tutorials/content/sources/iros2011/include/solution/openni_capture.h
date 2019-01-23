@@ -23,7 +23,7 @@ class OpenNICapture
     void waitForTrigger ();
 
     pcl::OpenNIGrabber grabber_;
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> preview_;
+    pcl::visualization::PCLVisualizer::Ptr preview_;
     int frame_counter_;
     PointCloudPtr most_recent_frame_;
     bool use_trigger_, trigger_;

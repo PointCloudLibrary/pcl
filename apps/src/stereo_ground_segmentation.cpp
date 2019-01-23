@@ -72,7 +72,7 @@ typedef Cloud::ConstPtr CloudConstPtr;
 class HRCSSegmentation
 {
   private:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+    pcl::visualization::PCLVisualizer::Ptr viewer;
     boost::shared_ptr<pcl::visualization::ImageViewer> image_viewer;
     pcl::PointCloud<PointT>::ConstPtr prev_cloud;
     pcl::PointCloud<pcl::Normal>::ConstPtr prev_normal_cloud;

@@ -88,7 +88,7 @@ class OpenNIPassthrough : public QMainWindow
     cloud_cb (const CloudConstPtr& cloud);
 
   protected:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
+    pcl::visualization::PCLVisualizer::Ptr vis_;
     pcl::OpenNIGrabber& grabber_;
     std::string device_id_;
     CloudPtr cloud_pass_;

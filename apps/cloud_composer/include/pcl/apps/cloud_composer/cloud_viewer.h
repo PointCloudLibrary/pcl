@@ -78,7 +78,7 @@ namespace pcl
 
       private:
         
-        boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
+        pcl::visualization::PCLVisualizer::Ptr vis_;
         QMap <ProjectModel*, CloudView*> model_view_map_;
     };
   }

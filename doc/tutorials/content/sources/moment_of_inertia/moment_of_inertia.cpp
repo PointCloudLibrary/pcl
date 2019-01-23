@@ -38,7 +38,7 @@ int main (int argc, char** argv)
   feature_extractor.getEigenVectors (major_vector, middle_vector, minor_vector);
   feature_extractor.getMassCenter (mass_center);
 
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
   viewer->addCoordinateSystem (1.0);
   viewer->initCameraParameters ();

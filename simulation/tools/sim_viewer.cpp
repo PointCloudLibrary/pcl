@@ -185,7 +185,7 @@ printHelp (int, char **argv)
 
 // Global visualizer object
 pcl::visualization::PCLHistogramVisualizer ph_global;
-boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
+pcl::visualization::PCLVisualizer::Ptr p;
 
 void
 pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
@@ -323,7 +323,7 @@ void print_Isometry3d(Eigen::Isometry3d pose, std::stringstream &ss){
 void simulate_callback (const pcl::visualization::KeyboardEvent &event,
                         void* viewer_void)
 {
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
+  pcl::visualization::PCLVisualizer::Ptr viewer = *static_cast<pcl::visualization::PCLVisualizer::Ptr *> (viewer_void);
   // I choose v for virtual as s for simulate is takwen
   if (event.getKeySym () == "v" && event.keyDown ())
   {

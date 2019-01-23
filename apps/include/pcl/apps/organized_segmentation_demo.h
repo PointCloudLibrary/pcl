@@ -104,7 +104,7 @@ class OrganizedSegmentationDemo : public QMainWindow
     void cloud_cb (const CloudConstPtr& cloud);
   
   protected:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
+    pcl::visualization::PCLVisualizer::Ptr vis_;
     pcl::Grabber& grabber_;
 
     QMutex mtx_;

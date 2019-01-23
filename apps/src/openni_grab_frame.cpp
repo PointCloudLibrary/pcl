@@ -263,7 +263,7 @@ class OpenNIGrabFrame
       visualizer_enable_ = visualizer;
     }
 
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> visualizer_;
+    pcl::visualization::PCLVisualizer::Ptr visualizer_;
     pcl::PCDWriter writer_;
     bool quit_;
     bool continuous_;

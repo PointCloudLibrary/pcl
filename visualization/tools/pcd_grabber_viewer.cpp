@@ -67,7 +67,7 @@ printHelp (int, char **argv)
 }
 
 // Create the PCLVisualizer object
-boost::shared_ptr<pcl::visualization::PCLVisualizer> cloud_viewer;
+pcl::visualization::PCLVisualizer::Ptr cloud_viewer;
 #ifdef DISPLAY_IMAGE
 boost::shared_ptr<pcl::visualization::ImageViewer> img_viewer;
 #endif

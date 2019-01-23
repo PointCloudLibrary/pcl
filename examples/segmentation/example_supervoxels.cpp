@@ -56,15 +56,15 @@ keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 void addSupervoxelConnectionsToViewer (PointT &supervoxel_center, 
                                        PointCloudT &adjacent_supervoxel_centers,
                                        std::string supervoxel_name,
-                                       boost::shared_ptr<pcl::visualization::PCLVisualizer> & viewer);
+                                       pcl::visualization::PCLVisualizer::Ptr & viewer);
 
 /** \brief Displays info text in the specified PCLVisualizer
  *  \param[in] viewer_arg The PCLVisualizer to modify  */
-void printText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
+void printText (pcl::visualization::PCLVisualizer::Ptr viewer);
 
 /** \brief Removes info text in the specified PCLVisualizer
  *  \param[in] viewer_arg The PCLVisualizer to modify  */
-void removeText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
+void removeText (pcl::visualization::PCLVisualizer::Ptr viewer);
 
 /** \brief Checks if the PCLPointCloud2 pc2 has the field named field_name
  * \param[in] pc2 PCLPointCloud2 to check
@@ -337,7 +337,7 @@ main (int argc, char ** argv)
 
   
   std::cout << "Loading visualization...\n";
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
   viewer->registerKeyboardCallback(keyboard_callback, 0);
 
@@ -488,7 +488,7 @@ void
 addSupervoxelConnectionsToViewer (PointT &supervoxel_center, 
                                   PointCloudT &adjacent_supervoxel_centers,
                                   std::string supervoxel_name,
-                                  boost::shared_ptr<pcl::visualization::PCLVisualizer> & viewer)
+                                  pcl::visualization::PCLVisualizer::Ptr & viewer)
 {
   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New (); 
   vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New (); 
@@ -515,7 +515,7 @@ addSupervoxelConnectionsToViewer (PointT &supervoxel_center,
 }
 
 
-void printText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
+void printText (pcl::visualization::PCLVisualizer::Ptr viewer)
 {
   std::string on_str = "on";
   std::string off_str = "off";
@@ -547,7 +547,7 @@ void printText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
     viewer->addText (temp, 5, 10, 10, 1.0, 1.0, 1.0, "refined_text");
 }
 
-void removeText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
+void removeText (pcl::visualization::PCLVisualizer::Ptr viewer)
 {
   viewer->removeShape ("hud_text");
   viewer->removeShape ("voxel_text");
