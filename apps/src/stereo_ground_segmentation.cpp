@@ -73,7 +73,7 @@ class HRCSSegmentation
 {
   private:
     pcl::visualization::PCLVisualizer::Ptr viewer;
-    boost::shared_ptr<pcl::visualization::ImageViewer> image_viewer;
+    pcl::visualization::ImageViewer::Ptr image_viewer;
     pcl::PointCloud<PointT>::ConstPtr prev_cloud;
     pcl::PointCloud<pcl::Normal>::ConstPtr prev_normal_cloud;
     pcl::PointCloud<pcl::PointXYZ>::ConstPtr prev_ground_cloud;

@@ -69,7 +69,7 @@ printHelp (int, char **argv)
 // Create the PCLVisualizer object
 pcl::visualization::PCLVisualizer::Ptr cloud_viewer;
 #ifdef DISPLAY_IMAGE
-boost::shared_ptr<pcl::visualization::ImageViewer> img_viewer;
+pcl::visualization::ImageViewer::Ptr img_viewer;
 #endif
 
 std::vector<double> fcolor_r, fcolor_b, fcolor_g;

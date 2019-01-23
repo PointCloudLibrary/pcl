@@ -146,7 +146,7 @@ printHelp (int, char **argv)
 // Global visualizer object
 pcl::visualization::PCLPlotter ph_global;
 pcl::visualization::PCLVisualizer::Ptr p;
-std::vector<boost::shared_ptr<pcl::visualization::ImageViewer> > imgs;
+std::vector<pcl::visualization::ImageViewer::Ptr > imgs;
 pcl::search::KdTree<pcl::PointXYZ> search;
 pcl::PCLPointCloud2::Ptr cloud;
 pcl::PointCloud<pcl::PointXYZ>::Ptr xyzcloud;

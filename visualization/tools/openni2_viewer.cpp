@@ -271,7 +271,7 @@ public:
   }
 
   pcl::visualization::PCLVisualizer::Ptr cloud_viewer_;
-  boost::shared_ptr<pcl::visualization::ImageViewer> image_viewer_;
+  pcl::visualization::ImageViewer::Ptr image_viewer_;
 
   pcl::io::OpenNI2Grabber& grabber_;
   boost::mutex cloud_mutex_;
@@ -285,7 +285,7 @@ public:
 
 // Create the PCLVisualizer object
 pcl::visualization::PCLVisualizer::Ptr cld;
-boost::shared_ptr<pcl::visualization::ImageViewer> img;
+pcl::visualization::ImageViewer::Ptr img;
 
 /* ---[ */
 int
