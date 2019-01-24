@@ -16,15 +16,13 @@ endif()
 set(Boost_ADDITIONAL_VERSIONS
   "1.68.0" "1.68" "1.67.0" "1.67" "1.66.0" "1.66" "1.65.1" "1.65.0" "1.65"
   "1.64.0" "1.64" "1.63.0" "1.63" "1.62.0" "1.62" "1.61.0" "1.61" "1.60.0" "1.60"
-  "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55"
-  "1.54.0" "1.54" "1.53.0" "1.53" "1.52.0" "1.52" "1.51.0" "1.51"
-  "1.50.0" "1.50" "1.49.0" "1.49" "1.48.0" "1.48" "1.47.0" "1.47")
+  "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55")
 
 # Disable the config mode of find_package(Boost)
 set(Boost_NO_BOOST_CMAKE ON)
 
 # Optional boost modules
-find_package(Boost 1.40.0 QUIET COMPONENTS serialization mpi)
+find_package(Boost 1.55.0 QUIET COMPONENTS serialization mpi)
 if(Boost_SERIALIZATION_FOUND)
   set(BOOST_SERIALIZATION_FOUND TRUE)
 endif()
@@ -32,10 +30,10 @@ endif()
 # Required boost modules
 if(WITH_OPENNI2)
 set(BOOST_REQUIRED_MODULES filesystem thread date_time iostreams chrono system)
-find_package(Boost 1.47.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
+find_package(Boost 1.55.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
 else()
 set(BOOST_REQUIRED_MODULES filesystem thread date_time iostreams system)
-find_package(Boost 1.40.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
+find_package(Boost 1.55.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
 endif()
 
 if(Boost_FOUND)
