@@ -738,9 +738,19 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
   model_coefficients.head<3> ().matrix () = eigen_vector;
   model_coefficients[3] = -1 * model_coefficients.dot (xyz_centroid);
 
+  query_point = cloud.points[index].getVector3fMap ().template cast<double> ();
+
+  if (!std::isfinite(eigen_vector[0]) || !std::isfinite(eigen_vector[1]) || !std::isfinite(eigen_vector[2]))
+  {
+    // Invalid plane coefficients, this may happen if the input cloud is non-dense (it contains invalid points).
+    // Keep the input point and stop here.
+    valid = false;
+    mean = query_point;
+    return;
+  }
+
   // Projected query point
   valid = true;
-  query_point = cloud.points[index].getVector3fMap ().template cast<double> ();
   double distance = query_point.dot (model_coefficients.head<3> ()) + model_coefficients[3];
   mean = query_point - distance * model_coefficients.head<3> ();
 
