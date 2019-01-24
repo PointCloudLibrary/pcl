@@ -1598,10 +1598,7 @@ pcl::keypoints::brisk::Layer::halfsample (
   unsigned int row = 0;
   const unsigned int end = hsize / 2;
   bool half_end;
-  if (hsize % 2 == 0)
-    half_end = false;
-  else
-    half_end = true;
+  half_end = hsize % 2 != 0;
   while (p2 < p_end)
   {
     for (unsigned int i = 0; i < end; i++)

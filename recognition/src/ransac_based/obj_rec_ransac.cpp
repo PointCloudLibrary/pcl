@@ -539,7 +539,7 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (const BVHH& b
       // Make sure that we do not compute the same set intersection twice
       pair<set<ordered_int_pair, bool(*)(const ordered_int_pair&, const ordered_int_pair&)>::iterator, bool> res = ordered_hypotheses_ids.insert (id_pair);
 
-      if ( res.second == false )
+      if ( !res.second )
         continue; // We've already computed that set intersection -> check the next pair
 
       // Do the more involved intersection test based on a set intersection of the range image pixels which explained by the hypotheses

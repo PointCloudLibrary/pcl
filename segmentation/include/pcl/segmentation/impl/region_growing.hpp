@@ -468,7 +468,7 @@ pcl::RegionGrowing<PointT, NormalT>::growRegion (int initial_seed, int segment_n
       bool is_a_seed = false;
       bool belongs_to_segment = validatePoint (initial_seed, curr_seed, index, is_a_seed);
 
-      if (belongs_to_segment == false)
+      if (!belongs_to_segment)
       {
         i_nghbr++;
         continue;

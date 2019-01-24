@@ -171,7 +171,7 @@ namespace pcl
         static inline bool
         compareCorrespondences (const pcl::Correspondence& a, const pcl::Correspondence& b)
         {
-          return static_cast<bool> (a.distance < b.distance);
+          return a.distance < b.distance;
         }
 
       protected:

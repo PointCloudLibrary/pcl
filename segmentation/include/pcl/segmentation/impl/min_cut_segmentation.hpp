@@ -258,7 +258,7 @@ pcl::MinCutSegmentation<PointT>::extract (std::vector <pcl::PointIndices>& clust
   if ( !graph_is_valid_ )
   {
     success = buildGraph ();
-    if (success == false)
+    if (!success)
     {
       deinitCompute ();
       return;
@@ -271,7 +271,7 @@ pcl::MinCutSegmentation<PointT>::extract (std::vector <pcl::PointIndices>& clust
   if ( !unary_potentials_are_valid_ )
   {
     success = recalculateUnaryPotentials ();
-    if (success == false)
+    if (!success)
     {
       deinitCompute ();
       return;
@@ -282,7 +282,7 @@ pcl::MinCutSegmentation<PointT>::extract (std::vector <pcl::PointIndices>& clust
   if ( !binary_potentials_are_valid_ )
   {
     success = recalculateBinaryPotentials ();
-    if (success == false)
+    if (!success)
     {
       deinitCompute ();
       return;

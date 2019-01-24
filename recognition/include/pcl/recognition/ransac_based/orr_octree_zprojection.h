@@ -94,7 +94,7 @@ namespace pcl
             static inline bool
             compare_nodes_z (ORROctree::Node* node1, ORROctree::Node* node2)
             {
-              return static_cast<bool> (node1->getData ()->get3dIdZ () < node2->getData ()->get3dIdZ ());
+              return node1->getData()->get3dIdZ() < node2->getData()->get3dIdZ();
             }
 
             inline void

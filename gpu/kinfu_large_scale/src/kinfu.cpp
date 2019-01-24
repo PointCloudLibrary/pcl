@@ -437,7 +437,7 @@ pcl::gpu::kinfuLS::KinfuTracker::performICP(const Intr& cam_intrinsics, Matrix3f
         if ( fabs (det) < 100000 /*1e-15*/ || pcl_isnan (det) ) //TODO find a threshold that makes ICP track well, but prevents it from generating wrong transforms
         {
           if (pcl_isnan (det)) cout << "qnan" << endl;
-          if(lost_ == false)
+          if(!lost_)
             PCL_ERROR ("ICP LOST... PLEASE COME BACK TO THE LAST VALID POSE (green)\n");
           //reset (); //GUI will now show the user that ICP is lost. User needs to press "R" to reset the volume
           lost_ = true;

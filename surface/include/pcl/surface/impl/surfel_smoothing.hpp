@@ -305,7 +305,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::extractSalientFeaturesBetweenScales (Poin
         smallest = false;
     }
 
-    if (largest == true || smallest == true)
+    if (largest || smallest)
       (*output_features)[point_i] = point_i;
   }
 }

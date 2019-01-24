@@ -209,7 +209,7 @@ showHypothesisAsCoordinateFrame (Hypothesis& hypo, CallbackParameters* parameter
 bool
 compareHypotheses (const Hypothesis& a, const Hypothesis& b)
 {
-  return (static_cast<bool> (a.match_confidence_ > b.match_confidence_));
+  return a.match_confidence_ > b.match_confidence_;
 }
 
 //===============================================================================================================================

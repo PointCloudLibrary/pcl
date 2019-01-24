@@ -106,7 +106,7 @@ namespace pcl
             static inline bool
             compare (const Node* a, const Node* b)
             {
-              return (static_cast<bool> (a->fitness_ > b->fitness_));
+              return a->fitness_ > b->fitness_;
             }
 
             friend class ORRGraph;

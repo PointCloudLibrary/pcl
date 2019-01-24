@@ -500,7 +500,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       {
         if (end_header_callback_)
         {
-          if (end_header_callback_ () == false)
+          if (!end_header_callback_ ())
             return true;
         }
         break;
@@ -549,7 +549,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
              ++property_iterator)
         {
           struct property& property = *(property_iterator->get ());
-          if (property.parse (*this, format, stringstream) == false)
+          if (!property.parse (*this, format, stringstream))
             return false;
         }
         if (!stringstream.eof ())
@@ -595,7 +595,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
              ++property_iterator)
         {
           struct property& property = *(property_iterator->get ());
-          if (property.parse (*this, format, istream) == false)
+          if (!property.parse (*this, format, istream))
           {
             return false;
           }
