@@ -330,9 +330,9 @@ namespace pcl
       current_field.name = property_name;
       current_field.offset = cloud_->point_step;
       current_field.datatype = pcl::traits::asEnum<pcl::io::ply::int32>::value;
-      current_field.count = 1u;
-      if (current_field.count * sizeof (pcl::io::ply::int32) + cloud_->point_step < std::numeric_limits<uint32_t>::max ())
-          cloud_->point_step += static_cast<uint32_t> (current_field.count * sizeof (pcl::io::ply::int32));
+      current_field.count = 1u; // value will be updated once first vertex is read
+      if (sizeof (pcl::io::ply::int32) + cloud_->point_step < std::numeric_limits<uint32_t>::max ())
+          cloud_->point_step += static_cast<uint32_t> (sizeof (pcl::io::ply::int32));
       else
         cloud_->point_step = static_cast<uint32_t> (std::numeric_limits<uint32_t>::max ());
       do_resize_ = true;
@@ -359,9 +359,9 @@ namespace pcl
       current_field.name = property_name;
       current_field.offset = cloud_->point_step;
       current_field.datatype = pcl::traits::asEnum<ContentType>::value;
-      current_field.count = 1u;
-      if (current_field.count * sizeof (ContentType) + cloud_->point_step < std::numeric_limits<uint32_t>::max ())
-        cloud_->point_step += static_cast<uint32_t> (current_field.count * sizeof (ContentType));
+      current_field.count = 1u; // value will be updated once first vertex is read
+      if (sizeof (ContentType) + cloud_->point_step < std::numeric_limits<uint32_t>::max ())
+        cloud_->point_step += static_cast<uint32_t> (sizeof (ContentType));
       else
         cloud_->point_step = static_cast<uint32_t> (std::numeric_limits<uint32_t>::max ());
       do_resize_ = true;
