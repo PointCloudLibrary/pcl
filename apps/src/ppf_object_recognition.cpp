@@ -140,7 +140,7 @@ main (int argc, char** argv)
 
     PointCloud<PointXYZ>::Ptr cloud_output_subsampled_xyz (new PointCloud<PointXYZ> ());
     for (size_t i = 0; i < cloud_output_subsampled.points.size (); ++i)
-      cloud_output_subsampled_xyz->points.push_back ( PointXYZ (cloud_output_subsampled.points[i].x, cloud_output_subsampled.points[i].y, cloud_output_subsampled.points[i].z));
+      cloud_output_subsampled_xyz->points.emplace_back(cloud_output_subsampled.points[i].x, cloud_output_subsampled.points[i].y, cloud_output_subsampled.points[i].z);
 
 
     Eigen::Matrix4f mat = ppf_registration.getFinalTransformation ();

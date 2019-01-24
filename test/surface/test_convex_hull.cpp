@@ -348,10 +348,10 @@ TEST (PCL, ConvexHull_2dsquare)
 
   //Make sure they're actually near some edge
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > facets;
-  facets.push_back (Eigen::Vector4f (-1.0, 0.0, 0.0, 1.0));
-  facets.push_back (Eigen::Vector4f (-1.0, 0.0, 0.0, -1.0));
-  facets.push_back (Eigen::Vector4f (0.0, -1.0, 0.0, 1.0));
-  facets.push_back (Eigen::Vector4f (0.0, -1.0, 0.0, -1.0));
+  facets.emplace_back(-1.0, 0.0, 0.0, 1.0);
+  facets.emplace_back(-1.0, 0.0, 0.0, -1.0);
+  facets.emplace_back(0.0, -1.0, 0.0, 1.0);
+  facets.emplace_back(0.0, -1.0, 0.0, -1.0);
 
   //Make sure they're in the plane
   for (size_t i = 0; i < hull.points.size (); i++)
@@ -404,12 +404,12 @@ TEST (PCL, ConvexHull_3dcube)
   
   //Make sure they're actually near some edge
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > facets;
-  facets.push_back (Eigen::Vector4f (-1.0f, 0.0f, 0.0f, 1.0f));
-  facets.push_back (Eigen::Vector4f (-1.0f, 0.0f, 0.0f, -1.0f));
-  facets.push_back (Eigen::Vector4f (0.0f, -1.0f, 0.0f, 1.0f));
-  facets.push_back (Eigen::Vector4f (0.0f, -1.0f, 0.0f, -1.0f));
-  facets.push_back (Eigen::Vector4f (0.0f, 0.0f, -1.0f, 1.0f));
-  facets.push_back (Eigen::Vector4f (0.0f, 0.0f, -1.0f, -1.0f));
+  facets.emplace_back(-1.0f, 0.0f, 0.0f, 1.0f);
+  facets.emplace_back(-1.0f, 0.0f, 0.0f, -1.0f);
+  facets.emplace_back(0.0f, -1.0f, 0.0f, 1.0f);
+  facets.emplace_back(0.0f, -1.0f, 0.0f, -1.0f);
+  facets.emplace_back(0.0f, 0.0f, -1.0f, 1.0f);
+  facets.emplace_back(0.0f, 0.0f, -1.0f, -1.0f);
 
   //Make sure they're near a facet
   for (size_t i = 0; i < hull.points.size (); i++)

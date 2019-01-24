@@ -211,11 +211,11 @@ main (int argc,
 
   // Parse all files and options
   std::vector<std::string> supported_extensions;
-  supported_extensions.push_back("obj");
-  supported_extensions.push_back("pcd");
-  supported_extensions.push_back("ply");
-  supported_extensions.push_back("stl");
-  supported_extensions.push_back("vtk");
+  supported_extensions.emplace_back("obj");
+  supported_extensions.emplace_back("pcd");
+  supported_extensions.emplace_back("ply");
+  supported_extensions.emplace_back("stl");
+  supported_extensions.emplace_back("vtk");
   std::vector<int> file_args;
   for (int i = 1; i < argc; ++i)
     for (size_t j = 0; j < supported_extensions.size(); ++j)

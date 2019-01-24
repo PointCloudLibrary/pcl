@@ -137,7 +137,7 @@ main (int argc, char** argv)
   cloud.width = 10;
   cloud.height = 480;
   for (uint32_t i = 0; i < size; ++i)
-    cloud.points.push_back (PointXYZ (3.0f * static_cast<float>(i) + 0, 3.0f * static_cast<float> (i) + 1, 3.0f * static_cast<float> (i) + 2));
+    cloud.points.emplace_back(3.0f * static_cast<float>(i) + 0, 3.0f * static_cast<float> (i) + 1, 3.0f * static_cast<float> (i) + 2);
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

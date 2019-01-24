@@ -249,8 +249,8 @@ namespace pcl
           // constructor arguments
           struct CommonParams
           {
-            static const int HALFSAMPLE = 0;
-            static const int TWOTHIRDSAMPLE = 1;
+            static const int HALFSAMPLE;
+            static const int TWOTHIRDSAMPLE;
           };
 
           /** \brief Constructor.

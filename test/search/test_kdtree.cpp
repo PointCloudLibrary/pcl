@@ -55,7 +55,7 @@ init ()
   for (float z = -0.5f; z <= 0.5f; z += resolution)
     for (float y = -0.5f; y <= 0.5f; y += resolution)
       for (float x = -0.5f; x <= 0.5f; x += resolution)
-        cloud.points.push_back (PointXYZ (x, y, z));
+        cloud.points.emplace_back(x, y, z);
   cloud.width = static_cast<uint32_t> (cloud.points.size ());
   cloud.height = 1;
 
@@ -64,9 +64,9 @@ init ()
   srand (static_cast<unsigned int> (time (NULL)));
   // Randomly create a new point cloud
   for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
-    cloud_big.points.push_back (PointXYZ (static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)), 
+    cloud_big.points.emplace_back(static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)), 
                                           static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
-                                          static_cast<float> (1024 * rand () / (RAND_MAX + 1.0))));
+                                          static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)));
 }
 
 /* Test for KdTree nearestKSearch */TEST (PCL, KdTree_nearestKSearch)

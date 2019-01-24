@@ -423,10 +423,10 @@ int main(int argc, char** argv)
     
   //selecting tree files
   vector<string> tree_files;
-  tree_files.push_back("Data/forest1/tree_20.txt");
-  tree_files.push_back("Data/forest2/tree_20.txt");
-  tree_files.push_back("Data/forest3/tree_20.txt");
-  tree_files.push_back("Data/forest4/tree_20.txt");    
+  tree_files.emplace_back("Data/forest1/tree_20.txt");
+  tree_files.emplace_back("Data/forest2/tree_20.txt");
+  tree_files.emplace_back("Data/forest3/tree_20.txt");
+  tree_files.emplace_back("Data/forest4/tree_20.txt");    
   
   pc::parse_argument (argc, argv, "-tree0", tree_files[0]);
   pc::parse_argument (argc, argv, "-tree1", tree_files[1]);

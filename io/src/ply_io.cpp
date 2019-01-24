@@ -102,7 +102,7 @@ pcl::PLYReader::endHeaderCallback ()
 template<typename Scalar> void
 pcl::PLYReader::appendScalarProperty (const std::string& name, const size_t& size)
 {
-  cloud_->fields.push_back (::pcl::PCLPointField ());
+  cloud_->fields.emplace_back();
   ::pcl::PCLPointField &current_field = cloud_->fields.back ();
   current_field.name = name;
   current_field.offset = cloud_->point_step;
@@ -325,7 +325,7 @@ namespace pcl
     }
     else if (element_name == "vertex")
     {
-      cloud_->fields.push_back (pcl::PCLPointField ());
+      cloud_->fields.emplace_back();
       pcl::PCLPointField &current_field = cloud_->fields.back ();
       current_field.name = property_name;
       current_field.offset = cloud_->point_step;
@@ -354,7 +354,7 @@ namespace pcl
   {
     if (element_name == "vertex")
     {
-      cloud_->fields.push_back (pcl::PCLPointField ());
+      cloud_->fields.emplace_back();
       pcl::PCLPointField &current_field = cloud_->fields.back ();
       current_field.name = property_name;
       current_field.offset = cloud_->point_step;

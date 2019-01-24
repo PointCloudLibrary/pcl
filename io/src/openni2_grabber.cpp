@@ -852,7 +852,7 @@ pcl::io::openni2::OpenNI2VideoMode dummy;
   for (std::map<int, pcl::io::openni2::OpenNI2VideoMode>::const_iterator it = config2oni_map_.begin (); it != config2oni_map_.end (); ++it)
   {
     if (device_->findCompatibleDepthMode (it->second, dummy))
-      result.push_back (*it);
+      result.emplace_back(*it);
   }
 
   return (result);
@@ -867,7 +867,7 @@ pcl::io::openni2::OpenNI2VideoMode dummy;
   for (std::map<int, pcl::io::openni2::OpenNI2VideoMode>::const_iterator it = config2oni_map_.begin (); it != config2oni_map_.end (); ++it)
   {
     if (device_->findCompatibleColorMode (it->second, dummy))
-      result.push_back (*it);
+      result.emplace_back(*it);
   }
 
   return (result);

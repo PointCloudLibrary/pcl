@@ -309,7 +309,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.push_back (cloud_point_index_idx (static_cast<unsigned int> (idx), *it));
+      index_vector.emplace_back(static_cast<unsigned int> (idx), *it);
     }
   }
   // No distance filtering, process all data
@@ -333,7 +333,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.push_back (cloud_point_index_idx (static_cast<unsigned int> (idx), *it));
+      index_vector.emplace_back(static_cast<unsigned int> (idx), *it);
     }
   }
 
@@ -359,7 +359,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     if (i - index >= min_points_per_voxel_)
     {
       ++total;
-      first_and_last_indices_vector.push_back (std::pair<unsigned int, unsigned int> (index, i));
+      first_and_last_indices_vector.emplace_back(index, i);
     }
     index = i;
   }

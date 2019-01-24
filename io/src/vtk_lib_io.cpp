@@ -380,7 +380,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::TextureMe
   mesh.tex_polygons.push_back (polygon_mesh.polygons);
 
   // Add dummy material
-  mesh.tex_materials.push_back (pcl::TexMaterial ());
+  mesh.tex_materials.emplace_back();
   std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > dummy;
   mesh.tex_coordinates.push_back (dummy);
 

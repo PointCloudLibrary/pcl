@@ -793,7 +793,7 @@ NarfKeypoint::calculateInterestPoints ()
             stop = false; // There is a point in range -> Have to check further distances
             
             float interest_value2 = interest_image_[index2];
-            sample_points.push_back (Eigen::Vector3d (x2-keypoint_x_int, y2-keypoint_y_int, interest_value2));
+            sample_points.emplace_back(x2-keypoint_x_int, y2-keypoint_y_int, interest_value2);
           }
         }
         if (!polynomial_calculations.bivariatePolynomialApproximation (sample_points, 2, polynomial))

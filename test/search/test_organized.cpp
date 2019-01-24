@@ -129,7 +129,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
         y = double (ypos * oneOverFocalLength * z);
         x = double (xpos * oneOverFocalLength * z);
 
-        cloudIn->points.push_back (PointXYZ (float (x), float (y), float (z)));
+        cloudIn->points.emplace_back(float (x), float (y), float (z));
       }
 
     unsigned int searchIdx = rand()%(cloudIn->width * cloudIn->height);

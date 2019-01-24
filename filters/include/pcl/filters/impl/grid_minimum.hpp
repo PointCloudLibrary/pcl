@@ -131,7 +131,7 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
 
     // Compute the grid cell index
     int idx = ijk0 * divb_mul[0] + ijk1 * divb_mul[1];
-    index_vector.push_back (point_index_idx (static_cast<unsigned int> (idx), *it));
+    index_vector.emplace_back(static_cast<unsigned int> (idx), *it);
   }
   
   // Second pass: sort the index_vector vector using value representing target cell as index
@@ -156,7 +156,7 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
     while (i < index_vector.size () && index_vector[i].idx == index_vector[index].idx)
       ++i;
     ++total;
-    first_and_last_indices_vector.push_back (std::pair<unsigned int, unsigned int> (index, i));
+    first_and_last_indices_vector.emplace_back(index, i);
     index = i;
   }
 

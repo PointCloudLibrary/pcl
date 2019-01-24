@@ -58,7 +58,7 @@ init ()
   for (float z = -0.5f; z <= 0.5f; z += resolution)
     for (float y = -0.5f; y <= 0.5f; y += resolution)
       for (float x = -0.5f; x <= 0.5f; x += resolution)
-        cloud.points.push_back (PointXYZ (x, y, z));
+        cloud.points.emplace_back(x, y, z);
   cloud.width = int (cloud.points.size ());
   cloud.height = 1;
 
@@ -67,11 +67,10 @@ init ()
   srand (int (time (NULL)));
   // Randomly create a new point cloud
   for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
-    cloud_big.points.push_back (
-                                PointXYZ (
+    cloud_big.points.emplace_back(
                                   float (1024 * rand () / (RAND_MAX + 1.0)),
                                   float (1024 * rand () / (RAND_MAX + 1.0)),
-                                  float (1024 * rand () / (RAND_MAX + 1.0))));
+                                  float (1024 * rand () / (RAND_MAX + 1.0)));
 }
 
 
