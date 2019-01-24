@@ -53,7 +53,7 @@ namespace pcl
   struct cloud_show : cloud_show_base
   {
     cloud_show (const std::string &cloud_name, typename CloudT::ConstPtr cloud,
-      boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer) :
+      pcl::visualization::PCLVisualizer::Ptr viewer) :
       cloud_name (cloud_name), cloud (cloud), viewer (viewer),popped_ (false)
     {}
 
@@ -88,7 +88,7 @@ namespace pcl
     
     std::string cloud_name;
     typename CloudT::ConstPtr cloud;
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+    pcl::visualization::PCLVisualizer::Ptr viewer;
     bool popped_;
   };
   
@@ -244,7 +244,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   }
 
   std::string window_name_;
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
+  pcl::visualization::PCLVisualizer::Ptr viewer_;
   boost::mutex mtx_, spin_mtx_, c_mtx, once_mtx;
   boost::thread viewer_thread_;
   bool has_cloud_;

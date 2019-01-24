@@ -159,7 +159,7 @@ class OpenNIFastMesh
     boost::shared_ptr<std::vector<pcl::Vertices> > vertices_;
     pcl::PolygonMesh::Ptr mesh_;
 
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> view;
+    pcl::visualization::PCLVisualizer::Ptr view;
 };
 
 void

@@ -64,11 +64,11 @@ namespace pcl
         clone () const override;
         
         void 
-        paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const override;
+        paintView (pcl::visualization::PCLVisualizer::Ptr vis) const override;
         
         /** \brief Remove from View function - removes the normal cloud from a PCLVisualizer object*/
         void
-        removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const override;
+        removeFromView (pcl::visualization::PCLVisualizer::Ptr vis) const override;
         
       private:
         pcl::PointCloud<pcl::Normal>::Ptr normals_ptr_;

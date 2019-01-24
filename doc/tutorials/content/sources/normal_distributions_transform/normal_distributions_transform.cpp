@@ -76,7 +76,7 @@ main (int argc, char** argv)
   pcl::io::savePCDFileASCII ("room_scan2_transformed.pcd", *output_cloud);
 
   // Initializing point cloud visualizer
-  boost::shared_ptr<pcl::visualization::PCLVisualizer>
+  pcl::visualization::PCLVisualizer::Ptr
   viewer_final (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer_final->setBackgroundColor (0, 0, 0);
 

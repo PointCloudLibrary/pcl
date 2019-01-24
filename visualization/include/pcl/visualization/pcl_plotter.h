@@ -76,7 +76,9 @@ namespace pcl
     class PCL_EXPORTS PCLPlotter
     {
       public:
-	
+        typedef boost::shared_ptr<PCLPlotter> Ptr;
+        typedef boost::shared_ptr<const PCLPlotter> ConstPtr;
+
         /**\brief A representation of polynomial function. i'th element of the vector denotes the coefficient of x^i of the polynomial in variable x. 
          */
         typedef std::vector<double> PolynomialFunction;

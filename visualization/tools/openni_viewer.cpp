@@ -257,8 +257,8 @@ class OpenNIViewer
         delete[] rgb_data_;
     }
     
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> cloud_viewer_;
-    boost::shared_ptr<pcl::visualization::ImageViewer> image_viewer_;
+    pcl::visualization::PCLVisualizer::Ptr cloud_viewer_;
+    pcl::visualization::ImageViewer::Ptr image_viewer_;
     
     pcl::Grabber& grabber_;
     boost::mutex cloud_mutex_;
@@ -271,8 +271,8 @@ class OpenNIViewer
 };
 
 // Create the PCLVisualizer object
-boost::shared_ptr<pcl::visualization::PCLVisualizer> cld;
-boost::shared_ptr<pcl::visualization::ImageViewer> img;
+pcl::visualization::PCLVisualizer::Ptr cld;
+pcl::visualization::ImageViewer::Ptr img;
 
 /* ---[ */
 int

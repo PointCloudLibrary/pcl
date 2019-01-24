@@ -75,6 +75,7 @@ namespace openni_wrapper
         OpenNI_12_bit_depth = 1, // Default mode: regular 12-bit depth
       } DepthMode;
 
+      typedef boost::shared_ptr<OpenNIDevice> Ptr;
       typedef boost::function<void(boost::shared_ptr<Image>, void* cookie) > ImageCallbackFunction;
       typedef boost::function<void(boost::shared_ptr<DepthImage>, void* cookie) > DepthImageCallbackFunction;
       typedef boost::function<void(boost::shared_ptr<IRImage>, void* cookie) > IRImageCallbackFunction;

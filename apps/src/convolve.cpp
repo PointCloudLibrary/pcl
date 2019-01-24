@@ -208,7 +208,7 @@ main (int argc, char ** argv)
 #endif  
   convolved_label << "threads: " << nb_threads;
   // Display
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Convolution"));
+  pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("Convolution"));
   // viewport stuff
   viewer->createViewPort (0, 0, 0.5, 1, viewport_source);
   viewer->createViewPort (0.5, 0, 1, 1, viewport_convolved);

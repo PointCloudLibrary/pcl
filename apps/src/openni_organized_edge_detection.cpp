@@ -46,7 +46,7 @@ typedef pcl::PointXYZRGBA PointT;
 class OpenNIOrganizedEdgeDetection
 {
   private:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+    pcl::visualization::PCLVisualizer::Ptr viewer;
     pcl::PointCloud<PointT> cloud_;
     boost::mutex cloud_mutex;
 
@@ -60,7 +60,7 @@ class OpenNIOrganizedEdgeDetection
     {
     }
 
-    boost::shared_ptr<pcl::visualization::PCLVisualizer>
+    pcl::visualization::PCLVisualizer::Ptr
     initCloudViewer (pcl::PointCloud<PointT>::ConstPtr cloud)
     {
       viewer->setSize (640, 480);

@@ -145,8 +145,8 @@ printHelp (int, char **argv)
 
 // Global visualizer object
 pcl::visualization::PCLPlotter ph_global;
-boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
-std::vector<boost::shared_ptr<pcl::visualization::ImageViewer> > imgs;
+pcl::visualization::PCLVisualizer::Ptr p;
+std::vector<pcl::visualization::ImageViewer::Ptr > imgs;
 pcl::search::KdTree<pcl::PointXYZ> search;
 pcl::PCLPointCloud2::Ptr cloud;
 pcl::PointCloud<pcl::PointXYZ>::Ptr xyzcloud;
@@ -331,8 +331,8 @@ main (int argc, char** argv)
     for (size_t i = shadings.size (); i < p_file_indices.size (); ++i)
       shadings.emplace_back("flat");
 
-  // Create the PCLVisualizer object
-  boost::shared_ptr<pcl::visualization::PCLPlotter> ph;
+  // Create the PCLPlotter object
+  pcl::visualization::PCLPlotter::Ptr ph;
   // Using min_p, max_p to set the global Y min/max range for the histogram
   float min_p = FLT_MAX; float max_p = -FLT_MAX;
 

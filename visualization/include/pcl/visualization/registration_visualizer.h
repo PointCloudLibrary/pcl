@@ -164,7 +164,7 @@ namespace pcl
       }
 
       /** \brief The registration viewer. */
-      boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
+      pcl::visualization::PCLVisualizer::Ptr viewer_;
 
       /** \brief The thread running the runDisplay() function. */
       boost::thread viewer_thread_;

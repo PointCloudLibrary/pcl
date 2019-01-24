@@ -185,7 +185,7 @@ printHelp (int, char **argv)
 
 // Global visualizer object
 pcl::visualization::PCLHistogramVisualizer ph_global;
-boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
+pcl::visualization::PCLVisualizer::Ptr p;
 
 void
 pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
@@ -323,7 +323,7 @@ void print_Isometry3d(Eigen::Isometry3d pose, std::stringstream &ss){
 void simulate_callback (const pcl::visualization::KeyboardEvent &event,
                         void* viewer_void)
 {
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
+  pcl::visualization::PCLVisualizer::Ptr viewer = *static_cast<pcl::visualization::PCLVisualizer::Ptr *> (viewer_void);
   // I choose v for virtual as s for simulate is takwen
   if (event.getKeySym () == "v" && event.keyDown ())
   {
@@ -518,8 +518,8 @@ main (int argc, char** argv)
     for (size_t i = opaque.size (); i < p_file_indices.size (); ++i)
       opaque.push_back (1.0);
 
-  // Create the PCLVisualizer object
-  boost::shared_ptr<pcl::visualization::PCLHistogramVisualizer> ph;
+  // Create the PCLHistogramVisualizer object
+  pcl::visualization::PCLHistogramVisualizer::Ptr ph;
 
   // Using min_p, max_p to set the global Y min/max range for the histogram
   float min_p = FLT_MAX; float max_p = -FLT_MAX;

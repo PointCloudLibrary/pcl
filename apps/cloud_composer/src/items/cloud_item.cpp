@@ -73,7 +73,7 @@ pcl::cloud_composer::CloudItem::~CloudItem ()
 
 
 void
-pcl::cloud_composer::CloudItem::paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
+pcl::cloud_composer::CloudItem::paintView (pcl::visualization::PCLVisualizer::Ptr vis) const
 {
   vis->addPointCloud (cloud_blob_ptr_, geometry_handler_, color_handler_, origin_, orientation_, getId ().toStdString ());
   vis->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, properties_->getProperty ("Point Size").toDouble (), getId ().toStdString ());
@@ -82,7 +82,7 @@ pcl::cloud_composer::CloudItem::paintView (boost::shared_ptr<pcl::visualization:
 }
 
 void
-pcl::cloud_composer::CloudItem::removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
+pcl::cloud_composer::CloudItem::removeFromView (pcl::visualization::PCLVisualizer::Ptr vis) const
 {  
   vis->removePointCloud (getId ().toStdString ());
 }

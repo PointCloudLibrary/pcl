@@ -39,7 +39,7 @@ pcl::cloud_composer::FPFHItem::getInspectorTabs ()
   //Create the plotter and QVTKWidget if it doesn't exist
   if (!plot_)
   {
-    plot_ = boost::shared_ptr<pcl::visualization::PCLPlotter> (new pcl::visualization::PCLPlotter);
+    plot_.reset (new pcl::visualization::PCLPlotter);
     qvtk_ = new QVTKWidget ();
     hist_page_ = new QWidget ();
     QGridLayout *mainLayout = new QGridLayout (hist_page_);
