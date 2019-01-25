@@ -606,14 +606,7 @@ pcl::HDLGrabber::setLaserColorRGB (const pcl::RGB& color,
 bool
 pcl::HDLGrabber::isAddressUnspecified (const boost::asio::ip::address& ipAddress)
 {
-#if BOOST_VERSION>=104700
   return (ipAddress.is_unspecified ());
-#else
-  if (ipAddress.is_v4 ())
-    return (ipAddress.to_v4 ().to_ulong () == 0);
-
-  return (false);
-#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////

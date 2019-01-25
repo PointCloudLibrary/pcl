@@ -39,7 +39,6 @@
 #pragma once
 
 #include <pcl/segmentation/boost.h>
-#if (BOOST_VERSION >= 104400)
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -107,7 +106,7 @@ namespace pcl
       MinCutSegmentation ();
 
       /** \brief Destructor that frees memory. */
-      
+
       ~MinCutSegmentation ();
 
       /** \brief This method simply sets the input point cloud.
@@ -323,6 +322,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/min_cut_segmentation.hpp>
-#endif
-
 #endif
