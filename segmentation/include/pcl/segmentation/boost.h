@@ -41,7 +41,7 @@
 #pragma once
 
 #ifdef __GNUC__
-#pragma GCC system_header 
+#pragma GCC system_header
 #endif
 
 #ifndef Q_MOC_RUN
@@ -52,7 +52,5 @@
 #include <boost/multi_array.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
 
-#if (BOOST_VERSION >= 104400) 
-  #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
-#endif 
+#include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 #endif

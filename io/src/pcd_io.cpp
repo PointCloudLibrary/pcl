@@ -62,9 +62,7 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
   (void)lock;
 #ifndef WIN32
 #ifndef NO_MANDATORY_LOCKING
-  // Boost version 1.49 introduced permissions
-#if BOOST_VERSION >= 104900
-  // Attempt to lock the file. 
+  // Attempt to lock the file.
   // For mandatory locking, the filesystem must be mounted with the "mand" option in Linux (see http://www.hackinglinuxexposed.com/articles/20030623.html)
   lock = boost::interprocess::file_lock (file_name.c_str ());
   if (lock.try_lock ())
@@ -83,7 +81,6 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
   }
 #endif
 #endif
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -95,8 +92,6 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
   (void)lock;
 #ifndef WIN32
 #ifndef NO_MANDATORY_LOCKING
-  // Boost version 1.49 introduced permissions
-#if BOOST_VERSION >= 104900
   (void)file_name;
   namespace fs = boost::filesystem;
   try
@@ -108,7 +103,6 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
     PCL_DEBUG ("[pcl::PCDWriter::resetLockingPermissions] Permissions on %s could not be reset!\n", file_name.c_str ());
   }
   lock.unlock ();
-#endif
 #endif
 #endif
 }
@@ -394,7 +388,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
     return (-1);
   }
 
-  // Open file in binary mode to avoid problem of 
+  // Open file in binary mode to avoid problem of
   // std::getline() corrupting the result of ifstream::tellg()
   std::ifstream fs;
   fs.open (file_name.c_str (), std::ios::binary);
@@ -456,7 +450,7 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
       // Tokenize the line
       boost::trim (line);
       boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
-      
+
       if (idx >= nr_points)
       {
         PCL_WARN ("[pcl::PCDReader::read] input has more points (%d) than advertised (%d)!\n", idx, nr_points);
@@ -713,7 +707,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
 
   if (res < 0)
     return (res);
-  
+
   // if ascii
   if (data_type == 0)
   {
@@ -734,7 +728,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     // Close file
     fs.close ();
   }
-  else 
+  else
   /// ---[ Binary mode only
   /// We must re-open the file and read with mmap () for binary
   {
@@ -749,7 +743,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     // Infer file size
     const size_t file_size = io::raw_lseek (fd, 0, SEEK_END);
     io::raw_lseek (fd, 0, SEEK_SET);
-    
+
     size_t mmap_size = offset + data_idx;   // ...because we mmap from the start of the file.
     if (data_type == 2)
     {
@@ -762,7 +756,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
         PCL_ERROR ("[pcl::PCDReader::read] Error during lseek ()!\n");
         return (-1);
       }
-    
+
       // Read compressed size to compute how much must be mapped
       unsigned int compressed_size = 0;
       ssize_t num_read = io::raw_read (fd, &compressed_size, 4);
@@ -794,10 +788,10 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
 
     // Prepare the map
 #ifdef _WIN32
-    // As we don't know the real size of data (compressed or not), 
+    // As we don't know the real size of data (compressed or not),
     // we set dwMaximumSizeHigh = dwMaximumSizeLow = 0 so as to map the whole file
     HANDLE fm = CreateFileMapping ((HANDLE) _get_osfhandle (fd), NULL, PAGE_READONLY, 0, 0, NULL);
-    // As we don't know the real size of data (compressed or not), 
+    // As we don't know the real size of data (compressed or not),
     // we set dwNumberOfBytesToMap = 0 so as to map the whole file
     unsigned char *map = static_cast<unsigned char*> (MapViewOfFile (fm, FILE_MAP_READ, 0, 0, 0));
     if (map == NULL)
@@ -929,7 +923,7 @@ pcl::PCDWriter::generateHeaderASCII (const pcl::PCLPointCloud2 &cloud,
   result = stream.str ();
   boost::trim (result);
   oss << result << "\nCOUNT ";
-  
+
   stream.str ("");
   // Write the TYPE of each field
   for (size_t d = 0; d < cloud.fields.size () - 1; ++d)
@@ -938,9 +932,9 @@ pcl::PCDWriter::generateHeaderASCII (const pcl::PCLPointCloud2 &cloud,
     if (cloud.fields[d].name == "_")
       continue;
     int count = abs (static_cast<int> (cloud.fields[d].count));
-    if (count == 0) 
+    if (count == 0)
       count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
-  
+
     stream << count << " ";
   }
   // Ignore invalid padded dimensions that are inherited from binary data
@@ -958,9 +952,9 @@ pcl::PCDWriter::generateHeaderASCII (const pcl::PCLPointCloud2 &cloud,
   boost::trim (result);
   oss << result << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
 
-  oss << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " << 
+  oss << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " <<
                          orientation.x () << " " << orientation.y () << " " << orientation.z () << "\n";
-  
+
   oss << "POINTS " << cloud.width * cloud.height << "\n";
 
   return (oss.str ());
@@ -982,7 +976,7 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
   unsigned int fsize = 0;
   for (size_t i = 0; i < cloud.fields.size (); ++i)
     fsize += cloud.fields[i].count * getFieldSize (cloud.fields[i].datatype);
- 
+
   // The size of the fields cannot be larger than point_step
   if (fsize > cloud.point_step)
   {
@@ -999,15 +993,15 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
     if (toffset != cloud.fields[i].offset)
     {
       // If we're at the last "valid" field
-      int fake_offset = (i == 0) ? 
+      int fake_offset = (i == 0) ?
         // Use the current_field offset
         (cloud.fields[i].offset)
         :
         // Else, do cur_field.offset - prev_field.offset + sizeof (prev_field)
-        (cloud.fields[i].offset - 
-        (cloud.fields[i-1].offset + 
+        (cloud.fields[i].offset -
+        (cloud.fields[i-1].offset +
          cloud.fields[i-1].count * getFieldSize (cloud.fields[i].datatype)));
-      
+
       toffset += fake_offset;
 
       field_names << " _";  // By convention, _ is an invalid field name
@@ -1064,7 +1058,7 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (std::ostream &os,
   unsigned int fsize = 0;
   for (size_t i = 0; i < cloud.fields.size (); ++i)
     fsize += cloud.fields[i].count * getFieldSize (cloud.fields[i].datatype);
- 
+
   // The size of the fields cannot be larger than point_step
   if (fsize > cloud.point_step)
   {
@@ -1087,14 +1081,14 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (std::ostream &os,
     field_counts << " " << count;
   }
   os  << field_names.str ();
-  os  << "\nSIZE" << field_sizes.str () 
-      << "\nTYPE" << field_types.str () 
+  os  << "\nSIZE" << field_sizes.str ()
+      << "\nTYPE" << field_types.str ()
       << "\nCOUNT" << field_counts.str ();
   os  << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
 
   os  << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " << 
                          orientation.x () << " " << orientation.y () << " " << orientation.z () << "\n";
-  
+
   os  << "POINTS " << cloud.width * cloud.height << "\n";
 
   return (os ? 0 : -1);
@@ -1156,7 +1150,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
         continue;
 
       int count = cloud.fields[d].count;
-      if (count == 0) 
+      if (count == 0)
         count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
 
       for (int c = 0; c < count; ++c)
@@ -1368,7 +1362,7 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
   {
     if (cloud.fields[i].name == "_")
       continue;
-    
+
     fields_sizes[nri] = cloud.fields[i].count * pcl::getFieldSize (cloud.fields[i].datatype);
     fsize += fields_sizes[nri];
     fields[nri] = cloud.fields[i];
@@ -1376,7 +1370,7 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
   }
   fields_sizes.resize (nri);
   fields.resize (nri);
- 
+
   // Compute the size of data
   data_size = cloud.width * cloud.height * fsize;
 
@@ -1411,7 +1405,7 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
     pters[i] = &only_valid_data[toff];
     toff += fields_sizes[i] * cloud.width * cloud.height;
   }
-  
+
   // Go over all the points, and copy the data in the appropriate places
   for (size_t i = 0; i < cloud.width * cloud.height; ++i)
   {
