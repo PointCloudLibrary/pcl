@@ -112,9 +112,9 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
 
     for (size_t point_i = 0; point_i < xyz_source->points.size (); ++point_i)
     {
-      if (!pcl_isfinite (xyz_source->points[point_i].x) || !pcl_isfinite (xyz_source->points[point_i].y) || !pcl_isfinite (xyz_source->points[point_i].z))
+      if (!std::isfinite (xyz_source->points[point_i].x) || !std::isfinite (xyz_source->points[point_i].y) || !std::isfinite (xyz_source->points[point_i].z))
         continue;
-      if (!pcl_isfinite (xyz_target->points[point_i].x) || !pcl_isfinite (xyz_target->points[point_i].y) || !pcl_isfinite (xyz_target->points[point_i].z))
+      if (!std::isfinite (xyz_target->points[point_i].x) || !std::isfinite (xyz_target->points[point_i].y) || !std::isfinite (xyz_target->points[point_i].z))
         continue;
 
 
@@ -137,7 +137,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
 
     for (size_t point_i = 0; point_i < xyz_source->points.size (); ++ point_i)
     {
-      if (!pcl_isfinite (xyz_source->points[point_i].x) || !pcl_isfinite (xyz_source->points[point_i].y) || !pcl_isfinite (xyz_source->points[point_i].z))
+      if (!std::isfinite (xyz_source->points[point_i].x) || !std::isfinite (xyz_source->points[point_i].y) || !std::isfinite (xyz_source->points[point_i].z))
         continue;
 
       std::vector<int> nn_indices (1);
@@ -169,7 +169,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
 
     for (size_t point_i = 0; point_i < xyz_source->points.size (); ++ point_i)
     {
-      if (!pcl_isfinite (xyz_source->points[point_i].x) || !pcl_isfinite (xyz_source->points[point_i].y) || !pcl_isfinite (xyz_source->points[point_i].z))
+      if (!std::isfinite (xyz_source->points[point_i].x) || !std::isfinite (xyz_source->points[point_i].y) || !std::isfinite (xyz_source->points[point_i].z))
         continue;
 
       std::vector<int> nn_indices (1);

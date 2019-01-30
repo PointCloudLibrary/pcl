@@ -124,9 +124,9 @@ pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud,
     for (size_t i = 0; i < cloud.points.size (); ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[i].x) || 
-          !pcl_isfinite (cloud.points[i].y) || 
-          !pcl_isfinite (cloud.points[i].z))
+      if (!std::isfinite (cloud.points[i].x) || 
+          !std::isfinite (cloud.points[i].y) || 
+          !std::isfinite (cloud.points[i].z))
         continue;
       // Check if the point is inside bounds
       if (cloud.points[i].x < min_pt[0] || cloud.points[i].y < min_pt[1] || cloud.points[i].z < min_pt[2])
@@ -168,7 +168,7 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
     for (size_t i = 0; i < cloud.points.size (); ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[i].x) || !pcl_isfinite (cloud.points[i].y) || !pcl_isfinite (cloud.points[i].z))
+      if (!std::isfinite (cloud.points[i].x) || !std::isfinite (cloud.points[i].y) || !std::isfinite (cloud.points[i].z))
         continue;
       pcl::Vector3fMapConst pt = cloud.points[i].getVector3fMap ();
       dist = (pivot_pt3 - pt).norm ();
@@ -216,9 +216,9 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int
     for (size_t i = 0; i < indices.size (); ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[indices[i]].x) || !pcl_isfinite (cloud.points[indices[i]].y)
+      if (!std::isfinite (cloud.points[indices[i]].x) || !std::isfinite (cloud.points[indices[i]].y)
           ||
-          !pcl_isfinite (cloud.points[indices[i]].z))
+          !std::isfinite (cloud.points[indices[i]].z))
         continue;
 
       pcl::Vector3fMapConst pt = cloud.points[indices[i]].getVector3fMap ();
@@ -261,9 +261,9 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, PointT &min_pt, PointT &
     for (size_t i = 0; i < cloud.points.size (); ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[i].x) || 
-          !pcl_isfinite (cloud.points[i].y) || 
-          !pcl_isfinite (cloud.points[i].z))
+      if (!std::isfinite (cloud.points[i].x) || 
+          !std::isfinite (cloud.points[i].y) || 
+          !std::isfinite (cloud.points[i].z))
         continue;
       pcl::Array4fMapConst pt = cloud.points[i].getArray4fMap ();
       min_p = min_p.min (pt);
@@ -298,9 +298,9 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &min_pt,
     for (size_t i = 0; i < cloud.points.size (); ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[i].x) || 
-          !pcl_isfinite (cloud.points[i].y) || 
-          !pcl_isfinite (cloud.points[i].z))
+      if (!std::isfinite (cloud.points[i].x) || 
+          !std::isfinite (cloud.points[i].y) || 
+          !std::isfinite (cloud.points[i].z))
         continue;
       pcl::Array4fMapConst pt = cloud.points[i].getArray4fMap ();
       min_p = min_p.min (pt);
@@ -337,9 +337,9 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices 
     for (size_t i = 0; i < indices.indices.size (); ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[indices.indices[i]].x) || 
-          !pcl_isfinite (cloud.points[indices.indices[i]].y) || 
-          !pcl_isfinite (cloud.points[indices.indices[i]].z))
+      if (!std::isfinite (cloud.points[indices.indices[i]].x) || 
+          !std::isfinite (cloud.points[indices.indices[i]].y) || 
+          !std::isfinite (cloud.points[indices.indices[i]].z))
         continue;
       pcl::Array4fMapConst pt = cloud.points[indices.indices[i]].getArray4fMap ();
       min_p = min_p.min (pt);
@@ -374,9 +374,9 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &
     for (size_t i = 0; i < indices.size (); ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[indices[i]].x) || 
-          !pcl_isfinite (cloud.points[indices[i]].y) || 
-          !pcl_isfinite (cloud.points[indices[i]].z))
+      if (!std::isfinite (cloud.points[indices[i]].x) || 
+          !std::isfinite (cloud.points[indices[i]].y) || 
+          !std::isfinite (cloud.points[indices[i]].z))
         continue;
       pcl::Array4fMapConst pt = cloud.points[indices[i]].getArray4fMap ();
       min_pt = min_pt.array ().min (pt);

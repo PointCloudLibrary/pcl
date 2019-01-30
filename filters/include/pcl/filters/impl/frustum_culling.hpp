@@ -59,7 +59,7 @@ pcl::FrustumCulling<PointT>::applyFilter (PointCloud& output)
     {
       PointT &pt_to_remove = output.at ((*removed_indices_)[rii]);
       pt_to_remove.x = pt_to_remove.y = pt_to_remove.z = user_filter_value_;
-      if (!pcl_isfinite (user_filter_value_))
+      if (!std::isfinite (user_filter_value_))
         output.is_dense = false;
     }
   }

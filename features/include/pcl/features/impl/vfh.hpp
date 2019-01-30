@@ -211,11 +211,11 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     {
       for (size_t i = 0; i < indices_->size (); ++i)
       {
-        if (!pcl_isfinite (normals_->points[(*indices_)[i]].normal[0])
+        if (!std::isfinite (normals_->points[(*indices_)[i]].normal[0])
             ||
-            !pcl_isfinite (normals_->points[(*indices_)[i]].normal[1])
+            !std::isfinite (normals_->points[(*indices_)[i]].normal[1])
             ||
-            !pcl_isfinite (normals_->points[(*indices_)[i]].normal[2]))
+            !std::isfinite (normals_->points[(*indices_)[i]].normal[2]))
           continue;
         normal_centroid += normals_->points[(*indices_)[i]].getNormalVector4fMap ();
         cp++;

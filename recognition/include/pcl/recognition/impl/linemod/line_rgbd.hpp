@@ -168,7 +168,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
     {
       const PointXYZRGBA & p = template_point_cloud.points[j];
 
-      if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
+      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
       min_x = std::min (min_x, p.x);
@@ -201,7 +201,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
     {
       PointXYZRGBA p = template_point_cloud.points[j];
 
-      if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
+      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
       p.x -= center_x;
@@ -255,7 +255,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
     {
       const PointXYZRGBA & p = template_point_cloud.points[j];
 
-      if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
+      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
       min_x = std::min (min_x, p.x);
@@ -288,7 +288,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
     {
       PointXYZRGBA p = template_point_cloud.points[j];
 
-      if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
+      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
       p.x -= center_x;
@@ -347,7 +347,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModT
     {
       const PointXYZRGBA & p = template_point_cloud.points[j];
 
-      if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
+      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
       min_x = std::min (min_x, p.x);
@@ -380,7 +380,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModT
     {
       PointXYZRGBA p = template_point_cloud.points[j];
 
-      if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
+      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
       p.x -= center_x;
@@ -455,7 +455,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
       {
         const PointXYZT & point = (*cloud_xyz_) (col_index, row_index);
 
-        if (pcl_isfinite (point.x) && pcl_isfinite (point.y) && pcl_isfinite (point.z))
+        if (std::isfinite (point.x) && std::isfinite (point.y) && std::isfinite (point.z))
         {
           center_x += point.x;
           center_y += point.y;
@@ -556,7 +556,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
       {
         const PointXYZT & point = (*cloud_xyz_) (col_index, row_index);
 
-        if (pcl_isfinite (point.x) && pcl_isfinite (point.y) && pcl_isfinite (point.z))
+        if (std::isfinite (point.x) && std::isfinite (point.y) && std::isfinite (point.z))
         {
           center_x += point.x;
           center_y += point.y;
@@ -666,7 +666,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
       {
         const PointXYZT & point = (*cloud_xyz_) (col_index, row_index);
 
-        if (/*pcl_isfinite (point.x) && pcl_isfinite (point.y) && */pcl_isfinite (point.z))
+        if (/*std::isfinite (point.x) && std::isfinite (point.y) && */std::isfinite (point.z))
         {
           min_depth = std::min (min_depth, point.z);
           max_depth = std::max (max_depth, point.z);
@@ -683,7 +683,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
       {
         const PointXYZT & point = (*cloud_xyz_) (col_index, row_index);
 
-        if (/*pcl_isfinite (point.x) && pcl_isfinite (point.y) && */pcl_isfinite (point.z))
+        if (/*std::isfinite (point.x) && std::isfinite (point.y) && */std::isfinite (point.z))
         {
           const size_t bin_index = static_cast<size_t> ((point.z - min_depth) / step_size);
           ++depth_bins[bin_index];
@@ -745,7 +745,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
         const pcl::PointXYZRGBA & point_template = point_cloud (col_index, row_index);
         const PointXYZT & point_input = (*cloud_xyz_) (col_index + start_x, row_index + start_y);
 
-        if (!pcl_isfinite (point_template.z) || !pcl_isfinite (point_input.z))
+        if (!std::isfinite (point_template.z) || !std::isfinite (point_input.z))
           continue;
 
         depth_matches.push_back (std::make_pair (point_template.z, point_input.z));

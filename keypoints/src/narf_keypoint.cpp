@@ -810,7 +810,7 @@ NarfKeypoint::calculateInterestPoints ()
           keypoint_y_int = static_cast<int> (pcl_lrint (keypoint_y));
           
           range_image.calculate3DPoint (keypoint_x, keypoint_y, keypoint_3d);
-          if (!pcl_isfinite (keypoint_3d.range))
+          if (!std::isfinite (keypoint_3d.range))
           {
             keypoint_3d = point;
             break;

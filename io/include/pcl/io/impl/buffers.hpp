@@ -54,14 +54,14 @@ template <>
 struct buffer_traits <float>
 {
   static float invalid () { return std::numeric_limits<float>::quiet_NaN (); };
-  static bool is_invalid (float value) { return pcl_isnan (value); };
+  static bool is_invalid (float value) { return std::isnan (value); };
 };
 
 template <>
 struct buffer_traits <double>
 {
   static double invalid () { return std::numeric_limits<double>::quiet_NaN (); };
-  static bool is_invalid (double value) { return pcl_isnan (value); };
+  static bool is_invalid (double value) { return std::isnan (value); };
 };
 
 template <typename T>

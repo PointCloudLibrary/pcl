@@ -181,7 +181,7 @@ pcl::SVM::adaptLibSVMToInput (std::vector<SVMData> &training_set, svm_problem pr
     {
       SVMDataPoint seed; // single feature seed
 
-      if (pcl_isfinite (prob.x[i][j].value))
+      if (std::isfinite (prob.x[i][j].value))
       {
         seed.idx = prob.x[i][j].index;
         seed.value = float (prob.x[i][j].value);
@@ -214,7 +214,7 @@ pcl::SVM::adaptInputToLibSVM (std::vector<SVMData> training_set, svm_problem &pr
 
   for (int i = 0; i < prob.l; i++)
   {
-    if (pcl_isfinite (training_set[i].label) && labelled_training_set_)
+    if (std::isfinite (training_set[i].label) && labelled_training_set_)
     {
       prob.y[i] = training_set[i].label;
       labelled_training_set_ = true;
@@ -227,7 +227,7 @@ pcl::SVM::adaptInputToLibSVM (std::vector<SVMData> training_set, svm_problem &pr
     int k = 0;
     
     for (size_t j = 0; j < training_set[i].SV.size(); j++)
-      if (training_set[i].SV[j].idx != -1 && pcl_isfinite (training_set[i].SV[j].value))
+      if (training_set[i].SV[j].idx != -1 && std::isfinite (training_set[i].SV[j].value))
       {
         prob.x[i][k].index = training_set[i].SV[j].idx;
         if (training_set[i].SV[j].idx < scaling_.max && scaling_.obj[ training_set[i].SV[j].idx ].index == 1)
@@ -471,12 +471,12 @@ pcl::SVM::saveProblem (const char *filename, bool labelled = false)
 
     if (labelled)
     {
-      assert (pcl_isfinite (training_set_[j].label));
+      assert (std::isfinite (training_set_[j].label));
       myfile << training_set_[j].label << " ";
     }
 
     for (size_t i = 0; i < training_set_[j].SV.size(); i++)
-      if (pcl_isfinite (training_set_[j].SV[i].value))
+      if (std::isfinite (training_set_[j].SV[i].value))
         myfile << training_set_[j].SV[i].idx << ":" << training_set_[j].SV[i].value << " ";
 
     myfile << "\n";

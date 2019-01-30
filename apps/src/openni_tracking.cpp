@@ -497,9 +497,9 @@ public:
       if (!(fabs(point.x) < 0.01 &&
             fabs(point.y) < 0.01 &&
             fabs(point.z) < 0.01) &&
-          !pcl_isnan(point.x) &&
-          !pcl_isnan(point.y) &&
-          !pcl_isnan(point.z))
+          !std::isnan(point.x) &&
+          !std::isnan(point.y) &&
+          !std::isnan(point.z))
         result.points.push_back(point);
     }
 

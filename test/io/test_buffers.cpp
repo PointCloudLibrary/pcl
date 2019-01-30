@@ -68,8 +68,9 @@ class BuffersTest : public ::testing::Test
         memcpy (d.data (), dptr, buffer.size () * sizeof (T));
         buffer.push (d);
         for (size_t j = 0; j < buffer.size (); ++j)
-          if (pcl_isnan (eptr[j]))
-            EXPECT_TRUE (pcl_isnan (buffer[j]));
+          //MSVC is missing bool std::isnan(IntegralType arg); variant, so we need to cast ourself to double
+          if (std::isnan (static_cast<double>(eptr[j])))
+            EXPECT_TRUE (std::isnan (static_cast<double>(buffer[j])));
           else
             EXPECT_EQ (eptr[j], buffer[j]);
         dptr += buffer.size ();

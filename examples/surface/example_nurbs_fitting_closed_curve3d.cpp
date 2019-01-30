@@ -15,7 +15,7 @@ PointCloud2Vector2d (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::on_nurbs::v
   for (unsigned i = 0; i < cloud->size (); i++)
   {
     pcl::PointXYZ &p = cloud->at (i);
-    if (!pcl_isnan (p.x) && !pcl_isnan (p.y) && !pcl_isnan (p.z))
+    if (!std::isnan (p.x) && !std::isnan (p.y) && !std::isnan (p.z))
       data.push_back (Eigen::Vector3d (p.x, p.y, p.z));
   }
 }

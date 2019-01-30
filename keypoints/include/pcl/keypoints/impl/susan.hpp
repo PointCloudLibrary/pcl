@@ -126,7 +126,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads
 //   memset (&coefficients[0], 0, sizeof (float) * 6);
 //   for (std::vector<int>::const_iterator index = neighbors.begin(); index != neighbors.end(); ++index)
 //   {
-//     if (pcl_isfinite (normals_->points[*index].normal_x))
+//     if (std::isfinite (normals_->points[*index].normal_x))
 //     {
 //       Eigen::Vector3f diff = normals_->points[*index].getNormal3fMap () - nucleus_normal.getNormal3fMap ();
 //       float c = diff.norm () / t;
@@ -332,7 +332,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
       std::vector<int> usan; usan.reserve (nn_indices.size () - 1);
       for (std::vector<int>::const_iterator index = nn_indices.begin(); index != nn_indices.end(); ++index)
       {
-        if ((*index != point_index) && pcl_isfinite (normals_->points[*index].normal_x))
+        if ((*index != point_index) && std::isfinite (normals_->points[*index].normal_x))
         {
           // if the point fulfill condition
           if ((fabs (nucleus_intensity - intensity_ (input_->points[*index])) <= intensity_threshold_) ||

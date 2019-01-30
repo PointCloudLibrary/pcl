@@ -95,7 +95,7 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::filter (typename pcl::Poin
       continue;
 
     //Check if point depth (distance to camera) is greater than the (u,v) meaning that the point is not visible
-    if ((z - thres) > depth_[u * cy_ + v] || !pcl_isfinite(depth_[u * cy_ + v]))
+    if ((z - thres) > depth_[u * cy_ + v] || !std::isfinite(depth_[u * cy_ + v]))
       continue;
 
     indices_to_keep[keep] = static_cast<int> (i);
@@ -156,7 +156,7 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
     if (u >= cx_ || v >= cy_ || u < 0 || v < 0)
       continue;
 
-    if ((z < depth_[u * cy_ + v]) || (!pcl_isfinite(depth_[u * cy_ + v])))
+    if ((z < depth_[u * cy_ + v]) || (!std::isfinite(depth_[u * cy_ + v])))
       depth_[u * cx_ + v] = z;
   }
 
@@ -178,7 +178,7 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
         {
           for (int i = (v - ws2); i <= (v + ws2); i++)
           {
-            if (pcl_isfinite(depth_[j * cx_ + i]) && (depth_[j * cx_ + i] < min))
+            if (std::isfinite(depth_[j * cx_ + i]) && (depth_[j * cx_ + i] < min))
             {
               min = depth_[j * cx_ + i];
             }

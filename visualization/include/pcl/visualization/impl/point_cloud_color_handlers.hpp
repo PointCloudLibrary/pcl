@@ -167,9 +167,9 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
       // Copy the value at the specified field
-      if (!pcl_isfinite (cloud_->points[cp].x) ||
-          !pcl_isfinite (cloud_->points[cp].y) || 
-          !pcl_isfinite (cloud_->points[cp].z))
+      if (!std::isfinite (cloud_->points[cp].x) ||
+          !std::isfinite (cloud_->points[cp].y) || 
+          !std::isfinite (cloud_->points[cp].z))
         continue;
 
       memcpy (&rgb, (reinterpret_cast<const char *> (&cloud_->points[cp])) + rgba_offset, sizeof (pcl::RGB));
@@ -254,9 +254,9 @@ pcl::visualization::PointCloudColorHandlerHSVField<PointT>::getColor (vtkSmartPo
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
       // Copy the value at the specified field
-      if (!pcl_isfinite (cloud_->points[cp].x) ||
-          !pcl_isfinite (cloud_->points[cp].y) ||
-          !pcl_isfinite (cloud_->points[cp].z))
+      if (!std::isfinite (cloud_->points[cp].x) ||
+          !std::isfinite (cloud_->points[cp].y) ||
+          !std::isfinite (cloud_->points[cp].z))
         continue;
 
       ///@todo do this with the point_types_conversion in common, first template it!
@@ -408,7 +408,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor (vtkSma
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
       // Copy the value at the specified field
-      if (!pcl_isfinite (cloud_->points[cp].x) || !pcl_isfinite (cloud_->points[cp].y) || !pcl_isfinite (cloud_->points[cp].z))
+      if (!std::isfinite (cloud_->points[cp].x) || !std::isfinite (cloud_->points[cp].y) || !std::isfinite (cloud_->points[cp].z))
         continue;
 
       const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud_->points[cp]);
@@ -426,7 +426,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor (vtkSma
       const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud_->points[cp]);
       memcpy (&field_data, pt_data + fields_[field_idx_].offset, pcl::getFieldSize (fields_[field_idx_].datatype));
 
-      if (!pcl_isfinite (field_data))
+      if (!std::isfinite (field_data))
         continue;
 
       colors[j] = field_data;
@@ -479,9 +479,9 @@ pcl::visualization::PointCloudColorHandlerRGBAField<PointT>::getColor (vtkSmartP
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
       // Copy the value at the specified field
-      if (!pcl_isfinite (cloud_->points[cp].x) ||
-          !pcl_isfinite (cloud_->points[cp].y) ||
-          !pcl_isfinite (cloud_->points[cp].z))
+      if (!std::isfinite (cloud_->points[cp].x) ||
+          !std::isfinite (cloud_->points[cp].y) ||
+          !std::isfinite (cloud_->points[cp].z))
         continue;
 
       colors[j    ] = cloud_->points[cp].r;

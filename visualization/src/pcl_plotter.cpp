@@ -587,7 +587,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
   double min = data[0], max = data[0];
   for (size_t i = 1; i < data.size (); i++)
   {
-    if (pcl_isfinite (data[i]))
+    if (std::isfinite (data[i]))
     {
       if (data[i] < min) min = data[i];
       if (data[i] > max) max = data[i];
@@ -608,7 +608,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
   //fill the freq for each data
   for (size_t i = 0; i < data.size (); i++)
   {
-    if (pcl_isfinite (data[i]))
+    if (std::isfinite (data[i]))
     {
       unsigned int index = (unsigned int) (floor ((data[i] - min) / size));
       if (index == (unsigned int) nbins) index = nbins - 1; //including right boundary

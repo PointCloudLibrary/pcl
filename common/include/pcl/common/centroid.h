@@ -853,7 +853,7 @@ namespace pcl
       const T* data_ptr = reinterpret_cast<const T*>(raw_ptr);
 
       // Check if the value is invalid
-      if (!pcl_isfinite (*data_ptr))
+      if (!std::isfinite (*data_ptr))
       {
         f_idx_++;
         return;

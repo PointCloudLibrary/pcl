@@ -371,7 +371,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
     for (size_t dp_i = 0; dp_i < distinct_cloud_->size (); ++dp_i) // dp_i = distinct_point_i
     {
       // Distinct cloud may have nan points, skip them
-      if (!pcl_isfinite (distinct_cloud_->points[dp_i].x))
+      if (!std::isfinite (distinct_cloud_->points[dp_i].x))
         continue;
 
       // Get 3D position of point
@@ -538,7 +538,7 @@ pcl::MLSResult::calculatePrincipleCurvatures (const double u, const double v) co
   // Then:
   //      k1 = H + sqrt(H^2 - K)
   //      k1 = H - sqrt(H^2 - K)
-  if (order > 1 && c_vec.size () >= (order + 1) * (order + 2) / 2 && pcl_isfinite (c_vec[0]))
+  if (order > 1 && c_vec.size () >= (order + 1) * (order + 2) / 2 && std::isfinite (c_vec[0]))
   {
     PolynomialPartialDerivative d = getPolynomialPartialDerivative (u, v);
     double Z = 1 + d.z_u * d.z_u + d.z_v * d.z_v;
@@ -570,7 +570,7 @@ pcl::MLSResult::projectPointOrthogonalToPolynomialSurface (const double u, const
 
   MLSProjectionResults result;
   result.normal = plane_normal;
-  if (order > 1 && c_vec.size () >= (order + 1) * (order + 2) / 2 && pcl_isfinite (c_vec[0]))
+  if (order > 1 && c_vec.size () >= (order + 1) * (order + 2) / 2 && std::isfinite (c_vec[0]))
   {
     PolynomialPartialDerivative d = getPolynomialPartialDerivative (gu, gv);
     gw = d.z;
@@ -648,7 +648,7 @@ pcl::MLSResult::projectPointSimpleToPolynomialSurface (const double u, const dou
   result.v = v;
   result.normal = plane_normal;
 
-  if (order > 1 && c_vec.size () >= (order + 1) * (order + 2) / 2 && pcl_isfinite (c_vec[0]))
+  if (order > 1 && c_vec.size () >= (order + 1) * (order + 2) / 2 && std::isfinite (c_vec[0]))
   {
     PolynomialPartialDerivative d = getPolynomialPartialDerivative (u, v);
     w = d.z;
@@ -668,7 +668,7 @@ pcl::MLSResult::projectPoint (const Eigen::Vector3d &pt, ProjectionMethod method
   getMLSCoordinates (pt, u, v, w);
 
   MLSResult::MLSProjectionResults proj;
-  if (order > 1 && num_neighbors >= required_neighbors && pcl_isfinite (c_vec[0]) && method != NONE)
+  if (order > 1 && num_neighbors >= required_neighbors && std::isfinite (c_vec[0]) && method != NONE)
   {
     if (method == ORTHOGONAL)
       proj = projectPointOrthogonalToPolynomialSurface (u, v, w);
@@ -687,7 +687,7 @@ pcl::MLSResult::MLSProjectionResults
 pcl::MLSResult::projectQueryPoint (ProjectionMethod method, int required_neighbors) const
 {
   MLSResult::MLSProjectionResults proj;
-  if (order > 1 && num_neighbors >= required_neighbors && pcl_isfinite (c_vec[0]) && method != NONE)
+  if (order > 1 && num_neighbors >= required_neighbors && std::isfinite (c_vec[0]) && method != NONE)
   {
     if (method == ORTHOGONAL)
     {
@@ -840,7 +840,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::MLSVoxelGrid (PointC
   // Put initial cloud in voxel grid
   data_size_ = static_cast<uint64_t> (1.5 * max_size / voxel_size_);
   for (unsigned int i = 0; i < indices->size (); ++i)
-    if (pcl_isfinite (cloud->points[(*indices)[i]].x))
+    if (std::isfinite (cloud->points[(*indices)[i]].x))
     {
       Eigen::Vector3i pos;
       getCellIndex (cloud->points[(*indices)[i]].getVector3fMap (), pos);

@@ -76,7 +76,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
           memcpy (&output.data[remaining_indices[i] * output.point_step + output.fields[j].offset],
                   &user_filter_value_, sizeof(float));
     }
-    if (!pcl_isfinite (user_filter_value_))
+    if (!std::isfinite (user_filter_value_))
       output.is_dense = false;
     return;
   }

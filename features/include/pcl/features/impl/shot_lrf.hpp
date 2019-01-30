@@ -98,7 +98,7 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const i
   const double& e2c = solver.eigenvalues ()[1];
   const double& e3c = solver.eigenvalues ()[2];
 
-  if (!pcl_isfinite (e1c) || !pcl_isfinite (e2c) || !pcl_isfinite (e3c))
+  if (!std::isfinite (e1c) || !std::isfinite (e2c) || !std::isfinite (e3c))
   {
     //PCL_ERROR ("[pcl::%s::getLocalRF] Warning! Eigenvectors are NaN. Aborting Local RF computation of feature point (%lf, %lf, %lf)\n", "SHOTLocalReferenceFrameEstimation", central_point[0], central_point[1], central_point[2]);
     rf.setConstant (std::numeric_limits<float>::quiet_NaN ());

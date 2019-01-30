@@ -107,9 +107,9 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
       }
 
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud->points[i].x) || 
-          !pcl_isfinite (cloud->points[i].y) || 
-          !pcl_isfinite (cloud->points[i].z))
+      if (!std::isfinite (cloud->points[i].x) || 
+          !std::isfinite (cloud->points[i].y) || 
+          !std::isfinite (cloud->points[i].z))
         continue;
       // Create the point structure and get the min/max
       pcl::Array4fMapConst pt = cloud->points[i].getArray4fMap ();
@@ -186,9 +186,9 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
       }
 
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud->points[*it].x) || 
-          !pcl_isfinite (cloud->points[*it].y) || 
-          !pcl_isfinite (cloud->points[*it].z))
+      if (!std::isfinite (cloud->points[*it].x) || 
+          !std::isfinite (cloud->points[*it].y) || 
+          !std::isfinite (cloud->points[*it].z))
         continue;
       // Create the point structure and get the min/max
       pcl::Array4fMapConst pt = cloud->points[*it].getArray4fMap ();
@@ -280,9 +280,9 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[*it].x) || 
-            !pcl_isfinite (input_->points[*it].y) || 
-            !pcl_isfinite (input_->points[*it].z))
+        if (!std::isfinite (input_->points[*it].x) || 
+            !std::isfinite (input_->points[*it].y) || 
+            !std::isfinite (input_->points[*it].z))
           continue;
 
       // Get the distance value
@@ -322,9 +322,9 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[*it].x) || 
-            !pcl_isfinite (input_->points[*it].y) || 
-            !pcl_isfinite (input_->points[*it].z))
+        if (!std::isfinite (input_->points[*it].x) || 
+            !std::isfinite (input_->points[*it].y) || 
+            !std::isfinite (input_->points[*it].z))
           continue;
 
       int ijk0 = static_cast<int> (floor (input_->points[*it].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));

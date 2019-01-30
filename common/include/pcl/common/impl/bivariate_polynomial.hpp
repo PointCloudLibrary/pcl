@@ -202,7 +202,7 @@ pcl::BivariatePolynomialT<real>::findCriticalPoints (std::vector<real>& x_values
              (parameters[1]*parameters[1] - real(4)*parameters[0]*parameters[3]),
          y = (real(-2)*parameters[0]*x - parameters[2]) / parameters[1];
     
-    if (!pcl_isfinite(x) || !pcl_isfinite(y))
+    if (!std::isfinite(x) || !std::isfinite(y))
       return;
     
     int type = 2;

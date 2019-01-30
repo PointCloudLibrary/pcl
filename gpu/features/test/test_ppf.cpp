@@ -189,8 +189,8 @@ TEST(PCL_FeaturesGPU, ppfrgb)
         ASSERT_NEAR(gpu.f4, cpu.f4, 0.01f);
         ASSERT_NEAR(gpu.alpha_m, cpu.alpha_m, 0.01f); 
 
-        if (pcl_isnan(gpu.r_ratio) || pcl_isnan(gpu.g_ratio) || pcl_isnan(gpu.b_ratio) || 
-            pcl_isnan(cpu.r_ratio) || pcl_isnan(cpu.g_ratio) || pcl_isnan(cpu.b_ratio))
+        if (std::isnan(gpu.r_ratio) || std::isnan(gpu.g_ratio) || std::isnan(gpu.b_ratio) || 
+            std::isnan(cpu.r_ratio) || std::isnan(cpu.g_ratio) || std::isnan(cpu.b_ratio))
             continue;
         
         ASSERT_NEAR(gpu.r_ratio, cpu.r_ratio, 0.01f);
@@ -280,8 +280,8 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
         ASSERT_NEAR(gpu.f4, cpu.f4, 0.01f);
         ASSERT_NEAR(gpu.alpha_m, cpu.alpha_m, 0.01f); 
 
-        if (pcl_isnan(gpu.r_ratio) || pcl_isnan(gpu.g_ratio) || pcl_isnan(gpu.b_ratio) || 
-            pcl_isnan(cpu.r_ratio) || pcl_isnan(cpu.g_ratio) || pcl_isnan(cpu.b_ratio))
+        if (std::isnan(gpu.r_ratio) || std::isnan(gpu.g_ratio) || std::isnan(gpu.b_ratio) || 
+            std::isnan(cpu.r_ratio) || std::isnan(cpu.g_ratio) || std::isnan(cpu.b_ratio))
             continue;
         
         ASSERT_NEAR(gpu.r_ratio, cpu.r_ratio, 0.01f);

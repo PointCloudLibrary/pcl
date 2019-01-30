@@ -203,7 +203,7 @@ namespace pcl
             const PointCloudTargetConstPtr &cloud_tgt,
             const Matrix4 &transformation_matrix) const
         {
-          if (pcl_isnan (threshold_))
+          if (std::isnan (threshold_))
           {
             PCL_ERROR ("[pcl::TransformationValidationEuclidean::isValid] Threshold not set! Please use setThreshold () before continuing.");
             return (false);

@@ -161,9 +161,9 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
 
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.x_axis[0]) ||
-        !pcl_isfinite (current_frame.y_axis[0]) ||
-        !pcl_isfinite (current_frame.z_axis[0]))
+    if (!std::isfinite (current_frame.x_axis[0]) ||
+        !std::isfinite (current_frame.y_axis[0]) ||
+        !std::isfinite (current_frame.z_axis[0]))
     {
       PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
         getClassName ().c_str (), (*indices_)[idx]);
@@ -253,9 +253,9 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
 
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.x_axis[0]) ||
-        !pcl_isfinite (current_frame.y_axis[0]) ||
-        !pcl_isfinite (current_frame.z_axis[0]))
+    if (!std::isfinite (current_frame.x_axis[0]) ||
+        !std::isfinite (current_frame.y_axis[0]) ||
+        !std::isfinite (current_frame.z_axis[0]))
     {
       PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
         getClassName ().c_str (), (*indices_)[idx]);

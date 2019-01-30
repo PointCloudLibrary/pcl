@@ -530,16 +530,16 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
   float centerX = ((float)cloud->width - 1.f) / 2.f;
   float centerY = ((float)cloud->height - 1.f) / 2.f;
 
-  if (pcl_isfinite (depth_parameters_.focal_length_x))
+  if (std::isfinite (depth_parameters_.focal_length_x))
     constant_x =  1.0f / static_cast<float> (depth_parameters_.focal_length_x);
 
-  if (pcl_isfinite (depth_parameters_.focal_length_y))
+  if (std::isfinite (depth_parameters_.focal_length_y))
     constant_y =  1.0f / static_cast<float> (depth_parameters_.focal_length_y);
 
-  if (pcl_isfinite (depth_parameters_.principal_point_x))
+  if (std::isfinite (depth_parameters_.principal_point_x))
     centerX =  static_cast<float> (depth_parameters_.principal_point_x);
 
-  if (pcl_isfinite (depth_parameters_.principal_point_y))
+  if (std::isfinite (depth_parameters_.principal_point_y))
     centerY =  static_cast<float> (depth_parameters_.principal_point_y);
 
   if ( device_->isDepthRegistered() )
@@ -611,16 +611,16 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   float cy = ((float)depth_height_- 1.f) / 2.f; // Center y
 
   // Load pre-calibrated camera parameters if they exist
-  if (pcl_isfinite (depth_parameters_.focal_length_x))
+  if (std::isfinite (depth_parameters_.focal_length_x))
     fx =  static_cast<float> (depth_parameters_.focal_length_x);
 
-  if (pcl_isfinite (depth_parameters_.focal_length_y))
+  if (std::isfinite (depth_parameters_.focal_length_y))
     fy =  static_cast<float> (depth_parameters_.focal_length_y);
 
-  if (pcl_isfinite (depth_parameters_.principal_point_x))
+  if (std::isfinite (depth_parameters_.principal_point_x))
     cx =  static_cast<float> (depth_parameters_.principal_point_x);
 
-  if (pcl_isfinite (depth_parameters_.principal_point_y))
+  if (std::isfinite (depth_parameters_.principal_point_y))
     cy =  static_cast<float> (depth_parameters_.principal_point_y);
 
   // Get inverse focal length for calculations below
@@ -738,16 +738,16 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
   float cy = ((float)cloud->height - 1.f) / 2.f; // Center y
 
   // Load pre-calibrated camera parameters if they exist
-  if (pcl_isfinite (depth_parameters_.focal_length_x))
+  if (std::isfinite (depth_parameters_.focal_length_x))
     fx =  static_cast<float> (depth_parameters_.focal_length_x);
 
-  if (pcl_isfinite (depth_parameters_.focal_length_y))
+  if (std::isfinite (depth_parameters_.focal_length_y))
     fy =  static_cast<float> (depth_parameters_.focal_length_y);
 
-  if (pcl_isfinite (depth_parameters_.principal_point_x))
+  if (std::isfinite (depth_parameters_.principal_point_x))
     cx =  static_cast<float> (depth_parameters_.principal_point_x);
 
-  if (pcl_isfinite (depth_parameters_.principal_point_y))
+  if (std::isfinite (depth_parameters_.principal_point_y))
     cy =  static_cast<float> (depth_parameters_.principal_point_y);
 
   float fx_inv = 1.0f / fx;

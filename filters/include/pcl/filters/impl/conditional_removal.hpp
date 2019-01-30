@@ -712,9 +712,9 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     for (size_t cp = 0; cp < Filter<PointT>::indices_->size (); ++cp)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].x)
-          || !pcl_isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].y)
-          || !pcl_isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].z))
+      if (!std::isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].x)
+          || !std::isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].y)
+          || !std::isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].z))
       {
         if (extract_removed_indices_)
         {
@@ -782,7 +782,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
       }
     }
 
-    if (removed_p && !pcl_isfinite (user_filter_value_))
+    if (removed_p && !std::isfinite (user_filter_value_))
       output.is_dense = false;
   }
   removed_indices_->resize (nr_removed_p);

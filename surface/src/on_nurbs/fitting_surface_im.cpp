@@ -58,7 +58,7 @@ FittingSurfaceIM::computeMean () const
     int j = m_indices[idx] / cloud_ref.width;
 
     const pcl::PointXYZRGB &point = cloud_ref (i, j);
-    if (pcl_isnan (point.x) || pcl_isnan (point.y) || pcl_isnan (point.z))
+    if (std::isnan (point.x) || std::isnan (point.y) || std::isnan (point.z))
       continue;
 
     u.x += point.x * float (ds);
@@ -82,7 +82,7 @@ FittingSurfaceIM::computeIndexBoundingBox (pcl::PointCloud<pcl::PointXYZRGB>::Pt
     int j = indices[idx] / cloud_ref.width;
 
     const pcl::PointXYZRGB &point = cloud_ref (i, j);
-    if (pcl_isnan (point.x) || pcl_isnan (point.y) || pcl_isnan (point.z))
+    if (std::isnan (point.x) || std::isnan (point.y) || std::isnan (point.z))
       continue;
 
     if (i < bb (0))
@@ -281,7 +281,7 @@ FittingSurfaceIM::assemble (bool inverse_mapping)
     const pcl::PointXYZRGB &pt = cloud_ref.at (m_indices[i]);
     Eigen::Vector2i params (px, py);
 
-    if (pcl_isnan (pt.z) || pt.z == 0.0)
+    if (std::isnan (pt.z) || pt.z == 0.0)
       throw std::runtime_error ("[FittingSurfaceIM::assemble] Error, not a number (pt.z)");
 
     if (inverse_mapping)

@@ -307,7 +307,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointC
   {
     PointInT input_point = cloud.points[i];
 
-    if (!pcl_isfinite(input_point.x) || !pcl_isfinite(input_point.y) || !pcl_isfinite(input_point.z))
+    if (!std::isfinite(input_point.x) || !std::isfinite(input_point.y) || !std::isfinite(input_point.z))
       continue;
     // take occlusion into account
     Eigen::Vector4f p = input_point.getVector4fMap ();

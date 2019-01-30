@@ -75,7 +75,7 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
       {
         memcpy (pt_data + offsets[i], &user_filter_value, sizeof (float));
       }
-      if (!pcl_isfinite (user_filter_value_))
+      if (!std::isfinite (user_filter_value_))
         output.is_dense = false;
     }
   }

@@ -464,7 +464,7 @@ costFunction2 (float ref_val, float depth_val)
   }
   
   double lhood = 1;
-  if (pcl_isnan (depth_val))
+  if (std::isnan (depth_val))
   { // pixels with nan depth - for openNI null points
     lhood = 1; // log(1) = 0 ---> has no effect
   }

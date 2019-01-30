@@ -215,8 +215,8 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
   int j = 0;
   for (size_t i = 0; i < scene_normals_->points.size (); ++i)
   {
-    if (!pcl_isfinite (scene_normals_->points[i].normal_x) || !pcl_isfinite (scene_normals_->points[i].normal_y)
-        || !pcl_isfinite (scene_normals_->points[i].normal_z))
+    if (!std::isfinite (scene_normals_->points[i].normal_x) || !std::isfinite (scene_normals_->points[i].normal_y)
+        || !std::isfinite (scene_normals_->points[i].normal_z))
       continue;
 
     scene_normals_->points[j] = scene_normals_->points[i];
@@ -509,8 +509,8 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
     int j = 0;
     for (size_t i = 0; i < recog_model->cloud_->points.size (); ++i)
     {
-      if (!pcl_isfinite (recog_model->cloud_->points[i].x) || !pcl_isfinite (recog_model->cloud_->points[i].y)
-          || !pcl_isfinite (recog_model->cloud_->points[i].z))
+      if (!std::isfinite (recog_model->cloud_->points[i].x) || !std::isfinite (recog_model->cloud_->points[i].y)
+          || !std::isfinite (recog_model->cloud_->points[i].z))
         continue;
 
       recog_model->cloud_->points[j] = recog_model->cloud_->points[i];
@@ -543,8 +543,8 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
   int j = 0;
   for (size_t i = 0; i < recog_model->normals_->points.size (); ++i)
   {
-    if (!pcl_isfinite (recog_model->normals_->points[i].normal_x) || !pcl_isfinite (recog_model->normals_->points[i].normal_y)
-        || !pcl_isfinite (recog_model->normals_->points[i].normal_z))
+    if (!std::isfinite (recog_model->normals_->points[i].normal_x) || !std::isfinite (recog_model->normals_->points[i].normal_y)
+        || !std::isfinite (recog_model->normals_->points[i].normal_z))
       continue;
 
     recog_model->normals_->points[j] = recog_model->normals_->points[i];

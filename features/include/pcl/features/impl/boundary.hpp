@@ -66,7 +66,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
   if (indices.size () < 3)
     return (false);
 
-  if (!pcl_isfinite (q_point.x) || !pcl_isfinite (q_point.y) || !pcl_isfinite (q_point.z))
+  if (!std::isfinite (q_point.x) || !std::isfinite (q_point.y) || !std::isfinite (q_point.z))
     return (false);
 
   // Compute the angles between each neighboring point and the query point itself
@@ -76,9 +76,9 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
 
   for (size_t i = 0; i < indices.size (); ++i)
   {
-    if (!pcl_isfinite (cloud.points[indices[i]].x) || 
-        !pcl_isfinite (cloud.points[indices[i]].y) || 
-        !pcl_isfinite (cloud.points[indices[i]].z))
+    if (!std::isfinite (cloud.points[indices[i]].x) || 
+        !std::isfinite (cloud.points[indices[i]].y) || 
+        !std::isfinite (cloud.points[indices[i]].z))
       continue;
 
     Eigen::Vector4f delta = cloud.points[indices[i]].getVector4fMap () - q_point.getVector4fMap ();

@@ -215,7 +215,7 @@ namespace pcl
         testPoint (const PointT& query, unsigned k, std::priority_queue<Entry>& queue, unsigned index) const
         {
           const PointT& point = input_->points [index];
-          if (mask_ [index] && pcl_isfinite (point.x))
+          if (mask_ [index] && std::isfinite (point.x))
           {
             //float squared_distance = (point.getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
             float dist_x = point.x - query.x;

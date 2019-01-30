@@ -45,7 +45,7 @@ using std::cerr;
 void 
 pcl::visualization::FloatImageUtils::getColorForFloat (float value, unsigned char& r, unsigned char& g, unsigned char& b) 
 {
-  if (pcl_isinf (value)) 
+  if (std::isinf (value)) 
   {
     if (value > 0.0f) 
     {
@@ -55,7 +55,7 @@ pcl::visualization::FloatImageUtils::getColorForFloat (float value, unsigned cha
     r = 150;  g = 200;  b = 150;  // -INFINITY
     return;
   }
-  if (!pcl_isfinite (value)) 
+  if (!std::isfinite (value)) 
   {
     r = 200;  g = 150;  b = 150;  // -INFINITY
     return;
@@ -110,7 +110,7 @@ pcl::visualization::FloatImageUtils::getColorForFloat (float value, unsigned cha
 void 
 pcl::visualization::FloatImageUtils::getColorForAngle (float value, unsigned char& r, unsigned char& g, unsigned char& b) 
 {
-  if (pcl_isinf (value)) 
+  if (std::isinf (value)) 
   {
     if (value > 0.0f) 
     {
@@ -120,7 +120,7 @@ pcl::visualization::FloatImageUtils::getColorForAngle (float value, unsigned cha
     r = 150;  g = 200;  b = 150;  // -INFINITY
     return;
   }
-  if (!pcl_isfinite (value)) 
+  if (!std::isfinite (value)) 
   {
     r = 200;  g = 150;  b = 150;  // -INFINITY
     return;
@@ -165,8 +165,8 @@ pcl::visualization::FloatImageUtils::getVisualImage (const float* float_image, i
   unsigned char* data = new unsigned char[arraySize];
   unsigned char* dataPtr = data;
   
-  bool recalculateMinValue = pcl_isinf (min_value),
-       recalculateMaxValue = pcl_isinf (max_value);
+  bool recalculateMinValue = std::isinf (min_value),
+       recalculateMaxValue = std::isinf (max_value);
   if (recalculateMinValue) min_value = std::numeric_limits<float>::infinity ();
   if (recalculateMaxValue) max_value = -std::numeric_limits<float>::infinity ();
   
@@ -175,7 +175,7 @@ pcl::visualization::FloatImageUtils::getVisualImage (const float* float_image, i
     for (int i=0; i<size; ++i) 
     {
       float value = float_image[i];
-      if (!pcl_isfinite(value)) continue;
+      if (!std::isfinite(value)) continue;
       if (recalculateMinValue)  min_value = (std::min)(min_value, value);
       if (recalculateMaxValue)  max_value = (std::max)(max_value, value);
     }
@@ -188,7 +188,7 @@ pcl::visualization::FloatImageUtils::getVisualImage (const float* float_image, i
     unsigned char& r=*(dataPtr++), & g=*(dataPtr++), & b=*(dataPtr++);
     float value = float_image[i];
     
-    if (!pcl_isfinite(value)) 
+    if (!std::isfinite(value)) 
     {
       getColorForFloat(value, r, g, b);
       continue;

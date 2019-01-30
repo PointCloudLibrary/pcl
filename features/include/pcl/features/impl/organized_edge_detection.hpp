@@ -105,7 +105,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
       for (int col = 1; col < int(input_->width) - 1; col++)
       {
         int curr_idx = row*int(input_->width) + col;
-        if (!pcl_isfinite (input_->points[curr_idx].z))
+        if (!std::isfinite (input_->points[curr_idx].z))
           continue;
 
         float curr_depth = fabsf (input_->points[curr_idx].z);
@@ -118,7 +118,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
         {
           int nghr_idx = curr_idx + directions[d_idx].d_index;
           assert (nghr_idx >= 0 && nghr_idx < input_->points.size ());
-          if (!pcl_isfinite (input_->points[nghr_idx].z))
+          if (!std::isfinite (input_->points[nghr_idx].z))
           {
             found_invalid_neighbor = true;
             break;
@@ -161,7 +161,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
           {
             int nghr_idx = curr_idx + directions[d_idx].d_index;
             assert (nghr_idx >= 0 && nghr_idx < input_->points.size ());
-            if (!pcl_isfinite (input_->points[nghr_idx].z))
+            if (!std::isfinite (input_->points[nghr_idx].z))
             {
               dx += directions[d_idx].d_x;
               dy += directions[d_idx].d_y;
@@ -184,14 +184,14 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
             if (s_row < 0 || s_row >= int(input_->height) || s_col < 0 || s_col >= int(input_->width))
               break;
 
-            if (pcl_isfinite (input_->points[s_row*int(input_->width)+s_col].z))
+            if (std::isfinite (input_->points[s_row*int(input_->width)+s_col].z))
             {
               corr_depth = fabsf (input_->points[s_row*int(input_->width)+s_col].z);
               break;
             }
           }
 
-          if (!pcl_isnan (corr_depth))
+          if (!std::isnan (corr_depth))
           {
             // Found a corresponding point
             float dist = curr_depth - corr_depth;

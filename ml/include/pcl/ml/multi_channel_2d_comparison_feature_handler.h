@@ -155,7 +155,7 @@ namespace pcl
       const float value2 = static_cast<float> (data_set (example.data_set_id, p2_col, p2_row)[channel]);
 
       result = value1 - value2;
-      flag = (pcl_isfinite (value1) && pcl_isfinite (value2)) ? 0 : 1;
+      flag = (std::isfinite (value1) && std::isfinite (value2)) ? 0 : 1;
     }
 
     /** \brief Generates code for feature evaluation.
@@ -293,7 +293,7 @@ namespace pcl
       const float value2 = static_cast<float> (data_set (example.data_set_id, p2_col, p2_row)[channel]);
 
       result = value1 - value2;
-      flag = (pcl_isfinite (value1) && pcl_isfinite (value2)) ? 0 : 1;
+      flag = (std::isfinite (value1) && std::isfinite (value2)) ? 0 : 1;
     }
 
     /** \brief Generates code for feature evaluation.

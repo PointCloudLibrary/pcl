@@ -368,7 +368,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       const double& e2c = solver.eigenvalues ()[1];
       const double& e3c = solver.eigenvalues ()[0];
 
-      if (!pcl_isfinite (e1c) || !pcl_isfinite (e2c) || !pcl_isfinite (e3c))
+      if (!std::isfinite (e1c) || !std::isfinite (e2c) || !std::isfinite (e3c))
 	continue;
 
       if (e3c < 0)

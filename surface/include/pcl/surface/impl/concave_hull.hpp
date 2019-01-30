@@ -127,7 +127,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   // Check if the covariance matrix is finite or not.
   for (int i = 0; i < 3; ++i)
     for (int j = 0; j < 3; ++j)
-      if (!pcl_isfinite (covariance_matrix.coeffRef (i, j)))
+      if (!std::isfinite (covariance_matrix.coeffRef (i, j)))
           return;
 
   EIGEN_ALIGN16 Eigen::Vector3d eigen_values;
@@ -208,9 +208,9 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       bool NaNvalues = false;
       for (size_t i = 0; i < cloud_transformed.size (); ++i)
       {
-        if (!pcl_isfinite (cloud_transformed.points[i].x) ||
-            !pcl_isfinite (cloud_transformed.points[i].y) ||
-            !pcl_isfinite (cloud_transformed.points[i].z))
+        if (!std::isfinite (cloud_transformed.points[i].x) ||
+            !std::isfinite (cloud_transformed.points[i].y) ||
+            !std::isfinite (cloud_transformed.points[i].z))
         {
           NaNvalues = true;
           break;

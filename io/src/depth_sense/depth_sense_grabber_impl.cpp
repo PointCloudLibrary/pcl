@@ -248,7 +248,7 @@ pcl::io::depth_sense::DepthSenseGrabberImpl::computeXYZ (PointCloud<Point>& clou
     while (point.point.x < WIDTH)
     {
       point.depth = (*depth_buffer_)[i];
-      if (pcl_isnan (point.depth))
+      if (std::isnan (point.depth))
       {
         cloud.points[i].x = nan;
         cloud.points[i].y = nan;

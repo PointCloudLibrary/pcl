@@ -118,9 +118,9 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   {
     // Skip invalid points from the indices list
     for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
-      if (!pcl_isfinite (input_->points[*it].x) ||
-          !pcl_isfinite (input_->points[*it].y) ||
-          !pcl_isfinite (input_->points[*it].z))
+      if (!std::isfinite (input_->points[*it].x) ||
+          !std::isfinite (input_->points[*it].y) ||
+          !std::isfinite (input_->points[*it].z))
         state_[*it] = NONE;
   }
 
