@@ -67,8 +67,6 @@ class NormalEstimation
 
     void viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
-      static bool first_time = true;
-      double psize = 1.0,opacity = 1.0,linesize =1.0;
       std::string cloud_name ("cloud");
       boost::mutex::scoped_lock l(m_mutex);
       if (new_cloud)
@@ -77,6 +75,8 @@ class NormalEstimation
         typedef pcl::visualization::PointCloudColorHandlerGenericField <pcl::PointXYZRGBNormal> ColorHandler;
         //ColorHandler Color_handler (normal_cloud);
         ColorHandler Color_handler (normal_cloud,"curvature");
+        static bool first_time = true;
+        double psize = 1.0,opacity = 1.0,linesize =1.0;
         if (!first_time)
         {
           viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);

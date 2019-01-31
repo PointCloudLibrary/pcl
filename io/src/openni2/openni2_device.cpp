@@ -880,9 +880,7 @@ std::ostream& pcl::io::openni2::operator<< (std::ostream& stream, const OpenNI2D
     stream << "IR sensor video modes:" << std::endl;
     const std::vector<OpenNI2VideoMode>& video_modes = device.getSupportedIRVideoModes ();
 
-    std::vector<OpenNI2VideoMode>::const_iterator it = video_modes.begin ();
-    std::vector<OpenNI2VideoMode>::const_iterator it_end = video_modes.end ();
-    for (; it != it_end; ++it)
+    for (auto it = video_modes.cbegin (), it_end = video_modes.cend (); it != it_end; ++it)
       stream << "   - " << *it << std::endl;
   }
   else
@@ -895,9 +893,7 @@ std::ostream& pcl::io::openni2::operator<< (std::ostream& stream, const OpenNI2D
     stream << "Color sensor video modes:" << std::endl;
     const std::vector<OpenNI2VideoMode>& video_modes = device.getSupportedColorVideoModes ();
 
-    std::vector<OpenNI2VideoMode>::const_iterator it = video_modes.begin ();
-    std::vector<OpenNI2VideoMode>::const_iterator it_end = video_modes.end ();
-    for (; it != it_end; ++it)
+    for (auto it = video_modes.cbegin (), it_end = video_modes.cend (); it != it_end; ++it)
       stream << "   - " << *it << std::endl;
   }
   else
@@ -910,9 +906,7 @@ std::ostream& pcl::io::openni2::operator<< (std::ostream& stream, const OpenNI2D
     stream << "Depth sensor video modes:" << std::endl;
     const std::vector<OpenNI2VideoMode>& video_modes = device.getSupportedDepthVideoModes ();
 
-    std::vector<OpenNI2VideoMode>::const_iterator it = video_modes.begin ();
-    std::vector<OpenNI2VideoMode>::const_iterator it_end = video_modes.end ();
-    for (; it != it_end; ++it)
+    for (auto it = video_modes.cbegin (), it_end = video_modes.cend (); it != it_end; ++it)
       stream << "   - " << *it << std::endl;
   }
   else

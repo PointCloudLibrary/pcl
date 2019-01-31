@@ -58,8 +58,6 @@ using namespace octree;
 
 TEST (PCL, Octree_Test)
 {
-
-  unsigned int i, j;
   int data[256];
 
   // create octree instance
@@ -81,7 +79,7 @@ TEST (PCL, Octree_Test)
   srand (static_cast<unsigned int> (time (NULL)));
 
   // generate some voxel indices
-  for (i = 0; i < 256; i++)
+  for (unsigned int i = 0; i < 256; i++)
   {
     data[i] = i;
 
@@ -94,7 +92,7 @@ TEST (PCL, Octree_Test)
     *voxel_container = data[i];
   }
 
-  for (i = 0; i < 128; i++)
+  for (unsigned int i = 0; i < 128; i++)
   {
     // retrieve data from leaf node voxel
     int* voxel_container = octreeA.createLeaf(voxels[i].x, voxels[i].y, voxels[i].z);
@@ -102,7 +100,7 @@ TEST (PCL, Octree_Test)
     ASSERT_EQ (data[i], *voxel_container);
   }
 
-  for (i = 128; i < 256; i++)
+  for (unsigned int i = 128; i < 256; i++)
   {
     // check if leaf node exists in tree
     ASSERT_TRUE (octreeA.existLeaf (voxels[i].x, voxels[i].y, voxels[i].z));
@@ -128,14 +126,14 @@ TEST (PCL, Octree_Test)
   // deserialize tree - rebuild octree based on binary octree description
   octreeB.deserializeTree (treeBinaryA);
 
-  for (i = 0; i < 128; i++)
+  for (unsigned int i = 0; i < 128; i++)
   {
     // check if leafs exist in both octrees
     ASSERT_TRUE (octreeA.existLeaf (voxels[i].x, voxels[i].y, voxels[i].z));
     ASSERT_TRUE (octreeB.existLeaf (voxels[i].x, voxels[i].y, voxels[i].z));
   }
 
-  for (i = 128; i < 256; i++)
+  for (unsigned int i = 128; i < 256; i++)
   {
     // these leafs were not copies and should not exist
     ASSERT_FALSE (octreeB.existLeaf (voxels[i].x, voxels[i].y, voxels[i].z));
@@ -148,7 +146,7 @@ TEST (PCL, Octree_Test)
   ASSERT_EQ (0u, octreeB.getLeafCount ());
 
   // .. and previous leafs deleted..
-  for (i = 0; i < 128; i++)
+  for (unsigned int i = 0; i < 128; i++)
   {
     ASSERT_FALSE (octreeB.existLeaf (voxels[i].x, voxels[i].y, voxels[i].z));
   }
@@ -160,14 +158,13 @@ TEST (PCL, Octree_Test)
   ASSERT_EQ (octreeA.getLeafCount (), leafVectorA.size ());
 
   // check if leaf data is found in octree input data
-  bool bFound;
-  for (i = 0; i < 128; i++)
+  for (unsigned int i = 0; i < 128; i++)
   {
     int leafInt = *leafVectorA.back ();
     leafVectorA.pop_back ();
 
-    bFound = false;
-    for (j = 0; j < 256; j++)
+    bool bFound = false;
+    for (unsigned int j = 0; j < 256; j++)
       if (data[j] == leafInt)
       {
         bFound = true;
@@ -180,13 +177,13 @@ TEST (PCL, Octree_Test)
   // test tree serialization
   octreeA.serializeLeafs (leafVectorA);
 
-  for (i = 0; i < 128; i++)
+  for (unsigned int i = 0; i < 128; i++)
   {
     int leafInt = *leafVectorA.back ();
     leafVectorA.pop_back ();
 
-    bFound = false;
-    for (j = 0; j < 256; j++)
+    bool bFound = false;
+    for (unsigned int j = 0; j < 256; j++)
       if (data[j] == leafInt)
       {
         bFound = true;
@@ -210,22 +207,17 @@ TEST (PCL, Octree_Test)
   ASSERT_EQ (leafVectorB.size (), octreeB.getLeafCount ());
   ASSERT_EQ (leafVectorA.size (), leafVectorB.size ());
 
-  for (i = 0; i < leafVectorB.size (); i++)
+  for (unsigned int i = 0; i < leafVectorB.size (); i++)
   {
     ASSERT_EQ (*leafVectorA[i], *leafVectorB[i]);
   }
-
-  //  test iterator
-
-  OctreeBase<int>::Iterator a_it;
-  OctreeBase<int>::Iterator a_it_end = octreeA.end();
 
   unsigned int node_count = 0;
   unsigned int branch_count = 0;
   unsigned int leaf_count = 0;
 
   // iterate over tree
-  for (a_it=octreeA.begin(); a_it!=a_it_end; ++a_it)
+  for (auto a_it = octreeA.begin(), a_it_end = octreeA.end(); a_it!=a_it_end; ++a_it)
   {
     // depth should always be less than tree depth
     unsigned int depth = a_it.getCurrentOctreeDepth ();
@@ -251,16 +243,12 @@ TEST (PCL, Octree_Test)
 
 TEST (PCL, Octree_Dynamic_Depth_Test)
 {
+  constexpr int test_runs = 100;
+  constexpr int pointcount = 300;
 
-  size_t i;
-  int test_runs = 100;
-  int pointcount = 300;
+  constexpr float resolution = 0.01f;
 
-  int test, point;
-
-  float resolution = 0.01f;
-
-  const static size_t leafAggSize = 5;
+  constexpr size_t leafAggSize = 5;
 
   OctreePointCloudPointVector<PointXYZ> octree (resolution);
 
@@ -270,7 +258,7 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
   // assign input point clouds to octree
   octree.setInputCloud (cloud);
 
-  for (test = 0; test < test_runs; ++test)
+  for (int test = 0; test < test_runs; ++test)
   {
     // clean up
     cloud->points.clear ();
@@ -279,7 +267,7 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     PointXYZ newPoint (1.5, 2.5, 3.5);
     cloud->push_back (newPoint);
 
-    for (point = 0; point < 15; point++)
+    for (int point = 0; point < 15; point++)
     {
       // gereate a random point
       PointXYZ newPoint (1.0, 2.0, 3.0);
@@ -294,9 +282,7 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     octree.addPointsFromInputCloud ();
 
     // iterate over tree
-    OctreePointCloudPointVector<PointXYZ>::LeafNodeDepthFirstIterator it2;
-    const OctreePointCloudPointVector<PointXYZ>::LeafNodeDepthFirstIterator it2_end = octree.leaf_depth_end();
-    for (it2 = octree.leaf_depth_begin(); it2 != it2_end; ++it2)
+    for (auto it2 = octree.leaf_depth_begin(), it2_end = octree.leaf_depth_end(); it2 != it2_end; ++it2)
     {
       unsigned int depth = it2.getCurrentOctreeDepth ();
       ASSERT_TRUE ((depth == 1) || (depth == 6));
@@ -306,7 +292,7 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     cloud->points.clear ();
     octree.deleteTree ();
 
-    for (point = 0; point < pointcount; point++)
+    for (int point = 0; point < pointcount; point++)
     {
       // gereate a random point
       PointXYZ newPoint (static_cast<float> (1024.0 * rand () / RAND_MAX),
@@ -324,14 +310,12 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     octree.addPointsFromInputCloud ();
 
     //  test iterator
-    OctreePointCloudPointVector<PointXYZ>::LeafNodeDepthFirstIterator it;
-    const OctreePointCloudPointVector<PointXYZ>::LeafNodeDepthFirstIterator it_end = octree.leaf_depth_end();
     unsigned int leaf_count = 0;
 
     std::vector<int> indexVector;
 
     // iterate over tree
-    for (it = octree.leaf_depth_begin(); it != it_end; ++it)
+    for (auto it = octree.leaf_depth_begin(), it_end = octree.leaf_depth_end(); it != it_end; ++it)
     {
       OctreeNode* node = it.getCurrentOctreeNode ();
 
@@ -355,7 +339,7 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
       Eigen::Vector3f min_pt, max_pt;
       octree.getVoxelBounds (it, min_pt, max_pt);
 
-      for (i=0; i<tmpVector.size(); ++i)
+      for (size_t i=0; i < tmpVector.size(); ++i)
       {
         ASSERT_GE (cloud->points[tmpVector[i]].x, min_pt(0));
         ASSERT_GE (cloud->points[tmpVector[i]].y, min_pt(1));
@@ -372,7 +356,7 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     ASSERT_EQ (indexVector.size(), pointcount);
 
     // make sure all indices are within indexVector
-    for (i = 0; i < indexVector.size (); ++i)
+    for (size_t i = 0; i < indexVector.size (); ++i)
     {
 #if !defined(__APPLE__)
       bool indexFound = (std::find(indexVector.begin(), indexVector.end(), i) != indexVector.end());
@@ -403,14 +387,13 @@ TEST (PCL, Octree2Buf_Test)
     unsigned int z;
   };
 
-  unsigned int i, j;
   int data[256];
   MyVoxel voxels[256];
 
   srand (static_cast<unsigned int> (time (NULL)));
 
   // generate some voxel indices
-  for (i = 0; i < 256; i++)
+  for (unsigned int i = 0; i < 256; i++)
   {
     data[i] = i;
 
@@ -426,14 +409,14 @@ TEST (PCL, Octree2Buf_Test)
 
   ASSERT_EQ (static_cast<unsigned int> (256), octreeA.getLeafCount ());
 
-  for (i = 0; i < 128; i++)
+  for (unsigned int i = 0; i < 128; i++)
   {
     // retrieve and check data from leaf voxel
     int* voxel_container = octreeA.findLeaf(voxels[i].x, voxels[i].y, voxels[i].z);
     ASSERT_EQ (data[i], *voxel_container);
   }
 
-  for (i = 128; i < 256; i++)
+  for (unsigned int i = 128; i < 256; i++)
   {
     // check if leaf node exists in tree
     ASSERT_TRUE (octreeA.existLeaf (voxels[i].x, voxels[i].y, voxels[i].z));
@@ -462,13 +445,13 @@ TEST (PCL, Octree2Buf_Test)
   octreeB.deserializeTree (treeBinaryA);
 
   // check if leafs exist in octrees
-  for (i = 0; i < 128; i++)
+  for (unsigned int i = 0; i < 128; i++)
   {
     ASSERT_TRUE (octreeB.existLeaf (voxels[i].x, voxels[i].y, voxels[i].z));
   }
 
   // these leafs should not exist..
-  for (i = 128; i < 256; i++)
+  for (unsigned int i = 128; i < 256; i++)
   {
     ASSERT_FALSE (octreeB.existLeaf (voxels[i].x, voxels[i].y, voxels[i].z));
   }
@@ -480,7 +463,7 @@ TEST (PCL, Octree2Buf_Test)
   // octreeB.getLeafCount() should be zero now;
   ASSERT_EQ (static_cast<unsigned int> (0), octreeB.getLeafCount ());
 
-  for (i = 0; i < 128; i++)
+  for (unsigned int i = 0; i < 128; i++)
   {
     ASSERT_FALSE (octreeB.existLeaf (voxels[i].x, voxels[i].y, voxels[i].z));
   }
@@ -492,14 +475,13 @@ TEST (PCL, Octree2Buf_Test)
   ASSERT_EQ (octreeA.getLeafCount (), leafVectorA.size ());
 
   // check if leaf data is found in octree input data
-  bool bFound;
-  for (i = 0; i < 128; i++)
+  for (unsigned int i = 0; i < 128; i++)
   {
     int leafInt = *leafVectorA.back ();
     leafVectorA.pop_back ();
 
-    bFound = false;
-    for (j = 0; j < 256; j++)
+    bool bFound = false;
+    for (unsigned int j = 0; j < 256; j++)
       if (data[j] == leafInt)
       {
         bFound = true;
@@ -512,13 +494,13 @@ TEST (PCL, Octree2Buf_Test)
   // test tree serialization
   octreeA.serializeLeafs (leafVectorA);
 
-  for (i = 0; i < 128; i++)
+  for (unsigned int i = 0; i < 128; i++)
   {
     int leafInt = *leafVectorA.back ();
     leafVectorA.pop_back ();
 
-    bFound = false;
-    for (j = 0; j < 256; j++)
+    bool bFound = false;
+    for (unsigned int j = 0; j < 256; j++)
       if (data[j] == leafInt)
       {
         bFound = true;
@@ -541,7 +523,7 @@ TEST (PCL, Octree2Buf_Test)
   ASSERT_EQ (leafVectorB.size (), octreeB.getLeafCount ());
   ASSERT_EQ (leafVectorA.size (), leafVectorB.size ());
 
-  for (i = 0; i < leafVectorB.size (); i++)
+  for (unsigned int i = 0; i < leafVectorB.size (); i++)
   {
     ASSERT_EQ (*leafVectorA[i], *leafVectorB[i]);
   }
@@ -572,7 +554,6 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_Test)
     unsigned int z;
   };
 
-  unsigned int i, j, k, runs;
   int data[TESTPOINTS];
   MyVoxel voxels[TESTPOINTS];
 
@@ -580,21 +561,21 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_Test)
 
   const unsigned int test_runs = 20;
 
-  for (j = 0; j < test_runs; j++)
+  for (unsigned int j = 0; j < test_runs; j++)
   {
     octreeA.deleteTree ();
     octreeB.deleteTree ();
     octreeA.setTreeDepth (5);
     octreeB.setTreeDepth (5);
 
-    runs = rand () % 20 + 1;
-    for (k = 0; k < runs; k++)
+    unsigned int runs = rand () % 20 + 1;
+    for (unsigned int k = 0; k < runs; k++)
     {
       // switch buffers
       octreeA.switchBuffers ();
       octreeB.switchBuffers ();
 
-      for (i = 0; i < TESTPOINTS; i++)
+      for (unsigned int i = 0; i < TESTPOINTS; i++)
       {
         data[i] = rand ();
 
@@ -622,13 +603,11 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_Test)
     ASSERT_EQ (leafVectorA.size (), leafVectorB.size ());
 
     // check if octree octree structure is consistent.
-    for (i = 0; i < leafVectorB.size (); i++)
+    for (unsigned int i = 0; i < leafVectorB.size (); i++)
     {
       ASSERT_EQ (*leafVectorA[i], *leafVectorB[i]);
     }
-
   }
-
 }
 
 TEST (PCL, Octree2Buf_Base_Double_Buffering_XOR_Test)
@@ -656,7 +635,6 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_XOR_Test)
     unsigned int z;
   };
 
-  unsigned int i, j;
   int data[TESTPOINTS];
   MyVoxel voxels[TESTPOINTS];
 
@@ -664,9 +642,9 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_XOR_Test)
 
   const unsigned int test_runs = 15;
 
-  for (j = 0; j < test_runs; j++)
+  for (unsigned int j = 0; j < test_runs; j++)
   {
-    for (i = 0; i < TESTPOINTS; i++)
+    for (unsigned int i = 0; i < TESTPOINTS; i++)
     {
       data[i] = rand ();
 
@@ -693,7 +671,7 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_XOR_Test)
     ASSERT_EQ (treeBinaryA.size (), treeBinaryB.size ());
 
     // check if octree octree structure is consistent.
-    for (i = 0; i < leafVectorB.size (); i++)
+    for (unsigned int i = 0; i < leafVectorB.size (); i++)
     {
       ASSERT_EQ (*leafVectorA[i], *leafVectorB[i]);
     }
@@ -706,13 +684,10 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_XOR_Test)
 
 TEST (PCL, Octree_Pointcloud_Test)
 {
-  size_t i;
-  int test_runs = 100;
-  int pointcount = 300;
+  constexpr int test_runs = 100;
+  constexpr int pointcount = 300;
 
-  int test, point;
-
-  float resolution = 0.01f;
+  constexpr float resolution = 0.01f;
 
   // instantiate OctreePointCloudSinglePoint and OctreePointCloudPointVector classes
   OctreePointCloudSinglePoint<PointXYZ> octreeA (resolution);
@@ -728,7 +703,7 @@ TEST (PCL, Octree_Pointcloud_Test)
   octreeB.setInputCloud (cloudB);
   octreeC.setInputCloud (cloudB);
 
-  for (test = 0; test < test_runs; ++test)
+  for (int test = 0; test < test_runs; ++test)
   {
 
     // clean up
@@ -740,7 +715,7 @@ TEST (PCL, Octree_Pointcloud_Test)
 
     octreeC.deleteTree ();
 
-    for (point = 0; point < pointcount; point++)
+    for (int point = 0; point < pointcount; point++)
     {
       // gereate a random point
       PointXYZ newPoint (static_cast<float> (1024.0 * rand () / RAND_MAX),
@@ -760,7 +735,7 @@ TEST (PCL, Octree_Pointcloud_Test)
     ASSERT_EQ (cloudA->points.size (), octreeA.getLeafCount ());
 
     // checks for getVoxelDataAtPoint() and isVoxelOccupiedAtPoint() functionality
-    for (i = 0; i < cloudA->points.size (); i++)
+    for (size_t i = 0; i < cloudA->points.size (); i++)
     {
       ASSERT_TRUE (octreeA.isVoxelOccupiedAtPoint (cloudA->points[i]));
       octreeA.deleteVoxelAtPoint (cloudA->points[i]);
@@ -773,10 +748,6 @@ TEST (PCL, Octree_Pointcloud_Test)
     octreeB.defineBoundingBox ();
     octreeB.addPointsFromInputCloud ();
 
-    //  test iterator
-    OctreePointCloudPointVector<PointXYZ>::Iterator b_it;
-    OctreePointCloudPointVector<PointXYZ>::Iterator b_it_end = octreeB.end();
-
     // iterate over tree
 
     unsigned int node_count = 0;
@@ -787,7 +758,7 @@ TEST (PCL, Octree_Pointcloud_Test)
     octreeB.getBoundingBox (minx, miny, minz, maxx, maxy, maxz);
 
     // iterate over tree
-    for (b_it = octreeB.begin(); b_it != b_it_end; ++b_it)
+    for (auto b_it = octreeB.begin(), b_it_end = octreeB.end(); b_it != b_it_end; ++b_it)
     {
       // depth should always be less than tree depth
       unsigned int depth = b_it.getCurrentOctreeDepth ();
@@ -821,7 +792,7 @@ TEST (PCL, Octree_Pointcloud_Test)
     ASSERT_EQ (branch_count + leaf_count, node_count);
     ASSERT_EQ (octreeB.getLeafCount (), leaf_count);
 
-    for (i = 0; i < cloudB->points.size (); i++)
+    for (size_t i = 0; i < cloudB->points.size (); i++)
     {
       std::vector<int> pointIdxVec;
       octreeB.voxelSearch (cloudB->points[i], pointIdxVec);
@@ -902,14 +873,10 @@ TEST (PCL, Octree_Pointcloud_Iterator_Test)
   octreeA.setInputCloud (cloudIn);
   octreeA.addPointsFromInputCloud ();
 
-  // instantiate iterator for octreeA
-  OctreePointCloud<PointXYZ>::LeafNodeDepthFirstIterator it1;
-  OctreePointCloud<PointXYZ>::LeafNodeDepthFirstIterator it1_end = octreeA.leaf_depth_end();
-
   std::vector<int> indexVector;
   unsigned int leafNodeCounter = 0;
 
-  for (it1 = octreeA.leaf_depth_begin(); it1 != it1_end; ++it1)
+  for (auto it1 = octreeA.leaf_depth_begin(), it1_end = octreeA.leaf_depth_end(); it1 != it1_end; ++it1)
   {
     it1.getLeafContainer().getPointIndices(indexVector);
     leafNodeCounter++;
@@ -918,11 +885,8 @@ TEST (PCL, Octree_Pointcloud_Iterator_Test)
   ASSERT_EQ (cloudIn->points.size (), indexVector.size());
   ASSERT_EQ (octreeA.getLeafCount (), leafNodeCounter);
 
-  OctreePointCloud<PointXYZ>::Iterator it2;
-  OctreePointCloud<PointXYZ>::Iterator it2_end = octreeA.end();
-
   unsigned int traversCounter = 0;
-  for (it2 = octreeA.begin(); it2 != it2_end; ++it2)
+  for (auto it2 = octreeA.begin(), it2_end = octreeA.end(); it2 != it2_end; ++it2)
   {
     traversCounter++;
   }
@@ -937,10 +901,7 @@ TEST (PCL, Octree_Pointcloud_Iterator_Test)
 
   bool leafNodeVisited = false;
 
-  OctreePointCloud<PointXYZ>::BreadthFirstIterator bfIt;
-  const OctreePointCloud<PointXYZ>::BreadthFirstIterator bfIt_end = octreeA.breadth_end();
-
-  for (bfIt = octreeA.breadth_begin(); bfIt != bfIt_end; ++bfIt)
+  for (auto bfIt = octreeA.breadth_begin(); bfIt != octreeA.breadth_end(); ++bfIt)
   {
     // tree depth of visited nodes must grow
     ASSERT_TRUE (bfIt.getCurrentOctreeDepth () >= lastDepth);
@@ -967,8 +928,7 @@ TEST (PCL, Octree_Pointcloud_Iterator_Test)
 
 TEST(PCL, Octree_Pointcloud_Occupancy_Test)
 {
-  const unsigned int test_runs = 100;
-  unsigned int test_id;
+  constexpr unsigned int test_runs = 100;
 
   // instantiate point cloud
 
@@ -976,11 +936,9 @@ TEST(PCL, Octree_Pointcloud_Occupancy_Test)
 
   OctreePointCloudOccupancy<PointXYZ> octree (0.00001f);
 
-  size_t i;
-
   srand (static_cast<unsigned int> (time (NULL)));
 
-  for (test_id = 0; test_id < test_runs; test_id++)
+  for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
 
     cloudIn->width = 1000;
@@ -988,7 +946,7 @@ TEST(PCL, Octree_Pointcloud_Occupancy_Test)
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
 
     // generate point data for point cloud
-    for (i = 0; i < 1000; i++)
+    for (size_t i = 0; i < 1000; i++)
     {
       cloudIn->points[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX),
@@ -1000,7 +958,7 @@ TEST(PCL, Octree_Pointcloud_Occupancy_Test)
     octree.addPointsFromInputCloud ();
 
     // check occupancy of voxels
-    for (i = 0; i < 1000; i++)
+    for (size_t i = 0; i < 1000; i++)
     {
       ASSERT_TRUE (octree.isVoxelOccupiedAtPoint (cloudIn->points[i]));
       octree.deleteVoxelAtPoint (cloudIn->points[i]);
@@ -1017,8 +975,6 @@ TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
 
   OctreePointCloudChangeDetector<PointXYZ> octree (0.01f);
 
-  size_t i;
-
   srand (static_cast<unsigned int> (time (NULL)));
 
   cloudIn->width = 1000;
@@ -1026,7 +982,7 @@ TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
   cloudIn->points.resize (cloudIn->width * cloudIn->height);
 
   // generate point data for point cloud
-  for (i = 0; i < 1000; i++)
+  for (size_t i = 0; i < 1000; i++)
   {
     cloudIn->points[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
                                    static_cast<float> (10.0 * rand () / RAND_MAX),
@@ -1046,7 +1002,7 @@ TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
   octree.addPointsFromInputCloud ();
 
   // add 1000 additional points
-  for (i = 0; i < 1000; i++)
+  for (size_t i = 0; i < 1000; i++)
   {
     octree.addPointToCloud (
         PointXYZ (static_cast<float> (100.0 + 5.0  * rand () / RAND_MAX),
@@ -1064,11 +1020,10 @@ TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
   ASSERT_EQ (static_cast<std::size_t> (1000), newPointIdxVector.size ());
 
   // all point indices found should have an index of >= 1000
-  for (i = 0; i < 1000; i++)
+  for (size_t i = 0; i < 1000; i++)
   {
     ASSERT_TRUE (newPointIdxVector[i] >= 1000);
   }
-
 }
 
 TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
@@ -1081,8 +1036,6 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
   OctreePointCloudVoxelCentroid<PointXYZ> octree (1.0f);
   octree.defineBoundingBox (10.0, 10.0, 10.0);
 
-  size_t i;
-
   srand (static_cast<unsigned int> (time (NULL)));
 
   cloudIn->width = 10 * 3;
@@ -1090,7 +1043,7 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
   cloudIn->points.resize (cloudIn->width * cloudIn->height);
 
   // generate point data for point cloud
-  for (i = 0; i < 10; i++)
+  for (size_t i = 0; i < 10; i++)
   {
     // these three points should always be assigned to the same voxel in the octree
     cloudIn->points[i * 3 + 0] = PointXYZ (static_cast<float> (i) + 0.2f, static_cast<float> (i) + 0.2f, static_cast<float> (i) + 0.2f);
@@ -1111,7 +1064,7 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
   ASSERT_EQ (static_cast<std::size_t> (10), voxelCentroids.size());
 
   // check centroid calculation
-  for (i = 0; i < 10; i++)
+  for (size_t i = 0; i < 10; i++)
   {
     EXPECT_NEAR (voxelCentroids[i].x, static_cast<float> (i) + 0.4, 1e-4);
     EXPECT_NEAR (voxelCentroids[i].y, static_cast<float> (i) + 0.4, 1e-4);
@@ -1121,7 +1074,7 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
   // ADDING AN ADDITIONAL POINT CLOUD TO OctreePointCloudVoxelCentroid
 
   // generate new point data
-  for (i = 0; i < 10; i++)
+  for (size_t i = 0; i < 10; i++)
   {
     // these three points should always be assigned to the same voxel in the octree
     cloudIn->points[i * 3 + 0] = PointXYZ (static_cast<float> (i) + 0.1f, static_cast<float> (i) + 0.1f, static_cast<float> (i) + 0.1f);
@@ -1137,7 +1090,7 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
   octree.getVoxelCentroids (voxelCentroids);
 
   // check centroid calculation
-  for (i = 0; i < 10; i++)
+  for (size_t i = 0; i < 10; i++)
   {
     EXPECT_NEAR (voxelCentroids[i].x, static_cast<float> (i) + 0.4, 1e-4);
     EXPECT_NEAR (voxelCentroids[i].y, static_cast<float> (i) + 0.4, 1e-4);
@@ -1174,18 +1127,12 @@ public:
 
 TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 {
-
-  const unsigned int test_runs = 10;
-  unsigned int test_id;
+  constexpr unsigned int test_runs = 10;
 
   // instantiate point cloud
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-  size_t i;
-
   srand (static_cast<unsigned int> (time (NULL)));
-
-  unsigned int K;
 
   std::priority_queue<prioPointQueueEntry, pcl::PointCloud<prioPointQueueEntry>::VectorType> pointCandidates;
 
@@ -1199,7 +1146,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   std::vector<int> k_indices_bruteforce;
   std::vector<float> k_sqr_distances_bruteforce;
 
-  for (test_id = 0; test_id < test_runs; test_id++)
+  for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
     // define a random search point
 
@@ -1207,20 +1154,18 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
                           static_cast<float> (10.0 * rand () / RAND_MAX),
                           static_cast<float> (10.0 * rand () / RAND_MAX));
 
-    K = 1 + rand () % 10;
+    unsigned int K = 1 + rand () % 10;
 
     // generate point cloud
     cloudIn->width = 1000;
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
-    for (i = 0; i < 1000; i++)
+    for (size_t i = 0; i < 1000; i++)
     {
       cloudIn->points[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX));
     }
-
-    double pointDist;
 
     k_indices.clear ();
     k_sqr_distances.clear ();
@@ -1229,11 +1174,11 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     k_sqr_distances_bruteforce.clear ();
 
     // push all points and their distance to the search point into a priority queue - bruteforce approach.
-    for (i = 0; i < cloudIn->points.size (); i++)
+    for (size_t i = 0; i < cloudIn->points.size (); i++)
     {
-      pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x)
-          + (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y)
-          + (cloudIn->points[i].z - searchPoint.z) * (cloudIn->points[i].z - searchPoint.z));
+      double pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x) +
+                          (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y) +
+                          (cloudIn->points[i].z - searchPoint.z) * (cloudIn->points[i].z - searchPoint.z));
 
       prioPointQueueEntry pointEntry (cloudIn->points[i], pointDist, static_cast<int> (i));
 
@@ -1265,7 +1210,6 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     ASSERT_EQ (k_indices_bruteforce.size (), k_indices.size());
 
     // compare nearest neighbor results of octree with bruteforce search
-    i = 0;
     while (k_indices_bruteforce.size ())
     {
       ASSERT_EQ (k_indices_bruteforce.back(), k_indices.back ());
@@ -1282,14 +1226,10 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 
 TEST (PCL, Octree_Pointcloud_Box_Search)
 {
-
-  const unsigned int test_runs = 30;
-  unsigned int test_id;
+  constexpr unsigned int test_runs = 30;
 
   // instantiate point cloud
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
-
-  size_t i;
 
   srand (static_cast<unsigned int> (time (NULL)));
 
@@ -1297,7 +1237,7 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
   OctreePointCloudSearch<PointXYZ> octree (1);
   octree.setInputCloud (cloudIn);
 
-  for (test_id = 0; test_id < test_runs; test_id++)
+  for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
     std::vector<int> k_indices;
 
@@ -1305,7 +1245,7 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
     cloudIn->width = 300;
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
-    for (i = 0; i < cloudIn->points.size(); i++)
+    for (size_t i = 0; i < cloudIn->points.size(); i++)
     {
       cloudIn->points[i] = PointXYZ (static_cast<float> (10.0 * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX),
@@ -1329,9 +1269,8 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
     octree.boxSearch (lowerBoxCorner, upperBoxCorner, k_indices);
 
     // test every point in point cloud
-    for (i = 0; i < 300; i++)
+    for (size_t i = 0; i < 300; i++)
     {
-      std::size_t j;
       bool inBox;
       bool idxInResults;
       const PointXYZ& pt = cloudIn->points[i];
@@ -1341,7 +1280,7 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
               (pt.z >= lowerBoxCorner (2)) && (pt.z <= upperBoxCorner (2));
 
       idxInResults = false;
-      for (j = 0; (j < k_indices.size ()) && (!idxInResults); ++j)
+      for (size_t j = 0; (j < k_indices.size ()) && (!idxInResults); ++j)
       {
         if (i == static_cast<unsigned int> (k_indices[j]))
           idxInResults = true;
@@ -1354,24 +1293,22 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
 
 TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 {
-  const unsigned int test_runs = 100;
-  unsigned int test_id;
+  constexpr unsigned int test_runs = 100;
 
   unsigned int bestMatchCount = 0;
 
   // instantiate point cloud
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-  size_t i;
   srand (static_cast<unsigned int> (time (NULL)));
 
-  double voxelResolution = 0.1;
+  constexpr double voxelResolution = 0.1;
 
   // create octree
   OctreePointCloudSearch<PointXYZ> octree (voxelResolution);
   octree.setInputCloud (cloudIn);
 
-  for (test_id = 0; test_id < test_runs; test_id++)
+  for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
     // define a random search point
 
@@ -1383,7 +1320,7 @@ TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     cloudIn->width = 1000;
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
-    for (i = 0; i < 1000; i++)
+    for (size_t i = 0; i < 1000; i++)
     {
       cloudIn->points[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX),
@@ -1391,15 +1328,14 @@ TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     }
 
     // brute force search
-    double pointDist;
     double BFdistance = numeric_limits<double>::max ();
     int BFindex = 0;
 
-    for (i = 0; i < cloudIn->points.size (); i++)
+    for (size_t i = 0; i < cloudIn->points.size (); i++)
     {
-      pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x)
-          + (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y)
-          + (cloudIn->points[i].z - searchPoint.z) * (cloudIn->points[i].z - searchPoint.z));
+      double pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x) +
+                          (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y) +
+                          (cloudIn->points[i].z - searchPoint.z) * (cloudIn->points[i].z - searchPoint.z));
 
       if (pointDist < BFdistance)
       {
@@ -1431,19 +1367,15 @@ TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 
 TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
 {
-
-  const unsigned int test_runs = 100;
-  unsigned int test_id;
+  constexpr unsigned int test_runs = 100;
 
   // instantiate point clouds
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
   PointCloud<PointXYZ>::Ptr cloudOut (new PointCloud<PointXYZ> ());
 
-  size_t i;
-
   srand (static_cast<unsigned int> (time (NULL)));
 
-  for (test_id = 0; test_id < test_runs; test_id++)
+  for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
     // define a random search point
     PointXYZ searchPoint (static_cast<float> (10.0 * rand () / RAND_MAX),
@@ -1455,7 +1387,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
 
     // generate point cloud data
-    for (i = 0; i < 1000; i++)
+    for (size_t i = 0; i < 1000; i++)
     {
       cloudIn->points[i] = PointXYZ (static_cast<float> (10.0 * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX),
@@ -1473,7 +1405,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
 
     // bruteforce radius search
     vector<int> cloudSearchBruteforce;
-    for (i = 0; i < cloudIn->points.size (); i++)
+    for (size_t i = 0; i < cloudIn->points.size (); i++)
     {
       pointDist = sqrt (
           (cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x)
@@ -1520,8 +1452,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
 
 TEST (PCL, Octree_Pointcloud_Ray_Traversal)
 {
-  const unsigned int test_runs = 100;
-  unsigned int test_id;
+  constexpr unsigned int test_runs = 100;
 
   // instantiate point clouds
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
@@ -1536,7 +1467,7 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
 
   srand (static_cast<unsigned int> (time (NULL)));
 
-  for (test_id = 0; test_id < test_runs; test_id++)
+  for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
     // delete octree
     octree_search.deleteTree ();
@@ -1604,12 +1535,11 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
 
 TEST (PCL, Octree_Pointcloud_Adjacency)
 {
-  const unsigned int test_runs = 100;
-  unsigned int test_id;
+  constexpr unsigned int test_runs = 100;
 
   srand (static_cast<unsigned int> (time (NULL)));
 
-  for (test_id = 0; test_id < test_runs; test_id++)
+  for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
     // instantiate point cloud
     PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
@@ -1656,8 +1586,6 @@ TEST (PCL, Octree_Pointcloud_Adjacency)
         cloudIn->push_back(not_neighbor_point);
       }
     }
-
-
 
     OctreePointCloudAdjacency<PointXYZ> octree (resolution);
     octree.setInputCloud (cloudIn);

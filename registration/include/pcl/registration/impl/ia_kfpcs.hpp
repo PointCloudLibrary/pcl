@@ -181,16 +181,14 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
 {
   // reorganize candidates into single vector
   size_t total_size = 0;
-  std::vector <MatchingCandidates>::const_iterator it, it_e = candidates.end ();
-  for (it = candidates.begin (); it != it_e; it++)
+  for (auto it = candidates.cbegin (), it_e = candidates.cend (); it != it_e; it++)
     total_size += it->size ();
 
   candidates_.clear ();
   candidates_.reserve (total_size);
 
-  MatchingCandidates::const_iterator it_curr, it_curr_e;
-  for (it = candidates.begin (); it != it_e; it++)
-  for (it_curr = it->begin (), it_curr_e = it->end (); it_curr != it_curr_e; it_curr++)
+  for (auto it = candidates.cbegin (), it_e = candidates.cend (); it != it_e; it++)
+  for (auto it_curr = it->cbegin (), it_curr_e = it->cend (); it_curr != it_curr_e; it_curr++)
     candidates_.push_back (*it_curr);
 
   // sort according to score value

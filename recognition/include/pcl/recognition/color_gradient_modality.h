@@ -323,8 +323,7 @@ computeGaussianKernel (const size_t kernel_size, const float sigma, std::vector 
   double scale2X = -0.5/(sigmaX*sigmaX);
   double sum = 0;
 
-  int i;
-  for( i = 0; i < n; i++ )
+  for( int i = 0; i < n; i++ )
   {
     double x = i - (n-1)*0.5;
     double t = fixed_kernel ? double (fixed_kernel[i]) : std::exp (scale2X*x*x);
@@ -334,7 +333,7 @@ computeGaussianKernel (const size_t kernel_size, const float sigma, std::vector 
   }
 
   sum = 1./sum;
-  for (i = 0; i < n; i++ )
+  for ( int i = 0; i < n; i++ )
   {
     cf[i] = float (cf[i]*sum);
   }

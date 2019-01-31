@@ -153,10 +153,8 @@ namespace pcl
         float total = 0.0;
         float diff;
     
-        Point::const_iterator cpx=x.begin(); 
-        Point::const_iterator cpy=y.begin();
-        Point::const_iterator cpx_end=x.end();
-        for(;cpx!=cpx_end;++cpx,++cpy){
+        auto cpy=y.cbegin();
+        for(auto cpx = x.cbegin(), cpx_end = x.cend(); cpx != cpx_end; ++cpx, ++cpy){
           diff = *cpx - *cpy;
           total += (diff * diff); 
         }

@@ -190,14 +190,12 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     //single categories...
     if (use_single_categories_)
     {
-      std::map<std::string, boost::shared_ptr<std::vector<int> > >::iterator it;
-
       single_categories_data_.resize (single_categories.size ());
       single_categories_index_.resize (single_categories.size ());
       single_categories_pointers_to_models_.resize (single_categories.size ());
 
       int kk = 0;
-      for (it = single_categories.begin (); it != single_categories.end (); it++)
+      for (auto it = single_categories.begin (); it != single_categories.end (); it++)
       {
         //create index and flann data
         convertToFLANN (flann_models_, it->second, single_categories_data_[kk]);

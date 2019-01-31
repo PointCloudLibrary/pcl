@@ -105,9 +105,8 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
   }
 
   // Attempting to load all Point Cloud data input files (using the actor name)...
-  CloudActorMap::iterator it;
   int i = 1;
-  for (it = actors->begin (); it != actors->end (); ++it)
+  for (auto it = actors->cbegin (); it != actors->cend (); ++it)
   {
     std::string file_name = (*it).first;
 

@@ -64,9 +64,8 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovarian
   if(cloud_covariances.size () < cloud->size ())
     cloud_covariances.resize (cloud->size ());
 
-  typename pcl::PointCloud<PointT>::const_iterator points_iterator = cloud->begin ();
   MatricesVector::iterator matrices_iterator = cloud_covariances.begin ();
-  for(;
+  for(auto points_iterator = cloud->begin ();
       points_iterator != cloud->end ();
       ++points_iterator, ++matrices_iterator)
   {

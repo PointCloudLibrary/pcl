@@ -72,13 +72,10 @@ namespace pcl
         inline BufferedBranchNode&
         operator = (const BufferedBranchNode &source_arg)
         {
-
-          unsigned char i, b;
-
           memset (child_node_array_, 0, sizeof(child_node_array_));
 
-          for (b = 0; b < 2; ++b)
-            for (i = 0; i < 8; ++i)
+          for (unsigned char b = 0; b < 2; ++b)
+            for (unsigned char i = 0; i < 8; ++i)
               if (source_arg.child_node_array_[b][i])
                 child_node_array_[b][i] = source_arg.child_node_array_[b][i]->deepCopy ();
 
@@ -597,12 +594,11 @@ namespace pcl
          * */
         inline char getBranchBitPattern (const BranchNode& branch_arg) const
         {
-          unsigned char i;
           char node_bits;
 
           // create bit pattern
           node_bits = 0;
-          for (i = 0; i < 8; i++)
+          for (unsigned char i = 0; i < 8; i++)
           {
             const OctreeNode* child = branch_arg.getChildPtr(buffer_selector_, i);
             node_bits |= static_cast<char> ( (!!child) << i);
@@ -619,12 +615,11 @@ namespace pcl
         inline char getBranchBitPattern (const BranchNode& branch_arg,
             unsigned char bufferSelector_arg) const
         {
-          unsigned char i;
           char node_bits;
 
           // create bit pattern
           node_bits = 0;
-          for (i = 0; i < 8; i++)
+          for (unsigned char i = 0; i < 8; i++)
           {
             const OctreeNode* child = branch_arg.getChildPtr(bufferSelector_arg, i);
             node_bits |= static_cast<char> ( (!!child) << i);
@@ -640,13 +635,12 @@ namespace pcl
         inline char getBranchXORBitPattern (
             const BranchNode& branch_arg) const
         {
-          unsigned char i;
           char node_bits[2];
 
           // create bit pattern for both buffers
           node_bits[0] = node_bits[1] = 0;
 
-          for (i = 0; i < 8; i++)
+          for (unsigned char i = 0; i < 8; i++)
           {
             const OctreeNode* childA = branch_arg.getChildPtr(0, i);
             const OctreeNode* childB = branch_arg.getChildPtr(1, i);
@@ -721,10 +715,8 @@ namespace pcl
          * */
         inline void deleteBranch (BranchNode& branch_arg)
         {
-          char i;
-
           // delete all branch node children
-          for (i = 0; i < 8; i++)
+          for (char i = 0; i < 8; i++)
           {
 
             if (branch_arg.getChildPtr(0, i) == branch_arg.getChildPtr(1, i))

@@ -621,7 +621,6 @@ pcl::recognition::ObjRecRANSAC::testHypothesis (Hypothesis* hypothesis, int& mat
   // For better code readability
   const std::vector<ORROctree::Node*>& full_model_leaves = hypothesis->obj_model_->getOctree ().getFullLeaves ();
   const float* rigid_transform = hypothesis->rigid_transform_;
-  const ORROctreeZProjection::Pixel* pixel;
   float transformed_point[3];
 
   // The match/penalty loop
@@ -631,7 +630,7 @@ pcl::recognition::ObjRecRANSAC::testHypothesis (Hypothesis* hypothesis, int& mat
     aux::transform (rigid_transform, (*leaf_it)->getData ()->getPoint (), transformed_point);
 
     // Get the pixel 'transformed_point' lies in
-    pixel = scene_octree_proj_.getPixel (transformed_point);
+    const ORROctreeZProjection::Pixel* pixel = scene_octree_proj_.getPixel (transformed_point);
     // Check if we have a valid pixel
     if ( pixel == NULL )
       continue;
@@ -684,11 +683,11 @@ pcl::recognition::ObjRecRANSAC::testHypothesisNormalBased (Hypothesis* hypothesi
 
       set<ORROctree::Node*, bool(*)(ORROctree::Node*,ORROctree::Node*)>::const_iterator n = nodes->begin ();
       ORROctree::Node *closest_node = *n;
-      float sqr_dist, min_sqr_dist = aux::sqrDistance3 (closest_node->getData ()->getPoint (), transformed_point);
+      float min_sqr_dist = aux::sqrDistance3 (closest_node->getData ()->getPoint (), transformed_point);
 
       for ( ++n ; n != nodes->end () ; ++n )
       {
-        sqr_dist = aux::sqrDistance3 ((*n)->getData ()->getPoint (), transformed_point);
+        float sqr_dist = aux::sqrDistance3 ((*n)->getData ()->getPoint (), transformed_point);
         if ( sqr_dist < min_sqr_dist )
         {
           closest_node = *n;

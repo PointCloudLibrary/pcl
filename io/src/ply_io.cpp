@@ -114,7 +114,7 @@ pcl::PLYReader::appendScalarProperty (const std::string& name, const size_t& siz
 void
 pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& new_name, uint8_t new_datatype)
 {
-  std::vector< ::pcl::PCLPointField>::reverse_iterator finder = cloud_->fields.rbegin ();
+  auto finder = cloud_->fields.rbegin ();
   for (; finder != cloud_->fields.rend (); ++finder)
     if (finder->name == old_name)
       break;
@@ -296,7 +296,7 @@ namespace pcl
     // Adjust size only once
     if (vertex_count_ == 0)
     {
-      std::vector< pcl::PCLPointField>::reverse_iterator finder = cloud_->fields.rbegin ();
+      auto finder = cloud_->fields.rbegin ();
       for (; finder != cloud_->fields.rend (); ++finder)
         if (finder->name == name)
           break;
@@ -1603,10 +1603,9 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   for (size_t i = 0; i < nr_faces; i++)
   {
     fs << mesh.polygons[i].vertices.size () << " ";
-    size_t j = 0;
-    for (j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
+    for (size_t j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
       fs << mesh.polygons[i].vertices[j] << " ";
-    fs << mesh.polygons[i].vertices[j] << '\n';
+    fs << mesh.polygons[i].vertices.back() << '\n';
   }
 
   // Close file
@@ -1768,8 +1767,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   {
     unsigned char value = static_cast<unsigned char> (mesh.polygons[i].vertices.size ());
     fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned char));
-    size_t j = 0;
-    for (j = 0; j < mesh.polygons[i].vertices.size (); ++j)
+    for (size_t j = 0; j < mesh.polygons[i].vertices.size (); ++j)
     {
       //fs << mesh.polygons[i].vertices[j] << " ";
       int value = mesh.polygons[i].vertices[j];

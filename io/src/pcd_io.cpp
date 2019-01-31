@@ -128,8 +128,6 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
   size_t nr_points = 0;
   std::string line;
 
-  int specified_channel_count = 0;
-
   // field_sizes represents the size of one element in a field (e.g., float = 4, char = 1)
   // field_counts represents the number of elements in a field (e.g., x = 1, normal_x = 1, fpfh = 33)
   std::vector<int> field_sizes, field_counts;
@@ -168,7 +166,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
       // Get the field indices (check for COLUMNS too for backwards compatibility)
       if ( (line_type.substr (0, 6) == "FIELDS") || (line_type.substr (0, 7) == "COLUMNS") )
       {
-        specified_channel_count = static_cast<int> (st.size () - 1);
+        int specified_channel_count = static_cast<int> (st.size () - 1);
 
         // Allocate enough memory to accommodate all fields
         cloud.fields.resize (specified_channel_count);
@@ -193,7 +191,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
       // Get the field sizes
       if (line_type.substr (0, 4) == "SIZE")
       {
-        specified_channel_count = static_cast<int> (st.size () - 1);
+        int specified_channel_count = static_cast<int> (st.size () - 1);
 
         // Allocate enough memory to accommodate all fields
         if (specified_channel_count != static_cast<int> (cloud.fields.size ()))
@@ -223,7 +221,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
         if (field_sizes.empty ())
           throw "TYPE of FIELDS specified before SIZE in header!";
 
-        specified_channel_count = static_cast<int> (st.size () - 1);
+        int specified_channel_count = static_cast<int> (st.size () - 1);
 
         // Allocate enough memory to accommodate all fields
         if (specified_channel_count != static_cast<int> (cloud.fields.size ()))
@@ -246,7 +244,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
         if (field_sizes.empty () || field_types.empty ())
           throw "COUNT of FIELDS specified before SIZE or TYPE in header!";
 
-        specified_channel_count = static_cast<int> (st.size () - 1);
+        int specified_channel_count = static_cast<int> (st.size () - 1);
 
         // Allocate enough memory to accommodate all fields
         if (specified_channel_count != static_cast<int> (cloud.fields.size ()))

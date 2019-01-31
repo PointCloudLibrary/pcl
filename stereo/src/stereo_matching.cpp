@@ -385,7 +385,6 @@ pcl::GrayStereoMatching::preProcessing (unsigned char *img, unsigned char *pp_im
   int area = n * n;
   int threshold = 31;
 
-  int sum = 0; 
   int *v = new int[width_];
   memset (v, 0, sizeof (int) * width_);
 
@@ -406,7 +405,7 @@ pcl::GrayStereoMatching::preProcessing (unsigned char *img, unsigned char *pp_im
     for (int x = 0; x <= radius; x++)
       pp_img[y*width_+x] = img[y*width_+x];
 
-    sum = 0;
+    int sum = 0;
     for (int x = 0; x<n; x++)
     {
       v[x] = v[x] + img[ (y+radius)*width_+x] - img[ (y-radius-1)*width_+x];

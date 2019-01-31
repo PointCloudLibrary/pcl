@@ -103,9 +103,9 @@ saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 void 
 keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 {
-  double opacity;
   if (event.keyUp())
   {
+    double opacity;
     switch (event.getKeyCode())
     {
       case '1':

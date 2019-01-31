@@ -1050,7 +1050,6 @@ struct KinFuApp
     generate_halo(poses,focus_center,halo_r,halo_dz,n_poses);
 
     unsigned short * disparity_buf_ = new unsigned short[width*height ];
-    const KinfuTracker::PixelRGB* color_buf_;
     const uint8_t* color_buf_uint;
 
     // loop though and create the mesh:
@@ -1068,7 +1067,7 @@ struct KinFuApp
       std::cout << i << ": " << ss.str() << " pose_simulatedposition\n";
 
       capture (poses[i],disparity_buf_, color_buf_uint);//,ss.str());
-      color_buf_ = (const KinfuTracker::PixelRGB*) color_buf_uint;
+      const KinfuTracker::PixelRGB* color_buf_ = (const KinfuTracker::PixelRGB*) color_buf_uint;
       PtrStepSz<const unsigned short> depth_sim = PtrStepSz<const unsigned short>(height, width, disparity_buf_, 2*width);
       //cout << depth_sim.rows << " by " << depth_sim.cols << " | s: " << depth_sim.step << "\n";
       // RGB-KinFu currently disabled for now - problems with color in KinFu apparently

@@ -103,8 +103,7 @@ depth2xyz (float v_viewing_angle, float h_viewing_angle,
            int image_width, int image_height, int image_x, int image_y,
            float depth, float &x, float &y, float &z)
 {
-  float width, height;
-  static const float PI = 3.1415927;
+  constexpr float PI = 3.1415927;
 
   if (depth <= 0.0f)
   {
@@ -112,8 +111,8 @@ depth2xyz (float v_viewing_angle, float h_viewing_angle,
   }
   else
   {
-    width = depth * std::tan (h_viewing_angle * PI / 180 / 2) * 2;
-    height = depth * std::tan (v_viewing_angle * PI / 180 / 2) * 2;
+    float width = depth * std::tan (h_viewing_angle * PI / 180 / 2) * 2;
+    float height = depth * std::tan (v_viewing_angle * PI / 180 / 2) * 2;
 
     x = (image_x - image_width / 2.0) / image_width * width;
     y = (image_height / 2.0 - image_y) / image_height * height;
@@ -262,9 +261,6 @@ main (int argc, char** argv)
     PointCloud<PointXYZRGB> rgb_depth_cloud;
     PointCloud<PointXYZRGBA> rgba_depth_cloud;
 
-    int rgb;
-    int rgba;
-
     switch (components)
     {
       case 1: if (intensity_type.compare ("FLOAT") == 0)
@@ -396,9 +392,9 @@ main (int argc, char** argv)
             color.g = static_cast<uint8_t> (pixel[1]);
             color.b = static_cast<uint8_t> (pixel[2]);
 
-            rgb = (static_cast<int> (color.r)) << 16 |
-                (static_cast<int> (color.g)) << 8 |
-                (static_cast<int> (color.b));
+            int rgb = (static_cast<int> (color.r)) << 16 |
+                      (static_cast<int> (color.g)) << 8 |
+                      (static_cast<int> (color.b));
 
             color.rgb = static_cast<float> (rgb);
 
@@ -468,13 +464,13 @@ main (int argc, char** argv)
             color.b = static_cast<uint8_t> (pixel[2]);
             color.a = static_cast<uint8_t> (pixel[3]);
 
-            rgb = (static_cast<int> (color.r)) << 16 |
-                (static_cast<int> (color.g)) << 8 |
-                (static_cast<int> (color.b));
-            rgba = (static_cast<int> (color.a)) << 24 |
-                (static_cast<int> (color.r)) << 16 |
-                (static_cast<int> (color.g)) << 8 |
-                (static_cast<int> (color.b));
+            int rgb = (static_cast<int> (color.r)) << 16 |
+                      (static_cast<int> (color.g)) << 8 |
+                      (static_cast<int> (color.b));
+            int rgba = (static_cast<int> (color.a)) << 24 |
+                       (static_cast<int> (color.r)) << 16 |
+                       (static_cast<int> (color.g)) << 8 |
+                       (static_cast<int> (color.b));
 
             color.rgb = static_cast<float> (rgb);
             color.rgba = static_cast<uint32_t> (rgba);

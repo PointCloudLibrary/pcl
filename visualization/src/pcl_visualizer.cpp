@@ -1130,9 +1130,9 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
     if (use_scalars)
     {
       vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
-      double minmax[2];
       if (scalars)
       {
+        double minmax[2];
         scalars->GetRange (minmax);
         mapper->SetScalarRange (minmax);
 
@@ -1161,9 +1161,9 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
     if (use_scalars)
     {
       vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
-      double minmax[2];
       if (scalars)
       {
+        double minmax[2];
         scalars->GetRange (minmax);
         mapper->SetScalarRange (minmax);
 
@@ -1208,9 +1208,9 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
     if (use_scalars)
     {
       vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
-      double minmax[2];
       if (scalars)
       {
+        double minmax[2];
         scalars->GetRange (minmax);
         mapper->SetScalarRange (minmax);
 
@@ -1239,9 +1239,9 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
     if (use_scalars)
     {
       vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
-      double minmax[2];
       if (scalars)
       {
+        double minmax[2];
         scalars->GetRange (minmax);
         mapper->SetScalarRange (minmax);
 
@@ -3264,8 +3264,7 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
   pcl::fromPCLPointCloud2 (polymesh.cloud, point_cloud);
   poly_points->SetNumberOfPoints (point_cloud.points.size ());
 
-  size_t i;
-  for (i = 0; i < point_cloud.points.size (); ++i)
+  for (size_t i = 0; i < point_cloud.points.size (); ++i)
     poly_points->InsertPoint (i, point_cloud.points[i].x, point_cloud.points[i].y, point_cloud.points[i].z);
 
   // Create a cell array to store the lines in and add the lines to it
@@ -3273,7 +3272,7 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
   vtkSmartPointer <vtkPolyData> polyData;
   allocVtkPolyData (polyData);
 
-  for (i = 0; i < polymesh.polygons.size (); i++)
+  for (size_t i = 0; i < polymesh.polygons.size (); i++)
   {
     vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
     polyLine->GetPointIds()->SetNumberOfIds(polymesh.polygons[i].vertices.size());
@@ -3611,7 +3610,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   vtkIdType npts_com = 0, *ptIds_com = NULL;
   vtkSmartPointer<vtkCellArray> cells_com = polydata->GetPolys ();
 
-  double center[3], p1_com[3], p2_com[3], p3_com[3], area_com, totalArea_com = 0;
+  double center[3], p1_com[3], p2_com[3], p3_com[3], totalArea_com = 0;
   double comx = 0, comy = 0, comz = 0;
   for (cells_com->InitTraversal (); cells_com->GetNextCell (npts_com, ptIds_com);)
   {
@@ -3619,7 +3618,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     polydata->GetPoint (ptIds_com[1], p2_com);
     polydata->GetPoint (ptIds_com[2], p3_com);
     vtkTriangle::TriangleCenter (p1_com, p2_com, p3_com, center);
-    area_com = vtkTriangle::TriangleArea (p1_com, p2_com, p3_com);
+    double area_com = vtkTriangle::TriangleArea (p1_com, p2_com, p3_com);
     comx += center[0] * area_com;
     comy += center[1] * area_com;
     comz += center[2] * area_com;
@@ -3669,14 +3668,13 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   vtkSmartPointer<vtkCellArray> cells = mapper->GetInput ()->GetPolys ();
   vtkIdType npts = 0, *ptIds = NULL;
 
-  double p1[3], p2[3], p3[3], area, totalArea = 0;
+  double p1[3], p2[3], p3[3], totalArea = 0;
   for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds);)
   {
     polydata->GetPoint (ptIds[0], p1);
     polydata->GetPoint (ptIds[1], p2);
     polydata->GetPoint (ptIds[2], p3);
-    area = vtkTriangle::TriangleArea (p1, p2, p3);
-    totalArea += area;
+    totalArea += vtkTriangle::TriangleArea (p1, p2, p3);
   }
 
   //create icosahedron
@@ -4621,15 +4619,14 @@ std::string
 pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
 {
   std::vector<int> p_file_indices;
-  boost::uuids::detail::sha1 sha1;
-  unsigned int digest[5];
-  const char *str;
   std::ostringstream sstream;
-  bool valid = false;
 
   p_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
   if (p_file_indices.size () != 0)
   {
+    boost::uuids::detail::sha1 sha1;    
+    bool valid = false;
+
     // Calculate sha1 using canonical paths
     for (size_t i = 0; i < p_file_indices.size (); ++i)
     {
@@ -4637,7 +4634,7 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
       if (boost::filesystem::exists (path))
       {
         path = boost::filesystem::canonical (path);
-        str = path.string ().c_str ();
+        const char *str = path.string ().c_str ();
         sha1.process_bytes (str, std::strlen (str));
         valid = true;
       }
@@ -4646,6 +4643,7 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
     // Build camera filename
     if (valid)
     {
+      unsigned int digest[5];
       sha1.get_digest (digest);
       sstream << ".";
       sstream << std::hex << digest[0] << digest[1] << digest[2] << digest[3] << digest[4];

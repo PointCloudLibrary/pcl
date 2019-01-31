@@ -569,7 +569,6 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
   std::vector<float> nn_distances;
 
   std::map<int, boost::shared_ptr<std::vector<std::pair<int, float> > > > model_explains_scene_points; //which point i from the scene is explained by a points j_k with dist d_k from the model
-  std::map<int, boost::shared_ptr<std::vector<std::pair<int, float> > > >::iterator it;
 
   outliers_weight.resize (recog_model->cloud_->points.size ());
   recog_model->outlier_indices_.resize (recog_model->cloud_->points.size ());
@@ -588,7 +587,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
       for (size_t k = 0; k < nn_distances.size (); k++)
       {
         std::pair<int, float> pair = std::make_pair (i, nn_distances[k]); //i is a index to a model point and then distance
-        it = model_explains_scene_points.find (nn_indices[k]);
+        auto it = model_explains_scene_points.find (nn_indices[k]);
         if (it == model_explains_scene_points.end ())
         {
           boost::shared_ptr < std::vector<std::pair<int, float> > > vec (new std::vector<std::pair<int, float> > ());
@@ -614,7 +613,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
 
   int p = 0;
 
-  for (it = model_explains_scene_points.begin (); it != model_explains_scene_points.end (); it++, p++)
+  for (auto it = model_explains_scene_points.cbegin (); it != model_explains_scene_points.cend (); it++, p++)
   {
     size_t closest = 0;
     float min_d = std::numeric_limits<float>::min ();

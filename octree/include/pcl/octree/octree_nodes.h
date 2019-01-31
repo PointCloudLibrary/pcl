@@ -216,11 +216,9 @@ namespace pcl
         OctreeBranchNode (const OctreeBranchNode& source) :
             OctreeNode()
         {
-          unsigned char i;
-
           memset (child_node_array_, 0, sizeof(child_node_array_));
 
-          for (i = 0; i < 8; ++i)
+          for (unsigned char i = 0; i < 8; ++i)
             if (source.child_node_array_[i])
               child_node_array_[i] = source.child_node_array_[i]->deepCopy ();
         }
@@ -229,11 +227,9 @@ namespace pcl
         inline OctreeBranchNode&
         operator = (const OctreeBranchNode &source)
         {
-          unsigned char i;
-
           memset (child_node_array_, 0, sizeof(child_node_array_));
 
-          for (i = 0; i < 8; ++i)
+          for (unsigned char i = 0; i < 8; ++i)
             if (source.child_node_array_[i])
               child_node_array_[i] = source.child_node_array_[i]->deepCopy ();
           return (*this);

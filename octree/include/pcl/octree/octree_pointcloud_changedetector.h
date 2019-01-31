@@ -93,10 +93,7 @@ namespace pcl
           std::vector<OctreeContainerPointIndices*> leaf_containers;
           this->serializeNewLeafs (leaf_containers);
 
-          std::vector<OctreeContainerPointIndices*>::iterator it;
-          std::vector<OctreeContainerPointIndices*>::const_iterator it_end = leaf_containers.end();
-
-          for (it=leaf_containers.begin(); it!=it_end; ++it)
+          for (auto it = leaf_containers.cbegin(), it_end = leaf_containers.cend(); it != it_end; ++it)
           {
             if (static_cast<int> ((*it)->getSize ()) >= minPointsPerLeaf_arg)
               (*it)->getPointIndices(indicesVector_arg);

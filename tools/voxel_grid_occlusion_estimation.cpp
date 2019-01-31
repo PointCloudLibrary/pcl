@@ -90,10 +90,9 @@ getVoxelActors (pcl::PointCloud<pcl::PointXYZ>& voxelCenters,
 {
   vtkSmartPointer < vtkAppendPolyData > treeWireframe = vtkSmartPointer<vtkAppendPolyData>::New ();
   
-  size_t i;
   double s = voxelSideLen/2.0;
   
-  for (i = 0; i < voxelCenters.points.size (); i++)
+  for (size_t i = 0; i < voxelCenters.points.size (); i++)
   {
     double x = voxelCenters.points[i].x;
     double y = voxelCenters.points[i].y;

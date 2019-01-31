@@ -534,19 +534,18 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       normal_x_field = i;
       break;
     }
-
-
   // else if (cloud.fields[i].name == "rgba")
   //   rgba_field = i;
 
-  std::size_t point_idx = 0;
-  std::size_t normal_idx = 0;
-  std::string line;
   std::vector<std::string> st;
   try
   {
+    std::size_t point_idx = 0;
+    std::size_t normal_idx = 0;
+
     while (!fs.eof ())
     {
+      std::string line;
       getline (fs, line);
       // Ignore empty lines
       if (line == "")
@@ -679,14 +678,15 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
     }
 
   std::size_t v_idx = 0;
-  std::size_t vn_idx = 0;
-  std::size_t vt_idx = 0;
   std::size_t f_idx = 0;
   std::string line;
   std::vector<std::string> st;
   std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > coordinates;
   try
   {
+    std::size_t vn_idx = 0;
+    std::size_t vt_idx = 0;
+
     while (!fs.eof ())
     {
       getline (fs, line);
@@ -869,14 +869,15 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
       break;
     }
 
-  std::size_t v_idx = 0;
-  std::size_t vn_idx = 0;
-  std::string line;
   std::vector<std::string> st;
   try
   {
+    std::size_t v_idx = 0;
+    std::size_t vn_idx = 0;
+
     while (!fs.eof ())
     {
+      std::string line;
       getline (fs, line);
       // Ignore empty lines
       if (line == "")
@@ -1021,7 +1022,6 @@ pcl::io::saveOBJFile (const std::string &file_name,
       int count = tex_mesh.cloud.fields[d].count;
       if (count == 0)
         count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
-      int c = 0;
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
           tex_mesh.cloud.fields[d].name == "x" ||
@@ -1035,7 +1035,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
           v_written = true;
         }
         float value;
-        memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset], sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -1062,7 +1062,6 @@ pcl::io::saveOBJFile (const std::string &file_name,
       int count = tex_mesh.cloud.fields[d].count;
       if (count == 0)
         count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
-      int c = 0;
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
           tex_mesh.cloud.fields[d].name == "normal_x" ||
@@ -1076,7 +1075,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
           v_written = true;
     	  }
         float value;
-        memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset], sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -1117,10 +1116,9 @@ pcl::io::saveOBJFile (const std::string &file_name,
     {
       // Write faces with "f"
       fs << "f";
-      size_t j = 0;
       // There's one UV per vertex per face, i.e., the same vertex can have
       // different UV depending on the face.
-      for (j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
+      for (size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
         uint32_t idx = tex_mesh.tex_polygons[m][i].vertices[j] + 1;
         fs << " " << idx
@@ -1205,7 +1203,6 @@ pcl::io::saveOBJFile (const std::string &file_name,
     int xyz = 0;
     for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
     {
-      int c = 0;
       // adding vertex
       if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
           mesh.cloud.fields[d].name == "x" ||
@@ -1217,7 +1214,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
           fs << "v ";
 
         float value;
-        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -1243,7 +1240,6 @@ pcl::io::saveOBJFile (const std::string &file_name,
       int nxyz = 0;
       for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
       {
-        int c = 0;
         // adding vertex
         if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
               mesh.cloud.fields[d].name == "normal_x" ||
@@ -1255,7 +1251,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
             fs << "vn ";
 
           float value;
-          memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+          memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (float));
           fs << value;
           if (++nxyz == 3)
             break;
@@ -1279,11 +1275,10 @@ pcl::io::saveOBJFile (const std::string &file_name,
   {
     for(unsigned i = 0; i < nr_faces; i++)
     {
-      fs << "f ";
-      size_t j = 0;
-      for (; j < mesh.polygons[i].vertices.size () - 1; ++j)
+      fs << "f ";      
+      for (size_t j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
         fs << mesh.polygons[i].vertices[j] + 1 << " ";
-      fs << mesh.polygons[i].vertices[j] + 1 << '\n';
+      fs << mesh.polygons[i].vertices.back() + 1 << '\n';
     }
   }
   else
@@ -1291,10 +1286,9 @@ pcl::io::saveOBJFile (const std::string &file_name,
     for(unsigned i = 0; i < nr_faces; i++)
     {
       fs << "f ";
-      size_t j = 0;
-      for (; j < mesh.polygons[i].vertices.size () - 1; ++j)
+      for (size_t j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
         fs << mesh.polygons[i].vertices[j] + 1 << "//" << mesh.polygons[i].vertices[j] + 1 << " ";
-      fs << mesh.polygons[i].vertices[j] + 1 << "//" << mesh.polygons[i].vertices[j] + 1 << '\n';
+      fs << mesh.polygons[i].vertices.back() + 1 << "//" << mesh.polygons[i].vertices.back() + 1 << '\n';
     }
   }
   fs << "# End of File" << std::endl;

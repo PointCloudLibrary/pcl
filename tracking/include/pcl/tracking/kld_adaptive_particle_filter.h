@@ -133,7 +133,6 @@ namespace pcl
                                0.011630447319,-9.279453341e-3, 5.353579108e-3,
                                -2.141268741e-3, 5.35310549e-4,  0.999936657524};
         double w, y, z;
-        int i;
 
         if (u == 0.)
           return (0.5);
@@ -148,7 +147,7 @@ namespace pcl
         {
           w = y * y;
           z = a[0];
-          for (i = 1; i < 9; i++)
+          for (int i = 1; i < 9; i++)
             z = z * w + a[i];
           z *= (y * 2.0);
         }
@@ -156,7 +155,7 @@ namespace pcl
         {
           y -= 2.0;
           z = b[0];
-          for (i = 1; i < 15; i++)
+          for (int i = 1; i < 15; i++)
             z = z * y + b[i];
         }
 

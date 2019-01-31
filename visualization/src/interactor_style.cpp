@@ -629,7 +629,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
   // Switch between point color/geometry handlers
   if (Interactor->GetKeySym () && Interactor->GetKeySym ()[0]  >= '0' && Interactor->GetKeySym ()[0] <= '9')
   {
-    CloudActorMap::iterator it;
     int index = Interactor->GetKeySym ()[0] - '0' - 1;
     if (index == -1) index = 9;
 
@@ -640,7 +639,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     // Geometry ?
     if (keymod)
     {
-      for (it = cloud_actors_->begin (); it != cloud_actors_->end (); ++it)
+      for (auto it = cloud_actors_->begin (); it != cloud_actors_->end (); ++it)
       {
         CloudActor *act = &(*it).second;
         if (index >= static_cast<int> (act->geometry_handlers.size ()))
@@ -687,7 +686,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     }
     else
     {
-      for (it = cloud_actors_->begin (); it != cloud_actors_->end (); ++it)
+      for (auto it = cloud_actors_->begin (); it != cloud_actors_->end (); ++it)
       {
         CloudActor *act = &(*it).second;
         // Check for out of bounds
@@ -1174,8 +1173,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool add_lut)
 {
-  CloudActorMap::iterator am_it;
-  ShapeActorMap::iterator sm_it;
   bool actor_found = false;
 
   if (!lut_enabled_ && !add_lut)
@@ -1183,10 +1180,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool
 
   if (lut_actor_id_ != "")  // Search if provided actor id is in CloudActorMap or ShapeActorMap
   {
-    am_it = cloud_actors_->find (lut_actor_id_);
+    auto am_it = cloud_actors_->find (lut_actor_id_);
     if (am_it == cloud_actors_->end ())
     {
-      sm_it = shape_actors_->find (lut_actor_id_);
+      auto sm_it = shape_actors_->find (lut_actor_id_);
       if (sm_it == shape_actors_->end ())
       {
         PCL_WARN ("[updateLookUpTableDisplay] Could not find any actor with id <%s>!\n", lut_actor_id_.c_str ());
@@ -1240,9 +1237,9 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool
   else  // lut_actor_id_ == "", the user did not specify which cloud/shape LUT should be displayed
   // Circling through all clouds/shapes and displaying first LUT found
   {
-    for (am_it = cloud_actors_->begin (); am_it != cloud_actors_->end (); ++am_it)
+    for (auto am_it = cloud_actors_->cbegin (); am_it != cloud_actors_->cend (); ++am_it)
     {
-      CloudActor *act = & (*am_it).second;
+      const CloudActor *act = & (*am_it).second;
       if (!act->actor->GetMapper ()->GetLookupTable ())
         continue;
 
@@ -1258,10 +1255,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool
 
     if (!actor_found)
     {
-      for (sm_it = shape_actors_->begin (); sm_it != shape_actors_->end (); ++sm_it)
+      for (auto sm_it = shape_actors_->cbegin (); sm_it != shape_actors_->cend (); ++sm_it)
       {
-        vtkSmartPointer<vtkProp> *act = & (*sm_it).second;
-        vtkSmartPointer<vtkActor> actor = vtkActor::SafeDownCast (*act);
+        const vtkSmartPointer<vtkProp> *act = & (*sm_it).second;
+        const vtkSmartPointer<vtkActor> actor = vtkActor::SafeDownCast (*act);
         if (!actor)
           continue;
 

@@ -394,9 +394,8 @@ main (int argc, char ** argv)
     
     if (show_normals)
     {
-      std::map <uint32_t, pcl::Supervoxel<PointT>::Ptr>::iterator sv_itr,sv_itr_end;
-      sv_itr = ((show_refined)?refined_supervoxel_clusters.begin ():supervoxel_clusters.begin ());
-      sv_itr_end = ((show_refined)?refined_supervoxel_clusters.end ():supervoxel_clusters.end ());
+      auto sv_itr = ((show_refined) ? refined_supervoxel_clusters.begin () : supervoxel_clusters.begin ());
+      auto sv_itr_end = ((show_refined) ? refined_supervoxel_clusters.end () : supervoxel_clusters.end ());
       for (; sv_itr != sv_itr_end; ++sv_itr)
       {
         std::stringstream ss;
@@ -415,9 +414,8 @@ main (int argc, char ** argv)
     }
     else if (!show_normals)
     {
-      std::map <uint32_t, pcl::Supervoxel<PointT>::Ptr>::iterator sv_itr,sv_itr_end;
-      sv_itr = ((show_refined)?refined_supervoxel_clusters.begin ():supervoxel_clusters.begin ());
-      sv_itr_end = ((show_refined)?refined_supervoxel_clusters.end ():supervoxel_clusters.end ());
+      auto sv_itr = ((show_refined) ? refined_supervoxel_clusters.begin () : supervoxel_clusters.begin ());
+      auto sv_itr_end = ((show_refined) ? refined_supervoxel_clusters.end () : supervoxel_clusters.end ());
       for (; sv_itr != sv_itr_end; ++sv_itr)
       {
         std::stringstream ss;
@@ -429,8 +427,7 @@ main (int argc, char ** argv)
     if (show_graph && !graph_added)
     {
       poly_names.clear ();
-      std::multimap<uint32_t,uint32_t>::iterator label_itr = label_adjacency.begin ();
-      for ( ; label_itr != label_adjacency.end (); )
+      for (auto label_itr = label_adjacency.begin (); label_itr != label_adjacency.end (); )
       {
         //First get the label 
         uint32_t supervoxel_label = label_itr->first;
@@ -438,8 +435,7 @@ main (int argc, char ** argv)
         pcl::Supervoxel<PointT>::Ptr supervoxel = supervoxel_clusters.at (supervoxel_label);
         //Now we need to iterate through the adjacent supervoxels and make a point cloud of them
         PointCloudT adjacent_supervoxel_centers;
-        std::multimap<uint32_t,uint32_t>::iterator adjacent_itr = label_adjacency.equal_range (supervoxel_label).first;
-        for ( ; adjacent_itr!=label_adjacency.equal_range (supervoxel_label).second; ++adjacent_itr)
+        for (auto adjacent_itr = label_adjacency.equal_range (supervoxel_label).first; adjacent_itr!=label_adjacency.equal_range (supervoxel_label).second; ++adjacent_itr)
         {     
           pcl::Supervoxel<PointT>::Ptr neighbor_supervoxel = supervoxel_clusters.at (adjacent_itr->second);
           adjacent_supervoxel_centers.push_back (neighbor_supervoxel->centroid_);
@@ -495,8 +491,7 @@ addSupervoxelConnectionsToViewer (PointT &supervoxel_center,
   vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New ();
   
   //Iterate through all adjacent points, and add a center point to adjacent point pair
-  PointCloudT::iterator adjacent_itr = adjacent_supervoxel_centers.begin ();
-  for ( ; adjacent_itr != adjacent_supervoxel_centers.end (); ++adjacent_itr)
+  for (auto adjacent_itr = adjacent_supervoxel_centers.begin (); adjacent_itr != adjacent_supervoxel_centers.end (); ++adjacent_itr)
   {
     points->InsertNextPoint (supervoxel_center.data);
     points->InsertNextPoint (adjacent_itr->data); 

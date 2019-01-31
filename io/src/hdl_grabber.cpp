@@ -694,7 +694,6 @@ pcl::HDLGrabber::readPacketsFromPcap ()
   }
 
   struct timeval lasttime;
-  uint64_t usec_delay;
 
   lasttime.tv_sec = 0;
 
@@ -712,7 +711,7 @@ pcl::HDLGrabber::readPacketsFromPcap ()
       lasttime.tv_usec -= 1000000;
       lasttime.tv_sec++;
     }
-    usec_delay = ((header->ts.tv_sec - lasttime.tv_sec) * 1000000) +
+    uint64_t usec_delay = ((header->ts.tv_sec - lasttime.tv_sec) * 1000000) +
     (header->ts.tv_usec - lasttime.tv_usec);
 
     boost::this_thread::sleep (boost::posix_time::microseconds (usec_delay));

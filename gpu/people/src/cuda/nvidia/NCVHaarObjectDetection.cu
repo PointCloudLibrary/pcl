@@ -911,15 +911,14 @@ void initializeMaskVectorDynTemplate(NcvBool tbMaskByInmask,
 Ncv32u getStageNumWithNotLessThanNclassifiers(Ncv32u N, HaarClassifierCascadeDescriptor &haar,
                                               NCVVector<HaarStage64> &h_HaarStages)
 {
-    Ncv32u i = 0;
-    for (; i<haar.NumStages; i++)
+    for (Ncv32u i = 0; i<haar.NumStages; i++)
     {
         if (h_HaarStages.ptr()[i].getNumClassifierRootNodes() >= N)
         {
-            break;
+            return i;
         }
     }
-    return i;
+    return haar.NumStages;
 }
 
 

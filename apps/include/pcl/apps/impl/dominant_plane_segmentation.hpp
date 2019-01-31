@@ -514,9 +514,8 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
 
   clusters.resize (clusters_map.size ());
 
-  std::map<float, pcl::PointIndices>::iterator it_indices;
   int k = 0;
-  for (it_indices = clusters_map.begin (); it_indices != clusters_map.end (); it_indices++)
+  for (auto it_indices = clusters_map.cbegin (); it_indices != clusters_map.cend (); it_indices++)
   {
 
     if (int ((*it_indices).second.indices.size ()) >= object_cluster_min_size_)

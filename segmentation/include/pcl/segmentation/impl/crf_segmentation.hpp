@@ -346,8 +346,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
       labels.push_back (label);
 
     // add color to the color vector if not added yet
-    int c_idx;
-    for (c_idx = 0; c_idx < static_cast<int> (labels.size ()) ; c_idx++)
+    for (int c_idx = 0; c_idx < static_cast<int> (labels.size ()) ; c_idx++)
     {
       if (labels[c_idx] == label)
         break;
@@ -360,27 +359,6 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
           label = 0;
       }
     }
-
-   /* generate secret number: */
-    //double iSecret = static_cast<double> (rand ())  / static_cast<double> (RAND_MAX);
-   
-    /* 
-    if (k < 100)
-      std::cout << iSecret << std::endl;
-    */
-
-/*
-    int gg = 5; //static_cast<int> (labels.size ());
-    if (iSecret < 0.5)
-    {
-      int r = 0;
-      if (gg != 0)
-        r = rand () % (gg - 1 + 1) + 1;
-      else
-        r = 0;
-      c_idx = r;      
-    }
-*/
   
     // set the engeries for the labels
     size_t u_idx = k * n_labels;
@@ -388,7 +366,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
     {
       for (size_t i = 0; i < n_labels; i++)
         unary[u_idx + i] = n_energy;
-      unary[u_idx + c_idx] = p_energy;
+      unary[u_idx + labels.size ()] = p_energy;
 
       if (label == 1)
       {
@@ -398,7 +376,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
 
         for (size_t i = 0; i < n_labels; i++)
           unary[u_idx + i] = n_energy2;
-        unary[u_idx + c_idx] = p_energy2;
+        unary[u_idx + labels.size ()] = p_energy2;
       }
     
     }

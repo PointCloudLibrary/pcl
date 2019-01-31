@@ -332,18 +332,14 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
       if (label_index >= 0)
       {
         // find the label with the highest occurrence
-        std::map<int, int>::iterator it = labels.begin ();
-        int n_occurrence = it->second;
-        int label = it->first;
-        if (it != labels.end ())
+        int n_occurrence = labels.begin()->second;
+        int label = labels.begin()->first;
+        for (auto it = labels.cbegin (); it != labels.cend (); ++it)
         {
-          for (it = labels.begin (); it != labels.end (); ++it)
+          if (n_occurrence < it->second)
           {
-            if (n_occurrence < it->second)
-            {
-              n_occurrence = it->second;
-              label = it->first;
-            }
+            n_occurrence = it->second;
+            label = it->first;
           }
         }
         output.points[index].label = label;

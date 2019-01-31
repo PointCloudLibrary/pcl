@@ -245,17 +245,16 @@ template <typename PointT> void
 pcl::GrabCut<PointT>::setTrimap (const PointIndicesConstPtr &indices, segmentation::grabcut::TrimapValue t)
 {
   using namespace pcl::segmentation::grabcut;
-  std::vector<int>::const_iterator idx = indices->indices.begin ();
-  for (; idx != indices->indices.end (); ++idx)
+  for (auto idx = indices->indices.cbegin (); idx != indices->indices.cend (); ++idx)
     trimap_[*idx] = t;
 
   // Immediately set the hard segmentation as well so that the display will update.
   if (t == TrimapForeground)
-    for (idx = indices->indices.begin (); idx != indices->indices.end (); ++idx)
+    for (auto idx = indices->indices.cbegin (); idx != indices->indices.cend (); ++idx)
       hard_segmentation_[*idx] = SegmentationForeground;
   else
     if (t == TrimapBackground)
-      for (idx = indices->indices.begin (); idx != indices->indices.end (); ++idx)
+      for (auto idx = indices->indices.cbegin (); idx != indices->indices.cend (); ++idx)
         hard_segmentation_[*idx] = SegmentationBackground;
 }
 
@@ -312,9 +311,8 @@ pcl::GrabCut<PointT>::initGraph ()
     if (n_link.nb_links > 0)
     {
       int point_index = (*indices_) [i_point];
-      std::vector<int>::const_iterator indices_it    = n_link.indices.begin ();
       std::vector<float>::const_iterator weights_it  = n_link.weights.begin ();
-      for (; indices_it != n_link.indices.end (); ++indices_it, ++weights_it)
+      for (auto indices_it = n_link.indices.cbegin (); indices_it != n_link.indices.cend (); ++indices_it, ++weights_it)
       {
         if ((*indices_it != point_index) && (*indices_it > -1))
         {
@@ -335,10 +333,9 @@ pcl::GrabCut<PointT>::computeNLinksNonOrganized ()
     if (n_link.nb_links > 0)
     {
       int point_index = (*indices_) [i_point];
-      std::vector<int>::const_iterator indices_it = n_link.indices.begin ();
-      std::vector<float>::const_iterator dists_it = n_link.dists.begin   ();
-      std::vector<float>::iterator weights_it     = n_link.weights.begin ();
-      for (; indices_it != n_link.indices.end (); ++indices_it, ++dists_it, ++weights_it)
+      auto dists_it = n_link.dists.cbegin ();
+      auto weights_it = n_link.weights.begin ();
+      for (auto indices_it = n_link.indices.cbegin (); indices_it != n_link.indices.cend (); ++indices_it, ++dists_it, ++weights_it)
       {
         if (*indices_it != point_index)
         {

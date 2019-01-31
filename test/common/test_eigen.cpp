@@ -60,7 +60,6 @@ TEST (PCL, InverseGeneral3x3f)
   CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
   Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  Scalar determinant;
   const Scalar epsilon = 1e-5f;
   const unsigned iterations = 1000000;
 
@@ -73,7 +72,7 @@ TEST (PCL, InverseGeneral3x3f)
     c_matrix = r_matrix;
 
     // test row-major -> row-major
-    determinant = invert3x3Matrix (r_matrix, r_inverse);
+    Scalar determinant = invert3x3Matrix (r_matrix, r_inverse);
     if (fabs (determinant) > epsilon)
     {
       float eps = std::max (epsilon, epsilon / fabs(determinant));
@@ -120,7 +119,6 @@ TEST (PCL, InverseGeneral3x3d)
   CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
   Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  Scalar determinant;
   const Scalar epsilon = 1e-13;
   const unsigned iterations = 1000000;
 
@@ -133,7 +131,7 @@ TEST (PCL, InverseGeneral3x3d)
     }
     c_matrix = r_matrix;
     // test row-major -> row-major
-    determinant = invert3x3Matrix (r_matrix, r_inverse);
+    Scalar determinant = invert3x3Matrix (r_matrix, r_inverse);
     if (fabs (determinant) > epsilon)
     {
       Scalar eps = std::max (epsilon, epsilon / fabs (determinant));
@@ -180,7 +178,6 @@ TEST (PCL, InverseSymmetric3x3f)
   CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
   Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  Scalar determinant;
   const Scalar epsilon = 1e-5f;
   const unsigned iterations = 1000000;
 
@@ -199,7 +196,7 @@ TEST (PCL, InverseSymmetric3x3f)
     //c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
 
     // test row-major -> row-major
-    determinant = invert3x3SymMatrix (r_matrix, r_inverse);
+    Scalar determinant = invert3x3SymMatrix (r_matrix, r_inverse);
     if (fabs (determinant) > epsilon)
     {
       float eps = std::max (epsilon, epsilon / fabs(determinant));
@@ -246,7 +243,6 @@ TEST (PCL, InverseSymmetric3x3d)
   CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
   Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  Scalar determinant;
   const Scalar epsilon = 1e-13;
   const unsigned iterations = 1000000;
 
@@ -265,7 +261,7 @@ TEST (PCL, InverseSymmetric3x3d)
     //c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
 
     // test row-major -> row-major
-    determinant = invert3x3SymMatrix (r_matrix, r_inverse);
+    Scalar determinant = invert3x3SymMatrix (r_matrix, r_inverse);
     if (fabs (determinant) > epsilon)
     {
       Scalar eps = std::max (epsilon, epsilon / fabs (determinant));
@@ -313,7 +309,6 @@ TEST (PCL, Inverse2x2f)
   CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 2, 2> result = Eigen::Matrix<Scalar, 2, 2>::Zero ();
   Eigen::Matrix<Scalar, 2, 2> error = Eigen::Matrix<Scalar, 2, 2>::Zero ();
-  Scalar determinant;
   const Scalar epsilon = 1e-6f;
   const unsigned iterations = 1000000;
 
@@ -325,7 +320,7 @@ TEST (PCL, Inverse2x2f)
 
     c_matrix = r_matrix;
     // test row-major -> row-major
-    determinant = invert2x2 (r_matrix, r_inverse);
+    Scalar determinant = invert2x2 (r_matrix, r_inverse);
     if (fabs (determinant) > epsilon)
     {
       float eps = std::max (epsilon, epsilon / fabs(determinant));
@@ -372,7 +367,6 @@ TEST (PCL, Inverse2x2d)
   CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 2, 2> result;
   Eigen::Matrix<Scalar, 2, 2> error;
-  Scalar determinant;
   const Scalar epsilon = 1e-15;
   const unsigned iterations = 1000000;
 
@@ -384,7 +378,7 @@ TEST (PCL, Inverse2x2d)
 
     c_matrix = r_matrix;
     // test row-major -> row-major
-    determinant = invert2x2 (r_matrix, r_inverse);
+    Scalar determinant = invert2x2 (r_matrix, r_inverse);
     if (fabs (determinant) > epsilon)
     {
       Scalar eps = std::max (epsilon, epsilon / fabs (determinant));
@@ -479,7 +473,6 @@ TEST (PCL, eigen22d)
   Eigen::Matrix<Scalar, 2, 2> g_error;
   Eigen::Matrix<Scalar, 2, 2> c_result;
   Eigen::Matrix<Scalar, 2, 2> c_error;
-  Scalar diff;
 
   const Scalar epsilon = 1.25e-14;
   const unsigned iterations = 1000000;
@@ -497,7 +490,7 @@ TEST (PCL, eigen22d)
     // test if U * V * U^T = M
     r_result = r_vectors * r_eigenvalues.asDiagonal () * r_vectors.transpose ();
     r_error = r_result - r_matrix;
-    diff = r_error.cwiseAbs ().maxCoeff ();
+    Scalar diff = r_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     // test if the eigenvalues are orthonormal
@@ -538,7 +531,6 @@ TEST (PCL, eigen22f)
   Eigen::Matrix<Scalar, 2, 2> g_error;
   Eigen::Matrix<Scalar, 2, 2> c_result;
   Eigen::Matrix<Scalar, 2, 2> c_error;
-  Scalar diff;
 
   const Scalar epsilon = 3.1e-5f;
   const unsigned iterations = 1000000;
@@ -556,7 +548,7 @@ TEST (PCL, eigen22f)
     // test if U * V * U^T = M
     r_result = r_vectors * r_eigenvalues.asDiagonal () * r_vectors.transpose ();
     r_error = r_result - r_matrix;
-    diff = r_error.cwiseAbs ().maxCoeff ();
+    Scalar diff = r_error.cwiseAbs ().maxCoeff ();
     EXPECT_LE (diff, epsilon);
 
     // test if the eigenvalues are orthonormal
@@ -678,7 +670,6 @@ TEST (PCL, eigen33d)
   Eigen::Matrix<Scalar, 3, 3> g_error;
   Eigen::Matrix<Scalar, 3, 3> c_result;
   Eigen::Matrix<Scalar, 3, 3> c_error;
-  Scalar diff;
 
   const Scalar epsilon = 2e-5;
   const unsigned iterations = 1000000;
@@ -696,7 +687,7 @@ TEST (PCL, eigen33d)
     // test if U * V * U^T = M
     r_result = r_vectors * r_eigenvalues.asDiagonal () * r_vectors.transpose ();
     r_error = r_result - r_matrix;
-    diff = r_error.cwiseAbs (). sum ();
+    Scalar diff = r_error.cwiseAbs (). sum ();
     EXPECT_LE (diff, epsilon);
 
     // test if the eigenvalues are orthonormal
@@ -739,17 +730,15 @@ TEST (PCL, eigen33f)
   Eigen::Matrix<Scalar, 3, 3> g_error;
   Eigen::Matrix<Scalar, 3, 3> c_result;
   Eigen::Matrix<Scalar, 3, 3> c_error;
-  Scalar diff;
 
   const Scalar epsilon = 1e-3f;
-  const unsigned iterations = 1000000;
-  bool r_failed;
+  constexpr unsigned iterations = 1000000;
   unsigned r_fail_count = 0;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
-    r_failed = false;
+    bool r_failed = false;
     // generate test matrices
     generateSymPosMatrix3x3 (r_matrix);
     c_matrix = r_matrix;
@@ -760,7 +749,7 @@ TEST (PCL, eigen33f)
     // test if U * V * U^T = M
     r_result = r_vectors * r_eigenvalues.asDiagonal () * r_vectors.transpose ();
     r_error = r_result - r_matrix;
-    diff = r_error.cwiseAbs (). sum ();
+    Scalar diff = r_error.cwiseAbs (). sum ();
     if (diff > epsilon)
       r_failed = true;
 

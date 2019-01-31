@@ -863,8 +863,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
     //compute the center of the training object
     Eigen::Vector3f models_center (0.0f, 0.0f, 0.0f);
     const size_t num_of_points =  training_clouds_[i_cloud]->points.size ();
-    typename pcl::PointCloud<PointT>::iterator point_j;
-    for (point_j = training_clouds_[i_cloud]->begin (); point_j != training_clouds_[i_cloud]->end (); point_j++)
+    for (auto point_j = training_clouds_[i_cloud]->begin (); point_j != training_clouds_[i_cloud]->end (); point_j++)
       models_center += point_j->getVector3fMap ();
     models_center /= static_cast<float> (num_of_points);
 
@@ -884,8 +883,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
     estimateFeatures (sampled_point_cloud, sampled_normal_cloud, feature_cloud);
 
     int point_index = 0;
-    typename pcl::PointCloud<PointT>::iterator point_i;
-    for (point_i = sampled_point_cloud->points.begin (); point_i != sampled_point_cloud->points.end (); point_i++, point_index++)
+    for (auto point_i = sampled_point_cloud->points.cbegin (); point_i != sampled_point_cloud->points.cend (); point_i++, point_index++)
     {
       float descriptor_sum = Eigen::VectorXf::Map (feature_cloud->points[point_index].histogram, FeatureSize).sum ();
       if (descriptor_sum < std::numeric_limits<float>::epsilon ())
@@ -893,7 +891,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
 
       histograms.insert ( histograms.end (), feature_cloud->begin () + point_index, feature_cloud->begin () + point_index + 1 );
 
-      int dist = static_cast<int> (std::distance (sampled_point_cloud->points.begin (), point_i));
+      int dist = static_cast<int> (std::distance (sampled_point_cloud->points.cbegin (), point_i));
       Eigen::Matrix3f new_basis = alignYCoordWithNormal (sampled_normal_cloud->points[dist]);
       Eigen::Vector3f zero;
       zero (0) = 0.0;
@@ -1188,8 +1186,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::shiftCloud
   typename pcl::PointCloud<PointT>::Ptr in_cloud,
   Eigen::Vector3f shift_point)
 {
-  typename pcl::PointCloud<PointT>::iterator point_it;
-  for (point_it = in_cloud->points.begin (); point_it != in_cloud->points.end (); point_it++)
+  for (auto point_it = in_cloud->points.begin (); point_it != in_cloud->points.end (); point_it++)
   {
     point_it->x -= shift_point.x ();
     point_it->y -= shift_point.y ();

@@ -593,12 +593,11 @@ namespace pcl
 
       if( s < 1e-5 )
       {
-        double t;
-
         if( c > 0 )
           rx = ry = rz = 0;
         else
         {
+          double t;
           t = (R(0, 0) + 1)*0.5;
           rx = sqrt( std::max(t, 0.0) );
           t = (R(1, 1) + 1)*0.5;

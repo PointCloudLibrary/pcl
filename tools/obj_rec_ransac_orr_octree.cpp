@@ -326,14 +326,12 @@ void show_octree (ORROctree* octree, PCLVisualizer& viz, bool show_full_leaves_o
   }
   else
   {
-    ORROctree::Node* node;
-
     std::list<ORROctree::Node*> nodes;
     nodes.push_back (octree->getRoot ());
 
     while ( !nodes.empty () )
     {
-      node = nodes.front ();
+      ORROctree::Node* node = nodes.front ();
       nodes.pop_front ();
 
       // Visualize the node if it has children

@@ -36,8 +36,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::setSelectedActors ()
       selected_cloud_ids.append (cloud_item->getId ());
   }
   
-  pcl::visualization::CloudActorMap::iterator it;
-  for (it = actors_->begin (); it != actors_->end (); ++it)
+  for (auto it = actors_->cbegin (); it != actors_->cend (); ++it)
   {
     QString id = QString::fromStdString (it->first);
     if (selected_cloud_ids.contains (id))

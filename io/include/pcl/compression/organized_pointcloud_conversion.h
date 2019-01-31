@@ -100,16 +100,14 @@ namespace pcl
                           typename std::vector<uint16_t>& disparityData_arg,
                           typename std::vector<uint8_t>&)
       {
-        size_t cloud_size, i;
-
-        cloud_size = cloud_arg.points.size ();
+        size_t cloud_size = cloud_arg.points.size ();
 
         // Clear image data
         disparityData_arg.clear ();
 
         disparityData_arg.reserve (cloud_size);
 
-        for (i = 0; i < cloud_size; ++i)
+        for (size_t i = 0; i < cloud_size; ++i)
         {
           // Get point from cloud
           const PointT& point = cloud_arg.points[i];
@@ -148,9 +146,7 @@ namespace pcl
                           float disparityScale_arg,
                           pcl::PointCloud<PointT>& cloud_arg)
       {
-        size_t i;
         size_t cloud_size = width_arg * height_arg;
-        int x, y, centerX, centerY;
 
         assert(disparityData_arg.size()==cloud_size);
 
@@ -164,15 +160,15 @@ namespace pcl
         cloud_arg.is_dense = false;
 
         // Calculate center of disparity image
-        centerX = static_cast<int> (width_arg / 2);
-        centerY = static_cast<int> (height_arg / 2);
+        int centerX = static_cast<int> (width_arg / 2);
+        int centerY = static_cast<int> (height_arg / 2);
 
         const float fl_const = 1.0f / focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-        i = 0;
-        for (y = -centerY; y < +centerY; ++y)
-          for (x = -centerX; x < +centerX; ++x)
+        size_t i = 0;
+        for (int y = -centerY; y < centerY; ++y )
+          for (int x = -centerX; x < centerX; ++x )
           {
             PointT newPoint;
             const uint16_t& pixel_disparity = disparityData_arg[i];
@@ -217,9 +213,7 @@ namespace pcl
                           float focalLength_arg,
                           pcl::PointCloud<PointT>& cloud_arg)
       {
-        size_t i;
         size_t cloud_size = width_arg * height_arg;
-        int x, y, centerX, centerY;
 
         assert(depthData_arg.size()==cloud_size);
 
@@ -233,15 +227,15 @@ namespace pcl
         cloud_arg.is_dense = false;
 
         // Calculate center of disparity image
-        centerX = static_cast<int> (width_arg / 2);
-        centerY = static_cast<int> (height_arg / 2);
+        int centerX = static_cast<int> (width_arg / 2);
+        int centerY = static_cast<int> (height_arg / 2);
 
         const float fl_const = 1.0f / focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-        i = 0;
-        for (y = -centerY; y < +centerY; ++y)
-          for (x = -centerX; x < +centerX; ++x)
+        size_t i = 0;
+        for (int y = -centerY; y < centerY; ++y )
+          for (int x = -centerX; x < centerX; ++x )
           {
             PointT newPoint;
             const float& pixel_depth = depthData_arg[i];
@@ -295,9 +289,7 @@ namespace pcl
                           typename std::vector<uint16_t>& disparityData_arg,
                           typename std::vector<uint8_t>& rgbData_arg)
       {
-        size_t cloud_size, i;
-
-        cloud_size = cloud_arg.points.size ();
+        size_t cloud_size = cloud_arg.points.size ();
 
         // Reset output vectors
         disparityData_arg.clear ();
@@ -314,7 +306,7 @@ namespace pcl
         }
 
 
-        for (i = 0; i < cloud_size; ++i)
+        for (size_t i = 0; i < cloud_size; ++i)
         {
           const PointT& point = cloud_arg.points[i];
 
@@ -386,7 +378,6 @@ namespace pcl
                           float disparityScale_arg,
                           pcl::PointCloud<PointT>& cloud_arg)
       {
-        size_t i;
         size_t cloud_size = width_arg*height_arg;
         bool hasColor = (rgbData_arg.size () > 0);
 
@@ -403,8 +394,6 @@ namespace pcl
           }
         }
 
-        int x, y, centerX, centerY;
-
         // Reset point cloud
         cloud_arg.points.clear();
         cloud_arg.points.reserve(cloud_size);
@@ -415,15 +404,15 @@ namespace pcl
         cloud_arg.is_dense = false;
 
         // Calculate center of disparity image
-        centerX = static_cast<int>(width_arg/2);
-        centerY = static_cast<int>(height_arg/2);
+        int centerX = static_cast<int>(width_arg/2);
+        int centerY = static_cast<int>(height_arg/2);
 
         const float fl_const = 1.0f/focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-        i = 0;
-        for (y=-centerY; y<+centerY; ++y )
-          for (x=-centerX; x<+centerX; ++x )
+        size_t i = 0;
+        for (int y = -centerY; y < centerY; ++y )
+          for (int x = -centerX; x < centerX; ++x )
           {
             PointT newPoint;
 
@@ -491,7 +480,6 @@ namespace pcl
                           float focalLength_arg,
                           pcl::PointCloud<PointT>& cloud_arg)
       {
-        size_t i;
         size_t cloud_size = width_arg*height_arg;
         bool hasColor = (rgbData_arg.size () > 0);
 
@@ -508,8 +496,6 @@ namespace pcl
           }
         }
 
-        int x, y, centerX, centerY;
-
         // Reset point cloud
         cloud_arg.points.clear();
         cloud_arg.points.reserve(cloud_size);
@@ -520,15 +506,15 @@ namespace pcl
         cloud_arg.is_dense = false;
 
         // Calculate center of disparity image
-        centerX = static_cast<int>(width_arg/2);
-        centerY = static_cast<int>(height_arg/2);
+        int centerX = static_cast<int>(width_arg/2);
+        int centerY = static_cast<int>(height_arg/2);
 
         const float fl_const = 1.0f/focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-        i = 0;
-        for (y=-centerY; y<+centerY; ++y )
-          for (x=-centerX; x<+centerX; ++x )
+        size_t i = 0;
+        for (int y = -centerY; y < centerY; ++y )
+          for (int x = -centerX; x < centerX; ++x )
           {
             PointT newPoint;
 
