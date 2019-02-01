@@ -249,13 +249,13 @@ PCLViewer::colorCloudDistances ()
     switch (filtering_axis_)
     {
       case 0:  // x
-        value = boost::math::iround ( (cloud_it->x - min) * lut_scale);  // Round the number to the closest integer
+        value = std::lround ( (cloud_it->x - min) * lut_scale);  // Round the number to the closest integer
         break;
       case 1:  // y
-        value = boost::math::iround ( (cloud_it->y - min) * lut_scale);
+        value = std::lround ( (cloud_it->y - min) * lut_scale);
         break;
       default:  // z
-        value = boost::math::iround ( (cloud_it->z - min) * lut_scale);
+        value = std::lround ( (cloud_it->z - min) * lut_scale);
         break;
     }
 
