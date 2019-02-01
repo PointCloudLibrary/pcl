@@ -537,9 +537,9 @@ pcl::ihs::OpenGLViewer::addMesh (const CloudXYZRGBNormalConstPtr& cloud, const s
       const PointXYZRGBNormal& pt_2 = cloud->operator [] (ind_o_2);
       const PointXYZRGBNormal& pt_3 = cloud->operator [] (ind_o_3);
 
-      if (!boost::math::isnan (pt_1.x) && !boost::math::isnan (pt_3.x))
+      if (!std::isnan (pt_1.x) && !std::isnan (pt_3.x))
       {
-        if (!boost::math::isnan (pt_2.x)) // 1-2-3 is valid
+        if (!std::isnan (pt_2.x)) // 1-2-3 is valid
         {
           if (std::abs (pt_1.z - pt_2.z) < 1 &&
               std::abs (pt_1.z - pt_3.z) < 1 &&
@@ -552,7 +552,7 @@ pcl::ihs::OpenGLViewer::addMesh (const CloudXYZRGBNormalConstPtr& cloud, const s
             triangles.emplace_back(ind_v_1, ind_v_2, ind_v_3);
           }
         }
-        if (!boost::math::isnan (pt_0.x)) // 0-1-3 is valid
+        if (!std::isnan (pt_0.x)) // 0-1-3 is valid
         {
           if (std::abs (pt_0.z - pt_1.z) < 1 &&
               std::abs (pt_0.z - pt_3.z) < 1 &&

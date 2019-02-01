@@ -73,7 +73,6 @@ namespace pcl
 #endif
 #include <cmath>
 
-// MSCV doesn't have std::{isnan,isfinite}
 #if defined _WIN32 && defined _MSC_VER
 
 // If M_PI is not defined, then probably all of them are undefined

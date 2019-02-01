@@ -126,7 +126,7 @@ pcl::ihs::InputDataProcessing::segment (const CloudXYZRGBAConstPtr& cloud_in,
 
       xyz_mask (r, c) = hsv_mask (r, c) = false;
 
-      if (!boost::math::isnan (xyzrgb.x) && !boost::math::isnan (normal.normal_x) &&
+      if (!std::isnan (xyzrgb.x) && !std::isnan (normal.normal_x) &&
           xyzrgb.x  >= x_min             && xyzrgb.x  <= x_max                    &&
           xyzrgb.y  >= y_min             && xyzrgb.y  <= y_max                    &&
           xyzrgb.z  >= z_min             && xyzrgb.z  <= z_max)
