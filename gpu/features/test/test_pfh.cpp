@@ -38,7 +38,7 @@
     #define GTEST_USE_OWN_TR1_TUPLE 0
 #endif
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1500)
+#if defined(_MSC_VER)
     #define GTEST_USE_OWN_TR1_TUPLE 0
 #endif
 
