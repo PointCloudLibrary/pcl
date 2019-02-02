@@ -280,11 +280,7 @@ pcl::keypoints::brisk::ScaleSpace::getScoreBelow (
 {
   assert (layer);
   pcl::keypoints::brisk::Layer& l = pyramid_[layer-1];
-  int sixth_x;
-  int quarter_x;
   float xf;
-  int sixth_y;
-  int quarter_y;
   float yf;
 
   // scaling:
@@ -295,9 +291,9 @@ pcl::keypoints::brisk::ScaleSpace::getScoreBelow (
 
   if (layer % 2 == 0)
   { // octave
-    sixth_x = 8 * x_layer + 1;
+    int sixth_x = 8 * x_layer + 1;
     xf = float (sixth_x) / 6.0f;
-    sixth_y = 8 * y_layer + 1;
+    int sixth_y = 8 * y_layer + 1;
     yf = float (sixth_y) / 6.0f;
 
     // scaling:
@@ -308,9 +304,9 @@ pcl::keypoints::brisk::ScaleSpace::getScoreBelow (
   }
   else
   {
-    quarter_x = 6 * x_layer + 1;
+    int quarter_x = 6 * x_layer + 1;
     xf = float (quarter_x) / 4.0f;
-    quarter_y = 6 * y_layer + 1;
+    int quarter_y = 6 * y_layer + 1;
     yf = float (quarter_y) / 4.0f;
 
     // scaling:
@@ -514,13 +510,12 @@ pcl::keypoints::brisk::ScaleSpace::refine3D (
     // treat the patch below:
     float delta_x_below, delta_y_below;
     float max_below_float;
-    unsigned char max_below_uchar = 0;
     if (layer == 0)
     {
       // guess the lower intra octave...
       pcl::keypoints::brisk::Layer& l = pyramid_[0];
       int s_0_0 = l.getAgastScore_5_8 (x_layer - 1, y_layer - 1, 1);
-      max_below_uchar = static_cast<unsigned char> (s_0_0);
+      unsigned char max_below_uchar = static_cast<unsigned char> (s_0_0);
       int s_1_0 = l.getAgastScore_5_8 (x_layer, y_layer - 1, 1);
 
       if (s_1_0 > max_below_uchar) max_below_uchar = static_cast<unsigned char> (s_1_0);

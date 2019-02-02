@@ -122,8 +122,7 @@ namespace pcl
           Eigen::Vector2d sx  = Eigen::Vector2d::Zero ();
           Eigen::Matrix2d sxx = Eigen::Matrix2d::Zero ();
           
-          std::vector<size_t>::const_iterator i;
-          for (i = pt_indices_.begin (); i != pt_indices_.end (); i++)
+          for (auto i = pt_indices_.cbegin (); i != pt_indices_.cend (); i++)
           {
             Eigen::Vector2d p (cloud[*i]. x, cloud[*i]. y);
             sx  += p;

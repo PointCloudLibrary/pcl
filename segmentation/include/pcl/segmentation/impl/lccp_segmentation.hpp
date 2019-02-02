@@ -114,8 +114,7 @@ pcl::LCCPSegmentation<PointT>::relabelCloud (pcl::PointCloud<pcl::PointXYZL> &la
   if (grouping_data_valid_)
   {
     // Relabel all Points in cloud with new labels
-    typename pcl::PointCloud<pcl::PointXYZL>::iterator voxel_itr = labeled_cloud_arg.begin ();
-    for (; voxel_itr != labeled_cloud_arg.end (); ++voxel_itr)
+    for (auto voxel_itr = labeled_cloud_arg.begin (); voxel_itr != labeled_cloud_arg.end (); ++voxel_itr)
     {
       voxel_itr->label = sv_label_to_seg_label_map_[voxel_itr->label];
     }
@@ -209,8 +208,7 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
         nr_filtered++;
 
         // Find largest neighbor
-        std::set<uint32_t>::const_iterator neighbors_itr = seg_label_to_neighbor_set_map_[current_seg_label].begin ();
-        for (; neighbors_itr != seg_label_to_neighbor_set_map_[current_seg_label].end (); ++neighbors_itr)
+        for (auto neighbors_itr = seg_label_to_neighbor_set_map_[current_seg_label].cbegin (); neighbors_itr != seg_label_to_neighbor_set_map_[current_seg_label].cend (); ++neighbors_itr)
         {
           if (seg_label_to_sv_list_map_[*neighbors_itr].size () >= largest_neigh_size)
           {
@@ -229,9 +227,7 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
           filteredSegLabels.insert (current_seg_label);
 
           // Assign supervoxel labels of filtered segment to new owner
-          std::set<uint32_t>::iterator sv_ID_itr = seg_label_to_sv_list_map_[current_seg_label].begin ();
-          sv_ID_itr = seg_label_to_sv_list_map_[current_seg_label].begin ();
-          for (; sv_ID_itr != seg_label_to_sv_list_map_[current_seg_label].end (); ++sv_ID_itr)
+          for (auto sv_ID_itr = seg_label_to_sv_list_map_[current_seg_label].cbegin (); sv_ID_itr != seg_label_to_sv_list_map_[current_seg_label].cend (); ++sv_ID_itr)
           {
             seg_label_to_sv_list_map_[largest_neigh_seg_label].insert (*sv_ID_itr);
           }
@@ -240,8 +236,7 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
     }
 
     // Erase filtered Segments from segment map
-    std::set<uint32_t>::iterator filtered_ID_itr = filteredSegLabels.begin ();
-    for (; filtered_ID_itr != filteredSegLabels.end (); ++filtered_ID_itr)
+    for (auto filtered_ID_itr = filteredSegLabels.cbegin (); filtered_ID_itr != filteredSegLabels.cend (); ++filtered_ID_itr)
     {
       seg_label_to_sv_list_map_.erase (*filtered_ID_itr);
     }

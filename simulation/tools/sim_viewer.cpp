@@ -484,12 +484,13 @@ main (int argc, char** argv)
   }
 
   // Multiview enabled?
-  int y_s = 0, x_s = 0;
+  int x_s = 0;
   double x_step = 0, y_step = 0;
   if (mview)
   {
     print_highlight ("Multi-viewport rendering enabled.\n");
 
+    int y_s = 0;
     if (p_file_indices.size () != 0)
     {
       y_s = static_cast<int>(floor (sqrt (static_cast<float>(p_file_indices.size ()))));

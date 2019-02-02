@@ -57,18 +57,18 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
   // Reserve enough space for the indices
   index.resize (cloud_in.points.size ());
-  size_t j = 0;
 
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
   {
     // Simply copy the data
     cloud_out = cloud_in;
-    for (j = 0; j < cloud_out.points.size (); ++j)
+    for (size_t j = 0; j < cloud_out.points.size (); ++j)
       index[j] = static_cast<int>(j);
   }
   else
   {
+    size_t j = 0;
     for (size_t i = 0; i < cloud_in.points.size (); ++i)
     {
       if (!std::isfinite (cloud_in.points[i].x) ||

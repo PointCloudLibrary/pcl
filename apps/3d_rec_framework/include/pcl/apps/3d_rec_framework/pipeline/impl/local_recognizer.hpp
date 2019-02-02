@@ -298,13 +298,9 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       }
     }
 
-    typename std::map<std::string, ObjectHypothesis>::iterator it_map;
-
-    std::vector<float> feature_distance_avg;
-
     {
       //pcl::ScopeTime t("Geometric verification, RANSAC and transform estimation");
-      for (it_map = object_hypotheses.begin (); it_map != object_hypotheses.end (); it_map++)
+      for (auto it_map = object_hypotheses.cbegin (); it_map != object_hypotheses.cend (); it_map++)
       {
         std::vector < pcl::Correspondences > corresp_clusters;
         cg_algorithm_->setSceneCloud (keypoints_pointcloud);

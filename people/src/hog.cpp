@@ -355,26 +355,53 @@ void
 pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) const
 {
 #if defined(__SSE2__)
-  int y, y1; float *Ip, *In, r; __m128 *_Ip, *_In, *_G, _r;
+  int y, y1;
+  float *Ip, *In, r;
+  __m128 *_G, _r;
   // compute column of Gx
-  Ip=I-h; In=I+h; r=.5f;
-  if(x==0) { r=1; Ip+=h; } else if(x==w-1) { r=1; In-=h; }
-  if( h<4 || h%4>0 || (size_t(I)&15) || (size_t(Gx)&15) ) {
-  for( y=0; y<h; y++ ) *Gx++=(*In++-*Ip++)*r;
+  Ip = I-h;
+  In = I+h;
+  r = .5f;
+  if(x == 0)
+  {
+    r = 1;
+    Ip += h;
+  }
+  else if(x == w-1)
+  {
+    r = 1;
+    In -= h;
+  }
+  if( h<4 || h%4>0 || (size_t(I)&15) || (size_t(Gx)&15) )
+  {
+    for( y = 0; y < h; y++ )
+      *Gx++ = (*In++ - *Ip++) * r;
   } else {
-  _G=(__m128*) Gx; _Ip=(__m128*) Ip; _In=(__m128*) In; _r = pcl::sse_set(r);
-  for(y=0; y<h; y+=4) *_G++=pcl::sse_mul(pcl::sse_sub(*_In++,*_Ip++),_r);
+    _G = (__m128*) Gx;
+    __m128 *_Ip = (__m128*) Ip;
+    __m128 *_In = (__m128*) In;
+    _r = pcl::sse_set(r);
+    for(y = 0; y < h; y += 4)
+      *_G++ = pcl::sse_mul(pcl::sse_sub(*_In++,*_Ip++), _r);
   }
   // compute column of Gy
-  #define GRADY(r) *Gy++=(*In++-*Ip++)*r;
-  Ip=I; In=Ip+1;
-  // GRADY(1); Ip--; for(y=1; y<h-1; y++) GRADY(.5f); In--; GRADY(1);
-  y1=((~((size_t) Gy) + 1) & 15)/4; if(y1==0) y1=4; if(y1>h-1) y1=h-1;
-  GRADY(1); Ip--; for(y=1; y<y1; y++) GRADY(.5f);
-  _r = pcl::sse_set(.5f); _G=(__m128*) Gy;
-  for(; y+4<h-1; y+=4, Ip+=4, In+=4, Gy+=4)
-  *_G++=pcl::sse_mul(pcl::sse_sub(pcl::sse_ldu(*In),pcl::sse_ldu(*Ip)),_r);
-  for(; y<h-1; y++) GRADY(.5f); In--; GRADY(1);
+  #define GRADY(r) *Gy++ = (*In++-*Ip++)*r;
+  Ip = I;
+  In = Ip + 1;
+  // GRADY(1); Ip--; for(y = 1; y < h-1; y++) GRADY(.5f); In--; GRADY(1);
+  y1 = ((~((size_t) Gy) + 1) & 15)/4;
+  if(y1 == 0) y1 = 4;
+  if(y1 > h-1) y1 = h-1;
+  GRADY(1);
+  Ip--;
+  for(y = 1; y < y1; y++) GRADY(.5f);
+  _r = pcl::sse_set(.5f);
+  _G = (__m128*) Gy;
+  for(; y+4 < h-1; y += 4, Ip += 4, In += 4, Gy += 4)
+    *_G++ = pcl::sse_mul(pcl::sse_sub(pcl::sse_ldu(*In),pcl::sse_ldu(*Ip)), _r);
+  for(; y < h-1; y++) GRADY(.5f);
+  In--;
+  GRADY(1);
   #undef GRADY
 #else
   int y, y1;
@@ -387,17 +414,17 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
   
   if(x == 0)
   {
-  r = 1;
-  Ip += h;
+    r = 1;
+    Ip += h;
   }
   else if (x == w-1)
   {
-  r = 1;
-  In -= h;
+    r = 1;
+    In -= h;
   }
 
   for (y = 0; y < h; y++)
-  *Gx++=(*In++ - *Ip++)*r;
+    *Gx++=(*In++ - *Ip++)*r;
   
   // compute column of Gy
   #define GRADY(r) *Gy++=(*In++-*Ip++)*r;
@@ -416,61 +443,73 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
 float* 
 pcl::people::HOG::acosTable () const
 {
-  int i, n=25000, n2=n/2; float t, ni;
-  static float a[25000]; static bool init=false;
+  int n = 25000;
+  int n2 = n / 2;
+  static float a[25000];
+  static bool init = false;
   if( init ) return a+n2;
-  ni = 2.02f/(float) n;
-  for( i=0; i<n; i++ ) {
-    t = i*ni - 1.01f;
+  float ni = 2.02f/(float) n;
+  for(int i=0; i<n; i++ )
+  {
+    float t = i*ni - 1.01f;
     t = t<-1 ? -1 : (t>1 ? 1 : t);
     t = (float) acos( t );
     a[i] = (t <= M_PI-1e-5f) ? t : 0;
   }
-  init=true; return a+n2;
+  init = true;
+  return a+n2;
 }
       
 void 
 pcl::people::HOG::gradQuantize (float *O, float *M, int *O0, int *O1, float *M0, float *M1, int n_orients, int nb, int n, float norm) const
 {
-#if defined(__SSE2__)
-  // assumes all *OUTPUT* matrices are 4-byte aligned
-  int i, o0, o1; float o, od, m;
-  __m128i _o0, _o1, *_O0, *_O1; __m128 _o, _o0f, _m, *_M0, *_M1;
   // define useful constants
-  const float oMult=(float)n_orients/M_PI; const int oMax=n_orients*nb;
-  const __m128 _norm=pcl::sse_set(norm), _oMult=pcl::sse_set(oMult), _nbf=pcl::sse_set((float)nb);
-  const __m128i _oMax=pcl::sse_set(oMax), _nb=pcl::sse_set(nb);
+  const float oMult = (float)n_orients/M_PI;
+  const int oMax = n_orients * nb;
+
+  int i = 0;
+#if defined(__SSE2__)
+  // assumes all *OUTPUT* matrices are 4-byte aligned  
+  __m128i _o0, _o1, *_O0, *_O1; __m128 _o, _o0f, _m, *_M0, *_M1;
+  const __m128 _norm = pcl::sse_set(norm);
+  const __m128 _oMult = pcl::sse_set(oMult);
+  const __m128 _nbf = pcl::sse_set((float)nb);
+  const __m128i _oMax = pcl::sse_set(oMax);
+  const __m128i _nb = pcl::sse_set(nb);
 
   // perform the majority of the work with sse
-  _O0=(__m128i*) O0; _O1=(__m128i*) O1; _M0=(__m128*) M0; _M1=(__m128*) M1;
-  for( i=0; i<=n-4; i+=4 ) {
-  _o=pcl::sse_mul(pcl::sse_ldu(O[i]),_oMult); _o0f=pcl::sse_cvt(pcl::sse_cvt(_o)); _o0=pcl::sse_cvt(pcl::sse_mul(_o0f,_nbf));
-  _o1=pcl::sse_add(_o0,_nb); _o1=pcl::sse_and(pcl::sse_cmpgt(_oMax,_o1),_o1);
-  *_O0++=_o0; *_O1++=_o1; _m=pcl::sse_mul(pcl::sse_ldu(M[i]),_norm);
-  *_M1=pcl::sse_mul(pcl::sse_sub(_o,_o0f),_m); *_M0=pcl::sse_sub(_m,*_M1); _M0++; _M1++;
-  }
-
-  // compute trailing locations without sse
-  for( ; i<n; i++ ) {
-  o=O[i]*oMult; m=M[i]*norm; o0=(int) o; od=o-o0;
-  o0*=nb; o1=o0+nb; if(o1==oMax) o1=0;
-  O0[i]=o0; O1[i]=o1; M1[i]=od*m; M0[i]=m-M1[i];
-  }
-#else
-  int i, o0, o1;
-  float o, od, m;
-
-  // define useful constants
-  const float oMult=(float)n_orients/M_PI; const int oMax=n_orients*nb;
-
-  // compute trailing locations without sse
-  for( i = 0; i<n; i++ )
-  {
-    o=O[i]*oMult; m=M[i]*norm; o0=(int) o; od=o-o0;
-    o0*=nb; o1=o0+nb; if(o1==oMax) o1=0;
-    O0[i]=o0; O1[i]=o1; M1[i]=od*m; M0[i]=m-M1[i];
+  _O0=(__m128i*) O0;
+  _O1=(__m128i*) O1;
+  _M0=(__m128*) M0;
+  _M1=(__m128*) M1;
+  for( ; i <= n-4; i += 4 ) {
+    _o = pcl::sse_mul(pcl::sse_ldu(O[i]),_oMult);
+    _o0f = pcl::sse_cvt(pcl::sse_cvt(_o));
+    _o0 = pcl::sse_cvt(pcl::sse_mul(_o0f,_nbf));
+    _o1 = pcl::sse_add(_o0,_nb);
+    _o1 = pcl::sse_and(pcl::sse_cmpgt(_oMax,_o1),_o1);
+    *_O0++ = _o0;
+    *_O1++ = _o1;
+    _m = pcl::sse_mul(pcl::sse_ldu(M[i]),_norm);
+    *_M1 = pcl::sse_mul(pcl::sse_sub(_o,_o0f),_m);
+    *_M0 = pcl::sse_sub(_m,*_M1); _M0++; _M1++;
   }
 #endif
+
+  // compute trailing locations without sse
+  for( ; i < n; i++ ) {
+    float o = O[i] * oMult;
+    float m = M[i] * norm;
+    int o0 = (int) o;
+    float od = o - o0;
+    o0 *= nb;
+    int o1 = o0 + nb;
+    if(o1 == oMax) o1 = 0;
+    O0[i] = o0;
+    O1[i] = o1;
+    M1[i] = od * m;
+    M0[i] = m - M1[i];
+  }
 }
 
 inline void* 

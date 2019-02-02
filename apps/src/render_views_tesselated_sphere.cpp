@@ -32,7 +32,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
   vtkIdType npts_com = 0, *ptIds_com = NULL;
   vtkSmartPointer<vtkCellArray> cells_com = polydata_->GetPolys ();
 
-  double center[3], p1_com[3], p2_com[3], p3_com[3], area_com, totalArea_com = 0;
+  double center[3], p1_com[3], p2_com[3], p3_com[3], totalArea_com = 0;
   double comx = 0, comy = 0, comz = 0;
   for (cells_com->InitTraversal (); cells_com->GetNextCell (npts_com, ptIds_com);)
   {
@@ -40,7 +40,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
     polydata_->GetPoint (ptIds_com[1], p2_com);
     polydata_->GetPoint (ptIds_com[2], p3_com);
     vtkTriangle::TriangleCenter (p1_com, p2_com, p3_com, center);
-    area_com = vtkTriangle::TriangleArea (p1_com, p2_com, p3_com);
+    double area_com = vtkTriangle::TriangleArea (p1_com, p2_com, p3_com);
     comx += center[0] * area_com;
     comy += center[1] * area_com;
     comz += center[2] * area_com;
@@ -90,14 +90,13 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
   vtkSmartPointer<vtkCellArray> cells = mapper->GetInput ()->GetPolys ();
   vtkIdType npts = 0, *ptIds = NULL;
 
-  double p1[3], p2[3], p3[3], area, totalArea = 0;
+  double p1[3], p2[3], p3[3], totalArea = 0;
   for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds);)
   {
     polydata_->GetPoint (ptIds[0], p1);
     polydata_->GetPoint (ptIds[1], p2);
     polydata_->GetPoint (ptIds[2], p3);
-    area = vtkTriangle::TriangleArea (p1, p2, p3);
-    totalArea += area;
+    totalArea += vtkTriangle::TriangleArea (p1, p2, p3);
   }
 
   //create icosahedron

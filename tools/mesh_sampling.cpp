@@ -138,22 +138,22 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, bool 
 
   double p1[3], p2[3], p3[3], totalArea = 0;
   std::vector<double> cumulativeAreas (cells->GetNumberOfCells (), 0);
-  size_t i = 0;
   vtkIdType npts = 0, *ptIds = NULL;
-  for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds); i++)
+  size_t cellId = 0;
+  for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds); cellId++)
   {
     polydata->GetPoint (ptIds[0], p1);
     polydata->GetPoint (ptIds[1], p2);
     polydata->GetPoint (ptIds[2], p3);
     totalArea += vtkTriangle::TriangleArea (p1, p2, p3);
-    cumulativeAreas[i] = totalArea;
+    cumulativeAreas[cellId] = totalArea;
   }
 
   cloud_out.points.resize (n_samples);
   cloud_out.width = static_cast<pcl::uint32_t> (n_samples);
   cloud_out.height = 1;
 
-  for (i = 0; i < n_samples; i++)
+  for (size_t i = 0; i < n_samples; i++)
   {
     Eigen::Vector3f p;
     Eigen::Vector3f n;

@@ -113,7 +113,6 @@ saveOBJFile (const std::string &file_name,
       int count = tex_mesh.cloud.fields[d].count;
       if (count == 0)
         count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
-      int c = 0;
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
                 tex_mesh.cloud.fields[d].name == "x" ||
@@ -127,7 +126,7 @@ saveOBJFile (const std::string &file_name,
             v_written = true;
         }
         float value;
-        memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset], sizeof (float));
         fs << value;
         if (++xyz == 3)
             break;
@@ -154,7 +153,6 @@ saveOBJFile (const std::string &file_name,
       int count = tex_mesh.cloud.fields[d].count;
       if (count == 0)
       count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
-      int c = 0;
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
       tex_mesh.cloud.fields[d].name == "normal_x" ||
@@ -168,7 +166,7 @@ saveOBJFile (const std::string &file_name,
           v_written = true;
         }
         float value;
-        memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset], sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -218,10 +216,9 @@ saveOBJFile (const std::string &file_name,
     {
       // Write faces with "f"
       fs << "f";
-      size_t j = 0;
       // There's one UV per vertex per face, i.e., the same vertex can have
       // different UV depending on the face.
-      for (j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
+      for (size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
         unsigned int idx = tex_mesh.tex_polygons[m][i].vertices[j] + 1;
         fs << " " << idx

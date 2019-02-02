@@ -147,7 +147,6 @@ class TrajkovicDemo
 
         if (cloud)
         {
-          int w (cloud->width);
           if (!cloud_init)
           {
             cloud_viewer_.setPosition (0, 0);
@@ -179,8 +178,8 @@ class TrajkovicDemo
                  id != keypoints_indices_->indices.end ();
                  ++id)
             {
-              int u (*id % w);
-              int v (*id / w);
+              int u (*id % cloud->width);
+              int v (*id / cloud->width);
               image_viewer_.markPoint (u, v, visualization::red_color, visualization::blue_color, 5, getStrBool (!keypts), 0.5);
             }
             keypts = !keypts;

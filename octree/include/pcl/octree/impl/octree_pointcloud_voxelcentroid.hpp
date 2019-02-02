@@ -90,11 +90,8 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContain
     const BranchNode* branch_arg, OctreeKey& key_arg,
     typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::AlignedPointTVector &voxel_centroid_list_arg) const
 {
-  // child iterator
-  unsigned char child_idx;
-
   // iterate over all children
-  for (child_idx = 0; child_idx < 8; child_idx++)
+  for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
   {
     // if child exist
     if (branch_arg->hasChild (child_idx))

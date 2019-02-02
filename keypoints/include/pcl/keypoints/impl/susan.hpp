@@ -378,8 +378,8 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
             // point is valid from distance point of view 
             Eigen::Vector3f nc = centroid - nucleus;
             // Check the contiguity
-            std::vector<int>::const_iterator usan_it = usan.begin ();
-            for (; usan_it != usan.end (); ++usan_it)
+            auto usan_it = usan.cbegin ();
+            for (; usan_it != usan.cend (); ++usan_it)
             {
               if (!isWithinNucleusCentroid (nucleus, centroid, nc, input_->points[*usan_it]))
                 break;

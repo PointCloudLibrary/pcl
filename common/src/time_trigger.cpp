@@ -122,10 +122,9 @@ pcl::TimeTrigger::stop ()
 void
 pcl::TimeTrigger::thread_function ()
 {
-  double time = 0;
   while (true)
   {
-    time = getTime ();
+    double time = getTime ();
     boost::unique_lock<boost::mutex> lock (condition_mutex_);
     if(quit_)
       break;

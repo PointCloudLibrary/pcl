@@ -63,7 +63,6 @@ main (int argc, char **argv)
   std::ifstream input (argv[1]);
   std::ofstream output (argv[2]);
   std::string str;
-  char next;
 
   while (input >> str)
   {
@@ -71,7 +70,7 @@ main (int argc, char **argv)
       output << "nan";
     else
       output << str;
-    next = static_cast<char> (input.peek ());
+    char next = static_cast<char> (input.peek ());
     if (next == '\n' || next == '\r')
       output << "\n";
     else

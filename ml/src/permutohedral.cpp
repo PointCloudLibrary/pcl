@@ -161,7 +161,7 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
 
       // insert key in hash table      
       size_t hash_key = generateHashKey (key);
-      std::multimap<size_t ,int>::iterator it = hash_table.find (hash_key);
+      auto it = hash_table.find (hash_key);
       int key_index = -1;
       if (it != hash_table.end ())
       {
@@ -170,7 +170,7 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
         // check if key is the right one
         int tmp_key_index = -1;
         //for (int ii = key_index; ii < keys.size (); ii++)
-        for (it = hash_table.find (hash_key); it != hash_table.end (); ++it)
+        for (; it != hash_table.end (); ++it)
         {
           int ii = it->second;
           bool same = true;

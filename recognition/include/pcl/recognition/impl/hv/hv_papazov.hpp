@@ -132,10 +132,10 @@ template<typename ModelT, typename SceneT>
   {
     // iterate over all vertices of the graph and check if they have a better neighbour, then remove that vertex
     typedef typename boost::graph_traits<Graph>::vertex_iterator VertexIterator;
-    VertexIterator vi, vi_end, next;
+    VertexIterator vi, vi_end;
     boost::tie (vi, vi_end) = boost::vertices (conflict_graph_);
 
-    for (next = vi; next != vi_end; next++)
+    for (auto next = vi; next != vi_end; next++)
     {
       const typename Graph::vertex_descriptor v = boost::vertex (*next, conflict_graph_);
       typename boost::graph_traits<Graph>::adjacency_iterator ai;

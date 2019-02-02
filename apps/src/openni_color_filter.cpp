@@ -187,11 +187,11 @@ main (int argc, char ** argv)
   unsigned char red = 0, green = 0, blue = 0;
   int rr, gg, bb;
   unsigned char radius = 442; // all colors!
-  int rad;
 
   if (pcl::console::parse_3x_arguments (argc, argv, "-rgb", rr, gg, bb, true) != -1 )
   {
     cout << "-rgb present" << endl;
+    int rad;
     int idx = pcl::console::parse_argument (argc, argv, "-radius", rad);
     if (idx != -1)
     {

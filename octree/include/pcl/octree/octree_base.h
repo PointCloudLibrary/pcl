@@ -466,12 +466,11 @@ namespace pcl
         char
         getBranchBitPattern (const BranchNode& branch_arg) const
         {
-          unsigned char i;
           char node_bits;
 
           // create bit pattern
           node_bits = 0;
-          for (i = 0; i < 8; i++) {
+          for (unsigned char i = 0; i < 8; i++) {
             const OctreeNode* child = branch_arg.getChildPtr(i);
             node_bits |= static_cast<char> ((!!child) << i);
           }
@@ -522,10 +521,8 @@ namespace pcl
         void
         deleteBranch (BranchNode& branch_arg)
         {
-          char i;
-
           // delete all branch node children
-          for (i = 0; i < 8; i++)
+          for (char i = 0; i < 8; i++)
             deleteBranchChild (branch_arg, i);
         }
 

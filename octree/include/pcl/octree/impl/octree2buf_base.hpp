@@ -179,9 +179,8 @@ namespace pcl
       leaf_count_ = 0;
       branch_count_ = 1;
 
-      unsigned char child_idx;
       // we can safely remove children references of root node
-      for (child_idx = 0; child_idx < 8; child_idx++)
+      for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
       {
         root_node_->setChildPtr(buffer_selector_, child_idx, 0);
       }
@@ -327,21 +326,18 @@ namespace pcl
                                                                              BranchNode*& parent_of_leaf_arg,
                                                                              bool branch_reset_arg)
       {
-        // index to branch child
-      unsigned char child_idx;
-
       // branch reset -> this branch has been taken from previous buffer
       if (branch_reset_arg)
       {
         // we can safely remove children references
-        for (child_idx = 0; child_idx < 8; child_idx++)
+        for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
         {
           branch_arg->setChildPtr(buffer_selector_, child_idx, 0);
         }
       }
 
       // find branch child from key
-      child_idx = key_arg.getChildIdxWithDepthMask (depth_mask_arg);
+      unsigned char child_idx = key_arg.getChildIdxWithDepthMask (depth_mask_arg);
 
       if (depth_mask_arg > 1)
       {
@@ -534,9 +530,6 @@ namespace pcl
                                                                    bool do_XOR_encoding_arg,
                                                                    bool new_leafs_filter_arg)
     {
-      // child iterator
-      unsigned char child_idx;
-
       // bit pattern
       char branch_bit_pattern_curr_buffer;
       char branch_bit_pattern_prev_buffer;
@@ -564,7 +557,7 @@ namespace pcl
       }
 
       // iterate over all children
-      for (child_idx = 0; child_idx < 8; child_idx++)
+      for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
       {
         if (branch_arg->hasChild(buffer_selector_, child_idx))
         {
@@ -634,9 +627,6 @@ namespace pcl
         typename std::vector<LeafContainerT*>::const_iterator* dataVectorEndIterator_arg,
         bool branch_reset_arg, bool do_XOR_decoding_arg)
     {
-      // child iterator
-      unsigned char child_idx;
-
       // node bits
       char nodeBits;
       char recoveredNodeBits;
@@ -645,7 +635,7 @@ namespace pcl
       if (branch_reset_arg)
       {
         // we can safely remove children references
-        for (child_idx = 0; child_idx < 8; child_idx++)
+        for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
         {
           branch_arg->setChildPtr(buffer_selector_, child_idx, 0);
         }  
@@ -667,7 +657,7 @@ namespace pcl
         }
 
         // iterate over all children
-        for (child_idx = 0; child_idx < 8; child_idx++)
+        for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
         {
           // if occupancy bit for child_idx is set..
           if (recoveredNodeBits & (1 << child_idx))
@@ -789,25 +779,17 @@ namespace pcl
     template<typename LeafContainerT, typename BranchContainerT> void
     Octree2BufBase<LeafContainerT, BranchContainerT>::treeCleanUpRecursive (BranchNode* branch_arg)
     {
-      // child iterator
-      unsigned char child_idx;
-
-      // bit pattern
-      char occupied_children_bit_pattern_prev_buffer;
-      char node_XOR_bit_pattern;
-      char unused_branches_bit_pattern;
-
       // occupancy bit pattern of branch node  (previous octree buffer)
-      occupied_children_bit_pattern_prev_buffer = getBranchBitPattern (*branch_arg, !buffer_selector_);
+      char occupied_children_bit_pattern_prev_buffer = getBranchBitPattern (*branch_arg, !buffer_selector_);
 
       // XOR of current and previous occupancy bit patterns
-      node_XOR_bit_pattern = getBranchXORBitPattern (*branch_arg);
+      char node_XOR_bit_pattern = getBranchXORBitPattern (*branch_arg);
 
       // bit pattern indicating unused octree nodes in previous branch
-      unused_branches_bit_pattern = node_XOR_bit_pattern & occupied_children_bit_pattern_prev_buffer;
+      char unused_branches_bit_pattern = node_XOR_bit_pattern & occupied_children_bit_pattern_prev_buffer;
 
       // iterate over all children
-      for (child_idx = 0; child_idx < 8; child_idx++)
+      for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
       {
         if (branch_arg->hasChild(buffer_selector_, child_idx))
         {

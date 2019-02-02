@@ -232,14 +232,12 @@ namespace pcl
         if ( (this->max_octree_depth_>=FIFO_entry.depth_) &&
              (FIFO_entry.node_->getNodeType () == BRANCH_NODE) )
         {
-          unsigned char child_idx;
-          
           // current node is a branch node
           BranchNode* current_branch =
               static_cast<BranchNode*> (FIFO_entry.node_);
 
           // iterate over all children
-          for (child_idx = 0; child_idx < 8 ; ++child_idx)
+          for (unsigned char child_idx = 0; child_idx < 8 ; ++child_idx)
           {
 
             // if child exist

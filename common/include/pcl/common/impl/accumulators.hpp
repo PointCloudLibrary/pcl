@@ -200,7 +200,7 @@ namespace pcl
       template <typename PointT> void
       add (const PointT& t)
       {
-        std::map<uint32_t, size_t>::iterator itr = labels.find (t.label);
+        auto itr = labels.find (t.label);
         if (itr == labels.end ())
           labels.insert (std::make_pair (t.label, 1));
         else
@@ -211,8 +211,7 @@ namespace pcl
       get (PointT& t, size_t) const
       {
         size_t max = 0;
-        std::map<uint32_t, size_t>::const_iterator itr;
-        for (itr = labels.begin (); itr != labels.end (); ++itr)
+        for (auto itr = labels.cbegin (); itr != labels.cend (); ++itr)
           if (itr->second > max)
           {
             max = itr->second;

@@ -538,9 +538,8 @@ main(int argc, char* argv[])
   }
 
   std::ofstream ofstream;
-  const char* ofilename = "";
   if (parc > 1) {
-    ofilename = parv[1];
+    const char* ofilename = parv[1];
     if (std::strcmp(ofilename, "-") != 0) {
       ofstream.open(ofilename);
       if (!ofstream.is_open()) {

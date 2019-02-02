@@ -113,10 +113,8 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
 {
   if (! template_cloud_set_ )
   {
-    std::vector<pcl::PCLPointField>::iterator end = cloud_blob_ptr_->fields.end ();
-    std::vector<pcl::PCLPointField>::iterator itr = cloud_blob_ptr_->fields.begin ();
     QStringList field_names;
-    for ( itr = cloud_blob_ptr_->fields.begin ()  ; itr != end; ++itr)
+    for (auto itr = cloud_blob_ptr_->fields.cbegin (), end = cloud_blob_ptr_->fields.cend (); itr != end; ++itr)
     {
       field_names.append (QString::fromStdString ( itr->name ));
     }

@@ -171,7 +171,6 @@ void showModelOpps (PCLVisualizer& viz, const ModelLibrary::HashTable& hash_tabl
   printf ("Visualizing ... "); fflush (stdout);
 
   const ModelLibrary::HashTableCell* cells = hash_table.getVoxels ();
-  int i, num_cells = hash_table.getNumberOfVoxels ();
 
   // The opps points and lines
   vtkSmartPointer<vtkPolyData> vtk_opps = vtkSmartPointer<vtkPolyData>::New ();
@@ -185,7 +184,8 @@ void showModelOpps (PCLVisualizer& viz, const ModelLibrary::HashTable& hash_tabl
   vtkIdType ids[2] = {0, 1};
 
   // Check cell by cell
-  for ( i = 0 ; i < num_cells ; ++i )
+  const int num_cells = hash_table.getNumberOfVoxels ();
+  for (int i = 0 ; i < num_cells ; ++i )
   {
     // Make sure that we get only point pairs belonging to 'model'
 	ModelLibrary::HashTableCell::const_iterator res = cells[i].find (model);

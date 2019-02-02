@@ -488,9 +488,9 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
 
   for (unsigned i = 0; i < s; i++)
   {
-    Eigen::Vector2d &p = m_data->interior_param[i];
     if (v_max (0) > v_min (0) && v_max (0) > v_min (0))
     {
+      Eigen::Vector2d &p = m_data->interior_param[i];
       p (0) = (p (0) - v_min (0)) / (v_max (0) - v_min (0));
       p (1) = (p (1) - v_min (1)) / (v_max (1) - v_min (1));
     }

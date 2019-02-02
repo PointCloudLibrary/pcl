@@ -593,8 +593,7 @@ main (int argc, char** argv)
     return (-1);
   }  
   
-  int i;
-  for (i=0; i<2048; i++)
+  for (int i=0; i < 2048; i++)
   {
     float v = i/2048.0;
     v = powf(v, 3)* 6;

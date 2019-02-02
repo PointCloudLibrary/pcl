@@ -45,8 +45,7 @@ std::string
 Statistics::getStats()
 {
   std::string result;
-  std::vector<Statistics*>::const_iterator stat_vec_it;
-  for(stat_vec_it = stat_vec_.begin(); stat_vec_it != stat_vec_.end(); ++stat_vec_it)
+  for(auto stat_vec_it = stat_vec_.cbegin(); stat_vec_it != stat_vec_.cend(); ++stat_vec_it)
   {
     std::string stat_string = (*stat_vec_it) -> getStat();
     if (stat_string != "")

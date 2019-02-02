@@ -583,11 +583,11 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
                                           target_normals_->points[idx2].getNormalVector3fMap ()).norm () : 0.f);
 
   // loop over all pairs of points in source point cloud
-  std::vector <int>::iterator it_out = source_indices_->begin (), it_out_e = source_indices_->end () - 1;
-  std::vector <int>::iterator it_in, it_in_e = source_indices_->end ();
+  auto it_out = source_indices_->begin (), it_out_e = source_indices_->end () - 1;
+  auto it_in_e = source_indices_->end ();
   for ( ; it_out != it_out_e; it_out++)
   {
-    it_in = it_out + 1;
+    auto it_in = it_out + 1;
     const PointSource *pt1 = &(*input_)[*it_out];
     for ( ; it_in != it_in_e; it_in++)
     {
@@ -780,16 +780,14 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   // find corresponding points according to their distance to the centroid
   std::vector <int> copy = match_indices;
 
-  std::vector <int>::const_iterator it_base = base_indices.begin (), it_base_e = base_indices.end ();
-  std::vector <int>::iterator it_match, it_match_e = copy.end ();
-  std::vector <int>::iterator it_match_orig = match_indices.begin ();
-  for (; it_base != it_base_e; it_base++, it_match_orig++)
+  auto it_match_orig = match_indices.begin ();
+  for (auto it_base = base_indices.cbegin (), it_base_e = base_indices.cend (); it_base != it_base_e; it_base++, it_match_orig++)
   {
     float dist_sqr_1 = pcl::squaredEuclideanDistance (target_->points[*it_base], centre_pt_base);
     float best_diff_sqr = FLT_MAX;
     int best_index = -1;
 
-    for (it_match = copy.begin (); it_match != it_match_e; it_match++)
+    for (auto it_match = copy.cbegin (), it_match_e = copy.cend (); it_match != it_match_e; it_match++)
     {
       // calculate difference of distances to centre point
       float dist_sqr_2 = pcl::squaredEuclideanDistance (input_->points[*it_match], centre_pt_match);

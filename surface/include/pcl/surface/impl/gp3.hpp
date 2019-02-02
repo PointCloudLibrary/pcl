@@ -592,7 +592,6 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
 
       // Finding visibility region of R
       bool need_invert = false;
-      int sourceIdx = nnn_;
       if ((source_[R_] == ffn_[R_]) || (source_[R_] == sfn_[R_]))
       {
         if ((angles_[end].angle - angles_[start].angle) < M_PI)
@@ -600,6 +599,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       }
       else
       {
+        int sourceIdx;
         for (sourceIdx=0; sourceIdx<nnn_; sourceIdx++)
           if (angles_[sourceIdx].index == source_[R_])
             break;

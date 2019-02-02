@@ -2521,7 +2521,7 @@ namespace pcl
       delete[] rootData.edgesSet ; rootData.edgesSet = NULL;
       coarseRootData.interiorRoots = NULL;
       coarseRootData.boundaryValues = rootData.boundaryValues;
-      for( auto iter=rootData.boundaryRoots.begin() ; iter!=rootData.boundaryRoots.end() ; iter++ )
+      for( auto iter=rootData.boundaryRoots.cbegin() ; iter!=rootData.boundaryRoots.cend() ; iter++ )
         coarseRootData.boundaryRoots[iter->first] = iter->second;
 
       for( int d=sDepth ; d>=0 ; d-- )

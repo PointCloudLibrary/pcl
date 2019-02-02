@@ -110,7 +110,6 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   char *name = new char [length_of_name];
   fs.read (name, sizeof (char) * length_of_name);
   delete[] name;
-  int offset = 0;
 
   // Read the header and fill it in with wonderful values
   try
@@ -138,6 +137,7 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
         cloud.fields[1].name = "y";
         cloud.fields[2].name = "z";
 
+        int offset = 0;
         for (int i = 0; i < 3; ++i, offset += 4)
         {
           cloud.fields[i].offset   = offset;

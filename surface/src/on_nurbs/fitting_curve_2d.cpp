@@ -319,9 +319,9 @@ FittingCurve2d::initNurbsPCA (int order, NurbsDataCurve2d *data, int ncps)
 
   for (unsigned i = 0; i < s; i++)
   {
-    double &p = data->interior_param[i];
     if (v_max (0) > v_min (0))
     {
+      double &p = data->interior_param[i];
       p = (p - v_min (0)) / (v_max (0) - v_min (0));
     }
     else

@@ -57,8 +57,6 @@ inline T module (T a)
 char*
 pcl::SVM::readline (FILE *input)
 {
-  int len;
-
   if (fgets (line_, max_line_len_, input) == NULL)
     return NULL;
 
@@ -67,7 +65,7 @@ pcl::SVM::readline (FILE *input)
   {
     max_line_len_ *= 2;
     line_ = static_cast<char *> (realloc (line_, max_line_len_));
-    len = int (strlen (line_));
+    int len = int (strlen (line_));
 
     // if the new read part of the string is unavailable, break the while
     if (fgets (line_ + len, max_line_len_ - len, input) == NULL)
@@ -80,9 +78,7 @@ pcl::SVM::readline (FILE *input)
 void
 pcl::SVMTrain::doCrossValidation ()
 {
-  int i;
   int total_correct = 0;
-  double total_error = 0;
   double sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
   double *target = Malloc (double, prob_.l);
 
@@ -98,7 +94,8 @@ pcl::SVMTrain::doCrossValidation ()
   if (param_.svm_type == EPSILON_SVR ||
       param_.svm_type == NU_SVR)
   {
-    for (i = 0;i < prob_.l;i++)
+    double total_error = 0;
+    for (int i = 0; i < prob_.l; i++)
     {
       double y = prob_.y[i];
       double v = target[i];
@@ -121,7 +118,7 @@ pcl::SVMTrain::doCrossValidation ()
   }
   else
   {
-    for (i = 0;i < prob_.l;i++)
+    for (int i = 0; i < prob_.l; i++)
       if (target[i] == prob_.y[i])
         ++total_correct;
 
@@ -293,7 +290,6 @@ pcl::SVMTrain::trainClassifier ()
 bool
 pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
 {
-  int elements, max_index, inst_max_index, i, j;
   FILE *fp = fopen (filename, "re");
   svm_node *x_space_;
   char *endptr;
@@ -305,7 +301,7 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
     return false;
   }
 
-  elements = 0;
+  int elements = 0;
   prob.l = 0;
 
   line_ = Malloc (char, max_line_len_);
@@ -339,13 +335,13 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
   prob.x = Malloc (struct svm_node *, prob.l);
   x_space_ = Malloc (struct svm_node, elements);
 
-  max_index = 0;
-  j = 0;
+  int max_index = 0;
+  int j = 0;
   bool isUnlabelled = false;
 
-  for (i = 0;i < prob.l;i++)
+  for (int i = 0;i < prob.l;i++)
   {
-    inst_max_index = -1; // strtol gives 0 if wrong format, and precomputed kernel has <index> start from 0
+    int inst_max_index = -1; // strtol gives 0 if wrong format, and precomputed kernel has <index> start from 0
     // read one line in the file
     readline (fp);
     prob.x[i] = &x_space_[j];
@@ -432,7 +428,7 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
     param_.gamma = 1.0 / max_index;
 
   if (param_.kernel_type == PRECOMPUTED)
-    for (i = 0;i < prob.l;i++)
+    for (int i = 0;i < prob.l;i++)
     {
       if (prob.x[i][0].index != 0)
       {
@@ -606,7 +602,6 @@ pcl::SVMClassify::classificationTest ()
   int svm_type = svm_get_svm_type (&model_);
   int nr_class = svm_get_nr_class (&model_);
   double *prob_estimates = NULL;
-  int j;
 
   prediction_.clear ();
 
@@ -638,7 +633,7 @@ pcl::SVMClassify::classificationTest ()
       predict_label = svm_predict_probability (&model_, prob_.x[ii], prob_estimates);
       prediction_[ii].push_back (predict_label);
 
-      for (j = 0;j < nr_class;j++)
+      for (int j = 0; j < nr_class; j++)
       {
         prediction_[ii].push_back (prob_estimates[j]);
       }
@@ -725,8 +720,6 @@ pcl::SVMClassify::classification ()
 
   double *prob_estimates = NULL;
 
-  int j;
-
   prediction_.clear();
 
   if (predict_probability_)
@@ -754,7 +747,7 @@ pcl::SVMClassify::classification ()
       predict_label = svm_predict_probability (&model_, prob_.x[ii], prob_estimates);
       prediction_[ii].push_back (predict_label);
 
-      for (j = 0;j < nr_class;j++)
+      for (int j = 0;j < nr_class;j++)
       {
         prediction_[ii].push_back (prob_estimates[j]);
       }
@@ -805,14 +798,10 @@ pcl::SVMClassify::classification (pcl::SVMData in)
   int nr_class = svm_get_nr_class (&model_);
   double *prob_estimates = NULL;
 
-  int j;
-
   svm_node *buff;
   buff = Malloc (struct svm_node, in.SV.size() + 10);
 
-  size_t i = 0;
-
-  for (i = 0; i < in.SV.size (); i++)
+  for (size_t i = 0; i < in.SV.size (); i++)
   {
     buff[i].index = in.SV[i].idx;
 
@@ -822,7 +811,7 @@ pcl::SVMClassify::classification (pcl::SVMData in)
       buff[i].value = in.SV[i].value;
   }
 
-  buff[i].index = -1;
+  buff[in.SV.size ()].index = -1;
 
   // clean the prediction vector
   prediction_.clear ();
@@ -846,7 +835,7 @@ pcl::SVMClassify::classification (pcl::SVMData in)
     predict_label = svm_predict_probability (&model_, buff, prob_estimates);
     prediction_[0].push_back (predict_label);
 
-    for (j = 0;j < nr_class;j++)
+    for (int j = 0;j < nr_class;j++)
     {
       prediction_[0].push_back (prob_estimates[j]);
     }

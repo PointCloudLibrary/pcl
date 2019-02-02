@@ -204,8 +204,7 @@ namespace pcl
        uint16_t* depth_ptr = &disparityMap_arg[0];
        uint8_t* color_ptr = &colorImage_arg[0];
 
-       size_t i;
-       for (i=0; i<cloud_size; ++i, ++depth_ptr, color_ptr+=sizeof(uint8_t)*3)
+       for (size_t i = 0; i < cloud_size; ++i, ++depth_ptr, color_ptr += sizeof(uint8_t) * 3)
        {
          if (!(*depth_ptr) || (*depth_ptr==0x7FF))
            memset(color_ptr, 0, sizeof(uint8_t)*3);
@@ -225,14 +224,13 @@ namespace pcl
        {
          if (convertToMono)
          {
-           size_t i, size;
            vector<uint8_t> monoImage;
-           size = width_arg*height_arg;
+           size_t size = width_arg*height_arg;
 
            monoImage.reserve(size);
 
            // grayscale conversion
-           for (i=0; i<size; ++i)
+           for (size_t i = 0; i < size; ++i)
            {
              uint8_t grayvalue = static_cast<uint8_t>(0.2989 * static_cast<float>(colorImage_arg[i*3+0]) +
                                                       0.5870 * static_cast<float>(colorImage_arg[i*3+1]) +
@@ -405,29 +403,23 @@ namespace pcl
                                                                    float& maxDepth_arg,
                                                                    float& focalLength_arg) const
     {
-      size_t width, height, it;
-      int centerX, centerY;
-      int x, y;
-      float maxDepth;
-      float focalLength;
-
-      width = cloud_arg->width;
-      height = cloud_arg->height;
+      size_t width = cloud_arg->width;
+      size_t height = cloud_arg->height;
 
       // Center of organized point cloud
-      centerX = static_cast<int> (width / 2);
-      centerY = static_cast<int> (height / 2);
+      int centerX = static_cast<int> (width / 2);
+      int centerY = static_cast<int> (height / 2);
 
       // Ensure we have an organized point cloud
       assert((width>1) && (height>1));
       assert(width*height == cloud_arg->points.size());
 
-      maxDepth = 0;
-      focalLength = 0;
+      float maxDepth = 0;
+      float focalLength = 0;
 
-      it = 0;
-      for (y = -centerY; y < +centerY; ++y)
-        for (x = -centerX; x < +centerX; ++x)
+      size_t it = 0;
+      for (int y = -centerY; y < centerY; ++y )
+        for (int x = -centerX; x < centerX; ++x )
         {
           const PointT& point = cloud_arg->points[it++];
 

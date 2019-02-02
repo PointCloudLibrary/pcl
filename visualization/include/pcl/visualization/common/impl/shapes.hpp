@@ -56,8 +56,7 @@ pcl::visualization::createPolygon (const typename pcl::PointCloud<PointT>::Const
   poly_points->SetNumberOfPoints (cloud->points.size ());
   polygon->GetPointIds ()->SetNumberOfIds (cloud->points.size ());
 
-  size_t i;
-  for (i = 0; i < cloud->points.size (); ++i)
+  for (size_t i = 0; i < cloud->points.size (); ++i)
   {
     poly_points->SetPoint (i, cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
     polygon->GetPointIds ()->SetId (i, i);
@@ -85,8 +84,7 @@ pcl::visualization::createPolygon (const pcl::PlanarPolygon<PointT> &planar_poly
   poly_points->SetNumberOfPoints (planar_polygon.getContour ().size () + 1);
   polygon->GetPointIds ()->SetNumberOfIds (planar_polygon.getContour ().size () + 1);
 
-  size_t i;
-  for (i = 0; i < planar_polygon.getContour ().size (); ++i)
+  for (size_t i = 0; i < planar_polygon.getContour ().size (); ++i)
   {
     poly_points->SetPoint (i, planar_polygon.getContour ()[i].x, 
                               planar_polygon.getContour ()[i].y, 
@@ -94,10 +92,12 @@ pcl::visualization::createPolygon (const pcl::PlanarPolygon<PointT> &planar_poly
     polygon->GetPointIds ()->SetId (i, i);
   }
 
-  poly_points->SetPoint (i, planar_polygon.getContour ()[0].x, 
-                            planar_polygon.getContour ()[0].y, 
-                            planar_polygon.getContour ()[0].z);
-  polygon->GetPointIds ()->SetId (i, i);
+  size_t closingContourId = planar_polygon.getContour ().size ();
+  auto firstContour = planar_polygon.getContour ()[0];
+  poly_points->SetPoint (closingContourId, firstContour.x, 
+                                           firstContour.y, 
+                                           firstContour.z);
+  polygon->GetPointIds ()->SetId (closingContourId, closingContourId);
   
   allocVtkUnstructuredGrid (poly_grid);
   poly_grid->Allocate (1, 1);
