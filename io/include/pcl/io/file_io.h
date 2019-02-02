@@ -315,11 +315,11 @@ namespace pcl
 
   template <typename Type> inline
   std::enable_if_t<std::is_integral<Type>::value, bool>
-  isValueFinite (const pcl::PCLPointCloud2 &cloud,
-                 const unsigned int point_index, 
-                 const int point_size, 
-                 const unsigned int field_idx, 
-                 const unsigned int fields_count)
+  isValueFinite (const pcl::PCLPointCloud2& /* cloud */,
+                 const unsigned int /* point_index */,
+                 const int /* point_size */,
+                 const unsigned int /* field_idx */,
+                 const unsigned int /* fields_count */)
   {
     return true;
   }

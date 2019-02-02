@@ -275,7 +275,7 @@ namespace pcl
 
   template<typename T> inline
   std::enable_if_t<std::is_integral<T>::value>
-  unsetDenseFlagIfNotFinite(T value, PCLPointCloud2* cloud)
+  unsetDenseFlagIfNotFinite(T /* value */, PCLPointCloud2* /* cloud */)
   {
   }
 
