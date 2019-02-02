@@ -57,12 +57,12 @@ namespace pcl
     * \ingroup segmentation
     */
   void 
-  seededHueSegmentation (const PointCloud<PointXYZRGB>                           &cloud, 
-                         const boost::shared_ptr<search::Search<PointXYZRGB> >   &tree, 
-                         float                                                   tolerance, 
-                         PointIndices                                            &indices_in, 
-                         PointIndices                                            &indices_out, 
-                         float                                                   delta_hue = 0.0);
+  seededHueSegmentation (const PointCloud<PointXYZRGB>            &cloud,
+                         const search::Search<PointXYZRGB>::Ptr   &tree,
+                         float                                    tolerance,
+                         PointIndices                             &indices_in,
+                         PointIndices                             &indices_out,
+                         float                                    delta_hue = 0.0);
 
   /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
     * \param[in] cloud the point cloud message
@@ -76,12 +76,12 @@ namespace pcl
     * \ingroup segmentation
     */
   void 
-  seededHueSegmentation (const PointCloud<PointXYZRGB>                           &cloud, 
-                         const boost::shared_ptr<search::Search<PointXYZRGBL> >  &tree, 
-                         float                                                   tolerance, 
-                         PointIndices                                            &indices_in, 
-                         PointIndices                                            &indices_out, 
-                         float                                                   delta_hue = 0.0);
+  seededHueSegmentation (const PointCloud<PointXYZRGB>            &cloud,
+                         const search::Search<PointXYZRGBL>::Ptr  &tree,
+                         float                                    tolerance,
+                         PointIndices                             &indices_in,
+                         PointIndices                             &indices_out,
+                         float                                    delta_hue = 0.0);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

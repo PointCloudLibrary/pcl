@@ -42,10 +42,10 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud, 
-                               const boost::shared_ptr<search::Search<PointT> > &tree,
+pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
+                               const typename search::Search<PointT>::Ptr &tree,
                                float tolerance, std::vector<PointIndices> &clusters,
-                               unsigned int min_pts_per_cluster, 
+                               unsigned int min_pts_per_cluster,
                                unsigned int max_pts_per_cluster)
 {
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
@@ -115,11 +115,11 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** @todo: fix the return value, make sure the exit is not needed anymore*/
 template <typename PointT> void
-pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud, 
+pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
                                const std::vector<int> &indices,
-                               const boost::shared_ptr<search::Search<PointT> > &tree,
+                               const typename search::Search<PointT>::Ptr &tree,
                                float tolerance, std::vector<PointIndices> &clusters,
-                               unsigned int min_pts_per_cluster, 
+                               unsigned int min_pts_per_cluster,
                                unsigned int max_pts_per_cluster)
 {
   // \note If the tree was created over <cloud, indices>, we guarantee a 1-1 mapping between what the tree returns
@@ -240,7 +240,7 @@ pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clu
 }
 
 #define PCL_INSTANTIATE_EuclideanClusterExtraction(T) template class PCL_EXPORTS pcl::EuclideanClusterExtraction<T>;
-#define PCL_INSTANTIATE_extractEuclideanClusters(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const boost::shared_ptr<pcl::search::Search<T> > &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
-#define PCL_INSTANTIATE_extractEuclideanClusters_indices(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const std::vector<int> &, const boost::shared_ptr<pcl::search::Search<T> > &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_extractEuclideanClusters(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_extractEuclideanClusters_indices(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const std::vector<int> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
 
 #endif        // PCL_EXTRACT_CLUSTERS_IMPL_H_

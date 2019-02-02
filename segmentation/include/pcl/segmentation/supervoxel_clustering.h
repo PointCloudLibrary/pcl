@@ -277,7 +277,7 @@ namespace pcl
       typename pcl::PointCloud<PointXYZRGBA>::Ptr
       getColoredCloud () const
       { 
-        return boost::shared_ptr<pcl::PointCloud<PointXYZRGBA> > (new pcl::PointCloud<PointXYZRGBA>);
+        return pcl::PointCloud<PointXYZRGBA>::Ptr (new pcl::PointCloud<PointXYZRGBA>);
       }
 
       /** \brief Returns a deep copy of the voxel centroid cloud */
@@ -302,7 +302,7 @@ namespace pcl
       pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
       getColoredVoxelCloud () const
       {
-        return boost::shared_ptr<pcl::PointCloud<PointXYZRGBA> > (new pcl::PointCloud<PointXYZRGBA>);
+        return pcl::PointCloud<PointXYZRGBA>::Ptr (new pcl::PointCloud<PointXYZRGBA>);
       }
 
       /** \brief Returns labeled voxelized cloud

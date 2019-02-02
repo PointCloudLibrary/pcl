@@ -508,7 +508,7 @@ namespace pcl
         * \param[out] rf the resulting reference frame.
         */
       template<typename PointType, typename PointRfType> void
-      computeRf (const boost::shared_ptr<const pcl::PointCloud<PointType> > &input, pcl::PointCloud<PointRfType> &rf);
+      computeRf (const typename pcl::PointCloud<PointType>::ConstPtr &input, pcl::PointCloud<PointRfType> &rf);
   };
 }
 

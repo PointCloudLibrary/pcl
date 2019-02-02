@@ -267,7 +267,7 @@ namespace pcl
           boost::shared_ptr<std::vector<int> > full_cloud_pt_indices_;
           
           /** \brief  Pointer to the input PointCloud */
-          boost::shared_ptr<const pcl::PointCloud<WeightSACPointType> > point_cloud_ptr_;
+          pcl::PointCloud<WeightSACPointType>::ConstPtr point_cloud_ptr_;
           
           /** \brief  Highest score found so far */
           double best_score_;

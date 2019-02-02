@@ -636,7 +636,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::setSamplin
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <int FeatureSize, typename PointT, typename NormalT> boost::shared_ptr<pcl::Feature<PointT, pcl::Histogram<FeatureSize> > >
+template <int FeatureSize, typename PointT, typename NormalT> typename pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::FeaturePtr
 pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::getFeatureEstimator ()
 {
   return (feature_estimator_);
@@ -644,8 +644,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::getFeature
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <int FeatureSize, typename PointT, typename NormalT> void
-pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::setFeatureEstimator (
-  boost::shared_ptr<pcl::Feature<PointT, pcl::Histogram<FeatureSize> > > feature)
+pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::setFeatureEstimator (FeaturePtr feature)
 {
   feature_estimator_ = feature;
 }
