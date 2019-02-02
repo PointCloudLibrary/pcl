@@ -1,5 +1,5 @@
 if(NOT WITH_OPENNI)
-  build()
+  return()
 endif()
 
 if(NOT VTK_FOUND)
