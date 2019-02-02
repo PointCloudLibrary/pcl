@@ -100,6 +100,8 @@ namespace pcl
 
       typedef boost::graph_traits< mGraph >::in_edge_iterator InEdgeIterator;
 
+      typedef boost::shared_ptr<mGraph> mGraphPtr;
+
     public:
 
       /** \brief Constructor that sets default values for member variables. */
@@ -201,7 +203,7 @@ namespace pcl
       getMaxFlow () const;
 
       /** \brief Returns the graph that was build for finding the minimum cut. */
-      typename boost::shared_ptr<typename pcl::MinCutSegmentation<PointT>::mGraph>
+      mGraphPtr
       getGraph () const;
 
       /** \brief Returns the colored cloud. Points that belong to the object have the same color. */
@@ -292,7 +294,7 @@ namespace pcl
       std::vector <pcl::PointIndices> clusters_;
 
       /** \brief Stores the graph for finding the maximum flow. */
-      boost::shared_ptr<mGraph> graph_;
+      mGraphPtr graph_;
 
       /** \brief Stores the capacity of every edge in the graph. */
       boost::shared_ptr<CapacityMap> capacity_;

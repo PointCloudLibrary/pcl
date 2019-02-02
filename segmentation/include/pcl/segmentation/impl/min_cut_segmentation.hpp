@@ -311,7 +311,7 @@ pcl::MinCutSegmentation<PointT>::getMaxFlow () const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> typename boost::shared_ptr<typename pcl::MinCutSegmentation<PointT>::mGraph>
+template <typename PointT> typename pcl::MinCutSegmentation<PointT>::mGraphPtr
 pcl::MinCutSegmentation<PointT>::getGraph () const
 {
   return (graph_);
