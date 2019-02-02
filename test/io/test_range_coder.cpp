@@ -96,7 +96,6 @@ TEST (PCL, Adaptive_Range_Coder_Test)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Static_Range_Coder_Test)
 {
-  size_t i;
   std::stringstream sstream;
   std::vector<char> inputCharData;
   std::vector<char> outputCharData;
