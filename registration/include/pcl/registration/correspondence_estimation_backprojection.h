@@ -187,7 +187,7 @@ namespace pcl
         getKSearch () const { return (k_); }
         
         /** \brief Clone and cast to CorrespondenceEstimationBase */
-        virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > 
+        virtual typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
         clone () const
         {
           Ptr copy (new CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar> (*this));

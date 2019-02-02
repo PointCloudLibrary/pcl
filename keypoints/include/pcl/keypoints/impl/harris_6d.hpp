@@ -209,7 +209,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     }
   }
 
-  boost::shared_ptr<pcl::PointCloud<PointOutT> > response (new pcl::PointCloud<PointOutT> ());
+  typename pcl::PointCloud<PointOutT>::Ptr response (new pcl::PointCloud<PointOutT>);
   response->points.reserve (input_->points.size());
   responseTomasi(*response);
 

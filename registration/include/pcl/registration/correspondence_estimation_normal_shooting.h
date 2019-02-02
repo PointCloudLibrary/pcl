@@ -183,7 +183,7 @@ namespace pcl
         getKSearch () const { return (k_); }
 
         /** \brief Clone and cast to CorrespondenceEstimationBase */
-        boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > 
+        typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
         clone () const override
         {
           Ptr copy (new CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar> (*this));

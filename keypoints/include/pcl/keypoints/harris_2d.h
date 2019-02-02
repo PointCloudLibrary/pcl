@@ -168,7 +168,7 @@ namespace pcl
       Eigen::MatrixXf derivatives_rows_;
       Eigen::MatrixXf derivatives_cols_;
       /// intermediate holder for computed responses
-      boost::shared_ptr<pcl::PointCloud<PointOutT> > response_;
+      typename pcl::PointCloud<PointOutT>::Ptr response_;
       /// comparator for responses intensity
       bool 
       greaterIntensityAtIndices (int a, int b) const

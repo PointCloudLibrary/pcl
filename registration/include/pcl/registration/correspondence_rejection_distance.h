@@ -172,8 +172,8 @@ namespace pcl
           * confident that the tree will be set correctly.
           */
         template <typename PointT> inline void
-        setSearchMethodTarget (const boost::shared_ptr<pcl::search::KdTree<PointT> > &tree, 
-                               bool force_no_recompute = false) 
+        setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr &tree,
+                               bool force_no_recompute = false)
         { 
           boost::static_pointer_cast< DataContainer<PointT> > 
             (data_container_)->setSearchMethodTarget (tree, force_no_recompute );

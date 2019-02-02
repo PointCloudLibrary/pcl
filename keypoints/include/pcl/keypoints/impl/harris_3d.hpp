@@ -240,7 +240,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
 template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut &output)
 {
-  boost::shared_ptr<pcl::PointCloud<PointOutT> > response (new pcl::PointCloud<PointOutT> ());
+  typename pcl::PointCloud<PointOutT>::Ptr response (new pcl::PointCloud<PointOutT>);
 
   response->points.reserve (input_->points.size());
 

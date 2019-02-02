@@ -132,8 +132,8 @@ namespace pcl
       bool refine_;
       bool nonmax_;
       unsigned int threads_;    
-      boost::shared_ptr<pcl::PointCloud<NormalT> > normals_;
-      boost::shared_ptr<pcl::PointCloud<pcl::IntensityGradient> > intensity_gradients_;
+      typename pcl::PointCloud<NormalT>::Ptr normals_;
+      pcl::PointCloud<pcl::IntensityGradient>::Ptr intensity_gradients_;
   } ;
 }
 

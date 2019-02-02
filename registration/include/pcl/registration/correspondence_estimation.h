@@ -279,7 +279,7 @@ namespace pcl
         }
 
         /** \brief Clone and cast to CorrespondenceEstimationBase */
-        virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > clone () const = 0;
+        virtual typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr clone () const = 0;
 
       protected:
         /** \brief The correspondence estimation method name. */
@@ -424,7 +424,7 @@ namespace pcl
 
         
         /** \brief Clone and cast to CorrespondenceEstimationBase */
-        boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > 
+        typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
         clone () const override
         {
           Ptr copy (new CorrespondenceEstimation<PointSource, PointTarget, Scalar> (*this));
