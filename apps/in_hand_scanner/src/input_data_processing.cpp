@@ -246,7 +246,7 @@ pcl::ihs::InputDataProcessing::calculateNormals (const CloudXYZRGBAConstPtr& clo
 
   for (; it_in!=cloud_in->end (); ++it_in, ++it_n, ++it_out)
   {
-    if (!boost::math::isnan (it_n->getNormalVector4fMap ()))
+    if (!it_n->getNormalVector4fMap (). hasNaN ())
     {
       // m -> cm
       it_out->getVector4fMap ()       = 100.f * it_in->getVector4fMap ();
