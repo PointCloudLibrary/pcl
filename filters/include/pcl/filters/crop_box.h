@@ -107,7 +107,7 @@ namespace pcl
         max_pt_ = max_pt;
       }
 
-      /** \brief Get the value of the maxiomum point of the box, as set by the user
+      /** \brief Get the value of the maximum point of the box, as set by the user
         * \return the value of the internal \a max_pt parameter.
         */
       inline Eigen::Vector4f
