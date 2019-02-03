@@ -406,7 +406,7 @@ pcl::ihs::ICP::selectDataPoints (const CloudXYZRGBNormalConstPtr& cloud_data) co
 
   for (auto it_in = cloud_data->begin (); it_in!=cloud_data->end (); ++it_in)
   {
-    if (!boost::math::isnan (it_in->x))
+    if (!std::isnan (it_in->x))
     {
       PointNormal pt;
       pt.getVector4fMap ()       = it_in->getVector4fMap ();
