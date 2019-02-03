@@ -106,19 +106,19 @@ the *Grabber* interface so generic, leading to the relatively complicated
 *boost::bind* line. In fact, we can register the following callback types as of
 this writing:
 
-* `void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&)`
+* `void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)`
 
-* `void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&)`
+* `void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)`
 
-* `void (const boost::shared_ptr<openni_wrapper::Image>&)`
+* `void (const openni_wrapper::Image::Ptr&)`
 
   This provides just the RGB image from the built-in camera.
 
-* `void (const boost::shared_ptr<openni_wrapper::DepthImage>&)`
+* `void (const openni_wrapper::DepthImage::Ptr&)`
 
   This provides the depth image, without any color or intensity information
 
-* `void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)`
+* `void (const openni_wrapper::Image::Ptr&, const openni_wrapper::DepthImage::Ptr&, float constant)`
     
   When a callback of this type is registered, the grabber sends both RGB
   image and depth image and the constant (*1 / focal length*), which you need
