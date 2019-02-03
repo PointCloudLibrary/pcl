@@ -57,6 +57,8 @@ namespace pcl
       public:
       
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+        typedef boost::shared_ptr<HoughSpace3D> Ptr;
       
         /** \brief Constructor
           *
@@ -468,7 +470,7 @@ namespace pcl
       float local_rf_search_radius_;
 
       /** \brief The Hough space. */
-      boost::shared_ptr<pcl::recognition::HoughSpace3D> hough_space_;
+      pcl::recognition::HoughSpace3D::Ptr hough_space_;
 
       /** \brief Transformations found by clusterCorrespondences method. */
       std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > found_transformations_;
@@ -506,7 +508,7 @@ namespace pcl
         * \param[out] rf the resulting reference frame.
         */
       template<typename PointType, typename PointRfType> void
-      computeRf (const boost::shared_ptr<const pcl::PointCloud<PointType> > &input, pcl::PointCloud<PointRfType> &rf);
+      computeRf (const typename pcl::PointCloud<PointType>::ConstPtr &input, pcl::PointCloud<PointRfType> &rf);
   };
 }
 

@@ -58,8 +58,8 @@ namespace pcl
     */
   template <typename PointT> void 
   extractEuclideanClusters (
-      const PointCloud<PointT> &cloud, const boost::shared_ptr<search::Search<PointT> > &tree, 
-      float tolerance, std::vector<PointIndices> &clusters, 
+      const PointCloud<PointT> &cloud, const typename search::Search<PointT>::Ptr &tree,
+      float tolerance, std::vector<PointIndices> &clusters,
       unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,8 +76,8 @@ namespace pcl
     */
   template <typename PointT> void 
   extractEuclideanClusters (
-      const PointCloud<PointT> &cloud, const std::vector<int> &indices, 
-      const boost::shared_ptr<search::Search<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, 
+      const PointCloud<PointT> &cloud, const std::vector<int> &indices,
+      const typename search::Search<PointT>::Ptr &tree, float tolerance, std::vector<PointIndices> &clusters,
       unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,10 +96,10 @@ namespace pcl
     */
   template <typename PointT, typename Normal> void 
   extractEuclideanClusters (
-      const PointCloud<PointT> &cloud, const PointCloud<Normal> &normals, 
-      float tolerance, const boost::shared_ptr<KdTree<PointT> > &tree, 
-      std::vector<PointIndices> &clusters, double eps_angle, 
-      unsigned int min_pts_per_cluster = 1, 
+      const PointCloud<PointT> &cloud, const PointCloud<Normal> &normals,
+      float tolerance, const typename KdTree<PointT>::Ptr &tree,
+      std::vector<PointIndices> &clusters, double eps_angle,
+      unsigned int min_pts_per_cluster = 1,
       unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ())
   {
     if (tree->getInputCloud ()->points.size () != cloud.points.size ())
@@ -195,10 +195,10 @@ namespace pcl
     */
   template <typename PointT, typename Normal> 
   void extractEuclideanClusters (
-      const PointCloud<PointT> &cloud, const PointCloud<Normal> &normals, 
-      const std::vector<int> &indices, const boost::shared_ptr<KdTree<PointT> > &tree, 
-      float tolerance, std::vector<PointIndices> &clusters, double eps_angle, 
-      unsigned int min_pts_per_cluster = 1, 
+      const PointCloud<PointT> &cloud, const PointCloud<Normal> &normals,
+      const std::vector<int> &indices, const typename KdTree<PointT>::Ptr &tree,
+      float tolerance, std::vector<PointIndices> &clusters, double eps_angle,
+      unsigned int min_pts_per_cluster = 1,
       unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ())
   {
     // \note If the tree was created over <cloud, indices>, we guarantee a 1-1 mapping between what the tree returns

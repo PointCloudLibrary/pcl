@@ -311,7 +311,7 @@ pcl::MinCutSegmentation<PointT>::getMaxFlow () const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> typename boost::shared_ptr<typename pcl::MinCutSegmentation<PointT>::mGraph>
+template <typename PointT> typename pcl::MinCutSegmentation<PointT>::mGraphPtr
 pcl::MinCutSegmentation<PointT>::getGraph () const
 {
   return (graph_);
@@ -328,17 +328,14 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
     return (false);
 
   if (search_ == 0)
-    search_ = boost::shared_ptr<pcl::search::Search<PointT> > (new pcl::search::KdTree<PointT>);
+    search_.reset (new pcl::search::KdTree<PointT>);
 
-  graph_.reset ();
-  graph_ = boost::shared_ptr< mGraph > (new mGraph ());
+  graph_.reset (new mGraph);
 
-  capacity_.reset ();
-  capacity_ = boost::shared_ptr<CapacityMap> (new CapacityMap ());
+  capacity_.reset (new CapacityMap);
   *capacity_ = boost::get (boost::edge_capacity, *graph_);
 
-  reverse_edges_.reset ();
-  reverse_edges_ = boost::shared_ptr<ReverseEdgeMap> (new ReverseEdgeMap ());
+  reverse_edges_.reset (new ReverseEdgeMap);
   *reverse_edges_ = boost::get (boost::edge_reverse, *graph_);
 
   VertexDescriptor vertex_descriptor(0);

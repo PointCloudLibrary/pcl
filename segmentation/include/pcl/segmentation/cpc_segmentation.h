@@ -249,8 +249,8 @@ namespace pcl
             // Maximum number of trials before we give up.
             max_iterations_ = 10000;
             use_directed_weights_ = false;
-            model_pt_indices_ = boost::shared_ptr<std::vector<int> > (new std::vector<int> ());
-            full_cloud_pt_indices_.reset (new std::vector<int> (* (sac_model_->getIndices ())));       
+            model_pt_indices_.reset (new std::vector<int>);
+            full_cloud_pt_indices_.reset (new std::vector<int> (* (sac_model_->getIndices ())));
             point_cloud_ptr_ = sac_model_->getInputCloud ();
           }
           
@@ -267,7 +267,7 @@ namespace pcl
           boost::shared_ptr<std::vector<int> > full_cloud_pt_indices_;
           
           /** \brief  Pointer to the input PointCloud */
-          boost::shared_ptr<const pcl::PointCloud<WeightSACPointType> > point_cloud_ptr_;
+          pcl::PointCloud<WeightSACPointType>::ConstPtr point_cloud_ptr_;
           
           /** \brief  Highest score found so far */
           double best_score_;
