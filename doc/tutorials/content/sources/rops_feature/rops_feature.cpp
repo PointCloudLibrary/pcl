@@ -10,7 +10,7 @@ int main (int argc, char** argv)
   if (pcl::io::loadPCDFile (argv[1], *cloud) == -1)
     return (-1);
 
-  pcl::PointIndicesPtr indices = boost::shared_ptr <pcl::PointIndices> (new pcl::PointIndices ());
+  pcl::PointIndicesPtr indices (new pcl::PointIndices);
   std::ifstream indices_file;
   indices_file.open (argv[2], std::ifstream::in);
   for (std::string line; std::getline (indices_file, line);)

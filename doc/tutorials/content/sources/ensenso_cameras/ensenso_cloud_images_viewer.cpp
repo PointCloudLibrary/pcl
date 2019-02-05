@@ -26,6 +26,7 @@ typedef pcl::PointCloud<PointT> PointCloudT;
 
 /** @brief Convenience typdef for the Ensenso grabber callback */
 typedef std::pair<pcl::PCLImage, pcl::PCLImage> PairOfImages;
+typedef boost::shared_ptr<PairOfImages> PairOfImagesPtr;
 
 /** @brief CloudViewer pointer */
 pcl::visualization::CloudViewer::Ptr viewer_ptr;
@@ -92,8 +93,8 @@ getOpenCVType (const std::string &type)
  * @warning Image type changes if a calibration pattern is discovered/lost;
  * check @c images->first.encoding */
 void
-grabberCallback (const boost::shared_ptr<PointCloudT>& cloud,
-                 const boost::shared_ptr<PairOfImages>& images)
+grabberCallback (const PointCloudT::Ptr& cloud,
+                 const PairOfImagesPtr& images)
 {
   viewer_ptr->showCloud (cloud);
   unsigned char *l_image_array = reinterpret_cast<unsigned char *> (&images->first.data[0]);
@@ -126,9 +127,7 @@ main (void)
   //ensenso_ptr->initExtrinsicCalibration (5); // Disable projector if you want good looking images.
   // You won't be able to detect a calibration pattern with the projector enabled!
 
-  boost::function<void
-  (const boost::shared_ptr<PointCloudT>&,
-   const boost::shared_ptr<PairOfImages>&)> f = boost::bind (&grabberCallback, _1, _2);
+  boost::function<void (const PointCloudT::Ptr&, const PairOfImagesPtr&)> f = boost::bind (&grabberCallback, _1, _2);
   ensenso_ptr->registerCallback (f);
 
   cv::namedWindow ("Ensenso images", cv::WINDOW_AUTOSIZE);

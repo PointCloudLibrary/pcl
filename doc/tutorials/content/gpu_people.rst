@@ -39,7 +39,7 @@ Now, let's break down the code piece by piece. Starting from the main routine.
 
 .. literalinclude:: sources/gpu/people_detect/src/people_detect.cpp
    :language: cpp
-   :lines: 317-368
+   :lines: 317-367
 
 First the GPU device is set, by default this is the first GPU found in the bus, but if you have multiple GPU's in
 your system, this allows you to select a specific one.
@@ -47,7 +47,7 @@ Then a OpenNI Capture is made, see the OpenNI Grabber tutorial for more info on 
 
 .. literalinclude:: sources/gpu/people_detect/src/people_detect.cpp
    :language: cpp
-   :lines: 330-339
+   :lines: 329-338
 
 The implementation is based on a similar approach as Shotton et al. and thus needs off-line learned random
 decision forests for labeling. The current implementation allows up to 4 decision trees to be loaded into
@@ -55,19 +55,19 @@ the forest. This is done by giving it the names of the text files to load.
 
 .. literalinclude:: sources/gpu/people_detect/src/people_detect.cpp
    :language: cpp
-   :lines: 341-342
+   :lines: 340-341
 
 An additional parameter allows you to configure the number of trees to be loaded. 
 
 .. literalinclude:: sources/gpu/people_detect/src/people_detect.cpp
    :language: cpp
-   :lines: 351-353
+   :lines: 350-352
 
 Then the RDF object is created, loading the trees upon creation.
 
 .. literalinclude:: sources/gpu/people_detect/src/people_detect.cpp
    :language: cpp
-   :lines: 355-360
+   :lines: 354-359
 
 Now we create the application object, give it the pointer to the RDF object and start the loop.
 Now we'll have a look at the main loop.

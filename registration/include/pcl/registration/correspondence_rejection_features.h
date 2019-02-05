@@ -159,9 +159,11 @@ namespace pcl
             virtual bool isValid () = 0;
             virtual double getCorrespondenceScore (int index) = 0;
             virtual bool isCorrespondenceValid (int index) = 0;
+
+            typedef boost::shared_ptr<FeatureContainerInterface> Ptr;
         };
 
-        typedef boost::unordered_map<std::string, boost::shared_ptr<FeatureContainerInterface> > FeaturesMap;
+        typedef boost::unordered_map<std::string, FeatureContainerInterface::Ptr> FeaturesMap;
 
         /** \brief An STL map containing features to use when performing the correspondence search.*/
         FeaturesMap features_map_;
