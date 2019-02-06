@@ -193,7 +193,7 @@ namespace pcl
             Eigen::SimplicialCholesky<SparseMatrix, Eigen::Lower> cg;
             cg.compute (L);
             bool succeeded = true;
-            for (int i = 0; i < B.cols (); ++i)
+            for (Eigen::Index i = 0; i < B.cols (); ++i)
             {
               Vector b = B.col (i);
               X.col (i) = cg.solve (b);
@@ -210,7 +210,7 @@ namespace pcl
           {
             using namespace boost;
             if (X.cols ())
-              for (int i = 0; i < X.rows (); ++i)
+              for (Eigen::Index i = 0; i < X.rows (); ++i)
               {
                 size_t max_column;
                 X.row (i).maxCoeff (&max_column);
@@ -226,7 +226,7 @@ namespace pcl
             using namespace boost;
             potentials = Matrix::Zero (num_vertices (g_), colors_.size ());
             // Copy over rows from X
-            for (int i = 0; i < X.rows (); ++i)
+            for (Eigen::Index i = 0; i < X.rows (); ++i)
               potentials.row (L_vertex_bimap.left.at (i)).head (X.cols ()) = X.row (i);
             // In rows that correspond to seeds put ones in proper columns
             for (size_t i = 0; i < seeds_.size (); ++i)
@@ -237,7 +237,7 @@ namespace pcl
             }
             // Fill in a map that associates colors with columns in potentials matrix
             color_to_column_map.clear ();
-            for (int i = 0; i < potentials.cols (); ++i)
+            for (Eigen::Index i = 0; i < potentials.cols (); ++i)
               color_to_column_map[B_color_bimap.left.at (i)] = i;
           }
 

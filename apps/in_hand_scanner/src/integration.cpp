@@ -213,7 +213,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
   // Nearest neighbor search
   CloudXYZPtr xyz_model (new CloudXYZ ());
   xyz_model->reserve (mesh_model->sizeVertices ());
-  for (unsigned int i=0; i<mesh_model->sizeVertices (); ++i)
+  for (size_t i=0; i<mesh_model->sizeVertices (); ++i)
   {
     const PointIHS& pt = mesh_model->getVertexDataCloud () [i];
     xyz_model->push_back (PointXYZ (pt.x, pt.y, pt.z));
@@ -388,7 +388,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
 void
 pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
 {
-  for (unsigned int i=0; i<mesh->sizeVertices (); ++i)
+  for (size_t i=0; i<mesh->sizeVertices (); ++i)
   {
     PointIHS& pt = mesh->getVertexDataCloud () [i];
     if (pt.age < max_age_)
@@ -422,7 +422,7 @@ pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
 void
 pcl::ihs::Integration::removeUnfitVertices (const MeshPtr& mesh, const bool cleanup) const
 {
-  for (unsigned int i=0; i<mesh->sizeVertices (); ++i)
+  for (size_t i=0; i<mesh->sizeVertices (); ++i)
   {
     if (pcl::ihs::countDirections (mesh->getVertexDataCloud () [i].directions) < min_directions_)
     {

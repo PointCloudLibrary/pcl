@@ -134,7 +134,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
   else
   {
     cam_positions.resize (sphere->GetNumberOfPoints ());
-    for (int i = 0; i < sphere->GetNumberOfPoints (); i++)
+    for (vtkIdType i = 0; i < sphere->GetNumberOfPoints (); i++)
     {
       double cam_pos[3];
       sphere->GetPoint (i, cam_pos);
@@ -382,7 +382,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
       vtkSmartPointer<vtkIdTypeArray> ids = vtkSmartPointer<vtkIdTypeArray>::New ();
       ids = vtkIdTypeArray::SafeDownCast(hdw_selection->GetNode(0)->GetSelectionList());
       double visible_area = 0;
-      for (int sel_id = 0; sel_id < (ids->GetNumberOfTuples ()); sel_id++)
+      for (vtkIdType sel_id = 0; sel_id < (ids->GetNumberOfTuples ()); sel_id++)
       {
         int id_mesh = int (ids->GetValue (sel_id));
         if(id_mesh >= polydata->GetNumberOfPolys())

@@ -96,7 +96,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   MyPoint test_point(0.0f, 0.0f, 0.0f);
   double max_dist = 0.15;
   set<int> brute_force_result;
-  for (unsigned int i=0; i<cloud.points.size(); ++i)
+  for (size_t i=0; i < cloud.points.size(); ++i)
     if (euclideanDistance(cloud.points[i], test_point) < max_dist)
       brute_force_result.insert(i);
   vector<int> k_indices;

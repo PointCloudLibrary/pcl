@@ -573,7 +573,7 @@ CloudEditorWidget::isColored (const std::string &fileName) const
   pcl::PCDReader reader;
   reader.readHeader(fileName, cloud2);
   std::vector< pcl::PCLPointField > fs = cloud2.fields;
-  for(unsigned int i = 0; i < fs.size(); ++i)
+  for(size_t i = 0; i < fs.size(); ++i)
   {
     std::string name(fs[i].name);
     stringToLower(name);

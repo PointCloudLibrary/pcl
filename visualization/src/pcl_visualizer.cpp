@@ -3276,7 +3276,7 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
   {
     vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
     polyLine->GetPointIds()->SetNumberOfIds(polymesh.polygons[i].vertices.size());
-    for(unsigned int k = 0; k < polymesh.polygons[i].vertices.size(); k++)
+    for(size_t k = 0; k < polymesh.polygons[i].vertices.size(); k++)
     {
       polyLine->GetPointIds ()->SetId (k, polymesh.polygons[i].vertices[k]);
     }
@@ -3713,7 +3713,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   else
   {
     cam_positions.resize (sphere->GetNumberOfPoints ());
-    for (int i = 0; i < sphere->GetNumberOfPoints (); i++)
+    for (vtkIdType i = 0; i < sphere->GetNumberOfPoints (); i++)
     {
       double cam_pos[3];
       sphere->GetPoint (i, cam_pos);
@@ -3918,7 +3918,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     if (!ids)
       return;
     double visible_area = 0;
-    for (int sel_id = 0; sel_id < (ids->GetNumberOfTuples ()); sel_id++)
+    for (vtkIdType sel_id = 0; sel_id < (ids->GetNumberOfTuples ()); sel_id++)
     {
       int id_mesh = static_cast<int> (ids->GetValue (sel_id));
       vtkCell * cell = polydata->GetCell (id_mesh);

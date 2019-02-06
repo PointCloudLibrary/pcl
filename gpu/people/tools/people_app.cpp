@@ -256,7 +256,7 @@ class PeoplePCDApp
         rgba_host_.points.resize(w * h);
         rgba_host_.width = w;
         rgba_host_.height = h;
-        for(int i = 0; i < rgba_host_.size(); ++i)
+        for(size_t i = 0; i < rgba_host_.size(); ++i)
         {
           const unsigned char *pixel = &rgb_host_[i * 3];
           RGB& rgba = rgba_host_.points[i];         

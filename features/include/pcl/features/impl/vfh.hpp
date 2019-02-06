@@ -238,19 +238,19 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   output.height = 1;
 
   // Estimate the FPFH at nn_indices[0] using the entire cloud and copy the resultant signature
-  for (int d = 0; d < hist_f1_.size (); ++d)
+  for (Eigen::Index d = 0; d < hist_f1_.size (); ++d)
     output.points[0].histogram[d + 0] = hist_f1_[d];
 
   size_t data_size = hist_f1_.size ();
-  for (int d = 0; d < hist_f2_.size (); ++d)
+  for (Eigen::Index d = 0; d < hist_f2_.size (); ++d)
     output.points[0].histogram[d + data_size] = hist_f2_[d];
 
   data_size += hist_f2_.size ();
-  for (int d = 0; d < hist_f3_.size (); ++d)
+  for (Eigen::Index d = 0; d < hist_f3_.size (); ++d)
     output.points[0].histogram[d + data_size] = hist_f3_[d];
 
   data_size += hist_f3_.size ();
-  for (int d = 0; d < hist_f4_.size (); ++d)
+  for (Eigen::Index d = 0; d < hist_f4_.size (); ++d)
     output.points[0].histogram[d + data_size] = hist_f4_[d];
 
   // ---[ Step 2 : obtain the viewpoint component
@@ -279,7 +279,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   }
   data_size += hist_f4_.size ();
   // Copy the resultant signature
-  for (int d = 0; d < hist_vp_.size (); ++d)
+  for (Eigen::Index d = 0; d < hist_vp_.size (); ++d)
     output.points[0].histogram[d + data_size] = hist_vp_[d];
 }
 

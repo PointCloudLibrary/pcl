@@ -277,7 +277,7 @@ void showCameras (pcl::texture_mapping::CameraVector cams, pcl::PointCloud<pcl::
   pcl::visualization::PCLVisualizer visu ("cameras");
 
   // add a visual for each camera at the correct pose
-  for(int i = 0 ; i < cams.size () ; ++i)
+  for(size_t i = 0 ; i < cams.size () ; ++i)
   {
     // read current camera
     pcl::TextureMapping<pcl::PointXYZ>::Camera cam = cams[i];
@@ -351,7 +351,7 @@ void showCameras (pcl::texture_mapping::CameraVector cams, pcl::PointCloud<pcl::
 std::ifstream& GotoLine(std::ifstream& file, unsigned int num)
 {
   file.seekg (std::ios::beg);
-  for(int i=0; i < num - 1; ++i)
+  for(unsigned int i=0; i < num - 1; ++i)
   {
     file.ignore (std::numeric_limits<std::streamsize>::max (),'\n');
   }
@@ -464,7 +464,7 @@ main (int argc, char** argv)
 
   // Create materials for each texture (and one extra for occluded faces)
   mesh.tex_materials.resize (my_cams.size () + 1);
-  for(int i = 0 ; i <= my_cams.size() ; ++i)
+  for(size_t i = 0 ; i <= my_cams.size() ; ++i)
   {
     pcl::TexMaterial mesh_material;
     mesh_material.tex_Ka.r = 0.2f;
@@ -503,7 +503,7 @@ main (int argc, char** argv)
   
   
   PCL_INFO ("Sorting faces by cameras done.\n");
-  for(int i = 0 ; i <= my_cams.size() ; ++i)
+  for(size_t i = 0 ; i <= my_cams.size() ; ++i)
   {
     PCL_INFO ("\tSub mesh %d contains %d faces and %d UV coordinates.\n", i, mesh.tex_polygons[i].size (), mesh.tex_coordinates[i].size ());
   }

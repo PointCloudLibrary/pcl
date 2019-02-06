@@ -206,21 +206,21 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   // Setting up random access for the list created above. Maintaining the iterators to individual elements of the list
   // in a vector. Using vector now as the size of the list is known.
   std::vector<std::vector<std::list<int>::iterator> > random_access (normals_hg.size ());
-  for (unsigned int i = 0; i < normals_hg.size (); i++)
+  for (size_t i = 0; i < normals_hg.size (); i++)
   {
     random_access.emplace_back();
     random_access[i].resize (normals_hg[i].size ());
 
-    unsigned int j = 0;
+    size_t j = 0;
     for (std::list<int>::iterator itr = normals_hg[i].begin (); itr != normals_hg[i].end (); itr++, j++)
       random_access[i][j] = itr;
   }
-  std::vector<unsigned int> start_index (normals_hg.size ());
+  std::vector<size_t> start_index (normals_hg.size ());
   start_index[0] = 0;
-  unsigned int prev_index = start_index[0];
-  for (unsigned int i = 1; i < normals_hg.size (); i++)
+  size_t prev_index = 0;
+  for (size_t i = 1; i < normals_hg.size (); i++)
   {
-    start_index[i] = prev_index + static_cast<unsigned int> (normals_hg[i-1].size ());
+    start_index[i] = prev_index + normals_hg[i-1].size ();
     prev_index = start_index[i];
   }
 
@@ -232,7 +232,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   while (i < sample_)
   {
     // Iterating through every bin and picking one point at random, until the required number of points are sampled.
-    for (unsigned int j = 0; j < normals_hg.size (); j++)
+    for (size_t j = 0; j < normals_hg.size (); j++)
     {
       unsigned int M = static_cast<unsigned int> (normals_hg[j].size ());
       if (M == 0 || bin_empty_flag.test (j)) // bin_empty_flag(i) is set if all points in that bin are sampled..

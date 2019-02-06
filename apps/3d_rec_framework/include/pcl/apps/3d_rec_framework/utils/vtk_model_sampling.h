@@ -150,7 +150,7 @@ namespace pcl
       cloud_out.height = 1;
       cloud_out.is_dense = false;
 
-      for (int i = 0; i < points->GetNumberOfPoints (); i++)
+      for (vtkIdType i = 0; i < points->GetNumberOfPoints (); i++)
       {
         double p[3];
         points->GetPoint (i, p);

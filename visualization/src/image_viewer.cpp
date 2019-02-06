@@ -386,7 +386,7 @@ pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
     interactor_->Start ();
     interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
   );
-  for(unsigned int i = 0; i < image_data_.size(); i++)
+  for(size_t i = 0; i < image_data_.size(); i++)
 	  delete [] image_data_[i];
   image_data_.clear ();
 }
@@ -871,7 +871,7 @@ void
 pcl::visualization::ImageViewer::render ()
 {
   win_->Render ();
-  for(unsigned int i = 0; i < image_data_.size(); i++)
+  for(size_t i = 0; i < image_data_.size(); i++)
 	  delete [] image_data_[i];
   image_data_.clear ();
 }

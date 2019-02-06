@@ -165,7 +165,7 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
 
   index = 0;
 
-  for (unsigned int cp = 0; cp < first_and_last_indices_vector.size (); ++cp)
+  for (size_t cp = 0; cp < first_and_last_indices_vector.size (); ++cp)
   {
     unsigned int first_index = first_and_last_indices_vector[cp].first;
     unsigned int last_index = first_and_last_indices_vector[cp].second;

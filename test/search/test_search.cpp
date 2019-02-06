@@ -164,7 +164,7 @@ bool testUniqueness (const vector<int>& indices, const string& name)
 bool testOrder (const vector<float>& distances, const string& name)
 {
   bool ordered = true;
-  for (unsigned idx1 = 1; idx1 < distances.size (); ++idx1)
+  for (size_t idx1 = 1; idx1 < distances.size (); ++idx1)
   {
     if (distances [idx1-1] > distances [idx1])
     {
@@ -254,7 +254,7 @@ bool compareResults (const std::vector<int>& indices1, const::vector<float>& dis
   }
   else
   {
-    for (unsigned idx = 0; idx < indices1.size (); ++idx)
+    for (size_t idx = 0; idx < indices1.size (); ++idx)
     {
       if (indices1[idx] != indices2[idx] && fabs (distances1[idx] - distances2[idx]) > eps)
       {
@@ -406,7 +406,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
       }
     }
   }
-  for (unsigned sIdx = 0; sIdx < search_methods.size (); ++sIdx)
+  for (size_t sIdx = 0; sIdx < search_methods.size (); ++sIdx)
   {
     cout << search_methods [sIdx]->getName () << ": " << (passed[sIdx]?"passed":"failed") << endl;
     EXPECT_TRUE (passed [sIdx]);

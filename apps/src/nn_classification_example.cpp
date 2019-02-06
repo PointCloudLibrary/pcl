@@ -80,7 +80,7 @@ main (int, char* argv[])
   }
 
   // Print results
-  for (unsigned i = 0; i < result->first.size(); ++i)
+  for (size_t i = 0; i < result->first.size(); ++i)
     std::cerr << result->first.at (i) << ": " << result->second.at (i) << std::endl;
 
   return 0;

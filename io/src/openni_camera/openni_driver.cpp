@@ -166,7 +166,7 @@ openni_wrapper::OpenNIDriver::updateDeviceList ()
 
 #ifndef _WIN32
   // add context object for each found device
-  for (unsigned deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)
+  for (size_t deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)
   {
     // register bus@address to the corresponding context object
     unsigned short vendor_id;
@@ -181,7 +181,7 @@ openni_wrapper::OpenNIDriver::updateDeviceList ()
   getDeviceInfos ();
 #endif
   // build serial number -> device index map
-  for (unsigned deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)
+  for (size_t deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)
   {
     std::string serial_number = getSerialNumber (deviceIdx);
     if (!serial_number.empty ())
@@ -190,7 +190,7 @@ openni_wrapper::OpenNIDriver::updateDeviceList ()
 
 
   // redundant, but needed for Windows right now and also for Xtion
-  for (unsigned deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)
+  for (size_t deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)
   {
     unsigned short product_id;
     unsigned short vendor_id;

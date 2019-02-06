@@ -321,7 +321,7 @@ FittingCurve2dATDM::assembleClosestPoints (const std::vector<double> &elements, 
 
   double ds = 1.0 / (2.0 * sigma2);
 
-  for (unsigned i = 0; i < elements.size (); i++)
+  for (size_t i = 0; i < elements.size (); i++)
   {
 
     int j = i % int (elements.size ());

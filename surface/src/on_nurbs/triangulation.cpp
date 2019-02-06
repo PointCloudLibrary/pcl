@@ -182,7 +182,7 @@ Triangulation::convertSurface2PolygonMesh (const ON_NurbsSurface &nurbs, Polygon
   createVertices (cloud, float (x0), float (y0), 0.0f, float (w), float (h), resolution, resolution);
   createIndices (mesh.polygons, 0, resolution, resolution);
 
-  for (unsigned i = 0; i < cloud->size (); i++)
+  for (size_t i = 0; i < cloud->size (); i++)
   {
     pcl::PointXYZ &v = cloud->at (i);
 
@@ -232,7 +232,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
   std::vector<uint32_t> out_idx;
   pcl::on_nurbs::vector_vec2d out_pc;
 
-  for (unsigned i = 0; i < cloud->size (); i++)
+  for (size_t i = 0; i < cloud->size (); i++)
   {
     double err;
     Eigen::Vector2d pc, tc;
@@ -255,7 +255,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     pt_is_in[i] = (z (2) >= 0.0);
   }
 
-  for (unsigned i = 0; i < polygons.size (); i++)
+  for (size_t i = 0; i < polygons.size (); i++)
   {
     unsigned in (0);
     pcl::Vertices &poly = polygons[i];
@@ -358,7 +358,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
   pcl::on_nurbs::NurbsTools::computeBoundingBox (curve, a0, a1);
   double rScale = 1.0 / pcl::on_nurbs::NurbsTools::computeRScale (a0, a1);
 
-  for (unsigned i = 0; i < cloud->size (); i++)
+  for (size_t i = 0; i < cloud->size (); i++)
   {
     double err, param;
     Eigen::Vector2d pc, tc;
@@ -385,7 +385,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     start.push_back (Eigen::Vector3d (vp (0), vp (1), 0.0));
   }
 
-  for (unsigned i = 0; i < polygons.size (); i++)
+  for (size_t i = 0; i < polygons.size (); i++)
   {
     unsigned in (0);
     pcl::Vertices &poly = polygons[i];
@@ -483,7 +483,7 @@ Triangulation::convertSurface2Vertices (const ON_NurbsSurface &nurbs, pcl::Point
   createVertices (cloud, float (x0), float (y0), 0.0f, float (w), float (h), resolution, resolution);
   createIndices (vertices, 0, resolution, resolution);
 
-  for (unsigned i = 0; i < cloud->size (); i++)
+  for (size_t i = 0; i < cloud->size (); i++)
   {
     pcl::PointXYZ &v = cloud->at (i);
 

@@ -501,7 +501,7 @@ addSupervoxelConnectionsToViewer (PointT &supervoxel_center,
   // Add the points to the dataset
   polyData->SetPoints (points);
   polyLine->GetPointIds  ()->SetNumberOfIds(points->GetNumberOfPoints ());
-  for(unsigned int i = 0; i < points->GetNumberOfPoints (); i++)
+  for(vtkIdType i = 0; i < points->GetNumberOfPoints (); i++)
     polyLine->GetPointIds ()->SetId (i,i);
   cells->InsertNextCell (polyLine);
   // Add the lines to the dataset

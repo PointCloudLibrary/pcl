@@ -97,7 +97,7 @@ void
 printVertices (const Mesh& mesh)
 {
   std::cout << "Vertices:\n   ";
-  for (unsigned int i=0; i<mesh.sizeVertices (); ++i)
+  for (size_t i=0; i<mesh.sizeVertices (); ++i)
   {
     std::cout << mesh.getVertexDataCloud () [i] << " ";
   }
@@ -132,7 +132,7 @@ void
 printFaces (const Mesh& mesh)
 {
   std::cout << "Faces:\n";
-  for (unsigned int i=0; i<mesh.sizeFaces (); ++i)
+  for (size_t i=0; i<mesh.sizeFaces (); ++i)
   {
     printFace (mesh, FaceIndex (i));
   }

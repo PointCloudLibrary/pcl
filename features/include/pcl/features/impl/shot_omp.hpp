@@ -179,7 +179,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
                                                                                            nn_dists) == 0)
     {
       // Copy into the resultant cloud
-      for (int d = 0; d < shot.size (); ++d)
+      for (Eigen::Index d = 0; d < shot.size (); ++d)
         output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
         output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
@@ -192,7 +192,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
     this->computePointSHOT (idx, nn_indices, nn_dists, shot);
 
     // Copy into the resultant cloud
-    for (int d = 0; d < shot.size (); ++d)
+    for (Eigen::Index d = 0; d < shot.size (); ++d)
       output.points[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
@@ -267,7 +267,7 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
         this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
     {
       // Copy into the resultant cloud
-      for (int d = 0; d < shot.size (); ++d)
+      for (Eigen::Index d = 0; d < shot.size (); ++d)
         output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
         output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
@@ -280,7 +280,7 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
     this->computePointSHOT (idx, nn_indices, nn_dists, shot);
 
     // Copy into the resultant cloud
-    for (int d = 0; d < shot.size (); ++d)
+    for (Eigen::Index d = 0; d < shot.size (); ++d)
       output.points[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {

@@ -338,7 +338,7 @@ namespace pcl
         Eigen::Array4i diff2min = min_b_ - ijk;
         Eigen::Array4i diff2max = max_b_ - ijk;
         std::vector<int> neighbors (relative_coordinates.cols());
-        for (int ni = 0; ni < relative_coordinates.cols (); ni++)
+        for (Eigen::Index ni = 0; ni < relative_coordinates.cols (); ni++)
         {
           Eigen::Vector4i displacement = (Eigen::Vector4i() << relative_coordinates.col(ni), 0).finished();
           // checking if the specified cell is in the grid
@@ -668,7 +668,7 @@ namespace pcl
         Eigen::Array4i diff2min = min_b_ - ijk;
         Eigen::Array4i diff2max = max_b_ - ijk;
         std::vector<int> neighbors (relative_coordinates.cols());
-        for (int ni = 0; ni < relative_coordinates.cols (); ni++)
+        for (Eigen::Index ni = 0; ni < relative_coordinates.cols (); ni++)
         {
           Eigen::Vector4i displacement = (Eigen::Vector4i() << relative_coordinates.col(ni), 0).finished();
           // checking if the specified cell is in the grid

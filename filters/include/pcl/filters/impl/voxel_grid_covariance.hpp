@@ -386,7 +386,7 @@ pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const PointT& referenc
 
   // Check each neighbor to see if it is occupied and contains sufficient points
   // Slower than radius search because needs to check 26 indices
-  for (int ni = 0; ni < relative_coordinates.cols (); ni++)
+  for (Eigen::Index ni = 0; ni < relative_coordinates.cols (); ni++)
   {
     Eigen::Vector4i displacement = (Eigen::Vector4i () << relative_coordinates.col (ni), 0).finished ();
     // Checking if the specified cell is in the grid

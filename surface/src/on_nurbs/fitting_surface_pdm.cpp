@@ -86,10 +86,10 @@ FittingSurface::refine (int dim)
   std::vector<double> xi;
   std::vector<double> elements = getElementVector (m_nurbs, dim);
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (unsigned i = 0; i < xi.size (); i++)
+  for (size_t i = 0; i < xi.size (); i++)
     m_nurbs.InsertKnot (dim, xi[i], 1);
 
   m_elementsU = getElementVector (m_nurbs, 0);
@@ -106,10 +106,10 @@ FittingSurface::refine (ON_NurbsSurface &nurbs, int dim)
   std::vector<double> xi;
   std::vector<double> elements = getElementVector (nurbs, dim);
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (unsigned i = 0; i < xi.size (); i++)
+  for (size_t i = 0; i < xi.size (); i++)
     nurbs.InsertKnot (dim, xi[i], 1);
 }
 
@@ -1120,9 +1120,9 @@ FittingSurface::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const 
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest (DBL_MAX);
-  for (unsigned i = 0; i < elementsU.size () - 1; i++)
+  for (size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (unsigned j = 0; j < elementsV.size () - 1; j++)
+    for (size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
       double d;
@@ -1164,20 +1164,20 @@ FittingSurface::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vect
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   // NORTH - SOUTH
-  for (unsigned i = 0; i < (elementsV.size () - 1); i++)
+  for (size_t i = 0; i < (elementsV.size () - 1); i++)
   {
     ini_points.emplace_back(WEST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i]));
     ini_points.emplace_back(EAST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i]));
   }
 
   // WEST - EAST
-  for (unsigned i = 0; i < (elementsU.size () - 1); i++)
+  for (size_t i = 0; i < (elementsU.size () - 1); i++)
   {
     ini_points.emplace_back(NORTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]));
     ini_points.emplace_back(SOUTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]));
   }
 
-  for (unsigned i = 0; i < ini_points.size (); i++)
+  for (size_t i = 0; i < ini_points.size (); i++)
   {
 
     Vector2d params = inverseMappingBoundary (nurbs, pt, ini_points[i].side, ini_points[i].hint, err_tmp, p_tmp,

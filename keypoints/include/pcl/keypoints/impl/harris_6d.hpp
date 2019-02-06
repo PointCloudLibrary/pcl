@@ -187,7 +187,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 #ifdef _OPENMP
   #pragma omp parallel for num_threads(threads_) default (shared)
 #endif    
-  for (unsigned idx = 0; idx < intensity_gradients_->size (); ++idx)
+  for (size_t idx = 0; idx < intensity_gradients_->size (); ++idx)
   {
     float len = intensity_gradients_->points [idx].gradient_x * intensity_gradients_->points [idx].gradient_x +
                 intensity_gradients_->points [idx].gradient_y * intensity_gradients_->points [idx].gradient_y +

@@ -455,7 +455,7 @@ namespace pcl
       {
         size_t sample_size = sample.size ();
         size_t index_size = shuffled_indices_.size ();
-        for (unsigned int i = 0; i < sample_size; ++i)
+        for (size_t i = 0; i < sample_size; ++i)
           // The 1/(RAND_MAX+1.0) trick is when the random numbers are not uniformly distributed and for small modulo
           // elements, that does not matter (and nowadays, random number generators are good)
           //std::swap (shuffled_indices_[i], shuffled_indices_[i + (rand () % (index_size - i))]);
@@ -490,14 +490,14 @@ namespace pcl
         if (indices.size () < sample_size - 1)
         {
           // radius search failed, make an invalid model
-          for(unsigned int i = 1; i < sample_size; ++i)
+          for(size_t i = 1; i < sample_size; ++i)
             shuffled_indices_[i] = shuffled_indices_[0];
         }
         else
         {
-          for (unsigned int i = 0; i < sample_size-1; ++i)
+          for (size_t i = 0; i < sample_size-1; ++i)
             std::swap (indices[i], indices[i + (rnd () % (indices.size () - i))]);
-          for (unsigned int i = 1; i < sample_size; ++i)
+          for (size_t i = 1; i < sample_size; ++i)
             shuffled_indices_[i] = indices[i-1];
         }
 
