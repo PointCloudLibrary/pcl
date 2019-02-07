@@ -75,7 +75,7 @@ FittingCurve2dPDM::findElement (double xi, const std::vector<double> &elements)
   if (xi >= elements.back ())
     return (int (elements.size ()) - 2);
 
-  for (unsigned long i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
   {
     if (xi >= elements[i] && xi < elements[i + 1])
     {
@@ -95,7 +95,7 @@ FittingCurve2dPDM::refine ()
 
   std::vector<double> elements = getElementVector (m_nurbs);
 
-  for (unsigned long i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
   for (size_t i = 0; i < xi.size (); i++)
@@ -208,7 +208,7 @@ FittingCurve2dPDM::addCPsOnClosestPointViolation (double max_error)
 
   //int nknots (0);
 
-  for (unsigned long i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
   {
 
     bool inserted (false);
@@ -646,7 +646,7 @@ FittingCurve2dPDM::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Ve
   error = DBL_MAX;
   int is_corner (-1);
 
-  for (unsigned long i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
   {
     Eigen::Vector2d p1;
     nurbs.Evaluate (elements[i], 0, 2, &p1 (0));
@@ -804,7 +804,7 @@ FittingCurve2dPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const
   std::vector<double> elements = pcl::on_nurbs::FittingCurve2dPDM::getElementVector (nurbs);
   double seg = 1.0 / (nurbs.Order () - 1);
 
-  for (unsigned long i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
   {
     double &xi0 = elements[i];
     double &xi1 = elements[i + 1];
@@ -847,7 +847,7 @@ FittingCurve2dPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const
   double d_shortest (DBL_MAX);
   double seg = 1.0 / (nurbs.Order () - 1);
 
-  for (unsigned long i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
   {
     double &xi0 = elements[i];
     double &xi1 = elements[i + 1];
