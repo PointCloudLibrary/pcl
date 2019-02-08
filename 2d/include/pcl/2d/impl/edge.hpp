@@ -273,8 +273,8 @@ pcl::Edge<PointInT, PointOutT>::suppressNonMaxima (
   maxima.width = width;
   maxima.resize (height * width);
 
-  for (size_t i = 0; i < maxima.size (); ++i)
-    maxima[i].intensity = 0.0f;
+  for (auto &point : maxima)
+    point.intensity = 0.0f;
 
   // tHigh and non-maximal supression
   for (int i = 1; i < height - 1; i++)
