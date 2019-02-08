@@ -90,7 +90,7 @@ namespace pcl
       bool load_views_;
 
       void
-      getIdAndClassFromFilename (std::string & filename, std::string & id, std::string & classname)
+      getIdAndClassFromFilename (const std::string & filename, std::string & id, std::string & classname)
       {
 
         std::vector < std::string > strs;
@@ -125,9 +125,9 @@ namespace pcl
 
         std::stringstream ss;
         ss << training_dir << "/";
-        for (size_t i = 0; i < strs.size (); i++)
+        for (const auto &str : strs)
         {
-          ss << strs[i] << "/";
+          ss << str << "/";
           bf::path trained_dir = ss.str ();
           if (!bf::exists (trained_dir))
           bf::create_directory (trained_dir);

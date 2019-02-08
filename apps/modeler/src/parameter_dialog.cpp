@@ -85,15 +85,13 @@ pcl::modeler::ParameterDialog::exec()
   tableView.setModel(&parameterModel);
 
   size_t currentRow = 0;
-  for(std::map<std::string, Parameter*>::iterator it = name_parameter_map_.begin();
-    it != name_parameter_map_.end();
-    ++ it)
+  for(const auto &name_parameter : name_parameter_map_)
   {
     QModelIndex name = parameterModel.index(int (currentRow), 0, QModelIndex());
-    parameterModel.setData(name, QVariant(it->first.c_str()));
+    parameterModel.setData(name, QVariant(name_parameter.first.c_str()));
 
     QModelIndex value = parameterModel.index(int (currentRow), 1, QModelIndex());
-    std::pair<QVariant, int> model_data = it->second->toModelData();
+    std::pair<QVariant, int> model_data = name_parameter.second->toModelData();
     parameterModel.setData(value, model_data.first, model_data.second);
 
     currentRow ++;
@@ -137,14 +135,12 @@ void
 pcl::modeler::ParameterDialog::reset()
 {
   size_t currentRow = 0;
-  for (std::map<std::string, Parameter*>::iterator it = name_parameter_map_.begin();
-    it != name_parameter_map_.end();
-    ++ it)
+  for (auto &name_parameter : name_parameter_map_)
   {
-    it->second->reset();
+    name_parameter.second->reset();
 
     QModelIndex value = parameter_model_->index(int (currentRow), 1, QModelIndex());
-    std::pair<QVariant, int> model_data = it->second->toModelData();
+    std::pair<QVariant, int> model_data = name_parameter.second->toModelData();
     parameter_model_->setData(value, model_data.first, model_data.second);
 
     currentRow ++;

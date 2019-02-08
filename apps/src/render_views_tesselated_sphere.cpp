@@ -155,8 +155,8 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
   cam_positions.resize (valid);*/
 
   double camera_radius = radius_sphere_;
-  double cam_pos[3];
-  double first_cam_pos[3];
+  std::array<double, 3> cam_pos;
+  std::array<double, 3> first_cam_pos;
 
   first_cam_pos[0] = cam_positions[0][0] * radius_sphere_;
   first_cam_pos[1] = cam_positions[0][1] * radius_sphere_;
@@ -179,16 +179,16 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
   Eigen::Vector3f perp = cam_pos_3f.cross (Eigen::Vector3f::UnitY ());
   cam->SetViewUp (perp[0], perp[1], perp[2]);
 
-  cam->SetPosition (first_cam_pos);
+  cam->SetPosition (first_cam_pos.data());
   cam->SetViewAngle (view_angle_);
   cam->Modified ();
 
   //For each camera position, traposesnsform the object and render view
-  for (size_t i = 0; i < cam_positions.size (); i++)
+  for (auto &cam_position : cam_positions)
   {
-    cam_pos[0] = cam_positions[i][0];
-    cam_pos[1] = cam_positions[i][1];
-    cam_pos[2] = cam_positions[i][2];
+    cam_pos[0] = cam_position[0];
+    cam_pos[1] = cam_position[1];
+    cam_pos[2] = cam_position[2];
 
     //create temporal virtual camera
     vtkSmartPointer<vtkCamera> cam_tmp = vtkSmartPointer<vtkCamera>::New ();
@@ -209,12 +209,12 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
     cam_tmp->SetViewUp (test[0], test[1], test[2]);
 
-    for (int k = 0; k < 3; k++)
+    for (double & cam_po : cam_pos)
     {
-      cam_pos[k] = cam_pos[k] * camera_radius;
+      cam_po *= camera_radius;
     }
 
-    cam_tmp->SetPosition (cam_pos);
+    cam_tmp->SetPosition (cam_pos.data());
     cam_tmp->SetFocalPoint (0, 0, 0);
     cam_tmp->Modified ();
 
@@ -414,11 +414,11 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
     //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
     //thus, the fliping in y and z
-    for (size_t i = 0; i < cloud->points.size (); i++)
+    for (auto &point : cloud->points)
     {
-      cloud->points[i].getVector4fMap () = trans_view * cloud->points[i].getVector4fMap ();
-      cloud->points[i].y *= -1.0f;
-      cloud->points[i].z *= -1.0f;
+      point.getVector4fMap () = trans_view * point.getVector4fMap ();
+      point.y *= -1.0f;
+      point.z *= -1.0f;
     }
 
     renderer->RemoveActor (actor_view);

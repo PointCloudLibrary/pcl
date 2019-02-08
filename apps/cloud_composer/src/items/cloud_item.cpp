@@ -114,9 +114,9 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
   if (! template_cloud_set_ )
   {
     QStringList field_names;
-    for (auto itr = cloud_blob_ptr_->fields.cbegin (), end = cloud_blob_ptr_->fields.cend (); itr != end; ++itr)
+    for (const auto &field : cloud_blob_ptr_->fields)
     {
-      field_names.append (QString::fromStdString ( itr->name ));
+      field_names.append (QString::fromStdString ( field.name ));
     }
     point_type_ = PointTypeFlags::NONE;
     if (field_names.contains ("x") && field_names.contains ("y") && field_names.contains ("z"))

@@ -291,9 +291,9 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
             crha.getTransforms (roll_transforms);
 
             //create object hypothesis
-            for (size_t k = 0; k < roll_transforms.size (); k++)
+            for (const auto &roll_transform : roll_transforms)
             {
-              Eigen::Matrix4f final_roll_trans (roll_transforms[k] * model_view_pose);
+              Eigen::Matrix4f final_roll_trans (roll_transform * model_view_pose);
               models_->push_back (m);
               transforms_->push_back (final_roll_trans);
             }

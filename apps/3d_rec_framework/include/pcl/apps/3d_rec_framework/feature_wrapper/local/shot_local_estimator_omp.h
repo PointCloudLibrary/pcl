@@ -120,13 +120,13 @@ namespace pcl
           int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
 
           int good = 0;
-          for (size_t k = 0; k < shots->points.size (); k++)
+          for (const auto &point : shots->points)
           {
 
             int NaNs = 0;
             for (int i = 0; i < size_feat; i++)
             {
-              if (!std::isfinite(shots->points[k].descriptor[i]))
+              if (!std::isfinite(point.descriptor[i]))
                 NaNs++;
             }
 
@@ -134,7 +134,7 @@ namespace pcl
             {
               for (int i = 0; i < size_feat; i++)
               {
-                signatures->points[good].histogram[i] = shots->points[k].descriptor[i];
+                signatures->points[good].histogram[i] = point.descriptor[i];
               }
 
               good++;

@@ -165,13 +165,13 @@ namespace pcl
 
           //std::cout << "Res:" << normal_estimator_->mesh_resolution_ << " Radius normals:" << radius << " Cluster tolerance:" << cluster_tolerance_radius << " " << eps_angle_threshold_ << " " << curvature_threshold_ << std::endl;
 
-          for (size_t i = 0; i < cvfh_signatures.points.size (); i++)
+          for (const auto &point : cvfh_signatures.points)
           {
             pcl::PointCloud<FeatureT> vfh_signature;
             vfh_signature.points.resize (1);
             vfh_signature.width = vfh_signature.height = 1;
             for (int d = 0; d < 308; ++d)
-              vfh_signature.points[0].histogram[d] = cvfh_signatures.points[i].histogram[d];
+              vfh_signature.points[0].histogram[d] = point.histogram[d];
 
             signatures.push_back (vfh_signature);
           }

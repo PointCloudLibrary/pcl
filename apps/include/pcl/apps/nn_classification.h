@@ -262,8 +262,8 @@ namespace pcl
             result->second.push_back (sqrt (*it));
             sum_dist += result->second.back ();
           }
-        for (std::vector<float>::iterator it = result->second.begin (); it != result->second.end (); ++it)
-          *it = 1 - *it/sum_dist;
+        for (float & it : result->second)
+          it = 1 - it/sum_dist;
 
         // Return label/score list pair
         return (result);

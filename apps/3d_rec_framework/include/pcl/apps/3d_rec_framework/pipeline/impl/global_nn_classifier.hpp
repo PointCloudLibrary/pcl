@@ -144,10 +144,10 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         }
       }
 
-      for (auto it = category_map.cbegin (); it != category_map.cend (); it++)
+      for (const auto &category : category_map)
       {
-        float prob = static_cast<float> (it->second) / static_cast<float> (num_n);
-        categories_.push_back (it->first);
+        float prob = static_cast<float> (category.second) / static_cast<float> (num_n);
+        categories_.push_back (category.first);
         confidences_.push_back (prob);
       }
 

@@ -45,9 +45,9 @@ std::string
 Statistics::getStats()
 {
   std::string result;
-  for(auto stat_vec_it = stat_vec_.cbegin(); stat_vec_it != stat_vec_.cend(); ++stat_vec_it)
+  for(auto stat_vec : stat_vec_)
   {
-    std::string stat_string = (*stat_vec_it) -> getStat();
+    std::string stat_string = stat_vec -> getStat();
     if (stat_string != "")
     {
       result += (stat_string + "\n");

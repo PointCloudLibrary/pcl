@@ -83,9 +83,9 @@ pcl::ihs::detail::FaceVertexMesh::FaceVertexMesh (const Mesh& mesh, const Eigen:
     exit (EXIT_FAILURE);
   }
 
-  for (CloudIHS::iterator it=vertices.begin (); it!=vertices.end (); ++it)
+  for (auto &vertex : vertices)
   {
-    std::swap (it->r, it->b);
+    std::swap (vertex.r, vertex.b);
   }
 
   triangles.reserve (mesh.sizeFaces ());
