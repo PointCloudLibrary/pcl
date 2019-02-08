@@ -385,7 +385,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives (
 
     if (compute_hessian)
     {
-      for (int j = 0; j < hessian.cols (); j++)
+      for (Eigen::Index j = 0; j < hessian.cols (); j++)
       {
         // Update hessian, Equation 6.13 [Magnusson 2009]
         hessian (i, j) += e_x_cov_x * (-gauss_d2_ * x_trans.dot (cov_dxd_pi) * x_trans.dot (c_inv * point_gradient_.col (j)) +
@@ -470,7 +470,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateHessian (Eige
     // Sigma_k^-1 d(T(x,p))/dpi, Reusable portion of Equation 6.12 and 6.13 [Magnusson 2009]
     cov_dxd_pi = c_inv * point_gradient_.col (i);
 
-    for (int j = 0; j < hessian.cols (); j++)
+    for (Eigen::Index j = 0; j < hessian.cols (); j++)
     {
       // Update hessian, Equation 6.13 [Magnusson 2009]
       hessian (i, j) += e_x_cov_x * (-gauss_d2_ * x_trans.dot (cov_dxd_pi) * x_trans.dot (c_inv * point_gradient_.col (j)) +

@@ -560,10 +560,10 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
     depth_map = depth_resize_buffer_.data();
   }
 
-  int depth_idx = 0;
-  for (int v = 0; v < depth_height_; ++v)
+  unsigned depth_idx = 0;
+  for (unsigned v = 0; v < depth_height_; ++v)
   {
-    for (int u = 0; u < depth_width_; ++u, ++depth_idx)
+    for (unsigned u = 0; u < depth_width_; ++u, ++depth_idx)
     {
       pcl::PointXYZ& pt = cloud->points[depth_idx];
       // Check for invalid measurements
@@ -662,11 +662,11 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   unsigned step = cloud->width / depth_width_;
   unsigned skip = cloud->width - (depth_width_ * step);
 
-  int value_idx = 0;
-  int point_idx = 0;
-  for (int v = 0; v < depth_height_; ++v, point_idx += skip)
+  unsigned value_idx = 0;
+  unsigned point_idx = 0;
+  for (unsigned v = 0; v < depth_height_; ++v, point_idx += skip)
   {
-    for (int u = 0; u < depth_width_; ++u, ++value_idx, point_idx += step)
+    for (unsigned u = 0; u < depth_width_; ++u, ++value_idx, point_idx += step)
     {
       PointT& pt = cloud->points[point_idx];
       /// @todo Different values for these cases
@@ -773,12 +773,12 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
   }
 
 
-  int depth_idx = 0;
+  size_t depth_idx = 0;
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-  for (int v = 0; v < depth_height_; ++v)
+  for (unsigned v = 0; v < depth_height_; ++v)
   {
-    for (int u = 0; u < depth_width_; ++u, ++depth_idx)
+    for (unsigned u = 0; u < depth_width_; ++u, ++depth_idx)
     {
       pcl::PointXYZI& pt = cloud->points[depth_idx];
       /// @todo Different values for these cases

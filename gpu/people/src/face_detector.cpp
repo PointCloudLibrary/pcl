@@ -327,7 +327,7 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
   //merge root and leaf nodes in one classifiers array, leaf nodes are sorted behind the root nodes
   Ncv32u offset_root = haarClassifierNodes.size();
 
-  for (Ncv32u i=0; i<haarClassifierNodes.size(); i++)
+  for (size_t i = 0; i < haarClassifierNodes.size(); i++)
   {
       HaarClassifierNodeDescriptor32 node_left = haarClassifierNodes[i].getLeftNodeDesc();
       if (!node_left.isLeaf())
@@ -346,7 +346,7 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
       haarClassifierNodes[i].setRightNodeDesc(node_right);
   }
 
-  for (Ncv32u i=0; i<host_temp_classifier_not_root_nodes.size(); i++)
+  for (size_t i = 0; i < host_temp_classifier_not_root_nodes.size(); i++)
   {
       HaarClassifierNodeDescriptor32 node_left = host_temp_classifier_not_root_nodes[i].getLeftNodeDesc();
       if (!node_left.isLeaf())
@@ -583,7 +583,7 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
 
   NCV_SKIP_COND_BEGIN
 
-  for(int i=0; i<input_gray.points.size(); i++)
+  for(size_t i = 0; i < input_gray.points.size(); i++)
   {
     memcpy(h_src.ptr(), &input_gray.points[i].intensity, sizeof(input_gray.points[i].intensity));
   }
@@ -628,7 +628,7 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
   PCL_ASSERT_CUDA_RETURN(cudaStreamSynchronize(0), NCV_CUDA_ERROR);
 
   // Copy result back into output cloud
-  for(int i=0; i<cloud_out.points.size(); i++)
+  for(size_t i = 0; i < cloud_out.points.size(); i++)
   {
     memcpy(&cloud_out.points[i].intensity, h_src.ptr() /* + i * ??? */, sizeof(cloud_out.points[i].intensity));
   }

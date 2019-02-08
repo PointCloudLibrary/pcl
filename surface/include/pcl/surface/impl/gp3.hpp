@@ -276,7 +276,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
     }
 
     is_free = NONE;
-    for (unsigned temp = 0; temp < indices_->size (); temp++)
+    for (size_t temp = 0; temp < indices_->size (); temp++)
     {
       if (state_[temp] == FREE)
       {

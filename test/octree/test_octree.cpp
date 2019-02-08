@@ -207,7 +207,7 @@ TEST (PCL, Octree_Test)
   ASSERT_EQ (leafVectorB.size (), octreeB.getLeafCount ());
   ASSERT_EQ (leafVectorA.size (), leafVectorB.size ());
 
-  for (unsigned int i = 0; i < leafVectorB.size (); i++)
+  for (size_t i = 0; i < leafVectorB.size (); i++)
   {
     ASSERT_EQ (*leafVectorA[i], *leafVectorB[i]);
   }
@@ -523,7 +523,7 @@ TEST (PCL, Octree2Buf_Test)
   ASSERT_EQ (leafVectorB.size (), octreeB.getLeafCount ());
   ASSERT_EQ (leafVectorA.size (), leafVectorB.size ());
 
-  for (unsigned int i = 0; i < leafVectorB.size (); i++)
+  for (size_t i = 0; i < leafVectorB.size (); i++)
   {
     ASSERT_EQ (*leafVectorA[i], *leafVectorB[i]);
   }
@@ -603,7 +603,7 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_Test)
     ASSERT_EQ (leafVectorA.size (), leafVectorB.size ());
 
     // check if octree octree structure is consistent.
-    for (unsigned int i = 0; i < leafVectorB.size (); i++)
+    for (size_t i = 0; i < leafVectorB.size (); i++)
     {
       ASSERT_EQ (*leafVectorA[i], *leafVectorB[i]);
     }
@@ -671,7 +671,7 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_XOR_Test)
     ASSERT_EQ (treeBinaryA.size (), treeBinaryB.size ());
 
     // check if octree octree structure is consistent.
-    for (unsigned int i = 0; i < leafVectorB.size (); i++)
+    for (size_t i = 0; i < leafVectorB.size (); i++)
     {
       ASSERT_EQ (*leafVectorA[i], *leafVectorB[i]);
     }

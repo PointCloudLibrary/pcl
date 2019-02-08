@@ -437,7 +437,7 @@ template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseCurvature (PointCloudOut &output) const
 {
   PointOutT point;
-  for (unsigned idx = 0; idx < input_->points.size(); ++idx)
+  for (size_t idx = 0; idx < input_->points.size(); ++idx)
   {
     point.x = input_->points[idx].x;
     point.y = input_->points[idx].y;

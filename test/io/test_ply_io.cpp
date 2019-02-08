@@ -96,7 +96,7 @@ TEST (PCL, PLYReaderWriter)
   EXPECT_EQ (cloud.is_dense, cloud2.is_dense);   // test for fromPCLPointCloud2 ()
   EXPECT_EQ (cloud.size (), cloud2.size ());         // test for fromPCLPointCloud2 ()
 
-  for (uint32_t counter = 0; counter < cloud.size (); ++counter)
+  for (size_t counter = 0; counter < cloud.size (); ++counter)
   {
     EXPECT_FLOAT_EQ (cloud[counter].x, cloud2[counter].x);     // test for fromPCLPointCloud2 ()
     EXPECT_FLOAT_EQ (cloud[counter].y, cloud2[counter].y);     // test for fromPCLPointCloud2 ()

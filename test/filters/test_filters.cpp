@@ -1788,7 +1788,7 @@ TEST (SamplingSurfaceNormal, Filters)
   ssn_filter.filter (outcloud);
 
   // All the sampled points should have normals along the direction of Z axis
-  for (unsigned int i = 0; i < outcloud.points.size (); i++)
+  for (size_t i = 0; i < outcloud.points.size (); i++)
   {
     EXPECT_NEAR (outcloud.points[i].normal[0], 0, 1e-3);
     EXPECT_NEAR (outcloud.points[i].normal[1], 0, 1e-3);
@@ -2186,7 +2186,7 @@ TEST (NormalRefinement, Filters)
   // Run estimation
   pcl::NormalEstimation<pcl::PointXYZRGB, pcl::PointXYZRGBNormal> ne;
   cloud_organized_normal.reserve (cloud_organized_nonan.size ());
-  for (unsigned int i = 0; i < cloud_organized_nonan.size (); ++i)
+  for (size_t i = 0; i < cloud_organized_nonan.size (); ++i)
   {
     // Output point
     pcl::PointXYZRGBNormal normali;
@@ -2257,7 +2257,7 @@ TEST (NormalRefinement, Filters)
   int num_nans = 0;
 
   // Loop
-  for (unsigned int i = 0; i < idx_table.size (); ++i)
+  for (size_t i = 0; i < idx_table.size (); ++i)
   {
     float tmp;
 
@@ -2301,13 +2301,13 @@ TEST (NormalRefinement, Filters)
 
   // Error variance of estimated
   float err_est_var = 0.0f;
-  for (unsigned int i = 0; i < errs_est.size (); ++i)
+  for (size_t i = 0; i < errs_est.size (); ++i)
     err_est_var = (errs_est[i] - err_est_mean) * (errs_est[i] - err_est_mean);
   err_est_var /= static_cast<float> (errs_est.size () - 1);
 
   // Error variance of refined
   float err_refined_var = 0.0f;
-  for (unsigned int i = 0; i < errs_refined.size (); ++i)
+  for (size_t i = 0; i < errs_refined.size (); ++i)
     err_refined_var = (errs_refined[i] - err_refined_mean) * (errs_refined[i] - err_refined_mean);
   err_refined_var /= static_cast<float> (errs_refined.size () - 1);
 

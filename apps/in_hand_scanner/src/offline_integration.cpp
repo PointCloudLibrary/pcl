@@ -146,7 +146,7 @@ pcl::ihs::OfflineIntegration::computationThread ()
     return;
   }
 
-  for (unsigned int i=1; i<filenames.size (); ++i)
+  for (size_t i=1; i<filenames.size (); ++i)
   {
     std::cerr << "Processing file " << std::setw (5) << i+1 << " / " << filenames.size () << std::endl;
 

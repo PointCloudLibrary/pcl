@@ -71,7 +71,7 @@ main (int argc, char ** argv)
   Eigen::ArrayXf gaussian_kernel(5);
   gaussian_kernel << 1.f/16, 1.f/4, 3.f/8, 1.f/4, 1.f/16;
   pcl::console::print_info ("convolution kernel:");
-  for (int i = 0; i < gaussian_kernel.size (); ++i)
+  for (Eigen::Index i = 0; i < gaussian_kernel.size (); ++i)
     pcl::console::print_info (" %f", gaussian_kernel[i]);
   pcl::console::print_info ("\n");
 

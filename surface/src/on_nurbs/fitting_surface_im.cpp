@@ -157,7 +157,7 @@ FittingSurfaceIM::refine ()
   {
     int dim = 0;
     std::vector<double> elements = getElementVector (m_nurbs, dim);
-    for (unsigned i = 0; i < elements.size () - 1; i++)
+    for (size_t i = 0; i < elements.size () - 1; i++)
     {
       double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
       m_nurbs.InsertKnot (dim, xi, 1);
@@ -166,7 +166,7 @@ FittingSurfaceIM::refine ()
   {
     int dim = 1;
     std::vector<double> elements = getElementVector (m_nurbs, dim);
-    for (unsigned i = 0; i < elements.size () - 1; i++)
+    for (size_t i = 0; i < elements.size () - 1; i++)
     {
       double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
       m_nurbs.InsertKnot (dim, xi, 1);
@@ -521,9 +521,9 @@ FittingSurfaceIM::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, cons
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest (DBL_MAX);
-  for (unsigned i = 0; i < elementsU.size () - 1; i++)
+  for (size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (unsigned j = 0; j < elementsV.size () - 1; j++)
+    for (size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
       double d;

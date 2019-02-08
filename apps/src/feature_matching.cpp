@@ -298,12 +298,12 @@ void ICCVTutorial<FeatureType>::filterCorrespondences ()
 {
   cout << "correspondence rejection..." << std::flush;
   std::vector<std::pair<unsigned, unsigned> > correspondences;
-  for (unsigned cIdx = 0; cIdx < source2target_.size (); ++cIdx)
+  for (size_t cIdx = 0; cIdx < source2target_.size (); ++cIdx)
     if (target2source_[source2target_[cIdx]] == static_cast<int> (cIdx))
       correspondences.push_back(std::make_pair(cIdx, source2target_[cIdx]));
 
   correspondences_->resize (correspondences.size());
-  for (unsigned cIdx = 0; cIdx < correspondences.size(); ++cIdx)
+  for (size_t cIdx = 0; cIdx < correspondences.size(); ++cIdx)
   {
     (*correspondences_)[cIdx].index_query = correspondences[cIdx].first;
     (*correspondences_)[cIdx].index_match = correspondences[cIdx].second;

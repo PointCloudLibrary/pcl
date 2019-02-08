@@ -571,13 +571,13 @@ namespace pcl
           if (this->sizeHalfEdges () != other.sizeHalfEdges ()) return (false);
           if (this->sizeFaces     () != other.sizeFaces     ()) return (false);
 
-          for (unsigned int i=0; i<this->sizeVertices (); ++i)
+          for (size_t i=0; i<this->sizeVertices (); ++i)
           {
             if (this->getOutgoingHalfEdgeIndex (VertexIndex (i)) !=
                 other.getOutgoingHalfEdgeIndex (VertexIndex (i))) return (false);
           }
 
-          for (unsigned int i=0; i<this->sizeHalfEdges (); ++i)
+          for (size_t i=0; i<this->sizeHalfEdges (); ++i)
           {
             if (this->getTerminatingVertexIndex (HalfEdgeIndex (i)) !=
                 other.getTerminatingVertexIndex (HalfEdgeIndex (i))) return (false);
@@ -592,7 +592,7 @@ namespace pcl
                 other.getFaceIndex (HalfEdgeIndex (i))) return (false);
           }
 
-          for (unsigned int i=0; i<this->sizeFaces (); ++i)
+          for (size_t i=0; i<this->sizeFaces (); ++i)
           {
             if (this->getInnerHalfEdgeIndex (FaceIndex (i)) !=
                 other.getInnerHalfEdgeIndex (FaceIndex (i))) return (false);
@@ -1953,7 +1953,7 @@ namespace pcl
         bool
         isManifold (boost::false_type /*is_manifold*/) const
         {
-          for (unsigned int i=0; i<this->sizeVertices (); ++i)
+          for (size_t i=0; i<this->sizeVertices (); ++i)
           {
             if (!this->isManifold (VertexIndex (i))) return (false);
           }

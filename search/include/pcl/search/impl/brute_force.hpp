@@ -250,7 +250,7 @@ pcl::search::BruteForce<PointT>::denseRadiusSearch (
   }
   else
   {
-    for (unsigned index = 0; index < input_->size (); ++index)
+    for (size_t index = 0; index < input_->size (); ++index)
     {
       distance = getDistSqr (input_->points[index], point);
       if (distance <= radius)
@@ -309,7 +309,7 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
   }
   else
   {
-    for (unsigned index = 0; index < input_->size (); ++index)
+    for (size_t index = 0; index < input_->size (); ++index)
     {
       if (!std::isfinite (input_->points[index].x))
         continue;

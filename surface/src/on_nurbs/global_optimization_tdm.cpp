@@ -90,7 +90,7 @@ GlobalOptimizationTDM::assemble (Parameter params)
 
   m_solver.assign (m_nrows, m_ncols, 1);
 
-  for (unsigned i = 0; i < m_data.size (); i++)
+  for (size_t i = 0; i < m_data.size (); i++)
     m_data[i]->common_boundary_param.clear ();
 
   // assemble matrix
@@ -208,7 +208,7 @@ GlobalOptimizationTDM::updateSurf (double damp)
 {
   int ncps (0);
 
-  for (unsigned i = 0; i < m_nurbs.size (); i++)
+  for (size_t i = 0; i < m_nurbs.size (); i++)
   {
     ON_NurbsSurface* nurbs = m_nurbs[i];
 
@@ -276,7 +276,7 @@ GlobalOptimizationTDM::assembleCommonBoundaries (unsigned id1, double weight, un
   if (nurbs1->m_order[0] != nurbs1->m_order[1])
     printf ("[GlobalOptimizationTDM::assembleCommonBoundaries] Warning, order in u and v direction differ (nurbs1).\n");
 
-  for (unsigned i = 0; i < data1->common_boundary_point.size (); i++)
+  for (size_t i = 0; i < data1->common_boundary_point.size (); i++)
   {
     Eigen::Vector3d p0 = data1->common_boundary_point[i];
     Eigen::Vector2i id (id1, data1->common_boundary_idx[i]);
@@ -368,12 +368,12 @@ GlobalOptimizationTDM::assembleClosingBoundaries (unsigned id, unsigned samples,
   ClosingBoundary::sampleFromBoundary (nurbs1, boundary1, params1, samples);
 
   // for each other nurbs
-  for (unsigned n2 = (id + 1); n2 < m_nurbs.size (); n2++)
+  for (size_t n2 = (id + 1); n2 < m_nurbs.size (); n2++)
   {
     ON_NurbsSurface *nurbs2 = m_nurbs[n2];
 
     // find closest point to boundary
-    for (unsigned i = 0; i < boundary1.size (); i++)
+    for (size_t i = 0; i < boundary1.size (); i++)
     {
       double error;
       Eigen::Vector3d p, tu, tv;
@@ -412,14 +412,14 @@ GlobalOptimizationTDM::assembleClosingBoundariesTD (unsigned id, unsigned sample
 
   // for each other nurbs
   //  for (unsigned n2 = (id + 1); n2 < m_nurbs.size(); n2++) {
-  for (unsigned n2 = 0; n2 < m_nurbs.size (); n2++)
+  for (size_t n2 = 0; n2 < m_nurbs.size (); n2++)
   {
     if (id == n2)
       continue;
     ON_NurbsSurface *nurbs2 = m_nurbs[n2];
 
     // find closest point to boundary
-    for (unsigned i = 0; i < boundary1.size (); i++)
+    for (size_t i = 0; i < boundary1.size (); i++)
     {
       double error;
       Eigen::Vector3d p, n, tu, tv;

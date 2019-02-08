@@ -252,7 +252,7 @@ namespace pcl
       setExcludeLabels (const std::vector<bool>& exclude_labels)
       {
         exclude_labels_ = boost::make_shared<std::set<uint32_t> > ();
-        for (uint32_t i = 0; i < exclude_labels.size (); ++i)
+        for (size_t i = 0; i < exclude_labels.size (); ++i)
           if (exclude_labels[i])
             exclude_labels_->insert (i);
       }

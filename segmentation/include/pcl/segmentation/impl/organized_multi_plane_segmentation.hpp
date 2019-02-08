@@ -111,7 +111,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   // Calculate range part of planes' hessian normal form
   std::vector<float> plane_d (input_->points.size ());
   
-  for (unsigned int i = 0; i < input_->size (); ++i)
+  for (size_t i = 0; i < input_->size (); ++i)
     plane_d[i] = input_->points[i].getVector3fMap ().dot (normals_->points[i].getNormalVector3fMap ());
   
   // Make a comparator
@@ -204,7 +204,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
     boundary_cloud.resize (0);
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[0], labels, boundary_indices[i]);
     boundary_cloud.points.resize (boundary_indices[i].indices.size ());
-    for (unsigned j = 0; j < boundary_indices[i].indices.size (); j++)
+    for (size_t j = 0; j < boundary_indices[i].indices.size (); j++)
       boundary_cloud.points[j] = input_->points[boundary_indices[i].indices[j]];
     
     Eigen::Vector3f centroid = Eigen::Vector3f (centroids[i][0],centroids[i][1],centroids[i][2]);
@@ -243,7 +243,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
     int max_inlier_idx = static_cast<int> (inlier_indices[i].indices.size ()) - 1;
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[max_inlier_idx], labels, boundary_indices[i]);
     boundary_cloud.points.resize (boundary_indices[i].indices.size ());
-    for (unsigned j = 0; j < boundary_indices[i].indices.size (); j++)
+    for (size_t j = 0; j < boundary_indices[i].indices.size (); j++)
       boundary_cloud.points[j] = input_->points[boundary_indices[i].indices[j]];
     
     Eigen::Vector3f centroid = Eigen::Vector3f (centroids[i][0],centroids[i][1],centroids[i][2]);
@@ -287,7 +287,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
     int max_inlier_idx = static_cast<int> (inlier_indices[i].indices.size ()) - 1;
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[max_inlier_idx], labels, boundary_indices[i]);
     boundary_cloud.points.resize (boundary_indices[i].indices.size ());
-    for (unsigned j = 0; j < boundary_indices[i].indices.size (); j++)
+    for (size_t j = 0; j < boundary_indices[i].indices.size (); j++)
       boundary_cloud.points[j] = input_->points[boundary_indices[i].indices[j]];
 
     Eigen::Vector3f centroid = Eigen::Vector3f (centroids[i][0],centroids[i][1],centroids[i][2]);

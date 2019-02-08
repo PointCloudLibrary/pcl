@@ -70,7 +70,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::assignLabelIndices (pcl::PointCloud<Poi
 {
   const unsigned invalid_label = unsigned (0);
   label_indices.resize (num_of_edgetype_);
-  for (unsigned idx = 0; idx < input_->points.size (); idx++)
+  for (size_t idx = 0; idx < input_->points.size (); idx++)
   {
     if (labels[idx].label != invalid_label)
     {

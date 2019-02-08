@@ -260,7 +260,7 @@ pcl::people::PersonClassifier<PointT>::evaluate (float height_person,
  
     // Calculate confidence value by dot product:
     confidence = 0.0;
-    for(unsigned int i = 0; i < SVM_weights_.size(); i++)
+    for(size_t i = 0; i < SVM_weights_.size(); i++)
     { 
       confidence += SVM_weights_[i] * descriptor[i];
     }

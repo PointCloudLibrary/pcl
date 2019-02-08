@@ -917,7 +917,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::clusterDes
 {
   Eigen::MatrixXf points_to_cluster (histograms.size (), FeatureSize);
 
-  for (unsigned int i_feature = 0; i_feature < histograms.size (); i_feature++)
+  for (size_t i_feature = 0; i_feature < histograms.size (); i_feature++)
     for (int i_dim = 0; i_dim < FeatureSize; i_dim++)
       points_to_cluster (i_feature, i_dim) = histograms[i_feature].histogram[i_dim];
 
@@ -941,7 +941,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateS
   if (training_sigmas_.size () != 0)
   {
     sigmas.resize (training_sigmas_.size (), 0.0f);
-    for (unsigned int i_sigma = 0; i_sigma < training_sigmas_.size (); i_sigma++)
+    for (size_t i_sigma = 0; i_sigma < training_sigmas_.size (); i_sigma++)
       sigmas[i_sigma] = training_sigmas_[i_sigma];
     return;
   }
@@ -1311,7 +1311,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::computeKMe
   for (int i_dim = 0; i_dim < feature_dimension; i_dim++)
     box[i_dim] = Eigen::Vector2f (points_to_cluster (0, i_dim), points_to_cluster (0, i_dim));
 
-  for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
+  for (size_t i_point = 0; i_point < number_of_points; i_point++)
     for (int i_dim = 0; i_dim < feature_dimension; i_dim++)
     {
       float v = points_to_cluster (i_point, i_dim);
@@ -1349,7 +1349,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::computeKMe
         centers.setZero ();
         for (int i_cluster = 0; i_cluster < number_of_clusters; i_cluster++)
           counters[i_cluster] = 0;
-        for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
+        for (size_t i_point = 0; i_point < number_of_points; i_point++)
         {
           int i_label = labels (i_point, 0);
           for (int i_dim = 0; i_dim < feature_dimension; i_dim++)
@@ -1387,7 +1387,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::computeKMe
         }
       }
       compactness = 0.0f;
-      for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
+      for (size_t i_point = 0; i_point < number_of_points; i_point++)
       {
         Eigen::VectorXf sample (feature_dimension);
         sample = points_to_cluster.row (i_point);
@@ -1494,7 +1494,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::generateCe
   }
 
   for (int i_cluster = 0; i_cluster < number_of_clusters; i_cluster++)
-    for (unsigned int i_dim = 0; i_dim < dimension; i_dim++)
+    for (size_t i_dim = 0; i_dim < dimension; i_dim++)
       out_centers (i_cluster, i_dim) = data (centers[i_cluster], i_dim);
 }
 
@@ -1506,7 +1506,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::generateRa
   size_t dimension = boxes.size ();
   float margin = 1.0f / static_cast<float> (dimension);
 
-  for (unsigned int i_dim = 0; i_dim < dimension; i_dim++)
+  for (size_t i_dim = 0; i_dim < dimension; i_dim++)
   {
     unsigned int random_integer = rand () - 1;
     float random_float = static_cast<float> (random_integer) / static_cast<float> (std::numeric_limits<unsigned int>::max ());
@@ -1520,7 +1520,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::computeDis
 {
   size_t dimension = vec_1.rows () > 1 ? vec_1.rows () : vec_1.cols ();
   float distance = 0.0f;
-  for(unsigned int i_dim = 0; i_dim < dimension; i_dim++)
+  for(size_t i_dim = 0; i_dim < dimension; i_dim++)
   {
     float diff = vec_1 (i_dim) - vec_2 (i_dim);
     distance += diff * diff;

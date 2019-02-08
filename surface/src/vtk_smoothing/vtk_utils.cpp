@@ -162,7 +162,7 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
   while (mesh_polygons->GetNextCell (nr_cell_points, cell_points))
   {
     mesh.polygons[id_poly].vertices.resize (nr_cell_points);
-    for (int i = 0; i < nr_cell_points; ++i)
+    for (vtkIdType i = 0; i < nr_cell_points; ++i)
       mesh.polygons[id_poly].vertices[i] = static_cast<unsigned int> (cell_points[i]);
     ++id_poly;
   }

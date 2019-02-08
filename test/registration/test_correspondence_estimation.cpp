@@ -76,7 +76,7 @@ TEST (CorrespondenceEstimation, CorrespondenceEstimationNormalShooting)
   ce.determineCorrespondences (*corr);
 
   // Based on the data defined, the correspondence indices should be 1 <-> 1 , 2 <-> 2 , 3 <-> 3 etc.
-  for (unsigned int i = 0; i < corr->size (); i++)
+  for (size_t i = 0; i < corr->size (); i++)
   {
     EXPECT_EQ ((*corr)[i].index_query, (*corr)[i].index_match);
   }

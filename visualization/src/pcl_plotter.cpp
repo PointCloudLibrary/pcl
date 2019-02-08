@@ -158,7 +158,7 @@ pcl::visualization::PCLPlotter::addPlotData (
   double *array_x = new double[plot_data.size ()];
   double *array_y = new double[plot_data.size ()];
 
-  for (unsigned int i = 0; i < plot_data.size (); i++)
+  for (size_t i = 0; i < plot_data.size (); i++)
   {
     array_x[i] = plot_data[i].first;
     array_y[i] = plot_data[i].second;

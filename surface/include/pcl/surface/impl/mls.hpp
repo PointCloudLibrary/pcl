@@ -148,7 +148,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
     normals_->height = 1;
     normals_->width = static_cast<uint32_t> (normals_->size ());
 
-    for (unsigned int i = 0; i < output.size (); ++i)
+    for (size_t i = 0; i < output.size (); ++i)
     {
       typedef typename pcl::traits::fieldList<PointOutT>::type FieldList;
       pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_x", normals_->points[i].normal_x));
@@ -846,7 +846,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::MLSVoxelGrid (PointC
   const double max_size = (std::max) ((std::max)(bounding_box_size.x (), bounding_box_size.y ()), bounding_box_size.z ());
   // Put initial cloud in voxel grid
   data_size_ = static_cast<uint64_t> (1.5 * max_size / voxel_size_);
-  for (unsigned int i = 0; i < indices->size (); ++i)
+  for (size_t i = 0; i < indices->size (); ++i)
     if (std::isfinite (cloud->points[(*indices)[i]].x))
     {
       Eigen::Vector3i pos;

@@ -593,7 +593,7 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
 
   double int_err (0.0);
   double div_err = 1.0 / double (m_data.interior_error.size ());
-  for (unsigned i = 0; i < m_data.interior_error.size (); i++)
+  for (size_t i = 0; i < m_data.interior_error.size (); i++)
   {
     int_err += (m_data.interior_error[i] * div_err);
   }
@@ -608,9 +608,9 @@ unsigned
 SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, const std::vector<int> &indices,
                           vector_vec3d &on_cloud)
 {
-  unsigned numPoints (0);
+  size_t numPoints = 0;
 
-  for (unsigned i = 0; i < indices.size (); i++)
+  for (size_t i = 0; i < indices.size (); i++)
   {
 
     pcl::PointXYZRGB &pt = pcl_cloud->at (indices[i]);
