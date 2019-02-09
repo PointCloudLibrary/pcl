@@ -76,8 +76,8 @@ namespace pcl
         //Inline constructor
         Tree2() : id(NO_CHILD), lid(NO_CHILD), nr_parts(0)
         {
-          for(int i=0;i<NUM_PARTS;i++)
-            parts_lid[i] = NO_CHILD;
+          for(int &part : parts_lid)
+            part = NO_CHILD;
         }
        
         int     id;                     // specific identification number of this tree
@@ -124,10 +124,10 @@ namespace pcl
       {
         if(sorted[label].size() == 0)
           return 0;
-        for(size_t i = 0; i < sorted[label].size(); i++)
+        for(auto &i : sorted[label])
         {
           for(int j = 0; j < MAX_CHILD; j++)
-            sorted[label][i].child_id[j] = LEAF;
+            i.child_id[j] = LEAF;
         }
         return 0;
       }
@@ -146,8 +146,8 @@ namespace pcl
       {
         if(sorted[label].size() == 0)
           return 0;
-        for(size_t i = 0; i < sorted[label].size(); i++){
-          sorted[label][i].child_id[child_number] = NO_CHILD;
+        for(auto &i : sorted[label]){
+          i.child_id[child_number] = NO_CHILD;
         }
         return 0;
       }
@@ -163,8 +163,8 @@ namespace pcl
       {
         if(sorted[label].size() == 0)
           return false;
-        for(size_t i = 0; i < sorted[label].size(); i++)
-          if((sorted[label][i].child_id[child_number] != NO_CHILD) && (sorted[label][i].child_id[child_number] != LEAF))
+        for(const auto &i : sorted[label])
+          if((i.child_id[child_number] != NO_CHILD) && (i.child_id[child_number] != LEAF))
             return true;
         return false;
       }
