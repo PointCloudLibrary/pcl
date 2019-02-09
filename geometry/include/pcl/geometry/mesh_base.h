@@ -1381,9 +1381,9 @@ namespace pcl
 
           const FaceIndex idx_face (static_cast <int> (this->sizeFaces () - 1));
 
-          for (HalfEdgeIndices::const_iterator it=inner_he.begin (); it!=inner_he.end (); ++it)
+          for (const auto &idx_half_edge : inner_he)
           {
-            this->setFaceIndex (*it, idx_face);
+            this->setFaceIndex (idx_half_edge, idx_face);
           }
 
           return (idx_face);
