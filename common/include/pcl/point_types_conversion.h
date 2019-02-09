@@ -250,10 +250,10 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       Intensity p;
-      PointRGBtoI (in.points[i], p);
+      PointRGBtoI (point, p);
       out.points.push_back (p);
     }
   }
@@ -268,10 +268,10 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       Intensity8u p;
-      PointRGBtoI (in.points[i], p);
+      PointRGBtoI (point, p);
       out.points.push_back (p);
     }
   }
@@ -286,10 +286,10 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       Intensity32u p;
-      PointRGBtoI (in.points[i], p);
+      PointRGBtoI (point, p);
       out.points.push_back (p);
     }
   }
@@ -304,10 +304,10 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       PointXYZHSV p;
-      PointXYZRGBtoXYZHSV (in.points[i], p);
+      PointXYZRGBtoXYZHSV (point, p);
       out.points.push_back (p);
     }
   }
@@ -322,10 +322,10 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       PointXYZHSV p;
-      PointXYZRGBAtoXYZHSV (in.points[i], p);
+      PointXYZRGBAtoXYZHSV (point, p);
       out.points.push_back (p);
     }
   }
@@ -340,10 +340,10 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       PointXYZI p;
-      PointXYZRGBtoXYZI (in.points[i], p);
+      PointXYZRGBtoXYZI (point, p);
       out.points.push_back (p);
     }
   }

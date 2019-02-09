@@ -86,10 +86,10 @@ pcl::getMeanStd (const std::vector<float> &values, double &mean, double &stddev)
   
   double sum = 0, sq_sum = 0;
 
-  for (size_t i = 0; i < values.size (); ++i)
+  for (const float value : values)
   {
-    sum += values[i];
-    sq_sum += values[i] * values[i];
+    sum += value;
+    sq_sum += value * value;
   }
   mean = sum / static_cast<double>(values.size ());
   double variance = (sq_sum - sum * sum / static_cast<double>(values.size ())) / (static_cast<double>(values.size ()) - 1);
@@ -324,9 +324,9 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices 
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (size_t i = 0; i < indices.indices.size (); ++i)
+    for (const int index : indices.indices)
     {
-      pcl::Array4fMapConst pt = cloud.points[indices.indices[i]].getArray4fMap ();
+      pcl::Array4fMapConst pt = cloud.points[index].getArray4fMap ();
       min_p = min_p.min (pt);
       max_p = max_p.max (pt);
     }
@@ -334,14 +334,14 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices 
   // NaN or Inf values could exist => check for them
   else
   {
-    for (size_t i = 0; i < indices.indices.size (); ++i)
+    for (const int index : indices.indices)
     {
       // Check if the point is invalid
-      if (!std::isfinite (cloud.points[indices.indices[i]].x) || 
-          !std::isfinite (cloud.points[indices.indices[i]].y) || 
-          !std::isfinite (cloud.points[indices.indices[i]].z))
+      if (!std::isfinite (cloud.points[index].x) || 
+          !std::isfinite (cloud.points[index].y) || 
+          !std::isfinite (cloud.points[index].z))
         continue;
-      pcl::Array4fMapConst pt = cloud.points[indices.indices[i]].getArray4fMap ();
+      pcl::Array4fMapConst pt = cloud.points[index].getArray4fMap ();
       min_p = min_p.min (pt);
       max_p = max_p.max (pt);
     }
@@ -361,9 +361,9 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (size_t i = 0; i < indices.size (); ++i)
+    for (const int index : indices)
     {
-      pcl::Array4fMapConst pt = cloud.points[indices[i]].getArray4fMap ();
+      pcl::Array4fMapConst pt = cloud.points[index].getArray4fMap ();
       min_pt = min_pt.array ().min (pt);
       max_pt = max_pt.array ().max (pt);
     }
@@ -371,14 +371,14 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &
   // NaN or Inf values could exist => check for them
   else
   {
-    for (size_t i = 0; i < indices.size (); ++i)
+    for (const int index : indices)
     {
       // Check if the point is invalid
-      if (!std::isfinite (cloud.points[indices[i]].x) || 
-          !std::isfinite (cloud.points[indices[i]].y) || 
-          !std::isfinite (cloud.points[indices[i]].z))
+      if (!std::isfinite (cloud.points[index].x) || 
+          !std::isfinite (cloud.points[index].y) || 
+          !std::isfinite (cloud.points[index].z))
         continue;
-      pcl::Array4fMapConst pt = cloud.points[indices[i]].getArray4fMap ();
+      pcl::Array4fMapConst pt = cloud.points[index].getArray4fMap ();
       min_pt = min_pt.array ().min (pt);
       max_pt = max_pt.array ().max (pt);
     }
