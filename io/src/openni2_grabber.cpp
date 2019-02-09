@@ -849,10 +849,10 @@ pcl::io::OpenNI2Grabber::getAvailableDepthModes () const
 {
 pcl::io::openni2::OpenNI2VideoMode dummy;
   std::vector<std::pair<int, pcl::io::openni2::OpenNI2VideoMode> > result;
-  for (std::map<int, pcl::io::openni2::OpenNI2VideoMode>::const_iterator it = config2oni_map_.begin (); it != config2oni_map_.end (); ++it)
+  for (const auto &config2oni : config2oni_map_)
   {
-    if (device_->findCompatibleDepthMode (it->second, dummy))
-      result.emplace_back(*it);
+    if (device_->findCompatibleDepthMode (config2oni.second, dummy))
+      result.emplace_back(config2oni);
   }
 
   return (result);
@@ -864,10 +864,10 @@ pcl::io::OpenNI2Grabber::getAvailableImageModes () const
 {
 pcl::io::openni2::OpenNI2VideoMode dummy;
   std::vector<std::pair<int, pcl::io::openni2::OpenNI2VideoMode> > result;
-  for (std::map<int, pcl::io::openni2::OpenNI2VideoMode>::const_iterator it = config2oni_map_.begin (); it != config2oni_map_.end (); ++it)
+  for (const auto &config2oni : config2oni_map_)
   {
-    if (device_->findCompatibleColorMode (it->second, dummy))
-      result.emplace_back(*it);
+    if (device_->findCompatibleColorMode (config2oni.second, dummy))
+      result.emplace_back(config2oni);
   }
 
   return (result);

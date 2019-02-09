@@ -467,12 +467,12 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
 
   if (material_files.size () > 0)
   {
-    for (std::size_t i = 0; i < material_files.size (); ++i)
+    for (const auto &material_file : material_files)
     {
       MTLReader companion;
-      if (companion.read (file_name, material_files[i]))
+      if (companion.read (file_name, material_file))
         PCL_WARN ("[pcl::OBJReader::readHeader] Problem reading material file %s\n",
-                  material_files[i].c_str ());
+                  material_file.c_str ());
       companions_.push_back (companion);
     }
   }
@@ -772,10 +772,10 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
       {
         mesh.tex_polygons.emplace_back();
         mesh.tex_materials.emplace_back();
-        for (std::size_t i = 0; i < companions_.size (); ++i)
+        for (auto &companion : companions_)
         {
-          std::vector<pcl::TexMaterial>::const_iterator mat_it = companions_[i].getMaterial (st[1]);
-          if (mat_it != companions_[i].materials_.end ())
+          std::vector<pcl::TexMaterial>::const_iterator mat_it = companion.getMaterial (st[1]);
+          if (mat_it != companion.materials_.end ())
           {
             mesh.tex_materials.back () = *mat_it;
             break;
@@ -1094,10 +1094,10 @@ pcl::io::saveOBJFile (const std::string &file_name,
   for (unsigned m = 0; m < nr_meshes; ++m)
   {
     fs << "# " << tex_mesh.tex_coordinates[m].size() << " vertex textures in submesh " << m <<  '\n';
-    for (size_t i = 0; i < tex_mesh.tex_coordinates[m].size (); ++i)
+    for (const auto &coordinate : tex_mesh.tex_coordinates[m])
     {
       fs << "vt ";
-      fs <<  tex_mesh.tex_coordinates[m][i][0] << " " << tex_mesh.tex_coordinates[m][i][1] << '\n';
+      fs <<  coordinate[0] << " " << coordinate[1] << '\n';
     }
   }
 

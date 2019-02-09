@@ -544,9 +544,8 @@ pcl::io::openni2::OpenNI2Device::getDefaultIRMode () const
 {
   // Search for and return VGA@30 Hz mode
   vector<OpenNI2VideoMode> modeList = getSupportedIRVideoModes ();
-  for (vector<OpenNI2VideoMode>::iterator modeItr = modeList.begin (); modeItr != modeList.end (); ++modeItr)
+  for (const auto &mode : modeList)
   {
-    OpenNI2VideoMode mode = *modeItr;
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
       return mode;
   }
@@ -558,9 +557,8 @@ pcl::io::openni2::OpenNI2Device::getDefaultColorMode () const
 {
   // Search for and return VGA@30 Hz mode
   vector<OpenNI2VideoMode> modeList = getSupportedColorVideoModes ();
-  for (vector<OpenNI2VideoMode>::iterator modeItr = modeList.begin (); modeItr != modeList.end (); ++modeItr)
+  for (const auto &mode : modeList)
   {
-    OpenNI2VideoMode mode = *modeItr;
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
       return mode;
   }
@@ -572,9 +570,8 @@ pcl::io::openni2::OpenNI2Device::getDefaultDepthMode () const
 {
   // Search for and return VGA@30 Hz mode
   vector<OpenNI2VideoMode> modeList = getSupportedDepthVideoModes ();
-  for (vector<OpenNI2VideoMode>::iterator modeItr = modeList.begin (); modeItr != modeList.end (); ++modeItr)
+  for (const auto &mode : modeList)
   {
-    OpenNI2VideoMode mode = *modeItr;
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
       return mode;
   }
@@ -687,19 +684,19 @@ bool
 pcl::io::openni2::OpenNI2Device::findCompatibleVideoMode (const std::vector<OpenNI2VideoMode> supportedModes, const OpenNI2VideoMode& requested_mode, OpenNI2VideoMode& actual_mode) const
 {
   bool found = false;
-  for (std::vector<OpenNI2VideoMode>::const_iterator modeIt = supportedModes.begin (); modeIt != supportedModes.end (); ++modeIt)
+  for (const auto &supportedMode : supportedModes)
   {
-    if (modeIt->frame_rate_ == requested_mode.frame_rate_
-      && resizingSupported (modeIt->x_resolution_, modeIt->y_resolution_, requested_mode.x_resolution_, requested_mode.y_resolution_))
+    if (supportedMode.frame_rate_ == requested_mode.frame_rate_
+      && resizingSupported (supportedMode.x_resolution_, supportedMode.y_resolution_, requested_mode.x_resolution_, requested_mode.y_resolution_))
     {
       if (found)
       { // check whether the new mode is better -> smaller than the current one.
-        if (actual_mode.x_resolution_ * actual_mode.x_resolution_ > modeIt->x_resolution_ * modeIt->y_resolution_ )
-          actual_mode = *modeIt;
+        if (actual_mode.x_resolution_ * actual_mode.x_resolution_ > supportedMode.x_resolution_ * supportedMode.y_resolution_ )
+          actual_mode = supportedMode;
       }
       else
       {
-        actual_mode = *modeIt;
+        actual_mode = supportedMode;
         found = true;
       }
     }
@@ -880,8 +877,8 @@ std::ostream& pcl::io::openni2::operator<< (std::ostream& stream, const OpenNI2D
     stream << "IR sensor video modes:" << std::endl;
     const std::vector<OpenNI2VideoMode>& video_modes = device.getSupportedIRVideoModes ();
 
-    for (auto it = video_modes.cbegin (), it_end = video_modes.cend (); it != it_end; ++it)
-      stream << "   - " << *it << std::endl;
+    for (const auto &video_mode : video_modes)
+      stream << "   - " << video_mode << std::endl;
   }
   else
   {
@@ -893,8 +890,8 @@ std::ostream& pcl::io::openni2::operator<< (std::ostream& stream, const OpenNI2D
     stream << "Color sensor video modes:" << std::endl;
     const std::vector<OpenNI2VideoMode>& video_modes = device.getSupportedColorVideoModes ();
 
-    for (auto it = video_modes.cbegin (), it_end = video_modes.cend (); it != it_end; ++it)
-      stream << "   - " << *it << std::endl;
+    for (const auto &video_mode : video_modes)
+      stream << "   - " << video_mode << std::endl;
   }
   else
   {
@@ -906,8 +903,8 @@ std::ostream& pcl::io::openni2::operator<< (std::ostream& stream, const OpenNI2D
     stream << "Depth sensor video modes:" << std::endl;
     const std::vector<OpenNI2VideoMode>& video_modes = device.getSupportedDepthVideoModes ();
 
-    for (auto it = video_modes.cbegin (), it_end = video_modes.cend (); it != it_end; ++it)
-      stream << "   - " << *it << std::endl;
+    for (const auto &video_mode : video_modes)
+      stream << "   - " << video_mode << std::endl;
   }
   else
   {

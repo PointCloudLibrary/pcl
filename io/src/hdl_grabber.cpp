@@ -149,11 +149,11 @@ pcl::HDLGrabber::initialize (const std::string& correctionsFile)
 
   loadCorrectionsFile (correctionsFile);
 
-  for (uint8_t i = 0; i < HDL_MAX_NUM_LASERS; i++)
+  for (auto &laser_correction : laser_corrections_)
   {
-    HDLLaserCorrection correction = laser_corrections_[i];
-    laser_corrections_[i].sinVertOffsetCorrection = correction.verticalOffsetCorrection * correction.sinVertCorrection;
-    laser_corrections_[i].cosVertOffsetCorrection = correction.verticalOffsetCorrection * correction.cosVertCorrection;
+    HDLLaserCorrection correction = laser_correction;
+    laser_correction.sinVertOffsetCorrection = correction.verticalOffsetCorrection * correction.sinVertCorrection;
+    laser_correction.cosVertOffsetCorrection = correction.verticalOffsetCorrection * correction.cosVertCorrection;
   }
   sweep_xyz_signal_ = createSignal<sig_cb_velodyne_hdl_sweep_point_cloud_xyz> ();
   sweep_xyzrgba_signal_ = createSignal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba> ();
@@ -167,8 +167,8 @@ pcl::HDLGrabber::initialize (const std::string& correctionsFile)
   current_sweep_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ>);
   current_sweep_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI>);
 
-  for (uint8_t i = 0; i < HDL_MAX_NUM_LASERS; i++)
-    laser_rgb_mapping_[i].r = laser_rgb_mapping_[i].g = laser_rgb_mapping_[i].b = 0;
+  for (auto &rgb : laser_rgb_mapping_)
+    rgb.r = rgb.g = rgb.b = 0;
 
   if (laser_corrections_[32].distanceCorrection == 0.0)
   {
@@ -335,9 +335,8 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
   current_scan_xyzi_->header.seq = scan_counter;
   scan_counter++;
 
-  for (uint8_t i = 0; i < HDL_FIRING_PER_PKT; ++i)
+  for (const auto &firing_data : dataPacket->firingData)
   {
-    HDLFiringData firing_data = dataPacket->firingData[i];
     uint8_t offset = (firing_data.blockIdentifier == BLOCK_0_TO_31) ? 0 : 32;
 
     for (uint8_t j = 0; j < HDL_LASER_PER_FIRING; j++)

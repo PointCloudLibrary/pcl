@@ -873,9 +873,9 @@ openni_wrapper::OpenNIDevice::ImageDataThreadFunction ()
     image_lock.unlock ();
     
     boost::shared_ptr<Image> image = getCurrentImage (image_data);
-    for (std::map< OpenNIDevice::CallbackHandle, ActualImageCallbackFunction >::iterator callbackIt = image_callback_.begin (); callbackIt != image_callback_.end (); ++callbackIt)
+    for (const auto &callback : image_callback_)
     {
-      callbackIt->second.operator()(image);
+      callback.second.operator()(image);
     }
   }
 }
@@ -903,10 +903,9 @@ openni_wrapper::OpenNIDevice::DepthDataThreadFunction ()
 
     boost::shared_ptr<DepthImage> depth_image ( new DepthImage (depth_data, baseline_, getDepthFocalLength (), shadow_value_, no_sample_value_) );
 
-    for (std::map< OpenNIDevice::CallbackHandle, ActualDepthImageCallbackFunction >::iterator callbackIt = depth_callback_.begin ();
-         callbackIt != depth_callback_.end (); ++callbackIt)
+    for (const auto &callback : depth_callback_)
     {
-      callbackIt->second.operator()(depth_image);
+      callback.second.operator()(depth_image);
     }
   }
 }
@@ -934,10 +933,9 @@ openni_wrapper::OpenNIDevice::IRDataThreadFunction ()
 
     boost::shared_ptr<IRImage> ir_image ( new IRImage (ir_data) );
 
-    for (std::map< OpenNIDevice::CallbackHandle, ActualIRImageCallbackFunction >::iterator callbackIt = ir_callback_.begin ();
-         callbackIt != ir_callback_.end (); ++callbackIt)
+    for (const auto &callback : ir_callback_)
     {
-      callbackIt->second.operator()(ir_image);
+      callback.second.operator()(ir_image);
     }
   }
 }
@@ -1117,18 +1115,18 @@ openni_wrapper::OpenNIDevice::findCompatibleImageMode (const XnMapOutputMode& ou
   else
   {
     bool found = false;
-    for (std::vector<XnMapOutputMode>::const_iterator modeIt = available_image_modes_.begin (); modeIt != available_image_modes_.end (); ++modeIt)
+    for (const auto &available_image_mode : available_image_modes_)
     {
-      if (modeIt->nFPS == output_mode.nFPS && isImageResizeSupported (modeIt->nXRes, modeIt->nYRes, output_mode.nXRes, output_mode.nYRes))
+      if (available_image_mode.nFPS == output_mode.nFPS && isImageResizeSupported (available_image_mode.nXRes, available_image_mode.nYRes, output_mode.nXRes, output_mode.nYRes))
       {
         if (found)
         { // check whether the new mode is better -> smaller than the current one.
-          if (mode.nXRes * mode.nYRes > modeIt->nXRes * modeIt->nYRes )
-            mode = *modeIt;
+          if (mode.nXRes * mode.nYRes > available_image_mode.nXRes * available_image_mode.nYRes )
+            mode = available_image_mode;
         }
         else
         {
-          mode = *modeIt;
+          mode = available_image_mode;
           found = true;
         }
       }
@@ -1149,18 +1147,18 @@ openni_wrapper::OpenNIDevice::findCompatibleDepthMode (const XnMapOutputMode& ou
   else
   {
     bool found = false;
-    for (std::vector<XnMapOutputMode>::const_iterator modeIt = available_depth_modes_.begin (); modeIt != available_depth_modes_.end (); ++modeIt)
+    for (const auto &available_depth_mode : available_depth_modes_)
     {
-      if (modeIt->nFPS == output_mode.nFPS && isImageResizeSupported (modeIt->nXRes, modeIt->nYRes, output_mode.nXRes, output_mode.nYRes))
+      if (available_depth_mode.nFPS == output_mode.nFPS && isImageResizeSupported (available_depth_mode.nXRes, available_depth_mode.nYRes, output_mode.nXRes, output_mode.nYRes))
       {
         if (found)
         { // check whether the new mode is better -> smaller than the current one.
-          if (mode.nXRes * mode.nYRes > modeIt->nXRes * modeIt->nYRes )
-            mode = *modeIt;
+          if (mode.nXRes * mode.nYRes > available_depth_mode.nXRes * available_depth_mode.nYRes )
+            mode = available_depth_mode;
         }
         else
         {
-          mode = *modeIt;
+          mode = available_depth_mode;
           found = true;
         }
       }
@@ -1173,9 +1171,9 @@ openni_wrapper::OpenNIDevice::findCompatibleDepthMode (const XnMapOutputMode& ou
 bool 
 openni_wrapper::OpenNIDevice::isImageModeSupported (const XnMapOutputMode& output_mode) const throw ()
 {
-  for (std::vector<XnMapOutputMode>::const_iterator modeIt = available_image_modes_.begin (); modeIt != available_image_modes_.end (); ++modeIt)
+  for (const auto &available_image_mode : available_image_modes_)
   {
-    if (modeIt->nFPS == output_mode.nFPS && modeIt->nXRes == output_mode.nXRes && modeIt->nYRes == output_mode.nYRes)
+    if (available_image_mode.nFPS == output_mode.nFPS && available_image_mode.nXRes == output_mode.nXRes && available_image_mode.nYRes == output_mode.nYRes)
       return (true);
   }
   return (false);
@@ -1185,9 +1183,9 @@ openni_wrapper::OpenNIDevice::isImageModeSupported (const XnMapOutputMode& outpu
 bool 
 openni_wrapper::OpenNIDevice::isDepthModeSupported (const XnMapOutputMode& output_mode) const throw ()
 {
-  for (std::vector<XnMapOutputMode>::const_iterator modeIt = available_depth_modes_.begin (); modeIt != available_depth_modes_.end (); ++modeIt)
+  for (const auto &available_depth_mode : available_depth_modes_)
   {
-    if (modeIt->nFPS == output_mode.nFPS && modeIt->nXRes == output_mode.nXRes && modeIt->nYRes == output_mode.nYRes)
+    if (available_depth_mode.nFPS == output_mode.nFPS && available_depth_mode.nXRes == output_mode.nXRes && available_depth_mode.nYRes == output_mode.nYRes)
       return (true);
   }
   return (false);

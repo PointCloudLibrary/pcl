@@ -620,16 +620,16 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     {
       if ((*range_grid_)[r].size () == 0)
       {
-        for (size_t f = 0; f < cloud_->fields.size (); ++f)
-          if (cloud_->fields[f].datatype == ::pcl::PCLPointField::FLOAT32)
-            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
+        for (const auto &field : cloud_->fields)
+          if (field.datatype == ::pcl::PCLPointField::FLOAT32)
+            memcpy (&data[r * cloud_->point_step + field.offset],
                     reinterpret_cast<const char*> (&f_nan), sizeof (float));
-          else if (cloud_->fields[f].datatype == ::pcl::PCLPointField::FLOAT64)
-            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
+          else if (field.datatype == ::pcl::PCLPointField::FLOAT64)
+            memcpy (&data[r * cloud_->point_step + field.offset],
                     reinterpret_cast<const char*> (&d_nan), sizeof (double));
           else
-            memset (&data[r * cloud_->point_step + cloud_->fields[f].offset], 0,
-                    pcl::getFieldSize (cloud_->fields[f].datatype) * cloud_->fields[f].count);
+            memset (&data[r * cloud_->point_step + field.offset], 0,
+                    pcl::getFieldSize (field.datatype) * field.count);
       }
       else
         memcpy (&data[r* cloud_->point_step], &cloud_->data[(*range_grid_)[r][0] * cloud_->point_step], cloud_->point_step);
@@ -640,14 +640,14 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   orientation_ = Eigen::Quaternionf (orientation);
   origin_ = origin;
 
-  for (size_t i = 0; i < cloud_->fields.size (); ++i)
+  for (auto &field : cloud_->fields)
   {
-    if (cloud_->fields[i].name == "nx")
-      cloud_->fields[i].name = "normal_x";
-    if (cloud_->fields[i].name == "ny")
-      cloud_->fields[i].name = "normal_y";
-    if (cloud_->fields[i].name == "nz")
-      cloud_->fields[i].name = "normal_z";
+    if (field.name == "nx")
+      field.name = "normal_x";
+    if (field.name == "ny")
+      field.name = "normal_y";
+    if (field.name == "nz")
+      field.name = "normal_z";
   }
   return (0);
 }
@@ -680,16 +680,16 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
     {
       if ((*range_grid_)[r].size () == 0)
       {
-        for (size_t f = 0; f < cloud_->fields.size (); ++f)
-          if (cloud_->fields[f].datatype == ::pcl::PCLPointField::FLOAT32)
-            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
+        for (const auto &field : cloud_->fields)
+          if (field.datatype == ::pcl::PCLPointField::FLOAT32)
+            memcpy (&data[r * cloud_->point_step + field.offset],
                     reinterpret_cast<const char*> (&f_nan), sizeof (float));
-          else if (cloud_->fields[f].datatype == ::pcl::PCLPointField::FLOAT64)
-            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
+          else if (field.datatype == ::pcl::PCLPointField::FLOAT64)
+            memcpy (&data[r * cloud_->point_step + field.offset],
                     reinterpret_cast<const char*> (&d_nan), sizeof (double));
           else
-            memset (&data[r * cloud_->point_step + cloud_->fields[f].offset], 0,
-                    pcl::getFieldSize (cloud_->fields[f].datatype) * cloud_->fields[f].count);
+            memset (&data[r * cloud_->point_step + field.offset], 0,
+                    pcl::getFieldSize (field.datatype) * field.count);
       }
       else
         memcpy (&data[r* cloud_->point_step], &cloud_->data[(*range_grid_)[r][0] * cloud_->point_step], cloud_->point_step);
@@ -700,14 +700,14 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
   orientation_ = Eigen::Quaternionf (orientation);
   origin_ = origin;
 
-  for (size_t i = 0; i < cloud_->fields.size (); ++i)
+  for (auto &field : cloud_->fields)
   {
-    if (cloud_->fields[i].name == "nx")
-      cloud_->fields[i].name = "normal_x";
-    if (cloud_->fields[i].name == "ny")
-      cloud_->fields[i].name = "normal_y";
-    if (cloud_->fields[i].name == "nz")
-      cloud_->fields[i].name = "normal_z";
+    if (field.name == "nx")
+      field.name = "normal_x";
+    if (field.name == "ny")
+      field.name = "normal_y";
+    if (field.name == "nz")
+      field.name = "normal_z";
   }
   return (0);
 }
@@ -766,27 +766,27 @@ pcl::PLYWriter::generateHeader (const pcl::PCLPointCloud2 &cloud,
 
   oss << "\nelement vertex "<< valid_points;
 
-  for (std::size_t i = 0; i < cloud.fields.size (); ++i)
+  for (const auto &field : cloud.fields)
   {
-    if (cloud.fields[i].name == "normal_x")
+    if (field.name == "normal_x")
     {
       oss << "\nproperty float nx";
     }
-    else if (cloud.fields[i].name == "normal_y")
+    else if (field.name == "normal_y")
     {
       oss << "\nproperty float ny";
     }
-    else if (cloud.fields[i].name == "normal_z")
+    else if (field.name == "normal_z")
     {
       oss << "\nproperty float nz";
     }
-    else if (cloud.fields[i].name == "rgb")
+    else if (field.name == "rgb")
     {
       oss << "\nproperty uchar red"
         "\nproperty uchar green"
         "\nproperty uchar blue";
     }
-    else if (cloud.fields[i].name == "rgba")
+    else if (field.name == "rgba")
     {
       oss << "\nproperty uchar red"
         "\nproperty uchar green"
@@ -796,9 +796,9 @@ pcl::PLYWriter::generateHeader (const pcl::PCLPointCloud2 &cloud,
     else
     {
       oss << "\nproperty";
-      if (cloud.fields[i].count != 1)
+      if (field.count != 1)
         oss << " list uint";
-      switch (cloud.fields[i].datatype)
+      switch (field.datatype)
       {
         case pcl::PCLPointField::INT8 : oss << " char "; break;
         case pcl::PCLPointField::UINT8 : oss << " uchar "; break;
@@ -814,7 +814,7 @@ pcl::PLYWriter::generateHeader (const pcl::PCLPointCloud2 &cloud,
           return ("");
         }
       }
-      oss << cloud.fields[i].name;
+      oss << field.name;
     }
   }
 
@@ -1767,10 +1767,9 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   {
     unsigned char value = static_cast<unsigned char> (mesh.polygons[i].vertices.size ());
     fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned char));
-    for (size_t j = 0; j < mesh.polygons[i].vertices.size (); ++j)
+    for (const int value : mesh.polygons[i].vertices)
     {
       //fs << mesh.polygons[i].vertices[j] << " ";
-      int value = mesh.polygons[i].vertices[j];
       fpout.write (reinterpret_cast<const char*> (&value), sizeof (int));
     }
   }
