@@ -221,8 +221,8 @@ int main (int argc, char *argv[])
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
   {
     pcl::PointCloud<PointOutT>::Ptr cloud_cluster_don (new pcl::PointCloud<PointOutT>);
-    for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit){
-      cloud_cluster_don->points.push_back (doncloud->points[*pit]);
+    for (const int index : it->indices){
+      cloud_cluster_don->points.push_back (doncloud->points[index]);
     }
 
     cloud_cluster_don->width = int (cloud_cluster_don->points.size ());
