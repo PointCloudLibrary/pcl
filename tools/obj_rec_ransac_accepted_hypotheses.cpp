@@ -237,12 +237,12 @@ update (CallbackParameters* params)
 
   // Clear the visualizer
   vtkRenderer *renderer = params->viz_.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
-  for ( list<vtkActor*>::iterator it = params->actors_.begin () ; it != params->actors_.end () ; ++it )
-    renderer->RemoveActor (*it);
+  for (const auto &actor : params->actors_)
+    renderer->RemoveActor (actor);
   params->actors_.clear ();
 
-  for ( list<vtkActor*>::iterator it = params->model_actors_.begin () ; it != params->model_actors_.end () ; ++it )
-    renderer->RemoveActor (*it);
+  for (const auto &model_actor : params->model_actors_)
+    renderer->RemoveActor (model_actor);
   params->model_actors_.clear ();
 
   params->viz_.removeAllShapes ();

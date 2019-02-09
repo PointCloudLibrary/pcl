@@ -157,10 +157,10 @@ void updateViewer (ORROctree& octree, PCLVisualizer& viz, std::vector<ORROctree:
   int i = 0;
 
   // Show the cubes
-  for ( std::list<ORROctree::Node*>::iterator it = intersected_leaves.begin () ; it != intersected_leaves.end () ; ++it )
+  for (const auto &intersected_leave : intersected_leaves)
   {
     sprintf(cube_id, "cube %i", ++i);
-    b = (*it)->getBounds ();
+    b = intersected_leave->getBounds ();
     viz.addCube (b[0], b[1], b[2], b[3], b[4], b[5], 1.0, 1.0, 0.0, cube_id);
   }
 
@@ -320,9 +320,9 @@ void show_octree (ORROctree* octree, PCLVisualizer& viz, bool show_full_leaves_o
   if ( show_full_leaves_only )
   {
     std::vector<ORROctree::Node*>& full_leaves = octree->getFullLeaves ();
-    for ( std::vector<ORROctree::Node*>::iterator it = full_leaves.begin () ; it != full_leaves.end () ; ++it )
+    for (auto &full_leave : full_leaves)
       // Add it to the other cubes
-      node_to_cube (*it, append);
+      node_to_cube (full_leave, append);
   }
   else
   {

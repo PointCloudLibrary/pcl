@@ -118,11 +118,11 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
               float radius, bool inside, bool keep_organized)
 {
   std::vector<std::string> st;
-  for (size_t i = 0; i < pcd_files.size (); ++i)
+  for (const auto &pcd_file : pcd_files)
   {
     // Load the first file
     Cloud::Ptr cloud (new Cloud);
-    if (!loadCloud (pcd_files[i], cloud))
+    if (!loadCloud (pcd_file, cloud))
       return (-1);
 
     // Perform the feature estimation
@@ -130,7 +130,7 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
     compute (cloud, output, radius, inside, keep_organized);
 
     // Prepare output file name
-    std::string filename = pcd_files[i];
+    std::string filename = pcd_file;
     boost::trim (filename);
     boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
 

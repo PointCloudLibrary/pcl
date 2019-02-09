@@ -195,9 +195,9 @@ void show_octree (ORROctree* octree, PCLVisualizer& viz)
   cout << "There are " << octree->getFullLeaves ().size () << " full leaves.\n";
 
   std::vector<ORROctree::Node*>& full_leaves = octree->getFullLeaves ();
-  for ( std::vector<ORROctree::Node*>::iterator it = full_leaves.begin () ; it != full_leaves.end () ; ++it )
+  for (auto &full_leave : full_leaves)
     // Add it to the other cubes
-    node_to_cube (*it, append);
+    node_to_cube (full_leave, append);
 
   // Save the result
   append->Update();

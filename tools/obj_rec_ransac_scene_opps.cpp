@@ -155,14 +155,14 @@ void update (CallbackParameters* params)
   vtkIdType ids[2] = {0, 1};
 
   // Insert the points and compute the lines
-  for ( list<ObjRecRANSAC::OrientedPointPair>::const_iterator it = opps.begin () ; it != opps.end () ; ++it )
+  for (const auto &opp : opps)
   {
-    vtk_opps_points->SetPoint (ids[0], it->p1_[0], it->p1_[1], it->p1_[2]);
-    vtk_opps_points->SetPoint (ids[1], it->p2_[0], it->p2_[1], it->p2_[2]);
+    vtk_opps_points->SetPoint (ids[0], opp.p1_[0], opp.p1_[1], opp.p1_[2]);
+    vtk_opps_points->SetPoint (ids[1], opp.p2_[0], opp.p2_[1], opp.p2_[2]);
     vtk_opps_lines->InsertNextCell (2, ids);
 
-    vtk_normals->SetTuple3 (ids[0], it->n1_[0], it->n1_[1], it->n1_[2]);
-    vtk_normals->SetTuple3 (ids[1], it->n2_[0], it->n2_[1], it->n2_[2]);
+    vtk_normals->SetTuple3 (ids[0], opp.n1_[0], opp.n1_[1], opp.n1_[2]);
+    vtk_normals->SetTuple3 (ids[1], opp.n2_[0], opp.n2_[1], opp.n2_[2]);
 
     ids[0] += 2;
     ids[1] += 2;
