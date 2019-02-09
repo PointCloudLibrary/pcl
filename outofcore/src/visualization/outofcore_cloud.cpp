@@ -157,11 +157,11 @@ OutofcoreCloud::updateVoxelData ()
   double voxel_side_length = octree_->getVoxelSideLength (display_depth_);
 
   double s = voxel_side_length / 2;
-  for (size_t i = 0; i < voxel_centers.size (); i++)
+  for (const auto &voxel_center : voxel_centers)
   {
-    double x = voxel_centers[i].x;
-    double y = voxel_centers[i].y;
-    double z = voxel_centers[i].z;
+    double x = voxel_center.x;
+    double y = voxel_center.y;
+    double z = voxel_center.z;
 
     voxel_data->AddInputData (getVtkCube (x - s, x + s, y - s, y + s, z - s, z + s));
   }

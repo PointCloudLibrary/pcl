@@ -164,19 +164,19 @@ class OutofcoreCloud : public Object
     }
 
     int
-    getDisplayDepth ()
+    getDisplayDepth () const
     {
       return display_depth_;
     }
 
     uint64_t
-    getPointsLoaded ()
+    getPointsLoaded () const
     {
       return points_loaded_;
     }
 
     uint64_t
-    getDataLoaded ()
+    getDataLoaded () const
     {
       return data_loaded_;
     }
