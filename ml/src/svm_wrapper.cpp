@@ -134,10 +134,10 @@ pcl::SVMTrain::scaleFactors (std::vector<SVMData> training_set, svm_scaling &sca
 {
   int max = 0;
 
-  for (size_t i = 0; i < training_set.size() ; i++)
-    for (size_t j = 0; j < training_set[i].SV.size() ; j++)
-      if (training_set[i].SV[j].idx > max)
-        max = training_set[i].SV[j].idx; // max number of features
+  for (const auto &svm_data : training_set)
+    for (const auto &sample : svm_data.SV)
+      if (sample.idx > max)
+        max = sample.idx; // max number of features
 
   max += 1;
 
@@ -151,13 +151,13 @@ pcl::SVMTrain::scaleFactors (std::vector<SVMData> training_set, svm_scaling &sca
     scaling.obj[i].value = 0;
   }
 
-  for (size_t i = 0; i < training_set.size(); i++)
-    for (size_t j = 0; j < training_set[i].SV.size(); j++)
+  for (auto &svm_data : training_set)
+    for (const auto &sample : svm_data.SV)
       // save scaling factor finding the maximum value
-      if (module (training_set[i].SV[j].value) > scaling.obj[ training_set[i].SV[j].idx ].value)
+      if (module (sample.value) > scaling.obj[sample.idx].value)
       {
-        scaling.obj[ training_set[i].SV[j].idx ].index = 1;
-        scaling.obj[ training_set[i].SV[j].idx ].value = module (training_set[i].SV[j].value);
+        scaling.obj[sample.idx].index = 1;
+        scaling.obj[sample.idx].value = module (sample.value);
       }
 };
 
@@ -462,18 +462,18 @@ pcl::SVM::saveProblem (const char *filename, bool labelled = false)
   }
     
 
-  for (size_t j = 0; j < training_set_.size() ; j++)
+  for (const auto &svm_data : training_set_)
   {
 
     if (labelled)
     {
-      assert (std::isfinite (training_set_[j].label));
-      myfile << training_set_[j].label << " ";
+      assert (std::isfinite (svm_data.label));
+      myfile << svm_data.label << " ";
     }
 
-    for (size_t i = 0; i < training_set_[j].SV.size(); i++)
-      if (std::isfinite (training_set_[j].SV[i].value))
-        myfile << training_set_[j].SV[i].idx << ":" << training_set_[j].SV[i].value << " ";
+    for (const auto &sample : svm_data.SV)
+      if (std::isfinite (sample.value))
+        myfile << sample.idx << ":" << sample.value << " ";
 
     myfile << "\n";
   }
@@ -899,10 +899,10 @@ pcl::SVMClassify::saveClassificationResult (const char *filename)
     output << "\n";
   }
 
-  for (size_t i = 0; i < prediction_.size(); i++)
+  for (const auto &prediction : prediction_)
   {
-    for (size_t j = 0; j < prediction_[i].size(); j++)
-      output << prediction_[i][j] << " ";
+    for (const double value : prediction)
+      output << value << " ";
 
     output << "\n";
   }

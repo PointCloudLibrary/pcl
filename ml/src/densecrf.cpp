@@ -52,8 +52,8 @@ pcl::DenseCrf::DenseCrf (int N, int m) :
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::DenseCrf::~DenseCrf ()
 {
-  for(size_t i = 0; i < pairwise_potential_.size (); i++ )
-    delete pairwise_potential_[i];
+  for(auto &p : pairwise_potential_)
+    delete p;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -294,11 +294,11 @@ pcl::DenseCrf::runInference (float relax)
     next_[i] = -unary_[i];
 
   // Add up all pairwise potentials
-	for( size_t i = 0; i < pairwise_potential_.size(); i++ )
-    pairwise_potential_[i]->compute( next_, current_, tmp_, M_ );
+  for(auto &p : pairwise_potential_)
+    p->compute( next_, current_, tmp_, M_ );
 
-	// Exponentiate and normalize
-	expAndNormalize( current_, next_, 1.0, relax );
+  // Exponentiate and normalize
+  expAndNormalize( current_, next_, 1.0, relax );
 }
 
 void
