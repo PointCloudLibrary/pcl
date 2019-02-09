@@ -66,14 +66,14 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 {
   if (indices_)
   {
-    for (std::vector<int>::const_iterator current = indices_->begin (); current != indices_->end (); ++current)
+    for (const int index : *indices_)
     {
-      assert( (*current>=0) && (*current < static_cast<int> (input_->points.size ())));
+      assert( (index >= 0) && (index < static_cast<int> (input_->points.size ())));
       
-      if (isFinite (input_->points[*current]))
+      if (isFinite (input_->points[index]))
       {
         // add points to octree
-        this->addPointIdx (*current);
+        this->addPointIdx (index);
       }
     }
   }
@@ -539,10 +539,10 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     // add data to new branch
     OctreeKey new_index_key;
 
-    for (auto it = leafIndices.cbegin(), it_end = leafIndices.cend(); it!=it_end; ++it)
+    for (const int leafIndex : leafIndices)
     {
 
-      const PointT& point_from_index = input_->points[*it];
+      const PointT& point_from_index = input_->points[leafIndex];
       // generate key
       genOctreeKeyforPoint (point_from_index, new_index_key);
 
@@ -550,7 +550,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
       BranchNode* newBranchParent;
       this->createLeafRecursive (new_index_key, depth_mask, childBranch, newLeaf, newBranchParent);
 
-      (*newLeaf)->addPointIndex(*it);
+      (*newLeaf)->addPointIndex(leafIndex);
     }
   }
 

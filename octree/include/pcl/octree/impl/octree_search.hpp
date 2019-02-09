@@ -270,10 +270,10 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
       (*child_leaf)->getPointIndices (decoded_point_vector);
 
       // Linearly iterate over all decoded (unsorted) points
-      for (size_t i = 0; i < decoded_point_vector.size (); i++)
+      for (const int point_index : decoded_point_vector)
       {
 
-        const PointT& candidate_point = this->getPointByIndex (decoded_point_vector[i]);
+        const PointT& candidate_point = this->getPointByIndex (point_index);
 
         // calculate point distance to search point
         float squared_dist = pointSquaredDist (candidate_point, point);
@@ -284,7 +284,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
           prioPointQueueEntry point_entry;
 
           point_entry.point_distance_ = squared_dist;
-          point_entry.point_idx_ = decoded_point_vector[i];
+          point_entry.point_idx_ = point_index;
           point_candidates.push_back (point_entry);
         }
       }
@@ -361,9 +361,9 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
         (*child_leaf)->getPointIndices (decoded_point_vector);
 
         // Linearly iterate over all decoded (unsorted) points
-        for (size_t i = 0; i < decoded_point_vector.size (); i++)
+        for (int & i : decoded_point_vector)
         {
-          const PointT& candidate_point = this->getPointByIndex (decoded_point_vector[i]);
+          const PointT& candidate_point = this->getPointByIndex (i);
 
           // calculate point distance to search point
           squared_dist = pointSquaredDist (candidate_point, point);
@@ -373,7 +373,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
             continue;
 
           // add point to result vector
-          k_indices.push_back (decoded_point_vector[i]);
+          k_indices.push_back (i);
           k_sqr_distances.push_back (squared_dist);
 
           if (max_nn != 0 && k_indices.size () == static_cast<unsigned int> (max_nn))
@@ -454,9 +454,9 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::a
     (**child_leaf).getPointIndices (decoded_point_vector);
 
     // Linearly iterate over all decoded (unsorted) points
-    for (size_t i = 0; i < decoded_point_vector.size (); i++)
+    for (int & i : decoded_point_vector)
     {
-      const PointT& candidate_point = this->getPointByIndex (decoded_point_vector[i]);
+      const PointT& candidate_point = this->getPointByIndex (i);
 
       // calculate point distance to search point
       double squared_dist = pointSquaredDist (candidate_point, point);
@@ -465,7 +465,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::a
       if (squared_dist >= smallest_squared_dist)
         continue;
 
-      result_index = decoded_point_vector[i];
+      result_index = i;
       smallest_squared_dist = squared_dist;
       sqr_distance = static_cast<float> (squared_dist);
     }
@@ -535,9 +535,9 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::b
         (**child_leaf).getPointIndices (decoded_point_vector);
 
         // Linearly iterate over all decoded (unsorted) points
-        for (size_t i = 0; i < decoded_point_vector.size (); i++)
+        for (int & i : decoded_point_vector)
         {
-          const PointT& candidate_point = this->getPointByIndex (decoded_point_vector[i]);
+          const PointT& candidate_point = this->getPointByIndex (i);
 
           // check if point falls within search box
           bInBox = ( (candidate_point.x >= min_pt (0)) && (candidate_point.x <= max_pt (0)) &&
@@ -546,7 +546,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::b
 
           if (bInBox)
             // add to result vector
-            k_indices.push_back (decoded_point_vector[i]);
+            k_indices.push_back (i);
         }
       }
     }
