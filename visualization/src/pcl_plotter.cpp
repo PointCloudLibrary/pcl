@@ -352,8 +352,8 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
 
   // Compute the total size of the fields
   unsigned int fsize = 0;
-  for (size_t i = 0; i < cloud.fields.size (); ++i)
-    fsize += cloud.fields[i].count * pcl::getFieldSize (cloud.fields[i].datatype);
+  for (const auto &field : cloud.fields)
+    fsize += field.count * pcl::getFieldSize (field.datatype);
   
   int hsize = cloud.fields[field_idx].count;
   std::vector<double> array_x (hsize), array_y (hsize);
@@ -606,11 +606,11 @@ pcl::visualization::PCLPlotter::computeHistogram (
   }
 
   //fill the freq for each data
-  for (size_t i = 0; i < data.size (); i++)
+  for (const double value : data)
   {
-    if (std::isfinite (data[i]))
+    if (std::isfinite (value))
     {
-      unsigned int index = (unsigned int) (floor ((data[i] - min) / size));
+      unsigned int index = (unsigned int) (floor ((value - min) / size));
       if (index == (unsigned int) nbins) index = nbins - 1; //including right boundary
       histogram[index].second++;
     }
