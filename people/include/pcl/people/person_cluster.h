@@ -155,7 +155,7 @@ namespace pcl
        * \return the height of the cluster.
        */
       float
-      getHeight ();
+      getHeight () const;
 
       /**
        * \brief Update the height of the cluster.
@@ -181,28 +181,28 @@ namespace pcl
        * y dimension.
        */
       float
-      getDistance ();
+      getDistance () const;
 
       /**
        * \brief Returns the angle formed by the cluster's centroid with respect to the sensor (in radians).
        * \return the angle formed by the cluster's centroid with respect to the sensor (in radians).
        */
       float
-      getAngle ();
+      getAngle () const;
 
       /**
        * \brief Returns the minimum angle formed by the cluster with respect to the sensor (in radians).
        * \return the minimum angle formed by the cluster with respect to the sensor (in radians).
        */
       float
-      getAngleMin ();
+      getAngleMin () const;
 
       /**
        * \brief Returns the maximum angle formed by the cluster with respect to the sensor (in radians).
        * \return the maximum angle formed by the cluster with respect to the sensor (in radians).
        */
       float
-      getAngleMax ();
+      getAngleMax () const;
 
       /**
        * \brief Returns the indices of the point cloud points corresponding to the cluster.
@@ -274,14 +274,14 @@ namespace pcl
        * \return the HOG confidence.
        */
       float
-      getPersonConfidence ();
+      getPersonConfidence () const;
 
       /**
        * \brief Returns the number of points of the cluster.
        * \return the number of points of the cluster.
        */
       int
-      getNumberPoints ();
+      getNumberPoints () const;
 
       /**
        * \brief Sets the cluster height.

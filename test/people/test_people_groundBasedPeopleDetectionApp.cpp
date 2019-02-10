@@ -90,7 +90,7 @@ TEST (PCL, GroundBasedPeopleDetectionApp)
   EXPECT_TRUE (people_detector.compute(clusters));             // perform people detection
 
   unsigned int k = 0;
-  for(auto &cluster : clusters)
+  for(const auto &cluster : clusters)
   {
     if(cluster.getPersonConfidence() > min_confidence)             // draw only people with confidence above a threshold
       k++;
