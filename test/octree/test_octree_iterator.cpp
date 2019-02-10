@@ -124,8 +124,8 @@ struct OctreeIteratorTest : public OctreeIteratorBaseTest
     keys_[7] = OctreeKeyT (0b1u, 0b1u, 0b1u);
 
     // Create the leaves
-    for (uint8_t i = 0; i < 8; ++i)
-      octree_.createLeaf (keys_[i].x, keys_[i].y, keys_[i].z);
+    for (const auto &key : keys_)
+      octree_.createLeaf (key.x, key.y, key.z);
 
     // reset the iterator state
     it_.reset ();
@@ -1439,12 +1439,10 @@ struct OctreePointCloudSierpinskiTest
   {
     std::vector<std::pair<Eigen::Vector3f, Eigen::Vector3f> > voxels_out;
 
-    for (std::vector<std::pair<Eigen::Vector3f, Eigen::Vector3f> >::const_iterator it = voxels_in.begin ();
-        it != voxels_in.end ();
-        ++it)
+    for (const auto &voxel : voxels_in)
       {
-        Eigen::Vector3f v_min = it->first;
-        Eigen::Vector3f v_max = it->second;
+        Eigen::Vector3f v_min = voxel.first;
+        Eigen::Vector3f v_max = voxel.second;
         Eigen::Vector3f v_mid = 0.5 * (v_min + v_max);
 
         std::pair<Eigen::Vector3f, Eigen::Vector3f> voxel_0;

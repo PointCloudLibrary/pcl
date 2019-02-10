@@ -85,11 +85,11 @@ TEST (PCL, MomentInvariantsEstimation)
   mi.compute (*moments);
   EXPECT_EQ (moments->points.size (), indices.size ());
 
-  for (size_t i = 0; i < moments->points.size (); ++i)
+  for (const auto &point : moments->points)
   {
-    EXPECT_NEAR (moments->points[i].j1, 1.59244, 1e-4);
-    EXPECT_NEAR (moments->points[i].j2, 0.652063, 1e-4);
-    EXPECT_NEAR (moments->points[i].j3, 0.053917, 1e-4);
+    EXPECT_NEAR (point.j1, 1.59244, 1e-4);
+    EXPECT_NEAR (point.j2, 0.652063, 1e-4);
+    EXPECT_NEAR (point.j3, 0.053917, 1e-4);
   }
 }
 

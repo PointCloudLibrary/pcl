@@ -164,8 +164,8 @@ TEST (PCL, Octree_Test)
     leafVectorA.pop_back ();
 
     bool bFound = false;
-    for (unsigned int j = 0; j < 256; j++)
-      if (data[j] == leafInt)
+    for (const int value : data)
+      if (value == leafInt)
       {
         bFound = true;
         break;
@@ -183,8 +183,8 @@ TEST (PCL, Octree_Test)
     leafVectorA.pop_back ();
 
     bool bFound = false;
-    for (unsigned int j = 0; j < 256; j++)
-      if (data[j] == leafInt)
+    for (const int value : data)
+      if (value == leafInt)
       {
         bFound = true;
         break;
@@ -339,14 +339,14 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
       Eigen::Vector3f min_pt, max_pt;
       octree.getVoxelBounds (it, min_pt, max_pt);
 
-      for (size_t i=0; i < tmpVector.size(); ++i)
+      for (int i : tmpVector)
       {
-        ASSERT_GE (cloud->points[tmpVector[i]].x, min_pt(0));
-        ASSERT_GE (cloud->points[tmpVector[i]].y, min_pt(1));
-        ASSERT_GE (cloud->points[tmpVector[i]].z, min_pt(2));
-        ASSERT_LE (cloud->points[tmpVector[i]].x, max_pt(0));
-        ASSERT_LE (cloud->points[tmpVector[i]].y, max_pt(1));
-        ASSERT_LE (cloud->points[tmpVector[i]].z, max_pt(2));
+        ASSERT_GE (cloud->points[i].x, min_pt(0));
+        ASSERT_GE (cloud->points[i].y, min_pt(1));
+        ASSERT_GE (cloud->points[i].z, min_pt(2));
+        ASSERT_LE (cloud->points[i].x, max_pt(0));
+        ASSERT_LE (cloud->points[i].y, max_pt(1));
+        ASSERT_LE (cloud->points[i].z, max_pt(2));
       }
 
       leaf_count++;
@@ -481,8 +481,8 @@ TEST (PCL, Octree2Buf_Test)
     leafVectorA.pop_back ();
 
     bool bFound = false;
-    for (unsigned int j = 0; j < 256; j++)
-      if (data[j] == leafInt)
+    for (const int value : data)
+      if (value == leafInt)
       {
         bFound = true;
         break;
@@ -500,8 +500,8 @@ TEST (PCL, Octree2Buf_Test)
     leafVectorA.pop_back ();
 
     bool bFound = false;
-    for (unsigned int j = 0; j < 256; j++)
-      if (data[j] == leafInt)
+    for (const int value : data)
+      if (value == leafInt)
       {
         bFound = true;
         break;
@@ -735,11 +735,11 @@ TEST (PCL, Octree_Pointcloud_Test)
     ASSERT_EQ (cloudA->points.size (), octreeA.getLeafCount ());
 
     // checks for getVoxelDataAtPoint() and isVoxelOccupiedAtPoint() functionality
-    for (size_t i = 0; i < cloudA->points.size (); i++)
+    for (const auto &point : cloudA->points)
     {
-      ASSERT_TRUE (octreeA.isVoxelOccupiedAtPoint (cloudA->points[i]));
-      octreeA.deleteVoxelAtPoint (cloudA->points[i]);
-      ASSERT_FALSE (octreeA.isVoxelOccupiedAtPoint (cloudA->points[i]));
+      ASSERT_TRUE (octreeA.isVoxelOccupiedAtPoint (point));
+      octreeA.deleteVoxelAtPoint (point);
+      ASSERT_FALSE (octreeA.isVoxelOccupiedAtPoint (point));
     }
 
     ASSERT_EQ (static_cast<unsigned int> (0), octreeA.getLeafCount ());
@@ -1245,11 +1245,11 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
     cloudIn->width = 300;
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
-    for (size_t i = 0; i < cloudIn->points.size(); i++)
+    for (auto &point : cloudIn->points)
     {
-      cloudIn->points[i] = PointXYZ (static_cast<float> (10.0 * rand () / RAND_MAX),
-                                     static_cast<float> (10.0 * rand () / RAND_MAX),
-                                     static_cast<float> (10.0 * rand () / RAND_MAX));
+      point = PointXYZ (static_cast<float> (10.0 * rand () / RAND_MAX),
+                        static_cast<float> (10.0 * rand () / RAND_MAX),
+                        static_cast<float> (10.0 * rand () / RAND_MAX));
     }
 
 

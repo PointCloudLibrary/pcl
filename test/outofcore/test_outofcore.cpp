@@ -274,11 +274,11 @@ point_test (octree_disk& t)
     //query the list
     AlignedPointTVector pointsinregion;
 
-    for (AlignedPointTVector::iterator pointit = points.begin (); pointit != points.end (); ++pointit)
+    for (const auto &point : points)
     {
-      if ((query_box_min[0] <= pointit->x) && (pointit->x < qboxmax[0]) && (query_box_min[1] < pointit->y) && (pointit->y < qboxmax[1]) && (query_box_min[2] <= pointit->z) && (pointit->z < qboxmax[2]))
+      if ((query_box_min[0] <= point.x) && (point.x < qboxmax[0]) && (query_box_min[1] < point.y) && (point.y < qboxmax[1]) && (query_box_min[2] <= point.z) && (point.z < qboxmax[2]))
       {
-        pointsinregion.push_back (*pointit);
+        pointsinregion.push_back (point);
       }
     }
 
