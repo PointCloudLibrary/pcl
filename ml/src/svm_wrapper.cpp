@@ -151,7 +151,7 @@ pcl::SVMTrain::scaleFactors (std::vector<SVMData> training_set, svm_scaling &sca
     scaling.obj[i].value = 0;
   }
 
-  for (auto &svm_data : training_set)
+  for (const auto &svm_data : training_set)
     for (const auto &sample : svm_data.SV)
       // save scaling factor finding the maximum value
       if (module (sample.value) > scaling.obj[sample.idx].value)
