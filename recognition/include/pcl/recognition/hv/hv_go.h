@@ -295,21 +295,21 @@ namespace pcl
             }
           }
 
-          for (size_t i = 0; i < explained.size (); i++)
+          for (const int i : explained)
           {
             if (val < 0)
             {
               //the hypothesis is being removed, check that there are no points that become unexplained and have clutter unexplained hypotheses
-              if ((explained_by_RM[explained[i]] == 0) && (unexplained_by_RM[explained[i]] > 0))
+              if ((explained_by_RM[i] == 0) && (unexplained_by_RM[i] > 0))
               {
-                add_to_unexplained += unexplained_by_RM[explained[i]]; //the points become unexplained
+                add_to_unexplained += unexplained_by_RM[i]; //the points become unexplained
               }
             } else
             {
               //std::cout << "being added..." << add_to_unexplained << " " << unexplained_by_RM[explained[i]] << std::endl;
-              if ((explained_by_RM[explained[i]] == 1) && (unexplained_by_RM[explained[i]] > 0))
+              if ((explained_by_RM[i] == 1) && (unexplained_by_RM[i] > 0))
               { //the only hypothesis explaining that point
-                add_to_unexplained -= unexplained_by_RM[explained[i]]; //the points are not unexplained any longer because this hypothesis explains them
+                add_to_unexplained -= unexplained_by_RM[i]; //the points are not unexplained any longer because this hypothesis explains them
               }
             }
           }
@@ -353,17 +353,17 @@ namespace pcl
 
       void updateCMDuplicity(std::vector<int> & vec, std::vector<int> & occupancy_vec, float sign) {
         int add_to_duplicity_ = 0;
-        for (size_t i = 0; i < vec.size (); i++)
+        for (const int i : vec)
         {
-          bool prev_dup = occupancy_vec[vec[i]] > 1;
-          occupancy_vec[vec[i]] += static_cast<int> (sign);
-          if ((occupancy_vec[vec[i]] > 1) && prev_dup)
+          bool prev_dup = occupancy_vec[i] > 1;
+          occupancy_vec[i] += static_cast<int> (sign);
+          if ((occupancy_vec[i] > 1) && prev_dup)
           { //its still a duplicate, we are adding
             add_to_duplicity_ += static_cast<int> (sign); //so, just add or remove one
-          } else if ((occupancy_vec[vec[i]] == 1) && prev_dup)
+          } else if ((occupancy_vec[i] == 1) && prev_dup)
           { //if was duplicate before, now its not, remove 2, we are removing the hypothesis
             add_to_duplicity_ -= 2;
-          } else if ((occupancy_vec[vec[i]] > 1) && !prev_dup)
+          } else if ((occupancy_vec[i] > 1) && !prev_dup)
           { //it was not a duplicate but it is now, add 2, we are adding a conflicting hypothesis for the point
             add_to_duplicity_ += 2;
           }

@@ -187,8 +187,8 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
   else
   {
     // Iterate over all full leaves and average points
-    for ( vector<ORROctree::Node*>::iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it )
-      (*it)->getData ()->computeAveragePoint ();
+    for (const auto &full_leave : full_leaves_)
+      full_leave->getData ()->computeAveragePoint ();
   }
 
 #ifdef PCL_REC_ORR_OCTREE_VERBOSE

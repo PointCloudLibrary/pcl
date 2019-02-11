@@ -285,9 +285,9 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::cl
   for (size_t j = 0; j < max_values.size (); ++j)
   {
     Correspondences temp_corrs, filtered_corrs;
-    for (size_t i = 0; i < max_ids[j].size (); ++i)
+    for (const int i : max_ids[j])
     {
-      temp_corrs.push_back (model_scene_corrs_->at (max_ids[j][i]));
+      temp_corrs.push_back (model_scene_corrs_->at (i));
     }
     // RANSAC filtering
     corr_rejector.getRemainingCorrespondences (temp_corrs, filtered_corrs);

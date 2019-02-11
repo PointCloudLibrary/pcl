@@ -980,8 +980,8 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
   //}
 
   MaskMap mask_maps[8];
-  for (size_t map_index = 0; map_index < 8; ++map_index)
-    mask_maps[map_index].resize (width, height);
+  for (auto &mask_map : mask_maps)
+    mask_map.resize (width, height);
 
   unsigned char map[255];
   memset(map, 0, 255);
@@ -1251,8 +1251,8 @@ pcl::SurfaceNormalModality<PointInT>::extractAllFeatures (
   //}
 
   MaskMap mask_maps[8];
-  for (size_t map_index = 0; map_index < 8; ++map_index)
-    mask_maps[map_index].resize (width, height);
+  for (auto &mask_map : mask_maps)
+    mask_map.resize (width, height);
 
   unsigned char map[255];
   memset(map, 0, 255);
