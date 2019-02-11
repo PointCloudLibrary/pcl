@@ -694,8 +694,8 @@ namespace pcl
         Eigen::Vector4i ijk (static_cast<int> (floorf (x * inverse_leaf_size_[0])), static_cast<int> (floorf (y * inverse_leaf_size_[1])), static_cast<int> (floorf (z * inverse_leaf_size_[2])), 0);
         std::vector<int> neighbors;
         neighbors.reserve (relative_coordinates.size ());
-        for (std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> >::const_iterator it = relative_coordinates.begin (); it != relative_coordinates.end (); it++)
-          neighbors.push_back (leaf_layout_[(ijk + (Eigen::Vector4i() << *it, 0).finished() - min_b_).dot (divb_mul_)]);
+        for (const auto &relative_coordinate : relative_coordinates)
+          neighbors.push_back (leaf_layout_[(ijk + (Eigen::Vector4i() << relative_coordinate, 0).finished() - min_b_).dot (divb_mul_)]);
         return (neighbors);
       }
 

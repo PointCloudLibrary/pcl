@@ -239,10 +239,10 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
 
   // Estimate the mean and the standard deviation of the distance vector
   double sum = 0, sq_sum = 0;
-  for (size_t i = 0; i < distances.size (); ++i)
+  for (const float distance : distances)
   {
-    sum += distances[i];
-    sq_sum += distances[i] * distances[i];
+    sum += distance;
+    sq_sum += distance * distance;
   }
 
   mean = sum / static_cast<double>(valid_distances);
