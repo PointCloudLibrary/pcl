@@ -62,9 +62,8 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>          &cloud,
   std::vector<float> nn_distances;
 
   // Process all points in the indices vector
-  for (size_t k = 0; k < indices_in.indices.size (); ++k)
+  for (const int i : indices_in.indices)
   {
-    int i = indices_in.indices[k];
     if (processed[i])
       continue;
 
@@ -111,8 +110,8 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>          &cloud,
       sq_idx++;
     }
     // Copy the seed queue into the output indices
-    for (size_t l = 0; l < seed_queue.size (); ++l)
-      indices_out.indices.push_back(seed_queue[l]);
+    for (const int l : seed_queue)
+      indices_out.indices.push_back(l);
   }
   // This is purely esthetical, can be removed for speed purposes
   std::sort (indices_out.indices.begin (), indices_out.indices.end ());
@@ -138,9 +137,8 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>            &cloud,
   std::vector<float> nn_distances;
 
   // Process all points in the indices vector
-  for (size_t k = 0; k < indices_in.indices.size (); ++k)
+  for (const int i : indices_in.indices)
   {
-    int i = indices_in.indices[k];
     if (processed[i])
       continue;
 
@@ -186,8 +184,8 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>            &cloud,
       sq_idx++;
     }
     // Copy the seed queue into the output indices
-    for (size_t l = 0; l < seed_queue.size (); ++l)
-      indices_out.indices.push_back(seed_queue[l]);
+    for (const int l : seed_queue)
+      indices_out.indices.push_back(l);
   }
   // This is purely esthetical, can be removed for speed purposes
   std::sort (indices_out.indices.begin (), indices_out.indices.end ());

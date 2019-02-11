@@ -415,9 +415,9 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
 
 
     std::cout << "labels size: " << labels.size () << std::endl;
-    for (size_t i = 0; i < labels.size (); i++)
+    for (const int label : labels)
     {
-      std::cout << labels[i] << std::endl;
+      std::cout << label << std::endl;
     }
 
   }

@@ -418,10 +418,10 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (std::vector<int
   // This is 1/20th of the number of voxels which fit in a planar slice through search volume
   // Area of planar slice / area of voxel side. (Note: This is smaller than the value mentioned in the original paper)
   float min_points = 0.05f * (search_radius)*(search_radius) * 3.1415926536f  / (resolution_*resolution_);
-  for (size_t i = 0; i < seed_indices_orig.size (); ++i)
+  for (const int index_orig : seed_indices_orig)
   {
-    int num = voxel_kdtree_->radiusSearch (seed_indices_orig[i], search_radius , neighbors, sqr_distances);
-    int min_index = seed_indices_orig[i];
+    int num = voxel_kdtree_->radiusSearch (index_orig, search_radius , neighbors, sqr_distances);
+    int min_index = index_orig;
     if ( num > min_points)
     {
       seed_indices.push_back (min_index);
@@ -512,12 +512,12 @@ pcl::SupervoxelClustering<PointT>::getSupervoxelAdjacencyList (VoxelAdjacencyLis
     uint32_t label = sv_itr->getLabel ();
     std::set<uint32_t> neighbor_labels;
     sv_itr->getNeighborLabels (neighbor_labels);
-    for (std::set<uint32_t>::iterator label_itr = neighbor_labels.begin (); label_itr != neighbor_labels.end (); ++label_itr)
+    for (const unsigned int neighbor_label : neighbor_labels)
     {
       bool edge_added;
       EdgeID edge;
       VoxelID u = (label_ID_map.find (label))->second;
-      VoxelID v = (label_ID_map.find (*label_itr))->second;
+      VoxelID v = (label_ID_map.find (neighbor_label))->second;
       boost::tie (edge, edge_added) = add_edge (u,v,adjacency_list_arg);
       //Calc distance between centers, set as edge weight
       if (edge_added)
@@ -528,7 +528,7 @@ pcl::SupervoxelClustering<PointT>::getSupervoxelAdjacencyList (VoxelAdjacencyLis
         
         for (typename HelperListT::const_iterator neighb_itr = supervoxel_helpers_.cbegin (); neighb_itr != supervoxel_helpers_.cend (); ++neighb_itr)
         {
-          if (neighb_itr->getLabel () == (*label_itr))
+          if (neighb_itr->getLabel () == neighbor_label)
           {
             neighb_centroid_data = neighb_itr->getCentroid ();
             break;
@@ -554,8 +554,8 @@ pcl::SupervoxelClustering<PointT>::getSupervoxelAdjacency (std::multimap<uint32_
     uint32_t label = sv_itr->getLabel ();
     std::set<uint32_t> neighbor_labels;
     sv_itr->getNeighborLabels (neighbor_labels);
-    for (std::set<uint32_t>::iterator label_itr = neighbor_labels.begin (); label_itr != neighbor_labels.end (); ++label_itr)
-      label_adjacency.insert (std::pair<uint32_t,uint32_t> (label, *label_itr) );
+    for (const unsigned int neighbor_label : neighbor_labels)
+      label_adjacency.insert (std::pair<uint32_t,uint32_t> (label, neighbor_label) );
     //if (neighbor_labels.size () == 0)
     //  std::cout << label<<"(size="<<sv_itr->size () << ") has "<<neighbor_labels.size () << "\n";
   }

@@ -114,9 +114,9 @@ pcl::LCCPSegmentation<PointT>::relabelCloud (pcl::PointCloud<pcl::PointXYZL> &la
   if (grouping_data_valid_)
   {
     // Relabel all Points in cloud with new labels
-    for (auto voxel_itr = labeled_cloud_arg.begin (); voxel_itr != labeled_cloud_arg.end (); ++voxel_itr)
+    for (auto &voxel : labeled_cloud_arg)
     {
-      voxel_itr->label = sv_label_to_seg_label_map_[voxel_itr->label];
+      voxel.label = sv_label_to_seg_label_map_[voxel.label];
     }
   }
   else
@@ -236,9 +236,9 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
     }
 
     // Erase filtered Segments from segment map
-    for (auto filtered_ID_itr = filteredSegLabels.cbegin (); filtered_ID_itr != filteredSegLabels.cend (); ++filtered_ID_itr)
+    for (const unsigned int filteredSegLabel : filteredSegLabels)
     {
-      seg_label_to_sv_list_map_.erase (*filtered_ID_itr);
+      seg_label_to_sv_list_map_.erase (filteredSegLabel);
     }
 
     // After filtered Segments are deleted, compute completely new adjacency map
@@ -272,11 +272,10 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<uint32_t, typ
   }
 
   // Add all edges
-  for (std::multimap<uint32_t, uint32_t>::const_iterator sv_neighbors_itr = label_adjaceny_arg.begin (); sv_neighbors_itr != label_adjaceny_arg.end ();
-      ++sv_neighbors_itr)
+  for (const auto &sv_neighbors_itr : label_adjaceny_arg)
   {
-    const uint32_t& sv_label = sv_neighbors_itr->first;
-    const uint32_t& neighbor_label = sv_neighbors_itr->second;
+    const uint32_t& sv_label = sv_neighbors_itr.first;
+    const uint32_t& neighbor_label = sv_neighbors_itr.second;
 
     VertexID u = label_ID_map[sv_label];
     VertexID v = label_ID_map[neighbor_label];
