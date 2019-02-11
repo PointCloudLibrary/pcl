@@ -101,10 +101,10 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   float sum_w = 0, w = 0;
   int bin = 0;
-  for (size_t i = 0; i < grid.points.size (); ++i)
+  for (const auto &point : grid.points)
   {
-    bin = static_cast<int> ((((atan2 (grid.points[i].normal_y, grid.points[i].normal_x) + M_PI) * 180 / M_PI) / bin_angle)) % nbins;
-    w = std::sqrt (grid.points[i].normal_y * grid.points[i].normal_y + grid.points[i].normal_x * grid.points[i].normal_x);
+    bin = static_cast<int> ((((atan2 (point.normal_y, point.normal_x) + M_PI) * 180 / M_PI) / bin_angle)) % nbins;
+    w = std::sqrt (point.normal_y * point.normal_y + point.normal_x * point.normal_x);
     sum_w += w;
     spatial_data[bin] += w;
   }
