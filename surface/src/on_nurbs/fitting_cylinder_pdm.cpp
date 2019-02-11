@@ -84,8 +84,8 @@ FittingCylinder::refine (int dim)
   for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (size_t i = 0; i < xi.size (); i++)
-    m_nurbs.InsertKnot (dim, xi[i], 1);
+  for (const double i : xi)
+    m_nurbs.InsertKnot (dim, i, 1);
 }
 
 void

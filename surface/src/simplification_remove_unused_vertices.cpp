@@ -55,12 +55,12 @@ pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMes
   indices.reserve (nr_points);
 
   // mark all points in triangles as being used
-  for (size_t polygon = 0; polygon < input.polygons.size (); ++polygon)
-    for (size_t point = 0; point < input.polygons[polygon].vertices.size (); ++point)
-      if (new_indices[ input.polygons[polygon].vertices[point] ] == -1 )
+  for (const auto &polygon : input.polygons)
+    for (size_t point = 0; point < polygon.vertices.size (); ++point)
+      if (new_indices[ polygon.vertices[point] ] == -1 )
       {
-        new_indices[input.polygons[polygon].vertices[point]] = static_cast<int> (indices.size ());
-        indices.push_back (input.polygons[polygon].vertices[point]);
+        new_indices[polygon.vertices[point]] = static_cast<int> (indices.size ());
+        indices.push_back (polygon.vertices[point]);
       }
 
   // in case all points are used , do nothing and return input mesh
@@ -91,12 +91,12 @@ pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMes
 
   // copy mesh information (and update indices)
   output.polygons.reserve (input.polygons.size ());
-  for (size_t polygon = 0; polygon < input.polygons.size (); ++polygon)
+  for (const auto &polygon : input.polygons)
   {
     pcl::Vertices corrected_polygon;
-    corrected_polygon.vertices.resize (input.polygons[polygon].vertices.size ());
-    for (size_t point = 0; point < input.polygons[polygon].vertices.size(); ++point)
-      corrected_polygon.vertices[point] = new_indices[input.polygons[polygon].vertices[point]];
+    corrected_polygon.vertices.resize (polygon.vertices.size ());
+    for (size_t point = 0; point < polygon.vertices.size(); ++point)
+      corrected_polygon.vertices[point] = new_indices[polygon.vertices[point]];
     output.polygons.push_back (corrected_polygon);
   }
 }

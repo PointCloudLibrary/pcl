@@ -168,9 +168,9 @@ FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector
 
   Eigen::Vector3d _min (DBL_MAX, DBL_MAX, DBL_MAX);
   Eigen::Vector3d _max (-DBL_MAX, -DBL_MAX, -DBL_MAX);
-  for (size_t i = 0; i < data->interior.size (); i++)
+  for (const auto &i : data->interior)
   {
-    Eigen::Vector3d p = data->interior[i] - mean;
+    Eigen::Vector3d p = i - mean;
 
     if (p (0) < _min (0))
       _min (0) = p (0);

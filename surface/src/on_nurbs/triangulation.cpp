@@ -182,10 +182,8 @@ Triangulation::convertSurface2PolygonMesh (const ON_NurbsSurface &nurbs, Polygon
   createVertices (cloud, float (x0), float (y0), 0.0f, float (w), float (h), resolution, resolution);
   createIndices (mesh.polygons, 0, resolution, resolution);
 
-  for (size_t i = 0; i < cloud->size (); i++)
+  for (auto &v : *cloud)
   {
-    pcl::PointXYZ &v = cloud->at (i);
-
     double point[9];
     nurbs.Evaluate (v.x, v.y, 1, 3, point);
 
@@ -255,17 +253,14 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     pt_is_in[i] = (z (2) >= 0.0);
   }
 
-  for (size_t i = 0; i < polygons.size (); i++)
+  for (const auto &poly : polygons)
   {
     unsigned in (0);
-    pcl::Vertices &poly = polygons[i];
-
     std::vector<uint32_t> out_idx_tmp;
     pcl::on_nurbs::vector_vec2d out_pc_tmp;
 
-    for (std::size_t j = 0; j < poly.vertices.size (); j++)
+    for (const unsigned int vi : poly.vertices)
     {
-      uint32_t &vi = poly.vertices[j];
       if (pt_is_in[vi])
         in++;
       else
@@ -297,9 +292,8 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     v.y = float (pc (1));
   }
 
-  for (std::size_t i = 0; i < cloud->size (); i++)
+  for (auto &v : *cloud)
   {
-    pcl::PointXYZ &v = cloud->at (i);
     Eigen::Vector3d tu, tv;
 
     double point[3];
@@ -385,17 +379,14 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     start.push_back (Eigen::Vector3d (vp (0), vp (1), 0.0));
   }
 
-  for (size_t i = 0; i < polygons.size (); i++)
+  for (const auto &poly : polygons)
   {
     unsigned in (0);
-    pcl::Vertices &poly = polygons[i];
-
     std::vector<uint32_t> out_idx_tmp;
     pcl::on_nurbs::vector_vec2d out_pc_tmp;
 
-    for (std::size_t j = 0; j < poly.vertices.size (); j++)
+    for (const unsigned int vi : poly.vertices)
     {
-      uint32_t &vi = poly.vertices[j];
       if (pt_is_in[vi])
         in++;
       else
@@ -427,10 +418,8 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     v.y = float (pc (1));
   }
 
-  for (std::size_t i = 0; i < cloud->size (); i++)
+  for (auto &v : *cloud)
   {
-    pcl::PointXYZ &v = cloud->at (i);
-
     double point[3];
     nurbs.Evaluate (v.x, v.y, 0, 3, point);
 
@@ -483,10 +472,8 @@ Triangulation::convertSurface2Vertices (const ON_NurbsSurface &nurbs, pcl::Point
   createVertices (cloud, float (x0), float (y0), 0.0f, float (w), float (h), resolution, resolution);
   createIndices (vertices, 0, resolution, resolution);
 
-  for (size_t i = 0; i < cloud->size (); i++)
+  for (auto &v : *cloud)
   {
-    pcl::PointXYZ &v = cloud->at (i);
-
     double point[9];
     nurbs.Evaluate (v.x, v.y, 1, 3, point);
 

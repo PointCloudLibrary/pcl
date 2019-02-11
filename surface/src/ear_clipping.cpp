@@ -58,8 +58,8 @@ pcl::EarClipping::performProcessing (PolygonMesh& output)
 {
   output.polygons.clear ();
   output.cloud = input_mesh_->cloud;
-  for (int i = 0; i < static_cast<int> (input_mesh_->polygons.size ()); ++i)
-    triangulate (input_mesh_->polygons[i], output);
+  for (const auto &polygon : input_mesh_->polygons)
+    triangulate (polygon, output);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
