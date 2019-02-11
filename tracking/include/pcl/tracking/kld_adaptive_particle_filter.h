@@ -109,7 +109,7 @@ namespace pcl
         * \param b index of the bin
         */
       virtual bool 
-      equalBin (std::vector<int> a, std::vector<int> b)
+      equalBin (const std::vector<int> &a, const std::vector<int> &b)
       {
         int dimension = StateT::stateDimension ();
         for (int i = 0; i < dimension; i++)
@@ -177,11 +177,11 @@ namespace pcl
 
       /** \brief insert a bin into the set of the bins. if that bin is already registered,
           return false. if not, return true.
-        * \param bin a bin to be inserted.
-        * \param B a set of the bins
+        * \param new_bin a bin to be inserted.
+        * \param bins a set of the bins
         */
       virtual bool 
-      insertIntoBins (std::vector<int> bin, std::vector<std::vector<int> > &B);
+      insertIntoBins (std::vector<int> &&new_bin, std::vector<std::vector<int> > &bins);
             
       /** \brief This method should get called before starting the actual computation. */
       bool 
