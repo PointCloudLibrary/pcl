@@ -304,7 +304,6 @@ endif()
 # Dependencies for different grabbers
 PCL_ADD_GRABBER_DEPENDENCY("OpenNI" "OpenNI grabber support")
 PCL_ADD_GRABBER_DEPENDENCY("OpenNI2" "OpenNI2 grabber support")
-PCL_ADD_GRABBER_DEPENDENCY("FZAPI" "Fotonic camera support")
 PCL_ADD_GRABBER_DEPENDENCY("Ensenso" "IDS-Imaging Ensenso camera support")
 PCL_ADD_GRABBER_DEPENDENCY("davidSDK" "David Vision Systems SDK support")
 PCL_ADD_GRABBER_DEPENDENCY("DSSDK" "DepthSense SDK support")
