@@ -59,21 +59,6 @@ pcl::SupervoxelClustering<PointT>::SupervoxelClustering (float voxel_resolution,
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::SupervoxelClustering<PointT>::SupervoxelClustering (float voxel_resolution, float seed_resolution, bool) :
-  resolution_ (voxel_resolution),
-  seed_resolution_ (seed_resolution),
-  adjacency_octree_ (),
-  voxel_centroid_cloud_ (),
-  color_importance_ (0.1f),
-  spatial_importance_ (0.4f),
-  normal_importance_ (1.0f),
-  use_default_transform_behaviour_ (true)
-{
-  adjacency_octree_.reset (new OctreeAdjacencyT (resolution_));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
 pcl::SupervoxelClustering<PointT>::~SupervoxelClustering ()
 {
 
