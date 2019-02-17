@@ -190,7 +190,7 @@ namespace pcl
       SupervoxelClustering (float voxel_resolution, float seed_resolution);
 
       [[deprecated("constructor with flag for using the single camera transform is deprecated. Default behavior is now to use the transform for organized clouds, and not use it for unorganized. Use setUseSingleCameraTransform() to override the defaults.")]]
-      SupervoxelClustering (float voxel_resolution, float seed_resolution, bool);
+      SupervoxelClustering (float voxel_resolution, float seed_resolution, bool) : SupervoxelClustering (voxel_resolution, seed_resolution) { }
 
       /** \brief This destructor destroys the cloud, normals and search method used for
         * finding neighbors. In other words it frees memory.
