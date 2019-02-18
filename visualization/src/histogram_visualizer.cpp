@@ -66,16 +66,16 @@ pcl::visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () :
 void
 pcl::visualization::PCLHistogramVisualizer::spinOnce (int time)
 {
-  for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
+  for (auto &win : wins_)
   {
-    DO_EVERY(1.0/(*am_it).second.interactor_->GetDesiredUpdateRate (),
-      (*am_it).second.interactor_->Render ();
-      exit_main_loop_timer_callback_->right_timer_id = (*am_it).second.interactor_->CreateRepeatingTimer (time);
+    DO_EVERY(1.0/win.second.interactor_->GetDesiredUpdateRate (),
+      win.second.interactor_->Render ();
+      exit_main_loop_timer_callback_->right_timer_id = win.second.interactor_->CreateRepeatingTimer (time);
 
       // Set the correct interactor for callbacks
-      exit_main_loop_timer_callback_->interact = (*am_it).second.interactor_;
-      (*am_it).second.interactor_->Start ();
-      (*am_it).second.interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
+      exit_main_loop_timer_callback_->interact = win.second.interactor_;
+      win.second.interactor_->Start ();
+      win.second.interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
     );
   }
 }
@@ -119,10 +119,10 @@ pcl::visualization::PCLHistogramVisualizer::setBackgroundColor (const double &r,
     ++i;
   }
   */
-  for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
+  for (auto &win : wins_)
   {
-    (*am_it).second.ren_->SetBackground (r, g, b);
-    (*am_it).second.ren_->Render ();
+    win.second.ren_->SetBackground (r, g, b);
+    win.second.ren_->Render ();
   }
 }
 
@@ -130,10 +130,10 @@ pcl::visualization::PCLHistogramVisualizer::setBackgroundColor (const double &r,
 void 
 pcl::visualization::PCLHistogramVisualizer::setGlobalYRange (float minp, float maxp)
 {
-  for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
+  for (auto &win : wins_)
   {
-    (*am_it).second.xy_plot_->SetYRange (minp, maxp);
-    (*am_it).second.xy_plot_->Modified ();
+    win.second.xy_plot_->SetYRange (minp, maxp);
+    win.second.xy_plot_->Modified ();
   }
 }
 
@@ -142,15 +142,15 @@ void
 pcl::visualization::PCLHistogramVisualizer::updateWindowPositions ()
 {
   int posx = 0, posy = 0;
-  for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
+  for (auto &win : wins_)
   {
     // Get the screen size
-    int *scr_size = (*am_it).second.win_->GetScreenSize ();
-    int *win_size = (*am_it).second.win_->GetActualSize ();
+    int *scr_size = win.second.win_->GetScreenSize ();
+    int *win_size = win.second.win_->GetActualSize ();
 
     // Update the position of the current window
-    (*am_it).second.win_->SetPosition (posx, posy);
-    (*am_it).second.win_->Modified ();
+    win.second.win_->SetPosition (posx, posy);
+    win.second.win_->Modified ();
     // If there is space on Y, go on Y first
     if ((posy + win_size[1]) <= scr_size[1]) 
       posy += win_size[1];
@@ -353,8 +353,8 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 
   // Compute the total size of the fields
   unsigned int fsize = 0;
-  for (size_t i = 0; i < cloud.fields.size (); ++i)
-    fsize += cloud.fields[i].count * pcl::getFieldSize (cloud.fields[i].datatype);
+  for (const auto &field : cloud.fields)
+    fsize += field.count * pcl::getFieldSize (field.datatype);
 
   // Parse the cloud data and store it in the array
   double xy[2];
@@ -448,8 +448,8 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
   
   // Compute the total size of the fields
   unsigned int fsize = 0;
-  for (size_t i = 0; i < cloud.fields.size (); ++i)
-    fsize += cloud.fields[i].count * pcl::getFieldSize (cloud.fields[i].datatype);
+  for (const auto &field : cloud.fields)
+    fsize += field.count * pcl::getFieldSize (field.datatype);
 
   // Parse the cloud data and store it in the array
   double xy[2];

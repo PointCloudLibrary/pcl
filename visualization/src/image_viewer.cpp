@@ -386,8 +386,8 @@ pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
     interactor_->Start ();
     interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
   );
-  for(size_t i = 0; i < image_data_.size(); i++)
-	  delete [] image_data_[i];
+  for(auto &i : image_data_)
+    delete [] i;
   image_data_.clear ();
 }
 
@@ -871,8 +871,8 @@ void
 pcl::visualization::ImageViewer::render ()
 {
   win_->Render ();
-  for(size_t i = 0; i < image_data_.size(); i++)
-	  delete [] image_data_[i];
+  for(auto &i : image_data_)
+    delete [] i;
   image_data_.clear ();
 }
 
@@ -883,9 +883,9 @@ pcl::visualization::ImageViewer::convertIntensityCloudToUChar (
     boost::shared_array<unsigned char> data)
 {
   int j = 0;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (const auto &point : cloud.points)
   {
-    data[j++] = static_cast <unsigned char> (cloud.points[i].intensity * 255);
+    data[j++] = static_cast <unsigned char> (point.intensity * 255);
   }
 }
 
@@ -896,8 +896,8 @@ pcl::visualization::ImageViewer::convertIntensityCloud8uToUChar (
     boost::shared_array<unsigned char> data)
 {
   int j = 0;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
-    data[j++] = static_cast<unsigned char> (cloud.points[i].intensity);
+  for (const auto &point : cloud.points)
+    data[j++] = static_cast<unsigned char> (point.intensity);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

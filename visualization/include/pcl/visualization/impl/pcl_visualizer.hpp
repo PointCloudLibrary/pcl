@@ -1122,10 +1122,10 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   corrs.resize (correspondences.size ());
 
   size_t index = 0;
-  for (pcl::Correspondences::iterator corrs_it (corrs.begin ()); corrs_it != corrs.end (); ++corrs_it)
+  for (auto &corr : corrs)
   {
-    corrs_it->index_query = index;
-    corrs_it->index_match = correspondences[index];
+    corr.index_query = index;
+    corr.index_match = correspondences[index];
     index++;
   }
 
@@ -1691,9 +1691,9 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
 
   // Get the maximum size of a polygon
   int max_size_of_polygon = -1;
-  for (size_t i = 0; i < vertices.size (); ++i)
-    if (max_size_of_polygon < static_cast<int> (vertices[i].vertices.size ()))
-      max_size_of_polygon = static_cast<int> (vertices[i].vertices.size ());
+  for (const auto &vertex : vertices)
+    if (max_size_of_polygon < static_cast<int> (vertex.vertices.size ()))
+      max_size_of_polygon = static_cast<int> (vertex.vertices.size ());
 
   if (vertices.size () > 1)
   {
@@ -1870,9 +1870,9 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 
   // Get the maximum size of a polygon
   int max_size_of_polygon = -1;
-  for (size_t i = 0; i < verts.size (); ++i)
-    if (max_size_of_polygon < static_cast<int> (verts[i].vertices.size ()))
-      max_size_of_polygon = static_cast<int> (verts[i].vertices.size ());
+  for (const auto &vertex : verts)
+    if (max_size_of_polygon < static_cast<int> (vertex.vertices.size ()))
+      max_size_of_polygon = static_cast<int> (vertex.vertices.size ());
 
   // Update the cells
   cells = vtkSmartPointer<vtkCellArray>::New ();

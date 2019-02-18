@@ -73,9 +73,9 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
   std::vector<int> nn_indices (1);
   std::vector<float> nn_dists (1);
   // For each point on screen, find its correspondent in the target
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (const auto &point : cloud.points)
   {
-    kdtree.nearestKSearch (cloud.points[i], 1, nn_indices, nn_dists);
+    kdtree.nearestKSearch (point, 1, nn_indices, nn_dists);
     indices.push_back (nn_indices[0]);
   }
   // Sort and remove duplicate indices
@@ -106,9 +106,9 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
 
   // Attempting to load all Point Cloud data input files (using the actor name)...
   int i = 1;
-  for (auto it = actors->cbegin (); it != actors->cend (); ++it)
+  for (const auto &actor : *actors)
   {
-    std::string file_name = (*it).first;
+    std::string file_name = actor.first;
 
     // Is there a ".pcd" in the name? If no, then do not attempt to load this actor
     std::string::size_type position;

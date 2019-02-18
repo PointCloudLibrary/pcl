@@ -3058,9 +3058,9 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     colors->SetName ("Colors");
     pcl::PointCloud<pcl::PointXYZRGB> cloud;
     pcl::fromPCLPointCloud2 (poly_mesh.cloud, cloud);
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (const auto &point : cloud.points)
     {
-      const unsigned char color[3] = { cloud.points[i].r, cloud.points[i].g, cloud.points[i].b };
+      const unsigned char color[3] = { point.r, point.g, point.b };
       colors->InsertNextTupleValue (color);
     }
   }
@@ -3071,9 +3071,9 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     colors->SetName ("Colors");
     pcl::PointCloud<pcl::PointXYZRGBA> cloud;
     pcl::fromPCLPointCloud2 (poly_mesh.cloud, cloud);
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (const auto &point : cloud.points)
     {
-      const unsigned char color[3] = { cloud.points[i].r, cloud.points[i].g, cloud.points[i].b };
+      const unsigned char color[3] = { point.r, point.g, point.b };
       colors->InsertNextTupleValue (color);
     }
   }
@@ -3084,12 +3084,11 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     //create polys from polyMesh.polygons
     vtkSmartPointer<vtkCellArray> cell_array = vtkSmartPointer<vtkCellArray>::New ();
 
-    for (size_t i = 0; i < poly_mesh.polygons.size (); i++)
+    for (const auto &polygon : poly_mesh.polygons)
     {
-      size_t n_points (poly_mesh.polygons[i].vertices.size ());
-      cell_array->InsertNextCell (int (n_points));
-      for (size_t j = 0; j < n_points; j++)
-        cell_array->InsertCellPoint (poly_mesh.polygons[i].vertices[j]);
+      cell_array->InsertNextCell (static_cast<int> (polygon.vertices.size ()));
+      for (const auto &vertex : polygon.vertices)
+        cell_array->InsertCellPoint (vertex);
     }
 
     vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New ();
@@ -3207,9 +3206,9 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 
   // Get the maximum size of a polygon
   int max_size_of_polygon = -1;
-  for (size_t i = 0; i < verts.size (); ++i)
-    if (max_size_of_polygon < static_cast<int> (verts[i].vertices.size ()))
-      max_size_of_polygon = static_cast<int> (verts[i].vertices.size ());
+  for (const auto &vertex : verts)
+    if (max_size_of_polygon < static_cast<int> (vertex.vertices.size ()))
+      max_size_of_polygon = static_cast<int> (vertex.vertices.size ());
 
   // Update the cells
   cells = vtkSmartPointer<vtkCellArray>::New ();
@@ -3272,13 +3271,13 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
   vtkSmartPointer <vtkPolyData> polyData;
   allocVtkPolyData (polyData);
 
-  for (size_t i = 0; i < polymesh.polygons.size (); i++)
+  for (const auto &polygon : polymesh.polygons)
   {
     vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
-    polyLine->GetPointIds()->SetNumberOfIds(polymesh.polygons[i].vertices.size());
-    for(size_t k = 0; k < polymesh.polygons[i].vertices.size(); k++)
+    polyLine->GetPointIds()->SetNumberOfIds(polygon.vertices.size());
+    for(size_t v = 0; v < polygon.vertices.size(); v++)
     {
-      polyLine->GetPointIds ()->SetId (k, polymesh.polygons[i].vertices[k]);
+      polyLine->GetPointIds ()->SetId (v, polygon.vertices[v]);
     }
 
     cells->InsertNextCell (polyLine);
@@ -3342,8 +3341,8 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
   }
   // total number of vertices
   std::size_t nb_vertices = 0;
-  for (std::size_t i = 0; i < mesh.tex_polygons.size (); ++i)
-    nb_vertices += mesh.tex_polygons[i].size ();
+  for (const auto &tex_polygon : mesh.tex_polygons)
+    nb_vertices += tex_polygon.size ();
   // no vertices --> exit
   if (nb_vertices == 0)
   {
@@ -3352,8 +3351,8 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
   }
   // total number of coordinates
   std::size_t nb_coordinates = 0;
-  for (std::size_t i = 0; i < mesh.tex_coordinates.size (); ++i)
-    nb_coordinates += mesh.tex_coordinates[i].size ();
+  for (const auto &tex_coordinate : mesh.tex_coordinates)
+    nb_coordinates += tex_coordinate.size ();
   // no texture coordinates --> exit
   if (nb_coordinates == 0)
   {
@@ -3410,14 +3409,13 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
 
   //create polys from polyMesh.tex_polygons
   vtkSmartPointer<vtkCellArray> polys = vtkSmartPointer<vtkCellArray>::New ();
-  for (std::size_t i = 0; i < mesh.tex_polygons.size (); i++)
+  for (const auto &tex_polygon : mesh.tex_polygons)
   {
-    for (std::size_t j = 0; j < mesh.tex_polygons[i].size (); j++)
+    for (const auto &vertex : tex_polygon)
     {
-      std::size_t n_points = mesh.tex_polygons[i][j].vertices.size ();
-      polys->InsertNextCell (int (n_points));
-      for (std::size_t k = 0; k < n_points; k++)
-        polys->InsertCellPoint (mesh.tex_polygons[i][j].vertices[k]);
+      polys->InsertNextCell (static_cast<int> (vertex.vertices.size ()));
+      for (const auto &point : vertex.vertices)
+        polys->InsertCellPoint (point);
     }
   }
 
@@ -3470,9 +3468,8 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
 
     for (std::size_t t = 0; t < mesh.tex_coordinates.size (); ++t)
       if (t == tex_id)
-        for (std::size_t tc = 0; tc < mesh.tex_coordinates[t].size (); ++tc)
-          coordinates->InsertNextTuple2 (mesh.tex_coordinates[t][tc][0],
-                                         mesh.tex_coordinates[t][tc][1]);
+        for (const auto &tc : mesh.tex_coordinates[t])
+          coordinates->InsertNextTuple2 (tc[0], tc[1]);
       else
         for (std::size_t tc = 0; tc < mesh.tex_coordinates[t].size (); ++tc)
           coordinates->InsertNextTuple2 (-1.0, -1.0);
@@ -3752,11 +3749,11 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   cam->Modified ();
 
   //For each camera position, transform the object and render view
-  for (size_t i = 0; i < cam_positions.size (); i++)
+  for (const auto &cam_position : cam_positions)
   {
-    cam_pos[0] = cam_positions[i][0];
-    cam_pos[1] = cam_positions[i][1];
-    cam_pos[2] = cam_positions[i][2];
+    cam_pos[0] = cam_position[0];
+    cam_pos[1] = cam_position[1];
+    cam_pos[2] = cam_position[2];
 
     //create temporal virtual camera
     vtkSmartPointer<vtkCamera> cam_tmp = vtkSmartPointer<vtkCamera>::New ();
@@ -3777,9 +3774,9 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
     cam_tmp->SetViewUp (test[0], test[1], test[2]);
 
-    for (int k = 0; k < 3; k++)
+    for (double &c_pos : cam_pos)
     {
-      cam_pos[k] = cam_pos[k] * camera_radius;
+      c_pos *= camera_radius;
     }
 
     cam_tmp->SetPosition (cam_pos);
@@ -3955,11 +3952,11 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
     //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
     //thus, the fliping in y and z
-    for (size_t i = 0; i < cloud->points.size (); i++)
+    for (auto &point : cloud->points)
     {
-      cloud->points[i].getVector4fMap () = trans_view * cloud->points[i].getVector4fMap ();
-      cloud->points[i].y *= -1.0f;
-      cloud->points[i].z *= -1.0f;
+      point.getVector4fMap () = trans_view * point.getVector4fMap ();
+      point.y *= -1.0f;
+      point.z *= -1.0f;
     }
 
     renderer->RemoveActor (actor_view);
@@ -4628,9 +4625,9 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
     bool valid = false;
 
     // Calculate sha1 using canonical paths
-    for (size_t i = 0; i < p_file_indices.size (); ++i)
+    for (int p_file_index : p_file_indices)
     {
-      boost::filesystem::path path (argv[p_file_indices[i]]);
+      boost::filesystem::path path (argv[p_file_index]);
       if (boost::filesystem::exists (path))
       {
         path = boost::filesystem::canonical (path);

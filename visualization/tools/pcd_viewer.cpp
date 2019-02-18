@@ -712,14 +712,14 @@ main (int argc, char** argv)
     {
       if (ph) ph->spinOnce ();
 
-      for (int i = 0; i < int (imgs.size ()); ++i)
+      for (auto &img : imgs)
       {
-        if (imgs[i]->wasStopped ())
+        if (img->wasStopped ())
         {
           stopped = true;
           break;
         }
-        imgs[i]->spinOnce ();
+        img->spinOnce ();
       }
         
       if (p)
