@@ -120,15 +120,15 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
 
   float zz = 0;
 
-  for (std::vector<int>::const_iterator iIt = neighbors.begin(); iIt != neighbors.end(); ++iIt)
+  for (const int neighbor : neighbors)
   {
-    if (std::isfinite (normals_->points[*iIt].normal_x))
+    if (std::isfinite (normals_->points[neighbor].normal_x))
     {
       // nx, ny, nz, h
-      norm1 = _mm_load_ps (&(normals_->points[*iIt].normal_x));
+      norm1 = _mm_load_ps (&(normals_->points[neighbor].normal_x));
 
       // nx, nx, nx, nx
-      norm2 = _mm_set1_ps (normals_->points[*iIt].normal_x);
+      norm2 = _mm_set1_ps (normals_->points[neighbor].normal_x);
 
       // nx * nx, nx * ny, nx * nz, nx * h
       norm2 = _mm_mul_ps (norm1, norm2);
@@ -137,7 +137,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
       vec1 = _mm_add_ps (vec1, norm2);
 
       // ny, ny, ny, ny
-      norm2 = _mm_set1_ps (normals_->points[*iIt].normal_y);
+      norm2 = _mm_set1_ps (normals_->points[neighbor].normal_y);
 
       // ny * nx, ny * ny, ny * nz, ny * h
       norm2 = _mm_mul_ps (norm1, norm2);
@@ -145,7 +145,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
       // accumulate
       vec2 = _mm_add_ps (vec2, norm2);
 
-      zz += normals_->points[*iIt].normal_z * normals_->points[*iIt].normal_z;
+      zz += normals_->points[neighbor].normal_z * normals_->points[neighbor].normal_z;
       ++count;
     }
   }
