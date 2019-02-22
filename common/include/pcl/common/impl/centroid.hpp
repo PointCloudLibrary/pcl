@@ -874,7 +874,7 @@ pcl::CentroidPoint<PointT>::get (PointOutT& point) const
   {
     // Filter accumulators so that only those that are compatible with
     // both PointT and requested point type remain
-    typename pcl::detail::Accumulators<PointT, PointOutT>::type ca (accumulators_);
+    auto ca = boost::fusion::filter_if<detail::IsAccumulatorCompatible<PointT, PointOutT>> (accumulators_);
     // Invoke get point on each accumulator in filtered list
     boost::fusion::for_each (ca, detail::GetPoint<PointOutT> (point, num_points_));
   }
