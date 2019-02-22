@@ -1038,22 +1038,14 @@ namespace pcl
 
     public:
 
-      CentroidPoint ()
-      : num_points_ (0)
-      {
-      }
+      CentroidPoint () = default;
 
       /** Add a new point to the centroid computation.
         *
         * In this function only the accumulators and point counter are updated,
         * actual centroid computation does not happen until get() is called. */
       void
-      add (const PointT& point)
-      {
-        // Invoke add point on each accumulator
-        boost::fusion::for_each (accumulators_, detail::AddPoint<PointT> (point));
-        ++num_points_;
-      }
+      add (const PointT& point);
 
       /** Retrieve the current centroid.
         *
@@ -1065,20 +1057,10 @@ namespace pcl
         * If the number of accumulated points is zero, then the point will be
         * left untouched. */
       template <typename PointOutT> void
-      get (PointOutT& point) const
-      {
-        if (num_points_ != 0)
-        {
-          // Filter accumulators so that only those that are compatible with
-          // both PointT and requested point type remain
-          typename pcl::detail::Accumulators<PointT, PointOutT>::type ca (accumulators_);
-          // Invoke get point on each accumulator in filtered list
-          boost::fusion::for_each (ca, detail::GetPoint<PointOutT> (point, num_points_));
-        }
-      }
+      get (PointOutT& point) const;
 
       /** Get the total number of points that were added. */
-      size_t
+      inline size_t
       getSize () const
       {
         return (num_points_);
@@ -1088,7 +1070,7 @@ namespace pcl
 
     private:
 
-      size_t num_points_;
+      size_t num_points_ = 0;
       typename pcl::detail::Accumulators<PointT>::type accumulators_;
 
   };
