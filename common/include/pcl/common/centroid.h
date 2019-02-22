@@ -970,30 +970,14 @@ namespace pcl
     * taking into account the meaning of the data inside fields. Currently the
     * following fields are supported:
     *
-    * - XYZ (\c x, \c y, \c z)
-    *
-    *   Separate average for each field.
-    *
-    * - Normal (\c normal_x, \c normal_y, \c normal_z)
-    *
-    *   Separate average for each field, and the resulting vector is normalized.
-    *
-    * - Curvature (\c curvature)
-    *
-    *   Average.
-    *
-    * - RGB/RGBA (\c rgb or \c rgba)
-    *
-    *   Separate average for R, G, B, and alpha channels.
-    *
-    * - Intensity (\c intensity)
-    *
-    *   Average.
-    *
-    * - Label (\c label)
-    *
-    *   Majority vote. If several labels have the same largest support then the
-    *   smaller label wins.
+    *  Data      | Point fields                          | Algorithm
+    *  --------- | ------------------------------------- | -------------------------------------------------------------------------------------------
+    *  XYZ       | \c x, \c y, \c z                      | Average (separate for each field)
+    *  Normal    | \c normal_x, \c normal_y, \c normal_z | Average (separate for each field), resulting vector is normalized
+    *  Curvature | \c curvature                          | Average
+    *  Color     | \c rgb or \c rgba                     | Average (separate for R, G, B, and alpha channels)
+    *  Intensity | \c intensity                          | Average
+    *  Label     | \c label                              | Majority vote; if several labels have the same largest support then the  smaller label wins
     *
     * The template parameter defines the type of points that may be accumulated
     * with this class. This may be an arbitrary PCL point type, and centroid
