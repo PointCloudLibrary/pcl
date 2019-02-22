@@ -858,7 +858,28 @@ pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
   return (pcl::computeNDCentroid (cloud, indices.indices, centroid));
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::CentroidPoint<PointT>::add (const PointT& point)
+{
+  // Invoke add point on each accumulator
+  boost::fusion::for_each (accumulators_, detail::AddPoint<PointT> (point));
+  ++num_points_;
+}
+
+template <typename PointT>
+template <typename PointOutT> void
+pcl::CentroidPoint<PointT>::get (PointOutT& point) const
+{
+  if (num_points_ != 0)
+  {
+    // Filter accumulators so that only those that are compatible with
+    // both PointT and requested point type remain
+    auto ca = boost::fusion::filter_if<detail::IsAccumulatorCompatible<PointT, PointOutT>> (accumulators_);
+    // Invoke get point on each accumulator in filtered list
+    boost::fusion::for_each (ca, detail::GetPoint<PointOutT> (point, num_points_));
+  }
+}
+
 template <typename PointInT, typename PointOutT> size_t
 pcl::computeCentroid (const pcl::PointCloud<PointInT>& cloud,
                       PointOutT& centroid)
@@ -877,7 +898,6 @@ pcl::computeCentroid (const pcl::PointCloud<PointInT>& cloud,
   return (cp.getSize ());
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> size_t
 pcl::computeCentroid (const pcl::PointCloud<PointInT>& cloud,
                       const std::vector<int>& indices,
