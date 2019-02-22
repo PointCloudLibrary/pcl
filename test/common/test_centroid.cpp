@@ -813,6 +813,7 @@ TEST (PCL, CentroidPoint)
     centroid.get (c);
     EXPECT_XYZ_EQ (PointXYZ (100, 100, 100), c);
   }
+
   // Single point
   {
     CentroidPoint<PointXYZ> centroid;
@@ -821,6 +822,7 @@ TEST (PCL, CentroidPoint)
     centroid.get (c);
     EXPECT_XYZ_EQ (p1, c);
   }
+
   // Multiple points
   {
     CentroidPoint<PointXYZ> centroid;
@@ -834,12 +836,36 @@ TEST (PCL, CentroidPoint)
 
   // Retrieve centroid into a different point type
   {
-    CentroidPoint<PointXYZ> centroid;
+    PointNormal p1; p1.getVector3fMap () << 1, 2, 3; p1.getNormalVector3fMap() << 0, 1, 0;
+    CentroidPoint<PointNormal> centroid;
     centroid.add (p1);
-    PointXYZRGB c; c.rgba = 0x00FFFFFF;
-    centroid.get (c);
-    EXPECT_XYZ_EQ (p1, c);
-    EXPECT_EQ (0x00FFFFFF, c.rgba);
+    // Retrieve into a point type that is a "superset" of the original
+    {
+      PointXYZRGBNormal c; c.rgba = 0x00FFFFFF;
+      centroid.get (c);
+      EXPECT_XYZ_EQ (p1, c);
+      EXPECT_NORMAL_EQ (p1, c);
+      EXPECT_EQ (0x00FFFFFF, c.rgba); // unchanged
+    }
+    // Retrieve into a point type that is a "subset" of the original
+    {
+      Normal c;
+      centroid.get (c);
+      EXPECT_NORMAL_EQ (p1, c);
+    }
+    // Retrieve into a point type that partially "overlaps" with the original
+    {
+      PointXYZRGB c; c.rgba = 0x00FFFFFF;
+      centroid.get (c);
+      EXPECT_XYZ_EQ (p1, c);
+      EXPECT_EQ (0x00FFFFFF, c.rgba); // unchanged
+    }
+    // Retrieve into a point type that does not "overlap" with the original
+    {
+      RGB c; c.rgba = 0x00FFFFFF;
+      centroid.get (c);
+      EXPECT_EQ (0x00FFFFFF, c.rgba); // unchanged
+    }
   }
 
   // Centroid with XYZ and RGB
@@ -857,7 +883,7 @@ TEST (PCL, CentroidPoint)
     EXPECT_EQ (0xFF111111, c.rgba);
   }
 
-  // Centroid with normal and curavture
+  // Centroid with normal and curvature
   {
     Normal np1; np1.getNormalVector4fMap () << 1, 0, 0, 0; np1.curvature = 0.2;
     Normal np2; np2.getNormalVector4fMap () << -1, 0, 0, 0; np2.curvature = 0.1;
