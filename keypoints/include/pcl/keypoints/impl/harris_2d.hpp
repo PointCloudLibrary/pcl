@@ -243,7 +243,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
   else
   {    
     std::sort (indices_->begin (), indices_->end (), 
-               [auto] (auto i1, auto i2) {return greaterIntensityAtIndices (i1, i2); });
+               [this] (auto i1, auto i2) {return greaterIntensityAtIndices (i1, i2); });
     float threshold = threshold_ * response_->points[indices_->front ()].intensity;
     output.clear ();
     output.reserve (response_->size());
