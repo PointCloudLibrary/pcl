@@ -278,7 +278,7 @@ namespace pcl
             //load views, poses and self-occlusions for those that exist
             //generate otherwise
             std::cout << filename << std::endl;
-            std::string path_model = path_ + "/" + filename;
+            std::string path_model = path_ + '/' + filename;
             loadOrGenerate (training_dir, path_model, m);
 
             models_->push_back (m);

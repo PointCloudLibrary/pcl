@@ -50,7 +50,7 @@ Statistics::getStats()
     std::string stat_string = stat_vec -> getStat();
     if (stat_string != "")
     {
-      result += (stat_string + "\n");
+      result += (stat_string + '\n');
     }
   }
     

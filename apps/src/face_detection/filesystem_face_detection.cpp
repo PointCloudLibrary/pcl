@@ -228,7 +228,7 @@ int main(int argc, char ** argv)
 
     for (const auto &filename : files)
     {
-      std::string file = test_directory + "/" + filename;
+      std::string file = test_directory + '/' + filename;
       std::cout << file << std::endl;
 
       if (rgb_exists)
