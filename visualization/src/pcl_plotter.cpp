@@ -606,7 +606,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
   }
 
   //fill the freq for each data
-  for (const double value : data)
+  for (const double &value : data)
   {
     if (std::isfinite (value))
     {
