@@ -97,7 +97,7 @@ namespace pcl
       }
       if(!children){
         fprintf(stderr,"Failed to initialize children in OctNode::initChildren\n");
-        POISSON_THROW_EXCEPTION (pcl::poisson::PoissonBadInit, "Failed to initialize OctNode children.");
+        POISSON_THROW_EXCEPTION (pcl::poisson::PoissonBadInitException, "Failed to initialize OctNode children.");
       }
       int d,off[3];
       depthAndOffset(d,off);

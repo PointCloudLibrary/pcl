@@ -135,13 +135,13 @@ namespace pcl
         : pcl::poisson::PoissonException (error_description, file_name, function_name, line_number) {}
     };
 
-    /** \class PoissonBadInit
+    /** \class PoissonBadInitException
       * \brief An exception that is thrown when initialization fails.
       */
-    class PoissonBadInit : public PoissonException
+    class PoissonBadInitException : public PoissonException
     {
     public:
-      PoissonBadInit (const std::string& error_description,
+      PoissonBadInitException (const std::string& error_description,
         const char* file_name = NULL,
         const char* function_name = NULL,
         unsigned line_number = 0)
