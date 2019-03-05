@@ -305,7 +305,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
     binary_cloud->points.resize (input_->points.size ());
     binary_cloud->is_dense = input_->is_dense;
 
-    for (const int idx : cloud_object_indices.indices)
+    for (const int &idx : cloud_object_indices.indices)
     {
       binary_cloud->points[idx].getVector4fMap () = input_->points[idx].getVector4fMap ();
       binary_cloud->points[idx].intensity = 1.0;

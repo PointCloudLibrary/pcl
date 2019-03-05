@@ -60,7 +60,7 @@ CopyBuffer::set (ConstCloudPtr cloud_ptr, const Selection& selection)
   clean();
   if (!cloud_ptr)
       return;
-  for(unsigned int s_it : selection)
+  for(const unsigned int &s_it : selection)
     buffer_.append( (*cloud_ptr)[s_it] );
 }
 

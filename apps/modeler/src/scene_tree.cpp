@@ -169,7 +169,7 @@ pcl::modeler::SceneTree::slotOpenPointCloud()
   if (filenames.isEmpty())
     return;
 
-  for (auto render_window_item : selected_render_window_items)
+  for (const auto &render_window_item : selected_render_window_items)
   {
     QList<CloudMeshItem*> cloud_mesh_items;
     for (int i = 0, i_end = render_window_item->childCount(); i < i_end; ++ i)
@@ -259,7 +259,7 @@ pcl::modeler::SceneTree::closePointCloud(const QList<CloudMeshItem*>& items)
 {
   QList<RenderWindowItem*> render_window_items;
 
-  for (auto item : items)
+  for (const auto &item : items)
   {
     RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(item->parent());
     if (render_window_item != NULL)
@@ -469,7 +469,7 @@ pcl::modeler::SceneTree::dropEvent(QDropEvent * event)
   QList<CloudMeshItem*> selected_cloud_meshes = selectedTypeItems<CloudMeshItem>();
 
   std::set<RenderWindowItem*> previous_parents;
-  for (auto cloud_mesh_item : selected_cloud_meshes)
+  for (const auto &cloud_mesh_item : selected_cloud_meshes)
   {
     RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(cloud_mesh_item->parent());
     if (render_window_item != NULL)
@@ -479,7 +479,7 @@ pcl::modeler::SceneTree::dropEvent(QDropEvent * event)
   QTreeWidget::dropEvent(event);
 
   std::vector<CloudMeshItem*> cloud_mesh_items;
-  for (auto cloud_mesh_item : selected_cloud_meshes)
+  for (const auto &cloud_mesh_item : selected_cloud_meshes)
   {
     if (dynamic_cast<RenderWindowItem*>(cloud_mesh_item->parent()) == NULL)
       cloud_mesh_items.push_back(cloud_mesh_item);
@@ -490,15 +490,15 @@ pcl::modeler::SceneTree::dropEvent(QDropEvent * event)
   // put the cloud mesh items in a new render window
   if (!cloud_mesh_items.empty())
   {
-    for (auto &cloud_mesh_item : cloud_mesh_items)
+    for (const auto &cloud_mesh_item : cloud_mesh_items)
       takeTopLevelItem(indexFromItem(cloud_mesh_item).row());
     RenderWindowItem* render_window_item = MainWindow::getInstance().createRenderWindow();
-    for (auto &cloud_mesh_item : cloud_mesh_items)
+    for (const auto &cloud_mesh_item : cloud_mesh_items)
       render_window_item->addChild(cloud_mesh_item);
     render_window_item->setExpanded(true);
   }
 
-  for (auto previous_parent : previous_parents)
+  for (const auto &previous_parent : previous_parents)
   {
     previous_parent->getRenderWindow()->updateAxes();
     previous_parent->getRenderWindow()->render();

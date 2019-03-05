@@ -45,7 +45,7 @@ std::string
 Statistics::getStats()
 {
   std::string result;
-  for(auto stat_vec : stat_vec_)
+  for(const auto &stat_vec : stat_vec_)
   {
     std::string stat_string = stat_vec -> getStat();
     if (stat_string != "")

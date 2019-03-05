@@ -231,7 +231,7 @@ usage (char ** argv)
             << "         -normal_search_radius X = size of the neighborhood to consider for calculating the local plane and extracting the normals (default: " << default_normal_search_radius << "\n"
             << "         -persistence_alpha X = value of alpha for the multiscale feature persistence (default: " << default_alpha << "\n"
             << "         -scales X1 X2 ... = values for the multiple scales for extracting features (default: ";
-  for (double i : default_scales_vector) std::cout << i << " ";
+  for (const double &i : default_scales_vector) std::cout << i << " ";
   std::cout << "\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();

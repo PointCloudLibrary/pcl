@@ -115,14 +115,14 @@ pcl::modeler::CloudMesh::save(const std::vector<const CloudMesh*>& cloud_meshes,
     return (cloud_meshes[0]->save(filename));
 
   CloudMesh cloud_mesh;
-  for (auto mesh : cloud_meshes)
+  for (const auto &mesh : cloud_meshes)
   {
     if (filename.rfind(".obj") == (filename.length()-4))
     {
       size_t delta = cloud_mesh.cloud_->size();
       for (auto polygon : mesh->polygons_)
       {
-        for (unsigned int & vertice : polygon.vertices)
+        for (unsigned int &vertice : polygon.vertices)
           vertice += static_cast<unsigned int> (delta);
         cloud_mesh.polygons_.push_back(polygon);
       }
@@ -213,7 +213,7 @@ pcl::modeler::CloudMesh::updateVtkPolygons()
     for (const auto &polygon : polygons_)
     {
       vtk_polygons_->InsertNextCell (polygon.vertices.size());
-      for (unsigned int vertex : polygon.vertices)
+      for (const unsigned int &vertex : polygon.vertices)
         vtk_polygons_->InsertCellPoint (vertex);
     }
   }
@@ -225,7 +225,7 @@ pcl::modeler::CloudMesh::updateVtkPolygons()
     for (const auto &polygon : polygons_)
     {
       vtk_polygons_->InsertNextCell (polygon.vertices.size());
-	  for (unsigned int vertex : polygon.vertices)
+	  for (const unsigned int &vertex : polygon.vertices)
         vtk_polygons_->InsertCellPoint ((*indices)[vertex]);
     }
   }

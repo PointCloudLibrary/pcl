@@ -262,7 +262,7 @@ namespace pcl
             result->second.push_back (sqrt (*it));
             sum_dist += result->second.back ();
           }
-        for (float & it : result->second)
+        for (float &it : result->second)
           it = 1 - it/sum_dist;
 
         // Return label/score list pair

@@ -184,7 +184,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
   cam->Modified ();
 
   //For each camera position, traposesnsform the object and render view
-  for (auto &cam_position : cam_positions)
+  for (const auto &cam_position : cam_positions)
   {
     cam_pos[0] = cam_position[0];
     cam_pos[1] = cam_position[1];
@@ -209,7 +209,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
     cam_tmp->SetViewUp (test[0], test[1], test[2]);
 
-    for (double & cam_po : cam_pos)
+    for (double &cam_po : cam_pos)
     {
       cam_po *= camera_radius;
     }
