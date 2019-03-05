@@ -28,6 +28,7 @@ DAMAGE.
 
 #include <unordered_map>
 
+#include "poisson_exceptions.h"
 #include "octree_poisson.h"
 #include "mat.h"
 
@@ -206,24 +207,36 @@ namespace pcl
       cData.cCount = 0;
       std::vector< int > offsets( threads+1 );
       offsets[0] = 0;
-      for( int t=0 ; t<threads ; t++ ) cData.cCount += count[t] , offsets[t+1] = offsets[t] + count[t];
+      for (int t = 0; t < threads; t++)
+      {
+        cData.cCount += count[t];
+        offsets[t + 1] = offsets[t] + count[t];
+      }
+
+      int paralellExceptionCount = 0;
 #pragma omp parallel for num_threads( threads )
-      for( int t=0 ; t<threads ; t++ )
-        for( int d=minDepth ; d<=maxDepth ; d++ )
+      for (int t = 0; t < threads; t++)
+      {
+        for (int d = minDepth; d <= maxDepth; d++)
         {
-          int start = spans[d].first , end = spans[d].second , width = end - start;
-          for( int i=start + (width*t)/threads ; i<start+(width*(t+1))/threads ; i++ )
-            for( int c=0 ; c<Cube::CORNERS ; c++ )
+          int start = spans[d].first, end = spans[d].second, width = end - start;
+          for (int i = start + (width*t) / threads; i < start + (width*(t + 1)) / threads; i++)
+          {
+            for (int c = 0; c < Cube::CORNERS; c++)
             {
               int& idx = cData[ treeNodes[i] ][c];
-              if( idx<0 )
+              if ( idx<0 )
               {
-                fprintf( stderr , "[ERROR] Found unindexed corner nodes[%d][%d] = %d (%d,%d)\n" , treeNodes[i]->nodeData.nodeIndex , c , idx , minDepth , maxDepth );
-                int _d , _off[3];
-                treeNodes[i]->depthAndOffset( _d , _off );
-                printf( "(%d [%d %d %d) <-> (%d [%d %d %d])\n" , minDepth , off[0] , off[1] , off[2] , _d , _off[0] , _off[1] , _off[2] );
-                printf( "[%d %d]\n" , spans[d].first , spans[d].second );
-                exit( 0 );
+                fprintf (stderr, "[ERROR] Found unindexed corner nodes[%d][%d] = %d (%d,%d)\n", treeNodes[i]->nodeData.nodeIndex, c, idx, minDepth, maxDepth);
+                int _d, _off[3];
+                treeNodes[i]->depthAndOffset (_d, _off);
+                printf ("(%d [%d %d %d) <-> (%d [%d %d %d])\n", minDepth, off[0], off[1], off[2], _d, _off[0], _off[1], _off[2]);
+                printf ("[%d %d]\n", spans[d].first, spans[d].second);
+
+#pragma omp critical
+                {
+                  ++paralellExceptionCount;
+                }
               }
               else
               {
@@ -232,7 +245,12 @@ namespace pcl
                 idx = rem + offsets[div];
               }
             }
+          }
         }
+      }
+
+      if (paralellExceptionCount > 0)
+        POISSON_THROW_EXCEPTION (pcl::poisson::PoissonOpenMPException, "Found " << paralellExceptionCount << " unindexed corner nodes during openMP loop execution.");
     }
     int SortedTreeNodes::getMaxCornerCount( const TreeOctNode* rootNode , int depth , int maxDepth , int threads ) const
     {
@@ -380,17 +398,34 @@ namespace pcl
       eData.eCount = 0;
       std::vector< int > offsets( threads+1 );
       offsets[0] = 0;
-      for( int t=0 ; t<threads ; t++ ) eData.eCount += count[t] , offsets[t+1] = offsets[t] + count[t];
+      for (int t = 0; t < threads; t++)
+      {
+        eData.eCount += count[t];
+        offsets[t + 1] = offsets[t] + count[t];
+      }
+
+      int paralellExceptionCount = 0;
 #pragma omp parallel for num_threads( threads )
-      for( int t=0 ; t<threads ; t++ )
-        for( int d=minDepth ; d<=maxDepth ; d++ )
+      for (int t = 0; t < threads; t++)
+      {
+
+        for (int d = minDepth; d <= maxDepth; d++)
         {
-          int start = spans[d].first , end = spans[d].second , width = end - start;
-          for( int i=start + (width*t)/threads ; i<start+(width*(t+1))/threads ; i++ )
-            for( int e=0 ; e<Cube::EDGES ; e++ )
+          int start = spans[d].first, end = spans[d].second, width = end - start;
+          for (int i = start + (width*t) / threads; i < start + (width*(t + 1)) / threads; i++)
+          {
+            for (int e = 0; e < Cube::EDGES; e++)
             {
-              int& idx = eData[ treeNodes[i] ][e];
-              if( idx<0 ) fprintf( stderr , "[ERROR] Found unindexed edge %d (%d,%d)\n" , idx , minDepth , maxDepth ) , exit( 0 );
+              int& idx = eData[treeNodes[i]][e];
+              if (idx < 0)
+              {
+                fprintf (stderr, "[ERROR] Found unindexed edge %d (%d,%d)\n", idx, minDepth, maxDepth);
+
+#pragma omp critical
+                {
+                  ++paralellExceptionCount;
+                }
+              }
               else
               {
                 int div = idx / ( nodeCount*Cube::EDGES );
@@ -398,7 +433,13 @@ namespace pcl
                 idx = rem + offsets[div];
               }
             }
+          }
         }
+      }
+
+      if(paralellExceptionCount > 0)
+        POISSON_THROW_EXCEPTION (pcl::poisson::PoissonOpenMPException, "Found " << paralellExceptionCount << " unindexed edges during openMP loop execution.");
+
     }
     int SortedTreeNodes::getMaxEdgeCount( const TreeOctNode* rootNode , int depth , int threads ) const
     {
