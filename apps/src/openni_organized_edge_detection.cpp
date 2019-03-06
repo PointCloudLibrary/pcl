@@ -201,10 +201,10 @@ class OpenNIOrganizedEdgeDetection
           std::cout << "Frame took " << double (oed_end - normal_start) << std::endl;
 
           // Make gray point cloud
-          for (size_t idx = 0; idx < cloud_.points.size (); idx++)
+          for (auto &point : cloud_.points)
           {
-            pcl::uint8_t gray = pcl::uint8_t((cloud_.points[idx].r + cloud_.points[idx].g + cloud_.points[idx].b)/3);
-            cloud_.points[idx].r = cloud_.points[idx].g = cloud_.points[idx].b = gray;
+            pcl::uint8_t gray = pcl::uint8_t((point.r + point.g + point.b)/3);
+            point.r = point.g = point.b = gray;
           }
 
           // Show the gray point cloud

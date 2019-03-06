@@ -115,22 +115,20 @@ pcl::modeler::CloudMesh::save(const std::vector<const CloudMesh*>& cloud_meshes,
     return (cloud_meshes[0]->save(filename));
 
   CloudMesh cloud_mesh;
-  for (size_t i = 0, i_end = cloud_meshes.size(); i < i_end; ++ i)
+  for (const auto &mesh : cloud_meshes)
   {
     if (filename.rfind(".obj") == (filename.length()-4))
     {
       size_t delta = cloud_mesh.cloud_->size();
-      const std::vector<pcl::Vertices>& polygons = cloud_meshes[i]->polygons_;
-      for (size_t j = 0, j_end = polygons.size(); j < j_end; ++ j)
+      for (auto polygon : mesh->polygons_)
       {
-        pcl::Vertices polygon = polygons[j];
-        for (size_t k = 0, k_end = polygon.vertices.size(); k < k_end; ++ k)
-          polygon.vertices[k] += static_cast<unsigned int> (delta);
+        for (unsigned int &vertice : polygon.vertices)
+          vertice += static_cast<unsigned int> (delta);
         cloud_mesh.polygons_.push_back(polygon);
       }
     }
 
-    *cloud_mesh.cloud_ += *(cloud_meshes[i]->cloud_);
+    *cloud_mesh.cloud_ += *(mesh->cloud_);
   }
 
   return (cloud_mesh.save(filename));
@@ -212,12 +210,11 @@ pcl::modeler::CloudMesh::updateVtkPolygons()
 
   if (cloud_->is_dense)
   {
-    for (size_t i = 0, i_end = polygons_.size (); i < i_end; ++i)
+    for (const auto &polygon : polygons_)
     {
-      size_t n_points = polygons_[i].vertices.size ();
-      vtk_polygons_->InsertNextCell (static_cast<unsigned int> (n_points));
-      for (size_t j = 0; j < n_points; j++)
-        vtk_polygons_->InsertCellPoint (polygons_[i].vertices[j]);
+      vtk_polygons_->InsertNextCell (polygon.vertices.size());
+      for (const unsigned int &vertex : polygon.vertices)
+        vtk_polygons_->InsertCellPoint (vertex);
     }
   }
   else
@@ -225,12 +222,11 @@ pcl::modeler::CloudMesh::updateVtkPolygons()
     pcl::IndicesPtr indices(new std::vector<int>());
     pcl::removeNaNFromPointCloud(*cloud_, *indices);
 
-    for (size_t i = 0, i_end = polygons_.size(); i < i_end; ++i)
+    for (const auto &polygon : polygons_)
     {
-      size_t n_points = polygons_[i].vertices.size ();
-      vtk_polygons_->InsertNextCell (static_cast<unsigned int> (n_points));
-      for (size_t j = 0; j < n_points; j++)
-        vtk_polygons_->InsertCellPoint ((*indices)[polygons_[i].vertices[j]]);
+      vtk_polygons_->InsertNextCell (polygon.vertices.size());
+	  for (const unsigned int &vertex : polygon.vertices)
+        vtk_polygons_->InsertCellPoint ((*indices)[vertex]);
     }
   }
 

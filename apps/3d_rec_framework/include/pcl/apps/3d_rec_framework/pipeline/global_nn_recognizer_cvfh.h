@@ -168,7 +168,7 @@ namespace pcl
         }
 
         inline void
-        convertToFLANN (const std::vector<flann_model> &models, boost::shared_ptr<std::vector<int> > & indices, flann::Matrix<float> &data)
+        convertToFLANN (const std::vector<flann_model> &models, const boost::shared_ptr<std::vector<int> > & indices, flann::Matrix<float> &data)
         {
           data.rows = indices->size ();
           data.cols = models[0].descr.size (); // number of histogram bins

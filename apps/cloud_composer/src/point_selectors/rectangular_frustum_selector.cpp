@@ -48,9 +48,9 @@ pcl::cloud_composer::RectangularFrustumSelector::OnLeftButtonUp ()
   vtkSmartPointer<vtkAppendPolyData> append = vtkAppendPolyData::New ();
   
   QMap < QString, vtkPolyData* > id_selected_data_map;
-  for (auto it = actors_->cbegin (); it != actors_->cend (); ++it)
+  for (const auto &actor : *actors_)
   {
-        const pcl::visualization::CloudActor *act = &(*it).second;
+        const pcl::visualization::CloudActor *act = &actor.second;
         vtkMapper* mapper = act->actor->GetMapper ();
         vtkDataSet* data = mapper->GetInput ();
         vtkPolyData* poly_data = vtkPolyData::SafeDownCast (data);
@@ -62,7 +62,7 @@ pcl::cloud_composer::RectangularFrustumSelector::OnLeftButtonUp ()
         if (selected->GetNumberOfPoints() > 0)
         {
           qDebug () << "Selected " << selected->GetNumberOfPoints () << " points.";
-          id_selected_data_map.insert ( QString::fromStdString ((*it).first), selected);
+          id_selected_data_map.insert ( QString::fromStdString (actor.first), selected);
           append->AddInputData (selected);
         }
   }

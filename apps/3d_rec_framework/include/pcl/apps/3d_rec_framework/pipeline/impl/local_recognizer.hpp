@@ -315,12 +315,12 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         {
           //sort the hypotheses for each model according to their correspondences and take those that are threshold_accept_model_hypothesis_ over the max cardinality
           int max_cardinality = -1;
-          for (size_t i = 0; i < corresp_clusters.size (); i++)
+          for (const auto &corresp_cluster : corresp_clusters)
           {
             //std::cout <<  (corresp_clusters[i]).size() << " -- " << (*(*it_map).second.correspondences_to_inputcloud).size() << std::endl;
-            if (max_cardinality < static_cast<int> (corresp_clusters[i].size ()))
+            if (max_cardinality < static_cast<int> (corresp_cluster.size ()))
             {
-              max_cardinality = static_cast<int> (corresp_clusters[i].size ());
+              max_cardinality = static_cast<int> (corresp_cluster.size ());
             }
           }
 

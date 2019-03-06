@@ -174,12 +174,10 @@ class TrajkovicDemo
             image_viewer_.removeLayer (getStrBool (keypts));
             std::vector<int> uv;
             uv.reserve (keypoints_indices_->indices.size () * 2);
-            for (std::vector<int>::const_iterator id = keypoints_indices_->indices.begin ();
-                 id != keypoints_indices_->indices.end ();
-                 ++id)
+            for (const int &index : keypoints_indices_->indices)
             {
-              int u (*id % cloud->width);
-              int v (*id / cloud->width);
+              int u (index % cloud->width);
+              int v (index / cloud->width);
               image_viewer_.markPoint (u, v, visualization::red_color, visualization::blue_color, 5, getStrBool (!keypts), 0.5);
             }
             keypts = !keypts;

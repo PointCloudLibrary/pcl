@@ -256,8 +256,8 @@ class NILinemod
       Label l; l.label = 0;
       PointCloud<Label>::Ptr scene (new PointCloud<Label> (cloud->width, cloud->height, l));
       // Mask the objects that we want to split into clusters
-      for (int i = 0; i < static_cast<int> (points_above_plane->indices.size ()); ++i)
-        scene->points[points_above_plane->indices[i]].label = 1;
+      for (const int &index : points_above_plane->indices)
+        scene->points[index].label = 1;
       euclidean_cluster_comparator->setLabels (scene);
 
       boost::shared_ptr<std::set<uint32_t> > exclude_labels = boost::make_shared<std::set<uint32_t> > ();
@@ -272,17 +272,17 @@ class NILinemod
 
       // For each cluster found
       bool cluster_found = false;
-      for (size_t i = 0; i < euclidean_label_indices.size (); i++)
+      for (const auto &euclidean_label_index : euclidean_label_indices)
       {
         if (cluster_found)
           break;
         // Check if the point that we picked belongs to it
-        for (size_t j = 0; j < euclidean_label_indices[i].indices.size (); ++j)
+        for (size_t j = 0; j < euclidean_label_index.indices.size (); ++j)
         {
-          if (picked_idx != euclidean_label_indices[i].indices[j])
+          if (picked_idx != euclidean_label_index.indices[j])
             continue;
           //pcl::PointCloud<PointT> cluster;
-          pcl::copyPointCloud (*cloud, euclidean_label_indices[i].indices, object);
+          pcl::copyPointCloud (*cloud, euclidean_label_index.indices, object);
           cluster_found = true;
           break;
           //object_indices = euclidean_label_indices[i].indices;

@@ -57,10 +57,8 @@ pcl::modeler::AbstractWorker::~AbstractWorker()
 int
 pcl::modeler::AbstractWorker::exec()
 {
-  for (QList<CloudMeshItem*>::iterator cloud_mesh_items_it = cloud_mesh_items_.begin();
-    cloud_mesh_items_it != cloud_mesh_items_.end();
-    ++ cloud_mesh_items_it)
-    initParameters(*cloud_mesh_items_it);
+  for (auto &cloud_mesh_item : cloud_mesh_items_)
+    initParameters(cloud_mesh_item);
 
   setupParameters();
 
@@ -71,11 +69,9 @@ pcl::modeler::AbstractWorker::exec()
 void
 pcl::modeler::AbstractWorker::process()
 {
-  for (QList<CloudMeshItem*>::iterator cloud_mesh_items_it = cloud_mesh_items_.begin();
-    cloud_mesh_items_it != cloud_mesh_items_.end();
-    ++ cloud_mesh_items_it)
+  for (auto &cloud_mesh_item : cloud_mesh_items_)
   {
-    processImpl(*cloud_mesh_items_it);
+    processImpl(cloud_mesh_item);
   }
 
   emit finished();

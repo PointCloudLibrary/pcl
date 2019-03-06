@@ -36,12 +36,12 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::setSelectedActors ()
       selected_cloud_ids.append (cloud_item->getId ());
   }
   
-  for (auto it = actors_->cbegin (); it != actors_->cend (); ++it)
+  for (const auto &actorItem : *actors_)
   {
-    QString id = QString::fromStdString (it->first);
+    QString id = QString::fromStdString (actorItem.first);
     if (selected_cloud_ids.contains (id))
     {
-      vtkLODActor* actor = (it->second).actor;
+      vtkLODActor* actor = actorItem.second.actor;
       qDebug () << "Adding "<<id<< " to selected manip! ptr ="<<actor;
       selected_actors_map_.insert (id ,actor);
       vtkSmartPointer<vtkMatrix4x4> start_matrix = vtkSmartPointer<vtkMatrix4x4>::New ();

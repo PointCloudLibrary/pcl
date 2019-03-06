@@ -195,14 +195,14 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       single_categories_pointers_to_models_.resize (single_categories.size ());
 
       int kk = 0;
-      for (auto it = single_categories.begin (); it != single_categories.end (); it++)
+      for (const auto &single_category : single_categories)
       {
         //create index and flann data
-        convertToFLANN (flann_models_, it->second, single_categories_data_[kk]);
+        convertToFLANN (flann_models_, single_category.second, single_categories_data_[kk]);
         single_categories_index_[kk] = new flann::Index<DistT> (single_categories_data_[kk], flann::LinearIndexParams ());
-        single_categories_pointers_to_models_[kk] = it->second;
+        single_categories_pointers_to_models_[kk] = single_category.second;
 
-        category_to_vectors_indices_[it->first] = kk;
+        category_to_vectors_indices_[single_category.first] = kk;
         kk++;
       }
     }
