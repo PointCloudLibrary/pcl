@@ -153,7 +153,7 @@ target_link_libraries("${EXE_NAME}" pcl_cc_tool_interface pcl_common pcl_io pcl_
 PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs} ${item_incs} ${selector_incs})
 PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}/impl" ${impl_incs})
 
-PCL_MAKE_PKGCONFIG("${EXE_NAME}" "${SUBSUBSYS_NAME}" "${SUBSYS_DESC}" "" "" "" "" "")
+PCL_MAKE_PKGCONFIG(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} DESC ${SUBSYS_DESC})
 
 
 #TOOL buildING SCRIPTS

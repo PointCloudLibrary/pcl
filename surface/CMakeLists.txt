@@ -165,7 +165,7 @@ target_link_libraries("${LIB_NAME}" pcl_common pcl_search pcl_kdtree pcl_octree 
 if(QHULL_FOUND)
   target_link_libraries("${LIB_NAME}" ${QHULL_LIBRARIES})
 endif()
-PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
+PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})

@@ -118,7 +118,7 @@ if(WITH_OPENNI)
   endif()
 endif()
 
-PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" "" "" "" "" "")
+PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSUBSYS_NAME} DESC ${SUBSUBSYS_DESC})
 
 if(QHULL_FOUND)
   add_executable(pcl_global_classification src/tools/global_classification.cpp)
