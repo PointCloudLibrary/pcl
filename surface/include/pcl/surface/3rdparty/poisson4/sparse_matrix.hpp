@@ -210,7 +210,6 @@ namespace pcl
       {
         if (count > _maxEntriesPerRow)
         {
-          fprintf (stderr, "[ERROR] Cannot set row size on contiguous matrix: %d<=%d\n", count, _maxEntriesPerRow);
           POISSON_THROW_EXCEPTION (pcl::poisson::PoissonBadArgumentException, "Attempted to set row size on contiguous matrix larger than max row size: (requested)"<< count << " > (maximum)" << _maxEntriesPerRow );
         }
         rowSizes[row] = count;

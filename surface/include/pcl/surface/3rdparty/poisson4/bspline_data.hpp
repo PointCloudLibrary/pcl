@@ -444,7 +444,6 @@ namespace pcl
     template< int Degree >
     void BSplineElements< Degree >::upSample( BSplineElements< Degree >& high ) const
     {
-      fprintf (stderr, "[ERROR] B-spline up-sampling not supported for degree %d\n", Degree);
       POISSON_THROW_EXCEPTION (pcl::poisson::PoissonBadArgumentException, "B-spline up-sampling not supported for degree " << Degree);
     }
     template<>

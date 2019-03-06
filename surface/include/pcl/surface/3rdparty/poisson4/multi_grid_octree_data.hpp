@@ -227,14 +227,9 @@ namespace pcl
               int& idx = cData[ treeNodes[i] ][c];
               if ( idx<0 )
               {
-                fprintf (stderr, "[ERROR] Found unindexed corner nodes[%d][%d] = %d (%d,%d)\n", treeNodes[i]->nodeData.nodeIndex, c, idx, minDepth, maxDepth);
-                int _d, _off[3];
-                treeNodes[i]->depthAndOffset (_d, _off);
-                printf ("(%d [%d %d %d) <-> (%d [%d %d %d])\n", minDepth, off[0], off[1], off[2], _d, _off[0], _off[1], _off[2]);
-                printf ("[%d %d]\n", spans[d].first, spans[d].second);
-
 #pragma omp critical
                 {
+                  // found unindexed corner
                   ++paralellExceptionCount;
                 }
               }
@@ -419,10 +414,9 @@ namespace pcl
               int& idx = eData[treeNodes[i]][e];
               if (idx < 0)
               {
-                fprintf (stderr, "[ERROR] Found unindexed edge %d (%d,%d)\n", idx, minDepth, maxDepth);
-
 #pragma omp critical
                 {
+                  // found unindexed edge
                   ++paralellExceptionCount;
                 }
               }
