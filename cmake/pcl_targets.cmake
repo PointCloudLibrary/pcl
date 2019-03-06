@@ -445,68 +445,43 @@ endmacro()
 # Make a pkg-config file for a library. Do not include general PCL stuff in the
 # arguments; they will be added automatically.
 # _name The library name. "pcl_" will be preprended to this.
-# _component The part of PCL that this pkg-config file belongs to.
-# _desc Description of the library.
-# _pcl_deps External dependencies to pcl libs, as a list. (will get mangled to external pkg-config name)
-# _ext_deps External dependencies, as a list.
-# _int_deps Internal dependencies, as a list.
-# _cflags Compiler flags necessary to build with the library.
-# _lib_flags Linker flags necessary to link to the library.
-macro(PCL_MAKE_PKGCONFIG _name _component _desc _pcl_deps _ext_deps _int_deps _cflags _lib_flags)
+# COMPONENT The part of PCL that this pkg-config file belongs to.
+# DESC Description of the library.
+# PCL_DEPS External dependencies to pcl libs, as a list. (will get mangled to external pkg-config name)
+# EXT_DEPS External dependencies, as a list.
+# INT_DEPS Internal dependencies, as a list.
+# CFLAGS Compiler flags necessary to build with the library.
+# LIB_FLAGS Linker flags necessary to link to the library.
+# HEADER_ONLY Ensures that no -L or l flags will be created.
+function(PCL_MAKE_PKGCONFIG _name)
+  set(options HEADER_ONLY)
+  set(oneValueArgs COMPONENT DESC CFLAGS LIB_FLAGS)
+  set(multiValueArgs PCL_DEPS INT_DEPS EXT_DEPS)
+  cmake_parse_arguments(PARSE_ARGV 1 PKGCONFIG "${options}" "${oneValueArgs}" "${multiValueArgs}")
+  
   set(PKG_NAME ${_name})
-  set(PKG_DESC ${_desc})
-  set(PKG_CFLAGS ${_cflags})
-  set(PKG_LIBFLAGS ${_lib_flags})
-  LIST_TO_STRING(_ext_deps_str "${_ext_deps}")
-  set(PKG_EXTERNAL_DEPS ${_ext_deps_str})
-  foreach(_dep ${_pcl_deps})
+  set(PKG_DESC ${PKGCONFIG_DESC})
+  set(PKG_CFLAGS ${PKGCONFIG_CFLAGS})
+  set(PKG_LIBFLAGS ${PKGCONFIG_LIB_FLAGS})
+  LIST_TO_STRING(PKG_EXTERNAL_DEPS "${PKGCONFIG_EXT_DEPS}")
+  foreach(_dep ${PKGCONFIG_PCL_DEPS})
     set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
   endforeach()
   set(PKG_INTERNAL_DEPS "")
-  foreach(_dep ${_int_deps})
+  foreach(_dep ${PKGCONFIG_INT_DEPS})
     set(PKG_INTERNAL_DEPS "${PKG_INTERNAL_DEPS} -l${_dep}")
   endforeach()
 
   set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.pc)
-  configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig.cmake.in ${_pc_file} @ONLY)
+  if(PKGCONFIG_HEADER_ONLY)
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig-headeronly.cmake.in ${_pc_file} @ONLY)
+  else()
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig.cmake.in ${_pc_file} @ONLY)
+  endif()
   install(FILES ${_pc_file}
           DESTINATION ${PKGCFG_INSTALL_DIR}
-          COMPONENT pcl_${_component})
-endmacro()
-
-###############################################################################
-# Make a pkg-config file for a header-only library.
-# Essentially a duplicate of PCL_MAKE_PKGCONFIG, but
-# ensures that no -L or l flags will be created
-# Do not include general PCL stuff in the
-# arguments; they will be added automatically.
-# _name The library name. "pcl_" will be preprended to this.
-# _component The part of PCL that this pkg-config file belongs to.
-# _desc Description of the library.
-# _pcl_deps External dependencies to pcl libs, as a list. (will get mangled to external pkg-config name)
-# _ext_deps External dependencies, as a list.
-# _int_deps Internal dependencies, as a list.
-# _cflags Compiler flags necessary to build with the library.
-macro(PCL_MAKE_PKGCONFIG_HEADER_ONLY _name _component _desc _pcl_deps _ext_deps _int_deps _cflags)
-  set(PKG_NAME ${_name})
-  set(PKG_DESC ${_desc})
-  set(PKG_CFLAGS ${_cflags})
-  #set(PKG_LIBFLAGS ${_lib_flags})
-  LIST_TO_STRING(_ext_deps_str "${_ext_deps}")
-  set(PKG_EXTERNAL_DEPS ${_ext_deps_str})
-  foreach(_dep ${_pcl_deps})
-    set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
-  endforeach()
-  set(PKG_INTERNAL_DEPS "")
-  foreach(_dep ${_int_deps})
-    set(PKG_INTERNAL_DEPS "${PKG_INTERNAL_DEPS} -l${_dep}")
-  endforeach()
-  set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.pc)
-  configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig-headeronly.cmake.in ${_pc_file} @ONLY)
-  install(FILES ${_pc_file}
-          DESTINATION ${PKGCFG_INSTALL_DIR}
-          COMPONENT pcl_${_component})
-endmacro()
+          COMPONENT pcl_${PKGCONFIG_COMPONENT})
+endfunction()
 
 ###############################################################################
 # PRIVATE
