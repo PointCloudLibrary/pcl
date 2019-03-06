@@ -473,7 +473,7 @@ function(PCL_MAKE_PKGCONFIG _name)
   endforeach()
 
   set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.pc)
-  if(${PKGCONFIG_HEADER_ONLY})
+  if(PKGCONFIG_HEADER_ONLY)
     configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig-headeronly.cmake.in ${_pc_file} @ONLY)
   else()
     configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig.cmake.in ${_pc_file} @ONLY)
