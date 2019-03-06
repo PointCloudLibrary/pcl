@@ -46,17 +46,27 @@
 template <typename Scalar> bool
 pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
 {
-  convergence_state_ = CONVERGENCE_CRITERIA_NOT_CONVERGED;
+  if (convergence_state_ != CONVERGENCE_CRITERIA_NOT_CONVERGED)
+  {
+    //If it already converged or failed before, reset.
+    iterations_similar_transforms_ = 0;
+    convergence_state_ = CONVERGENCE_CRITERIA_NOT_CONVERGED;
+  }
+  
+  bool is_similar = false;
 
   PCL_DEBUG ("[pcl::DefaultConvergenceCriteria::hasConverged] Iteration %d out of %d.\n", iterations_, max_iterations_);
   // 1. Number of iterations has reached the maximum user imposed number of iterations
   if (iterations_ >= max_iterations_)
   {
     if (failure_after_max_iter_)
-      return (false);
-    
-    convergence_state_ = CONVERGENCE_CRITERIA_ITERATIONS;
-    return (true);
+      convergence_state_ = CONVERGENCE_CRITERIA_FAILURE_AFTER_MAX_ITERATIONS;
+    else
+    {
+      iterations_similar_transforms_ = 0;
+      convergence_state_ = CONVERGENCE_CRITERIA_ITERATIONS;
+      return (true);
+    }
   }
 
   // 2. The epsilon (difference) between the previous transformation and the current estimated transformation
@@ -69,11 +79,7 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   if (cos_angle >= rotation_threshold_ && translation_sqr <= translation_threshold_)
   {
     if (iterations_similar_transforms_ < max_iterations_similar_transforms_)
-    {
-      // Increment the number of transforms that the thresholds are allowed to be similar
-      ++iterations_similar_transforms_;
-      return (false);
-    }
+      is_similar = true;
     else
     {
       iterations_similar_transforms_ = 0;
@@ -90,11 +96,7 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   if (fabs (correspondences_cur_mse_ - correspondences_prev_mse_) < mse_threshold_absolute_)
   {
     if (iterations_similar_transforms_ < max_iterations_similar_transforms_)
-    {
-      // Increment the number of transforms that the thresholds are allowed to be similar
-      ++iterations_similar_transforms_;
-      return (false);
-    }
+      is_similar = true;
     else
     {
       iterations_similar_transforms_ = 0;
@@ -107,17 +109,24 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   if (fabs (correspondences_cur_mse_ - correspondences_prev_mse_) / correspondences_prev_mse_ < mse_threshold_relative_)
   {
     if (iterations_similar_transforms_ < max_iterations_similar_transforms_)
-    {
-      // Increment the number of transforms that the thresholds are allowed to be similar
-      ++iterations_similar_transforms_;
-      return (false);
-    }
+      is_similar = true;
     else
     {
       iterations_similar_transforms_ = 0;
       convergence_state_ = CONVERGENCE_CRITERIA_REL_MSE;
       return (true);
     }
+  }
+
+  if (is_similar)
+  {
+    // Increment the number of transforms that the thresholds are allowed to be similar
+    ++iterations_similar_transforms_;
+  }
+  else
+  {
+    // When the transform becomes large, reset.
+    iterations_similar_transforms_ = 0;
   }
 
   correspondences_prev_mse_ = correspondences_cur_mse_;
