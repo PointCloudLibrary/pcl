@@ -74,7 +74,7 @@ pcl::getMeanStdDev (const std::vector<float> &values, double &mean, double &stdd
 {
   double sum = 0, sq_sum = 0;
 
-  for (const float value : values)
+  for (const float &value : values)
   {
     sum += value;
     sq_sum += value * value;
