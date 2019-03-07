@@ -428,7 +428,7 @@ namespace pcl
 
         // Find leaves corresponding to neighbors
         k_leaves.reserve (k);
-        for (const int k_index : k_indices)
+        for (const int &k_index : k_indices)
         {
           k_leaves.push_back (&leaves_[voxel_centroids_leaf_indices_[k_index]]);
         }

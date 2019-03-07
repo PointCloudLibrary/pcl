@@ -120,7 +120,7 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &in
 
   // Estimate the mean and the standard deviation of the distance vector
   double sum = 0, sq_sum = 0;
-  for (const float distance : distances)
+  for (const float &distance : distances)
   {
     sum += distance;
     sq_sum += distance * distance;

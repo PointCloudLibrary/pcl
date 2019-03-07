@@ -208,7 +208,7 @@ pcl::BoxClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& clou
   }
   else
   {
-    for (const int index : indices)
+    for (const int &index : indices)
       if (clipPoint3D (cloud_in[index]))
         clipped.push_back (index);
   }

@@ -71,7 +71,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
                       inserter (remaining_indices, remaining_indices.begin ()));
 
       // Prepare the output and copy the data
-      for (const int remaining_index : remaining_indices)
+      for (const int &remaining_index : remaining_indices)
         for (size_t j = 0; j < output.fields.size(); ++j)
           memcpy (&output.data[remaining_index * output.point_step + output.fields[j].offset],
                   &user_filter_value_, sizeof(float));

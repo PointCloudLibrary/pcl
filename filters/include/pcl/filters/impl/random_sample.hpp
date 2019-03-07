@@ -71,7 +71,7 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
     for (size_t rii = 0; rii < removed_indices_->size (); ++rii)
     {
       uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output[(*removed_indices_)[rii]]);
-      for (const unsigned long offset : offsets)
+      for (const unsigned long &offset : offsets)
       {
         memcpy (pt_data + offset, &user_filter_value, sizeof (float));
       }
