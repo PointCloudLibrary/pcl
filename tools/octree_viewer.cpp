@@ -402,7 +402,7 @@ private:
 
         // Iterate over the leafs to compute the centroid of all of them
         pcl::CentroidPoint<pcl::PointXYZ> centroid;
-        for (auto voxelCentroid : voxelCentroids)
+        for (const auto &voxelCentroid : voxelCentroids)
         {
           centroid.add (voxelCentroid);
         }

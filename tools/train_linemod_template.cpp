@@ -133,7 +133,7 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
   seg.segment (*inliers, *coefficients);  
   
   // Mask off the plane inliers
-  for (const int index : inliers->indices)
+  for (const int &index : inliers->indices)
     foreground_mask[index] = false;
 
   // Mask off any foreground points that are too high above the detected plane
@@ -262,10 +262,10 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-max_height", max_height);
 
   // Segment and create templates for each input file
-  for (int p_file_indice : p_file_indices)
+  for (const int &p_file_index : p_file_indices)
   {
     // Load input file
-    const std::string input_filename = argv[p_file_indice];
+    const std::string input_filename = argv[p_file_index];
     PointCloudXYZRGBA::Ptr cloud (new PointCloudXYZRGBA);
     if (!loadCloud (input_filename, *cloud)) 
       return (-1);

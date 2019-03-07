@@ -134,7 +134,7 @@ main (int argc, char** argv)
 
   //pcl::PointCloud<pcl::PointXYZ> cloud_all;
   pcl::PCLPointCloud2 cloud_all;
-  for (const int file_index : file_indices)
+  for (const int &file_index : file_indices)
   {
     // Load the Point Cloud
     pcl::PCLPointCloud2 cloud;

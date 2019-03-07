@@ -90,7 +90,7 @@ main (int argc, char **argv)
   pcl::registration::IncrementalRegistration<PointType> iicp;
   iicp.setRegistration (icp);
 
-  for (const int pcd_index : pcd_indices)
+  for (const int &pcd_index : pcd_indices)
   {
     CloudPtr data (new Cloud);
     if (pcl::io::loadPCDFile (argv[pcd_index], *data) == -1)

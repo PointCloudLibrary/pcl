@@ -84,7 +84,7 @@ main (int argc, char** argv)
   line_rgbd.setDetectionThreshold (detect_thresh);
 
   // Load the template LMT and PCD files
-  for (const int lmt_file_index : lmt_file_indices)
+  for (const int &lmt_file_index : lmt_file_indices)
   {
     // Load the LMT file
     std::string lmt_filename = argv[lmt_file_index];
