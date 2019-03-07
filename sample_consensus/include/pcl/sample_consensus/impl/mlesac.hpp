@@ -147,7 +147,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
 
       n_inliers_count = 0;
       // Need to compute the number of inliers for this model to adapt k
-      for (const double distance : distances)
+      for (const double &distance : distances)
         if (distance <= 2 * sigma_)
           n_inliers_count++;
 

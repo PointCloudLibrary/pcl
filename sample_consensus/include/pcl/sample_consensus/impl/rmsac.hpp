@@ -109,7 +109,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
     if (distances.empty () && k > 1.0)
       continue;
 
-    for (const double distance : distances)
+    for (const double &distance : distances)
       d_cur_penalty += std::min (distance, threshold_);
 
     // Better match ?
@@ -123,7 +123,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
 
       n_inliers_count = 0;
       // Need to compute the number of inliers for this model to adapt k
-      for (const double distance : distances)
+      for (const double &distance : distances)
         if (distance <= threshold_)
           n_inliers_count++;
 

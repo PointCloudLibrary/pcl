@@ -296,7 +296,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the plane
-    for (const int inlier : inliers)
+    for (const int &inlier : inliers)
     {
       // Calculate the distance from the point to the plane
       Eigen::Vector4f p (input_->points[inlier].x,
@@ -352,7 +352,7 @@ pcl::SampleConsensusModelPlane<PointT>::doSamplesVerifyModel (
     return (false);
   }
 
-  for (const int index : indices)
+  for (const int &index : indices)
   {
     Eigen::Vector4f pt (input_->points[index].x,
                         input_->points[index].y,

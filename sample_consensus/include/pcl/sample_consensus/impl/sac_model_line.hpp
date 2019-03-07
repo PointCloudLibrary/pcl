@@ -263,7 +263,7 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the line
-    for (const int inlier : inliers)
+    for (const int &inlier : inliers)
     {
       Eigen::Vector4f pt (input_->points[inlier].x, input_->points[inlier].y, input_->points[inlier].z, 0);
       // double k = (DOT_PROD_3D (points[i], p21) - dotA_B) / dotB_B;
@@ -321,7 +321,7 @@ pcl::SampleConsensusModelLine<PointT>::doSamplesVerifyModel (
 
   double sqr_threshold = threshold * threshold;
   // Iterate through the 3d points and calculate the distances from them to the line
-  for (const int index : indices)
+  for (const int &index : indices)
   {
     // Calculate the distance from the point to the line
     // D = ||(P2-P1) x (P1-P0)|| / ||P2-P1|| = norm (cross (p2-p1, p2-p0)) / norm(p2-p1)

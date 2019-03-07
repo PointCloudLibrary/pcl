@@ -333,7 +333,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the cylinder
-    for (const int inlier : inliers)
+    for (const int &inlier : inliers)
     {
       Eigen::Vector4f p (input_->points[inlier].x,
                          input_->points[inlier].y,
@@ -396,7 +396,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::doSamplesVerifyModel (
     return (false);
   }
 
-  for (const int index : indices)
+  for (const int &index : indices)
   {
     // Approximate the distance from the point to the cylinder as the difference between
     // dist(point,cylinder_axis) and cylinder radius

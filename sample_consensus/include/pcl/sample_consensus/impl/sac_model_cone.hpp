@@ -378,7 +378,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the cone
-    for (const int inlier : inliers)
+    for (const int &inlier : inliers)
     {
       Eigen::Vector4f pt (input_->points[inlier].x, 
                           input_->points[inlier].y, 
@@ -457,7 +457,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::doSamplesVerifyModel (
   float dirdotdir = 1.0f / axis_dir.dot (axis_dir);
 
   // Iterate through the 3d points and calculate the distances from them to the cone
-  for (const int index : indices)
+  for (const int &index : indices)
   {
     Eigen::Vector4f pt (input_->points[index].x, input_->points[index].y, input_->points[index].z, 0);
 
