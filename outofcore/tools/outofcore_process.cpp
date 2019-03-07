@@ -303,7 +303,7 @@ main (int argc, char* argv[])
   std::vector<int> file_arg_indices = parse_file_extension_argument (argc, argv, ".pcd");
 
   std::vector<boost::filesystem::path> pcd_paths;
-  for (const int file_arg_index : file_arg_indices)
+  for (const int &file_arg_index : file_arg_indices)
   {
     boost::filesystem::path pcd_path (argv[file_arg_index]);
     if (!boost::filesystem::exists (pcd_path))
