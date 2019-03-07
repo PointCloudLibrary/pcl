@@ -172,7 +172,7 @@ pcl::people::HeadBasedSubclustering<PointT>::mergeClustersCloseInFloorCoordinate
         // Copy cluster points into new cluster:
         pcl::PointIndices point_indices;
         point_indices = input_clusters[i].getIndices();
-        for(const int cluster : connected_clusters[i])
+        for(const int &cluster : connected_clusters[i])
         {
           if (!used_clusters[cluster])         // if this cluster has not been used yet
           {
