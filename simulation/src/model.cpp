@@ -23,7 +23,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel (pcl::PolygonMesh::Ptr plg
     Eigen::Vector4f tmp;
     for(const auto &polygon : plg->polygons)
     {
-      for(const unsigned int point : polygon.vertices)
+      for(const unsigned int &point : polygon.vertices)
       {
         tmp = newcloud.points[point].getVector4fMap();
         vertices.push_back (Vertex (Eigen::Vector3f (tmp (0), tmp (1), tmp (2)),
@@ -41,7 +41,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel (pcl::PolygonMesh::Ptr plg
     Eigen::Vector4f tmp;
     for(const auto &polygon : plg->polygons)
     {
-      for(const unsigned int point : polygon.vertices)
+      for(const unsigned int &point : polygon.vertices)
       {
         tmp = newcloud.points[point].getVector4fMap();
         vertices.push_back (Vertex (Eigen::Vector3f (tmp (0), tmp (1), tmp (2)),

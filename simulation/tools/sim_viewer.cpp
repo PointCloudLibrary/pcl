@@ -245,7 +245,7 @@ void capture (Eigen::Isometry3d pose_in)
 
   range_likelihood_->computeLikelihoods (reference, poses, scores);
   std::cout << "score: ";
-  for (const float score : scores)
+  for (const float &score : scores)
   {
     std::cout << " " << score;
   }

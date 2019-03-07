@@ -325,7 +325,7 @@ void display ()
   
   range_likelihood_->computeLikelihoods (reference, poses, scores);
   std::cout << "score: ";
-  for (const float score : scores)
+  for (const float &score : scores)
   {
     std::cout << " " << score;
   }
