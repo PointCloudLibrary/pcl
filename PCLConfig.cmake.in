@@ -124,7 +124,7 @@ macro(find_eigen)
   elseif(NOT EIGEN_ROOT)
     get_filename_component(EIGEN_ROOT "@EIGEN_INCLUDE_DIRS@" ABSOLUTE)
   endif()
-  find_package(Eigen)
+  find_package(Eigen 3.1)
   set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS})
 endmacro()
 
