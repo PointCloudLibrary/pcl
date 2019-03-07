@@ -270,7 +270,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
       (*child_leaf)->getPointIndices (decoded_point_vector);
 
       // Linearly iterate over all decoded (unsorted) points
-      for (const int point_index : decoded_point_vector)
+      for (const int &point_index : decoded_point_vector)
       {
 
         const PointT& candidate_point = this->getPointByIndex (point_index);
@@ -361,7 +361,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
         (*child_leaf)->getPointIndices (decoded_point_vector);
 
         // Linearly iterate over all decoded (unsorted) points
-        for (int & i : decoded_point_vector)
+        for (int &i : decoded_point_vector)
         {
           const PointT& candidate_point = this->getPointByIndex (i);
 
@@ -454,7 +454,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::a
     (**child_leaf).getPointIndices (decoded_point_vector);
 
     // Linearly iterate over all decoded (unsorted) points
-    for (int & i : decoded_point_vector)
+    for (int &i : decoded_point_vector)
     {
       const PointT& candidate_point = this->getPointByIndex (i);
 
@@ -535,7 +535,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::b
         (**child_leaf).getPointIndices (decoded_point_vector);
 
         // Linearly iterate over all decoded (unsorted) points
-        for (int & i : decoded_point_vector)
+        for (int &i : decoded_point_vector)
         {
           const PointT& candidate_point = this->getPointByIndex (i);
 

@@ -66,7 +66,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 {
   if (indices_)
   {
-    for (const int index : *indices_)
+    for (const int &index : *indices_)
     {
       assert( (index >= 0) && (index < static_cast<int> (input_->points.size ())));
       
@@ -539,7 +539,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     // add data to new branch
     OctreeKey new_index_key;
 
-    for (const int leafIndex : leafIndices)
+    for (const int &leafIndex : leafIndices)
     {
 
       const PointT& point_from_index = input_->points[leafIndex];
