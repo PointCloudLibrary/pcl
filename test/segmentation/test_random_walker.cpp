@@ -227,7 +227,7 @@ TEST_P (RandomWalkerTest, GetPotentials)
   ASSERT_EQ (g.colors.size (), p.cols ());
   ASSERT_EQ (g.colors.size (), map.size ());
 
-  for (const unsigned int color : g.colors)
+  for (const unsigned int &color : g.colors)
     for (size_t i = 0; i < g.size; ++i)
       if (g.potentials.count (color))
       {

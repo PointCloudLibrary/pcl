@@ -159,7 +159,7 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
 
   // Are they all unique?
   set<int> unique_indices;
-  for (const int nn_index : nn_indices)
+  for (const int &nn_index : nn_indices)
   {
     unique_indices.insert (nn_index);
   }

@@ -105,7 +105,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   
   //cout << k_indices.size()<<"=="<<brute_force_result.size()<<"?\n";
   
-  for (const int k_index : k_indices)
+  for (const int &k_index : k_indices)
   {
     set<int>::iterator brute_force_result_it = brute_force_result.find (k_index);
     bool ok = brute_force_result_it != brute_force_result.end ();
@@ -187,7 +187,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
   // Check if all found neighbors have distance smaller than max_dist
-  for (const int k_index : k_indices)
+  for (const int &k_index : k_indices)
   {
     const MyPoint& point = cloud.points[k_index];
     bool ok = euclideanDistance (test_point, point) <= max_dist;

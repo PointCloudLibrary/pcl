@@ -2257,7 +2257,7 @@ TEST (NormalRefinement, Filters)
   int num_nans = 0;
 
   // Loop
-  for (const int idx : idx_table)
+  for (const int &idx : idx_table)
   {
     float tmp;
 
@@ -2301,13 +2301,13 @@ TEST (NormalRefinement, Filters)
 
   // Error variance of estimated
   float err_est_var = 0.0f;
-  for (const float err : errs_est)
+  for (const float &err : errs_est)
     err_est_var = (err - err_est_mean) * (err - err_est_mean);
   err_est_var /= static_cast<float> (errs_est.size () - 1);
 
   // Error variance of refined
   float err_refined_var = 0.0f;
-  for (const float err : errs_refined)
+  for (const float &err : errs_refined)
     err_refined_var = (err - err_refined_mean) * (err - err_refined_mean);
   err_refined_var /= static_cast<float> (errs_refined.size () - 1);
 

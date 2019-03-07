@@ -164,7 +164,7 @@ TEST (PCL, Octree_Test)
     leafVectorA.pop_back ();
 
     bool bFound = false;
-    for (const int value : data)
+    for (const int &value : data)
       if (value == leafInt)
       {
         bFound = true;
@@ -183,7 +183,7 @@ TEST (PCL, Octree_Test)
     leafVectorA.pop_back ();
 
     bool bFound = false;
-    for (const int value : data)
+    for (const int &value : data)
       if (value == leafInt)
       {
         bFound = true;
@@ -339,7 +339,7 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
       Eigen::Vector3f min_pt, max_pt;
       octree.getVoxelBounds (it, min_pt, max_pt);
 
-      for (int i : tmpVector)
+      for (const int &i : tmpVector)
       {
         ASSERT_GE (cloud->points[i].x, min_pt(0));
         ASSERT_GE (cloud->points[i].y, min_pt(1));
@@ -481,7 +481,7 @@ TEST (PCL, Octree2Buf_Test)
     leafVectorA.pop_back ();
 
     bool bFound = false;
-    for (const int value : data)
+    for (const int &value : data)
       if (value == leafInt)
       {
         bFound = true;
@@ -500,7 +500,7 @@ TEST (PCL, Octree2Buf_Test)
     leafVectorA.pop_back ();
 
     bool bFound = false;
-    for (const int value : data)
+    for (const int &value : data)
       if (value == leafInt)
       {
         bFound = true;
