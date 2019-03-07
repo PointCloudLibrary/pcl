@@ -371,7 +371,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
       Tree2 t2;
       buildTree(sorted2, cloud_host_, Neck, c, t2, person_attribs_);
       //int par = 0;
-      for(const int f : t2.parts_lid)
+      for(const int &f : t2.parts_lid)
       {
         if(f == NO_CHILD)
         {

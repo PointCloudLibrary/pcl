@@ -110,7 +110,7 @@ pcl::gpu::people::OrganizedPlaneDetector::process(const PointCloud<PointTC>::Con
   // Fill in the probabilities
   for(const auto &inlier_index : inlier_indices)                           // iterate over all found planes
   {
-    for(const int index : inlier_index.indices)                            // iterate over all the indices in that plane
+    for(const int &index : inlier_index.indices)                           // iterate over all the indices in that plane
     {
       P_l_host_.points[index].probs[pcl::gpu::people::Background] = 1.f;   // set background at max
     }
