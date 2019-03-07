@@ -457,6 +457,16 @@ namespace pcl
       /** \brief The second order derivative of the transformation of a point w.r.t. the transform vector, \f$ H_E \f$ in Equation 6.20 [Magnusson 2009]. */
       Eigen::Matrix<double, 18, 6> point_hessian_;
 
+      /** \brief Will keep a copy of the Hessian \f$ H \f$ in Equation 6.13 [Magnusson 2009]. */
+      Eigen::Matrix<double, 6, 6> hessian_;
+
+    public:
+      /** \brief Return the hessian matrix */
+      Eigen::Matrix<double, 6, 6> getHessian()
+      {
+         return hessian_;
+      }
+
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 

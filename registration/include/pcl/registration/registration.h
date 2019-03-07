@@ -603,6 +603,17 @@ namespace pcl
     private:
       /** \brief The point representation used (internal). */
       PointRepresentationConstPtr point_representation_;
+      
+      
+      /** \brief Stores the distances between input pointcloud and matching points on registration */
+      std::vector<float> tf_points_distance_;
+    
+    public:
+      /** \brief returns the distances between input pointcloud and matching points on registration */
+      std::vector<float> getPointsDistance() {
+      	return tf_points_distance_;
+      }
+          
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
    };

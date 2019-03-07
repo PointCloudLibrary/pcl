@@ -175,6 +175,9 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
   // Store transformation probability.  The realtive differences within each scan registration are accurate
   // but the normalization constants need to be modified for it to be globally accurate
   trans_probability_ = score / static_cast<double> (input_->points.size ());
+
+  // get a copy of Hessian
+  hessian_ = hessian;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
