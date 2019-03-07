@@ -401,7 +401,7 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
         feature->getRotations(rotations, strengths);
         {
           //feature->getRotatedVersions(range_image, rotations, feature_list);
-          for (const float rotation : rotations)
+          for (const float &rotation : rotations)
           {
             Narf* feature2 = new Narf(*feature);  // Call copy constructor
             feature2->transformation_ = Eigen::AngleAxisf(-rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f))*feature2->transformation_;
@@ -497,7 +497,7 @@ Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths
 void 
 Narf::getRotatedVersions (const RangeImage&, const std::vector<float>& rotations, std::vector<Narf*>& features) const
 {
-  for (const float rotation : rotations)
+  for (const float &rotation : rotations)
   {
     Narf* feature = new Narf(*this);  // Call copy constructor
     feature->transformation_ = Eigen::AngleAxisf(-rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f))*feature->transformation_;

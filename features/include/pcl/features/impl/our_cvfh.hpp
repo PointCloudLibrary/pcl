@@ -169,7 +169,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurva
   size_t in, out;
   in = out = 0;
 
-  for (const int index : indices_to_use)
+  for (const int &index : indices_to_use)
   {
     if (cloud.points[index].curvature > threshold)
     {
@@ -238,7 +238,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
   float sum_w = 0.f;
 
   //for (int k = 0; k < static_cast<intgrid->points[k].getVector3fMap ();> (grid->points.size ()); k++)
-  for (const int index : indices.indices)
+  for (const int &index : indices.indices)
   {
     Eigen::Vector3f pvector = grid->points[index].getVector3fMap ();
     float d_k = (pvector).norm ();

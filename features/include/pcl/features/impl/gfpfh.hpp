@@ -208,7 +208,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeDistanceHistogram (co
 
   const float range = max_value - min_value;
   const int max_bin = descriptorSize () - 1;
-  for (const float distance : distances)
+  for (const float &distance : distances)
   {
     const float raw_bin = static_cast<float> (descriptorSize ()) * (distance - min_value) / range;
     int bin = std::min (max_bin, static_cast<int> (floor (raw_bin)));
@@ -252,7 +252,7 @@ template <typename PointInT, typename PointNT, typename PointOutT> boost::uint32
 pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std::vector<int>& indices)
 {
   std::vector<uint32_t> counts (getNumberOfClasses () + 1, 0);
-  for (const int nn_index : indices)
+  for (const int &nn_index : indices)
   {
     uint32_t label = labels_->points[nn_index].label;
     counts[label] += 1;

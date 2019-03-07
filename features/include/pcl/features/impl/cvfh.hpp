@@ -172,7 +172,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurvatur
   size_t in, out;
   in = out = 0;
 
-  for (const int index : indices_to_use)
+  for (const int &index : indices_to_use)
   {
     if (cloud.points[index].curvature > threshold)
     {

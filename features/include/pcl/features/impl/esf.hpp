@@ -270,31 +270,31 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
   float weights[10] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 1.0f,  1.0f, 2.0f, 2.0f, 2.0f};
 
   hist.reserve (binsize * 10);
-  for (const float i : h_a3_in)
+  for (const float &i : h_a3_in)
     hist.push_back (i * weights[0]);
-  for (const float i : h_a3_out)
+  for (const float &i : h_a3_out)
     hist.push_back (i * weights[1]);
-  for (const float i : h_a3_mix)
+  for (const float &i : h_a3_mix)
     hist.push_back (i * weights[2]);
 
-  for (const float i : h_d3_in)
+  for (const float &i : h_d3_in)
     hist.push_back (i * weights[3]);
-  for (const float i : h_d3_out)
+  for (const float &i : h_d3_out)
     hist.push_back (i * weights[4]);
-  for (const float i : h_d3_mix)
+  for (const float &i : h_d3_mix)
     hist.push_back (i * weights[5]);
 
-  for (const float i : h_in)
+  for (const float &i : h_in)
     hist.push_back (i*0.5f * weights[6]);
-  for (const float i : h_out)
+  for (const float &i : h_out)
     hist.push_back (i * weights[7]);
-  for (const float i : h_mix)
+  for (const float &i : h_mix)
     hist.push_back (i * weights[8]);
-  for (const float i : h_mix_ratio)
+  for (const float &i : h_mix_ratio)
     hist.push_back (i*0.5f * weights[9]);
 
   float sm = 0;
-  for (const float i : hist)
+  for (const float &i : hist)
     sm += i;
 
   for (float &i : hist)

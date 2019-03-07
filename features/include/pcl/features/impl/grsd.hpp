@@ -102,7 +102,7 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   {
     int source_type = types[idx];
     std::vector<int> neighbors = grid.getNeighborCentroidIndices (cloud_downsampled->points[idx], relative_coordinates_all_);
-    for (const int neighbor : neighbors)
+    for (const int &neighbor : neighbors)
     {
       int neighbor_type;
       if (neighbor == -1) // empty

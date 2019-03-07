@@ -133,7 +133,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
       // Copy into the histogram
       h_index = 0;
       h_p     = 1;
-      for (const int d : f_index_)
+      for (const int &d : f_index_)
       {
         h_index += h_p * d;
         h_p     *= nr_split;

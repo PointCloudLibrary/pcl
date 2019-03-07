@@ -134,7 +134,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
     hist_incr_size_component = 0.0;
 
   // Iterate over all the points in the neighborhood
-  for (const int index : indices)
+  for (const int &index : indices)
   {
     // Compute the pair P to NNi
     if (!computePairFeatures (centroid_p, centroid_n, cloud.points[index].getVector4fMap (),

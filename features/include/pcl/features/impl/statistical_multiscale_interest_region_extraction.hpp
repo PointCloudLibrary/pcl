@@ -212,7 +212,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema (std:
       std::vector<int> nn_indices;
       geodesicFixedRadiusSearch (point_i, scale_values_[scale_i], nn_indices);
       bool is_max_point = true, is_min_point = true;
-      for (const int nn_index : nn_indices)
+      for (const int &nn_index : nn_indices)
         if (F_scales_[scale_i][point_i] < F_scales_[scale_i][nn_index])
           is_max_point = false;
         else

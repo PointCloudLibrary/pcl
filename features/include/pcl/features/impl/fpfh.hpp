@@ -73,7 +73,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (
   float hist_incr = 100.0f / static_cast<float>(indices.size () - 1);
 
   // Iterate over all the points in the neighborhood
-  for (const int index : indices)
+  for (const int &index : indices)
   {
     // Avoid unnecessary returns
     if (p_idx == index)
