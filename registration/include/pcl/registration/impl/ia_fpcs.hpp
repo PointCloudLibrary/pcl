@@ -359,7 +359,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
     const PointTarget *pt2 = &(target_->points[base_indices[1]]);
     const PointTarget *pt3 = &(target_->points[base_indices[2]]);
 
-    for (const int target_index : *target_indices_)
+    for (const int &target_index : *target_indices_)
     {
       const PointTarget *pt4 = &(target_->points[target_index]);
 
@@ -670,7 +670,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
     const PointTarget *pt2 = &(input_->points[pair.index_query]);
 
     // calculate intermediate points using both ratios from base (r1,r2)
-    for (const float r : ratio)
+    for (const float &r : ratio)
     {
       PointTarget pt_e;
       pt_e.x = pt1->x + r * (pt2->x - pt1->x);
@@ -679,7 +679,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
 
       // search for corresponding intermediate points
       tree_e->radiusSearch (pt_e, coincidation_limit_, ids, dists_sqr);
-      for (const int id : ids)
+      for (const int &id : ids)
       {
         std::vector <int> match_indices (4);
 
@@ -787,7 +787,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
     float best_diff_sqr = FLT_MAX;
     int best_index = -1;
 
-    for (const int match_index : copy)
+    for (const int &match_index : copy)
     {
       // calculate difference of distances to centre point
       float dist_sqr_2 = pcl::squaredEuclideanDistance (input_->points[match_index], centre_pt_match);

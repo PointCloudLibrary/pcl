@@ -105,7 +105,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
                                      search_method_->getModelDiameter () /2,
                                      indices,
                                      distances);
-    for(const size_t scene_point_index : indices)
+    for(const size_t &scene_point_index : indices)
 //    for(size_t i = 0; i < target_->points.size (); ++i)
     {
       //size_t scene_point_index = i;

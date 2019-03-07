@@ -162,7 +162,7 @@ pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::computeHistogra
   const float idx_per_val = static_cast<float> (bins) / (upper - lower);
   
   // Accumulate
-  for (const float value : data)
+  for (const float &value : data)
      ++result[ std::min (last_idx, int (value*idx_per_val)) ];
   
   return (result);

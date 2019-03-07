@@ -124,7 +124,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
        if (save_inliers_)
        {
          inlier_indices_.reserve (inliers.size ());
-         for (const int inlier : inliers)
+         for (const int &inlier : inliers)
            inlier_indices_.push_back (index_to_correspondence[inlier]);
        }
 

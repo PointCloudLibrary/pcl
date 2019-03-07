@@ -93,7 +93,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::select
 
     // Check to see if the sample is 1) unique and 2) far away from the other samples
     bool valid_sample = true;
-    for (const int sample_idx : sample_indices)
+    for (const int &sample_idx : sample_indices)
     {
       float distance_between_samples = euclideanDistance (cloud.points[sample_index], cloud.points[sample_idx]);
 
