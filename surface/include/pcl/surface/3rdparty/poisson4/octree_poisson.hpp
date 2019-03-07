@@ -96,7 +96,6 @@ namespace pcl
         children=new OctNode[Cube::CORNERS];
       }
       if(!children){
-        fprintf(stderr,"Failed to initialize children in OctNode::initChildren\n");
         POISSON_THROW_EXCEPTION (pcl::poisson::PoissonBadInitException, "Failed to initialize OctNode children.");
       }
       int d,off[3];
@@ -1196,7 +1195,6 @@ namespace pcl
 
           if( !temp.neighbors[1][1][1] || !temp.neighbors[1][1][1]->children )
           {
-            fprintf( stderr , "[ERROR] Couldn't find node at appropriate depth\n" );
             POISSON_THROW_EXCEPTION (pcl::poisson::PoissonBadArgumentException, "Couldn't find node at appropriate depth");
           }
           for( i=0 ; i<2 ; i++ ) for( j=0 ; j<2 ; j++ ) for( k=0 ; k<2 ; k++ )
@@ -1551,7 +1549,6 @@ namespace pcl
       int d=node->depth();
       if (d < minDepth)
       {
-        fprintf (stderr, "[ERROR] Node depth lower than min-depth: %d < %d\n", d, minDepth);
         POISSON_THROW_EXCEPTION (pcl::poisson::PoissonBadArgumentException, "Node depth lower than min-depth: (actual)" << d << " < (minimum)" << minDepth);
       }
       if( node!=neighbors[d].neighbors[1][1][1] )

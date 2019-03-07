@@ -70,8 +70,8 @@ namespace pcl
     {
       public:
         PoissonException (const std::string& error_description,
-                      const char* file_name = NULL,
-                      const char* function_name = NULL,
+                      const char* file_name = nullptr,
+                      const char* function_name = nullptr,
                       unsigned line_number = 0)
           : std::runtime_error (createDetailedMessage (error_description,
                                                        file_name,
@@ -90,14 +90,14 @@ namespace pcl
                                unsigned line_number)
         {
           std::ostringstream sstream;
-          if (function_name != NULL)
-            sstream << function_name << " ";
+          if (function_name)
+            sstream << function_name << ' ';
           
-          if (file_name != NULL)
+          if (file_name)
           {
-            sstream << "in " << file_name << " ";
-            if (line_number != 0)
-              sstream << "@ " << line_number << " ";
+            sstream << "in " << file_name << ' ';
+            if (line_number)
+              sstream << "@ " << line_number << ' ';
           }
           sstream << ": " << error_description;
           
@@ -116,8 +116,8 @@ namespace pcl
     {
     public:
       PoissonBadArgumentException (const std::string& error_description,
-        const char* file_name = NULL,
-        const char* function_name = NULL,
+        const char* file_name = nullptr,
+        const char* function_name = nullptr,
         unsigned line_number = 0)
         : pcl::poisson::PoissonException (error_description, file_name, function_name, line_number) {}
     };
@@ -129,8 +129,8 @@ namespace pcl
     {
     public:
       PoissonOpenMPException (const std::string& error_description,
-        const char* file_name = NULL,
-        const char* function_name = NULL,
+        const char* file_name = nullptr,
+        const char* function_name = nullptr,
         unsigned line_number = 0)
         : pcl::poisson::PoissonException (error_description, file_name, function_name, line_number) {}
     };
@@ -142,8 +142,8 @@ namespace pcl
     {
     public:
       PoissonBadInitException (const std::string& error_description,
-        const char* file_name = NULL,
-        const char* function_name = NULL,
+        const char* file_name = nullptr,
+        const char* function_name = nullptr,
         unsigned line_number = 0)
         : pcl::poisson::PoissonException (error_description, file_name, function_name, line_number) {}
     };

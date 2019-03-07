@@ -213,7 +213,7 @@ namespace pcl
         offsets[t + 1] = offsets[t] + count[t];
       }
 
-      int paralellExceptionCount = 0;
+      unsigned int paralellExceptionCount = 0;
 #pragma omp parallel for num_threads( threads )
       for (int t = 0; t < threads; t++)
       {
@@ -399,11 +399,10 @@ namespace pcl
         offsets[t + 1] = offsets[t] + count[t];
       }
 
-      int paralellExceptionCount = 0;
+      unsigned int paralellExceptionCount = 0;
 #pragma omp parallel for num_threads( threads )
       for (int t = 0; t < threads; t++)
       {
-
         for (int d = minDepth; d <= maxDepth; d++)
         {
           int start = spans[d].first, end = spans[d].second, width = end - start;
