@@ -161,7 +161,7 @@ pcl::GrabCut<PointT>::setBackgroundPointsIndices (const PointIndicesConstPtr &in
 
   std::fill (trimap_.begin (), trimap_.end (), TrimapBackground);
   std::fill (hard_segmentation_.begin (), hard_segmentation_.end (), SegmentationBackground);
-  for (const int index : indices->indices)
+  for (const int &index : indices->indices)
   {
     trimap_[index] = TrimapUnknown;
     hard_segmentation_[index] = SegmentationForeground;
@@ -245,16 +245,16 @@ template <typename PointT> void
 pcl::GrabCut<PointT>::setTrimap (const PointIndicesConstPtr &indices, segmentation::grabcut::TrimapValue t)
 {
   using namespace pcl::segmentation::grabcut;
-  for (const int index : indices->indices)
+  for (const int &index : indices->indices)
     trimap_[index] = t;
 
   // Immediately set the hard segmentation as well so that the display will update.
   if (t == TrimapForeground)
-    for (const int index : indices->indices)
+    for (const int &index : indices->indices)
       hard_segmentation_[index] = SegmentationForeground;
   else
     if (t == TrimapBackground)
-      for (const int index : indices->indices)
+      for (const int &index : indices->indices)
         hard_segmentation_[index] = SegmentationBackground;
 }
 

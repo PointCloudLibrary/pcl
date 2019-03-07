@@ -150,7 +150,7 @@ pcl::UnaryClassifier<PointT>::findClusters (typename pcl::PointCloud<PointT>::Pt
 
       // check if label exist
       bool exist = false;
-      for (const int cluster_number : cluster_numbers)
+      for (const int &cluster_number : cluster_numbers)
       {
         if (static_cast<uint32_t> (cluster_number) == label)
         {
@@ -378,11 +378,11 @@ pcl::UnaryClassifier<PointT>::trainWithLabel (
   std::vector<int> cluster_numbers;
   findClusters (input_cloud_, cluster_numbers);
   std::cout << "cluster numbers: ";
-  for (const int cluster_number : cluster_numbers)
+  for (const int &cluster_number : cluster_numbers)
     std::cout << cluster_number << " ";
   std::cout << std::endl;
 
-  for (const int cluster_number : cluster_numbers)
+  for (const int &cluster_number : cluster_numbers)
   {    
     // extract all points with the same label number
     pcl::PointCloud<pcl::PointXYZ>::Ptr label_cloud (new pcl::PointCloud<pcl::PointXYZ>);

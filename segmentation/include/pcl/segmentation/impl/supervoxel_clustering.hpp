@@ -418,7 +418,7 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (std::vector<int
   // This is 1/20th of the number of voxels which fit in a planar slice through search volume
   // Area of planar slice / area of voxel side. (Note: This is smaller than the value mentioned in the original paper)
   float min_points = 0.05f * (search_radius)*(search_radius) * 3.1415926536f  / (resolution_*resolution_);
-  for (const int index_orig : seed_indices_orig)
+  for (const int &index_orig : seed_indices_orig)
   {
     int num = voxel_kdtree_->radiusSearch (index_orig, search_radius , neighbors, sqr_distances);
     int min_index = index_orig;
@@ -512,7 +512,7 @@ pcl::SupervoxelClustering<PointT>::getSupervoxelAdjacencyList (VoxelAdjacencyLis
     uint32_t label = sv_itr->getLabel ();
     std::set<uint32_t> neighbor_labels;
     sv_itr->getNeighborLabels (neighbor_labels);
-    for (const unsigned int neighbor_label : neighbor_labels)
+    for (const unsigned int &neighbor_label : neighbor_labels)
     {
       bool edge_added;
       EdgeID edge;
@@ -554,7 +554,7 @@ pcl::SupervoxelClustering<PointT>::getSupervoxelAdjacency (std::multimap<uint32_
     uint32_t label = sv_itr->getLabel ();
     std::set<uint32_t> neighbor_labels;
     sv_itr->getNeighborLabels (neighbor_labels);
-    for (const unsigned int neighbor_label : neighbor_labels)
+    for (const unsigned int &neighbor_label : neighbor_labels)
       label_adjacency.insert (std::pair<uint32_t,uint32_t> (label, neighbor_label) );
     //if (neighbor_labels.size () == 0)
     //  std::cout << label<<"(size="<<sv_itr->size () << ") has "<<neighbor_labels.size () << "\n";

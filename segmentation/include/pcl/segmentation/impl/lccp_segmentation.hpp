@@ -236,7 +236,7 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
     }
 
     // Erase filtered Segments from segment map
-    for (const unsigned int filteredSegLabel : filteredSegLabels)
+    for (const unsigned int &filteredSegLabel : filteredSegLabels)
     {
       seg_label_to_sv_list_map_.erase (filteredSegLabel);
     }
