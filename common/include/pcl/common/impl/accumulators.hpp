@@ -212,11 +212,11 @@ namespace pcl
       get (PointT& t, size_t) const
       {
         size_t max = 0;
-        for (auto itr = labels.cbegin (); itr != labels.cend (); ++itr)
-          if (itr->second > max)
+        for (const auto &label : labels)
+          if (label.second > max)
           {
-            max = itr->second;
-            t.label = itr->first;
+            max = label.second;
+            t.label = label.first;
           }
       }
 

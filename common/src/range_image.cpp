@@ -345,9 +345,9 @@ RangeImage::getIntegralImage (float*& integral_image, int*& valid_points_num_ima
 void 
 RangeImage::setUnseenToMaxRange ()
 {
-  for (size_t i=0; i < points.size (); ++i)
-    if (std::isinf (points[i].range))
-      points[i].range = std::numeric_limits<float>::infinity ();
+  for (auto &point : points)
+    if (std::isinf (point.range))
+      point.range = std::numeric_limits<float>::infinity ();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -443,9 +443,9 @@ RangeImage::getMinMaxRanges (float& min_range, float& max_range) const
 {
   min_range = std::numeric_limits<float>::infinity ();
   max_range = -std::numeric_limits<float>::infinity ();
-  for (size_t i=0; i < points.size (); ++i)
+  for (const auto &point : points)
   {
-    float range = points[i].range;
+    float range = point.range;
     if (!std::isfinite (range))
       continue;
     min_range = (std::min) (min_range, range);

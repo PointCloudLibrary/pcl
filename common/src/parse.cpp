@@ -156,10 +156,8 @@ pcl::console::parse_file_extension_argument (int argc, const char * const * argv
   for (int i = 1; i < argc; ++i)
   {
     std::string fname = std::string (argv[i]);
-    for (size_t j = 0; j < extension.size (); ++j)
+    for (auto ext : extension)
     {
-      std::string ext = extension[j];
-
       // Needs to be at least 4: .ext
       if (fname.size () <= 4)
         continue;

@@ -358,13 +358,13 @@ pcl::CloudIterator<PointT>::CloudIterator (
   indices.reserve (corrs.size ());
   if (source)
   {
-    for (typename Correspondences::const_iterator indexIt = corrs.begin (); indexIt != corrs.end (); ++indexIt)
-      indices.push_back (indexIt->index_query);
+    for (const auto &corr : corrs)
+      indices.push_back (corr.index_query);
   }
   else
   {
-    for (typename Correspondences::const_iterator indexIt = corrs.begin (); indexIt != corrs.end (); ++indexIt)
-      indices.push_back (indexIt->index_match);
+    for (const auto &corr : corrs)
+      indices.push_back (corr.index_match);
   }
   iterator_ = new IteratorIdx<PointT> (cloud, indices);
 }
@@ -472,13 +472,13 @@ pcl::ConstCloudIterator<PointT>::ConstCloudIterator (
   indices.reserve (corrs.size ());
   if (source)
   {
-    for (typename Correspondences::const_iterator indexIt = corrs.begin (); indexIt != corrs.end (); ++indexIt)
-      indices.push_back (indexIt->index_query);
+    for (const auto &corr : corrs)
+      indices.push_back (corr.index_query);
   }
   else
   {
-    for (typename Correspondences::const_iterator indexIt = corrs.begin (); indexIt != corrs.end (); ++indexIt)
-      indices.push_back (indexIt->index_match);
+    for (const auto &corr : corrs)
+      indices.push_back (corr.index_match);
   }
   iterator_ = new typename pcl::ConstCloudIterator<PointT>::ConstIteratorIdx (cloud, indices);
 }
