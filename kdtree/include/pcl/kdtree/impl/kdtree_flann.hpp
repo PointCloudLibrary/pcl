@@ -279,7 +279,7 @@ pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud, co
   // But we can not guarantee that => identity_mapping_ = false
   identity_mapping_ = false;
   
-  for (const int index : indices)
+  for (const int &index : indices)
   {
     // Check if the point is invalid
     if (!point_representation_->isValid (cloud.points[index]))
