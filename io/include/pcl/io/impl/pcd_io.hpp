@@ -678,7 +678,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
   char *out = &map[0] + data_idx;
   // Copy the data
-  for (int index : indices)
+  for (const int &index : indices)
   {
     int nrj = 0;
     for (const auto &field : fields)
@@ -762,7 +762,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
   stream.imbue (std::locale::classic ());
 
   // Iterate through the points
-  for (const int index : indices)
+  for (const int &index : indices)
   {
     for (size_t d = 0; d < fields.size (); ++d)
     {

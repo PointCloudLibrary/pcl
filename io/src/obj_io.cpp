@@ -772,9 +772,9 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
       {
         mesh.tex_polygons.emplace_back();
         mesh.tex_materials.emplace_back();
-        for (auto &companion : companions_)
+        for (const auto &companion : companions_)
         {
-          std::vector<pcl::TexMaterial>::const_iterator mat_it = companion.getMaterial (st[1]);
+          auto mat_it = companion.getMaterial (st[1]);
           if (mat_it != companion.materials_.end ())
           {
             mesh.tex_materials.back () = *mat_it;
