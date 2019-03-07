@@ -50,8 +50,8 @@ template <typename PointT, typename Scalar> inline unsigned int
 pcl::compute3DCentroid (ConstCloudIterator<PointT> &cloud_iterator,
                         Eigen::Matrix<Scalar, 4, 1> &centroid)
 {
-  // Initialize to 0
-  centroid.setZero ();
+  // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
+  Eigen::Matrix<Scalar, 1, 3, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 3, Eigen::RowMajor>::Zero();
   
   unsigned cp = 0;
 
@@ -62,15 +62,20 @@ pcl::compute3DCentroid (ConstCloudIterator<PointT> &cloud_iterator,
     // Check if the point is invalid
     if (pcl::isFinite (*cloud_iterator))
     {
-      centroid[0] += cloud_iterator->x;
-      centroid[1] += cloud_iterator->y;
-      centroid[2] += cloud_iterator->z;
+      accu[0] += cloud_iterator->x;
+      accu[1] += cloud_iterator->y;
+      accu[2] += cloud_iterator->z;
       ++cp;
     }
     ++cloud_iterator;
   }
-  centroid /= static_cast<Scalar> (cp);
-  centroid[3] = 1;
+  if (cp != 0)
+  {
+    centroid[0] = accu[0] / static_cast<Scalar> (cp);
+    centroid[1] = accu[1] / static_cast<Scalar> (cp);
+    centroid[2] = accu[2] / static_cast<Scalar> (cp);
+    centroid[3] = 1;
+  }
   return (cp);
 }
 
@@ -82,43 +87,46 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
   if (cloud.empty ())
     return (0);
 
-  // Initialize to 0
-  centroid.setZero ();
+  // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
+  Eigen::Matrix<Scalar, 1, 3, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 3, Eigen::RowMajor>::Zero();
+  size_t point_count = cloud.size();
+  unsigned cp = 0;
+
   // For each point in the cloud
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (size_t i = 0; i < cloud.size (); ++i)
+    for (size_t i = 0; i < point_count; ++i)
     {
-      centroid[0] += cloud[i].x;
-      centroid[1] += cloud[i].y;
-      centroid[2] += cloud[i].z;
+      accu[0] += cloud[i].x;
+      accu[1] += cloud[i].y;
+      accu[2] += cloud[i].z;
     }
-    centroid /= static_cast<Scalar> (cloud.size ());
-    centroid[3] = 1;
-
-    return (static_cast<unsigned int> (cloud.size ()));
+    cp = static_cast<unsigned int>(point_count);
   }
   // NaN or Inf values could exist => check for them
   else
   {
-    unsigned cp = 0;
-    for (size_t i = 0; i < cloud.size (); ++i)
+    for (size_t i = 0; i < point_count; ++i)
     {
       // Check if the point is invalid
       if (!isFinite (cloud [i]))
         continue;
 
-      centroid[0] += cloud[i].x;
-      centroid[1] += cloud[i].y;
-      centroid[2] += cloud[i].z;
+      accu[0] += cloud[i].x;
+      accu[1] += cloud[i].y;
+      accu[2] += cloud[i].z;
       ++cp;
     }
-    centroid /= static_cast<Scalar> (cp);
-    centroid[3] = 1;
-
-    return (cp);
   }
+  if (cp != 0)
+  {
+    centroid[0] = accu[0] / static_cast<Scalar> (cp);
+    centroid[1] = accu[1] / static_cast<Scalar> (cp);
+    centroid[2] = accu[2] / static_cast<Scalar> (cp);
+    centroid[3] = 1;
+  }
+  return (cp);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -130,38 +138,43 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
   if (indices.empty ())
     return (0);
 
-  // Initialize to 0
-  centroid.setZero ();
+  // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
+  Eigen::Matrix<Scalar, 1, 3, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 3, Eigen::RowMajor>::Zero();
+  size_t point_count = cloud.size();
+  unsigned cp = 0;
+
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (size_t i = 0; i < indices.size (); ++i)
+    for (size_t i = 0; i < point_count; ++i)
     {
-      centroid[0] += cloud[indices[i]].x;
-      centroid[1] += cloud[indices[i]].y;
-      centroid[2] += cloud[indices[i]].z;
+      accu[0] += cloud[indices[i]].x;
+      accu[1] += cloud[indices[i]].y;
+      accu[2] += cloud[indices[i]].z;
     }
-    centroid /= static_cast<Scalar> (indices.size ());
-    centroid[3] = 1;
-    return (static_cast<unsigned int> (indices.size ()));
+    cp = static_cast<unsigned int> (point_count);
   }
   // NaN or Inf values could exist => check for them
   else
   {
-    unsigned cp = 0;
-    for (size_t i = 0; i < indices.size (); ++i)
+    for (size_t i = 0; i < point_count; ++i)
     {
       // Check if the point is invalid
       if (!isFinite (cloud [indices[i]]))
         continue;
 
-      centroid[0] += cloud[indices[i]].x;
-      centroid[1] += cloud[indices[i]].y;
-      centroid[2] += cloud[indices[i]].z;
+      accu[0] += cloud[indices[i]].x;
+      accu[1] += cloud[indices[i]].y;
+      accu[2] += cloud[indices[i]].z;
       ++cp;
     }
-    centroid /= static_cast<Scalar> (cp);
-    centroid[3] = 1;
+    if (cp != 0)
+    {
+      centroid[0] = accu[0] / static_cast<Scalar> (cp);
+      centroid[1] = accu[1] / static_cast<Scalar> (cp);
+      centroid[2] = accu[2] / static_cast<Scalar> (cp);
+      centroid[3] = 1;
+    }
     return (cp);
   }
 }
@@ -184,14 +197,14 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   if (cloud.empty ())
     return (0);
 
-  // Initialize to 0
-  covariance_matrix.setZero ();
+  // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
+  Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor>::Zero();
+  size_t point_count = cloud.size();
+  unsigned cp = 0;
 
-  unsigned point_count;
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    point_count = static_cast<unsigned> (cloud.size ());
     // For each point in the cloud
     for (size_t i = 0; i < point_count; ++i)
     {
@@ -200,23 +213,22 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       pt[1] = cloud[i].y - centroid[1];
       pt[2] = cloud[i].z - centroid[2];
 
-      covariance_matrix (1, 1) += pt.y () * pt.y ();
-      covariance_matrix (1, 2) += pt.y () * pt.z ();
-
-      covariance_matrix (2, 2) += pt.z () * pt.z ();
+      accu[4] += pt.y() * pt.y();
+      accu[5] += t.y() * pt.z();
+      accu[8] += pt.z() * pt.z();
 
       pt *= pt.x ();
-      covariance_matrix (0, 0) += pt.x ();
-      covariance_matrix (0, 1) += pt.y ();
-      covariance_matrix (0, 2) += pt.z ();
+      accu[0] += pt.x();
+      accu[1] += pt.y();
+      accu[2] += pt.z();
     }
+    cp = static_cast<unsigned> (point_count);
   }
   // NaN or Inf values could exist => check for them
   else
   {
-    point_count = 0;
     // For each point in the cloud
-    for (size_t i = 0; i < cloud.size (); ++i)
+    for (size_t i = 0; i < point_count; ++i)
     {
       // Check if the point is invalid
       if (!isFinite (cloud [i]))
@@ -227,23 +239,31 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       pt[1] = cloud[i].y - centroid[1];
       pt[2] = cloud[i].z - centroid[2];
 
-      covariance_matrix (1, 1) += pt.y () * pt.y ();
-      covariance_matrix (1, 2) += pt.y () * pt.z ();
+      accu[4] += pt.y() * pt.y();
+      accu[5] += t.y() * pt.z();
+      accu[8] += pt.z() * pt.z();
 
-      covariance_matrix (2, 2) += pt.z () * pt.z ();
-
-      pt *= pt.x ();
-      covariance_matrix (0, 0) += pt.x ();
-      covariance_matrix (0, 1) += pt.y ();
-      covariance_matrix (0, 2) += pt.z ();
-      ++point_count;
+      pt *= pt.x();
+      accu[0] += pt.x();
+      accu[1] += pt.y();
+      accu[2] += pt.z();
+      ++cp;
     }
   }
-  covariance_matrix (1, 0) = covariance_matrix (0, 1);
-  covariance_matrix (2, 0) = covariance_matrix (0, 2);
-  covariance_matrix (2, 1) = covariance_matrix (1, 2);
+  if (cp != 0)
+  {
+    covariance_matrix(1, 1) = accu[4];
+    covariance_matrix(1, 2) = accu[5];
+    covariance_matrix(2, 2) = accu[8];
+    covariance_matrix(0, 0) = accu[0];
+    covariance_matrix(0, 1) = accu[1];
+    covariance_matrix(0, 2) = accu[2];
+    covariance_matrix(1, 0) = covariance_matrix(0, 1);
+    covariance_matrix(2, 0) = covariance_matrix(0, 2);
+    covariance_matrix(2, 1) = covariance_matrix(1, 2);
+  }
 
-  return (point_count);
+  return (cp);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,14 +288,14 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   if (indices.empty ())
     return (0);
 
-  // Initialize to 0
-  covariance_matrix.setZero ();
+  // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
+  Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor>::Zero();
+  size_t point_count = cloud.size();
+  unsigned cp = 0;
 
-  size_t point_count;
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    point_count = indices.size ();
     // For each point in the cloud
     for (size_t i = 0; i < point_count; ++i)
     {
@@ -284,23 +304,22 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       pt[1] = cloud[indices[i]].y - centroid[1];
       pt[2] = cloud[indices[i]].z - centroid[2];
 
-      covariance_matrix (1, 1) += pt.y () * pt.y ();
-      covariance_matrix (1, 2) += pt.y () * pt.z ();
+      accu[4] += pt.y() * pt.y();
+      accu[5] += t.y() * pt.z();
+      accu[8] += pt.z() * pt.z();
 
-      covariance_matrix (2, 2) += pt.z () * pt.z ();
-
-      pt *= pt.x ();
-      covariance_matrix (0, 0) += pt.x ();
-      covariance_matrix (0, 1) += pt.y ();
-      covariance_matrix (0, 2) += pt.z ();
+      pt *= pt.x();
+      accu[0] += pt.x();
+      accu[1] += pt.y();
+      accu[2] += pt.z();
     }
+    cp = static_cast<unsigned>(point_count);
   }
   // NaN or Inf values could exist => check for them
   else
   {
-    point_count = 0;
     // For each point in the cloud
-    for (size_t i = 0; i < indices.size (); ++i)
+    for (size_t i = 0; i < point_count; ++i)
     {
       // Check if the point is invalid
       if (!isFinite (cloud[indices[i]]))
@@ -311,22 +330,30 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       pt[1] = cloud[indices[i]].y - centroid[1];
       pt[2] = cloud[indices[i]].z - centroid[2];
 
-      covariance_matrix (1, 1) += pt.y () * pt.y ();
-      covariance_matrix (1, 2) += pt.y () * pt.z ();
+      accu[4] += pt.y() * pt.y();
+      accu[5] += t.y() * pt.z();
+      accu[8] += pt.z() * pt.z();
 
-      covariance_matrix (2, 2) += pt.z () * pt.z ();
-
-      pt *= pt.x ();
-      covariance_matrix (0, 0) += pt.x ();
-      covariance_matrix (0, 1) += pt.y ();
-      covariance_matrix (0, 2) += pt.z ();
-      ++point_count;
+      pt *= pt.x();
+      accu[0] += pt.x();
+      accu[1] += pt.y();
+      accu[2] += pt.z();
+      ++cp;
     }
   }
-  covariance_matrix (1, 0) = covariance_matrix (0, 1);
-  covariance_matrix (2, 0) = covariance_matrix (0, 2);
-  covariance_matrix (2, 1) = covariance_matrix (1, 2);
-  return (static_cast<unsigned int> (point_count));
+  if (cp != 0)
+  {
+    covariance_matrix(1, 1) = accu[4];
+    covariance_matrix(1, 2) = accu[5];
+    covariance_matrix(2, 2) = accu[8];
+    covariance_matrix(0, 0) = accu[0];
+    covariance_matrix(0, 1) = accu[1];
+    covariance_matrix(0, 2) = accu[2];
+    covariance_matrix(1, 0) = covariance_matrix(0, 1);
+    covariance_matrix(2, 0) = covariance_matrix(0, 2);
+    covariance_matrix(2, 1) = covariance_matrix(1, 2);
+  }
+  return (cp);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -530,10 +557,11 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       ++point_count;
     }
   }
-  accu /= static_cast<Scalar> (point_count);
+  
   if (point_count != 0)
   {
     //centroid.head<3> () = accu.tail<3> ();    -- does not compile with Clang 3.0
+    accu /= static_cast<Scalar> (point_count);
     centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
     centroid[3] = 1;
     covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];
@@ -597,21 +625,24 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
     }
   }
 
-  accu /= static_cast<Scalar> (point_count);
-  //Eigen::Vector3f vec = accu.tail<3> ();
-  //centroid.head<3> () = vec;//= accu.tail<3> ();
-  //centroid.head<3> () = accu.tail<3> ();    -- does not compile with Clang 3.0
-  centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
-  centroid[3] = 1;
-  covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];
-  covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];
-  covariance_matrix.coeffRef (2) = accu [2] - accu [6] * accu [8];
-  covariance_matrix.coeffRef (4) = accu [3] - accu [7] * accu [7];
-  covariance_matrix.coeffRef (5) = accu [4] - accu [7] * accu [8];
-  covariance_matrix.coeffRef (8) = accu [5] - accu [8] * accu [8];
-  covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);
-  covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);
-  covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);
+  if (point_count != 0)
+  {
+    accu /= static_cast<Scalar> (point_count);
+    //Eigen::Vector3f vec = accu.tail<3> ();
+    //centroid.head<3> () = vec;//= accu.tail<3> ();
+    //centroid.head<3> () = accu.tail<3> ();    -- does not compile with Clang 3.0
+    centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
+    centroid[3] = 1;
+    covariance_matrix.coeffRef(0) = accu[0] - accu[6] * accu[6];
+    covariance_matrix.coeffRef(1) = accu[1] - accu[6] * accu[7];
+    covariance_matrix.coeffRef(2) = accu[2] - accu[6] * accu[8];
+    covariance_matrix.coeffRef(4) = accu[3] - accu[7] * accu[7];
+    covariance_matrix.coeffRef(5) = accu[4] - accu[7] * accu[8];
+    covariance_matrix.coeffRef(8) = accu[5] - accu[8] * accu[8];
+    covariance_matrix.coeffRef(3) = covariance_matrix.coeff(1);
+    covariance_matrix.coeffRef(6) = covariance_matrix.coeff(2);
+    covariance_matrix.coeffRef(7) = covariance_matrix.coeff(5);
+  }
 
   return (static_cast<unsigned int> (point_count));
 }
