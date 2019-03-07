@@ -229,7 +229,7 @@ namespace pcl
           int max_num_transforms = 0;
 
           // For each full leaf
-          for (const auto full_leave : full_leaves)
+          for (const auto &full_leave : full_leaves)
           {
             // Is there an entry for 'model' in the current cell
             const RotationSpaceCell::Entry *entry = full_leave->getData ().getEntry (model);
@@ -240,7 +240,7 @@ namespace pcl
             const std::set<CellOctree::Node*>& neighs = full_leave->getNeighbors ();
 
             // For each neighbor
-            for (const auto neigh : neighs)
+            for (const auto &neigh : neighs)
             {
               const RotationSpaceCell::Entry *neigh_entry = neigh->getData ().getEntry (model);
               if ( !neigh_entry )

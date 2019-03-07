@@ -171,7 +171,7 @@ mets::gol_type pcl::GlobalHypothesesVerification<ModelT, SceneT>::evaluateSoluti
   setPreviousBadInfo (bad_info);
 
   int n_active_hyp = 0;
-  for(const bool i : active) {
+  for(const bool &i : active) {
     if(i)
       n_active_hyp++;
   }
@@ -381,9 +381,9 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::SAOptimize(std::vector<i
 
   recognition_models_.clear ();
 
-  for (const int cc_indice : cc_indices)
+  for (const int &cc_index : cc_indices)
   {
-    recognition_models_.push_back (recognition_models_copy[cc_indice]);
+    recognition_models_.push_back (recognition_models_copy[cc_index]);
   }
 
   for (size_t j = 0; j < recognition_models_.size (); j++)

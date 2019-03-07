@@ -101,7 +101,7 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
       {
         //Let's check if j fits into the current consensus set
         bool is_a_good_candidate = true;
-        for (const int k : consensus_set)
+        for (const int &k : consensus_set)
         {
           int scene_index_k = model_scene_corrs_->at (k).index_match;
           int model_index_k = model_scene_corrs_->at (k).index_query;
@@ -133,7 +133,7 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
     if (static_cast<int> (consensus_set.size ()) > gc_threshold_)
     {
       Correspondences temp_corrs, filtered_corrs;
-      for (const int j : consensus_set)
+      for (const int &j : consensus_set)
       {
         temp_corrs.push_back (model_scene_corrs_->at (j));
         taken_corresps[ j ] = true;

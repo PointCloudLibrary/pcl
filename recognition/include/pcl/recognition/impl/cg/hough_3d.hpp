@@ -285,7 +285,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::cl
   for (size_t j = 0; j < max_values.size (); ++j)
   {
     Correspondences temp_corrs, filtered_corrs;
-    for (const int i : max_ids[j])
+    for (const int &i : max_ids[j])
     {
       temp_corrs.push_back (model_scene_corrs_->at (i));
     }

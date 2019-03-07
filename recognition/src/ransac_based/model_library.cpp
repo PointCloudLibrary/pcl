@@ -130,7 +130,7 @@ ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, 
   int num_of_pairs = 0;
 
   // Run through all full leaves
-  for (const auto full_leave : full_leaves)
+  for (const auto &full_leave : full_leaves)
   {
     const ORROctree::Node::Data* node_data1 = full_leave->getData ();
 

@@ -295,7 +295,7 @@ namespace pcl
             }
           }
 
-          for (const int i : explained)
+          for (const int &i : explained)
           {
             if (val < 0)
             {
@@ -353,7 +353,7 @@ namespace pcl
 
       void updateCMDuplicity(std::vector<int> & vec, std::vector<int> & occupancy_vec, float sign) {
         int add_to_duplicity_ = 0;
-        for (const int i : vec)
+        for (const int &i : vec)
         {
           bool prev_dup = occupancy_vec[i] > 1;
           occupancy_vec[i] += static_cast<int> (sign);

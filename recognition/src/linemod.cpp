@@ -1336,7 +1336,7 @@ pcl::LINEMOD::loadTemplates (std::vector<std::string> & file_names)
 {
   templates_.clear ();
 
-  for(auto &filename : file_names)
+  for(const auto &filename : file_names)
   {
     std::ifstream file_stream;
     file_stream.open (filename.c_str (), std::ofstream::in | std::ofstream::binary);

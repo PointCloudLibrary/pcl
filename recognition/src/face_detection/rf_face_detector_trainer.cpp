@@ -191,7 +191,7 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
     {
       //compute rotation using the first less uncertain votes
       std::vector < std::pair<int, float> > uncertainty;
-      for (const int index : votes_indices[i])
+      for (const int &index : votes_indices[i])
       {
         uncertainty.emplace_back (index, uncertainties_[index]);
       }

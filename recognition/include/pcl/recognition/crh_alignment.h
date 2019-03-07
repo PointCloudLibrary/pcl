@@ -153,7 +153,7 @@ namespace pcl
 
         //if the number of peaks is too big, we should try to reduce using siluette matching
 
-        for (const float peak : peaks)
+        for (const float &peak : peaks)
         {
           Eigen::Affine3f rollToRot;
           computeRollTransform (centroid_input_, centroid_target_, peak, rollToRot);
@@ -245,7 +245,7 @@ namespace pcl
           {
             bool insert = true;
 
-            for (int peaks_index : peaks_indices)
+            for (const int &peaks_index : peaks_indices)
             { //check inserted peaks, first pick always inserted
               if ((std::abs (peaks_index - scored_peaks[i].second) <= peak_distance) ||
                   (std::abs (peaks_index - (scored_peaks[i].second - nr_bins_after_padding)) <= peak_distance))

@@ -439,7 +439,7 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfCloseHypotheses (HypothesisOctree& h
     // Get the neighbors of the current rotation space
     const set<HypothesisOctree::Node*>& neighbors = (*hypo)->getNeighbors ();
 
-    for (const auto neighbor : neighbors)
+    for (const auto &neighbor : neighbors)
       graph.insertDirectedEdge ((*hypo)->getData ().getLinearId (), neighbor->getData ().getLinearId ());
   }
 
@@ -505,7 +505,7 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (const BVHH& b
   set<ordered_int_pair, bool(*)(const ordered_int_pair&, const ordered_int_pair&)> ordered_hypotheses_ids (aux::compareOrderedPairs<int>);
 
   // Project the hypotheses onto the "range image" and store in each pixel the corresponding hypothesis id
-  for (const auto bounded_object : *bounded_objects)
+  for (const auto &bounded_object : *bounded_objects)
   {
     // For better code readability
     Hypothesis *hypo1 = bounded_object->getData ();
@@ -624,7 +624,7 @@ pcl::recognition::ObjRecRANSAC::testHypothesis (Hypothesis* hypothesis, int& mat
   float transformed_point[3];
 
   // The match/penalty loop
-  for (const auto full_model_leave : full_model_leaves)
+  for (const auto &full_model_leave : full_model_leaves)
   {
     // Transform the model point with the current rigid transform
     aux::transform (rigid_transform, full_model_leave->getData ()->getPoint (), transformed_point);
@@ -661,7 +661,7 @@ pcl::recognition::ObjRecRANSAC::testHypothesisNormalBased (Hypothesis* hypothesi
   float transformed_point[3];
 
   // The match/penalty loop
-  for (const auto full_model_leave : full_model_leaves)
+  for (const auto &full_model_leave : full_model_leaves)
   {
     // Transform the model point with the current rigid transform
     aux::transform (rigid_transform, full_model_leave->getData ()->getPoint (), transformed_point);

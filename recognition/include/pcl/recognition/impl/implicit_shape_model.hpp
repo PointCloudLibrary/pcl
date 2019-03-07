@@ -404,7 +404,7 @@ pcl::features::ISMModel::saveModelToFile (std::string& file_name)
   for (unsigned int i_cluster = 0; i_cluster < number_of_clusters_; i_cluster++)
   {
     output_file << static_cast<unsigned int> (clusters_[i_cluster].size ()) << " ";
-    for (const unsigned int i_visual_word : clusters_[i_cluster])
+    for (const unsigned int &i_visual_word : clusters_[i_cluster])
       output_file << i_visual_word << " ";
   }
 
