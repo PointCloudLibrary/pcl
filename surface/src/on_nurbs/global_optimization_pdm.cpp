@@ -159,7 +159,7 @@ GlobalOptimization::updateSurf (double damp)
 {
   int ncps (0);
 
-  for (const auto nurbs : m_nurbs)
+  for (const auto &nurbs : m_nurbs)
   {
     int ncp = nurbs->CVCount ();
 
@@ -200,7 +200,7 @@ GlobalOptimization::refine (unsigned id, int dim)
   for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (const double i : xi)
+  for (const double &i : xi)
   {
     m_nurbs[id]->InsertKnot (dim, i, 1);
   }

@@ -97,7 +97,7 @@ FittingCurve2d::refine ()
   for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (const double i : xi)
+  for (const double &i : xi)
     m_nurbs.InsertKnot (i, 1);
 }
 

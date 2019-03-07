@@ -324,7 +324,7 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
     {
       Eigen::Vector2f tmp_VT;
       // for each point of this face
-      for (const unsigned int vertex : tex_polygon.vertices)
+      for (const unsigned int &vertex : tex_polygon.vertices)
       {
         // get point
         PointInT pt = camera_transformed_cloud->points[vertex];
@@ -385,7 +385,7 @@ pcl::TextureMapping<PointInT>::isPointOccluded (const PointInT &pt, OctreePtr oc
   octree->getIntersectedVoxelIndices(direction, -direction, indices);
 
   int nbocc = static_cast<int> (indices.size ());
-  for (const int index : indices)
+  for (const int &index : indices)
   {
    // if intersected point is on the over side of the camera
    if (pt.z * cloud->points[index].z < 0)
@@ -441,7 +441,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
     octree->getIntersectedVoxelIndices (direction, -direction, indices);
 
     int nbocc = static_cast<int> (indices.size ());
-    for (const int index : indices)
+    for (const int &index : indices)
     {
       // if intersected point is on the over side of the camera
       if (input_cloud->points[i].z * input_cloud->points[index].z < 0)
@@ -501,7 +501,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const pcl::TextureMesh &tex
       std::vector<int>::iterator it;
 
       // iterate over face's vertex
-      for (const unsigned int vertex : tex_mesh.tex_polygons[polygons][faces].vertices)
+      for (const unsigned int &vertex : tex_mesh.tex_polygons[polygons][faces].vertices)
       {
         it = find (occluded.begin (), occluded.end (), vertex);
 
@@ -685,7 +685,7 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
     nbocc = static_cast<int> (indices.size ());
 
     // TODO need to clean this up and find tricks to get remove aliasaing effect on planes
-    for (const int index : indices)
+    for (const int &index : indices)
     {
       // if intersected point is on the over side of the camera
       if (pt.z * input_cloud->points[index].z < 0)
@@ -872,7 +872,7 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
               if (kdtree.radiusSearch (center, radius, idxNeighbors, neighborsSquaredDistance) > 0 )
               {
                 // for each neighbor
-                for (const int idxNeighbor : idxNeighbors)
+                for (const int &idxNeighbor : idxNeighbors)
                 {
                   if (std::max (camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[0]].z,
                                 std::max (camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[1]].z, 

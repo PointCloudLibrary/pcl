@@ -208,7 +208,7 @@ GlobalOptimizationTDM::updateSurf (double damp)
 {
   int ncps (0);
 
-  for (const auto nurbs : m_nurbs)
+  for (const auto &nurbs : m_nurbs)
   {
     int ncp = nurbs->CVCount ();
 
