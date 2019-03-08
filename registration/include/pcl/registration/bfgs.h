@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef PCL_FOR_EIGEN_BFGS_H
-#define PCL_FOR_EIGEN_BFGS_H
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header 
@@ -475,7 +473,7 @@ BFGS<FunctorType>::interpolate (Scalar a, Scalar fa, Scalar fpa,
   // Ensure ymin <= ymax
   if (ymin > ymax) { Scalar tmp = ymin; ymin = ymax; ymax = tmp; };
 
-  if (order > 2 && !(fpb != fpb) && fpb != std::numeric_limits<Scalar>::infinity ()) 
+  if (order > 2 && !(fpb != fpa) && fpb != std::numeric_limits<Scalar>::infinity ())
   {
     fpa = fpa * (b - a);
     fpb = fpb * (b - a);
@@ -652,5 +650,3 @@ BFGS<FunctorType>::lineSearch(Scalar rho, Scalar sigma,
   }
   return BFGSSpace::Success;
 }
-#endif // PCL_FOR_EIGEN_BFGS_H
-

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_H_
+#pragma once
 
 #include <pcl/registration/correspondence_types.h>
 #include <pcl/registration/correspondence_estimation.h>
@@ -188,7 +187,7 @@ namespace pcl
         getKSearch () const { return (k_); }
         
         /** \brief Clone and cast to CorrespondenceEstimationBase */
-        virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > 
+        virtual typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
         clone () const
         {
           Ptr copy (new CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar> (*this));
@@ -202,7 +201,7 @@ namespace pcl
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::tree_reciprocal_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_;
 
-        /** \brief Internal computation initalization. */
+        /** \brief Internal computation initialization. */
         bool
         initCompute ();
 
@@ -224,5 +223,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_estimation_backprojection.hpp>
-
-#endif /* PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_H_ */

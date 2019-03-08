@@ -30,7 +30,7 @@ And this is a video of the PCL Cloud Viewer showing the point cloud data corresp
   
 Dinast Grabber currently offer this data type, as is the one currently available from Dinast devices:
 
-* `void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&)`
+* `void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&)`
   
 The code
 --------

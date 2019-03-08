@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2017-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -36,18 +37,14 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_ITERATOR_H
-#define PCL_OCTREE_ITERATOR_H
+#pragma once
 
 #include <cstddef>
 #include <vector>
 #include <deque>
 
-#include "octree_nodes.h"
-#include "octree_key.h"
-
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include <pcl/octree/octree_nodes.h>
+#include <pcl/octree/octree_key.h>
 
 #include <iterator>
 
@@ -65,7 +62,7 @@ namespace pcl
     struct IteratorState{
         OctreeNode* node_;
         OctreeKey key_;
-        unsigned char depth_;
+        unsigned int depth_;
     };
 
 
@@ -106,26 +103,21 @@ namespace pcl
           this->reset ();
         }
 
-        /** \brief Copy constructor.
-         * \param[in] src the iterator to copy into this
-         * \param[in] max_depth_arg Depth limitation during traversal
-         */
-        OctreeIteratorBase (const OctreeIteratorBase& src, unsigned int max_depth_arg = 0) :
-            octree_ (src.octree_), current_state_(0), max_octree_depth_(max_depth_arg)
-        {
-        }
-
-        /** \brief Copy operator.
-         * \param[in] src the iterator to copy into this
-         */
-        inline OctreeIteratorBase&
-        operator = (const OctreeIteratorBase& src)
-        {
-          octree_ = src.octree_;
-          current_state_ = src.current_state_;
-          max_octree_depth_ = src.max_octree_depth_;
-          return (*this);
-        }
+        /** \brief Constructor.
+          * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
+          * \param[in] max_depth_arg Depth limitation during traversal
+          * \param[in] current_state A pointer to the current iterator state
+          *
+          *  \warning For advanced users only.
+          */
+        explicit
+        OctreeIteratorBase (OctreeT* octree_arg,
+                            unsigned int max_depth_arg,
+                            IteratorState* current_state)
+          : octree_(octree_arg)
+          , current_state_ (current_state)
+          , max_octree_depth_ (max_depth_arg)
+        {}
 
         /** \brief Empty deconstructor. */
         virtual
@@ -138,9 +130,17 @@ namespace pcl
          */
         bool operator==(const OctreeIteratorBase& other) const
         {
-          return (( octree_ ==other.octree_) &&
-                  ( current_state_ == other.current_state_) &&
-                  ( max_octree_depth_ == other.max_octree_depth_) );
+          if (this == &other)  // same object
+            return true;
+          if (octree_ != other.octree_)  // refer to different octrees
+            return false;
+          if (!current_state_ && !other.current_state_)  // both are end iterators
+            return true;
+          if (max_octree_depth_ == other.max_octree_depth_ &&
+              current_state_ && other.current_state_ &&  // null dereference protection
+              current_state_->key_ == other.current_state_->key_)
+            return true;
+          return false;
         }
 
         /** \brief Inequal comparison operator
@@ -148,9 +148,7 @@ namespace pcl
          */
         bool operator!=(const OctreeIteratorBase& other) const
         {
-          return (( octree_ !=other.octree_) &&
-                  ( current_state_ != other.current_state_) &&
-                  ( max_octree_depth_ != other.max_octree_depth_) );
+          return !operator== (other);
         }
 
         /** \brief Reset iterator */
@@ -387,11 +385,33 @@ namespace pcl
         explicit
         OctreeDepthFirstIterator (OctreeT* octree_arg, unsigned int max_depth_arg = 0);
 
-        /** \brief Empty deconstructor. */
-        virtual
-        ~OctreeDepthFirstIterator ();
+        /** \brief Constructor.
+          * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
+          * \param[in] max_depth_arg Depth limitation during traversal
+          * \param[in] current_state A pointer to the current iterator state
+          *
+          *  \warning For advanced users only.
+          */
+        explicit
+        OctreeDepthFirstIterator (OctreeT* octree_arg,
+                                  unsigned int max_depth_arg,
+                                  IteratorState* current_state,
+                                  const std::vector<IteratorState>& stack = std::vector<IteratorState> ())
+          : OctreeIteratorBase<OctreeT> (octree_arg, max_depth_arg, current_state)
+          , stack_ (stack)
+        {}
 
-        /** \brief Copy operator.
+        /** \brief Copy Constructor.
+         * \param[in] other Another OctreeDepthFirstIterator to copy from
+         */
+        OctreeDepthFirstIterator (const OctreeDepthFirstIterator& other)
+          : OctreeIteratorBase<OctreeT> (other)
+          , stack_ (other.stack_)
+        {
+          this->current_state_ = stack_.size ()? &stack_.back () : NULL;
+        }
+
+        /** \brief Copy assignment
          * \param[in] src the iterator to copy into this
          */
         inline OctreeDepthFirstIterator&
@@ -404,7 +424,7 @@ namespace pcl
 
           if (stack_.size())
           {
-            this->current_state_ = &stack_.back();
+            this->current_state_ = &stack_.back ();
           } else
           {
             this->current_state_ = 0;
@@ -454,12 +474,11 @@ namespace pcl
     template<typename OctreeT>
       class OctreeBreadthFirstIterator : public OctreeIteratorBase<OctreeT>
       {
+      public:
         // public typedefs
         typedef typename OctreeIteratorBase<OctreeT>::BranchNode BranchNode;
         typedef typename OctreeIteratorBase<OctreeT>::LeafNode LeafNode;
 
-
-      public:
         /** \brief Empty constructor.
          * \param[in] max_depth_arg Depth limitation during traversal
          */
@@ -473,9 +492,31 @@ namespace pcl
         explicit
         OctreeBreadthFirstIterator (OctreeT* octree_arg, unsigned int max_depth_arg = 0);
 
-        /** \brief Empty deconstructor. */
-        virtual
-        ~OctreeBreadthFirstIterator ();
+        /** \brief Constructor.
+          * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
+          * \param[in] max_depth_arg Depth limitation during traversal
+          * \param[in] current_state A pointer to the current iterator state
+          *
+          *  \warning For advanced users only.
+          */
+        explicit
+        OctreeBreadthFirstIterator (OctreeT* octree_arg,
+                                    unsigned int max_depth_arg,
+                                    IteratorState* current_state,
+                                    const std::deque<IteratorState>& fifo = std::deque<IteratorState> ())
+          : OctreeIteratorBase<OctreeT> (octree_arg, max_depth_arg, current_state)
+          , FIFO_ (fifo)
+        {}
+
+        /** \brief Copy Constructor.
+         * \param[in] other Another OctreeBreadthFirstIterator to copy from
+         */
+        OctreeBreadthFirstIterator (const OctreeBreadthFirstIterator& other)
+          : OctreeIteratorBase<OctreeT> (other)
+          , FIFO_ (other.FIFO_)
+        {
+          this->current_state_ = FIFO_.size ()? &FIFO_.front () : NULL;
+        }
 
         /** \brief Copy operator.
          * \param[in] src the iterator to copy into this
@@ -527,6 +568,92 @@ namespace pcl
       };
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /** \brief @b Octree iterator class
+     * \note Iterator  over all existing nodes at a given depth. It walks across an octree
+     *       in a breadth-first manner.
+     * \ingroup octree
+     * \author Fabien Rozar (fabien.rozar@gmail.com)
+     */
+    template<typename OctreeT>
+    class OctreeFixedDepthIterator : public OctreeBreadthFirstIterator<OctreeT>
+    {
+    public:
+
+      // public typedefs
+      using typename OctreeBreadthFirstIterator<OctreeT>::BranchNode;
+      using typename OctreeBreadthFirstIterator<OctreeT>::LeafNode;
+
+      /** \brief Empty constructor.
+       */
+      OctreeFixedDepthIterator ();
+
+      /** \brief Constructor.
+       * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
+       * \param[in] fixed_depth_arg Depth level during traversal
+       */
+      explicit
+      OctreeFixedDepthIterator (OctreeT* octree_arg, unsigned int fixed_depth_arg = 0);
+
+      /** \brief Constructor.
+       * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
+       * \param[in] fixed_depth_arg Depth level during traversal
+       * \param[in] current_state A pointer to the current iterator state
+       * \param[in] fifo Internal container of octree node to go through
+       *
+       *  \warning For advanced users only.
+       */
+      OctreeFixedDepthIterator (OctreeT* octree_arg,
+                                unsigned int fixed_depth_arg,
+                                IteratorState* current_state,
+                                const std::deque<IteratorState>& fifo = std::deque<IteratorState> ())
+        : OctreeBreadthFirstIterator<OctreeT> (octree_arg, fixed_depth_arg, current_state, fifo)
+        , fixed_depth_ (fixed_depth_arg)
+      {}
+
+      /** \brief Copy Constructor.
+       * \param[in] other Another OctreeFixedDepthIterator to copy from
+       */
+      OctreeFixedDepthIterator (const OctreeFixedDepthIterator& other)
+        : OctreeBreadthFirstIterator<OctreeT> (other)
+      {
+        this->fixed_depth_ = other.fixed_depth_;
+      }
+
+      /** \brief Copy assignment.
+       * \param[in] src the iterator to copy into this
+       * \return pointer to the current octree node
+       */
+      inline OctreeFixedDepthIterator&
+      operator = (const OctreeFixedDepthIterator& src)
+      {
+        OctreeBreadthFirstIterator<OctreeT>::operator= (src);
+        this->fixed_depth_ = src.fixed_depth_;
+
+        return (*this);
+      }
+
+      /** \brief Reset the iterator to the first node at the depth given as parameter
+       * \param[in] fixed_depth_arg Depth level during traversal
+       */
+      void
+      reset (unsigned int fixed_depth_arg);
+
+      /** \brief Reset the iterator to the first node at the current depth
+       */
+      void
+      reset ()
+      {
+        this->reset (fixed_depth_);
+      }
+
+    protected:
+      using OctreeBreadthFirstIterator<OctreeT>::FIFO_;
+
+      /** \brief Given level of the node to be iterated */
+      unsigned int fixed_depth_;
+    };
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief Octree leaf node iterator class
      * \note This class implements a forward iterator for traversing the leaf nodes of an octree data structure.
      * \ingroup octree
@@ -534,7 +661,7 @@ namespace pcl
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename OctreeT>
-      class OctreeLeafNodeIterator : public OctreeDepthFirstIterator<OctreeT>
+      class OctreeLeafNodeDepthFirstIterator : public OctreeDepthFirstIterator<OctreeT>
       {
         typedef typename OctreeDepthFirstIterator<OctreeT>::BranchNode BranchNode;
         typedef typename OctreeDepthFirstIterator<OctreeT>::LeafNode LeafNode;
@@ -544,7 +671,7 @@ namespace pcl
          * \param[in] max_depth_arg Depth limitation during traversal
          */
         explicit
-        OctreeLeafNodeIterator (unsigned int max_depth_arg = 0) :
+        OctreeLeafNodeDepthFirstIterator (unsigned int max_depth_arg = 0) :
             OctreeDepthFirstIterator<OctreeT> (max_depth_arg)
         {
           reset ();
@@ -555,17 +682,29 @@ namespace pcl
          * \param[in] max_depth_arg Depth limitation during traversal
          */
         explicit
-        OctreeLeafNodeIterator (OctreeT* octree_arg, unsigned int max_depth_arg = 0) :
+        OctreeLeafNodeDepthFirstIterator (OctreeT* octree_arg, unsigned int max_depth_arg = 0) :
             OctreeDepthFirstIterator<OctreeT> (octree_arg, max_depth_arg)
         {
           reset ();
         }
 
-        /** \brief Empty deconstructor. */
-        virtual
-        ~OctreeLeafNodeIterator ()
-        {
-        }
+        /** \brief Constructor.
+          * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
+          * \param[in] max_depth_arg Depth limitation during traversal
+          * \param[in] current_state A pointer to the current iterator state
+          *
+          *  \warning For advanced users only.
+          */
+        explicit
+        OctreeLeafNodeDepthFirstIterator (OctreeT* octree_arg,
+                                unsigned int max_depth_arg,
+                                IteratorState* current_state,
+                                const std::vector<IteratorState>& stack = std::vector<IteratorState> ())
+          : OctreeDepthFirstIterator<OctreeT> (octree_arg,
+                                               max_depth_arg,
+                                               current_state,
+                                               stack)
+        {}
 
         /** \brief Reset the iterator to the root node of the octree
          */
@@ -579,7 +718,7 @@ namespace pcl
         /** \brief Preincrement operator.
          * \note recursively step to next octree leaf node
          */
-        inline OctreeLeafNodeIterator&
+        inline OctreeLeafNodeDepthFirstIterator&
         operator++ ()
         {
           do
@@ -593,10 +732,10 @@ namespace pcl
         /** \brief postincrement operator.
          * \note step to next octree node
          */
-        inline OctreeLeafNodeIterator
+        inline OctreeLeafNodeDepthFirstIterator
         operator++ (int)
         {
-          OctreeLeafNodeIterator _Tmp = *this;
+          OctreeLeafNodeDepthFirstIterator _Tmp = *this;
           ++*this;
           return (_Tmp);
         }
@@ -616,8 +755,71 @@ namespace pcl
         }
       };
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Octree leaf node iterator class
+     * \note This class implements a forward iterator for traversing the leaf nodes of an octree data structure
+     * in the breadth first way.
+     * \ingroup octree
+     * \author Fabien Rozar (fabien.rozar@gmail.com)
+     */
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+      class OctreeLeafNodeBreadthFirstIterator : public OctreeBreadthFirstIterator<OctreeT>
+      {
+        typedef typename OctreeBreadthFirstIterator<OctreeT>::BranchNode BranchNode;
+        typedef typename OctreeBreadthFirstIterator<OctreeT>::LeafNode LeafNode;
+
+      public:
+        /** \brief Empty constructor.
+         * \param[in] max_depth_arg Depth limitation during traversal
+         */
+        explicit
+        OctreeLeafNodeBreadthFirstIterator (unsigned int max_depth_arg = 0);
+
+        /** \brief Constructor.
+         * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
+         * \param[in] max_depth_arg Depth limitation during traversal
+         */
+        explicit
+        OctreeLeafNodeBreadthFirstIterator (OctreeT* octree_arg, unsigned int max_depth_arg = 0);
+
+        /** \brief Copy constructor.
+          * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
+          * \param[in] max_depth_arg Depth limitation during traversal
+          * \param[in] current_state A pointer to the current iterator state
+          * \param[in] fifo Internal container of octree node to go through
+          *
+          *  \warning For advanced users only.
+          */
+        explicit
+        OctreeLeafNodeBreadthFirstIterator (OctreeT* octree_arg,
+                                       unsigned int max_depth_arg,
+                                       IteratorState* current_state,
+                                       const std::deque<IteratorState>& fifo = std::deque<IteratorState> ());
+
+        /** \brief Reset the iterator to the first leaf in the breadth first way.
+         */
+        inline void
+        reset ();
+
+        /** \brief Preincrement operator.
+         * \note recursively step to next octree leaf node
+         */
+        inline OctreeLeafNodeBreadthFirstIterator&
+        operator++ ();
+
+
+        /** \brief Postincrement operator.
+         * \note step to next octree node
+         */
+        inline OctreeLeafNodeBreadthFirstIterator
+        operator++ (int);
+      };
+
   }
 }
 
-#endif
-
+/*
+ * Note: Since octree iterators depend on octrees, don't precompile them.
+ */
+#include <pcl/octree/impl/octree_iterator.hpp>

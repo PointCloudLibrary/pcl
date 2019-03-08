@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_ICP_H_
-#define PCL_ICP_H_
+#pragma once
 
 // PCL includes
 #include <pcl/sample_consensus/ransac.h>
@@ -119,6 +118,7 @@ namespace pcl
       using Registration<PointSource, PointTarget, Scalar>::final_transformation_;
       using Registration<PointSource, PointTarget, Scalar>::transformation_;
       using Registration<PointSource, PointTarget, Scalar>::transformation_epsilon_;
+      using Registration<PointSource, PointTarget, Scalar>::transformation_rotation_epsilon_;
       using Registration<PointSource, PointTarget, Scalar>::converged_;
       using Registration<PointSource, PointTarget, Scalar>::corr_dist_threshold_;
       using Registration<PointSource, PointTarget, Scalar>::inlier_threshold_;
@@ -152,7 +152,7 @@ namespace pcl
       };
 
       /** \brief Empty destructor */
-      virtual ~IterativeClosestPoint () {}
+      ~IterativeClosestPoint () {}
 
       /** \brief Returns a pointer to the DefaultConvergenceCriteria used by the IterativeClosestPoint class.
         * This allows to check the convergence state after the align() method as well as to configure
@@ -173,8 +173,8 @@ namespace pcl
         *
         * \param[in] cloud the input point cloud source
         */
-      virtual void
-      setInputSource (const PointCloudSourceConstPtr &cloud)
+      void
+      setInputSource (const PointCloudSourceConstPtr &cloud) override
       {
         Registration<PointSource, PointTarget, Scalar>::setInputSource (cloud);
         std::vector<pcl::PCLPointField> fields;
@@ -208,8 +208,8 @@ namespace pcl
         *
         * \param[in] cloud the input point cloud target
         */
-      virtual void
-      setInputTarget (const PointCloudTargetConstPtr &cloud)
+      void
+      setInputTarget (const PointCloudTargetConstPtr &cloud) override
       {
         Registration<PointSource, PointTarget, Scalar>::setInputTarget (cloud);
         std::vector<pcl::PCLPointField> fields;
@@ -260,8 +260,8 @@ namespace pcl
         * \param output the transformed input point cloud dataset using the rigid transformation found
         * \param guess the initial guess of the transformation to compute
         */
-      virtual void 
-      computeTransformation (PointCloudSource &output, const Matrix4 &guess);
+      void 
+      computeTransformation (PointCloudSource &output, const Matrix4 &guess) override;
 
       /** \brief Looks at the Estimators and Rejectors and determines whether their blob-setter methods need to be called */
       virtual void
@@ -334,5 +334,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/icp.hpp>
-
-#endif  //#ifndef PCL_ICP_H_

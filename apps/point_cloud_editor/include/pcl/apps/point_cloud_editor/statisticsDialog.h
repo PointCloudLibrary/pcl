@@ -38,8 +38,7 @@
 /// to PCL's denoising filter.
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef STATISTICS_DIALOG_H_
-#define STATISTICS_DIALOG_H_
+#pragma once
 
 #include <QLineEdit>
 #include <QDialog>
@@ -61,12 +60,12 @@ class StatisticsDialog : public QDialog
     /// @brief Destructor
     ~StatisticsDialog ();
     
-  public slots:
+  public Q_SLOTS:
     /// @brief update the dialog box.
     void update ();
     
-  private slots:
-    void accept ();
+  private Q_SLOTS:
+    void accept () override;
     
   private:
     /// The button box.
@@ -77,5 +76,3 @@ class StatisticsDialog : public QDialog
     /// A timer used for periodically update the statistics in the dialog.
     QTimer timer_;
 };
-
-#endif // STATISTICS_DIALOG_H_

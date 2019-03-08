@@ -43,8 +43,7 @@
  *      Author: ari
  */
 
-#ifndef FACE_DETECTION_APPS_UTILS_H_
-#define FACE_DETECTION_APPS_UTILS_H_
+#pragma once
 
 namespace face_detection_apps_utils
 {
@@ -183,5 +182,3 @@ namespace face_detection_apps_utils
     }
   }
 }
-
-#endif /* FACE_DETECTION_APPS_UTILS_H_ */

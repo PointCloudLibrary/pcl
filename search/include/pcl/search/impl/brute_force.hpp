@@ -150,7 +150,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
     std::vector<int>::const_iterator iIt =indices_->begin ();
     for (; iIt != indices_->end () && result.size () < static_cast<unsigned> (k); ++iIt)
     {
-      if (pcl_isfinite (input_->points[*iIt].x))
+      if (std::isfinite (input_->points[*iIt].x))
         result.push_back (Entry (*iIt, getDistSqr (input_->points[*iIt], point)));
     }
     
@@ -161,7 +161,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
     Entry entry;
     for (; iIt != indices_->end (); ++iIt)
     {
-      if (!pcl_isfinite (input_->points[*iIt].x))
+      if (!std::isfinite (input_->points[*iIt].x))
         continue;
 
       entry.distance = getDistSqr (input_->points[*iIt], point);
@@ -178,7 +178,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
     Entry entry;
     for (entry.index = 0; entry.index < input_->size () && result.size () < static_cast<unsigned> (k); ++entry.index)
     {
-      if (pcl_isfinite (input_->points[entry.index].x))
+      if (std::isfinite (input_->points[entry.index].x))
       {
         entry.distance = getDistSqr (input_->points[entry.index], point);
         result.push_back (entry);
@@ -189,7 +189,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
     // add the rest
     for (; entry.index < input_->size (); ++entry.index)
     {
-      if (!pcl_isfinite (input_->points[entry.index].x))
+      if (!std::isfinite (input_->points[entry.index].x))
         continue;
 
       entry.distance = getDistSqr (input_->points[entry.index], point);
@@ -250,7 +250,7 @@ pcl::search::BruteForce<PointT>::denseRadiusSearch (
   }
   else
   {
-    for (unsigned index = 0; index < input_->size (); ++index)
+    for (size_t index = 0; index < input_->size (); ++index)
     {
       distance = getDistSqr (input_->points[index], point);
       if (distance <= radius)
@@ -294,7 +294,7 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
   {
     for (std::vector<int>::const_iterator iIt =indices_->begin (); iIt != indices_->end (); ++iIt)
     {
-      if (!pcl_isfinite (input_->points[*iIt].x))
+      if (!std::isfinite (input_->points[*iIt].x))
         continue;
 
       distance = getDistSqr (input_->points[*iIt], point);
@@ -309,9 +309,9 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
   }
   else
   {
-    for (unsigned index = 0; index < input_->size (); ++index)
+    for (size_t index = 0; index < input_->size (); ++index)
     {
-      if (!pcl_isfinite (input_->points[index].x))
+      if (!std::isfinite (input_->points[index].x))
         continue;
       distance = getDistSqr (input_->points[index], point);
       if (distance <= radius)

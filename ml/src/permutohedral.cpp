@@ -85,11 +85,11 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
   }
 
   // Expected standard deviation of our filter (p.6 in [Adams etal 2010])
-  float inv_std_dev = sqrtf (2.0f / 3.0f) * static_cast<float> (d_ + 1);
+  float inv_std_dev = std::sqrt (2.0f / 3.0f) * static_cast<float> (d_ + 1);
   
   // Compute the diagonal part of E (p.5 in [Adams etal 2010])
   for (int i = 0; i < d_; i++)
-    scale_factor (i) = 1.0f / sqrtf (static_cast<float> (i + 2) * static_cast<float> (i + 1)) * inv_std_dev;
+    scale_factor (i) = 1.0f / std::sqrt (static_cast<float> (i + 2) * static_cast<float> (i + 1)) * inv_std_dev;
 
   // Compute the simplex each feature lies in
   for (int k = 0; k < N_; k++)
@@ -161,7 +161,7 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
 
       // insert key in hash table      
       size_t hash_key = generateHashKey (key);
-      std::multimap<size_t ,int>::iterator it = hash_table.find (hash_key);
+      auto it = hash_table.find (hash_key);
       int key_index = -1;
       if (it != hash_table.end ())
       {
@@ -170,7 +170,7 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
         // check if key is the right one
         int tmp_key_index = -1;
         //for (int ii = key_index; ii < keys.size (); ii++)
-        for (it = hash_table.find (hash_key); it != hash_table.end (); ++it)
+        for (; it != hash_table.end (); ++it)
         {
           int ii = it->second;
           bool same = true;
@@ -353,10 +353,10 @@ pcl::Permutohedral::initOLD (const std::vector<float> &feature, const int featur
   }
 		
   // Expected standard deviation of our filter (p.6 in [Adams etal 2010])
-  float inv_std_dev = sqrtf (2.0f / 3.0f)* static_cast<float>(d_+1);
+  float inv_std_dev = std::sqrt (2.0f / 3.0f)* static_cast<float>(d_+1);
   // Compute the diagonal part of E (p.5 in [Adams etal 2010])
   for (int i=0; i<d_; i++)
-    scale_factor[i] = 1.0f / sqrtf (static_cast<float>(i+2)*static_cast<float>(i+1)) * inv_std_dev;
+    scale_factor[i] = 1.0f / std::sqrt (static_cast<float>(i+2)*static_cast<float>(i+1)) * inv_std_dev;
 		
   // Compute the simplex each feature lies in
   for (int k=0; k<N_; k++)

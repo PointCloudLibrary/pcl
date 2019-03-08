@@ -37,14 +37,9 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_VOXELCENTROID_H
-#define PCL_OCTREE_VOXELCENTROID_H
+#pragma once
 
-#include "octree_pointcloud.h"
-
-#include <pcl/common/point_operators.h>
-#include <pcl/point_types.h>
-#include <pcl/register_point_struct.h>
+#include <pcl/octree/octree_pointcloud.h>
 
 namespace pcl
 {
@@ -65,7 +60,7 @@ namespace pcl
         }
 
         /** \brief Empty class deconstructor. */
-        virtual ~OctreePointCloudVoxelCentroidContainer ()
+        ~OctreePointCloudVoxelCentroidContainer ()
         {
         }
 
@@ -79,7 +74,7 @@ namespace pcl
         /** \brief Equal comparison operator - set to false
          */
          // param[in] OctreePointCloudVoxelCentroidContainer to compare with
-        virtual bool operator==(const OctreeContainerBase&) const
+        bool operator==(const OctreeContainerBase&) const override
         {
           return ( false );
         }
@@ -117,8 +112,8 @@ namespace pcl
         }
 
         /** \brief Reset leaf container. */
-        virtual void 
-        reset ()
+        void 
+        reset () override
         {
           using namespace pcl::common;
 
@@ -162,7 +157,7 @@ namespace pcl
         }
 
         /** \brief Empty class deconstructor. */
-        virtual
+        
         ~OctreePointCloudVoxelCentroid ()
         {
         }
@@ -170,8 +165,8 @@ namespace pcl
         /** \brief Add DataT object to leaf node at octree key.
           * \param pointIdx_arg
           */
-        virtual void 
-        addPointIdx (const int pointIdx_arg)
+        void 
+        addPointIdx (const int pointIdx_arg) override
         {
           OctreeKey key;
 
@@ -232,7 +227,5 @@ namespace pcl
   }
 }
 
+// Note: Don't precompile this octree type to speed up compilation. It's probably rarely used.
 #include <pcl/octree/impl/octree_pointcloud_voxelcentroid.hpp>
-
-#endif
-

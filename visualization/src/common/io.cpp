@@ -56,7 +56,7 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
   cloud.height = 1; cloud.width = static_cast<uint32_t> (src->GetNumberOfPoints ());
   cloud.is_dense = false;
   cloud.points.resize (cloud.width * cloud.height);
-  for (int i = 0; i < src->GetNumberOfPoints (); i++)
+  for (vtkIdType i = 0; i < src->GetNumberOfPoints (); i++)
   {
     double p[3];
     src->GetPoint (i, p);
@@ -73,9 +73,9 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
   std::vector<int> nn_indices (1);
   std::vector<float> nn_dists (1);
   // For each point on screen, find its correspondent in the target
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (const auto &point : cloud.points)
   {
-    kdtree.nearestKSearch (cloud.points[i], 1, nn_indices, nn_dists);
+    kdtree.nearestKSearch (point, 1, nn_indices, nn_dists);
     indices.push_back (nn_indices[0]);
   }
   // Sort and remove duplicate indices
@@ -90,11 +90,7 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
   // Clean the data (no duplicates!)
   vtkSmartPointer<vtkCleanPolyData> cleaner = vtkSmartPointer<vtkCleanPolyData>::New ();
   cleaner->SetTolerance (0.0);
-#if VTK_MAJOR_VERSION < 6
-  cleaner->SetInput (data);
-#else
   cleaner->SetInputData (data);
-#endif
   cleaner->ConvertLinesToPointsOff ();
   cleaner->ConvertPolysToLinesOff ();
   cleaner->ConvertStripsToPolysOff ();
@@ -109,11 +105,10 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
   }
 
   // Attempting to load all Point Cloud data input files (using the actor name)...
-  CloudActorMap::iterator it;
   int i = 1;
-  for (it = actors->begin (); it != actors->end (); ++it)
+  for (const auto &actor : *actors)
   {
-    std::string file_name = (*it).first;
+    std::string file_name = actor.first;
 
     // Is there a ".pcd" in the name? If no, then do not attempt to load this actor
     std::string::size_type position;

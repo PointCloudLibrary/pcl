@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef PCLVIEWER_H
-#define PCLVIEWER_H
+#pragma once
 
 #include <iostream>
 
@@ -68,7 +66,7 @@ public:
   explicit PCLViewer (QWidget *parent = 0);
   ~PCLViewer ();
 
-public slots:
+public Q_SLOTS:
   void
   randomButtonPressed ();
 
@@ -88,7 +86,7 @@ public slots:
   blueSliderValueChanged (int value);
 
 protected:
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+  pcl::visualization::PCLVisualizer::Ptr viewer;
   PointCloudT::Ptr cloud;
 
   unsigned int red;
@@ -99,5 +97,3 @@ private:
   Ui::PCLViewer *ui;
 
 };
-
-#endif // PCLVIEWER_H

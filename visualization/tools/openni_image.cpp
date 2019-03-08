@@ -246,8 +246,8 @@ class Buffer
     }
 
 	private:
-		Buffer (const Buffer&);            // Disabled copy constructor
-		Buffer& operator =(const Buffer&); // Disabled assignment operator
+		Buffer (const Buffer&) = delete;            // Disabled copy constructor
+		Buffer& operator =(const Buffer&) = delete; // Disabled assignment operator
 		
     boost::mutex bmutex_;
 		boost::condition_variable buff_empty_;
@@ -330,7 +330,7 @@ class Writer
       {
         {
           boost::mutex::scoped_lock io_lock (io_mutex);
-          print_info ("Writing remaing %ld clouds in the buffer to disk...\n", buf_.getSize ());
+          print_info ("Writing remaining %ld clouds in the buffer to disk...\n", buf_.getSize ());
         }
         while (!buf_.isEmpty ())
         {
@@ -509,7 +509,8 @@ class Viewer
 
             image_viewer_->addRGBImage (reinterpret_cast<unsigned char*> (&rgb_data[0]), 
                                         frame->image->getWidth (),
-                                        frame->image->getHeight ());
+                                        frame->image->getHeight (),
+                                        "rgb_image");
           }
 
           if (frame->depth_image)
@@ -524,7 +525,8 @@ class Viewer
 
             depth_image_viewer_->addRGBImage (data, 
                                               frame->depth_image->getWidth (),
-                                              frame->depth_image->getHeight ());
+                                              frame->depth_image->getHeight (),
+                                              "rgb_image");
             if (!depth_image_cld_init_)
             {
               depth_image_viewer_->setPosition (frame->depth_image->getWidth (), 0);
@@ -673,7 +675,7 @@ main (int argc, char ** argv)
   else
     print_highlight ("Using default buffer size of %d frames.\n", buff_size);
 
-  string device_id ("");
+  string device_id;
   OpenNIGrabber::Mode image_mode = OpenNIGrabber::OpenNI_Default_Mode;
   OpenNIGrabber::Mode depth_mode = OpenNIGrabber::OpenNI_Default_Mode;
   

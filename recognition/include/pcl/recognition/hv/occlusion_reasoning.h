@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RECOGNITION_OCCLUSION_REASONING_H_
-#define PCL_RECOGNITION_OCCLUSION_REASONING_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/common/transforms.h>
@@ -96,8 +95,8 @@ namespace pcl
           continue;
 
         //Check for invalid depth
-        if (!pcl_isfinite (organized_cloud->at (u, v).x) || !pcl_isfinite (organized_cloud->at (u, v).y)
-            || !pcl_isfinite (organized_cloud->at (u, v).z))
+        if (!std::isfinite (organized_cloud->at (u, v).x) || !std::isfinite (organized_cloud->at (u, v).y)
+            || !std::isfinite (organized_cloud->at (u, v).z))
           continue;
 
         float z_oc = organized_cloud->at (u, v).z;
@@ -142,8 +141,8 @@ namespace pcl
         //Check for invalid depth
         if (check_invalid_depth)
         {
-          if (!pcl_isfinite (organized_cloud->at (u, v).x) || !pcl_isfinite (organized_cloud->at (u, v).y)
-              || !pcl_isfinite (organized_cloud->at (u, v).z))
+          if (!std::isfinite (organized_cloud->at (u, v).x) || !std::isfinite (organized_cloud->at (u, v).y)
+              || !std::isfinite (organized_cloud->at (u, v).z))
             continue;
         }
 
@@ -189,8 +188,8 @@ namespace pcl
         //Check for invalid depth
         if (check_invalid_depth)
         {
-          if (!pcl_isfinite (organized_cloud->at (u, v).x) || !pcl_isfinite (organized_cloud->at (u, v).y)
-              || !pcl_isfinite (organized_cloud->at (u, v).z))
+          if (!std::isfinite (organized_cloud->at (u, v).x) || !std::isfinite (organized_cloud->at (u, v).y)
+              || !std::isfinite (organized_cloud->at (u, v).z))
             continue;
         }
 
@@ -214,5 +213,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/recognition/impl/hv/occlusion_reasoning.hpp>
 #endif
-
-#endif /* PCL_RECOGNITION_OCCLUSION_REASONING_H_ */

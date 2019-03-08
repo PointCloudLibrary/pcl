@@ -72,9 +72,8 @@ Selection::addIndex (const IndexVector &indices)
 void
 Selection::removeIndex (const IndexVector &indices)
 {
-  IndexVector::const_iterator it;
-  for(it = indices.begin(); it != indices.end(); ++it)
-    removeIndex(*it);
+  for(const unsigned int &index : indices)
+    removeIndex(index);
 }
 
 void

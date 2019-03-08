@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef FEATURE_ESTIMATION_H
-#define FEATURE_ESTIMATION_H
+#pragma once
 
 #include "typedefs.h"
 
@@ -176,5 +174,3 @@ computeFeatures (const PointCloudPtr & input)
 
   return (features);
 }
-
-#endif

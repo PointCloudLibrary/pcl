@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef TYPEDEFS_H
-#define TYPEDEFS_H
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -74,5 +72,3 @@ typedef pcl::VFHSignature308 GlobalDescriptorT;
 typedef pcl::PointCloud<GlobalDescriptorT> GlobalDescriptors;
 typedef pcl::PointCloud<GlobalDescriptorT>::Ptr GlobalDescriptorsPtr;
 typedef pcl::PointCloud<GlobalDescriptorT>::ConstPtr GlobalDescriptorsConstPtr;
-
-#endif

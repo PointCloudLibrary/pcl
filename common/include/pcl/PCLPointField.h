@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef PCL_SENSOR_MSGS_MESSAGE_POINTFIELD_H
-#define PCL_SENSOR_MSGS_MESSAGE_POINTFIELD_H
+#pragma once
 
 #ifdef USE_ROS
    #error USE_ROS setup requires PCL to compile against ROS message headers, which is now deprecated

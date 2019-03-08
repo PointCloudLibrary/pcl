@@ -200,7 +200,7 @@ public:
 
     grabber_.start ();
 
-    while (!cloud_viewer_->wasStopped () && (image_viewer_ && !image_viewer_->wasStopped ()))
+    while (!(cloud_viewer_->wasStopped () || (image_viewer_ && image_viewer_->wasStopped ())))
     {
       boost::shared_ptr<pcl::io::openni2::Image> image;
       CloudConstPtr cloud;
@@ -222,7 +222,7 @@ public:
         {
           cloud_viewer_->setPosition (0, 0);
           cloud_viewer_->setSize (cloud->width, cloud->height);
-          cloud_init = !cloud_init;
+          cloud_init = true;
         }
 
         if (!cloud_viewer_->updatePointCloud (cloud, "OpenNICloud"))
@@ -250,7 +250,7 @@ public:
         {
           image_viewer_->setPosition (cloud->width, 0);
           image_viewer_->setSize (cloud->width, cloud->height);
-          image_init = !image_init;
+          image_init = true;
         }
 
         if (image->getEncoding () == pcl::io::openni2::Image::RGB)
@@ -270,8 +270,8 @@ public:
       delete[] rgb_data_;
   }
 
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> cloud_viewer_;
-  boost::shared_ptr<pcl::visualization::ImageViewer> image_viewer_;
+  pcl::visualization::PCLVisualizer::Ptr cloud_viewer_;
+  pcl::visualization::ImageViewer::Ptr image_viewer_;
 
   pcl::io::OpenNI2Grabber& grabber_;
   boost::mutex cloud_mutex_;
@@ -284,14 +284,14 @@ public:
 };
 
 // Create the PCLVisualizer object
-boost::shared_ptr<pcl::visualization::PCLVisualizer> cld;
-boost::shared_ptr<pcl::visualization::ImageViewer> img;
+pcl::visualization::PCLVisualizer::Ptr cld;
+pcl::visualization::ImageViewer::Ptr img;
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  std::string device_id ("");
+  std::string device_id;
   pcl::io::OpenNI2Grabber::Mode depth_mode = pcl::io::OpenNI2Grabber::OpenNI_Default_Mode;
   pcl::io::OpenNI2Grabber::Mode image_mode = pcl::io::OpenNI2Grabber::OpenNI_Default_Mode;
   bool xyz = false;
@@ -317,7 +317,7 @@ main (int argc, char** argv)
         boost::shared_ptr<pcl::io::openni2::OpenNI2DeviceManager> deviceManager = pcl::io::openni2::OpenNI2DeviceManager::getInstance ();
         if (deviceManager->getNumOfConnectedDevices () > 0)
         {
-          for (unsigned deviceIdx = 0; deviceIdx < deviceManager->getNumOfConnectedDevices (); ++deviceIdx)
+          for (size_t deviceIdx = 0; deviceIdx < deviceManager->getNumOfConnectedDevices (); ++deviceIdx)
           {
             boost::shared_ptr<pcl::io::openni2::OpenNI2Device> device = deviceManager->getDeviceByIndex (deviceIdx);
             cout << "Device " << device->getStringID () << "connected." << endl;
@@ -352,17 +352,25 @@ main (int argc, char** argv)
   if (pcl::console::find_argument (argc, argv, "-xyz") != -1)
     xyz = true;
 
-  pcl::io::OpenNI2Grabber grabber (device_id, depth_mode, image_mode);
+  try
+  {
+    pcl::io::OpenNI2Grabber grabber (device_id, depth_mode, image_mode);
 
-  if (xyz || !grabber.providesCallback<pcl::io::OpenNI2Grabber::sig_cb_openni_point_cloud_rgb> ())
-  {
-    OpenNI2Viewer<pcl::PointXYZ> openni_viewer (grabber);
-    openni_viewer.run ();
+    if (xyz || !grabber.providesCallback<pcl::io::OpenNI2Grabber::sig_cb_openni_point_cloud_rgb> ())
+    {
+      OpenNI2Viewer<pcl::PointXYZ> openni_viewer (grabber);
+      openni_viewer.run ();
+    }
+    else
+    {
+      OpenNI2Viewer<pcl::PointXYZRGBA> openni_viewer (grabber);
+      openni_viewer.run ();
+    }
   }
-  else
+  catch (pcl::IOException& e)
   {
-    OpenNI2Viewer<pcl::PointXYZRGBA> openni_viewer (grabber);
-    openni_viewer.run ();
+    pcl::console::print_error ("Failed to create a grabber: %s\n", e.what ());
+    return (1);
   }
 
   return (0);

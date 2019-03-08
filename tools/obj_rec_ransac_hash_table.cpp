@@ -168,12 +168,12 @@ visualize (const ModelLibrary::HashTable& hash_table)
 
   const ModelLibrary::HashTableCell* cells = hash_table.getVoxels ();
   size_t max_num_entries = 0;
-  int i, id3[3], num_cells = hash_table.getNumberOfVoxels ();
+  int id3[3], num_cells = hash_table.getNumberOfVoxels ();
   float half_side, b[6], cell_center[3], spacing = hash_table.getVoxelSpacing ()[0];
   char cube_id[128];
 
   // Just get the maximal number of entries in the cells
-  for ( i = 0 ; i < num_cells ; ++i, ++cells )
+  for ( int i = 0 ; i < num_cells ; ++i, ++cells )
   {
     if (cells->size ()) // That's the number of models in the cell (it's maximum one, since we loaded only one model)
     {
@@ -191,7 +191,8 @@ visualize (const ModelLibrary::HashTable& hash_table)
   cout << "s = " << s << ", max_num_entries = " << max_num_entries << endl;
 
   // Now, render a sphere with the right radius at the right place
-  for ( i = 0, cells = hash_table.getVoxels () ; i < num_cells ; ++i, ++cells )
+  cells = hash_table.getVoxels ();
+  for ( int i = 0; i < num_cells ; ++i, ++cells )
   {
     // Does the cell have any entries?
     if (cells->size ())

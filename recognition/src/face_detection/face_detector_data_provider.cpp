@@ -45,7 +45,7 @@ namespace pcl
 template<class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
 void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::initialize(std::string & data_dir)
 {
-  std::string start = "";
+  std::string start;
   std::string ext = std::string ("pcd");
   bf::path dir = data_dir;
 
@@ -366,15 +366,14 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     center_point.y = trans_vector[1];
     center_point.z = trans_vector[2];
 
-    int N_patches = patches_per_image_;
-    int pos_extracted = 0;
-    int neg_extracted = 0;
-    int w_size_2 = static_cast<int> (w_size_ / 2);
-
     //************************************************
     //2nd training style, fanelli's journal description
     //************************************************
     {
+      int N_patches = patches_per_image_;
+      int pos_extracted = 0;
+      int neg_extracted = 0;
+      int w_size_2 = static_cast<int> (w_size_ / 2);
 
       typedef std::pair<int, int> pixelpair;
       std::vector < pixelpair > negative_p, positive_p;
@@ -431,7 +430,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
         te.wsize_ = w_size_;
 
         te.trans_ = center_point.getVector3fMap () - patch_center_point.getVector3fMap ();
-        te.trans_ *= 1000.f; //transform it to milimiters
+        te.trans_ *= 1000.f; //transform it to millimeters
         te.rot_ = ea;
         te.rot_ *= 57.2957795f; //transform it to degrees
 

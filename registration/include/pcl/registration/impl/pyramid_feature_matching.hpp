@@ -45,18 +45,6 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/console/print.h>
 
-
-/** \brief Helper function to calculate the binary logarithm
- * \param n_arg: some value
- * \return binary logarithm (log2) of argument n_arg
- */
-__inline float
-Log2 (float n_arg)
-{
-  return std::log (n_arg) / float (M_LN2);
-}
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> float
 pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (const PyramidFeatureHistogramPtr &pyramid_a,
@@ -119,7 +107,7 @@ pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (con
   float self_similarity_a = static_cast<float> (pyramid_a->nr_features),
         self_similarity_b = static_cast<float> (pyramid_b->nr_features);
   PCL_DEBUG ("[pcl::PyramidFeatureMatching::comparePyramidFeatureHistograms] Self similarity measures: %f, %f\n", self_similarity_a, self_similarity_b);
-  match_count /= sqrtf (self_similarity_a * self_similarity_b);
+  match_count /= std::sqrt (self_similarity_a * self_similarity_b);
 
   return match_count;
 }
@@ -187,8 +175,8 @@ pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
     float aux = range_it->first - range_it->second;
     D += aux * aux;
   }
-  D = sqrtf (D);
-  nr_levels = static_cast<size_t> (ceilf (Log2 (D)));
+  D = std::sqrt (D);
+  nr_levels = static_cast<size_t> (ceilf (std::log2(D)));
   PCL_DEBUG ("[pcl::PyramidFeatureHistogram::initializeHistogram] Pyramid will have %u levels with a hyper-parallelepiped diagonal size of %f\n", nr_levels, D);
 
 
@@ -200,8 +188,8 @@ pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
     for (size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i) 
     {
       bins_per_dimension[dim_i] = 
-        static_cast<size_t> (ceilf ((dimension_range_target_[dim_i].second - dimension_range_target_[dim_i].first) / (powf (2.0f, static_cast<float> (level_i)) * sqrtf (static_cast<float> (nr_dimensions)))));
-      bin_step[dim_i] = powf (2.0f, static_cast<float> (level_i)) * sqrtf (static_cast<float> (nr_dimensions));
+        static_cast<size_t> (ceilf ((dimension_range_target_[dim_i].second - dimension_range_target_[dim_i].first) / (powf (2.0f, static_cast<float> (level_i)) * std::sqrt (static_cast<float> (nr_dimensions)))));
+      bin_step[dim_i] = powf (2.0f, static_cast<float> (level_i)) * std::sqrt (static_cast<float> (nr_dimensions));
     }
     hist_levels[level_i] = PyramidFeatureHistogramLevel (bins_per_dimension, bin_step);
 

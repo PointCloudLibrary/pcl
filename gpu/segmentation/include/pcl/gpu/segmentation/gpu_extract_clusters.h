@@ -37,8 +37,7 @@
  * @author: Koen Buys
  */
 
-#ifndef PCL_GPU_EXTRACT_CLUSTERS_H_
-#define PCL_GPU_EXTRACT_CLUSTERS_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -165,9 +164,3 @@ namespace pcl
     }
   }
 }
-
-#endif //PCL_GPU_EXTRACT_CLUSTERS_H_
-
-
-
-

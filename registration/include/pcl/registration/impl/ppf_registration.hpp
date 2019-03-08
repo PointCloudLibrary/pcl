@@ -213,7 +213,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses (typename pcl::PPFR
       }
     }
 
-    if (found_cluster == false)
+    if (!found_cluster)
     {
       // Create a new cluster with the current pose
       PoseWithVotesList new_cluster;

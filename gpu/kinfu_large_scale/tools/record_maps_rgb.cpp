@@ -126,8 +126,8 @@ class MapsBuffer
     }
   
   private:
-    MapsBuffer (const MapsBuffer&); // Disabled copy constructor
-    MapsBuffer& operator =(const MapsBuffer&); // Disabled assignment operator
+    MapsBuffer (const MapsBuffer&) = delete; // Disabled copy constructor
+    MapsBuffer& operator =(const MapsBuffer&) = delete; // Disabled assignment operator
 
     boost::mutex bmutex_;
     boost::condition_variable buff_empty_;
@@ -284,7 +284,7 @@ receiveAndProcess ()
 
   {
     boost::mutex::scoped_lock io_lock (io_mutex);
-    PCL_INFO ("Writing remaing %d maps in the buffer to disk...\n", buff.getSize ());
+    PCL_INFO ("Writing remaining %d maps in the buffer to disk...\n", buff.getSize ());
   }
   while (!buff.isEmpty ())
   {

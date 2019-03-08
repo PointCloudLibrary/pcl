@@ -241,17 +241,13 @@ TEST(Edge, canny)
   edge_->setHysteresisThresholdHigh (50);
   edge_->detectEdgeCanny (*output_cloud);
 
-  int count = 0;
   for (int i = 1; i < height - 1; i++)
   {
     for (int j = 1; j < width - 1; j++)
     {
-      if (fabs ((*output_cloud)(j,i).magnitude - (*gt_output_cloud)(j,i).intensity) > 50)
-        count++;
       EXPECT_NEAR ((*output_cloud)(j,i).magnitude, (*gt_output_cloud)(j,i).intensity, 255);
     }
   }
-  //EXPECT_LE(count, 0.1*height*width);
 }
 
 void threshold(pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud, float thresh){

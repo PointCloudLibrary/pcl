@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RANGE_IMAGE_H_
-#define PCL_RANGE_IMAGE_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_macros.h>
@@ -72,7 +71,7 @@ namespace pcl
       /** Constructor */
       PCL_EXPORTS RangeImage ();
       /** Destructor */
-      PCL_EXPORTS virtual ~RangeImage ();
+      PCL_EXPORTS ~RangeImage ();
       
       // =====STATIC VARIABLES=====
       /** The maximum number of openmp threads that can be used in this class */
@@ -349,7 +348,7 @@ namespace pcl
       getTransformationToWorldSystem () const { return to_world_system_;}
       
       /** Getter for the angular resolution of the range image in x direction in radians per pixel.
-       *  Provided for downwards compatability */
+       *  Provided for downwards compatibility */
       inline float
       getAngularResolution () const { return angular_resolution_x_;}
       
@@ -746,7 +745,7 @@ namespace pcl
       getViewingDirection (const Eigen::Vector3f& point, Eigen::Vector3f& viewing_direction) const;
       
       /** Return a newly created Range image.
-       *  Can be reimplmented in derived classes like RangeImagePlanar to return an image of the same type. */
+       *  Can be reimplemented in derived classes like RangeImagePlanar to return an image of the same type. */
       PCL_EXPORTS virtual RangeImage* 
       getNew () const { return new RangeImage; }
 
@@ -771,9 +770,9 @@ namespace pcl
       Eigen::Affine3f to_world_system_;        /**< Inverse of to_range_image_system_ */
       float angular_resolution_x_;             /**< Angular resolution of the range image in x direction in radians per pixel */
       float angular_resolution_y_;             /**< Angular resolution of the range image in y direction in radians per pixel */
-      float angular_resolution_x_reciprocal_;  /**< 1.0/angular_resolution_x_ - provided for better performace of
+      float angular_resolution_x_reciprocal_;  /**< 1.0/angular_resolution_x_ - provided for better performance of
                                                 *   multiplication compared to division */
-      float angular_resolution_y_reciprocal_;  /**< 1.0/angular_resolution_y_ - provided for better performace of
+      float angular_resolution_y_reciprocal_;  /**< 1.0/angular_resolution_y_ - provided for better performance of
                                                 *   multiplication compared to division */
       int image_offset_x_, image_offset_y_;    /**< Position of the top left corner of the range image compared to
                                                 *   an image of full size (360x180 degrees) */
@@ -840,5 +839,3 @@ namespace pcl
 
 
 #include <pcl/range_image/impl/range_image.hpp>  // Definitions of templated and inline functions
-
-#endif  //#ifndef PCL_RANGE_IMAGE_H_

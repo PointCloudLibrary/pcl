@@ -35,10 +35,7 @@
  *
  */
 
-#ifndef CLOUD_COMPOSER_H_
-#define CLOUD_COMPOSER_H_
-
-#include <pcl/apps/cloud_composer/qt.h>
+#pragma once
 
 //PCL
 #include <pcl/point_cloud.h>
@@ -76,7 +73,7 @@ namespace pcl
         explicit ComposerMainWindow (QWidget *parent = 0);
         ~ComposerMainWindow ();
   
-      signals:
+      Q_SIGNALS:
         /** \brief Signal emitted when the active project is switched - ie a different project tab is selected */
         void
         activeProjectChanged (ProjectModel* new_model, ProjectModel* previous_model);
@@ -93,7 +90,7 @@ namespace pcl
         void 
         saveSelectedCloudToFile ();
         
-      public slots:
+      public Q_SLOTS:
       //Slots for File Menu Actions
         void
         on_action_new_project__triggered (/*QString name = "unsaved project"*/);
@@ -169,8 +166,3 @@ namespace pcl
     
   }
 }
-
-
-
-
-#endif // CLOUD_COMPOSER_H

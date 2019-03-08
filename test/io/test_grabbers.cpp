@@ -87,7 +87,7 @@ TEST (PCL, PCDGrabber)
   grabber.registerCallback (fxn);
   grabber.start ();
   // 1 second should be /plenty/ of time
-  boost::this_thread::sleep (boost::posix_time::microseconds (1E6));
+  boost::this_thread::sleep (boost::posix_time::seconds (1));
   grabber.stop ();
 
   //// Make sure they match
@@ -103,30 +103,30 @@ TEST (PCL, PCDGrabber)
       const PointT &pcd_pt = pcds_[i]->at(j);
       const PointT &grabbed_pt = grabbed_clouds[i]->at(j);
       const PointT &fg_pt = cloud_from_file_grabber->at(j);
-      if (pcl_isnan (pcd_pt.x))
+      if (std::isnan (pcd_pt.x))
       {
-        EXPECT_TRUE (pcl_isnan (grabbed_pt.x));
-        EXPECT_TRUE (pcl_isnan (fg_pt.x));
+        EXPECT_TRUE (std::isnan (grabbed_pt.x));
+        EXPECT_TRUE (std::isnan (fg_pt.x));
       }
       else
       {
         EXPECT_FLOAT_EQ (pcd_pt.x, grabbed_pt.x);
         EXPECT_FLOAT_EQ (pcd_pt.x, fg_pt.x);
       }
-      if (pcl_isnan (pcd_pt.y))
+      if (std::isnan (pcd_pt.y))
       {
-        EXPECT_TRUE (pcl_isnan (grabbed_pt.y));
-        EXPECT_TRUE (pcl_isnan (fg_pt.y));
+        EXPECT_TRUE (std::isnan (grabbed_pt.y));
+        EXPECT_TRUE (std::isnan (fg_pt.y));
       }
       else
       {
         EXPECT_FLOAT_EQ (pcd_pt.y, grabbed_pt.y);
         EXPECT_FLOAT_EQ (pcd_pt.y, fg_pt.y);
       }
-      if (pcl_isnan (pcd_pt.z))
+      if (std::isnan (pcd_pt.z))
       {
-        EXPECT_TRUE (pcl_isnan (grabbed_pt.z));
-        EXPECT_TRUE (pcl_isnan (fg_pt.z));
+        EXPECT_TRUE (std::isnan (grabbed_pt.z));
+        EXPECT_TRUE (std::isnan (fg_pt.z));
       }
       else
       {
@@ -167,7 +167,9 @@ TEST (PCL, ImageGrabberTIFF)
       boost::this_thread::sleep (boost::posix_time::microseconds (10000));
       if (++niter > 100)
       {
-        ASSERT_TRUE (false);
+        #ifdef PCL_BUILT_WITH_VTK
+          FAIL ();
+        #endif
         return;
       }
     }
@@ -186,30 +188,30 @@ TEST (PCL, ImageGrabberTIFF)
       const PointT &pcd_pt = pcds_[i]->at(j);
       const PointT &tiff_pt = tiff_clouds[i]->at(j);
       const PointT &tiff_fg_pt = cloud_from_file_grabber->at(j);
-      if (pcl_isnan (pcd_pt.x))
+      if (std::isnan (pcd_pt.x))
       {
-        EXPECT_TRUE (pcl_isnan (tiff_pt.x));
-        EXPECT_TRUE (pcl_isnan (tiff_fg_pt.x));
+        EXPECT_TRUE (std::isnan (tiff_pt.x));
+        EXPECT_TRUE (std::isnan (tiff_fg_pt.x));
       }
       else
       {
         EXPECT_FLOAT_EQ (pcd_pt.x, tiff_pt.x);
         EXPECT_FLOAT_EQ (pcd_pt.x, tiff_fg_pt.x);
       }
-      if (pcl_isnan (pcd_pt.y))
+      if (std::isnan (pcd_pt.y))
       {
-        EXPECT_TRUE (pcl_isnan (tiff_pt.y));
-        EXPECT_TRUE (pcl_isnan (tiff_fg_pt.y));
+        EXPECT_TRUE (std::isnan (tiff_pt.y));
+        EXPECT_TRUE (std::isnan (tiff_fg_pt.y));
       }
       else
       {
         EXPECT_FLOAT_EQ (pcd_pt.y, tiff_pt.y);
         EXPECT_FLOAT_EQ (pcd_pt.y, tiff_fg_pt.y);
       }
-      if (pcl_isnan (pcd_pt.z))
+      if (std::isnan (pcd_pt.z))
       {
-        EXPECT_TRUE (pcl_isnan (tiff_pt.z));
-        EXPECT_TRUE (pcl_isnan (tiff_fg_pt.z));
+        EXPECT_TRUE (std::isnan (tiff_pt.z));
+        EXPECT_TRUE (std::isnan (tiff_fg_pt.z));
       }
       else
       {
@@ -265,30 +267,30 @@ TEST (PCL, ImageGrabberPCLZF)
       const PointT &pcd_pt = pcds_[i]->at(j);
       const PointT &pclzf_pt = pclzf_clouds[i]->at(j);
       const PointT &pclzf_fg_pt = cloud_from_file_grabber->at(j);
-      if (pcl_isnan (pcd_pt.x))
+      if (std::isnan (pcd_pt.x))
       {
-        EXPECT_TRUE (pcl_isnan (pclzf_pt.x));
-        EXPECT_TRUE (pcl_isnan (pclzf_fg_pt.x));
+        EXPECT_TRUE (std::isnan (pclzf_pt.x));
+        EXPECT_TRUE (std::isnan (pclzf_fg_pt.x));
       }
       else
       {
         EXPECT_FLOAT_EQ (pcd_pt.x, pclzf_pt.x);
         EXPECT_FLOAT_EQ (pcd_pt.x, pclzf_fg_pt.x);
       }
-      if (pcl_isnan (pcd_pt.y))
+      if (std::isnan (pcd_pt.y))
       {
-        EXPECT_TRUE (pcl_isnan (pclzf_pt.y));
-        EXPECT_TRUE (pcl_isnan (pclzf_fg_pt.y));
+        EXPECT_TRUE (std::isnan (pclzf_pt.y));
+        EXPECT_TRUE (std::isnan (pclzf_fg_pt.y));
       }
       else
       {
         EXPECT_FLOAT_EQ (pcd_pt.y, pclzf_pt.y);
         EXPECT_FLOAT_EQ (pcd_pt.y, pclzf_fg_pt.y);
       }
-      if (pcl_isnan (pcd_pt.z))
+      if (std::isnan (pcd_pt.z))
       {
-        EXPECT_TRUE (pcl_isnan (pclzf_pt.z));
-        EXPECT_TRUE (pcl_isnan (pclzf_fg_pt.z));
+        EXPECT_TRUE (std::isnan (pclzf_pt.z));
+        EXPECT_TRUE (std::isnan (pclzf_fg_pt.z));
       }
       else
       {
@@ -345,30 +347,30 @@ TEST (PCL, ImageGrabberOMP)
       const PointT &pcd_pt = pcds_[i]->at(j);
       const PointT &pclzf_pt = pclzf_clouds[i]->at(j);
       const PointT &pclzf_fg_pt = cloud_from_file_grabber->at(j);
-      if (pcl_isnan (pcd_pt.x))
+      if (std::isnan (pcd_pt.x))
       {
-        EXPECT_TRUE (pcl_isnan (pclzf_pt.x));
-        EXPECT_TRUE (pcl_isnan (pclzf_fg_pt.x));
+        EXPECT_TRUE (std::isnan (pclzf_pt.x));
+        EXPECT_TRUE (std::isnan (pclzf_fg_pt.x));
       }
       else
       {
         EXPECT_FLOAT_EQ (pcd_pt.x, pclzf_pt.x);
         EXPECT_FLOAT_EQ (pcd_pt.x, pclzf_fg_pt.x);
       }
-      if (pcl_isnan (pcd_pt.y))
+      if (std::isnan (pcd_pt.y))
       {
-        EXPECT_TRUE (pcl_isnan (pclzf_pt.y));
-        EXPECT_TRUE (pcl_isnan (pclzf_fg_pt.y));
+        EXPECT_TRUE (std::isnan (pclzf_pt.y));
+        EXPECT_TRUE (std::isnan (pclzf_fg_pt.y));
       }
       else
       {
         EXPECT_FLOAT_EQ (pcd_pt.y, pclzf_pt.y);
         EXPECT_FLOAT_EQ (pcd_pt.y, pclzf_fg_pt.y);
       }
-      if (pcl_isnan (pcd_pt.z))
+      if (std::isnan (pcd_pt.z))
       {
-        EXPECT_TRUE (pcl_isnan (pclzf_pt.z));
-        EXPECT_TRUE (pcl_isnan (pclzf_fg_pt.z));
+        EXPECT_TRUE (std::isnan (pclzf_pt.z));
+        EXPECT_TRUE (std::isnan (pclzf_fg_pt.z));
       }
       else
       {
@@ -436,7 +438,9 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
       boost::this_thread::sleep (boost::posix_time::microseconds (10000));
       if (++niter > 100)
       {
-        ASSERT_TRUE (false);
+        #ifdef PCL_BUILT_WITH_VTK
+          FAIL ();
+        #endif
         return;
       }
     }
@@ -456,16 +460,16 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
       {
         const PointT &pcd_pt = pcds_[i]->operator()(x,y);
         const PointT &tiff_pt = tiff_clouds[i]->operator()(x,y);
-        if (pcl_isnan (pcd_pt.x))
-          EXPECT_TRUE (pcl_isnan (tiff_pt.x));
+        if (std::isnan (pcd_pt.x))
+          EXPECT_TRUE (std::isnan (tiff_pt.x));
         else
           EXPECT_NEAR ( pcd_pt.x * (x-cx_new), tiff_pt.x * fx_multiplier * (x-cx_old), 1E-4);
-        if (pcl_isnan (pcd_pt.y))
-          EXPECT_TRUE (pcl_isnan (tiff_pt.y));
+        if (std::isnan (pcd_pt.y))
+          EXPECT_TRUE (std::isnan (tiff_pt.y));
         else
           EXPECT_NEAR ( pcd_pt.y * (y-cy_new), tiff_pt.y * fy_multiplier * (y-cy_old), 1E-4);
-        if (pcl_isnan (pcd_pt.z))
-          EXPECT_TRUE (pcl_isnan (tiff_pt.z));
+        if (std::isnan (pcd_pt.z))
+          EXPECT_TRUE (std::isnan (tiff_pt.z));
         else
           EXPECT_FLOAT_EQ (pcd_pt.z, tiff_pt.z);
       }
@@ -528,16 +532,16 @@ TEST (PCL, ImageGrabberSetIntrinsicsPCLZF)
       {
         const PointT &pcd_pt = pcds_[i]->operator()(x,y);
         const PointT &pclzf_pt = pclzf_clouds[i]->operator()(x,y);
-        if (pcl_isnan (pcd_pt.x))
-          EXPECT_TRUE (pcl_isnan (pclzf_pt.x));
+        if (std::isnan (pcd_pt.x))
+          EXPECT_TRUE (std::isnan (pclzf_pt.x));
         else
           EXPECT_NEAR ( pcd_pt.x * (x-cx_new), pclzf_pt.x * fx_multiplier * (x-cx_old), 1E-4);
-        if (pcl_isnan (pcd_pt.y))
-          EXPECT_TRUE (pcl_isnan (pclzf_pt.y));
+        if (std::isnan (pcd_pt.y))
+          EXPECT_TRUE (std::isnan (pclzf_pt.y));
         else
           EXPECT_NEAR ( pcd_pt.y * (y-cy_new), pclzf_pt.y * fy_multiplier * (y-cy_old), 1E-4);
-        if (pcl_isnan (pcd_pt.z))
-          EXPECT_TRUE (pcl_isnan (pclzf_pt.z));
+        if (std::isnan (pcd_pt.z))
+          EXPECT_TRUE (std::isnan (pclzf_pt.z));
         else
           EXPECT_FLOAT_EQ (pcd_pt.z, pclzf_pt.z);
       }
@@ -584,7 +588,7 @@ int
   {
     CloudT::Ptr cloud (new CloudT);
     pcl::io::loadPCDFile (pcd_files_[i], *cloud); 
-    pcds_.push_back (cloud);
+    pcds_.emplace_back(cloud);
   }
 
   testing::InitGoogleTest (&argc, argv);

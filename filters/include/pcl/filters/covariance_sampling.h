@@ -38,9 +38,7 @@
  *
  */
 
-
-#ifndef PCL_FILTERS_COVARIANCE_SAMPLING_H_
-#define PCL_FILTERS_COVARIANCE_SAMPLING_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 
@@ -117,7 +115,7 @@ namespace pcl
       /** \brief Compute the condition number of the input point cloud. The condition number is the ratio between the
         * largest and smallest eigenvalues of the 6x6 covariance matrix of the cloud. The closer this number is to 1.0,
         * the more stable the cloud is for ICP registration.
-        * \param[in] covariance_matrix user given covariance matrix
+        * \param[in] covariance_matrix user given covariance matrix. Assumed to be self adjoint/symmetric.
         * \return the condition number
         */
       static double
@@ -146,13 +144,13 @@ namespace pcl
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (Cloud &output);
+      applyFilter (Cloud &output) override;
 
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (std::vector<int> &indices) override;
 
       static bool
       sort_dot_list_function (std::pair<int, double> a,
@@ -167,6 +165,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/covariance_sampling.hpp>
 #endif
-
-
-#endif /* PCL_FILTERS_COVARIANCE_SAMPLING_H_ */

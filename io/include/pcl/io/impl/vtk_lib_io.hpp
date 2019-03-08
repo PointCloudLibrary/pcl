@@ -61,6 +61,13 @@
 #include <vtkStructuredGrid.h>
 #include <vtkVertexGlyphFilter.h>
 
+// Support for VTK 7.1 upwards
+#ifdef vtkGenericDataArray_h
+#define SetTupleValue SetTypedTuple
+#define InsertNextTupleValue InsertNextTypedTuple
+#define GetTupleValue GetTypedTuple
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<PointT>& cloud)
@@ -303,9 +310,9 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud[i].x) ||
-          !pcl_isfinite (cloud[i].y) ||
-          !pcl_isfinite (cloud[i].z))
+      if (!std::isfinite (cloud[i].x) ||
+          !std::isfinite (cloud[i].y) ||
+          !std::isfinite (cloud[i].z))
         continue;
 
       memcpy (&data[j * 3], &cloud[i].x, 12);    // sizeof (float) * 3
@@ -378,11 +385,7 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
 
   // Add 0D topology to every point
   vtkSmartPointer<vtkVertexGlyphFilter> vertex_glyph_filter = vtkSmartPointer<vtkVertexGlyphFilter>::New ();
-  #if VTK_MAJOR_VERSION < 6
-    vertex_glyph_filter->AddInputConnection (temp_polydata->GetProducerPort ());
-  #else
-    vertex_glyph_filter->SetInputData (temp_polydata);
-  #endif
+  vertex_glyph_filter->SetInputData (temp_polydata);
   vertex_glyph_filter->Update ();
 
   pdata->DeepCopy (vertex_glyph_filter->GetOutput ());
@@ -502,6 +505,12 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
     structured_grid->GetPointData ()->AddArray (colors);
   }
 }
+
+#ifdef vtkGenericDataArray_h
+#undef SetTupleValue
+#undef InsertNextTupleValue
+#undef GetTupleValue
+#endif
 
 #endif  //#ifndef PCL_IO_VTK_IO_H_
 

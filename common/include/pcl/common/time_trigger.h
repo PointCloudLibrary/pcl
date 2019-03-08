@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_COMMON_TIME_TRIGGER_H_
-#define PCL_COMMON_TIME_TRIGGER_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #ifndef Q_MOC_RUN
@@ -70,7 +69,7 @@ namespace pcl
       /** \brief Destructor. */
       ~TimeTrigger ();
 
-      /** \brief registeres a callback
+      /** \brief registers a callback
         * \param[in] callback callback function to the list of callbacks. signature has to be boost::function<void()>
         * \return connection the connection, which can be used to disable/enable and remove callback from list
         */
@@ -104,5 +103,3 @@ namespace pcl
       boost::mutex condition_mutex_;
   };
 }
-
-#endif

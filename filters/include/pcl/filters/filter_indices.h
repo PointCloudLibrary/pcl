@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_FILTER_INDICES_H_
-#define PCL_FILTERS_FILTER_INDICES_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
 
@@ -94,7 +93,7 @@ namespace pcl
       }
 
       /** \brief Empty virtual destructor. */
-      virtual
+      
       ~FilterIndices ()
       {
       }
@@ -133,7 +132,7 @@ namespace pcl
         * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
         */
       inline bool
-      getNegative ()
+      getNegative () const
       {
         return (negative_);
       }
@@ -153,7 +152,7 @@ namespace pcl
         * \return The value of the internal \a keep_organized_ parameter; false = remove points (default), true = redefine points, keep structure.
         */
       inline bool
-      getKeepOrganized ()
+      getKeepOrganized () const
       {
         return (keep_organized_);
       }
@@ -187,8 +186,8 @@ namespace pcl
       applyFilter (std::vector<int> &indices) = 0;
 
       /** \brief Abstract filter method for point cloud. */
-      virtual void
-      applyFilter (PointCloud &output) = 0;
+      void
+      applyFilter (PointCloud &output) override = 0;
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -219,7 +218,7 @@ namespace pcl
       }
 
       /** \brief Empty virtual destructor. */
-      virtual
+      
       ~FilterIndices ()
       {
       }
@@ -249,7 +248,7 @@ namespace pcl
         * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
         */
       inline bool
-      getNegative ()
+      getNegative () const
       {
         return (negative_);
       }
@@ -269,7 +268,7 @@ namespace pcl
         * \return The value of the internal \a keep_organized_ parameter; false = remove points (default), true = redefine points, keep structure.
         */
       inline bool
-      getKeepOrganized ()
+      getKeepOrganized () const
       {
         return (keep_organized_);
       }
@@ -300,14 +299,11 @@ namespace pcl
       applyFilter (std::vector<int> &indices) = 0;
 
       /** \brief Abstract filter method for point cloud. */
-      virtual void
-      applyFilter (PCLPointCloud2 &output) = 0;
+      void
+      applyFilter (PCLPointCloud2 &output) override = 0;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/filter_indices.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_FILTER_INDICES_H_
-

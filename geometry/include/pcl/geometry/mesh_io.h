@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_MESH_IO_H
-#define PCL_GEOMETRY_MESH_IO_H
+#pragma once
 
 #include <fstream>
 #include <string>
@@ -261,5 +260,3 @@ namespace pcl
 
   } // End namespace geometry
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_MESH_IO_H

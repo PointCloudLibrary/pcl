@@ -186,14 +186,14 @@ pcl::PlaneClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cl
 #if 0
     Eigen::MatrixXf points = cloud_in.getMatrixXfMap (4, sizeof (PointT) / sizeof (float), offsetof(PointT,x) / sizeof (float));
     Eigen::VectorXf distances = plane_params_.transpose () * points;
-    for (register unsigned rIdx = 0; rIdx < cloud_in.size (); ++ rIdx)
+    for (unsigned rIdx = 0; rIdx < cloud_in.size (); ++ rIdx)
     {
       if (distances (rIdx, 0) >= -plane_params_[3])
         clipped.push_back (rIdx);
     }
 #else
     Eigen::Matrix4Xf points (4, cloud_in.size ());
-    for (register unsigned rIdx = 0; rIdx < cloud_in.size (); ++ rIdx)
+    for (unsigned rIdx = 0; rIdx < cloud_in.size (); ++ rIdx)
     {
       points (0, rIdx) = cloud_in[rIdx].x;
       points (1, rIdx) = cloud_in[rIdx].y;
@@ -201,7 +201,7 @@ pcl::PlaneClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cl
       points (3, rIdx) = 1;
     }
     Eigen::VectorXf distances = plane_params_.transpose () * points;
-    for (register unsigned rIdx = 0; rIdx < cloud_in.size (); ++ rIdx)
+    for (unsigned rIdx = 0; rIdx < cloud_in.size (); ++ rIdx)
     {
       if (distances (rIdx, 0) >= 0)
         clipped.push_back (rIdx);
@@ -213,7 +213,7 @@ pcl::PlaneClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cl
 
     //cout << "distances: " << distances.rows () << " x " << distances.cols () << endl;
     /*/
-    for (register unsigned pIdx = 0; pIdx < cloud_in.size (); ++pIdx)
+    for (unsigned pIdx = 0; pIdx < cloud_in.size (); ++pIdx)
       if (clipPoint3D (cloud_in[pIdx]))
         clipped.push_back (pIdx);
     //*/

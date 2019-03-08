@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_BRISK_2D_H_
-#define PCL_FEATURES_BRISK_2D_H_
+#pragma once
 
 // PCL includes
 #include <pcl/features/feature.h>
@@ -140,7 +139,7 @@ namespace pcl
         *
         * \note This should never be called by a regular user. We use a fixed type in PCL 
         * (BRISKSignature512) and tampering with the parameters might lead to a different
-        * size descriptor which the user needs to accomodate in a new point type.
+        * size descriptor which the user needs to accommodate in a new point type.
         */
       void
       generateKernel (std::vector<float> &radius_list,
@@ -262,5 +261,3 @@ namespace pcl
 }
 
 #include <pcl/features/impl/brisk_2d.hpp>
-
-#endif  //#ifndef PCL_FEATURES_BRISK_2D_H_

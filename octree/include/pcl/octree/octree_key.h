@@ -35,10 +35,7 @@
  *
  */
 
-#ifndef PCL_OCTREE_KEY_H
-#define PCL_OCTREE_KEY_H
-
-#include <string>
+#pragma once
 
 namespace pcl
 {
@@ -79,6 +76,15 @@ namespace pcl
       operator == (const OctreeKey& b) const
       {
         return ((b.x == this->x) && (b.y == this->y) && (b.z == this->z));
+      }
+
+      /** \brief Inequal comparison operator
+       * \param[in] other OctreeIteratorBase to compare with
+       * \return "true" if the current and other iterators are different ; "false" otherwise.
+       */
+      bool operator!= (const OctreeKey& other) const
+      {
+        return !operator== (other);
       }
 
       /** \brief Operator<= for comparing octree keys with each other.
@@ -133,7 +139,7 @@ namespace pcl
       }
 
       /* \brief maximum depth that can be addressed */
-      static const unsigned char maxDepth = static_cast<const unsigned char>(sizeof(uint32_t)*8);
+      static const unsigned char maxDepth = static_cast<unsigned char>(sizeof(uint32_t)*8);
 
       // Indices addressing a voxel at (X, Y, Z)
 
@@ -152,5 +158,3 @@ namespace pcl
     };
   }
 }
-
-#endif

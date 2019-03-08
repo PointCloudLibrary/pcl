@@ -35,13 +35,13 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#pragma once
+ 
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
-#ifndef __OPENNI_SHIFT_TO_DEPTH_CONVERSION
-#define __OPENNI_SHIFT_TO_DEPTH_CONVERSION
-
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 #include <limits>
 
@@ -64,28 +64,24 @@ namespace openni_wrapper
       generateLookupTable ()
       {
         // lookup of 11 bit shift values
-        const std::size_t table_size = 1<<10;
+        constexpr size_t table_size = 1 << 10;
 
         lookupTable_.clear();
         lookupTable_.resize(table_size);
 
         // constants taken from openni driver
-        static const int16_t nConstShift = 800;
-        static const double nParamCoeff = 4.000000;
-        static const double dPlanePixelSize = 0.104200;
-        static const double nShiftScale = 10.000000;
-        static const double dPlaneDsr = 120.000000;
-        static const double dPlaneDcl = 7.500000;
+        constexpr int16_t nConstShift = 800;
+        constexpr double nParamCoeff = 4.000000;
+        constexpr double dPlanePixelSize = 0.104200;
+        constexpr double nShiftScale = 10.000000;
+        constexpr double dPlaneDsr = 120.000000;
+        constexpr double dPlaneDcl = 7.500000;
 
-        std::size_t i;
-        double dFixedRefX;
-        double dMetric;
-
-        for (i=0; i<table_size; ++i)
+        for (size_t i=0; i<table_size; ++i)
         {
           // shift to depth calculation from opnni
-          dFixedRefX = (static_cast<double>(i - nConstShift) / nParamCoeff)-0.375;
-          dMetric = dFixedRefX * dPlanePixelSize;
+          double dFixedRefX = (static_cast<double>(i - nConstShift) / nParamCoeff)-0.375;
+          double dMetric = dFixedRefX * dPlanePixelSize;
           lookupTable_[i] = static_cast<float>((nShiftScale * ((dMetric * dPlaneDsr / (dPlaneDcl - dMetric)) + dPlaneDsr) ) / 1000.0f);
         }
 
@@ -99,7 +95,7 @@ namespace openni_wrapper
       {
         assert (init_);
 
-        static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
+        constexpr float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
         float ret = bad_point;
 
@@ -122,4 +118,3 @@ namespace openni_wrapper
 }
 
 #endif
-#endif //__OPENNI_SHIFT_TO_DEPTH_CONVERSION

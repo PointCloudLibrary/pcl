@@ -55,7 +55,7 @@ borderSize greater 0 will leave a border of unobserved points around the image w
    :language: cpp
    :lines: 29-33
 
-The remaining code creates the range image from the point cloud with the given paramters and outputs some information on the terminal.
+The remaining code creates the range image from the point cloud with the given parameters and outputs some information on the terminal.
 
 The range image is derived from the PointCloud class and its points have the members x,y,z and range. There are three kinds of points. Valid points have a real range greater zero. Unobserved points have x=y=z=NAN and range=-INFINITY. Far range points have x=y=z=NAN and range=INFINITY.
 

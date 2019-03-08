@@ -39,14 +39,13 @@
 #include <pcl/apps/cloud_composer/properties_model.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
+#include <QDebug>
 
 pcl::cloud_composer::PropertiesModel::PropertiesModel (QObject* parent)
   : QStandardItemModel (parent)
 {
   setHorizontalHeaderItem (0, new QStandardItem ("Name"));
-  setHorizontalHeaderItem (1, new QStandardItem ("Value"));
-
-  
+  setHorizontalHeaderItem (1, new QStandardItem ("Value"));  
 }
 
 pcl::cloud_composer::PropertiesModel::PropertiesModel (CloudComposerItem* parent_item, QObject* parent)
@@ -57,8 +56,7 @@ pcl::cloud_composer::PropertiesModel::PropertiesModel (CloudComposerItem* parent
   setHorizontalHeaderItem (1, new QStandardItem ("Value"));
   
   connect (this, SIGNAL (itemChanged (QStandardItem*)),
-           this, SLOT (propertyChanged (QStandardItem*)));
-  
+           this, SLOT (propertyChanged (QStandardItem*)));  
 }
 
 pcl::cloud_composer::PropertiesModel::PropertiesModel (const PropertiesModel& to_copy)
@@ -79,8 +77,7 @@ pcl::cloud_composer::PropertiesModel::PropertiesModel (const PropertiesModel& to
 }
 
 pcl::cloud_composer::PropertiesModel::~PropertiesModel ()
-{
-  
+{  
 }
 
 void
@@ -149,7 +146,6 @@ pcl::cloud_composer::PropertiesModel::copyProperties (const PropertiesModel* to_
   for (int i=0; i < to_copy->rowCount (); ++i){
     QList <QStandardItem*> new_row;
     QStandardItem* parent = to_copy->item(i,0);
-    QModelIndex parent_index = to_copy->index(i,0);
     qDebug () << "Copying "<<parent->text()<< " cols ="<<to_copy->columnCount ();
     new_row.append (parent->clone ());
     for (int j=1; j < to_copy->columnCount (); ++j)
@@ -159,8 +155,7 @@ pcl::cloud_composer::PropertiesModel::copyProperties (const PropertiesModel* to_
         new_row.append (to_copy->item(i,j)->clone ());
       }
     }
-    appendRow (new_row);
-    
+    appendRow (new_row);    
   }
 }
 
@@ -169,7 +164,5 @@ void
 pcl::cloud_composer::PropertiesModel::propertyChanged (QStandardItem*)
 {
   //qDebug () << "Property Changed in properties model";
-  parent_item_->propertyChanged ();
-  
+  parent_item_->propertyChanged ();  
 }
-

@@ -35,12 +35,9 @@
  *
  * Author: Julius Kammerl (julius@kammerl.de)
  */
-
+#define PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
-
-#include <pcl/octree/octree.h>
-#include <pcl/octree/octree_impl.h>
 
 #include <pcl/compression/entropy_range_coder.h>
 #include <pcl/compression/impl/entropy_range_coder.hpp>

@@ -34,10 +34,8 @@
  *
  */
 
-#ifndef PCL_MODELER_MAIN_WINDOW_H_
-#define PCL_MODELER_MAIN_WINDOW_H_
+#pragma once
 
-#include <pcl/apps/modeler/qt.h>
 #include <boost/shared_ptr.hpp>
 
 #include <ui_main_window.h>
@@ -66,7 +64,7 @@ namespace pcl
         RenderWindowItem*
         createRenderWindow();
 
-      public slots:
+      public Q_SLOTS:
         // slots for file menu
         void 
         slotOpenProject();
@@ -120,7 +118,7 @@ namespace pcl
         void 
         saveGlobalSettings();
 
-      private slots:
+      private Q_SLOTS:
         void 
         slotOpenRecentPointCloud();
         void 
@@ -145,5 +143,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_MAIN_WINDOW_H_

@@ -3839,7 +3839,7 @@ bool ON_BinaryArchive::WriteObjectUserData( const ON_Object& object )
           {
             // 22 January 2004 Dale Lear
             //   Disable crc checking when writing the
-            //   unknow user data block.
+            //   unknown user data block.
             //   This has to be done so we don't get an extra
             //   32 bit CRC calculated on the block that
             //   ON_UnknownUserData::Write() writes.  The

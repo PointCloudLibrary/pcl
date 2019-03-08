@@ -72,33 +72,26 @@ These lines show how to access computed descriptors and other features.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 41-46
+   :lines: 41-47
 
-These lines simply create the instance of ``PCLVisualizer`` class for result visualization.
-Here we also add the cloud and the AABB for visualization.
+These lines simply create the instance of ``PCLVisualizer`` class for result
+visualization. Here we also add the cloud and the AABB for visualization. We
+set rendering properties so that the cube is displayed using a wireframe,
+because the default is to use a solid cube.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 48-50
+   :lines: 49-52
 
 Visualization of the OBB is little more complex. So here we create a quaternion from the rotational matrix, set OBBs position
 and pass it to the visualizer.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 52-58
+   :lines: 54-60
 
-This lines are responsible for eigen vectors visualization.
-
-.. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
-   :language: cpp
-   :lines: 60-98
-
-This huge amount of code shows how to work with the oriented bounding box. Note that you need to rotate each of the vertices of the OBB.
-This code does the same thing as ``PCLVisualizer::addCube ()`` method. Its only purpose is to show how to work with OBB
-if you don't have such usable method as ``PCLVisualizer::addCube ()``.
-
-Few lines that left simply launch the visualization process.
+These lines are responsible for eigen vectors visualization. The few lines that
+are left simply launch the visualization process.
 
 Compiling and running the program
 ---------------------------------

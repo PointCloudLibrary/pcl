@@ -37,15 +37,14 @@
  * Authors: Julius Kammerl (julius@kammerl.de)
  */
 
-#ifndef PCL_ORGANIZED_CONVERSION_H_
-#define PCL_ORGANIZED_CONVERSION_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 
 #include <vector>
 #include <limits>
-#include <assert.h>
+#include <cassert>
 
 namespace pcl
 {
@@ -101,16 +100,14 @@ namespace pcl
                           typename std::vector<uint16_t>& disparityData_arg,
                           typename std::vector<uint8_t>&)
       {
-        size_t cloud_size, i;
-
-        cloud_size = cloud_arg.points.size ();
+        size_t cloud_size = cloud_arg.points.size ();
 
         // Clear image data
         disparityData_arg.clear ();
 
         disparityData_arg.reserve (cloud_size);
 
-        for (i = 0; i < cloud_size; ++i)
+        for (size_t i = 0; i < cloud_size; ++i)
         {
           // Get point from cloud
           const PointT& point = cloud_arg.points[i];
@@ -149,9 +146,7 @@ namespace pcl
                           float disparityScale_arg,
                           pcl::PointCloud<PointT>& cloud_arg)
       {
-        size_t i;
         size_t cloud_size = width_arg * height_arg;
-        int x, y, centerX, centerY;
 
         assert(disparityData_arg.size()==cloud_size);
 
@@ -165,15 +160,15 @@ namespace pcl
         cloud_arg.is_dense = false;
 
         // Calculate center of disparity image
-        centerX = static_cast<int> (width_arg / 2);
-        centerY = static_cast<int> (height_arg / 2);
+        int centerX = static_cast<int> (width_arg / 2);
+        int centerY = static_cast<int> (height_arg / 2);
 
         const float fl_const = 1.0f / focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-        i = 0;
-        for (y = -centerY; y < +centerY; ++y)
-          for (x = -centerX; x < +centerX; ++x)
+        size_t i = 0;
+        for (int y = -centerY; y < centerY; ++y )
+          for (int x = -centerX; x < centerX; ++x )
           {
             PointT newPoint;
             const uint16_t& pixel_disparity = disparityData_arg[i];
@@ -218,9 +213,7 @@ namespace pcl
                           float focalLength_arg,
                           pcl::PointCloud<PointT>& cloud_arg)
       {
-        size_t i;
         size_t cloud_size = width_arg * height_arg;
-        int x, y, centerX, centerY;
 
         assert(depthData_arg.size()==cloud_size);
 
@@ -234,15 +227,15 @@ namespace pcl
         cloud_arg.is_dense = false;
 
         // Calculate center of disparity image
-        centerX = static_cast<int> (width_arg / 2);
-        centerY = static_cast<int> (height_arg / 2);
+        int centerX = static_cast<int> (width_arg / 2);
+        int centerY = static_cast<int> (height_arg / 2);
 
         const float fl_const = 1.0f / focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-        i = 0;
-        for (y = -centerY; y < +centerY; ++y)
-          for (x = -centerX; x < +centerX; ++x)
+        size_t i = 0;
+        for (int y = -centerY; y < centerY; ++y )
+          for (int x = -centerX; x < centerX; ++x )
           {
             PointT newPoint;
             const float& pixel_depth = depthData_arg[i];
@@ -296,9 +289,7 @@ namespace pcl
                           typename std::vector<uint16_t>& disparityData_arg,
                           typename std::vector<uint8_t>& rgbData_arg)
       {
-        size_t cloud_size, i;
-
-        cloud_size = cloud_arg.points.size ();
+        size_t cloud_size = cloud_arg.points.size ();
 
         // Reset output vectors
         disparityData_arg.clear ();
@@ -315,7 +306,7 @@ namespace pcl
         }
 
 
-        for (i = 0; i < cloud_size; ++i)
+        for (size_t i = 0; i < cloud_size; ++i)
         {
           const PointT& point = cloud_arg.points[i];
 
@@ -324,20 +315,17 @@ namespace pcl
             if (convertToMono)
             {
               // Encode point color
-              const uint32_t rgb = *reinterpret_cast<const int*> (&point.rgb);
-              uint8_t grayvalue = static_cast<uint8_t>(0.2989 * static_cast<float>((rgb >> 16) & 0x0000ff) +
-                                                       0.5870 * static_cast<float>((rgb >> 8)  & 0x0000ff) +
-                                                       0.1140 * static_cast<float>((rgb >> 0)  & 0x0000ff));
+              uint8_t grayvalue = static_cast<uint8_t>(0.2989 * point.r
+                                                        + 0.5870 * point.g
+                                                        + 0.1140 * point.b);
 
               rgbData_arg.push_back (grayvalue);
             } else
             {
               // Encode point color
-              const uint32_t rgb = *reinterpret_cast<const int*> (&point.rgb);
-
-              rgbData_arg.push_back ( (rgb >> 16) & 0x0000ff);
-              rgbData_arg.push_back ( (rgb >> 8) & 0x0000ff);
-              rgbData_arg.push_back ( (rgb >> 0) & 0x0000ff);
+              rgbData_arg.push_back (point.r);
+              rgbData_arg.push_back (point.g);
+              rgbData_arg.push_back (point.b);
             }
 
 
@@ -390,7 +378,6 @@ namespace pcl
                           float disparityScale_arg,
                           pcl::PointCloud<PointT>& cloud_arg)
       {
-        size_t i;
         size_t cloud_size = width_arg*height_arg;
         bool hasColor = (rgbData_arg.size () > 0);
 
@@ -407,8 +394,6 @@ namespace pcl
           }
         }
 
-        int x, y, centerX, centerY;
-
         // Reset point cloud
         cloud_arg.points.clear();
         cloud_arg.points.reserve(cloud_size);
@@ -419,15 +404,15 @@ namespace pcl
         cloud_arg.is_dense = false;
 
         // Calculate center of disparity image
-        centerX = static_cast<int>(width_arg/2);
-        centerY = static_cast<int>(height_arg/2);
+        int centerX = static_cast<int>(width_arg/2);
+        int centerY = static_cast<int>(height_arg/2);
 
         const float fl_const = 1.0f/focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-        i = 0;
-        for (y=-centerY; y<+centerY; ++y )
-          for (x=-centerX; x<+centerX; ++x )
+        size_t i = 0;
+        for (int y = -centerY; y < centerY; ++y )
+          for (int x = -centerX; x < centerX; ++x )
           {
             PointT newPoint;
 
@@ -446,35 +431,22 @@ namespace pcl
               {
                 if (monoImage_arg)
                 {
-                  const uint8_t& pixel_r = rgbData_arg[i];
-                  const uint8_t& pixel_g = rgbData_arg[i];
-                  const uint8_t& pixel_b = rgbData_arg[i];
-
                   // Define point color
-                  uint32_t rgb = (static_cast<uint32_t>(pixel_r) << 16
-                                | static_cast<uint32_t>(pixel_g) << 8
-                                | static_cast<uint32_t>(pixel_b));
-                  newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                  newPoint.r = rgbData_arg[i];
+                  newPoint.g = rgbData_arg[i];
+                  newPoint.b = rgbData_arg[i];
                 } else
                 {
-                  const uint8_t& pixel_r = rgbData_arg[i*3+0];
-                  const uint8_t& pixel_g = rgbData_arg[i*3+1];
-                  const uint8_t& pixel_b = rgbData_arg[i*3+2];
-
                   // Define point color
-                  uint32_t rgb = (static_cast<uint32_t>(pixel_r) << 16
-                                | static_cast<uint32_t>(pixel_g) << 8
-                                | static_cast<uint32_t>(pixel_b));
-                  newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                  newPoint.r = rgbData_arg[i*3+0];
+                  newPoint.g = rgbData_arg[i*3+1];
+                  newPoint.b = rgbData_arg[i*3+2];
                 }
 
               } else
               {
                 // Set white point color
-                uint32_t rgb = (static_cast<uint32_t>(255) << 16
-                              | static_cast<uint32_t>(255) << 8
-                              | static_cast<uint32_t>(255));
-                newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                newPoint.rgba = 0xffffffffu;
               }
             } else
             {
@@ -508,7 +480,6 @@ namespace pcl
                           float focalLength_arg,
                           pcl::PointCloud<PointT>& cloud_arg)
       {
-        size_t i;
         size_t cloud_size = width_arg*height_arg;
         bool hasColor = (rgbData_arg.size () > 0);
 
@@ -525,8 +496,6 @@ namespace pcl
           }
         }
 
-        int x, y, centerX, centerY;
-
         // Reset point cloud
         cloud_arg.points.clear();
         cloud_arg.points.reserve(cloud_size);
@@ -537,15 +506,15 @@ namespace pcl
         cloud_arg.is_dense = false;
 
         // Calculate center of disparity image
-        centerX = static_cast<int>(width_arg/2);
-        centerY = static_cast<int>(height_arg/2);
+        int centerX = static_cast<int>(width_arg/2);
+        int centerY = static_cast<int>(height_arg/2);
 
         const float fl_const = 1.0f/focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-        i = 0;
-        for (y=-centerY; y<+centerY; ++y )
-          for (x=-centerX; x<+centerX; ++x )
+        size_t i = 0;
+        for (int y = -centerY; y < centerY; ++y )
+          for (int x = -centerX; x < centerX; ++x )
           {
             PointT newPoint;
 
@@ -564,35 +533,22 @@ namespace pcl
               {
                 if (monoImage_arg)
                 {
-                  const uint8_t& pixel_r = rgbData_arg[i];
-                  const uint8_t& pixel_g = rgbData_arg[i];
-                  const uint8_t& pixel_b = rgbData_arg[i];
-
                   // Define point color
-                  uint32_t rgb = (static_cast<uint32_t>(pixel_r) << 16
-                                | static_cast<uint32_t>(pixel_g) << 8
-                                | static_cast<uint32_t>(pixel_b));
-                  newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                  newPoint.r = rgbData_arg[i];
+                  newPoint.g = rgbData_arg[i];
+                  newPoint.b = rgbData_arg[i];
                 } else
                 {
-                  const uint8_t& pixel_r = rgbData_arg[i*3+0];
-                  const uint8_t& pixel_g = rgbData_arg[i*3+1];
-                  const uint8_t& pixel_b = rgbData_arg[i*3+2];
-
                   // Define point color
-                  uint32_t rgb = (static_cast<uint32_t>(pixel_r) << 16
-                                | static_cast<uint32_t>(pixel_g) << 8
-                                | static_cast<uint32_t>(pixel_b));
-                  newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                  newPoint.r = rgbData_arg[i*3+0];
+                  newPoint.g = rgbData_arg[i*3+1];
+                  newPoint.b = rgbData_arg[i*3+2];
                 }
 
               } else
               {
                 // Set white point color
-                uint32_t rgb = (static_cast<uint32_t>(255) << 16
-                              | static_cast<uint32_t>(255) << 8
-                              | static_cast<uint32_t>(255));
-                newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                newPoint.rgba = 0xffffffffu;
               }
             } else
             {
@@ -611,6 +567,3 @@ namespace pcl
 
   }
 }
-
-
-#endif

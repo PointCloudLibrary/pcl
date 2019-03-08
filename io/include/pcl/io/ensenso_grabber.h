@@ -36,10 +36,9 @@
  *  Author: Victor Lamoine (victor.lamoine@gmail.com)
  */
 
-#include <pcl/pcl_config.h>
+#pragma once
 
-#ifndef __PCL_IO_ENSENSO_GRABBER__
-#define __PCL_IO_ENSENSO_GRABBER__
+#include <pcl/pcl_config.h>
 
 #include <pcl/common/time.h>
 #include <pcl/common/io.h>
@@ -48,7 +47,6 @@
 #include <Eigen/StdVector>
 #include <pcl/io/boost.h>
 #include <boost/thread.hpp>
-#include <boost/lexical_cast.hpp> // TODO: Remove when setExtrinsicCalibration is fixed
 
 #include <pcl/io/grabber.h>
 #include <pcl/common/synchronizer.h>
@@ -490,6 +488,3 @@ namespace pcl
       processGrabbing ();
   };
 }  // namespace pcl
-
-#endif // __PCL_IO_ENSENSO_GRABBER__
-

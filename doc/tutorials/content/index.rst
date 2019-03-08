@@ -395,6 +395,21 @@ Features
      .. |fe_9| image:: images/rops_feature.png
                :height: 100px
 
+  * :ref:`gasd_estimation`
+
+     =======  ======
+     |fe_10|  Title: **Globally Aligned Spatial Distribution (GASD) descriptors**
+
+              Author: *Joao Paulo Lima*
+
+              Compatibility: >= PCL 1.9
+
+              This document describes the Globally Aligned Spatial Distribution (GASD) global descriptor to be used for efficient object recognition and pose estimation.
+     =======  ======
+
+     .. |fe_10| image:: images/gasd_estimation.png
+               :height: 100px
+
 .. _filtering_tutorial:
 
 Filtering

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_HARRIS_KEYPOINT_2D_H_
-#define PCL_HARRIS_KEYPOINT_2D_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 #include <pcl/common/intensity.h>
@@ -135,9 +134,9 @@ namespace pcl
 
     protected:
       bool 
-      initCompute ();
+      initCompute () override;
       void 
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
       /** \brief gets the corner response for valid input points*/
       void 
       responseHarris (PointCloudOut &output) const;
@@ -160,7 +159,7 @@ namespace pcl
       bool refine_;
       /// non maximas suppression
       bool nonmax_;
-      /// cornerness computation methode
+      /// cornerness computation method
       ResponseMethod method_;
       /// number of threads to be used
       unsigned int threads_;      
@@ -169,7 +168,7 @@ namespace pcl
       Eigen::MatrixXf derivatives_rows_;
       Eigen::MatrixXf derivatives_cols_;
       /// intermediate holder for computed responses
-      boost::shared_ptr<pcl::PointCloud<PointOutT> > response_;
+      typename pcl::PointCloud<PointOutT>::Ptr response_;
       /// comparator for responses intensity
       bool 
       greaterIntensityAtIndices (int a, int b) const
@@ -194,5 +193,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/harris_2d.hpp>
-
-#endif // #ifndef PCL_HARRIS_KEYPOINT_2D_H_

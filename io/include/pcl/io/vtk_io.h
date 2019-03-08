@@ -38,14 +38,13 @@
  *
  */
 
-#ifndef PCL_IO_VTK_IO_H_
-#define PCL_IO_VTK_IO_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/PolygonMesh.h>
 
-// Please do not add any functions tha depend on VTK structures to this file!
+// Please do not add any functions that depend on VTK structures to this file!
 // Use vtk_io_lib.h instead.
 
 namespace pcl
@@ -71,5 +70,3 @@ namespace pcl
     saveVTKFile (const std::string &file_name, const pcl::PCLPointCloud2 &cloud, unsigned precision = 5);
   }
 }
-
-#endif  //#ifndef PCL_IO_VTK_IO_H_

@@ -38,17 +38,14 @@
 #ifndef OCTREE_COMPRESSION_HPP
 #define OCTREE_COMPRESSION_HPP
 
-#include <pcl/octree/octree_pointcloud.h>
 #include <pcl/compression/entropy_range_coder.h>
 
 #include <iterator>
 #include <iostream>
 #include <vector>
-#include <string.h>
+#include <cstring>
 #include <iostream>
-#include <stdio.h>
-
-using namespace pcl::octree;
+#include <cstdio>
 
 namespace pcl
 {
@@ -138,7 +135,6 @@ namespace pcl
 
         // prepare for next frame
         this->switchBuffers ();
-        i_frame_ = false;
 
         // reset object count
         object_count_ = 0;
@@ -165,6 +161,8 @@ namespace pcl
           PCL_INFO ("Total compression percentage: %f%%\n", (bytes_per_XYZ + bytes_per_color) / (sizeof (int) + 3.0f * sizeof (float)) * 100.0f);
           PCL_INFO ("Compression ratio: %f\n\n", static_cast<float> (sizeof (int) + 3.0f * sizeof (float)) / static_cast<float> (bytes_per_XYZ + bytes_per_color));
         }
+        
+        i_frame_ = false;
       } else {
         if (b_show_statistics_)
         PCL_INFO ("Info: Dropping empty point cloud\n");
@@ -512,22 +510,21 @@ namespace pcl
         const OctreeKey& key_arg)
     {
       double lowerVoxelCorner[3];
-      std::size_t pointCount, i, cloudSize;
       PointT newPoint;
 
-      pointCount = 1;
+      size_t pointCount = 1;
 
       if (!do_voxel_grid_enDecoding_)
       {
         // get current cloud size
-        cloudSize = output_->points.size ();
+        size_t cloudSize = output_->points.size ();
 
         // get amount of point to be decoded
         pointCount = *point_count_data_vector_iterator_;
         point_count_data_vector_iterator_++;
 
         // increase point cloud by amount of voxel points
-        for (i = 0; i < pointCount; i++)
+        for (size_t i = 0; i < pointCount; i++)
           output_->points.push_back (newPoint);
 
         // calculcate position of lower voxel corner

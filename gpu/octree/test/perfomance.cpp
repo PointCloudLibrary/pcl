@@ -69,8 +69,8 @@ using pcl::ScopeTime;
     #include "opencv2/contrib/contrib.hpp"
 #endif
 
-//TEST(PCL_OctreeGPU, DISABLED_perfomance)
-TEST(PCL_OctreeGPU, perfomance)
+//TEST(PCL_OctreeGPU, DISABLED_performance)
+TEST(PCL_OctreeGPU, performance)
 {
     DataGenerator data;
     data.data_size = 871000;
@@ -108,7 +108,7 @@ TEST(PCL_OctreeGPU, perfomance)
     
     cout << "[!] Host octree resolution: " << host_octree_resolution << endl << endl;    
 
-    cout << "======  Build perfomance =====" << endl;
+    cout << "======  Build performance =====" << endl;
     // build device octree
     pcl::gpu::Octree octree_device;                
     octree_device.setCloud(cloud_device);	    
@@ -142,7 +142,7 @@ TEST(PCL_OctreeGPU, perfomance)
     }
 #endif
     
-    //// Radius search perfomance ///
+    //// Radius search performance ///
 
     const int max_answers = 500;
     float dist;

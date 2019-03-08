@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_NDT_2D_H_
-#define PCL_NDT_2D_H_
+#pragma once
 
 #include <pcl/registration/registration.h>
 
@@ -82,7 +81,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~NormalDistributionsTransform2D () {}
+      ~NormalDistributionsTransform2D () {}
  
       /** \brief centre of the ndt grid (target coordinate system)
         * \param centre value to set
@@ -126,8 +125,8 @@ namespace pcl
         * \param[out] output the transformed input point cloud dataset using the rigid transformation found
         * \param[in] guess the initial guess of the transformation to compute
         */
-      virtual void 
-      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess);
+      void 
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess) override;
 
       using Registration<PointSource, PointTarget>::reg_name_;
       using Registration<PointSource, PointTarget>::target_;
@@ -135,8 +134,9 @@ namespace pcl
       using Registration<PointSource, PointTarget>::nr_iterations_;
       using Registration<PointSource, PointTarget>::max_iterations_;
       using Registration<PointSource, PointTarget>::transformation_epsilon_;
+      using Registration<PointSource, PointTarget>::transformation_rotation_epsilon_;
       using Registration<PointSource, PointTarget>::transformation_;
-      using Registration<PointSource, PointTarget>::previous_transformation_;      
+      using Registration<PointSource, PointTarget>::previous_transformation_;
       using Registration<PointSource, PointTarget>::final_transformation_;
       using Registration<PointSource, PointTarget>::update_visualizer_;
       using Registration<PointSource, PointTarget>::indices_;
@@ -152,6 +152,3 @@ namespace pcl
 } // namespace pcl
 
 #include <pcl/registration/impl/ndt_2d.hpp>
-
-#endif // ndef PCL_NDT_2D_H_
-

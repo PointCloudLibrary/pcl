@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_IMPL_H
-#define PCL_OCTREE_IMPL_H
+#pragma once
 
 #include <pcl/octree/octree.h>
 
@@ -46,5 +45,3 @@
 #include <pcl/octree/impl/octree_pointcloud.hpp>
 #include <pcl/octree/impl/octree_iterator.hpp>
 #include <pcl/octree/impl/octree_search.hpp>
-
-#endif

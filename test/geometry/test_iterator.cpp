@@ -38,7 +38,7 @@
 #include <pcl/geometry/line_iterator.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <math.h>
+#include <cmath>
 
 using namespace pcl;
 
@@ -169,7 +169,7 @@ void checkGeneralLine (unsigned x_start, unsigned y_start, unsigned x_end, unsig
   else
     EXPECT_EQ (abs(dx) + abs(dy), idx);
   
-  float length = sqrtf (float (dx * dx + dy * dy));
+  float length = std::sqrt (float (dx * dx + dy * dy));
   float dir_x = float (dx) / length;
   float dir_y = float (dy) / length;
   

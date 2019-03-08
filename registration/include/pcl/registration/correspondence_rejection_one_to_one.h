@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_ONE_TO_ONE_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_ONE_TO_ONE_H_
+
+#pragma once
 
 #include <pcl/registration/correspondence_rejection.h>
 
@@ -77,14 +77,14 @@ namespace pcl
           */
         void 
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
-                                     pcl::Correspondences& remaining_correspondences);
+                                     pcl::Correspondences& remaining_correspondences) override;
 
       protected:
         /** \brief Apply the rejection algorithm.
           * \param[out] correspondences the set of resultant correspondences.
           */
         inline void 
-        applyRejection (pcl::Correspondences &correspondences)
+        applyRejection (pcl::Correspondences &correspondences) override
         {
           getRemainingCorrespondences (*input_correspondences_, correspondences);
         }
@@ -94,5 +94,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_rejection_one_to_one.hpp>
-
-#endif    // PCL_REGISTRATION_CORRESPONDENCE_REJECTION_ONE_TO_ONE_H_

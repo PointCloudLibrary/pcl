@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_TRAJKOVIC_KEYPOINT_2D_H_
-#define PCL_TRAJKOVIC_KEYPOINT_2D_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 #include <pcl/common/intensity.h>
@@ -139,10 +138,10 @@ namespace pcl
 
     protected:
       bool
-      initCompute ();
+      initCompute () override;
 
       void
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
 
     private:
       /// comparator for responses intensity
@@ -172,5 +171,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/trajkovic_2d.hpp>
-
-#endif // #ifndef PCL_TRAJKOVIC_KEYPOINT_2D_H_

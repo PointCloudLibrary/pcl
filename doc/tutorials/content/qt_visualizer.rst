@@ -35,7 +35,7 @@ If you want to change this layout you will have to do minor modifications in the
 Create the folder tree and download the sources files from `github <https://github.com/PointCloudLibrary/pcl/tree/master/doc/tutorials/content/sources/qt_visualizer>`_.
 
 .. note::
-   File paths should not contain any special caracter or the compilation might fail with a ``moc: Cannot open options file specified with @`` error message.
+   File paths should not contain any special character or the compilation might fail with a ``moc: Cannot open options file specified with @`` error message.
 
 Qt configuration
 ================
@@ -92,8 +92,8 @@ main.cpp
    :language: cpp
 
 | Here we include the headers for the class PCLViewer and the headers for QApplication and QMainWindow.
-| Then the main functions consists of instanciating a QApplication `a` which manages the GUI application's control flow and main settings.
-| A ``PCLViewer`` object called `w` is instanciated and it's method ``show()`` is called.
+| Then the main functions consists of instantiating a QApplication `a` which manages the GUI application's control flow and main settings.
+| A ``PCLViewer`` object called `w` is instantiated and it's method ``show()`` is called.
 | Finally we return the state of our program exit through the QApplication `a`.
 
 pclviewer.h
@@ -101,7 +101,7 @@ pclviewer.h
 
 .. literalinclude:: sources/qt_visualizer/pclviewer.h
    :language: cpp
-   :lines: 1-18
+   :lines: 1-17
 
 This file is the header for the class PCLViewer; we include ``QMainWindow`` because this class contains UI elements, we include the PCL headers we will 
 be using and the VTK header for the ``qvtkWidget``. We also define typedefs of the point types and point clouds, this improves readabily.
@@ -109,32 +109,32 @@ be using and the VTK header for the ``qvtkWidget``. We also define typedefs of t
 
 .. literalinclude:: sources/qt_visualizer/pclviewer.h
    :language: cpp
-   :lines: 20-23
+   :lines: 19-22
 
 We declare the namespace ``Ui`` and the class PCLViewer inside it.
 
 .. literalinclude:: sources/qt_visualizer/pclviewer.h
    :language: cpp
-   :lines: 25-27
+   :lines: 24-26
 
 This is the definition of the PCLViewer class; the macro ``Q_OBJECT`` tells the compiler that this object contains UI elements;
 this imply that this file will be processed through `the Meta-Object Compiler (moc) <http://qt-project.org/doc/qt-4.8/moc.html>`_.
 
 .. literalinclude:: sources/qt_visualizer/pclviewer.h
    :language: cpp
-   :lines: 29-31
+   :lines: 28-30
 
 The constructor and destructor of the PCLViewer class.
 
 .. literalinclude:: sources/qt_visualizer/pclviewer.h
    :language: cpp
-   :lines: 33-50
+   :lines: 32-49
 
 These are the public slots; these functions will be linked with UI elements actions.
 
 .. literalinclude:: sources/qt_visualizer/pclviewer.h
    :language: cpp
-   :lines: 52-58
+   :lines: 51-57
 
 | A boost shared pointer to a PCLVisualier and a pointer to a point cloud are defined here.
 | The integers ``red``, ``green``, ``blue`` will help us store the value of the sliders.
@@ -194,7 +194,7 @@ Here we connect slots and signals, this links UI actions to functions. Here is a
 
 | This is the last part of our constructor; we add the point cloud to the visualizer, call the method ``pSliderValueChanged`` to change the point size to 2.
 
-We finaly reset the camera within the PCL Visualizer not avoid the user having to zoom out and update the qvtkwidget to be 
+We finally reset the camera within the PCL Visualizer not avoid the user having to zoom out and update the qvtkwidget to be 
 sure the modifications will be displayed.
 
 .. literalinclude:: sources/qt_visualizer/pclviewer.cpp

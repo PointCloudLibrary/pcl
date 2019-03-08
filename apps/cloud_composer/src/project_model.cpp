@@ -35,8 +35,6 @@
  *
  */
 
-
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/commands.h>
@@ -46,6 +44,11 @@
 #include <pcl/apps/cloud_composer/merge_selection.h>
 #include <pcl/apps/cloud_composer/transform_clouds.h>
 
+#include <QAction>
+#include <QFileDialog>
+#include <QItemSelectionModel>
+#include <QMessageBox>
+#include <QThread>
 
 pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   : QStandardItemModel (parent)
@@ -330,9 +333,9 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
   depth_pixel = static_cast<unsigned short*>(depth_image->GetScalarPointer (depth_dims[0]-1,depth_dims[1]-1,0));
   color_pixel = static_cast<unsigned char*> (rgb_image->GetScalarPointer (depth_dims[0]-1,depth_dims[1]-1,0));
   
-  for (int y=0; y<cloud->height; ++y)
+  for (uint32_t y=0; y<cloud->height; ++y)
   {
-    for (int x=0; x<cloud->width; ++x, --depth_pixel, color_pixel-=3)
+    for (uint32_t x=0; x<cloud->width; ++x, --depth_pixel, color_pixel-=3)
     {
       PointXYZRGB new_point;
       //  uint8_t* p_i = &(cloud_blob->data[y * cloud_blob->row_step + x * cloud_blob->point_step]);

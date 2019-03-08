@@ -269,8 +269,8 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                      pcl::PointCloud<PointT> &cloud_out)
 {
   int nr_p = 0;
-  for (size_t i = 0; i < indices.size (); ++i)
-    nr_p += indices[i].indices.size ();
+  for (const auto &index : indices)
+    nr_p += index.indices.size ();
 
   // Do we want to copy everything? Remember we assume UNIQUE indices
   if (nr_p == cloud_in.points.size ())
@@ -290,13 +290,13 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
   // Iterate over each cluster
   int cp = 0;
-  for (size_t cc = 0; cc < indices.size (); ++cc)
+  for (const auto &cluster_index : indices)
   {
     // Iterate over each idx
-    for (size_t i = 0; i < indices[cc].indices.size (); ++i)
+    for (const auto &index : cluster_index.indices)
     {
       // Iterate over each dimension
-      cloud_out.points[cp] = cloud_in.points[indices[cc].indices[i]];
+      cloud_out.points[cp] = cloud_in.points[index];
       cp++;
     }
   }
@@ -309,8 +309,8 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
                      pcl::PointCloud<PointOutT> &cloud_out)
 {
   int nr_p = 0;
-  for (size_t i = 0; i < indices.size (); ++i)
-    nr_p += indices[i].indices.size ();
+  for (const auto &index : indices)
+    nr_p += index.indices.size ();
 
   // Do we want to copy everything? Remember we assume UNIQUE indices
   if (nr_p == cloud_in.points.size ())
@@ -330,12 +330,12 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
 
   // Iterate over each cluster
   int cp = 0;
-  for (size_t cc = 0; cc < indices.size (); ++cc)
+  for (const auto &cluster_index : indices)
   {
     // Iterate over each idx
-    for (size_t i = 0; i < indices[cc].indices.size (); ++i)
+    for (const auto &index : cluster_index.indices)
     {
-      copyPoint (cloud_in.points[indices[cc].indices[i]], cloud_out.points[cp]);
+      copyPoint (cloud_in.points[index], cloud_out.points[cp]);
       ++cp;
     }
   }

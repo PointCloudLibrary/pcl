@@ -133,7 +133,7 @@ public:
       {
         FPS_CALC ("drawing");
         //the call to get() sets the cloud_ to null;
-        viewer.showCloud (getLatestCloud ());
+        viewer.showCloud (getLatestCloud (), "cloud");
       }
     }
 
@@ -158,7 +158,7 @@ usage(char ** argv)
 int
 main(int argc, char ** argv)
 {
-  std::string arg("");
+  std::string arg;
 
   unsigned frame_rate = 0;
   if (argc >= 2)

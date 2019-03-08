@@ -47,14 +47,6 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
-pcl::MarchingCubesRBF<PointNT>::MarchingCubesRBF ()
-  : MarchingCubes<PointNT> (),
-    off_surface_epsilon_ (0.1f)
-{
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointNT>
 pcl::MarchingCubesRBF<PointNT>::~MarchingCubesRBF ()
 {
 }
@@ -64,18 +56,18 @@ template <typename PointNT> void
 pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
 {
   // Initialize data structures
-  unsigned int N = static_cast<unsigned int> (input_->size ());
+  const unsigned int N = static_cast<unsigned int> (input_->size ());
   Eigen::MatrixXd M (2*N, 2*N),
                   d (2*N, 1);
 
   for (unsigned int row_i = 0; row_i < 2*N; ++row_i)
   {
     // boolean variable to determine whether we are in the off_surface domain for the rows
-    bool row_off = (row_i >= N) ? 1 : 0;
+    bool row_off = (row_i >= N);
     for (unsigned int col_i = 0; col_i < 2*N; ++col_i)
     {
       // boolean variable to determine whether we are in the off_surface domain for the columns
-      bool col_off = (col_i >= N) ? 1 : 0;
+      bool col_off = (col_i >= N);
       M (row_i, col_i) = kernel (Eigen::Vector3f (input_->points[col_i%N].getVector3fMap ()).cast<double> () + Eigen::Vector3f (input_->points[col_i%N].getNormalVector3fMap ()).cast<double> () * col_off * off_surface_epsilon_,
                                  Eigen::Vector3f (input_->points[row_i%N].getVector3fMap ()).cast<double> () + Eigen::Vector3f (input_->points[row_i%N].getNormalVector3fMap ()).cast<double> () * row_off * off_surface_epsilon_);
     }
@@ -103,10 +95,9 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
     for (int y = 0; y < res_y_; ++y)
       for (int z = 0; z < res_z_; ++z)
       {
-        Eigen::Vector3d point;
-        point[0] = min_p_[0] + (max_p_[0] - min_p_[0]) * float (x) / float (res_x_);
-        point[1] = min_p_[1] + (max_p_[1] - min_p_[1]) * float (y) / float (res_y_);
-        point[2] = min_p_[2] + (max_p_[2] - min_p_[2]) * float (z) / float (res_z_);
+        const Eigen::Vector3f point_f = (size_voxel_ * Eigen::Array3f (x, y, z) 
+            + lower_boundary_).matrix ();
+        const Eigen::Vector3d point = point_f.cast<double> ();
 
         double f = 0.0;
         std::vector<double>::const_iterator w_it (weights.begin());

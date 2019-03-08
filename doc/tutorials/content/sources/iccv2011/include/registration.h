@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef REGISTRATION_H
-#define REGISTRATION_H
+#pragma once
 
 #include "typedefs.h"
 
@@ -86,7 +84,7 @@ computeInitialAlignment (const PointCloudPtr & source_points, const LocalDescrip
 }
 
 /* Use IterativeClosestPoint to find a precise alignment from the source cloud to the target cloud, 
- * starting with an intial guess
+ * starting with an initial guess
  * Inputs:
  *   source_points
  *     The "source" points, i.e., the points that must be transformed to align with the target point cloud
@@ -128,5 +126,3 @@ refineAlignment (const PointCloudPtr & source_points, const PointCloudPtr & targ
 
   return (icp.getFinalTransformation () * initial_alignment);
 }
-
-#endif

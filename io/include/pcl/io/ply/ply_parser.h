@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_IO_PLY_PLY_PARSER_H
-#define PCL_IO_PLY_PLY_PARSER_H
+#pragma once
 
 #include <fstream>
 #include <iostream>
@@ -50,12 +49,7 @@
 
 #ifdef BUILD_Maintainer
 #  if defined __GNUC__
-#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#      pragma GCC diagnostic ignored "-Weffc++"
-#      pragma GCC diagnostic ignored "-pedantic"
-#    else
-#      pragma GCC system_header 
-#    endif
+#    pragma GCC system_header 
 #  elif defined _MSC_VER
 #    pragma warning(push, 1)
 #  endif
@@ -304,8 +298,7 @@ namespace pcl
           typedef int flags_type;
           enum flags { };
 
-          ply_parser (flags_type flags = 0) : 
-            flags_ (flags), 
+          ply_parser () :
             comment_callback_ (), obj_info_callback_ (), end_header_callback_ (), 
             line_number_ (0), current_element_ ()
           {}
@@ -334,7 +327,7 @@ namespace pcl
             {}
             bool parse (class ply_parser& ply_parser, 
                         format_type format, 
-                        std::istream& istream) 
+                        std::istream& istream) override 
             { 
               return ply_parser.parse_scalar_property<scalar_type> (format, istream, callback); 
             }
@@ -360,7 +353,7 @@ namespace pcl
             {}
             bool parse (class ply_parser& ply_parser, 
                         format_type format, 
-                        std::istream& istream) 
+                        std::istream& istream) override 
             { 
               return ply_parser.parse_list_property<size_type, scalar_type> (format, 
                                                                              istream,
@@ -391,8 +384,6 @@ namespace pcl
             end_element_callback_type end_element_callback;
             std::vector<boost::shared_ptr<property> > properties;
           };
-
-          flags_type flags_;
           
           info_callback_type info_callback_;
           warning_callback_type warning_callback_;
@@ -729,5 +720,3 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
 #    pragma warning(pop)
 #  endif
 #endif
-
-#endif // PCL_IO_PLY_PLY_PARSER_H

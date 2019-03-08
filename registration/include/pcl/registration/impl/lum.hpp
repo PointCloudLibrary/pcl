@@ -314,7 +314,7 @@ pcl::registration::LUM<PointT>::computeEdge (const Edge &e)
     Eigen::Vector3f target_compounded = pcl::getTransformation (target_pose (0), target_pose (1), target_pose (2), target_pose (3), target_pose (4), target_pose (5)) * target_cloud->points[(*corrs)[ici].index_match].getVector3fMap ();
 
     // NaN points can not be passed to the remaining computational pipeline
-    if (!pcl_isfinite (source_compounded (0)) || !pcl_isfinite (source_compounded (1)) || !pcl_isfinite (source_compounded (2)) || !pcl_isfinite (target_compounded (0)) || !pcl_isfinite (target_compounded (1)) || !pcl_isfinite (target_compounded (2)))
+    if (!std::isfinite (source_compounded (0)) || !std::isfinite (source_compounded (1)) || !std::isfinite (source_compounded (2)) || !std::isfinite (target_compounded (0)) || !std::isfinite (target_compounded (1)) || !std::isfinite (target_compounded (2)))
       continue;
 
     // Compute the point pair average and difference and store for later use
@@ -384,7 +384,7 @@ pcl::registration::LUM<PointT>::computeEdge (const Edge &e)
                             + pow (corrs_diff[ci] (2) - (D (2) + corrs_aver[ci] (1) * D (3) - corrs_aver[ci] (0) * D (5)), 2.0f));
 
   // When reaching the limitations of computation due to linearization
-  if (ss < 0.0000000000001 || !pcl_isfinite (ss))
+  if (ss < 0.0000000000001 || !std::isfinite (ss))
   {
     (*slam_graph_)[e].cinv_ = Eigen::Matrix6f::Zero ();
     (*slam_graph_)[e].cinvd_ = Eigen::Vector6f::Zero ();

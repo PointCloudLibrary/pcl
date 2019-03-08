@@ -33,8 +33,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef PCL_DIGITAL_ELEVATION_MAP_H_
-#define PCL_DIGITAL_ELEVATION_MAP_H_
+
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/stereo/disparity_map_converter.h>
@@ -87,7 +87,7 @@ namespace pcl
       /** \brief DigitalElevationMapBuilder constructor. */
       DigitalElevationMapBuilder ();
       /** \brief Empty destructor. */
-      virtual ~DigitalElevationMapBuilder ();
+      ~DigitalElevationMapBuilder ();
 
       /** \brief Set resolution of the DEM.
         * \param[in] resolution_column the column resolution.
@@ -124,7 +124,7 @@ namespace pcl
         * \param[out] out_cloud the variable to return the resulting cloud.
         */
       void 
-      compute (pcl::PointCloud<PointDEM> &out_cloud);
+      compute (pcl::PointCloud<PointDEM> &out_cloud) override;
 
     protected:
       /** \brief Column resolution of the DEM. */
@@ -136,5 +136,3 @@ namespace pcl
       size_t min_points_in_cell_;
   };
 }
-
-#endif // PCL_DIGITAL_ELEVATION_MAP_H_

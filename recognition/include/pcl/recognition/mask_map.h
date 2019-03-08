@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_MASK_MAP
-#define PCL_FEATURES_MASK_MAP
+#pragma once
 
 #include <vector>
 #include <pcl/pcl_macros.h>
@@ -118,5 +117,3 @@ namespace pcl
   };
 
 }
-
-#endif  

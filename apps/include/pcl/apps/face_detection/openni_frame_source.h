@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef OPENNI_CAPTURE_H
-#define OPENNI_CAPTURE_H
+#pragma once
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -76,5 +74,3 @@ namespace OpenNIFrameSource
   };
 
 }
-
-#endif

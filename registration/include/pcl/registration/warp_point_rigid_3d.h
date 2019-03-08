@@ -38,9 +38,7 @@
  *
  */
 
-
-#ifndef PCL_WARP_POINT_RIGID_3D_H_
-#define PCL_WARP_POINT_RIGID_3D_H_
+#pragma once
 
 #include <pcl/registration/eigen.h>
 #include <pcl/registration/warp_point_rigid.h>
@@ -70,13 +68,13 @@ namespace pcl
         WarpPointRigid3D () : WarpPointRigid<PointSourceT, PointTargetT, Scalar> (3) {}
       
         /** \brief Empty destructor */
-        virtual ~WarpPointRigid3D () {}
+        ~WarpPointRigid3D () {}
 
         /** \brief Set warp parameters. 
           * \param[in] p warp parameters (tx ty rz)
           */
-        virtual void 
-        setParam (const VectorX & p)
+        void 
+        setParam (const VectorX & p) override
         {
           assert (p.rows () == this->getDimension ());
           Matrix4 &trans = this->transform_matrix_;
@@ -95,6 +93,3 @@ namespace pcl
     };
   }
 }
-
-#endif
-

@@ -78,8 +78,8 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeSobel (
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude = 
-      sqrtf ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
-             (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
+      std::sqrt ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
+                 (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
     output[i].direction = 
       atan2f ((*magnitude_y)[i].intensity, (*magnitude_x)[i].intensity);
   }
@@ -121,8 +121,8 @@ pcl::Edge<PointInT, PointOutT>::sobelMagnitudeDirection (
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude = 
-      sqrtf ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
-             (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
+      std::sqrt ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
+                 (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
     output[i].direction = 
       atan2f ((*magnitude_y)[i].intensity, (*magnitude_x)[i].intensity);
   }
@@ -160,8 +160,8 @@ pcl::Edge<PointInT, PointOutT>::detectEdgePrewitt (pcl::PointCloud<PointOutT> &o
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude = 
-      sqrtf ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
-             (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
+      std::sqrt ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
+                 (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
     output[i].direction = 
       atan2f ((*magnitude_y)[i].intensity, (*magnitude_x)[i].intensity);
   }
@@ -199,8 +199,8 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeRoberts (pcl::PointCloud<PointOutT> &o
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude = 
-      sqrtf ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
-             (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
+      std::sqrt ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
+                 (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
     output[i].direction = 
       atan2f ((*magnitude_y)[i].intensity, (*magnitude_x)[i].intensity);
   }
@@ -273,8 +273,8 @@ pcl::Edge<PointInT, PointOutT>::suppressNonMaxima (
   maxima.width = width;
   maxima.resize (height * width);
 
-  for (size_t i = 0; i < maxima.size (); ++i)
-    maxima[i].intensity = 0.0f;
+  for (auto &point : maxima)
+    point.intensity = 0.0f;
 
   // tHigh and non-maximal supression
   for (int i = 1; i < height - 1; i++)
@@ -352,7 +352,7 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeCanny (pcl::PointCloud<PointOutT> &out
   convolution_.filter (*smoothed_cloud);
   //PCL_ERROR ("Gaussian blur: %g\n", tt.toc ()); tt.tic ();
   
-  // Edge detection usign Sobel
+  // Edge detection using Sobel
   pcl::PointCloud<PointXYZIEdge>::Ptr edges (new pcl::PointCloud<PointXYZIEdge>);
   setInputCloud (smoothed_cloud);
   detectEdgeSobel (*edges);
@@ -431,7 +431,7 @@ pcl::Edge<PointInT, PointOutT>::canny (
   convolution_.filter (smoothed_cloud_y);
 
 
-  // Edge detection usign Sobel
+  // Edge detection using Sobel
   pcl::PointCloud<PointXYZIEdge>::Ptr edges (new pcl::PointCloud<PointXYZIEdge>);
   sobelMagnitudeDirection (smoothed_cloud_x, smoothed_cloud_y, *edges.get ());
 

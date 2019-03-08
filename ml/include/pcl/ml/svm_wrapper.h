@@ -36,14 +36,13 @@
   *
   */
 
-#ifndef PCL_SVM_WRAPPER_H_
-#define PCL_SVM_WRAPPER_H_
+#pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
+#include <cerrno>
 #include <iostream>
 #include <fstream>
 #include <pcl/common/eigen.h>
@@ -87,7 +86,7 @@ namespace pcl
     }
   };
 
-  /** \brief The structure initialize a model crated by the SVM (Support Vector Machines) classifier (pcl::SVMTrain)
+  /** \brief The structure initialize a model created by the SVM (Support Vector Machines) classifier (pcl::SVMTrain)
    */
   struct SVMModel: svm_model
   {
@@ -180,7 +179,7 @@ namespace pcl
       /** \brief  Constructor. */
       SVM () : 
         training_set_ (), prob_ (), model_ (), scaling_ (), param_ (), 
-        class_name_ (), line_ (NULL), max_line_len_ (10000), labelled_training_set_ (1)
+        class_name_ (), line_ (NULL), max_line_len_ (10000), labelled_training_set_ (true)
       {
       }
 
@@ -261,7 +260,7 @@ namespace pcl
       
     public:
       /** \brief Constructor. */
-      SVMTrain() : debug_ (0), cross_validation_ (0), nr_fold_ (0)
+      SVMTrain() : debug_ (false), cross_validation_ (0), nr_fold_ (0)
       {
         class_name_ = "SVMTrain";
         svm_set_print_string_function (&printNull); // Default to NULL to not print debugging info
@@ -346,7 +345,7 @@ namespace pcl
       bool
       saveTrainingSet (const char *filename)
       {
-        return SVM::saveProblem (filename, 1);
+        return SVM::saveProblem (filename, true);
       };
 
       /** \brief Save the normalized training set in a file (in svmlight format). 
@@ -354,7 +353,7 @@ namespace pcl
       bool
       saveNormTrainingSet (const char *filename)
       {
-        return SVM::saveProblemNorm (filename, prob_, 1);
+        return SVM::saveProblemNorm (filename, prob_, true);
       };
   };
 
@@ -383,7 +382,7 @@ namespace pcl
       
     public:
       /** \brief Constructor. */
-      SVMClassify () : model_extern_copied_ (0), predict_probability_ (0)
+      SVMClassify () : model_extern_copied_ (false), predict_probability_ (false)
       {
         class_name_ = "SvmClassify";
       }
@@ -464,7 +463,7 @@ namespace pcl
           scaling_.obj[j] = model_.scaling[j];
         }
 
-        model_extern_copied_ = 1;
+        model_extern_copied_ = true;
       };
 
       /** \brief Read in a raw classification problem (in svmlight format).
@@ -521,7 +520,7 @@ namespace pcl
       bool
       saveClassProblem (const char *filename)
       {
-        return SVM::saveProblem (filename, 0);
+        return SVM::saveProblem (filename, false);
       };
 
       /** \brief Save the normalized classification problem in a file (in svmlight format). 
@@ -529,9 +528,7 @@ namespace pcl
       bool
       saveNormClassProblem (const char *filename)
       {
-        return SVM::saveProblemNorm (filename, prob_, 0);
+        return SVM::saveProblemNorm (filename, prob_, false);
       };
   };
 }
-
-#endif // PCL_SVM_WRAPPER_H_

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_
-#define PCL_SEGMENTATION_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/segmentation/planar_region.h>
 #include <pcl/pcl_base.h>
@@ -100,7 +99,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedMultiPlaneSegmentation. */
-      virtual
+      
       ~OrganizedMultiPlaneSegmentation ()
       {
       }
@@ -320,5 +319,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/organized_multi_plane_segmentation.hpp>
 #endif
-
-#endif //#ifndef PCL_SEGMENTATION_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_

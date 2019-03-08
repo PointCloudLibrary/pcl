@@ -28,8 +28,7 @@
  *
  */
 
-#ifndef PCL_IO_OPENNI2_DEVICE_H_
-#define PCL_IO_OPENNI2_DEVICE_H_
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include "openni.h"
@@ -230,21 +229,21 @@ namespace pcl
           void
           setUseDeviceTimer (bool enable);
 
-          /** \brief Get absolut number of depth frames in the current stream.
+          /** \brief Get absolute number of depth frames in the current stream.
           * This function returns 0 if the current device is not a file stream or
           * if the current mode has no depth stream.
           */
           int
           getDepthFrameCount ();
 
-          /** \brief Get absolut number of color frames in the current stream.
+          /** \brief Get absolute number of color frames in the current stream.
           * This function returns 0 if the current device is not a file stream or
           * if the current mode has no color stream.
           */
           int
           getColorFrameCount ();
 
-          /** \brief Get absolut number of ir frames in the current stream.
+          /** \brief Get absolute number of ir frames in the current stream.
           * This function returns 0 if the current device is not a file stream or
           * if the current mode has no ir stream.
           */
@@ -330,5 +329,3 @@ namespace pcl
     } // namespace
   }
 }
-
-#endif // PCL_IO_OPENNI2_DEVICE_H_

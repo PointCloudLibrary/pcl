@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_MEDIAN_DISTANCE_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_MEDIAN_DISTANCE_H_
+
+#pragma once
 
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/point_cloud.h>
@@ -83,7 +83,7 @@ namespace pcl
           */
         void 
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
-                                     pcl::Correspondences& remaining_correspondences);
+                                     pcl::Correspondences& remaining_correspondences) override;
 
         /** \brief Get the median distance used for thresholding in correspondence rejection. */
         inline double
@@ -128,12 +128,12 @@ namespace pcl
         
         /** \brief See if this rejector requires source points */
         bool
-        requiresSourcePoints () const
+        requiresSourcePoints () const override
         { return (true); }
 
         /** \brief Blob method for setting the source cloud */
         void
-        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
         { 
           PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
           fromPCLPointCloud2 (*cloud2, *cloud);
@@ -142,12 +142,12 @@ namespace pcl
         
         /** \brief See if this rejector requires a target cloud */
         bool
-        requiresTargetPoints () const
+        requiresTargetPoints () const override
         { return (true); }
 
         /** \brief Method for setting the target cloud */
         void
-        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
         { 
           PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
           fromPCLPointCloud2 (*cloud2, *cloud);
@@ -162,8 +162,8 @@ namespace pcl
           * confident that the tree will be set correctly.
           */
         template <typename PointT> inline void
-        setSearchMethodTarget (const boost::shared_ptr<pcl::search::KdTree<PointT> > &tree, 
-                               bool force_no_recompute = false) 
+        setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr &tree,
+                               bool force_no_recompute = false)
         { 
           boost::static_pointer_cast< DataContainer<PointT> > 
             (data_container_)->setSearchMethodTarget (tree, force_no_recompute );
@@ -186,7 +186,7 @@ namespace pcl
           * \param[out] correspondences the set of resultant correspondences.
           */
         inline void 
-        applyRejection (pcl::Correspondences &correspondences)
+        applyRejection (pcl::Correspondences &correspondences) override
         {
           getRemainingCorrespondences (*input_correspondences_, correspondences);
         }
@@ -209,5 +209,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_rejection_median_distance.hpp>
-
-#endif    // PCL_REGISTRATION_CORRESPONDENCE_REJECTION_MEDIAN_DISTANCE_H_

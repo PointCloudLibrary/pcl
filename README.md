@@ -1,19 +1,29 @@
 # Point Cloud Library
 
-<img src="http://ns50.pointclouds.org/assets/images/contents/logos/pcl/pcl_horz_large_pos.png" align="center" height="100">
+<img src="pcl.png" align="center" height="100">
 
-Continuous integration
-----------------------
-[ ![Release] [release-image] ] [releases]
-[ ![License] [license-image] ] [license]
+[![Release][release-image]][releases]
+[![License][license-image]][license]
 
-[release-image]: https://img.shields.io/badge/release-1.8.0-green.svg?style=flat
+[release-image]: https://img.shields.io/badge/release-1.9.1-green.svg?style=flat
 [releases]: https://github.com/PointCloudLibrary/pcl/releases
 
 [license-image]: https://img.shields.io/badge/license-BSD-green.svg?style=flat
 [license]: https://github.com/PointCloudLibrary/pcl/blob/master/LICENSE.txt
 
-[![Build Status](https://travis-ci.org/PointCloudLibrary/pcl.svg?branch=master)](https://travis-ci.org/PointCloudLibrary/pcl)
+Continuous integration
+----------------------
+
+Ubuntu | Windows | MacOS
+------ | ------- | -----
+[![Ubuntu Build Status][ci-ubuntu-image]][ci-ubuntu] | [![Windows Build Status][ci-windows-image]][ci-windows] | [![MacOS Build Status][ci-macos-image]][ci-macos]
+
+[ci-ubuntu]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=4
+[ci-ubuntu-image]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/Build.Ubuntu
+[ci-windows]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=3
+[ci-windows-image]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/Build.Windows
+[ci-macos]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=2
+[ci-macos-image]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/Build.MacOS
 
 Description
 -----------
@@ -31,7 +41,7 @@ Please refer to the platform specific tutorials:
 Documentation
 -------------
 - [Tutorials](http://www.pointclouds.org/documentation/tutorials/)
-- [PCL trunk documentation](http://docs.pointclouds.org/trunk/) (generated 2 times a week)
+- [PCL trunk documentation](http://docs.pointclouds.org/trunk/) (updated daily)
 
 Contributing
 ------------
@@ -41,3 +51,7 @@ Issues
 ------
 For general questions on how to use the PCL, please use the [pcl-users](http://www.pcl-users.org/) mailing list (do not forget to subscribe before posting).
 To report issues, please read [CONTRIBUTING.md#bug-reports](https://github.com/PointCloudLibrary/pcl/blob/master/CONTRIBUTING.md#bug-reports).
+
+API/ABI Compatibility Report
+------
+For details about API/ABI changes over the timeline please check PCL's page at [ABI Laboratory](https://abi-laboratory.pro/tracker/timeline/pcl/).

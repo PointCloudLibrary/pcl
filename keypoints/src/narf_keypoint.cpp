@@ -356,7 +356,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
           continue;
         const Eigen::Vector3f& surface_change_direction = surface_change_directions[index2];
         
-        float distance = sqrtf (distance_squared);
+        float distance = std::sqrt (distance_squared);
         float distance_factor = radius_reciprocal*distance;
         float positive_score, current_negative_score;
         nkdGetScores (distance_factor, surface_change_score, pixelDistance,
@@ -372,8 +372,8 @@ NarfKeypoint::calculateCompleteInterestImage ()
       }
       
       // Reset was_touched to false
-      for (size_t neighbors_to_check_idx=0; neighbors_to_check_idx<neighbors_to_check.size (); ++neighbors_to_check_idx)
-        was_touched[neighbors_to_check[neighbors_to_check_idx]] = false;
+      for (const int neighbors_to_check_idx : neighbors_to_check)
+        was_touched[neighbors_to_check_idx] = false;
       
       float angle_change_value = 0.0f;
       for (int histogram_cell1=0; histogram_cell1<angle_histogram_size-1; ++histogram_cell1)
@@ -392,7 +392,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
                                          normalized_angle_diff,   angle_change_value);
         }
       }
-      angle_change_value = sqrtf (angle_change_value);
+      angle_change_value = std::sqrt (angle_change_value);
       interest_value = negative_score * angle_change_value;
       
       if (parameters_.add_points_on_straight_edges)
@@ -552,8 +552,8 @@ NarfKeypoint::calculateSparseInterestImage ()
     }
     
     // Reset was_touched to false
-    for (size_t neighbors_to_check_idx=0; neighbors_to_check_idx<neighbors_to_check.size (); ++neighbors_to_check_idx)
-      was_touched[neighbors_to_check[neighbors_to_check_idx]] = false;
+    for (const int neighbors_to_check_idx : neighbors_to_check)
+      was_touched[neighbors_to_check_idx] = false;
     
     float angle_change_value = 0.0f;
     for (int histogram_cell1=0; histogram_cell1<angle_histogram_size-1; ++histogram_cell1)
@@ -572,7 +572,7 @@ NarfKeypoint::calculateSparseInterestImage ()
                                        normalized_angle_diff,   angle_change_value);
       }
     }
-    angle_change_value = sqrtf (angle_change_value);
+    angle_change_value = std::sqrt (angle_change_value);
     float maximum_interest_value = angle_change_value;
     
     if (parameters_.add_points_on_straight_edges)
@@ -586,51 +586,46 @@ NarfKeypoint::calculateSparseInterestImage ()
     // Every point in distance search_radius cannot have a higher value
     // Therefore: if too low, set all to zero. Else calculate properly
     if (maximum_interest_value < parameters_.min_interest_value)
-      for (size_t neighbors_idx=0; neighbors_idx<neighbors_within_radius_overhead.size (); ++neighbors_idx)
-        interest_image_[neighbors_within_radius_overhead[neighbors_idx]] = 0.0f;
+      for (const int neighbors_idx : neighbors_within_radius_overhead)
+        interest_image_[neighbors_idx] = 0.0f;
     else
     {
       // Reduce number of neighbors to go through by filtering close by points with the same angle
-      bool do_neighbor_size_reduction = true;
-      if (do_neighbor_size_reduction)
+      float min_distance_between_relevant_points = 0.25f * search_radius,
+            min_distance_between_relevant_points_squared = powf(min_distance_between_relevant_points, 2);
+      for (int angle_histogram_idx=0; angle_histogram_idx<angle_histogram_size; ++angle_histogram_idx)
       {
-        float min_distance_between_relevant_points = 0.25f * search_radius,
-              min_distance_between_relevant_points_squared = powf(min_distance_between_relevant_points, 2);
-        for (int angle_histogram_idx=0; angle_histogram_idx<angle_histogram_size; ++angle_histogram_idx)
+        std::vector<std::pair<int,float> >& relevent_point_indices = angle_elements[angle_histogram_idx];
+        std::sort(relevent_point_indices.begin(), relevent_point_indices.end(), secondPairElementIsGreater);
+        relevant_point_still_valid.clear();
+        relevant_point_still_valid.resize(relevent_point_indices.size(), true);
+        for (int rpi_idx1=0; rpi_idx1<int(relevent_point_indices.size ())-1; ++rpi_idx1)
         {
-          std::vector<std::pair<int,float> >& relevent_point_indices = angle_elements[angle_histogram_idx];
-          std::sort(relevent_point_indices.begin(), relevent_point_indices.end(), secondPairElementIsGreater);
-          relevant_point_still_valid.clear();
-          relevant_point_still_valid.resize(relevent_point_indices.size(), true);
-          for (int rpi_idx1=0; rpi_idx1<int(relevent_point_indices.size ())-1; ++rpi_idx1)
+          if (!relevant_point_still_valid[rpi_idx1])
+            continue;
+          const PointWithRange& relevant_point1 = range_image.getPoint (relevent_point_indices[rpi_idx1].first);
+          for (int rpi_idx2=rpi_idx1+1; rpi_idx2<int(relevent_point_indices.size ()); ++rpi_idx2)
           {
-            if (!relevant_point_still_valid[rpi_idx1])
+            if (!relevant_point_still_valid[rpi_idx2])
               continue;
-            const PointWithRange& relevant_point1 = range_image.getPoint (relevent_point_indices[rpi_idx1].first);
-            for (int rpi_idx2=rpi_idx1+1; rpi_idx2<int(relevent_point_indices.size ()); ++rpi_idx2)
-            {
-              if (!relevant_point_still_valid[rpi_idx2])
-                continue;
-              const PointWithRange& relevant_point2 = range_image.getPoint (relevent_point_indices[rpi_idx2].first);
-              float distance_squared = (relevant_point1.getVector3fMap ()-relevant_point2.getVector3fMap ()).norm ();
-              if (distance_squared > min_distance_between_relevant_points_squared)
-                continue;
-              relevant_point_still_valid[rpi_idx2] = false;
-            }
+            const PointWithRange& relevant_point2 = range_image.getPoint (relevent_point_indices[rpi_idx2].first);
+            float distance_squared = (relevant_point1.getVector3fMap ()-relevant_point2.getVector3fMap ()).norm ();
+            if (distance_squared > min_distance_between_relevant_points_squared)
+              continue;
+            relevant_point_still_valid[rpi_idx2] = false;
           }
-          int newPointIdx=0;
-          for (int oldPointIdx=0; oldPointIdx<int(relevant_point_still_valid.size()); ++oldPointIdx) {
-            if (relevant_point_still_valid[oldPointIdx])
-              relevent_point_indices[newPointIdx++] = relevent_point_indices[oldPointIdx];
-          }
-          relevent_point_indices.resize(newPointIdx);
         }
+        int newPointIdx=0;
+        for (int oldPointIdx=0; oldPointIdx<int(relevant_point_still_valid.size()); ++oldPointIdx) {
+          if (relevant_point_still_valid[oldPointIdx])
+            relevent_point_indices[newPointIdx++] = relevent_point_indices[oldPointIdx];
+        }
+        relevent_point_indices.resize(newPointIdx);
       }
-      
+
       // Caclulate interest values for neighbors
-      for (size_t neighbors_idx=0; neighbors_idx<neighbors_within_radius_overhead.size (); ++neighbors_idx)
+      for (const int index2 : neighbors_within_radius_overhead)
       {
-        int index2 = neighbors_within_radius_overhead[neighbors_idx];
         int y2 = index2/range_image.width,
             x2 = index2 - y2*range_image.width;
         const PointWithRange& point2 = range_image.getPoint (index2);
@@ -644,13 +639,13 @@ NarfKeypoint::calculateSparseInterestImage ()
           float& histogram_value = angle_histogram[angle_histogram_idx];
           histogram_value = 0;
           const std::vector<std::pair<int,float> >& relevent_point_indices = angle_elements[angle_histogram_idx];
-          for (size_t rpi_idx=0; rpi_idx<relevent_point_indices.size (); ++rpi_idx)
+          for (const auto &relevent_point_index : relevent_point_indices)
           {
-            int index3 = relevent_point_indices[rpi_idx].first;
+            int index3 = relevent_point_index.first;
             int y3 = index3/range_image.width,
                 x3 = index3 - y3*range_image.width;
             const PointWithRange& point3 = range_image.getPoint (index3);
-            float surface_change_score = relevent_point_indices[rpi_idx].second;
+            float surface_change_score = relevent_point_index.second;
             
             float pixelDistance = static_cast<float> (std::max (abs (x3-x2), abs (y3-y2)));
             float distance = (point3.getVector3fMap ()-point2.getVector3fMap ()).norm ();
@@ -680,7 +675,7 @@ NarfKeypoint::calculateSparseInterestImage ()
                                                                normalized_angle_diff);
           }
         }
-        angle_change_value = sqrtf (angle_change_value);
+        angle_change_value = std::sqrt (angle_change_value);
         interest_value = negative_score * angle_change_value;
         if (parameters_.add_points_on_straight_edges)
         {
@@ -797,7 +792,7 @@ NarfKeypoint::calculateInterestPoints ()
             stop = false; // There is a point in range -> Have to check further distances
             
             float interest_value2 = interest_image_[index2];
-            sample_points.push_back (Eigen::Vector3d (x2-keypoint_x_int, y2-keypoint_y_int, interest_value2));
+            sample_points.emplace_back(x2-keypoint_x_int, y2-keypoint_y_int, interest_value2);
           }
         }
         if (!polynomial_calculations.bivariatePolynomialApproximation (sample_points, 2, polynomial))
@@ -814,7 +809,7 @@ NarfKeypoint::calculateInterestPoints ()
           keypoint_y_int = static_cast<int> (pcl_lrint (keypoint_y));
           
           range_image.calculate3DPoint (keypoint_x, keypoint_y, keypoint_3d);
-          if (!pcl_isfinite (keypoint_3d.range))
+          if (!std::isfinite (keypoint_3d.range))
           {
             keypoint_3d = point;
             break;
@@ -836,16 +831,13 @@ NarfKeypoint::calculateInterestPoints ()
   std::sort (tmp_interest_points.begin (), tmp_interest_points.end (), isBetterInterestPoint);
   
   float min_distance_squared = powf (parameters_.min_distance_between_interest_points*parameters_.support_size, 2);
-  for (size_t int_point_idx=0; int_point_idx<tmp_interest_points.size (); ++int_point_idx)
+  for (const auto &interest_point : tmp_interest_points)
   {
     if (parameters_.max_no_of_interest_points > 0  &&  int (interest_points_->size ()) >= parameters_.max_no_of_interest_points)
       break;
-    const InterestPoint& interest_point = tmp_interest_points[int_point_idx];
-    
     bool better_point_too_close = false;
-    for (size_t int_point_idx2=0; int_point_idx2<interest_points_->points.size (); ++int_point_idx2)
+    for (const auto &interest_point2 : interest_points_->points)
     {
-      const InterestPoint& interest_point2 = interest_points_->points[int_point_idx2];
       float distance_squared = (interest_point.getVector3fMap ()-interest_point2.getVector3fMap ()).squaredNorm ();
       if (distance_squared < min_distance_squared)
       {

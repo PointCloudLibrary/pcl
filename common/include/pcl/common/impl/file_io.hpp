@@ -56,7 +56,7 @@ namespace pcl
       {
         std::string file_name = dirp->d_name;
         if (file_name.substr(file_name.size()-4, 4)==".pcd")
-          file_names.push_back(dirp->d_name);
+          file_names.emplace_back(dirp->d_name);
       }
     }
     closedir(dp);

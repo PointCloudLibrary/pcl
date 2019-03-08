@@ -34,8 +34,7 @@
  *  @author Suat Gedikli
  */
 
-#ifndef PCL_HARRIS_KEYPOINT_6D_H_
-#define PCL_HARRIS_KEYPOINT_6D_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 
@@ -133,12 +132,9 @@ namespace pcl
       bool refine_;
       bool nonmax_;
       unsigned int threads_;    
-      boost::shared_ptr<pcl::PointCloud<NormalT> > normals_;
-      boost::shared_ptr<pcl::PointCloud<pcl::IntensityGradient> > intensity_gradients_;
+      typename pcl::PointCloud<NormalT>::Ptr normals_;
+      pcl::PointCloud<pcl::IntensityGradient>::Ptr intensity_gradients_;
   } ;
 }
 
 #include <pcl/keypoints/impl/harris_6d.hpp>
-
-#endif // #ifndef PCL_HARRIS_KEYPOINT_6D_H_
-

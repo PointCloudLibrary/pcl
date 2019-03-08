@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_MESH_SOURCE_H_
-#define REC_FRAMEWORK_MESH_SOURCE_H_
+#pragma once
 
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
 #include <pcl/apps/render_views_tesselated_sphere.h>
@@ -139,20 +138,20 @@ namespace pcl
               }
             }
 
-            for (size_t i = 0; i < view_filenames.size (); i++)
+            for (const auto &view_filename : view_filenames)
             {
               std::stringstream view_file;
-              view_file << pathmodel.str () << "/" << view_filenames[i];
+              view_file << pathmodel.str () << "/" << view_filename;
               typename pcl::PointCloud<PointInT>::Ptr cloud (new pcl::PointCloud<PointInT> ());
               pcl::io::loadPCDFile (view_file.str (), *cloud);
 
               model.views_->push_back (cloud);
 
-              std::string file_replaced1 (view_filenames[i]);
+              std::string file_replaced1 (view_filename);
               boost::replace_all (file_replaced1, "view", "pose");
               boost::replace_all (file_replaced1, ".pcd", ".txt");
 
-              std::string file_replaced2 (view_filenames[i]);
+              std::string file_replaced2 (view_filename);
               boost::replace_all (file_replaced2, "view", "entropy");
               boost::replace_all (file_replaced2, ".pcd", ".txt");
 
@@ -255,7 +254,7 @@ namespace pcl
          * \brief Creates the model representation of the training set, generating views if needed
          */
         void
-        generate (std::string & training_dir)
+        generate (std::string & training_dir) override
         {
 
           //create training dir fs if not existent
@@ -263,25 +262,23 @@ namespace pcl
 
           //get models in directory
           std::vector < std::string > files;
-          std::string start = "";
+          std::string start;
           std::string ext = std::string ("ply");
           bf::path dir = path_;
           getModelsInDirectory (dir, start, files, ext);
 
           models_.reset (new std::vector<ModelT>);
 
-          for (size_t i = 0; i < files.size (); i++)
+          for (const auto &filename : files)
           {
             ModelT m;
-            this->getIdAndClassFromFilename (files[i], m.id_, m.class_);
+            this->getIdAndClassFromFilename (filename, m.id_, m.class_);
 
             //check which of them have been trained using training_dir and the model_id_
             //load views, poses and self-occlusions for those that exist
             //generate otherwise
-            std::cout << files[i] << std::endl;
-            std::stringstream model_path;
-            model_path << path_ << "/" << files[i];
-            std::string path_model = model_path.str ();
+            std::cout << filename << std::endl;
+            std::string path_model = path_ + '/' + filename;
             loadOrGenerate (training_dir, path_model, m);
 
             models_->push_back (m);
@@ -290,5 +287,3 @@ namespace pcl
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_MESH_SOURCE_H_ */

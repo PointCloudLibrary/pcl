@@ -34,14 +34,6 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#if (defined(__GNUC__) && !defined(__CUDACC__) && (GTEST_GCC_VER_ >= 40000)) 
-    #define GTEST_USE_OWN_TR1_TUPLE 0
-#endif
-
-#if defined(_MSC_VER) && (_MSC_VER >= 1500)
-    #define GTEST_USE_OWN_TR1_TUPLE 0
-#endif
-
 #include <gtest/gtest.h>
 #include "data_source.hpp"
 #include <iostream>
@@ -289,12 +281,12 @@ TEST(PCL_FeaturesGPU, normals_highlevel_3)
 
         float abs_error = 0.01f;
 
-        if (pcl_isnan(n.normal_x) || pcl_isnan(n.normal_y) || pcl_isnan(n.normal_z))
+        if (std::isnan(n.normal_x) || std::isnan(n.normal_y) || std::isnan(n.normal_z))
             continue;
 
-        ASSERT_EQ(pcl_isnan(n.normal_x), pcl_isnan(xyz.x));
-        ASSERT_EQ(pcl_isnan(n.normal_y), pcl_isnan(xyz.y));
-        ASSERT_EQ(pcl_isnan(n.normal_z), pcl_isnan(xyz.z));
+        ASSERT_EQ(std::isnan(n.normal_x), std::isnan(xyz.x));
+        ASSERT_EQ(std::isnan(n.normal_y), std::isnan(xyz.y));
+        ASSERT_EQ(std::isnan(n.normal_z), std::isnan(xyz.z));
         
         ASSERT_NEAR(n.normal_x, xyz.x, abs_error);
         ASSERT_NEAR(n.normal_y, xyz.y, abs_error);
@@ -363,12 +355,12 @@ TEST(PCL_FeaturesGPU, normals_highlevel_4)
 
         float abs_error = 0.01f;
 
-        if (pcl_isnan(n.normal_x) || pcl_isnan(n.normal_y) || pcl_isnan(n.normal_z))
+        if (std::isnan(n.normal_x) || std::isnan(n.normal_y) || std::isnan(n.normal_z))
             continue;
 
-        ASSERT_EQ(pcl_isnan(n.normal_x), pcl_isnan(xyz.x));
-        ASSERT_EQ(pcl_isnan(n.normal_y), pcl_isnan(xyz.y));
-        ASSERT_EQ(pcl_isnan(n.normal_z), pcl_isnan(xyz.z));
+        ASSERT_EQ(std::isnan(n.normal_x), std::isnan(xyz.x));
+        ASSERT_EQ(std::isnan(n.normal_y), std::isnan(xyz.y));
+        ASSERT_EQ(std::isnan(n.normal_z), std::isnan(xyz.z));
         
         ASSERT_NEAR(n.normal_x, xyz.x, abs_error);
         ASSERT_NEAR(n.normal_y, xyz.y, abs_error);

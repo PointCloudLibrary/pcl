@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef IA_RANSAC_H_
-#define IA_RANSAC_H_
+
+#pragma once
 
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_svd.h>
@@ -114,10 +114,10 @@ namespace pcl
         private:
           TruncatedError () {}
         public:
-          virtual ~TruncatedError () {}
+          ~TruncatedError () {}
 
           TruncatedError (float threshold) : threshold_ (threshold) {}
-          virtual float operator () (float e) const
+          float operator () (float e) const override
           { 
             if (e <= threshold_)
               return (e / threshold_);
@@ -127,6 +127,8 @@ namespace pcl
         protected:
           float threshold_;
       };
+
+      typedef typename boost::shared_ptr<ErrorFunctor> ErrorFunctorPtr;
 
       typedef typename KdTreeFLANN<FeatureT>::Ptr FeatureKdTreePtr; 
       /** \brief Constructor. */
@@ -144,7 +146,7 @@ namespace pcl
         transformation_estimation_.reset (new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>);
       };
 
-      /** \brief Provide a boost shared pointer to the source point cloud's feature descriptors
+      /** \brief Provide a shared pointer to the source point cloud's feature descriptors
         * \param features the source point cloud's features
         */
       void 
@@ -154,7 +156,7 @@ namespace pcl
       inline FeatureCloudConstPtr const 
       getSourceFeatures () { return (input_features_); }
 
-      /** \brief Provide a boost shared pointer to the target point cloud's feature descriptors
+      /** \brief Provide a shared pointer to the target point cloud's feature descriptors
         * \param features the target point cloud's features
         */
       void 
@@ -200,12 +202,12 @@ namespace pcl
        * \param[in] error_functor a shared pointer to a subclass of SampleConsensusInitialAlignment::ErrorFunctor
        */
       void
-      setErrorFunction (const boost::shared_ptr<ErrorFunctor> & error_functor) { error_functor_ = error_functor; }
+      setErrorFunction (const ErrorFunctorPtr & error_functor) { error_functor_ = error_functor; }
 
       /** \brief Get a shared pointer to the ErrorFunctor that is to be minimized  
        * \return A shared pointer to a subclass of SampleConsensusInitialAlignment::ErrorFunctor
        */
-      boost::shared_ptr<ErrorFunctor>
+      ErrorFunctorPtr
       getErrorFunction () { return (error_functor_); }
 
     protected:
@@ -248,8 +250,8 @@ namespace pcl
         * \param output the transformed input point cloud dataset using the rigid transformation found
         * \param guess The computed transforamtion
         */
-      virtual void 
-      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);
+      void 
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess) override;
 
       /** \brief The source point cloud's feature descriptors. */
       FeatureCloudConstPtr input_features_;
@@ -269,13 +271,10 @@ namespace pcl
       /** \brief The KdTree used to compare feature descriptors. */
       FeatureKdTreePtr feature_tree_;               
 
-      /** */
-      boost::shared_ptr<ErrorFunctor> error_functor_;
+      ErrorFunctorPtr error_functor_;
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
 #include <pcl/registration/impl/ia_ransac.hpp>
-
-#endif  //#ifndef IA_RANSAC_H_

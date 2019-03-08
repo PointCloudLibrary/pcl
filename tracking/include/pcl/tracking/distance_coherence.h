@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef PCL_TRACKING_DISTANCE_COHERENCE_H_
-#define PCL_TRACKING_DISTANCE_COHERENCE_H_
+#pragma once
 
 #include <pcl/tracking/coherence.h>
 
@@ -75,7 +73,7 @@ namespace pcl
         * \param source instance of source point.
         * \param target instance of target point.
         */
-      double computeCoherence (PointInT &source, PointInT &target);
+      double computeCoherence (PointInT &source, PointInT &target) override;
 
       /** \brief the weight of coherence.*/
       double weight_;
@@ -85,8 +83,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/tracking/impl/distance_coherence.hpp>
-#endif
-
-// #include <pcl/tracking/impl/distance_coherence.hpp>
-
 #endif

@@ -375,7 +375,7 @@ main (int argc, char* argv[])
   // parse input cloud file
   pc::parse_argument (argc, argv, "-cf", cloud_file);
 
-  // pase output volume file
+  // parse output volume file
   pc::parse_argument (argc, argv, "-vf", volume_file);
 
   // parse options to extract and save cloud from volume

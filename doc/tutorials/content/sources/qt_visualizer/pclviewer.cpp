@@ -37,7 +37,7 @@
 
 
 #include "pclviewer.h"
-#include "../build/ui_pclviewer.h"
+#include "ui_pclviewer.h"
 
 PCLViewer::PCLViewer (QWidget *parent) :
   QMainWindow (parent),

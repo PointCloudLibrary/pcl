@@ -125,7 +125,7 @@ saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 
 int
 batchProcess (const vector<string> &pcd_files, string &output_dir,
-              std::string field_name, float min, float max, bool inside, bool keep_organized)
+              const std::string &field_name, float min, float max, bool inside, bool keep_organized)
 {
   vector<string> st;
   for (size_t i = 0; i < pcd_files.size (); ++i)

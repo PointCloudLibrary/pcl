@@ -163,7 +163,7 @@ Setting up the structure
   <http://www.pointclouds.org/documentation/advanced/pcl_style_guide.php>`_ to
   familiarize yourself with the concepts. 
 
-There's two different ways we could set up the structure: i) set up the code
+There're two different ways we could set up the structure: i) set up the code
 separately, as a standalone PCL class, but outside of the PCL code tree; or ii)
 set up the files directly in the PCL code tree. Since our assumption is that
 the end result will be contributed back to PCL, it's best to concentrate on the
@@ -181,7 +181,7 @@ Assuming that we want the new algorithm to be part of the PCL Filtering library,
 
 We also need a name for our new class. Let's call it `BilateralFilter`.
 
-.. [*] The PCL Filtering API specifies that two definitions and implementations must be available for every algorithm: one operating on PointCloud<T> and another one operating on PCLPointCloud2. For the purpose of this tutorial, we will concentrate only on the former.
+.. [*] Some PCL filter algorithms provide two implementations: one for PointCloud<T> types and another one operating on legacy PCLPointCloud2 types. This is no longer required.
 
 bilateral.h
 ===========
@@ -222,7 +222,7 @@ While we're at it, let's set up two skeleton *bilateral.hpp* and
 
     #include <pcl/filters/bilateral.h>
     
-    #endif // PCL_FILTERS_BILATERAL_H_
+    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
 
 This should be straightforward. We haven't declared any methods for
 `BilateralFilter` yet, therefore there is no implementation. 
@@ -239,7 +239,7 @@ Let's write *bilateral.cpp* too:
     #include <pcl/filters/impl/bilateral.hpp>
     
 Because we are writing templated code in PCL (1.x) where the template parameter
-is a point type (see :ref:`adding_custom_ptype`), we want to explicitely
+is a point type (see :ref:`adding_custom_ptype`), we want to explicitly
 instantiate the most common use cases in *bilateral.cpp*, so that users don't
 have to spend extra cycles when compiling code that uses our
 `BilateralFilter`. To do this, we need to access both the header
@@ -288,7 +288,7 @@ begin filling in the actual code in each file. Let's start with the
 bilateral.cpp
 =============
 
-As previously mentioned, we're going to explicitely instantiate and
+As previously mentioned, we're going to explicitly instantiate and
 *precompile* a number of templated specializations for the `BilateralFilter`
 class. While this might lead to an increased compilation time for the PCL
 Filtering library, it will save users the pain of processing and compiling the
@@ -349,7 +349,7 @@ that only two of the types contain intensity, namely:
 
 Note that at this point we haven't declared the PCL_INSTANTIATE template for
 `BilateralFilter`, nor did we actually implement the pure virtual functions in
-the abstract class :pcl:`pcl::Filter<pcl::Filter>` so attemping to compile the
+the abstract class :pcl:`pcl::Filter<pcl::Filter>` so attempting to compile the
 code will result in errors like::
 
   filters/src/bilateral.cpp:6:32: error: expected constructor, destructor, or type conversion before ‘(’ token
@@ -385,7 +385,7 @@ paradigms.
           }
 
           double
-          getSigmaS ()
+          getSigmaS () const
           {
             return (sigma_s_);
           }
@@ -397,7 +397,7 @@ paradigms.
           }
 
           double
-          getSigmaR ()
+          getSigmaR () const
           {
             return (sigma_r_);
           }
@@ -546,7 +546,7 @@ header file becomes:
           }
 
           double 
-          getSigmaS ()
+          getSigmaS () const
           {
             return (sigma_s_);
           }
@@ -558,7 +558,7 @@ header file becomes:
           }
 
           double 
-          getSigmaR ()
+          getSigmaR () const
           {
             return (sigma_r_);
           }
@@ -589,7 +589,7 @@ header file becomes:
 bilateral.hpp
 =============
 
-There's two methods that we need to implement here, namely `applyFilter` and
+There're two methods that we need to implement here, namely `applyFilter` and
 `computePointWeight`. 
 
 .. code-block:: cpp
@@ -660,7 +660,7 @@ entry for the class:
 
     #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
 
-    #endif // PCL_FILTERS_BILATERAL_H_
+    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
 
 One additional thing that we can do is error checking on:
 
@@ -770,7 +770,7 @@ The implementation file header thus becomes:
      
     #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
 
-    #endif // PCL_FILTERS_BILATERAL_H_
+    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
 
 
 Taking advantage of other PCL concepts
@@ -885,7 +885,7 @@ The implementation file header thus becomes:
      
     #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
 
-    #endif // PCL_FILTERS_BILATERAL_H_
+    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
 
 To make :pcl:`indices_<pcl::PCLBase::indices_>` work without typing the full
 construct, we need to add a new line to *bilateral.h* that specifies the class
@@ -1079,7 +1079,7 @@ class look like:
 
           /** \brief Get the half size of the Gaussian bilateral filter window as set by the user. */
           double 
-          getHalfSize ()
+          getHalfSize () const
           {
             return (sigma_s_);
           }
@@ -1095,7 +1095,7 @@ class look like:
 
           /** \brief Get the value of the current standard deviation parameter of the bilateral filter. */
           double 
-          getStdDev ()
+          getStdDev () const
           {
             return (sigma_r_);
           }
@@ -1133,7 +1133,7 @@ class look like:
 
     #endif // PCL_FILTERS_BILATERAL_H_
 
-And the *bilateral.hpp* like:
+And the *bilateral.hpp* likes:
 
 .. code-block:: cpp
    :linenos:
@@ -1249,7 +1249,7 @@ And the *bilateral.hpp* like:
      
     #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
 
-    #endif // PCL_FILTERS_BILATERAL_H_
+    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
 
 
 Testing the new class

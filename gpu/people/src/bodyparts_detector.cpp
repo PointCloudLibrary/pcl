@@ -71,7 +71,7 @@ pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<strin
 
     // this might throw but we haven't done any malloc yet
     int height = loadTree (tree_files[i], nodes, leaves );
-    impl_->trees.push_back(device::CUDATree(height, nodes, leaves));
+    impl_->trees.emplace_back(height, nodes, leaves);
   }
 
   allocate_buffers(rows, cols);

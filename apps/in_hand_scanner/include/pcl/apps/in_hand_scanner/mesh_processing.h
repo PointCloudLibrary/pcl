@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_MESH_PROCESSING_H
-#define PCL_APPS_IN_HAND_SCANNER_MESH_PROCESSING_H
+#pragma once
 
 #include <pcl/apps/in_hand_scanner/common_types.h>
 
@@ -74,5 +73,3 @@ namespace pcl
     };
   } // End namespace ihs
 } // End namespace pcl
-
-#endif // PCL_APPS_IN_HAND_SCANNER_MESH_PROCESSING_H

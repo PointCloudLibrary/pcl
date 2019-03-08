@@ -36,9 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_H
-#define PCL_OCTREE_H
-
+#pragma once
 
 #include <pcl/octree/octree_base.h>
 #include <pcl/octree/octree2buf_base.h>
@@ -51,7 +49,6 @@
 #include <pcl/octree/octree_pointcloud_pointvector.h>
 #include <pcl/octree/octree_pointcloud_changedetector.h>
 #include <pcl/octree/octree_pointcloud_voxelcentroid.h>
+#include <pcl/octree/octree_pointcloud_adjacency.h>
 
 #include <pcl/octree/octree_search.h>
-
-#endif

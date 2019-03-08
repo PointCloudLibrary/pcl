@@ -1,7 +1,7 @@
-#ifndef PCL_FEATURES_FROM_MESHES_H_
-#define PCL_FEATURES_FROM_MESHES_H_
+#pragma once
 
-#include <pcl/features/normal_3d.h>
+#include "pcl/features/normal_3d.h"
+#include "pcl/Vertices.h"
 
 namespace pcl
 {
@@ -98,8 +98,3 @@ namespace pcl
 
   }
 }
-
-
-#endif // PCL_FEATURES_FROM_MESHES_H_
-
-

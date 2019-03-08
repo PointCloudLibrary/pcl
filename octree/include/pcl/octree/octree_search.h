@@ -36,13 +36,11 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_SEARCH_H_
-#define PCL_OCTREE_SEARCH_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 
-#include "octree_pointcloud.h"
+#include <pcl/octree/octree_pointcloud.h>
 
 namespace pcl
 {
@@ -86,7 +84,7 @@ namespace pcl
         }
 
         /** \brief Empty class destructor. */
-        virtual
+        
         ~OctreePointCloudSearch ()
         {
         }
@@ -243,6 +241,7 @@ namespace pcl
 
 
         /** \brief Search for points within rectangular search area
+         * Points exactly on the edges of the search rectangle are included.
          * \param[in] min_pt lower corner of search area
          * \param[in] max_pt upper corner of search area
          * \param[out] k_indices the resultant point indices
@@ -602,8 +601,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/octree/impl/octree_search.hpp>
-#else
-#define PCL_INSTANTIATE_OctreePointCloudSearch(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudSearch<T>;
-#endif    // PCL_NO_PRECOMPILE
-
-#endif    // PCL_OCTREE_SEARCH_H_
+#endif

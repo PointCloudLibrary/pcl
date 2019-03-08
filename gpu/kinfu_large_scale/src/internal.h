@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KINFU_INTERNAL_HPP_
-#define PCL_KINFU_INTERNAL_HPP_
+#pragma once
 
 #include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/gpu/kinfu_large_scale/device.h>
@@ -60,8 +59,8 @@ namespace pcl
       ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Maps
     
-      /** \brief Perfoms bilateral filtering of disparity map
-        * \param[in] src soruce map
+      /** \brief Performs bilateral filtering of disparity map
+        * \param[in] src source map
         * \param[out] dst output map
         */
       void 
@@ -96,7 +95,7 @@ namespace pcl
       void 
       computeNormalsEigen (const MapArr& vmap, MapArr& nmap);
 
-      /** \brief Performs affine tranform of vertex and normal maps
+      /** \brief Performs affine transform of vertex and normal maps
         * \param[in] vmap_src source vertex map
         * \param[in] nmap_src source vertex map
         * \param[in] Rmat Rotation mat
@@ -117,7 +116,7 @@ namespace pcl
       ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //   ICP 
               
-      /** \brief (now it's exra code) Computes corespondances map
+      /** \brief (now it's extra code) Computes corespondances map
         * \param[in] vmap_g_curr current vertex map in global coo space
         * \param[in] nmap_g_curr current normals map in global coo space
         * \param[in] Rprev_inv inverse camera rotation at previous pose
@@ -133,7 +132,7 @@ namespace pcl
       findCoresp (const MapArr& vmap_g_curr, const MapArr& nmap_g_curr, const Mat33& Rprev_inv, const float3& tprev, const Intr& intr, 
                   const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, float distThres, float angleThres, PtrStepSz<short2> coresp);
 
-      /** \brief (now it's exra code) Computation Ax=b for ICP iteration
+      /** \brief (now it's extra code) Computation Ax=b for ICP iteration
         * \param[in] v_dst destination vertex map (previous frame cloud)
         * \param[in] n_dst destination normal map (previous frame normals) 
         * \param[in] v_src source normal map (current frame cloud) 
@@ -337,7 +336,7 @@ namespace pcl
       /** \brief Perform point cloud extraction from tsdf volume
         * \param[in] volume tsdf volume 
         * \param[in] volume_size size of the volume
-        * \param[out] output buffer large enought to store point cloud
+        * \param[out] output buffer large enough to store point cloud
         * \return number of point stored to passed buffer
         */ 
       PCL_EXPORTS size_t 
@@ -350,14 +349,14 @@ namespace pcl
         * \param[in] shiftX Offset in indices that will be cleared from the TSDF volume. The clearing start from buffer.OriginX and stops in OriginX + shiftX
         * \param[in] shiftY Offset in indices that will be cleared from the TSDF volume. The clearing start from buffer.OriginY and stops in OriginY + shiftY
         * \param[in] shiftZ Offset in indices that will be cleared from the TSDF volume. The clearing start from buffer.OriginZ and stops in OriginZ + shiftZ
-        * \param[out] output_xyz buffer large enought to store point cloud xyz values
-        * \param[out] output_intensities buffer large enought to store point cloud intensity values
+        * \param[out] output_xyz buffer large enough to store point cloud xyz values
+        * \param[out] output_intensities buffer large enough to store point cloud intensity values
         * \return number of point stored to passed buffer
         */ 
       PCL_EXPORTS size_t
       extractSliceAsCloud (const PtrStep<short2>& volume, const float3& volume_size, const pcl::gpu::kinfuLS::tsdf_buffer* buffer, const int shiftX, const int shiftY, const int shiftZ, PtrSz<PointType> output_xyz, PtrSz<float> output_intensities);
 
-      /** \brief Performs normals computation for given poins using tsdf volume
+      /** \brief Performs normals computation for given points using tsdf volume
         * \param[in] volume tsdf volume
         * \param[in] volume_size volume size
         * \param[in] input points where normals are computed
@@ -429,24 +428,24 @@ namespace pcl
       void 
       unbindTextures();
       
-      /** \brief Scans tsdf volume and retrieves occuped voxes
+      /** \brief Scans tsdf volume and retrieves occupied voxels
         * \param[in] volume tsdf volume
-        * \param[out] occupied_voxels buffer for occuped voxels. The function fulfills first row with voxel ids and second row with number of vertextes.
+        * \param[out] occupied_voxels buffer for occupied voxels. The function fulfills first row with voxel ids and second row with number of vertices.
         * \return number of voxels in the buffer
         */
       int
       getOccupiedVoxels(const PtrStep<short2>& volume, DeviceArray2D<int>& occupied_voxels);
 
-      /** \brief Computes total number of vertexes for all voxels and offsets of vertexes in final triangle array
-        * \param[out] occupied_voxels buffer with occuped voxels. The function fulfills 3nd only with offsets      
-        * \return total number of vertexes
+      /** \brief Computes total number of vertices for all voxels and offsets of vertices in final triangle array
+        * \param[out] occupied_voxels buffer with occupied voxels. The function fulfills 3nd only with offsets      
+        * \return total number of vertices
         */
       int
       computeOffsetsAndTotalVertexes(DeviceArray2D<int>& occupied_voxels);
 
       /** \brief Generates final triangle array
         * \param[in] volume tsdf volume
-        * \param[in] occupied_voxels occuped voxel ids (first row), number of vertexes(second row), offsets(third row).
+        * \param[in] occupied_voxels occupied voxel ids (first row), number of vertices(second row), offsets(third row).
         * \param[in] volume_size volume size in meters
         * \param[out] output triangle array            
         */
@@ -455,5 +454,3 @@ namespace pcl
     }
   }
 }
-
-#endif /* PCL_KINFU_INTERNAL_HPP_ */

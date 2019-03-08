@@ -43,8 +43,7 @@
  *      Author: papazov
  */
 
-#ifndef PCL_RECOGNITION_ORR_GRAPH_H_
-#define PCL_RECOGNITION_ORR_GRAPH_H_
+#pragma once
 
 #include <vector>
 
@@ -107,7 +106,7 @@ namespace pcl
             static inline bool
             compare (const Node* a, const Node* b)
             {
-              return (static_cast<bool> (a->fitness_ > b->fitness_));
+              return a->fitness_ > b->fitness_;
             }
 
             friend class ORRGraph;
@@ -221,5 +220,3 @@ namespace pcl
     };
   } // namespace recognition
 } // namespace pcl
-
-#endif /* PCL_RECOGNITION_ORR_GRAPH_H_ */

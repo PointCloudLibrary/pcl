@@ -47,6 +47,9 @@
 #include <emmintrin.h>
 #endif
 
+const int pcl::keypoints::brisk::Layer::CommonParams::HALFSAMPLE = 0;
+const int pcl::keypoints::brisk::Layer::CommonParams::TWOTHIRDSAMPLE = 1;
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // construct telling the octaves number:
 pcl::keypoints::brisk::ScaleSpace::ScaleSpace (int octaves)
@@ -74,15 +77,15 @@ pcl::keypoints::brisk::ScaleSpace::constructPyramid (
   pyramid_.clear ();
 
   // fill the pyramid
-  pyramid_.push_back (pcl::keypoints::brisk::Layer (std::vector<unsigned char> (image), width, height));
+  pyramid_.emplace_back(std::vector<unsigned char> (image), width, height);
   if (layers_ > 1)
-    pyramid_.push_back (pcl::keypoints::brisk::Layer (pyramid_.back (), pcl::keypoints::brisk::Layer::CommonParams::TWOTHIRDSAMPLE));
+    pyramid_.emplace_back(pyramid_.back (), pcl::keypoints::brisk::Layer::CommonParams::TWOTHIRDSAMPLE);
   const int octaves2 = layers_;
 
   for (int i = 2; i < octaves2; i += 2)
   {
-    pyramid_.push_back (pcl::keypoints::brisk::Layer (pyramid_[i-2], pcl::keypoints::brisk::Layer::CommonParams::HALFSAMPLE));
-    pyramid_.push_back (pcl::keypoints::brisk::Layer (pyramid_[i-1], pcl::keypoints::brisk::Layer::CommonParams::HALFSAMPLE));
+    pyramid_.emplace_back(pyramid_[i-2], pcl::keypoints::brisk::Layer::CommonParams::HALFSAMPLE);
+    pyramid_.emplace_back(pyramid_[i-1], pcl::keypoints::brisk::Layer::CommonParams::HALFSAMPLE);
   }
 }
 
@@ -140,7 +143,7 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
                               delta_x, delta_y);
 
       // store:
-      keypoints.push_back (pcl::PointWithScale (point.u + delta_x, point.v + delta_y, 0.0f, basic_size_, -1, max, 0));
+      keypoints.emplace_back(point.u + delta_x, point.v + delta_y, 0.0f, basic_size_, -1, max, 0);
     }
     return;
   }
@@ -186,13 +189,13 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
                                 delta_x, delta_y);
 
         // store:
-        keypoints.push_back (pcl::PointWithScale ((point.u + delta_x) * l.getScale () + l.getOffset (),     // x
-                                                  (point.v + delta_y) * l.getScale () + l.getOffset (),     // y
-                                                  0.0f,                                           // z
-                                                  basic_size_ * l.getScale (),                         // size
-                                                  -1,                                             // angle
-                                                  max,                                            // response
-                                                  i));                                            // octave
+        keypoints.emplace_back((point.u + delta_x) * l.getScale () + l.getOffset (),  // x
+                               (point.v + delta_y) * l.getScale () + l.getOffset (),  // y
+                               0.0f,                                                  // z
+                               basic_size_ * l.getScale (),                           // size
+                               -1,                                                    // angle
+                               max,                                                   // response
+                               i);                                                    // octave
       }
     }
     else
@@ -218,7 +221,7 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
         // finally store the detected keypoint:
         if (score > float (threshold_))
         {
-          keypoints.push_back (pcl::PointWithScale (x, y, 0.0f, basic_size_ * scale, -1, score, i));
+          keypoints.emplace_back(x, y, 0.0f, basic_size_ * scale, -1, score, i);
         }
       }
     }
@@ -277,11 +280,7 @@ pcl::keypoints::brisk::ScaleSpace::getScoreBelow (
 {
   assert (layer);
   pcl::keypoints::brisk::Layer& l = pyramid_[layer-1];
-  int sixth_x;
-  int quarter_x;
   float xf;
-  int sixth_y;
-  int quarter_y;
   float yf;
 
   // scaling:
@@ -292,9 +291,9 @@ pcl::keypoints::brisk::ScaleSpace::getScoreBelow (
 
   if (layer % 2 == 0)
   { // octave
-    sixth_x = 8 * x_layer + 1;
+    int sixth_x = 8 * x_layer + 1;
     xf = float (sixth_x) / 6.0f;
-    sixth_y = 8 * y_layer + 1;
+    int sixth_y = 8 * y_layer + 1;
     yf = float (sixth_y) / 6.0f;
 
     // scaling:
@@ -305,9 +304,9 @@ pcl::keypoints::brisk::ScaleSpace::getScoreBelow (
   }
   else
   {
-    quarter_x = 6 * x_layer + 1;
+    int quarter_x = 6 * x_layer + 1;
     xf = float (quarter_x) / 4.0f;
-    quarter_y = 6 * y_layer + 1;
+    int quarter_y = 6 * y_layer + 1;
     yf = float (quarter_y) / 4.0f;
 
     // scaling:
@@ -511,13 +510,12 @@ pcl::keypoints::brisk::ScaleSpace::refine3D (
     // treat the patch below:
     float delta_x_below, delta_y_below;
     float max_below_float;
-    unsigned char max_below_uchar = 0;
     if (layer == 0)
     {
       // guess the lower intra octave...
       pcl::keypoints::brisk::Layer& l = pyramid_[0];
       int s_0_0 = l.getAgastScore_5_8 (x_layer - 1, y_layer - 1, 1);
-      max_below_uchar = static_cast<unsigned char> (s_0_0);
+      unsigned char max_below_uchar = static_cast<unsigned char> (s_0_0);
       int s_1_0 = l.getAgastScore_5_8 (x_layer, y_layer - 1, 1);
 
       if (s_1_0 > max_below_uchar) max_below_uchar = static_cast<unsigned char> (s_1_0);
@@ -1578,9 +1576,9 @@ pcl::keypoints::brisk::Layer::halfsample (
   assert (floor (double (srcheight) / 2.0) == dstheight);
 
   // mask needed later:
-  register __m128i mask = _mm_set_epi32 (0x00FF00FF, 0x00FF00FF, 0x00FF00FF, 0x00FF00FF);
+  __m128i mask = _mm_set_epi32 (0x00FF00FF, 0x00FF00FF, 0x00FF00FF, 0x00FF00FF);
   // to be added in order to make successive averaging correct:
-  register __m128i ones = _mm_set_epi32 (0x11111111, 0x11111111, 0x11111111, 0x11111111);
+  __m128i ones = _mm_set_epi32 (0x11111111, 0x11111111, 0x11111111, 0x11111111);
 
   // data pointers:
   const __m128i* p1 = reinterpret_cast<const __m128i*> (&srcimg[0]);
@@ -1595,10 +1593,7 @@ pcl::keypoints::brisk::Layer::halfsample (
   unsigned int row = 0;
   const unsigned int end = hsize / 2;
   bool half_end;
-  if (hsize % 2 == 0)
-    half_end = false;
-  else
-    half_end = true;
+  half_end = hsize % 2 != 0;
   while (p2 < p_end)
   {
     for (unsigned int i = 0; i < end; i++)
@@ -1742,10 +1737,10 @@ pcl::keypoints::brisk::Layer::twothirdsample (
   assert (floor (double (srcheight) / 3.0 * 2.0) == dstheight);
 
   // masks:
-  register __m128i mask1 = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),12,char(0x80),10,char(0x80),7,char(0x80),4,char(0x80),1);
-  register __m128i mask2 = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),12,char(0x80),10,char(0x80),7,char(0x80),4,char(0x80),1,char(0x80));
-  register __m128i mask = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),14,12,11,9,8,6,5,3,2,0);
-  register __m128i store_mask = _mm_set_epi8 (0x0,0x0,0x0,0x0,0x0,0x0,char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80));
+  __m128i mask1 = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),12,char(0x80),10,char(0x80),7,char(0x80),4,char(0x80),1);
+  __m128i mask2 = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),12,char(0x80),10,char(0x80),7,char(0x80),4,char(0x80),1,char(0x80));
+  __m128i mask = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),14,12,11,9,8,6,5,3,2,0);
+  __m128i store_mask = _mm_set_epi8 (0x0,0x0,0x0,0x0,0x0,0x0,char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80));
 
   // data pointers:
   const unsigned char* p1 = &srcimg[0];

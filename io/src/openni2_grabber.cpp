@@ -53,7 +53,7 @@
 
 using namespace pcl::io::openni2;
 
-namespace pcl
+namespace
 {
   // Treat color as chars, float32, or uint32
   typedef union
@@ -347,7 +347,7 @@ pcl::io::OpenNI2Grabber::setupDevice (const std::string& device_id, const Mode& 
   }
   catch (...)
   {
-    PCL_THROW_EXCEPTION (pcl::IOException, "unknown error occured");
+    PCL_THROW_EXCEPTION (pcl::IOException, "unknown error occurred");
   }
 
   typedef pcl::io::openni2::OpenNI2VideoMode VideoMode;
@@ -530,16 +530,16 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
   float centerX = ((float)cloud->width - 1.f) / 2.f;
   float centerY = ((float)cloud->height - 1.f) / 2.f;
 
-  if (pcl_isfinite (depth_parameters_.focal_length_x))
+  if (std::isfinite (depth_parameters_.focal_length_x))
     constant_x =  1.0f / static_cast<float> (depth_parameters_.focal_length_x);
 
-  if (pcl_isfinite (depth_parameters_.focal_length_y))
+  if (std::isfinite (depth_parameters_.focal_length_y))
     constant_y =  1.0f / static_cast<float> (depth_parameters_.focal_length_y);
 
-  if (pcl_isfinite (depth_parameters_.principal_point_x))
+  if (std::isfinite (depth_parameters_.principal_point_x))
     centerX =  static_cast<float> (depth_parameters_.principal_point_x);
 
-  if (pcl_isfinite (depth_parameters_.principal_point_y))
+  if (std::isfinite (depth_parameters_.principal_point_y))
     centerY =  static_cast<float> (depth_parameters_.principal_point_y);
 
   if ( device_->isDepthRegistered() )
@@ -560,10 +560,10 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
     depth_map = depth_resize_buffer_.data();
   }
 
-  int depth_idx = 0;
-  for (int v = 0; v < depth_height_; ++v)
+  unsigned depth_idx = 0;
+  for (unsigned v = 0; v < depth_height_; ++v)
   {
-    for (int u = 0; u < depth_width_; ++u, ++depth_idx)
+    for (unsigned u = 0; u < depth_width_; ++u, ++depth_idx)
     {
       pcl::PointXYZ& pt = cloud->points[depth_idx];
       // Check for invalid measurements
@@ -611,16 +611,16 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   float cy = ((float)depth_height_- 1.f) / 2.f; // Center y
 
   // Load pre-calibrated camera parameters if they exist
-  if (pcl_isfinite (depth_parameters_.focal_length_x))
+  if (std::isfinite (depth_parameters_.focal_length_x))
     fx =  static_cast<float> (depth_parameters_.focal_length_x);
 
-  if (pcl_isfinite (depth_parameters_.focal_length_y))
+  if (std::isfinite (depth_parameters_.focal_length_y))
     fy =  static_cast<float> (depth_parameters_.focal_length_y);
 
-  if (pcl_isfinite (depth_parameters_.principal_point_x))
+  if (std::isfinite (depth_parameters_.principal_point_x))
     cx =  static_cast<float> (depth_parameters_.principal_point_x);
 
-  if (pcl_isfinite (depth_parameters_.principal_point_y))
+  if (std::isfinite (depth_parameters_.principal_point_y))
     cy =  static_cast<float> (depth_parameters_.principal_point_y);
 
   // Get inverse focal length for calculations below
@@ -662,11 +662,11 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   unsigned step = cloud->width / depth_width_;
   unsigned skip = cloud->width - (depth_width_ * step);
 
-  int value_idx = 0;
-  int point_idx = 0;
-  for (int v = 0; v < depth_height_; ++v, point_idx += skip)
+  unsigned value_idx = 0;
+  unsigned point_idx = 0;
+  for (unsigned v = 0; v < depth_height_; ++v, point_idx += skip)
   {
-    for (int u = 0; u < depth_width_; ++u, ++value_idx, point_idx += step)
+    for (unsigned u = 0; u < depth_width_; ++u, ++value_idx, point_idx += step)
     {
       PointT& pt = cloud->points[point_idx];
       /// @todo Different values for these cases
@@ -738,16 +738,16 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
   float cy = ((float)cloud->height - 1.f) / 2.f; // Center y
 
   // Load pre-calibrated camera parameters if they exist
-  if (pcl_isfinite (depth_parameters_.focal_length_x))
+  if (std::isfinite (depth_parameters_.focal_length_x))
     fx =  static_cast<float> (depth_parameters_.focal_length_x);
 
-  if (pcl_isfinite (depth_parameters_.focal_length_y))
+  if (std::isfinite (depth_parameters_.focal_length_y))
     fy =  static_cast<float> (depth_parameters_.focal_length_y);
 
-  if (pcl_isfinite (depth_parameters_.principal_point_x))
+  if (std::isfinite (depth_parameters_.principal_point_x))
     cx =  static_cast<float> (depth_parameters_.principal_point_x);
 
-  if (pcl_isfinite (depth_parameters_.principal_point_y))
+  if (std::isfinite (depth_parameters_.principal_point_y))
     cy =  static_cast<float> (depth_parameters_.principal_point_y);
 
   float fx_inv = 1.0f / fx;
@@ -773,12 +773,12 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
   }
 
 
-  int depth_idx = 0;
+  size_t depth_idx = 0;
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-  for (int v = 0; v < depth_height_; ++v)
+  for (unsigned v = 0; v < depth_height_; ++v)
   {
-    for (int u = 0; u < depth_width_; ++u, ++depth_idx)
+    for (unsigned u = 0; u < depth_width_; ++u, ++depth_idx)
     {
       pcl::PointXYZI& pt = cloud->points[depth_idx];
       /// @todo Different values for these cases
@@ -852,7 +852,7 @@ pcl::io::openni2::OpenNI2VideoMode dummy;
   for (std::map<int, pcl::io::openni2::OpenNI2VideoMode>::const_iterator it = config2oni_map_.begin (); it != config2oni_map_.end (); ++it)
   {
     if (device_->findCompatibleDepthMode (it->second, dummy))
-      result.push_back (*it);
+      result.emplace_back(*it);
   }
 
   return (result);
@@ -867,7 +867,7 @@ pcl::io::openni2::OpenNI2VideoMode dummy;
   for (std::map<int, pcl::io::openni2::OpenNI2VideoMode>::const_iterator it = config2oni_map_.begin (); it != config2oni_map_.end (); ++it)
   {
     if (device_->findCompatibleColorMode (it->second, dummy))
-      result.push_back (*it);
+      result.emplace_back(*it);
   }
 
   return (result);

@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef OBJECT_RECOGNITION_H_
-#define OBJECT_RECOGNITION_H_
+#pragma once
 
 #include "typedefs.h"
 #include "load_clouds.h"
@@ -236,5 +234,3 @@ class ObjectRecognition
     GlobalDescriptorsPtr descriptors_;
     pcl::KdTreeFLANN<GlobalDescriptorT>::Ptr kdtree_;
 };
-
-#endif

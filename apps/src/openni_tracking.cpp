@@ -217,14 +217,9 @@ public:
       if (visualize_particles_)
       {
         pcl::PointCloud<pcl::PointXYZ>::Ptr particle_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-        for (size_t i = 0; i < particles->points.size (); i++)
+        for (const auto &point : particles->points)
         {
-          pcl::PointXYZ point;
-          
-          point.x = particles->points[i].x;
-          point.y = particles->points[i].y;
-          point.z = particles->points[i].z;
-          particle_cloud->points.push_back (point);
+          particle_cloud->points.emplace_back (point.x, point.y, point.z);
         }
         
         {
@@ -497,9 +492,9 @@ public:
       if (!(fabs(point.x) < 0.01 &&
             fabs(point.y) < 0.01 &&
             fabs(point.z) < 0.01) &&
-          !pcl_isnan(point.x) &&
-          !pcl_isnan(point.y) &&
-          !pcl_isnan(point.z))
+          !std::isnan(point.x) &&
+          !std::isnan(point.y) &&
+          !std::isnan(point.z))
         result.points.push_back(point);
     }
 
@@ -509,14 +504,14 @@ public:
   }
   
   void extractSegmentCluster (const CloudConstPtr &cloud,
-                              const std::vector<pcl::PointIndices> cluster_indices,
+                              const std::vector<pcl::PointIndices> &cluster_indices,
                               const int segment_index,
                               Cloud &result)
   {
     pcl::PointIndices segmented_indices = cluster_indices[segment_index];
-    for (size_t i = 0; i < segmented_indices.indices.size (); i++)
+    for (const int &index : segmented_indices.indices)
     {
-      PointType point = cloud->points[segmented_indices.indices[i]];
+      PointType point = cloud->points[index];
       result.points.push_back (point);
     }
     result.width = pcl::uint32_t (result.points.size ());

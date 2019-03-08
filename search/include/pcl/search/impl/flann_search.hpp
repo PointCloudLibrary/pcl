@@ -214,11 +214,10 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (
   }
   if (!identity_mapping_)
   {
-    for (size_t j = 0; j < k_indices.size (); ++j)
+    for (auto &k_index : k_indices)
     {
-      for (size_t i = 0; i < static_cast<unsigned int> (k); ++i)
+      for (int &neighbor_index : k_index)
       {
-        int& neighbor_index = k_indices[j][i];
         neighbor_index = index_mapping_[neighbor_index];
       }
     }
@@ -259,9 +258,8 @@ pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (const PointT& poi
 
   if (!identity_mapping_)
   {
-    for (size_t i = 0; i < indices.size (); ++i)
+    for (int &neighbor_index : indices)
     {
-      int& neighbor_index = indices [i];
       neighbor_index = index_mapping_ [neighbor_index];
     }
   }
@@ -346,11 +344,10 @@ pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (
   }
   if (!identity_mapping_)
   {
-    for (size_t j = 0; j < k_indices.size (); ++j )
+    for (auto &k_index : k_indices)
     {
-      for (size_t i = 0; i < k_indices[j].size (); ++i)
+      for (int &neighbor_index : k_index)
       {
-        int& neighbor_index = k_indices[j][i];
         neighbor_index = index_mapping_[neighbor_index];
       }
     }

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_MESH_CONVERSION_H
-#define PCL_GEOMETRY_MESH_CONVERSION_H
+#pragma once
 
 #include <pcl/PolygonMesh.h>
 #include <pcl/conversions.h>
@@ -90,7 +89,6 @@ namespace pcl
     {
       typedef HalfEdgeMeshT                          HalfEdgeMesh;
       typedef typename HalfEdgeMesh::VertexDataCloud VertexDataCloud;
-      typedef typename HalfEdgeMesh::VertexIndex     VertexIndex;
       typedef typename HalfEdgeMesh::VertexIndices   VertexIndices;
 
       BOOST_STATIC_ASSERT (HalfEdgeMesh::HasVertexData::value); // Output mesh must have data associated with the vertices!
@@ -102,9 +100,9 @@ namespace pcl
       half_edge_mesh.reserveEdges (3 * face_vertex_mesh.polygons.size ());
       half_edge_mesh.reserveFaces (    face_vertex_mesh.polygons.size ());
 
-      for (typename VertexDataCloud::const_iterator it=vertices.begin (); it!=vertices.end (); ++it)
+      for (const auto &vertex : vertices)
       {
-        half_edge_mesh.addVertex (*it);
+        half_edge_mesh.addVertex (vertex);
       }
 
       assert (half_edge_mesh.sizeVertices () == vertices.size ());
@@ -112,12 +110,12 @@ namespace pcl
       int count_not_added = 0;
       VertexIndices vi;
       vi.reserve (3); // Minimum number (triangle)
-      for (size_t i=0; i<face_vertex_mesh.polygons.size (); ++i)
+      for (const auto &polygon : face_vertex_mesh.polygons)
       {
         vi.clear ();
-        for (size_t j=0; j<face_vertex_mesh.polygons [i].vertices.size (); ++j)
+        for (const unsigned int vertex : polygon.vertices)
         {
-          vi.push_back (VertexIndex (face_vertex_mesh.polygons [i].vertices [j]));
+          vi.emplace_back (vertex);
         }
 
         if (!half_edge_mesh.addFace (vi).isValid ())
@@ -130,5 +128,3 @@ namespace pcl
     }
   } // End namespace geometry
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_MESH_CONVERSION_H

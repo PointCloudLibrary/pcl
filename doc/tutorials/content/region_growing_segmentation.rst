@@ -171,7 +171,7 @@ and how to access its elements.
    :lines: 65-73
 
 The ``pcl::RegionGrowing`` class provides a method that returns the colored cloud where each cluster has its own color.
-So in this part of code the ``pcl::visualization::CloudViewer`` is instanciated for viewing the result of the segmentation - the same colored cloud.
+So in this part of code the ``pcl::visualization::CloudViewer`` is instantiated for viewing the result of the segmentation - the same colored cloud.
 You can learn more about cloud visualization in the :ref:`cloud_viewer` tutorial.
 
 Compiling and running the program

@@ -97,8 +97,7 @@ pcl::BlockBasedStereoMatching::compute_impl (unsigned char* ref_img, unsigned ch
   }//x
 
   //2
-  unsigned char *lp, *rp, *lpp, *rpp;
-  int ind1 = radius_ + radius_ + max_disp_ + x_off_;
+  const int ind1 = radius_ + radius_ + max_disp_ + x_off_;
 
   for (int y = radius_ + 1; y < height_ - radius_; y++)
   {
@@ -115,10 +114,10 @@ pcl::BlockBasedStereoMatching::compute_impl (unsigned char* ref_img, unsigned ch
     }
 
     //all other positions
-    lp  = static_cast<unsigned char*> (ref_img) + (y + radius_)    * width_ + ind1;
-    rp  = static_cast<unsigned char*> (trg_img) + (y + radius_)    * width_ + ind1 - x_off_;
-    lpp = static_cast<unsigned char*> (ref_img) + (y - radius_ -1) * width_ + ind1;
-    rpp = static_cast<unsigned char*> (trg_img) + (y - radius_ -1) * width_ + ind1 - x_off_;
+    unsigned char *lp  = static_cast<unsigned char*> (ref_img) + (y + radius_)    * width_ + ind1;
+    unsigned char *rp  = static_cast<unsigned char*> (trg_img) + (y + radius_)    * width_ + ind1 - x_off_;
+    unsigned char *lpp = static_cast<unsigned char*> (ref_img) + (y - radius_ -1) * width_ + ind1;
+    unsigned char *rpp = static_cast<unsigned char*> (trg_img) + (y - radius_ -1) * width_ + ind1 - x_off_;
 
     for (int x = max_disp_ + x_off_ + radius_ + 1; x < width_ - radius_; x++)
     {

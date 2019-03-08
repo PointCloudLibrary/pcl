@@ -35,9 +35,7 @@
  *
  */
 
-#ifndef PROJECT_MODEL_H_
-#define PROJECT_MODEL_H_
-
+#pragma once
 
 #include <vtkSmartPointer.h>
 #include <vtkCamera.h>
@@ -45,11 +43,13 @@
 #include <pcl/io/pcd_io.h>
 
 #include <pcl/apps/cloud_composer/commands.h>
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/point_selectors/selection_event.h> 
 #include <pcl/apps/cloud_composer/point_selectors/manipulation_event.h>
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 
+#include <QDir>
+
+class QItemSelection;
 class QItemSelectionModel;
 
 namespace pcl
@@ -70,7 +70,7 @@ namespace pcl
       public:
         ProjectModel (QObject *parent = 0);
         ProjectModel (const ProjectModel& to_copy);
-        virtual ~ProjectModel ();
+        ~ProjectModel ();
         
         ProjectModel (QString project_name, QObject *parent = 0);
         
@@ -112,7 +112,7 @@ namespace pcl
         /** \brief This is invoked to perform the manipulations specified on the model */
         void
         manipulateClouds (boost::shared_ptr<ManipulationEvent> manip_event);
-      public slots:
+      public Q_SLOTS:
         void 
         commandCompleted (CloudCommand* command);
         
@@ -157,7 +157,7 @@ namespace pcl
         /** \brief Selects all items in the model */
         void 
         selectAllItems (QStandardItem* item = 0 );
-      signals:  
+      Q_SIGNALS:
         void
         enqueueNewAction (AbstractTool* tool, ConstItemList data);
         
@@ -209,6 +209,3 @@ namespace pcl
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::ProjectModel);
 Q_DECLARE_METATYPE (pcl::cloud_composer::interactor_styles::INTERACTOR_STYLES);
-
-#endif //PROJECT_MODEL_H
-

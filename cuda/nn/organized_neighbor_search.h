@@ -34,8 +34,7 @@
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
-#ifndef POINTCLOUD_DEPTH_NEIGHBOR_SEARCH_H
-#define POINTCLOUD_DEPTH_NEIGHBOR_SEARCH_H
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -339,6 +338,3 @@ namespace pcl
 }
 
 //#include "organized_neighbor_search.hpp"
-
-#endif
-

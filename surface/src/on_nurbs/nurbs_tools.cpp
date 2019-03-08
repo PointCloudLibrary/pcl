@@ -83,47 +83,15 @@ NurbsTools::downsample_random (vector_vec3d &data, unsigned size)
   data = data_tmp;
 }
 
-//std::list<unsigned>
-//NurbsTools::getClosestPoints (const Eigen::Vector2d &p, const vector_vec2d &data, unsigned s)
-//{
-//  if (data.empty ())
-//    throw std::runtime_error ("[NurbsTools::getClosestPoint(2d)] Data empty.\n");
-//
-//  std::list<unsigned> idxs;
-//
-//  double dist2 (DBL_MAX);
-//  for (unsigned i = 0; i < data.size (); i++)
-//  {
-//    double d2 = (data[i] - p).squaredNorm ();
-//    if (d2 < dist2)
-//    {
-//      idxs.push_front (i);
-//      if (idxs.size () > s)
-//        idxs.pop_back ();
-//      dist2 = d2;
-//    }
-//  }
-//
-//  std::list<unsigned>::iterator it;
-//  printf ("NurbsTools::getClosestPoints");
-//  for (it = idxs.begin (); it != idxs.end (); it++)
-//  {
-//    printf (" %d", *it);
-//  }
-//  printf ("\n");
-//
-//  return idxs;
-//}
-
 unsigned
 NurbsTools::getClosestPoint (const Eigen::Vector2d &p, const vector_vec2d &data)
 {
   if (data.empty ())
     throw std::runtime_error ("[NurbsTools::getClosestPoint(2d)] Data empty.\n");
 
-  unsigned idx (0);
+  size_t idx = 0;
   double dist2 (DBL_MAX);
-  for (unsigned i = 0; i < data.size (); i++)
+  for (size_t i = 0; i < data.size (); i++)
   {
     double d2 = (data[i] - p).squaredNorm ();
     if (d2 < dist2)
@@ -141,9 +109,9 @@ NurbsTools::getClosestPoint (const Eigen::Vector3d &p, const vector_vec3d &data)
   if (data.empty ())
     throw std::runtime_error ("[NurbsTools::getClosestPoint(2d)] Data empty.\n");
 
-  unsigned idx (0);
+  size_t idx = 0;
   double dist2 (DBL_MAX);
-  for (unsigned i = 0; i < data.size (); i++)
+  for (size_t i = 0; i < data.size (); i++)
   {
     double d2 = (data[i] - p).squaredNorm ();
     if (d2 < dist2)
@@ -162,11 +130,11 @@ NurbsTools::getClosestPoint (const Eigen::Vector2d &p, const Eigen::Vector2d &di
   if (data.empty ())
     throw std::runtime_error ("[NurbsTools::getClosestPoint(2d)] Data empty.\n");
 
-  unsigned idx (0);
+  size_t idx = 0;
   idxcp = 0;
   double dist2 (0.0);
   double dist2cp (DBL_MAX);
-  for (unsigned i = 0; i < data.size (); i++)
+  for (size_t i = 0; i < data.size (); i++)
   {
     Eigen::Vector2d v = (data[i] - p);
     double d2 = v.squaredNorm ();

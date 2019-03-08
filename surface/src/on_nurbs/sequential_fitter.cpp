@@ -187,10 +187,7 @@ SequentialFitter::is_back_facing (const Eigen::Vector3d &v0, const Eigen::Vector
   e2 = v2 - v0;
 
   Eigen::Vector3d z (m_extrinsic (0, 2), m_extrinsic (1, 2), m_extrinsic (2, 2));
-  if (z.dot (e1.cross (e2)) > 0.0)
-    return true;
-  else
-    return false;
+  return z.dot (e1.cross (e2)) > 0.0;
 }
 
 /********************************************************************************/
@@ -235,10 +232,10 @@ SequentialFitter::setCorners (pcl::PointIndices::Ptr &corners, bool flip_on_dema
     throw std::runtime_error ("[SequentialFitter::setCorners] Error: Empty or invalid pcl-point-cloud.\n");
 
   if (corners->indices.size () < 4)
-    throw std::runtime_error ("[SequentialFitter::setCorners] Error: to few corners (<4)\n");
+    throw std::runtime_error ("[SequentialFitter::setCorners] Error: too few corners (<4)\n");
 
   if (corners->indices.size () > 4)
-    printf ("[SequentialFitter::setCorners] Warning: to many corners (>4)\n");
+    printf ("[SequentialFitter::setCorners] Warning: too many corners (>4)\n");
 
   bool flip = false;
   pcl::PointXYZRGB &pt0 = m_cloud->at (corners->indices[0]);
@@ -563,7 +560,7 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
       unsigned idx = row * m_cloud->width + col;
 
       pcl::PointXYZRGB &pt = m_cloud->at (idx);
-      if (!pcl_isnan (pt.x) && !pcl_isnan (pt.y) && !pcl_isnan (pt.z))
+      if (!std::isnan (pt.x) && !std::isnan (pt.y) && !std::isnan (pt.z))
       {
 
         // distance requirement
@@ -596,7 +593,7 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
 
   double int_err (0.0);
   double div_err = 1.0 / double (m_data.interior_error.size ());
-  for (unsigned i = 0; i < m_data.interior_error.size (); i++)
+  for (size_t i = 0; i < m_data.interior_error.size (); i++)
   {
     int_err += (m_data.interior_error[i] * div_err);
   }
@@ -611,14 +608,14 @@ unsigned
 SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, const std::vector<int> &indices,
                           vector_vec3d &on_cloud)
 {
-  unsigned numPoints (0);
+  size_t numPoints = 0;
 
-  for (unsigned i = 0; i < indices.size (); i++)
+  for (size_t i = 0; i < indices.size (); i++)
   {
 
     pcl::PointXYZRGB &pt = pcl_cloud->at (indices[i]);
 
-    if (!pcl_isnan (pt.x) && !pcl_isnan (pt.y) && !pcl_isnan (pt.z))
+    if (!std::isnan (pt.x) && !std::isnan (pt.y) && !std::isnan (pt.z))
     {
       on_cloud.push_back (Eigen::Vector3d (pt.x, pt.y, pt.z));
       numPoints++;

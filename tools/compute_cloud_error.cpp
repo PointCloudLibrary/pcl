@@ -82,7 +82,7 @@ loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 
 void
 compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointCloud2::ConstPtr &cloud_target,
-         pcl::PCLPointCloud2 &output, std::string correspondence_type)
+         pcl::PCLPointCloud2 &output, const std::string &correspondence_type)
 {
   // Estimate
   TicToc tt;
@@ -112,9 +112,9 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
 
     for (size_t point_i = 0; point_i < xyz_source->points.size (); ++point_i)
     {
-      if (!pcl_isfinite (xyz_source->points[point_i].x) || !pcl_isfinite (xyz_source->points[point_i].y) || !pcl_isfinite (xyz_source->points[point_i].z))
+      if (!std::isfinite (xyz_source->points[point_i].x) || !std::isfinite (xyz_source->points[point_i].y) || !std::isfinite (xyz_source->points[point_i].z))
         continue;
-      if (!pcl_isfinite (xyz_target->points[point_i].x) || !pcl_isfinite (xyz_target->points[point_i].y) || !pcl_isfinite (xyz_target->points[point_i].z))
+      if (!std::isfinite (xyz_target->points[point_i].x) || !std::isfinite (xyz_target->points[point_i].y) || !std::isfinite (xyz_target->points[point_i].z))
         continue;
 
 
@@ -126,7 +126,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
       output_xyzi->points[point_i].z = xyz_source->points[point_i].z;
       output_xyzi->points[point_i].intensity = dist;
     }
-    rmse = sqrtf (rmse / static_cast<float> (xyz_source->points.size ()));
+    rmse = std::sqrt (rmse / static_cast<float> (xyz_source->points.size ()));
   }
   else if (correspondence_type == "nn")
   {
@@ -137,7 +137,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
 
     for (size_t point_i = 0; point_i < xyz_source->points.size (); ++ point_i)
     {
-      if (!pcl_isfinite (xyz_source->points[point_i].x) || !pcl_isfinite (xyz_source->points[point_i].y) || !pcl_isfinite (xyz_source->points[point_i].z))
+      if (!std::isfinite (xyz_source->points[point_i].x) || !std::isfinite (xyz_source->points[point_i].y) || !std::isfinite (xyz_source->points[point_i].z))
         continue;
 
       std::vector<int> nn_indices (1);
@@ -154,7 +154,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
       output_xyzi->points[point_i].z = xyz_source->points[point_i].z;
       output_xyzi->points[point_i].intensity = dist;
     }
-    rmse = sqrtf (rmse / static_cast<float> (xyz_source->points.size ()));
+    rmse = std::sqrt (rmse / static_cast<float> (xyz_source->points.size ()));
 
   }
   else if (correspondence_type == "nnplane")
@@ -169,7 +169,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
 
     for (size_t point_i = 0; point_i < xyz_source->points.size (); ++ point_i)
     {
-      if (!pcl_isfinite (xyz_source->points[point_i].x) || !pcl_isfinite (xyz_source->points[point_i].y) || !pcl_isfinite (xyz_source->points[point_i].z))
+      if (!std::isfinite (xyz_source->points[point_i].x) || !std::isfinite (xyz_source->points[point_i].y) || !std::isfinite (xyz_source->points[point_i].z))
         continue;
 
       std::vector<int> nn_indices (1);
@@ -190,7 +190,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
       output_xyzi->points[point_i].z = xyz_source->points[point_i].z;
       output_xyzi->points[point_i].intensity = dist * dist;
     }
-    rmse = sqrtf (rmse / static_cast<float> (xyz_source->points.size ()));
+    rmse = std::sqrt (rmse / static_cast<float> (xyz_source->points.size ()));
   }
   else
   {

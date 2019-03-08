@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_MARCHING_CUBES_H_
-#define PCL_SURFACE_MARCHING_CUBES_H_
+#pragma once
 
 #include <pcl/surface/boost.h>
 #include <pcl/surface/reconstruction.h>
@@ -374,12 +373,16 @@ namespace pcl
       typedef typename pcl::KdTree<PointNT> KdTree;
       typedef typename pcl::KdTree<PointNT>::Ptr KdTreePtr;
 
-
       /** \brief Constructor. */
-      MarchingCubes ();
+      MarchingCubes (const float percentage_extend_grid = 0.0f,
+                     const float iso_level = 0.0f) :
+        percentage_extend_grid_ (percentage_extend_grid),
+        iso_level_ (iso_level) 
+      {
+      }
 
       /** \brief Destructor. */
-      virtual ~MarchingCubes ();
+      ~MarchingCubes ();
 
 
       /** \brief Method that sets the iso level of the surface to be extracted.
@@ -402,7 +405,6 @@ namespace pcl
       inline void
       setGridResolution (int res_x, int res_y, int res_z)
       { res_x_ = res_x; res_y_ = res_y; res_z_ = res_z; }
-
 
       /** \brief Method to get the marching cubes grid resolution.
         * \param[in] res_x the resolution of the grid along the x-axis
@@ -437,8 +439,12 @@ namespace pcl
       /** \brief The grid resolution */
       int res_x_, res_y_, res_z_;
 
-      /** \brief Min and max data points. */
-      Eigen::Vector4f min_p_, max_p_;
+      /** \brief bounding box */
+      Eigen::Array3f upper_boundary_;
+      Eigen::Array3f lower_boundary_;
+
+      /** \brief size of voxels */
+      Eigen::Array3f size_voxel_;
 
       /** \brief Parameter that defines how much free space should be left inside the grid between
         * the bounding box of the point cloud and the grid limits, as a percentage of the bounding box.*/
@@ -447,7 +453,8 @@ namespace pcl
       /** \brief The iso level to be extracted. */
       float iso_level_;
 
-      /** \brief Convert the point cloud into voxel data. */
+      /** \brief Convert the point cloud into voxel data. 
+        */
       virtual void
       voxelizeData () = 0;
 
@@ -466,13 +473,14 @@ namespace pcl
         * \param leaf_node the leaf node to be checked
         * \param index_3d the 3d index of the leaf node to be checked
         * \param cloud point cloud to store the vertices of the polygon
-       */
+        */
       void
-      createSurface (std::vector<float> &leaf_node,
-                     Eigen::Vector3i &index_3d,
+      createSurface (const std::vector<float> &leaf_node,
+                     const Eigen::Vector3i &index_3d,
                      pcl::PointCloud<PointNT> &cloud);
 
-      /** \brief Get the bounding box for the input data points. */
+      /** \brief Get the bounding box for the input data points. 
+        */
       void
       getBoundingBox ();
 
@@ -492,21 +500,21 @@ namespace pcl
                          Eigen::Vector3i &index3d);
 
       /** \brief Class get name method. */
-      std::string getClassName () const { return ("MarchingCubes"); }
+      std::string getClassName () const override { return ("MarchingCubes"); }
 
       /** \brief Extract the surface.
         * \param[out] output the resultant polygonal mesh
         */
-       virtual void
-       performReconstruction (pcl::PolygonMesh &output);
+       void
+       performReconstruction (pcl::PolygonMesh &output) override;
 
        /** \brief Extract the surface.
          * \param[out] points the points of the extracted mesh
          * \param[out] polygons the connectivity between the point of the extracted mesh.
          */
-       virtual void
+       void
        performReconstruction (pcl::PointCloud<PointNT> &points,
-                              std::vector<pcl::Vertices> &polygons);
+                              std::vector<pcl::Vertices> &polygons) override;
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -516,6 +524,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/marching_cubes.hpp>
 #endif
-
-#endif  // PCL_SURFACE_MARCHING_CUBES_H_
-

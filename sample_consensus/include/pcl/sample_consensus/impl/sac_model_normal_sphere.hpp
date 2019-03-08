@@ -108,7 +108,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> int
 pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
-      const Eigen::VectorXf &model_coefficients,  const double threshold)
+      const Eigen::VectorXf &model_coefficients,  const double threshold) const
 {
   if (!normals_)
   {
@@ -158,7 +158,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::getDistancesToModel (
-      const Eigen::VectorXf &model_coefficients, std::vector<double> &distances)
+      const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) const
 {
   if (!normals_)
   {
@@ -207,7 +207,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::getDistancesToModel (
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool 
-pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::isModelValid (const Eigen::VectorXf &model_coefficients)
+pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::isModelValid (const Eigen::VectorXf &model_coefficients) const
 {
   if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
     return (false);

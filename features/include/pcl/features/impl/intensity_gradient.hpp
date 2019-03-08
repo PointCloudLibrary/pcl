@@ -61,10 +61,10 @@ pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT, IntensitySelecto
   for (size_t i_point = 0; i_point < indices.size (); ++i_point)
   {
     PointInT p = cloud.points[indices[i_point]];
-    if (!pcl_isfinite (p.x) ||
-        !pcl_isfinite (p.y) ||
-        !pcl_isfinite (p.z) ||
-        !pcl_isfinite (intensity_ (p)))
+    if (!std::isfinite (p.x) ||
+        !std::isfinite (p.y) ||
+        !std::isfinite (p.z) ||
+        !std::isfinite (intensity_ (p)))
       continue;
 
     p.x -= point[0];

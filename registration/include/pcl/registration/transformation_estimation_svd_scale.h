@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_SCALE_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_SCALE_H_
+
+#pragma once
 
 #include <pcl/registration/transformation_estimation_svd.h>
 
@@ -88,5 +88,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/transformation_estimation_svd_scale.hpp>
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_SCALE_H_ */

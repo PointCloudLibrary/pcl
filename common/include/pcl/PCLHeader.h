@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef PCL_ROSLIB_MESSAGE_HEADER_H
-#define PCL_ROSLIB_MESSAGE_HEADER_H
+#pragma once
 
 #ifdef USE_ROS
    #error USE_ROS setup requires PCL to compile against ROS message headers, which is now deprecated
@@ -88,6 +86,3 @@ namespace pcl
   }
 
 } // namespace pcl
-
-#endif // PCL_ROSLIB_MESSAGE_HEADER_H
-

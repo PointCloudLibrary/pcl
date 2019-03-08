@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_UNIFORM_SAMPLING_H_
-#define REC_FRAMEWORK_UNIFORM_SAMPLING_H_
+#pragma once
 
 #include <vtkPolyData.h>
 #include <vtkTriangle.h>
@@ -35,7 +34,7 @@ namespace pcl
     {
       float r1 = static_cast<float> (uniform_deviate (rand ()));
       float r2 = static_cast<float> (uniform_deviate (rand ()));
-      float r1sqr = sqrtf (r1);
+      float r1sqr = std::sqrt (r1);
       float OneMinR1Sqr = (1 - r1sqr);
       float OneMinR2 = (1 - r2);
       a1 *= OneMinR1Sqr;
@@ -151,7 +150,7 @@ namespace pcl
       cloud_out.height = 1;
       cloud_out.is_dense = false;
 
-      for (int i = 0; i < points->GetNumberOfPoints (); i++)
+      for (vtkIdType i = 0; i < points->GetNumberOfPoints (); i++)
       {
         double p[3];
         points->GetPoint (i, p);
@@ -162,5 +161,3 @@ namespace pcl
     }
   }
 }
-
-#endif /* REC_FRAMEWORK_UNIFORM_SAMPLING_H_ */

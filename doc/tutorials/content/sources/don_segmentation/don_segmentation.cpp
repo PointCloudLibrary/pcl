@@ -152,7 +152,7 @@ main (int argc, char *argv[])
 
   if (!don.initCompute ())
   {
-    std::cerr << "Error: Could not intialize DoN feature operator" << std::endl;
+    std::cerr << "Error: Could not initialize DoN feature operator" << std::endl;
     exit (EXIT_FAILURE);
   }
 
@@ -174,7 +174,8 @@ main (int argc, char *argv[])
                                new pcl::FieldComparison<PointNormal> ("curvature", pcl::ComparisonOps::GT, threshold))
                              );
   // Build the filter
-  pcl::ConditionalRemoval<PointNormal> condrem (range_cond);
+  pcl::ConditionalRemoval<PointNormal> condrem;
+  condrem.setCondition (range_cond);
   condrem.setInputCloud (doncloud);
 
   pcl::PointCloud<PointNormal>::Ptr doncloud_filtered (new pcl::PointCloud<PointNormal>);

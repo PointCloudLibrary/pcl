@@ -36,11 +36,9 @@
  *
  */
 
-#ifndef PCL_MIN_CUT_SEGMENTATION_H_
-#define PCL_MIN_CUT_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/segmentation/boost.h>
-#if (BOOST_VERSION >= 104400)
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -102,20 +100,22 @@ namespace pcl
 
       typedef boost::graph_traits< mGraph >::in_edge_iterator InEdgeIterator;
 
+      typedef boost::shared_ptr<mGraph> mGraphPtr;
+
     public:
 
       /** \brief Constructor that sets default values for member variables. */
       MinCutSegmentation ();
 
       /** \brief Destructor that frees memory. */
-      virtual
+
       ~MinCutSegmentation ();
 
       /** \brief This method simply sets the input point cloud.
         * \param[in] cloud the const boost shared pointer to a PointCloud
         */
-      virtual void
-      setInputCloud (const PointCloudConstPtr &cloud);
+      void
+      setInputCloud (const PointCloudConstPtr &cloud) override;
 
       /** \brief Returns normalization value for binary potentials. For more information see the article. */
       double
@@ -203,7 +203,7 @@ namespace pcl
       getMaxFlow () const;
 
       /** \brief Returns the graph that was build for finding the minimum cut. */
-      typename boost::shared_ptr<typename pcl::MinCutSegmentation<PointT>::mGraph>
+      mGraphPtr
       getGraph () const;
 
       /** \brief Returns the colored cloud. Points that belong to the object have the same color. */
@@ -294,7 +294,7 @@ namespace pcl
       std::vector <pcl::PointIndices> clusters_;
 
       /** \brief Stores the graph for finding the maximum flow. */
-      boost::shared_ptr<mGraph> graph_;
+      mGraphPtr graph_;
 
       /** \brief Stores the capacity of every edge in the graph. */
       boost::shared_ptr<CapacityMap> capacity_;
@@ -324,7 +324,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/min_cut_segmentation.hpp>
-#endif
-
-#endif
 #endif

@@ -35,15 +35,14 @@
  *
  */
 
-
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/filters/passthrough.h>
-
 
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
+
+#include <QMessageBox>
 
 pcl::cloud_composer::CloudItem::CloudItem (QString name,
                                            pcl::PCLPointCloud2::Ptr cloud_ptr,
@@ -111,7 +110,7 @@ pcl::cloud_composer::CloudItem::~CloudItem ()
 
 
 void
-pcl::cloud_composer::CloudItem::paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
+pcl::cloud_composer::CloudItem::paintView (pcl::visualization::PCLVisualizer::Ptr vis) const
 {
   vis->addPointCloud (cloud_blob_ptr_, geometry_handler_, color_handler_, origin_, orientation_, getId ().toStdString ());
   vis->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, properties_->getProperty ("Point Size").toDouble (), getId ().toStdString ());
@@ -120,7 +119,7 @@ pcl::cloud_composer::CloudItem::paintView (boost::shared_ptr<pcl::visualization:
 }
 
 void
-pcl::cloud_composer::CloudItem::removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
+pcl::cloud_composer::CloudItem::removeFromView (pcl::visualization::PCLVisualizer::Ptr vis) const
 {  
   vis->removePointCloud (getId ().toStdString ());
 }
@@ -128,7 +127,7 @@ pcl::cloud_composer::CloudItem::removeFromView (boost::shared_ptr<pcl::visualiza
 QVariant
 pcl::cloud_composer::CloudItem::data (int role) const
 {
-  // Check if we're trying to get something which is template dependant, if so, create the template if it hasn't been set
+  // Check if we're trying to get something which is template dependent, if so, create the template if it hasn't been set
   if ( (role == ItemDataRole::CLOUD_TEMPLATED || role == ItemDataRole::KD_TREE_SEARCH) && !template_cloud_set_)
   {
     qCritical () << "Attempted to access templated types which are not set!!";
@@ -151,12 +150,10 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
 {
   if (! template_cloud_set_ )
   {
-    std::vector<pcl::PCLPointField>::iterator end = cloud_blob_ptr_->fields.end ();
-    std::vector<pcl::PCLPointField>::iterator itr = cloud_blob_ptr_->fields.begin ();
     QStringList field_names;
-    for ( itr = cloud_blob_ptr_->fields.begin ()  ; itr != end; ++itr)
+    for (const auto &field : cloud_blob_ptr_->fields)
     {
-      field_names.append (QString::fromStdString ( itr->name ));
+      field_names.append (QString::fromStdString ( field.name ));
     }
     point_type_ = PointTypeFlags::NONE;
     if (field_names.contains ("x") && field_names.contains ("y") && field_names.contains ("z"))
@@ -237,9 +234,6 @@ pcl::cloud_composer::CloudItem::checkIfFinite ()
   pass_filter.setKeepOrganized (false);
   pass_filter.filter (*cloud_filtered);
   
-  if (cloud_filtered->data.size() == cloud_blob_ptr_->data.size ())
-    return true;
-  
-  return false;
+  return cloud_filtered->data.size() == cloud_blob_ptr_->data.size ();
 
 }

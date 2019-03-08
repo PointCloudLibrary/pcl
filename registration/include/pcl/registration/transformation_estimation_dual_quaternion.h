@@ -36,8 +36,8 @@
  *
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_H_
+
+#pragma once
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/cloud_iterator.h>
@@ -63,7 +63,7 @@ namespace pcl
         typedef typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
 
         TransformationEstimationDualQuaternion () {};
-        virtual ~TransformationEstimationDualQuaternion () {};
+        ~TransformationEstimationDualQuaternion () {};
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using
           * dual quaternion optimization
@@ -75,7 +75,7 @@ namespace pcl
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using
           * dual quaternion optimization
@@ -89,14 +89,14 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using
           * dual quaternion optimization
           * \param[in] cloud_src the source point cloud dataset
           * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
           * \param[in] cloud_tgt the target point cloud dataset
-          * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
+          * \param[in] indices_tgt the vector of indices describing the correspondences of the interest points from \a indices_src
           * \param[out] transformation_matrix the resultant transformation matrix
           */
         inline void
@@ -105,7 +105,7 @@ namespace pcl
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const std::vector<int> &indices_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using
           * dual quaternion optimization
@@ -119,7 +119,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const pcl::Correspondences &correspondences,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
       protected:
 
@@ -138,5 +138,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/transformation_estimation_dual_quaternion.hpp>
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_H_ */

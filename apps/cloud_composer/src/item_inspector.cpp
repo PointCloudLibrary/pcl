@@ -35,11 +35,10 @@
  *
  */
 
-
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/item_inspector.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
+#include <QTreeView>
 
 pcl::cloud_composer::ItemInspector::ItemInspector (QWidget* parent)
   : QTabWidget(parent)

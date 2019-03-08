@@ -43,12 +43,12 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                         &cloud, 
-                            const boost::shared_ptr<search::Search<PointXYZRGB> > &tree,
-                            float                                                 tolerance, 
-                            PointIndices                                          &indices_in,
-                            PointIndices                                          &indices_out,
-                            float                                                 delta_hue)
+pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>          &cloud,
+                            const search::Search<PointXYZRGB>::Ptr &tree,
+                            float                                  tolerance,
+                            PointIndices                           &indices_in,
+                            PointIndices                           &indices_out,
+                            float                                  delta_hue)
 {
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
   {
@@ -119,12 +119,12 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                       
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                           &cloud, 
-                            const boost::shared_ptr<search::Search<PointXYZRGBL> >  &tree,
-                            float                                                   tolerance, 
-                            PointIndices                                            &indices_in,
-                            PointIndices                                            &indices_out,
-                            float                                                   delta_hue)
+pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>            &cloud,
+                            const search::Search<PointXYZRGBL>::Ptr  &tree,
+                            float                                    tolerance,
+                            PointIndices                             &indices_in,
+                            PointIndices                             &indices_out,
+                            float                                    delta_hue)
 {
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
   {

@@ -46,7 +46,7 @@
     
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/octree/octree.h>
+#include <pcl/octree/octree_search.h>
 
 #if defined _MSC_VER
     #pragma warning (default: 4521)
@@ -110,7 +110,7 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
              
     for(size_t i = 0; i < data.tests_num; ++i)
     {
-        //search host on octree tha was built on device
+        //search host on octree that was built on device
         vector<int> results_host_gpu; //host search
         octree_device.radiusSearchHost(data.queries[i], data.radiuses[i], results_host_gpu);                        
         

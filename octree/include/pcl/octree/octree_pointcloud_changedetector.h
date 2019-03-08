@@ -36,10 +36,10 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_CHANGEDETECTOR_H
-#define PCL_OCTREE_CHANGEDETECTOR_H
+#pragma once
 
-#include "octree_pointcloud.h"
+#include <pcl/octree/octree_pointcloud.h>
+#include <pcl/octree/octree2buf_base.h>
 
 namespace pcl
 {
@@ -77,7 +77,7 @@ namespace pcl
         }
 
         /** \brief Empty class constructor. */
-        virtual ~OctreePointCloudChangeDetector ()
+        ~OctreePointCloudChangeDetector ()
         {
         }
 
@@ -93,10 +93,7 @@ namespace pcl
           std::vector<OctreeContainerPointIndices*> leaf_containers;
           this->serializeNewLeafs (leaf_containers);
 
-          std::vector<OctreeContainerPointIndices*>::iterator it;
-          std::vector<OctreeContainerPointIndices*>::const_iterator it_end = leaf_containers.end();
-
-          for (it=leaf_containers.begin(); it!=it_end; ++it)
+          for (auto it = leaf_containers.cbegin(), it_end = leaf_containers.cend(); it != it_end; ++it)
           {
             if (static_cast<int> ((*it)->getSize ()) >= minPointsPerLeaf_arg)
               (*it)->getPointIndices(indicesVector_arg);
@@ -109,6 +106,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_OctreePointCloudChangeDetector(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudChangeDetector<T>;
-
-#endif
-

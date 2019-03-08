@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_EDGE_AWARE_PLANE_COMPARATOR_H_
-#define PCL_SEGMENTATION_EDGE_AWARE_PLANE_COMPARATOR_H_
+#pragma once
 
 #include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/plane_coefficient_comparator.h>
@@ -93,7 +92,7 @@ namespace pcl
       }
 
       /** \brief Destructor for PlaneCoefficientComparator. */
-      virtual
+      
       ~EdgeAwarePlaneComparator ()
       {
       }
@@ -169,7 +168,7 @@ namespace pcl
         * \param[in] idx2 The index of the second point.
         */
       bool
-      compare (int idx1, int idx2) const
+      compare (int idx1, int idx2) const override
       {
         // Note: there are two distance thresholds here that make sense to scale with depth.
         // dist_threshold is on the perpendicular distance to the plane, as in plane comparator
@@ -189,7 +188,7 @@ namespace pcl
         float dx = input_->points[idx1].x - input_->points[idx2].x;
         float dy = input_->points[idx1].y - input_->points[idx2].y;
         float dz = input_->points[idx1].z - input_->points[idx2].z;
-        float dist = sqrtf (dx*dx + dy*dy + dz*dz);
+        float dist = std::sqrt (dx*dx + dy*dy + dz*dz);
 
         bool normal_ok = (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ );
         bool dist_ok = (dist < euclidean_dist_threshold);
@@ -210,5 +209,3 @@ namespace pcl
       float euclidean_distance_threshold_;
   };
 }
-
-#endif // PCL_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_

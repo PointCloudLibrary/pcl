@@ -2,7 +2,8 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2014-, Open Perception, Inc.
+ *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -34,7 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
+#ifndef PCL_POLYNOMIAL_CALCULATIONS_HPP_
+#define PCL_POLYNOMIAL_CALCULATIONS_HPP_
 
 ////////////////////////////////////
 
@@ -53,7 +55,7 @@ pcl::PolynomialCalculationsT<real>:: ~PolynomialCalculationsT ()
 ////////////////////////////////////
 
 template <typename real>
-inline void 
+inline void
   pcl::PolynomialCalculationsT<real>::Parameters::setZeroValue (real new_zero_value)
 {
   zero_value = new_zero_value;
@@ -76,7 +78,7 @@ inline void
   {
     roots.push_back (-b/a);
   }
-  
+
 #if 0
   cout << __PRETTY_FUNCTION__ << ": Found "<<roots.size ()<<" roots.\n";
   for (unsigned int i=0; i<roots.size (); i++)
@@ -185,7 +187,7 @@ inline void
          alpha2 = alpha*alpha,
          alpha3 = alpha2*alpha,
          beta2 = beta*beta;
-  
+
   // Value for resubstitution:
   double resubValue = b/ (3*a);
 
@@ -233,7 +235,7 @@ inline void
     roots.push_back (-tmp1*cos (tmp2 + M_PI/3.0) - resubValue);
     roots.push_back (-tmp1*cos (tmp2 - M_PI/3.0) - resubValue);
   }
- 
+
 #if 0
   cout << __PRETTY_FUNCTION__ << ": Found "<<roots.size ()<<" roots.\n";
   for (unsigned int i=0; i<roots.size (); i++)
@@ -265,7 +267,7 @@ inline void
     //cout << "Highest order element is 0 => Calling solveCubicEquation.\n";
     solveCubicEquation (b, c, d, e, roots);
     return;
-  } 
+  }
 
   if (isNearlyZero (e))
   {
@@ -277,7 +279,7 @@ inline void
       if (!isNearlyZero (tmpRoots[i]))
         roots.push_back (tmpRoots[i]);
     return;
-  } 
+  }
 
   double root1, root2, root3, root4,
          a2 = a*a,
@@ -290,12 +292,12 @@ inline void
          beta  = (b3/ (8.0*a3)) - ( (b*c)/ (2.0*a2)) + (d/a),
          gamma = ( (-3.0*b4)/ (256.0*a4)) + ( (c*b2)/ (16.0*a3)) - ( (b*d)/ (4.0*a2)) + (e/a),
          alpha2 = alpha*alpha;
-  
+
   // Value for resubstitution:
   double resubValue = b/ (4*a);
 
   //cout << "Trying to solve y^4 + "<<alpha<<"y^2 + "<<beta<<"y + "<<gamma<<"\n";
-  
+
   if (isNearlyZero (beta))
   {  // y^4 + alpha*y^2 + gamma\n";
     //cout << "Using beta=0 condition\n";
@@ -338,7 +340,7 @@ inline void
       y += p/ (3.0*u);
 
     double w = alpha + 2.0*y;
-    
+
     if (w > 0)
     {
       w = sqrt (w);
@@ -355,7 +357,7 @@ inline void
 
     double tmp1 = - (3.0*alpha + 2.0*y + 2.0* (beta/w)),
            tmp2 = - (3.0*alpha + 2.0*y - 2.0* (beta/w));
-    
+
     if (tmp1 > 0)
     {
       tmp1 = sqrt (tmp1);
@@ -383,10 +385,10 @@ inline void
       root3 = - (b/ (4.0*a)) - 0.5*w;
       roots.push_back (root3);
     }
-   
+
     //cout << "Test: " << alpha<<", "<<beta<<", "<<gamma<<", "<<p<<", "<<q<<", "<<u <<", "<<y<<", "<<w<<"\n";
   }
-  
+
 #if 0
   cout << __PRETTY_FUNCTION__ << ": Found "<<roots.size ()<<" roots.\n";
   for (unsigned int i=0; i<roots.size (); i++)
@@ -431,19 +433,19 @@ inline bool
 
   //cout << "Searching for the "<<parameters_size<<" parameters for the bivariate polynom of degree "
   //     << polynomial_degree<<" using "<<samplePoints.size ()<<" points.\n";
-  
+
   if (parameters_size > samplePoints.size ()) // Too many parameters for this number of equations (points)?
   {
-    return false;    
+    return false;
     // Reduce degree of polynomial
-    //polynomial_degree = (unsigned int) (0.5f* (sqrtf (8*samplePoints.size ()+1) - 3));
+    //polynomial_degree = (unsigned int) (0.5f* (std::sqrt (8*samplePoints.size ()+1) - 3));
     //parameters_size = BivariatePolynomialT<real>::getNoOfParametersFromDegree (polynomial_degree);
     //cout << "Not enough points, so degree of polynomial was decreased to "<<polynomial_degree
     //     << " ("<<samplePoints.size ()<<" points => "<<parameters_size<<" parameters)\n";
   }
-  
+
   ret.setDegree (polynomial_degree);
-  
+
   //double coeffStuffStartTime=-get_time ();
   Eigen::Matrix<real, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> A (parameters_size, parameters_size);
   A.setZero();
@@ -472,20 +474,20 @@ inline bool
       }
       tmpX *= currentX;
     }
-    
+
     real* APtr = &A(0,0);
     real* bPtr = &b[0];
     real* tmpCPtr1=tmpC;
     for (unsigned int i=0; i<parameters_size; ++i)
     {
       * (bPtr++) += currentZ * *tmpCPtr1;
-      
+
       real* tmpCPtr2=tmpC;
       for (unsigned int j=0; j<parameters_size; ++j)
       {
         * (APtr++) += *tmpCPtr1 * * (tmpCPtr2++);
       }
-      
+
       ++tmpCPtr1;
     }
     //A += DMatrix<real>::outProd (tmpC);
@@ -527,7 +529,7 @@ inline bool
   //}
   //cout << "Calculating matrix A and vector b (size "<<b.size ()<<") from "<<samplePoints.size ()<<" points took "
        //<< (coeffStuffStartTime+get_time ())*1000<<"ms.\n";
-  
+
   Eigen::Matrix<real, Eigen::Dynamic, 1> parameters;
   //double choleskyStartTime=-get_time ();
   //parameters = A.choleskySolve (b);
@@ -538,17 +540,17 @@ inline bool
   //cout << "Inverse took "<< (invStartTime+get_time ())*1000<<"ms.\n";
 
   //cout << PVARC (A)<<PVARC (b)<<PVARN (parameters);
-  
+
   real inversionCheckResult = (A*parameters - b).norm ();
   if (inversionCheckResult > 1e-5)
   {
     //cout << "Inversion result: "<< inversionCheckResult<<" for matrix "<<A<<"\n";
     return false;
   }
-  
+
   for (unsigned int i=0; i<parameters_size; i++)
     ret.parameters[i] = parameters[i];
-  
+
   //cout << "Resulting polynomial is "<<ret<<"\n";
 
   //Test of gradient: ret.calculateGradient ();
@@ -556,3 +558,6 @@ inline bool
   delete [] tmpC;
   return true;
 }
+
+#endif      // PCL_POLYNOMIAL_CALCULATIONS_HPP_
+

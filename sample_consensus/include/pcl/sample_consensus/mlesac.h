@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MLESAC_H_
-#define PCL_SAMPLE_CONSENSUS_MLESAC_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/sac_model.h>
@@ -99,7 +98,7 @@ namespace pcl
         * \param[in] debug_verbosity_level enable/disable on-screen debug information and set the verbosity level
         */
       bool 
-      computeModel (int debug_verbosity_level = 0);
+      computeModel (int debug_verbosity_level = 0) override;
 
       /** \brief Set the number of EM iterations.
         * \param[in] iterations the number of EM iterations
@@ -160,5 +159,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/mlesac.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MLESAC_H_

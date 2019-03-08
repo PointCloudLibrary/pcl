@@ -1,0 +1,50 @@
+resources:
+  containers:
+    - container: doc
+      image: pointcloudlibrary/doc
+
+jobs:
+  - job: documentation
+    displayName: Generate Documentation
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    container: doc
+    variables:
+      BUILD_DIR: '$(Agent.BuildDirectory)/build'
+      DOC_DIR: '$(Agent.BuildDirectory)/documentation'
+    steps:
+      - task: InstallSSHKey@0
+        inputs:
+          hostName: github.com
+          sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBh5Yrau/gguTfoNALxhVX77Pgz6y6UWoJRERMKR68ee documentation@pointclouds.org
+          sshKeySecureFile: id_ed25519
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.6'
+          addToPath: true
+      - script: |
+          mkdir $BUILD_DIR && cd $BUILD_DIR
+          cmake $(Build.SourcesDirectory) \
+            -DDOXYGEN_USE_SHORT_NAMES=OFF \
+            -DSPHINX_HTML_FILE_SUFFIX=php \
+            -DWITH_DOCS=ON \
+            -DWITH_TUTORIALS=ON
+        displayName: 'CMake Configuration'
+      - script: |
+          cd $BUILD_DIR
+          cmake --build . -- doc tutorials advanced
+        displayName: 'Build Documentation'
+      - script: |
+          git config --global user.email "documentation@pointclouds.org"
+          git config --global user.name "PointCloudLibrary (via Azure Pipelines)"
+          echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+          git clone git@github.com:PointCloudLibrary/documentation.git $DOC_DIR
+          cd $DOC_DIR
+          cp -r $BUILD_DIR/doc/tutorials/html/* tutorials
+          cp -r $BUILD_DIR/doc/advanced/html/* advanced
+          cp -r $BUILD_DIR/doc/doxygen/html/* .
+          git add --all
+          git commit --amend --reset-author -m 'Documentation for commit $(Build.SourceVersion)' -q
+          git push --force
+        displayName: 'Push Generated Documentation To GitHub'
+        condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')

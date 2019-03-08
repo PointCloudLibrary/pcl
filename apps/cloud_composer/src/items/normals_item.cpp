@@ -35,11 +35,10 @@
  *
  */
 
-
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/items/normals_item.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 
+#include <QDebug>
 
 pcl::cloud_composer::NormalsItem::NormalsItem (QString name, pcl::PointCloud<pcl::Normal>::Ptr normals_ptr, double radius)
   : CloudComposerItem (name)
@@ -74,7 +73,7 @@ pcl::cloud_composer::NormalsItem::~NormalsItem ()
 }
 
 void
-pcl::cloud_composer::NormalsItem::paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
+pcl::cloud_composer::NormalsItem::paintView (pcl::visualization::PCLVisualizer::Ptr vis) const
 {
   //Get the parent cloud, convert to XYZ 
   if (parent ()->type () == CLOUD_ITEM)
@@ -98,7 +97,7 @@ pcl::cloud_composer::NormalsItem::paintView (boost::shared_ptr<pcl::visualizatio
 }
 
 void
-pcl::cloud_composer::NormalsItem::removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
+pcl::cloud_composer::NormalsItem::removeFromView (pcl::visualization::PCLVisualizer::Ptr vis) const
 {  
   //qDebug () << "Removing Normals "<<item_id_;
   vis->removePointCloud (getId ().toStdString ());

@@ -34,11 +34,11 @@
  *
  */
 
+#pragma once
+
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
-#ifndef OPENNI_OPENNI_H_
-#define OPENNI_OPENNI_H_
 #include <string>
 #include <vector>
 #include <map>
@@ -198,7 +198,7 @@ namespace openni_wrapper
     /**
      * @author Suat Gedikli
      * @brief decomposes the connection string into vendor id and product id.
-     * @param[in] connection_string the string containing teh connection information
+     * @param[in] connection_string the string containing the connection information
      * @param[out] vendorId the vendor id
      * @param[out] productId the product id
      */
@@ -247,5 +247,4 @@ namespace openni_wrapper
     return static_cast<unsigned> (device_context_.size ());
   }
 } // namespace
-#endif
 #endif

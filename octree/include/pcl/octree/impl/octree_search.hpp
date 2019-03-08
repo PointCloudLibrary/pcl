@@ -39,12 +39,7 @@
 #ifndef PCL_OCTREE_SEARCH_IMPL_H_
 #define PCL_OCTREE_SEARCH_IMPL_H_
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-
-#include <pcl/common/common.h>
-#include <assert.h>
-
+#include <cassert>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> bool
@@ -93,26 +88,23 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::n
   if (k < 1)
     return 0;
   
-  unsigned int i;
-  unsigned int result_count;
-
   prioPointQueueEntry point_entry;
   std::vector<prioPointQueueEntry> point_candidates;
 
   OctreeKey key;
   key.x = key.y = key.z = 0;
 
-  // initalize smallest point distance in search with high value
+  // initialize smallest point distance in search with high value
   double smallest_dist = std::numeric_limits<double>::max ();
 
   getKNearestNeighborRecursive (p_q, k, this->root_node_, key, 1, smallest_dist, point_candidates);
 
-  result_count = static_cast<unsigned int> (point_candidates.size ());
+  unsigned int result_count = static_cast<unsigned int> (point_candidates.size ());
 
   k_indices.resize (result_count);
   k_sqr_distances.resize (result_count);
   
-  for (i = 0; i < result_count; ++i)
+  for (unsigned int i = 0; i < result_count; ++i)
   {
     k_indices [i] = point_candidates [i].point_idx_;
     k_sqr_distances [i] = point_candidates [i].point_distance_;
@@ -217,8 +209,6 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
   std::vector<prioBranchQueueEntry> search_heap;
   search_heap.resize (8);
 
-  unsigned char child_idx;
-
   OctreeKey new_key;
 
   double smallest_squared_dist = squared_search_radius;
@@ -227,7 +217,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
   double voxelSquaredDiameter = this->getVoxelSquaredDiameter (tree_depth);
 
   // iterate over all children
-  for (child_idx = 0; child_idx < 8; child_idx++)
+  for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
   {
     if (this->branchHasChild (*node, child_idx))
     {
@@ -272,9 +262,6 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
     else
     {
       // we reached leaf node level
-
-      float squared_dist;
-      size_t i;
       std::vector<int> decoded_point_vector;
 
       const LeafNode* child_leaf = static_cast<const LeafNode*> (child_node);
@@ -283,13 +270,13 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
       (*child_leaf)->getPointIndices (decoded_point_vector);
 
       // Linearly iterate over all decoded (unsorted) points
-      for (i = 0; i < decoded_point_vector.size (); i++)
+      for (size_t i = 0; i < decoded_point_vector.size (); i++)
       {
 
         const PointT& candidate_point = this->getPointByIndex (decoded_point_vector[i]);
 
         // calculate point distance to search point
-        squared_dist = pointSquaredDist (candidate_point, point);
+        float squared_dist = pointSquaredDist (candidate_point, point);
 
         // check if a closer match is found
         if (squared_dist < smallest_squared_dist)
@@ -324,14 +311,11 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
     unsigned int tree_depth, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances,
     unsigned int max_nn) const
 {
-  // child iterator
-  unsigned char child_idx;
-
   // get spatial voxel information
   double voxel_squared_diameter = this->getVoxelSquaredDiameter (tree_depth);
 
   // iterate over all children
-  for (child_idx = 0; child_idx < 8; child_idx++)
+  for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
   {
     if (!this->branchHasChild (*node, child_idx))
       continue;
@@ -370,8 +354,6 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
       else
       {
         // we reached leaf node level
-
-        size_t i;
         const LeafNode* child_leaf = static_cast<const LeafNode*> (child_node);
         std::vector<int> decoded_point_vector;
 
@@ -379,7 +361,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
         (*child_leaf)->getPointIndices (decoded_point_vector);
 
         // Linearly iterate over all decoded (unsorted) points
-        for (i = 0; i < decoded_point_vector.size (); i++)
+        for (size_t i = 0; i < decoded_point_vector.size (); i++)
         {
           const PointT& candidate_point = this->getPointByIndex (decoded_point_vector[i]);
 
@@ -411,22 +393,18 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::a
                                                                                            int& result_index,
                                                                                            float& sqr_distance)
 {
-  unsigned char child_idx;
-  unsigned char min_child_idx;
-  double min_voxel_center_distance;
-
   OctreeKey minChildKey;
   OctreeKey new_key;
 
   const OctreeNode* child_node;
 
   // set minimum voxel distance to maximum value
-  min_voxel_center_distance = std::numeric_limits<double>::max ();
+  double min_voxel_center_distance = std::numeric_limits<double>::max ();
 
-  min_child_idx = 0xFF;
+  unsigned char min_child_idx = 0xFF;
 
   // iterate over all children
-  for (child_idx = 0; child_idx < 8; child_idx++)
+  for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
   {
     if (!this->branchHasChild (*node, child_idx))
       continue;
@@ -466,26 +444,22 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::a
   else
   {
     // we reached leaf node level
-
-    double squared_dist;
-    double smallest_squared_dist;
-    size_t i;
     std::vector<int> decoded_point_vector;
 
     const LeafNode* child_leaf = static_cast<const LeafNode*> (child_node);
 
-    smallest_squared_dist = std::numeric_limits<double>::max ();
+    double smallest_squared_dist = std::numeric_limits<double>::max ();
 
     // decode leaf node into decoded_point_vector
     (**child_leaf).getPointIndices (decoded_point_vector);
 
     // Linearly iterate over all decoded (unsorted) points
-    for (i = 0; i < decoded_point_vector.size (); i++)
+    for (size_t i = 0; i < decoded_point_vector.size (); i++)
     {
       const PointT& candidate_point = this->getPointByIndex (decoded_point_vector[i]);
 
       // calculate point distance to search point
-      squared_dist = pointSquaredDist (candidate_point, point);
+      double squared_dist = pointSquaredDist (candidate_point, point);
 
       // check if a closer match is found
       if (squared_dist >= smallest_squared_dist)
@@ -515,11 +489,8 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::b
                                                                                  unsigned int tree_depth,
                                                                                  std::vector<int>& k_indices) const
 {
-  // child iterator
-  unsigned char child_idx;
-
   // iterate over all children
-  for (child_idx = 0; child_idx < 8; child_idx++)
+  for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
   {
 
     const OctreeNode* child_node;
@@ -555,7 +526,6 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::b
       else
       {
         // we reached leaf node level
-        size_t i;
         std::vector<int> decoded_point_vector;
         bool bInBox;
 
@@ -565,7 +535,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::b
         (**child_leaf).getPointIndices (decoded_point_vector);
 
         // Linearly iterate over all decoded (unsorted) points
-        for (i = 0; i < decoded_point_vector.size (); i++)
+        for (size_t i = 0; i < decoded_point_vector.size (); i++)
         {
           const PointT& candidate_point = this->getPointByIndex (decoded_point_vector[i]);
 
@@ -863,5 +833,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
 
   return (voxel_count);
 }
+
+#define PCL_INSTANTIATE_OctreePointCloudSearch(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudSearch<T>;
 
 #endif    // PCL_OCTREE_SEARCH_IMPL_H_

@@ -222,7 +222,7 @@ pcl::gpu::KinfuTracker::allocateBufffers (int rows, int cols)
     coresps_[i].create (pyr_rows, pyr_cols);
   }  
   depthRawScaled_.create (rows, cols);
-  // see estimate tranform for the magic numbers
+  // see estimate transform for the magic numbers
   gbuf_.create (27, 20*60);
   sumbuf_.create (27);
 }
@@ -297,7 +297,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
       }
       else
       {
-        Rcurr = Rprev; // tranform to global coo for ith camera pose
+        Rcurr = Rprev; // transform to global coo for ith camera pose
         tcurr = tprev;
       }
       {
@@ -340,9 +340,9 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
             //checking nullspace
             double det = A.determinant ();
 
-            if (fabs (det) < 1e-15 || pcl_isnan (det))
+            if (fabs (det) < 1e-15 || std::isnan (det))
             {
-              if (pcl_isnan (det)) cout << "qnan" << endl;
+              if (std::isnan (det)) cout << "qnan" << endl;
 
               reset ();
               return (false);
@@ -365,7 +365,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
           }
         }
       }
-      //save tranform
+      //save transform
       rmats_.push_back (Rcurr);
       tvecs_.push_back (tcurr);
   } 
@@ -593,12 +593,11 @@ namespace pcl
 
       if( s < 1e-5 )
       {
-        double t;
-
         if( c > 0 )
           rx = ry = rz = 0;
         else
         {
+          double t;
           t = (R(0, 0) + 1)*0.5;
           rx = sqrt( std::max(t, 0.0) );
           t = (R(1, 1) + 1)*0.5;

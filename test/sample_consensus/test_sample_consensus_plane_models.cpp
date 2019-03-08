@@ -250,7 +250,7 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
   cloud.points.resize (10);
   normals.resize (10);
 
-  for (unsigned idx = 0; idx < cloud.size (); ++idx)
+  for (size_t idx = 0; idx < cloud.size (); ++idx)
   {
     cloud.points[idx].x = static_cast<float> ((rand () % 200) - 100);
     cloud.points[idx].y = static_cast<float> ((rand () % 200) - 100);

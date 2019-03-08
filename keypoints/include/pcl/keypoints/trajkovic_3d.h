@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_TRAJKOVIC_KEYPOINT_3D_H_
-#define PCL_TRAJKOVIC_KEYPOINT_3D_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 #include <pcl/common/intensity.h>
@@ -153,10 +152,10 @@ namespace pcl
 
     protected:
       bool
-      initCompute ();
+      initCompute () override;
 
       void
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
 
     private:
       /** Return a const reference to the normal at (i,j) if it is finite else return
@@ -214,5 +213,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/trajkovic_3d.hpp>
-
-#endif // #ifndef PCL_TRAJKOVIC_KEYPOINT_3D_H_

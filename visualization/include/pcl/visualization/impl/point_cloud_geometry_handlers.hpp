@@ -95,7 +95,7 @@ pcl::visualization::PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartP
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud_->points[i].x) || !pcl_isfinite (cloud_->points[i].y) || !pcl_isfinite (cloud_->points[i].z))
+      if (!std::isfinite (cloud_->points[i].x) || !std::isfinite (cloud_->points[i].y) || !std::isfinite (cloud_->points[i].z))
         continue;
 
       pts[j * 3 + 0] = cloud_->points[i].x;

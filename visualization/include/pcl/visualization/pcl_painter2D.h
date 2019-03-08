@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_VISUALUALIZATION_PCL_PAINTER2D_H_
-#define	PCL_VISUALUALIZATION_PCL_PAINTER2D_H_
+#pragma once
 
 #include <iostream>
 #include <map>
@@ -116,7 +115,7 @@ namespace pcl
 
       FPolyLine2D (std::vector<float> info, vtkPen *p, vtkBrush * b, vtkTransform2D *t) : Figure2D (info, p, b, t){}
 
-      void draw (vtkContext2D * painter)
+      void draw (vtkContext2D * painter) override
       {
         applyInternals(painter);  
         painter->DrawPoly (&info_[0], static_cast<unsigned int> (info_.size ()) / 2);
@@ -130,7 +129,7 @@ namespace pcl
 
       FPoints2D (std::vector<float> info, vtkPen *p, vtkBrush * b, vtkTransform2D *t) : Figure2D (info, p, b, t) {}
 
-      void draw (vtkContext2D * painter)
+      void draw (vtkContext2D * painter) override
       {
         applyInternals(painter);  
         painter->DrawPoints (&info_[0], static_cast<unsigned int> (info_.size ()) / 2);
@@ -144,7 +143,7 @@ namespace pcl
 
       FQuad2D (std::vector<float> info, vtkPen *p, vtkBrush * b, vtkTransform2D *t) : Figure2D (info, p, b, t) {}
 
-      void draw (vtkContext2D * painter)
+      void draw (vtkContext2D * painter) override
       {
         applyInternals(painter);  
         painter->DrawQuad (&info_[0]);
@@ -158,7 +157,7 @@ namespace pcl
 
       FPolygon2D (std::vector<float> info, vtkPen *p, vtkBrush * b, vtkTransform2D *t) : Figure2D (info, p, b, t){}
 
-      void draw (vtkContext2D * painter)
+      void draw (vtkContext2D * painter) override
       {
         applyInternals(painter);  
         painter->DrawPolygon (&info_[0], static_cast<unsigned int> (info_.size ()) / 2);
@@ -183,7 +182,7 @@ namespace pcl
         info_[5] = ea;
       }
 
-      void draw (vtkContext2D * painter)
+      void draw (vtkContext2D * painter) override
       {
         applyInternals(painter);  
         painter->DrawEllipticArc (info_[0], info_[1], info_[2], info_[3], info_[4], info_[5]);
@@ -210,8 +209,8 @@ namespace pcl
       /** \brief Paint event for the chart, called whenever the chart needs to be drawn
        *  \param[in] painter Name of the window
        */
-      virtual bool 
-      Paint (vtkContext2D *painter);
+      bool 
+      Paint (vtkContext2D *painter) override;
 
       /** \brief Draw a line between the specified points.
        * \param[in] x1 X coordinate of the starting point of the line
@@ -435,8 +434,8 @@ namespace pcl
           {
             return (new ExitMainLoopTimerCallback);
           }
-          virtual void 
-          Execute (vtkObject* vtkNotUsed (caller), unsigned long event_id, void* call_data)
+          void 
+          Execute (vtkObject* vtkNotUsed (caller), unsigned long event_id, void* call_data) override
           {
             if (event_id != vtkCommand::TimerEvent)
               return;
@@ -446,18 +445,10 @@ namespace pcl
               return;
 
             // Stop vtk loop and send notification to app to wake it up
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-            interactor->stopLoop ();
-#else
             interactor->TerminateApp ();
-#endif
           }
           int right_timer_id;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-          PCLVisualizerInteractor *interactor;
-#else
           vtkRenderWindowInteractor *interactor;
-#endif
         };
         
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
@@ -466,6 +457,3 @@ namespace pcl
 
   }
 }
-
-#endif	/* PCL_VISUALUALIZATION_PCL_PAINTER2D_H_ */
-

@@ -177,7 +177,7 @@ class PeoplePCDApp
       }
     }
 
-    void source_cb1(const boost::shared_ptr<const PointCloud<PointXYZRGBA> >& cloud)
+    void source_cb1(const PointCloud<PointXYZRGBA>::ConstPtr& cloud)
     {
       {
         boost::mutex::scoped_lock lock(data_ready_mutex_);
@@ -189,7 +189,7 @@ class PeoplePCDApp
       data_ready_cond_.notify_one();
     }
 
-    void source_cb2(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
+    void source_cb2(const openni_wrapper::Image::Ptr& image_wrapper, const openni_wrapper::DepthImage::Ptr& depth_wrapper, float)
     {
       {
         boost::mutex::scoped_try_lock lock(data_ready_mutex_);
@@ -244,11 +244,11 @@ class PeoplePCDApp
       if (ispcd)
         cloud_cb_= true;
 
-      typedef boost::shared_ptr<openni_wrapper::DepthImage> DepthImagePtr;
-      typedef boost::shared_ptr<openni_wrapper::Image> ImagePtr;
+      typedef openni_wrapper::DepthImage::Ptr DepthImagePtr;
+      typedef openni_wrapper::Image::Ptr ImagePtr;
 
-      boost::function<void (const boost::shared_ptr<const PointCloud<PointXYZRGBA> >&)> func1 = boost::bind (&PeoplePCDApp::source_cb1, this, _1);
-      boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func2 = boost::bind (&PeoplePCDApp::source_cb2, this, _1, _2, _3);                  
+      boost::function<void (const PointCloud<PointXYZRGBA>::ConstPtr&)> func1 = boost::bind (&PeoplePCDApp::source_cb1, this, _1);
+      boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func2 = boost::bind (&PeoplePCDApp::source_cb2, this, _1, _2, _3);
       boost::signals2::connection c = cloud_cb_ ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
 
       {
@@ -323,8 +323,7 @@ int main(int argc, char** argv)
   pcl::gpu::printShortCudaDeviceInfo (device);
 
   // selecting data source
-  boost::shared_ptr<pcl::Grabber> capture;
-  capture.reset( new pcl::OpenNIGrabber() );
+  pcl::Grabber::Ptr capture (new pcl::OpenNIGrabber());
 
   //selecting tree files
   vector<string> tree_files;

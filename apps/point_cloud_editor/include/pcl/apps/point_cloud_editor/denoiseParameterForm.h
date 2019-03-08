@@ -38,9 +38,7 @@
 /// to PCL's denoising filter.
 /// @author  Yue Li and Matthew Hielsberg
 
-
-#ifndef DENOISE_PARAMETER_FORM_H_
-#define DENOISE_PARAMETER_FORM_H_
+#pragma once
 
 #include <QLineEdit>
 #include <QDialog>
@@ -84,15 +82,15 @@ class DenoiseParameterForm : public QDialog
       return (ok_);
     }
 
-  private slots:
+  private Q_SLOTS:
     /// @brief Accepts and stores the current user inputs, and turns off the
     /// dialog box.
     void
-    accept ();
+    accept () override;
 
     /// @brief Rejects the current inputs, and turns off the dialog box.
     void
-    reject ();
+    reject () override;
 
   private:
     /// The line for entering the mean
@@ -112,5 +110,3 @@ class DenoiseParameterForm : public QDialog
     /// The flag indicating whether the OK button was pressed
     bool ok_;
 };
-
-#endif // DENOISE_PARAMETER_FORM_H_

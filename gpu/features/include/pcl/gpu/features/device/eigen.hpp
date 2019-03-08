@@ -154,7 +154,7 @@ namespace pcl
                     if (roots.x >= roots.y)
                         swap (roots.x, roots.y);
                 }
-                if (roots.x <= 0) // eigenval for symetric positive semi-definite matrix can not be negative! Set it to 0
+                if (roots.x <= 0) // eigenval for symmetric positive semi-definite matrix can not be negative! Set it to 0
                     computeRoots2 (c2, c1, roots);
             }
         }

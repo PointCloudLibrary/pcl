@@ -406,10 +406,10 @@ TEST (TestMesh, MeshData)
     EXPECT_EQ (edc.size () , edc_new.size ());
     EXPECT_EQ (fdc.size () , fdc_new.size ());
 
-    for (unsigned int i=0; i<vdc_new.size  (); ++i) EXPECT_EQ (vdc  [i], vdc_new  [i]) << "Index " << i;
-    for (unsigned int i=0; i<hedc_new.size (); ++i) EXPECT_EQ (hedc [i], hedc_new [i]) << "Index " << i;
-    for (unsigned int i=0; i<edc_new.size  (); ++i) EXPECT_EQ (edc  [i], edc_new  [i]) << "Index " << i;
-    for (unsigned int i=0; i<fdc_new.size  (); ++i) EXPECT_EQ (fdc  [i], fdc_new  [i]) << "Index " << i;
+    for (size_t i = 0; i < vdc_new.size  (); ++i) EXPECT_EQ (vdc  [i], vdc_new  [i]) << "Index " << i;
+    for (size_t i = 0; i < hedc_new.size (); ++i) EXPECT_EQ (hedc [i], hedc_new [i]) << "Index " << i;
+    for (size_t i = 0; i < edc_new.size  (); ++i) EXPECT_EQ (edc  [i], edc_new  [i]) << "Index " << i;
+    for (size_t i = 0; i < fdc_new.size  (); ++i) EXPECT_EQ (fdc  [i], fdc_new  [i]) << "Index " << i;
 
     vdc_new  [0] = 0;
     hedc_new [0] = 1;

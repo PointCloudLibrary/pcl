@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RECOGNITION_HV_PAPAZOV_H_
-#define PCL_RECOGNITION_HV_PAPAZOV_H_
+#pragma once
 
 #include <pcl/recognition/boost.h>
 #include <pcl/pcl_macros.h>
@@ -112,12 +111,10 @@ namespace pcl
 
       //build conflict graph
       //non-maxima supression
-      void verify();
+      void verify() override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/recognition/impl/hv/hv_papazov.hpp>
 #endif
-
-#endif /* PCL_RECOGNITION_HV_PAPAZOV_H_ */

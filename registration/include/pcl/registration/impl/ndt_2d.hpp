@@ -122,8 +122,7 @@ namespace pcl
           Eigen::Vector2d sx  = Eigen::Vector2d::Zero ();
           Eigen::Matrix2d sxx = Eigen::Matrix2d::Zero ();
           
-          std::vector<size_t>::const_iterator i;
-          for (i = pt_indices_.begin (); i != pt_indices_.end (); i++)
+          for (auto i = pt_indices_.cbegin (); i != pt_indices_.cend (); i++)
           {
             Eigen::Vector2d p (cloud[*i]. x, cloud[*i]. y);
             sx  += p;
@@ -322,10 +321,10 @@ namespace pcl
         {
           Eigen::Vector2f dx (step[0]/2, 0);
           Eigen::Vector2f dy (0, step[1]/2);
-          single_grids_[0] = boost::make_shared<SingleGrid> (cloud, about,        extent, step);
-          single_grids_[1] = boost::make_shared<SingleGrid> (cloud, about +dx,    extent, step);
-          single_grids_[2] = boost::make_shared<SingleGrid> (cloud, about +dy,    extent, step);
-          single_grids_[3] = boost::make_shared<SingleGrid> (cloud, about +dx+dy, extent, step);
+          single_grids_[0].reset(new SingleGrid (cloud, about,        extent, step));
+          single_grids_[1].reset(new SingleGrid (cloud, about +dx,    extent, step));
+          single_grids_[2].reset(new SingleGrid (cloud, about +dy,    extent, step));
+          single_grids_[3].reset(new SingleGrid (cloud, about +dx+dy, extent, step));
         }
         
         /** \brief Return the 'score' (denormalised likelihood) and derivatives of score of the point p given this distribution.
@@ -358,6 +357,7 @@ namespace Eigen
   template<typename PointT> struct NumTraits<pcl::ndt2d::NormalDist<PointT> >
   {
     typedef double Real;
+    typedef double Literal;
     static Real dummy_precision () { return 1.0; }
     enum {
       IsComplex = 0,
@@ -376,6 +376,9 @@ template <typename PointSource, typename PointTarget> void
 pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess)
 {
   PointCloudSource intm_cloud = output;
+
+  nr_iterations_ = 0;
+  converged_ = false;
 
   if (guess != Eigen::Matrix4f::Identity ())
   {
@@ -471,9 +474,19 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
 
     //std::cout << "eps=" << fabs ((transformation - previous_transformation_).sum ()) << std::endl;
 
-    if (nr_iterations_ > max_iterations_ ||
-       (transformation - previous_transformation_).array ().abs ().sum () < transformation_epsilon_)
+    Eigen::Matrix4f transformation_delta = transformation.inverse() * previous_transformation_;
+    double cos_angle = 0.5 * (transformation_delta.coeff (0, 0) + transformation_delta.coeff (1, 1) + transformation_delta.coeff (2, 2) - 1);
+    double translation_sqr = transformation_delta.coeff (0, 3) * transformation_delta.coeff (0, 3) +
+                               transformation_delta.coeff (1, 3) * transformation_delta.coeff (1, 3) +
+                               transformation_delta.coeff (2, 3) * transformation_delta.coeff (2, 3);
+
+    if (nr_iterations_ >= max_iterations_ ||
+        ((transformation_epsilon_ > 0 && translation_sqr <= transformation_epsilon_) && (transformation_rotation_epsilon_ > 0 && cos_angle >= transformation_rotation_epsilon_)) ||
+        ((transformation_epsilon_ <= 0)                                             && (transformation_rotation_epsilon_ > 0 && cos_angle >= transformation_rotation_epsilon_)) ||
+        ((transformation_epsilon_ > 0 && translation_sqr <= transformation_epsilon_) && (transformation_rotation_epsilon_ <= 0)))
+    {
       converged_ = true;
+    }
   }
   final_transformation_ = transformation;
   output = intm_cloud;

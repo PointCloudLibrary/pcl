@@ -5,7 +5,7 @@ Concatenate the points or the fields of two Point Clouds
 
 In this tutorial we will learn how to concatenating the points of two different
 point clouds. The constraint imposed here is that the type and number of fields
-in the two datasets has to be equal.
+in the two datasets have to be equal.
 
 The code
 --------

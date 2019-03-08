@@ -34,7 +34,6 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/chrono.hpp>
 
@@ -93,8 +92,14 @@ pcl::io::openni2::OpenNI2Device::OpenNI2Device (const std::string& device_URI) :
     {
       setColorVideoMode (getDefaultColorMode ());
     }
-    setDepthVideoMode (getDefaultDepthMode ());
-    setIRVideoMode (getDefaultIRMode ());
+    if (openni_device_->hasSensor (openni::SENSOR_DEPTH))
+    {
+      setDepthVideoMode (getDefaultDepthMode ());
+    }
+    if (openni_device_->hasSensor (openni::SENSOR_IR))
+    {
+      setIRVideoMode (getDefaultIRMode ());
+    }
   }
 
   if (openni_device_->isFile ())
@@ -875,9 +880,7 @@ std::ostream& pcl::io::openni2::operator<< (std::ostream& stream, const OpenNI2D
     stream << "IR sensor video modes:" << std::endl;
     const std::vector<OpenNI2VideoMode>& video_modes = device.getSupportedIRVideoModes ();
 
-    std::vector<OpenNI2VideoMode>::const_iterator it = video_modes.begin ();
-    std::vector<OpenNI2VideoMode>::const_iterator it_end = video_modes.end ();
-    for (; it != it_end; ++it)
+    for (auto it = video_modes.cbegin (), it_end = video_modes.cend (); it != it_end; ++it)
       stream << "   - " << *it << std::endl;
   }
   else
@@ -890,9 +893,7 @@ std::ostream& pcl::io::openni2::operator<< (std::ostream& stream, const OpenNI2D
     stream << "Color sensor video modes:" << std::endl;
     const std::vector<OpenNI2VideoMode>& video_modes = device.getSupportedColorVideoModes ();
 
-    std::vector<OpenNI2VideoMode>::const_iterator it = video_modes.begin ();
-    std::vector<OpenNI2VideoMode>::const_iterator it_end = video_modes.end ();
-    for (; it != it_end; ++it)
+    for (auto it = video_modes.cbegin (), it_end = video_modes.cend (); it != it_end; ++it)
       stream << "   - " << *it << std::endl;
   }
   else
@@ -905,9 +906,7 @@ std::ostream& pcl::io::openni2::operator<< (std::ostream& stream, const OpenNI2D
     stream << "Depth sensor video modes:" << std::endl;
     const std::vector<OpenNI2VideoMode>& video_modes = device.getSupportedDepthVideoModes ();
 
-    std::vector<OpenNI2VideoMode>::const_iterator it = video_modes.begin ();
-    std::vector<OpenNI2VideoMode>::const_iterator it_end = video_modes.end ();
-    for (; it != it_end; ++it)
+    for (auto it = video_modes.cbegin (), it_end = video_modes.cend (); it != it_end; ++it)
       stream << "   - " << *it << std::endl;
   }
   else

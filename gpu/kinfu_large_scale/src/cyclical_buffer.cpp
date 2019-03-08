@@ -111,7 +111,7 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
   std::vector<float , Eigen::aligned_allocator<float> > intensities_vector;
   intensities.download (intensities_vector);
   current_slice_intensities->points.resize (current_slice_xyz->points.size ());
-  for(int i = 0 ; i < current_slice_intensities->points.size () ; ++i)
+  for(size_t i = 0 ; i < current_slice_intensities->points.size () ; ++i)
     current_slice_intensities->points[i].intensity = intensities_vector[i];
 
   current_slice_intensities->width = (int) current_slice_intensities->points.size ();
@@ -132,11 +132,6 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
 
   // retrieve existing data from the world model
   PointCloud<PointXYZI>::Ptr previously_existing_slice (new  PointCloud<PointXYZI>);
-  double min_bound_x  = buffer_.origin_GRID_global.x + buffer_.voxels_size.x - 1;
-  double new_origin_x = buffer_.origin_GRID_global.x + offset_x;
-  double new_origin_y = buffer_.origin_GRID_global.y + offset_y;
-  double new_origin_z = buffer_.origin_GRID_global.z + offset_z;
-
   world_model_.getExistingData (buffer_.origin_GRID_global.x, buffer_.origin_GRID_global.y, buffer_.origin_GRID_global.z,
                                 offset_x, offset_y, offset_z,
                                 buffer_.voxels_size.x - 1, buffer_.voxels_size.y - 1, buffer_.voxels_size.z - 1,

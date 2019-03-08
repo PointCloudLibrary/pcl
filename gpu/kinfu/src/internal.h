@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KINFU_INTERNAL_HPP_
-#define PCL_KINFU_INTERNAL_HPP_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 //#include <pcl/gpu/utils/safe_call.hpp>
@@ -95,8 +94,8 @@ namespace pcl
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Maps
   
-    /** \brief Perfoms bilateral filtering of disparity map
-      * \param[in] src soruce map
+    /** \brief Performs bilateral filtering of disparity map
+      * \param[in] src source map
       * \param[out] dst output map
       */
     void 
@@ -131,7 +130,7 @@ namespace pcl
     void 
     computeNormalsEigen (const MapArr& vmap, MapArr& nmap);
 
-    /** \brief Performs affine tranform of vertex and normal maps
+    /** \brief Performs affine transform of vertex and normal maps
       * \param[in] vmap_src source vertex map
       * \param[in] nmap_src source vertex map
       * \param[in] Rmat Rotation mat
@@ -152,7 +151,7 @@ namespace pcl
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //   ICP 
             
-    /** \brief (now it's exra code) Computes corespondances map
+    /** \brief (now it's extra code) Computes corespondances map
       * \param[in] vmap_g_curr current vertex map in global coo space
       * \param[in] nmap_g_curr current normals map in global coo space
       * \param[in] Rprev_inv inverse camera rotation at previous pose
@@ -168,7 +167,7 @@ namespace pcl
     findCoresp (const MapArr& vmap_g_curr, const MapArr& nmap_g_curr, const Mat33& Rprev_inv, const float3& tprev, const Intr& intr, 
                 const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, float distThres, float angleThres, PtrStepSz<short2> coresp);
 
-    /** \brief (now it's exra code) Computation Ax=b for ICP iteration
+    /** \brief (now it's extra code) Computation Ax=b for ICP iteration
       * \param[in] v_dst destination vertex map (previous frame cloud)
       * \param[in] n_dst destination normal map (previous frame normals) 
       * \param[in] v_src source normal map (current frame cloud) 
@@ -289,7 +288,7 @@ namespace pcl
              const PtrStep<short2>& volume, MapArr& vmap, MapArr& nmap);
 
     /** \brief Renders 3D image of the scene
-      * \param[in] vmap vetex map
+      * \param[in] vmap vertex map
       * \param[in] nmap normals map
       * \param[in] light poase of light source
       * \param[out] dst buffer where image is generated
@@ -335,13 +334,13 @@ namespace pcl
     /** \brief Perform point cloud extraction from tsdf volume
       * \param[in] volume tsdf volume 
       * \param[in] volume_size size of the volume
-      * \param[out] output buffer large enought to store point cloud
+      * \param[out] output buffer large enough to store point cloud
       * \return number of point stored to passed buffer
       */ 
     PCL_EXPORTS size_t 
     extractCloud (const PtrStep<short2>& volume, const float3& volume_size, PtrSz<PointType> output);
 
-    /** \brief Performs normals computation for given poins using tsdf volume
+    /** \brief Performs normals computation for given points using tsdf volume
       * \param[in] volume tsdf volume
       * \param[in] volume_size volume size
       * \param[in] input points where normals are computed
@@ -413,16 +412,16 @@ namespace pcl
     void 
     unbindTextures();
     
-    /** \brief Scans tsdf volume and retrieves occuped voxes
+    /** \brief Scans tsdf volume and retrieves occupied voxels
       * \param[in] volume tsdf volume
-      * \param[out] occupied_voxels buffer for occuped voxels. The function fulfills first row with voxel ids and second row with number of vertextes.
+      * \param[out] occupied_voxels buffer for occupied voxels. The function fulfills first row with voxel ids and second row with number of vertices.
       * \return number of voxels in the buffer
       */
     int
     getOccupiedVoxels(const PtrStep<short2>& volume, DeviceArray2D<int>& occupied_voxels);
 
     /** \brief Computes total number of vertexes for all voxels and offsets of vertexes in final triangle array
-      * \param[out] occupied_voxels buffer with occuped voxels. The function fulfills 3nd only with offsets      
+      * \param[out] occupied_voxels buffer with occupied voxels. The function fulfills 3nd only with offsets      
       * \return total number of vertexes
       */
     int
@@ -430,7 +429,7 @@ namespace pcl
 
     /** \brief Generates final triangle array
       * \param[in] volume tsdf volume
-      * \param[in] occupied_voxels occuped voxel ids (first row), number of vertexes(second row), offsets(third row).
+      * \param[in] occupied_voxels occupied voxel ids (first row), number of vertexes(second row), offsets(third row).
       * \param[in] volume_size volume size in meters
       * \param[out] output triangle array            
       */
@@ -438,5 +437,3 @@ namespace pcl
     generateTriangles(const PtrStep<short2>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output);
   }
 }
-
-#endif /* PCL_KINFU_INTERNAL_HPP_ */

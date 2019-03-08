@@ -38,8 +38,7 @@
 /// transformation matrix using inputs from the mouse.
 /// @author Yue Li and Matthew Hielsberg
 
-#ifndef CLOUD_TRANSFORM_TOOL_H_
-#define CLOUD_TRANSFORM_TOOL_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/toolInterface.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -67,7 +66,7 @@ class CloudTransformTool : public ToolInterface
     /// @param buttons The state of the mouse buttons.  This function does not
     /// make use of this parameter.
     void
-    start (int x, int y, BitMask modifiers, BitMask buttons);
+    start (int x, int y, BitMask modifiers, BitMask buttons) override;
 
     /// @brief Updates the transform matrix of this object with mouse screen
     /// coordinates and key modifiers.
@@ -88,20 +87,20 @@ class CloudTransformTool : public ToolInterface
     /// @param buttons The LEFT mouse button must be pressed for any transform
     /// to be generated.  All other buttons are ignored.
     void
-    update (int x, int y, BitMask modifiers, BitMask buttons);
+    update (int x, int y, BitMask modifiers, BitMask buttons) override;
 
     /// @brief Updates the transform matrix of this object with mouse screen
     /// coordinates and key modifiers. Then right multiplies the cloud_matrix_
     /// matrix of the cloud object with the transform matrix of this object.
     /// @details This function is not required by this tool
     void
-    end (int, int, BitMask, BitMask)
+    end (int, int, BitMask, BitMask) override
     {
     }
 
     /// @brief This function does nothing for this cloud transform tool.
     void
-    draw() const
+    draw() const override
     {
     }
 
@@ -146,4 +145,3 @@ class CloudTransformTool : public ToolInterface
     /// default translation factor
     static const float DEFAULT_TRANSLATE_FACTOR_;
 };
-#endif  //CLOUD_TRANSFORM_TOOL_H_

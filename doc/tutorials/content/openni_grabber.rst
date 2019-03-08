@@ -89,7 +89,7 @@ As you can see, the *run ()* function of *SimpleOpenNIViewer* first creates a
 new *OpenNIGrabber* interface. The next line might seem a bit intimidating at
 first, but it's not that bad. We create a *boost::bind* object with the address
 of the callback *cloud_cb_*, we pass a reference to our *SimpleOpenNIViewer*
-and the argument palce holder *_1*.
+and the argument place holder *_1*.
 
 The *bind* then gets casted to a *boost::function* object which is templated on
 the callback function type, in this case *void (const
@@ -106,19 +106,19 @@ the *Grabber* interface so generic, leading to the relatively complicated
 *boost::bind* line. In fact, we can register the following callback types as of
 this writing:
 
-* `void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&)`
+* `void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)`
 
-* `void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&)`
+* `void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)`
 
-* `void (const boost::shared_ptr<openni_wrapper::Image>&)`
+* `void (const openni_wrapper::Image::Ptr&)`
 
   This provides just the RGB image from the built-in camera.
 
-* `void (const boost::shared_ptr<openni_wrapper::DepthImage>&)`
+* `void (const openni_wrapper::DepthImage::Ptr&)`
 
   This provides the depth image, without any color or intensity information
 
-* `void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)`
+* `void (const openni_wrapper::Image::Ptr&, const openni_wrapper::DepthImage::Ptr&, float constant)`
     
   When a callback of this type is registered, the grabber sends both RGB
   image and depth image and the constant (*1 / focal length*), which you need
@@ -171,7 +171,7 @@ Add the following lines to your CMakeLists.txt file:
 Troubleshooting
 ---------------
 
-Q: I get an error that theres now device connected:
+Q: I get an error that there's no device connected:
 
 .. note::
 

@@ -34,9 +34,7 @@
  * @author: Koen Buys, Anatoly Baksheev
  */
 
-
-#ifndef PCL_GPU_PEOPLE_RDF_BODYPARTS_DETECTOR_H
-#define PCL_GPU_PEOPLE_RDF_BODYPARTS_DETECTOR_H
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <pcl/point_types.h>
@@ -155,5 +153,3 @@ namespace pcl
     }
   }
 }
-
-#endif /* PCL_GPU_PEOPLE_RDF_BODYPARTS_DETECTOR_H */

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_COMMON_H_
-#define PCL_COMMON_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <cfloat>
@@ -102,8 +101,8 @@ namespace pcl
 
   /** \brief Get the point at maximum distance from a given point and a given pointcloud
     * \param cloud the point cloud data message
-    * \param pivot_pt the point from where to compute the distance
     * \param indices the vector of point indices to use from \a cloud
+    * \param pivot_pt the point from where to compute the distance
     * \param max_pt the point in cloud that is the farthest point away from pivot_pt
     * \ingroup common
     */
@@ -204,5 +203,3 @@ namespace pcl
 }
 /*@}*/
 #include <pcl/common/impl/common.hpp>
-
-#endif  //#ifndef PCL_COMMON_H_

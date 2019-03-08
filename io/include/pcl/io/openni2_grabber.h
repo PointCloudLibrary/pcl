@@ -37,11 +37,10 @@
  *
  */
 
-#include <pcl/pcl_config.h>
+#pragma once
+ 
 #ifdef HAVE_OPENNI2
-
-#ifndef PCL_IO_OPENNI2_GRABBER_H_
-#define PCL_IO_OPENNI2_GRABBER_H_
+#include <pcl/pcl_config.h>
 
 #include <pcl/io/eigen.h>
 #include <pcl/io/boost.h>
@@ -141,26 +140,26 @@ namespace pcl
           const Mode& image_mode = OpenNI_Default_Mode);
 
         /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-        virtual ~OpenNI2Grabber () throw ();
+        ~OpenNI2Grabber () throw ();
 
         /** \brief Start the data acquisition. */
-        virtual void
-        start ();
+        void
+        start () override;
 
         /** \brief Stop the data acquisition. */
-        virtual void
-        stop ();
+        void
+        stop () override;
 
         /** \brief Check if the data acquisition is still running. */
-        virtual bool
-        isRunning () const;
+        bool
+        isRunning () const override;
 
-        virtual std::string
-        getName () const;
+        std::string
+        getName () const override;
 
         /** \brief Obtain the number of frames per second (FPS). */
-        virtual float
-        getFramesPerSecond () const;
+        float
+        getFramesPerSecond () const override;
 
         /** \brief Get a boost shared pointer to the \ref OpenNIDevice object. */
         inline boost::shared_ptr<pcl::io::openni2::OpenNI2Device>
@@ -371,8 +370,8 @@ namespace pcl
         const pcl::io::openni2::DepthImage::Ptr &depth_image);
 
         /** \brief Process changed signals. */
-        virtual void
-        signalsChanged ();
+        void
+        signalsChanged () override;
 
         // helper methods
 
@@ -504,5 +503,4 @@ namespace pcl
   } // namespace
 }
 
-#endif // PCL_IO_OPENNI2_GRABBER_H_
 #endif // HAVE_OPENNI2

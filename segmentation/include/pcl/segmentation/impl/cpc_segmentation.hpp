@@ -68,7 +68,7 @@ pcl::CPCSegmentation<PointT>::segment ()
     // Correct edge relations using extended convexity definition if k>0
     applyKconvexity (k_factor_);
 
-    // Determine wether to use cutting planes
+    // Determine whether to use cutting planes
     doGrouping ();
 
     grouping_data_valid_ = true;
@@ -98,7 +98,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
   boost::tie (edge_itr, edge_itr_end) = boost::edges (sv_adjacency_list_);
   for (next_edge = edge_itr; edge_itr != edge_itr_end; edge_itr = next_edge)
   {
-    next_edge++;  // next_edge iterator is neccessary, because removing an edge invalidates the iterator to the current edge
+    next_edge++;  // next_edge iterator is necessary, because removing an edge invalidates the iterator to the current edge
     uint32_t source_sv_label = sv_adjacency_list_[boost::source (*edge_itr, sv_adjacency_list_)];
     uint32_t target_sv_label = sv_adjacency_list_[boost::target (*edge_itr, sv_adjacency_list_)];
 
@@ -182,8 +182,8 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
     {
       Eigen::Vector3f plane_normal (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
       // Cut the connections.
-      // We only interate through the points which are within the support (when we are local, otherwise all points in the segment).
-      // We also just acutally cut when the edge goes through the plane. This is why we check the planedistance
+      // We only iterate through the points which are within the support (when we are local, otherwise all points in the segment).
+      // We also just actually cut when the edge goes through the plane. This is why we check the planedistance
       std::vector<pcl::PointIndices> cluster_indices;
       pcl::EuclideanClusterExtraction<WeightSACPointType> euclidean_clusterer;
       pcl::search::KdTree<WeightSACPointType>::Ptr tree (new pcl::search::KdTree<WeightSACPointType>);
@@ -225,7 +225,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
       }
       if (cut_support_indices.size () == 0)
       {
-//         std::cout << "Could not find planes which exceed required minumum score (threshold " << min_cut_score_ << "), not cutting" << std::endl;
+//         std::cout << "Could not find planes which exceed required minimum score (threshold " << min_cut_score_ << "), not cutting" << std::endl;
         continue;
       }
     }
@@ -303,7 +303,7 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
   Eigen::VectorXf model_coefficients;
 
   unsigned skipped_count = 0;
-  // supress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
+  // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
   const unsigned max_skip = max_iterations_ * 10;
 
   // Iterate

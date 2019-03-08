@@ -43,8 +43,7 @@
  *      Author: aitor
  */
 
-#ifndef GO_H_
-#define GO_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
@@ -93,12 +92,12 @@ namespace pcl
           mets::gol_type cost_;
 
           //Evaluates the current solution
-          mets::gol_type cost_function() const
+          mets::gol_type cost_function() const override
           {
             return cost_;
           }
 
-          void copy_from(const mets::copyable& o)
+          void copy_from(const mets::copyable& o) override
           {
             const SAModel& s = dynamic_cast<const SAModel&> (o);
             solution_ = s.solution_;
@@ -132,7 +131,7 @@ namespace pcl
           {
             solution_[index] = val;
             //update optimizer solution
-            cost_ = opt_->evaluateSolution (solution_, index); //this will udpate the cost function in opt_
+            cost_ = opt_->evaluateSolution (solution_, index); //this will update the cost function in opt_
           }
           void setSolution(std::vector<bool> & sol)
           {
@@ -158,7 +157,7 @@ namespace pcl
           {
           }
 
-          mets::gol_type evaluate(const mets::feasible_solution& /*cs*/) const
+          mets::gol_type evaluate(const mets::feasible_solution& /*cs*/) const override
           {
             return static_cast<mets::gol_type>(0);
           }
@@ -169,7 +168,7 @@ namespace pcl
             return model.apply_and_evaluate (index_, !model.solution_[index_]);
           }
 
-          void apply(mets::feasible_solution& /*s*/) const
+          void apply(mets::feasible_solution& /*s*/) const override
           {
           }
 
@@ -484,7 +483,12 @@ namespace pcl
       }
 
       void
-      verify();
+      verify() override;
+      
+      void setResolutionOccupancyGrid(float r)
+      {
+        res_occupancy_grid_ = r;
+      }
 
       void setRadiusNormals(float r)
       {
@@ -526,5 +530,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/recognition/impl/hv/hv_go.hpp>
 #endif
-
-#endif /* GO_H_ */

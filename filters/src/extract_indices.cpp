@@ -76,7 +76,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
           memcpy (&output.data[remaining_indices[i] * output.point_step + output.fields[j].offset],
                   &user_filter_value_, sizeof(float));
     }
-    if (!pcl_isfinite (user_filter_value_))
+    if (!std::isfinite (user_filter_value_))
       output.is_dense = false;
     return;
   }
@@ -186,7 +186,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices
 #include <pcl/point_types.h>
 
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(ExtractIndices, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::Normal)(pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE(ExtractIndices, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::Normal)(pcl::PointNormal)(pcl::PointXYZRGBNormal))
 #else
   PCL_INSTANTIATE(ExtractIndices, PCL_POINT_TYPES)
 #endif

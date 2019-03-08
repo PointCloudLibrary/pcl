@@ -35,12 +35,11 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_LINEMOD
-#define PCL_RECOGNITION_LINEMOD
+#pragma once
 
 #include <vector>
 #include <cstddef>
-#include <string.h>
+#include <cstring>
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/quantizable_modality.h>
 #include <pcl/recognition/region_xy.h>
@@ -475,5 +474,3 @@ namespace pcl
   };
 
 }
-
-#endif 

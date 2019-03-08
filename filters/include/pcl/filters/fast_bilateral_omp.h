@@ -38,9 +38,7 @@
  *
  */
 
-
-#ifndef PCL_FILTERS_FAST_BILATERAL_OMP_H_
-#define PCL_FILTERS_FAST_BILATERAL_OMP_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
 #include <pcl/filters/fast_bilateral.h>
@@ -68,27 +66,28 @@ namespace pcl
     typedef typename Filter<PointT>::PointCloud PointCloud;
 
     public:
-    
+
       typedef boost::shared_ptr< FastBilateralFilterOMP<PointT> > Ptr;
       typedef boost::shared_ptr< const FastBilateralFilterOMP<PointT> > ConstPtr;
 
       /** \brief Empty constructor. */
       FastBilateralFilterOMP (unsigned int nr_threads = 0)
-        : threads_ (nr_threads)
-      { }
+      {
+          setNumberOfThreads(nr_threads);
+      }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      inline void 
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+      void
+      setNumberOfThreads (unsigned int nr_threads = 0);
 
       /** \brief Filter the input data and store the results into output.
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (PointCloud &output);
-    
+      applyFilter (PointCloud &output) override;
+
     protected:
       /** \brief The number of threads the scheduler should use. */
       unsigned int threads_;
@@ -101,7 +100,3 @@ namespace pcl
 #else
 #define PCL_INSTANTIATE_FastBilateralFilterOMP(T) template class PCL_EXPORTS pcl::FastBilateralFilterOMP<T>;
 #endif
-
-
-#endif /* PCL_FILTERS_FAST_BILATERAL_OMP_H_ */
-

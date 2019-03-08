@@ -116,7 +116,7 @@ pcl::computeRoots (const Matrix& m, Roots& roots)
         std::swap (roots (0), roots (1));
     }
 
-    if (roots (0) <= 0)  // eigenval for symetric positive semi-definite matrix can not be negative! Set it to 0
+    if (roots (0) <= 0)  // eigenval for symmetric positive semi-definite matrix can not be negative! Set it to 0
       computeRoots2 (c2, c1, roots);
   }
 }
@@ -738,6 +738,9 @@ template <typename Derived, typename OtherDerived>
 typename Eigen::internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type
 pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<OtherDerived>& dst, bool with_scaling)
 {
+#if EIGEN_VERSION_AT_LEAST (3, 3, 0)
+  return Eigen::umeyama (src, dst, with_scaling);
+#else
   typedef typename Eigen::internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type TransformationMatrixType;
   typedef typename Eigen::internal::traits<TransformationMatrixType>::Scalar Scalar;
   typedef typename Eigen::NumTraits<Scalar>::Real RealScalar;
@@ -780,37 +783,17 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
 
   // Eq. (39)
   VectorType S = VectorType::Ones (m);
-  if (sigma.determinant () < 0) 
+
+  if  ( svd.matrixU ().determinant () * svd.matrixV ().determinant () < 0 )
     S (m - 1) = -1;
 
   // Eq. (40) and (43)
-  const VectorType& d = svd.singularValues ();
-  Index rank = 0; 
-  for (Index i = 0; i < m; ++i) 
-    if (!Eigen::internal::isMuchSmallerThan (d.coeff (i), d.coeff (0))) 
-      ++rank;
-  if (rank == m - 1) 
-  {
-    if (svd.matrixU ().determinant () * svd.matrixV ().determinant () > 0) 
-      Rt.block (0, 0, m, m).noalias () = svd.matrixU () * svd.matrixV ().transpose ();
-    else 
-    {
-      const Scalar s = S (m - 1); 
-      S (m - 1) = -1;
-      Rt.block (0, 0, m, m).noalias () = svd.matrixU () * S.asDiagonal () * svd.matrixV ().transpose ();
-      S (m - 1) = s;
-    }
-  } 
-  else 
-  {
-    Rt.block (0, 0, m, m).noalias () = svd.matrixU () * S.asDiagonal () * svd.matrixV ().transpose ();
-  }
+  Rt.block (0,0,m,m).noalias () = svd.matrixU () * S.asDiagonal () * svd.matrixV ().transpose ();
 
-  // Eq. (42)
   if (with_scaling)
   {
     // Eq. (42)
-    const Scalar c = 1 / src_var * svd.singularValues ().dot (S);
+    const Scalar c = Scalar (1)/ src_var * svd.singularValues ().dot (S);
 
     // Eq. (41)
     Rt.col (m).head (m) = dst_mean;
@@ -824,6 +807,7 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
   }
 
   return (Rt);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -858,6 +842,11 @@ pcl::transformPlane (const Eigen::Matrix<Scalar, 4, 1> &plane_in,
   plane.coeffs () << plane_in;
   plane.transform (transformation);
   plane_out << plane.coeffs ();
+
+  // Versions prior to 3.3.2 don't normalize the result
+  #if !EIGEN_VERSION_AT_LEAST (3, 3, 2)
+    plane_out /= plane_out.template head<3> ().norm ();
+  #endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -866,7 +855,8 @@ pcl::transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
                            pcl::ModelCoefficients::Ptr plane_out,
                      const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
 {
-  Eigen::Matrix < Scalar, 4, 1 > v_plane_in (std::vector < Scalar > (plane_in->values.begin (), plane_in->values.end ()).data ());
+  std::vector<Scalar> values (plane_in->values.begin (), plane_in->values.end ());
+  Eigen::Matrix < Scalar, 4, 1 > v_plane_in (values.data ());
   pcl::transformPlane (v_plane_in, v_plane_in, transformation);
   plane_out->values.resize (4);
   for (int i = 0; i < 4; i++)

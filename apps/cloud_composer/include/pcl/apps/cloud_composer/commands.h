@@ -35,12 +35,11 @@
  *
  */
 
-#ifndef COMMANDS_H_
-#define COMMANDS_H_
+#pragma once
 
-#include <pcl/apps/cloud_composer/qt.h>
-#include <pcl/pcl_exports.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
+
+#include <QUndoCommand>
 
 namespace pcl
 {
@@ -56,22 +55,22 @@ namespace pcl
 
 
     
-    class PCL_EXPORTS CloudCommand : public QUndoCommand
+    class CloudCommand : public QUndoCommand
     {
       public: 
         CloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
         
-        virtual
+        
         ~CloudCommand ();
         
         virtual bool
         runCommand (AbstractTool* tool) = 0;
 
-        virtual void 
-        undo ()  = 0;
+        void 
+        undo ()  override = 0;
         
-        virtual void
-        redo () = 0;
+        void
+        redo () override = 0;
         
         //QList <CloudComposerItem*> 
        // executeToolOnTemplateCloud (AbstractTool* tool, ConstItemList &input_data);
@@ -119,76 +118,76 @@ namespace pcl
         int template_type_;
     };
     
-    class PCL_EXPORTS ModifyItemCommand : public CloudCommand
+    class ModifyItemCommand : public CloudCommand
     {
       public: 
         ModifyItemCommand (ConstItemList input_data, QUndoCommand* parent = 0);
     
-        virtual bool
-        runCommand (AbstractTool* tool);
+        bool
+        runCommand (AbstractTool* tool) override;
         
-        virtual void
-        undo ();
+        void
+        undo () override;
       
-        virtual void
-        redo ();
+        void
+        redo () override;
       private: 
         
       
       
     };
     
-    class PCL_EXPORTS NewItemCloudCommand : public CloudCommand
+    class NewItemCloudCommand : public CloudCommand
     {
       public: 
         NewItemCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
       
-        virtual bool
-        runCommand (AbstractTool* tool);
+        bool
+        runCommand (AbstractTool* tool) override;
         
-        virtual void
-        undo ();
+        void
+        undo () override;
       
-        virtual void
-        redo ();
+        void
+        redo () override;
 
     };
     
 
-    class PCL_EXPORTS SplitCloudCommand : public CloudCommand
+    class SplitCloudCommand : public CloudCommand
     {
       public: 
         SplitCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
       
-        virtual bool
-        runCommand (AbstractTool* tool);
+        bool
+        runCommand (AbstractTool* tool) override;
         
-        virtual void
-        undo ();
+        void
+        undo () override;
       
-        virtual void
-        redo ();
+        void
+        redo () override;
       private:
 
     };  
     
-    class PCL_EXPORTS DeleteItemCommand : public CloudCommand
+    class DeleteItemCommand : public CloudCommand
     {
       public: 
         DeleteItemCommand (ConstItemList input_data, QUndoCommand* parent = 0);
       
-        virtual bool
-        runCommand (AbstractTool* tool);
+        bool
+        runCommand (AbstractTool* tool) override;
         
-        virtual void
-        undo ();
+        void
+        undo () override;
       
-        virtual void
-        redo ();
+        void
+        redo () override;
       private:
     };
     
-    class PCL_EXPORTS MergeCloudCommand : public CloudCommand
+    class MergeCloudCommand : public CloudCommand
     {
       public: 
         /** \brief Construct for a merge command
@@ -197,14 +196,14 @@ namespace pcl
          */
         MergeCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
       
-        virtual bool
-        runCommand (AbstractTool* tool);
+        bool
+        runCommand (AbstractTool* tool) override;
         
-        virtual void
-        undo ();
+        void
+        undo () override;
       
-        virtual void
-        redo ();
+        void
+        redo () override;
         
         inline void
         setSelectedIndicesMap( const QMap <CloudItem*, pcl::PointIndices::Ptr > selected_item_index_map)
@@ -219,4 +218,3 @@ namespace pcl
 } 
 
 Q_DECLARE_METATYPE (ConstItemList);
-#endif //COMMANDS_H_

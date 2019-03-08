@@ -38,9 +38,7 @@
  *
  */
 
-
-#ifndef PCL_WARP_POINT_RIGID_6D_H_
-#define PCL_WARP_POINT_RIGID_6D_H_
+#pragma once
 
 #include <pcl/registration/warp_point_rigid.h>
 
@@ -70,14 +68,14 @@ namespace pcl
         WarpPointRigid6D () : WarpPointRigid<PointSourceT, PointTargetT, Scalar> (6) {}
       
         /** \brief Empty destructor */
-        virtual ~WarpPointRigid6D () {}
+        ~WarpPointRigid6D () {}
 
         /** \brief Set warp parameters. 
           * \note Assumes the quaternion parameters are normalized. 
           * \param[in] p warp parameters (tx ty tz qx qy qz)
           */
-        virtual void 
-        setParam (const VectorX& p)
+        void 
+        setParam (const VectorX& p) override
         {
           assert (p.rows () == this->getDimension ());
 
@@ -97,6 +95,3 @@ namespace pcl
     };
   }
 }
-
-#endif
-

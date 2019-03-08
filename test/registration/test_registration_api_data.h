@@ -35,10 +35,7 @@
  *
  */
 
-
-#ifndef REGISTRATION_API_DATA_H_
-
-#define REGISTRATION_API_DATA_H_
+#pragma once
 
 const int nr_original_correspondences = 397;
 const int correspondences_original[397][2] = {
@@ -1183,5 +1180,3 @@ const float transform_from_SAC[4][4] = {
 //  { 0.228091f, -0.107699f, 0.967665f, 0.0183277f },
 //  { 0.0f, 0.0f, 0.0f, 1.0f }
 //};
-
-#endif /* REGISTRATION_API_DATA_H_ */

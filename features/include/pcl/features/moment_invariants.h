@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_MOMENT_INVARIANTS_H_
-#define PCL_MOMENT_INVARIANTS_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -103,8 +102,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the moment invariants
         */
       void 
-      computeFeature (PointCloudOut &output);
-
+      computeFeature (PointCloudOut &output) override;
     private:
       /** \brief 16-bytes aligned placeholder for the XYZ centroid of a surface patch. */
       Eigen::Vector4f xyz_centroid_;
@@ -117,5 +115,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/moment_invariants.hpp>
 #endif
-
-#endif  //#ifndef PCL_MOMENT_INVARIANTS_H_

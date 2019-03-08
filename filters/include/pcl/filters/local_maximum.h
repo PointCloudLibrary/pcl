@@ -39,8 +39,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_LOCAL_MAXIMUM_H_
-#define PCL_FILTERS_LOCAL_MAXIMUM_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 #include <pcl/search/pcl_search.h>
@@ -99,13 +98,13 @@ namespace pcl
         * \param[out] output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Filtered results are indexed by an indices array.
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices)
+      applyFilter (std::vector<int> &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -128,6 +127,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/local_maximum.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_LOCAL_MAXIMUM_H_
-

@@ -85,7 +85,7 @@ class SimpleOpenNIProcessor
       // start receiving point clouds
       interface.start ();
 
-      std::cout << "<Esc>, \'q\', \'Q\': quit the program" << std::endl;
+      std::cout << R"(<Esc>, 'q', 'Q': quit the program)" << std::endl;
       std::cout << "\' \': pause" << std::endl;
       char key;
       do

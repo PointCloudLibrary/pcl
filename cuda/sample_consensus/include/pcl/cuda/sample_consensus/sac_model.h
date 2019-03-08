@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_SAMPLE_CONSENSUS_MODEL_H_
-#define PCL_CUDA_SAMPLE_CONSENSUS_MODEL_H_
+#pragma once
 
 #include <float.h>
 #include <thrust/sequence.h>
@@ -76,7 +75,7 @@ namespace pcl
 #ifdef __CUDACC__
             return (isnan (pt.x) | isnan (pt.y) | isnan (pt.z)) == 1; 
 #else
-            return (pcl_isnan (pt.x) | pcl_isnan (pt.y) | pcl_isnan (pt.z)) == 1;
+            return (std::isnan (pt.x) | std::isnan (pt.y) | std::isnan (pt.z)) == 1;
 #endif
         }
     };
@@ -419,5 +418,3 @@ namespace pcl
   //  };
   } // namespace_
 } // namespace_
-
-#endif  //#ifndef PCL_CUDA_SAMPLE_CONSENSUS_MODEL_H_

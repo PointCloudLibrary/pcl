@@ -35,9 +35,8 @@
  *
  */
 
+#pragma once
 
-#ifndef PCL_MESSAGE_VERTICES_H
-#define PCL_MESSAGE_VERTICES_H
 #include <string>
 #include <vector>
 #include <ostream>
@@ -76,6 +75,3 @@ namespace pcl
     return (s);
   }
 } // namespace pcl
-
-#endif // PCL_MESSAGE_VERTICES_H
-

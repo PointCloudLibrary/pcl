@@ -92,8 +92,8 @@ namespace pcl
             openni::OpenNI::removeDeviceStateChangedListener (this);
           }
 
-          virtual void
-          onDeviceStateChanged (const openni::DeviceInfo* pInfo, openni::DeviceState state)
+          void
+          onDeviceStateChanged (const openni::DeviceInfo* pInfo, openni::DeviceState state) override
           {
             switch (state)
             {
@@ -109,8 +109,8 @@ namespace pcl
             }
           }
 
-          virtual void
-          onDeviceConnected (const openni::DeviceInfo* pInfo)
+          void
+          onDeviceConnected (const openni::DeviceInfo* pInfo) override
           {
             boost::mutex::scoped_lock l (device_mutex_);
 
@@ -121,8 +121,8 @@ namespace pcl
             device_set_.insert (device_info_wrapped);
           }
 
-          virtual void
-          onDeviceDisconnected (const openni::DeviceInfo* pInfo)
+          void
+          onDeviceDisconnected (const openni::DeviceInfo* pInfo) override
           {
             boost::mutex::scoped_lock l (device_mutex_);
 
@@ -157,10 +157,7 @@ namespace pcl
 
             result->reserve (device_set_.size ());
 
-            DeviceSet::const_iterator it;
-            DeviceSet::const_iterator it_end = device_set_.end ();
-
-            for (it = device_set_.begin (); it != it_end; ++it)
+            for (auto it = device_set_.cbegin (), it_end = device_set_.cend (); it != it_end; ++it)
               result->push_back (*it);
 
             return result;
@@ -247,13 +244,9 @@ pcl::io::openni2::OpenNI2DeviceManager::getFileDevice (const std::string& path)
 std::ostream&
 operator<< (std::ostream& stream, const OpenNI2DeviceManager& device_manager) 
 {
+  auto device_info = device_manager.getConnectedDeviceInfos ();
 
-  boost::shared_ptr<std::vector<OpenNI2DeviceInfo> > device_info = device_manager.getConnectedDeviceInfos ();
-
-  std::vector<OpenNI2DeviceInfo>::const_iterator it;
-  std::vector<OpenNI2DeviceInfo>::const_iterator it_end = device_info->end ();
-
-  for (it = device_info->begin (); it != it_end; ++it)
+  for (auto it = device_info->cbegin (), it_end = device_info->cend (); it != it_end; ++it)
   {
     stream << "Uri: " << it->uri_ << " (Vendor: " << it->vendor_ <<
       ", Name: " << it->name_ <<

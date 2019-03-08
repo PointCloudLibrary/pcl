@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_POINT_CLOUD_COLOR_HANDLERS_H_
-#define PCL_POINT_CLOUD_COLOR_HANDLERS_H_
+
+#pragma once
 
 #if defined __GNUC__
 #pragma GCC system_header
@@ -488,6 +488,7 @@ namespace pcl
         virtual std::string
         getName () const { return ("PointCloudColorHandlerRGBAField"); }
 
+      private:
         // Members derived from the base class
         using PointCloudColorHandler<PointT>::cloud_;
         using PointCloudColorHandler<PointT>::capable_;
@@ -945,6 +946,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/point_cloud_color_handlers.hpp>
-
-#endif      // PCL_POINT_CLOUD_COLOR_HANDLERS_H_
-

@@ -418,32 +418,25 @@ void openni_wrapper::OpenNIDevice::InitShiftToDepthConversion ()
   {
     // Calculate shift conversion table
 
-    pcl::uint32_t nIndex = 0;
-    pcl::int32_t nShiftValue = 0;
-    double dFixedRefX = 0;
-    double dMetric = 0;
-    double dDepth = 0;
-    double dPlanePixelSize = shift_conversion_parameters_.zero_plane_pixel_size_;
-    double dPlaneDsr = shift_conversion_parameters_.zero_plane_distance_;
-    double dPlaneDcl = shift_conversion_parameters_.emitter_dcmos_distace_;
-    pcl::int32_t nConstShift = shift_conversion_parameters_.param_coeff_ *
-        shift_conversion_parameters_.const_shift_;
-
-    dPlanePixelSize *= shift_conversion_parameters_.pixel_size_factor_;
-    nConstShift /= shift_conversion_parameters_.pixel_size_factor_;
+    const double dPlanePixelSize = shift_conversion_parameters_.zero_plane_pixel_size_ * shift_conversion_parameters_.pixel_size_factor_;
+    const double dPlaneDsr = shift_conversion_parameters_.zero_plane_distance_;
+    const double dPlaneDcl = shift_conversion_parameters_.emitter_dcmos_distace_;
+    const pcl::int32_t nConstShift = (shift_conversion_parameters_.param_coeff_ *
+                                      shift_conversion_parameters_.const_shift_) /
+                                      shift_conversion_parameters_.pixel_size_factor_;
 
     shift_to_depth_table_.resize(shift_conversion_parameters_.device_max_shift_+1);
 
-    for (nIndex = 1; nIndex < shift_conversion_parameters_.device_max_shift_; nIndex++)
+    for (pcl::uint32_t nIndex = 1; nIndex < shift_conversion_parameters_.device_max_shift_; nIndex++)
     {
-      nShiftValue = (pcl::int32_t)nIndex;
+      pcl::int32_t nShiftValue = (pcl::int32_t)nIndex;
 
-      dFixedRefX = (double) (nShiftValue - nConstShift) /
-                   (double) shift_conversion_parameters_.param_coeff_;
+      double dFixedRefX = (double) (nShiftValue - nConstShift) /
+                          (double) shift_conversion_parameters_.param_coeff_;
       dFixedRefX -= 0.375;
-      dMetric = dFixedRefX * dPlanePixelSize;
-      dDepth = shift_conversion_parameters_.shift_scale_ *
-               ((dMetric * dPlaneDsr / (dPlaneDcl - dMetric)) + dPlaneDsr);
+      double dMetric = dFixedRefX * dPlanePixelSize;
+      double dDepth = shift_conversion_parameters_.shift_scale_ *
+                      ((dMetric * dPlaneDsr / (dPlaneDcl - dMetric)) + dPlaneDsr);
 
       // check cut-offs
       if ((dDepth > shift_conversion_parameters_.min_depth_) &&

@@ -111,13 +111,10 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
   const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners_all = input.points;
   std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners_nms = output.points;
 
-  int curr_corner_ind;
   int lastRow = 0, next_lastRow = 0;
   std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> >::const_iterator curr_corner;
   int lastRowCorner_ind = 0, next_lastRowCorner_ind = 0;
   std::vector<int>::iterator nms_flags_p;
-  std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> >::iterator curr_corner_nms;
-  int j;
   int num_corners_all = int (corners_all.size ());
   int n_max_corners = int (corners_nms.capacity ());
 
@@ -144,14 +141,13 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
   nms_flags.resize (num_corners_all);
 
   nms_flags_p = nms_flags.begin ();
-  curr_corner_nms = corners_nms.begin ();
 
   // set all flags to MAXIMUM
-  for (j = num_corners_all; j > 0; j--)
+  for (int j = num_corners_all; j > 0; j--)
     *nms_flags_p++= -1;
   nms_flags_p = nms_flags.begin ();
 
-  for (curr_corner_ind = 0; curr_corner_ind < num_corners_all; curr_corner_ind++)
+  for (int curr_corner_ind = 0; curr_corner_ind < num_corners_all; curr_corner_ind++)
   {
     int t;
 
@@ -229,7 +225,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
 
   // collecting maximum corners
   corners_nms.resize (0);
-  for (curr_corner_ind = 0; curr_corner_ind < num_corners_all; curr_corner_ind++)
+  for (int curr_corner_ind = 0; curr_corner_ind < num_corners_all; curr_corner_ind++)
   {
     if (*nms_flags_p++ == -1)
       corners_nms.push_back (corners_all[curr_corner_ind]);
@@ -303,7 +299,6 @@ pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all, 
   std::vector<ScoreIndex> &scores)
 {
-  unsigned int n = 0;
   unsigned int num_corners = static_cast<unsigned int> (corners_all.size ());
 
   if (num_corners > scores.capacity ())
@@ -320,7 +315,7 @@ pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   }
   scores.resize (num_corners);
 
-  for (; n < num_corners; n++)
+  for (unsigned int n = 0; n < num_corners; n++)
   {
     scores[n].idx   = n;
     scores[n].score = computeCornerScore (im + static_cast<size_t> (corners_all[n].v) * width_ + static_cast<size_t> (corners_all[n].u));
@@ -334,7 +329,6 @@ pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all, 
   std::vector<ScoreIndex> &scores)
 {
-  unsigned int n = 0;
   unsigned int num_corners = static_cast<unsigned int> (corners_all.size ());
 
   if (num_corners > scores.capacity ())
@@ -351,7 +345,7 @@ pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   }
   scores.resize (num_corners);
 
-  for (; n < num_corners; n++)
+  for (unsigned int n = 0; n < num_corners; n++)
   {
     scores[n].idx   = n;
     scores[n].score = computeCornerScore (im + static_cast<size_t> (corners_all[n].v) * width_ + static_cast<size_t> (corners_all[n].u));
@@ -392,7 +386,6 @@ namespace pcl
         int total = 0;
         int n_expected_corners = int (corners.capacity ());
         pcl::PointUV h;
-        int x, y;
         int width_b  = img_width - 3; //2, +1 due to faster test x>width_b
         int height_b = img_height - 2;
         int_fast16_t offset0, offset1, offset2, offset3, offset4, offset5, offset6, offset7, offset8, offset9, offset10, offset11;
@@ -414,10 +407,10 @@ namespace pcl
         offset11 = s_offset11;
         width    = img_width;
 
-        for (y = 2; y < height_b; y++)
+        for (int y = 2; y < height_b; y++)
         {                    
-          x = 1;
-          while (1)              
+          int x = 1;
+          while (true)              
           {                  
       homogeneous:
       {
@@ -2499,7 +2492,7 @@ namespace pcl
         int_fast16_t offset10 = s_offset10;
         int_fast16_t offset11 = s_offset11;
 
-        while (1)
+        while (true)
         {
           const T2 cb = *p + T2 (b_test);
           const T2 c_b = *p - T2 (b_test);
@@ -2629,28 +2622,16 @@ namespace pcl
                             else
                               goto is_not_a_corner;
                           else
-                            if (p[offset6] < c_b)
-                              if (p[offset3] > cb)
-                                if (p[offset4] > cb)
-                                  if (p[offset11] > cb)
-                                    goto is_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                            if (p[offset3] > cb)
+                              if (p[offset4] > cb)
+                                if (p[offset11] > cb)
+                                  goto is_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset3] > cb)
-                                if (p[offset4] > cb)
-                                  if (p[offset11] > cb)
-                                    goto is_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
+                              goto is_not_a_corner;
                         else
                           goto is_not_a_corner;
                     else
@@ -2739,28 +2720,16 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] < c_b)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset11] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                              if (p[offset3] > cb)
+                                if (p[offset4] > cb)
+                                  if (p[offset11] > cb)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset11] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                                goto is_not_a_corner;
                           else
                             goto is_not_a_corner;
                   else
@@ -2794,28 +2763,16 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] < c_b)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset11] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                              if (p[offset3] > cb)
+                                if (p[offset4] > cb)
+                                  if (p[offset11] > cb)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset11] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                                goto is_not_a_corner;
                           else
                             if (p[offset6] < c_b)
                               goto is_not_a_corner;
@@ -2847,28 +2804,16 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] < c_b)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset11] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                              if (p[offset3] > cb)
+                                if (p[offset4] > cb)
+                                  if (p[offset11] > cb)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset11] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                                goto is_not_a_corner;
                           else
                             goto is_not_a_corner;
                     else
@@ -3024,28 +2969,16 @@ namespace pcl
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                                if (p[offset3] > cb)
+                                  if (p[offset4] > cb)
+                                    if (p[offset11] > cb)
+                                      goto is_a_corner;
                                     else
                                       goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                  goto is_not_a_corner;
                             else
                               if (p[offset6] < c_b)
                                 goto is_not_a_corner;
@@ -3149,28 +3082,16 @@ namespace pcl
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                                if (p[offset3] > cb)
+                                  if (p[offset4] > cb)
+                                    if (p[offset11] > cb)
+                                      goto is_a_corner;
                                     else
                                       goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                  goto is_not_a_corner;
                             else
                               goto is_not_a_corner;
                 else
@@ -3292,14 +3213,11 @@ namespace pcl
                           goto is_not_a_corner;
                         else
                           if (p[offset1] > cb)
-                            if (p[offset6] > cb)
-                              if (p[offset3] > cb)
-                                if (p[offset4] > cb)
-                                  if (p[offset10] > cb)
-                                    if (p[offset11] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                            if (p[offset3] > cb)
+                              if (p[offset4] > cb)
+                                if (p[offset10] > cb)
+                                  if (p[offset11] > cb)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
@@ -3307,34 +3225,7 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] < c_b)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                              goto is_not_a_corner;
                           else
                             goto is_not_a_corner;
                       else
@@ -3551,85 +3442,31 @@ namespace pcl
                                 else
                                   goto is_not_a_corner;
                         else
-                          if (p[offset1] > cb)
-                            if (p[offset6] > cb)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] < c_b)
-                                if (p[offset8] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset3] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset10] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                          if (p[offset6] > cb)
+                            goto is_not_a_corner;
+                          else
+                            if (p[offset6] < c_b)
+                              if (p[offset8] < c_b)
+                                if (p[offset4] < c_b)
+                                  if (p[offset3] < c_b)
+                                    goto is_a_corner;
                                   else
                                     if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                                      goto is_a_corner;
                                     else
                                       goto is_not_a_corner;
                                 else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                          else
-                            if (p[offset1] < c_b)
-                              if (p[offset6] > cb)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset8] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset3] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset10] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
+                                  if (p[offset10] < c_b)
+                                    if (p[offset11] < c_b)
+                                      goto is_a_corner;
                                     else
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                                      goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
                             else
-                              if (p[offset6] > cb)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset8] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset3] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset10] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                              goto is_not_a_corner;
                     else
                       if (p[offset2] < c_b)
                         goto is_not_a_corner;
@@ -3639,14 +3476,11 @@ namespace pcl
                             goto is_not_a_corner;
                           else
                             if (p[offset1] > cb)
-                              if (p[offset6] > cb)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                              if (p[offset3] > cb)
+                                if (p[offset4] > cb)
+                                  if (p[offset10] > cb)
+                                    if (p[offset11] > cb)
+                                      goto is_a_corner;
                                     else
                                       goto is_not_a_corner;
                                   else
@@ -3654,34 +3488,7 @@ namespace pcl
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                goto is_not_a_corner;
                             else
                               goto is_not_a_corner;
                         else
@@ -3694,49 +3501,19 @@ namespace pcl
                           goto is_not_a_corner;
                         else
                           if (p[offset1] > cb)
-                            if (p[offset6] > cb)
-                              if (p[offset10] > cb)
-                                if (p[offset11] > cb)
-                                  if (p[offset3] > cb)
+                            if (p[offset10] > cb)
+                              if (p[offset11] > cb)
+                                if (p[offset3] > cb)
+                                  goto is_a_corner;
+                                else
+                                  if (p[offset8] > cb)
                                     goto is_a_corner;
                                   else
-                                    if (p[offset8] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                                    goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] < c_b)
-                                if (p[offset10] > cb)
-                                  if (p[offset11] > cb)
-                                    if (p[offset3] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset8] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset10] > cb)
-                                  if (p[offset11] > cb)
-                                    if (p[offset3] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset8] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                              goto is_not_a_corner;
                           else
                             goto is_not_a_corner;
                       else
@@ -3756,40 +3533,22 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                           else
-                            if (p[offset1] > cb)
-                              if (p[offset6] > cb)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset8] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                            if (p[offset6] > cb)
+                              goto is_not_a_corner;
                             else
-                              if (p[offset6] > cb)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset8] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                              if (p[offset6] < c_b)
+                                if (p[offset3] < c_b)
+                                  if (p[offset4] < c_b)
+                                    if (p[offset8] < c_b)
+                                      goto is_a_corner;
                                     else
                                       goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
                         else
                           goto is_not_a_corner;
                     else
@@ -3814,40 +3573,16 @@ namespace pcl
                                 goto is_not_a_corner;
                           else
                             if (p[offset1] > cb)
-                              if (p[offset6] > cb)
-                                if (p[offset8] > cb)
-                                  if (p[offset10] > cb)
-                                    if (p[offset11] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                              if (p[offset8] > cb)
+                                if (p[offset10] > cb)
+                                  if (p[offset11] > cb)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset8] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset8] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                goto is_not_a_corner;
                             else
                               if (p[offset6] < c_b)
                                 goto is_not_a_corner;
@@ -3886,49 +3621,19 @@ namespace pcl
                                   goto is_not_a_corner;
                             else
                               if (p[offset1] > cb)
-                                if (p[offset6] > cb)
-                                  if (p[offset10] > cb)
-                                    if (p[offset11] > cb)
-                                      if (p[offset3] > cb)
+                                if (p[offset10] > cb)
+                                  if (p[offset11] > cb)
+                                    if (p[offset3] > cb)
+                                      goto is_a_corner;
+                                    else
+                                      if (p[offset8] > cb)
                                         goto is_a_corner;
                                       else
-                                        if (p[offset8] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                        goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        if (p[offset3] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        if (p[offset3] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                  goto is_not_a_corner;
                               else
                                 if (p[offset6] < c_b)
                                   goto is_not_a_corner;
@@ -3966,40 +3671,16 @@ namespace pcl
                                   goto is_not_a_corner;
                             else
                               if (p[offset1] > cb)
-                                if (p[offset6] > cb)
-                                  if (p[offset8] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                                if (p[offset8] > cb)
+                                  if (p[offset10] > cb)
+                                    if (p[offset11] > cb)
+                                      goto is_a_corner;
                                     else
                                       goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset8] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset8] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                  goto is_not_a_corner;
                               else
                                 if (p[offset6] < c_b)
                                   goto is_not_a_corner;
@@ -4026,49 +3707,19 @@ namespace pcl
                               goto is_not_a_corner;
                             else
                               if (p[offset1] > cb)
-                                if (p[offset6] > cb)
-                                  if (p[offset10] > cb)
-                                    if (p[offset11] > cb)
-                                      if (p[offset3] > cb)
+                                if (p[offset10] > cb)
+                                  if (p[offset11] > cb)
+                                    if (p[offset3] > cb)
+                                      goto is_a_corner;
+                                    else
+                                      if (p[offset8] > cb)
                                         goto is_a_corner;
                                       else
-                                        if (p[offset8] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                        goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        if (p[offset3] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        if (p[offset3] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                  goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                           else
@@ -4094,195 +3745,45 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                           else
-                            if (p[offset1] > cb)
-                              if (p[offset6] > cb)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset8] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                            if (p[offset6] > cb)
+                              goto is_not_a_corner;
                             else
-                              if (p[offset6] > cb)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset8] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                              if (p[offset6] < c_b)
+                                if (p[offset3] < c_b)
+                                  if (p[offset4] < c_b)
+                                    if (p[offset8] < c_b)
+                                      goto is_a_corner;
                                     else
                                       goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
                         else
                           goto is_not_a_corner;
                     else
                       if (p[offset2] > cb)
-                        if (p[offset7] > cb)
-                          if (p[offset1] < c_b)
-                            goto is_not_a_corner;
-                          else
-                            if (p[offset1] > cb)
-                              if (p[offset6] > cb)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                        if (p[offset1] < c_b)
+                          goto is_not_a_corner;
+                        else
+                          if (p[offset1] > cb)
+                            if (p[offset3] > cb)
+                              if (p[offset4] > cb)
+                                if (p[offset10] > cb)
+                                  if (p[offset11] > cb)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                            else
-                              goto is_not_a_corner;
-                        else
-                          if (p[offset7] < c_b)
-                            if (p[offset1] < c_b)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset1] > cb)
-                                if (p[offset6] > cb)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset3] > cb)
-                                      if (p[offset4] > cb)
-                                        if (p[offset10] > cb)
-                                          if (p[offset11] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset3] > cb)
-                                      if (p[offset4] > cb)
-                                        if (p[offset10] > cb)
-                                          if (p[offset11] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                              else
                                 goto is_not_a_corner;
+                            else
+                              goto is_not_a_corner;
                           else
-                            if (p[offset1] < c_b)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset1] > cb)
-                                if (p[offset6] > cb)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset3] > cb)
-                                      if (p[offset4] > cb)
-                                        if (p[offset10] > cb)
-                                          if (p[offset11] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset3] > cb)
-                                      if (p[offset4] > cb)
-                                        if (p[offset10] > cb)
-                                          if (p[offset11] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
+                            goto is_not_a_corner;
                       else
                         goto is_not_a_corner;
               else
@@ -4311,40 +3812,16 @@ namespace pcl
                               goto is_not_a_corner;
                         else
                           if (p[offset1] > cb)
-                            if (p[offset6] > cb)
-                              if (p[offset8] > cb)
-                                if (p[offset10] > cb)
-                                  if (p[offset11] > cb)
-                                    goto is_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                            if (p[offset8] > cb)
+                              if (p[offset10] > cb)
+                                if (p[offset11] > cb)
+                                  goto is_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] < c_b)
-                                if (p[offset8] > cb)
-                                  if (p[offset10] > cb)
-                                    if (p[offset11] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset8] > cb)
-                                  if (p[offset10] > cb)
-                                    if (p[offset11] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                              goto is_not_a_corner;
                           else
                             if (p[offset6] < c_b)
                               goto is_not_a_corner;
@@ -4374,7 +3851,47 @@ namespace pcl
                           goto is_not_a_corner;
                         else
                           if (p[offset1] > cb)
-                            if (p[offset6] > cb)
+                            if (p[offset3] > cb)
+                              if (p[offset4] > cb)
+                                if (p[offset10] > cb)
+                                  if (p[offset11] > cb)
+                                    goto is_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                            else
+                              goto is_not_a_corner;
+                          else
+                            goto is_not_a_corner;
+                      else
+                        if (p[offset9] > cb)
+                          if (p[offset1] < c_b)
+                            goto is_not_a_corner;
+                          else
+                            if (p[offset1] > cb)
+                              if (p[offset10] > cb)
+                                if (p[offset11] > cb)
+                                  if (p[offset3] > cb)
+                                    goto is_a_corner;
+                                  else
+                                    if (p[offset8] > cb)
+                                      goto is_a_corner;
+                                    else
+                                      goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                            else
+                              goto is_not_a_corner;
+                        else
+                          if (p[offset1] < c_b)
+                            goto is_not_a_corner;
+                          else
+                            if (p[offset1] > cb)
                               if (p[offset3] > cb)
                                 if (p[offset4] > cb)
                                   if (p[offset10] > cb)
@@ -4389,239 +3906,28 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] < c_b)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                          else
-                            goto is_not_a_corner;
-                      else
-                        if (p[offset9] > cb)
-                          if (p[offset1] < c_b)
-                            goto is_not_a_corner;
-                          else
-                            if (p[offset1] > cb)
-                              if (p[offset6] > cb)
-                                if (p[offset10] > cb)
-                                  if (p[offset11] > cb)
-                                    if (p[offset3] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset8] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset10] > cb)
-                                    if (p[offset11] > cb)
-                                      if (p[offset3] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset8] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset10] > cb)
-                                    if (p[offset11] > cb)
-                                      if (p[offset3] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset8] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                            else
-                              goto is_not_a_corner;
-                        else
-                          if (p[offset1] < c_b)
-                            goto is_not_a_corner;
-                          else
-                            if (p[offset1] > cb)
-                              if (p[offset6] > cb)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                            else
                               goto is_not_a_corner;
                     else
                       if (p[offset9] < c_b)
-                        if (p[offset7] > cb)
-                          if (p[offset1] < c_b)
-                            goto is_not_a_corner;
-                          else
-                            if (p[offset1] > cb)
-                              if (p[offset6] > cb)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                            else
-                              goto is_not_a_corner;
+                        if (p[offset1] < c_b)
+                          goto is_not_a_corner;
                         else
-                          if (p[offset1] < c_b)
-                            goto is_not_a_corner;
-                          else
-                            if (p[offset1] > cb)
-                              if (p[offset6] > cb)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                          if (p[offset1] > cb)
+                            if (p[offset3] > cb)
+                              if (p[offset4] > cb)
+                                if (p[offset10] > cb)
+                                  if (p[offset11] > cb)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                goto is_not_a_corner;
                             else
                               goto is_not_a_corner;
+                          else
+                            goto is_not_a_corner;
                       else
                         if (p[offset7] > cb)
                           if (p[offset9] > cb)
@@ -4644,49 +3950,19 @@ namespace pcl
                                   goto is_not_a_corner;
                             else
                               if (p[offset1] > cb)
-                                if (p[offset6] > cb)
-                                  if (p[offset10] > cb)
-                                    if (p[offset11] > cb)
-                                      if (p[offset3] > cb)
+                                if (p[offset10] > cb)
+                                  if (p[offset11] > cb)
+                                    if (p[offset3] > cb)
+                                      goto is_a_corner;
+                                    else
+                                      if (p[offset8] > cb)
                                         goto is_a_corner;
                                       else
-                                        if (p[offset8] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                        goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        if (p[offset3] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        if (p[offset3] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                  goto is_not_a_corner;
                               else
                                 if (p[offset6] < c_b)
                                   goto is_not_a_corner;
@@ -4709,14 +3985,11 @@ namespace pcl
                               goto is_not_a_corner;
                             else
                               if (p[offset1] > cb)
-                                if (p[offset6] > cb)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
+                                if (p[offset3] > cb)
+                                  if (p[offset4] > cb)
+                                    if (p[offset10] > cb)
+                                      if (p[offset11] > cb)
+                                        goto is_a_corner;
                                       else
                                         goto is_not_a_corner;
                                     else
@@ -4724,34 +3997,7 @@ namespace pcl
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset3] > cb)
-                                      if (p[offset4] > cb)
-                                        if (p[offset10] > cb)
-                                          if (p[offset11] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset3] > cb)
-                                      if (p[offset4] > cb)
-                                        if (p[offset10] > cb)
-                                          if (p[offset11] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                  goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                         else
@@ -4760,49 +4006,19 @@ namespace pcl
                               goto is_not_a_corner;
                             else
                               if (p[offset1] > cb)
-                                if (p[offset6] > cb)
-                                  if (p[offset10] > cb)
-                                    if (p[offset11] > cb)
-                                      if (p[offset3] > cb)
+                                if (p[offset10] > cb)
+                                  if (p[offset11] > cb)
+                                    if (p[offset3] > cb)
+                                      goto is_a_corner;
+                                    else
+                                      if (p[offset8] > cb)
                                         goto is_a_corner;
                                       else
-                                        if (p[offset8] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                        goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        if (p[offset3] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        if (p[offset3] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                  goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                           else
@@ -4810,14 +4026,11 @@ namespace pcl
                               goto is_not_a_corner;
                             else
                               if (p[offset1] > cb)
-                                if (p[offset6] > cb)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
+                                if (p[offset3] > cb)
+                                  if (p[offset4] > cb)
+                                    if (p[offset10] > cb)
+                                      if (p[offset11] > cb)
+                                        goto is_a_corner;
                                       else
                                         goto is_not_a_corner;
                                     else
@@ -4825,34 +4038,7 @@ namespace pcl
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset3] > cb)
-                                      if (p[offset4] > cb)
-                                        if (p[offset10] > cb)
-                                          if (p[offset11] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset3] > cb)
-                                      if (p[offset4] > cb)
-                                        if (p[offset10] > cb)
-                                          if (p[offset11] > cb)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                  goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                   else
@@ -4880,40 +4066,16 @@ namespace pcl
                                 goto is_not_a_corner;
                           else
                             if (p[offset1] > cb)
-                              if (p[offset6] > cb)
-                                if (p[offset8] > cb)
-                                  if (p[offset10] > cb)
-                                    if (p[offset11] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                              if (p[offset8] > cb)
+                                if (p[offset10] > cb)
+                                  if (p[offset11] > cb)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset8] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset8] > cb)
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                goto is_not_a_corner;
                             else
                               if (p[offset6] < c_b)
                                 goto is_not_a_corner;
@@ -4956,28 +4118,16 @@ namespace pcl
                             else
                               goto is_not_a_corner;
                           else
-                            if (p[offset6] > cb)
-                              if (p[offset3] < c_b)
-                                if (p[offset4] < c_b)
-                                  if (p[offset11] < c_b)
-                                    goto is_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                            if (p[offset3] < c_b)
+                              if (p[offset4] < c_b)
+                                if (p[offset11] < c_b)
+                                  goto is_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset3] < c_b)
-                                if (p[offset4] < c_b)
-                                  if (p[offset11] < c_b)
-                                    goto is_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
+                              goto is_not_a_corner;
                         else
                           goto is_not_a_corner;
                     else
@@ -5010,28 +4160,16 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] > cb)
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset11] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                              if (p[offset3] < c_b)
+                                if (p[offset4] < c_b)
+                                  if (p[offset11] < c_b)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset11] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                                goto is_not_a_corner;
                           else
                             if (p[offset6] > cb)
                               goto is_not_a_corner;
@@ -5063,28 +4201,16 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] > cb)
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset11] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                              if (p[offset3] < c_b)
+                                if (p[offset4] < c_b)
+                                  if (p[offset11] < c_b)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset11] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                                goto is_not_a_corner;
                           else
                             goto is_not_a_corner;
                   else
@@ -5585,28 +4711,16 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] > cb)
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset11] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                              if (p[offset3] < c_b)
+                                if (p[offset4] < c_b)
+                                  if (p[offset11] < c_b)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset11] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                                goto is_not_a_corner;
                           else
                             goto is_not_a_corner;
                       else
@@ -5639,28 +4753,16 @@ namespace pcl
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] > cb)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                                if (p[offset3] < c_b)
+                                  if (p[offset4] < c_b)
+                                    if (p[offset11] < c_b)
+                                      goto is_a_corner;
                                     else
                                       goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                  goto is_not_a_corner;
                             else
                               if (p[offset6] > cb)
                                 goto is_not_a_corner;
@@ -5692,28 +4794,16 @@ namespace pcl
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] > cb)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                                if (p[offset3] < c_b)
+                                  if (p[offset4] < c_b)
+                                    if (p[offset11] < c_b)
+                                      goto is_a_corner;
                                     else
                                       goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                  goto is_not_a_corner;
                             else
                               goto is_not_a_corner;
                     else
@@ -5745,40 +4835,16 @@ namespace pcl
                               goto is_not_a_corner;
                         else
                           if (p[offset1] < c_b)
-                            if (p[offset6] > cb)
-                              if (p[offset8] < c_b)
-                                if (p[offset10] < c_b)
-                                  if (p[offset11] < c_b)
-                                    goto is_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                            if (p[offset8] < c_b)
+                              if (p[offset10] < c_b)
+                                if (p[offset11] < c_b)
+                                  goto is_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] < c_b)
-                                if (p[offset8] < c_b)
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset8] < c_b)
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                              goto is_not_a_corner;
                           else
                             if (p[offset6] > cb)
                               goto is_not_a_corner;
@@ -5816,40 +4882,22 @@ namespace pcl
                             else
                               goto is_not_a_corner;
                         else
-                          if (p[offset1] < c_b)
-                            if (p[offset6] < c_b)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] > cb)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset8] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
+                          if (p[offset6] < c_b)
+                            goto is_not_a_corner;
                           else
-                            if (p[offset6] < c_b)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] > cb)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset8] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                            if (p[offset6] > cb)
+                              if (p[offset3] > cb)
+                                if (p[offset4] > cb)
+                                  if (p[offset8] > cb)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
+                            else
+                              goto is_not_a_corner;
                       else
                         if (p[offset9] > cb)
                           if (p[offset1] < c_b)
@@ -5950,40 +4998,22 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                           else
-                            if (p[offset1] < c_b)
-                              if (p[offset6] < c_b)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] > cb)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset8] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                            if (p[offset6] < c_b)
+                              goto is_not_a_corner;
                             else
-                              if (p[offset6] < c_b)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] > cb)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset8] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                              if (p[offset6] > cb)
+                                if (p[offset3] > cb)
+                                  if (p[offset4] > cb)
+                                    if (p[offset8] > cb)
+                                      goto is_a_corner;
                                     else
                                       goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
                     else
                       goto is_not_a_corner;
                 else
@@ -5994,14 +5024,11 @@ namespace pcl
                           goto is_not_a_corner;
                         else
                           if (p[offset1] < c_b)
-                            if (p[offset6] > cb)
-                              if (p[offset3] < c_b)
-                                if (p[offset4] < c_b)
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                            if (p[offset3] < c_b)
+                              if (p[offset4] < c_b)
+                                if (p[offset10] < c_b)
+                                  if (p[offset11] < c_b)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
@@ -6009,34 +5036,7 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] < c_b)
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                              goto is_not_a_corner;
                           else
                             goto is_not_a_corner;
                       else
@@ -6060,49 +5060,19 @@ namespace pcl
                                 goto is_not_a_corner;
                           else
                             if (p[offset1] < c_b)
-                              if (p[offset6] > cb)
-                                if (p[offset10] < c_b)
-                                  if (p[offset11] < c_b)
-                                    if (p[offset3] < c_b)
+                              if (p[offset10] < c_b)
+                                if (p[offset11] < c_b)
+                                  if (p[offset3] < c_b)
+                                    goto is_a_corner;
+                                  else
+                                    if (p[offset8] < c_b)
                                       goto is_a_corner;
                                     else
-                                      if (p[offset8] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                      goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      if (p[offset3] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset8] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      if (p[offset3] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset8] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                goto is_not_a_corner;
                             else
                               if (p[offset6] > cb)
                                 goto is_not_a_corner;
@@ -6125,14 +5095,11 @@ namespace pcl
                             goto is_not_a_corner;
                           else
                             if (p[offset1] < c_b)
-                              if (p[offset6] > cb)
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                              if (p[offset3] < c_b)
+                                if (p[offset4] < c_b)
+                                  if (p[offset10] < c_b)
+                                    if (p[offset11] < c_b)
+                                      goto is_a_corner;
                                     else
                                       goto is_not_a_corner;
                                   else
@@ -6140,34 +5107,7 @@ namespace pcl
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                goto is_not_a_corner;
                             else
                               goto is_not_a_corner;
                     else
@@ -6177,49 +5117,19 @@ namespace pcl
                             goto is_not_a_corner;
                           else
                             if (p[offset1] < c_b)
-                              if (p[offset6] > cb)
-                                if (p[offset10] < c_b)
-                                  if (p[offset11] < c_b)
-                                    if (p[offset3] < c_b)
+                              if (p[offset10] < c_b)
+                                if (p[offset11] < c_b)
+                                  if (p[offset3] < c_b)
+                                    goto is_a_corner;
+                                  else
+                                    if (p[offset8] < c_b)
                                       goto is_a_corner;
                                     else
-                                      if (p[offset8] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                      goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      if (p[offset3] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset8] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      if (p[offset3] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset8] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                goto is_not_a_corner;
                             else
                               goto is_not_a_corner;
                         else
@@ -6353,58 +5263,6 @@ namespace pcl
                               goto is_not_a_corner;
                             else
                               if (p[offset1] < c_b)
-                                if (p[offset6] > cb)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset3] < c_b)
-                                      if (p[offset4] < c_b)
-                                        if (p[offset10] < c_b)
-                                          if (p[offset11] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset3] < c_b)
-                                      if (p[offset4] < c_b)
-                                        if (p[offset10] < c_b)
-                                          if (p[offset11] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                      else
-                        if (p[offset9] > cb)
-                          if (p[offset1] > cb)
-                            goto is_not_a_corner;
-                          else
-                            if (p[offset1] < c_b)
-                              if (p[offset6] > cb)
                                 if (p[offset3] < c_b)
                                   if (p[offset4] < c_b)
                                     if (p[offset10] < c_b)
@@ -6419,34 +5277,26 @@ namespace pcl
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                                goto is_not_a_corner;
+                      else
+                        if (p[offset9] > cb)
+                          if (p[offset1] > cb)
+                            goto is_not_a_corner;
+                          else
+                            if (p[offset1] < c_b)
+                              if (p[offset3] < c_b)
+                                if (p[offset4] < c_b)
+                                  if (p[offset10] < c_b)
+                                    if (p[offset11] < c_b)
+                                      goto is_a_corner;
                                     else
                                       goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
                             else
                               goto is_not_a_corner;
                         else
@@ -6455,49 +5305,19 @@ namespace pcl
                               goto is_not_a_corner;
                             else
                               if (p[offset1] < c_b)
-                                if (p[offset6] > cb)
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      if (p[offset3] < c_b)
+                                if (p[offset10] < c_b)
+                                  if (p[offset11] < c_b)
+                                    if (p[offset3] < c_b)
+                                      goto is_a_corner;
+                                    else
+                                      if (p[offset8] < c_b)
                                         goto is_a_corner;
                                       else
-                                        if (p[offset8] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                        goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        if (p[offset3] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        if (p[offset3] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                  goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                           else
@@ -6505,14 +5325,11 @@ namespace pcl
                               goto is_not_a_corner;
                             else
                               if (p[offset1] < c_b)
-                                if (p[offset6] > cb)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
+                                if (p[offset3] < c_b)
+                                  if (p[offset4] < c_b)
+                                    if (p[offset10] < c_b)
+                                      if (p[offset11] < c_b)
+                                        goto is_a_corner;
                                       else
                                         goto is_not_a_corner;
                                     else
@@ -6520,34 +5337,7 @@ namespace pcl
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset3] < c_b)
-                                      if (p[offset4] < c_b)
-                                        if (p[offset10] < c_b)
-                                          if (p[offset11] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset3] < c_b)
-                                      if (p[offset4] < c_b)
-                                        if (p[offset10] < c_b)
-                                          if (p[offset11] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                  goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                   else
@@ -6556,85 +5346,31 @@ namespace pcl
                         goto is_not_a_corner;
                       else
                         if (p[offset9] > cb)
-                          if (p[offset1] > cb)
-                            if (p[offset6] < c_b)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] > cb)
-                                if (p[offset8] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset3] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset10] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                          if (p[offset6] < c_b)
+                            goto is_not_a_corner;
+                          else
+                            if (p[offset6] > cb)
+                              if (p[offset8] > cb)
+                                if (p[offset4] > cb)
+                                  if (p[offset3] > cb)
+                                    goto is_a_corner;
                                   else
                                     if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                                      goto is_a_corner;
                                     else
                                       goto is_not_a_corner;
                                 else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                          else
-                            if (p[offset1] < c_b)
-                              if (p[offset6] < c_b)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] > cb)
-                                  if (p[offset8] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset3] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset10] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
+                                  if (p[offset10] > cb)
+                                    if (p[offset11] > cb)
+                                      goto is_a_corner;
                                     else
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
+                                      goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
                             else
-                              if (p[offset6] < c_b)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] > cb)
-                                  if (p[offset8] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset3] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset10] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                              goto is_not_a_corner;
                         else
                           goto is_not_a_corner;
                     else
@@ -6659,40 +5395,16 @@ namespace pcl
                                 goto is_not_a_corner;
                           else
                             if (p[offset1] < c_b)
-                              if (p[offset6] > cb)
-                                if (p[offset8] < c_b)
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                              if (p[offset8] < c_b)
+                                if (p[offset10] < c_b)
+                                  if (p[offset11] < c_b)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset8] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset8] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                goto is_not_a_corner;
                             else
                               if (p[offset6] > cb)
                                 goto is_not_a_corner;
@@ -6740,40 +5452,16 @@ namespace pcl
                               goto is_not_a_corner;
                         else
                           if (p[offset1] < c_b)
-                            if (p[offset6] > cb)
-                              if (p[offset8] < c_b)
-                                if (p[offset10] < c_b)
-                                  if (p[offset11] < c_b)
-                                    goto is_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                            if (p[offset8] < c_b)
+                              if (p[offset10] < c_b)
+                                if (p[offset11] < c_b)
+                                  goto is_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] < c_b)
-                                if (p[offset8] < c_b)
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset8] < c_b)
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                              goto is_not_a_corner;
                           else
                             if (p[offset6] > cb)
                               goto is_not_a_corner;
@@ -6803,7 +5491,47 @@ namespace pcl
                           goto is_not_a_corner;
                         else
                           if (p[offset1] < c_b)
-                            if (p[offset6] > cb)
+                            if (p[offset3] < c_b)
+                              if (p[offset4] < c_b)
+                                if (p[offset10] < c_b)
+                                  if (p[offset11] < c_b)
+                                    goto is_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                            else
+                              goto is_not_a_corner;
+                          else
+                            goto is_not_a_corner;
+                      else
+                        if (p[offset9] < c_b)
+                          if (p[offset1] > cb)
+                            goto is_not_a_corner;
+                          else
+                            if (p[offset1] < c_b)
+                              if (p[offset10] < c_b)
+                                if (p[offset11] < c_b)
+                                  if (p[offset3] < c_b)
+                                    goto is_a_corner;
+                                  else
+                                    if (p[offset8] < c_b)
+                                      goto is_a_corner;
+                                    else
+                                      goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                            else
+                              goto is_not_a_corner;
+                        else
+                          if (p[offset1] > cb)
+                            goto is_not_a_corner;
+                          else
+                            if (p[offset1] < c_b)
                               if (p[offset3] < c_b)
                                 if (p[offset4] < c_b)
                                   if (p[offset10] < c_b)
@@ -6818,239 +5546,28 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                             else
-                              if (p[offset6] < c_b)
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                          else
-                            goto is_not_a_corner;
-                      else
-                        if (p[offset9] < c_b)
-                          if (p[offset1] > cb)
-                            goto is_not_a_corner;
-                          else
-                            if (p[offset1] < c_b)
-                              if (p[offset6] > cb)
-                                if (p[offset10] < c_b)
-                                  if (p[offset11] < c_b)
-                                    if (p[offset3] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset8] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      if (p[offset3] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset8] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      if (p[offset3] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset8] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                            else
-                              goto is_not_a_corner;
-                        else
-                          if (p[offset1] > cb)
-                            goto is_not_a_corner;
-                          else
-                            if (p[offset1] < c_b)
-                              if (p[offset6] > cb)
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                            else
                               goto is_not_a_corner;
                     else
                       if (p[offset9] > cb)
-                        if (p[offset7] < c_b)
-                          if (p[offset1] > cb)
-                            goto is_not_a_corner;
-                          else
-                            if (p[offset1] < c_b)
-                              if (p[offset6] > cb)
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                            else
-                              goto is_not_a_corner;
+                        if (p[offset1] > cb)
+                          goto is_not_a_corner;
                         else
-                          if (p[offset1] > cb)
-                            goto is_not_a_corner;
-                          else
-                            if (p[offset1] < c_b)
-                              if (p[offset6] > cb)
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                          if (p[offset1] < c_b)
+                            if (p[offset3] < c_b)
+                              if (p[offset4] < c_b)
+                                if (p[offset10] < c_b)
+                                  if (p[offset11] < c_b)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                goto is_not_a_corner;
                             else
                               goto is_not_a_corner;
+                          else
+                            goto is_not_a_corner;
                       else
                         if (p[offset7] < c_b)
                           if (p[offset9] < c_b)
@@ -7073,49 +5590,19 @@ namespace pcl
                                   goto is_not_a_corner;
                             else
                               if (p[offset1] < c_b)
-                                if (p[offset6] > cb)
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      if (p[offset3] < c_b)
+                                if (p[offset10] < c_b)
+                                  if (p[offset11] < c_b)
+                                    if (p[offset3] < c_b)
+                                      goto is_a_corner;
+                                    else
+                                      if (p[offset8] < c_b)
                                         goto is_a_corner;
                                       else
-                                        if (p[offset8] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                        goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        if (p[offset3] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        if (p[offset3] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                  goto is_not_a_corner;
                               else
                                 if (p[offset6] > cb)
                                   goto is_not_a_corner;
@@ -7138,14 +5625,11 @@ namespace pcl
                               goto is_not_a_corner;
                             else
                               if (p[offset1] < c_b)
-                                if (p[offset6] > cb)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
+                                if (p[offset3] < c_b)
+                                  if (p[offset4] < c_b)
+                                    if (p[offset10] < c_b)
+                                      if (p[offset11] < c_b)
+                                        goto is_a_corner;
                                       else
                                         goto is_not_a_corner;
                                     else
@@ -7153,34 +5637,7 @@ namespace pcl
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset3] < c_b)
-                                      if (p[offset4] < c_b)
-                                        if (p[offset10] < c_b)
-                                          if (p[offset11] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset3] < c_b)
-                                      if (p[offset4] < c_b)
-                                        if (p[offset10] < c_b)
-                                          if (p[offset11] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                  goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                         else
@@ -7189,49 +5646,19 @@ namespace pcl
                               goto is_not_a_corner;
                             else
                               if (p[offset1] < c_b)
-                                if (p[offset6] > cb)
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      if (p[offset3] < c_b)
+                                if (p[offset10] < c_b)
+                                  if (p[offset11] < c_b)
+                                    if (p[offset3] < c_b)
+                                      goto is_a_corner;
+                                    else
+                                      if (p[offset8] < c_b)
                                         goto is_a_corner;
                                       else
-                                        if (p[offset8] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                        goto is_not_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        if (p[offset3] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        if (p[offset3] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          if (p[offset8] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                  goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                           else
@@ -7239,14 +5666,11 @@ namespace pcl
                               goto is_not_a_corner;
                             else
                               if (p[offset1] < c_b)
-                                if (p[offset6] > cb)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
+                                if (p[offset3] < c_b)
+                                  if (p[offset4] < c_b)
+                                    if (p[offset10] < c_b)
+                                      if (p[offset11] < c_b)
+                                        goto is_a_corner;
                                       else
                                         goto is_not_a_corner;
                                     else
@@ -7254,34 +5678,7 @@ namespace pcl
                                   else
                                     goto is_not_a_corner;
                                 else
-                                  if (p[offset6] < c_b)
-                                    if (p[offset3] < c_b)
-                                      if (p[offset4] < c_b)
-                                        if (p[offset10] < c_b)
-                                          if (p[offset11] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    if (p[offset3] < c_b)
-                                      if (p[offset4] < c_b)
-                                        if (p[offset10] < c_b)
-                                          if (p[offset11] < c_b)
-                                            goto is_a_corner;
-                                          else
-                                            goto is_not_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                                  goto is_not_a_corner;
                               else
                                 goto is_not_a_corner;
                   else
@@ -7309,40 +5706,16 @@ namespace pcl
                                 goto is_not_a_corner;
                           else
                             if (p[offset1] < c_b)
-                              if (p[offset6] > cb)
-                                if (p[offset8] < c_b)
-                                  if (p[offset10] < c_b)
-                                    if (p[offset11] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
+                              if (p[offset8] < c_b)
+                                if (p[offset10] < c_b)
+                                  if (p[offset11] < c_b)
+                                    goto is_a_corner;
                                   else
                                     goto is_not_a_corner;
                                 else
                                   goto is_not_a_corner;
                               else
-                                if (p[offset6] < c_b)
-                                  if (p[offset8] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  if (p[offset8] < c_b)
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
+                                goto is_not_a_corner;
                             else
                               if (p[offset6] > cb)
                                 goto is_not_a_corner;
@@ -7375,7 +5748,188 @@ namespace pcl
                       goto is_not_a_corner;
                     else
                       if (p[offset9] < c_b)
-                        if (p[offset1] > cb)
+                        if (p[offset6] > cb)
+                          goto is_not_a_corner;
+                        else
+                          if (p[offset6] < c_b)
+                            if (p[offset8] < c_b)
+                              if (p[offset4] < c_b)
+                                if (p[offset3] < c_b)
+                                  goto is_a_corner;
+                                else
+                                  if (p[offset10] < c_b)
+                                    goto is_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                              else
+                                if (p[offset10] < c_b)
+                                  if (p[offset11] < c_b)
+                                    goto is_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                            else
+                              goto is_not_a_corner;
+                          else
+                            goto is_not_a_corner;                        
+                      else
+                        goto is_not_a_corner;
+                  else
+                    if (p[offset2] < c_b)
+                      if (p[offset9] > cb)
+                        if (p[offset1] < c_b)
+                          if (p[offset6] > cb)
+                            goto is_not_a_corner;
+                          else
+                            if (p[offset6] < c_b)
+                              if (p[offset3] < c_b)
+                                if (p[offset4] < c_b)
+                                  goto is_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                            else
+                              goto is_not_a_corner;
+                        else
+                          if (p[offset6] > cb)
+                            goto is_not_a_corner;
+                          else
+                            if (p[offset6] < c_b)
+                              if (p[offset3] < c_b)
+                                if (p[offset4] < c_b)
+                                  if (p[offset8] < c_b)
+                                    goto is_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                            else
+                              goto is_not_a_corner;
+                      else
+                        if (p[offset9] < c_b)
+                          if (p[offset1] > cb)
+                            if (p[offset6] > cb)
+                              goto is_not_a_corner;
+                            else
+                              if (p[offset6] < c_b)
+                                if (p[offset8] < c_b)
+                                  if (p[offset4] < c_b)
+                                    if (p[offset3] < c_b)
+                                      goto is_a_corner;
+                                    else
+                                      if (p[offset10] < c_b)
+                                        goto is_a_corner;
+                                      else
+                                        goto is_not_a_corner;
+                                  else
+                                    if (p[offset10] < c_b)
+                                      if (p[offset11] < c_b)
+                                        goto is_a_corner;
+                                      else
+                                        goto is_not_a_corner;
+                                    else
+                                      goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                          else
+                            if (p[offset1] < c_b)
+                              if (p[offset6] > cb)
+                                goto is_not_a_corner;
+                              else
+                                if (p[offset6] < c_b)
+                                  if (p[offset4] < c_b)
+                                    if (p[offset3] < c_b)
+                                      goto is_a_corner;
+                                    else
+                                      if (p[offset8] < c_b)
+                                        if (p[offset10] < c_b)
+                                          goto is_a_corner;
+                                        else
+                                          goto is_not_a_corner;
+                                      else
+                                        goto is_not_a_corner;
+                                  else
+                                    if (p[offset8] < c_b)
+                                      if (p[offset10] < c_b)
+                                        if (p[offset11] < c_b)
+                                          goto is_a_corner;
+                                        else
+                                          goto is_not_a_corner;
+                                      else
+                                        goto is_not_a_corner;
+                                    else
+                                      goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                            else
+                              if (p[offset6] > cb)
+                                goto is_not_a_corner;
+                              else
+                                if (p[offset6] < c_b)
+                                  if (p[offset8] < c_b)
+                                    if (p[offset4] < c_b)
+                                      if (p[offset3] < c_b)
+                                        goto is_a_corner;
+                                      else
+                                        if (p[offset10] < c_b)
+                                          goto is_a_corner;
+                                        else
+                                          goto is_not_a_corner;
+                                    else
+                                      if (p[offset10] < c_b)
+                                        if (p[offset11] < c_b)
+                                          goto is_a_corner;
+                                        else
+                                          goto is_not_a_corner;
+                                      else
+                                        goto is_not_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                        else
+                          if (p[offset1] < c_b)
+                            if (p[offset6] > cb)
+                              goto is_not_a_corner;
+                            else
+                              if (p[offset6] < c_b)
+                                if (p[offset3] < c_b)
+                                  if (p[offset4] < c_b)
+                                    goto is_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                          else
+                            if (p[offset6] > cb)
+                              goto is_not_a_corner;
+                            else
+                              if (p[offset6] < c_b)
+                                if (p[offset3] < c_b)
+                                  if (p[offset4] < c_b)
+                                    if (p[offset8] < c_b)
+                                      goto is_a_corner;
+                                    else
+                                      goto is_not_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                    else
+                      if (p[offset9] > cb)
+                        goto is_not_a_corner;
+                      else
+                        if (p[offset9] < c_b)
                           if (p[offset6] > cb)
                             goto is_not_a_corner;
                           else
@@ -7402,331 +5956,6 @@ namespace pcl
                             else
                               goto is_not_a_corner;
                         else
-                          if (p[offset1] < c_b)
-                            if (p[offset6] > cb)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] < c_b)
-                                if (p[offset8] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset3] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset10] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                          else
-                            if (p[offset6] > cb)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] < c_b)
-                                if (p[offset8] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset3] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset10] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                      else
-                        goto is_not_a_corner;
-                  else
-                    if (p[offset2] < c_b)
-                      if (p[offset9] > cb)
-                        if (p[offset1] < c_b)
-                          if (p[offset6] > cb)
-                            goto is_not_a_corner;
-                          else
-                            if (p[offset6] < c_b)
-                              if (p[offset3] < c_b)
-                                if (p[offset4] < c_b)
-                                  goto is_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                            else
-                              goto is_not_a_corner;
-                        else
-                          if (p[offset1] > cb)
-                            if (p[offset6] > cb)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] < c_b)
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset8] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                          else
-                            if (p[offset6] > cb)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] < c_b)
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset8] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                      else
-                        if (p[offset9] < c_b)
-                          if (p[offset1] > cb)
-                            if (p[offset6] > cb)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] < c_b)
-                                if (p[offset8] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset3] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset10] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                          else
-                            if (p[offset1] < c_b)
-                              if (p[offset6] > cb)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset3] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset8] < c_b)
-                                        if (p[offset10] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    if (p[offset8] < c_b)
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                            else
-                              if (p[offset6] > cb)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset8] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset3] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset10] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                        else
-                          if (p[offset1] < c_b)
-                            if (p[offset6] > cb)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] < c_b)
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    goto is_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                          else
-                            if (p[offset1] > cb)
-                              if (p[offset6] > cb)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset8] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                            else
-                              if (p[offset6] > cb)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset3] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset8] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                    else
-                      if (p[offset9] > cb)
-                        goto is_not_a_corner;
-                      else
-                        if (p[offset9] < c_b)
-                          if (p[offset1] > cb)
-                            if (p[offset6] > cb)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] < c_b)
-                                if (p[offset8] < c_b)
-                                  if (p[offset4] < c_b)
-                                    if (p[offset3] < c_b)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset10] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] < c_b)
-                                      if (p[offset11] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                          else
-                            if (p[offset1] < c_b)
-                              if (p[offset6] > cb)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset8] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset3] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset10] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                            else
-                              if (p[offset6] > cb)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] < c_b)
-                                  if (p[offset8] < c_b)
-                                    if (p[offset4] < c_b)
-                                      if (p[offset3] < c_b)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset10] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      if (p[offset10] < c_b)
-                                        if (p[offset11] < c_b)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                        else
                           goto is_not_a_corner;
                 else
                   goto is_not_a_corner;
@@ -7738,7 +5967,188 @@ namespace pcl
                       goto is_not_a_corner;
                     else
                       if (p[offset9] > cb)
+                        if (p[offset6] < c_b)
+                          goto is_not_a_corner;
+                        else
+                          if (p[offset6] > cb)
+                            if (p[offset8] > cb)
+                              if (p[offset4] > cb)
+                                if (p[offset3] > cb)
+                                  goto is_a_corner;
+                                else
+                                  if (p[offset10] > cb)
+                                    goto is_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                              else
+                                if (p[offset10] > cb)
+                                  if (p[offset11] > cb)
+                                    goto is_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                            else
+                              goto is_not_a_corner;
+                          else
+                            goto is_not_a_corner;
+                      else
+                        goto is_not_a_corner;
+                  else
+                    if (p[offset2] > cb)
+                      if (p[offset9] < c_b)
                         if (p[offset1] > cb)
+                          if (p[offset6] < c_b)
+                            goto is_not_a_corner;
+                          else
+                            if (p[offset6] > cb)
+                              if (p[offset3] > cb)
+                                if (p[offset4] > cb)
+                                  goto is_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                            else
+                              goto is_not_a_corner;
+                        else
+                          if (p[offset6] < c_b)
+                            goto is_not_a_corner;
+                          else
+                            if (p[offset6] > cb)
+                              if (p[offset3] > cb)
+                                if (p[offset4] > cb)
+                                  if (p[offset8] > cb)
+                                    goto is_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                            else
+                              goto is_not_a_corner;
+                      else
+                        if (p[offset9] > cb)
+                          if (p[offset1] < c_b)
+                            if (p[offset6] < c_b)
+                              goto is_not_a_corner;
+                            else
+                              if (p[offset6] > cb)
+                                if (p[offset8] > cb)
+                                  if (p[offset4] > cb)
+                                    if (p[offset3] > cb)
+                                      goto is_a_corner;
+                                    else
+                                      if (p[offset10] > cb)
+                                        goto is_a_corner;
+                                      else
+                                        goto is_not_a_corner;
+                                  else
+                                    if (p[offset10] > cb)
+                                      if (p[offset11] > cb)
+                                        goto is_a_corner;
+                                      else
+                                        goto is_not_a_corner;
+                                    else
+                                      goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                          else
+                            if (p[offset1] > cb)
+                              if (p[offset6] < c_b)
+                                goto is_not_a_corner;
+                              else
+                                if (p[offset6] > cb)
+                                  if (p[offset4] > cb)
+                                    if (p[offset3] > cb)
+                                      goto is_a_corner;
+                                    else
+                                      if (p[offset8] > cb)
+                                        if (p[offset10] > cb)
+                                          goto is_a_corner;
+                                        else
+                                          goto is_not_a_corner;
+                                      else
+                                        goto is_not_a_corner;
+                                  else
+                                    if (p[offset8] > cb)
+                                      if (p[offset10] > cb)
+                                        if (p[offset11] > cb)
+                                          goto is_a_corner;
+                                        else
+                                          goto is_not_a_corner;
+                                      else
+                                        goto is_not_a_corner;
+                                    else
+                                      goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                            else
+                              if (p[offset6] < c_b)
+                                goto is_not_a_corner;
+                              else
+                                if (p[offset6] > cb)
+                                  if (p[offset8] > cb)
+                                    if (p[offset4] > cb)
+                                      if (p[offset3] > cb)
+                                        goto is_a_corner;
+                                      else
+                                        if (p[offset10] > cb)
+                                          goto is_a_corner;
+                                        else
+                                          goto is_not_a_corner;
+                                    else
+                                      if (p[offset10] > cb)
+                                        if (p[offset11] > cb)
+                                          goto is_a_corner;
+                                        else
+                                          goto is_not_a_corner;
+                                      else
+                                        goto is_not_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                        else
+                          if (p[offset1] > cb)
+                            if (p[offset6] < c_b)
+                              goto is_not_a_corner;
+                            else
+                              if (p[offset6] > cb)
+                                if (p[offset3] > cb)
+                                  if (p[offset4] > cb)
+                                    goto is_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                          else
+                            if (p[offset6] < c_b)
+                              goto is_not_a_corner;
+                            else
+                              if (p[offset6] > cb)
+                                if (p[offset3] > cb)
+                                  if (p[offset4] > cb)
+                                    if (p[offset8] > cb)
+                                      goto is_a_corner;
+                                    else
+                                      goto is_not_a_corner;
+                                  else
+                                    goto is_not_a_corner;
+                                else
+                                  goto is_not_a_corner;
+                              else
+                                goto is_not_a_corner;
+                    else
+                      if (p[offset9] < c_b)
+                        goto is_not_a_corner;
+                      else
+                        if (p[offset9] > cb)
                           if (p[offset6] < c_b)
                             goto is_not_a_corner;
                           else
@@ -7763,332 +6173,7 @@ namespace pcl
                               else
                                 goto is_not_a_corner;
                             else
-                              goto is_not_a_corner;
-                        else
-                          if (p[offset1] < c_b)
-                            if (p[offset6] < c_b)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] > cb)
-                                if (p[offset8] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset3] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset10] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                          else
-                            if (p[offset6] < c_b)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] > cb)
-                                if (p[offset8] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset3] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset10] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                      else
-                        goto is_not_a_corner;
-                  else
-                    if (p[offset2] > cb)
-                      if (p[offset9] < c_b)
-                        if (p[offset1] > cb)
-                          if (p[offset6] < c_b)
-                            goto is_not_a_corner;
-                          else
-                            if (p[offset6] > cb)
-                              if (p[offset3] > cb)
-                                if (p[offset4] > cb)
-                                  goto is_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                            else
-                              goto is_not_a_corner;
-                        else
-                          if (p[offset1] < c_b)
-                            if (p[offset6] < c_b)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] > cb)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset8] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                          else
-                            if (p[offset6] < c_b)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] > cb)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset8] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                      else
-                        if (p[offset9] > cb)
-                          if (p[offset1] < c_b)
-                            if (p[offset6] < c_b)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] > cb)
-                                if (p[offset8] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset3] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset10] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                          else
-                            if (p[offset1] > cb)
-                              if (p[offset6] < c_b)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset3] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset8] > cb)
-                                        if (p[offset10] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    if (p[offset8] > cb)
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                            else
-                              if (p[offset6] < c_b)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] > cb)
-                                  if (p[offset8] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset3] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset10] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                        else
-                          if (p[offset1] > cb)
-                            if (p[offset6] < c_b)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] > cb)
-                                if (p[offset3] > cb)
-                                  if (p[offset4] > cb)
-                                    goto is_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                          else
-                            if (p[offset1] < c_b)
-                              if (p[offset6] < c_b)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] > cb)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset8] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                            else
-                              if (p[offset6] < c_b)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] > cb)
-                                  if (p[offset3] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset8] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                    else
-                      if (p[offset9] < c_b)
-                        goto is_not_a_corner;
-                      else
-                        if (p[offset9] > cb)
-                          if (p[offset1] > cb)
-                            if (p[offset6] < c_b)
-                              goto is_not_a_corner;
-                            else
-                              if (p[offset6] > cb)
-                                if (p[offset8] > cb)
-                                  if (p[offset4] > cb)
-                                    if (p[offset3] > cb)
-                                      goto is_a_corner;
-                                    else
-                                      if (p[offset10] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    if (p[offset10] > cb)
-                                      if (p[offset11] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                    else
-                                      goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                              else
-                                goto is_not_a_corner;
-                          else
-                            if (p[offset1] < c_b)
-                              if (p[offset6] < c_b)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] > cb)
-                                  if (p[offset8] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset3] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset10] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
-                            else
-                              if (p[offset6] < c_b)
-                                goto is_not_a_corner;
-                              else
-                                if (p[offset6] > cb)
-                                  if (p[offset8] > cb)
-                                    if (p[offset4] > cb)
-                                      if (p[offset3] > cb)
-                                        goto is_a_corner;
-                                      else
-                                        if (p[offset10] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                    else
-                                      if (p[offset10] > cb)
-                                        if (p[offset11] > cb)
-                                          goto is_a_corner;
-                                        else
-                                          goto is_not_a_corner;
-                                      else
-                                        goto is_not_a_corner;
-                                  else
-                                    goto is_not_a_corner;
-                                else
-                                  goto is_not_a_corner;
+                              goto is_not_a_corner;                         
                         else
                           goto is_not_a_corner;
                 else
@@ -8246,7 +6331,6 @@ namespace pcl
         int total = 0;
         int n_expected_corners = int (corners.capacity ());
         pcl::PointUV h;
-        int x, y;
         int xsize_b = int (img_width) - 2;
         int ysize_b = int (img_height) - 1;
         int_fast16_t offset0, offset1, offset2, offset3, offset4, offset5, offset6, offset7;
@@ -8264,10 +6348,10 @@ namespace pcl
         offset7 = s_offset7;
         width   = int (img_width);
 
-        for (y = 1; y < ysize_b; y++)
+        for (int y = 1; y < ysize_b; y++)
         {
-          x = 0;
-          while (1)
+          int x = 0;
+          while (true)
           { 
       homogeneous:
       {
@@ -9024,7 +7108,7 @@ namespace pcl
         int_fast16_t offset6 = s_offset6;
         int_fast16_t offset7 = s_offset7;
 
-        while (1)
+        while (true)
         {
           const T2 cb = *p + T2 (b_test);
           const T2 c_b = *p - T2 (b_test);
@@ -9490,7 +7574,6 @@ namespace pcl
         int total = 0;
         int n_expected_corners = int (corners.capacity ());
         pcl::PointUV h;
-        int x, y;
         int xsize_b = int (img_width) - 4;
         int ysize_b = int (img_height) - 3;
         int_fast16_t offset0, offset1, offset2, offset3, offset4, offset5, offset6, offset7, offset8, offset9, offset10, offset11, offset12, offset13, offset14, offset15;
@@ -9516,10 +7599,10 @@ namespace pcl
         offset15 = s_offset15;
         width    = int (img_width);
 
-        for (y = 3; y < ysize_b; y++)
+        for (int y = 3; y < ysize_b; y++)
         {
-          x = 2;
-          while (1)
+          int x = 2;
+          while (true)
           {
             x++;
             if (x > xsize_b)
@@ -11625,7 +9708,7 @@ namespace pcl
         int_fast16_t offset14 = s_offset14;
         int_fast16_t offset15 = s_offset15;
 
-        while (1)
+        while (true)
         {
           const T2 cb = *p + T2 (b_test);
           const T2 c_b = *p - T2 (b_test);

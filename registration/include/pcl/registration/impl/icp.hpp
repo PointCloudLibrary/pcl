@@ -68,7 +68,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud (
       memcpy (&pt[1], data_in + y_idx_offset_, sizeof (float));
       memcpy (&pt[2], data_in + z_idx_offset_, sizeof (float));
 
-      if (!pcl_isfinite (pt[0]) || !pcl_isfinite (pt[1]) || !pcl_isfinite (pt[2])) 
+      if (!std::isfinite (pt[0]) || !std::isfinite (pt[1]) || !std::isfinite (pt[2])) 
         continue;
 
       pt_t = tr * pt;
@@ -81,7 +81,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud (
       memcpy (&nt[1], data_in + ny_idx_offset_, sizeof (float));
       memcpy (&nt[2], data_in + nz_idx_offset_, sizeof (float));
 
-      if (!pcl_isfinite (nt[0]) || !pcl_isfinite (nt[1]) || !pcl_isfinite (nt[2])) 
+      if (!std::isfinite (nt[0]) || !std::isfinite (nt[1]) || !std::isfinite (nt[2])) 
         continue;
 
       nt_t = rot * nt;
@@ -101,7 +101,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud (
       memcpy (&pt[1], data_in + y_idx_offset_, sizeof (float));
       memcpy (&pt[2], data_in + z_idx_offset_, sizeof (float));
 
-      if (!pcl_isfinite (pt[0]) || !pcl_isfinite (pt[1]) || !pcl_isfinite (pt[2])) 
+      if (!std::isfinite (pt[0]) || !std::isfinite (pt[1]) || !std::isfinite (pt[2])) 
         continue;
 
       pt_t = tr * pt;
@@ -163,7 +163,10 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
   convergence_criteria_->setMaximumIterations (max_iterations_);
   convergence_criteria_->setRelativeMSE (euclidean_fitness_epsilon_);
   convergence_criteria_->setTranslationThreshold (transformation_epsilon_);
-  convergence_criteria_->setRotationThreshold (1.0 - transformation_epsilon_);
+  if (transformation_rotation_epsilon_ > 0)
+    convergence_criteria_->setRotationThreshold (transformation_rotation_epsilon_);
+  else
+    convergence_criteria_->setRotationThreshold (1.0 - transformation_epsilon_);
 
   // Repeat until convergence
   do
@@ -218,7 +221,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     // Estimate the transform
     transformation_estimation_->estimateRigidTransformation (*input_transformed, *target_, *correspondences_, transformation_);
 
-    // Tranform the data
+    // Transform the data
     transformCloud (*input_transformed, *input_transformed, transformation_);
 
     // Obtain the final transformation    

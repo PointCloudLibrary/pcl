@@ -39,8 +39,7 @@
  *      Author: somani
  */
 
-#ifndef PCL_2D_KEYPOINT_H_
-#define PCL_2D_KEYPOINT_H_
+#pragma once
 
 #include <pcl/2d/edge.h>
 
@@ -71,5 +70,3 @@ namespace pcl
 }
 
 #include <pcl/2d/impl/keypoint.hpp>
-
-#endif    // PCL_2D_KEYPOINT_H_

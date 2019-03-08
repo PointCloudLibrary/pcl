@@ -36,10 +36,9 @@
  *
  */
 
-#include "pcl/pcl_config.h"
+#pragma once
 
-#ifndef PCL_IO_VLP_GRABBER_H_
-#define PCL_IO_VLP_GRABBER_H_
+#include "pcl/pcl_config.h"
 
 #include <pcl/io/hdl_grabber.h>
 #include <pcl/io/grabber.h>
@@ -68,29 +67,59 @@ namespace pcl
        * \param[in] port UDP Port that should be used to listen for VLP packets
        */
       VLPGrabber (const boost::asio::ip::address& ipAddress,
-                  const unsigned short port);
+                  const uint16_t port);
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-      virtual
+      
       ~VLPGrabber () throw ();
 
       /** \brief Obtains the name of this I/O Grabber
        *  \return The name of the grabber
        */
-      virtual std::string
-      getName () const;
+      std::string
+      getName () const override;
+
+      /** \brief Allows one to customize the colors used by each laser.
+       * \param[in] color RGB color to set
+       * \param[in] laserNumber Number of laser to set color
+       */
+      void
+      setLaserColorRGB (const pcl::RGB& color,
+                        const uint8_t laserNumber);
+
+      /** \brief Allows one to customize the colors used for each of the lasers.
+      * \param[in] begin begin iterator of RGB color array
+      * \param[in] end end iterator of RGB color array
+      */
+      template<typename IterT> void
+      setLaserColorRGB (const IterT& begin, const IterT& end)
+      {
+          std::copy (begin, end, laser_rgb_mapping_);
+      }
+
+      /** \brief Returns the maximum number of lasers
+      */
+      uint8_t
+      getMaximumNumberOfLasers () const override;
+
+    protected:
+      static const uint8_t VLP_MAX_NUM_LASERS = 16;
+      static const uint8_t VLP_DUAL_MODE = 0x39;
 
     private:
-      virtual void
-      toPointClouds (HDLDataPacket *dataPacket);
+      pcl::RGB laser_rgb_mapping_[VLP_MAX_NUM_LASERS];
+
+      void
+      toPointClouds (HDLDataPacket *dataPacket) override;
 
       boost::asio::ip::address
-      getDefaultNetworkAddress ();
+      getDefaultNetworkAddress () override;
+
+      void
+      initializeLaserMapping ();
 
       void
       loadVLP16Corrections ();
 
   };
 }
-
-#endif /* PCL_IO_VLP_GRABBER_H_ */

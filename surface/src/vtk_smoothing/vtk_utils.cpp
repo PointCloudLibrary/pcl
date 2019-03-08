@@ -49,6 +49,12 @@
 #include <vtkPointData.h>
 #include <vtkFloatArray.h>
 
+// Support for VTK 7.1 upwards
+#ifdef vtkGenericDataArray_h
+#define SetTupleValue SetTypedTuple
+#define InsertNextTupleValue InsertNextTypedTuple
+#define GetTupleValue GetTypedTuple
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int
@@ -64,11 +70,7 @@ pcl::VTKUtils::convertToVTK (const pcl::PolygonMesh &triangles, vtkSmartPointer<
   mesh2vtk (triangles, vtk_polygons);
 
   vtkSmartPointer<vtkTriangleFilter> vtk_triangles = vtkSmartPointer<vtkTriangleFilter>::New ();
-#if VTK_MAJOR_VERSION < 6
-  vtk_triangles->SetInput (vtk_polygons);
-#else
   vtk_triangles->SetInputData (vtk_polygons);
-#endif
   vtk_triangles->Update();
 
   triangles_out_vtk = vtk_triangles->GetOutput ();
@@ -160,7 +162,7 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
   while (mesh_polygons->GetNextCell (nr_cell_points, cell_points))
   {
     mesh.polygons[id_poly].vertices.resize (nr_cell_points);
-    for (int i = 0; i < nr_cell_points; ++i)
+    for (vtkIdType i = 0; i < nr_cell_points; ++i)
       mesh.polygons[id_poly].vertices[i] = static_cast<unsigned int> (cell_points[i]);
     ++id_poly;
   }

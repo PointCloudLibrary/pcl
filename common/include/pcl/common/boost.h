@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_COMMON_BOOST_H_
-#define PCL_COMMON_BOOST_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
@@ -58,5 +57,3 @@
 #include <boost/signals2/slot.hpp>
 #include <boost/algorithm/string.hpp>
 #endif
-
-#endif    // PCL_COMMON_BOOST_H_

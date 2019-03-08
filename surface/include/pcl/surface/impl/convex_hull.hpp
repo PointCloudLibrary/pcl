@@ -48,8 +48,8 @@
 #include <pcl/common/eigen.h>
 #include <pcl/common/transforms.h>
 #include <pcl/common/io.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <pcl/surface/qhull.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ pcl::ConvexHull<PointInT>::calculateInputDimension ()
   PCL_DEBUG ("[pcl::%s::calculateInputDimension] WARNING: Input dimension not specified.  Automatically determining input dimension.\n", getClassName ().c_str ());
   Eigen::Vector4d xyz_centroid;
   compute3DCentroid (*input_, *indices_, xyz_centroid);
-  EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix;
+  EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix = Eigen::Matrix3d::Zero ();
   computeCovarianceMatrixNormalized (*input_, *indices_, xyz_centroid, covariance_matrix);
 
   EIGEN_ALIGN16 Eigen::Vector3d eigen_values;

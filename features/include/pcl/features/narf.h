@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_NARF_H_
-#define PCL_NARF_H_
+#pragma once
 
 #include <pcl/features/eigen.h>
 #include <pcl/common/common_headers.h>
@@ -239,8 +238,8 @@ namespace pcl
         typedef Narf* PointT;
         FeaturePointRepresentation(int nr_dimensions) { this->nr_dimensions_ = nr_dimensions; }
         /** \brief Empty destructor */
-        virtual ~FeaturePointRepresentation () {}
-        virtual void copyToFloatArray (const PointT& p, float* out) const { memcpy(out, p->getDescriptor(), sizeof(*p->getDescriptor())*this->nr_dimensions_); }
+        ~FeaturePointRepresentation () {}
+        void copyToFloatArray (const PointT& p, float* out) const override { memcpy(out, p->getDescriptor(), sizeof(*p->getDescriptor())*this->nr_dimensions_); }
       };
       
     protected:
@@ -289,5 +288,3 @@ namespace pcl
 }  // end namespace pcl
 
 #include <pcl/features/impl/narf.hpp>
-
-#endif  //#ifndef PCL_NARF_H_

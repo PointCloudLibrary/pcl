@@ -35,9 +35,8 @@
  *
  */
 
+#pragma once
 
-#ifndef PCL_MESSAGE_MODELCOEFFICIENTS_H
-#define PCL_MESSAGE_MODELCOEFFICIENTS_H
 #include <string>
 #include <vector>
 #include <ostream>
@@ -79,6 +78,3 @@ namespace pcl
   }
 
 } // namespace pcl
-
-#endif // PCL_MESSAGE_MODELCOEFFICIENTS_H
-

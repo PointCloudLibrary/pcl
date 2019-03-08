@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_VIEWS_SOURCE_H_
-#define REC_FRAMEWORK_VIEWS_SOURCE_H_
+#pragma once
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
@@ -91,7 +90,7 @@ namespace pcl
       bool load_views_;
 
       void
-      getIdAndClassFromFilename (std::string & filename, std::string & id, std::string & classname)
+      getIdAndClassFromFilename (const std::string & filename, std::string & id, std::string & classname)
       {
 
         std::vector < std::string > strs;
@@ -126,9 +125,9 @@ namespace pcl
 
         std::stringstream ss;
         ss << training_dir << "/";
-        for (size_t i = 0; i < strs.size (); i++)
+        for (const auto &str : strs)
         {
-          ss << strs[i] << "/";
+          ss << str << "/";
           bf::path trained_dir = ss.str ();
           if (!bf::exists (trained_dir))
           bf::create_directory (trained_dir);
@@ -145,6 +144,9 @@ namespace pcl
       Source() {
         load_views_ = true;
       }
+
+      virtual
+      ~Source() = default;
 
       float
       getScale ()
@@ -259,12 +261,7 @@ namespace pcl
         dir << base_dir << "/" << m.class_ << "/" << m.id_ << "/" << descr_name;
         bf::path desc_dir = dir.str ();
         std::cout << dir.str () << std::endl;
-        if (bf::exists (desc_dir))
-        {
-          return true;
-        }
-
-        return false;
+        return bf::exists (desc_dir);
       }
 
       std::string
@@ -297,5 +294,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* REC_FRAMEWORK_VIEWS_SOURCE_H_ */

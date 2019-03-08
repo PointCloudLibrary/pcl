@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef PCL_TRACKING_HSV_COLOR_COHERENCE_H_
-#define PCL_TRACKING_HSV_COLOR_COHERENCE_H_
+#pragma once
 
 #include <pcl/tracking/coherence.h>
 
@@ -115,7 +113,7 @@ namespace pcl
           * \param[in] target instance of target point.
           */
         double 
-        computeCoherence (PointInT &source, PointInT &target);
+        computeCoherence (PointInT &source, PointInT &target) override;
 
         /** \brief the weight of coherence (w) */
         double weight_;
@@ -133,10 +131,6 @@ namespace pcl
   }
 }
 
-// #include <pcl/tracking/impl/hsv_color_coherence.hpp>
-
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/tracking/impl/hsv_color_coherence.hpp>
-#endif
-
 #endif

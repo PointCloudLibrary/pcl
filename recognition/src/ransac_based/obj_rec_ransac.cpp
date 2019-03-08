@@ -221,7 +221,7 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, co
     }
 
     // Save the sampled point pair
-    output.push_back (OrientedPointPair (p1, n1, p2, n2));
+    output.emplace_back(p1, n1, p2, n2);
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
     ++num_of_opps;
@@ -256,7 +256,7 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
     const float *scene_n2 = (*pair).n2_;
 
     // Use normals and points to compute a hash table key
-    this->compute_oriented_point_pair_signature (scene_p1, scene_n1, scene_p2, scene_n2, hash_table_key);
+    compute_oriented_point_pair_signature (scene_p1, scene_n1, scene_p2, scene_n2, hash_table_key);
     // Get the cell and its neighbors based on 'key'
     int num_neigh_cells = model_library_.getHashTable ().getNeighbors (hash_table_key, neigh_cells);
 
@@ -539,7 +539,7 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (const BVHH& b
       // Make sure that we do not compute the same set intersection twice
       pair<set<ordered_int_pair, bool(*)(const ordered_int_pair&, const ordered_int_pair&)>::iterator, bool> res = ordered_hypotheses_ids.insert (id_pair);
 
-      if ( res.second == false )
+      if ( !res.second )
         continue; // We've already computed that set intersection -> check the next pair
 
       // Do the more involved intersection test based on a set intersection of the range image pixels which explained by the hypotheses
@@ -598,11 +598,10 @@ pcl::recognition::ObjRecRANSAC::filterGraphOfConflictingHypotheses (ORRGraph<Hyp
   // The ON nodes correspond to accepted solutions
   for ( list<ORRGraph<Hypothesis*>::Node*>::iterator it = on_nodes.begin () ; it != on_nodes.end () ; ++it )
   {
-    recognized_objects.push_back (
-      ObjRecRANSAC::Output ((*it)->getData ()->obj_model_->getObjectName (),
+    recognized_objects.emplace_back((*it)->getData ()->obj_model_->getObjectName (),
                             (*it)->getData ()->rigid_transform_,
                             (*it)->getData ()->match_confidence_,
-                            (*it)->getData ()->obj_model_->getUserData ())
+                            (*it)->getData ()->obj_model_->getUserData ()
     );
   }
 
@@ -622,7 +621,6 @@ pcl::recognition::ObjRecRANSAC::testHypothesis (Hypothesis* hypothesis, int& mat
   // For better code readability
   const std::vector<ORROctree::Node*>& full_model_leaves = hypothesis->obj_model_->getOctree ().getFullLeaves ();
   const float* rigid_transform = hypothesis->rigid_transform_;
-  const ORROctreeZProjection::Pixel* pixel;
   float transformed_point[3];
 
   // The match/penalty loop
@@ -632,7 +630,7 @@ pcl::recognition::ObjRecRANSAC::testHypothesis (Hypothesis* hypothesis, int& mat
     aux::transform (rigid_transform, (*leaf_it)->getData ()->getPoint (), transformed_point);
 
     // Get the pixel 'transformed_point' lies in
-    pixel = scene_octree_proj_.getPixel (transformed_point);
+    const ORROctreeZProjection::Pixel* pixel = scene_octree_proj_.getPixel (transformed_point);
     // Check if we have a valid pixel
     if ( pixel == NULL )
       continue;
@@ -685,11 +683,11 @@ pcl::recognition::ObjRecRANSAC::testHypothesisNormalBased (Hypothesis* hypothesi
 
       set<ORROctree::Node*, bool(*)(ORROctree::Node*,ORROctree::Node*)>::const_iterator n = nodes->begin ();
       ORROctree::Node *closest_node = *n;
-      float sqr_dist, min_sqr_dist = aux::sqrDistance3 (closest_node->getData ()->getPoint (), transformed_point);
+      float min_sqr_dist = aux::sqrDistance3 (closest_node->getData ()->getPoint (), transformed_point);
 
       for ( ++n ; n != nodes->end () ; ++n )
       {
-        sqr_dist = aux::sqrDistance3 ((*n)->getData ()->getPoint (), transformed_point);
+        float sqr_dist = aux::sqrDistance3 ((*n)->getData ()->getPoint (), transformed_point);
         if ( sqr_dist < min_sqr_dist )
         {
           closest_node = *n;

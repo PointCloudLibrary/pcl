@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_RADIUS_OUTLIER_REMOVAL_H_
-#define PCL_FILTERS_RADIUS_OUTLIER_REMOVAL_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 #include <pcl/search/pcl_search.h>
@@ -154,13 +153,13 @@ namespace pcl
         * \param[out] output The resultant point cloud.
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Filtered results are indexed by an indices array.
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices)
+      applyFilter (std::vector<int> &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -262,13 +261,10 @@ namespace pcl
       KdTreePtr tree_;
 
       void
-      applyFilter (PCLPointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output) override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/radius_outlier_removal.hpp>
 #endif
-
-#endif  // PCL_FILTERS_RADIUS_OUTLIER_REMOVAL_H_
-

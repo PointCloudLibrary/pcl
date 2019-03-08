@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_KEYPOINTS_BRISK_KEYPOINT_2D_H_
-#define PCL_KEYPOINTS_BRISK_KEYPOINT_2D_H_
+#pragma once
 
 #include <pcl/keypoints/agast_2d.h>
 
@@ -96,7 +95,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~BriskKeypoint2D ()
+      ~BriskKeypoint2D ()
       {
       }
 
@@ -215,11 +214,11 @@ namespace pcl
     protected:
       /** \brief Initializes everything and checks whether input data is fine. */
       bool 
-      initCompute ();
+      initCompute () override;
 
       /** \brief Detects the keypoints. */
       void 
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
 
     private:
       /** \brief Intensity field accessor. */
@@ -250,8 +249,8 @@ namespace pcl
           // constructor arguments
           struct CommonParams
           {
-            static const int HALFSAMPLE = 0;
-            static const int TWOTHIRDSAMPLE = 1;
+            static const int HALFSAMPLE;
+            static const int TWOTHIRDSAMPLE;
           };
 
           /** \brief Constructor.
@@ -483,5 +482,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/brisk_2d.hpp>
-
-#endif

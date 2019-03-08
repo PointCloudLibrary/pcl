@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef SEGMENTATION_H
-#define SEGMENTATION_H
+#pragma once
 
 #include "typedefs.h"
 
@@ -64,7 +62,7 @@
 pcl::ModelCoefficients::Ptr
 fitPlane (const PointCloudPtr & input, float distance_threshold, float max_iterations)
 {
-  // Intialize the SACSegmentation object
+  // Initialize the SACSegmentation object
   pcl::SACSegmentation<PointT> seg;
   seg.setOptimizeCoefficients (true);
   seg.setModelType (pcl::SACMODEL_PLANE);
@@ -140,5 +138,3 @@ clusterObjects (const PointCloudPtr & input,
   ec.setInputCloud (input);
   ec.extract (cluster_indices_out);
 }
-
-#endif

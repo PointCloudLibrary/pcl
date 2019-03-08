@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_INTERNAL_H_
-#define PCL_TRACKING_INTERNAL_H_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/utils/safe_call.hpp>
@@ -48,6 +47,3 @@ namespace pcl
 			*/			
 	}
 }
-
-
-#endif // PCL_TRACKING_INTERNAL_H_

@@ -143,10 +143,10 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
 
       // do DCT on the s_matrix row-wise
       Eigen::VectorXf dct_row (M_);
-      for (int m = 0; m < s_row.size (); ++m)
+      for (Eigen::Index m = 0; m < s_row.size (); ++m)
       {
         float Xk = 0.0f;
-        for (int n = 0; n < s_row.size (); ++n)
+        for (Eigen::Index n = 0; n < s_row.size (); ++n)
           Xk += static_cast<float> (s_row[n] * cos (M_PI / (static_cast<double> (M_ * n) + 0.5) * static_cast<double> (k)));
         dct_row[m] = Xk;
       }
@@ -167,7 +167,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
           Xk_real += static_cast<float> (s_matrix (n, column_i) * cos (2.0f * M_PI / static_cast<double> (N_ * k * n)));
           Xk_imag += static_cast<float> (s_matrix (n, column_i) * sin (2.0f * M_PI / static_cast<double> (N_ * k * n)));
         }
-        dft_col[k] = sqrtf (Xk_real*Xk_real + Xk_imag*Xk_imag);
+        dft_col[k] = std::sqrt (Xk_real*Xk_real + Xk_imag*Xk_imag);
       }
       dft_matrix.col (column_i).matrix () = dft_col;
     }

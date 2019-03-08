@@ -39,7 +39,7 @@
 #include <fcntl.h>
 #include <string>
 #include <map>
-#include <stdlib.h>
+#include <cstdlib>
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 #include <pcl/io/ply_io.h>
@@ -59,7 +59,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
       cloud_->width = static_cast<uint32_t> (count);
       cloud_->height = 1;
     }
-    cloud_->is_dense = false;
+    cloud_->is_dense = true;
     cloud_->point_step = 0;
     cloud_->row_step = 0;
     vertex_count_ = 0;
@@ -95,14 +95,14 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
 bool
 pcl::PLYReader::endHeaderCallback ()
 {
-  cloud_->data.resize (cloud_->point_step * cloud_->width * cloud_->height);
-  return (cloud_->data.size () == cloud_->point_step * cloud_->width * cloud_->height);
+  cloud_->data.resize (static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height);
+  return (true);
 }
 
 template<typename Scalar> void
 pcl::PLYReader::appendScalarProperty (const std::string& name, const size_t& size)
 {
-  cloud_->fields.push_back (::pcl::PCLPointField ());
+  cloud_->fields.emplace_back();
   ::pcl::PCLPointField &current_field = cloud_->fields.back ();
   current_field.name = name;
   current_field.offset = cloud_->point_step;
@@ -114,7 +114,7 @@ pcl::PLYReader::appendScalarProperty (const std::string& name, const size_t& siz
 void
 pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& new_name, uint8_t new_datatype)
 {
-  std::vector< ::pcl::PCLPointField>::reverse_iterator finder = cloud_->fields.rbegin ();
+  auto finder = cloud_->fields.rbegin ();
   for (; finder != cloud_->fields.rend (); ++finder)
     if (finder->name == old_name)
       break;
@@ -264,9 +264,26 @@ namespace pcl
     return (0);
   }
 
+  template<typename T> inline
+  std::enable_if_t<std::is_floating_point<T>::value>
+  unsetDenseFlagIfNotFinite(T value, PCLPointCloud2* cloud)
+  {
+    //MSVC is missing bool std::isfinite(IntegralType arg); variant, so we implement an own template specialization for this
+    if (!std::isfinite(value))
+      cloud->is_dense = false;
+  }
+
+  template<typename T> inline
+  std::enable_if_t<std::is_integral<T>::value>
+  unsetDenseFlagIfNotFinite(T /* value */, PCLPointCloud2* /* cloud */)
+  {
+  }
+
   template<typename Scalar> void
   PLYReader::vertexScalarPropertyCallback (Scalar value)
   {
+    unsetDenseFlagIfNotFinite(value, cloud_);
+
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
             &value,
             sizeof (Scalar));
@@ -279,7 +296,7 @@ namespace pcl
     // Adjust size only once
     if (vertex_count_ == 0)
     {
-      std::vector< pcl::PCLPointField>::reverse_iterator finder = cloud_->fields.rbegin ();
+      auto finder = cloud_->fields.rbegin ();
       for (; finder != cloud_->fields.rend (); ++finder)
         if (finder->name == name)
           break;
@@ -291,6 +308,8 @@ namespace pcl
   template<typename ContentType> void
   PLYReader::vertexListPropertyContentCallback (ContentType value)
   {
+    unsetDenseFlagIfNotFinite(value, cloud_);
+
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
             &value,
             sizeof (ContentType));
@@ -301,7 +320,7 @@ namespace pcl
   boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> >
   pcl::PLYReader::listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
-    if ((element_name == "range_grid") && (property_name == "vertex_indices"))
+    if ((element_name == "range_grid") && (property_name == "vertex_indices" || property_name == "vertex_index"))
     {
       return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (
         boost::bind (&pcl::PLYReader::rangeGridVertexIndicesBeginCallback, this, _1),
@@ -309,7 +328,7 @@ namespace pcl
         boost::bind (&pcl::PLYReader::rangeGridVertexIndicesEndCallback, this)
       );
     }
-    else if ((element_name == "face") && (property_name == "vertex_indices") && polygons_)
+    else if ((element_name == "face") && (property_name == "vertex_indices" || property_name == "vertex_index") && polygons_)
     {
       return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (
         boost::bind (&pcl::PLYReader::faceVertexIndicesBeginCallback, this, _1),
@@ -319,14 +338,14 @@ namespace pcl
     }
     else if (element_name == "vertex")
     {
-      cloud_->fields.push_back (pcl::PCLPointField ());
+      cloud_->fields.emplace_back();
       pcl::PCLPointField &current_field = cloud_->fields.back ();
       current_field.name = property_name;
       current_field.offset = cloud_->point_step;
       current_field.datatype = pcl::traits::asEnum<pcl::io::ply::int32>::value;
-      current_field.count = std::numeric_limits<pcl::io::ply::uint8>::max ();
-      if (current_field.count * sizeof (pcl::io::ply::int32) + cloud_->point_step < std::numeric_limits<uint32_t>::max ())
-          cloud_->point_step += static_cast<uint32_t> (current_field.count * sizeof (pcl::io::ply::int32));
+      current_field.count = 1u; // value will be updated once first vertex is read
+      if (sizeof (pcl::io::ply::int32) + cloud_->point_step < std::numeric_limits<uint32_t>::max ())
+          cloud_->point_step += static_cast<uint32_t> (sizeof (pcl::io::ply::int32));
       else
         cloud_->point_step = static_cast<uint32_t> (std::numeric_limits<uint32_t>::max ());
       do_resize_ = true;
@@ -348,14 +367,14 @@ namespace pcl
   {
     if (element_name == "vertex")
     {
-      cloud_->fields.push_back (pcl::PCLPointField ());
+      cloud_->fields.emplace_back();
       pcl::PCLPointField &current_field = cloud_->fields.back ();
       current_field.name = property_name;
       current_field.offset = cloud_->point_step;
       current_field.datatype = pcl::traits::asEnum<ContentType>::value;
-      current_field.count = std::numeric_limits<SizeType>::max ();
-      if (current_field.count * sizeof (ContentType) + cloud_->point_step < std::numeric_limits<uint32_t>::max ())
-        cloud_->point_step += static_cast<uint32_t> (current_field.count * sizeof (ContentType));
+      current_field.count = 1u; // value will be updated once first vertex is read
+      if (sizeof (ContentType) + cloud_->point_step < std::numeric_limits<uint32_t>::max ())
+        cloud_->point_step += static_cast<uint32_t> (sizeof (ContentType));
       else
         cloud_->point_step = static_cast<uint32_t> (std::numeric_limits<uint32_t>::max ());
       do_resize_ = true;
@@ -435,7 +454,7 @@ pcl::PLYReader::vertexEndCallback ()
   {
     cloud_->point_step = vertex_offset_before_;
     cloud_->row_step = cloud_->point_step * cloud_->width;
-    cloud_->data.resize (cloud_->point_step * cloud_->width * cloud_->height);
+    cloud_->data.resize (static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height);
   }
   ++vertex_count_;
 }
@@ -517,8 +536,7 @@ pcl::PLYReader::vertexListPropertyEndCallback () {}
 bool
 pcl::PLYReader::parse (const std::string& istream_filename)
 {
-  pcl::io::ply::ply_parser::flags_type ply_parser_flags = 0;
-  pcl::io::ply::ply_parser ply_parser (ply_parser_flags);
+  pcl::io::ply::ply_parser ply_parser;
 
   ply_parser.info_callback (boost::bind (&pcl::PLYReader::infoCallback, this, boost::ref (istream_filename), _1, _2));
   ply_parser.warning_callback (boost::bind (&pcl::PLYReader::warningCallback, this, boost::ref (istream_filename), _1, _2));
@@ -1113,7 +1131,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
               // Test if x-coordinate is NaN, thus an invalid point
               if ("x" == cloud.fields[d].name)
               {
-                if (!pcl_isfinite(value))
+                if (!std::isfinite(value))
                   is_valid_line = false;
               }
               line << value;
@@ -1222,7 +1240,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
       {
         float value;
         memcpy(&value, &cloud.data[i * point_size + cloud.fields[xfield].offset], sizeof(float));
-        if (pcl_isfinite(value))
+        if (std::isfinite(value))
         {
           rangegrid[i] = valid_points;
           ++valid_points;
@@ -1585,10 +1603,9 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   for (size_t i = 0; i < nr_faces; i++)
   {
     fs << mesh.polygons[i].vertices.size () << " ";
-    size_t j = 0;
-    for (j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
+    for (size_t j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
       fs << mesh.polygons[i].vertices[j] << " ";
-    fs << mesh.polygons[i].vertices[j] << '\n';
+    fs << mesh.polygons[i].vertices.back() << '\n';
   }
 
   // Close file
@@ -1750,8 +1767,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   {
     unsigned char value = static_cast<unsigned char> (mesh.polygons[i].vertices.size ());
     fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned char));
-    size_t j = 0;
-    for (j = 0; j < mesh.polygons[i].vertices.size (); ++j)
+    for (size_t j = 0; j < mesh.polygons[i].vertices.size (); ++j)
     {
       //fs << mesh.polygons[i].vertices[j] << " ";
       int value = mesh.polygons[i].vertices[j];

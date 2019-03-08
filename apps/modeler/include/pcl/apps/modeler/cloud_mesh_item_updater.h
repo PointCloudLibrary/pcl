@@ -33,10 +33,10 @@
  *
  *
  */
-#ifndef PCL_MODELER_CLOUD_MESH_ITEM_UPDATER_H_
-#define PCL_MODELER_CLOUD_MESH_ITEM_UPDATER_H_
 
-#include <pcl/apps/modeler/qt.h>
+#pragma once
+
+#include <QObject>
 
 namespace pcl
 {
@@ -52,7 +52,7 @@ namespace pcl
         CloudMeshItemUpdater (CloudMeshItem* cloud_mesh_item);
         ~CloudMeshItemUpdater ();
 
-      public slots:
+      public Q_SLOTS:
         void
         updateCloudMeshItem();
 
@@ -61,5 +61,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_CLOUD_MESH_ITEM_UPDATER_H_

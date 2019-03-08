@@ -36,12 +36,9 @@
  *  Author: Raphael Favier, Technical University Eindhoven, (r.mysurname <aT> tue.nl)
  */
 
-#ifndef PCL_WORLD_MODEL_H_
-#define PCL_WORLD_MODEL_H_
+#pragma once
 
 #include <pcl/common/impl/common.hpp>
-#include <pcl/octree/octree.h>
-#include <pcl/octree/octree_impl.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/filter_indices.h>
 #include <pcl/filters/crop_box.h>
@@ -59,7 +56,7 @@ namespace pcl
     /** \brief WorldModel maintains a 3D point cloud that can be queried and updated via helper functions.\n
       * The world is represented as a point cloud.\n
       * When new points are added to the world, we replace old ones by the newest ones.
-      * This is acheived by setting old points to nan (for speed)
+      * This is achieved by setting old points to nan (for speed)
       * \author Raphael Favier
       */
     template <typename PointT>
@@ -105,7 +102,7 @@ namespace pcl
         void addSlice (const PointCloudPtr new_cloud);
 
 
-        /** \brief Retreive existing data from the world model, after a shift
+        /** \brief Retrieve existing data from the world model, after a shift
           * \param[in] previous_origin_x global origin of the cube on X axis, before the shift
           * \param[in] previous_origin_y global origin of the cube on Y axis, before the shift
           * \param[in] previous_origin_z global origin of the cube on Z axis, before the shift
@@ -163,7 +160,7 @@ namespace pcl
           * \param[in] size the size of a 3D cube.
           * \param[out] cubes a vector of point clouds representing each cube (in their original world coordinates). 
           * \param[out] transforms a vector containing the xyz position of each cube in world coordinates.
-          * \param[in] overlap optional overlap (in percent) between each cube (usefull to create overlapped meshes).
+          * \param[in] overlap optional overlap (in percent) between each cube (useful to create overlapped meshes).
           */
         void getWorldAsCubes (double size, std::vector<PointCloudPtr> &cubes, std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > &transforms, double overlap = 0.0);
         
@@ -182,5 +179,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_WORLD_MODEL_H_

@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RECOGNITION_HYPOTHESIS_VERIFICATION_H_
-#define PCL_RECOGNITION_HYPOTHESIS_VERIFICATION_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include "pcl/recognition/hv/occlusion_reasoning.h"
@@ -142,6 +141,9 @@ namespace pcl
       normals_set_ = false;
       requires_normals_ = false;
     }
+
+    virtual
+    ~HypothesisVerification() = default;
 
     bool getRequiresNormals() {
       return requires_normals_;
@@ -326,5 +328,3 @@ namespace pcl
   };
 
 }
-
-#endif /* PCL_RECOGNITION_HYPOTHESIS_VERIFICATION_H_ */

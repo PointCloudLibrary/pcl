@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KINFU_DEVICE_H_
-#define PCL_KINFU_DEVICE_H_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 #include <iostream> // used by operator << in Struct Intr
@@ -107,5 +106,3 @@ namespace pcl
     }
   }
 }
-
-#endif /* PCL_KINFU_DEVICE_H_ */

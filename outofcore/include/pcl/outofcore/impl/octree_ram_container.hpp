@@ -62,7 +62,7 @@ namespace pcl
     {
       if (!container_.empty ())
       {
-        FILE* fxyz = fopen (path.string ().c_str (), "w");
+        FILE* fxyz = fopen (path.string ().c_str (), "we");
 
         boost::uint64_t num = size ();
         for (boost::uint64_t i = 0; i < num; i++)

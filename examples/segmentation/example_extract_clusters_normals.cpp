@@ -76,7 +76,7 @@ main (int, char **argv)
   std::cout << "Estimated the normals" << std::endl;
 
   // Creating the kdtree object for the search method of the extraction
-  boost::shared_ptr<pcl::KdTree<pcl::PointXYZ> > tree_ec  (new pcl::KdTreeFLANN<pcl::PointXYZ> ());
+  pcl::KdTree<pcl::PointXYZ>::Ptr tree_ec  (new pcl::KdTreeFLANN<pcl::PointXYZ> ());
   tree_ec->setInputCloud (cloud_ptr);
   
   // Extracting Euclidean clusters using cloud and its normals
@@ -90,7 +90,7 @@ main (int, char **argv)
 
   std::cout << "No of clusters formed are " << cluster_indices.size () << std::endl;
 
-  // Saving the clusters in seperate pcd files
+  // Saving the clusters in separate pcd files
   int j = 0;
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
   {

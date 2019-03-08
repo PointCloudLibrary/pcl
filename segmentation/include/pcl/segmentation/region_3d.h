@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_REGION_3D_H_
-#define PCL_SEGMENTATION_REGION_3D_H_
+#pragma once
 
 #include <Eigen/Core>
 #include <vector>
@@ -120,5 +119,3 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif //#ifndef  PCL_SEGMENTATION_REGION_3D_H_

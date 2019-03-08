@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_H_
-#define PCL_REGISTRATION_H_
+#pragma once
 
 // PCL includes
 #include <pcl/pcl_base.h>
@@ -110,6 +109,7 @@ namespace pcl
         , transformation_ (Matrix4::Identity ())
         , previous_transformation_ (Matrix4::Identity ())
         , transformation_epsilon_ (0.0)
+        , transformation_rotation_epsilon_(0.0)
         , euclidean_fitness_epsilon_ (-std::numeric_limits<double>::max ())
         , corr_dist_threshold_ (std::sqrt (std::numeric_limits<double>::max ()))
         , inlier_threshold_ (0.05)
@@ -123,13 +123,12 @@ namespace pcl
         , source_cloud_updated_ (true)
         , force_no_recompute_ (false)
         , force_no_recompute_reciprocal_ (false)
-        , update_visualizer_ (NULL)
         , point_representation_ ()
       {
       }
 
       /** \brief destructor. */
-      virtual ~Registration () {}
+      ~Registration () {}
 
       /** \brief Provide a pointer to the transformation estimation object.
         * (e.g., SVD, point to plane etc.) 
@@ -172,20 +171,6 @@ namespace pcl
         */
       void
       setCorrespondenceEstimation (const CorrespondenceEstimationPtr &ce) { correspondence_estimation_ = ce; }
-
-      /** \brief Provide a pointer to the input source 
-        * (e.g., the point cloud that we want to align to the target)
-        *
-        * \param[in] cloud the input point cloud source
-        */
-      PCL_DEPRECATED ("[pcl::registration::Registration::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.")
-      void
-      setInputCloud (const PointCloudSourceConstPtr &cloud);
-
-      /** \brief Get a pointer to the input point cloud dataset target. */
-      PCL_DEPRECATED ("[pcl::registration::Registration::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.")
-      PointCloudSourceConstPtr const
-      getInputCloud ();
 
       /** \brief Provide a pointer to the input source 
         * (e.g., the point cloud that we want to align to the target)
@@ -326,7 +311,7 @@ namespace pcl
       inline double 
       getMaxCorrespondenceDistance () { return (corr_dist_threshold_); }
 
-      /** \brief Set the transformation epsilon (maximum allowable difference between two consecutive 
+      /** \brief Set the transformation epsilon (maximum allowable translation squared difference between two consecutive
         * transformations) in order for an optimization to be considered as having converged to the final 
         * solution.
         * \param[in] epsilon the transformation epsilon in order for an optimization to be considered as having 
@@ -335,11 +320,26 @@ namespace pcl
       inline void 
       setTransformationEpsilon (double epsilon) { transformation_epsilon_ = epsilon; }
 
-      /** \brief Get the transformation epsilon (maximum allowable difference between two consecutive 
+      /** \brief Get the transformation epsilon (maximum allowable translation squared difference between two consecutive
         * transformations) as set by the user.
         */
       inline double 
       getTransformationEpsilon () { return (transformation_epsilon_); }
+
+      /** \brief Set the transformation rotation epsilon (maximum allowable rotation difference between two consecutive
+        * transformations) in order for an optimization to be considered as having converged to the final
+        * solution.
+        * \param[in] epsilon the transformation rotation epsilon in order for an optimization to be considered as having
+        * converged to the final solution (epsilon is the cos(angle) in a axis-angle representation).
+        */
+      inline void
+      setTransformationRotationEpsilon (double epsilon) { transformation_rotation_epsilon_ = epsilon; }
+
+      /** \brief Get the transformation rotation epsilon (maximum allowable difference between two consecutive
+        * transformations) as set by the user (epsilon is the cos(angle) in a axis-angle representation).
+        */
+      inline double
+      getTransformationRotationEpsilon () { return (transformation_rotation_epsilon_); }
 
       /** \brief Set the maximum allowed Euclidean error between two consecutive steps in the ICP loop, before 
         * the algorithm is considered to have converged. 
@@ -348,7 +348,6 @@ namespace pcl
         * \param[in] epsilon the maximum allowed distance error before the algorithm will be considered to have
         * converged
         */
-
       inline void 
       setEuclideanFitnessEpsilon (double epsilon) { euclidean_fitness_epsilon_ = epsilon; }
 
@@ -404,14 +403,14 @@ namespace pcl
 
       /** \brief Call the registration algorithm which estimates the transformation and returns the transformed source 
         * (input) as \a output.
-        * \param[out] output the resultant input transfomed point cloud dataset
+        * \param[out] output the resultant input transformed point cloud dataset
         */
       inline void
       align (PointCloudSource &output);
 
       /** \brief Call the registration algorithm which estimates the transformation and returns the transformed source 
         * (input) as \a output.
-        * \param[out] output the resultant input transfomed point cloud dataset
+        * \param[out] output the resultant input transformed point cloud dataset
         * \param[in] guess the initial gross estimation of the transformation
         */
       inline void 
@@ -421,7 +420,7 @@ namespace pcl
       inline const std::string&
       getClassName () const { return (reg_name_); }
         
-      /** \brief Internal computation initalization. */
+      /** \brief Internal computation initialization. */
       bool
       initCompute ();
 
@@ -515,6 +514,11 @@ namespace pcl
         */
       double transformation_epsilon_;
 
+      /** \brief The maximum rotation difference between two consecutive transformations in order to consider convergence
+        * (user defined).
+        */
+      double transformation_rotation_epsilon_;
+
       /** \brief The maximum allowed Euclidean error between two consecutive steps in the ICP loop, before the 
         * algorithm is considered to have converged. The error is estimated as the sum of the differences between 
         * correspondences in an Euclidean sense, divided by the number of correspondences.
@@ -522,7 +526,7 @@ namespace pcl
       double euclidean_fitness_epsilon_;
 
       /** \brief The maximum distance threshold between two correspondent points in source <-> target. If the 
-        * distance is larger than this threshold, the points will be ignored in the alignement process.
+        * distance is larger than this threshold, the points will be ignored in the alignment process.
         */
       double corr_dist_threshold_;
 
@@ -605,5 +609,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/registration.hpp>
-
-#endif  //#ifndef PCL_REGISTRATION_H_

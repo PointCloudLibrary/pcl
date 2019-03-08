@@ -49,7 +49,7 @@ pcl::cloud_composer::SelectionEvent::~SelectionEvent ()
 void
 pcl::cloud_composer::SelectionEvent::findIndicesInItem (CloudItem* cloud_item, pcl::PointIndices::Ptr indices)
 {
-  // WE DONT NEED TO DO THIS SEARCH BECAUSE WE HAVE A 1-1 CORRESPONDENCE VTK TO PCL
+  // WE DON'T NEED TO DO THIS SEARCH BECAUSE WE HAVE A 1-1 CORRESPONDENCE VTK TO PCL
   // THIS IS ONLY THE CASE FOR CLOUDS WITH NO NANs
  //Go through every point in the selected data set and find the matching index in this cloud
  //pcl::search::KdTree<pcl::PointXYZ>::Ptr search = cloud_item->data (KD_TREE_SEARCH).value <pcl::search::Search<pcl::PointXYZ>::Ptr> ();
@@ -90,7 +90,7 @@ pcl::cloud_composer::SelectionEvent::findIndicesInItem (CloudItem* cloud_item, p
     vtkIdTypeArray* point_ids  = vtkIdTypeArray::SafeDownCast(points_in_item->GetPointData ()->GetArray ("vtkIdFilter_Ids"));
   
     indices->indices.resize (point_ids->GetNumberOfTuples ());
-    for(int i =0; i < point_ids->GetNumberOfTuples (); ++i)
+    for(vtkIdType i =0; i < point_ids->GetNumberOfTuples (); ++i)
     {
     //qDebug () << "id="<<point_ids->GetValue (i);
       indices->indices[i] = point_ids->GetValue (i);

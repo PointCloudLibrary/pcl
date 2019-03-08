@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef PCL_TRACKING_APPROX_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
-#define PCL_TRACKING_APPROX_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
+#pragma once
 
 #include <pcl/search/search.h>
 #include <pcl/search/octree.h>
@@ -74,11 +72,11 @@ namespace pcl
       
     protected:
       /** \brief This method should get called before starting the actual computation. */
-      virtual bool initCompute ();
+      bool initCompute () override;
       
       /** \brief compute the nearest pairs and compute coherence using point_coherences_ */
-      virtual void
-      computeCoherence (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices, float &w_j);
+      void
+      computeCoherence (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices, float &w_j) override;
 
       typename boost::shared_ptr<pcl::search::Octree<PointInT> > search_;
     };
@@ -88,6 +86,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/tracking/impl/approx_nearest_pair_point_cloud_coherence.hpp>
 #endif
-
-#endif
-

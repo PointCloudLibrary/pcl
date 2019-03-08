@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KINFU_KINFUTRACKER_HPP_
-#define PCL_KINFU_KINFUTRACKER_HPP_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -105,7 +104,7 @@ namespace pcl
           void
           setDepthIntrinsics (float fx, float fy, float cx = -1, float cy = -1);
 
-          /** \brief Sets initial camera pose relative to volume coordiante space
+          /** \brief Sets initial camera pose relative to volume coordinate space
             * \param[in] pose Initial camera pose
             */
           void
@@ -300,7 +299,7 @@ namespace pcl
                                          pcl::device::kinfuLS::Mat33& transform_out, float3& translation_out);
           
           /** \brief helper function that pre-process a raw detph map the kinect fusion algorithm.
-            * The raw depth map is first blured, eventually truncated, and downsampled for each pyramid level.
+            * The raw depth map is first blurred, eventually truncated, and downsampled for each pyramid level.
             * Then, vertex and normal maps are computed for each pyramid level.
             * \param[in] depth_raw the raw depth map to process
             * \param[in] cam_intrinsics intrinsics of the camera used to acquire the depth map
@@ -458,5 +457,3 @@ namespace pcl
     }
   }
 };
-
-#endif /* PCL_KINFU_KINFUTRACKER_HPP_ */

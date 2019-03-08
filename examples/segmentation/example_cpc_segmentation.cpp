@@ -36,9 +36,9 @@
  */
 
 // Stdlib
-#include <stdlib.h>
+#include <cstdlib>
 #include <cmath>
-#include <limits.h>
+#include <climits>
 
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
@@ -136,12 +136,12 @@ keyboardEventOccurred (const pcl::visualization::KeyboardEvent& event_arg,
 /** \brief Displays info text in the specified PCLVisualizer
  *  \param[in] viewer_arg The PCLVisualizer to modify  */
 void
-printText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg);
+printText (pcl::visualization::PCLVisualizer::Ptr viewer_arg);
 
 /** \brief Removes info text in the specified PCLVisualizer
  *  \param[in] viewer_arg The PCLVisualizer to modify  */
 void
-removeText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg);
+removeText (pcl::visualization::PCLVisualizer::Ptr viewer_arg);
 
 /// ---- main ---- ///
 int
@@ -189,8 +189,8 @@ LCCPSegmentation Parameters: \n\
 CPCSegmentation Parameters: \n\
   -cut <max_cuts>,<cutting_min_segments>,<min_cut_score> - Plane cutting parameters for splitting of segments\n\
        <max_cuts> - Perform cuts up to this recursion level. Cuts are performed in each segment separately (default 25)\n\
-       <cutting_min_segments> - Minumum number of supervoxels in the segment to perform cutting (default 400).\n\
-       <min_cut_score> - Minumum score a proposed cut needs to have for being cut (default 0.16)\n\
+       <cutting_min_segments> - Minimum number of supervoxels in the segment to perform cutting (default 400).\n\
+       <min_cut_score> - Minimum score a proposed cut needs to have for being cut (default 0.16)\n\
   -clocal - Use locally constrained cuts (recommended flag)\n\
   -cdir - Use directed weigths (recommended flag) \n\
   -cclean - Use clean cuts. \n\
@@ -211,7 +211,7 @@ CPCSegmentation Parameters: \n\
   bool save_binary_pcd = pcl::console::find_switch (argc, argv, "-bin");
 
   /// Create variables needed for preparations
-  std::string outputname ("");
+  std::string outputname;
   pcl::PointCloud<PointT>::Ptr input_cloud_ptr (new pcl::PointCloud<PointT>);
   pcl::PointCloud<pcl::Normal>::Ptr input_normals_ptr (new pcl::PointCloud<pcl::Normal>);
   bool has_normals = false;
@@ -255,7 +255,7 @@ CPCSegmentation Parameters: \n\
   {
     pcl::console::parse (argc, argv, "-o", outputname);
 
-    // If no filename is given, get output filename from inputname (strip seperators and file extension)
+    // If no filename is given, get output filename from inputname (strip separators and file extension)
     if (outputname.empty () || (outputname.at (0) == '-'))
     {
       outputname = pcd_filename;
@@ -348,7 +348,7 @@ CPCSegmentation Parameters: \n\
   textcolor = bg_white?0:1;
 
   pcl::console::print_info ("Maximum cuts: %d\n", max_cuts);
-  pcl::console::print_info ("Minumum segment siz: %d\n", cutting_min_segments);
+  pcl::console::print_info ("Minimum segment size: %d\n", cutting_min_segments);
   pcl::console::print_info ("Use local constrain: %d\n", use_local_constrain);
   pcl::console::print_info ("Use directed weights: %d\n", use_directed_cutting);
   pcl::console::print_info ("Use clean cuts: %d\n", use_clean_cutting);
@@ -386,7 +386,7 @@ CPCSegmentation Parameters: \n\
   /// Get the cloud of supervoxel centroid with normals and the colored cloud with supervoxel coloring (this is used for visulization)
   pcl::PointCloud<pcl::PointNormal>::Ptr sv_centroid_normal_cloud = pcl::SupervoxelClustering<PointT>::makeSupervoxelNormalCloud (supervoxel_clusters);
 
-  /// Set paramters for LCCP preprocessing and CPC (CPC inherits from LCCP, thus it includes LCCP's functionality)
+  /// Set parameters for LCCP preprocessing and CPC (CPC inherits from LCCP, thus it includes LCCP's functionality)
 
   PCL_INFO ("Starting Segmentation\n");
   pcl::CPCSegmentation<PointT> cpc;
@@ -456,7 +456,7 @@ CPCSegmentation Parameters: \n\
     const unsigned char concave_color [3] = {255,  0,  0};
     const unsigned char cut_color     [3] = {  0,255,  0};
     const unsigned char* convex_color     = bg_white ? black_color : white_color;
-    const unsigned char* color;
+    const unsigned char* color = NULL;
 
     //The vertices in the supervoxel adjacency list are the supervoxel centroids
     //This iterates through them, finding the edges
@@ -489,9 +489,13 @@ CPCSegmentation Parameters: \n\
           color = concave_color;
 
         // two times since we add also two points per edge
+#if (VTK_MAJOR_VERSION < 7) || (VTK_MAJOR_VERSION == 7 && VTK_MINOR_VERSION == 0)
         colors->InsertNextTupleValue (color);
         colors->InsertNextTupleValue (color);
-
+#else       
+        colors->InsertNextTypedTuple (color);
+        colors->InsertNextTypedTuple (color);
+#endif      
         pcl::Supervoxel<PointT>::Ptr supervoxel = supervoxel_clusters.at (sv_label);
         pcl::PointXYZRGBA vert_curr = supervoxel->centroid_;
 
@@ -601,7 +605,7 @@ CPCSegmentation Parameters: \n\
 /// -------------------------| Definitions of helper functions|-------------------------
 
 void
-printText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg)
+printText (pcl::visualization::PCLVisualizer::Ptr viewer_arg)
 {
   std::string on_str = "ON";
   std::string off_str = "OFF";  
@@ -640,7 +644,7 @@ printText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg)
 }
 
 void
-removeText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg)
+removeText (pcl::visualization::PCLVisualizer::Ptr viewer_arg)
 {
   viewer_arg->removeShape ("hud_text");
   viewer_arg->removeShape ("normals_text");

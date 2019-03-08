@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_H_
-#define PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_H_
+
+#pragma once
 
 #include <pcl/point_representation.h>
 #include <pcl/search/kdtree.h>
@@ -203,7 +203,7 @@ namespace pcl
             const PointCloudTargetConstPtr &cloud_tgt,
             const Matrix4 &transformation_matrix) const
         {
-          if (pcl_isnan (threshold_))
+          if (std::isnan (threshold_))
           {
             PCL_ERROR ("[pcl::TransformationValidationEuclidean::isValid] Threshold not set! Please use setThreshold () before continuing.");
             return (false);
@@ -265,6 +265,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/transformation_validation_euclidean.hpp>
-
-#endif    // PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_H_
-

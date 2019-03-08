@@ -50,7 +50,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Adaptive_Range_Coder_Test)
 {
-  size_t i;
   std::stringstream sstream;
   std::vector<char> inputData;
   std::vector<char> outputData;
@@ -65,7 +64,7 @@ TEST (PCL, Adaptive_Range_Coder_Test)
   outputData.resize(vectorSize);
 
   // fill vector with random data
-  for (i=0; i<vectorSize; i++)
+  for (size_t i=0; i<vectorSize; i++)
   {
     inputData[i] = static_cast<char>(rand() & 0xFF);
   }
@@ -87,7 +86,7 @@ TEST (PCL, Adaptive_Range_Coder_Test)
   EXPECT_EQ (inputData.size(), outputData.size());
   EXPECT_EQ (inputData.size(), vectorSize);
 
-  for (i=0; i<vectorSize; i++)
+  for (size_t i=0; i<vectorSize; i++)
   {
     EXPECT_EQ (inputData[i], outputData[i]);
   }
@@ -97,7 +96,6 @@ TEST (PCL, Adaptive_Range_Coder_Test)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Static_Range_Coder_Test)
 {
-  size_t i;
   std::stringstream sstream;
   std::vector<char> inputCharData;
   std::vector<char> outputCharData;
@@ -118,7 +116,7 @@ TEST (PCL, Static_Range_Coder_Test)
   outputIntData.resize(vectorSize);
 
   // fill vectors with random data
-  for (i=0; i<vectorSize; i++)
+  for (size_t i=0; i<vectorSize; i++)
   {
     inputCharData[i] = static_cast<char> (rand () & 0xFF);
     inputIntData[i] = static_cast<unsigned int> (rand () & 0xFFFF);
@@ -141,7 +139,7 @@ TEST (PCL, Static_Range_Coder_Test)
   EXPECT_EQ (inputCharData.size(), outputCharData.size());
   EXPECT_EQ (inputCharData.size(), vectorSize);
 
-  for (i=0; i<vectorSize; i++)
+  for (size_t i=0; i<vectorSize; i++)
   {
     EXPECT_EQ (inputCharData[i], outputCharData[i]);
   }
@@ -161,7 +159,7 @@ TEST (PCL, Static_Range_Coder_Test)
   EXPECT_EQ (inputIntData.size(), outputIntData.size());
   EXPECT_EQ (inputIntData.size(), vectorSize);
 
-  for (i=0; i<vectorSize; i++)
+  for (size_t i=0; i<vectorSize; i++)
   {
     EXPECT_EQ (inputIntData[i], outputIntData[i]);
   }

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_POINT_TYPES
-#define PCL_RECOGNITION_POINT_TYPES
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
@@ -45,39 +44,6 @@
 
 namespace pcl
 {
-
-  /** \brief A point structure for representing RGB color
-    * \ingroup common
-    */
-  //struct EIGEN_ALIGN16 PointRGB
-  //{
-  //  union
-  //  {
-  //    union
-  //    {
-  //      struct
-  //      {
-  //        uint8_t b;
-  //        uint8_t g;
-  //        uint8_t r;
-  //        uint8_t _unused;
-  //      };
-  //      float rgb;
-  //    };
-  //    uint32_t rgba;
-  //  };
-
-  //  inline PointRGB ()
-  //  {}
-
-  //  inline PointRGB (const uint8_t b, const uint8_t g, const uint8_t r)
-  //    : b (b), g (g), r (r), _unused (0)
-  //  {}
-
-  //  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  //};
-
-
   /** \brief A point structure representing Euclidean xyz coordinates, and the intensity value.
     * \ingroup common
     */
@@ -108,5 +74,3 @@ namespace pcl
   }
 
 }
-
-#endif

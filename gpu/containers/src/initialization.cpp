@@ -38,7 +38,7 @@
 #include <pcl/gpu/utils/safe_call.hpp>
 
 #include "cuda.h"
-#include <stdio.h>
+#include <cstdio>
 
 #define HAVE_CUDA
 //#include <pcl_config.h>
@@ -50,7 +50,7 @@ void throw_nogpu() { throw "PCL 2.0 exception"; }
 int  pcl::gpu::getCudaEnabledDeviceCount() { return 0; }
 void pcl::gpu::setDevice(int /*device*/) { throw_nogpu(); }
 std::string pcl::gpu::getDeviceName(int /*device*/) { throw_nogpu(); }
-void pcl::gpu::printCudaDeviceInfo(int /*deivce*/){ throw_nogpu(); }
+void pcl::gpu::printCudaDeviceInfo(int /*device*/){ throw_nogpu(); }
 void pcl::gpu::printShortCudaDeviceInfo(int /*device*/) { throw_nogpu(); }
 
 #else
@@ -111,12 +111,14 @@ namespace
     {
         // Defines for GPU Architecture types (using the SM version to determine the # of cores per SM
         typedef struct {
-            int SM; // 0xMm (hexidecimal notation), M = SM Major version, and m = SM minor version
+            int SM; // 0xMm (hexadecimal notation), M = SM Major version, and m = SM minor version
             int Cores;
         } SMtoCores;
 
-        SMtoCores gpuArchCoresPerSM[] =  { { 0x10, 8}, { 0x11, 8}, { 0x12, 8}, { 0x13, 8}, { 0x20, 32}, { 0x21, 48}, {0x30, 192}, {0x35, 192}, {0x50, 128}, {0x52, 128}, {-1, -1} };
-
+        SMtoCores gpuArchCoresPerSM[] = {
+            {0x10,   8}, {0x11,   8}, {0x12,   8}, {0x13,  8}, {0x20,  32}, {0x21, 48}, {0x30, 192},
+            {0x35, 192}, {0x50, 128}, {0x52, 128}, {0x53, 128}, {0x60, 64}, {0x61, 128}, {-1, -1}
+        };
         int index = 0;
         while (gpuArchCoresPerSM[index].SM != -1) 
         {
@@ -167,7 +169,6 @@ void pcl::gpu::printCudaDeviceInfo(int device)
         printf("  (%2d) Multiprocessors x (%2d) CUDA Cores/MP:     %d CUDA Cores\n", prop.multiProcessorCount, sm_cores, sm_cores * prop.multiProcessorCount);
         printf("  GPU Clock Speed:                               %.2f GHz\n", prop.clockRate * 1e-6f);
 
-#if (CUDART_VERSION >= 4000)
         // This is not available in the CUDA Runtime API, so we make the necessary calls the driver API to support this for output
         int memoryClock, memBusWidth, L2CacheSize;
         getCudaAttribute<int>( &memoryClock, CU_DEVICE_ATTRIBUTE_MEMORY_CLOCK_RATE, dev );        
@@ -185,7 +186,6 @@ void pcl::gpu::printCudaDeviceInfo(int device)
         printf("  Max Layered Texture Size (dim) x layers        1D=(%d) x %d, 2D=(%d,%d) x %d\n",
             prop.maxTexture1DLayered[0], prop.maxTexture1DLayered[1],
             prop.maxTexture2DLayered[0], prop.maxTexture2DLayered[1], prop.maxTexture2DLayered[2]);
-#endif
         printf("  Total amount of constant memory:               %u bytes\n", (int)prop.totalConstMem);
         printf("  Total amount of shared memory per block:       %u bytes\n", (int)prop.sharedMemPerBlock);
         printf("  Total number of registers available per block: %d\n", prop.regsPerBlock);
@@ -196,11 +196,7 @@ void pcl::gpu::printCudaDeviceInfo(int device)
         printf("  Maximum memory pitch:                          %u bytes\n", (int)prop.memPitch);
         printf("  Texture alignment:                             %u bytes\n", (int)prop.textureAlignment);
 
-#if CUDART_VERSION >= 4000
         printf("  Concurrent copy and execution:                 %s with %d copy engine(s)\n", (prop.deviceOverlap ? "Yes" : "No"), prop.asyncEngineCount);
-#else
-        printf("  Concurrent copy and execution:                 %s\n", prop.deviceOverlap ? "Yes" : "No");
-#endif
         printf("  Run time limit on kernels:                     %s\n", prop.kernelExecTimeoutEnabled ? "Yes" : "No");
         printf("  Integrated GPU sharing Host Memory:            %s\n", prop.integrated ? "Yes" : "No");
         printf("  Support host page-locked memory mapping:       %s\n", prop.canMapHostMemory ? "Yes" : "No");
@@ -209,10 +205,8 @@ void pcl::gpu::printCudaDeviceInfo(int device)
         printf("  Alignment requirement for Surfaces:            %s\n", prop.surfaceAlignment ? "Yes" : "No");
         printf("  Device has ECC support enabled:                %s\n", prop.ECCEnabled ? "Yes" : "No");
         printf("  Device is using TCC driver mode:               %s\n", prop.tccDriver ? "Yes" : "No");
-#if CUDART_VERSION >= 4000
         printf("  Device supports Unified Addressing (UVA):      %s\n", prop.unifiedAddressing ? "Yes" : "No");
         printf("  Device PCI Bus ID / PCI location ID:           %d / %d\n", prop.pciBusID, prop.pciDeviceID );
-#endif
         printf("  Compute Mode:\n");
         printf("      %s \n", computeMode[prop.computeMode]);
     }

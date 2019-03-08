@@ -37,13 +37,10 @@
  *  Email  : jpapon@gmail.com
  */
 
-#ifndef PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
-#define PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
+#pragma once
 
-#include <pcl/console/print.h>
-#include <pcl/common/geometry.h>
 #include <pcl/octree/boost.h>
-#include <pcl/octree/octree_impl.h>
+#include <pcl/octree/octree_pointcloud.h>
 #include <pcl/octree/octree_pointcloud_adjacency_container.h>
 
 #include <set>
@@ -97,26 +94,6 @@ namespace pcl
         typedef boost::shared_ptr<PointCloud> PointCloudPtr;
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
-        // Iterators are friends
-        friend class OctreeIteratorBase<OctreeAdjacencyT>;
-        friend class OctreeDepthFirstIterator<OctreeAdjacencyT>;
-        friend class OctreeBreadthFirstIterator<OctreeAdjacencyT>;
-        friend class OctreeLeafNodeIterator<OctreeAdjacencyT>;
-
-        // Octree default iterators
-        typedef OctreeDepthFirstIterator<OctreeAdjacencyT> Iterator;
-        typedef const OctreeDepthFirstIterator<OctreeAdjacencyT> ConstIterator;
-
-        Iterator depth_begin (unsigned int max_depth_arg = 0) { return Iterator (this, max_depth_arg); }
-        const Iterator depth_end () { return Iterator (); }
-
-        // Octree leaf node iterators
-        typedef OctreeLeafNodeIterator<OctreeAdjacencyT> LeafNodeIterator;
-        typedef const OctreeLeafNodeIterator<OctreeAdjacencyT> ConstLeafNodeIterator;
-
-        LeafNodeIterator leaf_begin (unsigned int max_depth_arg = 0) { return LeafNodeIterator (this, max_depth_arg); }
-        const LeafNodeIterator leaf_end () { return LeafNodeIterator (); }
-
         // BGL graph
         typedef boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, PointT, float> VoxelAdjacencyList;
         typedef typename VoxelAdjacencyList::vertex_descriptor VoxelID;
@@ -142,7 +119,7 @@ namespace pcl
         OctreePointCloudAdjacency (const double resolution_arg);
 
         /** \brief Empty class destructor. */
-        virtual ~OctreePointCloudAdjacency ()
+        ~OctreePointCloudAdjacency ()
         {
         }
 
@@ -198,8 +175,8 @@ namespace pcl
           * \param[in] point_idx_arg The index representing the point in the dataset given by setInputCloud() to be added
           *
           * \note This virtual implementation allows the use of a transform function to compute keys. */
-         virtual void
-         addPointIdx (const int point_idx_arg);
+         void
+         addPointIdx (const int point_idx_arg) override;
 
         /** \brief Fills in the neighbors fields for new voxels.
           *
@@ -247,9 +224,5 @@ namespace pcl
 
 }
 
-//#ifdef PCL_NO_PRECOMPILE
+// Note: Do not precompile this octree type because it is typically used with custom leaf containers.
 #include <pcl/octree/impl/octree_pointcloud_adjacency.hpp>
-//#endif
-
-#endif // PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
-

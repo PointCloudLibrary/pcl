@@ -142,15 +142,15 @@ pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2>::getColo
   unsigned char* colors = new unsigned char[nr_points * 3];
 
   pcl::RGB rgb_data;
-  int point_offset = cloud_->fields[field_idx_].offset;
-  int j = 0;
+  size_t point_offset = cloud_->fields[field_idx_].offset;
+  size_t j = 0;
   
   // If XYZ present, check if the points are invalid
   int x_idx = pcl::getFieldIndex (*cloud_, "x");
   if (x_idx != -1)
   {
     float x_data, y_data, z_data;
-    int x_point_offset = cloud_->fields[x_idx].offset;
+    size_t x_point_offset = cloud_->fields[x_idx].offset;
     
     // Color every point
     for (vtkIdType cp = 0; cp < nr_points; ++cp, 
@@ -164,7 +164,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2>::getColo
       memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
       memcpy (&z_data, &cloud_->data[x_point_offset + 2 * sizeof (float)], sizeof (float));
 
-      if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
+      if (!std::isfinite (x_data) || !std::isfinite (y_data) || !std::isfinite (z_data))
         continue;
 
       colors[j + 0] = rgb_data.r;
@@ -267,14 +267,14 @@ pcl::visualization::PointCloudColorHandlerHSVField<pcl::PCLPointCloud2>::getColo
       memcpy (&s_data, &cloud_->data[point_offset + sizeof (float)], sizeof (float));
       memcpy (&v_data, &cloud_->data[point_offset + 2 * sizeof (float)], sizeof (float));
 
-      if (!pcl_isfinite (h_data) || !pcl_isfinite (s_data) || !pcl_isfinite (v_data))
+      if (!std::isfinite (h_data) || !std::isfinite (s_data) || !std::isfinite (v_data))
         continue;   //skip to next point
 
       memcpy (&x_data, &cloud_->data[x_point_offset], sizeof (float));
       memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
       memcpy (&z_data, &cloud_->data[x_point_offset + 2 * sizeof (float)], sizeof (float));
 
-      if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
+      if (!std::isfinite (x_data) || !std::isfinite (y_data) || !std::isfinite (z_data))
         continue;   //skip to next point
 
       int idx = j * 3;
@@ -350,7 +350,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<pcl::PCLPointCloud2>::getColo
       memcpy (&s_data, &cloud_->data[point_offset + sizeof (float)], sizeof (float));
       memcpy (&v_data, &cloud_->data[point_offset + 2 * sizeof (float)], sizeof (float));
 
-      if (!pcl_isfinite (h_data) || !pcl_isfinite (s_data) || !pcl_isfinite (v_data))
+      if (!std::isfinite (h_data) || !std::isfinite (s_data) || !std::isfinite (v_data))
         continue;   //skip to next point
 
       int idx = j * 3;
@@ -468,7 +468,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2>::get
       memcpy (&x_data, &cloud_->data[x_point_offset], sizeof (float));
       memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
       memcpy (&z_data, &cloud_->data[x_point_offset + 2 * sizeof (float)], sizeof (float));
-      if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
+      if (!std::isfinite (x_data) || !std::isfinite (y_data) || !std::isfinite (z_data))
         continue;
 
       // Copy the value at the specified field
@@ -487,7 +487,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2>::get
       //memcpy (&field_data, &cloud_->data[point_offset], sizeof (float));
       memcpy (&field_data, &cloud_->data[point_offset], pcl::getFieldSize (cloud_->fields[field_idx_].datatype));
 
-      if (!pcl_isfinite (field_data))
+      if (!std::isfinite (field_data))
         continue;
       colors[j] = field_data;
       j++;
@@ -549,7 +549,7 @@ pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PCLPointCloud2>::getCol
       memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
       memcpy (&z_data, &cloud_->data[x_point_offset + 2 * sizeof (float)], sizeof (float));
 
-      if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
+      if (!std::isfinite (x_data) || !std::isfinite (y_data) || !std::isfinite (z_data))
         continue;
 
       colors[j + 0] = rgba_data.r;
@@ -654,7 +654,7 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::getCo
       memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
       memcpy (&z_data, &cloud_->data[x_point_offset + 2 * sizeof (float)], sizeof (float));
 
-      if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
+      if (!std::isfinite (x_data) || !std::isfinite (y_data) || !std::isfinite (z_data))
         continue;
       const pcl::RGB& color = static_mapping_ ? GlasbeyLUT::at (label % GlasbeyLUT::size ()) : colormap[label];
       colors[j    ] = color.r;
@@ -731,17 +731,17 @@ pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::getGeometry 
     {
       // Copy the value at the specified field
       memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_x_idx_].offset], sizeof (float));
-      if (!pcl_isfinite (dim))
+      if (!std::isfinite (dim))
         continue;
       pts[j * 3 + 0] = dim;
 
       memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_y_idx_].offset], sizeof (float));
-      if (!pcl_isfinite (dim))
+      if (!std::isfinite (dim))
         continue;
       pts[j * 3 + 1] = dim;
 
       memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_z_idx_].offset], sizeof (float));
-      if (!pcl_isfinite (dim))
+      if (!std::isfinite (dim))
         continue;
       pts[j * 3 + 2] = dim;
 

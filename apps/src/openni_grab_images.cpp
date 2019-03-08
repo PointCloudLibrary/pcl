@@ -122,14 +122,14 @@ class OpenNIGrabFrame
       depth_image.swap (depth_image_);
       image_mutex_.unlock ();
 
-      static unsigned char* rgb_data = 0;
-      static unsigned rgb_data_size = 0;
-      
       if (image)
       {
         const void* data;
         if (image->getEncoding() != openni_wrapper::Image::RGB)
         {
+          static unsigned char* rgb_data = 0;
+          static unsigned rgb_data_size = 0;
+
           if (rgb_data_size < image->getWidth () * image->getHeight ())
           {
             if (rgb_data)

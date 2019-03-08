@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_UNIFORM_SAMPLING_H_
-#define PCL_FILTERS_UNIFORM_SAMPLING_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
 #include <boost/unordered_map.hpp>
@@ -72,7 +71,8 @@ namespace pcl
       typedef boost::shared_ptr<const UniformSampling<PointT> > ConstPtr;
 
       /** \brief Empty constructor. */
-      UniformSampling () :
+      UniformSampling (bool extract_removed_indices = false) :
+        Filter<PointT>(extract_removed_indices),
         leaves_ (),
         leaf_size_ (Eigen::Vector4f::Zero ()),
         inverse_leaf_size_ (Eigen::Vector4f::Zero ()),
@@ -86,7 +86,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~UniformSampling ()
+      ~UniformSampling ()
       {
         leaves_.clear();
       }
@@ -133,13 +133,10 @@ namespace pcl
         * \param[out] output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/uniform_sampling.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_UNIFORM_SAMPLING_H_
-

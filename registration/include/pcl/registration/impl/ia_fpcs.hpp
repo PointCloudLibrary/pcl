@@ -187,7 +187,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
         // select four coplanar point base
         if (selectBase (base_indices, ratio) == 0)
         {
-          // calculate candidate pair correspondences using diagonal lenghts of base
+          // calculate candidate pair correspondences using diagonal lengths of base
           pcl::Correspondences pairs_a, pairs_b;
           if (bruteForceCorrespondences (base_indices[0], base_indices[1], pairs_a) == 0 &&
             bruteForceCorrespondences (base_indices[2], base_indices[3], pairs_b) == 0)
@@ -217,7 +217,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   }
   
 
-  // determine best match over all trys
+  // determine best match over all tries
   finalCompute (all_candidates);
 
   // apply the final transformation
@@ -298,7 +298,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
     delta_ *= mean_dist;
   }
 
-  // heuristic determination of number of trials to have high probabilty of finding a good solution
+  // heuristic determination of number of trials to have high probability of finding a good solution
   if (max_iterations_ == 0)
   {
     float first_est = std::log (small_error_) / std::log (1.0 - std::pow ((double) approx_overlap_, (double) min_iterations));
@@ -343,7 +343,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   Eigen::Vector4f centre_pt;
   float nearest_to_plane = FLT_MAX;
 
-  // repeat base search until valid quadruple was found or ransac_iterations_ number of trys were unsuccessfull
+  // repeat base search until valid quadruple was found or ransac_iterations_ number of tries were unsuccessful
   for (int i = 0; i < ransac_iterations_; i++)
   {
     // random select an appropriate point triple
@@ -382,7 +382,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
       }
     }
 
-    // check if at least one point fullfilled the conditions
+    // check if at least one point fulfilled the conditions
     if (nearest_to_plane != FLT_MAX)
     {
       // order points to build largest quadrangle and calcuate intersection ratios of diagonals
@@ -391,7 +391,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
     }
   }
 
-  // return unsuccessfull if no quadruple was selected
+  // return unsuccessful if no quadruple was selected
   return (-1);
 }
 
@@ -583,11 +583,11 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
                                           target_normals_->points[idx2].getNormalVector3fMap ()).norm () : 0.f);
 
   // loop over all pairs of points in source point cloud
-  std::vector <int>::iterator it_out = source_indices_->begin (), it_out_e = source_indices_->end () - 1;
-  std::vector <int>::iterator it_in, it_in_e = source_indices_->end ();
+  auto it_out = source_indices_->begin (), it_out_e = source_indices_->end () - 1;
+  auto it_in_e = source_indices_->end ();
   for ( ; it_out != it_out_e; it_out++)
   {
-    it_in = it_out + 1;
+    auto it_in = it_out + 1;
     const PointSource *pt1 = &(*input_)[*it_out];
     for ( ; it_in != it_in_e; it_in++)
     {
@@ -697,7 +697,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
     }
   }
 
-  // return unsuccessfull if no match was found
+  // return unsuccessful if no match was found
   return (matches.size () > 0 ? 0 : -1);
 }
 
@@ -780,16 +780,14 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   // find corresponding points according to their distance to the centroid
   std::vector <int> copy = match_indices;
 
-  std::vector <int>::const_iterator it_base = base_indices.begin (), it_base_e = base_indices.end ();
-  std::vector <int>::iterator it_match, it_match_e = copy.end ();
-  std::vector <int>::iterator it_match_orig = match_indices.begin ();
-  for (; it_base != it_base_e; it_base++, it_match_orig++)
+  auto it_match_orig = match_indices.begin ();
+  for (auto it_base = base_indices.cbegin (), it_base_e = base_indices.cend (); it_base != it_base_e; it_base++, it_match_orig++)
   {
     float dist_sqr_1 = pcl::squaredEuclideanDistance (target_->points[*it_base], centre_pt_base);
     float best_diff_sqr = FLT_MAX;
-    int best_index;
+    int best_index = -1;
 
-    for (it_match = copy.begin (); it_match != it_match_e; it_match++)
+    for (auto it_match = copy.cbegin (), it_match_e = copy.cend (); it_match != it_match_e; it_match++)
     {
       // calculate difference of distances to centre point
       float dist_sqr_2 = pcl::squaredEuclideanDistance (input_->points[*it_match], centre_pt_match);
@@ -868,7 +866,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
       break;
   }
 
-  // check current costs and return unsuccessfull if larger than previous ones
+  // check current costs and return unsuccessful if larger than previous ones
   inlier_score_temp /= static_cast <float> (nr_points);
   float fitness_score_temp = 1.f - inlier_score_temp;
 
@@ -885,7 +883,7 @@ template <typename PointSource, typename PointTarget, typename NormalT, typename
 pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::finalCompute (
   const std::vector <MatchingCandidates > &candidates)
 {
-  // get best fitness_score over all trys
+  // get best fitness_score over all tries
   int nr_candidates = static_cast <int> (candidates.size ());
   int best_index = -1;
   float best_score = FLT_MAX;

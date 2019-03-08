@@ -72,7 +72,7 @@ namespace pcl
 
     mean_ += (diff)*alpha;
 
-    //if (pcl_isnan(covariance_(0,0)))
+    //if (std::isnan(covariance_(0,0)))
     //{
       //cout << PVARN(weight);
       //exit(0);

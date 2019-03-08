@@ -23,8 +23,7 @@
 
 /* CUda UTility Library */
 
-#ifndef _CUTIL_H_
-#define _CUTIL_H_
+#pragma once
 
 #ifdef _WIN32
 #   pragma warning( disable : 4996 ) // disable deprecated warning 
@@ -340,7 +339,7 @@ extern "C" {
     //! @param w     width of the image
     //! @param h     height of the image
     //! @note If a NULL pointer is passed to this function and it is 
-    //!       initialized  withing Cutil then cutFree() has to be used to
+    //!       initialized within Cutil then cutFree() has to be used to
     //!       deallocate the memory
     ////////////////////////////////////////////////////////////////////////////
     DLL_MAPPING
@@ -355,7 +354,7 @@ extern "C" {
     //! @param w     width of the image
     //! @param h     height of the image
     //! @note If a NULL pointer is passed to this function and it is 
-    //!       initialized withing Cutil then cutFree() has to be used to 
+    //!       initialized within Cutil then cutFree() has to be used to 
     //!       deallocate the memory
     ////////////////////////////////////////////////////////////////////////////
     DLL_MAPPING
@@ -439,7 +438,7 @@ extern "C" {
     ////////////////////////////////////////////////////////////////////////////
     // Command line arguments: General notes
     // * All command line arguments begin with '--' followed by the token; 
-    //   token and value are seperated by '='; example --samples=50
+    //   token and value are separated by '='; example --samples=50
     // * Arrays have the form --model=[one.obj,two.obj,three.obj] 
     //   (without whitespaces)
     ////////////////////////////////////////////////////////////////////////////
@@ -736,18 +735,6 @@ extern "C" {
     ////////////////////////////////////////////////////////////////////////////
     //! Macros
 
-#if CUDART_VERSION >= 4000
-#define CUT_DEVICE_SYNCHRONIZE( )   cudaDeviceSynchronize();
-#else
-#define CUT_DEVICE_SYNCHRONIZE( )   cudaThreadSynchronize();
-#endif
-
-#if CUDART_VERSION >= 4000
-#define CUT_DEVICE_RESET( )   cudaDeviceReset();
-#else
-#define CUT_DEVICE_RESET( )   cudaThreadExit();
-#endif
-
 // This is for the CUTIL bank checker
 #ifdef _DEBUG
     #if __DEVICE_EMULATION__
@@ -793,7 +780,7 @@ extern "C" {
 #  define CUDA_SAFE_CALL( call)     CUDA_SAFE_CALL_NO_SYNC(call);                                            \
 
 #  define CUDA_SAFE_THREAD_SYNC( ) {                                         \
-    cudaError err = CUT_DEVICE_SYNCHRONIZE();                                 \
+    cudaError err = cudaDeviceSynchronize();                                 \
     if ( cudaSuccess != err) {                                               \
         fprintf(stderr, "Cuda error in file '%s' in line %i : %s.\n",        \
                 __FILE__, __LINE__, cudaGetErrorString( err) );              \
@@ -823,7 +810,7 @@ extern "C" {
                 errorMessage, __FILE__, __LINE__, cudaGetErrorString( err) );\
         exit(EXIT_FAILURE);                                                  \
     }                                                                        \
-    err = CUT_DEVICE_SYNCHRONIZE();                                           \
+    err = cudaDeviceSynchronize();                                           \
     if( cudaSuccess != err) {                                                \
         fprintf(stderr, "Cuda error: %s in file '%s' in line %i : %s.\n",    \
                 errorMessage, __FILE__, __LINE__, cudaGetErrorString( err) );\
@@ -849,7 +836,7 @@ extern "C" {
         exit(EXIT_FAILURE);                                                  \
     } } while(0);
 
-    //! Check if conditon is true (flexible assert)
+    //! Check if condition is true (flexible assert)
 #  define CUT_CONDITION( val)                                                \
     if( CUTFalse == cutCheckCondition( val, __FILE__, __LINE__)) {           \
         exit(EXIT_FAILURE);                                                  \
@@ -892,7 +879,7 @@ extern "C" {
                 errorMessage, __FILE__, __LINE__, cudaGetErrorString( err) );\
         exit(EXIT_FAILURE);                                                  \
     }                                                                        \
-    err = CUT_DEVICE_SYNCHRONIZE();                                           \
+    err = cudaDeviceSynchronize();                                           \
     if( cudaSuccess != err) {                                                \
         fprintf(stderr, "Cuda error: %s in file '%s' in line %i : %s.\n",    \
                 errorMessage, __FILE__, __LINE__, cudaGetErrorString( err) );\
@@ -907,7 +894,7 @@ extern "C" {
                 errorMessage, __FILE__, __LINE__, cudaGetErrorString( err) );\
         exit(EXIT_FAILURE);                                                  \
     }                                                                        \
-    err = CUT_DEVICE_SYNCHRONIZE();                                           \
+    err = cudaDeviceSynchronize();                                           \
     if( cudaSuccess != err) {                                                \
         fprintf(stderr, "Cuda error: %s in file '%s' in line %i : %s.\n",    \
                 errorMessage, __FILE__, __LINE__, cudaGetErrorString( err) );\
@@ -951,5 +938,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif  // #ifdef _DEBUG (else branch)
-
-#endif  // #ifndef _CUTIL_H_

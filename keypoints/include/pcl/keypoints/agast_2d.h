@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_KEYPOINTS_AGAST_KEYPOINT_2D_H_
-#define PCL_KEYPOINTS_AGAST_KEYPOINT_2D_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -159,7 +158,7 @@ namespace pcl
             nr_max_keypoints_ = nr_max_keypoints;
           }
 
-          /** \brief Get the maximum nuber of keypoints to return, as set by the user. */
+          /** \brief Get the maximum number of keypoints to return, as set by the user. */
           inline unsigned int 
           getMaxKeypoints ()
           {
@@ -289,32 +288,32 @@ namespace pcl
             * \param im 
             */
           int 
-          computeCornerScore (const unsigned char* im) const;
+          computeCornerScore (const unsigned char* im) const override;
 
           /** \brief Computes corner score. 
             * \param im 
             */
           int 
-          computeCornerScore (const float* im) const;
+          computeCornerScore (const float* im) const override;
 
           /** \brief Detects points of interest (i.e., keypoints) in the given image
             * \param[in] im the image to detect keypoints in 
             * \param[out] corners_all the resultant set of keypoints detected
             */
           void 
-          detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const;
+          detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const override;
 
           /** \brief Detects points of interest (i.e., keypoints) in the given image
             * \param[in] im the image to detect keypoints in 
             * \param[out] corners_all the resultant set of keypoints detected
             */
           void 
-          detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const;
+          detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const override;
 
         protected:
           /** \brief Initializes the sample pattern. */
           void 
-          initPattern ();
+          initPattern () override;
 
         private:
           /** \brief Border width. */
@@ -371,32 +370,32 @@ namespace pcl
             * \param im 
             */
           int 
-          computeCornerScore (const unsigned char* im) const;
+          computeCornerScore (const unsigned char* im) const override;
 
           /** \brief Computes corner score. 
             * \param im 
             */
           int 
-          computeCornerScore (const float* im) const;
+          computeCornerScore (const float* im) const override;
 
           /** \brief Detects points of interest (i.e., keypoints) in the given image
             * \param[in] im the image to detect keypoints in 
             * \param[out] corners_all the resultant set of keypoints detected
             */
           void 
-          detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const;
+          detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const override;
 
           /** \brief Detects points of interest (i.e., keypoints) in the given image
             * \param[in] im the image to detect keypoints in 
             * \param[out] corners_all the resultant set of keypoints detected
             */
           void 
-          detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const;
+          detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const override;
 
         protected:
           /** \brief Initializes the sample pattern. */
           void 
-          initPattern ();
+          initPattern () override;
 
         private:
           /** \brief Border width. */
@@ -449,32 +448,32 @@ namespace pcl
             * \param im 
             */
           int 
-          computeCornerScore (const unsigned char* im) const;
+          computeCornerScore (const unsigned char* im) const override;
 
           /** \brief Computes corner score. 
             * \param im 
             */
           int 
-          computeCornerScore (const float* im) const;
+          computeCornerScore (const float* im) const override;
 
           /** \brief Detects points of interest (i.e., keypoints) in the given image
             * \param[in] im the image to detect keypoints in 
             * \param[out] corners_all the resultant set of keypoints detected
             */
           void 
-          detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const;
+          detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const override;
 
           /** \brief Detects points of interest (i.e., keypoints) in the given image
             * \param[in] im the image to detect keypoints in 
             * \param[out] corners_all the resultant set of keypoints detected
             */
           void 
-          detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const;
+          detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const override;
 
         protected:
           /** \brief Initializes the sample pattern. */
           void 
-          initPattern ();
+          initPattern () override;
 
         private:
           /** \brief Border width. */
@@ -611,7 +610,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~AgastKeypoint2DBase ()
+      ~AgastKeypoint2DBase ()
       {
       }
 
@@ -641,7 +640,7 @@ namespace pcl
         nr_max_keypoints_ = nr_max_keypoints;
       }
 
-      /** \brief Get the maximum nuber of keypoints to return, as set by the user. */
+      /** \brief Get the maximum number of keypoints to return, as set by the user. */
       inline unsigned int 
       getMaxKeypoints ()
       {
@@ -695,13 +694,13 @@ namespace pcl
 
       /** \brief Initializes everything and checks whether input data is fine. */
       bool 
-      initCompute ();
+      initCompute () override;
       
       /** \brief Detects the keypoints.
         * \param[out] output the resultant keypoints
         */
-      virtual void 
-      detectKeypoints (PointCloudOut &output) = 0;
+      void 
+      detectKeypoints (PointCloudOut &output) override = 0;
 
       /** \brief Intensity field accessor. */
       IntensityT intensity_;
@@ -771,7 +770,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~AgastKeypoint2D ()
+      ~AgastKeypoint2D ()
       {
       }
 
@@ -779,8 +778,8 @@ namespace pcl
       /** \brief Detects the keypoints.
         * \param[out] output the resultant keypoints
         */
-      virtual void 
-      detectKeypoints (PointCloudOut &output);
+      void 
+      detectKeypoints (PointCloudOut &output) override;
   };
 
   /** \brief Detects 2D AGAST corner points. Based on the original work and
@@ -822,7 +821,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~AgastKeypoint2D ()
+      ~AgastKeypoint2D ()
       {
       }
 
@@ -830,13 +829,10 @@ namespace pcl
       /** \brief Detects the keypoints.
         * \param[out] output the resultant keypoints
         */
-      virtual void 
-      detectKeypoints (pcl::PointCloud<pcl::PointUV> &output);
+      void 
+      detectKeypoints (pcl::PointCloud<pcl::PointUV> &output) override;
   };
 
 }
 
 #include <pcl/keypoints/impl/agast_2d.hpp>
-
-#endif
-
