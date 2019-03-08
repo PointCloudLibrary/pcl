@@ -327,44 +327,44 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
   //merge root and leaf nodes in one classifiers array, leaf nodes are sorted behind the root nodes
   Ncv32u offset_root = haarClassifierNodes.size();
 
-  for (size_t i = 0; i < haarClassifierNodes.size(); i++)
+  for (auto &haarClassifierNode : haarClassifierNodes)
   {
-      HaarClassifierNodeDescriptor32 node_left = haarClassifierNodes[i].getLeftNodeDesc();
+      HaarClassifierNodeDescriptor32 node_left = haarClassifierNode.getLeftNodeDesc();
       if (!node_left.isLeaf())
       {
           Ncv32u new_offset = node_left.getNextNodeOffset() + offset_root;
           node_left.create(new_offset);
       }
-      haarClassifierNodes[i].setLeftNodeDesc(node_left);
+      haarClassifierNode.setLeftNodeDesc(node_left);
 
-      HaarClassifierNodeDescriptor32 node_right = haarClassifierNodes[i].getRightNodeDesc();
+      HaarClassifierNodeDescriptor32 node_right = haarClassifierNode.getRightNodeDesc();
       if (!node_right.isLeaf())
       {
           Ncv32u new_offset = node_right.getNextNodeOffset() + offset_root;
           node_right.create(new_offset);
       }
-      haarClassifierNodes[i].setRightNodeDesc(node_right);
+      haarClassifierNode.setRightNodeDesc(node_right);
   }
 
-  for (size_t i = 0; i < host_temp_classifier_not_root_nodes.size(); i++)
+  for (auto &host_temp_classifier_not_root_node : host_temp_classifier_not_root_nodes)
   {
-      HaarClassifierNodeDescriptor32 node_left = host_temp_classifier_not_root_nodes[i].getLeftNodeDesc();
+      HaarClassifierNodeDescriptor32 node_left = host_temp_classifier_not_root_node.getLeftNodeDesc();
       if (!node_left.isLeaf())
       {
           Ncv32u new_offset = node_left.getNextNodeOffset() + offset_root;
           node_left.create(new_offset);
       }
-      host_temp_classifier_not_root_nodes[i].setLeftNodeDesc(node_left);
+      host_temp_classifier_not_root_node.setLeftNodeDesc(node_left);
 
-      HaarClassifierNodeDescriptor32 node_right = host_temp_classifier_not_root_nodes[i].getRightNodeDesc();
+      HaarClassifierNodeDescriptor32 node_right = host_temp_classifier_not_root_node.getRightNodeDesc();
       if (!node_right.isLeaf())
       {
           Ncv32u new_offset = node_right.getNextNodeOffset() + offset_root;
           node_right.create(new_offset);
       }
-      host_temp_classifier_not_root_nodes[i].setRightNodeDesc(node_right);
+      host_temp_classifier_not_root_node.setRightNodeDesc(node_right);
 
-      haarClassifierNodes.push_back(host_temp_classifier_not_root_nodes[i]);
+      haarClassifierNodes.push_back(host_temp_classifier_not_root_node);
   }
   return (NCV_SUCCESS);
 }
@@ -583,9 +583,9 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
 
   NCV_SKIP_COND_BEGIN
 
-  for(size_t i = 0; i < input_gray.points.size(); i++)
+  for(const auto &point : input_gray.points)
   {
-    memcpy(h_src.ptr(), &input_gray.points[i].intensity, sizeof(input_gray.points[i].intensity));
+    memcpy(h_src.ptr(), &point.intensity, sizeof(point.intensity));
   }
 
   ncv_return_status = h_src.copySolid(d_src, 0);
@@ -628,9 +628,9 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
   PCL_ASSERT_CUDA_RETURN(cudaStreamSynchronize(0), NCV_CUDA_ERROR);
 
   // Copy result back into output cloud
-  for(size_t i = 0; i < cloud_out.points.size(); i++)
+  for(auto &point : cloud_out.points)
   {
-    memcpy(&cloud_out.points[i].intensity, h_src.ptr() /* + i * ??? */, sizeof(cloud_out.points[i].intensity));
+    memcpy(&point.intensity, h_src.ptr() /* + i * ??? */, sizeof(point.intensity));
   }
 
   NCV_SKIP_COND_END

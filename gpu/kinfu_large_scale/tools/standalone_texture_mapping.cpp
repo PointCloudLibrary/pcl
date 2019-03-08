@@ -189,10 +189,10 @@ saveOBJFile (const std::string &file_name,
 
     PCL_INFO ("%d vertex textures in submesh %d\n", tex_mesh.tex_coordinates[m].size (), m);
     fs << "# " << tex_mesh.tex_coordinates[m].size() << " vertex textures in submesh " << m <<  std::endl;
-    for (size_t i = 0; i < tex_mesh.tex_coordinates[m].size (); ++i)
+    for (const auto &coordinate : tex_mesh.tex_coordinates[m])
     {
       fs << "vt ";
-      fs <<  tex_mesh.tex_coordinates[m][i][0] << " " << tex_mesh.tex_coordinates[m][i][1] << std::endl;
+      fs <<  coordinate[0] << " " << coordinate[1] << std::endl;
     }
   }
 

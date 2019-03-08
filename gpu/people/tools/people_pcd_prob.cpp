@@ -187,9 +187,9 @@ class PeoplePCDApp
     void
     convertProbToRGB (pcl::PointCloud<pcl::device::prob_histogram>& histograms, int label, pcl::PointCloud<pcl::RGB>& rgb)
     {
-      for(size_t t = 0; t < histograms.points.size(); t++)
+      for(const auto &point : histograms.points)
       {
-        float value = histograms.points[t].probs[label];
+        float value = point.probs[label];
         float value8 = value * 255;
         char val = static_cast<char> (value8);
         pcl::RGB p;

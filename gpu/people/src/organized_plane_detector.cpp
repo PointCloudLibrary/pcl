@@ -108,11 +108,11 @@ pcl::gpu::people::OrganizedPlaneDetector::process(const PointCloud<PointTC>::Con
   }
 
   // Fill in the probabilities
-  for(size_t plane = 0; plane < inlier_indices.size(); plane++)                                            // iterate over all found planes
+  for(const auto &inlier_index : inlier_indices)                           // iterate over all found planes
   {
-    for(size_t idx = 0; idx < inlier_indices[plane].indices.size(); idx++)                               // iterate over all the indices in that plane
+    for(const int &index : inlier_index.indices)                           // iterate over all the indices in that plane
     {
-      P_l_host_.points[inlier_indices[plane].indices[idx]].probs[pcl::gpu::people::Background] = 1.f;   // set background at max
+      P_l_host_.points[index].probs[pcl::gpu::people::Background] = 1.f;   // set background at max
     }
   }
 }
@@ -140,11 +140,11 @@ pcl::gpu::people::OrganizedPlaneDetector::allocate_buffers(int rows, int cols)
 void
 pcl::gpu::people::OrganizedPlaneDetector::emptyHostLabelProbability(HostLabelProbability& histogram)
 {
-  for(size_t hist = 0; hist < histogram.points.size(); hist++)
+  for(auto &point : histogram.points)
   {
     for(int label = 0; label < pcl::gpu::people::NUM_LABELS; label++)
     {
-      histogram.points[hist].probs[label] = 0.f;
+      point.probs[label] = 0.f;
     }
   }
 }
