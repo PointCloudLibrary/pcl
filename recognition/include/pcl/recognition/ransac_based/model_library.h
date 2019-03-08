@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_MODEL_LIBRARY_H_
-#define PCL_RECOGNITION_MODEL_LIBRARY_H_
+#pragma once
 
 #include "auxiliary.h"
 #include <pcl/recognition/ransac_based/voxel_structure.h>
@@ -270,5 +269,3 @@ namespace pcl
     };
   } // namespace recognition
 } // namespace pcl
-
-#endif // PCL_RECOGNITION_MODEL_LIBRARY_H_

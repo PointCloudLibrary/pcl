@@ -220,7 +220,7 @@ class OpenNIGrabFrame
     }
 
     void
-    setOptions (std::string filename, std::string pcd_format, bool paused, bool visualizer)
+    setOptions (const std::string &filename, const std::string &pcd_format, bool paused, bool visualizer)
     {
       boost::filesystem::path path(filename);
 
@@ -263,7 +263,7 @@ class OpenNIGrabFrame
       visualizer_enable_ = visualizer;
     }
 
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> visualizer_;
+    pcl::visualization::PCLVisualizer::Ptr visualizer_;
     pcl::PCDWriter writer_;
     bool quit_;
     bool continuous_;

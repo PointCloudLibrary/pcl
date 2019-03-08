@@ -10,7 +10,7 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 PCL_SET_SUBSYS_INCLUDE_DIR(${SUBSYS_NAME} ${SUBSYS_PATH})
 
 ## ---[ Point Cloud Library - pcl/cuda/common
-set(incs 
+set(incs
     include/pcl/cuda/cutil.h
     include/pcl/cuda/cutil_math.h
     include/pcl/cuda/point_cloud.h
@@ -23,7 +23,7 @@ set(incs
     include/pcl/cuda/cutil_inline_drvapi.h
     include/pcl/cuda/cutil_inline_runtime.h
     )
-set(common_incs 
+set(common_incs
     include/pcl/cuda/common/eigen.h
     include/pcl/cuda/common/point_type_rgb.h
     )

@@ -36,7 +36,7 @@ CloudPtr src, tgt;
 bool rejection = true;
 bool visualize = false;
 
-boost::shared_ptr<PCLVisualizer> vis;
+PCLVisualizer::Ptr vis;
 
 ////////////////////////////////////////////////////////////////////////////////
 void

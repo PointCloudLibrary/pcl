@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_RANDOM_WALKER_H
-#define PCL_SEGMENTATION_RANDOM_WALKER_H
+#pragma once
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_concepts.hpp>
@@ -139,6 +138,3 @@ namespace pcl
 }
 
 #include <pcl/segmentation/impl/random_walker.hpp>
-
-#endif /* PCL_SEGMENTATION_RANDOM_WALKER_H */
-

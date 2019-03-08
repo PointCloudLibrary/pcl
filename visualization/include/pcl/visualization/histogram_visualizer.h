@@ -36,8 +36,8 @@
  * $Id$
  *
  */
-#ifndef PCL_PCL_HISTOGRAM_VISUALIZER_H_
-#define PCL_PCL_HISTOGRAM_VISUALIZER_H_
+
+#pragma once
 
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/common/common.h>
@@ -56,6 +56,9 @@ namespace pcl
     class PCL_EXPORTS PCLHistogramVisualizer
     {
       public:
+        typedef boost::shared_ptr<PCLHistogramVisualizer> Ptr;
+        typedef boost::shared_ptr<const PCLHistogramVisualizer> ConstPtr;
+
         /** \brief PCL histogram visualizer constructor. */
         PCLHistogramVisualizer ();
 
@@ -63,13 +66,9 @@ namespace pcl
         /** \brief Spin once method. Calls the interactor and updates the screen once. 
           *  \param[in] time - How long (in ms) should the visualization loop be allowed to run.
           */
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-        void 
-        spinOnce (int time = 1, bool force_redraw = false);
-#else
         void 
         spinOnce (int time = 1);
-#endif
+
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
         void 
         spin ();
@@ -187,15 +186,7 @@ namespace pcl
         /** \brief Update all window positions on screen so that they fit. */
         void 
         updateWindowPositions ();
-#if ((VTK_MAJOR_VERSION) == 5 && (VTK_MINOR_VERSION <= 4))
-        /** \brief Returns true when the user tried to close the window */
-        bool 
-        wasStopped ();
-        
-        /** \brief Set the stopped flag back to false */
-        void 
-        resetStoppedFlag ();
-#endif
+
       protected:
 
         /** \brief Create a 2D actor from the given vtkDoubleArray histogram and add it to the screen.
@@ -229,15 +220,11 @@ namespace pcl
           {
             return (new ExitMainLoopTimerCallback);
           }
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void* call_data);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void* call_data) override;
 
           int right_timer_id;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-          PCLVisualizerInteractor *interact;
-#else
           vtkRenderWindowInteractor *interact;
-#endif
         };
         
         struct ExitCallback : public vtkCommand
@@ -249,8 +236,8 @@ namespace pcl
             return (new ExitCallback);
           }
 
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void*) override;
 
           PCLHistogramVisualizer *his;
         };
@@ -265,5 +252,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/histogram_visualizer.hpp>
-
-#endif

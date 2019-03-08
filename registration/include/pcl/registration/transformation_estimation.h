@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_H_
+
+#pragma once
 
 #include <pcl/correspondence.h>
 #include <pcl/common/transforms.h>
@@ -95,7 +95,7 @@ namespace pcl
           * \param[in] cloud_src the source point cloud dataset
           * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
           * \param[in] cloud_tgt the target point cloud dataset
-          * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
+          * \param[in] indices_tgt the vector of indices describing the correspondences of the interest points from \a indices_src
           * \param[out] transformation_matrix the resultant transformation matrix
           */
         virtual void
@@ -125,5 +125,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_H_ */

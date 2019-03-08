@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_H_
+#pragma once
 
 #include <string>
 
@@ -106,21 +105,7 @@ namespace pcl
         }
       
         /** \brief Empty destructor */
-        virtual ~CorrespondenceEstimationBase () {}
-
-        /** \brief Provide a pointer to the input source 
-          * (e.g., the point cloud that we want to align to the target)
-          *
-          * \param[in] cloud the input point cloud source
-          */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceEstimationBase::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.")
-        void
-        setInputCloud (const PointCloudSourceConstPtr &cloud);
-
-        /** \brief Get a pointer to the input point cloud dataset target. */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceEstimationBase::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.")
-        PointCloudSourceConstPtr const
-        getInputCloud ();
+        ~CorrespondenceEstimationBase () {}
 
         /** \brief Provide a pointer to the input source 
           * (e.g., the point cloud that we want to align to the target)
@@ -294,7 +279,7 @@ namespace pcl
         }
 
         /** \brief Clone and cast to CorrespondenceEstimationBase */
-        virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > clone () const = 0;
+        virtual typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr clone () const = 0;
 
       protected:
         /** \brief The correspondence estimation method name. */
@@ -327,11 +312,11 @@ namespace pcl
         inline const std::string& 
         getClassName () const { return (corr_name_); }
 
-        /** \brief Internal computation initalization. */
+        /** \brief Internal computation initialization. */
         bool
         initCompute ();
         
-        /** \brief Internal computation initalization for reciprocal correspondences. */
+        /** \brief Internal computation initialization for reciprocal correspondences. */
         bool
         initComputeReciprocal ();
 
@@ -416,15 +401,15 @@ namespace pcl
         }
       
         /** \brief Empty destructor */
-        virtual ~CorrespondenceEstimation () {}
+        ~CorrespondenceEstimation () {}
 
         /** \brief Determine the correspondences between input and target cloud.
           * \param[out] correspondences the found correspondences (index of query point, index of target point, distance)
           * \param[in] max_distance maximum allowed distance between correspondences
           */
-        virtual void 
+        void 
         determineCorrespondences (pcl::Correspondences &correspondences,
-                                  double max_distance = std::numeric_limits<double>::max ());
+                                  double max_distance = std::numeric_limits<double>::max ()) override;
 
         /** \brief Determine the reciprocal correspondences between input and target cloud.
           * A correspondence is considered reciprocal if both Src_i has Tgt_i as a 
@@ -433,14 +418,14 @@ namespace pcl
           * \param[out] correspondences the found correspondences (index of query and target point, distance)
           * \param[in] max_distance maximum allowed distance between correspondences
           */
-        virtual void 
+        void 
         determineReciprocalCorrespondences (pcl::Correspondences &correspondences,
-                                            double max_distance = std::numeric_limits<double>::max ());
+                                            double max_distance = std::numeric_limits<double>::max ()) override;
 
         
         /** \brief Clone and cast to CorrespondenceEstimationBase */
-        virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > 
-        clone () const
+        typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
+        clone () const override
         {
           Ptr copy (new CorrespondenceEstimation<PointSource, PointTarget, Scalar> (*this));
           return (copy);
@@ -450,5 +435,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_estimation.hpp>
-
-#endif /* PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_H_ */

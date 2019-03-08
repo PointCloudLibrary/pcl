@@ -77,7 +77,7 @@ pcl::Morphology<PointT>::erosionBinary (pcl::PointCloud<PointT> &output)
           {
             continue;
           }
-          // If one of the elements of the kernel and image dont match, 
+          // If one of the elements of the kernel and image don't match, 
           // the output image is 0. So, move to the next point.
           if ((*input_)(j + l - kernel_width / 2, i + k - kernel_height / 2).intensity != 1)
           {
@@ -192,7 +192,7 @@ pcl::Morphology<PointT>::erosionGray (pcl::PointCloud<PointT> &output)
           {
             continue;
           }
-          // If one of the elements of the kernel and image dont match, 
+          // If one of the elements of the kernel and image don't match, 
           // the output image is 0. So, move to the next point.
           if ((*input_)(j + l - kernel_width / 2, i + k - kernel_height / 2).intensity < min || min == -1)
           {
@@ -236,7 +236,7 @@ pcl::Morphology<PointT>::dilationGray (pcl::PointCloud<PointT> &output)
           {
             continue;
           }
-          // If one of the elements of the kernel and image dont match, 
+          // If one of the elements of the kernel and image don't match, 
           // the output image is 0. So, move to the next point.
           if ((*input_)(j + l - kernel_width / 2, i + k - kernel_height / 2).intensity > max || max == -1)
           {
@@ -277,7 +277,7 @@ pcl::Morphology<PointT>::subtractionBinary (
     const pcl::PointCloud<PointT> &input1, 
     const pcl::PointCloud<PointT> &input2)
 {
-  const int height = (input1.height < input2.hieght) ? input1.height : input2.height;
+  const int height = (input1.height < input2.height) ? input1.height : input2.height;
   const int width = (input1.width < input2.width) ? input1.width : input2.width;
   output.width = width;
   output.height = height;
@@ -299,7 +299,7 @@ pcl::Morphology<PointT>::unionBinary (
     const pcl::PointCloud<PointT> &input1, 
     const pcl::PointCloud<PointT> &input2)
 {
-  const int height = (input1.height < input2.hieght) ? input1.height : input2.height;
+  const int height = (input1.height < input2.height) ? input1.height : input2.height;
   const int width = (input1.width < input2.width) ? input1.width : input2.width;
   output.width = width;
   output.height = height;

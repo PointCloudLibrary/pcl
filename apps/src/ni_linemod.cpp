@@ -249,19 +249,19 @@ class NILinemod
       exppd.segment (*points_above_plane);
 
       // Use an organized clustering segmentation to extract the individual clusters
-      EuclideanClusterComparator<PointT, Normal, Label>::Ptr euclidean_cluster_comparator (new EuclideanClusterComparator<PointT, Normal, Label>);
+      EuclideanClusterComparator<PointT, Label>::Ptr euclidean_cluster_comparator (new EuclideanClusterComparator<PointT, Label>);
       euclidean_cluster_comparator->setInputCloud (cloud);
       euclidean_cluster_comparator->setDistanceThreshold (0.03f, false);
       // Set the entire scene to false, and the inliers of the objects located on top of the plane to true
       Label l; l.label = 0;
       PointCloud<Label>::Ptr scene (new PointCloud<Label> (cloud->width, cloud->height, l));
       // Mask the objects that we want to split into clusters
-      for (int i = 0; i < static_cast<int> (points_above_plane->indices.size ()); ++i)
-        scene->points[points_above_plane->indices[i]].label = 1;
+      for (const int &index : points_above_plane->indices)
+        scene->points[index].label = 1;
       euclidean_cluster_comparator->setLabels (scene);
 
-      vector<bool> exclude_labels (2);  exclude_labels[0] = true; exclude_labels[1] = false;
-      euclidean_cluster_comparator->setExcludeLabels (exclude_labels);
+      boost::shared_ptr<std::set<uint32_t> > exclude_labels = boost::make_shared<std::set<uint32_t> > ();
+      exclude_labels->insert (0);
 
       OrganizedConnectedComponentSegmentation<PointT, Label> euclidean_segmentation (euclidean_cluster_comparator);
       euclidean_segmentation.setInputCloud (cloud);
@@ -272,17 +272,17 @@ class NILinemod
 
       // For each cluster found
       bool cluster_found = false;
-      for (size_t i = 0; i < euclidean_label_indices.size (); i++)
+      for (const auto &euclidean_label_index : euclidean_label_indices)
       {
         if (cluster_found)
           break;
         // Check if the point that we picked belongs to it
-        for (size_t j = 0; j < euclidean_label_indices[i].indices.size (); ++j)
+        for (size_t j = 0; j < euclidean_label_index.indices.size (); ++j)
         {
-          if (picked_idx != euclidean_label_indices[i].indices[j])
+          if (picked_idx != euclidean_label_index.indices[j])
             continue;
           //pcl::PointCloud<PointT> cluster;
-          pcl::copyPointCloud (*cloud, euclidean_label_indices[i].indices, object);
+          pcl::copyPointCloud (*cloud, euclidean_label_index.indices, object);
           cluster_found = true;
           break;
           //object_indices = euclidean_label_indices[i].indices;
@@ -497,7 +497,7 @@ class NILinemod
           {
             cloud_viewer_.setPosition (0, 0);
             cloud_viewer_.setSize (cloud->width, cloud->height);
-            cloud_init = !cloud_init;
+            cloud_init = true;
           }
 
           if (!cloud_viewer_.updatePointCloud (cloud, "OpenNICloud"))
@@ -510,7 +510,7 @@ class NILinemod
           {
             image_viewer_.setPosition (cloud->width, 0);
             image_viewer_.setSize (cloud->width, cloud->height);
-            image_init = !image_init;
+            image_init = true;
           }
 
           image_viewer_.showRGBImage<PointT> (cloud);

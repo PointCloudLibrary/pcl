@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_ELCH_H_
-#define PCL_ELCH_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
@@ -101,7 +100,7 @@ namespace pcl
         {};
       
         /** \brief Empty destructor */
-        virtual ~ELCH () {}
+        ~ELCH () {}
 
         /** \brief Add a new point cloud to the internal graph.
          * \param[in] cloud the new point cloud
@@ -255,5 +254,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/elch.hpp>
-
-#endif // PCL_ELCH_H_

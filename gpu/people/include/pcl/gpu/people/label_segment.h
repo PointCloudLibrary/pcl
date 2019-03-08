@@ -39,8 +39,7 @@
  * @brief This file contains the function prototypes for the segmentation functions
  */
 
-#ifndef PCL_GPU_PEOPLE_LABEL_SEGMENT_H_
-#define PCL_GPU_PEOPLE_LABEL_SEGMENT_H_
+#pragma once
 
 // our headers
 #include "pcl/gpu/people/label_blob2.h"
@@ -77,7 +76,7 @@ namespace pcl
          * \param[in] dmap the cvMat with the depths, must be CV_16U in mm
          * \param[out] lmap_out the smoothed output labelmap as cvMat
          * \param[in] patch_size make the patch size for smoothing
-         * \param[in] depthThres the z-distance thresshold
+         * \param[in] depthThres the z-distance threshold
          * \todo add a Gaussian contribution function to depth and vote
          **/
         //inline void smoothLabelImage ( cv::Mat&      lmap_in,
@@ -397,5 +396,3 @@ namespace pcl
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl
-
-#endif //#ifndef LABELSKEL_SEGMENT_H

@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_H_
+
+#pragma once
 
 #include <pcl/registration/correspondence_rejection.h>
 
@@ -87,7 +87,7 @@ namespace pcl
         }
 
         /** \brief Empty destructor. */
-        virtual ~CorrespondenceRejectorSampleConsensus () {}
+        ~CorrespondenceRejectorSampleConsensus () {}
 
         /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
           * \param[in] original_correspondences the set of initial correspondences given
@@ -95,19 +95,7 @@ namespace pcl
           */
         inline void 
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
-                                     pcl::Correspondences& remaining_correspondences);
-
-        /** \brief Provide a source point cloud dataset (must contain XYZ data!)
-          * \param[in] cloud a cloud containing XYZ data
-          */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.")
-        virtual void
-        setInputCloud (const PointCloudConstPtr &cloud);
-
-        /** \brief Get a pointer to the input point cloud dataset target. */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.")
-        PointCloudConstPtr const
-        getInputCloud ();
+                                     pcl::Correspondences& remaining_correspondences) override;
 
         /** \brief Provide a source point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
@@ -125,13 +113,6 @@ namespace pcl
         /** \brief Provide a target point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
           */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::setTargetCloud] setTargetCloud is deprecated. Please use setInputTarget instead.")
-        virtual void
-        setTargetCloud (const PointCloudConstPtr &cloud);
-
-        /** \brief Provide a target point cloud dataset (must contain XYZ data!)
-          * \param[in] cloud a cloud containing XYZ data
-          */
         virtual inline void 
         setInputTarget (const PointCloudConstPtr &cloud) { target_ = cloud; }
 
@@ -142,12 +123,12 @@ namespace pcl
 
         /** \brief See if this rejector requires source points */
         bool
-        requiresSourcePoints () const
+        requiresSourcePoints () const override
         { return (true); }
 
         /** \brief Blob method for setting the source cloud */
         void
-        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
         { 
           PointCloudPtr cloud (new PointCloud);
           fromPCLPointCloud2 (*cloud2, *cloud);
@@ -156,12 +137,12 @@ namespace pcl
         
         /** \brief See if this rejector requires a target cloud */
         bool
-        requiresTargetPoints () const
+        requiresTargetPoints () const override
         { return (true); }
 
         /** \brief Method for setting the target cloud */
         void
-        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
         { 
           PointCloudPtr cloud (new PointCloud);
           fromPCLPointCloud2 (*cloud2, *cloud);
@@ -184,22 +165,8 @@ namespace pcl
         /** \brief Set the maximum number of iterations.
           * \param[in] max_iterations Maximum number if iterations to run
           */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::setMaxIterations] setMaxIterations is deprecated. Please use setMaximumIterations instead.")
-        void
-        setMaxIterations (int max_iterations);
-
-        /** \brief Set the maximum number of iterations.
-          * \param[in] max_iterations Maximum number if iterations to run
-          */
         inline void 
         setMaximumIterations (int max_iterations) { max_iterations_ = std::max (max_iterations, 0); }
-
-        /** \brief Get the maximum number of iterations.
-          * \return max_iterations Maximum number if iterations to run
-          */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::getMaxIterations] getMaxIterations is deprecated. Please use getMaximumIterations instead.")
-        int
-        getMaxIterations ();
 
         /** \brief Get the maximum number of iterations.
           * \return max_iterations Maximum number if iterations to run
@@ -252,7 +219,7 @@ namespace pcl
           * \param[out] correspondences the set of resultant correspondences.
           */
         inline void 
-        applyRejection (pcl::Correspondences &correspondences)
+        applyRejection (pcl::Correspondences &correspondences) override
         {
           getRemainingCorrespondences (*input_correspondences_, correspondences);
         }
@@ -278,5 +245,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_rejection_sample_consensus.hpp>
-
-#endif    // PCL_REGISTRATION_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_H_

@@ -43,13 +43,11 @@
  *      Author: papazov
  */
 
-#ifndef ORR_OCTREE_ZPROJECTION_H_
-#define ORR_OCTREE_ZPROJECTION_H_
+#pragma once
 
 #include "orr_octree.h"
 #include <pcl/pcl_exports.h>
 #include <set>
-
 
 namespace pcl
 {
@@ -96,7 +94,7 @@ namespace pcl
             static inline bool
             compare_nodes_z (ORROctree::Node* node1, ORROctree::Node* node2)
             {
-              return static_cast<bool> (node1->getData ()->get3dIdZ () < node2->getData ()->get3dIdZ ());
+              return node1->getData()->get3dIdZ() < node2->getData()->get3dIdZ();
             }
 
             inline void
@@ -211,6 +209,3 @@ namespace pcl
     };
   } // namespace recognition
 } // namespace pcl
-
-
-#endif /* ORR_OCTREE_ZPROJECTION_H_ */

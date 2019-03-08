@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_TYPE_CONVERSIONS_H
-#define PCL_TYPE_CONVERSIONS_H
+#pragma once
 
 #include <limits>
 
@@ -46,10 +45,10 @@
 
 namespace pcl
 {
-  // r,g,b, i values are from 0 to 1
+  // r,g,b, i values are from 0 to 255
   // h = [0,360]
   // s, v values are from 0 to 1
-  // if s = 0 > h = -1 (undefined)
+  // if s = 0 => h = 0
 
   /** \brief Convert a XYZRGB point type to a XYZI
     * \param[in] in the input XYZRGB point 
@@ -82,7 +81,7 @@ namespace pcl
   PointRGBtoI (const RGB&    in,
                Intensity8u&  out)
   {
-    out.intensity = static_cast<uint8_t>(std::numeric_limits<uint8_t>::max() * 0.299f * static_cast <float> (in.r)
+    out.intensity = static_cast<uint8_t>(0.299f * static_cast <float> (in.r)
                       + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b));
   }
 
@@ -94,7 +93,7 @@ namespace pcl
   PointRGBtoI (const RGB&    in,
                Intensity32u& out)
   {
-    out.intensity = static_cast<uint32_t>(static_cast<float>(std::numeric_limits<uint32_t>::max()) * 0.299f * static_cast <float> (in.r)
+    out.intensity = static_cast<uint32_t>(0.299f * static_cast <float> (in.r)
                       + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b));
   }
 
@@ -135,8 +134,8 @@ namespace pcl
     if (out.h < 0.f) out.h += 360.f;
   }
 
-  /** \brief Convert a XYZRGB point type to a XYZHSV
-    * \param[in] in the input XYZRGB point
+  /** \brief Convert a XYZRGBA point type to a XYZHSV
+    * \param[in] in the input XYZRGBA point
     * \param[out] out the output XYZHSV point
     * \todo include the A parameter but how?
     */
@@ -153,7 +152,7 @@ namespace pcl
     if (max == 0) // division by zero
     {
       out.s = 0.f;
-      out.h = 0.f; // h = -1.f;
+      out.h = 0.f;
       return;
     }
 
@@ -241,7 +240,7 @@ namespace pcl
     }
   }
 
-  /** \brief Convert a RGB point cloud to a Intensity
+  /** \brief Convert a RGB point cloud to an Intensity
     * \param[in] in the input RGB point cloud
     * \param[out] out the output Intensity point cloud
     */
@@ -251,15 +250,15 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       Intensity p;
-      PointRGBtoI (in.points[i], p);
+      PointRGBtoI (point, p);
       out.points.push_back (p);
     }
   }
 
-  /** \brief Convert a RGB point cloud to a Intensity
+  /** \brief Convert a RGB point cloud to an Intensity
     * \param[in] in the input RGB point cloud
     * \param[out] out the output Intensity point cloud
     */
@@ -269,15 +268,15 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       Intensity8u p;
-      PointRGBtoI (in.points[i], p);
+      PointRGBtoI (point, p);
       out.points.push_back (p);
     }
   }
 
-  /** \brief Convert a RGB point cloud to a Intensity
+  /** \brief Convert a RGB point cloud to an Intensity
     * \param[in] in the input RGB point cloud
     * \param[out] out the output Intensity point cloud
     */
@@ -287,10 +286,10 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       Intensity32u p;
-      PointRGBtoI (in.points[i], p);
+      PointRGBtoI (point, p);
       out.points.push_back (p);
     }
   }
@@ -305,10 +304,10 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       PointXYZHSV p;
-      PointXYZRGBtoXYZHSV (in.points[i], p);
+      PointXYZRGBtoXYZHSV (point, p);
       out.points.push_back (p);
     }
   }
@@ -323,10 +322,10 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       PointXYZHSV p;
-      PointXYZRGBAtoXYZHSV (in.points[i], p);
+      PointXYZRGBAtoXYZHSV (point, p);
       out.points.push_back (p);
     }
   }
@@ -341,10 +340,10 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       PointXYZI p;
-      PointXYZRGBtoXYZI (in.points[i], p);
+      PointXYZRGBtoXYZI (point, p);
       out.points.push_back (p);
     }
   }
@@ -371,7 +370,6 @@ namespace pcl
       for (size_t u = 0; u < width_; u++)
       {
         PointXYZRGBA pt;
-        pt.a = 0;
         float depth_ = depth.at (u, v).intensity;
 
         if (depth_ == 0)
@@ -395,6 +393,3 @@ namespace pcl
     out.height = height_;
   }
 }
-
-#endif //#ifndef PCL_TYPE_CONVERSIONS_H
-

@@ -26,7 +26,7 @@ The clusters classified as too small or too large can still be retrieved afterwa
 The Code
 --------
 
-First, download the dataset `Statues_4.pcd <https://raw.github.com/PointCloudLibrary/data/master/Trimble/Outdoor1/Statues_4.pcd>`_ and save it somewhere to disk.
+First, download the dataset `Statues_4.pcd <https://sourceforge.net/projects/pointclouds/files/PCD datasets/Trimble/Outdoor1/Statues_4.pcd.zip>`_ and extract the PCD file from the archive.
 This is a very large data set of an outdoor environment where we aim to cluster the separate objects and also want to separate the building from the ground plane even though it is attached in a Euclidean sense.
 
 Now create a file, let's say, ``conditional_euclidean_clustering.cpp`` in your favorite editor, and place the following inside it:
@@ -95,7 +95,7 @@ Lines 97-109 contain a piece of code that is a quick and dirty fix to visualize 
    :language: cpp
    :lines: 97-109
 
-When the output point cloud is opened with PCL's standard PCD viewer, pressing '5' will switch to the intenisty channel visualization.
+When the output point cloud is opened with PCL's standard PCD viewer, pressing '5' will switch to the intensity channel visualization.
 The too-small clusters will be colored red, the too-large clusters will be colored blue, and the actual clusters/objects of interest will be colored randomly in between yellow and cyan hues.
 
 Compiling and running the program

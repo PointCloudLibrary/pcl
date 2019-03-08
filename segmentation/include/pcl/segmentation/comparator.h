@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_COMPARATOR_H_
-#define PCL_SEGMENTATION_COMPARATOR_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 
@@ -97,7 +96,7 @@ namespace pcl
       
     protected:
       PointCloudConstPtr input_;
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif //#ifndef _PCL_SEGMENTATION_COMPARATOR_H_

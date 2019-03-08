@@ -123,11 +123,7 @@ pcl::visualization::ImageViewer::addMask (
     search.projectPoint (mask[i], p_projected);
 
     xy.push_back (p_projected.x);
-    #if ((VTK_MAJOR_VERSION >= 6) || ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7)))
     xy.push_back (static_cast<float> (image->height) - p_projected.y);
-    #else
-    xy.push_back (p_projected.y);
-    #endif
   }
 
   vtkSmartPointer<context_items::Points> points = vtkSmartPointer<context_items::Points>::New ();
@@ -180,11 +176,7 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
     pcl::PointXY p;
     search.projectPoint (polygon.getContour ()[i], p);
     xy.push_back (p.x);
-    #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 7))
-    xy.push_back (static_cast<float> (image->height) - p.y);
-    #else
     xy.push_back (p.y);
-    #endif
   }
 
   // Close the polygon
@@ -261,17 +253,15 @@ pcl::visualization::ImageViewer::addRectangle (
   min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max ();
   max_pt_2d.x = max_pt_2d.y = -std::numeric_limits<float>::max ();
   // Search for the two extrema
-  for (size_t i = 0; i < pp_2d.size (); ++i)
+  for (const auto &point : pp_2d)
   {
-    if (pp_2d[i].x < min_pt_2d.x) min_pt_2d.x = pp_2d[i].x;
-    if (pp_2d[i].y < min_pt_2d.y) min_pt_2d.y = pp_2d[i].y;
-    if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
-    if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
+    if (point.x < min_pt_2d.x) min_pt_2d.x = point.x;
+    if (point.y < min_pt_2d.y) min_pt_2d.y = point.y;
+    if (point.x > max_pt_2d.x) max_pt_2d.x = point.x;
+    if (point.y > max_pt_2d.y) max_pt_2d.y = point.y;
   }
-#if ((VTK_MAJOR_VERSION >= 6) || ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7)))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
-#endif
 
   vtkSmartPointer<context_items::Rectangle> rect = vtkSmartPointer<context_items::Rectangle>::New ();
   rect->setColors (static_cast<unsigned char> (255.0 * r), 
@@ -326,17 +316,15 @@ pcl::visualization::ImageViewer::addRectangle (
   min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max ();
   max_pt_2d.x = max_pt_2d.y = -std::numeric_limits<float>::max ();
   // Search for the two extrema
-  for (size_t i = 0; i < pp_2d.size (); ++i)
+  for (const auto &point : pp_2d)
   {
-    if (pp_2d[i].x < min_pt_2d.x) min_pt_2d.x = pp_2d[i].x;
-    if (pp_2d[i].y < min_pt_2d.y) min_pt_2d.y = pp_2d[i].y;
-    if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
-    if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
+    if (point.x < min_pt_2d.x) min_pt_2d.x = point.x;
+    if (point.y < min_pt_2d.y) min_pt_2d.y = point.y;
+    if (point.x > max_pt_2d.x) max_pt_2d.x = point.x;
+    if (point.y > max_pt_2d.y) max_pt_2d.y = point.y;
   }
-#if ((VTK_MAJOR_VERSION >= 6) ||((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7)))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
-#endif
 
   vtkSmartPointer<context_items::Rectangle> rect = vtkSmartPointer<context_items::Rectangle>::New ();
   rect->setColors (static_cast<unsigned char> (255.0 * r), 
@@ -436,24 +424,11 @@ pcl::visualization::ImageViewer::showCorrespondences (
   
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New ();
   image->SetDimensions (source_img.width + target_img.width, std::max (source_img.height, target_img.height), 1);
-#if VTK_MAJOR_VERSION < 6
-  image->SetScalarTypeToUnsignedChar ();
-  image->SetNumberOfScalarComponents (3);
-  image->AllocateScalars ();
-#else
   image->AllocateScalars (VTK_UNSIGNED_CHAR, 3);
-#endif
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, data_size_, 1);
   vtkSmartPointer<PCLContextImageItem> image_item = vtkSmartPointer<PCLContextImageItem>::New ();
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
-  // Now create filter and set previously created transformation
-  algo_->SetInput (image);
-  algo_->Update ();
-  image_item->set (0, 0, algo_->GetOutput ());
-#else
   image_item->set (0, 0, image);
   interactor_style_->adjustCamera (image, ren_);
-#endif
   am_it->actor->GetScene ()->AddItem (image_item);
   image_viewer_->SetSize (image->GetDimensions ()[0], image->GetDimensions ()[1]);
 
@@ -474,13 +449,8 @@ pcl::visualization::ImageViewer::showCorrespondences (
 
     float query_x = correspondences[i].index_query % source_img.width;
     float match_x = correspondences[i].index_match % target_img.width + source_img.width;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
-    float query_y = correspondences[i].index_query / source_img.width;
-    float match_y = correspondences[i].index_match / target_img.width;
-#else
     float query_y = getSize ()[1] - correspondences[i].index_query / source_img.width;
     float match_y = getSize ()[1] - correspondences[i].index_match / target_img.width;
-#endif
 
     query_circle->set (query_x, query_y, 3.0);
     match_circle->set (match_x, match_y, 3.0);

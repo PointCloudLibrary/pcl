@@ -39,8 +39,6 @@
  */
 
 #pragma once
-#ifndef __PCL_IO_IMAGE_GRABBER__
-#define __PCL_IO_IMAGE_GRABBER__
 
 #include "pcl/pcl_config.h"
 #include <pcl/io/grabber.h>
@@ -93,15 +91,15 @@ namespace pcl
     }
 
     /** \brief Virtual destructor. */
-    virtual ~ImageGrabberBase () throw ();
+    ~ImageGrabberBase () throw ();
 
     /** \brief Starts playing the list of PCD files if frames_per_second is > 0. Otherwise it works as a trigger: publishes only the next PCD file in the list. */
-    virtual void 
-    start ();
+    void 
+    start () override;
       
     /** \brief Stops playing the list of PCD files if frames_per_second is > 0. Otherwise the method has no effect. */
-    virtual void 
-    stop ();
+    void 
+    stop () override;
       
     /** \brief Triggers a callback with new data */
     virtual void 
@@ -110,20 +108,20 @@ namespace pcl
     /** \brief whether the grabber is started (publishing) or not.
      * \return true only if publishing.
      */
-    virtual bool 
-    isRunning () const;
+    bool 
+    isRunning () const override;
       
     /** \return The name of the grabber */
-    virtual std::string 
-    getName () const;
+    std::string 
+    getName () const override;
       
     /** \brief Rewinds to the first PCD file in the list.*/
     virtual void 
     rewind ();
 
     /** \brief Returns the frames_per_second. 0 if grabber is trigger-based */
-    virtual float 
-    getFramesPerSecond () const;
+    float 
+    getFramesPerSecond () const override;
 
     /** \brief Returns whether the repeat flag is on */
     bool 
@@ -231,21 +229,21 @@ namespace pcl
                   bool repeat = false);
       
     /** \brief Empty destructor */
-    virtual ~ImageGrabber () throw () {}
+    ~ImageGrabber () throw () {}
     
     // Inherited from FileGrabber
     const boost::shared_ptr< const pcl::PointCloud<PointT> >
-    operator[] (size_t idx) const;
+    operator[] (size_t idx) const override;
 
     // Inherited from FileGrabber
     size_t
-    size () const;
+    size () const override;
 
     protected:
-    virtual void 
+    void 
     publish (const pcl::PCLPointCloud2& blob,
              const Eigen::Vector4f& origin, 
-             const Eigen::Quaternionf& orientation) const;
+             const Eigen::Quaternionf& orientation) const override;
     boost::signals2::signal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>* signal_;
   };
 
@@ -315,4 +313,3 @@ namespace pcl
     signal_->operator () (cloud);
   }
 }
-#endif

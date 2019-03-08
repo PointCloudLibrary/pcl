@@ -52,8 +52,8 @@ TEST (CorrespondenceEstimation, CorrespondenceEstimationNormalShooting)
   {
     for (float z = 0.0f; z < 5.0f; z += 0.2f)
     {
-      cloud1->points.push_back (pcl::PointXYZ (i, 0, z));
-      cloud2->points.push_back (pcl::PointXYZ (i, 2, z)); // Ideally this should be the corresponding point to the point defined in the previous line
+      cloud1->points.emplace_back(i, 0, z);
+      cloud2->points.emplace_back(i, 2, z); // Ideally this should be the corresponding point to the point defined in the previous line
     }
   }
         
@@ -76,7 +76,7 @@ TEST (CorrespondenceEstimation, CorrespondenceEstimationNormalShooting)
   ce.determineCorrespondences (*corr);
 
   // Based on the data defined, the correspondence indices should be 1 <-> 1 , 2 <-> 2 , 3 <-> 3 etc.
-  for (unsigned int i = 0; i < corr->size (); i++)
+  for (size_t i = 0; i < corr->size (); i++)
   {
     EXPECT_EQ ((*corr)[i].index_query, (*corr)[i].index_match);
   }
@@ -90,8 +90,8 @@ TEST (CorrespondenceEstimation, CorrespondenceEstimationSetSearchMethod)
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2 (new pcl::PointCloud<pcl::PointXYZ> ());
   for ( size_t i = 0; i < 50; i++ )
   {
-    cloud1->points.push_back(pcl::PointXYZ(float (rand()), float (rand()), float (rand())));
-    cloud2->points.push_back(pcl::PointXYZ(float (rand()), float (rand()), float (rand())));
+    cloud1->points.emplace_back(float (rand()), float (rand()), float (rand()));
+    cloud2->points.emplace_back(float (rand()), float (rand()), float (rand()));
   }
   // Build a KdTree for each
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree1 (new pcl::search::KdTree<pcl::PointXYZ> ());

@@ -35,13 +35,17 @@
  *
  */
 
-#ifndef CLOUD_VIEW_H_
-#define CLOUD_VIEW_H_
+#pragma once
 
-#include <pcl/apps/cloud_composer/qt.h>
+#include <QWidget>
+
+#include <vtkEventQtSlotConnect.h>
+
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
-#include <vtkEventQtSlotConnect.h>
+
+class QItemSelection;
+class QStandardItem;
 
 namespace pcl
 {
@@ -60,7 +64,7 @@ namespace pcl
       CloudView (QWidget* parent = 0);
       CloudView (const CloudView& to_copy);
       CloudView (ProjectModel* model, QWidget* parent = 0);
-      virtual ~CloudView ();
+      ~CloudView ();
       
       void 
       setModel (ProjectModel* new_model);
@@ -70,7 +74,7 @@ namespace pcl
       QVTKWidget* 
       getQVTK() const {return qvtk_; }
       
-      boost::shared_ptr<pcl::visualization::PCLVisualizer>
+      pcl::visualization::PCLVisualizer::Ptr
       getPCLVisualizer () const { return vis_; }
       
       void 
@@ -116,9 +120,9 @@ namespace pcl
       
     protected:
       void
-      paintEvent (QPaintEvent* event);
+      paintEvent (QPaintEvent* event) override;
       void 
-      resizeEvent (QResizeEvent* event);
+      resizeEvent (QResizeEvent* event) override;
       //   void scrollContentsBy (int dx, int dy);
       
       
@@ -136,7 +140,7 @@ namespace pcl
       void
       removeOrientationMarkerWidgetAxes ();
       
-      boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
+      pcl::visualization::PCLVisualizer::Ptr vis_;
       ProjectModel* model_;
       QVTKWidget* qvtk_;
       vtkSmartPointer<InteractorStyleSwitch> style_switch_;
@@ -151,5 +155,3 @@ namespace pcl
 }
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::CloudView);
-#endif
-

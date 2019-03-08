@@ -24,7 +24,7 @@ namespace pcl
         PointCoherencePtr coherence = point_coherences_[i];
         double d = log(coherence->compute (source, target));
         //double d = coherence->compute (source, target);
-        if (! pcl_isnan(d))
+        if (! std::isnan(d))
           val += d;
         else
           PCL_WARN ("nan!\n");

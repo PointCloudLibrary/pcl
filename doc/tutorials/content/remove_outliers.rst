@@ -18,7 +18,7 @@ editor, and place the following inside it:
 RadiusOutlierRemoval Background
 -------------------------------
 
-The picture below helps to visualize what the RadiusOutlierRemoval filter object does.  The user specifies a number of neighbors which every indice must have within a specified radius to remain in the PointCloud.  For example if 1 neighbor is specified, only the yellow point will be removed from the PointCloud.  If 2 neighbors are specified then both the yellow and green points will be removed from the PointCloud.
+The picture below helps to visualize what the RadiusOutlierRemoval filter object does.  The user specifies a number of neighbors which every index must have within a specified radius to remain in the PointCloud.  For example if 1 neighbor is specified, only the yellow point will be removed from the PointCloud.  If 2 neighbors are specified then both the yellow and green points will be removed from the PointCloud.
 
 .. image:: images/radius_outlier.png
 
@@ -62,7 +62,7 @@ For the *ConditionalRemoval* class, the user must specify '-c' as the command li
    :language: cpp
    :lines: 38-53
 
-Basically, we create the condition which a given point must satisfy for it to remain in our PointCloud.  In this example, we use add two comparisons to the conditon: greater than (GT) 0.0 and less than (LT) 0.8.  This condition is then used to build the filter. 
+Basically, we create the condition which a given point must satisfy for it to remain in our PointCloud.  In this example, we use add two comparisons to the condition: greater than (GT) 0.0 and less than (LT) 0.8.  This condition is then used to build the filter. 
 
 In both cases the code above creates the filter object that we are going to use and sets certain parameters that are necessary for the filtering to take place.
 

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_MESH_TRAITS_H
-#define PCL_GEOMETRY_MESH_TRAITS_H
+#pragma once
 
 #include <pcl/geometry/boost.h>
 
@@ -77,10 +76,8 @@ namespace pcl
       typedef EdgeDataT     EdgeData;
       typedef FaceDataT     FaceData;
 
-      /** \brief Specifies wether the mesh is manifold or not (only non-manifold vertices can be represented). */
+      /** \brief Specifies whether the mesh is manifold or not (only non-manifold vertices can be represented). */
       typedef boost::false_type IsManifold;
     };
   } // End namespace geometry
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_MESH_TRAITS_H

@@ -50,7 +50,7 @@ pcl::modeler::StatisticalOutlierRemovalWorker::StatisticalOutlierRemovalWorker(c
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::StatisticalOutlierRemovalWorker::~StatisticalOutlierRemovalWorker(void)
+pcl::modeler::StatisticalOutlierRemovalWorker::~StatisticalOutlierRemovalWorker()
 {
   delete mean_k_;
   delete stddev_mul_thresh_;

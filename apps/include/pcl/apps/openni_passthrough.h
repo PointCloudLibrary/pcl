@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_APPS_OPENNI_PASSTHROUGH_3D_
-#define PCL_APPS_OPENNI_PASSTHROUGH_3D_
+#pragma once
 
 // PCL
 #include <pcl/apps/openni_passthrough_qt.h>
@@ -89,7 +88,7 @@ class OpenNIPassthrough : public QMainWindow
     cloud_cb (const CloudConstPtr& cloud);
 
   protected:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
+    pcl::visualization::PCLVisualizer::Ptr vis_;
     pcl::OpenNIGrabber& grabber_;
     std::string device_id_;
     CloudPtr cloud_pass_;
@@ -116,5 +115,3 @@ class OpenNIPassthrough : public QMainWindow
     void 
     valueChanged (int new_value);
 };
-
-#endif    // PCL_APPS_OPENNI_PASSTHROUGH_3D_

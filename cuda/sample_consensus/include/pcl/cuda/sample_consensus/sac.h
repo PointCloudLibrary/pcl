@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_SAMPLE_CONSENSUS_H_
-#define PCL_CUDA_SAMPLE_CONSENSUS_H_
+#pragma once
 
 #include <pcl/cuda/sample_consensus/sac_model.h>
 #include <pcl/cuda/point_cloud.h>
@@ -197,5 +196,3 @@ namespace pcl
     };
   } // namespace
 } // namespace
-
-#endif  //#ifndef PCL_CUDA_SAMPLE_CONSENSUS_H_

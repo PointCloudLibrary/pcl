@@ -38,8 +38,7 @@
 /// which are used for viewing and editing point clouds
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef CLOUD_EDITOR_WIDGET_H_
-#define CLOUD_EDITOR_WIDGET_H_
+#pragma once
 
 #include <QGLWidget>
 #include <boost/function.hpp>
@@ -123,7 +122,7 @@ class CloudEditorWidget : public QGLWidget
     void
     cut ();
 
-    /// @brief Enters the mode where users are able to translate the selecte
+    /// @brief Enters the mode where users are able to translate the selected
     /// points.
     void
     transform ();
@@ -190,31 +189,31 @@ class CloudEditorWidget : public QGLWidget
   protected:  
     /// initializes GL
     void
-    initializeGL ();
+    initializeGL () override;
 
     /// the rendering function.
     void
-    paintGL ();
+    paintGL () override;
 
     /// resizes widget
     void
-    resizeGL (int width, int height);
+    resizeGL (int width, int height) override;
 
     /// mouse press control
     void
-    mousePressEvent (QMouseEvent *event);
+    mousePressEvent (QMouseEvent *event) override;
 
     /// mouse move control
     void
-    mouseMoveEvent (QMouseEvent *event);
+    mouseMoveEvent (QMouseEvent *event) override;
 
     /// mouse release control
     void
-    mouseReleaseEvent (QMouseEvent *event);
+    mouseReleaseEvent (QMouseEvent *event) override;
 
     /// key press control
     void
-    keyPressEvent (QKeyEvent *event);
+    keyPressEvent (QKeyEvent *event) override;
 
   private:
     
@@ -311,4 +310,3 @@ class CloudEditorWidget : public QGLWidget
 
 
 };
-#endif // CLOUD_EDITOR_WIDGET_H_

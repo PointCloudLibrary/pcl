@@ -43,7 +43,7 @@
 #include <pcl/gpu/utils/device/static_check.hpp>
 #include <pcl/exceptions.h>
 
-#include<assert.h>
+#include<cassert>
 
 using namespace pcl::device;
 using namespace std;

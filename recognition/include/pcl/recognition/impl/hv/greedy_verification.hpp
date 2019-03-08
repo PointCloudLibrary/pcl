@@ -53,7 +53,7 @@ template<typename ModelT, typename SceneT>
     // initialize explained_by_RM
     points_explained_by_rm_.resize (scene_cloud_downsampled_->points.size ());
 
-    // initalize model
+    // initialize model
     for (size_t m = 0; m < visible_models_.size (); m++)
     {
       boost::shared_ptr < RecognitionModel > recog_model (new RecognitionModel);

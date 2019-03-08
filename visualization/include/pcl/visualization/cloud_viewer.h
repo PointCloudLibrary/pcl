@@ -33,10 +33,11 @@
  *
  *
  */
-#ifndef PCL_CLOUD_VIEWER_H_
-#define PCL_CLOUD_VIEWER_H_
+
+#pragma once
 
 #include <pcl/visualization/pcl_visualizer.h> //pcl vis
+#include <boost/scoped_ptr.hpp> // scoped_ptr for pre-C++11
 
 #include <string>
 
@@ -51,6 +52,9 @@ namespace pcl
     class PCL_EXPORTS CloudViewer : boost::noncopyable
     {
       public:
+        typedef boost::shared_ptr<CloudViewer> Ptr;
+        typedef boost::shared_ptr<const CloudViewer> ConstPtr;
+
         typedef pcl::PointCloud<pcl::PointXYZRGBA> ColorACloud;
         typedef pcl::PointCloud<pcl::PointXYZRGB> ColorCloud;
         typedef pcl::PointCloud<pcl::PointXYZI> GrayCloud;
@@ -199,7 +203,7 @@ namespace pcl
       private:
         /** \brief Private implementation. */
         struct CloudViewer_impl;
-        std::auto_ptr<CloudViewer_impl> impl_;
+	boost::scoped_ptr<CloudViewer_impl> impl_;
         
         boost::signals2::connection 
         registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)>);
@@ -212,5 +216,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* CLOUD_VIEWER_H_ */

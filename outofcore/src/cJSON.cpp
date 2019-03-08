@@ -23,13 +23,13 @@
 /* cJSON */
 /* JSON parser in C. */
 
-#include <string.h>
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-#include <float.h>
-#include <limits.h>
-#include <ctype.h>
+#include <cstring>
+#include <cstdio>
+#include <cmath>
+#include <cstdlib>
+#include <cfloat>
+#include <climits>
+#include <cctype>
 #include <pcl/outofcore/cJSON.h>
 
 static const char *ep;
@@ -421,26 +421,29 @@ static const char *parse_object(cJSON *item,const char *value)
 /* Render an object to text. */
 static char *print_object(cJSON *item,int depth,int fmt)
 {
-	char **entries=0,**names=0;
-	char *out=0,*ptr,*ret,*str;size_t len=7,i=0,j;
+	char *out=0;
+	size_t len=7;
 	cJSON *child=item->child;
 	size_t numentries=0,fail=0;
 	/* Count the number of entries. */
 	while (child) numentries++,child=child->next;
 	/* Allocate space for the names and the objects */
-	entries=static_cast<char**>(cJSON_malloc(numentries*sizeof(char*)));
+	char **entries = static_cast<char**>(cJSON_malloc(numentries*sizeof(char*)));
 	if (!entries) return 0;
-	names=static_cast<char**>(cJSON_malloc(numentries*sizeof(char*)));
+	char **names=static_cast<char**>(cJSON_malloc(numentries*sizeof(char*)));
 	if (!names) {cJSON_free(entries);return 0;}
 	memset(entries,0,sizeof(char*)*numentries);
 	memset(names,0,sizeof(char*)*numentries);
 
 	/* Collect all the results into our arrays: */
 	child=item->child;depth++;if (fmt) len+=depth;
+	int childId = 0;
 	while (child)
 	{
-		names[i]=str=print_string_ptr(child->string);
-		entries[i++]=ret=print_value(child,depth,fmt);
+		char *str = print_string_ptr(child->string);
+		names[childId] = str;
+		char *ret = print_value(child,depth,fmt);
+		entries[childId++] = ret;
 		if (str && ret) len+=strlen(ret)+strlen(str)+2+(fmt?2+depth:0); else fail=1;
 		child=child->next;
 	}
@@ -452,16 +455,19 @@ static char *print_object(cJSON *item,int depth,int fmt)
 	/* Handle failure */
 	if (fail)
 	{
-		for (i=0;i<numentries;i++) {if (names[i]) cJSON_free(names[i]);if (entries[i]) cJSON_free(entries[i]);}
+		for (size_t i=0;i<numentries;i++) {if (names[i]) cJSON_free(names[i]);if (entries[i]) cJSON_free(entries[i]);}
 		cJSON_free(names);cJSON_free(entries);
 		return 0;
 	}
 	
 	/* Compose the output: */
-	*out='{';ptr=out+1;if (fmt)*ptr++='\n';*ptr=0;
-	for (i=0;i<numentries;i++)
+	*out='{';
+	char *ptr = out+1;
+	if (fmt)*ptr++='\n';
+	*ptr=0;
+	for (size_t i=0;i<numentries;i++)
 	{
-		if (fmt) for (j=0;j<static_cast<size_t> (depth);j++) *ptr++='\t';
+		if (fmt) for (int j=0; j < depth; j++) *ptr++='\t';
 		strcpy(ptr,names[i]);ptr+=strlen(names[i]);
 		*ptr++=':';if (fmt) *ptr++='\t';
 		strcpy(ptr,entries[i]);ptr+=strlen(entries[i]);
@@ -471,7 +477,7 @@ static char *print_object(cJSON *item,int depth,int fmt)
 	}
 	
 	cJSON_free(names);cJSON_free(entries);
-	if (fmt) for (i=0;i<static_cast<size_t>(depth-1);i++) *ptr++='\t';
+	if (fmt) for (int i=0; i < depth-1; i++) *ptr++='\t';
 	*ptr++='}';*ptr++=0;
 	return out;	
 }
@@ -515,7 +521,7 @@ cJSON *cJSON_CreateArray()						{cJSON *item=cJSON_New_Item();if(item)item->type
 cJSON *cJSON_CreateObject()						{cJSON *item=cJSON_New_Item();if(item)item->type=cJSON_Object;return item;}
 
 /* Create Arrays: */
-cJSON *cJSON_CreateIntArray(int *numbers,int count)				{int i;cJSON *n=0,*p=0,*a=cJSON_CreateArray();for(i=0;a && i<count;i++){n=cJSON_CreateNumber(numbers[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
-cJSON *cJSON_CreateFloatArray(float *numbers,int count)			{int i;cJSON *n=0,*p=0,*a=cJSON_CreateArray();for(i=0;a && i<count;i++){n=cJSON_CreateNumber(numbers[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
-cJSON *cJSON_CreateDoubleArray(double *numbers,int count)		{int i;cJSON *n=0,*p=0,*a=cJSON_CreateArray();for(i=0;a && i<count;i++){n=cJSON_CreateNumber(numbers[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
-cJSON *cJSON_CreateStringArray(const char **strings,int count)	{int i;cJSON *n=0,*p=0,*a=cJSON_CreateArray();for(i=0;a && i<count;i++){n=cJSON_CreateString(strings[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
+cJSON *cJSON_CreateIntArray(int *numbers,int count)				{cJSON *p=0,*a=cJSON_CreateArray();for(int i=0;a && i<count;i++){cJSON *n=cJSON_CreateNumber(numbers[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
+cJSON *cJSON_CreateFloatArray(float *numbers,int count)			{cJSON *p=0,*a=cJSON_CreateArray();for(int i=0;a && i<count;i++){cJSON *n=cJSON_CreateNumber(numbers[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
+cJSON *cJSON_CreateDoubleArray(double *numbers,int count)		{cJSON *p=0,*a=cJSON_CreateArray();for(int i=0;a && i<count;i++){cJSON *n=cJSON_CreateNumber(numbers[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
+cJSON *cJSON_CreateStringArray(const char **strings,int count)	{cJSON *p=0,*a=cJSON_CreateArray();for(int i=0;a && i<count;i++){cJSON *n=cJSON_CreateString(strings[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}

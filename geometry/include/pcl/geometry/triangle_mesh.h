@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_TRIANGLE_MESH_H
-#define PCL_GEOMETRY_TRIANGLE_MESH_H
+#pragma once
 
 #include <utility>
 
@@ -357,5 +356,3 @@ namespace pcl
     };
   } // End namespace geom
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_TRIANGLE_MESH_H

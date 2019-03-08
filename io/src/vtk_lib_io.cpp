@@ -57,7 +57,7 @@
 int
 pcl::io::loadPolygonFile (const std::string &file_name, pcl::PolygonMesh& mesh)
 {
-  std::string extension = file_name.substr (file_name.find_last_of (".") + 1);
+  std::string extension = file_name.substr (file_name.find_last_of ('.') + 1);
 
   if (extension == "pcd") // no Polygon, but only a point cloud
   {
@@ -87,7 +87,7 @@ pcl::io::savePolygonFile (const std::string &file_name,
                           const bool binary_format)
 {
   // TODO: what about sensor position and orientation?!?!?!?
-  std::string extension = file_name.substr (file_name.find_last_of (".") + 1);
+  std::string extension = file_name.substr (file_name.find_last_of ('.') + 1);
   if (extension == "pcd")  // no Polygon, but only a point cloud
     return (pcl::io::savePCDFile (file_name, mesh.cloud, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), binary_format) == 0);
   else if (extension == "vtk")
@@ -99,7 +99,7 @@ pcl::io::savePolygonFile (const std::string &file_name,
   else
   {
     PCL_ERROR ("[pcl::io::savePolygonFile]: Unsupported file type (%s)\n", extension.c_str ());
-    return (0);
+    return (false);
   }
 }
 
@@ -183,11 +183,7 @@ pcl::io::savePolygonFileVTK (const std::string &file_name,
   pcl::io::mesh2vtk (mesh, poly_data);
 
   vtkSmartPointer<vtkPolyDataWriter> poly_writer = vtkSmartPointer<vtkPolyDataWriter>::New ();
-#if VTK_MAJOR_VERSION < 6
-  poly_writer->SetInput (poly_data);
-#else
   poly_writer->SetInputData (poly_data);
-#endif
 
   if (binary_format)
     poly_writer->SetFileTypeToBinary ();
@@ -209,11 +205,7 @@ pcl::io::savePolygonFilePLY (const std::string &file_name,
   pcl::io::mesh2vtk (mesh, poly_data);
 
   vtkSmartPointer<vtkPLYWriter> poly_writer = vtkSmartPointer<vtkPLYWriter>::New ();
-#if VTK_MAJOR_VERSION < 6
-  poly_writer->SetInput (poly_data);
-#else
   poly_writer->SetInputData (poly_data);
-#endif
 
   if (binary_format)
     poly_writer->SetFileTypeToBinary ();
@@ -235,11 +227,7 @@ pcl::io::savePolygonFileSTL (const std::string &file_name,
 
   pcl::io::mesh2vtk (mesh, poly_data);
   vtkSmartPointer<vtkSTLWriter> poly_writer = vtkSmartPointer<vtkSTLWriter>::New ();
-#if VTK_MAJOR_VERSION < 6
-  poly_writer->SetInput (poly_data);
-#else
   poly_writer->SetInputData (poly_data);
-#endif
 
   if (binary_format)
     poly_writer->SetFileTypeToBinary ();
@@ -288,17 +276,21 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   // Then the color information, if any
   vtkUnsignedCharArray* poly_colors = NULL;
   if (poly_data->GetPointData() != NULL)
+  {
     poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("Colors"));
 
-  // some applications do not save the name of scalars (including PCL's native vtk_io)
-  if (!poly_colors && poly_data->GetPointData () != NULL)
-    poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("scalars"));
+    // some applications do not save the name of scalars (including PCL's native vtk_io)
+    if (!poly_colors)
+      poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("scalars"));
 
-  if (!poly_colors && poly_data->GetPointData () != NULL)
-    poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("RGB"));
+    if (!poly_colors)
+      poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("RGB"));
 
-  // TODO: currently only handles rgb values with 3 components
-  if (poly_colors && (poly_colors->GetNumberOfComponents () == 3))
+    if (!poly_colors)
+      poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("RGBA"));
+  }
+
+  if (poly_colors && (poly_colors->GetNumberOfComponents () == 3 || poly_colors->GetNumberOfComponents () == 4))
   {
     pcl::PointCloud<pcl::RGB>::Ptr rgb_cloud (new pcl::PointCloud<pcl::RGB> ());
     rgb_cloud->points.resize (nr_points);
@@ -306,13 +298,15 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
     rgb_cloud->height = 1;
     rgb_cloud->is_dense = true;
 
-    unsigned char point_color[3];
+    unsigned char point_color[4] = {0, 0, 0, 255};
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); i++)
     {
       poly_colors->GetTupleValue (i, &point_color[0]);
-      rgb_cloud->points[i].r = point_color[0];
-      rgb_cloud->points[i].g = point_color[1];
-      rgb_cloud->points[i].b = point_color[2];
+      // individual component copy due to different memory layout
+      (*rgb_cloud)[i].r = point_color[0];
+      (*rgb_cloud)[i].g = point_color[1];
+      (*rgb_cloud)[i].b = point_color[2];
+      (*rgb_cloud)[i].a = point_color[3];
     }
 
     pcl::PCLPointCloud2 rgb_cloud2;
@@ -363,7 +357,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   while (mesh_polygons->GetNextCell (nr_cell_points, cell_points))
   {
     mesh.polygons[id_poly].vertices.resize (nr_cell_points);
-    for (int i = 0; i < nr_cell_points; ++i)
+    for (vtkIdType i = 0; i < nr_cell_points; ++i)
       mesh.polygons[id_poly].vertices[i] = static_cast<int> (cell_points[i]);
     ++id_poly;
   }
@@ -386,7 +380,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::TextureMe
   mesh.tex_polygons.push_back (polygon_mesh.polygons);
 
   // Add dummy material
-  mesh.tex_materials.push_back (pcl::TexMaterial ());
+  mesh.tex_materials.emplace_back();
   std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > dummy;
   mesh.tex_coordinates.push_back (dummy);
 
@@ -515,13 +509,7 @@ pcl::io::saveRangeImagePlanarFilePNG (
 {
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
   image->SetDimensions(range_image.width, range_image.height, 1);
-#if VTK_MAJOR_VERSION < 6
-  image->SetNumberOfScalarComponents(1);
-  image->SetScalarTypeToFloat();
-  image->AllocateScalars();
-#else
   image->AllocateScalars (VTK_FLOAT, 1);
-#endif
 
   int* dims = image->GetDimensions();
 
@@ -540,11 +528,7 @@ pcl::io::saveRangeImagePlanarFilePNG (
 
   vtkSmartPointer<vtkImageShiftScale> shiftScaleFilter = vtkSmartPointer<vtkImageShiftScale>::New();
   shiftScaleFilter->SetOutputScalarTypeToUnsignedChar();
-#if VTK_MAJOR_VERSION < 6
-  shiftScaleFilter->SetInputConnection(image->GetProducerPort());
-#else
   shiftScaleFilter->SetInputData (image);
-#endif
   shiftScaleFilter->SetShift(-1.0f * image->GetScalarRange()[0]); // brings the lower bound to 0
   shiftScaleFilter->SetScale(newRange/oldRange);
   shiftScaleFilter->Update();

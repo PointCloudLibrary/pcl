@@ -87,8 +87,7 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef PCL_CUDA_EIGEN_H_
-#define PCL_CUDA_EIGEN_H_
+#pragma once
 
 #include <pcl/cuda/point_cloud.h>
 #include <pcl/cuda/cutil_math.h>
@@ -218,7 +217,7 @@ namespace pcl
   		      swap (roots.x, roots.y);
   		  }
   		  
-  		  if (roots.x <= 0.0f) // eigenval for symetric positive semi-definite matrix can not be negative! Set it to 0
+  		  if (roots.x <= 0.0f) // eigenval for symmetric positive semi-definite matrix can not be negative! Set it to 0
   			  computeRoots2 (c2, c1, roots);
   		}
     }
@@ -770,5 +769,3 @@ namespace pcl
   
   } // namespace
 } // namespace
-
-#endif  //#ifndef PCL_CUDA_EIGEN_H_

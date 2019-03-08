@@ -21,7 +21,7 @@ Voxel Cloud Connectivity Segmentation (VCCS) is a recent "superpixel" method whi
    :scale: 50%
    :align: center
 
-   **From right to left, 6 (faces), 18 (faces,egdes), and 26 (faces, edges, vertices) adjacency**
+   **From right to left, 6 (faces), 18 (faces,edges), and 26 (faces, edges, vertices) adjacency**
 
 The adjacency graph of supervoxels (and the underlying voxels) is maintained efficiently within the octree by specifying that neighbors are voxels within R_voxel of one another, where R_voxel specifies the octree leaf resolution. This adjacency graph is used extensively for both the region growing used to generate the supervoxels, as well as determining adjacency of the resulting supervoxels themselves.
 
@@ -103,7 +103,7 @@ We are now ready to setup the supervoxel clustering. We use the class :pcl:`Supe
 
 .. important::
 
-  By default, the algorithm will use a special tranform compressing the depth in Z if your input cloud is organized (eg, from an RGBD sensor like the Kinect). You MUST set use_transform to false if you are using an organized cloud which doesn't have the camera at (0,0,0) and depth in positive Z. The transform is specifically designed to help improve Kinect data by increasing voxel bin size as distance from the camera increases. If your cloud is unorganized, this transform will not be used by default, but can be enabled by using setUseSingleCameraTransform(true). 
+  By default, the algorithm will use a special transform compressing the depth in Z if your input cloud is organized (eg, from an RGBD sensor like the Kinect). You MUST set use_transform to false if you are using an organized cloud which doesn't have the camera at (0,0,0) and depth in positive Z. The transform is specifically designed to help improve Kinect data by increasing voxel bin size as distance from the camera increases. If your cloud is unorganized, this transform will not be used by default, but can be enabled by using setUseSingleCameraTransform(true). 
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
@@ -136,13 +136,13 @@ Then we iterate through the multimap, creating a point cloud of the centroids of
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
-   :lines: 110-125
+   :lines: 110-123
 
 Then we create a string label for the supervoxel graph we will draw and call ``addSupervoxelConnectionsToViewer``, a drawing helper function implemented later in the tutorial code. The details of ``addSupervoxelConnectionsToViewer`` are beyond the scope of this tutorial, but all it does is draw a star polygon mesh of the supervoxel centroid to all of its neighbors centroids. We need to do this like this because adding individual lines using the ``addLine`` functionality of ``pcl_visualizer`` is too slow for large numbers of lines.
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
-   :lines: 126-132
+   :lines: 124-130
 
 This results in a supervoxel graph that looks like this for seed size of 0.1m (top) and 0.05m (middle). The bottom is the original cloud, given for reference.:
 

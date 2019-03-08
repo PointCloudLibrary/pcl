@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_IO_VTK_LIB_IO_H_
-#define PCL_IO_VTK_LIB_IO_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -270,5 +269,3 @@ namespace pcl
 }
 
 #include <pcl/io/impl/vtk_lib_io.hpp>
-
-#endif /* PLC_IO_VTK_LIB_IO_H_ */

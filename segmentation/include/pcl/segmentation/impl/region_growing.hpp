@@ -50,7 +50,7 @@
 #include <queue>
 #include <list>
 #include <cmath>
-#include <time.h>
+#include <ctime>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
@@ -468,7 +468,7 @@ pcl::RegionGrowing<PointT, NormalT>::growRegion (int initial_seed, int segment_n
       bool is_a_seed = false;
       bool belongs_to_segment = validatePoint (initial_seed, curr_seed, index, is_a_seed);
 
-      if (belongs_to_segment == false)
+      if (!belongs_to_segment)
       {
         i_nghbr++;
         continue;
@@ -622,8 +622,7 @@ pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint (int index, pcl::PointI
     }
     // if we have already made the segmentation, then find the segment
     // to which this point belongs
-    std::vector <pcl::PointIndices>::iterator i_segment;
-    for (i_segment = clusters_.begin (); i_segment != clusters_.end (); i_segment++)
+    for (auto i_segment = clusters_.cbegin (); i_segment != clusters_.cend (); i_segment++)
     {
       bool segment_was_found = false;
       for (size_t i_point = 0; i_point < i_segment->indices.size (); i_point++)
@@ -681,12 +680,10 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
       colored_cloud->points.push_back (point);
     }
 
-    std::vector< pcl::PointIndices >::iterator i_segment;
     int next_color = 0;
-    for (i_segment = clusters_.begin (); i_segment != clusters_.end (); i_segment++)
+    for (auto i_segment = clusters_.cbegin (); i_segment != clusters_.cend (); i_segment++)
     {
-      std::vector<int>::iterator i_point;
-      for (i_point = i_segment->indices.begin (); i_point != i_segment->indices.end (); i_point++)
+      for (auto i_point = i_segment->indices.cbegin (); i_point != i_segment->indices.cend (); i_point++)
       {
         int index;
         index = *i_point;
@@ -736,15 +733,12 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
       colored_cloud->points.push_back (point);
     }
 
-    std::vector< pcl::PointIndices >::iterator i_segment;
     int next_color = 0;
-    for (i_segment = clusters_.begin (); i_segment != clusters_.end (); i_segment++)
+    for (auto i_segment = clusters_.cbegin (); i_segment != clusters_.cend (); i_segment++)
     {
-      std::vector<int>::iterator i_point;
-      for (i_point = i_segment->indices.begin (); i_point != i_segment->indices.end (); i_point++)
+      for (auto i_point = i_segment->indices.cbegin (); i_point != i_segment->indices.cend (); i_point++)
       {
-        int index;
-        index = *i_point;
+        int index = *i_point;
         colored_cloud->points[index].r = colors[3 * next_color];
         colored_cloud->points[index].g = colors[3 * next_color + 1];
         colored_cloud->points[index].b = colors[3 * next_color + 2];

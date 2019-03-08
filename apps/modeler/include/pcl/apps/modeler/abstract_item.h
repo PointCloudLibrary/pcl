@@ -34,8 +34,7 @@
  *
  */
 
-#ifndef PCL_MODELER_ABSTRACT_ITEM_H_
-#define PCL_MODELER_ABSTRACT_ITEM_H_
+#pragma once
 
 #include <string>
 
@@ -55,8 +54,8 @@ namespace pcl
     class AbstractItem
     {
       public:
-        AbstractItem(void);
-        ~AbstractItem(void);
+        AbstractItem();
+        ~AbstractItem();
 
         void
         showContextMenu(const QPoint* position);
@@ -82,5 +81,3 @@ namespace pcl
 
   }
 }
-
-#endif // PCL_MODELER_ABSTRACT_ITEM_H_

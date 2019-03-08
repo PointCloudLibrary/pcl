@@ -36,8 +36,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_SURFACE_NORMAL_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_SURFACE_NORMAL_H_
+
+#pragma once
 
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/point_cloud.h>
@@ -81,7 +81,7 @@ namespace pcl
           */
         void 
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
-                                     pcl::Correspondences& remaining_correspondences);
+                                     pcl::Correspondences& remaining_correspondences) override;
 
         /** \brief Set the thresholding angle between the normals for correspondence rejection. 
           * \param[in] threshold cosine of the thresholding angle between the normals for rejection
@@ -163,8 +163,8 @@ namespace pcl
           * confident that the tree will be set correctly.
           */
         template <typename PointT> inline void
-        setSearchMethodTarget (const boost::shared_ptr<pcl::search::KdTree<PointT> > &tree, 
-                               bool force_no_recompute = false) 
+        setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr &tree,
+                               bool force_no_recompute = false)
         { 
           boost::static_pointer_cast< DataContainer<PointT> > 
             (data_container_)->setSearchMethodTarget (tree, force_no_recompute );
@@ -237,12 +237,12 @@ namespace pcl
 
         /** \brief See if this rejector requires source points */
         bool
-        requiresSourcePoints () const
+        requiresSourcePoints () const override
         { return (true); }
 
         /** \brief Blob method for setting the source cloud */
         void
-        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
         { 
           if (!data_container_)
             initializeDataContainer<PointXYZ, Normal> ();
@@ -253,12 +253,12 @@ namespace pcl
         
         /** \brief See if this rejector requires a target cloud */
         bool
-        requiresTargetPoints () const
+        requiresTargetPoints () const override
         { return (true); }
 
         /** \brief Method for setting the target cloud */
         void
-        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
         { 
           if (!data_container_)
             initializeDataContainer<PointXYZ, Normal> ();
@@ -269,12 +269,12 @@ namespace pcl
         
         /** \brief See if this rejector requires source normals */
         bool
-        requiresSourceNormals () const
+        requiresSourceNormals () const override
         { return (true); }
 
         /** \brief Blob method for setting the source normals */
         void
-        setSourceNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
+        setSourceNormals (pcl::PCLPointCloud2::ConstPtr cloud2) override
         { 
           if (!data_container_)
             initializeDataContainer<PointXYZ, Normal> ();
@@ -285,12 +285,12 @@ namespace pcl
         
         /** \brief See if this rejector requires target normals*/
         bool
-        requiresTargetNormals () const
+        requiresTargetNormals () const override
         { return (true); }
 
         /** \brief Method for setting the target normals */
         void
-        setTargetNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
+        setTargetNormals (pcl::PCLPointCloud2::ConstPtr cloud2) override
         { 
           if (!data_container_)
             initializeDataContainer<PointXYZ, Normal> ();
@@ -305,7 +305,7 @@ namespace pcl
           * \param[out] correspondences the set of resultant correspondences.
           */
         inline void 
-        applyRejection (pcl::Correspondences &correspondences)
+        applyRejection (pcl::Correspondences &correspondences) override
         {
           getRemainingCorrespondences (*input_correspondences_, correspondences);
         }
@@ -321,5 +321,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_rejection_surface_normal.hpp>
-
-#endif

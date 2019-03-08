@@ -35,12 +35,10 @@
  *
  */
 
-#ifndef MANIPULATION_EVENT_H_
-#define MANIPULATION_EVENT_H_
+#pragma once
 
 #include <pcl/visualization/vtk.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
-#include <pcl/apps/cloud_composer/qt.h>
 
 namespace pcl
 {
@@ -48,7 +46,7 @@ namespace pcl
   {
       
     
-    class PCL_EXPORTS ManipulationEvent
+    class ManipulationEvent
     {
       
       public:
@@ -76,7 +74,3 @@ namespace pcl
   }
   
 }
-
-#endif // MANIPULATION_EVENT_H_
-        
-        

@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_DENSITY_H
-#define PCL_OCTREE_DENSITY_H
+#pragma once
 
 #include <pcl/octree/octree_pointcloud.h>
 
@@ -58,7 +57,7 @@ namespace pcl
         }
 
         /** \brief Empty class deconstructor. */
-        virtual ~OctreePointCloudDensityContainer ()
+        ~OctreePointCloudDensityContainer ()
         {
         }
 
@@ -72,7 +71,7 @@ namespace pcl
         /** \brief Equal comparison operator
          * \param[in] other OctreePointCloudDensityContainer to compare with
          */
-        virtual bool operator==(const OctreeContainerBase& other) const
+        bool operator==(const OctreeContainerBase& other) const override
         {
           const OctreePointCloudDensityContainer* otherContainer =
               dynamic_cast<const OctreePointCloudDensityContainer*>(&other);
@@ -98,8 +97,8 @@ namespace pcl
         }
 
         /** \brief Reset leaf node. */
-        virtual void
-        reset ()
+        void
+        reset () override
         {
           point_counter_ = 0;
         }
@@ -131,7 +130,7 @@ namespace pcl
         }
 
         /** \brief Empty class deconstructor. */
-        virtual
+        
         ~OctreePointCloudDensity ()
         {
         }
@@ -157,6 +156,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_OctreePointCloudDensity(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudDensity<T>;
-
-#endif
-

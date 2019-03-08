@@ -34,8 +34,8 @@
  * $Id$
  *
  */
-#ifndef PCL_PCL_VISUALIZER_COMMON_H_
-#define PCL_PCL_VISUALIZER_COMMON_H_
+
+#pragma once
 
 #if defined __GNUC__
 #pragma GCC system_header
@@ -131,7 +131,8 @@ namespace pcl
       PCL_VISUALIZER_LUT_HSV_INVERSE,   /**< Inverse HSV colormap */
       PCL_VISUALIZER_LUT_GREY,          /**< Grey colormap (black to white) */
       PCL_VISUALIZER_LUT_BLUE2RED,      /**< Blue to red colormap (blue to white to red) */
-      PCL_VISUALIZER_LUT_RANGE_AUTO     /**< Set LUT range to min and max values of the data */
+      PCL_VISUALIZER_LUT_RANGE_AUTO,    /**< Set LUT range to min and max values of the data */
+      PCL_VISUALIZER_LUT_VIRIDIS        /**< Viridis colormap */
     };
 
     /** \brief Generate a lookup table for a colormap.
@@ -212,5 +213,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/common/impl/common.hpp>
-
-#endif

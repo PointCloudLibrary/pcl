@@ -101,13 +101,13 @@ class MultiRansac
 
     void viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
-      static bool first_time = true;
       boost::mutex::scoped_lock l(m_mutex);
       if (new_cloud)
       {
         typedef pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal> ColorHandler;
 
         ColorHandler Color_handler (normal_cloud);
+        static bool first_time = true;
         if (!first_time)
         {
           viz.removePointCloud ("normalcloud");
@@ -192,14 +192,12 @@ class MultiRansac
             std::vector<float4> coeffs = sac.getAllModelCoefficients ();
             std::vector<float3> centroids = sac.getAllModelCentroids ();
             std::cerr << "Found " << planes_inlier_counts.size () << " planes" << std::endl;
-            int best_plane = 0;
             int best_plane_inliers_count = -1;
 
             for (unsigned int i = 0; i < planes.size (); i++)
             {
               if (planes_inlier_counts[i] > best_plane_inliers_count)
               {
-                best_plane = i;
                 best_plane_inliers_count = planes_inlier_counts[i];
               }
 
@@ -219,52 +217,6 @@ class MultiRansac
               }
             }
           }
-
-          //{
-          //    ScopeTime t ("copying & transforming logo");
-          //for (unsigned int i = 0; i < planes.size (); i++)
-          //{
-//        //    if (i == best_plane) // assume first plane is biggest plane
-          //  {
-          //    if (logo_cloud_)
-          //    {
-          //      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > transformed_logo (new pcl::PointCloud<pcl::PointXYZRGB>);
-          //      Eigen::Affine3f transformation;
-
-          //      Eigen::Vector3f plane_normal (coeffs[i].x, coeffs[i].y, coeffs[i].z);
-          //      plane_normal.normalize ();
-          //      if (plane_normal.dot (Eigen::Vector3f::Zero()) - coeffs[i].w > 0)
-          //        plane_normal = -plane_normal;
-
-          //      Eigen::Vector3f logo_normal (0,0,-1);
-
-          //      Eigen::Vector3f trans (Eigen::Vector3f(centroids[i].x, centroids[i].y, centroids[i].z) * 0.97);
-          //      Eigen::AngleAxisf rot (acos (logo_normal.dot (plane_normal)), logo_normal.cross (plane_normal).normalized ());
-
-          //      transformation = Eigen::Affine3f::Identity();// = ....;
-          //      transformation.translate (trans);// = ....;
-          //      transformation.rotate (rot);// = ....;
-          //      transformation.scale (0.001 * sqrt (planes_inlier_counts[i]));// = ....;
-
-          //      std::cerr << "Plane centroid " << centroids[i].x << " " <<  centroids[i].y << " " << centroids[i].z << std::endl;
-          //      pcl::getTransformedPointCloud<pcl::PointCloud<pcl::PointXYZRGB> > (*logo_cloud_, transformation, *transformed_logo);
-
-          //      std::stringstream ss;
-          //      ss << "logo" << i;
-          //      //viewer.showCloud (transformed_logo, ss.str ());
-          //    }
-          //  }
-          //}
-          //}
-
-          //boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > dummy_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
-          //for (unsigned int i = planes.size (); i < nr_planes_last_time; i++)
-          //{
-          //  std::stringstream ss;
-          //  ss << "logo" << i;
-          //  viewer.showCloud (dummy_cloud, ss.str ());
-          //}
-          //nr_planes_last_time = planes.size ();
         }
       }
 
@@ -279,10 +231,6 @@ class MultiRansac
         new_cloud = true;
       }
 
-
-      //pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
-      //pcl_cuda::toPCL (*data, *output);
-      //viewer.showCloud (output);
     }
     
     void 
@@ -311,32 +259,11 @@ class MultiRansac
 
       interface->start ();
 
-      //--------------------- load pcl logo file
-      //pcl::Grabber* filegrabber = 0;
-
-      //float frames_per_second = 1;
-      //bool repeat = false;
-
-      //std::string path = "./pcl_logo.pcd";
-      //if (path != "" && boost::filesystem::exists (path))
-      //{
-      //  filegrabber = new pcl::PCDGrabber<pcl::PointXYZRGB > (path, frames_per_second, repeat);
-      //}
-      //else
-      //  std::cerr << "did not find file" << std::endl;
-      //
-      //boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&MultiRansac::logo_cb, this, _1);
-      //boost::signals2::connection c1 = filegrabber->registerCallback (f);
-
-      //filegrabber->start ();
-      //------- END --------- load pcl logo file
-      //
       while (!viewer.wasStopped ())
       {
         sleep (1);
       }
 
-      //filegrabber->stop ();
       interface->stop ();
     }
 

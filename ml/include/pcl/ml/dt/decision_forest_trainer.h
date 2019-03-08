@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_DT_DECISION_FOREST_TRAINER_H_
-#define PCL_ML_DT_DECISION_FOREST_TRAINER_H_
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -205,5 +204,3 @@ namespace pcl
 }
 
 #include <pcl/ml/impl/dt/decision_forest_trainer.hpp>
-
-#endif

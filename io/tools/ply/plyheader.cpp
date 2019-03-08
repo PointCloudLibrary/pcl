@@ -39,9 +39,9 @@
 
 #include <fstream>
 #include <iostream>
-#include <string.h>
+#include <cstring>
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 
 /** \file plheader extracts and prints out the header of a PLY file
   * 
@@ -143,9 +143,8 @@ int main (int argc, char* argv[])
   }
 
   std::ifstream ifstream;
-  const char* ifilename = "";
   if (parc > 0) {
-    ifilename = parv[0];
+    const char* ifilename = parv[0];
     if (strcmp (ifilename, "-") != 0) {
       ifstream.open (ifilename);
       if (!ifstream.is_open ()) {
@@ -156,9 +155,8 @@ int main (int argc, char* argv[])
   }
 
   std::ofstream ofstream;
-  const char* ofilename = "";
   if (parc > 1) {
-    ofilename = parv[1];
+    const char* ofilename = parv[1];
     if (strcmp (ofilename, "-") != 0) {
       ofstream.open (ofilename);
       if (!ofstream.is_open ()) {

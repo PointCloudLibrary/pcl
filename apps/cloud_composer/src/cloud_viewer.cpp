@@ -1,7 +1,8 @@
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/cloud_viewer.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/cloud_view.h>
+
+#include <QItemSelection>
 
 pcl::cloud_composer::CloudViewer::CloudViewer (QWidget* parent)
   : QTabWidget (parent)

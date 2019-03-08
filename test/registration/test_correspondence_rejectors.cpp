@@ -138,11 +138,11 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
    * Test criterion 2: expect high precision/recall. The true positives are the unscrambled correspondences
    * where the query/match index are equal.
    */
-  unsigned int true_positives = 0;
-  for (unsigned int i = 0; i < result.size(); ++i)
+  size_t true_positives = 0;
+  for (size_t i = 0; i < result.size(); ++i)
     if (result[i].index_query == result[i].index_match)
       ++true_positives;
-  const unsigned int false_positives = static_cast<unsigned int> (result.size()) - true_positives;
+  const size_t false_positives = result.size() - true_positives;
 
   const double precision = double(true_positives) / double(true_positives+false_positives);
   const double recall = double(true_positives) / double(size-last);

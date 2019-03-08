@@ -132,9 +132,9 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[cp].x) ||
-            !pcl_isfinite (input_->points[cp].y) ||
-            !pcl_isfinite (input_->points[cp].z))
+        if (!std::isfinite (input_->points[cp].x) ||
+            !std::isfinite (input_->points[cp].y) ||
+            !std::isfinite (input_->points[cp].z))
           continue;
 
       // Get the distance value
@@ -209,9 +209,9 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[cp].x) ||
-            !pcl_isfinite (input_->points[cp].y) ||
-            !pcl_isfinite (input_->points[cp].z))
+        if (!std::isfinite (input_->points[cp].x) ||
+            !std::isfinite (input_->points[cp].y) ||
+            !std::isfinite (input_->points[cp].z))
           continue;
 
       int ijk0 = static_cast<int> (floor (input_->points[cp].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
@@ -386,7 +386,7 @@ pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const PointT& referenc
 
   // Check each neighbor to see if it is occupied and contains sufficient points
   // Slower than radius search because needs to check 26 indices
-  for (int ni = 0; ni < relative_coordinates.cols (); ni++)
+  for (Eigen::Index ni = 0; ni < relative_coordinates.cols (); ni++)
   {
     Eigen::Vector4i displacement = (Eigen::Vector4i () << relative_coordinates.col (ni), 0).finished ();
     // Checking if the specified cell is in the grid

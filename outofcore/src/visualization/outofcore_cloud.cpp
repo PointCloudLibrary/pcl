@@ -157,24 +157,16 @@ OutofcoreCloud::updateVoxelData ()
   double voxel_side_length = octree_->getVoxelSideLength (display_depth_);
 
   double s = voxel_side_length / 2;
-  for (size_t i = 0; i < voxel_centers.size (); i++)
+  for (const auto &voxel_center : voxel_centers)
   {
-    double x = voxel_centers[i].x;
-    double y = voxel_centers[i].y;
-    double z = voxel_centers[i].z;
+    double x = voxel_center.x;
+    double y = voxel_center.y;
+    double z = voxel_center.z;
 
-#if VTK_MAJOR_VERSION < 6
-    voxel_data->AddInput (getVtkCube (x - s, x + s, y - s, y + s, z - s, z + s));
-#else
     voxel_data->AddInputData (getVtkCube (x - s, x + s, y - s, y + s, z - s, z + s));
-#endif
   }
 
-#if VTK_MAJOR_VERSION < 6
-  voxel_mapper->SetInput (voxel_data->GetOutput ());
-#else
   voxel_mapper->SetInputData (voxel_data->GetOutput ());
-#endif
 
   voxel_actor_->SetMapper (voxel_mapper);
   voxel_actor_->GetProperty ()->SetRepresentationToWireframe ();
@@ -269,7 +261,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
           cloud_actor->SetMapper (mapper);
           cloud_actor->GetProperty ()->SetColor (0.0, 0.0, 1.0);
           cloud_actor->GetProperty ()->SetPointSize (1);
-          cloud_actor->GetProperty ()->SetLighting (0);
+          cloud_actor->GetProperty ()->SetLighting (false);
 
           cloud_actors_map_[pcd_file] = cloud_actor;
         }

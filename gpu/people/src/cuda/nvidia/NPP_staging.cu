@@ -1427,7 +1427,7 @@ NCVStatus compactVector_32u_device(Ncv32u *d_src, Ncv32u srcLen,
                     (d_hierSums.ptr() + partSumOffsets[i],
                      partSumNums[i], NULL,
                      d_hierSums.ptr() + partSumOffsets[i+1],
-                     NULL);
+                     0);
             }
             else
             {
@@ -1437,7 +1437,7 @@ NCVStatus compactVector_32u_device(Ncv32u *d_src, Ncv32u srcLen,
                     (d_hierSums.ptr() + partSumOffsets[i],
                      partSumNums[i], NULL,
                      NULL,
-                     NULL);
+                     0);
             }
 
             ncvAssertCUDALastErrorReturn(NPPST_CUDA_KERNEL_EXECUTION_ERROR);

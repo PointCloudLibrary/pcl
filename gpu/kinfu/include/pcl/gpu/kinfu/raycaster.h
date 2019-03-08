@@ -35,10 +35,7 @@
  *
  */
 
-
-#ifndef PCL_KINFU_TSDF_RAYCASTER_H_
-#define PCL_KINFU_TSDF_RAYCASTER_H_
-
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -82,7 +79,7 @@ namespace pcl
       void
       setIntrinsics(float fx = 525.f, float fy = 525.f, float cx = -1, float cy = -1);
       
-      /** \brief Runs raycasting algorithm from given camera pose. It writes results to internal fiels.
+      /** \brief Runs raycasting algorithm from given camera pose. It writes results to internal files.
         * \param[in] volume tsdf volume container
         * \param[in] camera_pose camera pose
         */ 
@@ -150,5 +147,3 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     void convertMapToOranizedCloud(const RayCaster::MapArr& map, DeviceArray2D<PointType>& cloud);
   }
 }
-
-#endif /* PCL_KINFU_TSDF_RAYCASTER_H_ */

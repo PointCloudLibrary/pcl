@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_BOOST_H
-#define PCL_GEOMETRY_BOOST_H
+#pragma once
 
 #ifdef __GNUC__
 #  pragma GCC system_header
@@ -51,5 +50,3 @@
 #include <boost/type_traits/is_same.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/version.hpp>
-
-#endif // PCL_GEOMETRY_BOOST_H

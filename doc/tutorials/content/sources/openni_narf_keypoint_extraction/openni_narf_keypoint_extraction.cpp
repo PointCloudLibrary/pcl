@@ -24,9 +24,9 @@ boost::mutex depth_image_mutex,
              ir_image_mutex,
              image_mutex;
 pcl::PointCloud<pcl::PointXYZ>::ConstPtr point_cloud_ptr;
-boost::shared_ptr<openni_wrapper::DepthImage> depth_image_ptr;
-boost::shared_ptr<openni_wrapper::IRImage> ir_image_ptr;
-boost::shared_ptr<openni_wrapper::Image> image_ptr;
+openni_wrapper::DepthImage::Ptr depth_image_ptr;
+openni_wrapper::IRImage::Ptr ir_image_ptr;
+openni_wrapper::Image::Ptr image_ptr;
 
 bool received_new_depth_data = false,
      received_new_ir_image   = false,
@@ -34,7 +34,7 @@ bool received_new_depth_data = false,
 struct EventHelper
 {
   void
-  depth_image_cb (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image)
+  depth_image_cb (const openni_wrapper::DepthImage::Ptr& depth_image)
   {
     if (depth_image_mutex.try_lock ())
     {
@@ -115,7 +115,7 @@ int main (int argc, char** argv)
   pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
   EventHelper event_helper;
   
-  boost::function<void (const boost::shared_ptr<openni_wrapper::DepthImage>&) > f_depth_image =
+  boost::function<void (const openni_wrapper::DepthImage::Ptr&) > f_depth_image =
     boost::bind (&EventHelper::depth_image_cb, &event_helper, _1);
   boost::signals2::connection c_depth_image = interface->registerCallback (f_depth_image);
   
@@ -123,7 +123,7 @@ int main (int argc, char** argv)
   interface->start ();
   cout << "Done\n";
   
-  boost::shared_ptr<pcl::RangeImagePlanar> range_image_planar_ptr (new pcl::RangeImagePlanar);
+  pcl::RangeImagePlanar::Ptr range_image_planar_ptr (new pcl::RangeImagePlanar);
   pcl::RangeImagePlanar& range_image_planar = *range_image_planar_ptr;
   
   pcl::RangeImageBorderExtractor range_image_border_extractor;

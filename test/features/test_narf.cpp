@@ -64,7 +64,7 @@ TEST (PCL, Narf_save_load)
   //  EXPECT_EQ (narf.getTransformation().matrix(), narf2.getTransformation().matrix());
   // The above generates http://msdn.microsoft.com/en-us/library/sxe76d9e.aspx in VS2010
   // Therefore we use this:
-  for (int i=0; i<narf.getTransformation().matrix().size(); ++i)
+  for (Eigen::Index i = 0; i < narf.getTransformation().matrix().size(); ++i)
     EXPECT_EQ (narf.getTransformation().data()[i], narf2.getTransformation().data()[i]);
   EXPECT_EQ (narf.getPosition(), narf2.getPosition());
   EXPECT_EQ (narf.getSurfacePatchPixelSize(), narf2.getSurfacePatchPixelSize());

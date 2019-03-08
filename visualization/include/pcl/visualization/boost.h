@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_VISUALIZATION_BOOST_H_
-#define PCL_VISUALIZATION_BOOST_H_
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header 
@@ -65,5 +64,3 @@
 #endif
 #include <boost/filesystem.hpp>
 #endif
-
-#endif    // PCL_VISUALIZATION_BOOST_H_

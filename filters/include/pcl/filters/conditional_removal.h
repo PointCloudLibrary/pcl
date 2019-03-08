@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef PCL_FILTER_FIELD_VAL_CONDITION_H_
-#define PCL_FILTER_FIELD_VAL_CONDITION_H_
+#pragma once
+
 #include <pcl/common/eigen.h>
 #include <pcl/filters/filter.h>
 
@@ -141,7 +141,7 @@ namespace pcl
         * \param op the operator to use when making the comparison
         * \param compare_val the constant value to compare the field value too
         */
-      FieldComparison (std::string field_name, ComparisonOps::CompareOp op, double compare_val);
+      FieldComparison (const std::string &field_name, ComparisonOps::CompareOp op, double compare_val);
 
       /** \brief Copy constructor.
         * \param[in] src the field comparison object to copy into this
@@ -164,14 +164,14 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~FieldComparison ();
+      ~FieldComparison ();
 
       /** \brief Determine the result of this comparison.  
         * \param point the point to evaluate
         * \return the result of this comparison.
         */
-      virtual bool
-      evaluate (const PointT &point) const;
+      bool
+      evaluate (const PointT &point) const override;
 
     protected:
       /** \brief All types (that we care about) can be represented as a double. */
@@ -204,17 +204,17 @@ namespace pcl
         * \param op the operator to use when making the comparison
         * \param compare_val the constant value to compare the component value too
         */
-      PackedRGBComparison (std::string component_name, ComparisonOps::CompareOp op, double compare_val);
+      PackedRGBComparison (const std::string &component_name, ComparisonOps::CompareOp op, double compare_val);
 
       /** \brief Destructor. */
-      virtual ~PackedRGBComparison () {}
+      ~PackedRGBComparison () {}
 
       /** \brief Determine the result of this comparison.  
         * \param point the point to evaluate
         * \return the result of this comparison.
         */
-      virtual bool
-      evaluate (const PointT &point) const;
+      bool
+      evaluate (const PointT &point) const override;
 
     protected:
       /** \brief The name of the component. */
@@ -251,17 +251,17 @@ namespace pcl
         * \param op the operator to use when making the comparison
         * \param compare_val the constant value to compare the component value too
         */
-      PackedHSIComparison (std::string component_name, ComparisonOps::CompareOp op, double compare_val);
+      PackedHSIComparison (const std::string &component_name, ComparisonOps::CompareOp op, double compare_val);
 
       /** \brief Destructor. */
-      virtual ~PackedHSIComparison () {}
+      ~PackedHSIComparison () {}
 
       /** \brief Determine the result of this comparison.  
         * \param point the point to evaluate
         * \return the result of this comparison.
         */
-      virtual bool
-      evaluate (const PointT &point) const;
+      bool
+      evaluate (const PointT &point) const override;
 
       typedef enum
       {
@@ -319,7 +319,7 @@ namespace pcl
       TfQuadraticXYZComparison ();
       
       /** \brief Empty destructor */
-      virtual ~TfQuadraticXYZComparison () {}
+      ~TfQuadraticXYZComparison () {}
 
       /** \brief Constructor.
        * \param op the operator "[OP]" of the comparison "p'Ap + 2v'p + c [OP] 0".
@@ -422,8 +422,8 @@ namespace pcl
        * \param point the point to evaluate
        * \return the result of this comparison.
        */
-      virtual bool
-      evaluate (const PointT &point) const;
+      bool
+      evaluate (const PointT &point) const override;
 
     protected:
       using pcl::ComparisonBase<PointT>::capable_;
@@ -527,8 +527,8 @@ namespace pcl
         * The ConditionAnd evaluates to true when ALL
         * comparisons and nested conditions evaluate to true
         */
-      virtual bool
-      evaluate (const PointT &point) const;
+      bool
+      evaluate (const PointT &point) const override;
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -555,8 +555,8 @@ namespace pcl
         * The ConditionOr evaluates to true when ANY
         * comparisons or nested conditions evaluate to true
         */
-      virtual bool
-      evaluate (const PointT &point) const;
+      bool
+      evaluate (const PointT &point) const override;
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -622,21 +622,6 @@ namespace pcl
         filter_name_ = "ConditionalRemoval";
       }
 
-      /** \brief a constructor that includes the condition.  
-        * \param condition the condition that each point must satisfy to avoid
-        * being removed by the filter
-        * \param extract_removed_indices extract filtered indices from indices vector
-        */
-      PCL_DEPRECATED ("ConditionalRemoval(ConditionBasePtr condition, bool extract_removed_indices = false) is deprecated, "
-      "please use the setCondition (ConditionBasePtr condition) function instead.")
-      ConditionalRemoval (ConditionBasePtr condition, bool extract_removed_indices = false) :
-        Filter<PointT>::Filter (extract_removed_indices), capable_ (false), keep_organized_ (false), condition_ (),
-        user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
-      {
-        filter_name_ = "ConditionalRemoval";
-        setCondition (condition);
-      }
-
       /** \brief Set whether the filtered points should be kept and set to the
         * value given through \a setUserFilterValue (default: NaN), or removed
         * from the PointCloud, thus potentially breaking its organized
@@ -682,7 +667,7 @@ namespace pcl
         * \param output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief True if capable. */
       bool capable_;
@@ -705,5 +690,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/conditional_removal.hpp>
 #endif
-
-#endif 

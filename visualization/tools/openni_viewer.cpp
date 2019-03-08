@@ -192,7 +192,7 @@ class OpenNIViewer
       
       grabber_.start ();
 
-      while (!cloud_viewer_->wasStopped () && (image_viewer_ && !image_viewer_->wasStopped ()))
+      while (!(cloud_viewer_->wasStopped () || (image_viewer_ && image_viewer_->wasStopped ())))
       {
         boost::shared_ptr<openni_wrapper::Image> image;
         CloudConstPtr cloud;
@@ -214,7 +214,7 @@ class OpenNIViewer
           {
             cloud_viewer_->setPosition (0, 0);
             cloud_viewer_->setSize (cloud->width, cloud->height);
-            cloud_init = !cloud_init;
+            cloud_init = true;
           }
 
           if (!cloud_viewer_->updatePointCloud (cloud, "OpenNICloud"))
@@ -237,7 +237,7 @@ class OpenNIViewer
           {
             image_viewer_->setPosition (cloud->width, 0);
             image_viewer_->setSize (cloud->width, cloud->height);
-            image_init = !image_init;
+            image_init = true;
           }
 
           if (image->getEncoding() == openni_wrapper::Image::RGB)
@@ -257,8 +257,8 @@ class OpenNIViewer
         delete[] rgb_data_;
     }
     
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> cloud_viewer_;
-    boost::shared_ptr<pcl::visualization::ImageViewer> image_viewer_;
+    pcl::visualization::PCLVisualizer::Ptr cloud_viewer_;
+    pcl::visualization::ImageViewer::Ptr image_viewer_;
     
     pcl::Grabber& grabber_;
     boost::mutex cloud_mutex_;
@@ -271,14 +271,14 @@ class OpenNIViewer
 };
 
 // Create the PCLVisualizer object
-boost::shared_ptr<pcl::visualization::PCLVisualizer> cld;
-boost::shared_ptr<pcl::visualization::ImageViewer> img;
+pcl::visualization::PCLVisualizer::Ptr cld;
+pcl::visualization::ImageViewer::Ptr img;
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  std::string device_id("");
+  std::string device_id;
   pcl::OpenNIGrabber::Mode depth_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   bool xyz = false;

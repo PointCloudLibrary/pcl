@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_MARCHING_CUBES_RBF_H_
-#define PCL_SURFACE_MARCHING_CUBES_RBF_H_
+#pragma once
 
 #include <pcl/surface/boost.h>
 #include <pcl/surface/marching_cubes.h>
@@ -88,7 +87,7 @@ namespace pcl
       /** \brief Convert the point cloud into voxel data.
         */
       void
-      voxelizeData ();
+      voxelizeData () override;
 
 
       /** \brief Set the off-surface points displacement value.
@@ -120,6 +119,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/marching_cubes_rbf.hpp>
 #endif
-
-#endif  // PCL_SURFACE_MARCHING_CUBES_RBF_H_
-

@@ -44,8 +44,7 @@
  *      Author: papazov
  */
 
-#ifndef TRIMMED_ICP_H_
-#define TRIMMED_ICP_H_
+#pragma once
 
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -72,7 +71,7 @@ namespace pcl
         : new_to_old_energy_ratio_ (0.99f)
         {}
 
-        virtual ~TrimmedICP ()
+        ~TrimmedICP ()
         {}
 
         /** \brief Call this method before calling align().
@@ -172,7 +171,7 @@ namespace pcl
         static inline bool
         compareCorrespondences (const pcl::Correspondence& a, const pcl::Correspondence& b)
         {
-          return static_cast<bool> (a.distance < b.distance);
+          return a.distance < b.distance;
         }
 
       protected:
@@ -182,6 +181,3 @@ namespace pcl
     };
   } // namespace recognition
 } // namespace pcl
-
-
-#endif /* TRIMMED_ICP_H_ */

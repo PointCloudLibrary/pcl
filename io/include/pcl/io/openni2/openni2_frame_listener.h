@@ -35,8 +35,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_IO_OPENNI2_FRAME_LISTENER_H_
-#define PCL_IO_OPENNI2_FRAME_LISTENER_H_
+#pragma once
 
 #include <boost/function.hpp>
 
@@ -62,11 +61,11 @@ namespace pcl
           OpenNI2FrameListener (StreamCallbackFunction cb)
             : callback_(cb) {}
 
-          virtual ~OpenNI2FrameListener ()
+          ~OpenNI2FrameListener ()
           { };
 
           inline void
-          onNewFrame (openni::VideoStream& stream)
+          onNewFrame (openni::VideoStream& stream) override
           {
             if (callback_)
               callback_(stream);
@@ -85,5 +84,3 @@ namespace pcl
     } // namespace
   }
 }
-
-#endif // PCL_IO_OPENNI2_FRAME_LISTENER_H_

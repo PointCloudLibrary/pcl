@@ -38,55 +38,48 @@ void printHelp (int, char **argv)
 
 
 // Output the simulated output to file:
-void write_sim_output(string fname_root){ 
+void write_sim_output(const string &fname_root){ 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out (new pcl::PointCloud<pcl::PointXYZRGB>);
-  bool write_cloud=true;
-  bool demo_other_stuff=true;
-  
-  if (write_cloud)
-  {
-    // Read Color Buffer from the GPU before creating PointCloud:
-    // By default the buffers are not read back from the GPU
-    simexample->rl_->getColorBuffer ();
-    simexample->rl_->getDepthBuffer ();  
-    // Add noise directly to the CPU depth buffer 
-    simexample->rl_->addNoise ();
 
-    // Optional argument to save point cloud in global frame:
-    // Save camera relative:
-    //simexample->rl_->getPointCloud(pc_out);
-    // Save in global frame - applying the camera frame:
-    //simexample->rl_->getPointCloud(pc_out,true,simexample->camera_->getPose());
-    // Save in local frame
-    simexample->rl_->getPointCloud (pc_out,false,simexample->camera_->getPose ());
-    // TODO: what to do when there are more than one simulated view?
-    
-    if (pc_out->points.size()>0){
+  // Read Color Buffer from the GPU before creating PointCloud:
+  // By default the buffers are not read back from the GPU
+  simexample->rl_->getColorBuffer ();
+  simexample->rl_->getDepthBuffer ();  
+  // Add noise directly to the CPU depth buffer 
+  simexample->rl_->addNoise ();
+
+  // Optional argument to save point cloud in global frame:
+  // Save camera relative:
+  //simexample->rl_->getPointCloud(pc_out);
+  // Save in global frame - applying the camera frame:
+  //simexample->rl_->getPointCloud(pc_out,true,simexample->camera_->getPose());
+  // Save in local frame
+  simexample->rl_->getPointCloud (pc_out,false,simexample->camera_->getPose ());
+  // TODO: what to do when there are more than one simulated view?
+
+  if (pc_out->points.size()>0){
     std::cout << pc_out->points.size() << " points written to file\n";
-    
+
     pcl::PCDWriter writer;
     //writer.write ( string (fname_root + ".pcd"), *pc_out,	false);  /// ASCII
     writer.writeBinary (  string (fname_root + ".pcd")  , *pc_out);
     //cout << "finished writing file\n";
-    }else{
+  }else{
     std::cout << pc_out->points.size() << " points in cloud, not written\n";
-    }
   }
-  if (demo_other_stuff && write_cloud)
-  {
-    //simexample->write_score_image (simexample->rl_->getScoreBuffer (), 
-    //   		   string (fname_root + "_score.png") );  
-    simexample->write_rgb_image (simexample->rl_->getColorBuffer (), 
-				 string (fname_root + "_rgb.png") );  
-    simexample->write_depth_image (simexample->rl_->getDepthBuffer (),
-				    string (fname_root + "_depth.png") );  
-    //simexample->write_depth_image_uint (simexample->rl_->getDepthBuffer (),
-    //                                string (fname_root + "_depth_uint.png") );
 
-    // Demo interacton with RangeImage:
-    pcl::RangeImagePlanar rangeImage;
-    simexample->rl_->getRangeImagePlanar (rangeImage);
-  }
+  //simexample->write_score_image (simexample->rl_->getScoreBuffer (), 
+  //                               string (fname_root + "_score.png") );  
+  simexample->write_rgb_image (simexample->rl_->getColorBuffer (), 
+                               string (fname_root + "_rgb.png") );  
+  simexample->write_depth_image (simexample->rl_->getDepthBuffer (),
+                                 string (fname_root + "_depth.png") );  
+  //simexample->write_depth_image_uint (simexample->rl_->getDepthBuffer (),
+  //                                    string (fname_root + "_depth_uint.png") );
+
+  // Demo interacton with RangeImage:
+  pcl::RangeImagePlanar rangeImage;
+  simexample->rl_->getRangeImagePlanar (rangeImage);
 }
 
 
@@ -111,8 +104,8 @@ generate_halo(
     pose.setIdentity();
     Eigen::Matrix3d m;
     m = AngleAxisd(yaw, Eigen::Vector3d::UnitZ())
-	* AngleAxisd(pitch, Eigen::Vector3d::UnitY())
-	* AngleAxisd(0, Eigen::Vector3d::UnitZ());    
+    * AngleAxisd(pitch, Eigen::Vector3d::UnitY())
+    * AngleAxisd(0, Eigen::Vector3d::UnitZ());    
 
     pose *=m;
     Vector3d v(x,y,z);
@@ -171,8 +164,8 @@ main (int argc, char** argv)
     pose1.translation() << 1,0.75,2;
     Eigen::Matrix3d rot1;
     rot1 = AngleAxisd(M_PI, Eigen::Vector3d::UnitZ())
-	* AngleAxisd(M_PI/10, Eigen::Vector3d::UnitY())
-	* AngleAxisd(0.0, Eigen::Vector3d::UnitZ()); // ypr
+    * AngleAxisd(M_PI/10, Eigen::Vector3d::UnitY())
+    * AngleAxisd(0.0, Eigen::Vector3d::UnitZ()); // ypr
     pose1.rotate(rot1);  
   
     Eigen::Isometry3d pose2;
@@ -180,8 +173,8 @@ main (int argc, char** argv)
     pose2.translation() << 1,-1,3;
     Eigen::Matrix3d rot2;
     rot2 = AngleAxisd(3*M_PI/4, Eigen::Vector3d::UnitZ())
-	* AngleAxisd(M_PI/4, Eigen::Vector3d::UnitY())
-	* AngleAxisd(0.0, Eigen::Vector3d::UnitZ()); // ypr    
+    * AngleAxisd(M_PI/4, Eigen::Vector3d::UnitY())
+    * AngleAxisd(0.0, Eigen::Vector3d::UnitZ()); // ypr    
     pose2.rotate(rot2);  
   
     int n_poses = 20;

@@ -56,19 +56,19 @@ void
 selfTest ()
 {
   CloudPtr model (new Cloud);
-  model->points.push_back (PointType (1,1,0));  
-  model->points.push_back (PointType (4,4,0)); 
-  model->points.push_back (PointType (5,6,0));
-  model->points.push_back (PointType (3,3,0));
-  model->points.push_back (PointType (6,7,0));
-  model->points.push_back (PointType (7,11,0));
-  model->points.push_back (PointType (12,15,0));
-  model->points.push_back (PointType (7,12,0));
+  model->points.emplace_back(1,1,0);  
+  model->points.emplace_back(4,4,0); 
+  model->points.emplace_back(5,6,0);
+  model->points.emplace_back(3,3,0);
+  model->points.emplace_back(6,7,0);
+  model->points.emplace_back(7,11,0);
+  model->points.emplace_back(12,15,0);
+  model->points.emplace_back(7,12,0);
 
   CloudPtr data (new Cloud);
-  data->points.push_back (PointType (3,1,0));
-  data->points.push_back (PointType (7,4,0));
-  data->points.push_back (PointType (9,6,0));
+  data->points.emplace_back(3,1,0);
+  data->points.emplace_back(7,4,0);
+  data->points.emplace_back(9,6,0);
 
   pcl::console::setVerbosityLevel (pcl::console::L_DEBUG);  
   
@@ -115,7 +115,7 @@ main (int argc, char **argv)
   std::cout << argv[pcd_indices[0]] << " width: " << model->width << " height: " << model->height << std::endl;
 
   std::string result_filename (argv[pcd_indices[0]]);
-  result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
+  result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
   try
   {
     pcl::io::savePCDFile (result_filename.c_str (), *model);
@@ -166,7 +166,7 @@ main (int argc, char **argv)
     try
     {
       std::string result_filename (argv[pcd_indices[i]]);
-      result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
+      result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
       pcl::io::savePCDFileBinary (result_filename.c_str (), *tmp);
       std::cout << "saving result to " << result_filename << std::endl;
     }

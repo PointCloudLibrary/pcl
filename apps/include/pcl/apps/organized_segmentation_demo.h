@@ -34,8 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_ORGANIZED_SEGMENTATION_DEMO_H_
-#define PCL_ORGANIZED_SEGMENTATION_DEMO_H_
+#pragma once
 
 #include <pcl/apps/organized_segmentation_demo_qt.h>
 
@@ -105,7 +104,7 @@ class OrganizedSegmentationDemo : public QMainWindow
     void cloud_cb (const CloudConstPtr& cloud);
   
   protected:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
+    pcl::visualization::PCLVisualizer::Ptr vis_;
     pcl::Grabber& grabber_;
 
     QMutex mtx_;
@@ -139,7 +138,7 @@ class OrganizedSegmentationDemo : public QMainWindow
     pcl::RGBPlaneCoefficientComparator<PointT, pcl::Normal>::Ptr rgb_comparator_;
     pcl::RGBPlaneCoefficientComparator<PointT, pcl::Normal> rgb_comp_;
     pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal>::Ptr edge_aware_comparator_;
-    pcl::EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label>::Ptr euclidean_cluster_comparator_;
+    pcl::EuclideanClusterComparator<PointT, pcl::Label>::Ptr euclidean_cluster_comparator_;
 
   public Q_SLOTS:
     void toggleCapturePressed()
@@ -182,5 +181,3 @@ class OrganizedSegmentationDemo : public QMainWindow
     timeoutSlot();
 
 };
-
-#endif    // PCL_ORGANIZED_SEGMENTATION_DEMO_H_

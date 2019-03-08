@@ -278,8 +278,8 @@ FittingCurve2dASDM::assembleInterior (double wInt, double sigma2, double rScale,
     updateTNR = true;
   }
 
-  unsigned i1 (0);
-  unsigned i2 (0);
+  //unsigned i1 (0);
+  //unsigned i2 (0);
 
   for (unsigned p = 0; p < nInt; p++)
   {
@@ -349,12 +349,12 @@ FittingCurve2dASDM::assembleInterior (double wInt, double sigma2, double rScale,
     if ((pcp - pt).dot (n) >= 0.0)
     {
       d = (pcp - pt).norm ();
-      i1++;
+      //i1++;
     }
     else
     {
       d = -(pcp - pt).norm ();
-      i2++;
+      //i2++;
     }
 
     // evaluate if point lies inside or outside the closed curve
@@ -406,7 +406,7 @@ FittingCurve2dASDM::assembleClosestPoints (const std::vector<double> &elements, 
 
   double ds = 1.0 / (2.0 * sigma2);
 
-  for (unsigned i = 0; i < elements.size (); i++)
+  for (size_t i = 0; i < elements.size (); i++)
   {
 
     int j = (i + 1) % int (elements.size ());

@@ -56,7 +56,7 @@ pcl::modeler::NormalEstimationWorker::NormalEstimationWorker(const QList<CloudMe
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::NormalEstimationWorker::~NormalEstimationWorker(void)
+pcl::modeler::NormalEstimationWorker::~NormalEstimationWorker()
 {
   delete search_radius_;
 }

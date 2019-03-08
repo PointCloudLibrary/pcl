@@ -70,9 +70,7 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::getMeshFromTSDFCloud (const 
 {
 
   //Clearing TSDF GPU and cPU
-  const Eigen::Vector3f volume_size = Eigen::Vector3f::Constant (volume_size_);
-    std::cout << "VOLUME SIZE IS " << volume_size_ << std::endl;
-  const Eigen::Vector3i volume_resolution (voxels_x_, voxels_y_, voxels_z_);
+  std::cout << "VOLUME SIZE IS " << volume_size_ << std::endl;
 
   //Clear values in TSDF Volume GPU
   tsdf_volume_gpu_->reset (); // This one uses the same tsdf volume but clears it before loading new values. This one is our friend.

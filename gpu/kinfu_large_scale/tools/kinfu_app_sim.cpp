@@ -326,8 +326,8 @@ write_rgb_image(const uint8_t* rgb_buffer)
 void
 depthBufferToMM(const float* depth_buffer,unsigned short* depth_img)
 {
-  int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
- // unsigned short * depth_img = new unsigned short[npixels ];
+  //int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
+  //unsigned short * depth_img = new unsigned short[npixels ];
   for (int y = 0; y <  480; ++y)
   {
     for (int x = 0; x < 640; ++x)
@@ -394,7 +394,7 @@ display_tic_toc (vector<double> &tic_toc,const string &fun_name)
 void
 capture (Eigen::Isometry3d pose_in,unsigned short* depth_buffer_mm,const uint8_t* color_buffer)//, string point_cloud_fname)
 {
-  // No reference image - but this is kept for compatability with range_test_v2:
+  // No reference image - but this is kept for compatibility with range_test_v2:
   float* reference = new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
   //const float* depth_buffer = range_likelihood_->getDepthBuffer();
   // Copy one image from our last as a reference.
@@ -410,7 +410,6 @@ capture (Eigen::Isometry3d pose_in,unsigned short* depth_buffer_mm,const uint8_t
 
   std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses;
   std::vector<float> scores;
-  int n = 1;
   poses.push_back (pose_in);
   // HACK: mfallon modified computeLikelihoods to only call render()  (which is currently private)
   // need to make render public and use it.
@@ -976,7 +975,7 @@ struct KinFuApp
   }
 
   void
-  execute (int argc, char** argv, std::string plyfile)
+  execute (int argc, char** argv, const std::string &plyfile)
   {
     PtrStepSz<const unsigned short> depth;
     PtrStepSz<const KinfuTracker::PixelRGB> rgb24;
@@ -1049,7 +1048,6 @@ struct KinFuApp
     generate_halo(poses,focus_center,halo_r,halo_dz,n_poses);    
     
     unsigned short * disparity_buf_ = new unsigned short[width*height ];
-    const KinfuTracker::PixelRGB* color_buf_;
     const uint8_t* color_buf_uint;
     
     // loop though and create the mesh:
@@ -1067,7 +1065,7 @@ struct KinFuApp
       std::cout << i << ": " << ss.str() << " pose_simulatedposition\n";      
       
       capture (poses[i],disparity_buf_, color_buf_uint);//,ss.str());
-      color_buf_ = (const KinfuTracker::PixelRGB*) color_buf_uint;
+      const KinfuTracker::PixelRGB* color_buf_ = (const KinfuTracker::PixelRGB*) color_buf_uint;
       PtrStepSz<const unsigned short> depth_sim = PtrStepSz<const unsigned short>(height, width, disparity_buf_, 2*width);
       //cout << depth_sim.rows << " by " << depth_sim.cols << " | s: " << depth_sim.step << "\n";
       // RGB-KinFu currently disabled for now - problems with color in KinFu apparently
@@ -1076,7 +1074,7 @@ struct KinFuApp
       PtrStepSz<const KinfuTracker::PixelRGB> rgb24_sim = PtrStepSz<const KinfuTracker::PixelRGB>(height, width, color_buf_, width);
       tic_toc.push_back (getTime ());
       
-      if (1==0){ // live capture - probably doesnt work anymore, left in here for comparison:
+      if (1==0){ // live capture - probably doesn't work anymore, left in here for comparison:
 	bool has_frame = evaluation_ptr_ ? evaluation_ptr_->grab(i, depth) : capture_.grab (depth, rgb24);      
 	if (!has_frame)
 	{
@@ -1386,7 +1384,7 @@ print_cli_help ()
   cout << "    --registration, -r              : enable registration mode" << endl; 
   cout << "    --integrate-colors, -ic         : enable color integration mode ( allows to get cloud with colors )" << endl;   
   cout << "    -volume_suze <size_in_meters>   : define integration volume size" << endl;   
-  cout << "    -dev <deivce>, -oni <oni_file>  : select depth source. Default will be selected if not specified" << endl;
+  cout << "    -dev <device>, -oni <oni_file>  : select depth source. Default will be selected if not specified" << endl;
   cout << "";
   cout << " For RGBD benchmark (Requires OpenCV):" << endl; 
   cout << "    -eval <eval_folder> [-match_file <associations_file_in_the_folder>]" << endl;

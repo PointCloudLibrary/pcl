@@ -73,7 +73,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
 
     float gradient_magnitude = gradient_vector.norm ();
     float gradient_angle_from_center = acosf (gradient_vector.dot ((point - p0).normalized ()) / gradient_magnitude);
-    if (!pcl_isfinite (gradient_angle_from_center))
+    if (!std::isfinite (gradient_angle_from_center))
       gradient_angle_from_center = 0.0;
 
     // Normalize distance and angle values to: 0.0 <= d,g < nr_distances_bins,nr_gradient_bins
@@ -171,9 +171,9 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     computeRIFT (*surface_, *gradient_, (*indices_)[idx], static_cast<float> (search_radius_), nn_indices, nn_dist_sqr, rift_descriptor);
 
     // Copy into the resultant cloud
-    int bin = 0;
-    for (int g_bin = 0; g_bin < rift_descriptor.cols (); ++g_bin)
-      for (int d_bin = 0; d_bin < rift_descriptor.rows (); ++d_bin)
+    size_t bin = 0;
+    for (Eigen::Index g_bin = 0; g_bin < rift_descriptor.cols (); ++g_bin)
+      for (Eigen::Index d_bin = 0; d_bin < rift_descriptor.rows (); ++d_bin)
         output.points[idx].histogram[bin++] = rift_descriptor (d_bin, g_bin);
   }
 }

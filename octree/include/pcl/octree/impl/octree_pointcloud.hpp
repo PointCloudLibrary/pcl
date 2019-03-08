@@ -39,7 +39,7 @@
 #ifndef PCL_OCTREE_POINTCLOUD_HPP_
 #define PCL_OCTREE_POINTCLOUD_HPP_
 
-#include <assert.h>
+#include <cassert>
 
 #include <pcl/common/common.h>
 #include <pcl/octree/impl/octree_base.hpp>
@@ -64,8 +64,6 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 template<typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT> void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addPointsFromInputCloud ()
 {
-  size_t i;
-
   if (indices_)
   {
     for (std::vector<int>::const_iterator current = indices_->begin (); current != indices_->end (); ++current)
@@ -81,7 +79,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   }
   else
   {
-    for (i = 0; i < input_->points.size (); i++)
+    for (size_t i = 0; i < input_->points.size (); i++)
     {
       if (isFinite (input_->points[i]))
       {
@@ -538,13 +536,10 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     BranchNode* childBranch = this->createBranchChild (*parent_branch, child_idx);
     this->branch_count_ ++;
 
-    typename std::vector<int>::iterator it = leafIndices.begin();
-    typename std::vector<int>::const_iterator it_end = leafIndices.end();
-
     // add data to new branch
     OctreeKey new_index_key;
 
-    for (it = leafIndices.begin(); it!=it_end; ++it)
+    for (auto it = leafIndices.cbegin(), it_end = leafIndices.cend(); it!=it_end; ++it)
     {
 
       const PointT& point_from_index = input_->points[*it];
@@ -804,13 +799,10 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     const OctreeKey& key_arg,
     AlignedPointTVector &voxel_center_list_arg) const
 {
-  // child iterator
-  unsigned char child_idx;
-
   int voxel_count = 0;
 
   // iterate over all children
-  for (child_idx = 0; child_idx < 8; child_idx++)
+  for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
   {
     if (!this->branchHasChild (*node_arg, child_idx))
       continue;

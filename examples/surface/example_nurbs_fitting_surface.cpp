@@ -171,10 +171,10 @@ main (int argc, char *argv[])
 void
 PointCloud2Vector3d (pcl::PointCloud<Point>::Ptr cloud, pcl::on_nurbs::vector_vec3d &data)
 {
-  for (unsigned i = 0; i < cloud->size (); i++)
+  for (size_t i = 0; i < cloud->size (); i++)
   {
     Point &p = cloud->at (i);
-    if (!pcl_isnan (p.x) && !pcl_isnan (p.y) && !pcl_isnan (p.z))
+    if (!std::isnan (p.x) && !std::isnan (p.y) && !std::isnan (p.z))
       data.push_back (Eigen::Vector3d (p.x, p.y, p.z));
   }
 }

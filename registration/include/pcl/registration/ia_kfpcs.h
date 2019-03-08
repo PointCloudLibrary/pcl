@@ -34,8 +34,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_IA_KFPCS_H_
-#define PCL_REGISTRATION_IA_KFPCS_H_
+#pragma once
 
 #include <pcl/registration/ia_fpcs.h>
 
@@ -76,7 +75,7 @@ namespace pcl
       KFPCSInitialAlignment ();
 
       /** \brief Destructor. */
-      virtual ~KFPCSInitialAlignment ()
+      ~KFPCSInitialAlignment ()
       {};
 
 
@@ -188,8 +187,8 @@ namespace pcl
       
 
       /** \brief Internal computation initialization. */
-      virtual bool
-      initCompute ();
+      bool
+      initCompute () override;
 
       /** \brief Method to handle current candidate matches. Here we validate and evaluate the matches w.r.t the
         * base and store the sorted matches (together with score values and estimated transformations).
@@ -199,11 +198,11 @@ namespace pcl
         * reordered during this step.
         * \param[out] candidates vector which contains the candidates matches M
         */
-      virtual void
+      void
       handleMatches (
         const std::vector <int> &base_indices,
         std::vector <std::vector <int> > &matches,
-        MatchingCandidates &candidates);
+        MatchingCandidates &candidates) override;
 
       /** \brief Validate the transformation by calculating the score value after transforming the input source cloud.
         * The resulting score is later used as the decision criteria of the best fitting match.
@@ -215,16 +214,16 @@ namespace pcl
         * * < 0 if previous result is better than the current one (score remains)
         * * = 0 current result is better than the previous one (score updated)
         */
-      virtual int
-      validateTransformation (Eigen::Matrix4f &transformation, float &fitness_score);
+      int
+      validateTransformation (Eigen::Matrix4f &transformation, float &fitness_score) override;
 
       /** \brief Final computation of best match out of vector of matches. To avoid cross thread dependencies
         *  during parallel running, a best match for each try was calculated.
         * \note For forwards compatibility the candidates are stored in vectors of 'vectors of size 1'.
         * \param[in] candidates vector of candidate matches
         */
-      virtual void
-      finalCompute (const std::vector <MatchingCandidates > &candidates);
+      void
+      finalCompute (const std::vector <MatchingCandidates > &candidates) override;
 
 
       /** \brief Lower boundary for translation costs calculation.
@@ -258,5 +257,3 @@ namespace pcl
 }; // namespace pcl 
 
 #include <pcl/registration/impl/ia_kfpcs.hpp>
-
-#endif // PCL_REGISTRATION_IA_KFPCS_H_

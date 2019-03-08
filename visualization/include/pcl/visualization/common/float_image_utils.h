@@ -32,11 +32,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#pragma once
+
 #include <pcl/pcl_config.h>
-
-#ifndef PCL_VISUALIZATION_FLOAT_IMAGE_UTILS_H_
-#define PCL_VISUALIZATION_FLOAT_IMAGE_UTILS_H_
-
 #include <pcl/pcl_macros.h>
 
 #include <iostream>
@@ -98,6 +96,3 @@ namespace pcl
 
   }  // namespace end
 }
-
-#endif  //#ifndef PCL_VISUALIZATION_FLOAT_IMAGE_UTILS_H_
-

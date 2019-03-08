@@ -50,9 +50,7 @@
 #include <QFileDialog>
 #include <QtCore>
 #include <QKeyEvent>
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#include <QtConcurrent/QtConcurrent>
-#endif
+#include <QtConcurrent>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/transforms.h>
@@ -148,7 +146,7 @@ pcl::ihs::OfflineIntegration::computationThread ()
     return;
   }
 
-  for (unsigned int i=1; i<filenames.size (); ++i)
+  for (size_t i=1; i<filenames.size (); ++i)
   {
     std::cerr << "Processing file " << std::setw (5) << i+1 << " / " << filenames.size () << std::endl;
 
@@ -286,7 +284,7 @@ pcl::ihs::OfflineIntegration::load (const std::string&    filename,
   // Load the transformation.
   std::string fn_transform = filename;
 
-  size_t pos = fn_transform.find_last_of (".");
+  size_t pos = fn_transform.find_last_of ('.');
   if (pos == std::string::npos || pos == (fn_transform.size () - 1))
   {
     std::cerr << "ERROR in offline_integration.cpp: No file extension\n";

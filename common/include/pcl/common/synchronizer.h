@@ -32,8 +32,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *  Author: Nico Blodow (blodow@in.tum.de), Suat Gedikli (gedikli@willowgarage.com)
  */
-#ifndef __PCL_SYNCHRONIZER__
-#define __PCL_SYNCHRONIZER__
+
+#pragma once
 
 namespace pcl
 {
@@ -173,6 +173,3 @@ namespace pcl
     }
   } ;
 } // namespace
-
-#endif // __PCL_SYNCHRONIZER__
-

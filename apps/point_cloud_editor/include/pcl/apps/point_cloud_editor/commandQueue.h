@@ -39,8 +39,7 @@
 /// in order to both execute them and undo them in the proper order.
 /// @author Yue Li and Matthew Hielsberg
 
-#ifndef COMMAND_QUEUE_H_
-#define COMMAND_QUEUE_H_
+#pragma once
 
 #include <deque>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -53,7 +52,7 @@
 class CommandQueue
 {
   public:
-    /// @brief Defaut Constructor
+    /// @brief Default Constructor
     /// @details Creates a command queue object and makes its depth limit
     /// be the default value.
     CommandQueue ();
@@ -76,12 +75,12 @@ class CommandQueue
     void
     execute (CommandPtr);
 
-    /// @brief Undoes the last command by poping the tail of the queue, invoke
+    /// @brief Undoes the last command by popping the tail of the queue, invoke
     /// the undo function of the command.
     void
     undo ();
 
-    /// @breif Changes the command history limit.
+    /// @brief Changes the command history limit.
     /// @details If the passed size is smaller than the current size then the
     /// oldest commands are removed (their undo functions are not called).
     /// @param size The new maximum number of commands that may exist in this
@@ -119,4 +118,3 @@ class CommandQueue
     /// The depth limit of the command queue.
     unsigned int depth_limit_;
 };
-#endif // COMMAND_QUEUE_H_

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_REGION_XY_
-#define PCL_FEATURES_REGION_XY_
+#pragma once
 
 #include <fstream>
 
@@ -117,5 +116,3 @@ namespace pcl
 
   };
 }
-
-#endif // PCL_FEATURES_REGION_XY_

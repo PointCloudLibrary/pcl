@@ -193,7 +193,7 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
       std::vector < std::pair<int, float> > uncertainty;
       for (size_t j = 0; j < votes_indices[i].size (); j++)
       {
-        uncertainty.push_back (std::make_pair (votes_indices[i][j], uncertainties_[votes_indices[i][j]]));
+        uncertainty.emplace_back (votes_indices[i][j], uncertainties_[votes_indices[i][j]]);
       }
 
       std::sort (uncertainty.begin (), uncertainty.end (), boost::bind (&std::pair<int, float>::second, _1) < boost::bind (&std::pair<int, float>::second, _2));
@@ -402,10 +402,9 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
               head_center_votes_.push_back (head_center);
               float mult_fact = 0.0174532925f;
-              angle_votes_.push_back (
-                  Eigen::Vector3f (static_cast<float>(leaves[l].rot_mean_[0]) * mult_fact,
+              angle_votes_.emplace_back(static_cast<float>(leaves[l].rot_mean_[0]) * mult_fact,
                                    static_cast<float>(leaves[l].rot_mean_[1]) * mult_fact,
-                                   static_cast<float>(leaves[l].rot_mean_[2]) * mult_fact));
+                                   static_cast<float>(leaves[l].rot_mean_[2]) * mult_fact);
               uncertainties_.push_back (static_cast<float>(leaves[l].covariance_trans_.trace () + leaves[l].covariance_rot_.trace ()));
             }
           }

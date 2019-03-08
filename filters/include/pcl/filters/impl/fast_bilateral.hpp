@@ -60,7 +60,7 @@ pcl::FastBilateralFilter<PointT>::applyFilter (PointCloud &output)
   {
     for (size_t y = 0; y < output.height; ++y)
     {
-      if (pcl_isfinite (output (x, y).z))
+      if (std::isfinite (output (x, y).z))
       {
         if (base_max < output (x, y).z)
           base_max = output (x, y).z;
@@ -78,7 +78,7 @@ pcl::FastBilateralFilter<PointT>::applyFilter (PointCloud &output)
 
   for (size_t x = 0; x < output.width; ++x)
       for (size_t y = 0; y < output.height; ++y)
-        if (!pcl_isfinite (output (x, y).z))
+        if (!std::isfinite (output (x, y).z))
           output (x, y).z = base_max;
 
   const float base_delta = base_max - base_min;

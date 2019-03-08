@@ -53,7 +53,6 @@
 #include <fstream>
 #include <sstream>
 
-#include <pcl/visualization/interactor.h>
 #include <pcl/visualization/pcl_plotter.h>
 #include <pcl/common/common_headers.h>
 
@@ -124,11 +123,7 @@ pcl::visualization::PCLPlotter::addPlotData (
   //adding to chart
   //vtkPlot *line = chart_->AddPlot(vtkChart::LINE);
   vtkPlot *line = chart_->AddPlot (type);
-#if VTK_MAJOR_VERSION < 6
-  line->SetInput (table, 0, 1);
-#else
   line->SetInputData (table, 0, 1);
-#endif
   line->SetWidth (1);
 
   if (color == NULL)    //color automatically based on the ColorScheme
@@ -163,7 +158,7 @@ pcl::visualization::PCLPlotter::addPlotData (
   double *array_x = new double[plot_data.size ()];
   double *array_y = new double[plot_data.size ()];
 
-  for (unsigned int i = 0; i < plot_data.size (); i++)
+  for (size_t i = 0; i < plot_data.size (); i++)
   {
     array_x[i] = plot_data[i].first;
     array_y[i] = plot_data[i].second;
@@ -357,8 +352,8 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
 
   // Compute the total size of the fields
   unsigned int fsize = 0;
-  for (size_t i = 0; i < cloud.fields.size (); ++i)
-    fsize += cloud.fields[i].count * pcl::getFieldSize (cloud.fields[i].datatype);
+  for (const auto &field : cloud.fields)
+    fsize += field.count * pcl::getFieldSize (field.datatype);
   
   int hsize = cloud.fields[field_idx].count;
   std::vector<double> array_x (hsize), array_y (hsize);
@@ -592,7 +587,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
   double min = data[0], max = data[0];
   for (size_t i = 1; i < data.size (); i++)
   {
-    if (pcl_isfinite (data[i]))
+    if (std::isfinite (data[i]))
     {
       if (data[i] < min) min = data[i];
       if (data[i] > max) max = data[i];
@@ -611,12 +606,12 @@ pcl::visualization::PCLPlotter::computeHistogram (
   }
 
   //fill the freq for each data
-  for (size_t i = 0; i < data.size (); i++)
+  for (const double value : data)
   {
-    if (pcl_isfinite (data[i]))
+    if (std::isfinite (value))
     {
-      unsigned int index = (unsigned int) (floor ((data[i] - min) / size));
-      if (index == nbins) index = nbins - 1; //including right boundary
+      unsigned int index = (unsigned int) (floor ((value - min) / size));
+      if (index == (unsigned int) nbins) index = nbins - 1; //including right boundary
       histogram[index].second++;
     }
   }
@@ -693,11 +688,7 @@ pcl::visualization::PCLPlotter::ExitMainLoopTimerCallback::Execute (
     return;
 
   // Stop vtk loop and send notification to app to wake it up
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-  interactor->stopLoop ();
-#else
   interactor->TerminateApp ();
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -64,7 +64,7 @@ pcl::SampleConsensusModelRegistration<PointT>::isSampleGood (const std::vector<i
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelRegistration<PointT>::computeModelCoefficients (const std::vector<int> &samples, Eigen::VectorXf &model_coefficients)
+pcl::SampleConsensusModelRegistration<PointT>::computeModelCoefficients (const std::vector<int> &samples, Eigen::VectorXf &model_coefficients) const
 {
   if (!target_)
   {
@@ -77,7 +77,7 @@ pcl::SampleConsensusModelRegistration<PointT>::computeModelCoefficients (const s
 
   std::vector<int> indices_tgt (3);
   for (int i = 0; i < 3; ++i)
-    indices_tgt[i] = correspondences_[samples[i]];
+    indices_tgt[i] = correspondences_.at (samples[i]);
 
   estimateRigidTransformationSVD (*input_, samples, *target_, indices_tgt, model_coefficients);
   return (true);
@@ -85,7 +85,7 @@ pcl::SampleConsensusModelRegistration<PointT>::computeModelCoefficients (const s
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::SampleConsensusModelRegistration<PointT>::getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) 
+pcl::SampleConsensusModelRegistration<PointT>::getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) const
 {
   if (indices_->size () != indices_tgt_->size ())
   {
@@ -191,7 +191,7 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
-    const Eigen::VectorXf &model_coefficients, const double threshold)
+    const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   if (indices_->size () != indices_tgt_->size ())
   {
@@ -236,7 +236,7 @@ pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::SampleConsensusModelRegistration<PointT>::optimizeModelCoefficients (const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) 
+pcl::SampleConsensusModelRegistration<PointT>::optimizeModelCoefficients (const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) const
 {
   if (indices_->size () != indices_tgt_->size ())
   {
@@ -257,7 +257,7 @@ pcl::SampleConsensusModelRegistration<PointT>::optimizeModelCoefficients (const 
   for (size_t i = 0; i < inliers.size (); ++i)
   {
     indices_src[i] = inliers[i];
-    indices_tgt[i] = correspondences_[indices_src[i]];
+    indices_tgt[i] = correspondences_.at (indices_src[i]);
   }
 
   estimateRigidTransformationSVD (*input_, indices_src, *target_, indices_tgt, optimized_coefficients);
@@ -266,11 +266,11 @@ pcl::SampleConsensusModelRegistration<PointT>::optimizeModelCoefficients (const 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelRegistration<PointT>::estimateRigidTransformationSVD (
-    const pcl::PointCloud<PointT> &cloud_src, 
-    const std::vector<int> &indices_src, 
+    const pcl::PointCloud<PointT> &cloud_src,
+    const std::vector<int> &indices_src,
     const pcl::PointCloud<PointT> &cloud_tgt,
-    const std::vector<int> &indices_tgt, 
-    Eigen::VectorXf &transform)
+    const std::vector<int> &indices_tgt,
+    Eigen::VectorXf &transform) const
 {
   transform.resize (16);
 

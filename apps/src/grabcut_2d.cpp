@@ -43,7 +43,7 @@ class GrabCutHelper : public pcl::GrabCut<pcl::PointXYZRGB>
   {  }
 
   void
-  setInputCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud);
+  setInputCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) override;
   void
   setBackgroundPointsIndices (const pcl::PointIndices::ConstPtr& point_indices);
   void
@@ -51,11 +51,11 @@ class GrabCutHelper : public pcl::GrabCut<pcl::PointXYZRGB>
   void
   setTrimap(int x1, int y1, int x2, int y2, const pcl::segmentation::grabcut::TrimapValue& t);
   void
-  refine ();
+  refine () override;
   int
-  refineOnce ();
+  refineOnce () override;
   void
-  fitGMMs ();
+  fitGMMs () override;
   void
   display (int display_type);
   void
@@ -327,7 +327,7 @@ motion_callback (int x, int y)
 {
   y = height - y;
 
-  if (box == true)
+  if (box)
   {
     xend = x; yend = y;
     glutPostRedisplay ();
@@ -470,12 +470,6 @@ int main (int argc, char** argv)
     pcl::console::print_info ("Ideally, need an input file, and two output PCD files, e.g., object.pcd, background.pcd\n");
     return (-1);
   }
-
-  std::string object_file = "object.pcd", background_file = "background.pcd";
-  if (parsed_file_indices.size () >= 3)
-    background_file = argv[parsed_file_indices[2]];
-  if (parsed_file_indices.size () >= 2)
-    object_file = argv[parsed_file_indices[1]];
 
   pcl::PCDReader reader;
   // Test the header

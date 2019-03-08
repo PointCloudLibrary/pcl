@@ -217,7 +217,7 @@ int main(int argc, char ** argv)
   if (test_directory.compare ("") != 0)
   {
     //recognize all files in directory...
-    std::string start = "";
+    std::string start;
     std::string ext = std::string ("pcd");
     bf::path dir = test_directory;
 
@@ -226,11 +226,9 @@ int main(int argc, char ** argv)
 
     std::sort (files.begin (), files.end (), face_detection_apps_utils::sortFiles);
 
-    for (size_t i = 0; i < files.size (); i++)
+    for (const auto &filename : files)
     {
-      std::stringstream file_to_process;
-      file_to_process << test_directory << "/" << files[i];
-      std::string file = file_to_process.str ();
+      std::string file = test_directory + '/' + filename;
       std::cout << file << std::endl;
 
       if (rgb_exists)

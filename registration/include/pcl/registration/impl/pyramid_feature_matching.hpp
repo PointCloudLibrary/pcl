@@ -45,18 +45,6 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/console/print.h>
 
-
-/** \brief Helper function to calculate the binary logarithm
- * \param n_arg: some value
- * \return binary logarithm (log2) of argument n_arg
- */
-__inline float
-Log2 (float n_arg)
-{
-  return std::log (n_arg) / float (M_LN2);
-}
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> float
 pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (const PyramidFeatureHistogramPtr &pyramid_a,
@@ -188,7 +176,7 @@ pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
     D += aux * aux;
   }
   D = std::sqrt (D);
-  nr_levels = static_cast<size_t> (ceilf (Log2 (D)));
+  nr_levels = static_cast<size_t> (ceilf (std::log2(D)));
   PCL_DEBUG ("[pcl::PyramidFeatureHistogram::initializeHistogram] Pyramid will have %u levels with a hyper-parallelepiped diagonal size of %f\n", nr_levels, D);
 
 

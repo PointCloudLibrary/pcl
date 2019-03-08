@@ -305,10 +305,8 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
     binary_cloud->points.resize (input_->points.size ());
     binary_cloud->is_dense = input_->is_dense;
 
-    size_t idx;
-    for (size_t i = 0; i < cloud_object_indices.indices.size (); ++i)
+    for (const int &idx : cloud_object_indices.indices)
     {
-      idx = cloud_object_indices.indices[i];
       binary_cloud->points[idx].getVector4fMap () = input_->points[idx].getVector4fMap ();
       binary_cloud->points[idx].intensity = 1.0;
     }
@@ -514,18 +512,17 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
 
   clusters.resize (clusters_map.size ());
 
-  std::map<float, pcl::PointIndices>::iterator it_indices;
   int k = 0;
-  for (it_indices = clusters_map.begin (); it_indices != clusters_map.end (); it_indices++)
+  for (const auto &cluster : clusters_map)
   {
 
-    if (int ((*it_indices).second.indices.size ()) >= object_cluster_min_size_)
+    if (int (cluster.second.indices.size ()) >= object_cluster_min_size_)
     {
 
       clusters[k] = CloudPtr (new Cloud ());
-      pcl::copyPointCloud (*input_, (*it_indices).second.indices, *clusters[k]);
+      pcl::copyPointCloud (*input_, cluster.second.indices, *clusters[k]);
       k++;
-      indices_clusters_.push_back((*it_indices).second);
+      indices_clusters_.push_back(cluster.second);
     }
   }
 

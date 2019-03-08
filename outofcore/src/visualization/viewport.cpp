@@ -20,17 +20,6 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkSmartPointer.h>
 
-//void CallbackFunction (vtkObject* caller, long unsigned int vtkNotUsed (eventId), void* clientData, void* vtkNotUsed (callData) )
-//{
-//  vtkRenderer* renderer = static_cast<vtkRenderer*> (caller);
-//
-//  double timeInSeconds = renderer->GetLastRenderTimeInSeconds ();
-//  double fps = 1.0/timeInSeconds;
-//  std::cout << "FPS: " << fps << std::endl;
-//
-//  std::cout << "Callback" << std::endl;
-//}
-
 // Operators
 // -----------------------------------------------------------------------------
 Viewport::Viewport (vtkSmartPointer<vtkRenderWindow> window, double xmin/*=0.0*/, double ymin/*=0.0*/,
@@ -144,24 +133,15 @@ Viewport::viewportActorUpdate ()
 
   std::vector<Camera*> cameras = scene->getCameras ();
 
-  for (size_t i = 0; i < cameras.size (); i++)
+  for (auto &camera : cameras)
   {
-    cameras[i]->render (renderer_);
-//    if (cameras[i]->getCamera () != renderer_->GetActiveCamera ())
-//    {
-//      renderer_->AddActor (cameras[i]->getCameraActor ());
-//      if (cameras[i]->getName () == "octree")
-//      {
-//        renderer_->AddActor (cameras[i]->getHullActor ());
-//      }
-//    }
+    camera->render (renderer_);
   }
 
   std::vector<Object*> objects = scene->getObjects ();
-  for (size_t i = 0; i < objects.size (); i++)
+  for (auto &object : objects)
   {
-    //std::cout << objects[i]->getName () << std::endl;
-    objects[i]->render (renderer_);
+    object->render (renderer_);
   }
 }
 
@@ -189,10 +169,9 @@ Viewport::viewportHudUpdate ()
 
   uint64_t points_loaded = 0;
   uint64_t data_loaded = 0;
-  for (size_t i = 0; i < objects.size (); i++)
+  for (const auto &object : objects)
   {
-    //TYPE& dynamic_cast<TYPE&> (object);
-    OutofcoreCloud* cloud = dynamic_cast<OutofcoreCloud*> (objects[i]);
+    const auto cloud = dynamic_cast<const OutofcoreCloud*> (object);
     if (cloud != NULL)
     {
       points_loaded += cloud->getPointsLoaded ();

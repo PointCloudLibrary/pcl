@@ -33,10 +33,10 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *
 */
-#include <pcl/pcl_config.h>
 
-#ifndef PCL_IO_IMAGE_YUV422_H_
-#define PCL_IO_IMAGE_YUV422_H_
+#pragma once
+
+#include <pcl/pcl_config.h>
 #include <pcl/pcl_macros.h>
 
 #include <pcl/io/image.h>
@@ -55,25 +55,23 @@ namespace pcl
         ImageYUV422 (FrameWrapper::Ptr image_metadata);
         ImageYUV422 (FrameWrapper::Ptr image_metadata, Timestamp timestamp);
 
-        virtual ~ImageYUV422 () throw ();
+        ~ImageYUV422 () throw ();
 
-        inline virtual Encoding
-        getEncoding () const
+        inline Encoding
+        getEncoding () const override
         {
           return (YUV422);
         }
 
-        virtual void
-        fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const;
+        void
+        fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const override;
 
-        virtual void
-        fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const;
+        void
+        fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const override;
       
-        virtual bool
-        isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const;
+        bool
+        isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const override;
     };
 
   } // namespace
 }
-
-#endif // PCL_IO_IMAGE_YUV22_H_

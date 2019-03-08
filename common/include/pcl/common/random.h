@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_COMMON_RANDOM_H_
-#define PCL_COMMON_RANDOM_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
@@ -229,5 +228,3 @@ namespace pcl
 }
 
 #include <pcl/common/impl/random.hpp>
-
-#endif

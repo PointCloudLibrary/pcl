@@ -762,7 +762,6 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
 
     // CREATE UV MAP FOR CURRENT FACES
     pcl::PointCloud<pcl::PointXY>::Ptr projections (new pcl::PointCloud<pcl::PointXY>);
-    std::vector<pcl::Vertices>::iterator current_face;
     std::vector<bool> visibility;
     visibility.resize (mesh.tex_polygons[current_cam].size ());
     std::vector<UvIndex> indexes_uv_to_points;

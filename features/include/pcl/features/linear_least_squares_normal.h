@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_LINEAR_LEAST_SQUARES_NORMAL_H_
-#define PCL_FEATURES_LINEAR_LEAST_SQUARES_NORMAL_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -73,7 +72,7 @@ namespace pcl
       };
 
       /** \brief Destructor */
-      virtual ~LinearLeastSquaresNormalEstimation ();
+      ~LinearLeastSquaresNormalEstimation ();
 
       /** \brief Computes the normal at the specified position. 
         * \param[in] pos_x x position (pixel)
@@ -115,8 +114,8 @@ namespace pcl
       /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
         * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
-      virtual inline void 
-      setInputCloud (const typename PointCloudIn::ConstPtr &cloud) 
+      inline void 
+      setInputCloud (const typename PointCloudIn::ConstPtr &cloud) override 
       { 
         input_ = cloud; 
       }
@@ -126,7 +125,7 @@ namespace pcl
         * \param[out] output the resultant normals
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
     private:
 
@@ -147,6 +146,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/linear_least_squares_normal.hpp>
 #endif
-
-#endif 
-

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_DEPTH_SENSE_GRABBER_IMPL_H
-#define PCL_IO_DEPTH_SENSE_GRABBER_IMPL_H
+#pragma once
 
 #include <boost/thread/mutex.hpp>
 
@@ -155,6 +154,3 @@ namespace pcl
   }
 
 }
-
-#endif /* PCL_IO_DEPTH_SENSE_GRABBER_IMPL_H */
-

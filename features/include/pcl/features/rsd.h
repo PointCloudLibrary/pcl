@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_RSD_H_
-#define PCL_RSD_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -47,7 +46,7 @@ namespace pcl
 {
   /** \brief Transform a list of 2D matrices into a point cloud containing the values in a vector (Histogram<N>).
     * Can be used to transform the 2D histograms obtained in \ref RSDEstimation into a point cloud.
-    * @note The template paramter N should be (greater or) equal to the product of the number of rows and columns.
+    * @note The template parameter N should be (greater or) equal to the product of the number of rows and columns.
     * \param[in] histograms2D the list of neighborhood 2D histograms
     * \param[out] histogramsPC the dataset containing the linearized matrices
     * \ingroup features
@@ -84,9 +83,19 @@ namespace pcl
     * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT> Eigen::MatrixXf
-  computeRSD (boost::shared_ptr<const pcl::PointCloud<PointInT> > &surface, boost::shared_ptr<const pcl::PointCloud<PointNT> > &normals,
-             const std::vector<int> &indices, double max_dist,
-             int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
+  computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud<PointNT> &normals,
+              const std::vector<int> &indices, double max_dist,
+              int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
+
+  template <typename PointInT, typename PointNT, typename PointOutT>
+  [[deprecated("use computeRSD() overload that takes input point clouds by const reference")]]
+  Eigen::MatrixXf
+  computeRSD (typename pcl::PointCloud<PointInT>::ConstPtr &surface, typename pcl::PointCloud<PointNT>::ConstPtr &normals,
+              const std::vector<int> &indices, double max_dist,
+              int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false)
+  {
+    return computeRSD (*surface, *normals, indices, max_dist, nr_subdiv, plane_radius, radii, compute_histogram);
+  }
 
   /** \brief Estimate the Radius-based Surface Descriptor (RSD) for a given point based on its spatial neighborhood of 3D points with normals
     * \param[in] normals the dataset containing the surface normals at each point in the dataset
@@ -100,9 +109,19 @@ namespace pcl
     * \ingroup features
     */
   template <typename PointNT, typename PointOutT> Eigen::MatrixXf
-  computeRSD (boost::shared_ptr<const pcl::PointCloud<PointNT> > &normals,
-             const std::vector<int> &indices, const std::vector<float> &sqr_dists, double max_dist,
-             int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
+  computeRSD (const pcl::PointCloud<PointNT> &normals,
+              const std::vector<int> &indices, const std::vector<float> &sqr_dists, double max_dist,
+              int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
+
+  template <typename PointNT, typename PointOutT>
+  [[deprecated("use computeRSD() overload that takes input point cloud by const reference")]]
+  Eigen::MatrixXf
+  computeRSD (typename pcl::PointCloud<PointNT>::ConstPtr &normals,
+              const std::vector<int> &indices, const std::vector<float> &sqr_dists, double max_dist,
+              int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false)
+  {
+    return computeRSD (*normals, indices, sqr_dists, max_dist, nr_subdiv, plane_radius, radii, compute_histogram);
+  }
 
   /** \brief @b RSDEstimation estimates the Radius-based Surface Descriptor (minimal and maximal radius of the local surface's curves)
     * for a given point cloud dataset containing points and normals.
@@ -211,7 +230,7 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains the RSD feature estimates (r_min and r_max values)
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief The list of full distance-angle histograms for all points. */
       boost::shared_ptr<std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > > histograms_;
@@ -234,5 +253,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/rsd.hpp>
 #endif
-
-#endif  //#ifndef PCL_RSD_H_

@@ -41,9 +41,9 @@
 #include <zlib.h>
 
 #include <vector>
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cassert>
 
 
 // user defined I/O callback methods for libPNG
@@ -157,8 +157,7 @@ namespace pcl
       png_write_info (png_ptr, info_ptr);
 
       // Write image data
-      size_t y;
-      for (y = 0; y < height_arg; y++)
+      for (size_t y = 0; y < height_arg; y++)
       {
         png_write_row (png_ptr, reinterpret_cast<png_bytep> (&image_arg[y * width_arg * channels]));
       }
@@ -180,7 +179,6 @@ namespace pcl
                     size_t& height_arg,
                     unsigned int& channels_arg)
     {
-      unsigned long y;
       png_structp png_ptr;
       png_infop info_ptr;
       png_uint_32 png_width;
@@ -242,7 +240,7 @@ namespace pcl
 
       row_pointers = reinterpret_cast<png_bytep*> (malloc (sizeof(png_bytep) * png_height));
 
-      for (y = 0; y < png_height; y++)
+      for (unsigned long y = 0; y < png_height; y++)
         row_pointers[y] = reinterpret_cast<png_byte*> (&imageData_arg[y * png_width * png_channels]);
 
       png_read_image (png_ptr, row_pointers);

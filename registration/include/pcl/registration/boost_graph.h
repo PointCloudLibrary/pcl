@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_BOOST_GRAPH_H_
-#define PCL_REGISTRATION_BOOST_GRAPH_H_
+#pragma once
 
 #include <boost/graph/adjacency_list.hpp>
 #include <Eigen/StdVector>
@@ -99,5 +98,3 @@ namespace boost
       };
   }
 }
-
-#endif    // PCL_REGISTRATION_BOOST_GRAPH_H_

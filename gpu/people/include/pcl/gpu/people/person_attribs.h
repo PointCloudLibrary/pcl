@@ -1,5 +1,4 @@
-#ifndef PLC_GPU_PEOPLE_PERSON_ATTRIBS_H_
-#define PLC_GPU_PEOPLE_PERSON_ATTRIBS_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -25,7 +24,7 @@ namespace pcl
           /**
            * \brief Read XML configuration file for a specific person
            * \param[in] is input stream of file
-           * \return 0 when successfull, -1 when an error occured, datastructure might become corrupted in the process
+           * \return 0 when successful, -1 when an error occurred, datastructure might become corrupted in the process
            **/
           int
           readPersonXMLConfig (std::istream& is);
@@ -46,5 +45,3 @@ namespace pcl
     }
   }
 }
-
-#endif /* PLC_GPU_PEOPLE_PERSON_ATTRIBS_H_ */

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_H_
+#pragma once
 
 #include <pcl/registration/correspondence_types.h>
 #include <pcl/registration/correspondence_sorting.h>
@@ -244,20 +243,7 @@ namespace pcl
         }
       
         /** \brief Empty destructor */
-        virtual ~DataContainer () {}
-
-        /** \brief Provide a source point cloud dataset (must contain XYZ
-          * data!), used to compute the correspondence distance.  
-          * \param[in] cloud a cloud containing XYZ data
-          */
-        PCL_DEPRECATED ("[pcl::registration::DataContainer::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.")
-        void
-        setInputCloud (const PointCloudConstPtr &cloud);
-
-        /** \brief Get a pointer to the input point cloud dataset target. */
-        PCL_DEPRECATED ("[pcl::registration::DataContainer::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.")
-        PointCloudConstPtr const
-        getInputCloud ();
+        ~DataContainer () {}
 
         /** \brief Provide a source point cloud dataset (must contain XYZ
           * data!), used to compute the correspondence distance.  
@@ -331,7 +317,7 @@ namespace pcl
           * \param[in] index index of the point in the input cloud
           */
         inline double 
-        getCorrespondenceScore (int index)
+        getCorrespondenceScore (int index) override
         {
           if ( target_cloud_updated_ && !force_no_recompute_ )
           {
@@ -349,7 +335,7 @@ namespace pcl
           * \param[in] corr Correspondent points
           */
         inline double 
-        getCorrespondenceScore (const pcl::Correspondence &corr)
+        getCorrespondenceScore (const pcl::Correspondence &corr) override
         {
           // Get the source and the target feature from the list
           const PointT &src = input_->points[corr.index_query];
@@ -359,12 +345,12 @@ namespace pcl
         }
         
         /** \brief Get the correspondence score for a given pair of correspondent points based on 
-          * the angle betweeen the normals. The normmals for the in put and target clouds must be 
+          * the angle between the normals. The normmals for the in put and target clouds must be 
           * set before using this function
           * \param[in] corr Correspondent points
           */
         inline double
-        getCorrespondenceScoreFromNormals (const pcl::Correspondence &corr)
+        getCorrespondenceScoreFromNormals (const pcl::Correspondence &corr) override
         {
           //assert ( (input_normals_->points.size () != 0) && (target_normals_->points.size () != 0) && "Normals are not set for the input and target point clouds");
           assert (input_normals_ && target_normals_ && "Normals are not set for the input and target point clouds");
@@ -417,8 +403,3 @@ namespace pcl
     };
   }
 }
-
-#include <pcl/registration/impl/correspondence_rejection.hpp>
-
-#endif /* PCL_REGISTRATION_CORRESPONDENCE_REJECTION_H_ */
-

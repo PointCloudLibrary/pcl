@@ -61,9 +61,8 @@ pcl::ihs::MeshProcessing::processBoundary (Mesh& mesh, const std::vector <HalfEd
   Eigen::Vector3f ab, bc, ac, n_adb, n_plane; // Edges and normals
   Mesh::FaceIndex opposite_face;
 
-  for (BoundaryCollection::const_iterator it_bc=boundary_collection.begin (); it_bc!=boundary_collection.end (); ++it_bc)
+  for (const auto &boundary : boundary_collection)
   {
-    const Mesh::HalfEdgeIndices& boundary = *it_bc;
     if (boundary.size () == 3)
     {
       opposite_face = mesh.getOppositeFaceIndex (boundary [0]);
@@ -93,7 +92,7 @@ pcl::ihs::MeshProcessing::processBoundary (Mesh& mesh, const std::vector <HalfEd
       //                  \ /          //
       //                   5           //
 
-      for (int i=0; i<boundary.size (); ++i)
+      for (size_t i=0; i<boundary.size (); ++i)
       {
         // The vertices on the boundary
         vi_a = mesh.getOriginatingVertexIndex (boundary [i]);

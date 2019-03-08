@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_DENSE_CRF_H_
-#define PCL_DENSE_CRF_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -162,9 +161,3 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-
-
-
-
-#endif

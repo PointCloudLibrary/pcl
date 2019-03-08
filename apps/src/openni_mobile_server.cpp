@@ -73,9 +73,9 @@ CopyPointCloudToBuffers (pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud, Poi
 
     const pcl::PointXYZRGBA& point = cloud->points[i];
 
-    if (!pcl_isfinite (point.x) || 
-        !pcl_isfinite (point.y) || 
-        !pcl_isfinite (point.z))
+    if (!std::isfinite (point.x) || 
+        !std::isfinite (point.y) || 
+        !std::isfinite (point.z))
       continue;
 
     if (point.x < bounds_min.x ||
@@ -247,7 +247,7 @@ main (int argc, char ** argv)
 
   int port = 11111;
   float leaf_x = 0.01f, leaf_y = 0.01f, leaf_z = 0.01f;
-  std::string device_id = "";
+  std::string device_id;
 
   pcl::console::parse_argument (argc, argv, "-port", port);
   pcl::console::parse_3x_arguments (argc, argv, "-leaf", leaf_x, leaf_y, leaf_z, false);

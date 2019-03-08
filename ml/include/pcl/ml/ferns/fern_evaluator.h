@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_FERNS_FERN_EVALUATOR_H_
-#define PCL_ML_FERNS_FERN_EVALUATOR_H_
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -120,5 +119,3 @@ namespace pcl
 }
 
 #include <pcl/ml/impl/ferns/fern_evaluator.hpp>
-
-#endif

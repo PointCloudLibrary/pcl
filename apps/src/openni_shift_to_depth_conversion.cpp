@@ -44,9 +44,9 @@
 
 #include <iostream>
 #include <vector>
-#include <stdio.h>
+#include <cstdio>
 #include <sstream>
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 
@@ -158,10 +158,7 @@ protected:
            float focalLength_arg,
            pcl::PointCloud<PointXYZRGB>& cloud_arg) const
   {
-    size_t i;
     size_t cloud_size = width_arg * height_arg;
-
-    int x, y, centerX, centerY;
 
     // Reset point cloud
     cloud_arg.points.clear ();
@@ -173,15 +170,15 @@ protected:
     cloud_arg.is_dense = false;
 
     // Calculate center of disparity image
-    centerX = static_cast<int> (width_arg / 2);
-    centerY = static_cast<int> (height_arg / 2);
+    int centerX = static_cast<int> (width_arg / 2);
+    int centerY = static_cast<int> (height_arg / 2);
 
     const float fl_const = 1.0f / focalLength_arg;
     static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-    i = 0;
-    for (y = -centerY; y < +centerY; ++y)
-      for (x = -centerX; x < +centerX; ++x)
+    size_t i = 0;
+    for (int y = -centerY; y < +centerY; ++y)
+      for (int x = -centerX; x < +centerX; ++x)
       {
         PointXYZRGB newPoint;
 

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_POINT_TYPES
-#define PCL_RECOGNITION_POINT_TYPES
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
@@ -75,5 +74,3 @@ namespace pcl
   }
 
 }
-
-#endif

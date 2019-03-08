@@ -67,8 +67,6 @@ class NormalEstimation
 
     void viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
-      static bool first_time = true;
-      double psize = 1.0,opacity = 1.0,linesize =1.0;
       std::string cloud_name ("cloud");
       boost::mutex::scoped_lock l(m_mutex);
       if (new_cloud)
@@ -77,6 +75,8 @@ class NormalEstimation
         typedef pcl::visualization::PointCloudColorHandlerGenericField <pcl::PointXYZRGBNormal> ColorHandler;
         //ColorHandler Color_handler (normal_cloud);
         ColorHandler Color_handler (normal_cloud,"curvature");
+        static bool first_time = true;
+        double psize = 1.0,opacity = 1.0,linesize =1.0;
         if (!first_time)
         {
           viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
@@ -121,9 +121,9 @@ class NormalEstimation
       // we got a cloud in device..
 
       boost::shared_ptr<typename Storage<float4>::type> normals;
-      float focallength = 580/2.0;
       {
         ScopeTimeCPU time ("Normal Estimation");
+        float focallength = 580/2.0;
         normals = computePointNormals<Storage, typename PointIterator<Storage,PointXYZRGB>::type > (data->points.begin (), data->points.end (), focallength, data, 0.05, 30);
       }
       go_on = false;
@@ -164,11 +164,11 @@ class NormalEstimation
       d2c.compute<Storage> (depth_image, image, constant, data, false, 1, smoothing_nr_iterations, smoothing_filter_size);
       //d2c.compute<Storage> (depth_image, image, constant, data, true, 2);
 
-      boost::shared_ptr<typename Storage<float4>::type> normals;
-      float focallength = 580/2.0;
+      boost::shared_ptr<typename Storage<float4>::type> normals;      
       {
         ScopeTimeCPU time ("Normal Estimation");
         normals = computeFastPointNormals<Storage> (data);
+        //float focallength = 580/2.0;
         //normals = computePointNormals<Storage, typename PointIterator<Storage,PointXYZRGB>::type > (data->points.begin (), data->points.end (), focallength, data, 0.05, 30);
       }
 

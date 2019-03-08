@@ -131,11 +131,6 @@ TEST (PCL, CorrespondenceRejectorDistance)
   // re-do correspondence estimation
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  corr_est.setInputCloud (source);        // test for PCL_DEPRECATED
-  source = corr_est.getInputCloud ();     // test for PCL_DEPRECATED
-#pragma GCC diagnostic pop
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
@@ -237,11 +232,6 @@ TEST (PCL, CorrespondenceRejectorSampleConsensus)
 
   boost::shared_ptr<pcl::Correspondences> correspondences_result_rej_sac (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ> corr_rej_sac;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  corr_rej_sac.setInputCloud (source);        // test for PCL_DEPRECATED
-  source = corr_rej_sac.getInputCloud ();     // test for PCL_DEPRECATED
-#pragma GCC diagnostic pop
   corr_rej_sac.setInputSource (source);
   corr_rej_sac.setInputTarget (target);
   corr_rej_sac.setInlierThreshold (rej_sac_max_dist);
@@ -536,10 +526,10 @@ TEST (PCL, TransformationEstimationLM)
   const Eigen::Quaternionf   R_LM_1_float (T_LM_float.topLeftCorner  <3, 3> ());
   const Eigen::Translation3f t_LM_1_float (T_LM_float.topRightCorner <3, 1> ());
 
-  EXPECT_NEAR (R_LM_1_float.x (), R_ref.x (), 1e-4f);
-  EXPECT_NEAR (R_LM_1_float.y (), R_ref.y (), 1e-4f);
-  EXPECT_NEAR (R_LM_1_float.z (), R_ref.z (), 1e-4f);
-  EXPECT_NEAR (R_LM_1_float.w (), R_ref.w (), 1e-4f);
+  EXPECT_NEAR (R_LM_1_float.x (), R_ref.x (), 1e-3f);
+  EXPECT_NEAR (R_LM_1_float.y (), R_ref.y (), 1e-3f);
+  EXPECT_NEAR (R_LM_1_float.z (), R_ref.z (), 1e-3f);
+  EXPECT_NEAR (R_LM_1_float.w (), R_ref.w (), 1e-3f);
 
   EXPECT_NEAR (t_LM_1_float.x (), t_ref.x (), 1e-3f);
   EXPECT_NEAR (t_LM_1_float.y (), t_ref.y (), 1e-3f);

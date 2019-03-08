@@ -28,7 +28,7 @@ deviation, all points whose mean distances are outside an interval defined by
 the global distances mean and standard deviation can be considered as outliers
 and trimmed from the dataset.
 
-The following picture show the effects of the sparse outlier analysis and
+The following picture shows the effects of the sparse outlier analysis and
 removal: the original dataset is shown on the left, while the resultant one on
 the right. The graphic shows the mean k-nearest neighbor distances in a point
 neighborhood before and after filtering.

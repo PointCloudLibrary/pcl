@@ -39,8 +39,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_MORPHOLOGICAL_FILTER_H_
-#define PCL_FILTERS_MORPHOLOGICAL_FILTER_H_
+#pragma once
 
 #include <string>
 #include <pcl/pcl_base.h>
@@ -77,6 +76,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/morphological_filter.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_MORPHOLOGICAL_FILTER_H_
-

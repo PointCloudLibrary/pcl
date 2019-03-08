@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_NORMAL_ESTIMATOR_H_
-#define REC_FRAMEWORK_NORMAL_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
@@ -140,7 +139,7 @@ namespace pcl
 
           if (out->points.size () == 0)
           {
-            PCL_WARN("NORMAL estimator: Cloud has no points after voxel grid, wont be able to compute normals!\n");
+            PCL_WARN("NORMAL estimator: Cloud has no points after voxel grid, won't be able to compute normals!\n");
             return;
           }
 
@@ -207,7 +206,7 @@ namespace pcl
               int j = 0;
               for (size_t i = 0; i < out->points.size (); ++i)
               {
-                if (!pcl_isfinite (out->points[i].x) || !pcl_isfinite (out->points[i].y) || !pcl_isfinite (out->points[i].z))
+                if (!std::isfinite (out->points[i].x) || !std::isfinite (out->points[i].y) || !std::isfinite (out->points[i].z))
                   continue;
 
                 out->points[j] = out->points[i];
@@ -244,8 +243,8 @@ namespace pcl
             int j = 0;
             for (size_t i = 0; i < normals->points.size (); ++i)
             {
-              if (!pcl_isfinite (normals->points[i].normal_x) || !pcl_isfinite (normals->points[i].normal_y)
-                  || !pcl_isfinite (normals->points[i].normal_z))
+              if (!std::isfinite (normals->points[i].normal_x) || !std::isfinite (normals->points[i].normal_y)
+                  || !std::isfinite (normals->points[i].normal_z))
                 continue;
 
               normals->points[j] = normals->points[i];
@@ -268,8 +267,8 @@ namespace pcl
             bool NaNs = false;
             for (size_t i = 0; i < normals->points.size (); ++i)
             {
-              if (pcl_isfinite (normals->points[i].normal_x) && pcl_isfinite (normals->points[i].normal_y)
-                  && pcl_isfinite (normals->points[i].normal_z))
+              if (std::isfinite (normals->points[i].normal_x) && std::isfinite (normals->points[i].normal_y)
+                  && std::isfinite (normals->points[i].normal_z))
                 continue;
 
               NaNs = true;
@@ -296,5 +295,3 @@ namespace pcl
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_NORMAL_ESTIMATOR_H_ */

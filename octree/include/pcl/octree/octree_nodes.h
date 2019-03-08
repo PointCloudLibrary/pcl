@@ -36,12 +36,11 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_NODE_H
-#define PCL_OCTREE_NODE_H
+#pragma once
 
 #include <cstddef>
 
-#include <assert.h>
+#include <cassert>
 
 #include <Eigen/Core>
 
@@ -112,21 +111,21 @@ namespace pcl
         }
 
         /** \brief Empty deconstructor. */
-        virtual
+        
         ~OctreeLeafNode ()
         {
         }
 
         /** \brief Method to perform a deep copy of the octree */
-        virtual OctreeLeafNode<ContainerT>*
-        deepCopy () const
+        OctreeLeafNode<ContainerT>*
+        deepCopy () const override
         {
           return new OctreeLeafNode<ContainerT> (*this);
         }
 
         /** \brief Get the type of octree node. Returns LEAVE_NODE type */
-        virtual node_type_t
-        getNodeType () const
+        node_type_t
+        getNodeType () const override
         {
           return LEAF_NODE;
         }
@@ -217,11 +216,9 @@ namespace pcl
         OctreeBranchNode (const OctreeBranchNode& source) :
             OctreeNode()
         {
-          unsigned char i;
-
           memset (child_node_array_, 0, sizeof(child_node_array_));
 
-          for (i = 0; i < 8; ++i)
+          for (unsigned char i = 0; i < 8; ++i)
             if (source.child_node_array_[i])
               child_node_array_[i] = source.child_node_array_[i]->deepCopy ();
         }
@@ -230,25 +227,23 @@ namespace pcl
         inline OctreeBranchNode&
         operator = (const OctreeBranchNode &source)
         {
-          unsigned char i;
-
           memset (child_node_array_, 0, sizeof(child_node_array_));
 
-          for (i = 0; i < 8; ++i)
+          for (unsigned char i = 0; i < 8; ++i)
             if (source.child_node_array_[i])
               child_node_array_[i] = source.child_node_array_[i]->deepCopy ();
           return (*this);
         }
 
         /** \brief Octree deep copy method */
-        virtual OctreeBranchNode*
-        deepCopy () const
+        OctreeBranchNode*
+        deepCopy () const override
         {
           return (new OctreeBranchNode<ContainerT> (*this));
         }
 
         /** \brief Empty deconstructor. */
-        virtual
+        
         ~OctreeBranchNode ()
         {
         }
@@ -319,8 +314,8 @@ namespace pcl
         }*/
 
         /** \brief Get the type of octree node. Returns LEAVE_NODE type */
-        virtual node_type_t
-        getNodeType () const
+        node_type_t
+        getNodeType () const override
         {
           return BRANCH_NODE;
         }
@@ -396,5 +391,3 @@ namespace pcl
       };
   }
 }
-
-#endif

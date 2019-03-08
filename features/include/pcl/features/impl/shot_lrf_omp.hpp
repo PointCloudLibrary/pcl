@@ -44,8 +44,22 @@
 #include <pcl/features/shot_lrf_omp.h>
 #include <pcl/features/shot_lrf.h>
 
-template<typename PointInT, typename PointOutT>
-void
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, typename PointOutT> void
+pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::setNumberOfThreads (unsigned int nr_threads)
+{
+  if (nr_threads == 0)
+#ifdef _OPENMP
+    threads_ = omp_get_num_procs();
+#else
+    threads_ = 1;
+#endif
+  else
+    threads_ = nr_threads;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, typename PointOutT> void
 pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   //check whether used with search radius or search k-neighbors

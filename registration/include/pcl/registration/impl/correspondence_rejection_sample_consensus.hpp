@@ -43,44 +43,6 @@
 #include <boost/unordered_map.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::setInputCloud (
-    const typename pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::PointCloudConstPtr &cloud)
-{
-  setInputSource (cloud);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> typename pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::PointCloudConstPtr const
-pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getInputCloud ()
-{
-  return (getInputSource ()); 
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::setTargetCloud (
-    const typename pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::PointCloudConstPtr &cloud)
-{
-  setInputTarget (cloud);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::setMaxIterations (
-    int max_iterations)
-{
-  setMaximumIterations (max_iterations);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
-pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getMaxIterations ()
-{
-  return (getMaximumIterations ());
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
 pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences (
     const pcl::Correspondences& original_correspondences, 

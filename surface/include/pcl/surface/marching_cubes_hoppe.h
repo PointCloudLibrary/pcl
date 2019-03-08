@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_MARCHING_CUBES_HOPPE_H_
-#define PCL_SURFACE_MARCHING_CUBES_HOPPE_H_
+#pragma once
 
 #include <pcl/surface/boost.h>
 #include <pcl/surface/marching_cubes.h>
@@ -86,7 +85,7 @@ namespace pcl
       /** \brief Convert the point cloud into voxel data.
         */
       void
-      voxelizeData ();
+      voxelizeData () override;
 
       /** \brief Method that sets the distance for ignoring voxels which are far from point cloud.
         * If the distance is negative, then the distance functions would be calculated in all voxels;
@@ -118,6 +117,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/marching_cubes_hoppe.hpp>
 #endif
-
-#endif  // PCL_SURFACE_MARCHING_CUBES_HOPPE_H_
-

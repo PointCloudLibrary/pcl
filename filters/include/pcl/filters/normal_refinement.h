@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_NORMAL_REFINEMENT_H_
-#define PCL_FILTERS_NORMAL_REFINEMENT_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
 
@@ -103,12 +102,12 @@ namespace pcl
     float nx = 0.0f;
     float ny = 0.0f;
     float nz = 0.0f;
-    for (unsigned int i = 0; i < k_indices.size (); ++i) {
+    for (size_t i = 0; i < k_indices.size (); ++i) {
       // Neighbor
       const NormalT& pointi = cloud[k_indices[i]];
       
       // Accumulate if not NaN
-      if (pcl_isfinite (pointi.normal_x) && pcl_isfinite (pointi.normal_y) && pcl_isfinite (pointi.normal_z))
+      if (std::isfinite (pointi.normal_x) && std::isfinite (pointi.normal_y) && std::isfinite (pointi.normal_z))
       {
         const float& weighti = weights[i];
         nx += weighti * pointi.normal_x;
@@ -119,7 +118,7 @@ namespace pcl
     
     // Normalize if norm valid and non-zero
     const float norm = std::sqrt (nx * nx + ny * ny + nz * nz);
-    if (pcl_isfinite (norm) && norm > std::numeric_limits<float>::epsilon ())
+    if (std::isfinite (norm) && norm > std::numeric_limits<float>::epsilon ())
     {
       point.normal_x = nx / norm;
       point.normal_y = ny / norm;
@@ -282,7 +281,7 @@ namespace pcl
         * \param output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
       
     private:
       /** \brief indices of neighboring points */
@@ -304,5 +303,3 @@ namespace pcl
 #else
 #define PCL_INSTANTIATE_NormalRefinement(T) template class PCL_EXPORTS pcl::NormalRefinement<T>;
 #endif
-
-#endif 

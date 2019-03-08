@@ -51,11 +51,6 @@
 #include <vtkRenderWindow.h>
 #include <vtkCubeSource.h>
 #include <vtkCleanPolyData.h>
-//=============================
-// Displaying cubes is very long!
-// so we limit their numbers.
- const int MAX_DISPLAYED_CUBES(15000);
-//=============================
 
 class OctreeViewer
 {
@@ -324,11 +319,7 @@ private:
       wk_cubeSource->SetBounds (x - s, x + s, y - s, y + s, z - s, z + s);
       wk_cubeSource->Update ();
 
-#if VTK_MAJOR_VERSION < 6
-      appendFilter->AddInput (wk_cubeSource->GetOutput ());
-#else
       appendFilter->AddInputData (wk_cubeSource->GetOutput ());
-#endif
     }
 
     // Remove any duplicate points
@@ -376,20 +367,15 @@ private:
     displayCloud->points.clear();
     cloudVoxel->points.clear();
 
-    pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_it;
-    pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_it_end = octree.end();
-
     pcl::PointXYZ pt_voxel_center;
     pcl::PointXYZ pt_centroid;
     std::cout << "===== Extracting data at depth " << depth << "... " << std::flush;
     double start = pcl::getTime ();
 
-    for (tree_it = octree.begin(depth); tree_it!=tree_it_end; ++tree_it)
+    for (pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::FixedDepthIterator tree_it = octree.fixed_depth_begin (depth);
+         tree_it != octree.fixed_depth_end ();
+         ++tree_it)
     {
-      // If the iterator is not at the right depth, continue
-      if (tree_it.getCurrentOctreeDepth () != depth)
-        continue;
-
       // Compute the point at the center of the voxel which represents the current OctreeNode
       Eigen::Vector3f voxel_min, voxel_max;
       octree.getVoxelBounds (tree_it, voxel_min, voxel_max);
@@ -400,7 +386,7 @@ private:
       cloudVoxel->points.push_back (pt_voxel_center);
 
       // If the asked depth is the depth of the octree, retrieve the centroid at this LeafNode
-      if (octree.getTreeDepth () == depth)
+      if (octree.getTreeDepth () == (unsigned int) depth)
       {
         pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode* container = static_cast<pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode*> (tree_it.getCurrentOctreeNode ());
 
@@ -416,7 +402,7 @@ private:
 
         // Iterate over the leafs to compute the centroid of all of them
         pcl::CentroidPoint<pcl::PointXYZ> centroid;
-        for (int j = 0; j < voxelCentroids.size (); ++j)
+        for (size_t j = 0; j < voxelCentroids.size (); ++j)
         {
           centroid.add (voxelCentroids[j]);
         }

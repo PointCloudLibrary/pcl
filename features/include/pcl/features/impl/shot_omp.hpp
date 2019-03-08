@@ -63,7 +63,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::initCompute ()
   }
 
   // Default LRF estimation alg: SHOTLocalReferenceFrameEstimationOMP
-  typename boost::shared_ptr<SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT> > lrf_estimator(new SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT>());
+  typename SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT>::Ptr lrf_estimator(new SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT>);
   lrf_estimator->setRadiusSearch ((lrf_radius_ > 0 ? lrf_radius_ : search_radius_));
   lrf_estimator->setInputCloud (input_);
   lrf_estimator->setIndices (indices_);
@@ -101,7 +101,7 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::initCompute
   }
 
   // Default LRF estimation alg: SHOTLocalReferenceFrameEstimationOMP
-  typename boost::shared_ptr<SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT> > lrf_estimator(new SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT>());
+  typename SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT>::Ptr lrf_estimator(new SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT>);
   lrf_estimator->setRadiusSearch ((lrf_radius_ > 0 ? lrf_radius_ : search_radius_));
   lrf_estimator->setInputCloud (input_);
   lrf_estimator->setIndices (indices_);
@@ -117,6 +117,20 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::initCompute
   }
 
   return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
+pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::setNumberOfThreads (unsigned int nr_threads)
+{
+  if (nr_threads == 0)
+#ifdef _OPENMP
+    threads_ = omp_get_num_procs();
+#else
+    threads_ = 1;
+#endif
+  else
+    threads_ = nr_threads;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,9 +161,9 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
 
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.x_axis[0]) ||
-        !pcl_isfinite (current_frame.y_axis[0]) ||
-        !pcl_isfinite (current_frame.z_axis[0]))
+    if (!std::isfinite (current_frame.x_axis[0]) ||
+        !std::isfinite (current_frame.y_axis[0]) ||
+        !std::isfinite (current_frame.z_axis[0]))
     {
       PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
         getClassName ().c_str (), (*indices_)[idx]);
@@ -165,7 +179,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
                                                                                            nn_dists) == 0)
     {
       // Copy into the resultant cloud
-      for (int d = 0; d < shot.size (); ++d)
+      for (Eigen::Index d = 0; d < shot.size (); ++d)
         output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
         output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
@@ -178,7 +192,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
     this->computePointSHOT (idx, nn_indices, nn_dists, shot);
 
     // Copy into the resultant cloud
-    for (int d = 0; d < shot.size (); ++d)
+    for (Eigen::Index d = 0; d < shot.size (); ++d)
       output.points[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
@@ -187,6 +201,20 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
       output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
     }
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
+pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::setNumberOfThreads (unsigned int nr_threads)
+{
+  if (nr_threads == 0)
+#ifdef _OPENMP
+    threads_ = omp_get_num_procs();
+#else
+    threads_ = 1;
+#endif
+  else
+    threads_ = nr_threads;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,9 +253,9 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
 
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.x_axis[0]) ||
-        !pcl_isfinite (current_frame.y_axis[0]) ||
-        !pcl_isfinite (current_frame.z_axis[0]))
+    if (!std::isfinite (current_frame.x_axis[0]) ||
+        !std::isfinite (current_frame.y_axis[0]) ||
+        !std::isfinite (current_frame.z_axis[0]))
     {
       PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
         getClassName ().c_str (), (*indices_)[idx]);
@@ -239,7 +267,7 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
         this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
     {
       // Copy into the resultant cloud
-      for (int d = 0; d < shot.size (); ++d)
+      for (Eigen::Index d = 0; d < shot.size (); ++d)
         output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
         output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
@@ -252,7 +280,7 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
     this->computePointSHOT (idx, nn_indices, nn_dists, shot);
 
     // Copy into the resultant cloud
-    for (int d = 0; d < shot.size (); ++d)
+    for (Eigen::Index d = 0; d < shot.size (); ++d)
       output.points[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {

@@ -143,7 +143,7 @@ namespace pcl
         boost::filesystem::directory_iterator directory_it_end; //empty constructor creates end of iterator
 
         //flag to test if the desired metadata file was found
-        bool b_loaded = 0;
+        bool b_loaded = false;
 
         for (boost::filesystem::directory_iterator directory_it (node_metadata_->getDirectoryPathname ()); directory_it != directory_it_end; ++directory_it)
         {
@@ -271,7 +271,7 @@ namespace pcl
       
       for(size_t i=0; i<8; i++)
       {
-        boost::filesystem::path child_path = this->node_metadata_->getDirectoryPathname () / boost::filesystem::path (boost::lexical_cast<std::string> (i));
+        boost::filesystem::path child_path = this->node_metadata_->getDirectoryPathname () / boost::filesystem::path (std::to_string(i));
         if (boost::filesystem::exists (child_path))
           child_count++;
       }
@@ -316,7 +316,7 @@ namespace pcl
         //check all 8 possible child directories
         for (int i = 0; i < 8; i++)
         {
-          boost::filesystem::path child_dir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (boost::lexical_cast<std::string> (i));
+          boost::filesystem::path child_dir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (std::to_string(i));
           //if the directory exists and the child hasn't been created (set to 0 by this node's constructor)
           if (boost::filesystem::exists (child_dir) && this->children_[i] == 0)
           {
@@ -519,7 +519,7 @@ namespace pcl
         if(hasUnloadedChildren ())
           loadChildren (false);
 
-      if( skip_bb_check == false )
+      if( !skip_bb_check )
       {
 
         //indices to store the points for each bin
@@ -666,7 +666,7 @@ namespace pcl
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataAtMaxDepth (const pcl::PCLPointCloud2::Ptr input_cloud, const bool skip_bb_check)
     {
       //this assumes data is already in the correct bin
-      if(skip_bb_check == true)
+      if(skip_bb_check)
       {
         PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Adding %u points at max depth, %u\n",__FUNCTION__, input_cloud->width*input_cloud->height, this->depth_);
         
@@ -915,7 +915,7 @@ namespace pcl
       childbb_min[0] = start[0] + static_cast<double> (x) * step[0];
       childbb_max[0] = start[0] + static_cast<double> (x + 1) * step[0];
 
-      boost::filesystem::path childdir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (boost::lexical_cast<std::string> (idx));
+      boost::filesystem::path childdir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (std::to_string(idx));
       children_[idx] = new OutofcoreOctreeBaseNode<ContainerT, PointT> (childbb_min, childbb_max, childdir.string ().c_str (), this);
 
       num_children_++;
@@ -2026,7 +2026,7 @@ namespace pcl
         local_pt.y = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + y_offset]));
         local_pt.z = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + z_offset]));
 
-        if (!pcl_isfinite (local_pt.x) || !pcl_isfinite (local_pt.y) || !pcl_isfinite (local_pt.z))
+        if (!std::isfinite (local_pt.x) || !std::isfinite (local_pt.y) || !std::isfinite (local_pt.z))
           continue;
 
         if(!this->pointInBoundingBox (local_pt))

@@ -38,8 +38,7 @@
  * Author: Matteo Munaro
  */
 
-#ifndef PCL_PEOPLE_PERSON_CLUSTER_H_
-#define PCL_PEOPLE_PERSON_CLUSTER_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -328,4 +327,3 @@ namespace pcl
   } /* namespace people */
 } /* namespace pcl */
 #include <pcl/people/impl/person_cluster.hpp>
-#endif /* PCL_PEOPLE_PERSON_CLUSTER_H_ */

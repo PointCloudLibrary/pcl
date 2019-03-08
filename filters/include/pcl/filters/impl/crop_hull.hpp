@@ -95,14 +95,14 @@ template<typename PointT> Eigen::Vector3f
 pcl::CropHull<PointT>::getHullCloudRange ()
 {
   Eigen::Vector3f cloud_min (
-    std::numeric_limits<float> ().max (),
-    std::numeric_limits<float> ().max (),
-    std::numeric_limits<float> ().max ()
+    std::numeric_limits<float>::max (),
+    std::numeric_limits<float>::max (),
+    std::numeric_limits<float>::max ()
   );
   Eigen::Vector3f cloud_max (
-    -std::numeric_limits<float> ().max (),
-    -std::numeric_limits<float> ().max (),
-    -std::numeric_limits<float> ().max ()
+    -std::numeric_limits<float>::max (),
+    -std::numeric_limits<float>::max (),
+    -std::numeric_limits<float>::max ()
   );
   for (size_t index = 0; index < indices_->size (); index++)
   {

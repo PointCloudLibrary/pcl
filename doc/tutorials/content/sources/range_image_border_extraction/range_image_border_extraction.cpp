@@ -92,7 +92,7 @@ main (int argc, char** argv)
   }
   else
   {
-    cout << "\nNo *.pcd file given => Genarating example point cloud.\n\n";
+    cout << "\nNo *.pcd file given => Generating example point cloud.\n\n";
     for (float x=-0.5f; x<=0.5f; x+=0.01f)
     {
       for (float y=-0.5f; y<=0.5f; y+=0.01f)
@@ -110,7 +110,7 @@ main (int argc, char** argv)
   float noise_level = 0.0;
   float min_range = 0.0f;
   int border_size = 1;
-  boost::shared_ptr<pcl::RangeImage> range_image_ptr (new pcl::RangeImage);
+  pcl::RangeImage::Ptr range_image_ptr (new pcl::RangeImage);
   pcl::RangeImage& range_image = *range_image_ptr;   
   range_image.createFromPointCloud (point_cloud, angular_resolution, pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),
                                    scene_sensor_pose, coordinate_frame, noise_level, min_range, border_size);

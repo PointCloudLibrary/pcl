@@ -35,8 +35,9 @@
  *
  */
 
-#ifndef INTERACTOR_STYLE_SWITCH_H_
-#define INTERACTOR_STYLE_SWITCH_H_
+#pragma once
+
+#include <QMap>
 
 #include <pcl/visualization/vtk.h>
 #include <pcl/visualization/interactor_style.h>
@@ -44,11 +45,7 @@
 #include <pcl/visualization/common/ren_win_interact_map.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-#include <pcl/apps/cloud_composer/qt.h>
-
-
-
-
+class QVTKWidget;
 
 namespace pcl
 {
@@ -78,22 +75,22 @@ namespace pcl
     class ClickTrackballStyleInteractor;
     class ProjectModel;
     
-    class PCL_EXPORTS InteractorStyleSwitch : public vtkInteractorStyle 
+    class InteractorStyleSwitch : public vtkInteractorStyle 
     {
       public:
         static InteractorStyleSwitch *New();
         vtkTypeMacro(InteractorStyleSwitch, vtkInteractorStyle);
         
         InteractorStyleSwitch();
-        virtual ~InteractorStyleSwitch();
+        ~InteractorStyleSwitch();
   
         void 
-        SetInteractor(vtkRenderWindowInteractor *iren);
+        SetInteractor(vtkRenderWindowInteractor *iren) override;
         
         vtkGetObjectMacro(current_style_, vtkInteractorStyle);
         
         void 
-        initializeInteractorStyles (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis, ProjectModel* model);
+        initializeInteractorStyles (pcl::visualization::PCLVisualizer::Ptr vis, ProjectModel* model);
         
         inline void 
         setQVTKWidget (QVTKWidget* qvtk) { qvtk_ = qvtk; }
@@ -108,13 +105,13 @@ namespace pcl
         getInteractorStyle (const interactor_styles::INTERACTOR_STYLES interactor_style) const 
           { return name_to_style_map_.value (interactor_style); }
         
-        virtual 
-        void SetDefaultRenderer(vtkRenderer*);
-        virtual 
-        void SetCurrentRenderer(vtkRenderer*);
         
-        virtual void
-        OnLeave ();
+        void SetDefaultRenderer(vtkRenderer*) override;
+        
+        void SetCurrentRenderer(vtkRenderer*) override;
+        
+        void
+        OnLeave () override;
                   
       protected:
         void 
@@ -139,7 +136,7 @@ namespace pcl
         /** \brief Internal pointer to QVTKWidget that this Switch works with */
         QVTKWidget* qvtk_;
         /** \brief Internal pointer to PCLVisualizer that this Switch works with */
-        boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
+        pcl::visualization::PCLVisualizer::Ptr vis_;
       private:
         InteractorStyleSwitch(const InteractorStyleSwitch&);  // Not implemented.
         void operator=(const InteractorStyleSwitch&);  // Not implemented.
@@ -149,7 +146,3 @@ namespace pcl
   }
   
 }
-
-#endif // INTERACTOR_STYLE_SWITCH_H_
-        
-        

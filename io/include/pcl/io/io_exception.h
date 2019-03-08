@@ -33,10 +33,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pcl/pcl_config.h>
+#pragma once
 
-#ifndef PCL_IO_EXCEPTION_H_
-#define PCL_IO_EXCEPTION_H_
+#include <pcl/pcl_config.h>
 
 #include <cstdarg>
 #include <cstdio>
@@ -68,13 +67,13 @@ namespace pcl
           unsigned line_number,
           const std::string& message);
 
-        virtual ~IOException () throw ();
+        ~IOException () throw ();
 
         IOException&
         operator= (const IOException& exception);
 
-        virtual const char*
-        what () const throw ();
+        const char*
+        what () const throw () override;
 
         const std::string&
         getFunctionName () const;
@@ -104,4 +103,3 @@ namespace pcl
     }
   } // namespace
 }
-#endif // PCL_IO_EXCEPTION_H_

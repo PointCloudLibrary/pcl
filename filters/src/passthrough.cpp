@@ -77,7 +77,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     output.width = input_->width;
     output.height = input_->height;
     // Check what the user value is: if !finite, set is_dense to false, true otherwise
-    if (!pcl_isfinite (user_filter_value_))
+    if (!std::isfinite (user_filter_value_))
       output.is_dense = false;
     else
       output.is_dense = input_->is_dense;
@@ -86,7 +86,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   {
     // Copy the header (and thus the frame_id) + allocate enough space for points
     output.height = 1; // filtering breaks the organized structure
-    // Because we're doing explit checks for isfinite, is_dense = true
+    // Because we're doing explicit checks for isfinite, is_dense = true
     output.is_dense = true;
   }
   output.row_step = input_->row_step;
@@ -188,7 +188,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
                 sizeof(float));
 
         // Remove NAN/INF/-INF values. We expect passthrough to output clean valid data.
-        if (!pcl_isfinite (distance_value))
+        if (!std::isfinite (distance_value))
         {
           if (extract_removed_indices_)
             (*removed_indices_)[nr_removed_p++] = cp;
@@ -228,7 +228,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof(float));
 
         // Check if the point is invalid
-        if (!pcl_isfinite (pt[0]) || !pcl_isfinite (pt[1]) || !pcl_isfinite (pt[2]))
+        if (!std::isfinite (pt[0]) || !std::isfinite (pt[1]) || !std::isfinite (pt[2]))
         {
           if (extract_removed_indices_)
           {
@@ -256,7 +256,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof(float));
 
       // Check if the point is invalid
-      if (!pcl_isfinite (pt[0]) || !pcl_isfinite (pt[1]) || !pcl_isfinite (pt[2]))
+      if (!std::isfinite (pt[0]) || !std::isfinite (pt[1]) || !std::isfinite (pt[2]))
       {
         if (extract_removed_indices_)
         {

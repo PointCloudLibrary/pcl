@@ -4,7 +4,7 @@ Benchmarking 3D
 ---------------
 
 This document introduces benchmarking concepts for 3D algorithms. By
-*benchmarking* here we refer to the posibility of testing different
+*benchmarking* here we refer to the possibility of testing different
 computational pipelines in an **easy manner**. The goal is to test their
 reproductibility with respect to a particular problem of general interest.
 
@@ -50,7 +50,7 @@ A higher level representation as mentioned before will be herein represented by 
  * a combination of the above.
 
 
-In addtion, feature descriptors can be:
+In addition, feature descriptors can be:
 
  * **local** - estimated only at a set of discrete keypoints, using the information from neighboring pixels/points;
  * **global**, or meta-local - estimated on entire objects or the entire input dataset.

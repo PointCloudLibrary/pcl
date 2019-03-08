@@ -58,7 +58,7 @@ pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
 {
   // Open 3D viewer
   viewer_
-      = boost::shared_ptr<pcl::visualization::PCLVisualizer> (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+      = pcl::visualization::PCLVisualizer::Ptr (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer_->initCameraParameters ();
 
   // Create the handlers for the three point clouds buffers: cloud_source_, cloud_target_ and cloud_intermediate_

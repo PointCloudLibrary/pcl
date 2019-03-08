@@ -34,9 +34,10 @@ int
       pcl::FieldComparison<pcl::PointXYZ> ("z", pcl::ComparisonOps::LT, 0.8)));
 
   // build the filter
-  pcl::ConditionalRemoval<pcl::PointXYZ> condrem (range_cond);
+  pcl::ConditionalRemoval<pcl::PointXYZ> condrem;
+  condrem.setCondition (range_cond);
   condrem.setInputCloud (cloud);
-  condrem.setKeepOrganized(true);
+  condrem.setKeepOrganized (true);
 
   // apply filter
   condrem.filter (*cloud_filtered);

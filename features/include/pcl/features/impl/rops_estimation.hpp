@@ -247,9 +247,8 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
 
   Eigen::Vector3f feature_point (point.x, point.y, point.z);
 
-  std::set <unsigned int>::const_iterator it;
   unsigned int i_triangle = 0;
-  for (it = local_triangles.begin (), i_triangle = 0; it != local_triangles.end (); it++, i_triangle++)
+  for (auto it = local_triangles.cbegin (); it != local_triangles.cend (); it++, i_triangle++)
   {
     Eigen::Vector3f pt[3];
     for (unsigned int i_vertex = 0; i_vertex < 3; i_vertex++)
@@ -299,7 +298,8 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
 
   float h1 = 0.0f;
   float h3 = 0.0f;
-  for (it = local_triangles.begin (), i_triangle = 0; it != local_triangles.end (); it++, i_triangle++)
+  i_triangle = 0;
+  for (auto it = local_triangles.cbegin (); it != local_triangles.cend (); it++, i_triangle++)
   {
     Eigen::Vector3f pt[3];
     for (unsigned int i_vertex = 0; i_vertex < 3; i_vertex++)

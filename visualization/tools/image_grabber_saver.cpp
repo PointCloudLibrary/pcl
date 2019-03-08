@@ -104,10 +104,10 @@ main (int argc, char** argv)
   float focal_length = 525.0;
   pcl::console::parse (argc, argv, "-focal", focal_length);
 
-  std::string depth_path = "";
+  std::string depth_path;
   pcl::console::parse_argument (argc, argv, "-depth_dir", depth_path);
 
-  std::string rgb_path = "";
+  std::string rgb_path;
   pcl::console::parse_argument (argc, argv, "-rgb_dir", rgb_path);
 
   pcl::console::parse_argument (argc, argv, "-out_dir", out_folder);

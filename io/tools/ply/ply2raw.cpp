@@ -258,7 +258,7 @@ ply_to_raw_converter::vertex_z (pcl::io::ply::float32 z)
 void
 ply_to_raw_converter::vertex_end ()
 {
-  vertices_.push_back (boost::tuple<pcl::io::ply::float32, pcl::io::ply::float32, pcl::io::ply::float32 > (vertex_x_, vertex_y_, vertex_z_));
+  vertices_.emplace_back(vertex_x_, vertex_y_, vertex_z_);
 }
 
 void
@@ -303,8 +303,7 @@ ply_to_raw_converter::face_end () {}
 bool 
 ply_to_raw_converter::convert (std::istream&, const std::string& istream_filename, std::ostream& ostream, const std::string&)
 {
-  pcl::io::ply::ply_parser::flags_type ply_parser_flags = 0;
-  pcl::io::ply::ply_parser ply_parser (ply_parser_flags);
+  pcl::io::ply::ply_parser ply_parser;
 
   ply_parser.info_callback (boost::bind (&ply_to_raw_converter::info_callback, this, boost::ref (istream_filename), _1, _2));
   ply_parser.warning_callback (boost::bind (&ply_to_raw_converter::warning_callback, this, boost::ref (istream_filename), _1, _2));

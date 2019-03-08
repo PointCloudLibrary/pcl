@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_METRICS_H_
-#define REC_FRAMEWORK_METRICS_H_
+#pragma once
 
 #include <cmath>
 #include <cstdlib>
@@ -121,7 +120,7 @@ namespace Metrics
        */
       template<typename U, typename V>
         inline ResultType
-        accum_dist (const U& a, const V& b, int dim) const
+        accum_dist (const U& a, const V& b, int) const
         {
           //printf("New code being used, accum_dist\n");
           ResultType min0;
@@ -133,5 +132,3 @@ namespace Metrics
         }
     };
 }
-
-#endif /* REC_FRAMEWORK_METRICS_H_ */

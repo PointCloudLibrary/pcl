@@ -37,16 +37,15 @@
  *
  */
 
-#ifndef PCL_REGION_GROWING_H_
-#define PCL_REGION_GROWING_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/search/search.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <list>
-#include <math.h>
-#include <time.h>
+#include <cmath>
+#include <ctime>
 
 namespace pcl
 {
@@ -81,7 +80,7 @@ namespace pcl
       /** \brief This destructor destroys the cloud, normals and search method used for
         * finding KNN. In other words it frees memory.
         */
-      virtual
+      
       ~RegionGrowing ();
 
       /** \brief Get the minimum number of points that a cluster needs to contain in order to be considered valid. */
@@ -346,6 +345,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/region_growing.hpp>
-#endif
-
 #endif

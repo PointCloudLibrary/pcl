@@ -17,13 +17,13 @@ PCL is split in a number of modular libraries. The most important set of release
 ========================  ========================  ========================
 Filters_                  Features_                 Keypoints_
 |filters_small|           |features_small|          |keypoints_small|
-Registration_                   KdTree_                   Octree_
+Registration_             KdTree_                   Octree_
 |registration_small|      |kdtree_small|            |octree_small|
 Segmentation_             `Sample Consensus`_       Surface_
 |segmentation_small|      |sample_consensus_small|  |surface_small|
-`Range Image`_            `I/O`_                        Visualization_
+`Range Image`_            `I/O`_                    Visualization_
 |range_image_small|       |io_small|                |visualization_small|
-Common_					  Search_
+Common                    Search_
 |pcl_logo|                |pcl_logo|
 ========================  ========================  ========================
 
@@ -69,7 +69,7 @@ Filters
 
 .. image:: images/statistical_removal_2.jpg
 
-**Documentation:** http://docs.pointclouds.org/trunk/a02945.html
+**Documentation:** http://docs.pointclouds.org/trunk/group__filters.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#filtering-tutorial
 
@@ -82,17 +82,17 @@ Filters
 **Location:**
 
 	* MAC OS X (Homebrew installation)
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/filters/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/filters/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/filters/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/filters/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/filters/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/filters/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 
 Top_
 
@@ -124,7 +124,7 @@ Features
 	
 	|
 	
-**Documentation:** http://docs.pointclouds.org/trunk/a02944.html
+**Documentation:** http://docs.pointclouds.org/trunk/group__features.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#features-tutorial
 
@@ -139,17 +139,17 @@ Features
 **Location:**
 
 	* MAC OS X (Homebrew installation)
-		* Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/features/``
+		* Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/features/``
 		* Binaries_: ``$(PCL_PREFIX)/bin/``
 		* ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		* Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/filters/``
+		* Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/filters/``
 		* Binaries_: ``$(PCL_PREFIX)/bin/``
 		* ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/features/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/features/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 		
 Top_		
 
@@ -168,7 +168,7 @@ Keypoints
 
 |
 	
-**Documentation:** http://docs.pointclouds.org/trunk/a02949.html
+**Documentation:** http://docs.pointclouds.org/trunk/group__keypoints.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#keypoints-tutorial
 
@@ -185,17 +185,17 @@ Keypoints
 **Location:**
 
 	* MAC OS X (Homebrew installation)
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/keypoints/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/keypoints/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/filters/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/filters/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/keypoints/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/keypoints/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 		
 Top_		
 
@@ -218,7 +218,7 @@ Registration
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/a02953.html
+**Documentation:** http://docs.pointclouds.org/trunk/group__registration.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#registration-tutorial
 
@@ -232,17 +232,17 @@ Registration
 **Location:**
 
 	* MAC OS X (Homebrew installation)
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/registration/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/registration/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/filters/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/filters/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/registration/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/registration/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 		
 Top_		
 
@@ -265,7 +265,7 @@ Kd-tree
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/a02948.html
+**Documentation:** http://docs.pointclouds.org/trunk/group__kdtree.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#kdtree-tutorial
 
@@ -274,17 +274,17 @@ Kd-tree
 **Location:**
 
 	* MAC OS X (Homebrew installation)
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/kdtree/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/kdtree/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/filters/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/filters/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/kdtree/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/kdtree/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 		
 Top_		
 
@@ -305,7 +305,7 @@ Octree
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/a02950.html
+**Documentation:** http://docs.pointclouds.org/trunk/group__octree.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#octree-tutorial
 
@@ -314,17 +314,17 @@ Octree
 **Location:**
 
 	* MAC OS X (Homebrew installation)
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/octree/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/octree/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/filters/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/filters/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/octree/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/octree/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 		
 Top_		
 
@@ -346,7 +346,7 @@ Segmentation
 	
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/a02956.html
+**Documentation:** http://docs.pointclouds.org/trunk/group__segmentation.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#segmentation-tutorial
 
@@ -361,17 +361,17 @@ Segmentation
 **Location:**
 
 	* MAC OS X (Homebrew installation)
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/segmentation/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/segmentation/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/filters/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/filters/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/segmentation/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/segmentation/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 		
 Top_		
 
@@ -392,7 +392,7 @@ Sample Consensus
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/a02954.html
+**Documentation:** http://docs.pointclouds.org/trunk/group__sample__consensus.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#sample-consensus
 
@@ -401,17 +401,17 @@ Sample Consensus
 **Location:**
 
 	* MAC OS X (Homebrew installation)
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/sample_consensus/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/sample_consensus/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/filters/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/filters/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/sample_consensus/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/sample_consensus/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 		
 Top_		
 
@@ -438,7 +438,7 @@ Surface
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/a02957.html
+**Documentation:** http://docs.pointclouds.org/trunk/group__surface.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#surface-tutorial
 
@@ -452,17 +452,17 @@ Surface
 **Location:**
 
 	* MAC OS X (Homebrew installation)
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/surface/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/surface/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/filters/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/filters/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/surface/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/surface/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 		
 Top_		
 
@@ -475,11 +475,11 @@ Range Image
 
 	The *range_image* library contains two classes for representing and working with range images. A range image (or depth map) is an image whose pixel values represent a distance or depth from the sensor's origin. Range images are a common 3D representation and are often generated by stereo or time-of-flight cameras. With knowledge of the camera's intrinsic calibration parameters, a range image can be converted into a point cloud. 
 
+	Note: *range_image* is now a part of Common_ module.
+
 	.. image:: images/range_image.jpg
 
 |
-
-**Documentation:** http://docs.pointclouds.org/trunk/a01344.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#range-images
 
@@ -488,17 +488,17 @@ Range Image
 **Location:**
 
 	* MAC OS X (Homebrew installation)
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/range_image/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/range_image/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/filters/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/filters/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/range_image/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/range_image/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 		
 Top_		
 
@@ -519,7 +519,7 @@ I/O
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/a02947.html
+**Documentation:** http://docs.pointclouds.org/trunk/group__io.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#i-o
 
@@ -532,17 +532,17 @@ I/O
 **Location:**
 
 	* MAC OS X (Homebrew installation)
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/io/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/io/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/filters/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/filters/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/io/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/io/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 		
 Top_		
 
@@ -586,7 +586,7 @@ Visualization
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/a02958.html
+**Documentation:** http://docs.pointclouds.org/trunk/group__visualization.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#visualization-tutorial
 
@@ -601,17 +601,17 @@ Visualization
 **Location:**
 
 	* MAC OS X (Homebrew installation)
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/visualization/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/visualization/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/filters/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/filters/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/visualization/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/visualization/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 		
 Top_		
 
@@ -627,17 +627,17 @@ Common
 **Location:**
 
 	* MAC OS X (Homebrew installation)
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/common/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/common/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/common/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/common/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/common/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/common/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``	
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 
 Top_
 
@@ -665,17 +665,17 @@ Search
     
 **Location:**
 	* MAC OS X (Homebrew installation)
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/search/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/search/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Linux
-		- Header files: ``$(PCL_PREFIX)/pcl-1.6/pcl/search/``
+		- Header files: ``$(PCL_PREFIX)/pcl-$(PCL_VERSION)/pcl/search/``
 		- Binaries_: ``$(PCL_PREFIX)/bin/``
 		- ``$(PCL_PREFIX)`` is the ``cmake`` installation prefix ``CMAKE_INSTALL_PREFIX``, e.g., ``/usr/local/``
 	* Windows
-		- Header files: ``$(PCL_DIRECTORY)/include/pcl-1.6/pcl/search/``
+		- Header files: ``$(PCL_DIRECTORY)/include/pcl-$(PCL_VERSION)/pcl/search/``
 		- Binaries_: ``$(PCL_DIRECTORY)/bin/``
-		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL 1.6\``    
+		- ``$(PCL_DIRECTORY)`` is the PCL installation directory, e.g.,  ``C:\Program Files\PCL $(PCL_VERSION)\``
 		
 Top_		
 
@@ -767,7 +767,7 @@ This section provides a quick reference for some of the common tools in PCL.
 	
 	 	**Syntax is: mesh2pcd input.{ply,obj} output.pcd <options>**, where options are:
 	 	
-		                     -level X      = tesselated sphere level (default: 2)
+		                     -level X      = tessellated sphere level (default: 2)
 		
 		                     -resolution X = the sphere resolution in angle increments (default: 100 deg)
 		

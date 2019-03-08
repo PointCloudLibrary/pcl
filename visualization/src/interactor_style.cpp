@@ -236,7 +236,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const Eig
   window_size[0] = 2 * static_cast<int> (intrinsics (0, 2));
   window_size[1] = 2 * static_cast<int> (intrinsics (1, 2));
 
-  // Compute the vertical field of view based on the focal length and image heigh
+  // Compute the vertical field of view based on the focal length and image height
   double fovy = 2 * atan (window_size[1] / (2. * intrinsics (1, 1))) * 180.0 / M_PI;
 
 
@@ -629,7 +629,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
   // Switch between point color/geometry handlers
   if (Interactor->GetKeySym () && Interactor->GetKeySym ()[0]  >= '0' && Interactor->GetKeySym ()[0] <= '9')
   {
-    CloudActorMap::iterator it;
     int index = Interactor->GetKeySym ()[0] - '0' - 1;
     if (index == -1) index = 9;
 
@@ -640,17 +639,17 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     // Geometry ?
     if (keymod)
     {
-      for (it = cloud_actors_->begin (); it != cloud_actors_->end (); ++it)
+      for (auto &actor : *cloud_actors_)
       {
-        CloudActor *act = &(*it).second;
-        if (index >= static_cast<int> (act->geometry_handlers.size ()))
+        CloudActor &act = actor.second;
+        if (index >= static_cast<int> (act.geometry_handlers.size ()))
           continue;
 
         // Save the geometry handler index for later usage
-        act->geometry_handler_index_ = index;
+        act.geometry_handler_index_ = index;
 
         // Create the new geometry
-        PointCloudGeometryHandler<pcl::PCLPointCloud2>::ConstPtr geometry_handler = act->geometry_handlers[index];
+        PointCloudGeometryHandler<pcl::PCLPointCloud2>::ConstPtr geometry_handler = act.geometry_handlers[index];
 
         // Use the handler to obtain the geometry
         vtkSmartPointer<vtkPoints> points;
@@ -669,74 +668,66 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 #if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
         if (use_vbos_)
         {
-          vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act->actor->GetMapper ());
+          vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act.actor->GetMapper ());
           mapper->SetInput (data);
           // Modify the actor
-          act->actor->SetMapper (mapper);
+          act.actor->SetMapper (mapper);
         }
         else
 #endif
         {
-          vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
-#if VTK_MAJOR_VERSION < 6
-          mapper->SetInput (data);
-#else
+          vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
           mapper->SetInputData (data);
-#endif
           // Modify the actor
-          act->actor->SetMapper (mapper);
+          act.actor->SetMapper (mapper);
         }
-        act->actor->Modified ();
+        act.actor->Modified ();
       }
     }
     else
     {
-      for (it = cloud_actors_->begin (); it != cloud_actors_->end (); ++it)
+      for (auto &actor : *cloud_actors_)
       {
-        CloudActor *act = &(*it).second;
+        CloudActor &act = actor.second;
         // Check for out of bounds
-        if (index >= static_cast<int> (act->color_handlers.size ()))
+        if (index >= static_cast<int> (act.color_handlers.size ()))
           continue;
 
         // Save the color handler index for later usage
-        act->color_handler_index_ = index;
+        act.color_handler_index_ = index;
 
         // Get the new color
-        PointCloudColorHandler<pcl::PCLPointCloud2>::ConstPtr color_handler = act->color_handlers[index];
+        PointCloudColorHandler<pcl::PCLPointCloud2>::ConstPtr color_handler = act.color_handlers[index];
 
         vtkSmartPointer<vtkDataArray> scalars;
         color_handler->getColor (scalars);
         double minmax[2];
         scalars->GetRange (minmax);
         // Update the data
-        vtkPolyData *data = static_cast<vtkPolyData*>(act->actor->GetMapper ()->GetInput ());
+        vtkPolyData *data = static_cast<vtkPolyData*>(act.actor->GetMapper ()->GetInput ());
         data->GetPointData ()->SetScalars (scalars);
         // Modify the mapper
 #if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
         if (use_vbos_)
         {
-          vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act->actor->GetMapper ());
+          vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act.actor->GetMapper ());
           mapper->SetScalarRange (minmax);
           mapper->SetScalarModeToUsePointData ();
           mapper->SetInput (data);
           // Modify the actor
-          act->actor->SetMapper (mapper);
+          act.actor->SetMapper (mapper);
         }
         else
 #endif
         {
-          vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
+          vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
           mapper->SetScalarRange (minmax);
           mapper->SetScalarModeToUsePointData ();
-#if VTK_MAJOR_VERSION < 6
-          mapper->SetInput (data);
-#else
           mapper->SetInputData (data);
-#endif
           // Modify the actor
-          act->actor->SetMapper (mapper);
+          act.actor->SetMapper (mapper);
         }
-        act->actor->Modified ();
+        act.actor->Modified ();
       }
     }
 
@@ -796,29 +787,29 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     case 'l': case 'L':
     {
       // Iterate over the entire actors list and extract the geomotry/color handlers list
-      for (CloudActorMap::iterator it = cloud_actors_->begin (); it != cloud_actors_->end (); ++it)
+      for (auto &actor : *cloud_actors_)
       {
         std::list<std::string> geometry_handlers_list, color_handlers_list;
-        CloudActor *act = &(*it).second;
-        for (size_t i = 0; i < act->geometry_handlers.size (); ++i)
-          geometry_handlers_list.push_back (act->geometry_handlers[i]->getFieldName ());
-        for (size_t i = 0; i < act->color_handlers.size (); ++i)
-          color_handlers_list.push_back (act->color_handlers[i]->getFieldName ());
+        CloudActor *act = &actor.second;
+        for (auto &geometry_handler : act->geometry_handlers)
+          geometry_handlers_list.push_back (geometry_handler->getFieldName ());
+        for (auto &color_handler : act->color_handlers)
+          color_handlers_list.push_back (color_handler->getFieldName ());
 
         if (!geometry_handlers_list.empty ())
         {
           int i = 0;
-          pcl::console::print_info ("List of available geometry handlers for actor "); pcl::console::print_value ("%s: ", (*it).first.c_str ());
-          for (std::list<std::string>::iterator git = geometry_handlers_list.begin (); git != geometry_handlers_list.end (); ++git)
-            pcl::console::print_value ("%s(%d) ", (*git).c_str (), ++i);
+          pcl::console::print_info ("List of available geometry handlers for actor "); pcl::console::print_value ("%s: ", actor.first.c_str ());
+          for (auto &git : geometry_handlers_list)
+            pcl::console::print_value ("%s(%d) ", git.c_str (), ++i);
           pcl::console::print_info ("\n");
         }
         if (!color_handlers_list.empty ())
         {
           int i = 0;
-          pcl::console::print_info ("List of available color handlers for actor "); pcl::console::print_value ("%s: ", (*it).first.c_str ());
-          for (std::list<std::string>::iterator cit = color_handlers_list.begin (); cit != color_handlers_list.end (); ++cit)
-            pcl::console::print_value ("%s(%d) ", (*cit).c_str (), ++i);
+          pcl::console::print_info ("List of available color handlers for actor "); pcl::console::print_value ("%s: ", actor.first.c_str ());
+          for (auto &cit : color_handlers_list)
+            pcl::console::print_value ("%s(%d) ", cit.c_str (), ++i);
           pcl::console::print_info ("\n");
         }
       }
@@ -1182,8 +1173,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool add_lut)
 {
-  CloudActorMap::iterator am_it;
-  ShapeActorMap::iterator sm_it;
   bool actor_found = false;
 
   if (!lut_enabled_ && !add_lut)
@@ -1191,10 +1180,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool
 
   if (lut_actor_id_ != "")  // Search if provided actor id is in CloudActorMap or ShapeActorMap
   {
-    am_it = cloud_actors_->find (lut_actor_id_);
+    auto am_it = cloud_actors_->find (lut_actor_id_);
     if (am_it == cloud_actors_->end ())
     {
-      sm_it = shape_actors_->find (lut_actor_id_);
+      auto sm_it = shape_actors_->find (lut_actor_id_);
       if (sm_it == shape_actors_->end ())
       {
         PCL_WARN ("[updateLookUpTableDisplay] Could not find any actor with id <%s>!\n", lut_actor_id_.c_str ());
@@ -1248,16 +1237,16 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool
   else  // lut_actor_id_ == "", the user did not specify which cloud/shape LUT should be displayed
   // Circling through all clouds/shapes and displaying first LUT found
   {
-    for (am_it = cloud_actors_->begin (); am_it != cloud_actors_->end (); ++am_it)
+    for (const auto &actor : *cloud_actors_)
     {
-      CloudActor *act = & (*am_it).second;
-      if (!act->actor->GetMapper ()->GetLookupTable ())
+      const auto &act = actor.second;
+      if (!act.actor->GetMapper ()->GetLookupTable ())
         continue;
 
-      if (!act->actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+      if (!act.actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
         continue;
 
-      vtkScalarsToColors* lut = act->actor->GetMapper ()->GetLookupTable ();
+      vtkScalarsToColors* lut = act.actor->GetMapper ()->GetLookupTable ();
       lut_actor_->SetLookupTable (lut);
       lut_actor_->Modified ();
       actor_found = true;
@@ -1266,10 +1255,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool
 
     if (!actor_found)
     {
-      for (sm_it = shape_actors_->begin (); sm_it != shape_actors_->end (); ++sm_it)
+      for (const auto &shape_actor : *shape_actors_)
       {
-        vtkSmartPointer<vtkProp> *act = & (*sm_it).second;
-        vtkSmartPointer<vtkActor> actor = vtkActor::SafeDownCast (*act);
+        const vtkSmartPointer<vtkProp> *act = &shape_actor.second;
+        const vtkSmartPointer<vtkActor> actor = vtkActor::SafeDownCast (*act);
         if (!actor)
           continue;
 
@@ -1549,8 +1538,8 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnTimer ()
     return;
   }
 
-  for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
-    (*am_it).second.ren_->Render ();
+  for (auto &win : wins_)
+    win.second.ren_->Render ();
 }
 
 namespace pcl

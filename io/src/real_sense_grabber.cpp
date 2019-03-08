@@ -35,8 +35,6 @@
  *
  */
 
-#include <boost/lexical_cast.hpp>
-
 #include <pxcimage.h>
 #include <pxccapture.h>
 #include <pxcprojection.h>
@@ -323,7 +321,7 @@ pcl::RealSenseGrabber::run ()
       frequency_.event ();
       fps_mutex_.unlock ();
 
-      /* We preform the following steps to convert received data into point clouds:
+      /* We perform the following steps to convert received data into point clouds:
        *
        *   1. Push depth image to the depth buffer
        *   2. Pull filtered depth image from the depth buffer

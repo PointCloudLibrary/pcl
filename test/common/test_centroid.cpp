@@ -44,12 +44,15 @@
 #include <pcl/common/eigen.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/io/pcd_io.h>
 #include <pcl/pcl_tests.h>
 
 #include <pcl/common/centroid.h>
 
 using namespace pcl;
 using pcl::test::EXPECT_EQ_VECTORS;
+
+pcl::PCLPointCloud2 cloud_blob;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, compute3DCentroidFloat)
@@ -810,6 +813,7 @@ TEST (PCL, CentroidPoint)
     centroid.get (c);
     EXPECT_XYZ_EQ (PointXYZ (100, 100, 100), c);
   }
+
   // Single point
   {
     CentroidPoint<PointXYZ> centroid;
@@ -818,6 +822,7 @@ TEST (PCL, CentroidPoint)
     centroid.get (c);
     EXPECT_XYZ_EQ (p1, c);
   }
+
   // Multiple points
   {
     CentroidPoint<PointXYZ> centroid;
@@ -831,12 +836,36 @@ TEST (PCL, CentroidPoint)
 
   // Retrieve centroid into a different point type
   {
-    CentroidPoint<PointXYZ> centroid;
+    PointNormal p1; p1.getVector3fMap () << 1, 2, 3; p1.getNormalVector3fMap() << 0, 1, 0;
+    CentroidPoint<PointNormal> centroid;
     centroid.add (p1);
-    PointXYZRGB c; c.rgba = 0x00FFFFFF;
-    centroid.get (c);
-    EXPECT_XYZ_EQ (p1, c);
-    EXPECT_EQ (0x00FFFFFF, c.rgba);
+    // Retrieve into a point type that is a "superset" of the original
+    {
+      PointXYZRGBNormal c; c.rgba = 0x00FFFFFF;
+      centroid.get (c);
+      EXPECT_XYZ_EQ (p1, c);
+      EXPECT_NORMAL_EQ (p1, c);
+      EXPECT_EQ (0x00FFFFFF, c.rgba); // unchanged
+    }
+    // Retrieve into a point type that is a "subset" of the original
+    {
+      Normal c;
+      centroid.get (c);
+      EXPECT_NORMAL_EQ (p1, c);
+    }
+    // Retrieve into a point type that partially "overlaps" with the original
+    {
+      PointXYZRGB c; c.rgba = 0x00FFFFFF;
+      centroid.get (c);
+      EXPECT_XYZ_EQ (p1, c);
+      EXPECT_EQ (0x00FFFFFF, c.rgba); // unchanged
+    }
+    // Retrieve into a point type that does not "overlap" with the original
+    {
+      RGB c; c.rgba = 0x00FFFFFF;
+      centroid.get (c);
+      EXPECT_EQ (0x00FFFFFF, c.rgba); // unchanged
+    }
   }
 
   // Centroid with XYZ and RGB
@@ -854,7 +883,7 @@ TEST (PCL, CentroidPoint)
     EXPECT_EQ (0xFF111111, c.rgba);
   }
 
-  // Centroid with normal and curavture
+  // Centroid with normal and curvature
   {
     Normal np1; np1.getNormalVector4fMap () << 1, 0, 0, 0; np1.curvature = 0.2;
     Normal np2; np2.getNormalVector4fMap () << -1, 0, 0, 0; np2.curvature = 0.1;
@@ -1009,9 +1038,80 @@ TEST (PCL, computeCentroid)
   EXPECT_FLOAT_EQ (-500, centroid.curvature);
 }
 
+TEST (PCL, demeanPointCloud)
+{
+  PointCloud<PointXYZ> cloud, cloud_demean;
+  fromPCLPointCloud2 (cloud_blob, cloud);
+
+  Eigen::Vector4f centroid;
+  compute3DCentroid (cloud, centroid);
+  EXPECT_NEAR (centroid[0], -0.0290809, 1e-4);
+  EXPECT_NEAR (centroid[1],  0.102653,  1e-4);
+  EXPECT_NEAR (centroid[2],  0.027302,  1e-4);
+  EXPECT_NEAR (centroid[3],  1,         1e-4);
+
+  // Check standard demean
+  demeanPointCloud (cloud, centroid, cloud_demean);
+  EXPECT_METADATA_EQ (cloud_demean, cloud);
+
+  EXPECT_XYZ_NEAR (cloud_demean[0], PointXYZ (0.034503, 0.010837, 0.013447), 1e-4);
+  EXPECT_XYZ_NEAR (cloud_demean[cloud_demean.size () - 1], PointXYZ (-0.048849, 0.072507, -0.071702), 1e-4);
+
+  std::vector<int> indices (cloud.size ());
+  for (int i = 0; i < static_cast<int> (indices.size ()); ++i) { indices[i] = i; }
+
+  // Check standard demean w/ indices
+  demeanPointCloud (cloud, indices, centroid, cloud_demean);
+  EXPECT_EQ (cloud_demean.is_dense, cloud.is_dense);
+  EXPECT_EQ (cloud_demean.width, indices.size ());
+  EXPECT_EQ (cloud_demean.height, 1);
+  EXPECT_EQ (cloud_demean.size (), cloud.size ());
+
+  EXPECT_XYZ_NEAR (cloud_demean[0], PointXYZ (0.034503, 0.010837, 0.013447), 1e-4);
+  EXPECT_XYZ_NEAR (cloud_demean[cloud_demean.size () - 1], PointXYZ (-0.048849, 0.072507, -0.071702), 1e-4);
+
+  // Check eigen demean
+  Eigen::MatrixXf mat_demean;
+  demeanPointCloud (cloud, centroid, mat_demean);
+  EXPECT_EQ (mat_demean.cols (), int (cloud.size ()));
+  EXPECT_EQ (mat_demean.rows (), 4);
+
+  EXPECT_NEAR (mat_demean (0, 0), 0.034503, 1e-4);
+  EXPECT_NEAR (mat_demean (1, 0), 0.010837, 1e-4);
+  EXPECT_NEAR (mat_demean (2, 0), 0.013447, 1e-4);
+
+  EXPECT_NEAR (mat_demean (0, cloud_demean.size () - 1), -0.048849, 1e-4);
+  EXPECT_NEAR (mat_demean (1, cloud_demean.size () - 1),  0.072507, 1e-4);
+  EXPECT_NEAR (mat_demean (2, cloud_demean.size () - 1), -0.071702, 1e-4);
+
+  // Check eigen demean + indices
+  demeanPointCloud (cloud, indices, centroid, mat_demean);
+  EXPECT_EQ (mat_demean.cols (), int (cloud.size ()));
+  EXPECT_EQ (mat_demean.rows (), 4);
+
+  EXPECT_NEAR (mat_demean (0, 0), 0.034503, 1e-4);
+  EXPECT_NEAR (mat_demean (1, 0), 0.010837, 1e-4);
+  EXPECT_NEAR (mat_demean (2, 0), 0.013447, 1e-4);
+
+  EXPECT_NEAR (mat_demean (0, cloud_demean.size () - 1), -0.048849, 1e-4);
+  EXPECT_NEAR (mat_demean (1, cloud_demean.size () - 1),  0.072507, 1e-4);
+  EXPECT_NEAR (mat_demean (2, cloud_demean.size () - 1), -0.071702, 1e-4);
+}
+
 int
 main (int argc, char** argv)
 {
+  if (argc < 2)
+  {
+    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+  if (io::loadPCDFile (argv[1], cloud_blob) < 0)
+  {
+    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }

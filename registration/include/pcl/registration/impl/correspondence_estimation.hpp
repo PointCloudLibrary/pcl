@@ -45,20 +45,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::setInputCloud (const typename pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::PointCloudSourceConstPtr &cloud)
-{
-  setInputSource (cloud); 
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename Scalar> typename pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::PointCloudSourceConstPtr const
-pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::getInputCloud ()
-{
-  return (getInputSource ()); 
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename Scalar> void
 pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::setInputTarget (
     const PointCloudTargetConstPtr &cloud)
 {

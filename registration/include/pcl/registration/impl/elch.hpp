@@ -65,20 +65,20 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, double *we
   double *d_min = new double[num_vertices (g)];
   double dist;
   bool do_swap = false;
-  std::list<int>::iterator crossings_it, end_it, start_min, end_min;
+  std::list<int>::iterator start_min, end_min;
 
   // process all junctions
   while (!crossings.empty ())
   {
     dist = -1;
     // find shortest crossing for all vertices on the loop
-    for (crossings_it = crossings.begin (); crossings_it != crossings.end (); )
+    for (auto crossings_it = crossings.begin (); crossings_it != crossings.end (); )
     {
       dijkstra_shortest_paths (g, *crossings_it,
           predecessor_map(boost::make_iterator_property_map(p, get(boost::vertex_index, g))).
           distance_map(boost::make_iterator_property_map(d, get(boost::vertex_index, g))));
 
-      end_it = crossings_it;
+      auto end_it = crossings_it;
       end_it++;
       // find shortest crossing for one vertex
       for (; end_it != crossings.end (); end_it++)

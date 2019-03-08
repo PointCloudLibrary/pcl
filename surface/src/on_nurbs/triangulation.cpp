@@ -182,7 +182,7 @@ Triangulation::convertSurface2PolygonMesh (const ON_NurbsSurface &nurbs, Polygon
   createVertices (cloud, float (x0), float (y0), 0.0f, float (w), float (h), resolution, resolution);
   createIndices (mesh.polygons, 0, resolution, resolution);
 
-  for (unsigned i = 0; i < cloud->size (); i++)
+  for (size_t i = 0; i < cloud->size (); i++)
   {
     pcl::PointXYZ &v = cloud->at (i);
 
@@ -223,7 +223,6 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
   createIndices (polygons, 0, resolution, resolution);
 
   vector_vec2d points (cloud->size (), Eigen::Vector2d ());
-  std::vector<double> params (cloud->size (), 0.0);
   std::vector<bool> pt_is_in (cloud->size (), false);
 
   Eigen::Vector3d a0, a1;
@@ -233,19 +232,19 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
   std::vector<uint32_t> out_idx;
   pcl::on_nurbs::vector_vec2d out_pc;
 
-  for (unsigned i = 0; i < cloud->size (); i++)
+  for (size_t i = 0; i < cloud->size (); i++)
   {
-    double err, param;
+    double err;
     Eigen::Vector2d pc, tc;
     pcl::PointXYZ &v = cloud->at (i);
     Eigen::Vector2d vp (v.x, v.y);
 
     if (curve.Order () == 2)
-      param = pcl::on_nurbs::FittingCurve2dAPDM::inverseMappingO2 (curve, vp, err, pc, tc);
+      pcl::on_nurbs::FittingCurve2dAPDM::inverseMappingO2 (curve, vp, err, pc, tc);
     else
     {
-      param = pcl::on_nurbs::FittingCurve2dAPDM::findClosestElementMidPoint (curve, vp);
-      param = pcl::on_nurbs::FittingCurve2dAPDM::inverseMapping (curve, vp, param, err, pc, tc, rScale);
+      double param = pcl::on_nurbs::FittingCurve2dAPDM::findClosestElementMidPoint (curve, vp);
+      pcl::on_nurbs::FittingCurve2dAPDM::inverseMapping (curve, vp, param, err, pc, tc, rScale);
     }
 
     Eigen::Vector3d a (vp (0) - pc (0), vp (1) - pc (1), 0.0);
@@ -253,11 +252,10 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     Eigen::Vector3d z = a.cross (b);
 
     points[i] = pc;
-    params[i] = param;
     pt_is_in[i] = (z (2) >= 0.0);
   }
 
-  for (unsigned i = 0; i < polygons.size (); i++)
+  for (size_t i = 0; i < polygons.size (); i++)
   {
     unsigned in (0);
     pcl::Vertices &poly = polygons[i];
@@ -360,7 +358,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
   pcl::on_nurbs::NurbsTools::computeBoundingBox (curve, a0, a1);
   double rScale = 1.0 / pcl::on_nurbs::NurbsTools::computeRScale (a0, a1);
 
-  for (unsigned i = 0; i < cloud->size (); i++)
+  for (size_t i = 0; i < cloud->size (); i++)
   {
     double err, param;
     Eigen::Vector2d pc, tc;
@@ -387,7 +385,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     start.push_back (Eigen::Vector3d (vp (0), vp (1), 0.0));
   }
 
-  for (unsigned i = 0; i < polygons.size (); i++)
+  for (size_t i = 0; i < polygons.size (); i++)
   {
     unsigned in (0);
     pcl::Vertices &poly = polygons[i];
@@ -485,7 +483,7 @@ Triangulation::convertSurface2Vertices (const ON_NurbsSurface &nurbs, pcl::Point
   createVertices (cloud, float (x0), float (y0), 0.0f, float (w), float (h), resolution, resolution);
   createIndices (vertices, 0, resolution, resolution);
 
-  for (unsigned i = 0; i < cloud->size (); i++)
+  for (size_t i = 0; i < cloud->size (); i++)
   {
     pcl::PointXYZ &v = cloud->at (i);
 

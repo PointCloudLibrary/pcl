@@ -20,8 +20,7 @@
   THE SOFTWARE.
 */
 
-#ifndef cJSON__h
-#define cJSON__h
+#pragma once
 
 #include <pcl/pcl_macros.h>
 
@@ -113,7 +112,7 @@ PCLAPI(void) cJSON_AddItemToObject(cJSON *object,const char *string,cJSON *item)
 PCLAPI(void) cJSON_AddItemReferenceToArray(cJSON *array, cJSON *item);
 PCLAPI(void) cJSON_AddItemReferenceToObject(cJSON *object,const char *string,cJSON *item);
 
-/* Remove/Detatch items from Arrays/Objects. */
+/* Remove/Detach items from Arrays/Objects. */
 PCLAPI(cJSON *) cJSON_DetachItemFromArray(cJSON *array,int which);
 PCLAPI(void)    cJSON_DeleteItemFromArray(cJSON *array,int which);
 PCLAPI(cJSON *) cJSON_DetachItemFromObject(cJSON *object,const char *string);
@@ -131,6 +130,4 @@ PCLAPI(void) cJSON_ReplaceItemInObject(cJSON *object,const char *string,cJSON *n
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

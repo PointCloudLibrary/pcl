@@ -34,8 +34,7 @@
  * @author: Koen Buys
  */
 
-#ifndef PCL_GPU_PROBABILITY_PROCESSOR_H_
-#define PCL_GPU_PROBABILITY_PROCESSOR_H_
+#pragma once
 
 #include <iostream>
 #include <sstream>
@@ -110,5 +109,3 @@ namespace pcl
     }
   }
 }
-
-#endif // PCL_GPU_PROBABILITY_PROCESSOR_H_

@@ -59,7 +59,7 @@ The bool **file_is_pcd** will help us choose between loading PCD or PLY file.
    :language: cpp
    :lines: 47-62
 
-We now load the PCD/PLY file and check if the file was loaded successfuly. Otherwise terminate
+We now load the PCD/PLY file and check if the file was loaded successfully. Otherwise terminate
 the program.
 
 
@@ -83,7 +83,7 @@ We initialize a 4x4 matrix to identity;  ::
 This means no transformation (no rotation and no translation). We do not use the 
 last row of the matrix.
 
-The first 3 rows and colums (top left) components are the rotation
+The first 3 rows and columns (top left) components are the rotation
 matrix. The first 3 rows of the last column is the translation.
 
 .. literalinclude:: sources/matrix_transform/matrix_transform.cpp
@@ -104,7 +104,7 @@ This is the transformation we just defined ::
    :lines: 92-105
 
 This second approach is easier to understand and is less error prone. 
-Be carefull if you want to apply several rotations; rotations are not commutative ! This means than in most cases:
+Be careful if you want to apply several rotations; rotations are not commutative ! This means than in most cases:
 rotA * rotB != rotB * rotA.
 
 .. literalinclude:: sources/matrix_transform/matrix_transform.cpp

@@ -95,7 +95,7 @@ TEST (PCL, BOARDLocalReferenceFrameEstimation)
 
   EXPECT_FALSE (bunny_LRF.is_dense);
   //EXPECT_EQ (numeric_limits<float>::max (), bunny_LRF.at (24).confidence);
-  EXPECT_TRUE (pcl_isnan (bunny_LRF.at (24).x_axis[0]));
+  EXPECT_TRUE (std::isnan (bunny_LRF.at (24).x_axis[0]));
 
   // Expected Results
   //float point_15_conf = -9.06301;

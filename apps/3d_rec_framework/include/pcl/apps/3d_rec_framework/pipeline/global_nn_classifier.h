@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_GLOBAL_PIPELINE_H_
-#define REC_FRAMEWORK_GLOBAL_PIPELINE_H_
+#pragma once
 
 #include <flann/flann.h>
 #include <pcl/common/common.h>
@@ -141,19 +140,19 @@ namespace pcl
         }
 
         void
-        setNN (int nn)
+        setNN (int nn) override
         {
           NN_ = nn;
         }
 
         void
-        getCategory (std::vector<std::string> & categories)
+        getCategory (std::vector<std::string> & categories) override
         {
           categories = categories_;
         }
 
         void
-        getConfidence (std::vector<float> & conf)
+        getConfidence (std::vector<float> & conf) override
         {
           conf = confidences_;
         }
@@ -170,7 +169,7 @@ namespace pcl
          */
 
         void
-        classify ();
+        classify () override;
 
         /**
          * \brief Sets the model data source_
@@ -192,7 +191,7 @@ namespace pcl
         }
 
         void
-        setIndices (std::vector<int> & indices)
+        setIndices (std::vector<int> & indices) override
         {
           indices_ = indices;
         }
@@ -201,7 +200,7 @@ namespace pcl
          * \brief Sets the input cloud to be classified
          */
         void
-        setInputCloud (const PointInTPtr & cloud)
+        setInputCloud (const PointInTPtr & cloud) override
         {
           input_ = cloud;
         }
@@ -220,4 +219,3 @@ namespace pcl
       };
   }
 }
-#endif /* REC_FRAMEWORK_GLOBAL_PIPELINE_H_ */

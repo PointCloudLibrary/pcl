@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_H_
-#define PCL_REGISTRATION_H_
+#pragma once
 
 // PCL includes
 #include <pcl/pcl_base.h>
@@ -124,13 +123,12 @@ namespace pcl
         , source_cloud_updated_ (true)
         , force_no_recompute_ (false)
         , force_no_recompute_reciprocal_ (false)
-        , update_visualizer_ (NULL)
         , point_representation_ ()
       {
       }
 
       /** \brief destructor. */
-      virtual ~Registration () {}
+      ~Registration () {}
 
       /** \brief Provide a pointer to the transformation estimation object.
         * (e.g., SVD, point to plane etc.) 
@@ -173,20 +171,6 @@ namespace pcl
         */
       void
       setCorrespondenceEstimation (const CorrespondenceEstimationPtr &ce) { correspondence_estimation_ = ce; }
-
-      /** \brief Provide a pointer to the input source 
-        * (e.g., the point cloud that we want to align to the target)
-        *
-        * \param[in] cloud the input point cloud source
-        */
-      PCL_DEPRECATED ("[pcl::registration::Registration::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.")
-      void
-      setInputCloud (const PointCloudSourceConstPtr &cloud);
-
-      /** \brief Get a pointer to the input point cloud dataset target. */
-      PCL_DEPRECATED ("[pcl::registration::Registration::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.")
-      PointCloudSourceConstPtr const
-      getInputCloud ();
 
       /** \brief Provide a pointer to the input source 
         * (e.g., the point cloud that we want to align to the target)
@@ -419,14 +403,14 @@ namespace pcl
 
       /** \brief Call the registration algorithm which estimates the transformation and returns the transformed source 
         * (input) as \a output.
-        * \param[out] output the resultant input transfomed point cloud dataset
+        * \param[out] output the resultant input transformed point cloud dataset
         */
       inline void
       align (PointCloudSource &output);
 
       /** \brief Call the registration algorithm which estimates the transformation and returns the transformed source 
         * (input) as \a output.
-        * \param[out] output the resultant input transfomed point cloud dataset
+        * \param[out] output the resultant input transformed point cloud dataset
         * \param[in] guess the initial gross estimation of the transformation
         */
       inline void 
@@ -436,7 +420,7 @@ namespace pcl
       inline const std::string&
       getClassName () const { return (reg_name_); }
         
-      /** \brief Internal computation initalization. */
+      /** \brief Internal computation initialization. */
       bool
       initCompute ();
 
@@ -542,7 +526,7 @@ namespace pcl
       double euclidean_fitness_epsilon_;
 
       /** \brief The maximum distance threshold between two correspondent points in source <-> target. If the 
-        * distance is larger than this threshold, the points will be ignored in the alignement process.
+        * distance is larger than this threshold, the points will be ignored in the alignment process.
         */
       double corr_dist_threshold_;
 
@@ -625,5 +609,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/registration.hpp>
-
-#endif  //#ifndef PCL_REGISTRATION_H_

@@ -58,7 +58,7 @@ FittingSurfaceIM::computeMean () const
     int j = m_indices[idx] / cloud_ref.width;
 
     const pcl::PointXYZRGB &point = cloud_ref (i, j);
-    if (pcl_isnan (point.x) || pcl_isnan (point.y) || pcl_isnan (point.z))
+    if (std::isnan (point.x) || std::isnan (point.y) || std::isnan (point.z))
       continue;
 
     u.x += point.x * float (ds);
@@ -82,7 +82,7 @@ FittingSurfaceIM::computeIndexBoundingBox (pcl::PointCloud<pcl::PointXYZRGB>::Pt
     int j = indices[idx] / cloud_ref.width;
 
     const pcl::PointXYZRGB &point = cloud_ref (i, j);
-    if (pcl_isnan (point.x) || pcl_isnan (point.y) || pcl_isnan (point.z))
+    if (std::isnan (point.x) || std::isnan (point.y) || std::isnan (point.z))
       continue;
 
     if (i < bb (0))
@@ -157,7 +157,7 @@ FittingSurfaceIM::refine ()
   {
     int dim = 0;
     std::vector<double> elements = getElementVector (m_nurbs, dim);
-    for (unsigned i = 0; i < elements.size () - 1; i++)
+    for (size_t i = 0; i < elements.size () - 1; i++)
     {
       double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
       m_nurbs.InsertKnot (dim, xi, 1);
@@ -166,7 +166,7 @@ FittingSurfaceIM::refine ()
   {
     int dim = 1;
     std::vector<double> elements = getElementVector (m_nurbs, dim);
-    for (unsigned i = 0; i < elements.size () - 1; i++)
+    for (size_t i = 0; i < elements.size () - 1; i++)
     {
       double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
       m_nurbs.InsertKnot (dim, xi, 1);
@@ -281,7 +281,7 @@ FittingSurfaceIM::assemble (bool inverse_mapping)
     const pcl::PointXYZRGB &pt = cloud_ref.at (m_indices[i]);
     Eigen::Vector2i params (px, py);
 
-    if (pcl_isnan (pt.z) || pt.z == 0.0)
+    if (std::isnan (pt.z) || pt.z == 0.0)
       throw std::runtime_error ("[FittingSurfaceIM::assemble] Error, not a number (pt.z)");
 
     if (inverse_mapping)
@@ -521,9 +521,9 @@ FittingSurfaceIM::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, cons
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest (DBL_MAX);
-  for (unsigned i = 0; i < elementsU.size () - 1; i++)
+  for (size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (unsigned j = 0; j < elementsV.size () - 1; j++)
+    for (size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
       double d;

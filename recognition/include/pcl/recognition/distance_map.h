@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_DISTANCE_MAP
-#define PCL_RECOGNITION_DISTANCE_MAP
+#pragma once
 
 namespace pcl
 {
@@ -115,6 +114,3 @@ namespace pcl
   };
 
 }
-
-
-#endif 

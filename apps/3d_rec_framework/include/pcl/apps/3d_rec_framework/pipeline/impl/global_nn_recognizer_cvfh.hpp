@@ -22,8 +22,9 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       typedef std::pair<std::string, int> mv_pair;
       mv_pair pair_model_view = std::make_pair (model.id_, view_id);
 
-      std::map<mv_pair, Eigen::Matrix4f, std::less<mv_pair>, Eigen::aligned_allocator<std::pair<mv_pair, Eigen::Matrix4f> > >::iterator it =
-          poses_cache_.find (pair_model_view);
+      std::map<mv_pair, Eigen::Matrix4f,
+               std::less<mv_pair>,
+               Eigen::aligned_allocator<std::pair<const mv_pair, Eigen::Matrix4f> > >::iterator it = poses_cache_.find (pair_model_view);
 
       if (it != poses_cache_.end ())
       {
@@ -189,21 +190,19 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     //single categories...
     if (use_single_categories_)
     {
-      std::map<std::string, boost::shared_ptr<std::vector<int> > >::iterator it;
-
       single_categories_data_.resize (single_categories.size ());
       single_categories_index_.resize (single_categories.size ());
       single_categories_pointers_to_models_.resize (single_categories.size ());
 
       int kk = 0;
-      for (it = single_categories.begin (); it != single_categories.end (); it++)
+      for (const auto &single_category : single_categories)
       {
         //create index and flann data
-        convertToFLANN (flann_models_, it->second, single_categories_data_[kk]);
+        convertToFLANN (flann_models_, single_category.second, single_categories_data_[kk]);
         single_categories_index_[kk] = new flann::Index<DistT> (single_categories_data_[kk], flann::LinearIndexParams ());
-        single_categories_pointers_to_models_[kk] = it->second;
+        single_categories_pointers_to_models_[kk] = single_category.second;
 
-        category_to_vectors_indices_[it->first] = kk;
+        category_to_vectors_indices_[single_category.first] = kk;
         kk++;
       }
     }
@@ -295,7 +294,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
               nearestKSearch (single_categories_index_[it->second], histogram, NN_, indices, distances);
               //gather NN-search results
               double score = 0;
-              for (size_t i = 0; i < NN_; ++i)
+              for (size_t i = 0; i < (size_t) NN_; ++i)
               {
                 score = distances[0][i];
                 index_score is;

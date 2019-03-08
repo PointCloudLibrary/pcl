@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OUTOFCORE_ITERATOR_BASE_H_
-#define PCL_OUTOFCORE_ITERATOR_BASE_H_
+#pragma once
 
 #include <iterator>
 
@@ -155,5 +154,3 @@ namespace pcl
 #endif
   }
 }
-
-#endif //PCL_OUTOFCORE_ITERATOR_BASE_H_

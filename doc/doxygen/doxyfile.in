@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Point Cloud Library (PCL)"
-PROJECT_NUMBER         = @PCL_VERSION@
+PROJECT_NUMBER         = @PCL_VERSION_PRETTY@
 PROJECT_BRIEF          =
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = "@CMAKE_CURRENT_BINARY_DIR@"
@@ -25,7 +25,7 @@ ABBREVIATE_BRIEF       = "The $name class" \
 ALWAYS_DETAILED_SEC    = NO
 INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = YES
-STRIP_FROM_PATH        = 
+STRIP_FROM_PATH        = @STRIPPED_HEADERS@
 STRIP_FROM_INC_PATH    = @STRIPPED_HEADERS@
 SHORT_NAMES            = @SHORT_NAMES@
 JAVADOC_AUTOBRIEF      = YES
@@ -34,13 +34,13 @@ MULTILINE_CPP_IS_BRIEF = NO
 INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 2
-ALIASES                = 
+ALIASES                =
 TCL_SUBST              =
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
 OPTIMIZE_OUTPUT_VHDL   = NO
-EXTENSION_MAPPING      = 
+EXTENSION_MAPPING      =
 MARKDOWN_SUPPORT       = YES
 BUILTIN_STL_SUPPORT    = NO
 CPP_CLI_SUPPORT        = NO
@@ -83,12 +83,12 @@ GENERATE_TODOLIST      = NO
 GENERATE_TESTLIST      = NO
 GENERATE_BUGLIST       = NO
 GENERATE_DEPRECATEDLIST= NO
-ENABLED_SECTIONS       = 
+ENABLED_SECTIONS       =
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = YES
 SHOW_FILES             = NO
 SHOW_NAMESPACES        = YES
-FILE_VERSION_FILTER    = 
+FILE_VERSION_FILTER    =
 LAYOUT_FILE            = "@PCL_SOURCE_DIR@/doc/doxygen/doxygen_layout.xml"
 CITE_BIB_FILES         =
 
@@ -101,7 +101,7 @@ WARN_IF_UNDOCUMENTED   = YES
 WARN_IF_DOC_ERROR      = YES
 WARN_NO_PARAMDOC       = NO
 WARN_FORMAT            = "$file:$line: $text "
-WARN_LOGFILE           = 
+WARN_LOGFILE           =
 
 #---------------------------------------------------------------------------
 # configuration options related to the input files
@@ -127,14 +127,14 @@ EXCLUDE                = "@PCL_SOURCE_DIR@/cmake" \
                          "@PCL_SOURCE_DIR@/simulation" \
                          "@PCL_SOURCE_DIR@/test/gtest-1.6.0"
 EXCLUDE_SYMLINKS       = YES
-EXCLUDE_PATTERNS       = 
-EXCLUDE_SYMBOLS        = 
-EXAMPLE_PATH           = 
+EXCLUDE_PATTERNS       =
+EXCLUDE_SYMBOLS        =
+EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
-IMAGE_PATH             = 
-INPUT_FILTER           = 
-FILTER_PATTERNS        = 
+IMAGE_PATH             = "@PCL_SOURCE_DIR@/doc/doxygen"
+INPUT_FILTER           =
+FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
 FILTER_SOURCE_PATTERNS =
 
@@ -155,7 +155,7 @@ VERBATIM_HEADERS       = YES
 #---------------------------------------------------------------------------
 ALPHABETICAL_INDEX     = YES
 COLS_IN_ALPHA_INDEX    = 5
-IGNORE_PREFIX          = 
+IGNORE_PREFIX          =
 
 #---------------------------------------------------------------------------
 # configuration options related to the HTML output
@@ -163,9 +163,9 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = 
+HTML_HEADER            =
 HTML_FOOTER            = @PCL_SOURCE_DIR@/doc/doxygen/footer.html
-HTML_STYLESHEET        = 
+HTML_STYLESHEET        =
 HTML_EXTRA_FILES       =
 HTML_COLORSTYLE_HUE    = 87
 HTML_COLORSTYLE_SAT    = 46
@@ -178,20 +178,20 @@ DOCSET_BUNDLE_ID       = pointclouds.org
 DOCSET_PUBLISHER_ID    = pointclouds.org.Publisher
 DOCSET_PUBLISHER_NAME  = Point Cloud Library (PCL) Development Team
 GENERATE_HTMLHELP      = @DOCUMENTATION_HTML_HELP@
-CHM_FILE               = "pcl-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@.chm"
+CHM_FILE               = "pcl-@PCL_VERSION_MAJOR@.@PCL_VERSION_MINOR@.chm"
 HHC_LOCATION           = "@HTML_HELP_COMPILER@"
 GENERATE_CHI           = NO
-CHM_INDEX_ENCODING     = 
+CHM_INDEX_ENCODING     =
 BINARY_TOC             = NO
 TOC_EXPAND             = NO
 GENERATE_QHP           = NO
-QCH_FILE               = 
+QCH_FILE               =
 QHP_NAMESPACE          = pointclouds.org.Project
 QHP_VIRTUAL_FOLDER     = doc
-QHP_CUST_FILTER_NAME   = 
-QHP_CUST_FILTER_ATTRS  = 
-QHP_SECT_FILTER_ATTRS  = 
-QHG_LOCATION           = 
+QHP_CUST_FILTER_NAME   =
+QHP_CUST_FILTER_ATTRS  =
+QHP_SECT_FILTER_ATTRS  =
+QHG_LOCATION           =
 GENERATE_ECLIPSEHELP   = NO
 ECLIPSE_DOC_ID         = pointclouds.org.Project
 DISABLE_INDEX          = NO
@@ -205,7 +205,7 @@ USE_MATHJAX            = NO
 MATHJAX_RELPATH        = http://cdn.mathjax.org/mathjax/latest
 MATHJAX_EXTENSIONS     =
 SEARCHENGINE           = @DOCUMENTATION_SEARCHENGINE@
-SERVER_BASED_SEARCH    = YES
+SERVER_BASED_SEARCH    = NO
 
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output
@@ -217,7 +217,7 @@ MAKEINDEX_CMD_NAME     = makeindex
 COMPACT_LATEX          = NO
 PAPER_TYPE             = a4wide
 EXTRA_PACKAGES         = amsmath amssymb
-LATEX_HEADER           = 
+LATEX_HEADER           =
 LATEX_FOOTER           =
 PDF_HYPERLINKS         = YES
 USE_PDFLATEX           = YES
@@ -233,8 +233,8 @@ GENERATE_RTF           = NO
 RTF_OUTPUT             = rtf
 COMPACT_RTF            = NO
 RTF_HYPERLINKS         = NO
-RTF_STYLESHEET_FILE    = 
-RTF_EXTENSIONS_FILE    = 
+RTF_STYLESHEET_FILE    =
+RTF_EXTENSIONS_FILE    =
 
 #---------------------------------------------------------------------------
 # configuration options related to the man page output
@@ -262,7 +262,7 @@ GENERATE_AUTOGEN_DEF   = NO
 GENERATE_PERLMOD       = NO
 PERLMOD_LATEX          = NO
 PERLMOD_PRETTY         = YES
-PERLMOD_MAKEVAR_PREFIX = 
+PERLMOD_MAKEVAR_PREFIX =
 
 #---------------------------------------------------------------------------
 # Configuration options related to the preprocessor
@@ -271,7 +271,7 @@ ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
-INCLUDE_PATH           = 
+INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  = *.h
 #PREDEFINED            = protected=private \
 PREDEFINED =           = "HAVE_QHULL=1" \
@@ -279,15 +279,14 @@ PREDEFINED =           = "HAVE_QHULL=1" \
                          "HAVE_ENSENSO=1" \
                          "HAVE_DAVIDSDK=1" \
                          "HAVE_DSSDK=1" \
-                         "HAVE_RSSDK=1" \
-                         "PCL_DEPRECATED(x)="
-EXPAND_AS_DEFINED      = 
+                         "HAVE_RSSDK=1"
+EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
 
 #---------------------------------------------------------------------------
 # Configuration::additions related to external references
 #---------------------------------------------------------------------------
-TAGFILES               = 
+TAGFILES               =
 #TAGFILES               = qtools_docs/qtools.tag=../../qtools_docs/html
 GENERATE_TAGFILE       = pcl.tag
 ALLEXTERNALS           = NO
@@ -298,13 +297,13 @@ PERL_PATH              = /usr/bin/perl
 # Configuration options related to the dot tool
 #---------------------------------------------------------------------------
 CLASS_DIAGRAMS         = YES
-MSCGEN_PATH            = 
+MSCGEN_PATH            =
 HIDE_UNDOC_RELATIONS   = YES
 HAVE_DOT               = @HAVE_DOT@
 DOT_NUM_THREADS        = 0
 DOT_FONTNAME           = Helvetica
 DOT_FONTSIZE           = 10
-DOT_FONTPATH           = 
+DOT_FONTPATH           =
 CLASS_GRAPH            = YES
 COLLABORATION_GRAPH    = YES
 GROUP_GRAPHS           = YES
@@ -319,8 +318,8 @@ GRAPHICAL_HIERARCHY    = YES
 DIRECTORY_GRAPH        = YES
 DOT_IMAGE_FORMAT       = png
 INTERACTIVE_SVG        = YES
-DOT_PATH               = 
-DOTFILE_DIRS           = 
+DOT_PATH               =
+DOTFILE_DIRS           =
 MSCFILE_DIRS           =
 DOT_GRAPH_MAX_NODES    = 50
 MAX_DOT_GRAPH_DEPTH    = 0

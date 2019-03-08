@@ -199,7 +199,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::createBinDistan
   bin_distance_shape.resize (indices.size ());
 
   const PointRFT& current_frame = frames_->points[index];
-  //if (!pcl_isfinite (current_frame.rf[0]) || !pcl_isfinite (current_frame.rf[4]) || !pcl_isfinite (current_frame.rf[11]))
+  //if (!std::isfinite (current_frame.rf[0]) || !std::isfinite (current_frame.rf[4]) || !std::isfinite (current_frame.rf[11]))
     //return;
 
   Eigen::Vector4f current_frame_z (current_frame.z_axis[0], current_frame.z_axis[1], current_frame.z_axis[2], 0);
@@ -209,9 +209,9 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::createBinDistan
   {
     // check NaN normal
     const Eigen::Vector4f& normal_vec = normals_->points[indices[i_idx]].getNormalVector4fMap ();
-    if (!pcl_isfinite (normal_vec[0]) ||
-        !pcl_isfinite (normal_vec[1]) ||
-        !pcl_isfinite (normal_vec[2]))
+    if (!std::isfinite (normal_vec[0]) ||
+        !std::isfinite (normal_vec[1]) ||
+        !std::isfinite (normal_vec[2]))
     {
       bin_distance_shape[i_idx] = std::numeric_limits<double>::quiet_NaN ();
       ++nan_counter;
@@ -269,7 +269,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSing
 
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
-    if (!pcl_isfinite(binDistance[i_idx]))
+    if (!std::isfinite(binDistance[i_idx]))
       continue;
 
     Eigen::Vector4f delta = surface_->points[indices[i_idx]].getVector4fMap () - central_point;
@@ -448,7 +448,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDou
 
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
-    if (!pcl_isfinite(binDistanceShape[i_idx]))
+    if (!std::isfinite(binDistanceShape[i_idx]))
       continue;
 
     Eigen::Vector4f delta = surface_->points[indices[i_idx]].getVector4fMap () - central_point;
@@ -785,9 +785,9 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
   {
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.x_axis[0]) ||
-        !pcl_isfinite (current_frame.y_axis[0]) ||
-        !pcl_isfinite (current_frame.z_axis[0]))
+    if (!std::isfinite (current_frame.x_axis[0]) ||
+        !std::isfinite (current_frame.y_axis[0]) ||
+        !std::isfinite (current_frame.z_axis[0]))
     {
       PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
         getClassName ().c_str (), (*indices_)[idx]);
@@ -857,9 +857,9 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
   {
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.x_axis[0]) ||
-        !pcl_isfinite (current_frame.y_axis[0]) ||
-        !pcl_isfinite (current_frame.z_axis[0]))
+    if (!std::isfinite (current_frame.x_axis[0]) ||
+        !std::isfinite (current_frame.y_axis[0]) ||
+        !std::isfinite (current_frame.z_axis[0]))
     {
       PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
         getClassName ().c_str (), (*indices_)[idx]);

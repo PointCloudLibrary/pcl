@@ -34,10 +34,9 @@
  *
  */
 
-#ifndef PCL_MODELER_DOCK_WIDGET_H_
-#define PCL_MODELER_DOCK_WIDGET_H_
+#pragma once
 
-#include <pcl/apps/modeler/qt.h>
+#include <QDockWidget>
 
 namespace pcl
 {
@@ -53,12 +52,10 @@ namespace pcl
         void
         setFocusBasedStyle(bool focused);
       protected:
-        virtual void
-        focusInEvent ( QFocusEvent * event );
+        void
+        focusInEvent ( QFocusEvent * event ) override;
 
       private:
     };
   }
 }
-
-#endif // PCL_MODELER_DOCK_WIDGET_H_

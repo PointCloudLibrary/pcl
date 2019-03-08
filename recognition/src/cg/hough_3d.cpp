@@ -159,12 +159,11 @@ pcl::recognition::HoughSpace3D::voteInt (const Eigen::Vector3d &single_vote_coor
   {
     int final_bin_index = 0;
     int exp = 1;
-    int curr_neigh_index = 0;
     bool invalid = false;
 
     for (int d = 0; d < 3; ++d)
     {
-      curr_neigh_index = central_bin_coord[d] + ( n % (exp*3) ) / exp - 1; // (n % 3^(d+1) / 3^d) - 1
+      int curr_neigh_index = central_bin_coord[d] + ( n % (exp*3) ) / exp - 1; // (n % 3^(d+1) / 3^d) - 1
       if (curr_neigh_index >= 0 && curr_neigh_index <= bin_count_[d]-1)
       {
         // Each coordinate of the neighbor has to be equal either to one of the central bin or to one of the interpolated bins

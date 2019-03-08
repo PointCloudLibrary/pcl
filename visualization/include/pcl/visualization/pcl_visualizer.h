@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_PCL_VISUALIZER_H_
-#define PCL_PCL_VISUALIZER_H_
+
+#pragma once
 
 // PCL includes
 #include <pcl/correspondence.h>
@@ -103,7 +103,8 @@ namespace pcl
           */
         PCLVisualizer (const std::string &name = "", const bool create_interactor = true);
 
-        /** \brief PCL Visualizer constructor.
+        /** \brief PCL Visualizer constructor. It looks through the passed argv arguments to find the "-cam *.cam" argument. 
+          *        If the search failed, the name for cam file is calculated with boost uuid. If there is no such file, camera is not initilalized.
           * \param[in] argc
           * \param[in] argv
           * \param[in] name the window name (empty by default)
@@ -112,6 +113,26 @@ namespace pcl
           */
         PCLVisualizer (int &argc, char **argv, const std::string &name = "",
             PCLVisualizerInteractorStyle* style = PCLVisualizerInteractorStyle::New (), const bool create_interactor = true);
+            
+        /** \brief PCL Visualizer constructor.
+          * \param[in] custom vtk renderer
+          * \param[in] custom vtk render window
+          * \param[in] create_interactor if true (default), create an interactor, false otherwise
+          */
+        PCLVisualizer (vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string &name = "", const bool create_interactor = true);
+
+        /** \brief PCL Visualizer constructor.
+          * \param[in] argc
+          * \param[in] argv
+          * \param[in] custom vtk renderer
+          * \param[in] custom vtk render window
+          * \param[in] style interactor style (defaults to PCLVisualizerInteractorStyle)
+          * \param[in] create_interactor if true (default), create an interactor, false otherwise
+          */
+        PCLVisualizer (int &argc, char **argv, vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string &name = "",
+                       PCLVisualizerInteractorStyle* style = PCLVisualizerInteractorStyle::New (),
+                       const bool create_interactor = true);
+
 
         /** \brief PCL Visualizer destructor. */
         virtual ~PCLVisualizer ();
@@ -273,16 +294,6 @@ namespace pcl
         /** \brief Disables the Orientatation Marker Widget so it is removed from the renderer */
         void
         removeOrientationMarkerWidgetAxes ();
-        
-        /** \brief Adds 3D axes describing a coordinate system to screen at 0,0,0.
-          * \param[in] scale the scale of the axes (default: 1)
-          * \param[in] viewport the view port where the 3D axes should be added (default: all)
-          */
-        PCL_DEPRECATED (
-        "addCoordinateSystem (scale, viewport) is deprecated, please use function "
-        "addCoordinateSystem (scale, id, viewport) with id a unique string identifier.")
-        void
-        addCoordinateSystem (double scale, int viewport);
 
         /** \brief Adds 3D axes describing a coordinate system to screen at 0,0,0.
           * \param[in] scale the scale of the axes (default: 1)
@@ -297,36 +308,11 @@ namespace pcl
           * \param[in] x the X position of the axes
           * \param[in] y the Y position of the axes
           * \param[in] z the Z position of the axes
-          * \param[in] viewport the view port where the 3D axes should be added (default: all)
-          */
-        PCL_DEPRECATED (
-        "addCoordinateSystem (scale, x, y, z, viewport) is deprecated, please use function "
-        "addCoordinateSystem (scale, x, y, z, id, viewport) with id a unique string identifier.")
-        void
-        addCoordinateSystem (double scale, float x, float y, float z, int viewport);
-
-        /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z
-          * \param[in] scale the scale of the axes (default: 1)
-          * \param[in] x the X position of the axes
-          * \param[in] y the Y position of the axes
-          * \param[in] z the Z position of the axes
           * \param[in] id the coordinate system object id (default: reference)
           * \param[in] viewport the view port where the 3D axes should be added (default: all)
           */
         void
         addCoordinateSystem (double scale, float x, float y, float z, const std::string &id = "reference", int viewport = 0);
-
-         /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z, Roll,Pitch,Yaw
-           *
-           * \param[in] scale the scale of the axes (default: 1)
-           * \param[in] t transformation matrix
-           * \param[in] viewport the view port where the 3D axes should be added (default: all)
-           */
-        PCL_DEPRECATED (
-        "addCoordinateSystem (scale, t, viewport) is deprecated, please use function "
-        "addCoordinateSystem (scale, t, id, viewport) with id a unique string identifier.")
-        void
-        addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport);
 
          /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z, Roll,Pitch,Yaw
            *
@@ -365,15 +351,6 @@ namespace pcl
 
         void
         addCoordinateSystem (double scale, const Eigen::Affine3f& t, const std::string &id = "reference", int viewport = 0);
-
-        /** \brief Removes a previously added 3D axes (coordinate system)
-          * \param[in] viewport view port where the 3D axes should be removed from (default: all)
-          */
-        PCL_DEPRECATED (
-        "removeCoordinateSystem (viewport) is deprecated, please use function "
-        "addCoordinateSystem (id, viewport) with id a unique string identifier.")
-        bool
-        removeCoordinateSystem (int viewport);
 
         /** \brief Removes a previously added 3D axes (coordinate system)
           * \param[in] id the coordinate system object id (default: reference)
@@ -575,6 +552,28 @@ namespace pcl
         template <typename PointT> bool
         addText3D (const std::string &text,
                    const PointT &position,
+                   double textScale = 1.0,
+                   double r = 1.0, double g = 1.0, double b = 1.0,
+                   const std::string &id = "", int viewport = 0);
+
+        /** \brief Add a 3d text to the scene
+          * \param[in] text the text to add
+          * \param[in] position the world position where the text should be added
+          * \param[in] orientation the angles of rotation of the text around X, Y and Z axis,
+                       in this order. The way the rotations are effectively done is the
+                       Z-X-Y intrinsic rotations:
+                       https://en.wikipedia.org/wiki/Euler_angles#Definition_by_intrinsic_rotations
+          * \param[in] textScale the scale of the text to render
+          * \param[in] r the red color value
+          * \param[in] g the green color value
+          * \param[in] b the blue color value
+          * \param[in] id the text object id (default: equal to the "text" parameter)
+          * \param[in] viewport the view port (default: all)
+          */
+        template <typename PointT> bool
+        addText3D (const std::string &text,
+                   const PointT &position,
+                   double orientation[3],
                    double textScale = 1.0,
                    double r = 1.0, double g = 1.0, double b = 1.0,
                    const std::string &id = "", int viewport = 0);
@@ -1181,6 +1180,19 @@ namespace pcl
         getPointCloudRenderingProperties (int property, double &value,
                                           const std::string &id = "cloud");
         
+       /** \brief Get the rendering properties of a PointCloud
+         * \param[in] property the property type
+         * \param[out] val1 the resultant property value
+         * \param[out] val2 the resultant property value
+         * \param[out] val3 the resultant property value
+         * \param[in] id the point cloud object id (default: cloud)
+         * \return True if the property is effectively retrieved.
+         * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
+         */
+        bool
+        getPointCloudRenderingProperties (RenderingProperties property, double &val1, double &val2, double &val3,
+                                          const std::string &id = "cloud");
+
         /** \brief Set whether the point cloud is selected or not 
          *  \param[in] selected whether the cloud is selected or not (true = selected)
          *  \param[in] id the point cloud object id (default: cloud)
@@ -1538,6 +1550,37 @@ namespace pcl
         addLine (const pcl::ModelCoefficients &coefficients,
                  const std::string &id = "line",
                  int viewport = 0);
+
+        /** \brief Add a line from a set of given model coefficients
+          * \param[in] coefficients the model coefficients (point_on_line, direction)
+          * \param[in] id the line id/name (default: "line")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          *
+          * \code
+          * // The following are given (or computed using sample consensus techniques)
+          * // See SampleConsensusModelLine for more information
+          * // Eigen::Vector3f point_on_line, line_direction;
+          *
+          * pcl::ModelCoefficients line_coeff;
+          * line_coeff.values.resize (6);    // We need 6 values
+          * line_coeff.values[0] = point_on_line.x ();
+          * line_coeff.values[1] = point_on_line.y ();
+          * line_coeff.values[2] = point_on_line.z ();
+          *
+          * line_coeff.values[3] = line_direction.x ();
+          * line_coeff.values[4] = line_direction.y ();
+          * line_coeff.values[5] = line_direction.z ();
+          *
+          * addLine (line_coeff);
+          * \endcode
+          */
+        bool
+        addLine (const pcl::ModelCoefficients &coefficients,
+                 const char *id = "line",
+                 int viewport = 0)
+        {
+          return addLine (coefficients, std::string (id), viewport);
+        }
 
         /** \brief Add a plane from a set of given model coefficients
           * \param[in] coefficients the model coefficients (a, b, c, d with ax+by+cz+d=0)
@@ -1933,20 +1976,45 @@ namespace pcl
         }
       protected:
         /** \brief The render window interactor. */
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
-#else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-#endif
       private:
+        /** \brief Internal function for renderer setup
+         * \param[in] vtk renderer
+         */
+        void setupRenderer (vtkSmartPointer<vtkRenderer> ren);
+
+        /** \brief Internal function for setting up FPS callback
+         * \param[in] vtk renderer
+         */
+        void setupFPSCallback (const vtkSmartPointer<vtkRenderer>& ren);
+
+        /** \brief Internal function for setting up render window
+         * \param[in] name the window name
+         */
+        void setupRenderWindow (const std::string& name);
+
+        /** \brief Internal function for setting up interactor style
+         */
+        void setupStyle ();
+
+        /** \brief Internal function for setting the default render window size and position on screen
+         */
+        void setDefaultWindowSizeAndPos ();
+
+        /** \brief Internal function for setting up camera parameters
+         * \param[in] argc
+         * \param[in] argv
+         */
+        void setupCamera (int &argc, char **argv);
+
         struct PCL_EXPORTS ExitMainLoopTimerCallback : public vtkCommand
         {
           static ExitMainLoopTimerCallback* New ()
           {
             return (new ExitMainLoopTimerCallback);
           }
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void*) override;
 
           int right_timer_id;
           PCLVisualizer* pcl_visualizer;
@@ -1958,8 +2026,8 @@ namespace pcl
           {
             return (new ExitCallback);
           }
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void*) override;
 
           PCLVisualizer* pcl_visualizer;
         };
@@ -1973,8 +2041,8 @@ namespace pcl
           FPSCallback (const FPSCallback& src) : vtkCommand (), actor (src.actor), pcl_visualizer (src.pcl_visualizer), decimated (src.decimated), last_fps (src.last_fps) {}
           FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; last_fps = src.last_fps; return (*this); }
 
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void*) override;
 
           vtkTextActor *actor;
           PCLVisualizer* pcl_visualizer;
@@ -1985,13 +2053,12 @@ namespace pcl
         /** \brief The FPSCallback object for the current visualizer. */
         vtkSmartPointer<FPSCallback> update_fps_;
 
-#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         /** \brief Set to false if the interaction loop is running. */
         bool stopped_;
 
         /** \brief Global timer ID. Used in destructor only. */
         int timer_id_;
-#endif
+
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;
@@ -2239,7 +2306,7 @@ namespace pcl
                                 vtkTexture* vtk_tex) const;
 
         /** \brief Get camera file for camera parameter saving/restoring from command line.
-          * Camera filename is calculated using sha1 value of all pathes of input .pcd files
+          * Camera filename is calculated using sha1 value of all paths of input .pcd files
           * \return empty string if failed.
           */
         std::string
@@ -2278,6 +2345,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/pcl_visualizer.hpp>
-
-#endif
-

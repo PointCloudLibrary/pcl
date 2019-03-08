@@ -35,12 +35,11 @@
  *
  */
 
-#ifndef PCL_FILTERS_SHADOW_POINTS_FILTER_H_
-#define PCL_FILTERS_SHADOW_POINTS_FILTER_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
-#include <time.h>
-#include <limits.h>
+#include <ctime>
+#include <climits>
 
 namespace pcl
 {
@@ -110,13 +109,13 @@ namespace pcl
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (std::vector<int> &indices) override;
 
     private:
 
@@ -129,5 +128,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/shadowpoints.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_SHADOW_POINTS_FILTER_H_

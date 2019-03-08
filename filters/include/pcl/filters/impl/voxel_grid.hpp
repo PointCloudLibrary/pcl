@@ -107,9 +107,9 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
       }
 
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud->points[i].x) || 
-          !pcl_isfinite (cloud->points[i].y) || 
-          !pcl_isfinite (cloud->points[i].z))
+      if (!std::isfinite (cloud->points[i].x) || 
+          !std::isfinite (cloud->points[i].y) || 
+          !std::isfinite (cloud->points[i].z))
         continue;
       // Create the point structure and get the min/max
       pcl::Array4fMapConst pt = cloud->points[i].getArray4fMap ();
@@ -186,9 +186,9 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
       }
 
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud->points[*it].x) || 
-          !pcl_isfinite (cloud->points[*it].y) || 
-          !pcl_isfinite (cloud->points[*it].z))
+      if (!std::isfinite (cloud->points[*it].x) || 
+          !std::isfinite (cloud->points[*it].y) || 
+          !std::isfinite (cloud->points[*it].z))
         continue;
       // Create the point structure and get the min/max
       pcl::Array4fMapConst pt = cloud->points[*it].getArray4fMap ();
@@ -280,9 +280,9 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[*it].x) || 
-            !pcl_isfinite (input_->points[*it].y) || 
-            !pcl_isfinite (input_->points[*it].z))
+        if (!std::isfinite (input_->points[*it].x) || 
+            !std::isfinite (input_->points[*it].y) || 
+            !std::isfinite (input_->points[*it].z))
           continue;
 
       // Get the distance value
@@ -309,7 +309,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.push_back (cloud_point_index_idx (static_cast<unsigned int> (idx), *it));
+      index_vector.emplace_back(static_cast<unsigned int> (idx), *it);
     }
   }
   // No distance filtering, process all data
@@ -322,9 +322,9 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[*it].x) || 
-            !pcl_isfinite (input_->points[*it].y) || 
-            !pcl_isfinite (input_->points[*it].z))
+        if (!std::isfinite (input_->points[*it].x) || 
+            !std::isfinite (input_->points[*it].y) || 
+            !std::isfinite (input_->points[*it].z))
           continue;
 
       int ijk0 = static_cast<int> (floor (input_->points[*it].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
@@ -333,7 +333,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.push_back (cloud_point_index_idx (static_cast<unsigned int> (idx), *it));
+      index_vector.emplace_back(static_cast<unsigned int> (idx), *it);
     }
   }
 
@@ -342,7 +342,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   std::sort (index_vector.begin (), index_vector.end (), std::less<cloud_point_index_idx> ());
 
   // Third pass: count output cells
-  // we need to skip all the same, adjacenent idx values
+  // we need to skip all the same, adjacent idx values
   unsigned int total = 0;
   unsigned int index = 0;
   // first_and_last_indices_vector[i] represents the index in index_vector of the first point in
@@ -359,7 +359,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     if (i - index >= min_points_per_voxel_)
     {
       ++total;
-      first_and_last_indices_vector.push_back (std::pair<unsigned int, unsigned int> (index, i));
+      first_and_last_indices_vector.emplace_back(index, i);
     }
     index = i;
   }
@@ -393,7 +393,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   }
   
   index = 0;
-  for (unsigned int cp = 0; cp < first_and_last_indices_vector.size (); ++cp)
+  for (size_t cp = 0; cp < first_and_last_indices_vector.size (); ++cp)
   {
     // calculate centroid - sum values from all input points, that have the same idx value in index_vector array
   	unsigned int first_index = first_and_last_indices_vector[cp].first;

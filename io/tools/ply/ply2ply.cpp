@@ -339,9 +339,7 @@ ply_to_ply_converter::end_header_callback()
 bool 
 ply_to_ply_converter::convert (const std::string &ifilename, std::istream&, std::ostream& ostream)
 {
-  pcl::io::ply::ply_parser::flags_type ply_parser_flags = 0;
-
-  pcl::io::ply::ply_parser ply_parser(ply_parser_flags);
+  pcl::io::ply::ply_parser ply_parser;
 
   ply_parser.info_callback(boost::bind(&ply_to_ply_converter::info_callback, this, boost::ref(ifilename), _1, _2));
   ply_parser.warning_callback(boost::bind(&ply_to_ply_converter::warning_callback, this, boost::ref(ifilename), _1, _2));
@@ -540,9 +538,8 @@ main(int argc, char* argv[])
   }
 
   std::ofstream ofstream;
-  const char* ofilename = "";
   if (parc > 1) {
-    ofilename = parv[1];
+    const char* ofilename = parv[1];
     if (std::strcmp(ofilename, "-") != 0) {
       ofstream.open(ofilename);
       if (!ofstream.is_open()) {

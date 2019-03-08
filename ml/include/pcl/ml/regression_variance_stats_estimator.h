@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_REGRESSION_VARIANCE_STATS_ESTIMATOR_H_
-#define PCL_ML_REGRESSION_VARIANCE_STATS_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/ml/stats_estimator.h>
@@ -156,7 +155,7 @@ namespace pcl
         * \param[in] data_set The data set corresponding to the supplied result data.
         * \param[in] examples The examples used for extracting the supplied result data.
         * \param[in] label_data The label data corresponding to the specified examples.
-        * \param[in] results The results computed using the specifed examples.
+        * \param[in] results The results computed using the specified examples.
         * \param[in] flags The flags corresponding to the results.
         * \param[in] threshold The threshold for which the information gain is computed.
         */
@@ -325,5 +324,3 @@ namespace pcl
   };
 
 }
-
-#endif

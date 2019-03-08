@@ -5,8 +5,7 @@
  *      Author: Aitor Aldoma
  */
 
-#ifndef PCL_RF_FACE_UTILS_H_
-#define PCL_RF_FACE_UTILS_H_
+#pragma once
 
 #include "pcl/recognition/face_detection/face_common.h"
 #include <pcl/ml/feature_handler.h>
@@ -92,7 +91,7 @@ namespace pcl
          }
          }*/
 
-        void createRandomFeatures(const size_t num_of_features, std::vector<FT> & features)
+        void createRandomFeatures(const size_t num_of_features, std::vector<FT> & features) override
         {
           srand (static_cast<unsigned int>(time (NULL)));
           int min_s = 20;
@@ -141,7 +140,7 @@ namespace pcl
          * \param[out] flags Flags that are supplied together with the results.
          */
         void evaluateFeature(const FT & feature, DataSet & data_set, std::vector<ExampleIndex> & examples, std::vector<float> & results,
-            std::vector<unsigned char> & flags) const
+            std::vector<unsigned char> & flags) const override
         {
           results.resize (examples.size ());
           for (size_t i = 0; i < examples.size (); i++)
@@ -157,7 +156,7 @@ namespace pcl
          * \param[out] result The destination for the result of the feature evaluation.
          * \param[out] flag Flags that are supplied together with the results.
          */
-        void evaluateFeature(const FT & feature, DataSet & data_set, const ExampleIndex & example, float & result, unsigned char & flag) const
+        void evaluateFeature(const FT & feature, DataSet & data_set, const ExampleIndex & example, float & result, unsigned char & flag) const override
         {
           TrainingExample te = data_set[example];
           int el_f1 = te.iimages_[feature.used_ii_]->getFiniteElementsCount (te.col_ + feature.col1_, te.row_ + feature.row1_, feature.wsizex1_,
@@ -186,7 +185,7 @@ namespace pcl
          */
          // param[in] feature The feature for which code is generated.
          // param[out] stream The destination for the code.
-        void generateCodeForEvaluation(const FT &/*feature*/, ::std::ostream &/*stream*/) const
+        void generateCodeForEvaluation(const FT &/*feature*/, ::std::ostream &/*stream*/) const override
         {
 
         }
@@ -205,12 +204,12 @@ namespace pcl
         }
 
         /** \brief Destructor. */
-        virtual ~PoseClassRegressionVarianceStatsEstimator()
+        ~PoseClassRegressionVarianceStatsEstimator()
         {
         }
 
         /** \brief Returns the number of branches the corresponding tree has. */
-        inline size_t getNumOfBranches() const
+        inline size_t getNumOfBranches() const override
         {
           return branch_estimator_->getNumOfBranches ();
         }
@@ -218,7 +217,7 @@ namespace pcl
         /** \brief Returns the label of the specified node.
          * \param[in] node The node which label is returned.
          */
-        inline LabelDataType getLabelOfNode(NodeType & node) const
+        inline LabelDataType getLabelOfNode(NodeType & node) const override
         {
           return node.value;
         }
@@ -320,7 +319,7 @@ namespace pcl
          * \param[in] threshold The threshold for which the information gain is computed.
          */
         float computeInformationGain(DataSet & data_set, std::vector<ExampleIndex> & examples, std::vector<LabelDataType> & label_data,
-            std::vector<float> & results, std::vector<unsigned char> & flags, const float threshold) const
+            std::vector<float> & results, std::vector<unsigned char> & flags, const float threshold) const override
         {
           const size_t num_of_examples = examples.size ();
           const size_t num_of_branches = getNumOfBranches ();
@@ -443,7 +442,7 @@ namespace pcl
          * \param[out] branch_indices The destination for the computed branch indices.
          */
         void computeBranchIndices(std::vector<float> & results, std::vector<unsigned char> & flags, const float threshold,
-            std::vector<unsigned char> & branch_indices) const
+            std::vector<unsigned char> & branch_indices) const override
         {
           const size_t num_of_results = results.size ();
 
@@ -462,7 +461,7 @@ namespace pcl
          * \param[in] threshold The threshold used to compute the branch index.
          * \param[out] branch_index The destination for the computed branch index.
          */
-        inline void computeBranchIndex(const float result, const unsigned char flag, const float threshold, unsigned char & branch_index) const
+        inline void computeBranchIndex(const float result, const unsigned char flag, const float threshold, unsigned char & branch_index) const override
         {
           branch_estimator_->computeBranchIndex (result, flag, threshold, branch_index);
         }
@@ -473,7 +472,7 @@ namespace pcl
          * \param[in] label_data The label_data corresponding to the examples.
          * \param[out] node The destination node for the statistics.
          */
-        void computeAndSetNodeStats(DataSet & data_set, std::vector<ExampleIndex> & examples, std::vector<LabelDataType> & label_data, NodeType & node) const
+        void computeAndSetNodeStats(DataSet & data_set, std::vector<ExampleIndex> & examples, std::vector<LabelDataType> & label_data, NodeType & node) const override
         {
           const size_t num_of_examples = examples.size ();
 
@@ -516,7 +515,7 @@ namespace pcl
          * \param[out] stream The destination for the generated code.
          */
         // param[in] node The node for which code is generated.
-        void generateCodeForBranchIndexComputation(NodeType & /*node*/, std::ostream & stream) const
+        void generateCodeForBranchIndexComputation(NodeType & /*node*/, std::ostream & stream) const override
         {
           stream << "ERROR: RegressionVarianceStatsEstimator does not implement generateCodeForBranchIndex(...)";
         }
@@ -525,7 +524,7 @@ namespace pcl
          * \param[out] stream The destination for the generated code.
          */
         // param[in] node The node for which code is generated.
-        void generateCodeForOutput(NodeType & /*node*/, std::ostream & stream) const
+        void generateCodeForOutput(NodeType & /*node*/, std::ostream & stream) const override
         {
           stream << "ERROR: RegressionVarianceStatsEstimator does not implement generateCodeForBranchIndex(...)";
         }
@@ -536,5 +535,3 @@ namespace pcl
     };
   }
 }
-
-#endif /* PCL_RF_FACE_UTILS_H_ */

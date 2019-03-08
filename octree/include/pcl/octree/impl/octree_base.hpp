@@ -443,9 +443,6 @@ namespace pcl
                                                                             std::vector<char>* binary_tree_out_arg,
                                                                             typename std::vector<LeafContainerT*>* leaf_container_vector_arg) const
       {
-
-        // child iterator
-        unsigned char child_idx;
         char node_bit_pattern;
 
         // branch occupancy bit pattern
@@ -456,7 +453,7 @@ namespace pcl
           binary_tree_out_arg->push_back (node_bit_pattern);
 
         // iterate over all children
-        for (child_idx = 0; child_idx < 8; child_idx++)
+        for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
         {
 
           // if child exist
@@ -506,8 +503,6 @@ namespace pcl
                                                                               typename std::vector<LeafContainerT*>::const_iterator* leaf_container_vector_it_arg,
                                                                               typename std::vector<LeafContainerT*>::const_iterator* leaf_container_vector_it_end_arg)
       {
-        // child iterator
-        unsigned char child_idx;
         char node_bits;
 
         if (binary_tree_input_it_arg != binary_tree_input_it_end_arg)
@@ -517,7 +512,7 @@ namespace pcl
           binary_tree_input_it_arg++;
 
           // iterate over all children
-          for (child_idx = 0; child_idx < 8; child_idx++)
+          for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
           {
             // if occupancy bit for child_idx is set..
             if (node_bits & (1 << child_idx))

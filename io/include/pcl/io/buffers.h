@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_BUFFERS_H
-#define PCL_IO_BUFFERS_H
+#pragma once
 
 #include <vector>
 #include <limits>
@@ -113,14 +112,14 @@ namespace pcl
         /** Construct a buffer of given size. */
         SingleBuffer (size_t size);
 
-        virtual
+        
         ~SingleBuffer ();
 
-        virtual T
-        operator[] (size_t idx) const;
+        T
+        operator[] (size_t idx) const override;
 
-        virtual void
-        push (std::vector<T>& data);
+        void
+        push (std::vector<T>& data) override;
 
       private:
 
@@ -157,22 +156,22 @@ namespace pcl
           * value should be computed (0..255) */
         MedianBuffer (size_t size, unsigned char window_size);
 
-        virtual
+        
         ~MedianBuffer ();
 
         /** Access an element at a given index.
           *
           * This operation is constant time. */
-        virtual T
-        operator[] (size_t idx) const;
+        T
+        operator[] (size_t idx) const override;
 
         /** Insert a new chunk of data into the buffer.
           *
           * This operation is linear in buffer size and window size.
           *
           * \param[in] data input data chunk, the memory will be "stolen" */
-        virtual void
-        push (std::vector<T>& data);
+        void
+        push (std::vector<T>& data) override;
 
       private:
 
@@ -233,22 +232,22 @@ namespace pcl
           * value should be computed (0..255) */
         AverageBuffer (size_t size, unsigned char window_size);
 
-        virtual
+        
         ~AverageBuffer ();
 
         /** Access an element at a given index.
           *
           * This operation is constant time. */
-        virtual T
-        operator[] (size_t idx) const;
+        T
+        operator[] (size_t idx) const override;
 
         /** Insert a new chunk of data into the buffer.
           *
           * This operation is linear in buffer size.
           *
           * \param[in] data input data chunk, the memory will be "stolen" */
-        virtual void
-        push (std::vector<T>& data);
+        void
+        push (std::vector<T>& data) override;
 
       private:
 
@@ -278,6 +277,3 @@ namespace pcl
 }
 
 #include <pcl/io/impl/buffers.hpp>
-
-#endif /* PCL_IO_BUFFERS_H */
-

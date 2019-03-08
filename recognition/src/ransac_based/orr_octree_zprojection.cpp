@@ -44,6 +44,7 @@
  */
 
 #include <pcl/recognition/ransac_based/orr_octree_zprojection.h>
+#include <array>
 #include <vector>
 
 using namespace std;
@@ -98,24 +99,24 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
 
   // Compute the bounding box of the full leaves
   const vector<ORROctree::Node*>& full_leaves = input.getFullLeaves ();
-  vector<ORROctree::Node*>::const_iterator fl_it = full_leaves.begin ();
-  float full_leaves_bounds[4];
+  std::array<float, 4> full_leaves_bounds;
 
   if ( full_leaves.empty() )
     return;
 
   // The initialization run
-  full_leaves_bounds[0] = (*fl_it)->getBounds ()[0];
-  full_leaves_bounds[1] = (*fl_it)->getBounds ()[1];
-  full_leaves_bounds[2] = (*fl_it)->getBounds ()[2];
-  full_leaves_bounds[3] = (*fl_it)->getBounds ()[3];
+  full_leaves_bounds[0] = std::numeric_limits<float>::infinity();
+  full_leaves_bounds[1] = -std::numeric_limits<float>::infinity();
+  full_leaves_bounds[2] = std::numeric_limits<float>::infinity();
+  full_leaves_bounds[3] = -std::numeric_limits<float>::infinity();
 
-  for ( ++fl_it ; fl_it != full_leaves.end () ; ++fl_it )
+  for (const auto& leave : full_leaves)
   {
-    if ( (*fl_it)->getBounds ()[0] < full_leaves_bounds[0] ) full_leaves_bounds[0] = (*fl_it)->getBounds ()[0];
-    if ( (*fl_it)->getBounds ()[1] > full_leaves_bounds[1] ) full_leaves_bounds[1] = (*fl_it)->getBounds ()[1];
-    if ( (*fl_it)->getBounds ()[2] < full_leaves_bounds[2] ) full_leaves_bounds[2] = (*fl_it)->getBounds ()[2];
-    if ( (*fl_it)->getBounds ()[3] > full_leaves_bounds[3] ) full_leaves_bounds[3] = (*fl_it)->getBounds ()[3];
+    const auto bounds = leave->getBounds ();
+    if ( bounds[0] < full_leaves_bounds[0] ) full_leaves_bounds[0] = bounds[0];
+    if ( bounds[1] > full_leaves_bounds[1] ) full_leaves_bounds[1] = bounds[1];
+    if ( bounds[2] < full_leaves_bounds[2] ) full_leaves_bounds[2] = bounds[2];
+    if ( bounds[3] > full_leaves_bounds[3] ) full_leaves_bounds[3] = bounds[3];
   }
 
   // Make some initializations
@@ -132,18 +133,16 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
   num_pixels_y_ = static_cast<int> (extent_y_/pixel_size_ + 0.5f);
   num_pixels_   = num_pixels_x_*num_pixels_y_;
 
-  int i, j;
-
   // Allocate and initialize memory for the pixels and the sets
   pixels_ = new Pixel**[num_pixels_x_];
   sets_ = new Set**[num_pixels_x_];
 
-  for ( i = 0 ; i < num_pixels_x_ ; ++i )
+  for ( int i = 0 ; i < num_pixels_x_ ; ++i )
   {
     pixels_[i] = new Pixel*[num_pixels_y_];
     sets_[i] = new Set*[num_pixels_y_];
 
-    for ( j = 0 ; j < num_pixels_y_ ; ++j )
+    for ( int j = 0 ; j < num_pixels_y_ ; ++j )
     {
       pixels_[i][j] = NULL;
       sets_[i][j] = NULL;
@@ -153,24 +152,21 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
   int pixel_id = 0;
 
   // Project the octree full leaves onto the xy-plane
-  for ( fl_it = full_leaves.begin () ; fl_it != full_leaves.end () ; ++fl_it )
+  for (auto fl_it = full_leaves.cbegin () ; fl_it != full_leaves.cend () ; ++fl_it )
   {
-    this->getPixelCoordinates ((*fl_it)->getCenter(), i, j);
+    this->getPixelCoordinates ((*fl_it)->getCenter(), num_pixels_x_, num_pixels_y_);
     // If there is no set/pixel and at this position -> create one
-    if ( sets_[i][j] == NULL )
+    if ( sets_[num_pixels_x_][num_pixels_y_] == NULL )
     {
-      pixels_[i][j] = new Pixel (pixel_id++);
-      sets_[i][j] = new Set (i, j);
-      full_pixels_.push_back (pixels_[i][j]);
-      full_sets_.push_back (sets_[i][j]);
+      pixels_[num_pixels_x_][num_pixels_y_] = new Pixel (pixel_id++);
+      sets_[num_pixels_x_][num_pixels_y_] = new Set (num_pixels_x_, num_pixels_y_);
+      full_pixels_.push_back (pixels_[num_pixels_x_][num_pixels_y_]);
+      full_sets_.push_back (sets_[num_pixels_x_][num_pixels_y_]);
     }
 
     // Insert the full octree leaf at the right position in the set
-    sets_[i][j]->insert (*fl_it);
+    sets_[num_pixels_x_][num_pixels_y_]->insert (*fl_it);
   }
-
-  int len, maxlen, id_z1, id_z2;
-  float cur_min, best_min, cur_max, best_max;
 
   // Now, at each occupied (i, j) position, get the longest connected component consisting of neighboring full leaves
   for ( list<Set*>::iterator current_set = full_sets_.begin () ; current_set != full_sets_.end () ; ++current_set )
@@ -178,15 +174,18 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
     // Get the first node in the set
     set<ORROctree::Node*, bool(*)(ORROctree::Node*,ORROctree::Node*)>::iterator node = (*current_set)->get_nodes ().begin ();
     // Initialize
-    cur_min = best_min = (*node)->getBounds ()[4];
-    cur_max = best_max = (*node)->getBounds ()[5];
-    id_z1 = (*node)->getData ()->get3dIdZ ();
-    maxlen = len = 1;
+    float best_min = (*node)->getBounds ()[4];
+    float best_max = (*node)->getBounds ()[5];
+    float cur_min = best_min;
+    float cur_max = best_max;
+    int id_z1 = (*node)->getData ()->get3dIdZ ();
+    int maxlen = 1;
+    int len = 1;
 
     // Find the longest 1D "connected component" at the current (i, j) position
-    for ( ++node ; node != (*current_set)->get_nodes ().end () ; ++node, id_z1 = id_z2 )
+    for ( ++node ; node != (*current_set)->get_nodes ().end () ; ++node )
     {
-      id_z2 = (*node)->getData ()->get3dIdZ ();
+      int id_z2 = (*node)->getData ()->get3dIdZ ();
       cur_max = (*node)->getBounds()[5];
 
       if ( id_z2 - id_z1 > 1 ) // This connected component is over
@@ -206,10 +205,11 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
           best_max = cur_max;
         }
       }
+      id_z1 = id_z2;
     }
 
-    i = (*current_set)->get_x ();
-    j = (*current_set)->get_y ();
+    int i = (*current_set)->get_x ();
+    int j = (*current_set)->get_y ();
 
     pixels_[i][j]->set_z1 (best_min - eps_front);
     pixels_[i][j]->set_z2 (best_max  + eps_back);

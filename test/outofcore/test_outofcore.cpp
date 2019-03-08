@@ -103,10 +103,7 @@ AlignedPointTVector points;
 bool 
 compPt (const PointT &p1, const PointT &p2)
 {
-  if (p1.x != p2.x || p1.y != p2.y || p1.z != p2.z)
-    return false;
-  
-  return true;
+  return !(p1.x != p2.x || p1.y != p2.y || p1.z != p2.z);
 }
 
 TEST (PCL, Outofcore_Octree_Build)
@@ -404,12 +401,12 @@ class OutofcoreTest : public testing::Test
 
     OutofcoreTest () : smallest_voxel_dim () {}
 
-    virtual void SetUp ()
+    void SetUp () override
     {
       smallest_voxel_dim = 3.0f;
     }
 
-    virtual void TearDown ()
+    void TearDown () override
     {
 
     }
@@ -491,7 +488,6 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
 
   //(Case 4): Load existing tree from disk
   octree_disk octree_from_disk (filename_otreeB, true);
-  vector<uint64_t> numPoints = octree_from_disk.getNumPointsVector ();
   EXPECT_EQ (numPts , octree_from_disk.getNumPointsAtDepth (octree_from_disk.getDepth ())) << "Failure to count the number of points in a tree already existing on disk\n";
 }
 
@@ -756,7 +752,7 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
   point_cloud.height = 1;
 
   for (size_t i=0; i < numPts; i++)
-    point_cloud.points.push_back (PointT (static_cast<float>(rand () % 10), static_cast<float>(rand () % 10), static_cast<float>(rand () % 10)));
+    point_cloud.points.emplace_back(static_cast<float>(rand () % 10), static_cast<float>(rand () % 10), static_cast<float>(rand () % 10));
 
 
   pcl::PCLPointCloud2::Ptr input_cloud (new pcl::PCLPointCloud2 ());

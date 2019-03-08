@@ -6,7 +6,7 @@ import sys, os
 # -- General configuration -----------------------------------------------------
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.pngmath', 'sphinxcontrib.doxylink.doxylink']
+extensions = ['sphinx.ext.imgmath', 'sphinxcontrib.doxylink.doxylink']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -129,7 +129,7 @@ html_sidebars = {
 html_show_copyright = False
 html_show_sphinx = False
 html_add_permalinks = None
-needs_sphinx = 1.0
+needs_sphinx = '1.0'
 file_insertion_enabled = True
 raw_enabled = True
 # Set up doxylink

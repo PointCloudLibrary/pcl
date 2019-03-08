@@ -122,8 +122,8 @@ class ManualRegistration : public QMainWindow
     DstPointPickCallback (const pcl::visualization::PointPickingEvent& event, void*);
 
   protected:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_src_;
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_dst_;
+    pcl::visualization::PCLVisualizer::Ptr vis_src_;
+    pcl::visualization::PCLVisualizer::Ptr vis_dst_;
 
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_src_;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_dst_;

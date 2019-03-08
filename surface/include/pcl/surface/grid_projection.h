@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_GRID_PROJECTION_H_
-#define PCL_SURFACE_GRID_PROJECTION_H_
+#pragma once
 
 #include <pcl/surface/boost.h>
 #include <pcl/surface/reconstruction.h>
@@ -125,7 +124,7 @@ namespace pcl
         *  points within the padding area,and do a weighted average. Say if the padding
         *  size is 1, when we process cell (x,y,z), we will find union of input data points
         *  from (x-1) to (x+1), (y-1) to (y+1), (z-1) to (z+1)(in total, 27 cells). In this
-        *  way, even the cells itself doesnt contain any data points, we will stil process it
+        *  way, even the cells itself doesn't contain any data points, we will still process it
         *  because there are data points in the padding area. This can help us fix holes which 
         *  is smaller than the padding size.
         * \param padding_size The num of padding cells we want to create 
@@ -213,7 +212,7 @@ namespace pcl
         * \param[out] output the resultant polygonal mesh
         */
       void 
-      performReconstruction (pcl::PolygonMesh &output);
+      performReconstruction (pcl::PolygonMesh &output) override;
 
       /** \brief Create the surface. 
         *
@@ -227,7 +226,7 @@ namespace pcl
         */
       void 
       performReconstruction (pcl::PointCloud<PointNT> &points, 
-                             std::vector<pcl::Vertices> &polygons);
+                             std::vector<pcl::Vertices> &polygons) override;
 
       /** \brief When the input data points don't fill into the 1*1*1 box, 
         * scale them so that they can be filled in the unit box. Otherwise, 
@@ -495,12 +494,9 @@ namespace pcl
       boost::dynamic_bitset<> occupied_cell_list_;
 
       /** \brief Class get name method. */
-      std::string getClassName () const { return ("GridProjection"); }
+      std::string getClassName () const override { return ("GridProjection"); }
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif  // PCL_SURFACE_GRID_PROJECTION_H_
- 

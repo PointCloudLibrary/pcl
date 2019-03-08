@@ -5,8 +5,7 @@
  *
  */
 
-#ifndef PCL_SIMULATION_SUM_REDUCE
-#define PCL_SIMULATION_SUM_REDUCE
+#pragma once
 
 #include <GL/glew.h>
 
@@ -26,7 +25,7 @@ namespace pcl
   {
     /** \brief Implements a parallel summation of float arrays using GLSL.
      * The input array is provided as a float texture and the summation
-     * is performed over set number of levels, where each level halfs each
+     * is performed over set number of levels, where each level halves each
      * dimension.
      *
      * \author Hordur Johannsson
@@ -62,5 +61,3 @@ namespace pcl
     };
   } // namespace - simulation
 } // namespace - pcl
-
-#endif /* PCL_SIMULATION_SUM_REDUCE */

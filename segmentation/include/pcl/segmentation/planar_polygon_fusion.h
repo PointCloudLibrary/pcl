@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_PLANAR_POLYGON_FUSION_H_
-#define PCL_SEGMENTATION_PLANAR_POLYGON_FUSION_H_
+#pragma once
 
 #include <Eigen/Core>
 #include <vector>
@@ -86,5 +85,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/planar_polygon_fusion.hpp>
 #endif
-
-#endif // PCL_SEGMENTATION_PLANAR_POLYGON_FUSION_H_

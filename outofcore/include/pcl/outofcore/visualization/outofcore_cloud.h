@@ -1,7 +1,6 @@
-#ifndef PCL_OUTOFCORE_OUTOFCORE_CLOUD_H_
-#define PCL_OUTOFCORE_OUTOFCORE_CLOUD_H_
+#pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 // PCL
 //#include <pcl/common/time.h>
@@ -72,11 +71,7 @@ class OutofcoreCloud : public Object
 
       bool operator< (const PcdQueueItem& rhs) const
       {
-       if (coverage < rhs.coverage)
-       {
-         return true;
-       }
-       return false;
+       return coverage < rhs.coverage;
       }
 
       std::string pcd_file;
@@ -100,8 +95,8 @@ class OutofcoreCloud : public Object
        this->timestamp = timestamp;
       }
 
-      virtual size_t
-      sizeOf() const
+      size_t
+      sizeOf() const override
       {
         return item->GetActualMemorySize();
       }
@@ -169,19 +164,19 @@ class OutofcoreCloud : public Object
     }
 
     int
-    getDisplayDepth ()
+    getDisplayDepth () const
     {
       return display_depth_;
     }
 
     uint64_t
-    getPointsLoaded ()
+    getPointsLoaded () const
     {
       return points_loaded_;
     }
 
     uint64_t
-    getDataLoaded ()
+    getDataLoaded () const
     {
       return data_loaded_;
     }
@@ -265,8 +260,8 @@ class OutofcoreCloud : public Object
       std::cout << "Decreasing lod pixel threshold: " << lod_pixel_threshold_ << endl;
     }
 
-    virtual void
-    render (vtkRenderer* renderer);
+    void
+    render (vtkRenderer* renderer) override;
 
   private:
 
@@ -292,5 +287,3 @@ class OutofcoreCloud : public Object
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
-
-#endif

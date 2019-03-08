@@ -23,7 +23,7 @@ pcl::tracking::NormalCoherence<PointInT>::computeCoherence (PointInT &source, Po
         n.normalize ();
         n_dash.normalize ();
         double theta = pcl::getAngle3D (n, n_dash);
-        if (!pcl_isnan (theta))
+        if (!std::isnan (theta))
             return 1.0 / (1.0 + weight_ * theta * theta);
         else
             return 0.0;

@@ -176,7 +176,7 @@ Narf::extractDescriptor (int descriptor_size)
 
       int cell_x = static_cast<int> (pcl_lrint (beam_point_cell_x)), cell_y = static_cast<int> (pcl_lrint (beam_point_cell_y));
       beam_value = surface_patch_[cell_y*surface_patch_pixel_size_ + cell_x];
-      if (!pcl_isfinite(beam_value))
+      if (!std::isfinite(beam_value))
       {
         if (beam_value > 0.0f)
           beam_value = max_dist;
@@ -261,7 +261,7 @@ Narf::extractFromRangeImageWithBestRotation (const RangeImage& range_image, cons
   if (rotations.empty())
     return false;
   float best_rotation=rotations[0], best_strength=strengths[0];
-  for (unsigned int i=1; i<rotations.size(); ++i)
+  for (size_t i = 1; i < rotations.size(); ++i)
   {
     if (strengths[i] > best_strength)
     {
@@ -292,7 +292,7 @@ Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
       int old_x = static_cast<int> (pcl_lrint (floor (new_to_old_factor * float (x)))),
           old_y = static_cast<int> (pcl_lrint (floor (new_to_old_factor * float (y))));
       integral_pixel = surface_patch_[old_y*surface_patch_pixel_size_ + old_x];
-      if (pcl_isinf(integral_pixel))
+      if (std::isinf(integral_pixel))
         integral_pixel = 0.5f*surface_patch_world_size_;
       float left_value=0, top_left_value=0, top_value=0;
       if (x>0)
@@ -401,7 +401,7 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
         feature->getRotations(rotations, strengths);
         {
           //feature->getRotatedVersions(range_image, rotations, feature_list);
-          for (unsigned int i=0; i<rotations.size(); ++i)
+          for (size_t i = 0; i < rotations.size(); ++i)
           {
             float rotation = rotations[i];
             Narf* feature2 = new Narf(*feature);  // Call copy constructor
@@ -498,7 +498,7 @@ Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths
 void 
 Narf::getRotatedVersions (const RangeImage&, const std::vector<float>& rotations, std::vector<Narf*>& features) const
 {
-  for (unsigned int i=0; i<rotations.size(); ++i)
+  for (size_t i = 0; i < rotations.size(); ++i)
   {
     float rotation = rotations[i];
     
@@ -680,7 +680,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
   
   // Copy to NARF36 struct
   output.points.resize(feature_list.size());
-  for (unsigned int i=0; i<feature_list.size(); ++i)
+  for (size_t i = 0; i < feature_list.size(); ++i)
   {
     feature_list[i]->copyToNarf36(output.points[i]);
   }

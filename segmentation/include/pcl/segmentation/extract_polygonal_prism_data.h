@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_EXTRACT_POLYGONAL_PRISM_DATA_H_
-#define PCL_EXTRACT_POLYGONAL_PRISM_DATA_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
@@ -213,5 +212,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/extract_polygonal_prism_data.hpp>
 #endif
-
-#endif  //#ifndef PCL_EXTRACT_POLYGONAL_PRISM_DATA_H_

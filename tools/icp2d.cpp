@@ -79,7 +79,7 @@ main (int argc, char **argv)
   std::cout << argv[pcd_indices[0]] << " width: " << model->width << " height: " << model->height << std::endl;
 
   std::string result_filename (argv[pcd_indices[0]]);
-  result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
+  result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
   pcl::io::savePCDFile (result_filename.c_str (), *model);
   std::cout << "saving first model to " << result_filename << std::endl;
 
@@ -97,11 +97,11 @@ main (int argc, char **argv)
 
     pcl::IterativeClosestPointNonLinear<PointType, PointType> icp;
 
-    boost::shared_ptr<pcl::registration::WarpPointRigid3D<PointType, PointType> > warp_fcn 
+    pcl::registration::WarpPointRigid3D<PointType, PointType>::Ptr warp_fcn 
       (new pcl::registration::WarpPointRigid3D<PointType, PointType>);
 
     // Create a TransformationEstimationLM object, and set the warp to it
-    boost::shared_ptr<pcl::registration::TransformationEstimationLM<PointType, PointType> > te (new pcl::registration::TransformationEstimationLM<PointType, PointType>);
+    pcl::registration::TransformationEstimationLM<PointType, PointType>::Ptr te (new pcl::registration::TransformationEstimationLM<PointType, PointType>);
     te->setWarpFunction (warp_fcn);
 
     // Pass the TransformationEstimation objec to the ICP algorithm
@@ -127,7 +127,7 @@ main (int argc, char **argv)
     *model = *data;
 
     std::string result_filename (argv[pcd_indices[i]]);
-    result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
+    result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
     pcl::io::savePCDFileBinary (result_filename.c_str (), *tmp);
     std::cout << "saving result to " << result_filename << std::endl;
   }

@@ -38,9 +38,7 @@
  *
  */
 
-
-#ifndef PCL_FILTERS_FAST_BILATERAL_H_
-#define PCL_FILTERS_FAST_BILATERAL_H_
+#pragma once
 
 #include <pcl/filters/filter.h>
 
@@ -74,7 +72,7 @@ namespace pcl
       { }
       
       /** \brief Empty destructor */
-      virtual ~FastBilateralFilter () {}
+      ~FastBilateralFilter () {}
 
       /** \brief Set the standard deviation of the Gaussian used by the bilateral filter for
         * the spatial neighborhood/window.
@@ -106,8 +104,8 @@ namespace pcl
       /** \brief Filter the input data and store the results into output.
         * \param[out] output the resultant point cloud
         */
-      virtual void
-      applyFilter (PointCloud &output);
+      void
+      applyFilter (PointCloud &output) override;
 
     protected:
       float sigma_s_;
@@ -194,6 +192,3 @@ namespace pcl
 #else
 #define PCL_INSTANTIATE_FastBilateralFilter(T) template class PCL_EXPORTS pcl::FastBilateralFilter<T>;
 #endif
-
-
-#endif /* PCL_FILTERS_FAST_BILATERAL_H_ */

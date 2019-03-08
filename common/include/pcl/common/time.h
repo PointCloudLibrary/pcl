@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_TIME_H_
-#define PCL_TIME_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
@@ -163,7 +162,7 @@ namespace pcl
         stop_watch_.reset ();
       }
 
-      /** \brief Notifies the class that the event occured. */
+      /** \brief Notifies the class that the event occurred. */
       void event ()
       {
         event_time_queue_.push (stop_watch_.getTimeSeconds ());
@@ -233,5 +232,3 @@ if (1) {\
 
 }  // end namespace
 /*@}*/
-
-#endif  //#ifndef PCL_NORMS_H_

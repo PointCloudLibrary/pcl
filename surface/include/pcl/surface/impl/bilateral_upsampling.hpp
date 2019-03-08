@@ -108,7 +108,7 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
           {
             float val_exp_depth = val_exp_depth_matrix (static_cast<Eigen::MatrixXf::Index> (x - x_w + window_size_),
                                                         static_cast<Eigen::MatrixXf::Index> (y - y_w + window_size_));
-            
+
             Eigen::VectorXf::Index d_color = static_cast<Eigen::VectorXf::Index> (
                 abs (input_->points[y_w * input_->width + x_w].r - input_->points[y * input_->width + x].r) +
                 abs (input_->points[y_w * input_->width + x_w].g - input_->points[y * input_->width + x].g) +
@@ -116,7 +116,7 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
 
             float val_exp_rgb = val_exp_rgb_vector (d_color);
 
-            if (pcl_isfinite (input_->points[y_w*input_->width + x_w].z))
+            if (std::isfinite (input_->points[y_w*input_->width + x_w].z))
             {
               sum += val_exp_depth * val_exp_rgb * input_->points[y_w*input_->width + x_w].z;
               norm_sum += val_exp_depth * val_exp_rgb;
@@ -154,10 +154,10 @@ template <typename PointInT, typename PointOutT> void
 pcl::BilateralUpsampling<PointInT, PointOutT>::computeDistances (Eigen::MatrixXf &val_exp_depth, Eigen::VectorXf &val_exp_rgb)
 {
   val_exp_depth.resize (2*window_size_+1,2*window_size_+1);
-  val_exp_rgb.resize (3*255);
+  val_exp_rgb.resize (3*255+1);
 
   int j = 0;
-  for (int dx = -window_size_; dx < window_size_+1; ++dx) 
+  for (int dx = -window_size_; dx < window_size_+1; ++dx)
   {
     int i = 0;
     for (int dy = -window_size_; dy < window_size_+1; ++dy)
@@ -168,9 +168,9 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::computeDistances (Eigen::MatrixXf
     }
     j++;
   }
-    
-  for (int d_color = 0; d_color < 3*255; d_color++) 
-  {    
+
+  for (int d_color = 0; d_color < 3*255+1; d_color++)
+  {
     float val_exp = expf (- d_color * d_color / (2.0f * sigma_color_ * sigma_color_));
     val_exp_rgb(d_color) = val_exp;
   }

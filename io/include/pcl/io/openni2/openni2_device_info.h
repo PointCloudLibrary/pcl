@@ -29,8 +29,7 @@
  *      Author: Julius Kammerl (jkammerl@willowgarage.com)
  */
 
-#ifndef PCL_IO_OPENNI2_DEVICE_INFO_H_
-#define PCL_IO_OPENNI2_DEVICE_INFO_H_
+#pragma once
 
 #include <ostream>
 
@@ -58,5 +57,3 @@ namespace pcl
     } // namespace
   }
 }
-
-#endif // PCL_IO_OPENNI2_DEVICE_INFO_H_

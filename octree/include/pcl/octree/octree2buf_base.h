@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_TREE_2BUF_BASE_H
-#define PCL_OCTREE_TREE_2BUF_BASE_H
+#pragma once
 
 #include <vector>
 
@@ -73,13 +72,10 @@ namespace pcl
         inline BufferedBranchNode&
         operator = (const BufferedBranchNode &source_arg)
         {
-
-          unsigned char i, b;
-
           memset (child_node_array_, 0, sizeof(child_node_array_));
 
-          for (b = 0; b < 2; ++b)
-            for (i = 0; i < 8; ++i)
+          for (unsigned char b = 0; b < 2; ++b)
+            for (unsigned char i = 0; i < 8; ++i)
               if (source_arg.child_node_array_[b][i])
                 child_node_array_[b][i] = source_arg.child_node_array_[b][i]->deepCopy ();
 
@@ -88,13 +84,13 @@ namespace pcl
         }
 
         /** \brief Empty constructor. */
-        virtual ~BufferedBranchNode ()
+        ~BufferedBranchNode ()
         {
         }
 
         /** \brief Method to perform a deep copy of the octree */
-        virtual BufferedBranchNode*
-        deepCopy () const
+        BufferedBranchNode*
+        deepCopy () const override
         {
           return new BufferedBranchNode (*this);
         }
@@ -135,7 +131,7 @@ namespace pcl
         }
 
         /** \brief Get the type of octree node. Returns LEAVE_NODE type */
-        virtual node_type_t getNodeType () const
+        node_type_t getNodeType () const override
         {
           return BRANCH_NODE;
         }
@@ -233,7 +229,8 @@ namespace pcl
         friend class OctreeIteratorBase<OctreeT> ;
         friend class OctreeDepthFirstIterator<OctreeT> ;
         friend class OctreeBreadthFirstIterator<OctreeT> ;
-        friend class OctreeLeafNodeIterator<OctreeT> ;
+        friend class OctreeLeafNodeDepthFirstIterator<OctreeT> ;
+        friend class OctreeLeafNodeBreadthFirstIterator<OctreeT> ;
 
         typedef BufferedBranchNode<BranchContainerT> BranchNode;
         typedef OctreeLeafNode<LeafContainerT> LeafNode;
@@ -248,10 +245,36 @@ namespace pcl
         const Iterator end() {return Iterator();};
 
         // Octree leaf node iterators
-        typedef OctreeLeafNodeIterator<OctreeT> LeafNodeIterator;
-        typedef const OctreeLeafNodeIterator<OctreeT> ConstLeafNodeIterator;
-        LeafNodeIterator leaf_begin(unsigned int max_depth_arg = 0) {return LeafNodeIterator(this, max_depth_arg);};
-        const LeafNodeIterator leaf_end() {return LeafNodeIterator();};
+        // The previous deprecated names
+        // LeafNodeIterator and ConstLeafNodeIterator are deprecated.
+        // Please use LeafNodeDepthFirstIterator and ConstLeafNodeDepthFirstIterator instead.
+        typedef OctreeLeafNodeDepthFirstIterator<OctreeT> LeafNodeIterator;
+        typedef const OctreeLeafNodeDepthFirstIterator<OctreeT> ConstLeafNodeIterator;
+
+        [[deprecated("use leaf_depth_begin() instead")]]
+        LeafNodeIterator leaf_begin (unsigned int max_depth_arg = 0)
+        {
+          return LeafNodeIterator (this, max_depth_arg);
+        };
+
+        [[deprecated("use leaf_depth_end() instead")]]
+        const LeafNodeIterator leaf_end ()
+        {
+          return LeafNodeIterator ();
+        };
+
+        // The currently valide names
+        typedef OctreeLeafNodeDepthFirstIterator<OctreeT> LeafNodeDepthFirstIterator;
+        typedef const OctreeLeafNodeDepthFirstIterator<OctreeT> ConstLeafNodeDepthFirstIterator;
+        LeafNodeDepthFirstIterator leaf_depth_begin (unsigned int max_depth_arg = 0)
+        {
+          return LeafNodeDepthFirstIterator (this, max_depth_arg);
+        };
+
+        const LeafNodeDepthFirstIterator leaf_depth_end ()
+        {
+          return LeafNodeDepthFirstIterator();
+        };
 
         // Octree depth-first iterators
         typedef OctreeDepthFirstIterator<OctreeT> DepthFirstIterator;
@@ -264,6 +287,20 @@ namespace pcl
         typedef const OctreeBreadthFirstIterator<OctreeT> ConstBreadthFirstIterator;
         BreadthFirstIterator breadth_begin(unsigned int max_depth_arg = 0) {return BreadthFirstIterator(this, max_depth_arg);};
         const BreadthFirstIterator breadth_end() {return BreadthFirstIterator();};
+
+        // Octree leaf node iterators
+        typedef OctreeLeafNodeBreadthFirstIterator<OctreeT> LeafNodeBreadthIterator;
+        typedef const OctreeLeafNodeBreadthFirstIterator<OctreeT> ConstLeafNodeBreadthIterator;
+
+        LeafNodeBreadthIterator leaf_breadth_begin (unsigned int max_depth_arg = 0u)
+        {
+          return LeafNodeBreadthIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
+        };
+
+        const LeafNodeBreadthIterator leaf_breadth_end ()
+        {
+          return LeafNodeBreadthIterator (this, 0, NULL);
+        };
 
         /** \brief Empty constructor. */
         Octree2BufBase ();
@@ -489,7 +526,7 @@ namespace pcl
           return ret;
         }
 
-        /** \brief Check for leaf not existance in the octree
+        /** \brief Check if leaf doesn't exist in the octree
          *  \param key_arg: octree key addressing a leaf node.
          *  \return "true" if leaf node is found; "false" otherwise
          * */
@@ -557,12 +594,11 @@ namespace pcl
          * */
         inline char getBranchBitPattern (const BranchNode& branch_arg) const
         {
-          unsigned char i;
           char node_bits;
 
           // create bit pattern
           node_bits = 0;
-          for (i = 0; i < 8; i++)
+          for (unsigned char i = 0; i < 8; i++)
           {
             const OctreeNode* child = branch_arg.getChildPtr(buffer_selector_, i);
             node_bits |= static_cast<char> ( (!!child) << i);
@@ -579,12 +615,11 @@ namespace pcl
         inline char getBranchBitPattern (const BranchNode& branch_arg,
             unsigned char bufferSelector_arg) const
         {
-          unsigned char i;
           char node_bits;
 
           // create bit pattern
           node_bits = 0;
-          for (i = 0; i < 8; i++)
+          for (unsigned char i = 0; i < 8; i++)
           {
             const OctreeNode* child = branch_arg.getChildPtr(bufferSelector_arg, i);
             node_bits |= static_cast<char> ( (!!child) << i);
@@ -600,13 +635,12 @@ namespace pcl
         inline char getBranchXORBitPattern (
             const BranchNode& branch_arg) const
         {
-          unsigned char i;
           char node_bits[2];
 
           // create bit pattern for both buffers
           node_bits[0] = node_bits[1] = 0;
 
-          for (i = 0; i < 8; i++)
+          for (unsigned char i = 0; i < 8; i++)
           {
             const OctreeNode* childA = branch_arg.getChildPtr(0, i);
             const OctreeNode* childB = branch_arg.getChildPtr(1, i);
@@ -681,10 +715,8 @@ namespace pcl
          * */
         inline void deleteBranch (BranchNode& branch_arg)
         {
-          char i;
-
           // delete all branch node children
-          for (i = 0; i < 8; i++)
+          for (char i = 0; i < 8; i++)
           {
 
             if (branch_arg.getChildPtr(0, i) == branch_arg.getChildPtr(1, i))
@@ -804,8 +836,8 @@ namespace pcl
          *  \param key_arg: reference to an octree key
          *  \param binary_tree_in_it_arg iterator of binary input data
          *  \param binary_tree_in_it_end_arg
-         *  \param leaf_container_vector_it_arg: iterator pointing to leaf containter pointers to be added to a leaf node
-         *  \param leaf_container_vector_it_end_arg: iterator pointing to leaf containter pointers pointing to last object in input container.
+         *  \param leaf_container_vector_it_arg: iterator pointing to leaf container pointers to be added to a leaf node
+         *  \param leaf_container_vector_it_end_arg: iterator pointing to leaf container pointers pointing to last object in input container.
          *  \param branch_reset_arg: Reset pointer array of current branch
          *  \param do_XOR_decoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          **/
@@ -921,6 +953,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/octree/impl/octree2buf_base.hpp>
 #endif
-
-#endif
-

@@ -128,13 +128,12 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       first_nn_category_ = flann_models_[indices_scores[0].idx_models_].first.class_;
 
       std::map<std::string, int> category_map;
-      std::map<std::string, int>::iterator it;
       int num_n = std::min (NN_, static_cast<int> (indices_scores.size ()));
 
       for (int i = 0; i < num_n; ++i)
       {
         std::string cat = flann_models_[indices_scores[i].idx_models_].first.class_;
-        it = category_map.find (cat);
+        auto it = category_map.find (cat);
         if (it == category_map.end ())
         {
           category_map[cat] = 1;
@@ -145,10 +144,10 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         }
       }
 
-      for (it = category_map.begin (); it != category_map.end (); it++)
+      for (const auto &category : category_map)
       {
-        float prob = static_cast<float> (it->second) / static_cast<float> (num_n);
-        categories_.push_back (it->first);
+        float prob = static_cast<float> (category.second) / static_cast<float> (num_n);
+        categories_.push_back (category.first);
         confidences_.push_back (prob);
       }
 

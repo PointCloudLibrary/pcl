@@ -43,8 +43,7 @@
  *      Author: papazov
  */
 
-#ifndef PCL_RECOGNITION_HYPOTHESIS_H_
-#define PCL_RECOGNITION_HYPOTHESIS_H_
+#pragma once
 
 #include <pcl/recognition/ransac_based/model_library.h>
 #include <pcl/recognition/ransac_based/auxiliary.h>
@@ -96,7 +95,7 @@ namespace pcl
         {
         }
 
-        virtual ~Hypothesis (){}
+        ~Hypothesis (){}
 
         const Hypothesis&
         operator =(const Hypothesis& src)
@@ -156,5 +155,3 @@ namespace pcl
     };
   } // namespace recognition
 } // namespace pcl
-
-#endif /* PCL_RECOGNITION_HYPOTHESIS_H_ */

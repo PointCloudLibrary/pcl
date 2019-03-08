@@ -45,20 +45,20 @@ namespace pcl
         {       
             int level;
             int node_idx;
-            int lenght;
+            int length;
             const OctreeGlobalWithBox& octree;
 
             __device__ __forceinline__ OctreePriorityIteratorDevice(const OctreeGlobalWithBox& octree_arg) : octree(octree_arg)
             {
                 node_idx = 0;
                 level = 0;
-                lenght = 1;
+                length = 1;
             }
 
             __device__ __forceinline__ void gotoNextLevel(int first, int len) 
             {  
                 node_idx = first;
-                lenght = len;
+                length = len;
                 ++level;
             }       
 
@@ -72,9 +72,9 @@ namespace pcl
 #if 1
                 while(level >= 0)
                 {                
-                    if (lenght > 1)
+                    if (length > 1)
                     {
-                        lenght--;
+                        length--;
                         node_idx++;                      
                         break;
                     }
@@ -99,7 +99,7 @@ namespace pcl
 
                     int pos = node_idx - parent_first;
 
-                    lenght = parent_len - pos;
+                    length = parent_len - pos;
                 }
 #endif
             }
