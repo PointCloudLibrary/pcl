@@ -110,9 +110,9 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
   full_leaves_bounds[2] = std::numeric_limits<float>::infinity();
   full_leaves_bounds[3] = -std::numeric_limits<float>::infinity();
 
-  for (const auto &leave : full_leaves)
+  for (const auto &leaf : full_leaves)
   {
-    const auto bounds = leave->getBounds ();
+    const auto bounds = leaf->getBounds ();
     if ( bounds[0] < full_leaves_bounds[0] ) full_leaves_bounds[0] = bounds[0];
     if ( bounds[1] > full_leaves_bounds[1] ) full_leaves_bounds[1] = bounds[1];
     if ( bounds[2] < full_leaves_bounds[2] ) full_leaves_bounds[2] = bounds[2];
@@ -152,9 +152,9 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
   int pixel_id = 0;
 
   // Project the octree full leaves onto the xy-plane
-  for (const auto &full_leave : full_leaves)
+  for (const auto &full_leaf : full_leaves)
   {
-    this->getPixelCoordinates (full_leave->getCenter(), num_pixels_x_, num_pixels_y_);
+    this->getPixelCoordinates (full_leaf->getCenter(), num_pixels_x_, num_pixels_y_);
     // If there is no set/pixel and at this position -> create one
     if ( sets_[num_pixels_x_][num_pixels_y_] == NULL )
     {
@@ -165,7 +165,7 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
     }
 
     // Insert the full octree leaf at the right position in the set
-    sets_[num_pixels_x_][num_pixels_y_]->insert (full_leave);
+    sets_[num_pixels_x_][num_pixels_y_]->insert (full_leaf);
   }
 
   // Now, at each occupied (i, j) position, get the longest connected component consisting of neighboring full leaves

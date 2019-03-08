@@ -321,13 +321,13 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(list<HypothesisBase>& hypotheses
   float transformed_point[3];
 
   // Add all rigid transforms to the discrete rigid transform space
-  for (const auto &hypothese : hypotheses)
+  for (const auto &hypothesis : hypotheses)
   {
     // Transform the center of mass of the model
-    aux::transform (hypothese.rigid_transform_, hypothese.obj_model_->getOctreeCenterOfMass (), transformed_point);
+    aux::transform (hypothesis.rigid_transform_, hypothesis.obj_model_->getOctreeCenterOfMass (), transformed_point);
 
     // Now add the rigid transform at the right place
-    transform_space.addRigidTransform (hypothese.obj_model_, transformed_point, hypothese.rigid_transform_);
+    transform_space.addRigidTransform (hypothesis.obj_model_, transformed_point, hypothesis.rigid_transform_);
   }
 
   list<RotationSpace*>& rotation_spaces = transform_space.getRotationSpaces ();
@@ -584,8 +584,8 @@ pcl::recognition::ObjRecRANSAC::filterGraphOfConflictingHypotheses (ORRGraph<Hyp
     size_t num_of_explained = 0;
 
     // Accumulate the number of pixels the neighbors are explaining
-    for ( set<ORRGraph<Hypothesis*>::Node*>::const_iterator neigh = node->getNeighbors ().begin () ; neigh != node->getNeighbors ().end () ; ++neigh )
-      num_of_explained += (*neigh)->getData ()->explained_pixels_.size ();
+    for (const auto &neigh : node->getNeighbors ())
+      num_of_explained += neigh->getData ()->explained_pixels_.size ();
 
     // Now compute the fitness for the node
     node->setFitness (static_cast<int> (node->getData ()->explained_pixels_.size ()) - static_cast<int> (num_of_explained));
@@ -624,10 +624,10 @@ pcl::recognition::ObjRecRANSAC::testHypothesis (Hypothesis* hypothesis, int& mat
   float transformed_point[3];
 
   // The match/penalty loop
-  for (const auto &full_model_leave : full_model_leaves)
+  for (const auto &full_model_leaf : full_model_leaves)
   {
     // Transform the model point with the current rigid transform
-    aux::transform (rigid_transform, full_model_leave->getData ()->getPoint (), transformed_point);
+    aux::transform (rigid_transform, full_model_leaf->getData ()->getPoint (), transformed_point);
 
     // Get the pixel 'transformed_point' lies in
     const ORROctreeZProjection::Pixel* pixel = scene_octree_proj_.getPixel (transformed_point);
@@ -661,10 +661,10 @@ pcl::recognition::ObjRecRANSAC::testHypothesisNormalBased (Hypothesis* hypothesi
   float transformed_point[3];
 
   // The match/penalty loop
-  for (const auto &full_model_leave : full_model_leaves)
+  for (const auto &full_model_leaf : full_model_leaves)
   {
     // Transform the model point with the current rigid transform
-    aux::transform (rigid_transform, full_model_leave->getData ()->getPoint (), transformed_point);
+    aux::transform (rigid_transform, full_model_leaf->getData ()->getPoint (), transformed_point);
 
     // Get the pixel 'transformed_point' lies in
     const ORROctreeZProjection::Pixel* pixel = scene_octree_proj_.getPixel (transformed_point);
@@ -698,7 +698,7 @@ pcl::recognition::ObjRecRANSAC::testHypothesisNormalBased (Hypothesis* hypothesi
       float rotated_normal[3];
       aux::mult3x3 (rigid_transform, closest_node->getData ()->getNormal (), rotated_normal);
 
-      match += aux::dot3 (rotated_normal, full_model_leave->getData ()->getNormal ());
+      match += aux::dot3 (rotated_normal, full_model_leaf->getData ()->getNormal ());
     }
   }
 

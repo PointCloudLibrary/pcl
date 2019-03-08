@@ -369,16 +369,16 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
           std::vector<NodeType> leaves;
           dfe.evaluate (forest_, fhda, rse, eval_examples, 0, leaves);
 
-          for (const auto &leave : leaves)
+          for (const auto &leaf : leaves)
           {
-            if (leave.value >= thres_face_)
+            if (leaf.value >= thres_face_)
             {
-              if ((leave.covariance_trans_.trace () + leave.covariance_rot_.trace ()) > trans_max_variance_)
+              if ((leaf.covariance_trans_.trace () + leaf.covariance_rot_.trace ()) > trans_max_variance_)
                 continue;
 
-              Eigen::Vector3f head_center = Eigen::Vector3f (static_cast<float>(leave.trans_mean_[0]),
-                                                             static_cast<float>(leave.trans_mean_[1]),
-                                                             static_cast<float>(leave.trans_mean_[2]));
+              Eigen::Vector3f head_center = Eigen::Vector3f (static_cast<float>(leaf.trans_mean_[0]),
+                                                             static_cast<float>(leaf.trans_mean_[1]),
+                                                             static_cast<float>(leaf.trans_mean_[2]));
               head_center *= 0.001f;
 
               pcl::PointXYZ patch_center_point;
@@ -393,7 +393,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
               if (!pcl::isFinite (ppp))
                 continue;
 
-              //this is a good leave
+              //this is a good leaf
               for (int j = te.col_; j < (te.col_ + w_size_); j++)
               {
                 for (int k = te.row_; k < (te.row_ + w_size_); k++)
@@ -402,10 +402,10 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
               head_center_votes_.push_back (head_center);
               float mult_fact = 0.0174532925f;
-              angle_votes_.emplace_back(static_cast<float>(leave.rot_mean_[0]) * mult_fact,
-                                   static_cast<float>(leave.rot_mean_[1]) * mult_fact,
-                                   static_cast<float>(leave.rot_mean_[2]) * mult_fact);
-              uncertainties_.push_back (static_cast<float>(leave.covariance_trans_.trace () + leave.covariance_rot_.trace ()));
+              angle_votes_.emplace_back(static_cast<float>(leaf.rot_mean_[0]) * mult_fact,
+                                   static_cast<float>(leaf.rot_mean_[1]) * mult_fact,
+                                   static_cast<float>(leaf.rot_mean_[2]) * mult_fact);
+              uncertainties_.push_back (static_cast<float>(leaf.covariance_trans_.trace () + leaf.covariance_rot_.trace ()));
             }
           }
         }

@@ -130,18 +130,18 @@ ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, 
   int num_of_pairs = 0;
 
   // Run through all full leaves
-  for (const auto &full_leave : full_leaves)
+  for (const auto &full_leaf : full_leaves)
   {
-    const ORROctree::Node::Data* node_data1 = full_leave->getData ();
+    const ORROctree::Node::Data* node_data1 = full_leaf->getData ();
 
     // Get all full leaves at the right distance to the current leaf
     inter_leaves.clear ();
     octree.getFullLeavesIntersectedBySphere (node_data1->getPoint (), pair_width_, inter_leaves);
 
-    for (const auto &inter_leave : inter_leaves)
+    for (const auto &inter_leaf : inter_leaves)
     {
       // Compute the hash table key
-      if ( this->addToHashTable(new_model, node_data1, inter_leave->getData ()) )
+      if ( this->addToHashTable(new_model, node_data1, inter_leaf->getData ()) )
         ++num_of_pairs;
     }
   }
