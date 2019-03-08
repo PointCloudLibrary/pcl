@@ -171,7 +171,7 @@ main (int argc, char *argv[])
 void
 PointCloud2Vector3d (pcl::PointCloud<Point>::Ptr cloud, pcl::on_nurbs::vector_vec3d &data)
 {
-  for (auto &p : *cloud)
+  for (const auto &p : *cloud)
   {
     if (!std::isnan (p.x) && !std::isnan (p.y) && !std::isnan (p.z))
       data.emplace_back (p.x, p.y, p.z);
