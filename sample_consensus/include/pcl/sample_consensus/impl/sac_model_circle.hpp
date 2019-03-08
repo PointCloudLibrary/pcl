@@ -255,14 +255,14 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the plane
-    for (size_t i = 0; i < inliers.size (); ++i)
+    for (const int &inlier : inliers)
     {
-      float dx = input_->points[inliers[i]].x - model_coefficients[0];
-      float dy = input_->points[inliers[i]].y - model_coefficients[1];
+      float dx = input_->points[inlier].x - model_coefficients[0];
+      float dy = input_->points[inlier].y - model_coefficients[1];
       float a = std::sqrt ( (model_coefficients[2] * model_coefficients[2]) / (dx * dx + dy * dy) );
 
-      projected_points.points[inliers[i]].x = a * dx + model_coefficients[0];
-      projected_points.points[inliers[i]].y = a * dy + model_coefficients[1];
+      projected_points.points[inlier].x = a * dx + model_coefficients[0];
+      projected_points.points[inlier].y = a * dy + model_coefficients[1];
     }
   }
   else
@@ -303,14 +303,14 @@ pcl::SampleConsensusModelCircle2D<PointT>::doSamplesVerifyModel (
     return (false);
   }
 
-  for (std::set<int>::const_iterator it = indices.begin (); it != indices.end (); ++it)
+  for (const int &index : indices)
     // Calculate the distance from the point to the sphere as the difference between
     //dist(point,sphere_origin) and sphere_radius
     if (fabsf (std::sqrt (
-                         ( input_->points[*it].x - model_coefficients[0] ) *
-                         ( input_->points[*it].x - model_coefficients[0] ) +
-                         ( input_->points[*it].y - model_coefficients[1] ) *
-                         ( input_->points[*it].y - model_coefficients[1] )
+                         ( input_->points[index].x - model_coefficients[0] ) *
+                         ( input_->points[index].x - model_coefficients[0] ) +
+                         ( input_->points[index].y - model_coefficients[1] ) *
+                         ( input_->points[index].y - model_coefficients[1] )
                          ) - model_coefficients[2]) > threshold)
       return (false);
 

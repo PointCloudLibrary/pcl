@@ -290,17 +290,17 @@ pcl::SampleConsensusModelStick<PointT>::projectPoints (
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the line
-    for (size_t i = 0; i < inliers.size (); ++i)
+    for (const int &inlier : inliers)
     {
-      Eigen::Vector4f pt (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z, 0);
+      Eigen::Vector4f pt (input_->points[inlier].x, input_->points[inlier].y, input_->points[inlier].z, 0);
       // double k = (DOT_PROD_3D (points[i], p21) - dotA_B) / dotB_B;
       float k = (pt.dot (line_dir) - line_pt.dot (line_dir)) / line_dir.dot (line_dir);
 
       Eigen::Vector4f pp = line_pt + k * line_dir;
       // Calculate the projection of the point on the line (pointProj = A + k * B)
-      projected_points.points[inliers[i]].x = pp[0];
-      projected_points.points[inliers[i]].y = pp[1];
-      projected_points.points[inliers[i]].z = pp[2];
+      projected_points.points[inlier].x = pp[0];
+      projected_points.points[inlier].y = pp[1];
+      projected_points.points[inlier].z = pp[2];
     }
   }
   else
@@ -349,11 +349,11 @@ pcl::SampleConsensusModelStick<PointT>::doSamplesVerifyModel (
 
   float sqr_threshold = static_cast<float> (threshold * threshold);
   // Iterate through the 3d points and calculate the distances from them to the line
-  for (std::set<int>::const_iterator it = indices.begin (); it != indices.end (); ++it)
+  for (const int &index : indices)
   {
     // Calculate the distance from the point to the line
     // D = ||(P2-P1) x (P1-P0)|| / ||P2-P1|| = norm (cross (p2-p1, p2-p0)) / norm(p2-p1)
-    if ((line_pt - input_->points[*it].getVector4fMap ()).cross3 (line_dir).squaredNorm () > sqr_threshold)
+    if ((line_pt - input_->points[index].getVector4fMap ()).cross3 (line_dir).squaredNorm () > sqr_threshold)
       return (false);
   }
 

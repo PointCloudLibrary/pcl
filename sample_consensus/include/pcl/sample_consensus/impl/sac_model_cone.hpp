@@ -378,16 +378,16 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the cone
-    for (size_t i = 0; i < inliers.size (); ++i)
+    for (const int &inlier : inliers)
     {
-      Eigen::Vector4f pt (input_->points[inliers[i]].x, 
-                          input_->points[inliers[i]].y, 
-                          input_->points[inliers[i]].z, 
+      Eigen::Vector4f pt (input_->points[inlier].x, 
+                          input_->points[inlier].y, 
+                          input_->points[inlier].z, 
                           1);
 
       float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
 
-      pcl::Vector4fMap pp = projected_points.points[inliers[i]].getVector4fMap ();
+      pcl::Vector4fMap pp = projected_points.points[inlier].getVector4fMap ();
       pp.matrix () = apex + k * axis_dir;
 
       Eigen::Vector4f dir = pt - pp;
@@ -457,9 +457,9 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::doSamplesVerifyModel (
   float dirdotdir = 1.0f / axis_dir.dot (axis_dir);
 
   // Iterate through the 3d points and calculate the distances from them to the cone
-  for (std::set<int>::const_iterator it = indices.begin (); it != indices.end (); ++it)
+  for (const int &index : indices)
   {
-    Eigen::Vector4f pt (input_->points[*it].x, input_->points[*it].y, input_->points[*it].z, 0);
+    Eigen::Vector4f pt (input_->points[index].x, input_->points[index].y, input_->points[index].z, 0);
 
     // Calculate the point's projection on the cone axis
     float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;

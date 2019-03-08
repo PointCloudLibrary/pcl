@@ -286,16 +286,16 @@ pcl::SampleConsensusModelSphere<PointT>::doSamplesVerifyModel (
     return (false);
   }
 
-  for (std::set<int>::const_iterator it = indices.begin (); it != indices.end (); ++it)
+  for (const int &index : indices)
     // Calculate the distance from the point to the sphere as the difference between
     //dist(point,sphere_origin) and sphere_radius
     if (fabs (sqrt (
-                    ( input_->points[*it].x - model_coefficients[0] ) *
-                    ( input_->points[*it].x - model_coefficients[0] ) +
-                    ( input_->points[*it].y - model_coefficients[1] ) *
-                    ( input_->points[*it].y - model_coefficients[1] ) +
-                    ( input_->points[*it].z - model_coefficients[2] ) *
-                    ( input_->points[*it].z - model_coefficients[2] )
+                    ( input_->points[index].x - model_coefficients[0] ) *
+                    ( input_->points[index].x - model_coefficients[0] ) +
+                    ( input_->points[index].y - model_coefficients[1] ) *
+                    ( input_->points[index].y - model_coefficients[1] ) +
+                    ( input_->points[index].z - model_coefficients[2] ) *
+                    ( input_->points[index].z - model_coefficients[2] )
                    ) - model_coefficients[3]) > threshold)
       return (false);
 
