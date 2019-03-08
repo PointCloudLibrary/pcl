@@ -141,8 +141,8 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   const size_t neighb_cnt = searchForNeighbors ((*indices_)[index], search_radius_, nn_indices, nn_dists);
   if (neighb_cnt == 0)
   {
-    for (size_t i = 0; i < desc.size (); ++i)
-      desc[i] = std::numeric_limits<float>::quiet_NaN ();
+    for (float &descriptor : desc)
+      descriptor = std::numeric_limits<float>::quiet_NaN ();
 
     memset (rf, 0, sizeof (rf[0]) * 9);
     return (false);

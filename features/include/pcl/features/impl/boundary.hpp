@@ -74,14 +74,14 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
   float max_dif = FLT_MIN, dif;
   int cp = 0;
 
-  for (size_t i = 0; i < indices.size (); ++i)
+  for (const int &index : indices)
   {
-    if (!std::isfinite (cloud.points[indices[i]].x) || 
-        !std::isfinite (cloud.points[indices[i]].y) || 
-        !std::isfinite (cloud.points[indices[i]].z))
+    if (!std::isfinite (cloud.points[index].x) || 
+        !std::isfinite (cloud.points[index].y) || 
+        !std::isfinite (cloud.points[index].z))
       continue;
 
-    Eigen::Vector4f delta = cloud.points[indices[i]].getVector4fMap () - q_point.getVector4fMap ();
+    Eigen::Vector4f delta = cloud.points[index].getVector4fMap () - q_point.getVector4fMap ();
     if (delta == Eigen::Vector4f::Zero())
       continue;
 

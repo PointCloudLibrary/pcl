@@ -270,35 +270,35 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
   float weights[10] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 1.0f,  1.0f, 2.0f, 2.0f, 2.0f};
 
   hist.reserve (binsize * 10);
-  for (int i = 0; i < binsize; i++)
-    hist.push_back (h_a3_in[i] * weights[0]);
-  for (int i = 0; i < binsize; i++)
-    hist.push_back (h_a3_out[i] * weights[1]);
-  for (int i = 0; i < binsize; i++)
-    hist.push_back (h_a3_mix[i] * weights[2]);
+  for (const float &i : h_a3_in)
+    hist.push_back (i * weights[0]);
+  for (const float &i : h_a3_out)
+    hist.push_back (i * weights[1]);
+  for (const float &i : h_a3_mix)
+    hist.push_back (i * weights[2]);
 
-  for (int i = 0; i < binsize; i++)
-    hist.push_back (h_d3_in[i] * weights[3]);
-  for (int i = 0; i < binsize; i++)
-    hist.push_back (h_d3_out[i] * weights[4]);
-  for (int i = 0; i < binsize; i++)
-    hist.push_back (h_d3_mix[i] * weights[5]);
+  for (const float &i : h_d3_in)
+    hist.push_back (i * weights[3]);
+  for (const float &i : h_d3_out)
+    hist.push_back (i * weights[4]);
+  for (const float &i : h_d3_mix)
+    hist.push_back (i * weights[5]);
 
-  for (int i = 0; i < binsize; i++)
-    hist.push_back (h_in[i]*0.5f * weights[6]);
-  for (int i = 0; i < binsize; i++)
-    hist.push_back (h_out[i] * weights[7]);
-  for (int i = 0; i < binsize; i++)
-    hist.push_back (h_mix[i] * weights[8]);
-  for (int i = 0; i < binsize; i++)
-    hist.push_back (h_mix_ratio[i]*0.5f * weights[9]);
+  for (const float &i : h_in)
+    hist.push_back (i*0.5f * weights[6]);
+  for (const float &i : h_out)
+    hist.push_back (i * weights[7]);
+  for (const float &i : h_mix)
+    hist.push_back (i * weights[8]);
+  for (const float &i : h_mix_ratio)
+    hist.push_back (i*0.5f * weights[9]);
 
   float sm = 0;
-  for (size_t i = 0; i < hist.size (); i++)
-    sm += hist[i];
+  for (const float &i : hist)
+    sm += i;
 
-  for (size_t i = 0; i < hist.size (); i++)
-    hist[i] /= sm;
+  for (float &i : hist)
+    i /= sm;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -401,9 +401,8 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
         feature->getRotations(rotations, strengths);
         {
           //feature->getRotatedVersions(range_image, rotations, feature_list);
-          for (size_t i = 0; i < rotations.size(); ++i)
+          for (const float &rotation : rotations)
           {
-            float rotation = rotations[i];
             Narf* feature2 = new Narf(*feature);  // Call copy constructor
             feature2->transformation_ = Eigen::AngleAxisf(-rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f))*feature2->transformation_;
             feature2->surface_patch_rotation_ = rotation;
@@ -498,10 +497,8 @@ Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths
 void 
 Narf::getRotatedVersions (const RangeImage&, const std::vector<float>& rotations, std::vector<Narf*>& features) const
 {
-  for (size_t i = 0; i < rotations.size(); ++i)
+  for (const float &rotation : rotations)
   {
-    float rotation = rotations[i];
-    
     Narf* feature = new Narf(*this);  // Call copy constructor
     feature->transformation_ = Eigen::AngleAxisf(-rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f))*feature->transformation_;
     feature->surface_patch_rotation_ = rotation;
@@ -686,8 +683,8 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
   }
   
   // Cleanup
-  for (size_t i=0; i<feature_list.size(); ++i)
-    delete feature_list[i];
+  for (auto &i : feature_list)
+    delete i;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

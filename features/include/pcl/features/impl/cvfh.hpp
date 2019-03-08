@@ -172,16 +172,16 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurvatur
   size_t in, out;
   in = out = 0;
 
-  for (int i = 0; i < static_cast<int> (indices_to_use.size ()); i++)
+  for (const int &index : indices_to_use)
   {
-    if (cloud.points[indices_to_use[i]].curvature > threshold)
+    if (cloud.points[index].curvature > threshold)
     {
-      indices_out[out] = indices_to_use[i];
+      indices_out[out] = index;
       out++;
     }
     else
     {
-      indices_in[in] = indices_to_use[i];
+      indices_in[in] = index;
       in++;
     }
   }
@@ -273,19 +273,19 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   if (clusters.size () > 0)
   { // ---[ Step 1b.1 : If yes, compute CVFH using the cluster information
 
-    for (size_t i = 0; i < clusters.size (); ++i) //for each cluster
+    for (const auto &cluster : clusters) //for each cluster
     {
       Eigen::Vector4f avg_normal = Eigen::Vector4f::Zero ();
       Eigen::Vector4f avg_centroid = Eigen::Vector4f::Zero ();
 
-      for (size_t j = 0; j < clusters[i].indices.size (); j++)
+      for (const auto &index : cluster.indices)
       {
-        avg_normal += normals_filtered_cloud->points[clusters[i].indices[j]].getNormalVector4fMap ();
-        avg_centroid += normals_filtered_cloud->points[clusters[i].indices[j]].getVector4fMap ();
+        avg_normal += normals_filtered_cloud->points[index].getNormalVector4fMap ();
+        avg_centroid += normals_filtered_cloud->points[index].getVector4fMap ();
       }
 
-      avg_normal /= static_cast<float> (clusters[i].indices.size ());
-      avg_centroid /= static_cast<float> (clusters[i].indices.size ());
+      avg_normal /= static_cast<float> (cluster.indices.size ());
+      avg_centroid /= static_cast<float> (cluster.indices.size ());
 
       Eigen::Vector4f centroid_test;
       pcl::compute3DCentroid (*normals_filtered_cloud, centroid_test);

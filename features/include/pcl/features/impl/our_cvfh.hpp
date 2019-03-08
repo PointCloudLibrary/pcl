@@ -169,16 +169,16 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurva
   size_t in, out;
   in = out = 0;
 
-  for (int i = 0; i < static_cast<int> (indices_to_use.size ()); i++)
+  for (const int &index : indices_to_use)
   {
-    if (cloud.points[indices_to_use[i]].curvature > threshold)
+    if (cloud.points[index].curvature > threshold)
     {
-      indices_out[out] = indices_to_use[i];
+      indices_out[out] = index;
       out++;
     }
     else
     {
-      indices_in[in] = indices_to_use[i];
+      indices_in[in] = index;
       in++;
     }
   }
@@ -238,9 +238,9 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
   float sum_w = 0.f;
 
   //for (int k = 0; k < static_cast<intgrid->points[k].getVector3fMap ();> (grid->points.size ()); k++)
-  for (int k = 0; k < static_cast<int> (indices.indices.size ()); k++)
+  for (const int &index : indices.indices)
   {
-    Eigen::Vector3f pvector = grid->points[indices.indices[k]].getVector3fMap ();
+    Eigen::Vector3f pvector = grid->points[index].getVector3fMap ();
     float d_k = (pvector).norm ();
     float w = (max_dist - d_k);
     Eigen::Vector3f diff = (pvector);
@@ -390,11 +390,11 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
     // Make a note of how many transformations correspond to each cluster
     cluster_axes_[i] = transformations.size ();
     
-    for (size_t t = 0; t < transformations.size (); t++)
+    for (const auto &transformation : transformations)
     {
 
-      pcl::transformPointCloud (*processed, *grid, transformations[t]);
-      transforms_.push_back (transformations[t]);
+      pcl::transformPointCloud (*processed, *grid, transformation);
+      transforms_.push_back (transformation);
       valid_transforms_.push_back (true);
 
       std::vector < Eigen::VectorXf > quadrants (8);
@@ -611,7 +611,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
     std::vector<pcl::PointIndices> clusters_filtered;
     int cluster_filtered_idx = 0;
-    for (size_t i = 0; i < clusters.size (); i++)
+    for (const auto &cluster : clusters)
     {
 
       pcl::PointIndices pi;
@@ -624,27 +624,27 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
       Eigen::Vector4f avg_normal = Eigen::Vector4f::Zero ();
       Eigen::Vector4f avg_centroid = Eigen::Vector4f::Zero ();
 
-      for (size_t j = 0; j < clusters[i].indices.size (); j++)
+      for (const auto &index : cluster.indices)
       {
-        avg_normal += normals_filtered_cloud->points[clusters[i].indices[j]].getNormalVector4fMap ();
-        avg_centroid += normals_filtered_cloud->points[clusters[i].indices[j]].getVector4fMap ();
+        avg_normal += normals_filtered_cloud->points[index].getNormalVector4fMap ();
+        avg_centroid += normals_filtered_cloud->points[index].getVector4fMap ();
       }
 
-      avg_normal /= static_cast<float> (clusters[i].indices.size ());
-      avg_centroid /= static_cast<float> (clusters[i].indices.size ());
+      avg_normal /= static_cast<float> (cluster.indices.size ());
+      avg_centroid /= static_cast<float> (cluster.indices.size ());
       avg_normal.normalize ();
 
       Eigen::Vector3f avg_norm (avg_normal[0], avg_normal[1], avg_normal[2]);
       Eigen::Vector3f avg_dominant_centroid (avg_centroid[0], avg_centroid[1], avg_centroid[2]);
 
-      for (size_t j = 0; j < clusters[i].indices.size (); j++)
+      for (const auto &index : cluster.indices)
       {
         //decide if normal should be added
-        double dot_p = avg_normal.dot (normals_filtered_cloud->points[clusters[i].indices[j]].getNormalVector4fMap ());
+        double dot_p = avg_normal.dot (normals_filtered_cloud->points[index].getNormalVector4fMap ());
         if (fabs (acos (dot_p)) < (eps_angle_threshold_ * refine_clusters_))
         {
-          clusters_[cluster_filtered_idx].indices.push_back (indices_from_nfc_to_indices[clusters[i].indices[j]]);
-          clusters_filtered[cluster_filtered_idx].indices.push_back (clusters[i].indices[j]);
+          clusters_[cluster_filtered_idx].indices.push_back (indices_from_nfc_to_indices[index]);
+          clusters_filtered[cluster_filtered_idx].indices.push_back (index);
         }
       }
 
@@ -675,29 +675,24 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   // ---[ Step 1b : check if any dominant cluster was found
   if (clusters.size () > 0)
   { // ---[ Step 1b.1 : If yes, compute CVFH using the cluster information
-
-    for (size_t i = 0; i < clusters.size (); ++i) //for each cluster
-
+    for (const auto &cluster : clusters) //for each cluster
     {
       Eigen::Vector4f avg_normal = Eigen::Vector4f::Zero ();
       Eigen::Vector4f avg_centroid = Eigen::Vector4f::Zero ();
 
-      for (size_t j = 0; j < clusters[i].indices.size (); j++)
+      for (const auto &index : cluster.indices)
       {
-        avg_normal += normals_filtered_cloud->points[clusters[i].indices[j]].getNormalVector4fMap ();
-        avg_centroid += normals_filtered_cloud->points[clusters[i].indices[j]].getVector4fMap ();
+        avg_normal += normals_filtered_cloud->points[index].getNormalVector4fMap ();
+        avg_centroid += normals_filtered_cloud->points[index].getVector4fMap ();
       }
 
-      avg_normal /= static_cast<float> (clusters[i].indices.size ());
-      avg_centroid /= static_cast<float> (clusters[i].indices.size ());
+      avg_normal /= static_cast<float> (cluster.indices.size ());
+      avg_centroid /= static_cast<float> (cluster.indices.size ());
       avg_normal.normalize ();
 
-      Eigen::Vector3f avg_norm (avg_normal[0], avg_normal[1], avg_normal[2]);
-      Eigen::Vector3f avg_dominant_centroid (avg_centroid[0], avg_centroid[1], avg_centroid[2]);
-
       //append normal and centroid for the clusters
-      dominant_normals_.push_back (avg_norm);
-      centroids_dominant_orientations_.push_back (avg_dominant_centroid);
+      dominant_normals_.emplace_back (avg_normal[0], avg_normal[1], avg_normal[2]);
+      centroids_dominant_orientations_.emplace_back (avg_centroid[0], avg_centroid[1], avg_centroid[2]);
     }
 
     //compute modified VFH for all dominant clusters and add them to the list!

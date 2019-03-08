@@ -145,9 +145,9 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeTransitionHistograms 
     transition_histograms[i].resize ((getNumberOfClasses () + 2) * (getNumberOfClasses () + 1) / 2, 0);
 
     std::vector< std::vector <int> > transitions (getNumberOfClasses () + 1);
-    for (size_t k = 0; k < transitions.size (); ++k)
+    for (auto &transition : transitions)
     {
-      transitions[k].resize (getNumberOfClasses () + 1, 0);
+      transition.resize (getNumberOfClasses () + 1, 0);
     }
 
     for (size_t k = 1; k < label_histograms[i].size (); ++k)
@@ -208,9 +208,9 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeDistanceHistogram (co
 
   const float range = max_value - min_value;
   const int max_bin = descriptorSize () - 1;
-  for (size_t i = 0; i < distances.size (); ++i)
+  for (const float &distance : distances)
   {
-    const float raw_bin = static_cast<float> (descriptorSize ()) * (distances[i] - min_value) / range;
+    const float raw_bin = static_cast<float> (descriptorSize ()) * (distance - min_value) / range;
     int bin = std::min (max_bin, static_cast<int> (floor (raw_bin)));
     histogram[bin] += 1;
   }
@@ -224,12 +224,12 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeMeanHistogram (const 
   assert (histograms.size () > 0);
 
   mean_histogram.resize (histograms[0].size (), 0);
-  for (size_t i = 0; i < histograms.size (); ++i)
-    for (size_t j = 0; j < histograms[i].size (); ++j)
-      mean_histogram[j] += static_cast<float> (histograms[i][j]);
+  for (const auto &histogram : histograms)
+    for (size_t j = 0; j < histogram.size (); ++j)
+      mean_histogram[j] += static_cast<float> (histogram[j]);
 
-  for (size_t i = 0; i < mean_histogram.size (); ++i)
-    mean_histogram[i] /= static_cast<float> (histograms.size ());
+  for (float &i : mean_histogram)
+    i /= static_cast<float> (histograms.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,9 +252,9 @@ template <typename PointInT, typename PointNT, typename PointOutT> boost::uint32
 pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std::vector<int>& indices)
 {
   std::vector<uint32_t> counts (getNumberOfClasses () + 1, 0);
-  for (size_t i = 0; i < indices.size (); ++i)
+  for (const int &nn_index : indices)
   {
-    uint32_t label = labels_->points[indices[i]].label;
+    uint32_t label = labels_->points[nn_index].label;
     counts[label] += 1;
   }
 

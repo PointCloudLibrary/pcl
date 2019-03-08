@@ -57,12 +57,12 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvarian
   float mu200 = 0, mu020 = 0, mu002 = 0, mu110 = 0, mu101 = 0, mu011  = 0;
 
   // Iterate over the nearest neighbors set
-  for (size_t nn_idx = 0; nn_idx < indices.size (); ++nn_idx)
+  for (const int &index : indices)
   {
     // Demean the points
-    temp_pt_[0] = cloud.points[indices[nn_idx]].x - xyz_centroid_[0];
-    temp_pt_[1] = cloud.points[indices[nn_idx]].y - xyz_centroid_[1];
-    temp_pt_[2] = cloud.points[indices[nn_idx]].z - xyz_centroid_[2];
+    temp_pt_[0] = cloud.points[index].x - xyz_centroid_[0];
+    temp_pt_[1] = cloud.points[index].y - xyz_centroid_[1];
+    temp_pt_[2] = cloud.points[index].z - xyz_centroid_[2];
 
     mu200 += temp_pt_[0] * temp_pt_[0];
     mu020 += temp_pt_[1] * temp_pt_[1];

@@ -157,14 +157,14 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
           int dx = 0;
           int dy = 0;
           int num_of_invalid_pt = 0;
-          for (int d_idx = 0; d_idx < num_of_ngbr; d_idx++)
+          for (const auto &direction : directions)
           {
-            int nghr_idx = curr_idx + directions[d_idx].d_index;
+            int nghr_idx = curr_idx + direction.d_index;
             assert (nghr_idx >= 0 && nghr_idx < input_->points.size ());
             if (!std::isfinite (input_->points[nghr_idx].z))
             {
-              dx += directions[d_idx].d_x;
-              dy += directions[d_idx].d_y;
+              dx += direction.d_x;
+              dy += direction.d_y;
               num_of_invalid_pt++;
             }
           }
