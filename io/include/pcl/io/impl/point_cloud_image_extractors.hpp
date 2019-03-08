@@ -218,9 +218,9 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       // Note: the color LUT has a finite size (256 colors), therefore when
       // there are more labels the colors will repeat
       size_t color = 0;
-      for (std::set<uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter)
+      for (const uint32_t &label : labels)
       {
-        colormap[*iter] = color % GlasbeyLUT::size ();
+        colormap[label] = color % GlasbeyLUT::size ();
         ++color;
       }
 

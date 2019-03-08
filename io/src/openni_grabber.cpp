@@ -857,10 +857,10 @@ pcl::OpenNIGrabber::getAvailableDepthModes () const
 {
   XnMapOutputMode dummy;
   std::vector<std::pair<int, XnMapOutputMode> > result;
-  for (std::map<int, XnMapOutputMode>::const_iterator it = config2xn_map_.begin (); it != config2xn_map_.end (); ++it)
+  for (const auto &config2xn : config2xn_map_)
   {
-    if (device_->findCompatibleDepthMode (it->second, dummy))
-      result.emplace_back(*it);
+    if (device_->findCompatibleDepthMode (config2xn.second, dummy))
+      result.emplace_back(config2xn);
   }
 
   return (result);
@@ -872,10 +872,10 @@ pcl::OpenNIGrabber::getAvailableImageModes () const
 {
   XnMapOutputMode dummy;
   std::vector<std::pair<int, XnMapOutputMode> > result;
-  for (std::map<int, XnMapOutputMode>::const_iterator it = config2xn_map_.begin (); it != config2xn_map_.end (); ++it)
+  for (const auto &config2xn : config2xn_map_)
   {
-    if (device_->findCompatibleImageMode (it->second, dummy))
-      result.emplace_back(*it);
+    if (device_->findCompatibleImageMode (config2xn.second, dummy))
+      result.emplace_back(config2xn);
   }
 
   return (result);

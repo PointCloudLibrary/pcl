@@ -190,25 +190,25 @@ openni_wrapper::OpenNIDriver::updateDeviceList ()
 
 
   // redundant, but needed for Windows right now and also for Xtion
-  for (size_t deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)
+  for (const auto &device : device_context_)
   {
     unsigned short product_id;
     unsigned short vendor_id;
 
-    getDeviceType(device_context_[deviceIdx].device_node.GetCreationInfo (), vendor_id, product_id );
+    getDeviceType(device.device_node.GetCreationInfo (), vendor_id, product_id );
 
 #if _WIN32
     if (vendor_id == 0x45e)
     {
-      strcpy (const_cast<char*> (device_context_[deviceIdx].device_node.GetDescription ().strVendor), "Microsoft");
-      strcpy (const_cast<char*> (device_context_[deviceIdx].device_node.GetDescription ().strName), "Xbox NUI Camera");
+      strcpy (const_cast<char*> (device_context_[device].device_node.GetDescription ().strVendor), "Microsoft");
+      strcpy (const_cast<char*> (device_context_[device].device_node.GetDescription ().strName), "Xbox NUI Camera");
     }
     else
 #endif
-    if (vendor_id == 0x1d27 && device_context_[deviceIdx].image_node.get () == 0)
+    if (vendor_id == 0x1d27 && device.image_node.get () == 0)
     {
-      strcpy (const_cast<char*> (device_context_[deviceIdx].device_node.GetDescription ().strVendor), "ASUS");
-      strcpy (const_cast<char*> (device_context_[deviceIdx].device_node.GetDescription ().strName), "Xtion Pro");
+      strcpy (const_cast<char*> (device.device_node.GetDescription ().strVendor), "ASUS");
+      strcpy (const_cast<char*> (device.device_node.GetDescription ().strName), "Xtion Pro");
     }
   }
   return (static_cast<unsigned int> (device_context_.size ()));

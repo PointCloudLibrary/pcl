@@ -157,8 +157,8 @@ namespace pcl
 
             result->reserve (device_set_.size ());
 
-            for (auto it = device_set_.cbegin (), it_end = device_set_.cend (); it != it_end; ++it)
-              result->push_back (*it);
+            for (const auto &device : device_set_)
+              result->push_back (device);
 
             return result;
           }
@@ -246,12 +246,12 @@ operator<< (std::ostream& stream, const OpenNI2DeviceManager& device_manager)
 {
   auto device_info = device_manager.getConnectedDeviceInfos ();
 
-  for (auto it = device_info->cbegin (), it_end = device_info->cend (); it != it_end; ++it)
+  for (const auto &device : *device_info)
   {
-    stream << "Uri: " << it->uri_ << " (Vendor: " << it->vendor_ <<
-      ", Name: " << it->name_ <<
-      ", Vendor ID: " << it->vendor_id_ <<
-      ", Product ID: " << it->product_id_ <<
+    stream << "Uri: " << device.uri_ << " (Vendor: " << device.vendor_ <<
+      ", Name: " << device.name_ <<
+      ", Vendor ID: " << device.vendor_id_ <<
+      ", Product ID: " << device.product_id_ <<
       ")" << std::endl;
   }
 

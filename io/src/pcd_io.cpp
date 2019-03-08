@@ -580,13 +580,13 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
     std::vector<pcl::PCLPointField> fields (cloud.fields.size ());
     std::vector<int> fields_sizes (cloud.fields.size ());
     int nri = 0, fsize = 0;
-    for (size_t i = 0; i < cloud.fields.size (); ++i)
+    for (const auto &field : cloud.fields)
     {
-      if (cloud.fields[i].name == "_")
+      if (field.name == "_")
         continue;
-      fields_sizes[nri] = cloud.fields[i].count * pcl::getFieldSize (cloud.fields[i].datatype);
+      fields_sizes[nri] = field.count * pcl::getFieldSize (field.datatype);
       fsize += fields_sizes[nri];
-      fields[nri] = cloud.fields[i];
+      fields[nri] = field;
       ++nri;
     }
     fields.resize (nri);
@@ -972,8 +972,8 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
 
   // Compute the total size of the fields
   unsigned int fsize = 0;
-  for (size_t i = 0; i < cloud.fields.size (); ++i)
-    fsize += cloud.fields[i].count * getFieldSize (cloud.fields[i].datatype);
+  for (const auto &field : cloud.fields)
+    fsize += field.count * getFieldSize (field.datatype);
 
   // The size of the fields cannot be larger than point_step
   if (fsize > cloud.point_step)
@@ -1054,8 +1054,8 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (std::ostream &os,
 
   // Compute the total size of the fields
   unsigned int fsize = 0;
-  for (size_t i = 0; i < cloud.fields.size (); ++i)
-    fsize += cloud.fields[i].count * getFieldSize (cloud.fields[i].datatype);
+  for (const auto &field : cloud.fields)
+    fsize += field.count * getFieldSize (field.datatype);
 
   // The size of the fields cannot be larger than point_step
   if (fsize > cloud.point_step)
@@ -1066,15 +1066,15 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (std::ostream &os,
 
   std::stringstream field_names, field_types, field_sizes, field_counts;
   // Check if the size of the fields is smaller than the size of the point step
-  for (size_t i = 0; i < cloud.fields.size (); ++i)
+  for (const auto &field : cloud.fields)
   {
-    if (cloud.fields[i].name == "_")
+    if (field.name == "_")
       continue;
     // Add the regular dimension
-    field_names << " " << cloud.fields[i].name;
-    field_sizes << " " << pcl::getFieldSize (cloud.fields[i].datatype);
-    field_types << " " << pcl::getFieldType (cloud.fields[i].datatype);
-    int count = abs (static_cast<int> (cloud.fields[i].count));
+    field_names << " " << field.name;
+    field_sizes << " " << pcl::getFieldSize (field.datatype);
+    field_types << " " << pcl::getFieldType (field.datatype);
+    int count = abs (static_cast<int> (field.count));
     if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
     field_counts << " " << count;
   }
@@ -1356,14 +1356,14 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
   std::vector<pcl::PCLPointField> fields (cloud.fields.size ());
   std::vector<int> fields_sizes (cloud.fields.size ());
   // Compute the total size of the fields
-  for (size_t i = 0; i < cloud.fields.size (); ++i)
+  for (const auto &field : cloud.fields)
   {
-    if (cloud.fields[i].name == "_")
+    if (field.name == "_")
       continue;
 
-    fields_sizes[nri] = cloud.fields[i].count * pcl::getFieldSize (cloud.fields[i].datatype);
+    fields_sizes[nri] = field.count * pcl::getFieldSize (field.datatype);
     fsize += fields_sizes[nri];
-    fields[nri] = cloud.fields[i];
+    fields[nri] = field;
     ++nri;
   }
   fields_sizes.resize (nri);
