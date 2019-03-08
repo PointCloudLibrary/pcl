@@ -172,13 +172,13 @@ pcl::people::HeadBasedSubclustering<PointT>::mergeClustersCloseInFloorCoordinate
         // Copy cluster points into new cluster:
         pcl::PointIndices point_indices;
         point_indices = input_clusters[i].getIndices();
-        for(size_t j = 0; j < connected_clusters[i].size(); j++)
+        for(const int &cluster : connected_clusters[i])
         {
-          if (!used_clusters[connected_clusters[i][j]])         // if this cluster has not been used yet
+          if (!used_clusters[cluster])         // if this cluster has not been used yet
           {
-            used_clusters[connected_clusters[i][j]] = true;
-            for(std::vector<int>::const_iterator points_iterator = input_clusters[connected_clusters[i][j]].getIndices().indices.begin();
-                points_iterator != input_clusters[connected_clusters[i][j]].getIndices().indices.end(); points_iterator++)
+            used_clusters[cluster] = true;
+            for(std::vector<int>::const_iterator points_iterator = input_clusters[cluster].getIndices().indices.begin();
+                points_iterator != input_clusters[cluster].getIndices().indices.end(); points_iterator++)
             {
               point_indices.indices.push_back(*points_iterator);
             }
