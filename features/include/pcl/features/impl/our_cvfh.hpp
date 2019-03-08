@@ -675,7 +675,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   // ---[ Step 1b : check if any dominant cluster was found
   if (clusters.size () > 0)
   { // ---[ Step 1b.1 : If yes, compute CVFH using the cluster information
-    for (auto &cluster : clusters) //for each cluster
+    for (const auto &cluster : clusters) //for each cluster
     {
       Eigen::Vector4f avg_normal = Eigen::Vector4f::Zero ();
       Eigen::Vector4f avg_centroid = Eigen::Vector4f::Zero ();
@@ -690,12 +690,9 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
       avg_centroid /= static_cast<float> (cluster.indices.size ());
       avg_normal.normalize ();
 
-      Eigen::Vector3f avg_norm (avg_normal[0], avg_normal[1], avg_normal[2]);
-      Eigen::Vector3f avg_dominant_centroid (avg_centroid[0], avg_centroid[1], avg_centroid[2]);
-
       //append normal and centroid for the clusters
-      dominant_normals_.push_back (avg_norm);
-      centroids_dominant_orientations_.push_back (avg_dominant_centroid);
+      dominant_normals_.emplace_back (avg_normal[0], avg_normal[1], avg_normal[2]);
+      centroids_dominant_orientations_.emplace_back (avg_centroid[0], avg_centroid[1], avg_centroid[2]);
     }
 
     //compute modified VFH for all dominant clusters and add them to the list!
