@@ -124,10 +124,10 @@ namespace pcl
       {
         if(sorted[label].size() == 0)
           return 0;
-        for(auto &i : sorted[label])
+        for(auto &blob : sorted[label])
         {
           for(int j = 0; j < MAX_CHILD; j++)
-            i.child_id[j] = LEAF;
+            blob.child_id[j] = LEAF;
         }
         return 0;
       }
@@ -146,8 +146,8 @@ namespace pcl
       {
         if(sorted[label].size() == 0)
           return 0;
-        for(auto &i : sorted[label]){
-          i.child_id[child_number] = NO_CHILD;
+        for(auto &blob : sorted[label]){
+          blob.child_id[child_number] = NO_CHILD;
         }
         return 0;
       }
@@ -163,8 +163,8 @@ namespace pcl
       {
         if(sorted[label].size() == 0)
           return false;
-        for(const auto &i : sorted[label])
-          if((i.child_id[child_number] != NO_CHILD) && (i.child_id[child_number] != LEAF))
+        for(const auto &blob : sorted[label])
+          if((blob.child_id[child_number] != NO_CHILD) && (blob.child_id[child_number] != LEAF))
             return true;
         return false;
       }
