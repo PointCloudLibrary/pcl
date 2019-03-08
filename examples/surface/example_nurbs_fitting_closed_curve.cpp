@@ -14,11 +14,10 @@ pcl::visualization::PCLVisualizer viewer ("Curve Fitting PDM (red), SDM (green),
 void
 PointCloud2Vector2d (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::on_nurbs::vector_vec2d &data)
 {
-  for (size_t i = 0; i < cloud->size (); i++)
+  for (const auto &p : *cloud)
   {
-    pcl::PointXYZ &p = cloud->at (i);
     if (!std::isnan (p.x) && !std::isnan (p.y))
-      data.push_back (Eigen::Vector2d (p.x, p.y));
+      data.emplace_back (p.x, p.y);
   }
 }
 

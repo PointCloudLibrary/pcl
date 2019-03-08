@@ -270,8 +270,8 @@ main (int argc, char ** argv)
   // check that there are no negative z values, since we use log(z)
   if (cloud->isOrganized () && !disable_transform)
   {
-    for (PointCloudT::iterator cloud_itr = cloud->begin (); cloud_itr != cloud->end (); ++cloud_itr)
-      if (cloud_itr->z < 0)
+    for (const auto &point : *cloud)
+      if (point.z < 0)
       {
         PCL_ERROR ("Points found with negative Z values, this is not compatible with the single camera transform!\n");
         PCL_ERROR ("Set the --NT option to disable the single camera transform!\n");
@@ -453,9 +453,9 @@ main (int argc, char ** argv)
     }
     else if (!show_graph && graph_added)
     {
-      for (std::vector<std::string>::iterator name_itr = poly_names.begin (); name_itr != poly_names.end (); ++name_itr)
+      for (const auto &poly_name : poly_names)
       {
-        viewer->removeShape (*name_itr);
+        viewer->removeShape (poly_name);
       }
       graph_added = false;
     }
@@ -491,10 +491,10 @@ addSupervoxelConnectionsToViewer (PointT &supervoxel_center,
   vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New ();
   
   //Iterate through all adjacent points, and add a center point to adjacent point pair
-  for (auto adjacent_itr = adjacent_supervoxel_centers.begin (); adjacent_itr != adjacent_supervoxel_centers.end (); ++adjacent_itr)
+  for (const auto &adjacent_supervoxel_center : adjacent_supervoxel_centers)
   {
     points->InsertNextPoint (supervoxel_center.data);
-    points->InsertNextPoint (adjacent_itr->data); 
+    points->InsertNextPoint (adjacent_supervoxel_center.data); 
   } 
   // Create a polydata to store everything in
   vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New ();
@@ -556,8 +556,8 @@ void removeText (pcl::visualization::PCLVisualizer::Ptr viewer)
 bool
 hasField (const pcl::PCLPointCloud2 &pc2, const std::string &field_name)
 {
-  for (size_t cf = 0; cf < pc2.fields.size (); ++cf)
-    if (pc2.fields[cf].name == field_name)
+  for (const auto &field : pc2.fields)
+    if (field.name == field_name)
       return true;
-    return false;
+  return false;
 }
