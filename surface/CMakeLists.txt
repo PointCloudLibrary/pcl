@@ -83,6 +83,7 @@ set(POISSON_INCLUDES
   "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/ppolynomial.hpp"
   "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/sparse_matrix.hpp"
   "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/vector.hpp"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/poisson_exceptions.h"
 )
 
 set(POISSON_SOURCES
