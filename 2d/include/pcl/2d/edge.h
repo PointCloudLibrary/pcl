@@ -47,7 +47,7 @@ namespace pcl
   class Edge
   {
     private:
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
+      typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
 
       PointCloudInPtr input_;
