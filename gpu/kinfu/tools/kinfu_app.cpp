@@ -111,7 +111,7 @@ namespace pcl
       using PointCloudColorHandler<PointT>::cloud_;
 
       typedef typename PointCloudColorHandler<PointT>::PointCloud::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::PointCloud<RGB>::ConstPtr RgbCloudConstPtr;
+      typedef pcl::PointCloud<RGB>::ConstPtr RgbCloudConstPtr;
 
       public:
         typedef boost::shared_ptr<PointCloudColorHandlerRGBCloud<PointT> > Ptr;
