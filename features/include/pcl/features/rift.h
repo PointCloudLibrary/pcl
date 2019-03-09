@@ -68,15 +68,15 @@ namespace pcl
       using Feature<PointInT, PointOutT>::tree_;
       using Feature<PointInT, PointOutT>::search_radius_;
       
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
+      typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
-      typedef typename pcl::PointCloud<GradientT> PointCloudGradient;
+      typedef pcl::PointCloud<GradientT> PointCloudGradient;
       typedef typename PointCloudGradient::Ptr PointCloudGradientPtr;
       typedef typename PointCloudGradient::ConstPtr PointCloudGradientConstPtr;
 
-      typedef typename boost::shared_ptr<RIFTEstimation<PointInT, GradientT, PointOutT> > Ptr;
-      typedef typename boost::shared_ptr<const RIFTEstimation<PointInT, GradientT, PointOutT> > ConstPtr;
+      typedef boost::shared_ptr<RIFTEstimation<PointInT, GradientT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const RIFTEstimation<PointInT, GradientT, PointOutT> > ConstPtr;
 
 
       /** \brief Empty constructor. */

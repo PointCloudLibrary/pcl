@@ -160,8 +160,8 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
 
-      typedef typename boost::shared_ptr<RSDEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef typename boost::shared_ptr<const RSDEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+      typedef boost::shared_ptr<RSDEstimation<PointInT, PointNT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const RSDEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
 
 
       /** \brief Empty constructor. */
