@@ -63,8 +63,8 @@ namespace pcl
       typedef boost::shared_ptr<PCLSurfaceBase<PointInT> > Ptr;
       typedef boost::shared_ptr<const PCLSurfaceBase<PointInT> > ConstPtr;
 
-      typedef typename pcl::search::Search<PointInT> KdTree;
-      typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
+      typedef pcl::search::Search<PointInT> KdTree;
+      typedef typename KdTree::Ptr KdTreePtr;
 
       /** \brief Empty constructor. */
       PCLSurfaceBase () : tree_ () {}

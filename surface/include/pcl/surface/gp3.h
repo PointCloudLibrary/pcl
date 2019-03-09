@@ -144,8 +144,8 @@ namespace pcl
       using MeshConstruction<PointInT>::input_;
       using MeshConstruction<PointInT>::indices_;
 
-      typedef typename pcl::KdTree<PointInT> KdTree;
-      typedef typename pcl::KdTree<PointInT>::Ptr KdTreePtr;
+      typedef pcl::KdTree<PointInT> KdTree;
+      typedef typename KdTree::Ptr KdTreePtr;
 
       typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;

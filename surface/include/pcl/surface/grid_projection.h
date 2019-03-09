@@ -79,8 +79,8 @@ namespace pcl
 
       typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudPtr;
 
-      typedef typename pcl::KdTree<PointNT> KdTree;
-      typedef typename pcl::KdTree<PointNT>::Ptr KdTreePtr;
+      typedef pcl::KdTree<PointNT> KdTree;
+      typedef typename KdTree::Ptr KdTreePtr;
 
       /** \brief Data leaf. */
       struct Leaf
