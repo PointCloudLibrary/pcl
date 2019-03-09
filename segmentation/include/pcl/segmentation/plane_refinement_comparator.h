@@ -57,11 +57,11 @@ namespace pcl
       typedef typename Comparator<PointT>::PointCloud PointCloud;
       typedef typename Comparator<PointT>::PointCloudConstPtr PointCloudConstPtr;
       
-      typedef typename pcl::PointCloud<PointNT> PointCloudN;
+      typedef pcl::PointCloud<PointNT> PointCloudN;
       typedef typename PointCloudN::Ptr PointCloudNPtr;
       typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
 
-      typedef typename pcl::PointCloud<PointLT> PointCloudL;
+      typedef pcl::PointCloud<PointLT> PointCloudL;
       typedef typename PointCloudL::Ptr PointCloudLPtr;
       typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
 

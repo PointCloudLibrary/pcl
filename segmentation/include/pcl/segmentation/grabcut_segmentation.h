@@ -317,8 +317,8 @@ namespace pcl
   class GrabCut : public pcl::PCLBase<PointT>
   {
     public:
-      typedef typename pcl::search::Search<PointT> KdTree;
-      typedef typename pcl::search::Search<PointT>::Ptr KdTreePtr;
+      typedef pcl::search::Search<PointT> KdTree;
+      typedef typename KdTree::Ptr KdTreePtr;
       typedef typename PCLBase<PointT>::PointCloudConstPtr PointCloudConstPtr;
       typedef typename PCLBase<PointT>::PointCloudPtr PointCloudPtr;
       using PCLBase<PointT>::input_;
