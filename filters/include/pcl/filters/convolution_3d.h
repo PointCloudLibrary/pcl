@@ -199,11 +199,11 @@ namespace pcl
     class Convolution3D : public pcl::PCLBase <PointIn>
     {
       public:
-        typedef typename pcl::PointCloud<PointIn> PointCloudIn;
+        typedef pcl::PointCloud<PointIn> PointCloudIn;
         typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-        typedef typename pcl::search::Search<PointIn> KdTree;
-        typedef typename pcl::search::Search<PointIn>::Ptr KdTreePtr;
-        typedef typename pcl::PointCloud<PointOut> PointCloudOut;
+        typedef pcl::search::Search<PointIn> KdTree;
+        typedef typename KdTree::Ptr KdTreePtr;
+        typedef pcl::PointCloud<PointOut> PointCloudOut;
         typedef boost::shared_ptr<Convolution3D<PointIn, PointOut, KernelT> > Ptr;
         typedef boost::shared_ptr<Convolution3D<PointIn, PointOut, KernelT> > ConstPtr;
 

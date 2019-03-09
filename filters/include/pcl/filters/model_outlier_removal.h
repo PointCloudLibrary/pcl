@@ -74,8 +74,8 @@ namespace pcl
       typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
 
     public:
-      typedef typename pcl::PointCloud<pcl::Normal>::Ptr PointCloudNPtr;
-      typedef typename pcl::PointCloud<pcl::Normal>::ConstPtr PointCloudNConstPtr;
+      typedef pcl::PointCloud<pcl::Normal>::Ptr PointCloudNPtr;
+      typedef pcl::PointCloud<pcl::Normal>::ConstPtr PointCloudNConstPtr;
 
       /** \brief Constructor.
        * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).

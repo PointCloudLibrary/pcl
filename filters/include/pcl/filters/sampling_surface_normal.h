@@ -62,7 +62,7 @@ namespace pcl
     typedef typename PointCloud::Ptr PointCloudPtr;
     typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
-    typedef typename Eigen::Matrix<float, Eigen::Dynamic, 1> Vector;
+    typedef Eigen::Matrix<float, Eigen::Dynamic, 1> Vector;
 
     public:
 
