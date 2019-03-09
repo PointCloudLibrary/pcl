@@ -101,7 +101,7 @@ So let's look at the code. The following represents a simplified version of *vis
    {
      public:
        typedef pcl::PointCloud<pcl::PointXYZI> Cloud;
-       typedef typename Cloud::ConstPtr CloudConstPtr;
+       typedef Cloud::ConstPtr CloudConstPtr;
 
        SimpleHDLViewer (Grabber& grabber,
            pcl::visualization::PointCloudColorHandler<pcl::PointXYZI> &handler) :
