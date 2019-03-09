@@ -185,7 +185,7 @@ namespace pcl
       using HypothesisVerification<ModelT, SceneT>::inliers_threshold_;
 
       //class attributes
-      typedef typename pcl::NormalEstimation<SceneT, pcl::Normal> NormalEstimator_;
+      typedef pcl::NormalEstimation<SceneT, pcl::Normal> NormalEstimator_;
       pcl::PointCloud<pcl::Normal>::Ptr scene_normals_;
       pcl::PointCloud<pcl::PointXYZI>::Ptr clusters_cloud_;
 

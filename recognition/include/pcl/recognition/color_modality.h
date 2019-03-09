@@ -75,7 +75,7 @@ namespace pcl
       };
 
     public:
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
+      typedef pcl::PointCloud<PointInT> PointCloudIn;
 
       ColorModality ();
   

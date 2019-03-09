@@ -258,8 +258,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     if (USE_NORMALS_)
     {
-      typedef typename pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> NormalEstimator_;
-      NormalEstimator_ n3d;
+      pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> n3d;
       n3d.setNormalEstimationMethod (n3d.COVARIANCE_MATRIX);
       n3d.setInputCloud (cloud);
       n3d.setRadiusSearch (0.02);
