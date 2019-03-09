@@ -202,8 +202,8 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
   }
 
   // Remap the sampled_indices to the input_ cloud
-  for (size_t i = 0; i < sampled_indices.size (); ++i)
-    sampled_indices[i] = (*indices_)[candidate_indices[sampled_indices[i]]];
+  for (int &sampled_index : sampled_indices)
+    sampled_index = (*indices_)[candidate_indices[sampled_index]];
 }
 
 

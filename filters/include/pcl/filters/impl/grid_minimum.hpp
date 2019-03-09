@@ -165,10 +165,10 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
 
   index = 0;
 
-  for (size_t cp = 0; cp < first_and_last_indices_vector.size (); ++cp)
+  for (const auto &cp : first_and_last_indices_vector)
   {
-    unsigned int first_index = first_and_last_indices_vector[cp].first;
-    unsigned int last_index = first_and_last_indices_vector[cp].second;
+    unsigned int first_index = cp.first;
+    unsigned int last_index = cp.second;
     unsigned int min_index = index_vector[first_index].cloud_point_index;
     float min_z = input_->points[index_vector[first_index].cloud_point_index].z;
 
