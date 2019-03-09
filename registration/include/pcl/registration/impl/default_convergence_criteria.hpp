@@ -59,14 +59,13 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   // 1. Number of iterations has reached the maximum user imposed number of iterations
   if (iterations_ >= max_iterations_)
   {
-    if (failure_after_max_iter_)
-      convergence_state_ = CONVERGENCE_CRITERIA_FAILURE_AFTER_MAX_ITERATIONS;
-    else
+    if (!failure_after_max_iter_)
     {
       iterations_similar_transforms_ = 0;
       convergence_state_ = CONVERGENCE_CRITERIA_ITERATIONS;
       return (true);
     }
+    convergence_state_ = CONVERGENCE_CRITERIA_FAILURE_AFTER_MAX_ITERATIONS;
   }
 
   // 2. The epsilon (difference) between the previous transformation and the current estimated transformation
@@ -78,14 +77,13 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
 
   if (cos_angle >= rotation_threshold_ && translation_sqr <= translation_threshold_)
   {
-    if (iterations_similar_transforms_ < max_iterations_similar_transforms_)
-      is_similar = true;
-    else
+    if (iterations_similar_transforms_ >= max_iterations_similar_transforms_)
     {
       iterations_similar_transforms_ = 0;
       convergence_state_ = CONVERGENCE_CRITERIA_TRANSFORM;
       return (true);
     }
+    is_similar = true;
   }
 
   correspondences_cur_mse_ = calculateMSE (correspondences_);
@@ -95,27 +93,25 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   // Absolute
   if (fabs (correspondences_cur_mse_ - correspondences_prev_mse_) < mse_threshold_absolute_)
   {
-    if (iterations_similar_transforms_ < max_iterations_similar_transforms_)
-      is_similar = true;
-    else
+    if (iterations_similar_transforms_ >= max_iterations_similar_transforms_)
     {
       iterations_similar_transforms_ = 0;
       convergence_state_ = CONVERGENCE_CRITERIA_ABS_MSE;
       return (true);
     }
+    is_similar = true;
   }
   
   // Relative
   if (fabs (correspondences_cur_mse_ - correspondences_prev_mse_) / correspondences_prev_mse_ < mse_threshold_relative_)
   {
-    if (iterations_similar_transforms_ < max_iterations_similar_transforms_)
-      is_similar = true;
-    else
+    if (iterations_similar_transforms_ >= max_iterations_similar_transforms_)
     {
       iterations_similar_transforms_ = 0;
       convergence_state_ = CONVERGENCE_CRITERIA_REL_MSE;
       return (true);
     }
+    is_similar = true;
   }
 
   if (is_similar)
