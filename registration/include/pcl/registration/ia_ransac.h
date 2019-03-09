@@ -128,7 +128,7 @@ namespace pcl
           float threshold_;
       };
 
-      typedef typename boost::shared_ptr<ErrorFunctor> ErrorFunctorPtr;
+      typedef boost::shared_ptr<ErrorFunctor> ErrorFunctorPtr;
 
       typedef typename KdTreeFLANN<FeatureT>::Ptr FeatureKdTreePtr; 
       /** \brief Constructor. */

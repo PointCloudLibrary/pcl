@@ -71,9 +71,9 @@ namespace pcl
       typedef boost::shared_ptr< Registration<PointSource, PointTarget, Scalar> > Ptr;
       typedef boost::shared_ptr< const Registration<PointSource, PointTarget, Scalar> > ConstPtr;
 
-      typedef typename pcl::registration::CorrespondenceRejector::Ptr CorrespondenceRejectorPtr;
+      typedef pcl::registration::CorrespondenceRejector::Ptr CorrespondenceRejectorPtr;
       typedef pcl::search::KdTree<PointTarget> KdTree;
-      typedef typename pcl::search::KdTree<PointTarget>::Ptr KdTreePtr;
+      typedef typename KdTree::Ptr KdTreePtr;
 
       typedef pcl::search::KdTree<PointSource> KdTreeReciprocal;
       typedef typename KdTreeReciprocal::Ptr KdTreeReciprocalPtr;
@@ -92,7 +92,7 @@ namespace pcl
       typedef typename TransformationEstimation::Ptr TransformationEstimationPtr;
       typedef typename TransformationEstimation::ConstPtr TransformationEstimationConstPtr;
 
-      typedef typename pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> CorrespondenceEstimation;
+      typedef pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> CorrespondenceEstimation;
       typedef typename CorrespondenceEstimation::Ptr CorrespondenceEstimationPtr;
       typedef typename CorrespondenceEstimation::ConstPtr CorrespondenceEstimationConstPtr;
 
