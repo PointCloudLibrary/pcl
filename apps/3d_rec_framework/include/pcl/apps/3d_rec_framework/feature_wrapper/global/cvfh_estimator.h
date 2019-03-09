@@ -97,7 +97,7 @@ namespace pcl
         /*normals_.reset(new pcl::PointCloud<pcl::Normal>);
         normal_estimator_->estimate (in, processed, normals_);*/
 
-        typedef typename pcl::CVFHEstimation<PointInT, pcl::Normal, FeatureT> CVFHEstimation;
+        typedef pcl::CVFHEstimation<PointInT, pcl::Normal, FeatureT> CVFHEstimation;
         pcl::PointCloud<FeatureT> cvfh_signatures;
         typename pcl::search::KdTree<PointInT>::Ptr cvfh_tree (new pcl::search::KdTree<PointInT>);
 

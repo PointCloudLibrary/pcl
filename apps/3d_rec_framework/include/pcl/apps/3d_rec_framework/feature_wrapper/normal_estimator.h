@@ -183,8 +183,7 @@ namespace pcl
 
           if (out->isOrganized ())
           {
-            typedef typename pcl::IntegralImageNormalEstimation<PointInT, pcl::Normal> NormalEstimator_;
-            NormalEstimator_ n3d;
+            pcl::IntegralImageNormalEstimation<PointInT, pcl::Normal> n3d;
             n3d.setNormalEstimationMethod (n3d.COVARIANCE_MATRIX);
             //n3d.setNormalEstimationMethod (n3d.AVERAGE_3D_GRADIENT);
             n3d.setInputCloud (out);
@@ -223,8 +222,7 @@ namespace pcl
               out->height = 1;
             }
 
-            typedef typename pcl::NormalEstimation<PointInT, pcl::Normal> NormalEstimator_;
-            NormalEstimator_ n3d;
+            pcl::NormalEstimation<PointInT, pcl::Normal> n3d;
             typename pcl::search::KdTree<PointInT>::Ptr normals_tree (new pcl::search::KdTree<PointInT>);
             normals_tree->setInputCloud (out);
             n3d.setRadiusSearch (radius);
