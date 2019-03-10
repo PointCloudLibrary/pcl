@@ -61,8 +61,8 @@ namespace pcl
       using PCLBase<PointInT>::input_;
 
       typedef PCLBase<PointInT> BaseClass;
-      typedef typename pcl::search::Search<PointInT> KdTree;
-      typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
+      typedef pcl::search::Search<PointInT> KdTree;
+      typedef typename KdTree::Ptr KdTreePtr;
       typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;

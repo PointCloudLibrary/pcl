@@ -59,7 +59,7 @@ namespace pcl
       typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
       typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-      typedef typename pcl::PointCloud<NormalT> Normals;
+      typedef pcl::PointCloud<NormalT> Normals;
       typedef typename Normals::Ptr NormalsPtr;
       typedef typename Normals::ConstPtr NormalsConstPtr;
 

@@ -70,7 +70,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::feature_name_;
       using PCLBase<PointInT>::input_;
-      typedef typename pcl::PointCloud<PointNT> PointCloudN;
+      typedef pcl::PointCloud<PointNT> PointCloudN;
       typedef typename PointCloudN::Ptr PointCloudNPtr;
       typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;

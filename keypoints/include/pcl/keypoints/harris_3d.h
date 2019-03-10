@@ -59,7 +59,7 @@ namespace pcl
       typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
 
-      typedef typename pcl::PointCloud<NormalT> PointCloudN;
+      typedef pcl::PointCloud<NormalT> PointCloudN;
       typedef typename PointCloudN::Ptr PointCloudNPtr;
       typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
 

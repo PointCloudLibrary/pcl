@@ -70,7 +70,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::input_;
       using Feature<PointInT, PointOutT>::surface_;
 
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
+      typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Empty constructor. */

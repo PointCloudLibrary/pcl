@@ -112,8 +112,8 @@ namespace pcl
       typedef boost::shared_ptr< Feature<PointInT, PointOutT> > Ptr;
       typedef boost::shared_ptr< const Feature<PointInT, PointOutT> > ConstPtr;
 
-      typedef typename pcl::search::Search<PointInT> KdTree;
-      typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
+      typedef pcl::search::Search<PointInT> KdTree;
+      typedef typename KdTree::Ptr KdTreePtr;
 
       typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
@@ -314,7 +314,7 @@ namespace pcl
     typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
     public:
-      typedef typename pcl::PointCloud<PointNT> PointCloudN;
+      typedef pcl::PointCloud<PointNT> PointCloudN;
       typedef typename PointCloudN::Ptr PointCloudNPtr;
       typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
 
@@ -370,7 +370,7 @@ namespace pcl
     typedef typename PointCloudIn::Ptr PointCloudInPtr;
     typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
 
-    typedef typename pcl::PointCloud<PointLT> PointCloudL;
+    typedef pcl::PointCloud<PointLT> PointCloudL;
     typedef typename PointCloudL::Ptr PointCloudNPtr;
     typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
 

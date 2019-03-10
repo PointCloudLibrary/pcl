@@ -76,10 +76,10 @@ namespace pcl
     class Convolution
     {
       public:
-        typedef typename pcl::PointCloud<PointIn> PointCloudIn;
+        typedef pcl::PointCloud<PointIn> PointCloudIn;
         typedef typename PointCloudIn::Ptr PointCloudInPtr;
         typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-        typedef typename pcl::PointCloud<PointOut> PointCloudOut;
+        typedef pcl::PointCloud<PointOut> PointCloudOut;
         typedef boost::shared_ptr< Convolution<PointIn, PointOut> > Ptr;
         typedef boost::shared_ptr< const Convolution<PointIn, PointOut> > ConstPtr;
 

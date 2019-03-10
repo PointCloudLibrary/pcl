@@ -90,11 +90,11 @@ namespace pcl
       typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
       typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
-      typedef typename pcl::PointCloud<NormalT> PointCloudN;
+      typedef pcl::PointCloud<NormalT> PointCloudN;
       typedef typename PointCloudN::Ptr PointCloudNPtr;
       typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
 
-      typedef typename pcl::octree::OctreePointCloudSearch<PointInT> OctreeSearchIn;
+      typedef pcl::octree::OctreePointCloudSearch<PointInT> OctreeSearchIn;
       typedef typename OctreeSearchIn::Ptr OctreeSearchInPtr;
 
       using Keypoint<PointInT, PointOutT>::name_;

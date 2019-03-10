@@ -445,7 +445,7 @@ namespace pcl
   class ConditionBase
   {
     public:
-      typedef typename pcl::ComparisonBase<PointT> ComparisonBase;
+      typedef pcl::ComparisonBase<PointT> ComparisonBase;
       typedef typename ComparisonBase::Ptr ComparisonBasePtr;
       typedef typename ComparisonBase::ConstPtr ComparisonBaseConstPtr;
 
@@ -605,7 +605,7 @@ namespace pcl
     typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
     public:
-      typedef typename pcl::ConditionBase<PointT> ConditionBase;
+      typedef pcl::ConditionBase<PointT> ConditionBase;
       typedef typename ConditionBase::Ptr ConditionBasePtr;
       typedef typename ConditionBase::ConstPtr ConditionBaseConstPtr;
 
