@@ -1866,13 +1866,14 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       table->SetRange (range[0], range[1]);
       actor->GetMapper ()->SetLookupTable (table);
       style_->updateLookUpTableDisplay (false);
+      break;
     }
     case PCL_VISUALIZER_LUT_RANGE:
     {
       // Check if the mapper has scalars
       if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
         break;
-      
+
       // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
       if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
         break;
@@ -1888,7 +1889,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
           break;
       }
       break;
-    }    
+    }
     default:
     {
       pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
