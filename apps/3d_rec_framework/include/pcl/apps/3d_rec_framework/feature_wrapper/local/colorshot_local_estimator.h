@@ -61,7 +61,7 @@ namespace pcl
           }
 
           //compute signatures
-          typedef typename pcl::SHOTColorEstimation<PointInT, pcl::Normal, pcl::SHOT1344> SHOTEstimator;
+          typedef pcl::SHOTColorEstimation<PointInT, pcl::Normal, pcl::SHOT1344> SHOTEstimator;
           typename pcl::search::KdTree<PointInT>::Ptr tree (new pcl::search::KdTree<PointInT>);
 
           pcl::PointCloud<pcl::SHOT1344>::Ptr shots (new pcl::PointCloud<pcl::SHOT1344>);

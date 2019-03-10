@@ -62,7 +62,7 @@ namespace pcl
 
         crh_histograms_.resize(signatures.size());
 
-        typedef typename pcl::CRHEstimation<PointInT, pcl::Normal, pcl::Histogram<90> > CRHEstimation;
+        typedef pcl::CRHEstimation<PointInT, pcl::Normal, pcl::Histogram<90> > CRHEstimation;
         CRHEstimation crh;
         crh.setInputCloud(processed);
         crh.setInputNormals(normals_);

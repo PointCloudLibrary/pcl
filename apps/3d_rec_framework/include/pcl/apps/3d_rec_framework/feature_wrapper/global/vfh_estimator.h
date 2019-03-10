@@ -39,7 +39,7 @@ namespace pcl
           normals_.reset(new pcl::PointCloud<pcl::Normal>);
           normal_estimator_->estimate (in, processed, normals_);
 
-          typedef typename pcl::VFHEstimation<PointInT, pcl::Normal, FeatureT> VFHEstimation;
+          typedef pcl::VFHEstimation<PointInT, pcl::Normal, FeatureT> VFHEstimation;
           pcl::PointCloud<FeatureT> vfh_signature;
 
           VFHEstimation vfh;

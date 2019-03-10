@@ -63,8 +63,8 @@ namespace pcl
                                                        const OutofcoreOctreeBaseNode<ContainerT, PointT>&>/*Reference type*/
     {
       public:
-        typedef typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT> OctreeDisk;
-        typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> OctreeDiskNode;
+        typedef pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT> OctreeDisk;
+        typedef pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> OctreeDiskNode;
         
         typedef typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT>::BranchNode BranchNode;
         typedef typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT>::LeafNode LeafNode;

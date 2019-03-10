@@ -64,7 +64,7 @@ namespace pcl
     struct Host
     {
       // vector type
-      typedef typename thrust::host_vector<T> type;
+      typedef thrust::host_vector<T> type;
 
 //      // iterator type
 //      typedef thrust::detail::normal_iterator<T*> type;
@@ -93,7 +93,7 @@ namespace pcl
     struct Device
     {
       // vector type
-      typedef typename thrust::device_vector<T> type;
+      typedef thrust::device_vector<T> type;
       
 //      // iterator type
 //      typedef thrust::detail::normal_iterator<thrust::device_ptr<T> > iterator_type;

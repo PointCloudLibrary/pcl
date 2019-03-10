@@ -27,7 +27,7 @@ namespace pcl
                   std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids) override
         {
 
-          typedef typename pcl::ESFEstimation<PointInT, FeatureT> ESFEstimation;
+          typedef pcl::ESFEstimation<PointInT, FeatureT> ESFEstimation;
           pcl::PointCloud<FeatureT> ESF_signature;
 
           ESFEstimation esf;

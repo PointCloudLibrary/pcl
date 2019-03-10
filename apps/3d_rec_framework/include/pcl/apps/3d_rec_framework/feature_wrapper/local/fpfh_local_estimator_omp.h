@@ -61,7 +61,7 @@ namespace pcl
           assert (processed->points.size () == normals->points.size ());
 
           //compute signatures
-          typedef typename pcl::FPFHEstimationOMP<PointInT, pcl::Normal, pcl::FPFHSignature33> FPFHEstimator;
+          typedef pcl::FPFHEstimationOMP<PointInT, pcl::Normal, pcl::FPFHSignature33> FPFHEstimator;
           typename pcl::search::KdTree<PointInT>::Ptr tree (new pcl::search::KdTree<PointInT>);
 
           pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfhs (new pcl::PointCloud<pcl::FPFHSignature33>);

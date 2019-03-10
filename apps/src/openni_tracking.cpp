@@ -116,16 +116,16 @@ public:
   
   typedef pcl::PointCloud<PointType> Cloud;
   typedef pcl::PointCloud<RefPointType> RefCloud;
-  typedef typename RefCloud::Ptr RefCloudPtr;
-  typedef typename RefCloud::ConstPtr RefCloudConstPtr;
+  typedef RefCloud::Ptr RefCloudPtr;
+  typedef RefCloud::ConstPtr RefCloudConstPtr;
   typedef typename Cloud::Ptr CloudPtr;
   typedef typename Cloud::ConstPtr CloudConstPtr;
   //typedef KLDAdaptiveParticleFilterTracker<RefPointType, ParticleT> ParticleFilter;
   //typedef KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT> ParticleFilter;
   //typedef ParticleFilterOMPTracker<RefPointType, ParticleT> ParticleFilter;
   typedef ParticleFilterTracker<RefPointType, ParticleT> ParticleFilter;
-  typedef typename ParticleFilter::CoherencePtr CoherencePtr;
-  typedef typename pcl::search::KdTree<PointType> KdTree;
+  typedef ParticleFilter::CoherencePtr CoherencePtr;
+  typedef pcl::search::KdTree<PointType> KdTree;
   typedef typename KdTree::Ptr KdTreePtr;
   OpenNISegmentTracking (const std::string& device_id, int thread_nr, double downsampling_grid_size,
                          bool use_convex_hull,
