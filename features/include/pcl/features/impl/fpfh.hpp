@@ -250,7 +250,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        for (size_t d = 0; d < fpfh_histogram_.size (); ++d)
+        for (Eigen::Index d = 0; d < fpfh_histogram_.size (); ++d)
           output.points[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
     
         output.is_dense = false;
@@ -266,7 +266,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
       weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram_);
 
       // ...and copy it into the output cloud
-      for (size_t d = 0; d < fpfh_histogram_.size (); ++d)
+      for (Eigen::Index d = 0; d < fpfh_histogram_.size (); ++d)
         output.points[idx].histogram[d] = fpfh_histogram_[d];
     }
   }
@@ -278,7 +278,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        for (size_t d = 0; d < fpfh_histogram_.size (); ++d)
+        for (Eigen::Index d = 0; d < fpfh_histogram_.size (); ++d)
           output.points[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
     
         output.is_dense = false;
@@ -294,7 +294,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
       weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram_);
 
       // ...and copy it into the output cloud
-      for (size_t d = 0; d < fpfh_histogram_.size (); ++d)
+      for (Eigen::Index d = 0; d < fpfh_histogram_.size (); ++d)
         output.points[idx].histogram[d] = fpfh_histogram_[d];
     }
   }
