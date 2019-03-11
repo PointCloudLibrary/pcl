@@ -151,7 +151,7 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
   list<vtkSmartPointer<vtkPolyData> > vtk_models_list;
 
   // Load the models and add them to the recognizer
-  for (auto &model_name : model_names)
+  for (const auto &model_name : model_names)
   {
     PointCloud<PointXYZ>::Ptr model_points (new PointCloud<PointXYZ> ());
     model_points_list.push_back (model_points);
