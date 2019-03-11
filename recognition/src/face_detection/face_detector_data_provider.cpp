@@ -78,7 +78,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
   for (const auto &filename : files)
   {
-    std::string file = data_dir + "/" + filename;
+    std::string file = data_dir + '/' + filename;
 
     std::string pose_file (filename);
     boost::replace_all (pose_file, ".pcd", "_pose.txt");
@@ -86,7 +86,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     Eigen::Matrix4f pose_mat;
     pose_mat.setIdentity (4, 4);
 
-    pose_file = data_dir + "/" + pose_file;
+    pose_file = data_dir + '/' + pose_file;
 
     if (readMatrixFromFile (pose_file, pose_mat))
     {
