@@ -612,7 +612,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track (const PointClou
         iprev_point[0] = floor (prev_keypoints->points[ptidx].u);
         iprev_point[1] = floor (prev_keypoints->points[ptidx].v);
         const PointInT& prev_pt = prev_input->points[iprev_point[1]*prev_input->width + iprev_point[0]];
-        const PointInT& next_pt = input->points[inext_pt[1]*input->width + inext_pt[0]];
+        const PointInT& next_pt = input->points[inext_point[1]*input->width + inext_point[0]];
         transformation_computer.add (prev_pt.getVector3fMap (), next_pt.getVector3fMap (), 1.0);
       }
     }
