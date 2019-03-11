@@ -75,7 +75,7 @@ using namespace pcl::io;
 void run (const char *file_name, float voxel_size);
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>* pcl_normals);
 void show_octree (ORROctree* octree, PCLVisualizer& viz, bool show_full_leaves_only);
-void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree);
+void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree);
 void updateViewer (ORROctree& octree, PCLVisualizer& viz, std::vector<ORROctree::Node*>::iterator leaf);
 
 #define _SHOW_OCTREE_NORMALS_
@@ -157,10 +157,10 @@ void updateViewer (ORROctree& octree, PCLVisualizer& viz, std::vector<ORROctree:
   int i = 0;
 
   // Show the cubes
-  for (const auto &intersected_leave : intersected_leaves)
+  for (const auto &intersected_leaf : intersected_leaves)
   {
     sprintf(cube_id, "cube %i", ++i);
-    b = intersected_leave->getBounds ();
+    b = intersected_leaf->getBounds ();
     viz.addCube (b[0], b[1], b[2], b[3], b[4], b[5], 1.0, 1.0, 0.0, cube_id);
   }
 
@@ -297,7 +297,7 @@ bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points,
 
 //===============================================================================================================================
 
-void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree)
+void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree)
 {
   // Define the cube representing the leaf
   const float *b = node->getBounds ();
@@ -320,9 +320,9 @@ void show_octree (ORROctree* octree, PCLVisualizer& viz, bool show_full_leaves_o
   if ( show_full_leaves_only )
   {
     std::vector<ORROctree::Node*>& full_leaves = octree->getFullLeaves ();
-    for (auto &full_leave : full_leaves)
+    for (const auto &full_leaf : full_leaves)
       // Add it to the other cubes
-      node_to_cube (full_leave, append);
+      node_to_cube (full_leaf, append);
   }
   else
   {

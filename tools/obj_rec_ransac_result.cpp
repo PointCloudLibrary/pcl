@@ -241,7 +241,7 @@ update (CallbackParameters* params)
 {
   // Clear the visualizer from old object instances
   vtkRenderer *renderer = params->viz_.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
-  for (auto &actor : params->actors_)
+  for (const auto &actor : params->actors_)
     renderer->RemoveActor (actor);
   params->actors_.clear ();
 
