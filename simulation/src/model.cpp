@@ -111,7 +111,7 @@ pcl::simulation::TriangleMeshModel::~TriangleMeshModel ()
 pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMesh::Ptr plg) : mode_ (mode)
 {
   bool found_rgb=false;
-  for (auto &field : plg->cloud.fields)
+  for (const auto &field : plg->cloud.fields)
     if ((field.name =="rgb") || (field.name == "rgba"))
     {
       found_rgb = true;
