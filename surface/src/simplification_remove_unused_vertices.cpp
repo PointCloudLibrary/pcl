@@ -56,11 +56,11 @@ pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMes
 
   // mark all points in triangles as being used
   for (const auto &polygon : input.polygons)
-    for (size_t point = 0; point < polygon.vertices.size (); ++point)
-      if (new_indices[ polygon.vertices[point] ] == -1 )
+    for (const auto &vertex : polygon.vertices)
+      if (new_indices[ vertex ] == -1 )
       {
-        new_indices[polygon.vertices[point]] = static_cast<int> (indices.size ());
-        indices.push_back (polygon.vertices[point]);
+        new_indices[vertex] = static_cast<int> (indices.size ());
+        indices.push_back (vertex);
       }
 
   // in case all points are used , do nothing and return input mesh
