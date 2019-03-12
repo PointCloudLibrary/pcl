@@ -205,11 +205,9 @@ namespace pcl
         bool
         saveCameraParameters (const std::string &file);
 
-        /** \brief Get camera parameters and save them to a \ref pcl::visualization::Camera.
-          * \param[out] camera the name of the \ref pcl::visualization::Camera
-          */
+        /** \brief Get camera parameters of a given viewport (0 means default viewport). */
         void
-        getCameraParameters (Camera &camera);
+        getCameraParameters (Camera &camera, int viewport = 0) const;
 
         /** \brief Load camera parameters from a camera parameter file.
           * \param[in] file the name of the camera parameter file

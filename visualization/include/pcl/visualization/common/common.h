@@ -47,6 +47,9 @@
 #include <vtkSmartPointer.h>
 #include <vtkLookupTable.h>
 
+class vtkCamera;
+class vtkRenderWindow;
+
 namespace pcl
 {
   struct RGB;
@@ -148,6 +151,18 @@ namespace pcl
     class PCL_EXPORTS Camera
     {
       public:
+        /** Construct a camera with meaningful default values.
+          * The camera is positioned at origin, looks along z-axis and has up-vector along y-axis. Window position and
+          * size are initialized with (0, 0) and (1, 1) respectively. */
+        Camera ();
+
+        /** Construct a camera by copying parameters from a VTK camera.
+          * Window position and size are initialized with (0, 0) and (1, 1) respectively.*/
+        Camera (vtkCamera& camera);
+
+        /** Construct a camera by copying parameters from a VTK camera and a VTK render window. */
+        Camera (vtkCamera& camera, vtkRenderWindow& window);
+
         /** \brief Focal point or lookAt.
           * \note The view direction can be obtained by (focal-pos).normalized ()
           */
