@@ -38,13 +38,8 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header 
-#endif
+#include <chrono>
 
-#ifndef Q_MOC_RUN
-#include <boost/date_time/posix_time/posix_time.hpp>
-#endif
 #include <pcl/console/print.h>
 
 namespace pcl
@@ -55,19 +50,18 @@ namespace pcl
     {
       public:
 
-        TicToc () : tictic (), toctoc () {}
+        TicToc () : tictic () {}
 
         void 
         tic ()
         {
-          tictic = boost::posix_time::microsec_clock::local_time ();
+          tictic = std::chrono::steady_clock::now();
         };
 
         inline double 
         toc ()
         {
-          toctoc = boost::posix_time::microsec_clock::local_time ();
-          return (static_cast<double> ((toctoc - tictic).total_milliseconds ()));
+          return (static_cast<double> (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - tictic).count()));
         };
         
         inline void 
@@ -86,8 +80,7 @@ namespace pcl
         };
       
       private:
-        boost::posix_time::ptime tictic;
-        boost::posix_time::ptime toctoc;
+        std::chrono::time_point<std::chrono::steady_clock> tictic;
     };
   } 
 }
