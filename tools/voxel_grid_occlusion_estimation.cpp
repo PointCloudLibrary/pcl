@@ -92,11 +92,11 @@ getVoxelActors (pcl::PointCloud<pcl::PointXYZ>& voxelCenters,
   
   double s = voxelSideLen/2.0;
   
-  for (size_t i = 0; i < voxelCenters.points.size (); i++)
+  for (const auto &point : voxelCenters.points)
   {
-    double x = voxelCenters.points[i].x;
-    double y = voxelCenters.points[i].y;
-    double z = voxelCenters.points[i].z;
+    double x = point.x;
+    double y = point.y;
+    double z = point.z;
     
     treeWireframe->AddInputData (getCuboid (x - s, x + s, y - s, y + s, z - s, z + s));
   }

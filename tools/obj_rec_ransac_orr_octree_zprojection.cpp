@@ -76,7 +76,7 @@ void run (const char *file_name, float voxel_size);
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& points);
 void show_octree (ORROctree* octree, PCLVisualizer& viz);
 void show_octree_zproj (ORROctreeZProjection* zproj, PCLVisualizer& viz);
-void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree);
+void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree);
 void rectangle_to_vtk (float x1, float x2, float y1, float y2, float z, vtkAppendPolyData* additive_rectangle);
 
 //#define _SHOW_POINTS_
@@ -195,9 +195,9 @@ void show_octree (ORROctree* octree, PCLVisualizer& viz)
   cout << "There are " << octree->getFullLeaves ().size () << " full leaves.\n";
 
   std::vector<ORROctree::Node*>& full_leaves = octree->getFullLeaves ();
-  for ( std::vector<ORROctree::Node*>::iterator it = full_leaves.begin () ; it != full_leaves.end () ; ++it )
+  for (const auto &full_leaf : full_leaves)
     // Add it to the other cubes
-    node_to_cube (*it, append);
+    node_to_cube (full_leaf, append);
 
   // Save the result
   append->Update();
@@ -265,7 +265,7 @@ void show_octree_zproj (ORROctreeZProjection* zproj, PCLVisualizer& viz)
 
 //===============================================================================================================================
 
-void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree)
+void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree)
 {
   // Define the cube representing the leaf
   const float *b = node->getBounds ();

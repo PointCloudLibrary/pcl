@@ -382,13 +382,13 @@ main (int argc, char** argv)
 
     // Noisify each point in the dataset
     // \note: we might decide to noisify along the ray later
-    for (size_t cp = 0; cp < cloud.points.size (); ++cp)
+    for (auto &point : cloud.points)
     {
       // Add noise ?
       switch (noise_model)
       {
         // Gaussian
-        case 1: { cloud.points[cp].x += gaussian_rng (); cloud.points[cp].y += gaussian_rng (); cloud.points[cp].z += gaussian_rng (); break; }
+        case 1: { point.x += gaussian_rng (); point.y += gaussian_rng (); point.z += gaussian_rng (); break; }
       }
     }
 

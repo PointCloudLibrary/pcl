@@ -148,8 +148,8 @@ main (int argc, char **argv)
 
   // Fuse clouds
   PointCloud<PointXYZ>::Ptr big_boy (new PointCloud<PointXYZ> ());
-  for (size_t i = 0; i < aligned_clouds.size (); i++)
-    *big_boy += *aligned_clouds[i];
+  for (const auto &aligned_cloud : aligned_clouds)
+    *big_boy += *aligned_cloud;
 
   if (vis_result)
   {

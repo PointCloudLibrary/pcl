@@ -195,16 +195,16 @@ void showModelOpps (PCLVisualizer& viz, const ModelLibrary::HashTable& hash_tabl
     // Get the opps in the current cell
     const ModelLibrary::node_data_pair_list& data_pairs = res->second;
 
-    for ( ModelLibrary::node_data_pair_list::const_iterator dp = data_pairs.begin () ; dp != data_pairs.end () ; ++dp )
+    for (const auto &data_pair : data_pairs)
     {
-      vtk_opps_points->InsertNextPoint (dp->first->getPoint ());
-      vtk_opps_points->InsertNextPoint (dp->second->getPoint ());
+      vtk_opps_points->InsertNextPoint (data_pair.first->getPoint ());
+      vtk_opps_points->InsertNextPoint (data_pair.second->getPoint ());
       vtk_opps_lines->InsertNextCell (2, ids);
       ids[0] += 2;
       ids[1] += 2;
 #ifndef _SHOW_MODEL_OCTREE_NORMALS_
-      vtk_normals->InsertNextTuple3 (dp->first->getNormal  ()[0], dp->first->getNormal  ()[1], dp->first->getNormal  ()[2]);
-      vtk_normals->InsertNextTuple3 (dp->second->getNormal ()[0], dp->second->getNormal ()[1], dp->second->getNormal ()[2]);
+      vtk_normals->InsertNextTuple3 (data_pair.first->getNormal  ()[0], data_pair.first->getNormal  ()[1], data_pair.first->getNormal  ()[2]);
+      vtk_normals->InsertNextTuple3 (data_pair.second->getNormal ()[0], data_pair.second->getNormal ()[1], data_pair.second->getNormal ()[2]);
 #endif
     }
   }
