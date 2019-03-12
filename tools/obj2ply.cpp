@@ -41,7 +41,6 @@
 #include <pcl/io/ply_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/console/time.h>
 
 void
 printHelp (int,

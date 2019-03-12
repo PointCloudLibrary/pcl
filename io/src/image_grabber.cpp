@@ -42,7 +42,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/for_each_type.h>
 #include <pcl/io/lzf_image_io.h>
-#include <pcl/console/time.h>
 
 #ifdef PCL_BUILT_WITH_VTK
   #include <vtkImageReader2.h>

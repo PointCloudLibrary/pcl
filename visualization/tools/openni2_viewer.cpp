@@ -44,7 +44,6 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/console/time.h>
 
 #include <boost/chrono.hpp>
 

@@ -48,8 +48,6 @@
 #include <pcl/common/eigen.h>
 #include <vector>
 
-#include <pcl/console/time.h>
-
 #include <pcl/ml/svm.h>
 #define Malloc(type,n) static_cast<type *> (malloc((n)*sizeof(type)))
 

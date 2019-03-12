@@ -41,7 +41,6 @@
 #include <pcl/2d/edge.h>
 #include <pcl/features/organized_edge_detection.h>
 #include <pcl/console/print.h>
-#include <pcl/console/time.h>
 
 /**
  *  Directions: 1 2 3
