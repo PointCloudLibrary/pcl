@@ -507,7 +507,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track (const PointClou
 
       next_pts[ptidx] = next_pt;
 
-      Eigen::Array2i iprev_point, inext_pt;
+      Eigen::Array2i iprev_point;
       prev_pt -= half_win;
       iprev_point[0] = floor (prev_pt[0]);
       iprev_point[1] = floor (prev_pt[1]);
@@ -543,11 +543,10 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track (const PointClou
       det = 1.f/det;
       next_pt -= half_win;
 
-      Eigen::Array2f prev_delta;
+      Eigen::Array2f prev_delta (0, 0);
       for (unsigned int j = 0; j < max_iterations_; j++)
       {
-        inext_pt[0] = floor (next_pt[0]);
-        inext_pt[1] = floor (next_pt[1]);
+        Eigen::Array2i inext_pt = next_pt.floor ().cast<int> ();
 
         if (inext_pt[0] < -track_width_ || (uint32_t) inext_pt[0] >= next.width ||
             inext_pt[1] < -track_height_ || (uint32_t) inext_pt[1] >= next.height)
@@ -612,7 +611,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track (const PointClou
         iprev_point[0] = floor (prev_keypoints->points[ptidx].u);
         iprev_point[1] = floor (prev_keypoints->points[ptidx].v);
         const PointInT& prev_pt = prev_input->points[iprev_point[1]*prev_input->width + iprev_point[0]];
-        const PointInT& next_pt = input->points[inext_pt[1]*input->width + inext_pt[0]];
+        const PointInT& next_pt = input->points[inext_point[1]*input->width + inext_point[0]];
         transformation_computer.add (prev_pt.getVector3fMap (), next_pt.getVector3fMap (), 1.0);
       }
     }
