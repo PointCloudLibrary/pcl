@@ -373,6 +373,11 @@ void pcl::visualization::PCLVisualizer::setupRenderWindow (const std::string& na
   if (!win_)
     PCL_ERROR ("Pointer to render window is null");
 
+  // This is temporary measures for disable display of deprecated warnings
+  #if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
+  win_->GlobalWarningDisplayOff();
+  #endif
+
   win_->SetWindowName (name.c_str ());
 
   // By default, don't use vertex buffer objects
