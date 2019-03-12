@@ -180,25 +180,25 @@ namespace pcl
         std::vector<pcl::PCLPointField> fields;
         pcl::getFields (*cloud, fields);
         source_has_normals_ = false;
-        for (size_t i = 0; i < fields.size (); ++i)
+        for (const auto &field : fields)
         {
-          if      (fields[i].name == "x") x_idx_offset_ = fields[i].offset;
-          else if (fields[i].name == "y") y_idx_offset_ = fields[i].offset;
-          else if (fields[i].name == "z") z_idx_offset_ = fields[i].offset;
-          else if (fields[i].name == "normal_x") 
+          if      (field.name == "x") x_idx_offset_ = field.offset;
+          else if (field.name == "y") y_idx_offset_ = field.offset;
+          else if (field.name == "z") z_idx_offset_ = field.offset;
+          else if (field.name == "normal_x") 
           {
             source_has_normals_ = true;
-            nx_idx_offset_ = fields[i].offset;
+            nx_idx_offset_ = field.offset;
           }
-          else if (fields[i].name == "normal_y") 
+          else if (field.name == "normal_y") 
           {
             source_has_normals_ = true;
-            ny_idx_offset_ = fields[i].offset;
+            ny_idx_offset_ = field.offset;
           }
-          else if (fields[i].name == "normal_z") 
+          else if (field.name == "normal_z") 
           {
             source_has_normals_ = true;
-            nz_idx_offset_ = fields[i].offset;
+            nz_idx_offset_ = field.offset;
           }
         }
       }
@@ -215,9 +215,9 @@ namespace pcl
         std::vector<pcl::PCLPointField> fields;
         pcl::getFields (*cloud, fields);
         target_has_normals_ = false;
-        for (size_t i = 0; i < fields.size (); ++i)
+        for (const auto &field : fields)
         {
-          if (fields[i].name == "normal_x" || fields[i].name == "normal_y" || fields[i].name == "normal_z") 
+          if (field.name == "normal_x" || field.name == "normal_y" || field.name == "normal_z") 
           {
             target_has_normals_ = true;
             break;

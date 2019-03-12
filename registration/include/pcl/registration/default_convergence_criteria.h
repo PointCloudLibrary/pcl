@@ -218,8 +218,8 @@ namespace pcl
         calculateMSE (const pcl::Correspondences &correspondences) const
         {
           double mse = 0;
-          for (size_t i = 0; i < correspondences.size (); ++i)
-            mse += correspondences[i].distance;
+          for (const auto &correspondence : correspondences)
+            mse += correspondence.distance;
           mse /= double (correspondences.size ());
           return (mse);
         }

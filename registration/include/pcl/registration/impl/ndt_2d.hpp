@@ -336,8 +336,8 @@ namespace pcl
         test (const PointT& transformed_pt, const double& cos_theta, const double& sin_theta) const
         {
           ValueAndDerivatives<3,double> r = ValueAndDerivatives<3,double>::Zero ();
-          for (size_t i = 0; i < 4; i++)
-              r += single_grids_[i]->test (transformed_pt, cos_theta, sin_theta);
+          for (const auto &single_grid : single_grids_)
+              r += single_grid->test (transformed_pt, cos_theta, sin_theta);
           return r;
         }
 

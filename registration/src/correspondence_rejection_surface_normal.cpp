@@ -55,10 +55,10 @@ pcl::registration::CorrespondenceRejectorSurfaceNormal::getRemainingCorresponden
   remaining_correspondences.resize (original_correspondences.size ());
 
   // Test each correspondence
-  for (size_t i = 0; i < original_correspondences.size (); ++i)
+  for (const auto &original_correspondence : original_correspondences)
   {
-    if (data_container_->getCorrespondenceScoreFromNormals (original_correspondences[i]) > threshold_)
-      remaining_correspondences[number_valid_correspondences++] = original_correspondences[i];
+    if (data_container_->getCorrespondenceScoreFromNormals (original_correspondence) > threshold_)
+      remaining_correspondences[number_valid_correspondences++] = original_correspondence;
   }
   remaining_correspondences.resize (number_valid_correspondences);
 }

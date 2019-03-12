@@ -248,8 +248,8 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   {
     target_indices_.reset (new std::vector <int> (static_cast <int> (target_->size ())));
     int index = 0;
-    for (std::vector <int>::iterator it = target_indices_->begin (), it_e = target_indices_->end (); it != it_e; it++)
-      *it = index++;
+    for (int &target_index : *target_indices_)
+      target_index = index++;
     target_cloud_updated_ = true;
   }
 
@@ -359,9 +359,9 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
     const PointTarget *pt2 = &(target_->points[base_indices[1]]);
     const PointTarget *pt3 = &(target_->points[base_indices[2]]);
 
-    for (std::vector <int>::iterator it = target_indices_->begin (), it_e = target_indices_->end (); it != it_e; it++)
+    for (const int &target_index : *target_indices_)
     {
-      const PointTarget *pt4 = &(target_->points[*it]);
+      const PointTarget *pt4 = &(target_->points[target_index]);
 
       float d1 = pcl::squaredEuclideanDistance (*pt4, *pt1);
       float d2 = pcl::squaredEuclideanDistance (*pt4, *pt2);
@@ -377,7 +377,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
       float dist_to_plane = pcl::pointToPlaneDistance (*pt4, coefficients);
       if (dist_to_plane < nearest_to_plane)
       {
-        base_indices[3] = *it;
+        base_indices[3] = target_index;
         nearest_to_plane = dist_to_plane;
       }
     }
@@ -642,10 +642,10 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   PointCloudSourcePtr cloud_e (new PointCloudSource);
   cloud_e->resize (pairs_a.size () * 2);
   PointCloudSourceIterator it_pt = cloud_e->begin ();
-  for (pcl::Correspondences::const_iterator it_pair = pairs_a.begin (), it_pair_e = pairs_a.end () ; it_pair != it_pair_e; it_pair++)
+  for (const auto &pair : pairs_a)
   {
-    const PointSource *pt1 = &(input_->points[it_pair->index_match]);
-    const PointSource *pt2 = &(input_->points[it_pair->index_query]);
+    const PointSource *pt1 = &(input_->points[pair.index_match]);
+    const PointSource *pt2 = &(input_->points[pair.index_query]);
 
     // calculate intermediate points using both ratios from base (r1,r2)
     for (int i = 0; i < 2; i++, it_pt++)
@@ -664,29 +664,29 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   std::vector <float> dists_sqr;
 
   // loop over second point pair correspondences
-  for (pcl::Correspondences::const_iterator it_pair = pairs_b.begin (), it_pair_e = pairs_b.end () ; it_pair != it_pair_e; it_pair++)
+  for (const auto &pair : pairs_b)
   {
-    const PointTarget *pt1 = &(input_->points[it_pair->index_match]);
-    const PointTarget *pt2 = &(input_->points[it_pair->index_query]);
+    const PointTarget *pt1 = &(input_->points[pair.index_match]);
+    const PointTarget *pt2 = &(input_->points[pair.index_query]);
 
     // calculate intermediate points using both ratios from base (r1,r2)
-    for (int i = 0; i < 2; i++)
+    for (const float &r : ratio)
     {
       PointTarget pt_e;
-      pt_e.x = pt1->x + ratio[i] * (pt2->x - pt1->x);
-      pt_e.y = pt1->y + ratio[i] * (pt2->y - pt1->y);
-      pt_e.z = pt1->z + ratio[i] * (pt2->z - pt1->z);
+      pt_e.x = pt1->x + r * (pt2->x - pt1->x);
+      pt_e.y = pt1->y + r * (pt2->y - pt1->y);
+      pt_e.z = pt1->z + r * (pt2->z - pt1->z);
 
       // search for corresponding intermediate points
       tree_e->radiusSearch (pt_e, coincidation_limit_, ids, dists_sqr);
-      for (std::vector <int>::iterator it = ids.begin (), it_e = ids.end (); it != it_e; it++)
+      for (const int &id : ids)
       {
         std::vector <int> match_indices (4);
 
-        match_indices[0] = pairs_a[static_cast <int> (std::floor ((float)(*it/2.f)))].index_match;
-        match_indices[1] = pairs_a[static_cast <int> (std::floor ((float)(*it/2.f)))].index_query;
-        match_indices[2] = it_pair->index_match;
-        match_indices[3] = it_pair->index_query;
+        match_indices[0] = pairs_a[static_cast <int> (std::floor ((float)(id/2.f)))].index_match;
+        match_indices[1] = pairs_a[static_cast <int> (std::floor ((float)(id/2.f)))].index_query;
+        match_indices[2] = pair.index_match;
+        match_indices[3] = pair.index_query;
 
         // EDITED: added coarse check of match based on edge length (due to rigid-body )
         if (checkBaseMatch (match_indices, dist_base) < 0)
@@ -730,16 +730,16 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   float fitness_score = FLT_MAX;
 
   // loop over all Candidate matches
-  for (std::vector <std::vector <int> >::iterator match_indices = matches.begin (), it_e = matches.end (); match_indices != it_e; match_indices++)
+  for (auto &match : matches)
   {
     Eigen::Matrix4f transformation_temp;
     pcl::Correspondences correspondences_temp;
 
     // determine corresondences between base and match according to their distance to centroid
-    linkMatchWithBase (base_indices, *match_indices, correspondences_temp);
+    linkMatchWithBase (base_indices, match, correspondences_temp);
 
     // check match based on residuals of the corresponding points after
-    if (validateMatch (base_indices, *match_indices, correspondences_temp, transformation_temp) < 0)
+    if (validateMatch (base_indices, match, correspondences_temp, transformation_temp) < 0)
       continue;
 
     // check resulting  using a sub sample of the source point cloud and compare to previous matches
@@ -787,16 +787,16 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
     float best_diff_sqr = FLT_MAX;
     int best_index = -1;
 
-    for (auto it_match = copy.cbegin (), it_match_e = copy.cend (); it_match != it_match_e; it_match++)
+    for (const int &match_index : copy)
     {
       // calculate difference of distances to centre point
-      float dist_sqr_2 = pcl::squaredEuclideanDistance (input_->points[*it_match], centre_pt_match);
+      float dist_sqr_2 = pcl::squaredEuclideanDistance (input_->points[match_index], centre_pt_match);
       float diff_sqr = std::abs(dist_sqr_1 - dist_sqr_2);
 
       if (diff_sqr < best_diff_sqr)
       {
         best_diff_sqr = diff_sqr;
-        best_index = *it_match;
+        best_index = match_index;
       }
     }
 

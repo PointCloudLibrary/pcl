@@ -53,11 +53,11 @@ pcl::registration::CorrespondenceRejectionOrganizedBoundary::getRemainingCorresp
   }
 
   remaining_correspondences.reserve (original_correspondences.size ());
-  for (size_t c_i = 0; c_i < original_correspondences.size (); ++c_i)
+  for (const auto &original_correspondence : original_correspondences)
   {
     /// Count how many NaNs bound the target point
-    int x = original_correspondences[c_i].index_match % cloud->width;
-    int y = original_correspondences[c_i].index_match / cloud->width;
+    int x = original_correspondence.index_match % cloud->width;
+    int y = original_correspondence.index_match / cloud->width;
 
     int nan_count_tgt = 0;
     for (int x_d = -window_size_/2; x_d <= window_size_/2; ++x_d)
@@ -75,6 +75,6 @@ pcl::registration::CorrespondenceRejectionOrganizedBoundary::getRemainingCorresp
 
 
     /// The correspondence passes both tests, add it to the filtered set of correspondences
-    remaining_correspondences.push_back (original_correspondences[c_i]);
+    remaining_correspondences.push_back (original_correspondence);
   }
 }
