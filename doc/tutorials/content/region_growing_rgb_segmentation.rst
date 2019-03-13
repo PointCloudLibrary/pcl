@@ -33,13 +33,13 @@ Let's take a look at first lines that are of interest:
 
 .. literalinclude:: sources/region_growing_rgb_segmentation/region_growing_rgb_segmentation.cpp
    :language: cpp
-   :lines: 16-21
+   :lines: 20-25
 
 They are simply loading the cloud from the .pcd file. Note that points must have the color.
 
 .. literalinclude:: sources/region_growing_rgb_segmentation/region_growing_rgb_segmentation.cpp
    :language: cpp
-   :lines: 30-30
+   :lines: 34-34
 
 This line is responsible for ``pcl::RegionGrowingRGB`` instantiation. This class has two parameters:
 
@@ -49,40 +49,40 @@ This line is responsible for ``pcl::RegionGrowingRGB`` instantiation. This class
 
 .. literalinclude:: sources/region_growing_rgb_segmentation/region_growing_rgb_segmentation.cpp
    :language: cpp
-   :lines: 31-33
+   :lines: 35-37
 
 These lines provide the instance with the input cloud, indices and search method.
 
 .. literalinclude:: sources/region_growing_rgb_segmentation/region_growing_rgb_segmentation.cpp
    :language: cpp
-   :lines: 34-34
+   :lines: 38-38
 
 Here the distance threshold is set. It is used to determine whether the point is neighbouring or not. If the point is located at a distance less than
 the given threshold, then it is considered to be neighbouring. It is used for clusters neighbours search.
 
 .. literalinclude:: sources/region_growing_rgb_segmentation/region_growing_rgb_segmentation.cpp
    :language: cpp
-   :lines: 35-35
+   :lines: 39-39
 
 This line sets the color threshold. Just as angle threshold is used for testing points normals in ``pcl::RegionGrowing``
 to determine if the point belongs to cluster, this value is used for testing points colors.
 
 .. literalinclude:: sources/region_growing_rgb_segmentation/region_growing_rgb_segmentation.cpp
    :language: cpp
-   :lines: 36-36
+   :lines: 40-40
 
 Here the color threshold for clusters is set. This value is similar to the previous, but is used when the merging process takes place.
 
 .. literalinclude:: sources/region_growing_rgb_segmentation/region_growing_rgb_segmentation.cpp
    :language: cpp
-   :lines: 37-37
+   :lines: 41-41
 
 This value is similar to that which was used in the :ref:`region_growing_segmentation` tutorial. In addition to that, it is used for merging process mentioned in the beginning.
 If cluster has less points than was set through ``setMinClusterSize`` method, then it will be merged with the nearest neighbour.
 
 .. literalinclude:: sources/region_growing_rgb_segmentation/region_growing_rgb_segmentation.cpp
    :language: cpp
-   :lines: 39-40
+   :lines: 43-44
 
 Here is the place where the algorithm is launched. It will return the array of clusters when the segmentation process will be over.
 

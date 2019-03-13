@@ -47,32 +47,32 @@ Now let's study out what is the purpose of this code. First few lines will be om
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 13-15
+   :lines: 16-18
 
 These lines are simply loading the cloud from the .pcd file.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 17-19
+   :lines: 20-22
 
 Here is the line where the instantiation of the ``pcl::MomentOfInertiaEstimation`` class takes place.
 Immediately after that we set the input cloud and start the computational process, that easy.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 21-31
+   :lines: 24-34
 
 This is were we declare all necessary variables needed to store descriptors and bounding boxes.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 33-39
+   :lines: 36-42
 
 These lines show how to access computed descriptors and other features.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 41-47
+   :lines: 44-50
 
 These lines simply create the instance of ``PCLVisualizer`` class for result
 visualization. Here we also add the cloud and the AABB for visualization. We
@@ -81,14 +81,14 @@ because the default is to use a solid cube.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 49-52
+   :lines: 52-55
 
 Visualization of the OBB is little more complex. So here we create a quaternion from the rotational matrix, set OBBs position
 and pass it to the visualizer.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 54-60
+   :lines: 57-63
 
 These lines are responsible for eigen vectors visualization. The few lines that
 are left simply launch the visualization process.
