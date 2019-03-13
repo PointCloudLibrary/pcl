@@ -136,24 +136,24 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
   }
   bool cut_found = false;
   // do the following processing for each segment separately
-  for (SegLabel2ClusterMap::iterator itr = seg_to_edge_points_map.begin (); itr != seg_to_edge_points_map.end (); ++itr)
+  for (const auto &seg_to_edge_points : seg_to_edge_points_map)
   {
     // if too small do not process
-    if (itr->second->size () < min_segment_size_for_cutting_)
+    if (seg_to_edge_points.second->size () < min_segment_size_for_cutting_)
     {
       continue;
     }
 
     std::vector<double> weights;
-    weights.resize (itr->second->size ());
-    for (std::size_t cp = 0; cp < itr->second->size (); ++cp)
+    weights.resize (seg_to_edge_points.second->size ());
+    for (std::size_t cp = 0; cp < seg_to_edge_points.second->size (); ++cp)
     {
-      float& cur_weight = itr->second->points[cp].intensity;
+      float& cur_weight = seg_to_edge_points.second->points[cp].intensity;
       cur_weight = cur_weight < concavity_tolerance_threshold_ ? 0 : 1;
       weights[cp] = cur_weight;
     }
 
-    pcl::PointCloud<WeightSACPointType>::Ptr edge_cloud_cluster  = itr->second;
+    pcl::PointCloud<WeightSACPointType>::Ptr edge_cloud_cluster  = seg_to_edge_points.second;
     pcl::SampleConsensusModelPlane<WeightSACPointType>::Ptr model_p (new pcl::SampleConsensusModelPlane<WeightSACPointType> (edge_cloud_cluster));
 
     WeightedRandomSampleConsensus weight_sac (model_p, seed_resolution_, true);
@@ -195,32 +195,29 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
       euclidean_clusterer.setInputCloud (edge_cloud_cluster);
       euclidean_clusterer.setIndices (boost::make_shared <std::vector <int> > (support_indices));
       euclidean_clusterer.extract (cluster_indices);
-//       sv_adjacency_list_[seg_to_edgeID_map[itr->first][point_index]].used_for_cutting = true;
+//       sv_adjacency_list_[seg_to_edgeID_map[seg_to_edge_points.first][point_index]].used_for_cutting = true;
 
-      for (size_t cc = 0; cc < cluster_indices.size (); ++cc)
+      for (const auto &cluster_index : cluster_indices)
       {
         // get centroids of vertices        
         int cluster_concave_pts = 0;
         float cluster_score = 0;
 //         std::cout << "Cluster has " << cluster_indices[cc].indices.size () << " points" << std::endl;
-        for (size_t cp = 0; cp < cluster_indices[cc].indices.size (); ++cp)
+        for (const int &current_index : cluster_index.indices)
         {
-          int current_index = cluster_indices[cc].indices[cp];
-          double index_score;
+          double index_score = weights[current_index];
           if (use_directed_weights_)
-            index_score = weights[current_index] * 1.414 * (fabsf (plane_normal.dot (edge_cloud_cluster->at (current_index).getNormalVector3fMap ())));
-          else
-            index_score = weights[current_index];
+            index_score *= 1.414 * (fabsf (plane_normal.dot (edge_cloud_cluster->at (current_index).getNormalVector3fMap ())));
           cluster_score += index_score;
           if (weights[current_index] > 0)
             ++cluster_concave_pts;
         }
         // check if the score is below the threshold. If that is the case this segment should not be split
-        cluster_score = cluster_score * 1.0 / cluster_indices[cc].indices.size ();
+        cluster_score = cluster_score * 1.0 / cluster_index.indices.size ();
 //         std::cout << "Cluster score: " << cluster_score << std::endl;
         if (cluster_score >= min_cut_score_)
         {
-          cut_support_indices.insert (cut_support_indices.end (), cluster_indices[cc].indices.begin (), cluster_indices[cc].indices.end ());
+          cut_support_indices.insert (cut_support_indices.end (), cluster_index.indices.begin (), cluster_index.indices.end ());
         }
       }
       if (cut_support_indices.size () == 0)
@@ -242,15 +239,13 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
     }
 
     int number_connections_cut = 0;
-    for (size_t cs = 0; cs < cut_support_indices.size (); ++cs)
+    for (const int &point_index : cut_support_indices)
     {
-      const int point_index = cut_support_indices[cs];
-
       if (use_clean_cutting_)
       {
         // skip edges where both centroids are on one side of the cutting plane
-        uint32_t source_sv_label = sv_adjacency_list_[boost::source (seg_to_edgeIDs_map[itr->first][point_index], sv_adjacency_list_)];
-        uint32_t target_sv_label = sv_adjacency_list_[boost::target (seg_to_edgeIDs_map[itr->first][point_index], sv_adjacency_list_)];
+        uint32_t source_sv_label = sv_adjacency_list_[boost::source (seg_to_edgeIDs_map[seg_to_edge_points.first][point_index], sv_adjacency_list_)];
+        uint32_t target_sv_label = sv_adjacency_list_[boost::target (seg_to_edgeIDs_map[seg_to_edge_points.first][point_index], sv_adjacency_list_)];
         // get centroids of vertices
         const pcl::PointXYZRGBA source_centroid = sv_label_to_supervoxel_map_[source_sv_label]->centroid_;
         const pcl::PointXYZRGBA target_centroid = sv_label_to_supervoxel_map_[target_sv_label]->centroid_;
@@ -260,11 +255,11 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
           continue;
         }
       }
-      sv_adjacency_list_[seg_to_edgeIDs_map[itr->first][point_index]].used_for_cutting = true;
-      if (sv_adjacency_list_[seg_to_edgeIDs_map[itr->first][point_index]].is_valid) 
+      sv_adjacency_list_[seg_to_edgeIDs_map[seg_to_edge_points.first][point_index]].used_for_cutting = true;
+      if (sv_adjacency_list_[seg_to_edgeIDs_map[seg_to_edge_points.first][point_index]].is_valid) 
       {
         ++number_connections_cut;
-        sv_adjacency_list_[seg_to_edgeIDs_map[itr->first][point_index]].is_valid = false;
+        sv_adjacency_list_[seg_to_edgeIDs_map[seg_to_edge_points.first][point_index]].is_valid = false;
       }
     }
 //     std::cout << "We cut " << number_connections_cut << " connections" << std::endl;
@@ -333,15 +328,12 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
     sac_model_->selectWithinDistance (model_coefficients, threshold_, *current_inliers);
     double current_score = 0;
     Eigen::Vector3f plane_normal (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
-    for (size_t i = 0; i < current_inliers->size (); ++i)
+    for (const int &current_index : *current_inliers)
     {
-      int current_index = current_inliers->at (i);
-      double index_score;
+      double index_score = weights_[current_index];
       if (use_directed_weights_)
         // the sqrt(2) factor was used in the paper and was meant for making the scores better comparable between directed and undirected weights
-        index_score = weights_[current_index] * 1.414 * (fabsf (plane_normal.dot (point_cloud_ptr_->at (current_index).getNormalVector3fMap ())));
-      else
-        index_score = weights_[current_index];
+        index_score *= 1.414 * (fabsf (plane_normal.dot (point_cloud_ptr_->at (current_index).getNormalVector3fMap ())));
 
       current_score += index_score;
     }

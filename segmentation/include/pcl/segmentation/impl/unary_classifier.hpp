@@ -150,9 +150,9 @@ pcl::UnaryClassifier<PointT>::findClusters (typename pcl::PointCloud<PointT>::Pt
 
       // check if label exist
       bool exist = false;
-      for (size_t j = 0; j < cluster_numbers.size (); j++)
+      for (const int &cluster_number : cluster_numbers)
       {
-        if (static_cast<uint32_t> (cluster_numbers[j]) == label)
+        if (static_cast<uint32_t> (cluster_number) == label)
         {
           exist = true;
           break;
@@ -239,11 +239,11 @@ pcl::UnaryClassifier<PointT>::kmeansClustering (pcl::PointCloud<pcl::FPFHSignatu
   kmeans.setClusterSize (k);
 
   // add points to the clustering
-  for (size_t i = 0; i < in->points.size (); i++)
+  for (const auto &point : in->points)
   {
     std::vector<float> data (33);
     for (int idx = 0; idx < 33; idx++)
-      data[idx] = in->points[i].histogram[idx];
+      data[idx] = point.histogram[idx];
     kmeans.addDataPoint (data);
   }
 
@@ -277,8 +277,8 @@ pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud
 {
   // estimate the total number of row's needed
   int n_row = 0;
-  for (size_t i = 0; i < trained_features.size (); i++)
-    n_row += static_cast<int> (trained_features[i]->points.size ());
+  for (const auto &trained_feature : trained_features)
+    n_row += static_cast<int> (trained_feature->points.size ());
 
   // Convert data into FLANN format
   int n_col = 33;
@@ -378,15 +378,15 @@ pcl::UnaryClassifier<PointT>::trainWithLabel (
   std::vector<int> cluster_numbers;
   findClusters (input_cloud_, cluster_numbers);
   std::cout << "cluster numbers: ";
-  for (size_t i = 0; i < cluster_numbers.size (); i++)
-    std::cout << cluster_numbers[i] << " ";
+  for (const int &cluster_number : cluster_numbers)
+    std::cout << cluster_number << " ";
   std::cout << std::endl;
 
-  for (size_t i = 0; i < cluster_numbers.size (); i++)
+  for (const int &cluster_number : cluster_numbers)
   {    
     // extract all points with the same label number
     pcl::PointCloud<pcl::PointXYZ>::Ptr label_cloud (new pcl::PointCloud<pcl::PointXYZ>);
-    getCloudWithLabel (input_cloud_, label_cloud, cluster_numbers[i]);
+    getCloudWithLabel (input_cloud_, label_cloud, cluster_number);
 
     // compute FPFH feature histograms for all point of the input point cloud
     pcl::PointCloud<pcl::FPFHSignature33>::Ptr feature (new pcl::PointCloud<pcl::FPFHSignature33>);

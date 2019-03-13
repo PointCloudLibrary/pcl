@@ -134,11 +134,11 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   model.values.resize (4);
 
   // Fit Planes to each cluster
-  for (size_t i = 0; i < label_indices.size (); i++)
+  for (const auto &label_index : label_indices)
   {
-    if (static_cast<unsigned> (label_indices[i].indices.size ()) > min_inliers_)
+    if (static_cast<unsigned> (label_index.indices.size ()) > min_inliers_)
     {
-      pcl::computeMeanAndCovarianceMatrix (*input_, label_indices[i].indices, clust_cov, clust_centroid);
+      pcl::computeMeanAndCovarianceMatrix (*input_, label_index.indices, clust_cov, clust_centroid);
       Eigen::Vector4f plane_params;
       
       EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
@@ -174,7 +174,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
         model.values[2] = plane_params[2];
         model.values[3] = plane_params[3];
         model_coefficients.push_back (model);
-        inlier_indices.push_back (label_indices[i]);
+        inlier_indices.push_back (label_index);
         centroids.push_back (clust_centroid);
         covariances.push_back (clust_cov);
       }
