@@ -901,7 +901,7 @@ pcl::SVMClassify::saveClassificationResult (const char *filename)
 
   for (const auto &prediction : prediction_)
   {
-    for (const double value : prediction)
+    for (const double &value : prediction)
       output << value << " ";
 
     output << "\n";

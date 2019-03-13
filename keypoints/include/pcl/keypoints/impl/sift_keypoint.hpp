@@ -191,7 +191,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
   else
   {
     // Add keypoints to output
-    for (const int keypoint_index : extrema_indices)
+    for (const int &keypoint_index : extrema_indices)
     {
       PointOutT keypoint;
       keypoint.x = input.points[keypoint_index].x;

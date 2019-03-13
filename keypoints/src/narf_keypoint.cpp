@@ -372,7 +372,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
       }
       
       // Reset was_touched to false
-      for (const int neighbors_to_check_idx : neighbors_to_check)
+      for (const int &neighbors_to_check_idx : neighbors_to_check)
         was_touched[neighbors_to_check_idx] = false;
       
       float angle_change_value = 0.0f;
@@ -552,7 +552,7 @@ NarfKeypoint::calculateSparseInterestImage ()
     }
     
     // Reset was_touched to false
-    for (const int neighbors_to_check_idx : neighbors_to_check)
+    for (const int &neighbors_to_check_idx : neighbors_to_check)
       was_touched[neighbors_to_check_idx] = false;
     
     float angle_change_value = 0.0f;
@@ -586,7 +586,7 @@ NarfKeypoint::calculateSparseInterestImage ()
     // Every point in distance search_radius cannot have a higher value
     // Therefore: if too low, set all to zero. Else calculate properly
     if (maximum_interest_value < parameters_.min_interest_value)
-      for (const int neighbors_idx : neighbors_within_radius_overhead)
+      for (const int &neighbors_idx : neighbors_within_radius_overhead)
         interest_image_[neighbors_idx] = 0.0f;
     else
     {
@@ -624,7 +624,7 @@ NarfKeypoint::calculateSparseInterestImage ()
       }
 
       // Caclulate interest values for neighbors
-      for (const int index2 : neighbors_within_radius_overhead)
+      for (const int &index2 : neighbors_within_radius_overhead)
       {
         int y2 = index2/range_image.width,
             x2 = index2 - y2*range_image.width;

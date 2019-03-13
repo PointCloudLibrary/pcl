@@ -4590,7 +4590,7 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
     bool valid = false;
 
     // Calculate sha1 using canonical paths
-    for (int p_file_index : p_file_indices)
+    for (const int &p_file_index : p_file_indices)
     {
       boost::filesystem::path path (argv[p_file_index]);
       if (boost::filesystem::exists (path))

@@ -77,7 +77,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::calculateCombinedCovar (con
 {
   memset (coefficients, 0, sizeof (float) * 21);
   unsigned count = 0;
-  for (const int neighbor : neighbors)
+  for (const int &neighbor : neighbors)
   {
     if (std::isfinite (normals_->points[neighbor].normal_x) && std::isfinite (intensity_gradients_->points[neighbor].gradient [0]))
     {
