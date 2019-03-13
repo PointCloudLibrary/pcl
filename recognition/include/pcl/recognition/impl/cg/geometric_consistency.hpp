@@ -101,10 +101,10 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
       {
         //Let's check if j fits into the current consensus set
         bool is_a_good_candidate = true;
-        for (size_t k = 0; k < consensus_set.size (); ++k)
+        for (const int &k : consensus_set)
         {
-          int scene_index_k = model_scene_corrs_->at (consensus_set[k]).index_match;
-          int model_index_k = model_scene_corrs_->at (consensus_set[k]).index_query;
+          int scene_index_k = model_scene_corrs_->at (k).index_match;
+          int model_index_k = model_scene_corrs_->at (k).index_query;
           int scene_index_j = model_scene_corrs_->at (j).index_match;
           int model_index_j = model_scene_corrs_->at (j).index_query;
           
@@ -133,10 +133,10 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
     if (static_cast<int> (consensus_set.size ()) > gc_threshold_)
     {
       Correspondences temp_corrs, filtered_corrs;
-      for (size_t j = 0; j < consensus_set.size (); j++)
+      for (const int &j : consensus_set)
       {
-        temp_corrs.push_back (model_scene_corrs_->at (consensus_set[j]));
-        taken_corresps[ consensus_set[j] ] = true;
+        temp_corrs.push_back (model_scene_corrs_->at (j));
+        taken_corresps[ j ] = true;
       }
       //ransac filtering
       corr_rejector.getRemainingCorrespondences (temp_corrs, filtered_corrs);

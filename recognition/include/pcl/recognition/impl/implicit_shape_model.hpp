@@ -107,11 +107,11 @@ pcl::features::ISMVoteList<PointT>::getColoredCloud (typename pcl::PointCloud<Po
   point.r = 0;
   point.g = 0;
   point.b = 255;
-  for (size_t i_vote = 0; i_vote < votes_->points.size (); i_vote++)
+  for (const auto &i_vote : votes_->points)
   {
-    point.x = votes_->points[i_vote].x;
-    point.y = votes_->points[i_vote].y;
-    point.z = votes_->points[i_vote].z;
+    point.x = i_vote.x;
+    point.y = i_vote.y;
+    point.z = i_vote.z;
     colored_cloud->points.push_back (point);
   }
   colored_cloud->height += static_cast<uint32_t> (votes_->points.size ());
@@ -404,8 +404,8 @@ pcl::features::ISMModel::saveModelToFile (std::string& file_name)
   for (unsigned int i_cluster = 0; i_cluster < number_of_clusters_; i_cluster++)
   {
     output_file << static_cast<unsigned int> (clusters_[i_cluster].size ()) << " ";
-    for (unsigned int i_visual_word = 0; i_visual_word < static_cast<unsigned int> (clusters_[i_cluster].size ()); i_visual_word++)
-      output_file << clusters_[i_cluster][i_visual_word] << " ";
+    for (const unsigned int &visual_word : clusters_[i_cluster])
+      output_file << visual_word << " ";
   }
 
   output_file.close ();

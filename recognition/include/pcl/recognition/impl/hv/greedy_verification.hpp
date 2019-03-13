@@ -97,9 +97,9 @@ template<typename ModelT, typename SceneT>
 
       recognition_models_.push_back (recog_model);
 
-      for (size_t i = 0; i < explained_indices.size (); i++)
+      for (const int &explained_index : explained_indices)
       {
-        points_explained_by_rm_[explained_indices[i]].push_back (recog_model);
+        points_explained_by_rm_[explained_index].push_back (recog_model);
       }
     }
 

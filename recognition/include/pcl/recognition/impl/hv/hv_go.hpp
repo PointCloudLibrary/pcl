@@ -171,8 +171,8 @@ mets::gol_type pcl::GlobalHypothesesVerification<ModelT, SceneT>::evaluateSoluti
   setPreviousBadInfo (bad_info);
 
   int n_active_hyp = 0;
-  for(size_t i=0; i < active.size(); i++) {
-    if(active[i])
+  for(const bool &i : active) {
+    if(i)
       n_active_hyp++;
   }
 
@@ -267,11 +267,11 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
 
     float intens_incr = 100.f / static_cast<float> (clusters.size ());
     float intens = intens_incr;
-    for (size_t i = 0; i < clusters.size (); i++)
+    for (const auto &cluster : clusters)
     {
-      for (size_t j = 0; j < clusters[i].indices.size (); j++)
+      for (const auto &vertex : cluster.indices)
       {
-        clusters_cloud_->points[clusters[i].indices[j]].intensity = intens;
+        clusters_cloud_->points[vertex].intensity = intens;
       }
 
       intens += intens_incr;
@@ -381,9 +381,9 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::SAOptimize(std::vector<i
 
   recognition_models_.clear ();
 
-  for (size_t j = 0; j < cc_indices.size (); j++)
+  for (const int &cc_index : cc_indices)
   {
-    recognition_models_.push_back (recognition_models_copy[cc_indices[j]]);
+    recognition_models_.push_back (recognition_models_copy[cc_index]);
   }
 
   for (size_t j = 0; j < recognition_models_.size (); j++)
@@ -692,9 +692,9 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(boost:
 
     size_t p = 0;
     size_t j = 0;
-    for (size_t i = 0; i < neighborhood_indices.size (); i++)
+    for (const auto &neighborhood_index : neighborhood_indices)
     {
-      if ((j < exp_idces.size ()) && (neighborhood_indices[i].first == exp_idces[j]))
+      if ((j < exp_idces.size ()) && (neighborhood_index.first == exp_idces[j]))
       {
         //this index is explained by the hypothesis so ignore it, advance j
         j++;
@@ -702,11 +702,11 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(boost:
       {
         //indices_in_nb[i] < exp_idces[j]
         //recog_model->unexplained_in_neighborhood.push_back(neighborhood_indices[i]);
-        recog_model->unexplained_in_neighborhood[p] = neighborhood_indices[i].first;
+        recog_model->unexplained_in_neighborhood[p] = neighborhood_index.first;
 
-        if (clusters_cloud_->points[recog_model->explained_[neighborhood_indices[i].second]].intensity != 0.f
-            && (clusters_cloud_->points[recog_model->explained_[neighborhood_indices[i].second]].intensity
-                == clusters_cloud_->points[neighborhood_indices[i].first].intensity))
+        if (clusters_cloud_->points[recog_model->explained_[neighborhood_index.second]].intensity != 0.f
+            && (clusters_cloud_->points[recog_model->explained_[neighborhood_index.second]].intensity
+                == clusters_cloud_->points[neighborhood_index.first].intensity))
         {
 
           recog_model->unexplained_in_neighborhood_weights[p] = clutter_regularizer_;
@@ -716,13 +716,13 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(boost:
           //neighborhood_indices[i].first gives the index to the scene point and second to the explained scene point by the model causing this...
           //calculate weight of this clutter point based on the distance of the scene point and the model point causing it
           float d = static_cast<float> (pow (
-              (scene_cloud_downsampled_->points[recog_model->explained_[neighborhood_indices[i].second]].getVector3fMap ()
-                  - scene_cloud_downsampled_->points[neighborhood_indices[i].first].getVector3fMap ()).norm (), 2));
+              (scene_cloud_downsampled_->points[recog_model->explained_[neighborhood_index.second]].getVector3fMap ()
+                  - scene_cloud_downsampled_->points[neighborhood_index.first].getVector3fMap ()).norm (), 2));
           float d_weight = -(d / rn_sqr) + 1; //points that are close have a strong weight*/
 
           //using normals to weight clutter points
-          Eigen::Vector3f scene_p_normal = scene_normals_->points[neighborhood_indices[i].first].getNormalVector3fMap ();
-          Eigen::Vector3f model_p_normal = scene_normals_->points[recog_model->explained_[neighborhood_indices[i].second]].getNormalVector3fMap ();
+          Eigen::Vector3f scene_p_normal = scene_normals_->points[neighborhood_index.first].getNormalVector3fMap ();
+          Eigen::Vector3f model_p_normal = scene_normals_->points[recog_model->explained_[neighborhood_index.second]].getNormalVector3fMap ();
           float dotp = scene_p_normal.dot (model_p_normal); //[-1,1] from antiparallel trough perpendicular to parallel
 
           if (dotp < 0)

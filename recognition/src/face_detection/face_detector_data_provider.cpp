@@ -76,24 +76,19 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     }
   }
 
-  for (size_t i = 0; i < files.size (); i++)
+  for (const auto &filename : files)
   {
-    std::stringstream filestream;
-    filestream << data_dir << "/" << files[i];
-    std::string file = filestream.str ();
+    std::string file = data_dir + '/' + filename;
 
-    std::string pose_file (files[i]);
+    std::string pose_file (filename);
     boost::replace_all (pose_file, ".pcd", "_pose.txt");
 
     Eigen::Matrix4f pose_mat;
     pose_mat.setIdentity (4, 4);
 
-    std::stringstream filestream_pose;
-    filestream_pose << data_dir << "/" << pose_file;
-    pose_file = filestream_pose.str ();
+    pose_file = data_dir + '/' + pose_file;
 
-    bool result = readMatrixFromFile (pose_file, pose_mat);
-    if (result)
+    if (readMatrixFromFile (pose_file, pose_mat))
     {
       Eigen::Vector3f ea = pose_mat.block<3, 3> (0, 0).eulerAngles (0, 1, 2);
       ea *= 57.2957795f; //transform it to degrees to do the binning
@@ -152,9 +147,9 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
           yaw_pitch_bins[i][j] = min_images_per_bin_;
         }
 
-        for (size_t ii = 0; ii < image_files_per_bin[i][j].size (); ii++)
+        for (const auto &ii : image_files_per_bin[i][j])
         {
-          image_files_.push_back (image_files_per_bin[i][j][ii]);
+          image_files_.push_back (ii);
         }
       }
     }
@@ -405,11 +400,10 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
       negative_p.resize (N_patches);
 
       //extract positive patch
-      for (size_t p = 0; p < positive_p.size (); p++)
+      for (const auto &p : positive_p)
       {
-        int col, row;
-        col = positive_p[p].first;
-        row = positive_p[p].second;
+        int col = p.first;
+        int row = p.second;
 
         pcl::PointXYZ patch_center_point;
         patch_center_point.x = cloud->at (col + w_size_2, row + w_size_2).x;
@@ -465,11 +459,10 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
       sleep(2);
 #endif
 
-      for (size_t p = 0; p < negative_p.size (); p++)
+      for (const auto &p : negative_p)
       {
-        int col, row;
-        col = negative_p[p].first;
-        row = negative_p[p].second;
+        int col = p.first;
+        int row = p.second;
 
         TrainingExample te;
         te.iimages_.push_back (integral_image_depth);
