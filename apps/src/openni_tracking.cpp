@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#include <thread>
+
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/particle_filter.h>
 #include <pcl/tracking/kld_adaptive_particle_filter_omp.h>
@@ -104,6 +107,7 @@
   }
 
 using namespace pcl::tracking;
+using namespace std::chrono_literals;
 
 template <typename PointType>
 class OpenNISegmentTracking
@@ -266,7 +270,7 @@ public:
     
     if (!cloud_pass_)
     {
-      boost::this_thread::sleep (boost::posix_time::seconds (1));
+      std::this_thread::sleep_for(1s);
       return;
     }
     
@@ -657,7 +661,7 @@ public:
     interface->start ();
       
     while (!viewer_.wasStopped ())
-      boost::this_thread::sleep(boost::posix_time::seconds(1));
+      std::this_thread::sleep_for(1s);
     interface->stop ();
   }
   

@@ -44,7 +44,9 @@
  * Tracking people within groups with RGB-D data,
  * In Proceedings of the International Conference on Intelligent Robots and Systems (IROS) 2012, Vilamoura (Portugal), 2012.
  */
-  
+
+#include <thread>
+
 #include <pcl/console/parse.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>    
@@ -52,6 +54,8 @@
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/people/ground_based_people_detection_app.h>
 #include <pcl/common/time.h>
+
+using namespace std::chrono_literals;
 
 typedef pcl::PointXYZRGBA PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
@@ -140,7 +144,7 @@ int main (int argc, char** argv)
 
   // Wait for the first frame:
   while(!new_cloud_available_flag) 
-    boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+    std::this_thread::sleep_for(1ms);
   new_cloud_available_flag = false;
 
   cloud_mutex.lock ();    // for not overwriting the point cloud
@@ -162,7 +166,7 @@ int main (int argc, char** argv)
   viewer.spin();
   std::cout << "done." << std::endl;
   
-  cloud_mutex.unlock ();    
+  cloud_mutex.unlock ();
 
   // Ground plane estimation:
   Eigen::VectorXf ground_coeffs;
@@ -241,4 +245,3 @@ int main (int argc, char** argv)
 
   return 0;
 }
-

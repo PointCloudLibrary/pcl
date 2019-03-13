@@ -38,8 +38,6 @@
 
 #include <pcl/apps/organized_segmentation_demo_qt.h>
 
-// Boost
-#include <boost/thread/thread.hpp>
 // PCL
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>

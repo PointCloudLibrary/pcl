@@ -34,6 +34,7 @@
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
+#include <thread>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -60,6 +61,7 @@ using namespace pcl;
 using namespace pcl::io;
 
 using namespace std;
+using namespace std::chrono_literals;
 
 char usage[] = "\n"
   "  PCL organized point cloud stream compression\n"
@@ -165,7 +167,7 @@ class SimpleOpenNIViewer
 
         while (!outputFile_.fail())
         {
-          boost::this_thread::sleep(boost::posix_time::seconds(1));
+          std::this_thread::sleep_for(1s);
         }
 
         interface->stop ();
@@ -255,7 +257,7 @@ struct EventHelper
 
       while (!outputFile_.fail ())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
       }
 
       interface->stop ();
@@ -275,7 +277,7 @@ struct EventHelper
       grabber.start ();
       while (!outputFile_.fail())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
       }
       grabber.stop ();
 
@@ -450,7 +452,7 @@ main (int argc, char **argv)
 
         std::cout << "Disconnected!" << std::endl;
 
-        boost::this_thread::sleep(boost::posix_time::seconds(3));
+        std::this_thread::sleep_for(3s);
 
       }
       catch (std::exception& e)

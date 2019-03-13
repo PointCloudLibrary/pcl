@@ -1,5 +1,7 @@
 #include <iostream>
+#include <thread>
 #include <vector>
+
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/search/search.h>
@@ -7,6 +9,8 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/segmentation/region_growing_rgb.h>
+
+using namespace std::chrono_literals;
 
 int
 main (int argc, char** argv)
@@ -44,7 +48,7 @@ main (int argc, char** argv)
   viewer.showCloud (colored_cloud);
   while (!viewer.wasStopped ())
   {
-    boost::this_thread::sleep (boost::posix_time::microseconds (100));
+    std::this_thread::sleep_for(100us);
   }
 
   return (0);

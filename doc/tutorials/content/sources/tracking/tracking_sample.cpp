@@ -1,3 +1,5 @@
+#include <thread>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -32,6 +34,7 @@
 #include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
 
 using namespace pcl::tracking;
+using namespace std::chrono_literals;
 
 typedef pcl::PointXYZRGBA RefPointType;
 typedef ParticleXYZRPY ParticleT;
@@ -135,7 +138,7 @@ viz_cb (pcl::visualization::PCLVisualizer& viz)
     
   if (!cloud_pass_)
     {
-      boost::this_thread::sleep (boost::posix_time::seconds (1));
+      std::this_thread::sleep_for(1s);
       return;
    }
 
@@ -280,6 +283,6 @@ main (int argc, char** argv)
   //Start viewer and object tracking
   interface->start();
   while (!viewer_->wasStopped ())
-    boost::this_thread::sleep(boost::posix_time::seconds(1));
+    std::this_thread::sleep_for(1s);
   interface->stop();
 }

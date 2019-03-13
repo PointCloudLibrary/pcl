@@ -36,6 +36,8 @@
  *
  */
 
+#include <thread>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointSource, typename PointTarget> void
 pcl::RegistrationVisualizer<PointSource, PointTarget>::startDisplay ()
@@ -172,8 +174,8 @@ pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
 
     // Render visualizer updated buffers
     viewer_->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
-
+    using namespace std::chrono_literals;
+    std::this_thread::sleep_for(100ms);
   }
 }
 

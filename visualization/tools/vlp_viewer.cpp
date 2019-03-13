@@ -36,6 +36,8 @@
  * Author: Keven Ring <keven@mitre.org>
  */
 
+#include <thread>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
@@ -55,6 +57,7 @@
 #include <typeinfo>
 
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
 using namespace pcl::visualization;
@@ -185,7 +188,7 @@ class SimpleVLPViewer
         if (!grabber_.isRunning ())
           cloud_viewer_->spin ();
 
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
       }
 
       grabber_.stop ();

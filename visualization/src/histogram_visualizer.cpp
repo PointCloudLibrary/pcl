@@ -36,6 +36,8 @@
  *
  */
 
+#include <thread>
+
 #include <pcl/common/common_headers.h>
 #include <pcl/visualization/common/common.h>
 #include <vtkRenderWindowInteractor.h>
@@ -51,6 +53,8 @@
 #include <vtkDataObject.h>
 #include <vtkProperty2D.h>
 #include <vtkFieldData.h>
+
+using namespace std::chrono_literals;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () : 
@@ -90,7 +94,7 @@ pcl::visualization::PCLHistogramVisualizer::spin ()
     spinOnce ();
     if (stopped_)
       break;
-    boost::this_thread::sleep (boost::posix_time::seconds (1));
+    std::this_thread::sleep_for(1s);
   }
   while (true);
 }

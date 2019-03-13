@@ -47,6 +47,9 @@
 #include <pcl/io/boost.h>
 #include <pcl/exceptions.h>
 #include <iostream>
+#include <thread>
+
+using namespace std::chrono_literals;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
@@ -241,7 +244,7 @@ pcl::OpenNIGrabber::start ()
     PCL_THROW_EXCEPTION (pcl::IOException, "Could not start streams. Reason: " << ex.what ());
   }
   // workaround, since the first frame is corrupted
-  boost::this_thread::sleep (boost::posix_time::seconds (1));
+  std::this_thread::sleep_for(1s);
   unblock_signals ();
 }
 

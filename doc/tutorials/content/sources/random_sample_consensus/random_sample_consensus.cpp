@@ -1,4 +1,6 @@
 #include <iostream>
+#include <thread>
+
 #include <pcl/console/parse.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/io/pcd_io.h>
@@ -7,7 +9,8 @@
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <boost/thread/thread.hpp>
+
+using namespace std::chrono_literals;
 
 pcl::visualization::PCLVisualizer::Ptr
 simpleVis (pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud)
@@ -97,7 +100,7 @@ main(int argc, char** argv)
   while (!viewer->wasStopped ())
   {
     viewer->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
   return 0;
  }

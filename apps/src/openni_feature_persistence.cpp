@@ -35,6 +35,8 @@
  *
  */
 
+#include <thread>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -50,6 +52,7 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d_omp.h>
 
+using namespace std::chrono_literals;
 
 #define FPS_CALC(_WHAT_) \
 do \
@@ -158,7 +161,7 @@ class OpenNIFeaturePersistence
       boost::mutex::scoped_lock lock (mtx_);
       if (!cloud_)
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
         return;
       }
 
@@ -196,7 +199,7 @@ class OpenNIFeaturePersistence
 
       while (!viewer.wasStopped ())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
       }
 
       interface->stop ();

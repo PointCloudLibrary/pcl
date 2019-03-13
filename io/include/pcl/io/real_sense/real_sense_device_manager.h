@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <boost/thread.hpp>
 #include <boost/utility.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/shared_ptr.hpp>

@@ -42,7 +42,6 @@
 
 #include <pcl/common/time.h>
 #include <pcl/common/io.h>
-#include <boost/thread.hpp>
 #include <pcl/PolygonMesh.h>
 #include <pcl/io/grabber.h>
 

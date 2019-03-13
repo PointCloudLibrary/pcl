@@ -1,3 +1,4 @@
+#include <thread>
 
 #include <pcl/stereo/stereo_matching.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -15,6 +16,8 @@
   * \author Federico Tombari (federico.tombari@unibo.it)
   * \ingroup stereo
   */
+
+using namespace std::chrono_literals;
 
 int 
 main(int argc, char **argv)
@@ -96,6 +99,6 @@ main(int argc, char **argv)
   {
     viewer->spinOnce (100);
     iv.spinOnce (100); // press 'q' to exit
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
 }

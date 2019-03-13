@@ -56,9 +56,11 @@
 #include <vtkPointData.h>
 #include <vtkGlyph3D.h>
 #include <cstdio>
+#include <thread>
 #include <vector>
 
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace io;
 using namespace console;
@@ -223,7 +225,7 @@ visualize (const ModelLibrary::HashTable& hash_table)
   while (!vis.wasStopped ())
   {
     vis.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
 }
 

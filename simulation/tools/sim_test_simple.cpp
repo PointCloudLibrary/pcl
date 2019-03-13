@@ -19,6 +19,7 @@
 #include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
+#include <thread>
 #include <boost/shared_ptr.hpp>
 #ifdef _WIN32
 # define WIN32_LEAN_AND_MEAN
@@ -69,7 +70,6 @@
 
 // Pop-up viewer
 #include <pcl/visualization/cloud_viewer.h>
-#include <boost/thread/thread.hpp>
 
 using namespace Eigen;
 using namespace pcl;
@@ -78,6 +78,7 @@ using namespace pcl::io;
 using namespace pcl::simulation;
 
 using namespace std;
+using namespace std::chrono_literals;
 
 uint16_t t_gamma[2048];
 
@@ -412,7 +413,7 @@ void display ()
   while (!viewer->wasStopped ())
   {
     viewer->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }    
   
   // doesn't work:

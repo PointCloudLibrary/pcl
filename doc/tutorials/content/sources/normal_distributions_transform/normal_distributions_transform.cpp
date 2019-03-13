@@ -1,4 +1,6 @@
 #include <iostream>
+#include <thread>
+
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 
@@ -6,7 +8,8 @@
 #include <pcl/filters/approximate_voxel_grid.h>
 
 #include <pcl/visualization/pcl_visualizer.h>
-#include <boost/thread/thread.hpp>
+
+using namespace std::chrono_literals;
 
 int
 main (int argc, char** argv)
@@ -102,7 +105,7 @@ main (int argc, char** argv)
   while (!viewer_final->wasStopped ())
   {
     viewer_final->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
 
   return (0);

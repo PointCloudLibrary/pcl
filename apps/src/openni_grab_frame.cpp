@@ -45,7 +45,7 @@
 #include <boost/filesystem.hpp>
 #include <pcl/visualization/pcl_visualizer.h>
 
-
+using namespace std::chrono_literals;
 
 #define SHOW_FPS 1
 #if SHOW_FPS
@@ -194,7 +194,7 @@ class OpenNIGrabFrame
       // wait until user quits program with Ctrl-C, but no busy-waiting -> sleep (1);
       while (!visualizer_->wasStopped())
       {
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
 
         visualizer_->spinOnce ();
         
@@ -212,9 +212,6 @@ class OpenNIGrabFrame
         }
       }
       
-      //while (!quit_)
-        //boost::this_thread::sleep (boost::posix_time::seconds (1));
-   
       // stop the grabber
       grabber_.stop ();
     }

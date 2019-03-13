@@ -38,6 +38,9 @@
  */
 
 #define SHOW_FPS 1
+
+#include <thread>
+
 #include <pcl/apps/timer.h>
 #include <pcl/common/common.h>
 #include <pcl/common/angles.h>
@@ -53,6 +56,7 @@
 
 using namespace pcl;
 using namespace std;
+using namespace std::chrono_literals;
 
 typedef PointXYZRGBA PointT;
 typedef PointWithScale KeyPointT;
@@ -268,7 +272,7 @@ class BRISKDemo
 
         cloud_viewer_.spinOnce ();
         image_viewer_.spinOnce ();
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
       }
 
       grabber_.stop ();

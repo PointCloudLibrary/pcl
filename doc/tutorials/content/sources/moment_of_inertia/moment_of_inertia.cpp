@@ -1,9 +1,12 @@
-#include <pcl/features/moment_of_inertia_estimation.h>
 #include <vector>
+#include <thread>
+
+#include <pcl/features/moment_of_inertia_estimation.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <boost/thread/thread.hpp>
+
+using namespace std::chrono_literals;
 
 int main (int argc, char** argv)
 {
@@ -62,7 +65,7 @@ int main (int argc, char** argv)
   while(!viewer->wasStopped())
   {
     viewer->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
 
   return (0);

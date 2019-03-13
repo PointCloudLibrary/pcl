@@ -66,11 +66,13 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
+#include <thread>
 
 using namespace pcl;
 using namespace pcl::visualization;
 using namespace pcl::recognition;
 using namespace pcl::io;
+using namespace std::chrono_literals;
 
 void run (const char *file_name, float voxel_size);
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& points);
@@ -145,7 +147,7 @@ void run (const char* file_name, float voxel_size)
   {
     //main loop of the visualizer
     viz.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
 }
 

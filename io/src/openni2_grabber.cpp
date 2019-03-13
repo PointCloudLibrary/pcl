@@ -249,8 +249,6 @@ pcl::io::OpenNI2Grabber::start ()
     PCL_THROW_EXCEPTION (pcl::IOException, "Could not start streams. Reason: " << ex.what ());
   }
 
-  // workaround, since the first frame is corrupted
-  //boost::this_thread::sleep (boost::posix_time::seconds (1));
   unblock_signals ();
 }
 

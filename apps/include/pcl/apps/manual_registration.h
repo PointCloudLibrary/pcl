@@ -36,15 +36,10 @@
 
 #include <ui_manual_registration.h>
 
-// QT4
+// QT
 #include <QMainWindow>
 #include <QMutex>
 #include <QTimer>
-
-// Boost
-#ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
-#endif
 
 // PCL
 #include <pcl/console/print.h>
