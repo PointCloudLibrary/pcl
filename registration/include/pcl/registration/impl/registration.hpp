@@ -114,10 +114,11 @@ pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> inline double
-pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max_range)
+pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max_distance)
 {
 
   double fitness_score = 0.0;
+  double max_dist_sqr = max_distance * max_distance;
 
   // Transform the input dataset using the final transformation
   PointCloudSource input_transformed;
@@ -134,7 +135,7 @@ pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max
     tree_->nearestKSearch (input_transformed.points[i], 1, nn_indices, nn_dists);
     
     // Deal with occlusions (incomplete targets)
-    if (nn_dists[0] <= max_range)
+    if (nn_dists[0] <= max_dist_sqr)
     {
       // Add to the fitness score
       fitness_score += nn_dists[0];

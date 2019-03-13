@@ -129,7 +129,7 @@ class TemplateAlignment
 
     TemplateAlignment () :
       min_sample_distance_ (0.05f),
-      max_correspondence_distance_ (0.01f*0.01f),
+      max_correspondence_distance_ (0.01f),
       nr_iterations_ (500)
     {
       // Initialize the parameters in the Sample Consensus Initial Alignment (SAC-IA) algorithm
