@@ -7,8 +7,8 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel (pcl::PolygonMesh::Ptr plg
   Indices indices;
 
   bool found_rgb = false;
-  for (size_t i=0; i < plg->cloud.fields.size () ; ++i)
-    if (plg->cloud.fields[i].name.compare ("rgb") == 0)
+  for (const auto &field : plg->cloud.fields)
+    if (field.name == "rgb")
       found_rgb = true;
 
   if (found_rgb)
@@ -21,17 +21,15 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel (pcl::PolygonMesh::Ptr plg
     PCL_DEBUG("Mesh points: %ld", newcloud.points.size ());
 
     Eigen::Vector4f tmp;
-    for(size_t i=0; i< plg->polygons.size (); ++i)
-    { // each triangle/polygon
-      pcl::Vertices apoly_in = plg->polygons[i];
-      for(size_t j = 0; j < apoly_in.vertices.size (); ++j)
-      { // each point
-        uint32_t pt = apoly_in.vertices[j];
-        tmp = newcloud.points[pt].getVector4fMap();
+    for(const auto &polygon : plg->polygons)
+    {
+      for(const unsigned int &point : polygon.vertices)
+      {
+        tmp = newcloud.points[point].getVector4fMap();
         vertices.push_back (Vertex (Eigen::Vector3f (tmp (0), tmp (1), tmp (2)),
-                                    Eigen::Vector3f (newcloud.points[pt].r/255.0f,
-                                                     newcloud.points[pt].g/255.0f,
-                                                     newcloud.points[pt].b/255.0f)));
+                                    Eigen::Vector3f (newcloud.points[point].r/255.0f,
+                                                     newcloud.points[point].g/255.0f,
+                                                     newcloud.points[point].b/255.0f)));
         indices.push_back (indices.size ());
       }
     }
@@ -41,13 +39,11 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel (pcl::PolygonMesh::Ptr plg
     pcl::PointCloud<pcl::PointXYZ> newcloud;
     pcl::fromPCLPointCloud2 (plg->cloud, newcloud);
     Eigen::Vector4f tmp;
-    for(size_t i=0; i< plg->polygons.size (); i++)
-    { // each triangle/polygon
-      pcl::Vertices apoly_in = plg->polygons[i];
-      for(size_t j=0; j< apoly_in.vertices.size (); j++)
-      { // each point
-        uint32_t pt = apoly_in.vertices[j];
-        tmp = newcloud.points[pt].getVector4fMap();
+    for(const auto &polygon : plg->polygons)
+    {
+      for(const unsigned int &point : polygon.vertices)
+      {
+        tmp = newcloud.points[point].getVector4fMap();
         vertices.push_back (Vertex (Eigen::Vector3f (tmp (0), tmp (1), tmp (2)),
                                     Eigen::Vector3f (1.0, 1.0, 1.0)));
         indices.push_back (indices.size ());
@@ -115,18 +111,20 @@ pcl::simulation::TriangleMeshModel::~TriangleMeshModel ()
 pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMesh::Ptr plg) : mode_ (mode)
 {
   bool found_rgb=false;
-  for (size_t i=0; i<plg->cloud.fields.size () ;i++)
-    if (plg->cloud.fields[i].name.compare ("rgb") == 0 || plg->cloud.fields[i].name.compare ("rgba") == 0)
+  for (const auto &field : plg->cloud.fields)
+    if ((field.name == "rgb") || (field.name == "rgba"))
+    {
       found_rgb = true;
-  
+      break;
+    }
+
   if (found_rgb)
   {
     pcl::PointCloud<pcl::PointXYZRGB> newcloud;  
     pcl::fromPCLPointCloud2 (plg->cloud, newcloud);
     Eigen::Vector4f tmp;
-    for(size_t i = 0; i< plg->polygons.size (); i++)
+    for(const auto &apoly_in : plg->polygons)
     { // each triangle/polygon
-      pcl::Vertices apoly_in = plg->polygons[i];
       SinglePoly apoly;
       apoly.nvertices_ = apoly_in.vertices.size ();
       apoly.vertices_ = new float[3*apoly_in.vertices.size ()];
@@ -154,9 +152,8 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMe
     pcl::PointCloud<pcl::PointXYZ> newcloud;  
     pcl::fromPCLPointCloud2 (plg->cloud, newcloud);
     Eigen::Vector4f tmp;
-    for(size_t i=0; i< plg->polygons.size (); i++)
+    for(const auto &apoly_in : plg->polygons)
     { // each triangle/polygon
-      pcl::Vertices apoly_in = plg->polygons[i];
       SinglePoly apoly;
       apoly.nvertices_ = apoly_in.vertices.size ();
       apoly.vertices_ = new float [3*apoly_in.vertices.size ()];
@@ -184,10 +181,10 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMe
 pcl::simulation::PolygonMeshModel::~PolygonMeshModel ()
 {
   // TODO: memory management!
-  for (size_t i = 0; i < polygons.size (); ++i)
+  for (auto &polygon : polygons)
   {
-    delete [] polygons[i].vertices_;
-    delete [] polygons[i].colors_;
+    delete [] polygon.vertices_;
+    delete [] polygon.colors_;
   }
 }
 
@@ -200,11 +197,11 @@ pcl::simulation::PolygonMeshModel::draw ()
   glEnableClientState (GL_VERTEX_ARRAY);
   glEnableClientState (GL_COLOR_ARRAY);
 
-  for (size_t i = 0; i < polygons.size (); i++)
+  for (const auto &polygon : polygons)
   {
-    glVertexPointer (3, GL_FLOAT, 0, polygons[i].vertices_);
-    glColorPointer (4, GL_FLOAT, 0, polygons[i].colors_);
-    glDrawArrays (mode_, 0, polygons[i].nvertices_);
+    glVertexPointer (3, GL_FLOAT, 0, polygon.vertices_);
+    glColorPointer (4, GL_FLOAT, 0, polygon.colors_);
+    glDrawArrays (mode_, 0, polygon.nvertices_);
   }
   glDisableClientState (GL_COLOR_ARRAY);
   glDisableClientState (GL_VERTEX_ARRAY);

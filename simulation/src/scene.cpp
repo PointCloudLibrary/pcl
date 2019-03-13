@@ -28,8 +28,8 @@ Scene::addCompleteModel (std::vector<Model::Ptr> model)
 void
 Scene::draw ()
 {
-  for (std::vector<Model::Ptr>::iterator model = models_.begin (); model != models_.end (); ++model)
-    (*model)->draw ();
+  for (auto &model : models_)
+    model->draw ();
 }
 
 void
