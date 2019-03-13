@@ -1345,24 +1345,24 @@ TEST (ProjectInliers, Filters)
   proj.setModelCoefficients (coefficients);
   proj.filter (output);
 
-  for (size_t i = 0; i < output.points.size (); ++i)
-    EXPECT_NEAR (output.points[i].z, 0.0, 1e-4);
+  for (const auto &point : output.points)
+    EXPECT_NEAR (point.z, 0.0, 1e-4);
 
-    // Test the pcl::PCLPointCloud2 method
-    ProjectInliers<PCLPointCloud2> proj2;
+  // Test the pcl::PCLPointCloud2 method
+  ProjectInliers<PCLPointCloud2> proj2;
 
-    PCLPointCloud2 output_blob;
+  PCLPointCloud2 output_blob;
 
-    proj2.setModelType (SACMODEL_PLANE);
-    proj2.setInputCloud (cloud_blob);
-    proj2.setModelCoefficients (coefficients);
-    proj2.filter (output_blob);
+  proj2.setModelType (SACMODEL_PLANE);
+  proj2.setInputCloud (cloud_blob);
+  proj2.setModelCoefficients (coefficients);
+  proj2.filter (output_blob);
 
-    fromPCLPointCloud2 (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
-    for (size_t i = 0; i < output.points.size (); ++i)
-    EXPECT_NEAR (output.points[i].z, 0.0, 1e-4);
-  }
+  for (const auto &point : output.points)
+    EXPECT_NEAR (point.z, 0.0, 1e-4);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (RadiusOutlierRemoval, Filters)
@@ -1590,11 +1590,11 @@ TEST (ConditionalRemoval, Filters)
   condrem.filter (output);
 
   int num_not_nan = 0;
-  for (size_t i = 0; i < output.points.size (); i++)
+  for (const auto &point : output.points)
   {
-    if (std::isfinite (output.points[i].x) &&
-        std::isfinite (output.points[i].y) &&
-        std::isfinite (output.points[i].z))
+    if (std::isfinite (point.x) &&
+        std::isfinite (point.y) &&
+        std::isfinite (point.z))
     num_not_nan++;
   }
 
@@ -1627,11 +1627,11 @@ TEST (ConditionalRemoval, Filters)
   condrem_.filter (output);
 
   num_not_nan = 0;
-  for (size_t i = 0; i < output.points.size (); i++)
+  for (const auto &point : output.points)
   {
-    if (std::isfinite (output.points[i].x) &&
-        std::isfinite (output.points[i].y) &&
-        std::isfinite (output.points[i].z))
+    if (std::isfinite (point.x) &&
+        std::isfinite (point.y) &&
+        std::isfinite (point.z))
     num_not_nan++;
   }
 
@@ -1695,11 +1695,11 @@ TEST (ConditionalRemovalSetIndices, Filters)
   EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output.points[output.points.size () - 1].z);
 
   int num_not_nan = 0;
-  for (size_t i = 0; i < output.points.size (); i++)
+  for (const auto &point : output.points)
   {
-    if (std::isfinite (output.points[i].x) &&
-        std::isfinite (output.points[i].y) &&
-        std::isfinite (output.points[i].z))
+    if (std::isfinite (point.x) &&
+        std::isfinite (point.y) &&
+        std::isfinite (point.z))
       num_not_nan++;
   }
 
@@ -1745,11 +1745,11 @@ TEST (ConditionalRemovalSetIndices, Filters)
   EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output.points[output.points.size () - 1].z);
 
   num_not_nan = 0;
-  for (size_t i = 0; i < output.points.size (); i++)
+  for (const auto &point : output.points)
   {
-    if (std::isfinite (output.points[i].x) &&
-        std::isfinite (output.points[i].y) &&
-        std::isfinite (output.points[i].z))
+    if (std::isfinite (point.x) &&
+        std::isfinite (point.y) &&
+        std::isfinite (point.z))
       num_not_nan++;
   }
 
@@ -1788,11 +1788,11 @@ TEST (SamplingSurfaceNormal, Filters)
   ssn_filter.filter (outcloud);
 
   // All the sampled points should have normals along the direction of Z axis
-  for (size_t i = 0; i < outcloud.points.size (); i++)
+  for (const auto &point : outcloud.points)
   {
-    EXPECT_NEAR (outcloud.points[i].normal[0], 0, 1e-3);
-    EXPECT_NEAR (outcloud.points[i].normal[1], 0, 1e-3);
-    EXPECT_NEAR (outcloud.points[i].normal[2], 1, 1e-3);
+    EXPECT_NEAR (point.normal[0], 0, 1e-3);
+    EXPECT_NEAR (point.normal[1], 0, 1e-3);
+    EXPECT_NEAR (point.normal[2], 1, 1e-3);
   }
 }
 
@@ -1925,11 +1925,11 @@ TEST (FrustumCulling, Filters)
   fc.setKeepOrganized (true);
   fc.filter (*output);
   EXPECT_EQ (output->size (), input->size ());
-  for (size_t i = 0; i < output->size (); i++)
+  for (const auto &point : *output)
   {
-    EXPECT_TRUE (std::isnan (output->at (i).x));
-    EXPECT_TRUE (std::isnan (output->at (i).y));
-    EXPECT_TRUE (std::isnan (output->at (i).z));
+    EXPECT_TRUE (std::isnan (point.x));
+    EXPECT_TRUE (std::isnan (point.y));
+    EXPECT_TRUE (std::isnan (point.z));
   }
   removed = fc.getRemovedIndices ();
   EXPECT_EQ (removed->size (), input->size ());
@@ -2257,12 +2257,12 @@ TEST (NormalRefinement, Filters)
   int num_nans = 0;
 
   // Loop
-  for (size_t i = 0; i < idx_table.size (); ++i)
+  for (const int &idx : idx_table)
   {
     float tmp;
 
     // Estimated (need to avoid zeros and NaNs)
-    const pcl::PointXYZRGBNormal& calci = cloud_organized_normal[idx_table[i]];
+    const pcl::PointXYZRGBNormal& calci = cloud_organized_normal[idx];
     if ((fabsf (calci.normal_x) + fabsf (calci.normal_y) + fabsf (calci.normal_z)) > 0.0f)
     {
       tmp = 1.0f - (calci.normal_x * a + calci.normal_y * b + calci.normal_z * c);
@@ -2274,7 +2274,7 @@ TEST (NormalRefinement, Filters)
     }
 
     // Refined
-    const pcl::PointXYZRGBNormal& refinedi = cloud_organized_normal_refined[idx_table[i]];
+    const pcl::PointXYZRGBNormal& refinedi = cloud_organized_normal_refined[idx];
     if ((fabsf (refinedi.normal_x) + fabsf (refinedi.normal_y) + fabsf (refinedi.normal_z)) > 0.0f)
     {
       tmp = 1.0f - (refinedi.normal_x * a + refinedi.normal_y * b + refinedi.normal_z * c);
@@ -2301,14 +2301,14 @@ TEST (NormalRefinement, Filters)
 
   // Error variance of estimated
   float err_est_var = 0.0f;
-  for (size_t i = 0; i < errs_est.size (); ++i)
-    err_est_var = (errs_est[i] - err_est_mean) * (errs_est[i] - err_est_mean);
+  for (const float &err : errs_est)
+    err_est_var = (err - err_est_mean) * (err - err_est_mean);
   err_est_var /= static_cast<float> (errs_est.size () - 1);
 
   // Error variance of refined
   float err_refined_var = 0.0f;
-  for (size_t i = 0; i < errs_refined.size (); ++i)
-    err_refined_var = (errs_refined[i] - err_refined_mean) * (errs_refined[i] - err_refined_mean);
+  for (const float &err : errs_refined)
+    err_refined_var = (err - err_refined_mean) * (err - err_refined_mean);
   err_refined_var /= static_cast<float> (errs_refined.size () - 1);
 
   // Refinement should not produce any zeros and NaNs

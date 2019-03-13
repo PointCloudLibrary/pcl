@@ -55,11 +55,11 @@ TEST (PCL, PointCloudImageExtractorFromNormalField)
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (auto &point : cloud.points)
   {
-    cloud.points[i].normal_x = -1.0;
-    cloud.points[i].normal_y =  0.0;
-    cloud.points[i].normal_z =  1.0;
+    point.normal_x = -1.0;
+    point.normal_y =  0.0;
+    point.normal_z =  1.0;
   }
   pcl::PCLImage image;
   PointCloudImageExtractorFromNormalField<PointT> pcie;
@@ -93,11 +93,11 @@ TEST (PCL, PointCloudImageExtractorFromRGBField)
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (auto &point : cloud.points)
   {
-    cloud.points[i].r =   0;
-    cloud.points[i].g = 127;
-    cloud.points[i].b = 254;
+    point.r =   0;
+    point.g = 127;
+    point.b = 254;
   }
   pcl::PCLImage image;
   PointCloudImageExtractorFromRGBField<PointT> pcie;
@@ -131,12 +131,12 @@ TEST (PCL, PointCloudImageExtractorFromRGBAField)
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (auto &point : cloud.points)
   {
-    cloud.points[i].r =   0;
-    cloud.points[i].g = 127;
-    cloud.points[i].b = 254;
-    cloud.points[i].a = 100;
+    point.r =   0;
+    point.g = 127;
+    point.b = 254;
+    point.a = 100;
   }
   pcl::PCLImage image;
   PointCloudImageExtractorFromRGBField<PointT> pcie;

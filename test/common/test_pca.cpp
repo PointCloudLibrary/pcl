@@ -49,11 +49,11 @@ pcl::PCA<pcl::PointXYZ> pca;
 TEST(PCA, projection)
 {
   pcl::PointXYZ projected, reconstructed;
-  for(size_t i = 0; i < cloud.size(); i++)
+  for(const auto &point : cloud)
   {
-    pca.project (cloud[i], projected);
+    pca.project (point, projected);
     pca.reconstruct (projected, reconstructed);
-    EXPECT_NEAR_VECTORS (reconstructed.getVector3fMap (), cloud[i].getVector3fMap (), 2.5e-4);
+    EXPECT_NEAR_VECTORS (reconstructed.getVector3fMap (), point.getVector3fMap (), 2.5e-4);
   }
 }
 

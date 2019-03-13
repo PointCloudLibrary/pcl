@@ -92,9 +92,9 @@ TEST (TestAddDeleteFace, NonManifold1)
   vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear (); // 0
   vi.push_back (VI (2)); vi.push_back (VI (1)); vi.push_back (VI (4)); faces.push_back (vi); vi.clear (); // 1
   vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (5)); faces.push_back (vi); vi.clear (); // 2
-  for (size_t i=0; i < faces.size (); ++i)
+  for (const auto &face : faces)
   {
-    ASSERT_TRUE (mesh.addFace (faces [i]).isValid ());
+    ASSERT_TRUE (mesh.addFace (face).isValid ());
   }
   EXPECT_TRUE (hasFaces (mesh, faces));
 
@@ -154,9 +154,9 @@ TEST (TestAddDeleteFace, NonManifold2)
   // 3 - 4 //
   vi.push_back (VI (0)); vi.push_back (VI (1)); vi.push_back (VI (2)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (4)); faces.push_back (vi); vi.clear ();
-  for (size_t i=0; i < faces.size (); ++i)
+  for (const auto &face : faces)
   {
-    ASSERT_TRUE (mesh.addFace (faces [i]).isValid ());
+    ASSERT_TRUE (mesh.addFace (face).isValid ());
   }
   EXPECT_TRUE (hasFaces (mesh, faces));
 
@@ -584,9 +584,9 @@ TEST (TestMesh, IsBoundaryIsManifold)
   vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear (); // 0
   vi.push_back (VI (2)); vi.push_back (VI (1)); vi.push_back (VI (4)); faces.push_back (vi); vi.clear (); // 1
   vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (5)); faces.push_back (vi); vi.clear (); // 2
-  for (size_t i = 0; i < faces.size (); ++i)
+  for (const auto &face : faces)
   {
-    ASSERT_TRUE (mesh.addFace (faces [i]).isValid ());
+    ASSERT_TRUE (mesh.addFace (face).isValid ());
   }
   EXPECT_TRUE (hasFaces (mesh, faces));
 

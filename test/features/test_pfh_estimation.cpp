@@ -216,35 +216,35 @@ TEST (PCL, PFHEstimation)
   pfh.compute (*pfhs);
   EXPECT_EQ (pfhs->points.size (), indices.size ());
 
-  for (size_t i = 0; i < pfhs->points.size (); ++i)
+  for (const auto &point : pfhs->points)
   {
-    EXPECT_NEAR (pfhs->points[i].histogram[0],  0.156477  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[1],  0.539396  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[2],  0.410907  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[3],  0.184465  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[4],  0.115767  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[5],  0.0572475 , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[6],  0.206092  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[7],  0.339667  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[8],  0.265883  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[9],  0.0038165 , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[10], 0.103046  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[11], 0.214997  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[12], 0.398186  , 3e-2); // larger error w.r.t. considering all point pairs (feature bins=0,2,2 where 2 is middle, so angle of 0)
-    EXPECT_NEAR (pfhs->points[i].histogram[13], 0.298959  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[14], 0.00127217, 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[15], 0.11704   , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[16], 0.255706  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[17], 0.356205  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[18], 0.265883  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[19], 0.00127217, 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[20], 0.148844  , 1e-4);
-    //EXPECT_NEAR (pfhs->points[i].histogram[21], 0.721316  , 1e-3);
-    //EXPECT_NEAR (pfhs->points[i].histogram[22], 0.438899  , 1e-2);
-    EXPECT_NEAR (pfhs->points[i].histogram[23], 0.22263   , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[24], 0.0216269 , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[25], 0.223902  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[26], 0.07633   , 1e-4);
+    EXPECT_NEAR (point.histogram[0],  0.156477  , 1e-4);
+    EXPECT_NEAR (point.histogram[1],  0.539396  , 1e-4);
+    EXPECT_NEAR (point.histogram[2],  0.410907  , 1e-4);
+    EXPECT_NEAR (point.histogram[3],  0.184465  , 1e-4);
+    EXPECT_NEAR (point.histogram[4],  0.115767  , 1e-4);
+    EXPECT_NEAR (point.histogram[5],  0.0572475 , 1e-4);
+    EXPECT_NEAR (point.histogram[6],  0.206092  , 1e-4);
+    EXPECT_NEAR (point.histogram[7],  0.339667  , 1e-4);
+    EXPECT_NEAR (point.histogram[8],  0.265883  , 1e-4);
+    EXPECT_NEAR (point.histogram[9],  0.0038165 , 1e-4);
+    EXPECT_NEAR (point.histogram[10], 0.103046  , 1e-4);
+    EXPECT_NEAR (point.histogram[11], 0.214997  , 1e-4);
+    EXPECT_NEAR (point.histogram[12], 0.398186  , 3e-2); // larger error w.r.t. considering all point pairs (feature bins=0,2,2 where 2 is middle, so angle of 0)
+    EXPECT_NEAR (point.histogram[13], 0.298959  , 1e-4);
+    EXPECT_NEAR (point.histogram[14], 0.00127217, 1e-4);
+    EXPECT_NEAR (point.histogram[15], 0.11704   , 1e-4);
+    EXPECT_NEAR (point.histogram[16], 0.255706  , 1e-4);
+    EXPECT_NEAR (point.histogram[17], 0.356205  , 1e-4);
+    EXPECT_NEAR (point.histogram[18], 0.265883  , 1e-4);
+    EXPECT_NEAR (point.histogram[19], 0.00127217, 1e-4);
+    EXPECT_NEAR (point.histogram[20], 0.148844  , 1e-4);
+    //EXPECT_NEAR (point.histogram[21], 0.721316  , 1e-3);
+    //EXPECT_NEAR (point.histogram[22], 0.438899  , 1e-2);
+    EXPECT_NEAR (point.histogram[23], 0.22263   , 1e-4);
+    EXPECT_NEAR (point.histogram[24], 0.0216269 , 1e-4);
+    EXPECT_NEAR (point.histogram[25], 0.223902  , 1e-4);
+    EXPECT_NEAR (point.histogram[26], 0.07633   , 1e-4);
   }
   //Eigen::Map<Eigen::VectorXf> h (&(pfhs->points[0].histogram[0]), 125);
   //std::cerr << h.head<27> () << std::endl;

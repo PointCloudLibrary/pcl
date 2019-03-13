@@ -214,9 +214,9 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoBlob)
 
   // scope blob data
   ps = cloud_blob.point_step;
-  for (size_t i = 0; i < cloud_blob.fields.size (); ++i)
-    if (cloud_blob.fields[i].name == std::string("rgba"))
-      offset = static_cast<int32_t> (cloud_blob.fields[i].offset);
+  for (const auto &field : cloud_blob.fields)
+    if (field.name == std::string("rgba"))
+      offset = static_cast<int32_t> (field.offset);
 
   ASSERT_GE (offset, 0);
 
@@ -262,9 +262,9 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoPolygonMesh)
 
   // scope blob data
   ps = mesh.cloud.point_step;
-  for (size_t i = 0; i < mesh.cloud.fields.size (); ++i)
-    if (mesh.cloud.fields[i].name == std::string("rgba"))
-      offset = static_cast<int32_t> (mesh.cloud.fields[i].offset);
+  for (const auto &field : mesh.cloud.fields)
+    if (field.name == std::string("rgba"))
+      offset = static_cast<int32_t> (field.offset);
 
   ASSERT_GE (offset, 0);
 

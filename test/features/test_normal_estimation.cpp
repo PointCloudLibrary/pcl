@@ -153,12 +153,12 @@ TEST (PCL, NormalEstimation)
   n.compute (*normals);
   EXPECT_EQ (normals->points.size (), indices.size ());
 
-  for (size_t i = 0; i < normals->points.size (); ++i)
+  for (const auto &point : normals->points)
   {
-    EXPECT_NEAR (normals->points[i].normal[0], -0.035592, 1e-4);
-    EXPECT_NEAR (normals->points[i].normal[1], -0.369596, 1e-4);
-    EXPECT_NEAR (normals->points[i].normal[2], -0.928511, 1e-4);
-    EXPECT_NEAR (normals->points[i].curvature, 0.0693136, 1e-4);
+    EXPECT_NEAR (point.normal[0], -0.035592, 1e-4);
+    EXPECT_NEAR (point.normal[1], -0.369596, 1e-4);
+    EXPECT_NEAR (point.normal[2], -0.928511, 1e-4);
+    EXPECT_NEAR (point.curvature, 0.0693136, 1e-4);
   }
 
   PointCloud<PointXYZ>::Ptr surfaceptr = cloudptr;
@@ -204,12 +204,12 @@ TEST (PCL, NormalEstimationOpenMP)
   n.compute (*normals);
   EXPECT_EQ (normals->points.size (), indices.size ());
 
-  for (size_t i = 0; i < normals->points.size (); ++i)
+  for (const auto &point : normals->points)
   {
-    EXPECT_NEAR (normals->points[i].normal[0], -0.035592, 1e-4);
-    EXPECT_NEAR (normals->points[i].normal[1], -0.369596, 1e-4);
-    EXPECT_NEAR (normals->points[i].normal[2], -0.928511, 1e-4);
-    EXPECT_NEAR (normals->points[i].curvature, 0.0693136, 1e-4);
+    EXPECT_NEAR (point.normal[0], -0.035592, 1e-4);
+    EXPECT_NEAR (point.normal[1], -0.369596, 1e-4);
+    EXPECT_NEAR (point.normal[2], -0.928511, 1e-4);
+    EXPECT_NEAR (point.curvature, 0.0693136, 1e-4);
   }
 }
 

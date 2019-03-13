@@ -105,9 +105,9 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   
   //cout << k_indices.size()<<"=="<<brute_force_result.size()<<"?\n";
   
-  for (size_t i = 0; i < k_indices.size (); ++i)
+  for (const int &k_index : k_indices)
   {
-    set<int>::iterator brute_force_result_it = brute_force_result.find (k_indices[i]);
+    set<int>::iterator brute_force_result_it = brute_force_result.find (k_index);
     bool ok = brute_force_result_it != brute_force_result.end ();
     //if (!ok)  cerr << k_indices[i] << " is not correct...\n";
     //else      cerr << k_indices[i] << " is correct...\n";
@@ -128,8 +128,8 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
 
     ScopeTime scopeTime ("FLANN radiusSearch");
     {
-      for (size_t i = 0; i < cloud_big.points.size (); ++i)
-        kdtree.radiusSearch (cloud_big.points[i], 0.1, k_indices, k_distances);
+      for (const auto &point : cloud_big.points)
+        kdtree.radiusSearch (point, 0.1, k_indices, k_distances);
     }
   }
   
@@ -139,8 +139,8 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
 
     ScopeTime scopeTime ("FLANN radiusSearch (max neighbors in radius)");
     {
-      for (size_t i = 0; i < cloud_big.points.size (); ++i)
-        kdtree.radiusSearch (cloud_big.points[i], 0.1, k_indices, k_distances, 10);
+      for (const auto &point : cloud_big.points)
+        kdtree.radiusSearch (point, 0.1, k_indices, k_distances, 10);
     }
   }
   
@@ -151,8 +151,8 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
 
     ScopeTime scopeTime ("FLANN radiusSearch (unsorted results)");
     {
-      for (size_t i = 0; i < cloud_big.points.size (); ++i)
-        kdtree.radiusSearch (cloud_big.points[i], 0.1, k_indices, k_distances);
+      for (const auto &point : cloud_big.points)
+        kdtree.radiusSearch (point, 0.1, k_indices, k_distances);
     }
   }
 }
@@ -187,14 +187,14 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
   // Check if all found neighbors have distance smaller than max_dist
-  for (size_t i = 0; i < k_indices.size (); ++i)
+  for (const int &k_index : k_indices)
   {
-    const MyPoint& point = cloud.points[k_indices[i]];
+    const MyPoint& point = cloud.points[k_index];
     bool ok = euclideanDistance (test_point, point) <= max_dist;
     if (!ok)
       ok = (fabs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;
-    //if (!ok)  cerr << k_indices[i] << " is not correct...\n";
-    //else      cerr << k_indices[i] << " is correct...\n";
+    //if (!ok)  cerr << k_index << " is not correct...\n";
+    //else      cerr << k_index << " is correct...\n";
     EXPECT_EQ (ok, true);
   }
 
@@ -202,8 +202,8 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   {
     KdTreeFLANN<MyPoint> kdtree;
     kdtree.setInputCloud (cloud_big.makeShared ());
-    for (size_t i = 0; i < cloud_big.points.size (); ++i)
-      kdtree.nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+    for (const auto &point : cloud_big.points)
+      kdtree.nearestKSearch (point, no_of_neighbors, k_indices, k_distances);
   }
 }
 

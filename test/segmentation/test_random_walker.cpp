@@ -227,11 +227,11 @@ TEST_P (RandomWalkerTest, GetPotentials)
   ASSERT_EQ (g.colors.size (), p.cols ());
   ASSERT_EQ (g.colors.size (), map.size ());
 
-  for (std::set<Color>::iterator it = g.colors.begin (); it != g.colors.end (); ++it)
+  for (const unsigned int &color : g.colors)
     for (size_t i = 0; i < g.size; ++i)
-      if (g.potentials.count (*it))
+      if (g.potentials.count (color))
       {
-        EXPECT_NEAR (g.potentials[*it] (i), p (i, map[*it]), 0.01);
+        EXPECT_NEAR (g.potentials[color] (i), p (i, map[color]), 0.01);
       }
 }
 

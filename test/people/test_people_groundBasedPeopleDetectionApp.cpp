@@ -90,9 +90,9 @@ TEST (PCL, GroundBasedPeopleDetectionApp)
   EXPECT_TRUE (people_detector.compute(clusters));             // perform people detection
 
   unsigned int k = 0;
-  for(std::vector<pcl::people::PersonCluster<PointT> >::iterator it = clusters.begin(); it != clusters.end(); ++it)
+  for(const auto &cluster : clusters)
   {
-    if(it->getPersonConfidence() > min_confidence)             // draw only people with confidence above a threshold
+    if(cluster.getPersonConfidence() > min_confidence)             // draw only people with confidence above a threshold
       k++;
   }
   EXPECT_EQ (k, 5);		// verify number of people found (should be five)

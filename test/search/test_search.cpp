@@ -191,12 +191,12 @@ template<typename PointT> bool
 testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, const vector<bool>& indices_mask, const vector<bool>& nan_mask, const vector<int>& indices, const vector<int>& /*input_indices*/, const string& name)
 {
   bool validness = true;
-  for (vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
+  for (const int &index : indices)
   {
-    if (!indices_mask [*iIt])
+    if (!indices_mask [index])
     {
 #if DEBUG_OUT
-      cerr << name << ": result contains an invalid point: " << *iIt << " not in indices list.\n";
+      cerr << name << ": result contains an invalid point: " << index << " not in indices list.\n";
       
 //      for (vector<int>::const_iterator iIt2 = input_indices.begin (); iIt2 != input_indices.end (); ++iIt2)
 //        cout << *iIt2 << "  ";
@@ -205,12 +205,12 @@ testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, con
       validness = false;
       break;
     }
-    else if (!nan_mask [*iIt])
+    else if (!nan_mask [index])
     {
 #if DEBUG_OUT
-      cerr << name << ": result contains an invalid point: " << *iIt << " = NaN (" << point_cloud->points [*iIt].x << " , " 
-                                                                                   << point_cloud->points [*iIt].y << " , " 
-                                                                                   << point_cloud->points [*iIt].z << ")\n";
+      cerr << name << ": result contains an invalid point: " << index << " = NaN (" << point_cloud->points [index].x << " , " 
+                                                                                    << point_cloud->points [index].y << " , " 
+                                                                                    << point_cloud->points [index].z << ")\n";
 #endif
       validness = false;
       break;
@@ -291,8 +291,8 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
   if (input_indices.size () != 0)
   {
     indices_mask.assign (point_cloud->size (), false);
-    for (vector<int>::const_iterator iIt = input_indices.begin (); iIt != input_indices.end (); ++iIt)
-      indices_mask [*iIt] = true;
+    for (const int &input_index : input_indices)
+      indices_mask [input_index] = true;
   }
   
   // remove also Nans
@@ -315,12 +315,12 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
   for (unsigned knn = 1; knn <= 512; knn <<= 3)
   {
     // find nn for each point in the cloud
-    for (vector<int>::const_iterator qIt = query_indices.begin (); qIt != query_indices.end (); ++qIt)
+    for (const int &query_index : query_indices)
     {
       #pragma omp parallel for
       for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
       {
-        search_methods [sIdx]->nearestKSearch (point_cloud->points[*qIt], knn, indices [sIdx], distances [sIdx]);
+        search_methods [sIdx]->nearestKSearch (point_cloud->points[query_index], knn, indices [sIdx], distances [sIdx]);
         passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testOrder (distances [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testResultValidity<PointT>(point_cloud, indices_mask, nan_mask, indices [sIdx], input_indices, search_methods [sIdx]->getName ());
@@ -361,8 +361,8 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
   if (input_indices.size () != 0)
   {
     indices_mask.assign (point_cloud->size (), false);
-    for (vector<int>::const_iterator iIt = input_indices.begin (); iIt != input_indices.end (); ++iIt)
-      indices_mask [*iIt] = true;
+    for (const int &input_index : input_indices)
+      indices_mask [input_index] = true;
   }
   
   // remove also Nans
@@ -386,12 +386,12 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
   {
     //cout << radius << endl;
     // find nn for each point in the cloud
-    for (vector<int>::const_iterator qIt = query_indices.begin (); qIt != query_indices.end (); ++qIt)
+    for (const int &query_index : query_indices)
     {
       #pragma omp parallel for
       for (int sIdx = 0; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
       {
-        search_methods [sIdx]->radiusSearch (point_cloud->points[*qIt], radius, indices [sIdx], distances [sIdx], 0);
+        search_methods [sIdx]->radiusSearch (point_cloud->points[query_index], radius, indices [sIdx], distances [sIdx], 0);
         passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testOrder (distances [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testResultValidity<PointT>(point_cloud, indices_mask, nan_mask, indices [sIdx], input_indices, search_methods [sIdx]->getName ());

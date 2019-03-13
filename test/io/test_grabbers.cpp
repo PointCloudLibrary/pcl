@@ -546,10 +546,10 @@ int
   }
   sort (pcd_files_.begin (), pcd_files_.end ());
   // And load them
-  for (size_t i = 0; i < pcd_files_.size (); i++)
+  for (const auto &pcd_file : pcd_files_)
   {
     CloudT::Ptr cloud (new CloudT);
-    pcl::io::loadPCDFile (pcd_files_[i], *cloud); 
+    pcl::io::loadPCDFile (pcd_file, *cloud); 
     pcds_.emplace_back(cloud);
   }
 

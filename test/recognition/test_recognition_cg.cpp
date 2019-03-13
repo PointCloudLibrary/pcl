@@ -84,10 +84,10 @@ computeRmsE (const PointCloud<PointType>::ConstPtr &model, const PointCloud<Poin
 
   vector<int> neigh_indices (1);
   vector<float> neigh_sqr_dists (1);
-  for (size_t i = 0; i < transformed_model.size (); ++i)
+  for (const auto &model : transformed_model)
   {
 
-    int found_neighs = tree.nearestKSearch (transformed_model.at (i), 1, neigh_indices, neigh_sqr_dists);
+    int found_neighs = tree.nearestKSearch (model, 1, neigh_indices, neigh_sqr_dists);
     if(found_neighs == 1)
     {
       ++found_points;
@@ -138,8 +138,8 @@ TEST (PCL, Hough3DGrouping)
 
   // Pick transformation with lowest error
   double min_rms_e = std::numeric_limits<double>::max ();
-  for (size_t i = 0; i < rototranslations.size (); ++i)
-    min_rms_e = std::min (min_rms_e, computeRmsE (model_, scene_, rototranslations[i]));
+  for (const auto &rototranslation : rototranslations)
+    min_rms_e = std::min (min_rms_e, computeRmsE (model_, scene_, rototranslation));
   EXPECT_LT (min_rms_e, 1E-2);
 }
 
