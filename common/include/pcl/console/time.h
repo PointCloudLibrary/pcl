@@ -50,18 +50,19 @@ namespace pcl
     {
       public:
 
-        TicToc () : tictic () {}
+        TicToc () : tictic_ () {}
 
         void 
         tic ()
         {
-          tictic = std::chrono::steady_clock::now();
+          tictic_ = std::chrono::steady_clock::now();
         };
 
         inline double 
         toc () const
         {
-          return (static_cast<double> (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - tictic).count()));
+          auto end_time = std::chrono::steady_clock::now();
+          return std::chrono::duration<double, std::ratio<1, 1000>>(end_time - tictic_).count();
         };
         
         inline void 
@@ -80,7 +81,7 @@ namespace pcl
         };
       
       private:
-        std::chrono::time_point<std::chrono::steady_clock> tictic;
+        std::chrono::time_point<std::chrono::steady_clock> tictic_;
     };
   } 
 }
