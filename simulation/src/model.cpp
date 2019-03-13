@@ -112,7 +112,7 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMe
 {
   bool found_rgb=false;
   for (const auto &field : plg->cloud.fields)
-    if ((field.name =="rgb") || (field.name == "rgba"))
+    if ((field.name == "rgb") || (field.name == "rgba"))
     {
       found_rgb = true;
       break;
