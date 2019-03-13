@@ -59,13 +59,13 @@ namespace pcl
         };
 
         inline double 
-        toc ()
+        toc () const
         {
           return (static_cast<double> (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - tictic).count()));
         };
         
         inline void 
-        toc_print ()
+        toc_print () const
         {
           double milliseconds = toc ();
           //int minutes = (int) floor ( seconds / 60.0 );
