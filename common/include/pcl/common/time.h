@@ -78,7 +78,7 @@ namespace pcl
       inline double
       getTimeSeconds () const
       {
-        return (getTime () * 0.001f);
+        return (getTime () * 0.001);
       }
 
       /** \brief Reset the stopwatch to 0. */
@@ -110,12 +110,10 @@ namespace pcl
   class ScopeTime : public StopWatch
   {
     public:
-      inline ScopeTime (const char* title) : 
-        title_ (std::string (title))
+      inline ScopeTime (const std::string &title = "") : 
+        title_ (title)
       {
       }
-
-      inline ScopeTime () : ScopeTime ("") {};
 
       inline ~ScopeTime ()
       {
