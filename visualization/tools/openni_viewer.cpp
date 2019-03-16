@@ -43,7 +43,6 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/console/time.h>
 
 #define SHOW_FPS 1
 #if SHOW_FPS

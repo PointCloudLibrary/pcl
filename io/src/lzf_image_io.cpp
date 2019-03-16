@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <pcl/console/time.h>
 #include <pcl/io/low_level_io.h>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/io/lzf.h>

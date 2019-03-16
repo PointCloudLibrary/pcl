@@ -4,7 +4,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/io/image_grabber.h>
-#include <pcl/console/time.h>
 
 #include <string>
 #include <vector>

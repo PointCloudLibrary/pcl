@@ -40,7 +40,6 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/console/time.h>
 #include <pcl/tracking/pyramidal_klt.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/harris_2d.h>

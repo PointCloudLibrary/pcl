@@ -41,7 +41,6 @@
 #include <pcl/surface/organized_fast_mesh.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
-#include <pcl/console/time.h>
 #include <pcl/visualization/cloud_viewer.h>
 
 using namespace pcl;
@@ -117,7 +116,6 @@ class OpenNIFastMesh
       
       CloudConstPtr temp_cloud;
       boost::shared_ptr<std::vector<pcl::Vertices> > temp_verts;
-      pcl::console::TicToc t1;
 
       while (!view->wasStopped ())
       //while (!viewer.wasStopped ())

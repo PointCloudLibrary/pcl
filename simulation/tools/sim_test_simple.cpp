@@ -63,7 +63,6 @@
 
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/console/time.h>
 
 // RangeImage:
 #include <pcl/range_image/range_image_planar.h>
