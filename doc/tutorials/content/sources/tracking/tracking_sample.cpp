@@ -247,7 +247,7 @@ main (int argc, char** argv)
     = boost::shared_ptr<DistanceCoherence<RefPointType> > (new DistanceCoherence<RefPointType> ());
   coherence->addPointCoherence (distance_coherence);
 
-  boost::shared_ptr<pcl::search::Octree<RefPointType> > search (new pcl::search::Octree<RefPointType> (0.01));
+  pcl::search::Octree<RefPointType>::Ptr search (new pcl::search::Octree<RefPointType> (0.01));
   coherence->setSearchMethod (search);
   coherence->setMaximumDistance (0.01);
 
