@@ -58,10 +58,7 @@ void pcl::RFFaceDetectorTrainer::trainWithDataProvider()
 
   dtdp->initialize (directory_);
 
-  boost::shared_ptr < pcl::DecisionTreeTrainerDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>
-      > cast_dtdp;
-  cast_dtdp = boost::dynamic_pointer_cast
-      < pcl::DecisionTreeTrainerDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType> > (dtdp);
+  auto cast_dtdp = boost::dynamic_pointer_cast<pcl::DecisionTreeTrainerDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>> (dtdp);
   dft.setDecisionTreeDataProvider (cast_dtdp);
 
   pcl::DecisionForest<NodeType> forest;
