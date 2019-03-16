@@ -70,7 +70,7 @@ main (int argc, char** argv)
   normal_estimator.setInputCloud (testing_cloud);
   normal_estimator.compute (*testing_normals);
 
-  boost::shared_ptr<pcl::features::ISMVoteList<pcl::PointXYZ> > vote_list = ism.findObjects (
+  pcl::features::ISMVoteList<pcl::PointXYZ>::Ptr vote_list = ism.findObjects (
     model,
     testing_cloud,
     testing_normals,

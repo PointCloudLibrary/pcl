@@ -376,7 +376,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::SAOptimize(std::vector<i
 {
 
   //temporal copy of recogniton_models_
-  std::vector < boost::shared_ptr<RecognitionModel> > recognition_models_copy;
+  std::vector<RecognitionModelPtr> recognition_models_copy;
   recognition_models_copy = recognition_models_;
 
   recognition_models_.clear ();
@@ -388,7 +388,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::SAOptimize(std::vector<i
 
   for (size_t j = 0; j < recognition_models_.size (); j++)
   {
-    boost::shared_ptr < RecognitionModel > recog_model = recognition_models_[j];
+    RecognitionModelPtr recog_model = recognition_models_[j];
     for (size_t i = 0; i < recog_model->explained_.size (); i++)
     {
       explained_by_RM_[recog_model->explained_[i]]++;
@@ -487,7 +487,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::verify()
 
 template<typename ModelT, typename SceneT>
 bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::PointCloud<ModelT>::ConstPtr & model,
-    typename pcl::PointCloud<ModelT>::ConstPtr & complete_model, boost::shared_ptr<RecognitionModel> & recog_model)
+    typename pcl::PointCloud<ModelT>::ConstPtr & complete_model, RecognitionModelPtr & recog_model)
 {
   //voxelize model cloud
   recog_model->cloud_.reset (new pcl::PointCloud<ModelT> ());
@@ -650,7 +650,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
 }
 
 template<typename ModelT, typename SceneT>
-void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(boost::shared_ptr<RecognitionModel> & recog_model)
+void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(RecognitionModelPtr & recog_model)
 {
   if (detect_clutter_)
   {

@@ -749,14 +749,14 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::trainISM (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <int FeatureSize, typename PointT, typename NormalT> boost::shared_ptr<pcl::features::ISMVoteList<PointT> >
+template <int FeatureSize, typename PointT, typename NormalT> typename pcl::features::ISMVoteList<PointT>::Ptr
 pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::findObjects (
   ISMModelPtr model,
   typename pcl::PointCloud<PointT>::Ptr in_cloud,
   typename pcl::PointCloud<Normal>::Ptr in_normals,
   int in_class_of_interest)
 {
-  boost::shared_ptr<pcl::features::ISMVoteList<PointT> > out_votes (new pcl::features::ISMVoteList<PointT> ());
+  typename pcl::features::ISMVoteList<PointT>::Ptr out_votes (new pcl::features::ISMVoteList<PointT> ());
 
   if (in_cloud->points.size () == 0)
     return (out_votes);

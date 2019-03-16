@@ -42,6 +42,8 @@ namespace pcl
       using ParticleFilterTracker<PointInT, StateT>::sampleWithReplacement;
 
       typedef Tracker<PointInT, StateT> BaseClass;
+
+      typedef boost::shared_ptr<KLDAdaptiveParticleFilterTracker<PointInT, StateT>> Ptr;
       
       typedef typename Tracker<PointInT, StateT>::PointCloudIn PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;

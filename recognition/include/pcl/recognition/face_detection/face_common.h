@@ -10,7 +10,7 @@ namespace pcl
     class TrainingExample
     {
       public:
-        std::vector<boost::shared_ptr<pcl::IntegralImage2D<float, 1> > > iimages_; //also pointer to the respective integral image
+        std::vector<pcl::IntegralImage2D<float, 1>::Ptr> iimages_; //also pointer to the respective integral image
         int row_, col_;
         int wsize_;
         int label_;

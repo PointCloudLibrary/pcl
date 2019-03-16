@@ -72,13 +72,15 @@ namespace pcl
         float regularizer_;
       };
 
+      typedef boost::shared_ptr<RecognitionModel> RecognitionModelPtr;
+
       /*
        * \brief Sorts recognition models based on the number of explained scene points and visible outliers
        */
       struct sortModelsClass
       {
         bool
-        operator() (const boost::shared_ptr<RecognitionModel> & n1, const boost::shared_ptr<RecognitionModel> & n2)
+        operator() (const RecognitionModelPtr & n1, const RecognitionModelPtr & n2)
         {
           float val1 = static_cast<float>(n1->good_information_) - static_cast<float>(n1->bad_information_) * n1->regularizer_;
           float val2 = static_cast<float>(n2->good_information_) - static_cast<float>(n2->bad_information_) * n2->regularizer_;
@@ -93,7 +95,7 @@ namespace pcl
       struct modelIndices
       {
         int index_;
-        boost::shared_ptr<RecognitionModel> model_;
+        RecognitionModelPtr model_;
       };
 
       /*
@@ -114,10 +116,10 @@ namespace pcl
       std::vector<modelIndices> indices_models_;
 
       /** \brief Recognition models (hypotheses to be verified) */
-      std::vector<boost::shared_ptr<RecognitionModel> > recognition_models_;
+      std::vector<RecognitionModelPtr> recognition_models_;
 
       /** \brief Recognition models that explain a scene points. */
-      std::vector<std::vector<boost::shared_ptr<RecognitionModel> > > points_explained_by_rm_;
+      std::vector<std::vector<RecognitionModelPtr>> points_explained_by_rm_;
 
       /** \brief Weighting for outliers */
       float regularizer_;

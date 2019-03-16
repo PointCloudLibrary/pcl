@@ -65,7 +65,7 @@ namespace pcl
     float penalty_threshold_;
     float support_threshold_;
 
-    class RecognitionModel 
+    class RecognitionModel
     {
       public:
         std::vector<int> explained_; //indices vector referencing explained_by_RM_
@@ -75,12 +75,14 @@ namespace pcl
         int id_;
     };
 
-    std::vector<int> explained_by_RM_; //represents the points of scene_cloud_ that are explained by the recognition models
-    std::vector< boost::shared_ptr<RecognitionModel> > recognition_models_;
-    std::vector< std::vector <boost::shared_ptr<RecognitionModel> > > points_explained_by_rm_; //if inner size > 1, conflict
-    std::map<int, boost::shared_ptr<RecognitionModel> > graph_id_model_map_;
+    typedef boost::shared_ptr<RecognitionModel> RecognitionModelPtr;
 
-    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, boost::shared_ptr<RecognitionModel> > Graph;
+    std::vector<int> explained_by_RM_; //represents the points of scene_cloud_ that are explained by the recognition models
+    std::vector<RecognitionModelPtr> recognition_models_;
+    std::vector<std::vector<RecognitionModelPtr>> points_explained_by_rm_; //if inner size > 1, conflict
+    std::map<int, RecognitionModelPtr> graph_id_model_map_;
+
+    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, RecognitionModelPtr> Graph;
     Graph conflict_graph_;
 
     //builds the conflict_graph

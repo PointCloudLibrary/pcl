@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/shared_ptr.hpp>
+
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/tracker.h>
 #include <pcl/tracking/coherence.h>
@@ -30,6 +32,8 @@ namespace pcl
         using Tracker<PointInT, StateT>::indices_;
         using Tracker<PointInT, StateT>::getClassName;
         
+        typedef boost::shared_ptr<ParticleFilterTracker<PointInT, StateT>> Ptr;
+
         typedef Tracker<PointInT, StateT> BaseClass;
         
         typedef typename Tracker<PointInT, StateT>::PointCloudIn PointCloudIn;
@@ -479,7 +483,7 @@ namespace pcl
         std::vector<PointCloudInPtr> transed_reference_vector_;
 
         /** \brief Change detector used as a trigger to track. */
-        boost::shared_ptr<pcl::octree::OctreePointCloudChangeDetector<PointInT> > change_detector_;
+        typename pcl::octree::OctreePointCloudChangeDetector<PointInT>::Ptr change_detector_;
 
         /** \brief A flag to be true when change of pointclouds is detected. */
         bool changed_;

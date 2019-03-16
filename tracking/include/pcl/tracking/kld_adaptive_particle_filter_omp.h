@@ -46,6 +46,8 @@ namespace pcl
 
       typedef Tracker<PointInT, StateT> BaseClass;
 
+      typedef boost::shared_ptr<KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>> Ptr;
+
       typedef typename Tracker<PointInT, StateT>::PointCloudIn PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
