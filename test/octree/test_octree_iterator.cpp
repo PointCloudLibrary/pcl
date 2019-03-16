@@ -986,7 +986,7 @@ struct OctreeBaseIteratorsPrePostTest : public OctreeBaseBeginEndIteratorsTest
 TEST_F (OctreeBaseIteratorsPrePostTest, DefaultIterator)
 {
   // Useful types
-  typedef typename OctreeT::Iterator IteratorT;
+  typedef OctreeT::Iterator IteratorT;
 
   // Default initialization
   IteratorT it_a_pre;
@@ -1008,7 +1008,7 @@ TEST_F (OctreeBaseIteratorsPrePostTest, DefaultIterator)
 TEST_F (OctreeBaseIteratorsPrePostTest, LeafNodeDepthFirstIterator)
 {
   // Useful types
-  typedef typename OctreeT::LeafNodeDepthFirstIterator IteratorT;
+  typedef OctreeT::LeafNodeDepthFirstIterator IteratorT;
 
   // Default initialization
   IteratorT it_a_pre;
@@ -1030,7 +1030,7 @@ TEST_F (OctreeBaseIteratorsPrePostTest, LeafNodeDepthFirstIterator)
 TEST_F (OctreeBaseIteratorsPrePostTest, DepthFirstIterator)
 {
   // Useful types
-  typedef typename OctreeT::DepthFirstIterator IteratorT;
+  typedef OctreeT::DepthFirstIterator IteratorT;
 
   // Default initialization
   IteratorT it_a_pre;
@@ -1052,7 +1052,7 @@ TEST_F (OctreeBaseIteratorsPrePostTest, DepthFirstIterator)
 TEST_F (OctreeBaseIteratorsPrePostTest, BreadthFirstIterator)
 {
   // Useful types
-  typedef typename OctreeT::BreadthFirstIterator IteratorT;
+  typedef OctreeT::BreadthFirstIterator IteratorT;
 
   // Default initialization
   IteratorT it_a_pre;
@@ -1074,7 +1074,7 @@ TEST_F (OctreeBaseIteratorsPrePostTest, BreadthFirstIterator)
 TEST_F (OctreeBaseIteratorsPrePostTest, FixedDepthIterator)
 {
   // Useful types
-  typedef typename OctreeT::FixedDepthIterator IteratorT;
+  typedef OctreeT::FixedDepthIterator IteratorT;
 
   // Default initialization
   IteratorT it_a_pre;
@@ -1103,7 +1103,7 @@ TEST_F (OctreeBaseIteratorsPrePostTest, FixedDepthIterator)
 TEST_F (OctreeBaseIteratorsPrePostTest, LeafNodeBreadthFirstIterator)
 {
   // Useful types
-  typedef typename OctreeT::LeafNodeBreadthFirstIterator IteratorT;
+  typedef OctreeT::LeafNodeBreadthFirstIterator IteratorT;
 
   // Default initialization
   IteratorT it_a_pre;
