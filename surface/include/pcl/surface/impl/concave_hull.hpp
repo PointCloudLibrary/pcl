@@ -487,12 +487,12 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     {
       alpha_shape_sorted.points[sorted_idx] = alpha_shape.points[(*curr).first];
       // check where we can go from (*curr).first
-      for (size_t i = 0; i < (*curr).second.size (); i++)
+      for (const int &i : (*curr).second)
       {
-        if (!used[((*curr).second)[i]])
+        if (!used[i])
         {
           // we can go there
-          next = ((*curr).second)[i];
+          next = i;
           break;
         }
       }

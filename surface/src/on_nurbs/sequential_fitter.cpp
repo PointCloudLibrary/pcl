@@ -593,9 +593,9 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
 
   double int_err (0.0);
   double div_err = 1.0 / double (m_data.interior_error.size ());
-  for (size_t i = 0; i < m_data.interior_error.size (); i++)
+  for (const double &i : m_data.interior_error)
   {
-    int_err += (m_data.interior_error[i] * div_err);
+    int_err += (i * div_err);
   }
 
   printf ("[SequentialFitter::grow] average interior error: %e\n", int_err);
@@ -610,10 +610,10 @@ SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, con
 {
   size_t numPoints = 0;
 
-  for (size_t i = 0; i < indices.size (); i++)
+  for (const int &index : indices)
   {
 
-    pcl::PointXYZRGB &pt = pcl_cloud->at (indices[i]);
+    pcl::PointXYZRGB &pt = pcl_cloud->at (index);
 
     if (!std::isnan (pt.x) && !std::isnan (pt.y) && !std::isnan (pt.z))
     {

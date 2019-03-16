@@ -297,9 +297,9 @@ pcl::SurfelSmoothing<PointT, PointNT>::extractSalientFeaturesBetweenScales (Poin
 
     bool largest = true;
     bool smallest = true;
-    for (std::vector<int>::iterator nn_index_it = nn_indices.begin (); nn_index_it != nn_indices.end (); ++nn_index_it)
+    for (const int &nn_index : nn_indices)
     {
-      if (diffs[point_i] < diffs[*nn_index_it])
+      if (diffs[point_i] < diffs[nn_index])
         largest = false;
       else 
         smallest = false;

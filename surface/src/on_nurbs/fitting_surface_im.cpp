@@ -52,10 +52,10 @@ FittingSurfaceIM::computeMean () const
   double ds = 1.0 / double (m_indices.size ());
 
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *m_cloud;
-  for (size_t idx = 0; idx < m_indices.size (); idx++)
+  for (const int &index : m_indices)
   {
-    int i = m_indices[idx] % cloud_ref.width;
-    int j = m_indices[idx] / cloud_ref.width;
+    int i = index % cloud_ref.width;
+    int j = index / cloud_ref.width;
 
     const pcl::PointXYZRGB &point = cloud_ref (i, j);
     if (std::isnan (point.x) || std::isnan (point.y) || std::isnan (point.z))
@@ -76,10 +76,10 @@ FittingSurfaceIM::computeIndexBoundingBox (pcl::PointCloud<pcl::PointXYZRGB>::Pt
   Eigen::Vector4d bb = Eigen::Vector4d (DBL_MAX, 0, DBL_MAX, 0);
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *cloud;
 
-  for (size_t idx = 0; idx < indices.size (); idx++)
+  for (const int &index : indices)
   {
-    int i = indices[idx] % cloud_ref.width;
-    int j = indices[idx] / cloud_ref.width;
+    int i = index % cloud_ref.width;
+    int j = index / cloud_ref.width;
 
     const pcl::PointXYZRGB &point = cloud_ref (i, j);
     if (std::isnan (point.x) || std::isnan (point.y) || std::isnan (point.z))
@@ -273,12 +273,12 @@ FittingSurfaceIM::assemble (bool inverse_mapping)
 
   // assemble data points
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *m_cloud;
-  for (size_t i = 0; i < m_indices.size (); i++)
+  for (const int &index : m_indices)
   {
-    int px = m_indices[i] % cloud_ref.width;
-    int py = m_indices[i] / cloud_ref.width;
+    int px = index % cloud_ref.width;
+    int py = index / cloud_ref.width;
 
-    const pcl::PointXYZRGB &pt = cloud_ref.at (m_indices[i]);
+    const pcl::PointXYZRGB &pt = cloud_ref.at (index);
     Eigen::Vector2i params (px, py);
 
     if (std::isnan (pt.z) || pt.z == 0.0)

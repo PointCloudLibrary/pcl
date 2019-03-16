@@ -883,10 +883,10 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           else
             angle_so_far = 0;
         }
-        for (std::vector<int>::iterator it = to_erase.begin(); it != to_erase.end(); it++)
+        for (const int &it : to_erase)
         {
           for (std::vector<int>::iterator iter = angleIdx.begin(); iter != angleIdx.end(); iter++)
-            if (*it == *iter)
+            if (it == *iter)
             {
               angleIdx.erase(iter);
               break;
