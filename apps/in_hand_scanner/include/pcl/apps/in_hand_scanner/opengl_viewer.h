@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <iomanip>
 #include <string>
 
 #include <QGLWidget>
