@@ -25,7 +25,7 @@ Now, let's breakdown this code piece by piece.
 
 .. literalinclude:: sources/normal_distributions_transform/normal_distributions_transform.cpp
    :language: cpp
-   :lines: 10-11
+   :lines: 7-8
 
 These are the required header files to use Normal Distributions Transform algorithm and a filter used to down sample the data.  The filter can be exchanged for other filters but I have found the approximate voxel filter to produce the best results.
 

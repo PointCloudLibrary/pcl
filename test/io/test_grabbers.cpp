@@ -127,7 +127,7 @@ TEST (PCL, ImageGrabberTIFF)
     size_t niter = 0;
     while (!signal_received)
     {
-      std::this_thread::sleep_for(100ms);
+      std::this_thread::sleep_for(10ms);
       if (++niter > 100)
       {
         #ifdef PCL_BUILT_WITH_VTK
@@ -209,7 +209,7 @@ TEST (PCL, ImageGrabberPCLZF)
     size_t niter = 0;
     while (!signal_received)
     {
-      std::this_thread::sleep_for(100ms);
+      std::this_thread::sleep_for(10ms);
       if (++niter > 100)
       {
         ASSERT_TRUE (false);
@@ -289,7 +289,7 @@ TEST (PCL, ImageGrabberOMP)
     size_t niter = 0;
     while (!signal_received)
     {
-      std::this_thread::sleep_for(100ms);
+      std::this_thread::sleep_for(10ms);
       if (++niter > 100)
       {
         ASSERT_TRUE (false);
@@ -398,7 +398,7 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
     size_t niter = 0;
     while (!signal_received)
     {
-      std::this_thread::sleep_for(100ms);
+      std::this_thread::sleep_for(10ms);
       if (++niter > 100)
       {
         #ifdef PCL_BUILT_WITH_VTK
@@ -472,7 +472,7 @@ TEST (PCL, ImageGrabberSetIntrinsicsPCLZF)
     size_t niter = 0;
     while (!signal_received)
     {
-      std::this_thread::sleep_for(100ms);
+      std::this_thread::sleep_for(10ms);
       if (++niter > 100)
       {
         ASSERT_TRUE (false);

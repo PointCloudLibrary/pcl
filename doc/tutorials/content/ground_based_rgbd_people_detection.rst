@@ -74,7 +74,7 @@ After this, ``Q`` must be pressed in order to close the visualizer and let the p
 
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp
-   :lines: 136-160
+   :lines: 136-169
    
 .. image:: images/ground_based_rgbd_people_detection/Screen_floor.jpg
   :align: center
