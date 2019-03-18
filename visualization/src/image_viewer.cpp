@@ -538,7 +538,7 @@ pcl::visualization::ImageViewer::createLayer (
   Layer l;
   l.layer_name = layer_id;
   // Create a new layer
-  l.actor = vtkSmartPointer<vtkContextActor>::New ();
+  l.actor = vtkSmartPointer<PCLContextActor>::New ();
   l.actor->PickableOff ();
   l.actor->DragableOff ();
   if (fill_box)

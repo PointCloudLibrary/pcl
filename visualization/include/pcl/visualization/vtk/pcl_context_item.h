@@ -39,6 +39,11 @@
 
 #include <pcl/pcl_macros.h>
 #include <vtkContextItem.h>
+#if VTK_MAJOR_VERSION > 6 || (VTK_MAJOR_VERSION == 6 && VTK_MINOR_VERSION > 1)
+#include <vtkOpenGLContextActor.h>
+#else
+#include <vtkContextActor.h>
+#endif
 #include <vector>
 
 template <typename T> class vtkSmartPointer;
@@ -49,6 +54,39 @@ namespace pcl
 {
   namespace visualization
   {
+#if VTK_MAJOR_VERSION >= 6
+    /** \brief A special context actor to emulate the window resizing according to 'vtkImageSlice'
+      * \author Michael Dingerkus
+      * \ingroup visualization
+      */
+#if VTK_MAJOR_VERSION > 6 || (VTK_MAJOR_VERSION == 6 && VTK_MINOR_VERSION > 1)
+    class PCL_EXPORTS PCLContextActor : public vtkOpenGLContextActor
+#else
+    class PCL_EXPORTS PCLContextActor : public vtkContextActor
+#endif
+    {
+    public:
+#if VTK_MAJOR_VERSION > 6 || (VTK_MAJOR_VERSION == 6 && VTK_MINOR_VERSION > 1)
+      vtkTypeMacro(PCLContextActor, vtkOpenGLContextActor);
+#else
+      vtkTypeMacro(PCLContextActor, vtkContextActor);
+#endif
+
+      static PCLContextActor* New ();
+      PCLContextActor ();
+
+      virtual int RenderOverlay (vtkViewport *viewport);
+
+      static bool initial_viewport_set_;
+      static int initial_viewport_x_size_;
+      static int initial_viewport_y_size_;
+      static double initial_viewport_x_aspect_;
+      static double initial_viewport_y_aspect_;
+    };
+#else
+typedef vtkContextActor PCLContextActor;
+#endif
+
     /** Struct PCLContextItem represents our own custom version of vtkContextItem, used by
       * the ImageViewer class.
       *
