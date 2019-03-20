@@ -16,7 +16,6 @@ jobs:
           GENERATOR: 'Visual Studio 15 2017 Win64'
     variables:
       BUILD_DIR: '$(Agent.WorkFolder)\build'
-      VCVARSALL: '%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat'
       CONFIGURATION: 'Release'
       VCPKG_ROOT: 'C:\vcpkg'
     steps:
@@ -30,8 +29,6 @@ jobs:
           rmdir %VCPKG_ROOT%\packages /S /Q
         displayName: 'Free Up Space'
       - script: |
-          call "%VCVARSALL%" %ARCHITECTURE%
-          set PATH=%VCPKG_ROOT%\installed\%PLATFORM%-windows\bin;%PATH%
           mkdir %BUILD_DIR% && cd %BUILD_DIR%
           cmake $(Build.SourcesDirectory) -G"%GENERATOR%" -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake -DVCPKG_APPLOCAL_DEPS=ON -DPCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32=ON -DPCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32=ON -DPCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32=ON -DBUILD_global_tests=ON -DBUILD_tools=OFF -DBUILD_surface_on_nurbs=ON
         displayName: 'CMake Configuration'
