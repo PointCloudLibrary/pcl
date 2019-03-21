@@ -18,6 +18,7 @@ jobs:
       BUILD_DIR: '$(Agent.WorkFolder)\build'
       VCVARSALL: '%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat'
       CONFIGURATION: 'Release'
+      VCPKG_ROOT: 'C:\vcpkg'
     steps:
       - script: |
           vcpkg.exe install boost-system boost-filesystem boost-thread boost-date-time boost-iostreams boost-chrono boost-asio boost-dynamic-bitset boost-foreach boost-graph boost-interprocess boost-multi-array boost-ptr-container boost-random boost-signals2 eigen3 flann gtest qhull --triplet %PLATFORM%-windows && vcpkg.exe list
