@@ -84,7 +84,7 @@ namespace pcl
 
         typedef boost::shared_ptr< LoopGraph > LoopGraphPtr;
 
-        typedef typename pcl::Registration<PointT, PointT> Registration;
+        typedef pcl::Registration<PointT, PointT> Registration;
         typedef typename Registration::Ptr RegistrationPtr;
         typedef typename Registration::ConstPtr RegistrationConstPtr;
 

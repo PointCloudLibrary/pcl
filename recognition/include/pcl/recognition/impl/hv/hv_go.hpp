@@ -530,8 +530,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
 
   //compute normals unless given (now do it always...)
   typename pcl::search::KdTree<ModelT>::Ptr normals_tree (new pcl::search::KdTree<ModelT>);
-  typedef typename pcl::NormalEstimation<ModelT, pcl::Normal> NormalEstimator_;
-  NormalEstimator_ n3d;
+  pcl::NormalEstimation<ModelT, pcl::Normal> n3d;
   recog_model->normals_.reset (new pcl::PointCloud<pcl::Normal> ());
   normals_tree->setInputCloud (recog_model->cloud_);
   n3d.setRadiusSearch (radius_normals_);

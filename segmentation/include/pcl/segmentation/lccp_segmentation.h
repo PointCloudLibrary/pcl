@@ -81,7 +81,7 @@ namespace pcl
     public:
 
       // Adjacency list with nodes holding labels (uint32_t) and edges holding EdgeProperties.
-      typedef typename boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, uint32_t, EdgeProperties> SupervoxelAdjacencyList;
+      typedef boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, uint32_t, EdgeProperties> SupervoxelAdjacencyList;
       typedef typename boost::graph_traits<SupervoxelAdjacencyList>::vertex_iterator VertexIterator;
       typedef typename boost::graph_traits<SupervoxelAdjacencyList>::adjacency_iterator AdjacencyIterator;
 

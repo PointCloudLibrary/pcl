@@ -65,9 +65,9 @@ namespace pcl
   class SampleConsensusModel
   {
     public:
-      typedef typename pcl::PointCloud<PointT> PointCloud;
-      typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::PointCloud<PointT>::Ptr PointCloudPtr;
+      typedef pcl::PointCloud<PointT> PointCloud;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename pcl::search::Search<PointT>::Ptr SearchPtr;
 
       typedef boost::shared_ptr<SampleConsensusModel> Ptr;

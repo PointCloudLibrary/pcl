@@ -63,15 +63,15 @@ namespace pcl
     using PCLBase<PointT>::deinitCompute;
 
     public:
-      typedef typename pcl::PointCloud<PointT> PointCloud;
+      typedef pcl::PointCloud<PointT> PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
       
-      typedef typename pcl::PointCloud<PointLT> PointCloudL;
+      typedef pcl::PointCloud<PointLT> PointCloudL;
       typedef typename PointCloudL::Ptr PointCloudLPtr;
       typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
 
-      typedef typename pcl::Comparator<PointT> Comparator;
+      typedef pcl::Comparator<PointT> Comparator;
       typedef typename Comparator::Ptr ComparatorPtr;
       typedef typename Comparator::ConstPtr ComparatorConstPtr;
       

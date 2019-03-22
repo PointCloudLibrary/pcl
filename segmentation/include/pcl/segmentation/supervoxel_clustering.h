@@ -166,11 +166,11 @@ namespace pcl
       typedef pcl::octree::OctreePointCloudAdjacencyContainer<PointT, VoxelData> LeafContainerT;
       typedef std::vector <LeafContainerT*> LeafVectorT;
 
-      typedef typename pcl::PointCloud<PointT> PointCloudT;
-      typedef typename pcl::PointCloud<Normal> NormalCloudT;
-      typedef typename pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT> OctreeAdjacencyT;
-      typedef typename pcl::octree::OctreePointCloudSearch <PointT> OctreeSearchT;
-      typedef typename pcl::search::KdTree<PointT> KdTreeT;
+      typedef pcl::PointCloud<PointT> PointCloudT;
+      typedef pcl::PointCloud<Normal> NormalCloudT;
+      typedef pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT> OctreeAdjacencyT;
+      typedef pcl::octree::OctreePointCloudSearch <PointT> OctreeSearchT;
+      typedef pcl::search::KdTree<PointT> KdTreeT;
       typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
 
       using PCLBase <PointT>::initCompute;

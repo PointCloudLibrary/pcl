@@ -68,8 +68,8 @@ namespace pcl
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::point_representation_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_indices_;
 
-        typedef typename pcl::search::KdTree<PointTarget> KdTree;
-        typedef typename pcl::search::KdTree<PointTarget>::Ptr KdTreePtr;
+        typedef pcl::search::KdTree<PointTarget> KdTree;
+        typedef typename KdTree::Ptr KdTreePtr;
 
         typedef pcl::PointCloud<PointSource> PointCloudSource;
         typedef typename PointCloudSource::Ptr PointCloudSourcePtr;

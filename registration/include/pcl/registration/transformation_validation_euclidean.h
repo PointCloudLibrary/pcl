@@ -79,8 +79,8 @@ namespace pcl
         typedef boost::shared_ptr<TransformationValidation<PointSource, PointTarget, Scalar> > Ptr;
         typedef boost::shared_ptr<const TransformationValidation<PointSource, PointTarget, Scalar> > ConstPtr;
 
-        typedef typename pcl::search::KdTree<PointTarget> KdTree;
-        typedef typename pcl::search::KdTree<PointTarget>::Ptr KdTreePtr;
+        typedef pcl::search::KdTree<PointTarget> KdTree;
+        typedef typename KdTree::Ptr KdTreePtr;
 
         typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
 

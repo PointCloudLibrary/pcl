@@ -174,7 +174,7 @@ namespace pcl
       
       class WeightedRandomSampleConsensus : public SampleConsensus<WeightSACPointType>
       {
-          typedef typename SampleConsensusModel<WeightSACPointType>::Ptr SampleConsensusModelPtr;
+          typedef SampleConsensusModel<WeightSACPointType>::Ptr SampleConsensusModelPtr;
 
         public:
           typedef boost::shared_ptr<WeightedRandomSampleConsensus> Ptr;

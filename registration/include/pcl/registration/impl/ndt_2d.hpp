@@ -216,9 +216,9 @@ namespace pcl
     template <typename PointT> 
     class NDTSingleGrid: public boost::noncopyable
     {
-      typedef typename pcl::PointCloud<PointT> PointCloud;
-      typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::ndt2d::NormalDist<PointT> NormalDist;
+      typedef pcl::PointCloud<PointT> PointCloud;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      typedef pcl::ndt2d::NormalDist<PointT> NormalDist;
 
       public:
         NDTSingleGrid (PointCloudConstPtr cloud,
@@ -303,8 +303,8 @@ namespace pcl
     template <typename PointT> 
     class NDT2D: public boost::noncopyable
     {
-      typedef typename pcl::PointCloud<PointT> PointCloud;
-      typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
+      typedef pcl::PointCloud<PointT> PointCloud;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
       typedef NDTSingleGrid<PointT> SingleGrid;
 
       public:

@@ -63,7 +63,7 @@ namespace pcl
       typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
 
       typedef pcl::search::KdTree<PointTarget> KdTree;
-      typedef typename pcl::search::KdTree<PointTarget>::Ptr KdTreePtr;
+      typedef typename KdTree::Ptr KdTreePtr;
 
       typedef pcl::search::KdTree<PointSource> KdTreeReciprocal;
       typedef typename KdTree::Ptr KdTreeReciprocalPtr;
@@ -75,7 +75,7 @@ namespace pcl
       typedef boost::shared_ptr<JointIterativeClosestPoint<PointSource, PointTarget, Scalar> > Ptr;
       typedef boost::shared_ptr<const JointIterativeClosestPoint<PointSource, PointTarget, Scalar> > ConstPtr;
 
-      typedef typename pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> CorrespondenceEstimation;
+      typedef pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> CorrespondenceEstimation;
       typedef typename CorrespondenceEstimation::Ptr CorrespondenceEstimationPtr;
       typedef typename CorrespondenceEstimation::ConstPtr CorrespondenceEstimationConstPtr;
 

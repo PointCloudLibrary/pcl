@@ -258,10 +258,10 @@ namespace pcl
       using PCLBase<PointInT>::initCompute;
       using PCLBase<PointInT>::deinitCompute;
 
-      typedef typename pcl::search::Search<PointInT> KdTree;
-      typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
+      typedef pcl::search::Search<PointInT> KdTree;
+      typedef typename KdTree::Ptr KdTreePtr;
       typedef pcl::PointCloud<pcl::Normal> NormalCloud;
-      typedef pcl::PointCloud<pcl::Normal>::Ptr NormalCloudPtr;
+      typedef NormalCloud::Ptr NormalCloudPtr;
 
       typedef pcl::PointCloud<PointOutT> PointCloudOut;
       typedef typename PointCloudOut::Ptr PointCloudOutPtr;
