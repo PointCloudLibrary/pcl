@@ -867,8 +867,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     // display current camera settings/parameters
     case 'c': case 'C':
     {
-      Camera cam;
-      getCameraParameters (cam);
+      Camera cam (*CurrentRenderer->GetActiveCamera (), *Interactor->GetRenderWindow ());
       std::cerr <<  "Clipping plane [near,far] "  << cam.clip[0] << ", " << cam.clip[1] << endl <<
                     "Focal point [x,y,z] " << cam.focal[0] << ", " << cam.focal[1] << ", " << cam.focal[2] << endl <<
                     "Position [x,y,z] " << cam.pos[0] << ", " << cam.pos[1] << ", " << cam.pos[2] << endl <<
