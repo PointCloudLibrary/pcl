@@ -56,7 +56,7 @@ template<typename ModelT, typename SceneT>
     // initialize model
     for (size_t m = 0; m < visible_models_.size (); m++)
     {
-      boost::shared_ptr < RecognitionModel > recog_model (new RecognitionModel);
+      RecognitionModelPtr recog_model (new RecognitionModel);
       // voxelize model cloud
       recog_model->cloud_.reset (new pcl::PointCloud<ModelT>);
       recog_model->id_ = static_cast<int> (m);

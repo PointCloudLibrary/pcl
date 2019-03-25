@@ -41,6 +41,8 @@
 
 #include <vector>
 
+#include <boost/shared_ptr.hpp>
+
 namespace pcl
 {
   template <typename DataType>
@@ -106,6 +108,7 @@ namespace pcl
   class IntegralImage2D
   {
     public:
+      typedef boost::shared_ptr<IntegralImage2D<DataType, Dimension>> Ptr;
       static const unsigned second_order_size = (Dimension * (Dimension + 1)) >> 1;
       typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, Dimension, 1> ElementType;
       typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, second_order_size, 1> SecondOrderType;
@@ -229,6 +232,8 @@ namespace pcl
   class IntegralImage2D <DataType, 1>
   {
     public:
+      typedef boost::shared_ptr<IntegralImage2D<DataType, 1>> Ptr;
+
       static const unsigned second_order_size = 1;
       typedef typename IntegralImageTypeTraits<DataType>::IntegralType ElementType;
       typedef typename IntegralImageTypeTraits<DataType>::IntegralType SecondOrderType;

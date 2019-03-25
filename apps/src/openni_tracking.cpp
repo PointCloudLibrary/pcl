@@ -191,8 +191,7 @@ public:
     // NearestPairPointCloudCoherence<RefPointType>::Ptr coherence = NearestPairPointCloudCoherence<RefPointType>::Ptr
     //   (new NearestPairPointCloudCoherence<RefPointType> ());
     
-    boost::shared_ptr<DistanceCoherence<RefPointType> > distance_coherence
-      = boost::shared_ptr<DistanceCoherence<RefPointType> > (new DistanceCoherence<RefPointType> ());
+    DistanceCoherence<RefPointType>::Ptr distance_coherence (new DistanceCoherence<RefPointType>);
     coherence->addPointCoherence (distance_coherence);
     
     boost::shared_ptr<HSVColorCoherence<RefPointType> > color_coherence

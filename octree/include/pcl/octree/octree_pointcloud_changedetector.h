@@ -38,6 +38,8 @@
 
 #pragma once
 
+#include <boost/shared_ptr.hpp>
+
 #include <pcl/octree/octree_pointcloud.h>
 #include <pcl/octree/octree2buf_base.h>
 
@@ -66,6 +68,8 @@ namespace pcl
     {
 
       public:
+
+        typedef boost::shared_ptr<OctreePointCloudChangeDetector<PointT, LeafContainerT, BranchContainerT>> Ptr;
 
         /** \brief Constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level

@@ -245,7 +245,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     }
 
     //Compute integral image over depth
-    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_depth;
+    pcl::IntegralImage2D<float, 1>::Ptr integral_image_depth;
     integral_image_depth.reset (new pcl::IntegralImage2D<float, 1> (false));
 
     int element_stride = sizeof(pcl::PointXYZ) / sizeof(float);
@@ -271,9 +271,9 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     int element_stride_normal = sizeof(pcl::Normal) / sizeof(float);
     int row_stride_normal = element_stride_normal * normals->width;
-    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_normal_x;
-    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_normal_y;
-    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_normal_z;
+    pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_x;
+    pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_y;
+    pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_z;
 
     if (USE_NORMALS_)
     {

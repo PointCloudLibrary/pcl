@@ -39,6 +39,7 @@
 
 #include <pcl/io/grabber.h>
 #include <pcl/common/time_trigger.h>
+#include <pcl/point_cloud.h>
 #include <pcl/conversions.h>
 #include <pcl/stereo/stereo_matching.h>
 
@@ -129,7 +130,6 @@ namespace pcl
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename T> class PointCloud;
   template <typename PointT> class StereoGrabber : public StereoGrabberBase
   {
     public:
@@ -139,7 +139,7 @@ namespace pcl
       void 
       publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const override;
       
-      boost::signals2::signal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>* signal_;
+      boost::signals2::signal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>* signal_;
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +147,7 @@ namespace pcl
   StereoGrabber<PointT>::StereoGrabber (const std::pair<std::string, std::string>& pair_files, float frames_per_second, bool repeat)
     : StereoGrabberBase (pair_files, frames_per_second, repeat)
   {
-    signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
+    signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,7 +155,7 @@ namespace pcl
   StereoGrabber<PointT>::StereoGrabber (const std::vector<std::pair<std::string, std::string> >& files, float frames_per_second, bool repeat)
     : StereoGrabberBase (files, frames_per_second, repeat), signal_ ()
   {
-    signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
+    signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPTr&)>();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

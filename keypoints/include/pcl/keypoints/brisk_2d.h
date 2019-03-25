@@ -383,8 +383,8 @@ namespace pcl
           float offset_;
 
           /** agast */
-          boost::shared_ptr<pcl::keypoints::agast::OastDetector9_16> oast_detector_;
-          boost::shared_ptr<pcl::keypoints::agast::AgastDetector5_8> agast_detector_5_8_;
+          pcl::keypoints::agast::OastDetector9_16::Ptr oast_detector_;
+          pcl::keypoints::agast::AgastDetector5_8::Ptr agast_detector_5_8_;
       };
 
       /** BRISK Scale Space helper. */ 

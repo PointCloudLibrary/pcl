@@ -45,7 +45,7 @@ CloudPtr cloud_pass_downsampled_;
 CloudPtr target_cloud;
 
 boost::mutex mtx_;
-boost::shared_ptr<ParticleFilter> tracker_;
+ParticleFilter::Ptr tracker_;
 bool new_cloud_;
 double downsampling_grid_size_;
 int counter;
@@ -209,7 +209,7 @@ main (int argc, char** argv)
   std::vector<double> initial_noise_covariance = std::vector<double> (6, 0.00001);
   std::vector<double> default_initial_mean = std::vector<double> (6, 0.0);
 
-  boost::shared_ptr<KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT> > tracker
+  KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT>::Ptr tracker
     (new KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT> (8));
 
   ParticleT bin_size;
@@ -240,14 +240,14 @@ main (int argc, char** argv)
 
 
   //Setup coherence object for tracking
-  ApproxNearestPairPointCloudCoherence<RefPointType>::Ptr coherence = ApproxNearestPairPointCloudCoherence<RefPointType>::Ptr
-    (new ApproxNearestPairPointCloudCoherence<RefPointType> ());
-    
-  boost::shared_ptr<DistanceCoherence<RefPointType> > distance_coherence
-    = boost::shared_ptr<DistanceCoherence<RefPointType> > (new DistanceCoherence<RefPointType> ());
+  ApproxNearestPairPointCloudCoherence<RefPointType>::Ptr coherence
+    (new ApproxNearestPairPointCloudCoherence<RefPointType>);
+
+  DistanceCoherence<RefPointType>::Ptr distance_coherence
+    (new DistanceCoherence<RefPointType>);
   coherence->addPointCoherence (distance_coherence);
 
-  boost::shared_ptr<pcl::search::Octree<RefPointType> > search (new pcl::search::Octree<RefPointType> (0.01));
+  pcl::search::Octree<RefPointType>::Ptr search (new pcl::search::Octree<RefPointType> (0.01));
   coherence->setSearchMethod (search);
   coherence->setMaximumDistance (0.01);
 

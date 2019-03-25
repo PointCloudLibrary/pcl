@@ -77,6 +77,8 @@ namespace pcl
     {
       public:
 
+        typedef boost::shared_ptr<ISMVoteList<PointT>> Ptr;
+
         /** \brief Empty constructor with member variables initialization. */
         ISMVoteList ();
 
@@ -439,7 +441,7 @@ namespace pcl
           * \param[in] in_normals cloud of normals corresponding to the input cloud
           * \param[in] in_class_of_interest class which we are looking for
           */
-        boost::shared_ptr<pcl::features::ISMVoteList<PointT> >
+        typename pcl::features::ISMVoteList<PointT>::Ptr
         findObjects (ISMModelPtr model, typename pcl::PointCloud<PointT>::Ptr in_cloud, typename pcl::PointCloud<Normal>::Ptr in_normals, int in_class_of_interest);
 
       protected:

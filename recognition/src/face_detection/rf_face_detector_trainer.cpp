@@ -49,8 +49,7 @@ void pcl::RFFaceDetectorTrainer::trainWithDataProvider()
   dft.setRandomFeaturesAtSplitNode (true);
   dft.setThresholds (thresholds_);
 
-  boost::shared_ptr < face_detection::FaceDetectorDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>
-      > dtdp;
+  typename face_detection::FaceDetectorDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>::Ptr dtdp;
   dtdp.reset (new face_detection::FaceDetectorDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>);
   dtdp->setUseNormals (use_normals_);
   dtdp->setWSize (w_size_);
@@ -59,10 +58,7 @@ void pcl::RFFaceDetectorTrainer::trainWithDataProvider()
 
   dtdp->initialize (directory_);
 
-  boost::shared_ptr < pcl::DecisionTreeTrainerDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>
-      > cast_dtdp;
-  cast_dtdp = boost::dynamic_pointer_cast
-      < pcl::DecisionTreeTrainerDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType> > (dtdp);
+  auto cast_dtdp = boost::dynamic_pointer_cast<pcl::DecisionTreeTrainerDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>> (dtdp);
   dft.setDecisionTreeDataProvider (cast_dtdp);
 
   pcl::DecisionForest<NodeType> forest;
@@ -273,7 +269,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
   pass_.filter (*cloud);
 
   //compute depth integral image
-  boost::shared_ptr<pcl::IntegralImage2D<float, 1> > integral_image_depth;
+  pcl::IntegralImage2D<float, 1>::Ptr integral_image_depth;
   integral_image_depth.reset (new pcl::IntegralImage2D<float, 1> (false));
 
   int element_stride = sizeof(pcl::PointXYZ) / sizeof(float);
@@ -297,9 +293,9 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
   int element_stride_normal = sizeof(pcl::Normal) / sizeof(float);
   int row_stride_normal = element_stride_normal * normals->width;
-  boost::shared_ptr<pcl::IntegralImage2D<float, 1> > integral_image_normal_x;
-  boost::shared_ptr<pcl::IntegralImage2D<float, 1> > integral_image_normal_y;
-  boost::shared_ptr<pcl::IntegralImage2D<float, 1> > integral_image_normal_z;
+  pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_x;
+  pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_y;
+  pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_z;
 
   if (use_normals_)
   {

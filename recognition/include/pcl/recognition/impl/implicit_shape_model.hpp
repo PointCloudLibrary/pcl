@@ -228,7 +228,7 @@ pcl::features::ISMVoteList<PointT>::validateTree ()
   if (!tree_is_valid_)
   {
     if (tree_ == 0)
-      tree_ = boost::shared_ptr<pcl::KdTreeFLANN<pcl::InterestPoint> > (new pcl::KdTreeFLANN<pcl::InterestPoint> ());
+      tree_.reset (new pcl::KdTreeFLANN<pcl::InterestPoint>);
     tree_->setInputCloud (votes_);
     k_ind_.resize ( votes_->points.size (), -1 );
     k_sqr_dist_.resize ( votes_->points.size (), 0.0f );
@@ -749,14 +749,14 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::trainISM (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <int FeatureSize, typename PointT, typename NormalT> boost::shared_ptr<pcl::features::ISMVoteList<PointT> >
+template <int FeatureSize, typename PointT, typename NormalT> typename pcl::features::ISMVoteList<PointT>::Ptr
 pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::findObjects (
   ISMModelPtr model,
   typename pcl::PointCloud<PointT>::Ptr in_cloud,
   typename pcl::PointCloud<Normal>::Ptr in_normals,
   int in_class_of_interest)
 {
-  boost::shared_ptr<pcl::features::ISMVoteList<PointT> > out_votes (new pcl::features::ISMVoteList<PointT> ());
+  typename pcl::features::ISMVoteList<PointT>::Ptr out_votes (new pcl::features::ISMVoteList<PointT> ());
 
   if (in_cloud->points.size () == 0)
     return (out_votes);
@@ -1238,7 +1238,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::estimateFe
   typename pcl::PointCloud<NormalT>::Ptr normal_cloud,
   typename pcl::PointCloud<pcl::Histogram<FeatureSize> >::Ptr feature_cloud)
 {
-  typename pcl::search::Search<PointT>::Ptr tree = boost::shared_ptr<pcl::search::Search<PointT> > (new pcl::search::KdTree<PointT>);
+  typename pcl::search::Search<PointT>::Ptr tree (new pcl::search::KdTree<PointT>);
 //  tree->setInputCloud (point_cloud);
 
   feature_estimator_->setInputCloud (sampled_point_cloud->makeShared ());
