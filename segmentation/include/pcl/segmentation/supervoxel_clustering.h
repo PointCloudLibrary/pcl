@@ -40,6 +40,8 @@
 
 #pragma once
 
+#include <boost/version.hpp>
+
 #include <pcl/features/normal_3d.h>
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
@@ -524,7 +526,11 @@ namespace pcl
       };
 
       //Make boost::ptr_list can access the private class SupervoxelHelper
+#if BOOST_VERSION >= 107000
+      friend void boost::checked_delete<> (const typename pcl::SupervoxelClustering<PointT>::SupervoxelHelper *) BOOST_NOEXCEPT;
+#else
       friend void boost::checked_delete<> (const typename pcl::SupervoxelClustering<PointT>::SupervoxelHelper *);
+#endif
 
       typedef boost::ptr_list<SupervoxelHelper> HelperListT;
       HelperListT supervoxel_helpers_;
