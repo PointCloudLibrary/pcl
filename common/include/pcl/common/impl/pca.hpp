@@ -77,6 +77,8 @@ pcl::PCA<PointT>::initCompute ()
     eigenvalues_[i] = evd.eigenvalues () [2-i];
     eigenvectors_.col (i) = evd.eigenvectors ().col (2-i);
   }
+  // Enforce right hand rule 
+  eigenvectors_.col(2) = eigenvectors_.col(0).cross(eigenvectors_.col(1));
   // If not basis only then compute the coefficients
   if (!basis_only_)
     coefficients_ = eigenvectors_.transpose() * cloud_demean.topRows<3> ();
