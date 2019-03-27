@@ -168,10 +168,11 @@ namespace pcl
        * \param n_arg: some value
        * \return binary logarithm (log2) of argument n_arg
        */
+      [[deprecated("use std::log2 instead")]]
       inline double
       Log2 (double n_arg)
       {
-        return log (n_arg) / log (2.0);
+        return std::log2 (n_arg);
       }
 
     private:
