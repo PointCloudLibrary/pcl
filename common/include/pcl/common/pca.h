@@ -46,8 +46,10 @@ namespace pcl
   /** Principal Component analysis (PCA) class.\n
     *  Principal components are extracted by singular values decomposition on the 
     * covariance matrix of the centered input cloud. Available data after pca computation 
-    * are the mean of the input data, the eigenvalues (in descending order) and 
-    * corresponding eigenvectors.\n
+    * are:\n
+    * - The Mean of the input data\n
+    * - The Eigenvectors: Ordered set of vectors representing the resultant principal components and the eigenspace cartesian basis (right-handed coordinate system).\n
+    * - The Eigenvalues: Eigenvectors correspondent loadings ordered in descending order.\n\n
     * Other methods allow projection in the eigenspace, reconstruction from eigenspace and 
     *  update of the eigenspace with a new datum (according Matej Artec, Matjaz Jogan and 
     * Ales Leonardis: "Incremental PCA for On-line Visual Learning and Recognition").
@@ -189,6 +191,7 @@ namespace pcl
       }
 
       /** Eigen Vectors accessor
+        * \return Column ordered eigenvectors, representing the eigenspace cartesian basis (right-handed coordinate system).        
         * \throw InitFailedException
         */
       inline Eigen::Matrix3f& 
