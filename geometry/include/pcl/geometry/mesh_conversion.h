@@ -91,7 +91,7 @@ namespace pcl
       typedef typename HalfEdgeMesh::VertexDataCloud VertexDataCloud;
       typedef typename HalfEdgeMesh::VertexIndices   VertexIndices;
 
-      BOOST_STATIC_ASSERT (HalfEdgeMesh::HasVertexData::value); // Output mesh must have data associated with the vertices!
+      static_assert (HalfEdgeMesh::HasVertexData::value, "Output mesh must have data associated with the vertices!");
 
       VertexDataCloud vertices;
       pcl::fromPCLPointCloud2 (face_vertex_mesh.cloud, vertices);

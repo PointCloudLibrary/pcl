@@ -57,8 +57,7 @@ namespace pcl
         typedef pcl::ihs::Mesh        Mesh;
         typedef Mesh::HalfEdgeIndices HalfEdgeIndices;
 
-        // Currently works only on the manifold mesh.
-        BOOST_STATIC_ASSERT (Mesh::IsManifold::value);
+        static_assert (Mesh::IsManifold::value, "MeshProcessing currently works only on the manifold mesh.");
 
         /** \brief Constructor. */
         MeshProcessing ();
