@@ -22,6 +22,9 @@ jobs:
       - script: set
         displayName: 'Print Environment Variables'
       - script: |
+          echo ##vso[task.prependpath]%BOOST_ROOT%\lib
+        displayName: 'Update System PATH'
+      - script: |
           vcpkg.exe install eigen3 flann gtest qhull --triplet %PLATFORM%-windows && vcpkg.exe list
         displayName: 'Install Dependencies'
       - script: |
