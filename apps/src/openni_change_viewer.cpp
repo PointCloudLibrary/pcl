@@ -34,6 +34,8 @@
  * Author: Nico Blodow (blodow@cs.tum.edu), Julius Kammerl (julius@kammerl.de)
  */
 
+#include <thread>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -43,6 +45,8 @@
 #include <pcl/filters/extract_indices.h>
 
 #include <pcl/console/parse.h>
+
+using namespace std::chrono_literals;
 
 enum 
 {
@@ -128,7 +132,7 @@ class OpenNIChangeViewer
       
       while (!viewer.wasStopped())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
       }
 
       interface->stop ();

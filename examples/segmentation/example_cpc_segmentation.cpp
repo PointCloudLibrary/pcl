@@ -39,6 +39,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <climits>
+#include <thread>
 
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
@@ -62,6 +63,8 @@
 #include <vtkImageData.h>
 #include <vtkImageFlip.h>
 #include <vtkPolyLine.h>
+
+using namespace std::chrono_literals;
 
 /// *****  Type Definitions ***** ///
 
@@ -594,7 +597,7 @@ CPCSegmentation Parameters: \n\
           viewer->addText ("Press d to show help", 5, 10, 12, textcolor, textcolor, textcolor, "help_text");
       }
 
-      boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+      std::this_thread::sleep_for(100ms);
     }
   }  /// END if (show_visualization)
 

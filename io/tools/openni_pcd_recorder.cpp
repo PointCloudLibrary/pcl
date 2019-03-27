@@ -40,12 +40,14 @@
 #include <boost/circular_buffer.hpp>
 #include <csignal>
 #include <limits>
+#include <thread>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h> //fps calculations
 
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
 
@@ -239,7 +241,7 @@ class Producer
       {
         if (is_done)
           break;
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+        std::this_thread::sleep_for(1s);
       }
       interface->stop ();
     }
@@ -459,7 +461,7 @@ main (int argc, char** argv)
     PCDBuffer<PointXYZRGBA> buf;
     buf.setCapacity (buff_size);
     Producer<PointXYZRGBA> producer (buf, depth_mode);
-    boost::this_thread::sleep (boost::posix_time::seconds (2));
+    std::this_thread::sleep_for(2s);
     Consumer<PointXYZRGBA> consumer (buf);
 
     signal (SIGINT, ctrlC);
@@ -472,7 +474,7 @@ main (int argc, char** argv)
     PCDBuffer<PointXYZ> buf;
     buf.setCapacity (buff_size);
     Producer<PointXYZ> producer (buf, depth_mode);
-    boost::this_thread::sleep (boost::posix_time::seconds (2));
+    std::this_thread::sleep_for(2s);
     Consumer<PointXYZ> consumer (buf);
 
     signal (SIGINT, ctrlC);

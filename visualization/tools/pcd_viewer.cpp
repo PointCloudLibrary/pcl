@@ -37,6 +37,9 @@
  * $Id$
  *
  */
+
+#include <thread>
+
 // PCL
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
@@ -55,6 +58,7 @@
 #include <pcl/search/kdtree.h>
 #include <vtkPolyDataReader.h>
 
+using namespace std::chrono_literals;
 using namespace pcl::console;
 
 typedef pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
@@ -731,7 +735,7 @@ main (int argc, char** argv)
         }
         p->spinOnce ();
       }
-      boost::this_thread::sleep (boost::posix_time::microseconds (100));
+      std::this_thread::sleep_for(100us);
     }
     while (!stopped);
   }

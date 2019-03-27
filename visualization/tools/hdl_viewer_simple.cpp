@@ -47,10 +47,12 @@
 #include <pcl/visualization/mouse_event.h>
 #include <vector>
 #include <string>
+#include <thread>
 #include <boost/algorithm/string.hpp>
 #include <typeinfo>
 
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
 using namespace pcl::visualization;
@@ -177,7 +179,7 @@ class SimpleHDLViewer
         if (!grabber_.isRunning ())
           cloud_viewer_->spin ();
 
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
       }
 
       grabber_.stop ();

@@ -35,10 +35,14 @@
  *
  */
 
+#include <thread>
+
 #include <pcl/common/time.h>
 #include <pcl/point_types.h>
 #include <pcl/io/dinast_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
+
+using namespace std::chrono_literals;
 
 template <typename PointType>
 class DinastProcessor
@@ -79,7 +83,7 @@ class DinastProcessor
       
       while (!viewer.wasStopped())
       {
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+        std::this_thread::sleep_for(1s);
       }
       
       interface.stop ();

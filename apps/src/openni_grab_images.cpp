@@ -278,7 +278,6 @@ class OpenNIGrabFrame
         trigger_ = false;
         image_viewer_.spinOnce ();
         depth_image_viewer_.spinOnce ();
-        //boost::this_thread::sleep (boost::posix_time::microseconds (100));
       }
       
       image_mutex_.lock ();

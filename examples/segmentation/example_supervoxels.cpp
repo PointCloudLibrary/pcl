@@ -1,3 +1,5 @@
+#include <thread>
+
 #include <pcl/common/time.h>
 #include <pcl/console/parse.h>
 #include <pcl/point_cloud.h>
@@ -12,6 +14,8 @@
 #include <vtkImageData.h>
 #include <vtkImageFlip.h>
 #include <vtkPolyLine.h>
+
+using namespace std::chrono_literals;
 
 // Types
 typedef pcl::PointXYZRGBA PointT;
@@ -474,7 +478,7 @@ main (int argc, char ** argv)
       
     
     viewer->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
     
   }
   return (0);

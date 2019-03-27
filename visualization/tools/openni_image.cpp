@@ -43,6 +43,7 @@
 #include <boost/circular_buffer.hpp>
 #include <csignal>
 #include <limits>
+#include <thread>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/common/float_image_utils.h>
@@ -52,6 +53,7 @@
 #include <pcl/visualization/mouse_event.h>
 
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
 
@@ -322,7 +324,7 @@ class Writer
         if (save_data || toggle_one_frame_capture)
           writeToDisk (buf_.popFront ());
         else
-          boost::this_thread::sleep (boost::posix_time::microseconds (100));
+          std::this_thread::sleep_for(100us);
       }
 
       if (save_data && buf_.getSize () > 0)
@@ -417,7 +419,7 @@ class Driver
       
       while (!is_done)
       {
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+        std::this_thread::sleep_for(1s);
       }
       grabber_.stop ();
       image_connection.disconnect ();
@@ -476,7 +478,7 @@ class Viewer
              !depth_image_viewer_->wasStopped () && 
              !is_done)
       {
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
 
         if (!visualize)
         {

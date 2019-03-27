@@ -5,6 +5,7 @@
  **/
 
 ////// ALL INCLUDES /////////////
+#include <thread>
 #include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -22,6 +23,8 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
+
+using namespace std::chrono_literals;
 
 class PeopleTrackingApp
 {
@@ -63,7 +66,7 @@ class PeopleTrackingApp
 
       while (!viewer.wasStopped())
       {
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+        std::this_thread::sleep_for(1s);
       }
       interface->stop ();
     }

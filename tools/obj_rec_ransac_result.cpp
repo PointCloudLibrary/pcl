@@ -62,8 +62,10 @@
 #include <cstdio>
 #include <vector>
 #include <list>
+#include <thread>
 
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace io;
 using namespace console;
@@ -221,7 +223,7 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
   {
     //main loop of the visualizer
     viz.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
 }
 

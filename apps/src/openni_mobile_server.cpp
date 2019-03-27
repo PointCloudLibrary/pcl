@@ -33,6 +33,7 @@
  *
  */
 
+#include <thread>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -44,10 +45,9 @@
 #include <pcl/common/time.h>
 
 #include <boost/asio.hpp>
-#include <boost/thread/thread.hpp>
 
 using boost::asio::ip::tcp;
-
+using namespace std::chrono_literals;
 
 struct PointCloudBuffers
 {
@@ -161,7 +161,7 @@ class PCLMobileServer
 
       // wait for first cloud
       while (!getLatestPointCloud ())
-        boost::this_thread::sleep (boost::posix_time::milliseconds (10));
+        std::this_thread::sleep_for(10ms);
 
       viewer_.showCloud (getLatestPointCloud ());
 

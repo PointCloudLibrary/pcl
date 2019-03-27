@@ -6,9 +6,11 @@
 #include <pcl/io/image_grabber.h>
 
 #include <string>
+#include <thread>
 #include <vector>
 
 using namespace std;
+using namespace std::chrono_literals;
 
 typedef pcl::PointXYZRGBA PointT;
 typedef pcl::PointCloud<PointT> CloudT;
@@ -48,7 +50,7 @@ TEST (PCL, PCDGrabber)
   grabber.registerCallback (fxn);
   grabber.start ();
   // 1 second should be /plenty/ of time
-  boost::this_thread::sleep (boost::posix_time::seconds (1));
+  std::this_thread::sleep_for(1s);
   grabber.stop ();
 
   //// Make sure they match
@@ -125,7 +127,7 @@ TEST (PCL, ImageGrabberTIFF)
     size_t niter = 0;
     while (!signal_received)
     {
-      boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      std::this_thread::sleep_for(10ms);
       if (++niter > 100)
       {
         #ifdef PCL_BUILT_WITH_VTK
@@ -207,7 +209,7 @@ TEST (PCL, ImageGrabberPCLZF)
     size_t niter = 0;
     while (!signal_received)
     {
-      boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      std::this_thread::sleep_for(10ms);
       if (++niter > 100)
       {
         ASSERT_TRUE (false);
@@ -287,7 +289,7 @@ TEST (PCL, ImageGrabberOMP)
     size_t niter = 0;
     while (!signal_received)
     {
-      boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      std::this_thread::sleep_for(10ms);
       if (++niter > 100)
       {
         ASSERT_TRUE (false);
@@ -396,7 +398,7 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
     size_t niter = 0;
     while (!signal_received)
     {
-      boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      std::this_thread::sleep_for(10ms);
       if (++niter > 100)
       {
         #ifdef PCL_BUILT_WITH_VTK
@@ -470,7 +472,7 @@ TEST (PCL, ImageGrabberSetIntrinsicsPCLZF)
     size_t niter = 0;
     while (!signal_received)
     {
-      boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      std::this_thread::sleep_for(10ms);
       if (++niter > 100)
       {
         ASSERT_TRUE (false);

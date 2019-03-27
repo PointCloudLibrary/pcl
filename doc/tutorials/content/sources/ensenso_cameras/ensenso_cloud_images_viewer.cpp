@@ -5,9 +5,10 @@
  * @date November 2014
  */
 
-#include <iostream>
-#include <vector>
 #include <algorithm>
+#include <iostream>
+#include <thread>
+#include <vector>
 
 #include <pcl/common/common.h>
 #include <pcl/console/print.h>
@@ -16,6 +17,8 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+
+using namespace std::chrono_literals;
 
 /** @brief Convenience typedef */
 typedef pcl::PointXYZ PointT;
@@ -135,7 +138,7 @@ main (void)
   while (!viewer_ptr->wasStopped ())
   {
     PCL_INFO("FPS: %f\n", ensenso_ptr->getFramesPerSecond ());
-    boost::this_thread::sleep (boost::posix_time::milliseconds (500));
+    std::this_thread::sleep_for(500ms);
   }
 
   ensenso_ptr->stop ();

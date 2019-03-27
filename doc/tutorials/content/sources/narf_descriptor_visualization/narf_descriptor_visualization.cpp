@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-#include <boost/thread/thread.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/range_image_visualizer.h>

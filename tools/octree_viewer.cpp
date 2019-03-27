@@ -35,6 +35,8 @@
  *  \author Raphael Favier
  * */
 
+#include <thread>
+
 #include <pcl/io/auto_io.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -51,6 +53,8 @@
 #include <vtkRenderWindow.h>
 #include <vtkCubeSource.h>
 #include <vtkCleanPolyData.h>
+
+using namespace std::chrono_literals;
 
 class OctreeViewer
 {
@@ -191,7 +195,7 @@ private:
     {
       //main loop of the visualizer
       viz.spinOnce(100);
-      boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+      std::this_thread::sleep_for(100ms);
     }
   }
 

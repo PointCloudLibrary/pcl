@@ -32,19 +32,23 @@
  *  Author: Raphael Favier, Technical University Eindhoven, (r.mysurname < aT > tue.nl)
  */
 
+#include <csignal>
+#include <ctime>
+#include <thread>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
 #include <boost/thread/condition.hpp>
 #include <boost/circular_buffer.hpp>
-#include <csignal>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h> //fps calculations
 
 #include <pcl/gpu/containers/kernel_containers.h>
 #include <pcl/io/png_io.h>
-#include <ctime>
 #include <pcl/console/print.h>
+
+using namespace std::chrono_literals;
 
 #define FPS_CALC(_WHAT_) \
 do \
@@ -264,7 +268,7 @@ grabAndSend ()
   {
     if (is_done)
       break;
-    boost::this_thread::sleep (boost::posix_time::seconds (1));
+    std::this_thread::sleep_for(1s);
   }
   interface->stop ();
 }
@@ -320,7 +324,7 @@ main (int argc, char** argv)
   std::cout << "Starting the producer and consumer threads..." << std::endl;
   std::cout << "Press Ctrl-C to end" << std::endl;
   boost::thread producer (grabAndSend);
-  boost::this_thread::sleep (boost::posix_time::seconds (2));
+  std::this_thread::sleep_for(2s);
   boost::thread consumer (receiveAndProcess);
   boost::thread consumer2 (receiveAndProcess);
   boost::thread consumer3 (receiveAndProcess);

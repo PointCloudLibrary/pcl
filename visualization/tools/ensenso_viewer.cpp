@@ -40,6 +40,8 @@
 #include <pcl/io/ensenso_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 
+using namespace std::chrono_literals;
+
 /** @brief Convenience typedef */
 typedef pcl::visualization::CloudViewer CloudViewer;
 
@@ -78,7 +80,7 @@ main (void)
 
   while (!viewer_ptr->wasStopped ())
   {
-    boost::this_thread::sleep (boost::posix_time::milliseconds (1000));
+    std::this_thread::sleep_for(1s);
     std::cout << "FPS: " << ensenso_ptr->getFramesPerSecond () << std::endl;
   }
 

@@ -85,8 +85,6 @@
 
 // Pop-up viewer
 #include <pcl/visualization/cloud_viewer.h>
-#include <boost/thread/thread.hpp>
-
 
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>

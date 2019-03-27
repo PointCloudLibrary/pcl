@@ -46,7 +46,6 @@
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
 #include <pcl/io/boost.h>
-#include <boost/thread.hpp>
 
 #include <pcl/io/grabber.h>
 #include <pcl/common/synchronizer.h>

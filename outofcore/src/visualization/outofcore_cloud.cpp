@@ -33,10 +33,6 @@
 #include <vtkProperty.h>
 #include <vtkSmartPointer.h>
 
-// Boost
-//#include <boost/date_time.hpp>
-//#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
 
 // Forward Declarations
 

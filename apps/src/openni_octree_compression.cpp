@@ -50,6 +50,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include <boost/asio.hpp>
@@ -60,6 +61,7 @@ using namespace pcl;
 using namespace pcl::io;
 
 using namespace std;
+using namespace std::chrono_literals;
 
 char usage[] = "\n"
   "  PCL octree point cloud compression\n"
@@ -165,7 +167,7 @@ class SimpleOpenNIViewer
 
       while (!outputFile_.fail())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
       }
 
       interface->stop ();
@@ -219,7 +221,7 @@ struct EventHelper
 
     while (!outputFile_.fail ())
     {
-      boost::this_thread::sleep(boost::posix_time::seconds(1));
+      std::this_thread::sleep_for(1s);
     }
 
     interface->stop ();
@@ -463,7 +465,7 @@ main (int argc, char **argv)
 
         std::cout << "Disconnected!" << std::endl;
 
-        boost::this_thread::sleep(boost::posix_time::seconds(3));
+        std::this_thread::sleep_for(3s);
 
       }
       catch (std::exception& e)

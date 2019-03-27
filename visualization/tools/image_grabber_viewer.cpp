@@ -36,6 +36,9 @@
  *
  *
  */
+
+#include <thread>
+
 #include <pcl/io/image_grabber.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
@@ -44,6 +47,7 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/pcd_io.h>
 
+using namespace std::chrono_literals;
 using pcl::console::print_error;
 using pcl::console::print_info;
 using pcl::console::print_value;
@@ -250,7 +254,7 @@ main (int argc, char** argv)
 
     if (!cloud_)
     {
-      boost::this_thread::sleep(boost::posix_time::microseconds(10000));
+      std::this_thread::sleep_for(10ms);
       continue;
     }
     else if (mutex_.try_lock ())

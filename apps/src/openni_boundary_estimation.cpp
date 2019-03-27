@@ -32,8 +32,10 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *
  */
+
+#include <thread>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -46,6 +48,8 @@
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/cloud_viewer.h>
+
+using namespace std::chrono_literals;
 
 typedef pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
 typedef ColorHandler::Ptr ColorHandlerPtr;
@@ -123,7 +127,7 @@ class OpenNIIntegralImageNormalEstimation
       boost::mutex::scoped_lock lock (mtx_);
       if (!cloud_)
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
         return;
       }
 
@@ -163,7 +167,7 @@ class OpenNIIntegralImageNormalEstimation
       
       while (!viewer.wasStopped ())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
       }
 
       interface->stop ();

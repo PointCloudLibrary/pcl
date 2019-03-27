@@ -49,6 +49,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <thread>
 
 #include <boost/asio.hpp>
 
@@ -58,7 +59,7 @@ using namespace pcl;
 using namespace pcl::io;
 
 using namespace std;
-
+using namespace std::chrono_literals;
 
 class SimpleOpenNIViewer
 {
@@ -141,7 +142,7 @@ class SimpleOpenNIViewer
       grabber_->start ();
       while (true)
       {
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+        std::this_thread::sleep_for(1s);
       }
       grabber_->stop ();
 

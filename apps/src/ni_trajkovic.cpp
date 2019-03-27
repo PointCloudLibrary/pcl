@@ -38,6 +38,9 @@
  */
 
 #define SHOW_FPS 1
+
+#include <thread>
+
 #include <pcl/apps/timer.h>
 #include <pcl/common/common.h>
 #include <pcl/io/openni_grabber.h>
@@ -48,6 +51,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 
+using namespace std::chrono_literals;
 using namespace pcl;
 typedef PointXYZRGBA PointT;
 typedef PointXYZI KeyPointT;
@@ -192,7 +196,7 @@ class TrajkovicDemo
 
         cloud_viewer_.spinOnce ();
         image_viewer_.spinOnce ();
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
       }
 
       grabber_.stop ();
