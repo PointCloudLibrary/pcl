@@ -746,9 +746,9 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
   typedef typename Eigen::NumTraits<Scalar>::Real RealScalar;
   typedef typename Derived::Index Index;
 
-  EIGEN_STATIC_ASSERT (!Eigen::NumTraits<Scalar>::IsComplex, NUMERIC_TYPE_MUST_BE_REAL)
-  EIGEN_STATIC_ASSERT ((Eigen::internal::is_same<Scalar, typename Eigen::internal::traits<OtherDerived>::Scalar>::value),
-    YOU_MIXED_DIFFERENT_NUMERIC_TYPES__YOU_NEED_TO_USE_THE_CAST_METHOD_OF_MATRIXBASE_TO_CAST_NUMERIC_TYPES_EXPLICITLY)
+  static_assert (!Eigen::NumTraits<Scalar>::IsComplex, "Numeric type must be real.");
+  static_assert ((Eigen::internal::is_same<Scalar, typename Eigen::internal::traits<OtherDerived>::Scalar>::value),
+    "You mixed different numeric types. You need to use the cast method of matrixbase to cast numeric types explicitly.");
 
   enum { Dimension = PCL_EIGEN_SIZE_MIN_PREFER_DYNAMIC (Derived::RowsAtCompileTime, OtherDerived::RowsAtCompileTime) };
 
