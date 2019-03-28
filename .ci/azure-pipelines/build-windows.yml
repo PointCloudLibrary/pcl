@@ -37,6 +37,12 @@ jobs:
         displayName: 'CMake Configuration'
       - script: cd %BUILD_DIR% && cmake --build . --config %CONFIGURATION%
         displayName: 'Build Library'
-      - script: cd %BUILD_DIR% && ctest -C %CONFIGURATION% -V
+      - script: cd %BUILD_DIR% && ctest -C %CONFIGURATION% -V -T Test
         displayName: 'Run Unit Tests'
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'CTest'
+          testResultsFiles: '**/Test*.xml'
+          searchFolder: '$(Agent.WorkFolder)\build'
+        condition: succeededOrFailed()
 

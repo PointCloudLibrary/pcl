@@ -43,5 +43,11 @@ jobs:
         displayName: 'Build Library'
       - script: |
           cd $BUILD_DIR
-          cmake --build . -- tests
+          ctest -V -T Test
         displayName: 'Run Unit Tests'
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'CTest'
+          testResultsFiles: '**/Test*.xml'
+          searchFolder: '$(Agent.BuildDirectory)/build'
+        condition: succeededOrFailed()
