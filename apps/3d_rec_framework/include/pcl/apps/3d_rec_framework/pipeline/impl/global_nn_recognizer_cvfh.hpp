@@ -7,8 +7,6 @@
 
 #include <pcl/apps/3d_rec_framework/pipeline/global_nn_recognizer_cvfh.h>
 #include <pcl/registration/icp.h>
-#include <boost/random.hpp>
-#include <boost/random/normal_distribution.hpp>
 #include <pcl/common/time.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
@@ -653,17 +651,12 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
           if (noisify_)
           {
-            double noise_std = noise_;
-            boost::posix_time::ptime time = boost::posix_time::microsec_clock::local_time();
-            boost::posix_time::time_duration duration( time.time_of_day() );
-            boost::mt19937 rng;
-            rng.seed (static_cast<unsigned int> (duration.total_milliseconds()));
-            boost::normal_distribution<> nd (0.0, noise_std);
-            boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
+            std::random_device rd;
+            std::mt19937 rng(rd());
+            std::normal_distribution<float> nd (0.0f, noise_);
             // Noisify each point in the dataset
             for (size_t cp = 0; cp < view->points.size (); ++cp)
-              view->points[cp].z += static_cast<float> (var_nor ());
-
+              view->points[cp].z += nd (rng);
           }
 
           //pro view, compute signatures

@@ -111,10 +111,10 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
     // Initialize random number generator if necessary
     case (RANDOM_UNIFORM_DENSITY):
     {
-      rng_alg_.seed (static_cast<unsigned> (std::time (0)));
-      const float tmp = static_cast<float> (search_radius_ / 2.0f);
-      const boost::uniform_real<float> uniform_distrib (-tmp, tmp);
-      rng_uniform_distribution_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > (rng_alg_, uniform_distrib));
+      std::random_device rd;
+      rng_.seed (rd());
+      const double tmp = search_radius_ / 2.0;
+      rng_uniform_distribution_.reset (new std::uniform_real_distribution<> (-tmp, tmp));
 
       break;
     }
@@ -219,8 +219,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
         // Sample the local plane
         for (int num_added = 0; num_added < num_points_to_add;)
         {
-          const double u = (*rng_uniform_distribution_) ();
-          const double v = (*rng_uniform_distribution_) ();
+          const double u = (*rng_uniform_distribution_) (rng_);
+          const double v = (*rng_uniform_distribution_) (rng_);
 
           // Check if inside circle; if not, try another coin flip
           if (u * u + v * v > search_radius_ * search_radius_ / 4)

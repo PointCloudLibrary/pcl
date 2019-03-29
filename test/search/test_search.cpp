@@ -36,16 +36,15 @@
  */
 
 #include <gtest/gtest.h>
+
+#include <random>
+
 #include <pcl/search/brute_force.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/search/organized.h>
 #include <pcl/search/octree.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h>
-#include <boost/random/variate_generator.hpp>
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/random/uniform_real.hpp>
 
 using namespace pcl;
 using namespace std;
@@ -94,10 +93,14 @@ PointCloud<PointXYZ>::Ptr unorganized_sparse_cloud (new PointCloud<PointXYZ>);
 /** \brief unorganized point cloud*/
 PointCloud<PointXYZ>::Ptr unorganized_grid_cloud (new PointCloud<PointXYZ>);
 
+
+/** \brief random number generator*/
+std::mt19937 rng;
+
 /** \brief uniform distributed random number generator for unsigned it in range [0;10]*/
-boost::variate_generator< boost::mt19937, boost::uniform_int<unsigned> > rand_uint(boost::mt19937 (), boost::uniform_int<unsigned> (0, 10));
+std::uniform_int_distribution<unsigned> rand_uint(0, 10);
 /** \brief uniform distributed random number generator for floats in the range [0;1] */
-boost::variate_generator< boost::mt19937, boost::uniform_real<float> > rand_float(boost::mt19937 (), boost::uniform_real<float> (0, 1));
+std::uniform_real_distribution<float> rand_float (0.0f, 1.0f);
 
 /** \brief used by the *_VIEW_* tests to use only a subset of points from the point cloud*/
 std::vector<int> unorganized_input_indices;
@@ -543,15 +546,15 @@ void createIndices (std::vector<int>& indices, unsigned max_index)
 {
   // ~10% of the input cloud
   for (unsigned idx = 0; idx <= max_index; ++idx)
-    if (rand_uint () == 0)
+    if (rand_uint (rng) == 0)
       indices.push_back (idx);
    
-  boost::variate_generator< boost::mt19937, boost::uniform_int<> > rand_indices(boost::mt19937 (), boost::uniform_int<> (0, static_cast<int> (indices.size ()) - 1));
+  std::uniform_int_distribution<> rand_indices(0, static_cast<int> (indices.size ()) - 1);
   // shuffle indices -> not ascending index list
   for (unsigned idx = 0; idx < max_index; ++idx)
   {
-    unsigned idx1 = rand_indices ();
-    unsigned idx2 = rand_indices ();
+    const unsigned idx1 = rand_indices (rng);
+    const unsigned idx2 = rand_indices (rng);
 
     std::swap (indices[idx1], indices[idx2]);
   }
@@ -583,13 +586,13 @@ main (int argc, char** argv)
   PointXYZ point;
   for (unsigned pIdx = 0; pIdx < unorganized_point_count; ++pIdx)
   {
-    point.x = rand_float ();
-    point.y = rand_float ();
-    point.z = rand_float ();
+    point.x = rand_float (rng);
+    point.y = rand_float (rng);
+    point.z = rand_float (rng);
 
     unorganized_dense_cloud->points [pIdx] = point;
     
-    if (rand_uint () == 0)
+    if (rand_uint (rng) == 0)
       unorganized_sparse_cloud->points [pIdx].x = unorganized_sparse_cloud->points [pIdx].y = unorganized_sparse_cloud->points [pIdx].z = std::numeric_limits<float>::quiet_NaN ();
     else
       unorganized_sparse_cloud->points [pIdx] = point;

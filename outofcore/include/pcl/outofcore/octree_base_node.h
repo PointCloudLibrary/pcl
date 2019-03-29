@@ -39,6 +39,8 @@
 
 #pragma once
 
+#include <random>
+
 #include <pcl/common/io.h>
 #include <pcl/PCLPointCloud2.h>
 
@@ -561,10 +563,8 @@ namespace pcl
 
         /** \brief Mersenne Twister: A 623-dimensionally equidistributed uniform
          * pseudo-random number generator */
-        static boost::mt19937 rand_gen_;
+        static std::mt19937 rng_;
 
-        /** \brief Random number generator seed */
-        const static boost::uint32_t rngseed = 0xAABBCCDD;
         /** \brief Extension for this class to find the pcd files on disk */
         const static std::string pcd_extension;
 

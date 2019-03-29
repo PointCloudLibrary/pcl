@@ -37,6 +37,8 @@
  *
  */
 
+#include <random>
+
 #include <gtest/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -45,8 +47,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/correspondence_rejection_median_distance.h>
 #include <pcl/registration/correspondence_rejection_poly.h>
-
-#include <boost/random.hpp>
 
 pcl::PointCloud<pcl::PointXYZ> cloud;
 
@@ -97,15 +97,13 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
   pcl::transformPointCloud (cloud, target, t, q);
   
   // Noisify the target with a known seed and N(0, 0.005) using deterministic sampling
-  boost::mt19937 rng;
-  rng.seed (1e6);
-  boost::normal_distribution<> nd (0, 0.005);
-  boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
+  std::mt19937 rng(1e6);
+  std::normal_distribution<> nd (0, 0.005);
   for (auto &point : target)
   {
-    point.x += static_cast<float> (var_nor ());
-    point.y += static_cast<float> (var_nor ());
-    point.z += static_cast<float> (var_nor ());
+    point.x += static_cast<float> (nd (rng));
+    point.y += static_cast<float> (nd (rng));
+    point.z += static_cast<float> (nd (rng));
   }
   
   // Ensure deterministic sampling inside the rejector

@@ -39,6 +39,11 @@
 
 #pragma once
 
+#include <map>
+#include <random>
+
+#include <boost/function.hpp>
+
 // PCL includes
 #include <pcl/pcl_base.h>
 #include <pcl/search/pcl_search.h>
@@ -47,8 +52,6 @@
 #include <pcl/surface/boost.h>
 #include <pcl/surface/eigen.h>
 #include <pcl/surface/processing.h>
-#include <map>
-#include <boost/function.hpp>
 
 namespace pcl
 {
@@ -312,7 +315,7 @@ namespace pcl
                               dilation_iteration_num_ (0),
                               nr_coeff_ (),
                               corresponding_input_indices_ (),
-                              rng_alg_ (),
+                              rng_ (),
                               rng_uniform_distribution_ ()
                               {};
 
@@ -732,15 +735,13 @@ namespace pcl
       performUpsampling (PointCloudOut &output);
 
     private:
-      /** \brief Boost-based random number generator algorithm. */
-      boost::mt19937 rng_alg_;
+      /** \brief Random number generator algorithm. */
+      mutable std::mt19937 rng_;
 
       /** \brief Random number generator using an uniform distribution of floats
         * \note Used only in the case of RANDOM_UNIFORM_DENSITY upsampling
         */
-      boost::shared_ptr<boost::variate_generator<boost::mt19937&,
-                                                 boost::uniform_real<float> >
-                       > rng_uniform_distribution_;
+      std::unique_ptr<std::uniform_real_distribution<>> rng_uniform_distribution_;
 
       /** \brief Abstract class get name method. */
       std::string
