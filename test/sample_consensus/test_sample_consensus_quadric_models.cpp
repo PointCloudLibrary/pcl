@@ -305,7 +305,7 @@ TEST (SampleConsensusModelCone, RANSAC)
   EXPECT_EQ (7, coeff.size ());
   EXPECT_NEAR (0.000000, coeff[0], 1e-2);
   EXPECT_NEAR (0.100000, coeff[1], 1e-2);
-  EXPECT_NEAR (0.349066, coeff[6], 1e-2);
+  EXPECT_NEAR (0.510614, coeff[6], 1e-2);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
@@ -387,9 +387,9 @@ TEST (SampleConsensusModelCylinder, RANSAC)
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ (7, coeff.size ());
-  EXPECT_NEAR (-0.5, coeff[0], 1e-3);
-  EXPECT_NEAR ( 1.7, coeff[1], 1e-3);
-  EXPECT_NEAR ( 0.5, coeff[6], 1e-3);
+  EXPECT_NEAR (-0.49, coeff[0], 1e-3);
+  EXPECT_NEAR ( 1.69, coeff[1], 1e-3);
+  EXPECT_NEAR ( 0.49, coeff[6], 1e-3);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);

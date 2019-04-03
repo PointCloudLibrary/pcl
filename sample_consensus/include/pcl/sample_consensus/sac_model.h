@@ -44,12 +44,12 @@
 #include <ctime>
 #include <climits>
 #include <memory>
+#include <random>
 #include <set>
 
 #include <pcl/pcl_macros.h>
 #include <pcl/console/print.h>
 #include <pcl/point_cloud.h>
-#include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/model_types.h>
 
 #include <pcl/search/search.h>
@@ -80,20 +80,19 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModel (bool random = false) 
-        : input_ ()
-        , radius_min_ (-std::numeric_limits<double>::max ())
+        : radius_min_ (-std::numeric_limits<double>::max ())
         , radius_max_ (std::numeric_limits<double>::max ())
         , samples_radius_ (0.)
-        , samples_radius_search_ ()
-        , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
+        , rng_dist_ (new std::uniform_int_distribution<> ())
       {
         // Create a random number generator object
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
+        {
+          std::random_device rd;
+          rng_.seed (rd());
+        }
         else
-          rng_alg_.seed (12345u);
-
-        rng_gen_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_int<> > (rng_alg_, *rng_dist_)); 
+          rng_.seed (12345u);
        }
 
     public:
@@ -102,23 +101,10 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModel (const PointCloudConstPtr &cloud, bool random = false) 
-        : input_ ()
-        , radius_min_ (-std::numeric_limits<double>::max ())
-        , radius_max_ (std::numeric_limits<double>::max ())
-        , samples_radius_ (0.)
-        , samples_radius_search_ ()
-        , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
+        : SampleConsensusModel(random)
       {
-        if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time (nullptr)));
-        else
-          rng_alg_.seed (12345u);
-
         // Sets the input cloud and creates a vector of "fake" indices
         setInputCloud (cloud);
-
-        // Create a random number generator object
-        rng_gen_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_int<> > (rng_alg_, *rng_dist_)); 
       }
 
       /** \brief Constructor for base SampleConsensusModel.
@@ -129,18 +115,10 @@ namespace pcl
       SampleConsensusModel (const PointCloudConstPtr &cloud, 
                             const std::vector<int> &indices, 
                             bool random = false) 
-        : input_ (cloud)
-        , indices_ (new std::vector<int> (indices))
-        , radius_min_ (-std::numeric_limits<double>::max ())
-        , radius_max_ (std::numeric_limits<double>::max ())
-        , samples_radius_ (0.)
-        , samples_radius_search_ ()
-        , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
+        : SampleConsensusModel(random)
       {
-        if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
-        else
-          rng_alg_.seed (12345u);
+        input_ = cloud;
+        indices_.reset(new std::vector<int> (indices));
 
         if (indices_->size () > input_->points.size ())
         {
@@ -148,9 +126,6 @@ namespace pcl
           indices_->clear ();
         }
         shuffled_indices_ = *indices_;
-
-        // Create a random number generator object
-        rng_gen_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_int<> > (rng_alg_, *rng_dist_)); 
        };
 
       /** \brief Destructor for base SampleConsensusModel. */
@@ -543,14 +518,11 @@ namespace pcl
       /** Data containing a shuffled version of the indices. This is used and modified when drawing samples. */
       std::vector<int> shuffled_indices_;
 
-      /** \brief Boost-based random number generator algorithm. */
-      boost::mt19937 rng_alg_;
+      /** \brief Random number generator algorithm. */
+      std::mt19937 rng_;
 
-      /** \brief Boost-based random number generator distribution. */
-      std::shared_ptr<boost::uniform_int<> > rng_dist_;
-
-      /** \brief Boost-based random number generator. */
-      std::shared_ptr<boost::variate_generator< boost::mt19937&, boost::uniform_int<> > > rng_gen_;
+      /** \brief Random number generator distribution. */
+      std::shared_ptr<std::uniform_int_distribution<> > rng_dist_;
 
       /** \brief A vector holding the distances to the computed model. Used internally. */
       std::vector<double> error_sqr_dists_;
@@ -565,7 +537,7 @@ namespace pcl
       inline int
       rnd ()
       {
-        return ((*rng_gen_) ());
+        return ((*rng_dist_) (rng_));
       }
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
