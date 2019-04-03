@@ -40,6 +40,8 @@
 
 #pragma once
 
+#include <random>
+
 #include <pcl/point_types.h>
 #include <pcl/features/boost.h>
 #include <pcl/features/feature.h>
@@ -102,17 +104,20 @@ namespace pcl
         min_radius_(0.1),
         point_density_radius_(0.2),
         descriptor_length_ (),
-        rng_alg_ (),
-        rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
+        rng_ (),
+        rng_dist_ (0.0f, 1.0f)
       {
         feature_name_ = "ShapeContext3DEstimation";
         search_radius_ = 2.5;
 
         // Create a random number generator object
         if (random)
-          rng_->base ().seed (static_cast<unsigned> (std::time(nullptr)));
+        {
+          std::random_device rd;
+          rng_.seed (rd());
+        }
         else
-          rng_->base ().seed (12345u);
+          rng_.seed (12345u);
       }
 
       ~ShapeContext3DEstimation() {}
@@ -211,11 +216,11 @@ namespace pcl
       /** \brief Descriptor length */
       size_t descriptor_length_;
 
-      /** \brief Boost-based random number generator algorithm. */
-      boost::mt19937 rng_alg_;
+      /** \brief Random number generator algorithm. */
+      std::mt19937 rng_;
 
-      /** \brief Boost-based random number generator distribution. */
-      boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
+      /** \brief Random number generator distribution. */
+      std::uniform_real_distribution<> rng_dist_;
 
      /*  \brief Shift computed descriptor "L" times along the azimuthal direction
        * \param[in] block_size the size of each azimuthal block
@@ -229,7 +234,7 @@ namespace pcl
       inline double
       rnd ()
       {
-        return ((*rng_) ());
+        return (rng_dist_ (rng_));
       }
   };
 }
