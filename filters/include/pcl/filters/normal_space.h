@@ -77,15 +77,8 @@ namespace pcl
         , binsy_ ()
         , binsz_ ()
         , input_normals_ ()
-        , rng_uniform_distribution_ (nullptr)
       {
         filter_name_ = "NormalSpaceSampling";
-      }
-
-      /** \brief Destructor. */
-      ~NormalSpaceSampling ()
-      {
-        delete rng_uniform_distribution_;
       }
 
       /** \brief Set number of indices to be sampled.
@@ -194,9 +187,6 @@ namespace pcl
         */
       bool
       isEntireBinSampled (boost::dynamic_bitset<> &array, unsigned int start_index, unsigned int length);
-
-      /** \brief Uniform random distribution. */
-      boost::variate_generator<boost::mt19937, boost::uniform_int<uint32_t> > *rng_uniform_distribution_;
   };
 }
 

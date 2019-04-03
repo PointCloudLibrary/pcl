@@ -45,8 +45,6 @@
 #endif
 
 // Marking all Boost headers as system headers to remove warnings
-#include <boost/random.hpp>
-#include <boost/random/normal_distribution.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/dynamic_bitset.hpp>

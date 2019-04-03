@@ -41,8 +41,9 @@
 #include <pcl/filters/normal_space.h>
 #include <pcl/common/io.h>
 
-#include <vector>
 #include <list>
+#include <random>
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename NormalT> bool
@@ -58,11 +59,6 @@ pcl::NormalSpaceSampling<PointT, NormalT>::initCompute ()
                sample_, input_->size ());
     return false;
   }
-
-  boost::mt19937 rng (static_cast<unsigned int> (seed_));
-  boost::uniform_int<unsigned int> uniform_distrib (0, unsigned (input_->size ()));
-  delete rng_uniform_distribution_;
-  rng_uniform_distribution_ = new boost::variate_generator<boost::mt19937, boost::uniform_int<unsigned int> > (rng, uniform_distrib);
 
   return (true);
 }
@@ -227,6 +223,10 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   boost::dynamic_bitset<> is_sampled_flag (input_normals_->points.size ());
   // Maintaining flags to check if all points in the bin are sampled
   boost::dynamic_bitset<> bin_empty_flag (normals_hg.size ());
+
+  std::mt19937 rng (static_cast<unsigned int> (seed_));
+  std::uniform_int_distribution<unsigned int> uniform_distrib (0, unsigned (input_->size ()));
+
   unsigned int i = 0;
   while (i < sample_)
   {
@@ -243,7 +243,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
       // Picking up a sample at random from jth bin
       do
       {
-        random_index = static_cast<unsigned int> ((*rng_uniform_distribution_) () % M);
+        random_index = static_cast<unsigned int> (uniform_distrib (rng) % M);
         pos = start_index[j] + random_index;
       } while (is_sampled_flag.test (pos));
 
