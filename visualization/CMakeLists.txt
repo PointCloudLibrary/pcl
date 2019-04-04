@@ -134,16 +134,17 @@ if(APPLE)
 endif()
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs} ${vtk_incs})
+PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}")
+target_sources("${LIB_NAME}" PRIVATE ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs} ${vtk_incs})
 
 target_include_directories("${LIB_NAME}" SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
 
 # apple workaround (continued)
 if(APPLE)
-  target_link_libraries("${LIB_NAME}" "-framework Cocoa")
+  #PUBIC?
+  target_link_libraries("${LIB_NAME}" PRIVATE "-framework Cocoa")
 endif()
 
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree ${VTK_LIBRARIES} ${OPENGL_LIBRARIES})
 
 set(EXT_DEPS "")
 if(WITH_OPENNI)

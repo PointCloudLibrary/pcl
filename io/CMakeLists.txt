@@ -196,7 +196,8 @@ set(PLY_INCLUDES
   "include/pcl/${SUBSYS_NAME}/ply/ply_parser.h"
 )
 
-PCL_ADD_LIBRARY(pcl_io_ply "${SUBSYS_NAME}" ${PLY_SOURCES} ${PLY_INCLUDES})
+PCL_ADD_LIBRARY(pcl_io_ply "${SUBSYS_NAME}")
+target_sources(pcl_io_ply PRIVATE ${PLY_SOURCES} ${PLY_INCLUDES})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
 target_include_directories(pcl_io_ply PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
@@ -322,51 +323,57 @@ endif()
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
 add_definitions(${VTK_DEFINES})
-PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
+PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}")
+target_sources("${LIB_NAME}" PRIVATE ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
 target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 link_directories(${VTK_LINK_DIRECTORIES})
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_LIBRARIES})
+target_link_libraries("${LIB_NAME}" PRIVATE
+  PUBLIC
+    pcl_common pcl_io_ply
+  PRIVATE
+    ${VTK_LIBRARIES}
+  )
 if(PNG_FOUND)
-  target_link_libraries("${LIB_NAME}" ${PNG_LIBRARIES})
+  target_link_libraries("${LIB_NAME}" PUBLIC ${PNG_LIBRARIES})
 endif()
 
 if(LIBUSB_1_FOUND)
-  target_link_libraries("${LIB_NAME}" ${LIBUSB_1_LIBRARIES})
+  target_link_libraries("${LIB_NAME}" PUBLIC ${LIBUSB_1_LIBRARIES})
 endif()
 
 if(WITH_OPENNI2)
-  target_link_libraries(${LIB_NAME} ${OPENNI2_LIBRARIES})
+  target_link_libraries(${LIB_NAME} PUBLIC ${OPENNI2_LIBRARIES})
 endif()
 
 if(WITH_OPENNI)
-  target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})
+  target_link_libraries("${LIB_NAME}" PUBLIC ${OPENNI_LIBRARIES})
 endif()
 
 if(WITH_FZAPI)
-  target_link_libraries("${LIB_NAME}" ${FZAPI_LIBS})
+  target_link_libraries("${LIB_NAME}" PUBLIC ${FZAPI_LIBS})
   if(WIN32)
-  target_link_libraries("${LIB_NAME}" Version.lib)
+  target_link_libraries("${LIB_NAME}" PUBLIC Version.lib)
   endif()
 endif()
 
 if(WITH_ENSENSO)
-  target_link_libraries(${LIB_NAME} ${ENSENSO_LIBRARIES})
+  target_link_libraries(${LIB_NAME} PUBLIC ${ENSENSO_LIBRARIES})
 endif()
 
 if(WITH_DAVIDSDK)
-  target_link_libraries(${LIB_NAME} ${DAVIDSDK_LIBRARIES})
+  target_link_libraries(${LIB_NAME} PUBLIC ${DAVIDSDK_LIBRARIES})
 endif()
 
 if(WITH_DSSDK)
-  target_link_libraries(${LIB_NAME} ${DSSDK_LIBRARIES})
+  target_link_libraries(${LIB_NAME} PUBLIC ${DSSDK_LIBRARIES})
 endif()
 
 if(WITH_RSSDK)
-  target_link_libraries(${LIB_NAME} ${RSSDK_LIBRARIES})
+  target_link_libraries(${LIB_NAME} PUBLIC ${RSSDK_LIBRARIES})
 endif()
 
 if(PCAP_FOUND)
-  target_link_libraries("${LIB_NAME}" ${PCAP_LIBRARIES})
+  target_link_libraries("${LIB_NAME}" PUBLIC ${PCAP_LIBRARIES})
 endif()
 
 set(EXT_DEPS eigen3)

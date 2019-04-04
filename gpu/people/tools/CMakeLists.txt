@@ -14,7 +14,6 @@ set(the_target people_tracking)
 include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
 
 #PCL_ADD_EXECUTABLE("${the_target}" "${SUBSYS_NAME}" people_tracking.cpp)
-#target_link_libraries("${the_target}" pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization)
 
 if(HAVE_OPENNI)
   PCL_ADD_EXECUTABLE(pcl_people_app "${SUBSYS_NAME}" people_app.cpp)

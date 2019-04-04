@@ -103,7 +103,6 @@ macro(PCL_SUBSYS_DEPEND _var _name)
           PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires ${_dep}.")
         else()
           PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
-          include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
         endif()
       endforeach()
     endif()
@@ -119,7 +118,6 @@ macro(PCL_SUBSYS_DEPEND _var _name)
     if(SUBSYS_OPT_DEPS)
       foreach(_dep ${SUBSYS_OPT_DEPS})
         PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
-        include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
       endforeach()
     endif()
   endif()
@@ -158,7 +156,6 @@ macro(PCL_SUBSUBSYS_DEPEND _var _parent _name)
           PCL_SET_SUBSYS_STATUS(${_parent}_${_name} FALSE "Requires ${_dep}.")
         else()
           PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
-          include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
         endif()
       endforeach()
     endif()
@@ -191,26 +188,49 @@ endmacro()
 # _component The part of PCL that this library belongs to.
 # ARGN The source files for the library.
 macro(PCL_ADD_LIBRARY _name _component)
-  add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
-  target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
-  # must link explicitly against boost.
-  target_link_libraries(${_name} ${Boost_LIBRARIES})
-  if((UNIX AND NOT ANDROID) OR MINGW)
-    target_link_libraries(${_name} m)
-  endif()
+  set(options INTERFACE)
+  set(oneValueArgs)
+  set(multiValueArgs)
+  cmake_parse_arguments(PCL_ADD_LIBRARY "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-  if(MINGW)
-    target_link_libraries(${_name} gomp)
-  endif()
+  if(PCL_ADD_LIBRARY_INTERFACE)
+    add_library(${_name} INTERFACE)
+    set(_scope INTERFACE)
+  else()
+    add_library(${_name} ${PCL_LIB_TYPE})
+    set(_scope PUBLIC)
 
-  if(MSVC)
-    target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
+    set_target_properties(${_name} PROPERTIES
+      VERSION ${PCL_VERSION}
+      SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
+      DEFINE_SYMBOL "PCLAPI_EXPORTS")
   endif()
+  target_include_directories(${_name} ${_scope} include)
+  target_compile_features(${_name} ${_scope} ${PCL_CXX_COMPILE_FEATURES})
 
-  set_target_properties(${_name} PROPERTIES
-    VERSION ${PCL_VERSION}
-    SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
-    DEFINE_SYMBOL "PCLAPI_EXPORTS")
+  GET_IN_MAP(_subsys_deps PCL_SUBSYS_DEPS ${_component})
+  foreach(_dep ${_subsys_deps})
+    message(STATUS "${_name} -> ${_dep}")
+    target_link_libraries(${_name} ${_scope} pcl_${_dep})
+  endforeach()
+
+  # message(WARNING "${_subsys_deps}")
+  # GET_IN_MAP(PCL_SUBSYS_EXT_DEPS ${_name} "${SUBSYS_EXT_DEPS}")
+  # GET_IN_MAP(PCL_SUBSYS_OPT_DEPS ${_name} "${SUBSYS_OPT_DEPS}")
+  # GET_IN_MAP(subsys_status PCL_SUBSYS_HYPERSTATUS ${_parent}_${_name})
+
+  # if((UNIX AND NOT ANDROID) OR MINGW)
+  #   target_link_libraries(${_name} PRIVATE m)
+  # endif()
+  #
+  # if(MINGW)
+  #   target_link_libraries(${_name} PRIVATE gomp)
+  # endif()
+  #
+  # if(MSVC)
+  #   target_link_libraries(${_name} PRIVATE delayimp.lib)  # because delay load is enabled for openmp.dll
+  # endif()
+
   if(USE_PROJECT_FOLDERS)
     set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   endif()
@@ -236,7 +256,7 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
   endif()
 
   # must link explicitly against boost.
-  target_link_libraries(${_name} ${Boost_LIBRARIES})
+  target_link_libraries(${_name} PUBLIC ${Boost_LIBRARIES})
 
   set_target_properties(${_name} PROPERTIES
     VERSION ${PCL_VERSION}
@@ -260,11 +280,18 @@ endmacro()
 macro(PCL_ADD_EXECUTABLE _name _component)
   add_executable(${_name} ${ARGN})
   # must link explicitly against boost.
-  if(UNIX AND NOT ANDROID)
-    target_link_libraries(${_name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
-  else()
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
-  endif()
+  # if(UNIX AND NOT ANDROID)
+  #   target_link_libraries(${_name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
+  # else()
+  #   target_link_libraries(${_name} ${Boost_LIBRARIES})
+  # endif()
+
+  target_link_libraries(${_name} pcl_${_component})
+  # GET_IN_MAP(_subsys_deps PCL_SUBSYS_DEPS ${_component})
+  # foreach(_dep ${_subsys_deps})
+  #   message(STATUS "${_name} -> ${_dep}")
+  #   target_link_libraries(${_name} pcl_${_dep})
+  # endforeach()
 
   if(WIN32 AND MSVC)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
@@ -298,9 +325,9 @@ macro(PCL_ADD_EXECUTABLE_OPT_BUNDLE _name _component)
 
   # must link explicitly against boost.
   if(UNIX AND NOT ANDROID)
-    target_link_libraries(${_name} ${Boost_LIBRARIES} pthread)
+    target_link_libraries(${_name} PRIVATE ${Boost_LIBRARIES} pthread)
   else()
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
+    target_link_libraries(${_name} PRIVATE ${Boost_LIBRARIES})
   endif()
 
   if(WIN32 AND MSVC)
@@ -332,7 +359,7 @@ macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
   REMOVE_VTK_DEFINITIONS()
   cuda_add_executable(${_name} ${ARGN})
   # must link explicitly against boost.
-  target_link_libraries(${_name} ${Boost_LIBRARIES})
+  target_link_libraries(${_name} PRIVATE ${Boost_LIBRARIES})
 
   if(WIN32 AND MSVC)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
@@ -366,17 +393,17 @@ macro(PCL_ADD_TEST _name _exename)
     set_target_properties(${_exename} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
   endif()
   #target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
-  target_link_libraries(${_exename} ${PCL_ADD_TEST_LINK_WITH} ${CLANG_LIBRARIES})
+  target_link_libraries(${_exename} PRIVATE ${PCL_ADD_TEST_LINK_WITH} ${CLANG_LIBRARIES})
 
   if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    target_link_libraries(${_exename} pthread)
+    target_link_libraries(${_exename} PRIVATE pthread)
   elseif(UNIX AND NOT ANDROID)
     # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
-    target_link_libraries(${_exename} pthread)
+    target_link_libraries(${_exename} PRIVATE pthread)
   endif()
 
   # must link explicitly against boost only on Windows
-  target_link_libraries(${_exename} ${Boost_LIBRARIES})
+  target_link_libraries(${_exename} PRIVATE ${Boost_LIBRARIES})
   #
   if(USE_PROJECT_FOLDERS)
     set_target_properties(${_exename} PROPERTIES FOLDER "Tests")
@@ -399,7 +426,7 @@ macro(PCL_ADD_EXAMPLE _name)
   set(multiValueArgs FILES LINK_WITH)
   cmake_parse_arguments(PCL_ADD_EXAMPLE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   add_executable(${_name} ${PCL_ADD_EXAMPLE_FILES})
-  target_link_libraries(${_name} ${PCL_ADD_EXAMPLE_LINK_WITH} ${CLANG_LIBRARIES})
+  target_link_libraries(${_name} PRIVATE ${PCL_ADD_EXAMPLE_LINK_WITH} ${CLANG_LIBRARIES})
   if(WIN32 AND MSVC)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                               RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})

@@ -32,7 +32,6 @@ PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME}
   ${srcs} ${incs} ${compression_incs} ${impl_incs}
   ${VTK_IO_TARGET_LINK_LIBRARIES}
   ${OPENNI_INCLUDES})
-target_link_libraries(${LIB_NAME} pcl_simulation pcl_common pcl_io
   ${VTK_IO_TARGET_LINK_LIBRARIES} ${OPENGL_LIBRARIES} GLUT::GLUT)
 
 PCL_ADD_EXECUTABLE(pcl_sim_terminal_demo ${SUBSYS_NAME} sim_terminal_demo.cpp)
