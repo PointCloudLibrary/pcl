@@ -312,15 +312,9 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   boost::filesystem::directory_iterator end_itr;
   for (boost::filesystem::directory_iterator itr (dir); itr != end_itr; ++itr)
   {
-#if BOOST_FILESYSTEM_VERSION == 3
     extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
     pathname = itr->path ().string ();
     basename = boost::filesystem::basename (itr->path ());
-#else
-    extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ()));
-    pathname = itr->path ().filename ();
-    basename = boost::filesystem::basename (itr->leaf ());
-#endif
     if (!boost::filesystem::is_directory (itr->status ()) 
         && isValidExtension (extension))
     {
@@ -361,15 +355,9 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   // First iterate over depth images
   for (boost::filesystem::directory_iterator itr (depth_dir); itr != end_itr; ++itr)
   {
-#if BOOST_FILESYSTEM_VERSION == 3
     extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
     pathname = itr->path ().string ();
     basename = boost::filesystem::basename (itr->path ());
-#else
-    extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ()));
-    pathname = itr->path ().filename ();
-    basename = boost::filesystem::basename (itr->leaf ());
-#endif
     if (!boost::filesystem::is_directory (itr->status ())
         && isValidExtension (extension))
     {
@@ -382,15 +370,9 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   // Then iterate over RGB images
   for (boost::filesystem::directory_iterator itr (rgb_dir); itr != end_itr; ++itr)
   {
-#if BOOST_FILESYSTEM_VERSION == 3
     extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
     pathname = itr->path ().string ();
     basename = boost::filesystem::basename (itr->path ());
-#else
-    extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ()));
-    pathname = itr->path ().filename ();
-    basename = boost::filesystem::basename (itr->leaf ());
-#endif
     if (!boost::filesystem::is_directory (itr->status ())
         && isValidExtension (extension))
     {
@@ -429,15 +411,9 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
   boost::filesystem::directory_iterator end_itr;
   for (boost::filesystem::directory_iterator itr (dir); itr != end_itr; ++itr)
   {
-#if BOOST_FILESYSTEM_VERSION == 3
     extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
     pathname = itr->path ().string ();
     basename = boost::filesystem::basename (itr->path ());
-#else
-    extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ()));
-    pathname = itr->path ().filename ();
-    basename = boost::filesystem::basename (itr->leaf ());
-#endif
     if (!boost::filesystem::is_directory (itr->status ()) 
         && isValidExtension (extension))
     {

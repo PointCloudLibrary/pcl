@@ -530,19 +530,10 @@ int
   boost::filesystem::directory_iterator end_itr;
   for (boost::filesystem::directory_iterator itr (pcd_dir_); itr != end_itr; ++itr)
   {
-#if BOOST_FILESYSTEM_VERSION == 3
     if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ())) == ".PCD" )
-#else
-    if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ())) == ".PCD" )
-#endif
     {
-#if BOOST_FILESYSTEM_VERSION == 3
       pcd_files_.push_back (itr->path ().string ());
       std::cout << "added: " << itr->path ().string () << std::endl;
-#else
-      pcd_files_.push_back (itr->pcd_dir_ ().string ());
-      std::cout << "added: " << itr->pcd_dir_ () << std::endl;
-#endif
     }
   }
   sort (pcd_files_.begin (), pcd_files_.end ());

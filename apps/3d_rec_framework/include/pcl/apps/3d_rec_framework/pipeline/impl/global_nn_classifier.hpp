@@ -20,11 +20,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
       for (bf::directory_iterator itr_in (inside); itr_in != end_itr; ++itr_in)
       {
-#if BOOST_FILESYSTEM_VERSION == 3
         std::string file_name = (itr_in->path ().filename ()).string();
-#else
-        std::string file_name = (itr_in->path ()).filename ();
-#endif
 
         std::vector < std::string > strs;
         boost::split (strs, file_name, boost::is_any_of ("_"));

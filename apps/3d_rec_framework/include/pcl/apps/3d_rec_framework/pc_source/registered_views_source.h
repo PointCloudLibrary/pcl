@@ -73,11 +73,7 @@ namespace pcl
               std::vector < std::string > strs;
               std::vector < std::string > strs_;
 
-#if BOOST_FILESYSTEM_VERSION == 3
               std::string file = (itr->path ().filename ()).string();
-#else
-              std::string file = (itr->path ()).filename ();
-#endif
 
               boost::split (strs, file, boost::is_any_of ("."));
               boost::split (strs_, file, boost::is_any_of ("_"));
@@ -86,11 +82,7 @@ namespace pcl
 
               if (extension == "pcd" && (strs_[0].compare (view_prefix_) == 0))
               {
-#if BOOST_FILESYSTEM_VERSION == 3
                 view_filenames.push_back ((itr->path ().filename ()).string());
-#else
-                view_filenames.push_back ((itr->path ()).filename ());
-#endif
 
                 number_of_views++;
               }
@@ -134,11 +126,7 @@ namespace pcl
                 std::vector < std::string > strs;
                 std::vector < std::string > strs_;
 
-#if BOOST_FILESYSTEM_VERSION == 3
                 std::string file = (itr->path ().filename ()).string();
-#else
-                std::string file = (itr->path ()).filename ();
-#endif
 
                 boost::split (strs, file, boost::is_any_of ("."));
                 boost::split (strs_, file, boost::is_any_of ("_"));
@@ -147,12 +135,7 @@ namespace pcl
 
                 if (extension == "pcd" && strs_[0] == "view")
                 {
-#if BOOST_FILESYSTEM_VERSION == 3
                   view_filenames.push_back ((itr->path ().filename ()).string());
-#else
-                  view_filenames.push_back ((itr->path ()).filename ());
-#endif
-
                   number_of_views++;
                 }
               }
@@ -295,23 +278,13 @@ namespace pcl
             //check if its a directory, then get models in it
             if (bf::is_directory (*itr))
             {
-#if BOOST_FILESYSTEM_VERSION == 3
               std::string so_far = rel_path_so_far + (itr->path ().filename ()).string() + "/";
-#else
-              std::string so_far = rel_path_so_far + (itr->path ()).filename () + "/";
-#endif
-
               bf::path curr_path = itr->path ();
 
               if (isleafDirectory (curr_path))
               {
-#if BOOST_FILESYSTEM_VERSION == 3
                 std::string path = rel_path_so_far + (itr->path ().filename ()).string();
-#else
-                std::string path = rel_path_so_far + (itr->path ()).filename ();
-#endif
                 relative_paths.push_back (path);
-
               }
               else
               {

@@ -174,11 +174,7 @@ namespace pcl
           //check if its a directory, then get models in it
           if (bf::is_directory (*itr))
           {
-#if BOOST_FILESYSTEM_VERSION == 3
             std::string so_far = rel_path_so_far + (itr->path ().filename ()).string() + "/";
-#else
-            std::string so_far = rel_path_so_far + (itr->path ()).filename () + "/";
-#endif
 
             bf::path curr_path = itr->path ();
             getModelsInDirectory (curr_path, so_far, relative_paths, ext);
@@ -187,22 +183,14 @@ namespace pcl
           {
             //check that it is a ply file and then add, otherwise ignore..
             std::vector < std::string > strs;
-#if BOOST_FILESYSTEM_VERSION == 3
             std::string file = (itr->path ().filename ()).string();
-#else
-            std::string file = (itr->path ()).filename ();
-#endif
 
             boost::split (strs, file, boost::is_any_of ("."));
             std::string extension = strs[strs.size () - 1];
 
             if (extension.compare (ext) == 0)
             {
-#if BOOST_FILESYSTEM_VERSION == 3
               std::string path = rel_path_so_far + (itr->path ().filename ()).string();
-#else
-              std::string path = rel_path_so_far + (itr->path ()).filename ();
-#endif
 
               relative_paths.push_back (path);
             }

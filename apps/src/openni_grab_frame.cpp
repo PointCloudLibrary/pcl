@@ -235,19 +235,11 @@ class OpenNIGrabFrame
           std::cerr << "directory \"" << path.parent_path () << "\" does not exist!\n";
           exit (1);
         }
-#if BOOST_FILESYSTEM_VERSION == 3
         file_name_ = path.stem ().string ();
-#else
-        file_name_ = path.stem ();
-#endif
       }
       
       std::cout << "dir: " << dir_name_ << " :: " << path.parent_path () << std::endl;
-#if BOOST_FILESYSTEM_VERSION == 3
       std::cout << "file: " << file_name_ << " :: " << path.stem (). string () << std::endl;
-#else
-      std::cout << "file: " << file_name_ << " :: " << path.stem () << std::endl;
-#endif
       
       if (pcd_format == "b" || pcd_format == "all")
         format_ |= 1;

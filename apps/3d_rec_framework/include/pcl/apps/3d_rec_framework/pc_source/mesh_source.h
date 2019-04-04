@@ -114,11 +114,7 @@ namespace pcl
                 std::vector < std::string > strs;
                 std::vector < std::string > strs_;
 
-#if BOOST_FILESYSTEM_VERSION == 3
                 std::string file = (itr->path ().filename ()).string();
-#else
-                std::string file = (itr->path ()).filename ();
-#endif
 
                 boost::split (strs, file, boost::is_any_of ("."));
                 boost::split (strs_, file, boost::is_any_of ("_"));
@@ -127,11 +123,7 @@ namespace pcl
 
                 if (extension == "pcd" && strs_[0] == "view")
                 {
-#if BOOST_FILESYSTEM_VERSION == 3
                   view_filenames.push_back ((itr->path ().filename ()).string());
-#else
-                  view_filenames.push_back ((itr->path ()).filename ());
-#endif
 
                   number_of_views++;
                 }
