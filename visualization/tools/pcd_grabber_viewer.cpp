@@ -193,19 +193,10 @@ main (int argc, char** argv)
       boost::filesystem::directory_iterator end_itr;
       for (boost::filesystem::directory_iterator itr (path); itr != end_itr; ++itr)
       {
-#if BOOST_FILESYSTEM_VERSION == 3
         if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ())) == ".PCD" )
-#else
-        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ())) == ".PCD" )
-#endif
         {
-#if BOOST_FILESYSTEM_VERSION == 3
           pcd_files.push_back (itr->path ().string ());
           std::cout << "added: " << itr->path ().string () << std::endl;
-#else
-          pcd_files.push_back (itr->path ().string ());
-          std::cout << "added: " << itr->path () << std::endl;
-#endif
         }
       }
     }
