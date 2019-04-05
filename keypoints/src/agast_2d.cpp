@@ -7080,12 +7080,12 @@ namespace pcl
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      // Helper method for AgastDetector5_8::computeCornerScore
-      template <typename T1, typename T2> int
-      AgastDetector5_8_computeCornerScore (
+      // Helper method for AgastDetector5_8_computeCornerScore
+      template <typename T1, typename T2> bool
+      AgastDetector5_8_is_a_corner (
           const T1* p, 
-          double im_bmax,
-          double score_threshold,
+          const T2 cb,
+          const T2 c_b,
           int_fast16_t s_offset0,
           int_fast16_t s_offset1,
           int_fast16_t s_offset2,
@@ -7095,10 +7095,6 @@ namespace pcl
           int_fast16_t s_offset6,
           int_fast16_t s_offset7)
       {
-        T2 bmin = T2 (score_threshold);
-        T2 bmax = T2 (im_bmax);
-        int b_test = int ((bmax + bmin) / 2);
-
         int_fast16_t offset0 = s_offset0;
         int_fast16_t offset1 = s_offset1;
         int_fast16_t offset2 = s_offset2;
@@ -7108,10 +7104,6 @@ namespace pcl
         int_fast16_t offset6 = s_offset6;
         int_fast16_t offset7 = s_offset7;
 
-        while (true)
-        {
-          const T2 cb = *p + T2 (b_test);
-          const T2 c_b = *p - T2 (b_test);
           if (p[offset0] > cb)
             if (p[offset2] > cb)
               if (p[offset3] > cb)
@@ -7438,14 +7430,53 @@ namespace pcl
                 goto is_not_a_corner;
 
           is_a_corner:
-            bmin = T2 (b_test);
-            goto end;
+            return true;
 
           is_not_a_corner:
-            bmax = T2 (b_test);
-            goto end;
+            return false;
+      }
 
-          end:
+      ///////////////////////////////////////////////////////////////////////////////////
+      // Helper method for AgastDetector5_8::computeCornerScore
+      template <typename T1, typename T2> int
+      AgastDetector5_8_computeCornerScore (
+          const T1* p, 
+          double im_bmax,
+          double score_threshold,
+          int_fast16_t s_offset0,
+          int_fast16_t s_offset1,
+          int_fast16_t s_offset2,
+          int_fast16_t s_offset3,
+          int_fast16_t s_offset4,
+          int_fast16_t s_offset5,
+          int_fast16_t s_offset6,
+          int_fast16_t s_offset7)
+      {
+        T2 bmin = T2 (score_threshold);
+        T2 bmax = T2 (im_bmax);
+        int b_test = int ((bmax + bmin) / 2);
+
+        while (true)
+        {
+          const T2 cb = *p + T2 (b_test);
+          const T2 c_b = *p - T2 (b_test);
+
+          if (AgastDetector5_8_is_a_corner(p, cb, c_b, 
+            s_offset0, 
+            s_offset1,
+            s_offset2,
+            s_offset3,
+            s_offset4,
+            s_offset5,
+            s_offset6,
+            s_offset7))
+          {
+            bmin = T2 (b_test);
+          }
+          else
+          {
+            bmax = T2 (b_test);
+          }
 
           if (bmin == bmax - 1 || bmin == bmax)
             return (int (bmin));
