@@ -108,7 +108,7 @@ namespace pcl
 
       /** \brief Get the percentage of points to pre-test. */
       inline double 
-      getFractionNrPretest () { return (fraction_nr_pretest_); }
+      getFractionNrPretest () const { return (fraction_nr_pretest_); }
 
     private:
       /** \brief Number of samples to randomly pre-test, in percents. */

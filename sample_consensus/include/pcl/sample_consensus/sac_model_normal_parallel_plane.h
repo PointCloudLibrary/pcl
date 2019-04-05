@@ -148,7 +148,7 @@ namespace pcl
 
       /** \brief Get the axis along which we need to search for a plane perpendicular to. */
       inline Eigen::Vector3f
-      getAxis () { return (axis_.head<3> ()); }
+      getAxis () const { return (axis_.head<3> ()); }
 
       /** \brief Set the angle epsilon (delta) threshold.
         * \param[in] ea the maximum allowed deviation from 90 degrees between the plane normal and the given axis.
@@ -159,7 +159,7 @@ namespace pcl
 
       /** \brief Get the angle epsilon (delta) threshold. */
       inline double
-      getEpsAngle () { return (eps_angle_); }
+      getEpsAngle () const { return (eps_angle_); }
 
       /** \brief Set the distance we expect the plane to be from the origin
         * \param[in] d distance from the template plane to the origin
@@ -169,7 +169,7 @@ namespace pcl
 
       /** \brief Get the distance of the plane from the origin. */
       inline double
-      getDistanceFromOrigin () { return (distance_from_origin_); }
+      getDistanceFromOrigin () const { return (distance_from_origin_); }
 
       /** \brief Set the distance epsilon (delta) threshold.
         * \param[in] delta the maximum allowed deviation from the template distance from the origin
@@ -179,7 +179,7 @@ namespace pcl
 
       /** \brief Get the distance epsilon (delta) threshold. */
       inline double
-      getEpsDist () { return (eps_dist_); }
+      getEpsDist () const { return (eps_dist_); }
 
       /** \brief Return an unique id for this model (SACMODEL_NORMAL_PARALLEL_PLANE). */
       inline pcl::SacModel

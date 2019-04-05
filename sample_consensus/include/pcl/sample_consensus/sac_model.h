@@ -615,7 +615,7 @@ namespace pcl
 
       /** \brief Get the normal angular distance weight. */
       inline double 
-      getNormalDistanceWeight () { return (normal_distance_weight_); }
+      getNormalDistanceWeight () const { return (normal_distance_weight_); }
 
       /** \brief Provide a pointer to the input dataset that contains the point
         * normals of the XYZ dataset.
@@ -630,7 +630,7 @@ namespace pcl
 
       /** \brief Get a pointer to the normals of the input XYZ point cloud dataset. */
       inline PointCloudNConstPtr 
-      getInputNormals () { return (normals_); }
+      getInputNormals () const { return (normals_); }
 
     protected:
       /** \brief The relative weight (between 0 and 1) to give to the angular
