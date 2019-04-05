@@ -118,7 +118,7 @@ namespace pcl
 
       /** \brief Get the axis along which we need to search for a plane perpendicular to. */
       inline Eigen::Vector3f
-      getAxis ()  { return (axis_); }
+      getAxis () const { return (axis_); }
 
       /** \brief Set the angle epsilon (delta) threshold.
         * \param[in] ea the maximum allowed difference between the plane normal and the given axis.
@@ -129,7 +129,7 @@ namespace pcl
 
       /** \brief Get the angle epsilon (delta) threshold. */
       inline double
-      getEpsAngle () { return (eps_angle_); }
+      getEpsAngle () const { return (eps_angle_); }
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
