@@ -61,7 +61,6 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   {
     if (!failure_after_max_iter_)
     {
-      iterations_similar_transforms_ = 0;
       convergence_state_ = CONVERGENCE_CRITERIA_ITERATIONS;
       return (true);
     }
@@ -79,7 +78,6 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   {
     if (iterations_similar_transforms_ >= max_iterations_similar_transforms_)
     {
-      iterations_similar_transforms_ = 0;
       convergence_state_ = CONVERGENCE_CRITERIA_TRANSFORM;
       return (true);
     }
@@ -95,7 +93,6 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   {
     if (iterations_similar_transforms_ >= max_iterations_similar_transforms_)
     {
-      iterations_similar_transforms_ = 0;
       convergence_state_ = CONVERGENCE_CRITERIA_ABS_MSE;
       return (true);
     }
@@ -107,7 +104,6 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   {
     if (iterations_similar_transforms_ >= max_iterations_similar_transforms_)
     {
-      iterations_similar_transforms_ = 0;
       convergence_state_ = CONVERGENCE_CRITERIA_REL_MSE;
       return (true);
     }
