@@ -12,7 +12,6 @@ if(NOT build)
   return()
 endif()
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(incs
   "include/pcl/${SUBSYS_NAME}/boost.h"
@@ -169,8 +168,8 @@ if(MSVC)
 endif()
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${impl_incs})
-target_link_libraries("${LIB_NAME}" pcl_common pcl_search pcl_kdtree pcl_octree pcl_filters)
+PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}")
+target_sources("${LIB_NAME}" PRIVATE ${srcs} ${incs} ${impl_incs})
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 # Install headers
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})

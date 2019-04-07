@@ -14,7 +14,6 @@ endif()
 # this variable will filled with all targets added with pcl_add_example
 set(PCL_EXAMPLES_ALL_TARGETS)
 
-include_directories(${PCL_INCLUDE_DIRS})
 # This looks for all examples/XXX/CMakeLists.txt
 file (GLOB examples_sbudirs */CMakeLists.txt)
 # Extract only relevant XXX and append it to PCL_EXAMPLES_SUBDIRS

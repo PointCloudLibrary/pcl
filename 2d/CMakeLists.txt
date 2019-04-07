@@ -35,9 +35,9 @@ if(${VTK_FOUND})
   set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging)
 endif()
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
+PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" INTERFACE)
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} HEADER_ONLY)
 
 #Install include files

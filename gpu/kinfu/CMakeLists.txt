@@ -47,7 +47,6 @@ set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} "--ftz=true;--prec-div=false;--prec-sqrt=
 CUDA_COMPILE(cuda_objs ${cuda})
 
 PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${cuda} ${cuda_objs})
-target_link_libraries("${LIB_NAME}" pcl_gpu_containers)
 
 set(EXT_DEPS "")
 #set(EXT_DEPS CUDA)

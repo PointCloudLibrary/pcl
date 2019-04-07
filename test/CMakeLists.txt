@@ -11,7 +11,6 @@ if(NOT build)
 endif()
 
 find_package(GTestSource REQUIRED)
-include_directories(SYSTEM ${GTEST_INCLUDE_DIRS} ${GTEST_SRC_DIR})
 
 add_library(pcl_gtest STATIC ${GTEST_SRC_DIR}/src/gtest-all.cc)
 

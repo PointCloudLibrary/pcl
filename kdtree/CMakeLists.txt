@@ -29,9 +29,9 @@ set(impl_incs
 )
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${impl_incs})
-target_link_libraries("${LIB_NAME}" pcl_common FLANN::FLANN)
+PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}")
+target_sources("${LIB_NAME}" PRIVATE ${srcs} ${incs} ${impl_incs})
+target_include_directories("${LIB_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set(EXT_DEPS flann)
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
 
