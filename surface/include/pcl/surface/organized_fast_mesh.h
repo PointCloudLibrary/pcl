@@ -362,7 +362,7 @@ namespace pcl
         if (cos_angle_tolerance_ > 0)
         {
           float cos_angle = dir_a.dot (dir_b) / (distance_to_points*distance_between_points);
-          if (cos_angle != cos_angle)
+          if (std::isnan(cos_angle))
             cos_angle = 1.0f;
           bool check_angle = fabs (cos_angle) >= cos_angle_tolerance_;
 
