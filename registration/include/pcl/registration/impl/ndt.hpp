@@ -132,7 +132,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
     //Calculate step length with guarnteed sufficient decrease [More, Thuente 1994]
     delta_p_norm = delta_p.norm ();
 
-    if (delta_p_norm == 0 || delta_p_norm != delta_p_norm)
+    if (delta_p_norm == 0 || std::isnan(delta_p_norm))
     {
       trans_probability_ = score / static_cast<double> (input_->points.size ());
       converged_ = delta_p_norm == delta_p_norm;
@@ -368,7 +368,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives (
   e_x_cov_x = gauss_d2_ * e_x_cov_x;
 
   // Error checking for invalid values.
-  if (e_x_cov_x > 1 || e_x_cov_x < 0 || e_x_cov_x != e_x_cov_x)
+  if (e_x_cov_x > 1 || e_x_cov_x < 0 || std::isnan(e_x_cov_x))
     return (0);
 
   // Reusable portion of Equation 6.12 and 6.13 [Magnusson 2009]
@@ -459,7 +459,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateHessian (Eige
   double e_x_cov_x = gauss_d2_ * exp (-gauss_d2_ * x_trans.dot (c_inv * x_trans) / 2);
 
   // Error checking for invalid values.
-  if (e_x_cov_x > 1 || e_x_cov_x < 0 || e_x_cov_x != e_x_cov_x)
+  if (e_x_cov_x > 1 || e_x_cov_x < 0 || std::isnan(e_x_cov_x))
     return;
 
   // Reusable portion of Equation 6.12 and 6.13 [Magnusson 2009]
