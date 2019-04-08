@@ -7086,24 +7086,15 @@ namespace pcl
           const T1* p, 
           const T2 cb,
           const T2 c_b,
-          int_fast16_t s_offset0,
-          int_fast16_t s_offset1,
-          int_fast16_t s_offset2,
-          int_fast16_t s_offset3,
-          int_fast16_t s_offset4,
-          int_fast16_t s_offset5,
-          int_fast16_t s_offset6,
-          int_fast16_t s_offset7)
+          int_fast16_t offset0,
+          int_fast16_t offset1,
+          int_fast16_t offset2,
+          int_fast16_t offset3,
+          int_fast16_t offset4,
+          int_fast16_t offset5,
+          int_fast16_t offset6,
+          int_fast16_t offset7)
       {
-        int_fast16_t offset0 = s_offset0;
-        int_fast16_t offset1 = s_offset1;
-        int_fast16_t offset2 = s_offset2;
-        int_fast16_t offset3 = s_offset3;
-        int_fast16_t offset4 = s_offset4;
-        int_fast16_t offset5 = s_offset5;
-        int_fast16_t offset6 = s_offset6;
-        int_fast16_t offset7 = s_offset7;
-
         if (p[offset0] > cb)
           if (p[offset2] > cb)
             if (p[offset3] > cb)
