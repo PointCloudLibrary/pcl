@@ -141,7 +141,7 @@ namespace pcl { namespace device { namespace appnearest_search
 		{   
             __shared__ volatile int  per_warp_buffer[KernelPolicy::WARPS_COUNT];
 
-			int mask = __ballot(node_idx != -1);                        
+			int mask = __ballot_sync(0xFFFFFFFF, node_idx != -1);                        
 
 			while(mask)
 			{                
@@ -275,7 +275,7 @@ namespace pcl { namespace device { namespace appnearest_search
 
 		bool active = query_index < batch.queries_num;
 
-		if (__all(active == false)) 
+		if (__all_sync(0xFFFFFFFF, active == false)) 
 			return;
 
 		Warp_appNearestSearch search(batch, query_index);
