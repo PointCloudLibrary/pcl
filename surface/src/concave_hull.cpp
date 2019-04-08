@@ -36,8 +36,6 @@
  */
 
 #include <pcl/pcl_config.h>
-
-
 #ifdef HAVE_QHULL
 
 #include <pcl/impl/instantiate.hpp>

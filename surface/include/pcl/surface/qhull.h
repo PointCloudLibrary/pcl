@@ -39,9 +39,8 @@
 
 #pragma once
 
-#ifdef HAVE_QHULL
-
 #include <pcl/pcl_config.h>
+#ifdef HAVE_QHULL
 
 #if defined __GNUC__
 #  pragma GCC system_header 

@@ -39,10 +39,10 @@
 
 #pragma once
 
+#include <pcl/pcl_config.h>
 #ifdef HAVE_QHULL 
 
 // PCL includes
-#include <pcl/pcl_config.h>
 #include <pcl/surface/reconstruction.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/PolygonMesh.h>
