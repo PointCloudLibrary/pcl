@@ -7144,23 +7144,20 @@ namespace pcl
               else
                 return false;
             else
-              if (p[offset5] < c_b)
-                if (p[offset3] < c_b)
-                  if (p[offset2] < c_b)
-                    if (p[offset1] < c_b)
-                      return (p[offset4] < c_b);
-                    else
-                      if (p[offset4] < c_b)
-                        return (p[offset6] < c_b);
-                      else
-                        return false;
+              if ((p[offset3] < c_b) && (p[offset5] < c_b))
+                if (p[offset2] < c_b)
+                  if (p[offset1] < c_b)
+                    return (p[offset4] < c_b);
                   else
-                    if ((p[offset4] < c_b) && (p[offset7] < c_b))
+                    if (p[offset4] < c_b)
                       return (p[offset6] < c_b);
                     else
                       return false;
                 else
-                  return false;
+                  if ((p[offset4] < c_b) && (p[offset7] < c_b))
+                    return (p[offset6] < c_b);
+                  else
+                    return false;
               else
                 return false;
         else
@@ -7272,23 +7269,20 @@ namespace pcl
               else
                 return false;
             else
-              if (p[offset3] < c_b)
-                if (p[offset5] < c_b)
-                  if (p[offset2] < c_b)
-                    if (p[offset1] < c_b)
-                      return (p[offset4] < c_b);
-                    else
-                      if (p[offset4] < c_b)
-                        return (p[offset6] < c_b);
-                      else
-                        return false;
+              if ((p[offset3] < c_b) && (p[offset5] < c_b))
+                if (p[offset2] < c_b)
+                  if (p[offset1] < c_b)
+                    return (p[offset4] < c_b);
                   else
-                    if ((p[offset4] < c_b) && (p[offset7] < c_b))
+                    if (p[offset4] < c_b)
                       return (p[offset6] < c_b);
                     else
                       return false;
                 else
-                  return false;
+                  if ((p[offset4] < c_b) && (p[offset7] < c_b))
+                    return (p[offset6] < c_b);
+                  else
+                    return false;
               else
                 return false;
       }
