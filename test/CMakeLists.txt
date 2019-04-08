@@ -17,6 +17,7 @@ add_library(pcl_gtest STATIC ${GTEST_SRC_DIR}/src/gtest-all.cc)
 
 enable_testing()
 add_custom_target(tests "${CMAKE_CTEST_COMMAND}" "-V" VERBATIM)
+set_target_properties(tests PROPERTIES FOLDER "Tests")
 
 add_subdirectory(2d)
 add_subdirectory(common)
