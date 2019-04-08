@@ -7130,29 +7130,17 @@ namespace pcl
                 else
                   return false;
               else
-                if (p[offset5] < c_b)
-                  if (p[offset3] < c_b)
-                    if (p[offset7] < c_b)
-                      if (p[offset4] < c_b)
-                        return (p[offset6] < c_b);
-                      else
-                        return false;
-                    else
-                      return false;
-                  else
-                    return false;
+                if ((p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset5] < c_b) && (p[offset7] < c_b))
+                  return (p[offset6] < c_b);
                 else
                   return false;
           else
             if (p[offset5] > cb)
-              if (p[offset7] > cb)
-                if (p[offset6] > cb)
-                  if (p[offset1] > cb)
-                    return true;
-                  else
-                    return (p[offset4] > cb);
+              if ((p[offset6] > cb) && (p[offset7] > cb))
+                if (p[offset1] > cb)
+                  return true;
                 else
-                  return false;
+                  return (p[offset4] > cb);
               else
                 return false;
             else
@@ -7167,11 +7155,8 @@ namespace pcl
                       else
                         return false;
                   else
-                    if (p[offset7] < c_b)
-                      if (p[offset4] < c_b)
-                        return (p[offset6] < c_b);
-                      else
-                        return false;
+                    if ((p[offset4] < c_b) && (p[offset7] < c_b))
+                      return (p[offset6] < c_b);
                     else
                       return false;
                 else
@@ -7197,14 +7182,8 @@ namespace pcl
                     else
                       return false;
                 else
-                  if (p[offset5] > cb)
-                    if (p[offset3] > cb)
-                      if (p[offset4] > cb)
-                        return (p[offset6] > cb);
-                      else
-                        return false;
-                    else
-                      return false;
+                  if ((p[offset3] > cb) && (p[offset4] > cb) && (p[offset5] > cb))
+                    return (p[offset6] > cb);
                   else
                     return false;
               else
@@ -7260,27 +7239,18 @@ namespace pcl
                       else
                         return false;
                   else
-                    if (p[offset7] > cb)
-                      if (p[offset4] > cb)
-                        return (p[offset6] > cb);
-                      else
-                        return false;
+                    if ((p[offset4] > cb) && (p[offset7] > cb))
+                      return (p[offset6] > cb);
                     else
                       return false;
                 else
                   return false;
               else
-                if (p[offset5] < c_b)
-                  if (p[offset7] < c_b)
-                    if (p[offset6] < c_b)
-                      if (p[offset1] < c_b)
-                        return true;
-                      else
-                        return (p[offset4] < c_b);
-                    else
-                      return false;
+                if ((p[offset5] < c_b) && (p[offset6] < c_b) && (p[offset7] < c_b))
+                  if (p[offset1] < c_b)
+                    return true;
                   else
-                    return false;
+                    return (p[offset4] < c_b);
                 else
                   return false;
           else
@@ -7295,11 +7265,8 @@ namespace pcl
                     else
                       return false;
                 else
-                  if (p[offset7] > cb)
-                    if (p[offset4] > cb)
-                      return (p[offset6] > cb);
-                    else
-                      return false;
+                  if ((p[offset4] > cb) && (p[offset7] > cb))
+                    return (p[offset6] > cb);
                   else
                     return false;
               else
@@ -7316,11 +7283,8 @@ namespace pcl
                       else
                         return false;
                   else
-                    if (p[offset7] < c_b)
-                      if (p[offset4] < c_b)
-                        return (p[offset6] < c_b);
-                      else
-                        return false;
+                    if ((p[offset4] < c_b) && (p[offset7] < c_b))
+                      return (p[offset6] < c_b);
                     else
                       return false;
                 else
