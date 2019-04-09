@@ -286,15 +286,8 @@ macro(PCL_ADD_EXECUTABLE _name _component)
   #   target_link_libraries(${_name} ${Boost_LIBRARIES})
   # endif()
 
-  if(${_component} MATCHES "tools")
-    #TODO all executables in ./tools link against all pcl targets, this is probabably not needed,
-    #     the alternative however is to list the target_link_libraries indiviually for each executable
-    GET_IN_MAP(_subsys_deps PCL_SUBSYS_DEPS ${_component})
-    foreach(_dep ${_subsys_deps})
-      message(STATUS "${_name} -> ${_dep}")
-      target_link_libraries(${_name} pcl_${_dep})
-    endforeach()
-  else()
+  if(NOT ${_component} MATCHES "tools")
+    #TODO there is no pcl_tools target
     target_link_libraries(${_name} pcl_${_component})
   endif()
 
