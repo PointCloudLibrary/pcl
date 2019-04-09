@@ -286,12 +286,17 @@ macro(PCL_ADD_EXECUTABLE _name _component)
   #   target_link_libraries(${_name} ${Boost_LIBRARIES})
   # endif()
 
-  target_link_libraries(${_name} pcl_${_component})
-  # GET_IN_MAP(_subsys_deps PCL_SUBSYS_DEPS ${_component})
-  # foreach(_dep ${_subsys_deps})
-  #   message(STATUS "${_name} -> ${_dep}")
-  #   target_link_libraries(${_name} pcl_${_dep})
-  # endforeach()
+  if(${_component} MATCHES "tools")
+    #TODO all executables in ./tools link against all pcl targets, this is probabably not needed,
+    #     the alternative however is to list the target_link_libraries indiviually for each executable
+    GET_IN_MAP(_subsys_deps PCL_SUBSYS_DEPS ${_component})
+    foreach(_dep ${_subsys_deps})
+      message(STATUS "${_name} -> ${_dep}")
+      target_link_libraries(${_name} pcl_${_dep})
+    endforeach()
+  else()
+    target_link_libraries(${_name} pcl_${_component})
+  endif()
 
   if(WIN32 AND MSVC)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
@@ -323,12 +328,7 @@ macro(PCL_ADD_EXECUTABLE_OPT_BUNDLE _name _component)
     add_executable(${_name} ${ARGN})
   endif()
 
-  # must link explicitly against boost.
-  if(UNIX AND NOT ANDROID)
-    target_link_libraries(${_name} PRIVATE ${Boost_LIBRARIES} pthread)
-  else()
-    target_link_libraries(${_name} PRIVATE ${Boost_LIBRARIES})
-  endif()
+  target_link_libraries(${_name} pcl_${_component})
 
   if(WIN32 AND MSVC)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}

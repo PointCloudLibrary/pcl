@@ -360,6 +360,9 @@ if(WITH_VTK AND NOT ANDROID)
     vtkIOPLY
     vtkRenderingFreeType
     vtkRenderingLOD
+    vtkRenderingCore
+    #TODO this may not be sufficient if OpenGL2 is available
+    vtkRenderingContextOpenGL
   )
   if(VTK_FOUND AND ("${VTK_VERSION}" VERSION_LESS 6.2))
     message(WARNING "The minimum required version of VTK is 6.2, but found ${VTK_VERSION}")

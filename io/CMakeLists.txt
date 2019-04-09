@@ -328,9 +328,17 @@ target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/inclu
 link_directories(${VTK_LINK_DIRECTORIES})
 target_link_libraries("${LIB_NAME}" PRIVATE
   PUBLIC
-    pcl_common pcl_io_ply
+    pcl_io_ply
+    Boost::system
+    Boost::filesystem
+    vtkFiltersCore
+    vtkIOGeometry
+    vtkIOImage
+    vtkIOLegacy
+    vtkIOPLY
+    vtkImagingCore
   PRIVATE
-    ${VTK_LIBRARIES}
+    Boost::iostreams
   )
 if(PNG_FOUND)
   target_link_libraries("${LIB_NAME}" PUBLIC ${PNG_LIBRARIES})

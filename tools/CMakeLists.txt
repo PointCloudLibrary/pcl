@@ -166,6 +166,7 @@ else()
   target_link_libraries (pcl_organized_pcd_to_png pcl_common pcl_io)
 
   PCL_ADD_EXECUTABLE(pcl_tiff2pcd "${SUBSYS_NAME}" tiff2pcd.cpp)
+  target_link_libraries(pcl_tiff2pcd vtkRenderingFreeType vtkRenderingContextOpenGL)
 
   PCL_ADD_EXECUTABLE(pcl_ply2vtk "${SUBSYS_NAME}" ply2vtk.cpp)
 
@@ -183,34 +184,47 @@ else()
 
   if(BUILD_visualization)
     PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_model_opps "${SUBSYS_NAME}" obj_rec_ransac_model_opps.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_model_opps pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_hash_table "${SUBSYS_NAME}" obj_rec_ransac_hash_table.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_hash_table pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_scene_opps "${SUBSYS_NAME}" obj_rec_ransac_scene_opps.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_scene_opps pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_accepted_hypotheses "${SUBSYS_NAME}" obj_rec_ransac_accepted_hypotheses.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_accepted_hypotheses pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_orr_octree "${SUBSYS_NAME}" obj_rec_ransac_orr_octree.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_orr_octree pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_orr_octree_zprojection "${SUBSYS_NAME}" obj_rec_ransac_orr_octree_zprojection.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_orr_octree_zprojection pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_result "${SUBSYS_NAME}" obj_rec_ransac_result.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_result pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_registration_visualizer "${SUBSYS_NAME}" registration_visualizer.cpp)
+    target_link_libraries(pcl_registration_visualizer pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_octree_viewer "${SUBSYS_NAME}" octree_viewer.cpp)
+    target_link_libraries(pcl_octree_viewer pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_mesh2pcd "${SUBSYS_NAME}" mesh2pcd.cpp)
+    target_link_libraries(pcl_mesh2pcd pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_mesh_sampling "${SUBSYS_NAME}" mesh_sampling.cpp)
+    target_link_libraries(pcl_mesh_sampling pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_virtual_scanner "${SUBSYS_NAME}" virtual_scanner.cpp)
+    target_link_libraries(pcl_virtual_scanner pcl_visualization)
 
     PCL_ADD_EXECUTABLE (pcl_voxel_grid_occlusion_estimation "${SUBSYS_NAME}" voxel_grid_occlusion_estimation.cpp)
     target_link_libraries (pcl_voxel_grid_occlusion_estimation pcl_common pcl_io pcl_filters pcl_visualization)
 
     if(WITH_OPENNI)
       PCL_ADD_EXECUTABLE(pcl_openni_save_image "${SUBSYS_NAME}" openni_save_image.cpp)
+      target_link_libraries(pcl_openni_save_image pcl_visualization)
     endif()
   endif()
 endif()

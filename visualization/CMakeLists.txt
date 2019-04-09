@@ -165,6 +165,16 @@ if(WITH_RSSDK)
   list(APPEND EXT_DEPS rssdk)
 endif()
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
+target_link_libraries(${LIB_NAME}
+  PUBLIC
+    vtkRenderingFreeType
+    vtkRenderingLOD
+    vtkInteractionStyle
+    vtkChartsCore
+    vtkInteractionWidgets
+    vtkRenderingContextOpenGL
+    vtkViewsContext2D
+)
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
