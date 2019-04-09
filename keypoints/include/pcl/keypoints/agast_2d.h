@@ -38,6 +38,8 @@
 
 #pragma once
 
+#include <array>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/keypoints/keypoint.h>
@@ -320,18 +322,7 @@ namespace pcl
           static const int border_width_ = 2;
 
           // offsets defining the sample pattern
-          int_fast16_t s_offset0_;
-          int_fast16_t s_offset1_;
-          int_fast16_t s_offset2_;
-          int_fast16_t s_offset3_;
-          int_fast16_t s_offset4_;
-          int_fast16_t s_offset5_;
-          int_fast16_t s_offset6_;
-          int_fast16_t s_offset7_;
-          int_fast16_t s_offset8_;
-          int_fast16_t s_offset9_;
-          int_fast16_t s_offset10_;
-          int_fast16_t s_offset11_;
+          std::array<int_fast16_t, 12> offset_;
       };
 
       /** \brief Detector class for AGAST corner point detector (5_8). 
@@ -402,14 +393,7 @@ namespace pcl
           static const int border_width_ = 1;
 
           // offsets defining the sample pattern
-          int_fast16_t s_offset0_;
-          int_fast16_t s_offset1_;
-          int_fast16_t s_offset2_;
-          int_fast16_t s_offset3_;
-          int_fast16_t s_offset4_;
-          int_fast16_t s_offset5_;
-          int_fast16_t s_offset6_;
-          int_fast16_t s_offset7_;
+          std::array<int_fast16_t, 8> offset_;
       };
 
       /** \brief Detector class for AGAST corner point detector (OAST 9_16). 
@@ -480,22 +464,7 @@ namespace pcl
           static const int border_width_ = 3;
 
           // offsets defining the sample pattern
-          int_fast16_t s_offset0_;
-          int_fast16_t s_offset1_;
-          int_fast16_t s_offset2_;
-          int_fast16_t s_offset3_;
-          int_fast16_t s_offset4_;
-          int_fast16_t s_offset5_;
-          int_fast16_t s_offset6_;
-          int_fast16_t s_offset7_;
-          int_fast16_t s_offset8_;
-          int_fast16_t s_offset9_;
-          int_fast16_t s_offset10_;
-          int_fast16_t s_offset11_;
-          int_fast16_t s_offset12_;
-          int_fast16_t s_offset13_;
-          int_fast16_t s_offset14_;
-          int_fast16_t s_offset15_;
+          std::array<int_fast16_t, 16> offset_;
       };
     } // namespace agast
   } // namespace keypoints

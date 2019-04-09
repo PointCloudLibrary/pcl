@@ -369,18 +369,7 @@ namespace pcl
           const T1* im, 
           int img_width, int img_height,
           double threshold,
-          int_fast16_t s_offset0,
-          int_fast16_t s_offset1,
-          int_fast16_t s_offset2,
-          int_fast16_t s_offset3,
-          int_fast16_t s_offset4,
-          int_fast16_t s_offset5,
-          int_fast16_t s_offset6,
-          int_fast16_t s_offset7,
-          int_fast16_t s_offset8,
-          int_fast16_t s_offset9,
-          int_fast16_t s_offset10,
-          int_fast16_t s_offset11,
+          const std::array<int_fast16_t, 12> &offset,
           std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> >& corners)
       {
         int total = 0;
@@ -393,18 +382,18 @@ namespace pcl
 
         corners.resize (0);
 
-        offset0  = s_offset0;
-        offset1  = s_offset1;
-        offset2  = s_offset2;
-        offset3  = s_offset3;
-        offset4  = s_offset4;
-        offset5  = s_offset5;
-        offset6  = s_offset6;
-        offset7  = s_offset7;
-        offset8  = s_offset8;
-        offset9  = s_offset9;
-        offset10 = s_offset10;
-        offset11 = s_offset11;
+        offset0  = offset[0];
+        offset1  = offset[1];
+        offset2  = offset[2];
+        offset3  = offset[3];
+        offset4  = offset[4];
+        offset5  = offset[5];
+        offset6  = offset[6];
+        offset7  = offset[7];
+        offset8  = offset[8];
+        offset9  = offset[9];
+        offset10 = offset[10];
+        offset11 = offset[11];
         width    = img_width;
 
         for (int y = 2; y < height_b; y++)
@@ -2462,35 +2451,24 @@ namespace pcl
           const T1* p,
           double im_bmax,
           double score_threshold,
-          int_fast16_t s_offset0,
-          int_fast16_t s_offset1,
-          int_fast16_t s_offset2,
-          int_fast16_t s_offset3,
-          int_fast16_t s_offset4,
-          int_fast16_t s_offset5,
-          int_fast16_t s_offset6,
-          int_fast16_t s_offset7,
-          int_fast16_t s_offset8,
-          int_fast16_t s_offset9,
-          int_fast16_t s_offset10,
-          int_fast16_t s_offset11)
+          const std::array<int_fast16_t, 12> &offset)
       {
         T2 bmin = T2 (score_threshold);
         T2 bmax = T2 (im_bmax); // 255;
         int b_test = int ((bmax + bmin) / 2);
 
-        int_fast16_t offset0  = s_offset0;
-        int_fast16_t offset1  = s_offset1;
-        int_fast16_t offset2  = s_offset2;
-        int_fast16_t offset3  = s_offset3;
-        int_fast16_t offset4  = s_offset4;
-        int_fast16_t offset5  = s_offset5;
-        int_fast16_t offset6  = s_offset6;
-        int_fast16_t offset7  = s_offset7;
-        int_fast16_t offset8  = s_offset8;
-        int_fast16_t offset9  = s_offset9;
-        int_fast16_t offset10 = s_offset10;
-        int_fast16_t offset11 = s_offset11;
+        int_fast16_t offset0  = offset[0];
+        int_fast16_t offset1  = offset[1];
+        int_fast16_t offset2  = offset[2];
+        int_fast16_t offset3  = offset[3];
+        int_fast16_t offset4  = offset[4];
+        int_fast16_t offset5  = offset[5];
+        int_fast16_t offset6  = offset[6];
+        int_fast16_t offset7  = offset[7];
+        int_fast16_t offset8  = offset[8];
+        int_fast16_t offset9  = offset[9];
+        int_fast16_t offset10 = offset[10];
+        int_fast16_t offset11 = offset[11];
 
         while (true)
         {
@@ -6206,100 +6184,46 @@ namespace pcl
 void
 pcl::keypoints::agast::AgastDetector7_12s::initPattern ()
 {
-  s_offset0_  = static_cast<int_fast16_t> ((-2) + (0)  * width_);
-  s_offset1_  = static_cast<int_fast16_t> ((-2) + (-1) * width_);
-  s_offset2_  = static_cast<int_fast16_t> ((-1) + (-2) * width_);
-  s_offset3_  = static_cast<int_fast16_t> ((0)  + (-2) * width_);
-  s_offset4_  = static_cast<int_fast16_t> ((1)  + (-2) * width_);
-  s_offset5_  = static_cast<int_fast16_t> ((2)  + (-1) * width_);
-  s_offset6_  = static_cast<int_fast16_t> ((2)  + (0)  * width_);
-  s_offset7_  = static_cast<int_fast16_t> ((2)  + (1)  * width_);
-  s_offset8_  = static_cast<int_fast16_t> ((1)  + (2)  * width_);
-  s_offset9_  = static_cast<int_fast16_t> ((0)  + (2)  * width_);
-  s_offset10_ = static_cast<int_fast16_t> ((-1) + (2)  * width_);
-  s_offset11_ = static_cast<int_fast16_t> ((-2) + (1)  * width_);
+  offset_[0]  = static_cast<int_fast16_t> ((-2) + (0)  * width_);
+  offset_[1]  = static_cast<int_fast16_t> ((-2) + (-1) * width_);
+  offset_[2]  = static_cast<int_fast16_t> ((-1) + (-2) * width_);
+  offset_[3]  = static_cast<int_fast16_t> ((0)  + (-2) * width_);
+  offset_[4]  = static_cast<int_fast16_t> ((1)  + (-2) * width_);
+  offset_[5]  = static_cast<int_fast16_t> ((2)  + (-1) * width_);
+  offset_[6]  = static_cast<int_fast16_t> ((2)  + (0)  * width_);
+  offset_[7]  = static_cast<int_fast16_t> ((2)  + (1)  * width_);
+  offset_[8]  = static_cast<int_fast16_t> ((1)  + (2)  * width_);
+  offset_[9]  = static_cast<int_fast16_t> ((0)  + (2)  * width_);
+  offset_[10] = static_cast<int_fast16_t> ((-1) + (2)  * width_);
+  offset_[11] = static_cast<int_fast16_t> ((-2) + (1)  * width_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::keypoints::agast::AgastDetector7_12s::detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners) const
 {
-  return (pcl::keypoints::agast::AgastDetector7_12s_detect<unsigned char, int> (
-        im, int (width_), int (height_), threshold_, 
-        s_offset0_, 
-        s_offset1_,
-        s_offset2_,
-        s_offset3_,
-        s_offset4_,
-        s_offset5_,
-        s_offset6_,
-        s_offset7_,
-        s_offset8_,
-        s_offset9_,
-        s_offset10_,
-        s_offset11_,
-        corners));
+  return (AgastDetector7_12s_detect<unsigned char, int> (im, int (width_), int (height_), threshold_, offset_, corners));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::keypoints::agast::AgastDetector7_12s::detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners) const
 {
-  return (pcl::keypoints::agast::AgastDetector7_12s_detect<float, float> (
-        im, int (width_), int (height_), threshold_, 
-        s_offset0_, 
-        s_offset1_,
-        s_offset2_,
-        s_offset3_,
-        s_offset4_,
-        s_offset5_,
-        s_offset6_,
-        s_offset7_,
-        s_offset8_,
-        s_offset9_,
-        s_offset10_,
-        s_offset11_,
-        corners));
+  return (AgastDetector7_12s_detect<float, float> (im, int (width_), int (height_), threshold_, offset_, corners));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::keypoints::agast::AgastDetector7_12s::computeCornerScore (const unsigned char* p) const
 {
-  return (pcl::keypoints::agast::AgastDetector7_12s_computeCornerScore<unsigned char, int> (
-        p, bmax_, threshold_, 
-        s_offset0_, 
-        s_offset1_,
-        s_offset2_,
-        s_offset3_,
-        s_offset4_,
-        s_offset5_,
-        s_offset6_,
-        s_offset7_,
-        s_offset8_,
-        s_offset9_,
-        s_offset10_,
-        s_offset11_));
+  return (AgastDetector7_12s_computeCornerScore<unsigned char, int> (p, bmax_, threshold_, offset_));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::keypoints::agast::AgastDetector7_12s::computeCornerScore (const float* p) const
 {
-  return (pcl::keypoints::agast::AgastDetector7_12s_computeCornerScore<float, float> (
-        p, bmax_, threshold_, 
-        s_offset0_, 
-        s_offset1_,
-        s_offset2_,
-        s_offset3_,
-        s_offset4_,
-        s_offset5_,
-        s_offset6_,
-        s_offset7_,
-        s_offset8_,
-        s_offset9_,
-        s_offset10_,
-        s_offset11_));
+  return (AgastDetector7_12s_computeCornerScore<float, float> (p, bmax_, threshold_, offset_));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -6318,14 +6242,7 @@ namespace pcl
           const T1* im, 
           int img_width, int img_height,
           double threshold,
-          int_fast16_t s_offset0,
-          int_fast16_t s_offset1,
-          int_fast16_t s_offset2,
-          int_fast16_t s_offset3,
-          int_fast16_t s_offset4,
-          int_fast16_t s_offset5,
-          int_fast16_t s_offset6,
-          int_fast16_t s_offset7,
+          const std::array<int_fast16_t, 8> &offset,
           std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> >& corners)
       {
         int total = 0;
@@ -6338,14 +6255,14 @@ namespace pcl
 
         corners.resize (0);
 
-        offset0 = s_offset0;
-        offset1 = s_offset1;
-        offset2 = s_offset2;
-        offset3 = s_offset3;
-        offset4 = s_offset4;
-        offset5 = s_offset5;
-        offset6 = s_offset6;
-        offset7 = s_offset7;
+        offset0 = offset[0];
+        offset1 = offset[1];
+        offset2 = offset[2];
+        offset3 = offset[3];
+        offset4 = offset[4];
+        offset5 = offset[5];
+        offset6 = offset[6];
+        offset7 = offset[7];
         width   = int (img_width);
 
         for (int y = 1; y < ysize_b; y++)
@@ -7204,14 +7121,7 @@ namespace pcl
           const T1* p, 
           double im_bmax,
           double score_threshold,
-          int_fast16_t s_offset0,
-          int_fast16_t s_offset1,
-          int_fast16_t s_offset2,
-          int_fast16_t s_offset3,
-          int_fast16_t s_offset4,
-          int_fast16_t s_offset5,
-          int_fast16_t s_offset6,
-          int_fast16_t s_offset7)
+          const std::array<int_fast16_t, 8> &offset)
       {
         T2 bmin = T2 (score_threshold);
         T2 bmax = T2 (im_bmax);
@@ -7223,14 +7133,14 @@ namespace pcl
           const T2 c_b = *p - T2 (b_test);
 
           if (AgastDetector5_8_is_a_corner(p, cb, c_b, 
-            s_offset0, 
-            s_offset1,
-            s_offset2,
-            s_offset3,
-            s_offset4,
-            s_offset5,
-            s_offset6,
-            s_offset7))
+            offset[0], 
+            offset[1],
+            offset[2],
+            offset[3],
+            offset[4],
+            offset[5],
+            offset[6],
+            offset[7]))
           {
             bmin = T2 (b_test);
           }
@@ -7253,80 +7163,42 @@ namespace pcl
 void
 pcl::keypoints::agast::AgastDetector5_8::initPattern ()
 {
-  s_offset0_ = static_cast<int_fast16_t> ((-1) + (0)  * width_);
-  s_offset1_ = static_cast<int_fast16_t> ((-1) + (-1) * width_);
-  s_offset2_ = static_cast<int_fast16_t> ((0)  + (-1) * width_);
-  s_offset3_ = static_cast<int_fast16_t> ((1)  + (-1) * width_);
-  s_offset4_ = static_cast<int_fast16_t> ((1)  + (0)  * width_);
-  s_offset5_ = static_cast<int_fast16_t> ((1)  + (1)  * width_);
-  s_offset6_ = static_cast<int_fast16_t> ((0)  + (1)  * width_);
-  s_offset7_ = static_cast<int_fast16_t> ((-1) + (1)  * width_);
+  offset_[0] = static_cast<int_fast16_t> ((-1) + (0)  * width_);
+  offset_[1] = static_cast<int_fast16_t> ((-1) + (-1) * width_);
+  offset_[2] = static_cast<int_fast16_t> ((0)  + (-1) * width_);
+  offset_[3] = static_cast<int_fast16_t> ((1)  + (-1) * width_);
+  offset_[4] = static_cast<int_fast16_t> ((1)  + (0)  * width_);
+  offset_[5] = static_cast<int_fast16_t> ((1)  + (1)  * width_);
+  offset_[6] = static_cast<int_fast16_t> ((0)  + (1)  * width_);
+  offset_[7] = static_cast<int_fast16_t> ((-1) + (1)  * width_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::keypoints::agast::AgastDetector5_8::detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners) const
 {
-  return (pcl::keypoints::agast::AgastDetector5_8_detect<unsigned char, int> (
-        im, int (width_), int (height_), threshold_, 
-        s_offset0_, 
-        s_offset1_,
-        s_offset2_,
-        s_offset3_,
-        s_offset4_,
-        s_offset5_,
-        s_offset6_,
-        s_offset7_,
-        corners));
+  return (AgastDetector5_8_detect<unsigned char, int> (im, int (width_), int (height_), threshold_, offset_, corners));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::keypoints::agast::AgastDetector5_8::detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners) const
 {
-  return (pcl::keypoints::agast::AgastDetector5_8_detect<float, float> (
-        im, int (width_), int (height_), threshold_, 
-        s_offset0_, 
-        s_offset1_,
-        s_offset2_,
-        s_offset3_,
-        s_offset4_,
-        s_offset5_,
-        s_offset6_,
-        s_offset7_,
-        corners));
+  return (AgastDetector5_8_detect<float, float> (im, int (width_), int (height_), threshold_, offset_, corners));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::keypoints::agast::AgastDetector5_8::computeCornerScore (const unsigned char* p) const
 {
-  return (pcl::keypoints::agast::AgastDetector5_8_computeCornerScore<unsigned char, int> (
-        p, bmax_, threshold_, 
-        s_offset0_, 
-        s_offset1_,
-        s_offset2_,
-        s_offset3_,
-        s_offset4_,
-        s_offset5_,
-        s_offset6_,
-        s_offset7_));
+  return (AgastDetector5_8_computeCornerScore<unsigned char, int> (p, bmax_, threshold_, offset_));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::keypoints::agast::AgastDetector5_8::computeCornerScore (const float* p) const
 {
-  return (pcl::keypoints::agast::AgastDetector5_8_computeCornerScore<float, float> (
-        p, bmax_, threshold_, 
-        s_offset0_, 
-        s_offset1_,
-        s_offset2_,
-        s_offset3_,
-        s_offset4_,
-        s_offset5_,
-        s_offset6_,
-        s_offset7_));
+  return (AgastDetector5_8_computeCornerScore<float, float> (p, bmax_, threshold_, offset_));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -7345,22 +7217,7 @@ namespace pcl
           const T1* im, 
           int img_width, int img_height,
           double threshold,
-          int_fast16_t s_offset0,
-          int_fast16_t s_offset1,
-          int_fast16_t s_offset2,
-          int_fast16_t s_offset3,
-          int_fast16_t s_offset4,
-          int_fast16_t s_offset5,
-          int_fast16_t s_offset6,
-          int_fast16_t s_offset7,
-          int_fast16_t s_offset8,
-          int_fast16_t s_offset9,
-          int_fast16_t s_offset10,
-          int_fast16_t s_offset11,
-          int_fast16_t s_offset12,
-          int_fast16_t s_offset13,
-          int_fast16_t s_offset14,
-          int_fast16_t s_offset15,
+          const std::array<int_fast16_t, 16> offset,
           std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> >& corners)
       {
         int total = 0;
@@ -7373,22 +7230,22 @@ namespace pcl
 
         corners.resize (0);
 
-        offset0  = s_offset0;
-        offset1  = s_offset1;
-        offset2  = s_offset2;
-        offset3  = s_offset3;
-        offset4  = s_offset4;
-        offset5  = s_offset5;
-        offset6  = s_offset6;
-        offset7  = s_offset7;
-        offset8  = s_offset8;
-        offset9  = s_offset9;
-        offset10 = s_offset10;
-        offset11 = s_offset11;
-        offset12 = s_offset12;
-        offset13 = s_offset13;
-        offset14 = s_offset14;
-        offset15 = s_offset15;
+        offset0  = offset[0];
+        offset1  = offset[1];
+        offset2  = offset[2];
+        offset3  = offset[3];
+        offset4  = offset[4];
+        offset5  = offset[5];
+        offset6  = offset[6];
+        offset7  = offset[7];
+        offset8  = offset[8];
+        offset9  = offset[9];
+        offset10 = offset[10];
+        offset11 = offset[11];
+        offset12 = offset[12];
+        offset13 = offset[13];
+        offset14 = offset[14];
+        offset15 = offset[15];
         width    = int (img_width);
 
         for (int y = 3; y < ysize_b; y++)
@@ -9462,43 +9319,28 @@ namespace pcl
           const T1* p, 
           double im_bmax,
           double score_threshold,
-          int_fast16_t s_offset0,
-          int_fast16_t s_offset1,
-          int_fast16_t s_offset2,
-          int_fast16_t s_offset3,
-          int_fast16_t s_offset4,
-          int_fast16_t s_offset5,
-          int_fast16_t s_offset6,
-          int_fast16_t s_offset7,
-          int_fast16_t s_offset8,
-          int_fast16_t s_offset9,
-          int_fast16_t s_offset10,
-          int_fast16_t s_offset11,
-          int_fast16_t s_offset12,
-          int_fast16_t s_offset13,
-          int_fast16_t s_offset14,
-          int_fast16_t s_offset15)
+          const std::array<int_fast16_t, 16> &offset)
       {
         T2 bmin = T2 (score_threshold);
         T2 bmax = T2 (im_bmax);
         int b_test = int ((bmax + bmin) / 2);
 
-        int_fast16_t offset0  = s_offset0;
-        int_fast16_t offset1  = s_offset1;
-        int_fast16_t offset2  = s_offset2;
-        int_fast16_t offset3  = s_offset3;
-        int_fast16_t offset4  = s_offset4;
-        int_fast16_t offset5  = s_offset5;
-        int_fast16_t offset6  = s_offset6;
-        int_fast16_t offset7  = s_offset7;
-        int_fast16_t offset8  = s_offset8;
-        int_fast16_t offset9  = s_offset9;
-        int_fast16_t offset10 = s_offset10;
-        int_fast16_t offset11 = s_offset11;
-        int_fast16_t offset12 = s_offset12;
-        int_fast16_t offset13 = s_offset13;
-        int_fast16_t offset14 = s_offset14;
-        int_fast16_t offset15 = s_offset15;
+        int_fast16_t offset0  = offset[0];
+        int_fast16_t offset1  = offset[1];
+        int_fast16_t offset2  = offset[2];
+        int_fast16_t offset3  = offset[3];
+        int_fast16_t offset4  = offset[4];
+        int_fast16_t offset5  = offset[5];
+        int_fast16_t offset6  = offset[6];
+        int_fast16_t offset7  = offset[7];
+        int_fast16_t offset8  = offset[8];
+        int_fast16_t offset9  = offset[9];
+        int_fast16_t offset10 = offset[10];
+        int_fast16_t offset11 = offset[11];
+        int_fast16_t offset12 = offset[12];
+        int_fast16_t offset13 = offset[13];
+        int_fast16_t offset14 = offset[14];
+        int_fast16_t offset15 = offset[15];
 
         while (true)
         {
@@ -11559,119 +11401,48 @@ namespace pcl
 void
 pcl::keypoints::agast::OastDetector9_16::initPattern ()
 {
-  s_offset0_  = static_cast<int_fast16_t> ((-3) + (0)  * width_);
-  s_offset1_  = static_cast<int_fast16_t> ((-3) + (-1) * width_);
-  s_offset2_  = static_cast<int_fast16_t> ((-2) + (-2) * width_);
-  s_offset3_  = static_cast<int_fast16_t> ((-1) + (-3) * width_);
-  s_offset4_  = static_cast<int_fast16_t> ((0)  + (-3) * width_);
-  s_offset5_  = static_cast<int_fast16_t> ((1)  + (-3) * width_);
-  s_offset6_  = static_cast<int_fast16_t> ((2)  + (-2) * width_);
-  s_offset7_  = static_cast<int_fast16_t> ((3)  + (-1) * width_);
-  s_offset8_  = static_cast<int_fast16_t> ((3)  + (0)  * width_);
-  s_offset9_  = static_cast<int_fast16_t> ((3)  + (1)  * width_);
-  s_offset10_ = static_cast<int_fast16_t> ((2)  + (2)  * width_);
-  s_offset11_ = static_cast<int_fast16_t> ((1)  + (3)  * width_);
-  s_offset12_ = static_cast<int_fast16_t> ((0)  + (3)  * width_);
-  s_offset13_ = static_cast<int_fast16_t> ((-1) + (3)  * width_);
-  s_offset14_ = static_cast<int_fast16_t> ((-2) + (2)  * width_);
-  s_offset15_ = static_cast<int_fast16_t> ((-3) + (1)  * width_);
+  offset_[0]  = static_cast<int_fast16_t> ((-3) + (0)  * width_);
+  offset_[1]  = static_cast<int_fast16_t> ((-3) + (-1) * width_);
+  offset_[2]  = static_cast<int_fast16_t> ((-2) + (-2) * width_);
+  offset_[3]  = static_cast<int_fast16_t> ((-1) + (-3) * width_);
+  offset_[4]  = static_cast<int_fast16_t> ((0)  + (-3) * width_);
+  offset_[5]  = static_cast<int_fast16_t> ((1)  + (-3) * width_);
+  offset_[6]  = static_cast<int_fast16_t> ((2)  + (-2) * width_);
+  offset_[7]  = static_cast<int_fast16_t> ((3)  + (-1) * width_);
+  offset_[8]  = static_cast<int_fast16_t> ((3)  + (0)  * width_);
+  offset_[9]  = static_cast<int_fast16_t> ((3)  + (1)  * width_);
+  offset_[10] = static_cast<int_fast16_t> ((2)  + (2)  * width_);
+  offset_[11] = static_cast<int_fast16_t> ((1)  + (3)  * width_);
+  offset_[12] = static_cast<int_fast16_t> ((0)  + (3)  * width_);
+  offset_[13] = static_cast<int_fast16_t> ((-1) + (3)  * width_);
+  offset_[14] = static_cast<int_fast16_t> ((-2) + (2)  * width_);
+  offset_[15] = static_cast<int_fast16_t> ((-3) + (1)  * width_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::keypoints::agast::OastDetector9_16::detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners) const
 {
-  return (pcl::keypoints::agast::OastDetector9_16_detect<unsigned char, int> (
-        im, int (width_), int (height_), threshold_, 
-        s_offset0_, 
-        s_offset1_,
-        s_offset2_,
-        s_offset3_,
-        s_offset4_,
-        s_offset5_,
-        s_offset6_,
-        s_offset7_,
-        s_offset8_,
-        s_offset9_,
-        s_offset10_,
-        s_offset11_,
-        s_offset12_,
-        s_offset13_,
-        s_offset14_,
-        s_offset15_,
-        corners));
+  return (OastDetector9_16_detect<unsigned char, int> (im, int (width_), int (height_), threshold_, offset_, corners));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::keypoints::agast::OastDetector9_16::detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners) const
 {
-  return (pcl::keypoints::agast::OastDetector9_16_detect<float, float> (
-        im, int (width_), int (height_), threshold_, 
-        s_offset0_, 
-        s_offset1_,
-        s_offset2_,
-        s_offset3_,
-        s_offset4_,
-        s_offset5_,
-        s_offset6_,
-        s_offset7_,
-        s_offset8_,
-        s_offset9_,
-        s_offset10_,
-        s_offset11_,
-        s_offset12_,
-        s_offset13_,
-        s_offset14_,
-        s_offset15_,
-        corners));
+  return (OastDetector9_16_detect<float, float> (im, int (width_), int (height_), threshold_, offset_, corners));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::keypoints::agast::OastDetector9_16::computeCornerScore (const unsigned char* p) const
 {
-  return (pcl::keypoints::agast::OastDetector9_16_computeCornerScore<unsigned char, int> (
-        p, bmax_, threshold_, 
-        s_offset0_, 
-        s_offset1_,
-        s_offset2_,
-        s_offset3_,
-        s_offset4_,
-        s_offset5_,
-        s_offset6_,
-        s_offset7_,
-        s_offset8_,
-        s_offset9_,
-        s_offset10_,
-        s_offset11_,
-        s_offset12_,
-        s_offset13_,
-        s_offset14_,
-        s_offset15_));
+  return (OastDetector9_16_computeCornerScore<unsigned char, int> (p, bmax_, threshold_, offset_));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::keypoints::agast::OastDetector9_16::computeCornerScore (const float* p) const
 {
-  return (pcl::keypoints::agast::OastDetector9_16_computeCornerScore<float, float> (
-        p, bmax_, threshold_, 
-        s_offset0_, 
-        s_offset1_,
-        s_offset2_,
-        s_offset3_,
-        s_offset4_,
-        s_offset5_,
-        s_offset6_,
-        s_offset7_,
-        s_offset8_,
-        s_offset9_,
-        s_offset10_,
-        s_offset11_,
-        s_offset12_,
-        s_offset13_,
-        s_offset14_,
-        s_offset15_));
+  return (OastDetector9_16_computeCornerScore<float, float> (p, bmax_, threshold_, offset_));
 }
-
