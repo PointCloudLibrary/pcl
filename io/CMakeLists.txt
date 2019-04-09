@@ -196,8 +196,7 @@ set(PLY_INCLUDES
   "include/pcl/${SUBSYS_NAME}/ply/ply_parser.h"
 )
 
-PCL_ADD_LIBRARY(pcl_io_ply "${SUBSYS_NAME}")
-target_sources(pcl_io_ply PRIVATE ${PLY_SOURCES} ${PLY_INCLUDES})
+PCL_ADD_LIBRARY(pcl_io_ply "${SUBSYS_NAME}" ${PLY_SOURCES} ${PLY_INCLUDES})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
 target_include_directories(pcl_io_ply PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 

@@ -134,8 +134,7 @@ if(APPLE)
 endif()
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}")
-target_sources("${LIB_NAME}" PRIVATE ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs} ${vtk_incs})
+PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs} ${vtk_incs})
 
 target_include_directories("${LIB_NAME}" SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
 

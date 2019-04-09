@@ -35,8 +35,7 @@ set(incs
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
-PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}")
-target_sources("${LIB_NAME}" PRIVATE ${srcs} ${incs})
+PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs})
 
 
 set(EXT_DEPS eigen3)

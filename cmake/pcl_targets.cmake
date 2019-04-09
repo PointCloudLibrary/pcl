@@ -197,7 +197,7 @@ macro(PCL_ADD_LIBRARY _name _component)
     add_library(${_name} INTERFACE)
     set(_scope INTERFACE)
   else()
-    add_library(${_name} ${PCL_LIB_TYPE})
+    add_library(${_name} ${PCL_LIB_TYPE} ${PCL_ADD_LIBRARY_UNPARSED_ARGUMENTS})
     set(_scope PUBLIC)
 
     set_target_properties(${_name} PROPERTIES

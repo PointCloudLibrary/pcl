@@ -152,8 +152,7 @@ else()
 endif()
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}")
-target_sources("${LIB_NAME}" PRIVATE ${srcs} ${incs} ${impl_incs} ${face_detection_incs} ${ransac_based_incs} ${ransac_based_impl_incs} ${hv_incs} ${hv_impl_incs} ${cg_incs} ${cg_impl_incs} ${metslib_incs})
+PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${impl_incs} ${face_detection_incs} ${ransac_based_incs} ${ransac_based_impl_incs} ${hv_incs} ${hv_impl_incs} ${cg_incs} ${cg_impl_incs} ${metslib_incs})
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})

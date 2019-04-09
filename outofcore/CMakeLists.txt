@@ -60,8 +60,7 @@ set(visualization_incs
 )
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
-PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}")
-target_sources("${LIB_NAME}" PRIVATE ${srcs} ${incs} ${impl_incs} ${visualization_incs})
+PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${impl_incs} ${visualization_incs})
 #PCL_ADD_SSE_FLAGS("${LIB_NAME}")
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 

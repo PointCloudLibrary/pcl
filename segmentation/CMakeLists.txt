@@ -117,8 +117,7 @@ if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
 endif()
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}")
-target_sources("${LIB_NAME}" PRIVATE ${srcs} ${incs} ${impl_incs})
+PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${impl_incs})
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 
 # Install include files
