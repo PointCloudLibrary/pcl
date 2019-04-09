@@ -38,6 +38,7 @@
 #include <gtest/gtest.h>
 
 #include <cmath>
+#include <cstdint>
 
 #include <pcl/io/buffers.h>
 
@@ -82,7 +83,7 @@ class BuffersTest : public ::testing::Test
 
 };
 
-typedef ::testing::Types<char, int, float> DataTypes;
+typedef ::testing::Types<int8_t, int32_t, float> DataTypes;
 TYPED_TEST_CASE (BuffersTest, DataTypes);
 
 TYPED_TEST (BuffersTest, SingleBuffer)
