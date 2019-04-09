@@ -150,7 +150,7 @@ main (int argc, char** argv)
   std::string mode = "DEFAULT";
   if (parse_argument (argc, argv, "-mode", mode) != -1)
   {
-    if (! (mode.compare ("DEFAULT") == 0 || mode.compare ("FORCE_COLOR") == 0 || mode.compare ("FORCE_GRAYSCALE") == 0) )
+    if (! (mode == "DEFAULT" || mode == "FORCE_COLOR" || mode == "FORCE_GRAYSCALE") )
     {
       std::cout << "Wrong mode name.\n";
       printHelp (argc, argv);
@@ -230,7 +230,7 @@ main (int argc, char** argv)
 
   std::string intensity_type;
 
-  if (mode.compare ("DEFAULT") == 0)
+  if (mode == "DEFAULT")
   {
     //
     // If the input image is a monochrome image the output cloud will be:
@@ -241,7 +241,7 @@ main (int argc, char** argv)
 
     if (pcl::console::parse_argument (argc, argv, "--intensity_type", intensity_type) != -1)
     {
-      if (intensity_type.compare ("FLOAT") != 0 && intensity_type.compare ("UINT_8") != 0)
+      if (intensity_type != "FLOAT" && intensity_type != "UINT_8")
       {
         print_error ("Wrong intensity option.\n");
         printHelp (argc, argv);
@@ -263,7 +263,7 @@ main (int argc, char** argv)
 
     switch (components)
     {
-      case 1: if (intensity_type.compare ("FLOAT") == 0)
+      case 1: if (intensity_type == "FLOAT")
       {
         if (enable_depth)
         {
@@ -485,7 +485,7 @@ main (int argc, char** argv)
       break;
     }
   }
-  else if (mode.compare ("FORCE_COLOR") == 0)
+  else if (mode == "FORCE_COLOR")
   {
     //
     // Force the output cloud to be colored even if the input image is a
@@ -625,7 +625,7 @@ main (int argc, char** argv)
       saveCloud<RGB> (argv[pcd_file_indices[0]], cloud, format);
     }
   }
-  else if (mode.compare ("FORCE_GRAYSCALE") == 0)
+  else if (mode == "FORCE_GRAYSCALE")
   {
     if (enable_depth)
     {
@@ -686,7 +686,7 @@ main (int argc, char** argv)
 
       if (pcl::console::parse_argument (argc, argv, "--intensity_type", intensity_type) != -1)
       {
-        if (intensity_type.compare ("FLOAT") == 0)
+        if (intensity_type == "FLOAT")
         {
           cloud.width = dimensions[0];
           cloud.height = dimensions[1]; // This indicates that the point cloud is organized
@@ -725,7 +725,7 @@ main (int argc, char** argv)
           // Save the point cloud into a PCD file
           saveCloud<Intensity> (argv[pcd_file_indices[0]], cloud, format);
         }
-        else if (intensity_type.compare ("UINT_8") != 0)
+        else if (intensity_type != "UINT_8")
         {
           cloud8u.width = dimensions[0];
           cloud8u.height = dimensions[1]; // This indicates that the point cloud is organized

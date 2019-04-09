@@ -188,7 +188,7 @@ namespace pcl
             boost::split (strs, file, boost::is_any_of ("."));
             std::string extension = strs[strs.size () - 1];
 
-            if (extension.compare (ext) == 0)
+            if (extension == ext)
             {
               std::string path = rel_path_so_far + (itr->path ().filename ()).string();
 
@@ -229,7 +229,7 @@ namespace pcl
         typename std::vector<ModelT>::iterator it = models_->begin ();
         while (it != models_->end ())
         {
-          if (model_id.compare ((*it).id_) != 0)
+          if (model_id != (*it).id_)
           {
             it = models_->erase (it);
           }

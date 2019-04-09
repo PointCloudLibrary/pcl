@@ -142,19 +142,19 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
           g = 0.0f;
           b = 0.0f;
 
-          if (models->at (j).id_.compare ("cheff") == 0)
+          if (models->at (j).id_ == "cheff")
           {
             r = 0.0f;
             g = 255.0f;
             b = 0.0f;
           }
-          else if (models->at (j).id_.compare ("chicken_high") == 0)
+          else if (models->at (j).id_ == "chicken_high")
           {
             r = 0.0f;
             g = 255.0f;
             b = 255.0f;
           }
-          else if (models->at (j).id_.compare ("parasaurolophus_high") == 0)
+          else if (models->at (j).id_ == "parasaurolophus_high")
           {
             r = 255.0f;
             g = 255.0f;
@@ -260,7 +260,7 @@ getModelsInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector
       boost::split (strs, file, boost::is_any_of ("."));
       std::string extension = strs[strs.size () - 1];
 
-      if (extension.compare (ext) == 0)
+      if (extension == ext)
       {
         std::string path = rel_path_so_far + (itr->path ().filename ()).string();
 
@@ -318,13 +318,13 @@ main (int argc, char ** argv)
   pcl::console::parse_argument (argc, argv, "-use_hv", use_hv);
   pcl::console::parse_argument (argc, argv, "-thres_hyp", thres_hyp_);
 
-  if (mians_scenes.compare ("") == 0)
+  if (mians_scenes == "")
   {
     PCL_ERROR("Set the directory containing mians scenes using the -mians_scenes_dir [dir] option\n");
     return -1;
   }
 
-  if (path.compare ("") == 0)
+  if (path == "")
   {
     PCL_ERROR("Set the directory containing the models of mian dataset using the -models_dir [dir] option\n");
     return -1;
@@ -428,7 +428,7 @@ main (int argc, char ** argv)
       cast_hv_alg = boost::static_pointer_cast<pcl::HypothesisVerification<pcl::PointXYZ, pcl::PointXYZ> > (go);
   }
 
-  if (desc_name.compare ("shot") == 0)
+  if (desc_name == "shot")
   {
     boost::shared_ptr<pcl::rec_3d_framework::SHOTLocalEstimation<pcl::PointXYZ, pcl::Histogram<352> > > estimator;
     estimator.reset (new pcl::rec_3d_framework::SHOTLocalEstimation<pcl::PointXYZ, pcl::Histogram<352> >);
@@ -458,7 +458,7 @@ main (int argc, char ** argv)
 
   }
 
-  if (desc_name.compare ("shot_omp") == 0)
+  if (desc_name == "shot_omp")
   {
     desc_name = std::string ("shot");
     boost::shared_ptr<pcl::rec_3d_framework::SHOTLocalEstimationOMP<pcl::PointXYZ, pcl::Histogram<352> > > estimator;
@@ -492,7 +492,7 @@ main (int argc, char ** argv)
 
   }
 
-  if (desc_name.compare ("fpfh") == 0)
+  if (desc_name == "fpfh")
   {
     boost::shared_ptr<pcl::rec_3d_framework::FPFHLocalEstimation<pcl::PointXYZ, pcl::FPFHSignature33> > estimator;
     estimator.reset (new pcl::rec_3d_framework::FPFHLocalEstimation<pcl::PointXYZ, pcl::FPFHSignature33>);

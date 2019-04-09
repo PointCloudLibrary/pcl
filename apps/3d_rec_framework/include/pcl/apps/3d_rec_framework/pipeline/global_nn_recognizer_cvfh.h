@@ -94,7 +94,7 @@ namespace pcl
             else
             {
 
-              if (this->model.id_.compare (other.model.id_) == 0)
+              if (this->model.id_ == other.model.id_)
               {
                 //check view id
                 if ((this->view_id < other.view_id))

@@ -89,7 +89,7 @@ namespace face_detection_apps_utils
         boost::split (strs, file, boost::is_any_of ("."));
         std::string extension = strs[strs.size () - 1];
 
-        if (extension.compare (ext) == 0)
+        if (extension == ext)
         {
           std::string path = rel_path_so_far + (itr->path().filename()).string();
           relative_paths.push_back (path);

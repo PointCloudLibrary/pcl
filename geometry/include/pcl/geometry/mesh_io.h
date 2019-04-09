@@ -103,7 +103,7 @@ namespace pcl
           unsigned int line_number = 1;
           int n_v = -1, n_he = -1, n_f = -1;
 
-          if (!std::getline (file, line) || line.compare ("PCL half-edge mesh") != 0)
+          if (!std::getline (file, line) || line != "PCL half-edge mesh")
           {
             std::cerr << "Error loading '" << filename << "' (line " << line_number << "): Wrong file format.\n";
             return (false);

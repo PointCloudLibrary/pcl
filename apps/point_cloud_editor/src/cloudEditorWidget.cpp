@@ -577,7 +577,7 @@ CloudEditorWidget::isColored (const std::string &fileName) const
   {
     std::string name(field.name);
     stringToLower(name);
-    if ((name.compare("rgb") == 0) || (name.compare("rgba") == 0))
+    if ((name == "rgb") || (name == "rgba"))
       return true;
   }
   return false;
