@@ -7080,6 +7080,124 @@ namespace pcl
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
+      // Helper method for AgastDetector5_8_computeCornerScore
+      template <typename T1, typename T2> bool
+      AgastDetector5_8_is_a_corner (
+          const T1* p, 
+          const T2 cb,
+          const T2 c_b,
+          int_fast16_t offset0,
+          int_fast16_t offset1,
+          int_fast16_t offset2,
+          int_fast16_t offset3,
+          int_fast16_t offset4,
+          int_fast16_t offset5,
+          int_fast16_t offset6,
+          int_fast16_t offset7)
+      {
+        if (p[offset0] > cb)
+          if (p[offset2] > cb)
+            if (p[offset3] > cb)
+              if (p[offset1] > cb)
+                return ((p[offset4] > cb) || (p[offset7] > cb));
+              else
+                return ((p[offset4] > cb) && (p[offset5] > cb) && (p[offset6] > cb));
+            else
+              if (p[offset7] > cb)
+                if (p[offset6] > cb)
+                  if (p[offset1] > cb)
+                    return true;
+                  else
+                    return ((p[offset5] > cb) && (p[offset4] > cb));
+                else
+                  return false;
+              else
+                return ((p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset5] < c_b) && (p[offset6] < c_b) && (p[offset7] < c_b));
+          else
+            if (p[offset5] > cb)
+              if ((p[offset6] > cb) && (p[offset7] > cb))
+                return ((p[offset1] > cb) || (p[offset4] > cb));
+              else
+                return false;
+            else
+              if ((p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset5] < c_b))
+                if (p[offset2] < c_b)
+                  return ((p[offset1] < c_b) || (p[offset6] < c_b));
+                else
+                  return ((p[offset6] < c_b) && (p[offset7] < c_b));
+              else
+                return false;
+        else
+          if (p[offset0] < c_b)
+            if (p[offset2] < c_b)
+              if (p[offset7] > cb)
+                if (p[offset3] < c_b)
+                  if (p[offset4] < c_b)
+                    if (p[offset1] < c_b)
+                      return true;
+                    else
+                      return ((p[offset5] < c_b) && (p[offset6] < c_b));
+                  else
+                    return false;
+                else
+                  return ((p[offset3] > cb) && (p[offset4] > cb) && (p[offset5] > cb) && (p[offset6] > cb));
+              else
+                if (p[offset7] < c_b)
+                  if (p[offset3] < c_b)
+                    if (p[offset1] < c_b)
+                      return true;
+                    else
+                      return ((p[offset4] < c_b) && (p[offset5] < c_b) && (p[offset6] < c_b));
+                  else
+                    if (p[offset6] < c_b)
+                      if (p[offset1] < c_b)
+                        return true;
+                      else
+                        return ((p[offset4] < c_b) && (p[offset5] < c_b));
+                    else
+                      return false;
+                else
+                  if ((p[offset3] < c_b) && (p[offset4] < c_b))
+                    if (p[offset1] < c_b)
+                      return true;
+                    else
+                      return ((p[offset5] < c_b) && (p[offset6] < c_b));
+                  else
+                    return false;
+            else
+              if (p[offset5] > cb)
+                if ((p[offset3] > cb) && (p[offset4] > cb))
+                  if (p[offset2] > cb)
+                    return ((p[offset1] > cb) || (p[offset6] > cb));
+                  else
+                    return ((p[offset6] > cb) && (p[offset7] > cb));
+                else
+                  return false;
+              else
+                if ((p[offset5] < c_b) && (p[offset6] < c_b) && (p[offset7] < c_b))
+                  return ((p[offset1] < c_b) || (p[offset4] < c_b));
+                else
+                  return false;
+          else
+            if (p[offset3] > cb)
+              if ((p[offset4] > cb) && (p[offset5] > cb))
+                if (p[offset2] > cb)
+                  return ((p[offset1] > cb) || (p[offset6] > cb));
+                else
+                  return ((p[offset6] > cb) && (p[offset7] > cb));
+              else
+                return false;
+            else
+              if ((p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset5] < c_b))
+                if (p[offset2] < c_b)
+                  return (p[offset1] < c_b) || (p[offset6] < c_b);
+                else
+                  return ((p[offset6] < c_b) && (p[offset7] < c_b));
+              else
+                return false;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
       // Helper method for AgastDetector5_8::computeCornerScore
       template <typename T1, typename T2> int
       AgastDetector5_8_computeCornerScore (
@@ -7099,353 +7217,27 @@ namespace pcl
         T2 bmax = T2 (im_bmax);
         int b_test = int ((bmax + bmin) / 2);
 
-        int_fast16_t offset0 = s_offset0;
-        int_fast16_t offset1 = s_offset1;
-        int_fast16_t offset2 = s_offset2;
-        int_fast16_t offset3 = s_offset3;
-        int_fast16_t offset4 = s_offset4;
-        int_fast16_t offset5 = s_offset5;
-        int_fast16_t offset6 = s_offset6;
-        int_fast16_t offset7 = s_offset7;
-
         while (true)
         {
           const T2 cb = *p + T2 (b_test);
           const T2 c_b = *p - T2 (b_test);
-          if (p[offset0] > cb)
-            if (p[offset2] > cb)
-              if (p[offset3] > cb)
-                if (p[offset5] > cb)
-                  if (p[offset1] > cb)
-                    if (p[offset4] > cb)
-                      goto is_a_corner;
-                    else
-                      if (p[offset7] > cb)
-                        goto is_a_corner;
-                      else
-                        goto is_not_a_corner;
-                  else
-                    if (p[offset4] > cb)
-                      if (p[offset6] > cb)
-                        goto is_a_corner;
-                      else
-                        goto is_not_a_corner;
-                    else
-                      goto is_not_a_corner;
-                else
-                  if (p[offset1] > cb)
-                    if (p[offset4] > cb)
-                      goto is_a_corner;
-                    else
-                      if (p[offset7] > cb)
-                        goto is_a_corner;
-                      else
-                        goto is_not_a_corner;
-                  else
-                    goto is_not_a_corner;
-              else
-                if (p[offset7] > cb)
-                  if (p[offset6] > cb)
-                    if (p[offset5] > cb)
-                      if (p[offset1] > cb)
-                        goto is_a_corner;
-                      else
-                        if (p[offset4] > cb)
-                          goto is_a_corner;
-                        else
-                          goto is_not_a_corner;
-                    else
-                      if (p[offset1] > cb)
-                        goto is_a_corner;
-                      else
-                        goto is_not_a_corner;
-                  else
-                    goto is_not_a_corner;
-                else
-                  if (p[offset5] < c_b)
-                    if (p[offset3] < c_b)
-                      if (p[offset7] < c_b)
-                        if (p[offset4] < c_b)
-                          if (p[offset6] < c_b)
-                            goto is_a_corner;
-                          else
-                            goto is_not_a_corner;
-                        else
-                          goto is_not_a_corner;
-                      else
-                        goto is_not_a_corner;
-                    else
-                      goto is_not_a_corner;
-                  else
-                    goto is_not_a_corner;
-            else
-              if (p[offset5] > cb)
-                if (p[offset7] > cb)
-                  if (p[offset6] > cb)
-                    if (p[offset1] > cb)
-                      goto is_a_corner;
-                    else
-                      if (p[offset4] > cb)
-                        goto is_a_corner;
-                      else
-                        goto is_not_a_corner;
-                  else
-                    goto is_not_a_corner;
-                else
-                  goto is_not_a_corner;
-              else
-                if (p[offset5] < c_b)
-                  if (p[offset3] < c_b)
-                    if (p[offset2] < c_b)
-                      if (p[offset1] < c_b)
-                        if (p[offset4] < c_b)
-                          goto is_a_corner;
-                        else
-                          goto is_not_a_corner;
-                      else
-                        if (p[offset4] < c_b)
-                          if (p[offset6] < c_b)
-                            goto is_a_corner;
-                          else
-                            goto is_not_a_corner;
-                        else
-                          goto is_not_a_corner;
-                    else
-                      if (p[offset7] < c_b)
-                        if (p[offset4] < c_b)
-                          if (p[offset6] < c_b)
-                            goto is_a_corner;
-                          else
-                            goto is_not_a_corner;
-                        else
-                          goto is_not_a_corner;
-                      else
-                        goto is_not_a_corner;
-                  else
-                    goto is_not_a_corner;
-                else
-                  goto is_not_a_corner;
-          else if (p[offset0] < c_b)
-            if (p[offset2] < c_b)
-              if (p[offset7] > cb)
-                if (p[offset3] < c_b)
-                  if (p[offset5] < c_b)
-                    if (p[offset1] < c_b)
-                      if (p[offset4] < c_b)
-                        goto is_a_corner;
-                      else
-                        goto is_not_a_corner;
-                    else
-                      if (p[offset4] < c_b)
-                        if (p[offset6] < c_b)
-                          goto is_a_corner;
-                        else
-                          goto is_not_a_corner;
-                      else
-                        goto is_not_a_corner;
-                  else
-                    if (p[offset1] < c_b)
-                      if (p[offset4] < c_b)
-                        goto is_a_corner;
-                      else
-                        goto is_not_a_corner;
-                    else
-                      goto is_not_a_corner;
-                else
-                  if (p[offset5] > cb)
-                    if (p[offset3] > cb)
-                      if (p[offset4] > cb)
-                        if (p[offset6] > cb)
-                          goto is_a_corner;
-                        else
-                          goto is_not_a_corner;
-                      else
-                        goto is_not_a_corner;
-                    else
-                      goto is_not_a_corner;
-                  else
-                    goto is_not_a_corner;
-              else
-                if (p[offset7] < c_b)
-                  if (p[offset3] < c_b)
-                    if (p[offset5] < c_b)
-                      if (p[offset1] < c_b)
-                        goto is_a_corner;
-                      else
-                        if (p[offset4] < c_b)
-                          if (p[offset6] < c_b)
-                            goto is_a_corner;
-                          else
-                            goto is_not_a_corner;
-                        else
-                          goto is_not_a_corner;
-                    else
-                      if (p[offset1] < c_b)
-                        goto is_a_corner;
-                      else
-                        goto is_not_a_corner;
-                  else
-                    if (p[offset6] < c_b)
-                      if (p[offset5] < c_b)
-                        if (p[offset1] < c_b)
-                          goto is_a_corner;
-                        else
-                          if (p[offset4] < c_b)
-                            goto is_a_corner;
-                          else
-                            goto is_not_a_corner;
-                      else
-                        if (p[offset1] < c_b)
-                          goto is_a_corner;
-                        else
-                          goto is_not_a_corner;
-                    else
-                      goto is_not_a_corner;
-                else
-                  if (p[offset3] < c_b)
-                    if (p[offset5] < c_b)
-                      if (p[offset1] < c_b)
-                        if (p[offset4] < c_b)
-                          goto is_a_corner;
-                        else
-                          goto is_not_a_corner;
-                      else
-                        if (p[offset4] < c_b)
-                          if (p[offset6] < c_b)
-                            goto is_a_corner;
-                          else
-                            goto is_not_a_corner;
-                        else
-                          goto is_not_a_corner;
-                    else
-                      if (p[offset1] < c_b)
-                        if (p[offset4] < c_b)
-                          goto is_a_corner;
-                        else
-                          goto is_not_a_corner;
-                      else
-                        goto is_not_a_corner;
-                  else
-                    goto is_not_a_corner;
-            else
-              if (p[offset5] > cb)
-                if (p[offset3] > cb)
-                  if (p[offset2] > cb)
-                    if (p[offset1] > cb)
-                      if (p[offset4] > cb)
-                        goto is_a_corner;
-                      else
-                        goto is_not_a_corner;
-                    else
-                      if (p[offset4] > cb)
-                        if (p[offset6] > cb)
-                          goto is_a_corner;
-                        else
-                          goto is_not_a_corner;
-                      else
-                        goto is_not_a_corner;
-                  else
-                    if (p[offset7] > cb)
-                      if (p[offset4] > cb)
-                        if (p[offset6] > cb)
-                          goto is_a_corner;
-                        else
-                          goto is_not_a_corner;
-                      else
-                        goto is_not_a_corner;
-                    else
-                      goto is_not_a_corner;
-                else
-                  goto is_not_a_corner;
-              else
-                if (p[offset5] < c_b)
-                  if (p[offset7] < c_b)
-                    if (p[offset6] < c_b)
-                      if (p[offset1] < c_b)
-                        goto is_a_corner;
-                      else
-                        if (p[offset4] < c_b)
-                          goto is_a_corner;
-                        else
-                          goto is_not_a_corner;
-                    else
-                      goto is_not_a_corner;
-                  else
-                    goto is_not_a_corner;
-                else
-                  goto is_not_a_corner;
-          else
-            if (p[offset3] > cb)
-              if (p[offset5] > cb)
-                if (p[offset2] > cb)
-                  if (p[offset1] > cb)
-                    if (p[offset4] > cb)
-                      goto is_a_corner;
-                    else
-                      goto is_not_a_corner;
-                  else
-                    if (p[offset4] > cb)
-                      if (p[offset6] > cb)
-                        goto is_a_corner;
-                      else
-                        goto is_not_a_corner;
-                    else
-                      goto is_not_a_corner;
-                else
-                  if (p[offset7] > cb)
-                    if (p[offset4] > cb)
-                      if (p[offset6] > cb)
-                        goto is_a_corner;
-                      else
-                        goto is_not_a_corner;
-                    else
-                      goto is_not_a_corner;
-                  else
-                    goto is_not_a_corner;
-              else
-                goto is_not_a_corner;
-            else
-              if (p[offset3] < c_b)
-                if (p[offset5] < c_b)
-                  if (p[offset2] < c_b)
-                    if (p[offset1] < c_b)
-                      if (p[offset4] < c_b)
-                        goto is_a_corner;
-                      else
-                        goto is_not_a_corner;
-                    else
-                      if (p[offset4] < c_b)
-                        if (p[offset6] < c_b)
-                          goto is_a_corner;
-                        else
-                          goto is_not_a_corner;
-                      else
-                        goto is_not_a_corner;
-                  else
-                    if (p[offset7] < c_b)
-                      if (p[offset4] < c_b)
-                        if (p[offset6] < c_b)
-                          goto is_a_corner;
-                        else
-                          goto is_not_a_corner;
-                      else
-                        goto is_not_a_corner;
-                    else
-                      goto is_not_a_corner;
-                else
-                  goto is_not_a_corner;
-              else
-                goto is_not_a_corner;
 
-          is_a_corner:
+          if (AgastDetector5_8_is_a_corner(p, cb, c_b, 
+            s_offset0, 
+            s_offset1,
+            s_offset2,
+            s_offset3,
+            s_offset4,
+            s_offset5,
+            s_offset6,
+            s_offset7))
+          {
             bmin = T2 (b_test);
-            goto end;
-
-          is_not_a_corner:
+          }
+          else
+          {
             bmax = T2 (b_test);
-            goto end;
-
-          end:
+          }
 
           if (bmin == bmax - 1 || bmin == bmax)
             return (int (bmin));
