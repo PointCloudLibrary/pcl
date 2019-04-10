@@ -39,14 +39,8 @@
 
 #pragma once
 
-#if _MSC_VER
-  #pragma message ("This header is deprecated and will be removed in an upcoming release.")
-#elif __GNUC__
-  #warning ("This header is deprecated and will be removed in an upcoming release.")
-#endif
+#include <pcl/pcl_macros.h>
 
-#if defined __GNUC__
-#  pragma GCC system_header 
-#endif
+PCL_PRAGMA_WARNING("This header is deprecated and will be removed in an upcoming release.")
 
 #include <boost/random.hpp>
