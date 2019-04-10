@@ -106,7 +106,7 @@ namespace pcl { namespace device { namespace knn_search
             else                
                 query_index = -1;    
 
-            while(__any(active))
+            while(__any_sync(0xFFFFFFFF, active))
             {                
                 int leaf = -1;
            
@@ -163,7 +163,7 @@ namespace pcl { namespace device { namespace knn_search
 
         __device__ __forceinline__ void processLeaf(int node_idx)
         {   
-            int mask = __ballot(node_idx != -1);            
+            int mask = __ballot_sync(0xFFFFFFFF, node_idx != -1);            
 
             unsigned int laneId = Warp::laneId();
             unsigned int warpId = Warp::id();
@@ -310,7 +310,7 @@ namespace pcl { namespace device { namespace knn_search
                                 
         bool active = query_index < batch.queries_num;
 
-        if (__all(active == false)) 
+        if (__all_sync(0xFFFFFFFF, active == false)) 
             return;
 
         Warp_knnSearch search(batch, query_index);
