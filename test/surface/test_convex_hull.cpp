@@ -383,7 +383,7 @@ TEST (PCL, ConvexHull_3dcube)
   
   //rd
   std::mt19937 gen(12345u);
-  std::uniform_real_distribution<float> rd (-1.0f, 1.0f);;
+  std::uniform_real_distribution<float> rd (-1.0f, 1.0f);
 
   for (auto &point : input_cloud->points)
   {
