@@ -48,13 +48,13 @@ Statistics::getStats()
   for(const auto &stat_vec : stat_vec_)
   {
     std::string stat_string = stat_vec -> getStat();
-    if (stat_string != "")
+    if (!stat_string.empty())
     {
       result += (stat_string + '\n');
     }
   }
     
-  if (result == "")
+  if (result.empty())
     return ("Please load your cloud.");
   return (result);
 }

@@ -48,7 +48,7 @@ pcl::io::depth_sense::DepthSenseGrabberImpl::DepthSenseGrabberImpl (DepthSenseGr
 , color_data_ (COLOR_SIZE * 3)
 , depth_buffer_ (new pcl::io::SingleBuffer<float> (SIZE))
 {
-  if (device_id == "")
+  if (device_id.empty())
     device_id_ = DepthSenseDeviceManager::getInstance ()->captureDevice (this);
   else if (device_id[0] == '#')
     device_id_ = DepthSenseDeviceManager::getInstance ()->captureDevice (this, boost::lexical_cast<int> (device_id.substr (1)) - 1);

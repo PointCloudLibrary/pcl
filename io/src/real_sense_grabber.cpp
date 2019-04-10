@@ -119,7 +119,7 @@ pcl::RealSenseGrabber::RealSenseGrabber (const std::string& device_id, const Mod
 , mode_requested_ (mode)
 , strict_ (strict)
 {
-  if (device_id == "")
+  if (device_id.empty())
     device_ = RealSenseDeviceManager::getInstance ()->captureDevice ();
   else if (device_id[0] == '#')
     device_ = RealSenseDeviceManager::getInstance ()->captureDevice (boost::lexical_cast<int> (device_id.substr (1)) - 1);

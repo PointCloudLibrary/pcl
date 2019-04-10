@@ -179,7 +179,7 @@ main (int argc, char** argv)
   std::string path;
   pcl::console::parse_argument (argc, argv, "-file", path);
   std::cout << "path: " << path << std::endl;
-  if (path != "" && boost::filesystem::exists (path))
+  if (!path.empty() && boost::filesystem::exists (path))
   {
     grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (path, frames_per_second, repeat));
   }
@@ -188,7 +188,7 @@ main (int argc, char** argv)
     std::vector<std::string> pcd_files;
     pcl::console::parse_argument (argc, argv, "-dir", path);
     std::cout << "path: " << path << std::endl;
-    if (path != "" && boost::filesystem::exists (path))
+    if (!path.empty() && boost::filesystem::exists (path))
     {
       boost::filesystem::directory_iterator end_itr;
       for (boost::filesystem::directory_iterator itr (path); itr != end_itr; ++itr)

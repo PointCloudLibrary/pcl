@@ -105,7 +105,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
   {
     boost::shared_ptr < std::vector<ModelT> > models;
 
-    if(search_model_.compare("") == 0) {
+    if(search_model_.empty()) {
       models = source_->getModels ();
     } else {
       models = source_->getModels (search_model_);

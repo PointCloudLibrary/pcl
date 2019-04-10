@@ -275,7 +275,7 @@ class MultiRansac
       //bool repeat = false;
 
       //std::string path = "./pcl_logo.pcd";
-      //if (path != "" && boost::filesystem::exists (path))
+      //if (!path.empty() && boost::filesystem::exists (path))
       //{
       //  filegrabber = new pcl::PCDGrabber<pcl::PointXYZRGB > (path, frames_per_second, repeat);
       //}

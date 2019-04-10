@@ -142,7 +142,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
     {
       getline (fs, line);
       // Ignore empty lines
-      if (line == "")
+      if (line.empty())
         continue;
 
       // Tokenize the line
@@ -380,7 +380,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
                             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
                             int &pcd_version, int &data_type, unsigned int &data_idx, const int offset)
 {
-  if (file_name == "" || !boost::filesystem::exists (file_name))
+  if (file_name.empty() || !boost::filesystem::exists (file_name))
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
@@ -442,7 +442,7 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
     {
       getline (fs, line);
       // Ignore empty lines
-      if (line == "")
+      if (line.empty())
         continue;
 
       // Tokenize the line
@@ -692,7 +692,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   pcl::console::TicToc tt;
   tt.tic ();
 
-  if (file_name == "" || !boost::filesystem::exists (file_name))
+  if (file_name.empty() || !boost::filesystem::exists (file_name))
   {
     PCL_ERROR ("[pcl::PCDReader::read] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);

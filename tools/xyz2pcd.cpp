@@ -69,7 +69,7 @@ loadCloud (const string &filename, PointCloud<PointXYZ> &cloud)
   {
     getline (fs, line);
     // Ignore empty lines
-    if (line == "")
+    if (line.empty())
       continue;
 
     // Tokenize the line

@@ -168,7 +168,7 @@ main (int argc, char ** argv)
   normal_estimator->setRemoveOutliers (true);
   normal_estimator->setFactorsForCMR (3, 7);
 
-  if (desc_name.compare ("vfh") == 0)
+  if (desc_name == "vfh")
   {
     boost::shared_ptr<pcl::rec_3d_framework::VFHEstimation<pcl::PointXYZ, pcl::VFHSignature308> > vfh_estimator;
     vfh_estimator.reset (new pcl::rec_3d_framework::VFHEstimation<pcl::PointXYZ, pcl::VFHSignature308>);
@@ -188,7 +188,7 @@ main (int argc, char ** argv)
     segmentAndClassify<flann::L1, pcl::PointXYZ, pcl::VFHSignature308> (global);
   }
 
-  if (desc_name.compare ("cvfh") == 0)
+  if (desc_name == "cvfh")
   {
     boost::shared_ptr<pcl::rec_3d_framework::CVFHEstimation<pcl::PointXYZ, pcl::VFHSignature308> > vfh_estimator;
     vfh_estimator.reset (new pcl::rec_3d_framework::CVFHEstimation<pcl::PointXYZ, pcl::VFHSignature308>);
@@ -208,7 +208,7 @@ main (int argc, char ** argv)
     segmentAndClassify<Metrics::HistIntersectionUnionDistance, pcl::PointXYZ, pcl::VFHSignature308> (global);
   }
 
-  if (desc_name.compare ("esf") == 0)
+  if (desc_name == "esf")
   {
     boost::shared_ptr<pcl::rec_3d_framework::ESFEstimation<pcl::PointXYZ, pcl::ESFSignature640> > estimator;
     estimator.reset (new pcl::rec_3d_framework::ESFEstimation<pcl::PointXYZ, pcl::ESFSignature640>);
