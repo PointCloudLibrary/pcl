@@ -360,7 +360,7 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
                                         std::vector<char> &data,
                                         uint32_t &uncompressed_size)
 {
-  if (filename == "" || !boost::filesystem::exists (filename))
+  if (filename.empty() || !boost::filesystem::exists (filename))
   {
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] Could not find file '%s'.\n", filename.c_str ());
     return (false);

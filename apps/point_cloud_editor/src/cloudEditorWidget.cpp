@@ -132,7 +132,7 @@ CloudEditorWidget::save ()
   QString file_path = QFileDialog::getSaveFileName(this,tr("Save point cloud"));
   
   std::string file_path_std = file_path.toStdString();
-  if ( (file_path_std == "") || (!cloud_ptr_) )
+  if ( (file_path_std.empty()) || (!cloud_ptr_) )
     return;
 
   if (is_colored_)

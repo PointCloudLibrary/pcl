@@ -279,7 +279,7 @@ main (int argc, char** argv)
   }
   else
   {
-    if (input_dir != "" && boost::filesystem::exists (input_dir))
+    if (!input_dir.empty() && boost::filesystem::exists (input_dir))
     {
       vector<string> pcd_files;
       boost::filesystem::directory_iterator end_itr;

@@ -4459,7 +4459,7 @@ int
 pcl::visualization::PCLVisualizer::textureFromTexMaterial (const pcl::TexMaterial& tex_mat,
                                                            vtkTexture* vtk_tex) const
 {
-  if (tex_mat.tex_file == "")
+  if (tex_mat.tex_file.empty())
   {
     PCL_WARN ("[PCLVisualizer::textureFromTexMaterial] No texture file given for material %s!\n",
                tex_mat.tex_name.c_str ());
@@ -4510,7 +4510,7 @@ pcl::visualization::PCLVisualizer::textureFromTexMaterial (const pcl::TexMateria
         }
       }
       // Check texture file existence
-      if (real_name == "")
+      if (real_name.empty())
       {
         PCL_WARN ("[PCLVisualizer::textureFromTexMaterial] Can not find texture file %s!\n",
                    tex_mat.tex_file.c_str ());

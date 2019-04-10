@@ -196,7 +196,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::loadCameraParameters (const st
   while (!fs.eof ())
   {
     getline (fs, line);
-    if (line == "")
+    if (line.empty())
       continue;
 
     boost::split (camera, line, boost::is_any_of ("/"), boost::token_compress_on);
@@ -1171,7 +1171,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool
   if (!lut_enabled_ && !add_lut)
     return;
 
-  if (lut_actor_id_ != "")  // Search if provided actor id is in CloudActorMap or ShapeActorMap
+  if (!lut_actor_id_.empty())  // Search if provided actor id is in CloudActorMap or ShapeActorMap
   {
     auto am_it = cloud_actors_->find (lut_actor_id_);
     if (am_it == cloud_actors_->end ())
@@ -1227,7 +1227,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool
       actor_found = true;
     }
   }
-  else  // lut_actor_id_ == "", the user did not specify which cloud/shape LUT should be displayed
+  else  // lut_actor_id_.empty(), the user did not specify which cloud/shape LUT should be displayed
   // Circling through all clouds/shapes and displaying first LUT found
   {
     for (const auto &actor : *cloud_actors_)

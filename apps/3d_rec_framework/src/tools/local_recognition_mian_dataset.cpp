@@ -318,13 +318,13 @@ main (int argc, char ** argv)
   pcl::console::parse_argument (argc, argv, "-use_hv", use_hv);
   pcl::console::parse_argument (argc, argv, "-thres_hyp", thres_hyp_);
 
-  if (mians_scenes == "")
+  if (mians_scenes.empty())
   {
     PCL_ERROR("Set the directory containing mians scenes using the -mians_scenes_dir [dir] option\n");
     return -1;
   }
 
-  if (path == "")
+  if (path.empty())
   {
     PCL_ERROR("Set the directory containing the models of mian dataset using the -models_dir [dir] option\n");
     return -1;

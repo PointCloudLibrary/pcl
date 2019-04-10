@@ -143,14 +143,14 @@ int
 pcl::MTLReader::read (const std::string& obj_file_name,
                       const std::string& mtl_file_name)
 {
-  if (obj_file_name == "" || !boost::filesystem::exists (obj_file_name))
+  if (obj_file_name.empty() || !boost::filesystem::exists (obj_file_name))
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'!\n",
                obj_file_name.c_str ());
     return (-1);
   }
 
-  if (mtl_file_name == "")
+  if (mtl_file_name.empty())
   {
     PCL_ERROR ("[pcl::MTLReader::read] MTL file name is empty!\n");
     return (-1);
@@ -165,7 +165,7 @@ pcl::MTLReader::read (const std::string& obj_file_name,
 int
 pcl::MTLReader::read (const std::string& mtl_file_path)
 {
-  if (mtl_file_path == "" || !boost::filesystem::exists (mtl_file_path))
+  if (mtl_file_path.empty() || !boost::filesystem::exists (mtl_file_path))
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'.\n", mtl_file_path.c_str ());
     return (-1);
@@ -192,7 +192,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
     {
       getline (mtl_file, line);
       // Ignore empty lines
-      if (line == "")
+      if (line.empty())
         continue;
 
       // Tokenize the line
@@ -347,7 +347,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   std::ifstream fs;
   std::string line;
 
-  if (file_name == "" || !boost::filesystem::exists (file_name))
+  if (file_name.empty() || !boost::filesystem::exists (file_name))
   {
     PCL_ERROR ("[pcl::OBJReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
@@ -380,7 +380,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
     {
       getline (fs, line);
       // Ignore empty lines
-      if (line == "")
+      if (line.empty())
         continue;
 
       // Trim the line
@@ -548,7 +548,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       std::string line;
       getline (fs, line);
       // Ignore empty lines
-      if (line == "")
+      if (line.empty())
         continue;
 
       // Tokenize the line
@@ -691,7 +691,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
     {
       getline (fs, line);
       // Ignore empty lines
-      if (line == "")
+      if (line.empty())
         continue;
 
       // Tokenize the line
@@ -782,7 +782,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
           }
         }
         // We didn't find the appropriate material so we create it here with name only.
-        if (mesh.tex_materials.back ().tex_name == "")
+        if (mesh.tex_materials.back ().tex_name.empty())
           mesh.tex_materials.back ().tex_name = st[1];
         mesh.tex_coordinates.push_back (coordinates);
         coordinates.clear ();
@@ -880,7 +880,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
       std::string line;
       getline (fs, line);
       // Ignore empty lines
-      if (line == "")
+      if (line.empty())
         continue;
 
       // Tokenize the line

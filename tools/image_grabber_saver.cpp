@@ -112,7 +112,7 @@ main (int argc, char** argv)
 
   pcl::console::parse_argument (argc, argv, "-out_dir", out_folder);
 
-  if (out_folder == "" || !boost::filesystem::exists (out_folder))
+  if (out_folder.empty() || !boost::filesystem::exists (out_folder))
   {
     PCL_INFO("No correct directory was given with the -out_dir flag. Setting to current dir\n");
     out_folder = "./";
@@ -120,7 +120,7 @@ main (int argc, char** argv)
   else
     PCL_INFO("Using %s as output dir", out_folder.c_str());
 
-  if (rgb_path != "" && depth_path != "" && boost::filesystem::exists (rgb_path) && boost::filesystem::exists (depth_path))
+  if (!rgb_path.empty() && !depth_path.empty() && boost::filesystem::exists (rgb_path) && boost::filesystem::exists (depth_path))
   {
     grabber.reset (new pcl::ImageGrabber<pcl::PointXYZRGBA> (depth_path, rgb_path, frames_per_second, false));
   }

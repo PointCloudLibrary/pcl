@@ -214,7 +214,7 @@ int main(int argc, char ** argv)
 
   pcl::visualization::PCLVisualizer vis ("PCL Face detection");
 
-  if (test_directory != "")
+  if (!test_directory.empty())
   {
     //recognize all files in directory...
     std::string start;
