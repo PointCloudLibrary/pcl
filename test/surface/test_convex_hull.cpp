@@ -324,12 +324,12 @@ TEST (PCL, ConvexHull_2dsquare)
   
   //rng
   std::mt19937 rng(12345u);
-  std::uniform_real_distribution<float> rd (0.0f, 1.0f);
+  std::uniform_real_distribution<float> rd (-1.0f, 1.0f);
 
   for (auto &point : input_cloud->points)
   {
-    point.x = (2.0f * rd (rng)) - 1.0f;
-    point.y = (2.0f * rd (rng)) - 1.0f;
+    point.x = rd (rng);
+    point.y = rd (rng);
     point.z = 1.0f;
   }
 
@@ -383,13 +383,13 @@ TEST (PCL, ConvexHull_3dcube)
   
   //rd
   std::mt19937 gen(12345u);
-  std::uniform_real_distribution<float> rd (0.0f, 1.0f);;
+  std::uniform_real_distribution<float> rd (-1.0f, 1.0f);;
 
   for (auto &point : input_cloud->points)
   {
-    point.x =  (2.0f * rd (gen)) - 1.0f;
-    point.y =  (2.0f * rd (gen)) - 1.0f;
-    point.z =  (2.0f * rd (gen)) - 1.0f;
+    point.x = rd (gen);
+    point.y = rd (gen);
+    point.z = rd (gen);
   }
 
   //Set up for creating a hull

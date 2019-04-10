@@ -433,7 +433,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
             std::normal_distribution<float> nd (0.0f, noise_);
             // Noisify each point in the dataset
             for (size_t cp = 0; cp < view->points.size (); ++cp)
-              view->points[cp].z += static_cast<float> (nd (rng));
+              view->points[cp].z += nd (rng);
           }
 
           //pro view, compute signatures and CRH

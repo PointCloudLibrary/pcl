@@ -549,7 +549,7 @@ void createIndices (std::vector<int>& indices, unsigned max_index)
     if (rand_uint (rng) == 0)
       indices.push_back (idx);
    
-  std::uniform_int_distribution<> rand_indices(0, static_cast<int> (indices.size ()) - 1);
+  std::uniform_int_distribution<> rand_indices(0, indices.size () - 1);
   // shuffle indices -> not ascending index list
   for (unsigned idx = 0; idx < max_index; ++idx)
   {
