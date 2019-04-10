@@ -57,8 +57,7 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::ZBuffering () :
 template<typename ModelT, typename SceneT>
 pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::~ZBuffering ()
 {
-  if (depth_ != NULL)
-    delete[] depth_;
+  delete[] depth_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
