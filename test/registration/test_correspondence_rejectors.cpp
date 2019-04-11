@@ -98,12 +98,12 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
   
   // Noisify the target with a known seed and N(0, 0.005) using deterministic sampling
   std::mt19937 rng(1e6);
-  std::normal_distribution<float> nd (0.0f, 0.005f);
+  std::normal_distribution<> nd(0, 0.005);
   for (auto &point : target)
   {
-    point.x += nd (rng);
-    point.y += nd (rng);
-    point.z += nd (rng);
+	  point.x += static_cast<float> (nd(rng));
+	  point.y += static_cast<float> (nd(rng));
+	  point.z += static_cast<float> (nd(rng));
   }
   
   // Ensure deterministic sampling inside the rejector
