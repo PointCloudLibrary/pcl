@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include <flann/flann.h>
+#include <flann/flann.hpp>
+
 #include <pcl/common/common.h>
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/global/global_estimator.h>

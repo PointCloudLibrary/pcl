@@ -40,11 +40,11 @@
 #include <iostream>  // For debug
 #include <map>
 #include <pcl/common/time.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/distances.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -63,9 +63,6 @@ struct MyPoint : public PointXYZ
 };
 
 PointCloud<MyPoint> cloud, cloud_big;
-
-// Include the implementation so that KdTree<MyPoint> works
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
 
 void 
 init ()

@@ -4,6 +4,9 @@
  *  Created on: Mar 24, 2012
  *      Author: aitor
  */
+
+#include <flann/algorithms/dist.h>
+
 #include <pcl/recognition/hv/hv_papazov.h>
 #include <pcl/console/parse.h>
 #include <pcl/apps/3d_rec_framework/pipeline/local_recognizer.h>

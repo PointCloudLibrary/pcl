@@ -41,14 +41,13 @@
 #pragma once
 
 #include <pcl/kdtree/kdtree.h>
-#include <pcl/kdtree/flann.h>
+#include <flann/util/params.h>
 
 #include <boost/shared_array.hpp>
 
 // Forward declarations
 namespace flann
 {
-  struct SearchParams;
   template <typename T> struct L2_Simple;
   template <typename T> class Index;
 }

@@ -1,3 +1,5 @@
+#include <flann/flann.hpp>
+
 #include <pcl/apps/3d_rec_framework/pipeline/local_recognizer.h>
 #include <pcl/apps/3d_rec_framework/utils/vtk_model_sampling.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>

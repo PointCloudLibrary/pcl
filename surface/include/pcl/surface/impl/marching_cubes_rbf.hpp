@@ -43,7 +43,6 @@
 #include <pcl/common/common.h>
 #include <pcl/common/vector_average.h>
 #include <pcl/Vertices.h>
-#include <pcl/kdtree/kdtree_flann.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>

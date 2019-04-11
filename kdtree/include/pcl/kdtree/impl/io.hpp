@@ -41,7 +41,6 @@
 #define PCL_KDTREE_IO_IMPL_HPP_
 
 #include <pcl/kdtree/io.h>
-#include <pcl/kdtree/kdtree_flann.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename Point1T, typename Point2T> void

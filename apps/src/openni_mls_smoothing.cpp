@@ -41,7 +41,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
 #include <pcl/surface/mls.h>
-#include <pcl/kdtree/kdtree_flann.h>
 
 #define FPS_CALC(_WHAT_) \
 do \
