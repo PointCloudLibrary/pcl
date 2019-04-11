@@ -157,8 +157,7 @@ namespace pcl
     /** \brief Destructor. */
     ~QuantizedNormalLookUpTable () 
     { 
-      if (lut != NULL) 
-        delete[] lut; 
+      delete[] lut; 
     }
 
     /** \brief Initializes the LUT.
@@ -182,8 +181,7 @@ namespace pcl
       //if (lut != NULL) free16(lut);
       //lut = malloc16(size_x*size_y*size_z);
 
-      if (lut != NULL) 
-        delete[] lut;
+      delete[] lut;
       lut = new unsigned char[size_x*size_y*size_z];
 
       const int nr_normals = 8;

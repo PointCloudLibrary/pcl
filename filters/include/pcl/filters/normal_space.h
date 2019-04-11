@@ -85,8 +85,7 @@ namespace pcl
       /** \brief Destructor. */
       ~NormalSpaceSampling ()
       {
-        if (rng_uniform_distribution_ != NULL)
-          delete rng_uniform_distribution_;
+        delete rng_uniform_distribution_;
       }
 
       /** \brief Set number of indices to be sampled.

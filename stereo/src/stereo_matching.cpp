@@ -75,29 +75,13 @@ pcl::StereoMatching::StereoMatching ()
 //////////////////////////////////////////////////////////////////////////////
 pcl::StereoMatching::~StereoMatching ()
 {
-  if ( disp_map_ != NULL)
-  {
-    delete [] disp_map_;
-    //disp_map_ = NULL;
-  }
+  delete [] disp_map_;
+  delete [] disp_map_trg_;
 
-  if ( disp_map_trg_ != NULL)
-  {
-    delete [] disp_map_trg_;
-    //disp_map_trg_ = NULL;
-  }
-
-  if ( ref_img_ != NULL)
-  {
-    delete [] ref_img_;
-    delete [] trg_img_;
-  }
-
-  if ( pp_ref_img_ != NULL)
-  {
-    delete [] pp_ref_img_;
-    delete [] pp_trg_img_;
-  }
+  delete [] ref_img_;
+  delete [] trg_img_;
+  delete [] pp_ref_img_;
+  delete [] pp_trg_img_;
 
 }
 
@@ -528,19 +512,13 @@ pcl::GrayStereoMatching::compute (unsigned char* ref_img, unsigned char* trg_img
     delete [] disp_map_;
     disp_map_ = NULL;
 
-    if ( disp_map_trg_ != NULL)
-    {
-      delete [] disp_map_trg_;
-      disp_map_trg_ = NULL;
-    }
+    delete [] disp_map_trg_;
+    disp_map_trg_ = NULL;
 
-    if ( pp_ref_img_ != NULL)
-    {
-      delete [] pp_ref_img_;
-      delete [] pp_trg_img_;
-      pp_ref_img_ = NULL;
-      pp_trg_img_ = NULL;
-    }
+    delete [] pp_ref_img_;
+    delete [] pp_trg_img_;
+    pp_ref_img_ = NULL;
+    pp_trg_img_ = NULL;
   }
 
   if ( disp_map_ == NULL)
@@ -630,7 +608,7 @@ pcl::GrayStereoMatching::compute (unsigned char* ref_img, unsigned char* trg_img
   for (int j = 0; j < height_; j++)
     for (int i = 0; i < width_; i++)
       if ( disp_map_[j * width_ + i] > 0)
-	    disp_map_[j * width_ + i] += static_cast<short int> (x_off_ * 16);
+        disp_map_[j * width_ + i] += static_cast<short int> (x_off_ * 16);
 
 }
 

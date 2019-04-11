@@ -175,11 +175,8 @@ class SimpleOpenNIViewer
       }
 
       grabber_.stop ();
-      
       image_connection.disconnect ();
-      
-      if (rgb_data)
-        delete[] rgb_data;
+      delete[] rgb_data;
     }
 
     pcl::OpenNIGrabber& grabber_;
