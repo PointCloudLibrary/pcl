@@ -47,6 +47,9 @@
 
 // Boost
 #include <pcl/outofcore/boost.h>
+#include <boost/random/bernoulli_distribution.hpp>
+#include <boost/random/uniform_int.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 // PCL
 #include <pcl/io/pcd_io.h>

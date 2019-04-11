@@ -47,6 +47,7 @@
 #include <vector>
 #include <cstdio>
 #include <iostream>
+#include <random>
 using namespace std;
 
 #include <pcl/common/time.h>
@@ -62,9 +63,6 @@ using namespace std;
 
 using namespace pcl::outofcore;
 
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_real.hpp>
-#include <boost/random/normal_distribution.hpp>
 #include <boost/foreach.hpp>
 
 /** \brief Unit tests for UR out of core octree code which test public interface of OutofcoreOctreeBase 
@@ -74,7 +72,7 @@ using namespace pcl::outofcore;
 // set much higher
 const static uint64_t numPts (10000);
 
-const static boost::uint32_t rngseed = 0xAAFF33DD;
+constexpr uint32_t rngseed = 0xAAFF33DD;
 
 const static boost::filesystem::path filename_otreeA = "treeA/tree_test.oct_idx";
 const static boost::filesystem::path filename_otreeB = "treeB/tree_test.oct_idx";
@@ -122,13 +120,13 @@ TEST (PCL, Outofcore_Octree_Build)
   octree_disk treeB (4, min, max, filename_otreeB, "ECEF");
 
   // Equidistributed uniform pseudo-random number generator
-  boost::mt19937 rng(rngseed);
+  std::mt19937 rng (rngseed);
 
   // For testing sparse 
-  //boost::uniform_real<double> dist(0,1);
+  //std::uniform_real_distribution<double> dist(0.0, 1.0);
 
   // For testing less sparse
-  boost::normal_distribution<float> dist (0.5f, .1f);
+  std::normal_distribution<float> dist (0.5f, .1f);
 
   // Create a point
   PointT p;
@@ -173,11 +171,11 @@ TEST (PCL, Outofcore_Octree_Build_LOD)
   octree_disk treeB (4, min, max, filename_otreeB_LOD, "ECEF");
 
   // Equidistributed uniform pseudo-random number generator
-  boost::mt19937 rng (rngseed);
+  std::mt19937 rng (rngseed);
   // For testing sparse
-  //boost::uniform_real<double> dist(0,1);
+  //std::uniform_real_distribution<double> dist(0.0, 1.0);
   // For testing less sparse
-  boost::normal_distribution<float> dist (0.5f, .1f);
+  std::normal_distribution<float> dist (0.5f, .1f);
 
   // Create a point
   PointT p;
@@ -245,8 +243,8 @@ TEST(PCL, Outofcore_Bounding_Box)
 void 
 point_test (octree_disk& t)
 {
-  boost::mt19937 rng (rngseed);
-  boost::uniform_real<float> dist(0,1);
+  std::mt19937 rng (rngseed);
+  std::uniform_real_distribution<float> dist(0.0, 1.0);
 
   Eigen::Vector3d query_box_min;
   Eigen::Vector3d qboxmax;
@@ -324,9 +322,9 @@ TEST (PCL, Outofcore_Ram_Tree)
 
   octree_ram t (min, max, .1, filename_otreeA, "ECEF");
 
-  boost::mt19937 rng (rngseed);
-  //boost::uniform_real<double> dist(0,1);//for testing sparse
-  boost::normal_distribution<float> dist (0.5f, .1f);//for testing less sparse
+  std::mt19937 rng (rngseed);
+  //std::uniform_real_distribution<double> dist(0.0, 1.0); //for testing sparse
+  std::normal_distribution<float> dist (0.5f, .1f); //for testing less sparse
   PointT p;
 
   points.resize (numPts);

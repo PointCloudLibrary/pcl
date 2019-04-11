@@ -39,15 +39,8 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header 
-#endif
+#include <random>
 
-#include <boost/random/uniform_real.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/random/variate_generator.hpp>
-#include <boost/random/normal_distribution.hpp>
-#include <boost/random/mersenne_twister.hpp>
 #include <pcl/pcl_macros.h>
 
 namespace pcl 
@@ -55,24 +48,24 @@ namespace pcl
   namespace common 
   {
     /// uniform distribution dummy struct
-    template <typename T> struct uniform_distribution;
+    template <typename T, typename T2=void> struct uniform_distribution;
     /// uniform distribution int specialized
-    template<> 
-    struct uniform_distribution<int> 
+    template <typename T>
+    struct uniform_distribution<T, std::enable_if_t<std::is_integral<T>::value>>
     {
-      typedef boost::uniform_int<int> type;
+      typedef std::uniform_int_distribution<T> type;
     };
     /// uniform distribution float specialized
-    template<> 
-    struct uniform_distribution<float> 
+    template <typename T>
+    struct uniform_distribution<T, std::enable_if_t<std::is_floating_point<T>::value>>
     {
-      typedef boost::uniform_real<float> type;
+      typedef std::uniform_real_distribution<T> type;
     };
     ///  normal distribution
     template<typename T> 
     struct normal_distribution
     {
-      typedef boost::normal_distribution<T> type;
+      typedef std::normal_distribution<T> type;
     };
 
     /** \brief UniformGenerator class generates a random number from range [min, max] at each run picked
@@ -136,19 +129,16 @@ namespace pcl
 
         /// \return a randomly generated number in the interval [min, max]
         inline T 
-        run () { return (generator_ ()); }
+        run () { return (distribution_ (rng_)); }
 
       private:
-        typedef boost::mt19937 EngineType;
         typedef typename uniform_distribution<T>::type DistributionType;
         /// parameters
         Parameters parameters_;
+        /// random number generator
+        std::mt19937 rng_;
         /// uniform distribution
         DistributionType distribution_;
-        /// random number generator
-        EngineType rng_;
-        /// generator of random number from a uniform distribution
-        boost::variate_generator<EngineType&, DistributionType> generator_;
     };
 
     /** \brief NormalGenerator class generates a random number from a normal distribution specified
@@ -211,18 +201,15 @@ namespace pcl
 
         /// \return a randomly generated number in the normal distribution (mean, sigma)
         inline T 
-        run () { return (generator_ ()); }
+        run () { return (distribution_ (rng_)); }
 
-        typedef boost::mt19937 EngineType;
         typedef typename normal_distribution<T>::type DistributionType;
         /// parameters
         Parameters parameters_;
+        /// random number generator
+        std::mt19937 rng_;
         /// normal distribution
         DistributionType distribution_;
-        /// random number generator
-        EngineType rng_;
-        /// generator of random number from a normal distribution
-        boost::variate_generator<EngineType&, DistributionType > generator_;
     };
   }
 }

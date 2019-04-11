@@ -43,6 +43,8 @@
   * it noisifies the PCD models, and downsamples them. 
   * The viewpoint can be set to 1 or multiple views on a sphere.
   */
+
+#include <random>
 #include <string>
 #include <pcl/register_point_struct.h>
 #include <pcl/io/pcd_io.h>
@@ -192,9 +194,9 @@ main (int argc, char** argv)
   grid.setLeafSize (2.5, 2.5, 2.5);    // @note: this value should be given in mm!
 
   // Reset and set a random seed for the Global Random Number Generator
-  boost::mt19937 rng (static_cast<unsigned int> (std::time (0)));
-  boost::normal_distribution<float> normal_distrib (0.0f, noise_std * noise_std);
-  boost::variate_generator<boost::mt19937&, boost::normal_distribution<float> > gaussian_rng (rng, normal_distrib);
+  std::random_device rd;
+  std::mt19937 rng(rd());
+  std::normal_distribution<float> nd (0.0f, noise_std * noise_std);
 
   std::vector<std::string> st;
   // Virtual camera parameters
@@ -388,7 +390,7 @@ main (int argc, char** argv)
       switch (noise_model)
       {
         // Gaussian
-        case 1: { point.x += gaussian_rng (); point.y += gaussian_rng (); point.z += gaussian_rng (); break; }
+        case 1: { point.x += nd (rng); point.y += nd (rng); point.z += nd (rng); break; }
       }
     }
 

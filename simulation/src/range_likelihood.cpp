@@ -1,5 +1,9 @@
-#include <GL/glew.h>
 #include <ctime>
+#include <random>
+
+#include <boost/math/distributions/normal.hpp>
+
+#include <GL/glew.h>
 
 #include <pcl/pcl_config.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
@@ -14,7 +18,7 @@
 #include <pcl/simulation/range_likelihood.h>
 
 // For adding noise:
-static boost::minstd_rand generator (static_cast<unsigned int> (std::time (0))); // seed
+static std::minstd_rand rng ([] {std::random_device rd; return rd(); } ()); // seed
 
 //#define SIMULATION_DEBUG 1
 #define DO_TIMING_PROFILE 0
@@ -343,10 +347,8 @@ pcl::simulation::RangeLikelihood::~RangeLikelihood ()
 double
 pcl::simulation::RangeLikelihood::sampleNormal (double sigma)
 {
-  typedef boost::normal_distribution<double> Normal;
-  Normal dist (0.0, sigma);
-  boost::variate_generator<boost::minstd_rand&, Normal> norm (generator, dist);
-  return (norm ());
+  std::normal_distribution<> dist (0.0, sigma);
+  return (dist (rng));
 }
 
 void

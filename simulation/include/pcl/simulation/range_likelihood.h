@@ -11,11 +11,6 @@
 # include <GL/glu.h>
 #endif
 
-#include <boost/random/linear_congruential.hpp>
-#include <boost/random/normal_distribution.hpp>
-#include <boost/random/variate_generator.hpp>
-#include <boost/math/distributions/normal.hpp> // for normal_distribution
-
 //#include <math.h>
 #include <Eigen/StdVector>
 

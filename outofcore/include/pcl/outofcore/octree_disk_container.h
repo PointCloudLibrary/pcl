@@ -43,6 +43,9 @@
 #include <vector>
 #include <string>
 
+// Boost
+#include <boost/uuid/random_generator.hpp>
+
 #include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_abstract_node_container.h>
 #include <pcl/io/pcd_io.h>

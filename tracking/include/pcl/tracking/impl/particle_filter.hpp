@@ -1,10 +1,11 @@
 #ifndef PCL_TRACKING_IMPL_PARTICLE_FILTER_H_
 #define PCL_TRACKING_IMPL_PARTICLE_FILTER_H_
 
+#include <random>
+
 #include <pcl/common/common.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/transforms.h>
-#include <pcl/tracking/boost.h>
 #include <pcl/tracking/particle_filter.h>
 
 template <typename PointInT, typename StateT> bool
@@ -40,11 +41,10 @@ template <typename PointInT, typename StateT> int
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::sampleWithReplacement
 (const std::vector<int>& a, const std::vector<double>& q)
 {
-  using namespace boost;
-  static mt19937 gen (static_cast<unsigned int>(time (0)));
-  uniform_real<> dst (0.0, 1.0);
-  variate_generator<mt19937&, uniform_real<> > rand (gen, dst);
-  double rU = rand () * static_cast<double> (particles_->points.size ());
+  static std::mt19937 rng([] { std::random_device rd; return rd(); } ());
+  std::uniform_real_distribution<> rd (0.0, 1.0);
+
+  double rU = rd (rng) * static_cast<double> (particles_->points.size ());
   int k = static_cast<int> (rU);
   rU -= k;    /* rU - [rU] */
   if ( rU < q[k] )

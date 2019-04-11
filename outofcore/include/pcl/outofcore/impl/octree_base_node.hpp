@@ -78,7 +78,7 @@ namespace pcl
     boost::mutex OutofcoreOctreeBaseNode<ContainerT, PointT>::rng_mutex_;
 
     template<typename ContainerT, typename PointT>
-    boost::mt19937 OutofcoreOctreeBaseNode<ContainerT, PointT>::rand_gen_;
+    std::mt19937 OutofcoreOctreeBaseNode<ContainerT, PointT>::rng_;
 
     template<typename ContainerT, typename PointT>
     const double OutofcoreOctreeBaseNode<ContainerT, PointT>::sample_percent_ = .125;
@@ -597,13 +597,12 @@ namespace pcl
 
         // Create random number generator
         boost::mutex::scoped_lock lock(rng_mutex_);
-        boost::uniform_int<boost::uint64_t> buffdist(0, inputsize-1);
-        boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > buffdie(rand_gen_, buffdist);
+        std::uniform_int_distribution<uint64_t> buffdist(0, inputsize-1);
 
         // Randomly pick sampled points
-        for(boost::uint64_t i = 0; i < samplesize; ++i)
+        for(uint64_t i = 0; i < samplesize; ++i)
         {
-          boost::uint64_t buffstart = buffdie();
+          uint64_t buffstart = buffdist(rng_);
           insertBuff[i] = ( sampleBuff[buffstart] );
         }
       }
@@ -611,11 +610,10 @@ namespace pcl
       else
       {
         boost::mutex::scoped_lock lock(rng_mutex_);
-        boost::bernoulli_distribution<double> buffdist(percent);
-        boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > buffcoin(rand_gen_, buffdist);
+        std::bernoulli_distribution buffdist(percent);
 
-        for(boost::uint64_t i = 0; i < inputsize; ++i)
-          if(buffcoin())
+        for(uint64_t i = 0; i < inputsize; ++i)
+          if(buffdist(rng_))
             insertBuff.push_back( p[i] );
       }
     }

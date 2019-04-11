@@ -40,6 +40,7 @@
 #pragma once
 
 // C++
+#include <random>
 #include <vector>
 
 #include <pcl/outofcore/boost.h>
@@ -165,7 +166,7 @@ namespace pcl
         AlignedPointTVector container_;
 
         static boost::mutex rng_mutex_;
-        static boost::mt19937 rand_gen_;
+        static std::mt19937 rng_;
     };
   }
 }

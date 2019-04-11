@@ -39,6 +39,8 @@
 
 #include <gtest/gtest.h>
 
+#include <random>
+
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
@@ -321,14 +323,13 @@ TEST (PCL, ConvexHull_2dsquare)
   input_cloud->points.resize (input_cloud->width * input_cloud->height);
   
   //rng
-  boost::mt19937 rng_alg;
-  boost::uniform_01<boost::mt19937> rng (rng_alg);
-  rng.base ().seed (12345u);
+  std::mt19937 rng(12345u);
+  std::uniform_real_distribution<float> rd (-1.0f, 1.0f);
 
   for (auto &point : input_cloud->points)
   {
-    point.x = (2.0f * float (rng ()))-1.0f;
-    point.y = (2.0f * float (rng ()))-1.0f;
+    point.x = rd (rng);
+    point.y = rd (rng);
     point.z = 1.0f;
   }
 
@@ -380,16 +381,15 @@ TEST (PCL, ConvexHull_3dcube)
   input_cloud->height = 1;
   input_cloud->points.resize (input_cloud->width * input_cloud->height);
   
-  //rng
-  boost::mt19937 rng_alg;
-  boost::uniform_01<boost::mt19937> rng (rng_alg);
-  rng.base ().seed (12345u);
+  //rd
+  std::mt19937 gen(12345u);
+  std::uniform_real_distribution<float> rd (-1.0f, 1.0f);
 
   for (auto &point : input_cloud->points)
   {
-    point.x =  (2.0f * float (rng ()))-1.0f;
-    point.y =  (2.0f * float (rng ()))-1.0f;
-    point.z =  (2.0f * float (rng ()))-1.0f;
+    point.x = rd (gen);
+    point.y = rd (gen);
+    point.z = rd (gen);
   }
 
   //Set up for creating a hull
