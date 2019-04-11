@@ -101,9 +101,9 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
   std::normal_distribution<> nd(0, 0.005);
   for (auto &point : target)
   {
-	  point.x += static_cast<float> (nd(rng));
-	  point.y += static_cast<float> (nd(rng));
-	  point.z += static_cast<float> (nd(rng));
+    point.x += static_cast<float> (nd(rng));
+    point.y += static_cast<float> (nd(rng));
+    point.z += static_cast<float> (nd(rng));
   }
   
   // Ensure deterministic sampling inside the rejector
