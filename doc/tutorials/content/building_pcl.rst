@@ -24,7 +24,7 @@ PCL basic settings
 Let's say PCL is placed under /PATH/TO/PCL, which we will refer to as PCL_ROOT::
 
   $ cd $PCL_ROOT
-  $ mkdir build
+  $ mkdir build && cd build
   $ cmake ..
 
 This will cause `cmake` to create a file called CMakeCache.txt in the build
