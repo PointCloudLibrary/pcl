@@ -1,12 +1,13 @@
 jobs:
   - job: osx
     strategy:
-      highSierra:
-        DISPLAYNAME: 'macOS High Sierra'
-        VMIMAGE: 'macOS-10.13'
-      mojave:
-        DISPLAYNAME: 'macOS Mojave'
-        VMIMAGE: 'macOS-10.14'
+      matrix:
+        highSierra:
+          DISPLAYNAME: 'macOS High Sierra'
+          VMIMAGE: 'macOS-10.13'
+        mojave:
+          DISPLAYNAME: 'macOS Mojave'
+          VMIMAGE: 'macOS-10.14'
     displayName: '$(DISPLAYNAME)'
     timeoutInMinutes: 0
     pool:
