@@ -37,7 +37,7 @@ if(${DEFAULT} STREQUAL "TRUE")
 endif()
 
 pcl_subsubsys_option(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-pcl_subsubsys_depend(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS Qt4 OpenGL OpenGL_GLU openni)
+pcl_subsubsys_depend(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS Qt5 OpenGL OpenGL_GLU openni)
 
 pcl_add_doc("${SUBSUBSYS_NAME}")
 
@@ -111,7 +111,7 @@ qt5_wrap_cpp(MOC_HELP_WINDOW_SRC "${MOC_HELP_WINDOW_INC}")
 qt5_wrap_ui(UI_MAIN_WINDOW_INC   "${UI_MAIN_WINDOW}")
 qt5_wrap_ui(UI_HELP_WINDOW_INC   "${UI_HELP_WINDOW}")
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include"  ${LIBREALSENSE_INCLUDE_DIRS})
+include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 # In-hand scanner
 list(APPEND INCS "${MOC_IN_HAND_SCANNER_INC}" "${MOC_OPENGL_VIEWER_INC}" "${MOC_MAIN_WINDOW_INC}" "${MOC_HELP_WINDOW_INC}" "${UI_MAIN_WINDOW_INC}" "${UI_HELP_WINDOW_INC}")

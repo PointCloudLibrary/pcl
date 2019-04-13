@@ -12,5 +12,5 @@
 find_package(realsense2)
 
 set(RSSDK2_FOUND ${realsense2_FOUND})
-set(RSSDK2_INCLUDE_DIRS ${realsense_INCLUDE_DIR})
+set(RSSDK2_INCLUDE_DIRS ${realsense2_INCLUDE_DIR})
 set(RSSDK2_LIBRARIES ${realsense2_LIBRARY})
