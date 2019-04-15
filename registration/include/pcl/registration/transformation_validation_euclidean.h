@@ -43,7 +43,6 @@
 #include <pcl/point_representation.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/kdtree/kdtree.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/registration/transformation_validation.h>
 
 namespace pcl

@@ -17,8 +17,6 @@
 #include <pcl/features/pfhrgb.h>
 #include <pcl/features/3dsc.h>
 #include <pcl/features/shot_omp.h>
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>

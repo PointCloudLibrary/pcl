@@ -7,8 +7,7 @@
 
 #pragma once
 
-//#include <opencv2/opencv.hpp>
-#include <flann/flann.h>
+#include <flann/util/matrix.h>
 #include <pcl/common/common.h>
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/local_estimator.h>

@@ -45,7 +45,6 @@
 #include <pcl/common/transforms.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/search/kdtree.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/registration/boost.h>
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/correspondence_estimation.h>

@@ -40,8 +40,11 @@
 #ifndef PCL_SEARCH_IMPL_FLANN_SEARCH_H_
 #define PCL_SEARCH_IMPL_FLANN_SEARCH_H_
 
+#include <flann/algorithms/kdtree_index.h>
+#include <flann/algorithms/kdtree_single_index.h>
+#include <flann/algorithms/kmeans_index.h>
+
 #include <pcl/search/flann_search.h>
-#include <pcl/kdtree/flann.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename FlannDistance>

@@ -41,7 +41,6 @@
 #include <pcl/features/feature.h>
 #include <pcl/features/rsd.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/kdtree/kdtree_flann.h>
 
 namespace pcl
 {

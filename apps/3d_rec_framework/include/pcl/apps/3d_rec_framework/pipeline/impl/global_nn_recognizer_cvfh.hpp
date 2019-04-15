@@ -5,6 +5,7 @@
  *      Author: aitor
  */
 
+#include <flann/flann.hpp>
 #include <pcl/apps/3d_rec_framework/pipeline/global_nn_recognizer_cvfh.h>
 #include <pcl/registration/icp.h>
 #include <pcl/common/time.h>

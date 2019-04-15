@@ -49,7 +49,6 @@
 #include <pcl/common/eigen.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/transforms.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/common/io.h>
 #include <cstdio>
 #include <cstdlib>

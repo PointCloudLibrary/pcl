@@ -41,9 +41,11 @@
 #define PCL_UNARY_CLASSIFIER_HPP_
 
 #include <Eigen/Core>
+#include <flann/algorithms/center_chooser.h>
+#include <flann/util/matrix.h>
+
 #include <pcl/segmentation/unary_classifier.h>
 #include <pcl/common/io.h>
-#include <pcl/kdtree/flann.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>

@@ -42,6 +42,7 @@
 #include <vtkSmartPointer.h>
 
 #include <pcl/visualization/common/io.h>
+#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/eigen.h>
 

@@ -44,7 +44,6 @@
 #include <algorithm>
 #include <boost/foreach.hpp>
 #include <boost/shared_ptr.hpp>
-#include <pcl/kdtree/kdtree_flann.h>
 
 namespace pcl
 {
