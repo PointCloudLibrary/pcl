@@ -373,7 +373,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   {
     // Add vertices to hull point_cloud and store index
     hull_indices_.indices.push_back ((*indices_)[qh_pointid (vertex->point)]);
-    hull.points[i] = input_->points[(*indices_)[hull_indices_.indices.back ()]];
+    hull.points[i] = input_->points[hull_indices_.indices.back ()];
 
     qhid_to_pcidx[vertex->id] = i; // map the vertex id of qhull to the point cloud index
     ++i;
