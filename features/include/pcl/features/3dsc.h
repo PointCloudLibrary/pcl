@@ -220,7 +220,7 @@ namespace pcl
       std::mt19937 rng_;
 
       /** \brief Random number generator distribution. */
-      std::uniform_real_distribution<> rng_dist_;
+      std::uniform_real_distribution<float> rng_dist_;
 
      /*  \brief Shift computed descriptor "L" times along the azimuthal direction
        * \param[in] block_size the size of each azimuthal block
@@ -231,7 +231,7 @@ namespace pcl
       //shiftAlongAzimuth (size_t block_size, std::vector<float>& desc);
 
       /** \brief Boost-based random number generator. */
-      inline double
+      inline float
       rnd ()
       {
         return (rng_dist_ (rng_));
