@@ -36,9 +36,32 @@
 
 #pragma once
 
-#include <pcl/pcl_config.h>
-#include <boost/cstdint.hpp>
+
+
+#if defined __INTEL_COMPILER
+  #pragma warning disable 2196 2536 279
+#endif
+
+#if defined _MSC_VER
+  // 4244 : conversion from 'type1' to 'type2', possible loss of data
+  // 4661 : no suitable definition provided for explicit template instantiation reques
+  // 4503 : decorated name length exceeded, name was truncated
+  // 4146 : unary minus operator applied to unsigned type, result still unsigned
+  #pragma warning (disable: 4018 4244 4267 4521 4251 4661 4305 4503 4146)
+#endif
+
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+#include <cmath>
+#include <cstdarg>
+#include <cstdio>
 #include <cstdlib>
+#include <iostream>
+
+#include <boost/cstdint.hpp>
+
+#include <pcl/pcl_config.h>
 
 namespace pcl
 {
@@ -53,38 +76,26 @@ namespace pcl
   using boost::int_fast16_t;
 }
 
-#if defined __INTEL_COMPILER
-  #pragma warning disable 2196 2536 279
-#endif
-
-#if defined _MSC_VER
-  // 4244 : conversion from 'type1' to 'type2', possible loss of data
-  // 4661 : no suitable definition provided for explicit template instantiation reques
-  // 4503 : decorated name length exceeded, name was truncated
-  // 4146 : unary minus operator applied to unsigned type, result still unsigned
-  #pragma warning (disable: 4018 4244 4267 4521 4251 4661 4305 4503 4146)
-#endif
-
-#include <iostream>
-#include <cstdarg>
-#include <cstdio>
-#ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES
-#endif
-#include <cmath>
-
 #if defined _WIN32 && defined _MSC_VER
 
-// If M_PI & M_E is not defined, then probably all of them are undefined
-#ifndef M_PI
+// Define math constants, without including math.h, to prevent polluting global namespace with old math methods
 // Copied from math.h
-# define M_E     2.7182818284590452353   // e
-# define M_PI    3.14159265358979323846  // pi
-# define M_PI_2  1.57079632679489661923  // pi/2
-# define M_PI_4  0.78539816339744830962  // pi/4
-# define M_PIl   3.1415926535897932384626433832795029L  // pi
-# define M_PI_2l 1.5707963267948966192313216916397514L  // pi/2
-# define M_PI_4l 0.7853981633974483096156608458198757L  // pi/4
+#ifndef _MATH_DEFINES_DEFINED
+  #define _MATH_DEFINES_DEFINED
+
+  #define M_E        2.71828182845904523536   // e
+  #define M_LOG2E    1.44269504088896340736   // log2(e)
+  #define M_LOG10E   0.434294481903251827651  // log10(e)
+  #define M_LN2      0.693147180559945309417  // ln(2)
+  #define M_LN10     2.30258509299404568402   // ln(10)
+  #define M_PI       3.14159265358979323846   // pi
+  #define M_PI_2     1.57079632679489661923   // pi/2
+  #define M_PI_4     0.785398163397448309616  // pi/4
+  #define M_1_PI     0.318309886183790671538  // 1/pi
+  #define M_2_PI     0.636619772367581343076  // 2/pi
+  #define M_2_SQRTPI 1.12837916709551257390   // 2/sqrt(pi)
+  #define M_SQRT2    1.41421356237309504880   // sqrt(2)
+  #define M_SQRT1_2  0.707106781186547524401  // 1/sqrt(2)
 #endif
 
 // Stupid. This should be removed when all the PCL dependencies have min/max fixed.
