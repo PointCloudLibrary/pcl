@@ -898,7 +898,7 @@ void pcl::io::OpenNI2Grabber::processColorFrame (openni::VideoStream& stream)
   else //if (format == PixelFormat::PIXEL_FORMAT_RGB888)
     image = boost::make_shared<ImageRGB24> (frameWrapper, t_callback);
 
-  imageCallback (image, NULL);
+  imageCallback (image, nullptr);
 }
 
 
@@ -917,7 +917,7 @@ void pcl::io::OpenNI2Grabber::processDepthFrame (openni::VideoStream& stream)
   boost::shared_ptr<DepthImage> image  = 
    boost::make_shared<DepthImage> (frameWrapper, baseline, focalLength, shadow_value, no_sample_value);
 
-  depthCallback (image, NULL);
+  depthCallback (image, nullptr);
 }
 
 
@@ -930,7 +930,7 @@ void pcl::io::OpenNI2Grabber::processIRFrame (openni::VideoStream& stream)
 
   boost::shared_ptr<IRImage> image = boost::make_shared<IRImage> ( frameWrapper );
 
-  irCallback (image, NULL);
+  irCallback (image, nullptr);
 }
 
 #endif // HAVE_OPENNI2

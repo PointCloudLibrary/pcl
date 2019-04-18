@@ -86,7 +86,7 @@ pcl::io::LZFImageWriter::saveImageBlob (const char* data,
     return (false);
   }
 
-  char *map = static_cast<char*> (::mmap (0, data_size, PROT_WRITE, MAP_SHARED, fd, 0));
+  char *map = static_cast<char*> (::mmap (nullptr, data_size, PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     raw_close (fd);
@@ -399,7 +399,7 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
     return (false);
   }
 #else
-  char *map = static_cast<char*> (::mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0));
+  char *map = static_cast<char*> (::mmap (nullptr, data_size, PROT_READ, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     raw_close (fd);
@@ -492,7 +492,7 @@ pcl::io::LZFImageReader::readParameters (const std::string &filename)
 {
   std::filebuf fb;
   std::filebuf *f = fb.open (filename.c_str (), std::ios::in);
-  if (f == NULL)
+  if (f == nullptr)
     return (false);
   std::istream is (&fb);
   bool res = readParameters (is);

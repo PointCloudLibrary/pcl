@@ -52,8 +52,8 @@
 #include <pcap.h>
 #endif // #ifdef HAVE_PCAP
 
-double *pcl::HDLGrabber::cos_lookup_table_ = NULL;
-double *pcl::HDLGrabber::sin_lookup_table_ = NULL;
+double *pcl::HDLGrabber::cos_lookup_table_ = nullptr;
+double *pcl::HDLGrabber::sin_lookup_table_ = nullptr;
 
 using boost::asio::ip::udp;
 
@@ -78,10 +78,10 @@ pcl::HDLGrabber::HDLGrabber (const std::string& correctionsFile,
     source_address_filter_ (),
     source_port_filter_ (443),
     hdl_read_socket_service_ (),
-    hdl_read_socket_ (NULL),
+    hdl_read_socket_ (nullptr),
     pcap_file_name_ (pcapFile),
-    queue_consumer_thread_ (NULL),
-    hdl_read_packet_thread_ (NULL),
+    queue_consumer_thread_ (nullptr),
+    hdl_read_packet_thread_ (nullptr),
     min_distance_threshold_ (0.0),
     max_distance_threshold_ (10000.0)
 {
@@ -110,10 +110,10 @@ pcl::HDLGrabber::HDLGrabber (const boost::asio::ip::address& ipAddress,
     source_address_filter_ (),
     source_port_filter_ (443),
     hdl_read_socket_service_ (),
-    hdl_read_socket_ (NULL),
+    hdl_read_socket_ (nullptr),
     pcap_file_name_ (),
-    queue_consumer_thread_ (NULL),
-    hdl_read_packet_thread_ (NULL),
+    queue_consumer_thread_ (nullptr),
+    hdl_read_packet_thread_ (nullptr),
     min_distance_threshold_ (0.0),
     max_distance_threshold_ (10000.0)
 {
@@ -137,7 +137,7 @@ pcl::HDLGrabber::~HDLGrabber () throw ()
 void
 pcl::HDLGrabber::initialize (const std::string& correctionsFile)
 {
-  if (cos_lookup_table_ == NULL && sin_lookup_table_ == NULL)
+  if (cos_lookup_table_ == nullptr && sin_lookup_table_ == nullptr)
   {
     cos_lookup_table_ = static_cast<double *> (malloc (HDL_NUM_ROT_ANGLES * sizeof (*cos_lookup_table_)));
     sin_lookup_table_ = static_cast<double *> (malloc (HDL_NUM_ROT_ANGLES * sizeof (*sin_lookup_table_)));
@@ -443,13 +443,13 @@ pcl::HDLGrabber::computeXYZI (pcl::PointXYZI& point,
 void
 pcl::HDLGrabber::fireCurrentSweep ()
 {
-  if (sweep_xyz_signal_ != NULL && sweep_xyz_signal_->num_slots () > 0)
+  if (sweep_xyz_signal_ != nullptr && sweep_xyz_signal_->num_slots () > 0)
     sweep_xyz_signal_->operator() (current_sweep_xyz_);
 
-  if (sweep_xyzrgba_signal_ != NULL && sweep_xyzrgba_signal_->num_slots () > 0)
+  if (sweep_xyzrgba_signal_ != nullptr && sweep_xyzrgba_signal_->num_slots () > 0)
     sweep_xyzrgba_signal_->operator() (current_sweep_xyzrgba_);
 
-  if (sweep_xyzi_signal_ != NULL && sweep_xyzi_signal_->num_slots () > 0)
+  if (sweep_xyzi_signal_ != nullptr && sweep_xyzi_signal_->num_slots () > 0)
     sweep_xyzi_signal_->operator() (current_sweep_xyzi_);
 }
 
@@ -541,24 +541,24 @@ pcl::HDLGrabber::stop ()
   terminate_read_packet_thread_ = true;
   hdl_data_.stopQueue ();
 
-  if (hdl_read_packet_thread_ != NULL)
+  if (hdl_read_packet_thread_ != nullptr)
   {
     hdl_read_packet_thread_->interrupt ();
     hdl_read_packet_thread_->join ();
     delete hdl_read_packet_thread_;
-    hdl_read_packet_thread_ = NULL;
+    hdl_read_packet_thread_ = nullptr;
   }
-  if (queue_consumer_thread_ != NULL)
+  if (queue_consumer_thread_ != nullptr)
   {
     queue_consumer_thread_->join ();
     delete queue_consumer_thread_;
-    queue_consumer_thread_ = NULL;
+    queue_consumer_thread_ = nullptr;
   }
 
-  if (hdl_read_socket_ != NULL)
+  if (hdl_read_socket_ != nullptr)
   {
     delete hdl_read_socket_;
-    hdl_read_socket_ = NULL;
+    hdl_read_socket_ = nullptr;
   }
 }
 
@@ -566,7 +566,7 @@ pcl::HDLGrabber::stop ()
 bool
 pcl::HDLGrabber::isRunning () const
 {
-  return (!hdl_data_.isEmpty () || (hdl_read_packet_thread_ != NULL && !hdl_read_packet_thread_->timed_join (boost::posix_time::milliseconds (10))));
+  return (!hdl_data_.isEmpty () || (hdl_read_packet_thread_ != nullptr && !hdl_read_packet_thread_->timed_join (boost::posix_time::milliseconds (10))));
 }
 
 /////////////////////////////////////////////////////////////////////////////
