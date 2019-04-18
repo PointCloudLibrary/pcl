@@ -126,7 +126,7 @@ pcl::visualization::PCLPlotter::addPlotData (
   line->SetInputData (table, 0, 1);
   line->SetWidth (1);
 
-  if (color == NULL)    //color automatically based on the ColorScheme
+  if (color == nullptr)    //color automatically based on the ColorScheme
   {
     vtkColor3ub vcolor = color_series_->GetColorRepeating (current_plot_);
     line->SetColor (vcolor[0], vcolor[1], vcolor[2], 255);
@@ -144,7 +144,7 @@ pcl::visualization::PCLPlotter::addPlotData (
     int type /* = vtkChart::LINE */, 
     std::vector<char> const &color)
 {
-  this->addPlotData (&array_X[0], &array_Y[0], static_cast<unsigned long> (array_X.size ()), name, type, (color.empty ()) ? NULL : &color[0]);
+  this->addPlotData (&array_X[0], &array_Y[0], static_cast<unsigned long> (array_X.size ()), name, type, (color.empty ()) ? nullptr : &color[0]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,7 +163,7 @@ pcl::visualization::PCLPlotter::addPlotData (
     array_x[i] = plot_data[i].first;
     array_y[i] = plot_data[i].second;
   }
-  this->addPlotData (array_x, array_y, static_cast<unsigned long> (plot_data.size ()), name, type, (color.empty ()) ? NULL : &color[0]);
+  this->addPlotData (array_x, array_y, static_cast<unsigned long> (plot_data.size ()), name, type, (color.empty ()) ? nullptr : &color[0]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -653,7 +653,7 @@ pcl::visualization::PCLPlotter::setViewInteractor (
 bool
 pcl::visualization::PCLPlotter::wasStopped () const
 {
-  if (view_->GetInteractor() != NULL) 
+  if (view_->GetInteractor() != nullptr) 
     return (stopped_); 
   else 
     return (true);

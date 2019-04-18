@@ -962,7 +962,7 @@ pcl::visualization::ImageViewerInteractorStyle::OnLeftButtonDown ()
   int y = Interactor->GetEventPosition ()[1];
 
   FindPokedRenderer (x, y);
-  if (CurrentRenderer == NULL)
+  if (CurrentRenderer == nullptr)
     return;
 
   // Redefine this button to handle window/level

@@ -172,7 +172,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection
-        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = NULL)
+        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = nullptr)
         {
           return (registerKeyboardCallback (boost::bind (callback, _1, cookie)));
         }
@@ -184,7 +184,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = NULL)
+        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = nullptr)
         {
           return (registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie)));
         }
@@ -202,7 +202,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection
-        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = NULL)
+        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = nullptr)
         {
           return (registerMouseCallback (boost::bind (callback, _1, cookie)));
         }
@@ -214,7 +214,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = NULL)
+        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = nullptr)
         {
           return (registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }
@@ -232,7 +232,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = NULL);
+        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = nullptr);
 
         /** \brief Register a callback function for point picking events
           * \param[in] callback  the member function that will be registered as a callback for a point picking event
@@ -241,7 +241,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = NULL)
+        registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = nullptr)
         {
           return (registerPointPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }
@@ -259,7 +259,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie = NULL);
+        registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie = nullptr);
 
         /** \brief Register a callback function for area picking events
           * \param[in] callback  the member function that will be registered as a callback for an area picking event
@@ -268,7 +268,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerAreaPickingCallback (void (T::*callback) (const pcl::visualization::AreaPickingEvent&, void*), T& instance, void* cookie = NULL)
+        registerAreaPickingCallback (void (T::*callback) (const pcl::visualization::AreaPickingEvent&, void*), T& instance, void* cookie = nullptr)
         {
           return (registerAreaPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }

@@ -136,7 +136,7 @@ namespace pcl
           * \return              connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection 
-        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = NULL)
+        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = nullptr)
         {
           return (registerKeyboardCallback (boost::bind (callback, _1, cookie)));
         }
@@ -148,7 +148,7 @@ namespace pcl
           * \return              connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection 
-        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = NULL)
+        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = nullptr)
         {
           return (registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie)));
         }
@@ -159,7 +159,7 @@ namespace pcl
           * \return              connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection 
-        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = NULL)
+        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = nullptr)
         {
           return (registerMouseCallback (boost::bind (callback, _1, cookie)));
         }
@@ -171,7 +171,7 @@ namespace pcl
           * \return              connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection 
-        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = NULL)
+        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = nullptr)
         {
           return (registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }
@@ -183,7 +183,7 @@ namespace pcl
           * \return              connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection 
-        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = NULL)
+        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = nullptr)
         {
           return (registerPointPickingCallback (boost::bind (callback, _1, cookie)));
         }
@@ -195,7 +195,7 @@ namespace pcl
           * \return              connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection 
-        registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = NULL)
+        registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = nullptr)
         {
           return (registerPointPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }
