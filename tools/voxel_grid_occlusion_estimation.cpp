@@ -265,7 +265,7 @@ int main (int argc, char** argv)
   vtkActor* a;
   coll->InitTraversal ();
   a = coll->GetNextActor ();
-  while(a!=0)
+  while(a!=nullptr)
     {
       renderer->AddActor (a);
       a = coll->GetNextActor ();

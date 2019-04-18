@@ -73,7 +73,7 @@ using namespace recognition;
 using namespace visualization;
 
 bool
-vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_dst = NULL);
+vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_dst = nullptr);
 
 //#define _SHOW_SCENE_POINTS_
 #define _SHOW_OCTREE_POINTS_

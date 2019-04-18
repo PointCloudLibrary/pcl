@@ -109,7 +109,7 @@ class SimpleOpenNIViewer
       
       grabber_.start ();
       
-      unsigned char* rgb_data = 0;
+      unsigned char* rgb_data = nullptr;
       unsigned rgb_data_size = 0;
       const void* data;
        
