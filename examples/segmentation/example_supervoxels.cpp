@@ -343,7 +343,7 @@ main (int argc, char ** argv)
   std::cout << "Loading visualization...\n";
   pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
-  viewer->registerKeyboardCallback(keyboard_callback, 0);
+  viewer->registerKeyboardCallback(keyboard_callback, nullptr);
 
  
   bool refined_normal_shown = show_refined;

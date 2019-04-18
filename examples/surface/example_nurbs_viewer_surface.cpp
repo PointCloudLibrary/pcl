@@ -48,7 +48,7 @@ main (int argc, char *argv[])
   }
 
   const ON_Object* on_object = on_model.m_object_table[0].m_object;
-  if(on_object==NULL)
+  if(on_object==nullptr)
   {
     std::cout << "object[0] not valid." << std::endl;
     return -1;
@@ -68,7 +68,7 @@ main (int argc, char *argv[])
   else
   {
     on_object = on_model.m_object_table[1].m_object;
-    if(on_object==NULL)
+    if(on_object==nullptr)
     {
       std::cout << "object[1] not valid." << std::endl;
       return -1;
