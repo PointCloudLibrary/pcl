@@ -64,7 +64,7 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
     PCL_ERROR ("[pcl::people::HeightMap2D::compute] Floor parameters have not been set or they are not valid!\n");
     return;
   }
-  if (cloud_ == NULL)
+  if (cloud_ == nullptr)
   {
     PCL_ERROR ("[pcl::people::HeightMap2D::compute] Input cloud has not been set!\n");
     return;

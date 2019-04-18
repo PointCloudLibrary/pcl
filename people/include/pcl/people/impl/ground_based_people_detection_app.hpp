@@ -313,7 +313,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::compute] Floor parameters have not been set or they are not valid!\n");
     return (false);
   }
-  if (cloud_ == NULL)
+  if (cloud_ == nullptr)
   {
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::compute] Input cloud has not been set!\n");
     return (false);
