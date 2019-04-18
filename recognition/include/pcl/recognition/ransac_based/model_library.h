@@ -66,7 +66,7 @@ namespace pcl
         {
           public:
             Model (const PointCloudIn& points, const PointCloudN& normals, float voxel_size, const std::string& object_name,
-                   float frac_of_points_for_registration, void* user_data = NULL)
+                   float frac_of_points_for_registration, void* user_data = nullptr)
             : obj_name_(object_name),
               user_data_ (user_data)
             {
@@ -104,7 +104,7 @@ namespace pcl
                 ids[i] = i;
 
               // The random generator
-              pcl::common::UniformGenerator<int> randgen (0, num_octree_points - 1, static_cast<uint32_t> (time (NULL)));
+              pcl::common::UniformGenerator<int> randgen (0, num_octree_points - 1, static_cast<uint32_t> (time (nullptr)));
 
               // Randomly sample some points from the octree
               for ( int i = 0 ; i < num_points_for_registration ; ++i )
@@ -223,7 +223,7 @@ namespace pcl
           * Returns true if model successfully added and false otherwise (e.g., if object_name is not unique). */
         bool
         addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name,
-                  float frac_of_points_for_registration, void* user_data = NULL);
+                  float frac_of_points_for_registration, void* user_data = nullptr);
 
         /** \brief Returns the hash table built by this instance. */
         inline const HashTable&
@@ -239,7 +239,7 @@ namespace pcl
           if ( it != models_.end () )
             return (it->second);
 
-          return (NULL);
+          return (nullptr);
         }
 
         inline const std::map<std::string,Model*>&

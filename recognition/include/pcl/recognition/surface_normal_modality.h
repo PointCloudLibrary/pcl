@@ -151,7 +151,7 @@ namespace pcl
     QuantizedNormalLookUpTable () : 
       range_x (-1), range_y (-1), range_z (-1), 
       offset_x (-1), offset_y (-1), offset_z (-1), 
-      size_x (-1), size_y (-1), size_z (-1), lut (NULL) 
+      size_x (-1), size_y (-1), size_z (-1), lut (nullptr) 
     {}
 
     /** \brief Destructor. */

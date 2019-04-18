@@ -78,7 +78,7 @@ template<class T, typename REAL> inline T*
 pcl::recognition::VoxelStructure<T,REAL>::getVoxel (const REAL p[3])
 {
   if ( p[0] < bounds_[0] || p[0] >= bounds_[1] || p[1] < bounds_[2] || p[1] >= bounds_[3] || p[2] < bounds_[4] || p[2] >= bounds_[5] )
-    return NULL;
+    return nullptr;
 
   int x = static_cast<int> ((p[0] - bounds_[0])/spacing_[0]);
   int y = static_cast<int> ((p[1] - bounds_[2])/spacing_[1]);
@@ -92,9 +92,9 @@ pcl::recognition::VoxelStructure<T,REAL>::getVoxel (const REAL p[3])
 template<class T, typename REAL> inline T*
 pcl::recognition::VoxelStructure<T,REAL>::getVoxel (int x, int y, int z) const
 {
-  if ( x < 0 || x >= num_of_voxels_[0] ) return NULL;
-  if ( y < 0 || y >= num_of_voxels_[1] ) return NULL;
-  if ( z < 0 || z >= num_of_voxels_[2] ) return NULL;
+  if ( x < 0 || x >= num_of_voxels_[0] ) return nullptr;
+  if ( y < 0 || y >= num_of_voxels_[1] ) return nullptr;
+  if ( z < 0 || z >= num_of_voxels_[2] ) return nullptr;
 
   return &voxels_[z*num_of_voxels_xy_plane_ + y*num_of_voxels_[0] + x];
 }

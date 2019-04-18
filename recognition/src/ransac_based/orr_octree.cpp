@@ -51,7 +51,7 @@ using namespace pcl::recognition;
 pcl::recognition::ORROctree::ORROctree ()
 : voxel_size_ (-1.0),
   tree_levels_ (-1),
-  root_ (NULL)
+  root_ (nullptr)
 {
 }
 
@@ -63,7 +63,7 @@ pcl::recognition::ORROctree::clear ()
   if ( root_ )
   {
     delete root_;
-    root_ = NULL;
+    root_ = nullptr;
   }
 
   full_leaves_.clear();
@@ -106,7 +106,7 @@ pcl::recognition::ORROctree::build (const float* bounds, float voxel_size)
   root_ = new ORROctree::Node();
   root_->setCenter(center);
   root_->setBounds(bounds_);
-  root_->setParent(NULL);
+  root_->setParent(nullptr);
   root_->computeRadius();
 }
 
@@ -333,7 +333,7 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float ra
   vector<int> tmp_ids;
   tmp_ids.reserve (8);
 
-  pcl::common::UniformGenerator<int> randgen (0, 1, static_cast<uint32_t> (time (NULL)));
+  pcl::common::UniformGenerator<int> randgen (0, 1, static_cast<uint32_t> (time (nullptr)));
 
   list<ORROctree::Node*> nodes;
   nodes.push_back (root_);
@@ -370,7 +370,7 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float ra
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 //================================================================================================================================================================

@@ -93,7 +93,7 @@ namespace pcl
 
         void createRandomFeatures(const size_t num_of_features, std::vector<FT> & features) override
         {
-          srand (static_cast<unsigned int>(time (NULL)));
+          srand (static_cast<unsigned int>(time (nullptr)));
           int min_s = 20;
           float range_d = 0.05f;
           float incr_d = 0.01f;

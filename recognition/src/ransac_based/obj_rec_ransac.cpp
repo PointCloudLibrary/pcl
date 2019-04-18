@@ -181,7 +181,7 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, co
   }
 
   // The random generator
-  UniformGenerator<int> randgen (0, num_full_leaves - 1, static_cast<uint32_t> (time (NULL)));
+  UniformGenerator<int> randgen (0, num_full_leaves - 1, static_cast<uint32_t> (time (nullptr)));
 
   // Init the vector with the ids
   vector<int> ids (num_full_leaves);
@@ -632,7 +632,7 @@ pcl::recognition::ObjRecRANSAC::testHypothesis (Hypothesis* hypothesis, int& mat
     // Get the pixel 'transformed_point' lies in
     const ORROctreeZProjection::Pixel* pixel = scene_octree_proj_.getPixel (transformed_point);
     // Check if we have a valid pixel
-    if ( pixel == NULL )
+    if ( pixel == nullptr )
       continue;
 
     if ( transformed_point[2] < pixel->z1 () ) // The transformed model point overshadows a pixel -> penalize the hypothesis
@@ -669,7 +669,7 @@ pcl::recognition::ObjRecRANSAC::testHypothesisNormalBased (Hypothesis* hypothesi
     // Get the pixel 'transformed_point' lies in
     const ORROctreeZProjection::Pixel* pixel = scene_octree_proj_.getPixel (transformed_point);
     // Check if we have a valid pixel
-    if ( pixel == NULL )
+    if ( pixel == nullptr )
       continue;
 
     // Check if the point is OK

@@ -311,7 +311,7 @@ computeGaussianKernel (const size_t kernel_size, const float sigma, std::vector 
   };
 
   const float* fixed_kernel = n % 2 == 1 && n <= SMALL_GAUSSIAN_SIZE && sigma <= 0 ?
-      small_gaussian_tab[n>>1] : 0;
+      small_gaussian_tab[n>>1] : nullptr;
 
   //CV_Assert( ktype == CV_32F || ktype == CV_64F );
   /*Mat kernel(n, 1, ktype);*/
