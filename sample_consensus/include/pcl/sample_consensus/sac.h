@@ -82,7 +82,7 @@ namespace pcl
       {
          // Create a random number generator object
          if (random)
-           rng_->base ().seed (static_cast<unsigned> (std::time (0)));
+           rng_->base ().seed (static_cast<unsigned> (std::time (nullptr)));
          else
            rng_->base ().seed (12345u);
       };
@@ -108,7 +108,7 @@ namespace pcl
       {
          // Create a random number generator object
          if (random)
-           rng_->base ().seed (static_cast<unsigned> (std::time (0)));
+           rng_->base ().seed (static_cast<unsigned> (std::time (nullptr)));
          else
            rng_->base ().seed (12345u);
       };
