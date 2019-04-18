@@ -101,8 +101,8 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
   if (nr_points == 0)
     return 0;
 
-  vtkUnsignedCharArray* poly_colors = NULL;
-  if (poly_data->GetPointData() != NULL)
+  vtkUnsignedCharArray* poly_colors = nullptr;
+  if (poly_data->GetPointData() != nullptr)
     poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("Colors"));
 
   // Some applications do not save the name of scalars (including PCL's native vtk_io)
@@ -261,7 +261,7 @@ pcl::VTKUtils::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyDa
     poly_data->GetPointData()->SetNormals (normals);
   }
 
-  if (poly_data->GetPoints() == NULL)
+  if (poly_data->GetPoints() == nullptr)
     return (0);
   return (static_cast<int> (poly_data->GetPoints()->GetNumberOfPoints ()));
 }
