@@ -48,7 +48,7 @@ namespace pcl
     class StatisticalOutlierRemovalWorker : public AbstractWorker 
     {
       public:
-        StatisticalOutlierRemovalWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
+        StatisticalOutlierRemovalWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=nullptr);
         ~StatisticalOutlierRemovalWorker();
 
       protected:

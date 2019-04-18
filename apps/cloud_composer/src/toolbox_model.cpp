@@ -11,7 +11,7 @@ pcl::cloud_composer::ToolBoxModel::ToolBoxModel (QTreeView* tool_view, QTreeView
 : QStandardItemModel (parent)
 , tool_view_ (tool_view)
 , parameter_view_ (parameter_view_)
-, project_model_ (0)
+, project_model_ (nullptr)
 {
   
 }

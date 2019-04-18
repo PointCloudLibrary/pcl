@@ -125,7 +125,7 @@ class HRCSSegmentation
       viewer->setBackgroundColor (0, 0, 0);
       viewer->addCoordinateSystem (1.0, "global");
       viewer->initCameraParameters ();
-      viewer->registerKeyboardCallback (&HRCSSegmentation::keyboardCallback, *this, 0);
+      viewer->registerKeyboardCallback (&HRCSSegmentation::keyboardCallback, *this, nullptr);
       
       // Set up the stereo matching
       stereo.setMaxDisparity(60);

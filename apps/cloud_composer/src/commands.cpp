@@ -135,7 +135,7 @@ pcl::cloud_composer::CloudCommand::replaceOriginalWithNew (QList <const CloudCom
     }
   }
   // If parent is 0, it's parent is invisiblerootitem (That's how Qt defines it... boo!)
-  if (parent_item == 0)
+  if (parent_item == nullptr)
     parent_item = project_model_->invisibleRootItem ();
   
   //Now remove all the originals
@@ -169,7 +169,7 @@ pcl::cloud_composer::CloudCommand::restoreOriginalRemoveNew (QList <const CloudC
   {
     QStandardItem* parent_item = item->parent ();
     // If parent is 0, it's parent is invisiblerootitem (That's how Qt defines it... boo!)
-    if (parent_item == 0)
+    if (parent_item == nullptr)
       parent_item = project_model_->invisibleRootItem ();
     QPersistentModelIndex to_remove_index = QPersistentModelIndex(project_model_->indexFromItem (item));
     if (!to_remove_index.isValid ())

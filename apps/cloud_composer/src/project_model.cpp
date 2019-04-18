@@ -162,7 +162,7 @@ void
 pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
 {
   qDebug () << "Inserting cloud from file...";
-  QString filename = QFileDialog::getOpenFileName (0,tr ("Select cloud to open"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
+  QString filename = QFileDialog::getOpenFileName (nullptr,tr ("Select cloud to open"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
   if ( filename.isNull ())
   {
     qWarning () << "No file selected, no cloud loaded";
@@ -216,7 +216,7 @@ void
 pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
 {
   qDebug () << "Inserting cloud from RGB and Depth files...";
-  QString rgb_filename = QFileDialog::getOpenFileName (0,tr ("Select rgb image file to open"), last_directory_.absolutePath (), tr ("Images(*.png *.bmp *.tif *.ppm)"));
+  QString rgb_filename = QFileDialog::getOpenFileName (nullptr,tr ("Select rgb image file to open"), last_directory_.absolutePath (), tr ("Images(*.png *.bmp *.tif *.ppm)"));
   QString depth_filename;
   if ( rgb_filename.isNull ())
   {
@@ -369,7 +369,7 @@ pcl::cloud_composer::ProjectModel::saveSelectedCloudToFile ()
     return;
   }
   
-  QString filename = QFileDialog::getSaveFileName (0,tr ("Save Cloud"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
+  QString filename = QFileDialog::getSaveFileName (nullptr,tr ("Save Cloud"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
   if ( filename.isNull ())
   {
     qWarning () << "No file selected, not saving";
@@ -475,7 +475,7 @@ pcl::cloud_composer::ProjectModel::deleteSelectedItems ()
  // qDebug () << "Input for command is "<<input_data.size () << " element(s)";
   DeleteItemCommand* delete_command = new DeleteItemCommand (ConstItemList ());
   delete_command->setInputData (input_data);
-  if (delete_command->runCommand (0))
+  if (delete_command->runCommand (nullptr))
     commandCompleted(delete_command);
   else
     qCritical () << "Execution of delete command failed!";

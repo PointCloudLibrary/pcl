@@ -172,7 +172,7 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
       }
         
       case (PointTypeFlags::NONE):
-        QMessageBox::warning (0,"Unknown blob type!", "Could not find appropriate template type for this cloud blob! Only blob functionality enabled!");
+        QMessageBox::warning (nullptr,"Unknown blob type!", "Could not find appropriate template type for this cloud blob! Only blob functionality enabled!");
     }
     
     this->setData (cloud_pointer_variant, ItemDataRole::CLOUD_TEMPLATED);

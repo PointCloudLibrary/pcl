@@ -62,10 +62,10 @@ namespace pcl
 
       double A[3], B[3], C[3];
       vtkIdType npts = 0;
-      vtkIdType *ptIds = NULL;
+      vtkIdType *ptIds = nullptr;
       polydata->GetCellPoints (el, npts, ptIds);
 
-      if (ptIds == NULL)
+      if (ptIds == nullptr)
         return;
 
       polydata->GetPoint (ptIds[0], A);
@@ -84,7 +84,7 @@ namespace pcl
         double p1[3], p2[3], p3[3], totalArea = 0;
         std::vector<double> cumulativeAreas (cells->GetNumberOfCells (), 0);
         size_t i = 0;
-        vtkIdType npts = 0, *ptIds = NULL;
+        vtkIdType npts = 0, *ptIds = nullptr;
         for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds); i++)
         {
           polydata->GetPoint (ptIds[0], p1);

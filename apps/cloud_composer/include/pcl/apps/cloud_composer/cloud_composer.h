@@ -70,7 +70,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        explicit ComposerMainWindow (QWidget *parent = 0);
+        explicit ComposerMainWindow (QWidget *parent = nullptr);
         ~ComposerMainWindow ();
   
       Q_SIGNALS:

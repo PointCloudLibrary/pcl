@@ -162,7 +162,7 @@ pcl::modeler::CloudMesh::getColorScalarsFromField(vtkSmartPointer<vtkDataArray> 
 void
 pcl::modeler::CloudMesh::updateVtkPoints()
 {
-  if (vtk_points_->GetData() == NULL)
+  if (vtk_points_->GetData() == nullptr)
     vtk_points_->SetData(vtkSmartPointer<vtkFloatArray>::New ());
 
   vtkFloatArray* data = dynamic_cast<vtkFloatArray*>(vtk_points_->GetData());

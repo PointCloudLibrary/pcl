@@ -50,7 +50,7 @@ namespace pcl
       Q_OBJECT
 
       public:
-        SceneTree(QWidget * parent = 0);
+        SceneTree(QWidget * parent = nullptr);
         ~SceneTree();
 
         QSize
