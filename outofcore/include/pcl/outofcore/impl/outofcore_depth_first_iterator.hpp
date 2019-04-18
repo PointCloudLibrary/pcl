@@ -71,7 +71,7 @@ namespace pcl
       if (this->currentNode_)
       {
         bool bTreeUp = false;
-        OutofcoreOctreeBaseNode<ContainerT, PointT>* itNode = 0;
+        OutofcoreOctreeBaseNode<ContainerT, PointT>* itNode = nullptr;
 
         if (this->currentNode_->getNodeType () == pcl::octree::BRANCH_NODE)
         {
@@ -119,7 +119,7 @@ namespace pcl
           }
           else
           {
-            this->currentNode_ = NULL;
+            this->currentNode_ = nullptr;
           }
             
         }

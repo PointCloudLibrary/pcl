@@ -75,7 +75,7 @@ namespace pcl
         {
           // Get the branch node
           BranchNode* branch = static_cast<BranchNode*> (node);
-          OctreeDiskNode* child = 0;
+          OctreeDiskNode* child = nullptr;
 
           // Iterate over the branches children
           for (unsigned char child_idx = 0; child_idx < 8 ; child_idx++)
@@ -100,7 +100,7 @@ namespace pcl
       }
       else
       {
-        this->currentNode_ = NULL;
+        this->currentNode_ = nullptr;
       }
 
       return (*this);

@@ -110,7 +110,7 @@ namespace pcl
       , root_node_ ()
       , parent_ (super)
       , depth_ ()
-      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*>(0)))
+      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*>(nullptr)))
       , num_children_ (0)
       , num_loaded_children_ (0)
       , payload_ ()
@@ -120,7 +120,7 @@ namespace pcl
       node_metadata_->setOutofcoreVersion (3);
 
       //Check if this is the first node created/loaded (this is true if super, i.e. node's parent is NULL)
-      if (super == NULL)
+      if (super == nullptr)
       {
         node_metadata_->setDirectoryPathname (directory_path.parent_path ());
         node_metadata_->setMetadataFilename (directory_path);
@@ -185,7 +185,7 @@ namespace pcl
       , root_node_ ()
       , parent_ ()
       , depth_ ()
-      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*> (0)))
+      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*> (nullptr)))
       , num_children_ (0)
       , num_loaded_children_ (0)
       , payload_ ()
@@ -203,7 +203,7 @@ namespace pcl
     {
       assert (tree != NULL);
 
-      parent_ = NULL;
+      parent_ = nullptr;
       root_node_ = this;
       m_tree_ = tree;
       depth_ = 0;
@@ -318,7 +318,7 @@ namespace pcl
         {
           boost::filesystem::path child_dir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (std::to_string(i));
           //if the directory exists and the child hasn't been created (set to 0 by this node's constructor)
-          if (boost::filesystem::exists (child_dir) && this->children_[i] == 0)
+          if (boost::filesystem::exists (child_dir) && this->children_[i] == nullptr)
           {
             //load the child node
             this->children_[i] = new OutofcoreOctreeBaseNode<ContainerT, PointT> (child_dir, this, recursive);
@@ -347,7 +347,7 @@ namespace pcl
           delete (current);
         }
       }
-      children_.resize (8, static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>* > (0));
+      children_.resize (8, static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>* > (nullptr));
       num_children_ = 0;
     }
     ////////////////////////////////////////////////////////////////////////////////
@@ -541,7 +541,7 @@ namespace pcl
           if ( indices[i].empty () )
             continue;
 
-          if (children_[i] == 0)
+          if (children_[i] == nullptr)
           {
             createChild (i);
           }
@@ -794,7 +794,7 @@ namespace pcl
         if(indices[i].empty ())
           continue;
 
-        if (children_[i] == 0)
+        if (children_[i] == nullptr)
         {
           assert (i < 8);
           createChild (i);
@@ -1600,7 +1600,7 @@ namespace pcl
               for (size_t i=0; i<8; i++)
               {
                 //recursively traverse (depth first)
-                if (children_[i]!=0)
+                if (children_[i]!=nullptr)
                   children_[i]->queryBBIncludes_subsample (min_bb, max_bb, query_depth, dst_blob, percent);
               }
               return;
@@ -1730,7 +1730,7 @@ namespace pcl
       , root_node_ ()
       , parent_ ()
       , depth_ ()
-      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*>(0)))
+      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*>(nullptr)))
       , num_children_ ()
       , num_loaded_children_ (0)
       , payload_ ()
@@ -1739,7 +1739,7 @@ namespace pcl
       node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
       node_metadata_->setOutofcoreVersion (3);
       
-      if (super == NULL)
+      if (super == nullptr)
       {
         PCL_ERROR ( "[pc::outofcore::OutofcoreOctreeBaseNode] Super is null - don't make a root node this way!\n" );
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBaseNode] Outofcore Exception: Bad parent");
@@ -1942,7 +1942,7 @@ namespace pcl
       
       for (size_t i=0; i<8; i++)
       {
-        if (children_[i] != 0)
+        if (children_[i] != nullptr)
           loaded_children_count++;
       }
       
