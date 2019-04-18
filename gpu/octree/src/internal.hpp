@@ -56,7 +56,7 @@ namespace pcl
 
             int *parent;
 
-            OctreeGlobal() : nodes(0), codes(0), begs(0), ends(0), nodes_num(0), parent(0) {}
+            OctreeGlobal() : nodes(nullptr), codes(nullptr), begs(nullptr), ends(nullptr), nodes_num(nullptr), parent(nullptr) {}
         };
 
         struct OctreeGlobalWithBox : public OctreeGlobal

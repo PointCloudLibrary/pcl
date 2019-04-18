@@ -445,7 +445,7 @@ class NCV_EXPORTS NCVMemStackAllocator : public INCVMemAllocator
 public:
 
     explicit NCVMemStackAllocator(Ncv32u alignment);
-    NCVMemStackAllocator(NCVMemoryType memT, size_t capacity, Ncv32u alignment, void *reusePtr=NULL);
+    NCVMemStackAllocator(NCVMemoryType memT, size_t capacity, Ncv32u alignment, void *reusePtr=nullptr);
     virtual ~NCVMemStackAllocator();
 
     virtual NCVStatus alloc(NCVMemSegment &seg, size_t size);
@@ -535,7 +535,7 @@ public:
 
     void clear()
     {
-        _ptr = NULL;
+        _ptr = nullptr;
         _length = 0;
         _memtype = NCVMemoryTypeNone;
     }
@@ -553,8 +553,8 @@ public:
                 this->_length * sizeof(T) >= howMuch &&
                 howMuch > 0, NCV_MEM_COPY_ERROR);
         }
-        ncvAssertReturn((this->_ptr != NULL || this->_memtype == NCVMemoryTypeNone) && 
-                        (dst._ptr != NULL || dst._memtype == NCVMemoryTypeNone), NCV_NULL_PTR);
+        ncvAssertReturn((this->_ptr != nullptr || this->_memtype == NCVMemoryTypeNone) && 
+                        (dst._ptr != nullptr || dst._memtype == NCVMemoryTypeNone), NCV_NULL_PTR);
 
         NCVStatus ncvStat = NCV_SUCCESS;
         if (this->_memtype != NCVMemoryTypeNone)
@@ -620,7 +620,7 @@ public:
 
     NcvBool isMemAllocated() const
     {
-        return (this->allocatedMem.begin.ptr != NULL) || (this->allocator.isCounting());
+        return (this->allocatedMem.begin.ptr != nullptr) || (this->allocator.isCounting());
     }
 
     Ncv32u getAllocatorsAlignment() const
@@ -707,7 +707,7 @@ public:
 
     void clear()
     {
-        _ptr = NULL;
+        _ptr = nullptr;
         _pitch = 0;
         _width = 0;
         _height = 0;
@@ -734,8 +734,8 @@ public:
                             this->_pitch * this->_height >= howMuch &&
                             howMuch > 0, NCV_MEM_COPY_ERROR);
         }
-        ncvAssertReturn((this->_ptr != NULL || this->_memtype == NCVMemoryTypeNone) && 
-                        (dst._ptr != NULL || dst._memtype == NCVMemoryTypeNone), NCV_NULL_PTR);
+        ncvAssertReturn((this->_ptr != nullptr || this->_memtype == NCVMemoryTypeNone) && 
+                        (dst._ptr != nullptr || dst._memtype == NCVMemoryTypeNone), NCV_NULL_PTR);
 
         NCVStatus ncvStat = NCV_SUCCESS;
         if (this->_memtype != NCVMemoryTypeNone)
@@ -849,7 +849,7 @@ public:
 
     NcvBool isMemAllocated() const
     {
-        return (this->allocatedMem.begin.ptr != NULL) || (this->allocator.isCounting());
+        return (this->allocatedMem.begin.ptr != nullptr) || (this->allocator.isCounting());
     }
 
     Ncv32u getAllocatorsAlignment() const

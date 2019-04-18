@@ -60,8 +60,8 @@ namespace pcl
                 cudaEventDestroy(stop_);
             }
 
-            void start() { cudaEventRecord(start_, 0); }
-            Timer& stop()  { cudaEventRecord(stop_, 0); cudaEventSynchronize(stop_); return *this; }
+            void start() { cudaEventRecord(start_, nullptr); }
+            Timer& stop()  { cudaEventRecord(stop_, nullptr); cudaEventSynchronize(stop_); return *this; }
 
             float time()
             {

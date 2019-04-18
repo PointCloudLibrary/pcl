@@ -121,7 +121,7 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::getMeshesFromTSDFVector (con
     //Get mesh
     MeshPtr tmp = getMeshFromTSDFCloud (*tsdf_clouds[i]);
         
-    if(tmp != 0)
+    if(tmp != nullptr)
     {
        meshes_vector.push_back (tmp);
        mesh_counter++;
@@ -259,7 +259,7 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::runMarchingCubes ()
   //Creating mesh
   boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_ = convertTrianglesToMesh (triangles_device);
 
-  if(mesh_ptr_ != 0)
+  if(mesh_ptr_ != nullptr)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_tmp_ptr (new pcl::PointCloud<pcl::PointXYZ>);
     fromPCLPointCloud2 ( mesh_ptr_->cloud, *cloud_tmp_ptr);
