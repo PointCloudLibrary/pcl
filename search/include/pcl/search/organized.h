@@ -133,7 +133,7 @@ namespace pcl
           input_ = cloud;
           indices_ = indices;
 
-          if (indices_.get () != NULL && indices_->size () != 0)
+          if (indices_.get () != nullptr && indices_->size () != 0)
           {
             mask_.assign (input_->size (), 0);
             for (std::vector<int>::const_iterator iIt = indices_->begin (); iIt != indices_->end (); ++iIt)

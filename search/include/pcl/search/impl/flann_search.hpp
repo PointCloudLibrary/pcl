@@ -105,7 +105,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (const PointT &p
   assert (point_representation_->isValid (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!"); // remove this check as soon as FLANN does NaN checks internally
   bool can_cast = point_representation_->isTrivial ();
 
-  float* data = 0;
+  float* data = nullptr;
   if (!can_cast)
   {
     data = new float [point_representation_->getNumberOfDimensions ()];
@@ -162,7 +162,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (
     bool can_cast = point_representation_->isTrivial ();
 
     // full point cloud + trivial copy operation = no need to do any conversion/copying to the flann matrix!
-    float* data=0;
+    float* data=nullptr;
     if (!can_cast)
     {
       data = new float[dim_*cloud.size ()];
@@ -236,7 +236,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (const PointT& poi
   assert (point_representation_->isValid (point) && "Invalid (NaN, Inf) point coordinates given to radiusSearch!"); // remove this check as soon as FLANN does NaN checks internally
   bool can_cast = point_representation_->isTrivial ();
 
-  float* data = 0;
+  float* data = nullptr;
   if (!can_cast)
   {
     data = new float [point_representation_->getNumberOfDimensions ()];
@@ -290,7 +290,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (
 
     bool can_cast = point_representation_->isTrivial ();
 
-    float* data = 0;
+    float* data = nullptr;
     if (!can_cast)
     {
       data = new float[dim_*cloud.size ()];
