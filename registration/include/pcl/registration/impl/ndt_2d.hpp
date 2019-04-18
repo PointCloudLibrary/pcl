@@ -280,7 +280,7 @@ namespace pcl
           Eigen::Vector2i idxi = idxf.cast<int> ();
           for (size_t i = 0; i < 2; i++)
             if (idxi[i] >= cells_[i] || idxi[i] < 0)
-              return NULL;
+              return nullptr;
           // const cast to avoid duplicating this function in const and
           // non-const variants...
           return const_cast<NormalDist*> (&normal_distributions_.coeffRef (idxi[0], idxi[1]));
@@ -469,7 +469,7 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
 
     nr_iterations_++;
     
-    if (update_visualizer_ != 0)
+    if (update_visualizer_ != nullptr)
       update_visualizer_ (output, *indices_, *target_, *indices_);
 
     //std::cout << "eps=" << fabs ((transformation - previous_transformation_).sum ()) << std::endl;
