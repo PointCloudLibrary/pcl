@@ -363,7 +363,7 @@ TEST (PCL, IO)
   cloud.points.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   size_t nr_p = cloud.points.size ();
   // Randomly create a new point cloud
   for (size_t i = 0; i < nr_p; ++i)
@@ -674,7 +674,7 @@ TEST (PCL, PCDReaderWriter)
   cloud.points.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   size_t nr_p = cloud.points.size ();
   // Randomly create a new point cloud
   for (size_t i = 0; i < nr_p; ++i)
@@ -794,7 +794,7 @@ TEST (PCL, ASCIIRead)
 
   afile<< std::setprecision(10);
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   size_t nr_p = cloud.points.size ();
   // Randomly create a new point cloud
   for (size_t i = 0; i < nr_p; ++i)
@@ -1067,7 +1067,7 @@ TEST (PCL, LZF)
   cloud.points.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   size_t nr_p = cloud.points.size ();
   // Randomly create a new point cloud
   for (size_t i = 0; i < nr_p; ++i)
@@ -1125,7 +1125,7 @@ TEST (PCL, LZFExtended)
   cloud.points.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   size_t nr_p = cloud.points.size ();
   // Randomly create a new point cloud
   for (size_t i = 0; i < nr_p; ++i)
@@ -1178,7 +1178,7 @@ TEST (PCL, LZFInMem)
   cloud.points.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   size_t nr_p = cloud.points.size ();
   // Randomly create a new point cloud
   for (size_t i = 0; i < nr_p; ++i)
@@ -1249,7 +1249,7 @@ TEST (PCL, Locale)
     cloud.points.resize (cloud.width * cloud.height);
     cloud.is_dense = true;
 
-    srand (static_cast<unsigned int> (time (NULL)));
+    srand (static_cast<unsigned int> (time (nullptr)));
     size_t nr_p = cloud.points.size ();
     // Randomly create a new point cloud
     cloud.points[0].x = std::numeric_limits<float>::quiet_NaN ();

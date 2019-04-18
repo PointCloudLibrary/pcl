@@ -63,7 +63,7 @@ init ()
 
   cloud_big.width = 640;
   cloud_big.height = 480;
-  srand (int (time (NULL)));
+  srand (int (time (nullptr)));
   // Randomly create a new point cloud
   for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
     cloud_big.points.emplace_back(

@@ -76,7 +76,7 @@ TEST (PCL, Octree_Test)
   };
   MyVoxel voxels[256];
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   // generate some voxel indices
   for (unsigned int i = 0; i < 256; i++)
@@ -390,7 +390,7 @@ TEST (PCL, Octree2Buf_Test)
   int data[256];
   MyVoxel voxels[256];
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   // generate some voxel indices
   for (unsigned int i = 0; i < 256; i++)
@@ -557,7 +557,7 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_Test)
   int data[TESTPOINTS];
   MyVoxel voxels[TESTPOINTS];
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   const unsigned int test_runs = 20;
 
@@ -638,7 +638,7 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_XOR_Test)
   int data[TESTPOINTS];
   MyVoxel voxels[TESTPOINTS];
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   const unsigned int test_runs = 15;
 
@@ -936,7 +936,7 @@ TEST(PCL, Octree_Pointcloud_Occupancy_Test)
 
   OctreePointCloudOccupancy<PointXYZ> octree (0.00001f);
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
@@ -975,7 +975,7 @@ TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
 
   OctreePointCloudChangeDetector<PointXYZ> octree (0.01f);
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   cloudIn->width = 1000;
   cloudIn->height = 1;
@@ -1036,7 +1036,7 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
   OctreePointCloudVoxelCentroid<PointXYZ> octree (1.0f);
   octree.defineBoundingBox (10.0, 10.0, 10.0);
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   cloudIn->width = 10 * 3;
   cloudIn->height = 1;
@@ -1132,7 +1132,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   // instantiate point cloud
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   std::priority_queue<prioPointQueueEntry, pcl::PointCloud<prioPointQueueEntry>::VectorType> pointCandidates;
 
@@ -1231,7 +1231,7 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
   // instantiate point cloud
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   // create octree
   OctreePointCloudSearch<PointXYZ> octree (1);
@@ -1300,7 +1300,7 @@ TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
   // instantiate point cloud
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   constexpr double voxelResolution = 0.1;
 
@@ -1373,7 +1373,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
   PointCloud<PointXYZ>::Ptr cloudOut (new PointCloud<PointXYZ> ());
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
@@ -1465,7 +1465,7 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
   // Indices in ray
   std::vector<int> indicesInRay, indicesInRay2;
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
@@ -1537,7 +1537,7 @@ TEST (PCL, Octree_Pointcloud_Adjacency)
 {
   constexpr unsigned int test_runs = 100;
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
