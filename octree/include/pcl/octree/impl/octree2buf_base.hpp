@@ -182,7 +182,7 @@ namespace pcl
       // we can safely remove children references of root node
       for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
       {
-        root_node_->setChildPtr(buffer_selector_, child_idx, 0);
+        root_node_->setChildPtr(buffer_selector_, child_idx, nullptr);
       }
     }
 
@@ -197,7 +197,7 @@ namespace pcl
       binary_tree_out_arg.clear ();
       binary_tree_out_arg.reserve (this->branch_count_);
 
-      serializeTreeRecursive (root_node_, new_key, &binary_tree_out_arg, 0, do_XOR_encoding_arg, false);
+      serializeTreeRecursive (root_node_, new_key, &binary_tree_out_arg, nullptr, do_XOR_encoding_arg, false);
 
       // serializeTreeRecursive cleans-up unused octree nodes in previous octree
       tree_dirty_flag_ = false;
@@ -235,7 +235,7 @@ namespace pcl
 
       leaf_container_vector_arg.reserve (leaf_count_);
 
-      serializeTreeRecursive (root_node_, new_key, 0, &leaf_container_vector_arg, false, false);
+      serializeTreeRecursive (root_node_, new_key, nullptr, &leaf_container_vector_arg, false, false);
 
       // serializeLeafsRecursive cleans-up unused octree nodes in previous octree
       tree_dirty_flag_ = false;
@@ -256,7 +256,7 @@ namespace pcl
       std::vector<char>::const_iterator binary_tree_in_it_end = binary_tree_in_arg.end ();
 
       deserializeTreeRecursive (root_node_, depth_mask_, new_key,
-          binary_tree_in_it, binary_tree_in_it_end, 0, 0, false,
+          binary_tree_in_it, binary_tree_in_it_end, nullptr, nullptr, false,
           do_XOR_decoding_arg);
 
       // we modified the octree structure -> clean-up/tree-reset might be required
@@ -310,7 +310,7 @@ namespace pcl
       leaf_container_vector_arg.clear ();
       leaf_container_vector_arg.reserve (leaf_count_);
 
-      serializeTreeRecursive (root_node_, new_key, 0, &leaf_container_vector_arg, false, true);
+      serializeTreeRecursive (root_node_, new_key, nullptr, &leaf_container_vector_arg, false, true);
 
       // serializeLeafsRecursive cleans-up unused octree nodes in previous octree buffer
       tree_dirty_flag_ = false;
@@ -332,7 +332,7 @@ namespace pcl
         // we can safely remove children references
         for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
         {
-          branch_arg->setChildPtr(buffer_selector_, child_idx, 0);
+          branch_arg->setChildPtr(buffer_selector_, child_idx, nullptr);
         }
       }
 
@@ -637,7 +637,7 @@ namespace pcl
         // we can safely remove children references
         for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
         {
-          branch_arg->setChildPtr(buffer_selector_, child_idx, 0);
+          branch_arg->setChildPtr(buffer_selector_, child_idx, nullptr);
         }  
       }
 
@@ -765,7 +765,7 @@ namespace pcl
           else if (branch_arg->hasChild (!buffer_selector_, child_idx))
           {
             // remove old branch pointer information in current branch
-            branch_arg->setChildPtr(buffer_selector_, child_idx, 0);
+            branch_arg->setChildPtr(buffer_selector_, child_idx, nullptr);
             
             // remove unused branches in previous buffer
             deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
