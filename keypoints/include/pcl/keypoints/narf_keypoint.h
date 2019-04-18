@@ -115,7 +115,7 @@ class PCL_EXPORTS NarfKeypoint : public Keypoint<PointWithRange, int>
     };
     
     // =====CONSTRUCTOR & DESTRUCTOR=====
-    NarfKeypoint (RangeImageBorderExtractor* range_image_border_extractor=NULL, float support_size=-1.0f);
+    NarfKeypoint (RangeImageBorderExtractor* range_image_border_extractor=nullptr, float support_size=-1.0f);
     ~NarfKeypoint ();
     
     // =====PUBLIC METHODS=====
