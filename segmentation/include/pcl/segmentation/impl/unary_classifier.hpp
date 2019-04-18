@@ -68,7 +68,7 @@ pcl::UnaryClassifier<PointT>::~UnaryClassifier ()
 template <typename PointT> void
 pcl::UnaryClassifier<PointT>::setInputCloud (typename pcl::PointCloud<PointT>::Ptr input_cloud)
 {
-  if (input_cloud_ != NULL)
+  if (input_cloud_ != nullptr)
     input_cloud_.reset ();
 
   input_cloud_ = input_cloud;

@@ -225,7 +225,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::prepareForSegmentation ()
   if (normal_flag_)
   {
     // if user forgot to pass normals or the sizes of point and normal cloud are different
-    if ( normals_ == 0 || input_->points.size () != normals_->points.size () )
+    if ( normals_ == nullptr || input_->points.size () != normals_->points.size () )
       return (false);
   }
 
