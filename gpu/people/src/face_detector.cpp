@@ -590,7 +590,7 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
 
   ncv_return_status = h_src.copySolid(d_src, nullptr);
   PCL_ASSERT_NCVSTAT(ncv_return_status);
-  PCL_ASSERT_CUDA_RETURN(cudaStreamSynchronize(nullptr), NCV_CUDA_ERROR);
+  PCL_ASSERT_CUDA_RETURN(cudaStreamSynchronize(0), NCV_CUDA_ERROR);
 
   NCV_SKIP_COND_END
 
@@ -616,16 +616,16 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
                                                 gpu_allocator,
                                                 cpu_allocator,
                                                 device_properties,
-                                                nullptr);
+                                                0);
 
   PCL_ASSERT_NCVSTAT(ncv_return_status);
-  PCL_ASSERT_CUDA_RETURN(cudaStreamSynchronize(nullptr), NCV_CUDA_ERROR);
+  PCL_ASSERT_CUDA_RETURN(cudaStreamSynchronize(0), NCV_CUDA_ERROR);
 
   NCV_SKIP_COND_BEGIN
 
-  ncv_return_status = d_src.copySolid(h_src, nullptr);
+  ncv_return_status = d_src.copySolid(h_src, 0);
   PCL_ASSERT_NCVSTAT(ncv_return_status);
-  PCL_ASSERT_CUDA_RETURN(cudaStreamSynchronize(nullptr), NCV_CUDA_ERROR);
+  PCL_ASSERT_CUDA_RETURN(cudaStreamSynchronize(0), NCV_CUDA_ERROR);
 
   // Copy result back into output cloud
   for(auto &point : cloud_out.points)
@@ -680,11 +680,11 @@ pcl::gpu::people::FaceDetector::configure(std::string cascade_file_name)
   haar_features_dev_ = new NCVVectorAlloc<HaarFeature64>(*gpu_allocator_, haarNumFeatures);
   PCL_ASSERT_ERROR_PRINT_RETURN(haar_features_dev_->isMemAllocated(), "[pcl::gpu::people::FaceDetector::FaceDetector] : Error in cascade GPU allocator", -1);
 
-  ncv_return_status = haar_stages_host_->copySolid(*haar_stages_dev_, nullptr);
+  ncv_return_status = haar_stages_host_->copySolid(*haar_stages_dev_, 0);
   PCL_ASSERT_ERROR_PRINT_RETURN(ncv_return_status == NCV_SUCCESS, "[pcl::gpu::people::FaceDetector::FaceDetector] : Error copying cascade to GPU", -1);
-  ncv_return_status = haar_nodes_host_->copySolid(*haar_nodes_dev_, nullptr);
+  ncv_return_status = haar_nodes_host_->copySolid(*haar_nodes_dev_, 0);
   PCL_ASSERT_ERROR_PRINT_RETURN(ncv_return_status == NCV_SUCCESS, "[pcl::gpu::people::FaceDetector::FaceDetector] : Error copying cascade to GPU", -1);
-  ncv_return_status = haar_features_host_->copySolid(*haar_features_dev_, nullptr);
+  ncv_return_status = haar_features_host_->copySolid(*haar_features_dev_, 0);
   PCL_ASSERT_ERROR_PRINT_RETURN(ncv_return_status == NCV_SUCCESS, "[pcl::gpu::people::FaceDetector::FaceDetector] : Error copying cascade to GPU", -1);
 
   // Calculate memory requirements and create real allocators
