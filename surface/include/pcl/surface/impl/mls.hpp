@@ -777,7 +777,7 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
     {
       // Note: The max_sq_radius parameter is only used if weight_func was not defined
       double max_sq_radius = 1;
-      if (weight_func == nullptr)
+      if (weight_func.empty())
       {
         max_sq_radius = search_radius * search_radius;
         weight_func = boost::bind (&pcl::MLSResult::computeMLSWeight, this, _1, max_sq_radius);
