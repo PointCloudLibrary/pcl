@@ -173,7 +173,7 @@ ply_to_obj_converter::element_definition_callback (const std::string& element_na
     );
   }
   else {
-    return boost::tuple<boost::function<void ()>, boost::function<void ()> > (nullptr, nullptr);
+    return {};
   }
 }
 
@@ -191,11 +191,11 @@ ply_to_obj_converter::scalar_property_definition_callback (const std::string& el
       return boost::bind (&ply_to_obj_converter::vertex_z, this, _1);
     }
     else {
-      return nullptr;
+      return {};
     }
   }
   else {
-    return nullptr;
+    return {};
   }
 }
 
@@ -210,7 +210,7 @@ ply_to_obj_converter::list_property_definition_callback (const std::string& elem
     );
   }
   else {
-    return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (nullptr, nullptr, nullptr);
+    return {};
   }
 }
 

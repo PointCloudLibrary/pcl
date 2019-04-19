@@ -57,7 +57,7 @@ namespace pcl
         public:
 
           OpenNI2FrameListener ()
-            : callback_(nullptr) {}
+            : callback_() {}
           OpenNI2FrameListener (StreamCallbackFunction cb)
             : callback_(cb) {}
 
