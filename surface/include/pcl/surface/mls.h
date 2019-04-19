@@ -210,7 +210,7 @@ namespace pcl
                        const std::vector<int> &nn_indices,
                        double search_radius,
                        int polynomial_order = 2,
-                       boost::function<double(const double)> weight_func = nullptr);
+                       boost::function<double(const double)> weight_func = {});
 
     Eigen::Vector3d query_point;  /**< \brief The query point about which the mls surface was generated */
     Eigen::Vector3d mean;         /**< \brief The mean point of all the neighbors. */
