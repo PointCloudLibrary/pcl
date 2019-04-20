@@ -869,7 +869,7 @@ pcl::SVMClassify::scaleProblem (svm_problem &input, svm_scaling scaling)
         break;
 
       if (input.x[i][j].index < scaling.max && scaling.obj[ input.x[i][j].index ].index == 1)
-        input.x[i][j].value = input.x[i][j].value / scaling.obj[ input.x[i][j].index ].value;
+        input.x[i][j].value /= scaling.obj[ input.x[i][j].index ].value;
 
       j++;
     }

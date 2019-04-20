@@ -412,7 +412,7 @@ FittingSurface::initNurbsPCA (int order, NurbsDataSurface *m_data, Eigen::Vector
   if (eigenvectors.col (2).dot (z) < 0.0)
     flip = true;
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
 
   Eigen::Vector3d sigma (sqrt (eigenvalues (0)), sqrt (eigenvalues (1)), sqrt (eigenvalues (2)));
 
@@ -461,7 +461,7 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
   if (eigenvectors.col (2).dot (z) < 0.0)
     flip = true;
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
   Eigen::Matrix3d eigenvectors_inv = eigenvectors.inverse ();
 
   Eigen::Vector3d v_max (-DBL_MAX, -DBL_MAX, -DBL_MAX);

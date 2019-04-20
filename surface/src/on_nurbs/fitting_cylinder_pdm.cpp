@@ -227,7 +227,7 @@ FittingCylinder::initNurbsPCACylinder (int order, NurbsDataSurface *data)
   data->mean = mean;
   data->eigenvectors = eigenvectors;
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
 
   Eigen::Vector3d v_max (0.0, 0.0, 0.0);
   Eigen::Vector3d v_min (DBL_MAX, DBL_MAX, DBL_MAX);

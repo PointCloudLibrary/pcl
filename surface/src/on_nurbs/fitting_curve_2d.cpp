@@ -296,7 +296,7 @@ FittingCurve2d::initNurbsPCA (int order, NurbsDataCurve2d *data, int ncps)
   data->mean = mean;
   data->eigenvectors = eigenvectors;
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
   Eigen::Matrix2d eigenvectors_inv = eigenvectors.inverse ();
 
   Eigen::Vector2d v_max (-DBL_MAX, -DBL_MAX);

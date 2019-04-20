@@ -2095,7 +2095,7 @@ static void sigmoid_train (
         break;
       }
       else
-        stepsize = stepsize / 2.0;
+        stepsize /= 2.0;
     }
 
     if (stepsize < min_step)

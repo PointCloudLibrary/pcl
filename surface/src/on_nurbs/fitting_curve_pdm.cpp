@@ -255,7 +255,7 @@ FittingCurve::initNurbsCurvePCA (int order, const vector_vec3d &data, int ncps, 
 
   NurbsTools::pca (data, mean, eigenvectors, eigenvalues);
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
 
   double r = rf * sqrt (eigenvalues (0));
 

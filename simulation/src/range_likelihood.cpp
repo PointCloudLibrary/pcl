@@ -109,8 +109,8 @@ max_level (int a, int b)
   while (true)
   {
     if (a%2 || b%2) return level;
-    a = a / 2;
-    b = b / 2;
+    a /= 2;
+    b /= 2;
     level++;
   }
 }
