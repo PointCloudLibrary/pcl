@@ -384,7 +384,7 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (std::vector<int
   std::vector<float> distance;
   closest_index.resize(1,0);
   distance.resize(1,0);
-  if (voxel_kdtree_ == nullptr)
+  if (!voxel_kdtree_)
   {
     voxel_kdtree_.reset (new pcl::search::KdTree<PointT>);
     voxel_kdtree_ ->setInputCloud (voxel_centroid_cloud_);

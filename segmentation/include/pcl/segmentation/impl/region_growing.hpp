@@ -79,11 +79,6 @@ pcl::RegionGrowing<PointT, NormalT>::RegionGrowing () :
 template <typename PointT, typename NormalT>
 pcl::RegionGrowing<PointT, NormalT>::~RegionGrowing ()
 {
-  if (search_ != nullptr)
-    search_.reset ();
-  if (normals_ != nullptr)
-    normals_.reset ();
-
   point_neighbours_.clear ();
   point_labels_.clear ();
   num_pts_in_segment_.clear ();
@@ -233,9 +228,6 @@ pcl::RegionGrowing<PointT, NormalT>::getSearchMethod () const
 template <typename PointT, typename NormalT> void
 pcl::RegionGrowing<PointT, NormalT>::setSearchMethod (const KdTreePtr& tree)
 {
-  if (search_ != nullptr)
-    search_.reset ();
-
   search_ = tree;
 }
 
@@ -250,9 +242,6 @@ pcl::RegionGrowing<PointT, NormalT>::getInputNormals () const
 template <typename PointT, typename NormalT> void
 pcl::RegionGrowing<PointT, NormalT>::setInputNormals (const NormalPtr& norm)
 {
-  if (normals_ != nullptr)
-    normals_.reset ();
-
   normals_ = norm;
 }
 
@@ -312,7 +301,7 @@ pcl::RegionGrowing<PointT, NormalT>::prepareForSegmentation ()
     return (false);
 
   // if user forgot to pass normals or the sizes of point and normal cloud are different
-  if ( normals_ == nullptr || input_->points.size () != normals_->points.size () )
+  if ( !normals_ || input_->points.size () != normals_->points.size () )
     return (false);
 
   // if residual test is on then we need to check if all needed parameters were correctly initialized
