@@ -392,14 +392,14 @@ pcl::GrayStereoMatching::preProcessing (unsigned char *img, unsigned char *pp_im
     int sum = 0;
     for (int x = 0; x<n; x++)
     {
-      v[x] = v[x] + img[ (y+radius)*width_+x] - img[ (y-radius-1)*width_+x];
+      v[x] += img[ (y+radius)*width_+x] - img[ (y-radius-1)*width_+x];
       sum += v[x];
     }
 
     for (int x = radius + 1; x < width_ - radius; x++)
     {
-      v[x+radius] = v[x+radius] + img[ (y+radius)*width_ + x+radius] - img[ (y-radius-1)*width_+ x+radius];
-      sum = sum + v[x+radius] - v[x-radius-1];
+      v[x+radius] += img[ (y+radius)*width_ + x+radius] - img[ (y-radius-1)*width_+ x+radius];
+      sum += v[x+radius] - v[x-radius-1];
 
       short int temp = static_cast<short int> (img[y*width_+x] - (sum / area));
 

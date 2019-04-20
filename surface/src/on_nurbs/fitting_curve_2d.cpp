@@ -480,7 +480,7 @@ FittingCurve2d::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2
     }
     else
     {
-      current = current + delta;
+      current += delta;
 
       if (current < minU)
         current = minU;

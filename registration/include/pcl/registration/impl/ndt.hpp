@@ -150,7 +150,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
                        Eigen::AngleAxis<float> (static_cast<float> (delta_p (5)), Eigen::Vector3f::UnitZ ())).matrix ();
 
 
-    p = p + delta_p;
+    p += delta_p;
 
     // Update Visualizer (untested)
     if (update_visualizer_ != 0)
@@ -733,12 +733,12 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT
       open_interval = false;
 
       // Converts f_l and g_l from psi to phi
-      f_l = f_l + phi_0 - mu * d_phi_0 * a_l;
-      g_l = g_l + mu * d_phi_0;
+      f_l += phi_0 - mu * d_phi_0 * a_l;
+      g_l += mu * d_phi_0;
 
       // Converts f_u and g_u from psi to phi
-      f_u = f_u + phi_0 - mu * d_phi_0 * a_u;
-      g_u = g_u + mu * d_phi_0;
+      f_u += phi_0 - mu * d_phi_0 * a_u;
+      g_u += mu * d_phi_0;
     }
 
     if (open_interval)

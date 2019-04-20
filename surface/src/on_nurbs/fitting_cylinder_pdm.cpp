@@ -580,7 +580,7 @@ FittingCylinder::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &p
     }
     else
     {
-      current = current + delta;
+      current += delta;
       if (current (0) < minU)
         current (0) = minU;
       else if (current (0) > maxU)

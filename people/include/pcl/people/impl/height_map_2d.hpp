@@ -157,7 +157,7 @@ pcl::people::HeightMap2D<PointT>::searchLocalMaxima ()
       maxima_indices_[t] = i - int(offset/2 + 0.5);
       maxima_cloud_indices_[t] = buckets_cloud_indices_[maxima_indices_[t]];
       left = buckets_[i+1];
-      i = i+2;
+      i +=2;
       offset = 0;
       maxima_number_++;
     }

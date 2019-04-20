@@ -786,7 +786,7 @@ pcl::simulation::RangeLikelihood::addNoise ()
   {
     if (depth_buffer_[i] < 1)
     {
-      depth_buffer_[i] = depth_buffer_[i] + variance * static_cast<float> (sampleNormal ());
+      depth_buffer_[i] += variance * static_cast<float> (sampleNormal ());
       if (depth_buffer_[i] > 1)
       {
         depth_buffer_[i] = 1.0;

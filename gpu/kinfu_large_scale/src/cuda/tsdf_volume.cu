@@ -134,7 +134,7 @@ namespace pcl
                   
                 ///We make sure that we are not already before the start of the memory
                 if(pos < buffer.tsdf_memory_start)
-                    pos = pos + size;
+                    pos += size;
 
                 int nbSteps = abs(maxBounds.z);
                 

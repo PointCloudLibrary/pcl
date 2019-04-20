@@ -2333,7 +2333,7 @@ static double svm_svr_probability (
 
   for (int i = 0; i < prob->l; i++)
     if (fabs (ymv[i]) > 5*std)
-      count = count + 1;
+      count += 1;
     else
       mae += fabs (ymv[i]);
 
