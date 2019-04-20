@@ -213,7 +213,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
             ++cluster_concave_pts;
         }
         // check if the score is below the threshold. If that is the case this segment should not be split
-        cluster_score = cluster_score * 1.0 / cluster_index.indices.size ();
+        cluster_score /= cluster_index.indices.size ();
 //         std::cout << "Cluster score: " << cluster_score << std::endl;
         if (cluster_score >= min_cut_score_)
         {
@@ -338,7 +338,7 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
       current_score += index_score;
     }
     // normalize by the total number of inliers
-    current_score = current_score * 1.0 / current_inliers->size ();
+    current_score /= current_inliers->size ();
     
     // Better match ?
     if (current_score > best_score_)

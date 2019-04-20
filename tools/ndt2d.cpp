@@ -155,7 +155,7 @@ main (int argc, char **argv)
     CloudPtr tmp (new Cloud);
     ndt.align (*tmp);
 
-    t = t* ndt.getFinalTransformation ();
+    t *= ndt.getFinalTransformation ();
 
     pcl::transformPointCloud (*data, *tmp, t);
 

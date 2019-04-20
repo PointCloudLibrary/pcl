@@ -736,7 +736,7 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
           0, 1,  0, 0,
           0, 0,  0, 1;
     Eigen::Matrix4f m = pose.matrix ().cast<float> ();
-    m = m * T;
+    m *= T;
     pcl::transformPointCloud (*pc, *pc, m);
   }
   else
@@ -756,7 +756,7 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
                     0, -1, 0, 0,
                     0,  0, 0, 1;
     Eigen::Matrix4f camera = pose.matrix ().cast<float> ();
-    camera = camera * cam_to_body;
+    camera *= cam_to_body;
     pc->sensor_origin_ = camera.rightCols (1);
     Eigen::Quaternion<float> quat (camera.block<3,3> (0,0));
     pc->sensor_orientation_ = quat;

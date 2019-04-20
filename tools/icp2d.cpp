@@ -118,7 +118,7 @@ main (int argc, char **argv)
     CloudPtr tmp (new Cloud);
     icp.align (*tmp);
 
-    t = t * icp.getFinalTransformation ();
+    t *= icp.getFinalTransformation ();
 
     pcl::transformPointCloud (*data, *tmp, t);
 

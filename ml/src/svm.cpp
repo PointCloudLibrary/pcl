@@ -89,7 +89,7 @@ static inline double powi (double base, int times)
     if (t % 2 == 1)
       ret *= tmp;
 
-    tmp = tmp * tmp;
+    tmp *= tmp;
   }
 
   return ret;
