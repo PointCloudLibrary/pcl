@@ -469,7 +469,7 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
 
     nr_iterations_++;
     
-    if (update_visualizer_ != nullptr)
+    if (!update_visualizer_.empty())
       update_visualizer_ (output, *indices_, *target_, *indices_);
 
     //std::cout << "eps=" << fabs ((transformation - previous_transformation_).sum ()) << std::endl;
