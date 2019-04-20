@@ -423,7 +423,7 @@ pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
           &cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
           sizeof (pcl::io::ply::float32));
   // append alpha
-  rgba_ = rgba_ | a_ << 24;
+  rgba_ |= a_ << 24;
   // put rgba back
   memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
           &rgba_, 
