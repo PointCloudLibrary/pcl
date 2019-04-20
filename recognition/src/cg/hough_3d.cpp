@@ -242,7 +242,7 @@ pcl::recognition::HoughSpace3D::findMaxima (double min_threshold, std::vector<do
 
     for (int k = 2; k >= 0; --k){
 
-      moduled_index = moduled_index % partial_bin_products_[k+1];
+      moduled_index %= partial_bin_products_[k+1];
       indexes[k] = moduled_index / partial_bin_products_[k];
 
       if (indexes[k] > 0 && hough_space_[i] < hough_space_[i-partial_bin_products_[k]])
