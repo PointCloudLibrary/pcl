@@ -122,15 +122,15 @@ pcl::TextureMapping<PointInT>::mapTexture2Face (
 
   if (min_x < 0)
   {
-    tp1[0] = tp1[0] - min_x;
-    tp2[0] = tp2[0] - min_x;
-    tp3[0] = tp3[0] - min_x;
+    tp1[0] -= min_x;
+    tp2[0] -= min_x;
+    tp3[0] -= min_x;
   }
   if (min_y < 0)
   {
-    tp1[1] = tp1[1] - min_y;
-    tp2[1] = tp2[1] - min_y;
-    tp3[1] = tp3[1] - min_y;
+    tp1[1] -= min_y;
+    tp2[1] -= min_y;
+    tp3[1] -= min_y;
   }
 
   tex_coordinates.push_back (tp1);
