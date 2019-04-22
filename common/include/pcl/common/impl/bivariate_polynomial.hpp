@@ -42,7 +42,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename real>
 pcl::BivariatePolynomialT<real>::BivariatePolynomialT (int new_degree) :
-  degree(0), parameters(NULL), gradient_x(NULL), gradient_y(NULL)
+  degree(0), parameters(nullptr), gradient_x(nullptr), gradient_y(nullptr)
 {
   setDegree(new_degree);
 }
@@ -79,17 +79,17 @@ pcl::BivariatePolynomialT<real>::setDegree (int newDegree)
     delete[] parameters;
     parameters = new real[getNoOfParameters ()];
   }
-  delete gradient_x; gradient_x = NULL;
-  delete gradient_y; gradient_y = NULL;
+  delete gradient_x; gradient_x = nullptr;
+  delete gradient_y; gradient_y = nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename real> void
 pcl::BivariatePolynomialT<real>::memoryCleanUp ()
 {
-  delete[] parameters; parameters = NULL;
-  delete gradient_x; gradient_x = NULL;
-  delete gradient_y; gradient_y = NULL;
+  delete[] parameters; parameters = nullptr;
+  delete gradient_x; gradient_x = nullptr;
+  delete gradient_y; gradient_y = nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
