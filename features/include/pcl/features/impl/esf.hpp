@@ -54,7 +54,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
 {
   const int binsize = 64;
   unsigned int sample_size = 20000;
-  srand (static_cast<unsigned int> (time (0)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   int maxindex = static_cast<int> (pc.points.size ());
 
   int index1, index2, index3;

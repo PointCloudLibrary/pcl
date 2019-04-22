@@ -47,7 +47,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::BRISK2DEstim
   , scale_invariance_enabled_ (true)
   , pattern_scale_ (1.0f)
   , input_cloud_ (), keypoints_ (), scale_range_ (), pattern_points_ (), points_ ()
-  , n_rot_ (1024), scale_list_ (NULL), size_list_ (NULL)
+  , n_rot_ (1024), scale_list_ (nullptr), size_list_ (nullptr)
   , scales_ (64)
   , scalerange_ (30)
   , basic_size_ (12.0)

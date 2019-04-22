@@ -70,14 +70,14 @@ namespace pcl
       
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */
-      NarfDescriptor (const RangeImage* range_image=NULL, const std::vector<int>* indices=NULL);
+      NarfDescriptor (const RangeImage* range_image=nullptr, const std::vector<int>* indices=nullptr);
       /** Destructor */
       ~NarfDescriptor();
       
       // =====METHODS=====
       //! Set input data
       void 
-      setRangeImage (const RangeImage* range_image, const std::vector<int>* indices=NULL);
+      setRangeImage (const RangeImage* range_image, const std::vector<int>* indices=nullptr);
       
       //! Overwrite the compute function of the base class
       void 

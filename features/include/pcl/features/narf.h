@@ -220,7 +220,7 @@ namespace pcl
       getSurfacePatch () { return surface_patch_;}
       //! Method to erase the surface patch and free the memory
       inline void 
-      freeSurfacePatch () { delete[] surface_patch_; surface_patch_=NULL; surface_patch_pixel_size_=0; }
+      freeSurfacePatch () { delete[] surface_patch_; surface_patch_=nullptr; surface_patch_pixel_size_=0; }
       
       // =====SETTERS=====
       //! Setter for the descriptor
