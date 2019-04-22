@@ -46,7 +46,7 @@ namespace pcl
 
 /////////////////////////////////////////////////////////////////////////
 NarfKeypoint::NarfKeypoint (RangeImageBorderExtractor* range_image_border_extractor, float support_size) :
-    BaseClass (), interest_image_ (NULL), interest_points_ (NULL)
+    BaseClass (), interest_image_ (nullptr), interest_points_ (nullptr)
 {
   name_ = "NarfKeypoint";
   clearData ();
@@ -78,8 +78,8 @@ void
     delete[] interest_image_scale_space_[scale_space_idx];
   interest_image_scale_space_.clear ();
   is_interest_point_image_.clear ();
-  delete[] interest_image_; interest_image_=NULL;
-  delete interest_points_;  interest_points_=NULL;
+  delete[] interest_image_; interest_image_=nullptr;
+  delete interest_points_;  interest_points_=nullptr;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ NarfKeypoint::calculateScaleSpace ()
 {
   //MEASURE_FUNCTION_TIME;
   
-  if (range_image_border_extractor_ == NULL || !range_image_border_extractor_->hasRangeImage () ||
+  if (range_image_border_extractor_ == nullptr || !range_image_border_extractor_->hasRangeImage () ||
       !border_extractor_scale_space_.empty ())  // Nothing to compute or already done
     return;
   border_extractor_scale_space_.push_back (range_image_border_extractor_);
@@ -206,7 +206,7 @@ NarfKeypoint::calculateInterestImage ()
 {
   //std::cout << __PRETTY_FUNCTION__ << " called.\n";
   
-  if (interest_image_!=NULL)  // Already done
+  if (interest_image_!=nullptr)  // Already done
     return;
   
   if (parameters_.calculate_sparse_interest_image)
@@ -225,7 +225,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
     std::cerr << __PRETTY_FUNCTION__<<": parameters_.support_size is not set!\n";
     return;
   }
-  if (range_image_border_extractor_==NULL)
+  if (range_image_border_extractor_==nullptr)
   {
     std::cerr << __PRETTY_FUNCTION__<<": range_image_border_extractor_ is not set!\n";
     return;
@@ -250,7 +250,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
   
   //double interest_value_calculation_start_time = getTime ();
   interest_image_scale_space_.clear ();
-  interest_image_scale_space_.resize (range_image_scale_space_.size (), NULL);
+  interest_image_scale_space_.resize (range_image_scale_space_.size (), nullptr);
   for (int scale_idx = int (range_image_scale_space_.size ())-1;  scale_idx >= 0; --scale_idx)
   {
     const RangeImage& range_image = *range_image_scale_space_[scale_idx];
@@ -410,7 +410,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
   }
   
   if (interest_image_scale_space_.empty ())
-    interest_image_ = NULL;
+    interest_image_ = nullptr;
   else
     interest_image_ = interest_image_scale_space_[0];
 }
@@ -423,7 +423,7 @@ NarfKeypoint::calculateSparseInterestImage ()
     std::cerr << __PRETTY_FUNCTION__<<": parameters_.support_size is not set!\n";
     return;
   }
-  if (range_image_border_extractor_==NULL)
+  if (range_image_border_extractor_==nullptr)
   {
     std::cerr << __PRETTY_FUNCTION__<<": range_image_border_extractor_ is not set!\n";
     return;
@@ -698,7 +698,7 @@ NarfKeypoint::calculateInterestPoints ()
 {
   //std::cout << __PRETTY_FUNCTION__ << " called.\n";
 
-  if (interest_points_ != NULL)
+  if (interest_points_ != nullptr)
     return;
 
   calculateInterestImage ();
@@ -877,7 +877,7 @@ NarfKeypoint::detectKeypoints (NarfKeypoint::PointCloudOut& output)
     return;
   }
   
-  if (range_image_border_extractor_ == NULL)
+  if (range_image_border_extractor_ == nullptr)
   {
     std::cerr << __PRETTY_FUNCTION__
               << ": RangeImageBorderExtractor member is not set. "
