@@ -134,7 +134,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   // True if qhull should free points in qh_freeqhull() or reallocation
   boolT ismalloc = True;
   // output from qh_produce_output(), use NULL to skip qh_produce_output()
-  FILE *outfile = NULL;
+  FILE *outfile = nullptr;
 
 #ifndef HAVE_QHULL_2011
   if (compute_area_)
@@ -297,7 +297,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   // True if qhull should free points in qh_freeqhull() or reallocation
   boolT ismalloc = True;
   // output from qh_produce_output(), use NULL to skip qh_produce_output()
-  FILE *outfile = NULL;
+  FILE *outfile = nullptr;
 
 #ifndef HAVE_QHULL_2011
   if (compute_area_)
