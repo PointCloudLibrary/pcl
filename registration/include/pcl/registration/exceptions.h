@@ -52,8 +52,8 @@ namespace pcl
     public:
     
     SolverDidntConvergeException (const std::string& error_description,
-                                  const char* file_name = NULL,
-                                  const char* function_name = NULL,
+                                  const char* file_name = nullptr,
+                                  const char* function_name = nullptr,
                                   unsigned line_number = 0)
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
@@ -67,8 +67,8 @@ namespace pcl
     public:
     
     NotEnoughPointsException (const std::string& error_description,
-                              const char* file_name = NULL,
-                              const char* function_name = NULL,
+                              const char* file_name = nullptr,
+                              const char* function_name = nullptr,
                               unsigned line_number = 0)
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;

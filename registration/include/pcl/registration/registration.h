@@ -372,7 +372,7 @@ namespace pcl
       template<typename FunctionSignature> inline bool
       registerVisualizationCallback (boost::function<FunctionSignature> &visualizerCallback)
       {
-        if (visualizerCallback != NULL)
+        if (!visualizerCallback.empty())
         {
           update_visualizer_ = visualizerCallback;
           return (true);

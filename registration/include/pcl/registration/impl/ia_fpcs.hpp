@@ -231,7 +231,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> bool
 pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::initCompute ()
 {
-  std::srand (static_cast <unsigned int> (std::time (NULL)));
+  std::srand (static_cast <unsigned int> (std::time (nullptr)));
 
   // basic pcl initialization
   if (!pcl::PCLBase <PointSource>::initCompute ())
