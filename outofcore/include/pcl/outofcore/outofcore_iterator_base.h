@@ -73,7 +73,7 @@ namespace pcl
 
         explicit
         OutofcoreIteratorBase (OctreeDisk& octree_arg) 
-          : octree_ (octree_arg), currentNode_ (NULL)
+          : octree_ (octree_arg), currentNode_ (nullptr)
         {
           reset ();
         }
