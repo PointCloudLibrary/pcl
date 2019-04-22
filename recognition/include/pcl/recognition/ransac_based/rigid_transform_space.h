@@ -95,7 +95,7 @@ namespace pcl
             }
 
             inline void
-            computeAverageRigidTransform (float *rigid_transform = NULL)
+            computeAverageRigidTransform (float *rigid_transform = nullptr)
             {
               if ( num_transforms_ >= 2 )
               {
@@ -158,7 +158,7 @@ namespace pcl
           if ( res != model_to_entry_.end () )
             return (&res->second);
 
-          return (NULL);
+          return (nullptr);
         }
 
         inline const RotationSpaceCell::Entry&

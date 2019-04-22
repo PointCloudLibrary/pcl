@@ -109,7 +109,7 @@ ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, 
 #endif
 
   // Try to insert a new model entry
-  pair<map<string,Model*>::iterator, bool> result = models_.insert (pair<string,Model*> (object_name, static_cast<Model*> (NULL)));
+  pair<map<string,Model*>::iterator, bool> result = models_.insert (pair<string,Model*> (object_name, static_cast<Model*> (nullptr)));
 
   // Check if 'object_name' is unique
   if (!result.second)

@@ -167,7 +167,7 @@ template<class FeatureType, class DataSet, class LabelType, class ExampleIndex, 
 void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::getDatasetAndLabels(DataSet & data_set,
     std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples)
 {
-  srand (static_cast<unsigned int>(time (NULL)));
+  srand (static_cast<unsigned int>(time (nullptr)));
   std::random_shuffle (image_files_.begin (), image_files_.end ());
   std::vector < std::string > files;
   files = image_files_;

@@ -68,7 +68,7 @@ pcl::recognition::ORROctreeZProjection::clear ()
     }
 
     delete[] pixels_;
-    pixels_ = NULL;
+    pixels_ = nullptr;
   }
 
   if ( sets_ )
@@ -83,7 +83,7 @@ pcl::recognition::ORROctreeZProjection::clear ()
     }
 
     delete[] sets_;
-    sets_ = NULL;
+    sets_ = nullptr;
   }
 
   full_sets_.clear ();
@@ -144,8 +144,8 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
 
     for ( int j = 0 ; j < num_pixels_y_ ; ++j )
     {
-      pixels_[i][j] = NULL;
-      sets_[i][j] = NULL;
+      pixels_[i][j] = nullptr;
+      sets_[i][j] = nullptr;
     }
   }
 
@@ -156,7 +156,7 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
   {
     this->getPixelCoordinates (full_leaf->getCenter(), num_pixels_x_, num_pixels_y_);
     // If there is no set/pixel and at this position -> create one
-    if ( sets_[num_pixels_x_][num_pixels_y_] == NULL )
+    if ( sets_[num_pixels_x_][num_pixels_y_] == nullptr )
     {
       pixels_[num_pixels_x_][num_pixels_y_] = new Pixel (pixel_id++);
       sets_[num_pixels_x_][num_pixels_y_] = new Set (num_pixels_x_, num_pixels_y_);
