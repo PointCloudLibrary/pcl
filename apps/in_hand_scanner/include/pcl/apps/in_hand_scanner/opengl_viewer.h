@@ -170,7 +170,7 @@ namespace pcl
         };
 
         /** \brief Constructor. */
-        explicit OpenGLViewer (QWidget* parent=0);
+        explicit OpenGLViewer (QWidget* parent=nullptr);
 
         /** \brief Destructor. */
         ~OpenGLViewer ();

@@ -57,7 +57,7 @@ class CloudEditorWidget : public QGLWidget
   public:
     /// @brief Constructor
     /// @param parent a pointer which points to the parent widget
-    CloudEditorWidget (QWidget *parent = 0);
+    CloudEditorWidget (QWidget *parent = nullptr);
 
     /// @brief Destructor
     ~CloudEditorWidget ();

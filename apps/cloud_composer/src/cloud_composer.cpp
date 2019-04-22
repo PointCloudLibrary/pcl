@@ -33,7 +33,7 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   qRegisterMetaType<CloudView> ("CloudView");
   qRegisterMetaType<ConstItemList> ("ConstComposerItemList");
   
-  current_model_ = 0;
+  current_model_ = nullptr;
   
   multiplexer_ = new SignalMultiplexer (this);
   

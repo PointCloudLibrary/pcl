@@ -111,7 +111,7 @@ class OpenNIViewer
     OpenNIViewer (pcl::Grabber& grabber)
       : image_viewer_ ()
       , grabber_ (grabber)
-      , rgb_data_ (0), rgb_data_size_ (0)
+      , rgb_data_ (nullptr), rgb_data_size_ (0)
     { }
 
     void

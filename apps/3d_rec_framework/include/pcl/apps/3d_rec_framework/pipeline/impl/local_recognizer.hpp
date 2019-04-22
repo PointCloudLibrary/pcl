@@ -112,7 +112,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     } else {
       models = source_->getModels (search_model_);
       //reset cache and flann structures
-      if(flann_index_ != 0)
+      if(flann_index_ != nullptr)
         delete flann_index_;
 
       flann_models_.clear();
@@ -206,7 +206,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     //pcl::PointCloud<int> keypoints_input;
     PointInTPtr keypoints_pointcloud;
 
-    if (signatures_ != 0 && processed_ != 0 && (signatures_->size () == keypoints_pointcloud->points.size ()))
+    if (signatures_ != nullptr && processed_ != nullptr && (signatures_->size () == keypoints_pointcloud->points.size ()))
     {
       keypoints_pointcloud = keypoints_input_;
       signatures = signatures_;

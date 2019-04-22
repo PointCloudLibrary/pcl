@@ -58,7 +58,7 @@ namespace pcl
     class CloudCommand : public QUndoCommand
     {
       public: 
-        CloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
+        CloudCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
         
         
         ~CloudCommand ();
@@ -121,7 +121,7 @@ namespace pcl
     class ModifyItemCommand : public CloudCommand
     {
       public: 
-        ModifyItemCommand (ConstItemList input_data, QUndoCommand* parent = 0);
+        ModifyItemCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
     
         bool
         runCommand (AbstractTool* tool) override;
@@ -140,7 +140,7 @@ namespace pcl
     class NewItemCloudCommand : public CloudCommand
     {
       public: 
-        NewItemCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
+        NewItemCloudCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
       
         bool
         runCommand (AbstractTool* tool) override;
@@ -157,7 +157,7 @@ namespace pcl
     class SplitCloudCommand : public CloudCommand
     {
       public: 
-        SplitCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
+        SplitCloudCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
       
         bool
         runCommand (AbstractTool* tool) override;
@@ -174,7 +174,7 @@ namespace pcl
     class DeleteItemCommand : public CloudCommand
     {
       public: 
-        DeleteItemCommand (ConstItemList input_data, QUndoCommand* parent = 0);
+        DeleteItemCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
       
         bool
         runCommand (AbstractTool* tool) override;
@@ -194,7 +194,7 @@ namespace pcl
          *  \param[in] input_data Input list of CloudItem s from the project model which will be merged
          *  \param[in] temporary_clouds Input list of CloudItems which 
          */
-        MergeCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
+        MergeCloudCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
       
         bool
         runCommand (AbstractTool* tool) override;

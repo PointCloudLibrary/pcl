@@ -55,7 +55,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        CloudBrowser (QWidget* parent = 0);
+        CloudBrowser (QWidget* parent = nullptr);
         
         void 
         setModel (QAbstractItemModel* new_model) override;
@@ -69,7 +69,7 @@ namespace pcl
     {
       public:
         explicit 
-        BackgroundDelegate (QObject *parent = 0)
+        BackgroundDelegate (QObject *parent = nullptr)
           : QStyledItemDelegate(parent) {}
           
         void

@@ -97,7 +97,7 @@ pcl::cloud_composer::PropertiesModel::getProperty (const QString prop_name) cons
  // qDebug () << "Prop name="<<prop_name<<" row="<<property->row ()<<" col="<<property->column();
   int row = property->row ();
   QStandardItem* parent_item = property->parent ();
-  if (parent_item == 0)
+  if (parent_item == nullptr)
     parent_item = invisibleRootItem ();
   return parent_item->child (row,1)->data (Qt::EditRole);
 }

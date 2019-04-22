@@ -147,7 +147,7 @@ ICCVTutorial<FeatureType>::ICCVTutorial(boost::shared_ptr<pcl::Keypoint<pcl::Poi
 , show_target2source_ (false)
 , show_correspondences (false)
 {
-  visualizer_.registerKeyboardCallback(&ICCVTutorial::keyboard_callback, *this, 0);
+  visualizer_.registerKeyboardCallback(&ICCVTutorial::keyboard_callback, *this, nullptr);
 
   segmentation (source_, source_segmented_);
   segmentation (target_, target_segmented_);

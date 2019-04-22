@@ -48,7 +48,7 @@ namespace pcl
     class PoissonReconstructionWorker : public AbstractWorker 
     {
       public:
-        PoissonReconstructionWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
+        PoissonReconstructionWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=nullptr);
         ~PoissonReconstructionWorker();
 
       protected:

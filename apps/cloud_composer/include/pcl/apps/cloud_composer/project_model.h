@@ -68,11 +68,11 @@ namespace pcl
         Q_OBJECT
 
       public:
-        ProjectModel (QObject *parent = 0);
+        ProjectModel (QObject *parent = nullptr);
         ProjectModel (const ProjectModel& to_copy);
         ~ProjectModel ();
         
-        ProjectModel (QString project_name, QObject *parent = 0);
+        ProjectModel (QString project_name, QObject *parent = nullptr);
         
         inline const QString
         getName () { return horizontalHeaderItem (0)->text (); }
@@ -156,7 +156,7 @@ namespace pcl
         
         /** \brief Selects all items in the model */
         void 
-        selectAllItems (QStandardItem* item = 0 );
+        selectAllItems (QStandardItem* item = nullptr );
       Q_SIGNALS:
         void
         enqueueNewAction (AbstractTool* tool, ConstItemList data);

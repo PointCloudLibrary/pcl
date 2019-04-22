@@ -317,7 +317,7 @@ idle_callback ()
   if (!changed)
   {
     refining_ = false;
-    glutIdleFunc (NULL);
+    glutIdleFunc (nullptr);
   }
 }
 
@@ -452,7 +452,7 @@ keyboard_callback (unsigned char key, int, int)
       break;
     case 27:
       refining_ = false;
-      glutIdleFunc(NULL);
+      glutIdleFunc(nullptr);
     default:
       break;
   }

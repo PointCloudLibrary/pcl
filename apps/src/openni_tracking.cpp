@@ -568,7 +568,7 @@ public:
         target_cloud = cloud_pass_downsampled_;
       }
       
-      if (target_cloud != NULL)
+      if (target_cloud != nullptr)
       {
         PCL_INFO ("segmentation, please wait...\n");
         std::vector<pcl::PointIndices> cluster_indices;

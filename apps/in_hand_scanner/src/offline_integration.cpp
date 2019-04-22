@@ -96,7 +96,7 @@ pcl::ihs::OfflineIntegration::~OfflineIntegration ()
 void
 pcl::ihs::OfflineIntegration::start ()
 {
-  QString dir = QFileDialog::getExistingDirectory (0, "Please select a directory containing .pcd and .transform files.");
+  QString dir = QFileDialog::getExistingDirectory (nullptr, "Please select a directory containing .pcd and .transform files.");
 
   if (dir.isEmpty ())
   {

@@ -61,9 +61,9 @@ namespace pcl
       Q_OBJECT
       
     public:
-      CloudView (QWidget* parent = 0);
+      CloudView (QWidget* parent = nullptr);
       CloudView (const CloudView& to_copy);
-      CloudView (ProjectModel* model, QWidget* parent = 0);
+      CloudView (ProjectModel* model, QWidget* parent = nullptr);
       ~CloudView ();
       
       void 

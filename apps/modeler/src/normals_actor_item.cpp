@@ -72,7 +72,7 @@ pcl::modeler::NormalsActorItem::createNormalLines()
   if (cloud->empty())
     return;
 
-  if (points->GetData() == NULL)
+  if (points->GetData() == nullptr)
     points->SetData(vtkSmartPointer<vtkFloatArray>::New ());
 
   vtkFloatArray* data = dynamic_cast<vtkFloatArray*>(points->GetData());
