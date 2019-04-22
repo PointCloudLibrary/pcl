@@ -87,7 +87,7 @@ randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, dou
 
   double A[3], B[3], C[3];
   vtkIdType npts = 0;
-  vtkIdType *ptIds = NULL;
+  vtkIdType *ptIds = nullptr;
   polydata->GetCellPoints (el, npts, ptIds);
   polydata->GetPoint (ptIds[0], A);
   polydata->GetPoint (ptIds[1], B);
@@ -138,7 +138,7 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, bool 
 
   double p1[3], p2[3], p3[3], totalArea = 0;
   std::vector<double> cumulativeAreas (cells->GetNumberOfCells (), 0);
-  vtkIdType npts = 0, *ptIds = NULL;
+  vtkIdType npts = 0, *ptIds = nullptr;
   size_t cellId = 0;
   for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds); cellId++)
   {

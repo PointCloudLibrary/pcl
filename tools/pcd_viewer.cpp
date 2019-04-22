@@ -216,7 +216,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
 int
 main (int argc, char** argv)
 {
-  srand (static_cast<unsigned int> (time (0)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   print_info ("The viewer window provides interactive commands; for help, press 'h' or 'H' from within the window.\n");
 

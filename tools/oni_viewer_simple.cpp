@@ -184,7 +184,7 @@ main(int argc, char ** argv)
 
   pcl::TimeTrigger trigger;
   
-  pcl::ONIGrabber* grabber = 0;
+  pcl::ONIGrabber* grabber = nullptr;
   if (frame_rate == 0)
     grabber = new  pcl::ONIGrabber(arg, true, true);
   else

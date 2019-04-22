@@ -77,7 +77,7 @@ public:
       return;
 
     //register keyboard callbacks
-    viz.registerKeyboardCallback(&OctreeViewer::keyboardEventOccurred, *this, 0);
+    viz.registerKeyboardCallback(&OctreeViewer::keyboardEventOccurred, *this, nullptr);
 
     //key legends
     viz.addText ("Keys:", 0, 170, 0.0, 1.0, 0.0, "keys_t");

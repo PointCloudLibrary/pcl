@@ -119,7 +119,7 @@ public:
     : cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL OpenNI2 cloud"))
     , image_viewer_ ()
     , grabber_ (grabber)
-    , rgb_data_ (0), rgb_data_size_ (0)
+    , rgb_data_ (nullptr), rgb_data_size_ (0)
   {
   }
 
