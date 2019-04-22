@@ -186,7 +186,7 @@ namespace pcl
         binary_tree_out_arg.clear ();
         binary_tree_out_arg.reserve (this->branch_count_);
 
-        serializeTreeRecursive (root_node_, new_key, &binary_tree_out_arg, 0);
+        serializeTreeRecursive (root_node_, new_key, &binary_tree_out_arg, nullptr);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -220,7 +220,7 @@ namespace pcl
 
         leaf_container_vector_arg.reserve (this->leaf_count_);
 
-        serializeTreeRecursive (root_node_, new_key, 0, &leaf_container_vector_arg);
+        serializeTreeRecursive (root_node_, new_key, nullptr, &leaf_container_vector_arg);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,8 +242,8 @@ namespace pcl
                                   new_key,
                                   binary_tree_out_it,
                                   binary_tree_out_it_end,
-                                  0,
-                                  0);
+                                  nullptr,
+                                  nullptr);
 
       }
 

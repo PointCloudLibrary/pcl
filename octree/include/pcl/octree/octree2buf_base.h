@@ -127,7 +127,7 @@ namespace pcl
         inline bool hasChild (unsigned char buffer_arg, unsigned char index_arg) const
         {
           assert( (buffer_arg<2) && (index_arg<8));
-          return (child_node_array_[buffer_arg][index_arg] != 0);
+          return (child_node_array_[buffer_arg][index_arg] != nullptr);
         }
 
         /** \brief Get the type of octree node. Returns LEAVE_NODE type */
@@ -299,7 +299,7 @@ namespace pcl
 
         const LeafNodeBreadthIterator leaf_breadth_end ()
         {
-          return LeafNodeBreadthIterator (this, 0, NULL);
+          return LeafNodeBreadthIterator (this, 0, nullptr);
         };
 
         /** \brief Empty constructor. */
@@ -503,7 +503,7 @@ namespace pcl
         inline LeafContainerT*
         findLeaf (const OctreeKey& key_arg) const
         {
-          LeafContainerT* result = 0;
+          LeafContainerT* result = nullptr;
           findLeafRecursive (key_arg, depth_mask_, root_node_, result);
           return result;
         }
@@ -532,7 +532,7 @@ namespace pcl
          * */
         inline bool existLeaf (const OctreeKey& key_arg) const
         {
-          return (findLeaf(key_arg) != 0);
+          return (findLeaf(key_arg) != nullptr);
         }
 
         /** \brief Remove leaf node from octree
@@ -562,7 +562,7 @@ namespace pcl
         branchHasChild (const BranchNode& branch_arg, unsigned char child_idx_arg) const
         {
           // test occupancyByte for child existence
-          return (branch_arg.getChildPtr(buffer_selector_, child_idx_arg) != 0);
+          return (branch_arg.getChildPtr(buffer_selector_, child_idx_arg) != nullptr);
         }
 
         /** \brief Retrieve a child node pointer for child node at child_idx.
@@ -697,7 +697,7 @@ namespace pcl
             }
 
             // set branch child pointer to 0
-            branch_arg.setChildPtr(buffer_selector_arg, child_idx_arg, 0);
+            branch_arg.setChildPtr(buffer_selector_arg, child_idx_arg, nullptr);
           }
         }
 
@@ -725,8 +725,8 @@ namespace pcl
               deleteBranchChild (branch_arg, 0, i);
 
               // remove pointers from both buffers
-              branch_arg.setChildPtr(0, i, 0);
-              branch_arg.setChildPtr(1, i, 0);
+              branch_arg.setChildPtr(0, i, nullptr);
+              branch_arg.setChildPtr(1, i, nullptr);
             }
             else
             {
