@@ -265,7 +265,7 @@ pcl::people::HeadBasedSubclustering<PointT>::subcluster (std::vector<pcl::people
     PCL_ERROR ("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Cluster indices have not been set!\n");
     return;
   }
-  if (cloud_ == NULL)
+  if (cloud_ == nullptr)
   {
     PCL_ERROR ("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Input cloud has not been set!\n");
     return;
