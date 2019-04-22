@@ -77,7 +77,7 @@ namespace pcl
       RandomSample (bool extract_removed_indices = false) : 
         FilterIndices<PointT> (extract_removed_indices),
         sample_ (UINT_MAX), 
-        seed_ (static_cast<unsigned int> (time (NULL)))
+        seed_ (static_cast<unsigned int> (time (nullptr)))
       {
         filter_name_ = "RandomSample";
       }
@@ -166,7 +166,7 @@ namespace pcl
       typedef boost::shared_ptr<const RandomSample<pcl::PCLPointCloud2> > ConstPtr;
   
       /** \brief Empty constructor. */
-      RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (NULL)))
+      RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (nullptr)))
       {
         filter_name_ = "RandomSample";
       }

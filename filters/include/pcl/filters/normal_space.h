@@ -72,12 +72,12 @@ namespace pcl
       /** \brief Empty constructor. */
       NormalSpaceSampling ()
         : sample_ (std::numeric_limits<unsigned int>::max ())
-        , seed_ (static_cast<unsigned int> (time (NULL)))
+        , seed_ (static_cast<unsigned int> (time (nullptr)))
         , binsx_ ()
         , binsy_ ()
         , binsz_ ()
         , input_normals_ ()
-        , rng_uniform_distribution_ (NULL)
+        , rng_uniform_distribution_ (nullptr)
       {
         filter_name_ = "NormalSpaceSampling";
       }

@@ -49,7 +49,7 @@ template <typename PointT>
 pcl::FieldComparison<PointT>::FieldComparison (
     const std::string &field_name, ComparisonOps::CompareOp op, double compare_val) 
   : ComparisonBase<PointT> ()
-  , compare_val_ (compare_val), point_data_ (NULL)
+  , compare_val_ (compare_val), point_data_ (nullptr)
 {
   field_name_ = field_name;
   op_ = op;
@@ -93,10 +93,10 @@ pcl::FieldComparison<PointT>::FieldComparison (
 template <typename PointT>
 pcl::FieldComparison<PointT>::~FieldComparison () 
 {
-  if (point_data_ != NULL)
+  if (point_data_ != nullptr)
   {
     delete point_data_;
-    point_data_ = NULL;
+    point_data_ = nullptr;
   }
 }
 
@@ -682,7 +682,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     return;
   }
 
-  if (condition_.get () == NULL) 
+  if (condition_.get () == nullptr) 
   {
     PCL_WARN ("[pcl::%s::applyFilter] No filtering condition given!\n", getClassName ().c_str ());
     return;

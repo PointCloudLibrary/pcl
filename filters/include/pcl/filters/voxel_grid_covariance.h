@@ -308,7 +308,7 @@ namespace pcl
           return ret;
         }
         else
-          return NULL;
+          return nullptr;
       }
 
       /** \brief Get the voxel containing point p.
@@ -335,7 +335,7 @@ namespace pcl
           return ret;
         }
         else
-          return NULL;
+          return nullptr;
       }
 
       /** \brief Get the voxel containing point p.
@@ -362,7 +362,7 @@ namespace pcl
           return ret;
         }
         else
-          return NULL;
+          return nullptr;
 
       }
 
