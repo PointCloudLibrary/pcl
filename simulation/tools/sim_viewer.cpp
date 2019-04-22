@@ -434,7 +434,7 @@ initialize (int, char** argv)
 int
 main (int argc, char** argv)
 {
-  srand (time (0));
+  srand (time (nullptr));
 
   print_info ("The viewer window provides interactive commands; for help, press 'h' or 'H' from within the window.\n");
 

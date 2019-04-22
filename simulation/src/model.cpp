@@ -81,17 +81,17 @@ pcl::simulation::TriangleMeshModel::draw ()
   glBindBuffer (GL_ARRAY_BUFFER, vbo_);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ibo_);
 
-  glVertexPointer (3, GL_FLOAT, sizeof (Vertex), 0);
+  glVertexPointer (3, GL_FLOAT, sizeof (Vertex), nullptr);
   glColorPointer (3, GL_FLOAT, sizeof (Vertex), reinterpret_cast<GLvoid*> (12));
 
   // glNormalPointer(GL_FLOAT, sizeof(Vertex), (GLvoid*)((char*)&(vertices_[0].norm)-(char*)&(vertices_[0].pos)));
   //  glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0);
-  glDrawElements (GL_TRIANGLES, size_, GL_UNSIGNED_INT, 0);
+  glDrawElements (GL_TRIANGLES, size_, GL_UNSIGNED_INT, nullptr);
   glDisableClientState (GL_VERTEX_ARRAY);
   glDisableClientState (GL_COLOR_ARRAY);
   //glDisableClientState(GL_NORMAL_ARRAY);
-  glVertexPointer (3, GL_FLOAT, 0, 0);
-  glColorPointer (3, GL_FLOAT, 0, 0);
+  glVertexPointer (3, GL_FLOAT, 0, nullptr);
+  glColorPointer (3, GL_FLOAT, 0, nullptr);
   //glNormalPointer(GL_FLOAT, 0, 0);
 
   glBindBuffer (GL_ARRAY_BUFFER, 0);
@@ -282,7 +282,7 @@ pcl::simulation::Quad::render ()
   glBindBuffer (GL_ARRAY_BUFFER, quad_vbo_);
   glEnableVertexAttribArray (0);
   glEnableVertexAttribArray (1);
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, sizeof (float)*5, 0);
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, sizeof (float)*5, nullptr);
   glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, sizeof (float)*5, (const GLvoid*)12);
 
   glDrawArrays (GL_QUADS, 0, 4);
@@ -309,7 +309,7 @@ pcl::simulation::TexturedQuad::TexturedQuad (int width, int height) : width_ (wi
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
   glBindTexture (GL_TEXTURE_2D, 0);
 }
 

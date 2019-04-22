@@ -47,7 +47,7 @@ pcl::simulation::SumReduce::SumReduce (int width, int height, int levels) : leve
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-    glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, level_width, level_height, 0, GL_RED, GL_FLOAT, NULL);
+    glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, level_width, level_height, 0, GL_RED, GL_FLOAT, nullptr);
     glBindTexture (GL_TEXTURE_2D, 0);
   }
 }
