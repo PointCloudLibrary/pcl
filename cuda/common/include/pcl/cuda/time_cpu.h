@@ -119,7 +119,7 @@ inline double
   return (double)(timer_tick.QuadPart)/(double)frequency.QuadPart;
 #else
   timeval current_time;
-  gettimeofday (&current_time, NULL);
+  gettimeofday (&current_time, nullptr);
   return (current_time.tv_sec + 1e-6 * current_time.tv_usec);
 #endif
 }
