@@ -92,7 +92,7 @@ namespace pcl
       {
         // Create a random number generator object
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time(0)));
+          rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
         else
           rng_alg_.seed (12345u);
 
@@ -118,7 +118,7 @@ namespace pcl
         , error_sqr_dists_ ()
       {
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time (0)));
+          rng_alg_.seed (static_cast<unsigned> (std::time (nullptr)));
         else
           rng_alg_.seed (12345u);
 
@@ -150,7 +150,7 @@ namespace pcl
         , error_sqr_dists_ ()
       {
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time(0)));
+          rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
         else
           rng_alg_.seed (12345u);
 
