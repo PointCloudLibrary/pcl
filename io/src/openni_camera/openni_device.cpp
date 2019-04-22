@@ -281,7 +281,7 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context)
     available_image_modes_ (),
     available_depth_modes_ (),
     context_ (context),
-    device_node_info_ (0),
+    device_node_info_ (nullptr),
     depth_generator_ (),
     image_generator_ (),
     ir_generator_ (),

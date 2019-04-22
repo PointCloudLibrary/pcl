@@ -48,7 +48,7 @@ pcl::DinastGrabber::DinastGrabber (const int device_position)
   , image_height_ (240)
   , sync_packet_size_ (512)
   , fov_ (64. * M_PI / 180.)
-  , context_ (NULL)
+  , context_ (nullptr)
   , bulk_ep_ (std::numeric_limits<unsigned char>::max ())
   , second_image_ (false)
   , running_ (false)
@@ -131,7 +131,7 @@ pcl::DinastGrabber::setupDevice (int device_position, const int id_vendor, const
   #else
     libusb_set_debug (context_, 3);
   #endif
-  libusb_device **devs = NULL;
+  libusb_device **devs = nullptr;
   
   // Get the list of USB devices
   ssize_t number_devices = libusb_get_device_list (context_, &devs);
@@ -187,7 +187,7 @@ pcl::DinastGrabber::setupDevice (int device_position, const int id_vendor, const
   libusb_free_device_list (devs, 1);
   
   // Check if device founded if not notify
-  if (device_handle_ == NULL)
+  if (device_handle_ == nullptr)
     PCL_THROW_EXCEPTION (pcl::IOException, "[pcl::DinastGrabber::setupDevice] Failed to find any DINAST devices attached");
   
   // Claim device interface

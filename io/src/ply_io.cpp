@@ -77,7 +77,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
   else if (element_name == "camera")
   {
     cloud_->is_dense = true;
-    return (boost::tuple<boost::function<void ()>, boost::function<void ()> > (0, 0));
+    return {};
   }
   else if (element_name == "range_grid")
   {
@@ -88,7 +88,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
   }
   else
   {
-    return (boost::tuple<boost::function<void ()>, boost::function<void ()> > (0, 0));
+    return {};
   }
 }
 
@@ -187,12 +187,12 @@ namespace pcl
       }
       else
       {
-        return (0);
+        return {};
       }
     }
     else
     {
-      return (0);
+      return {};
     }
   }
 
@@ -225,7 +225,7 @@ namespace pcl
       }
     }
     else
-      return (0);
+      return {};
   }
 
   template <> boost::function<void (pcl::io::ply::int32)>
@@ -247,10 +247,10 @@ namespace pcl
         return boost::bind (&pcl::PLYReader::cloudHeightCallback, this, _1);
       }
       else
-        return (0);
+        return {};
     }
     else
-      return (0);
+      return {};
   }
 
   template <typename Scalar> boost::function<void (Scalar)>
@@ -261,7 +261,7 @@ namespace pcl
       appendScalarProperty<Scalar> (property_name, 1);
       return (boost::bind (&pcl::PLYReader::vertexScalarPropertyCallback<Scalar>, this, _1));
     }
-    return (0);
+    return {};
   }
 
   template<typename T> inline
@@ -357,7 +357,7 @@ namespace pcl
     }
     else
     {
-      return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (0, 0, 0);
+      return {};
     }
   }
 
@@ -386,7 +386,7 @@ namespace pcl
     }
     else
     {
-      return boost::tuple<boost::function<void (SizeType)>, boost::function<void (ContentType)>, boost::function<void ()> > (0, 0, 0);
+      return {};
     }
   }
 }
