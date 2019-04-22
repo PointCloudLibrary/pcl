@@ -55,7 +55,7 @@ namespace pcl
 
             T* data;
 
-            __PCL_GPU_HOST_DEVICE__ DevPtr() : data(0) {}
+            __PCL_GPU_HOST_DEVICE__ DevPtr() : data(nullptr) {}
             __PCL_GPU_HOST_DEVICE__ DevPtr(T* data_arg) : data(data_arg) {}
 
             __PCL_GPU_HOST_DEVICE__ size_t elemSize() const { return elem_size; }

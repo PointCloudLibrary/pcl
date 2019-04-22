@@ -51,7 +51,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////// Octree Host Interface implementation ////////////////////////////////
 
-pcl::gpu::Octree::Octree() : cloud_(0), impl(0)
+pcl::gpu::Octree::Octree() : cloud_(nullptr), impl(nullptr)
 {
     Static<sizeof(PointType) == sizeof(OctreeImpl::PointType)>::check();
 

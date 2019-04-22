@@ -381,7 +381,7 @@ pcl::gpu::people::FaceDetector::loadFromNVBIN(const std::string &filename,
 {
     size_t readCount;
     FILE *fp = fopen(filename.c_str(), "rb");
-    ncvAssertReturn(fp != NULL, NCV_FILE_ERROR);
+    ncvAssertReturn(fp != nullptr, NCV_FILE_ERROR);
     Ncv32u fileVersion;
     readCount = fread(&fileVersion, sizeof(Ncv32u), 1, fp);
     PCL_ASSERT_ERROR_PRINT_RETURN(1 == readCount, "return NCV_FILE_ERROR", NCV_FILE_ERROR);
@@ -502,7 +502,7 @@ pcl::gpu::people::FaceDetector::ncvHaarGetClassifierSize(const std::string &file
     if (fext == "nvbin")
     {
         FILE *fp = fopen(filename.c_str(), "rb");
-        PCL_ASSERT_ERROR_PRINT_RETURN(fp != NULL, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
+        PCL_ASSERT_ERROR_PRINT_RETURN(fp != nullptr, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
         Ncv32u fileVersion;
         size_t readCount = fread(&fileVersion, sizeof(Ncv32u), 1, fp);
         PCL_ASSERT_ERROR_PRINT_RETURN(1 == readCount, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
@@ -588,7 +588,7 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
     memcpy(h_src.ptr(), &point.intensity, sizeof(point.intensity));
   }
 
-  ncv_return_status = h_src.copySolid(d_src, 0);
+  ncv_return_status = h_src.copySolid(d_src, nullptr);
   PCL_ASSERT_NCVSTAT(ncv_return_status);
   PCL_ASSERT_CUDA_RETURN(cudaStreamSynchronize(0), NCV_CUDA_ERROR);
 
