@@ -200,7 +200,7 @@ namespace pcl
       nearestKSearch (int index, int k, 
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
       {
-        if (indices_ == NULL)
+        if (indices_ == nullptr)
         {
           assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in nearestKSearch!");
           return (nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
@@ -294,7 +294,7 @@ namespace pcl
       radiusSearch (int index, double radius, std::vector<int> &k_indices,
                     std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
       {
-        if (indices_ == NULL)
+        if (indices_ == nullptr)
         {
           assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in radiusSearch!");
           return (radiusSearch (input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
