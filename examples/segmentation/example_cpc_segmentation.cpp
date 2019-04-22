@@ -459,7 +459,7 @@ CPCSegmentation Parameters: \n\
     const unsigned char concave_color [3] = {255,  0,  0};
     const unsigned char cut_color     [3] = {  0,255,  0};
     const unsigned char* convex_color     = bg_white ? black_color : white_color;
-    const unsigned char* color = NULL;
+    const unsigned char* color = nullptr;
 
     //The vertices in the supervoxel adjacency list are the supervoxel centroids
     //This iterates through them, finding the edges
@@ -529,7 +529,7 @@ CPCSegmentation Parameters: \n\
     pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     float bg_color = bg_white?1:0;
     viewer->setBackgroundColor (bg_color, bg_color, bg_color);
-    viewer->registerKeyboardCallback (keyboardEventOccurred, 0);
+    viewer->registerKeyboardCallback (keyboardEventOccurred, nullptr);
     viewer->addPointCloud (cpc_labeled_cloud, "cpc_cloud");
     /// Visualization Loop
     PCL_INFO ("Loading viewer\n");
