@@ -78,7 +78,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   // instantiate point cloud
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   std::priority_queue<prioPointQueueEntry, pcl::PointCloud<prioPointQueueEntry>::VectorType> pointCandidates;
 
@@ -277,7 +277,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
   PointCloud<PointXYZ>::Ptr cloudOut (new PointCloud<PointXYZ> ());
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {

@@ -56,7 +56,7 @@ TEST (PCL, PLYReaderWriter)
   cloud.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   size_t nr_p = cloud.size ();
   // Randomly create a new point cloud
   for (size_t i = 0; i < nr_p; ++i)
