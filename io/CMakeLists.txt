@@ -325,7 +325,11 @@ add_definitions(${VTK_DEFINES})
 PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
 target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 link_directories(${VTK_LINK_DIRECTORIES})
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_LIBRARIES})
+target_link_libraries("${LIB_NAME}"
+    pcl_common
+    pcl_io_ply
+    ${PCL_IO_VTK_COMPONENTS}
+  )
 if(PNG_FOUND)
   target_link_libraries("${LIB_NAME}" ${PNG_LIBRARIES})
 endif()

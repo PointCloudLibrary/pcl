@@ -143,7 +143,13 @@ if(APPLE)
   target_link_libraries("${LIB_NAME}" "-framework Cocoa")
 endif()
 
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree ${VTK_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries("${LIB_NAME}"
+  pcl_common
+  pcl_io
+  pcl_kdtree
+  ${OPENGL_LIBRARIES}
+  ${PCL_VISUALIZATION_VTK_COMPONENTS}
+)
 
 set(EXT_DEPS "")
 if(WITH_OPENNI)
