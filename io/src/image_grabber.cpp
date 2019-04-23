@@ -329,7 +329,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
     }
   }
   sort (depth_image_files_.begin (), depth_image_files_.end ());
-  if (rgb_image_files_.size () > 0)
+  if (!rgb_image_files_.empty ())
     sort (rgb_image_files_.begin (), rgb_image_files_.end ());
 }
 
@@ -384,11 +384,11 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   }
   if (depth_image_files_.size () != rgb_image_files_.size () )
     PCL_WARN ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : Watch out not same amount of depth and rgb images");
-  if (depth_image_files_.size () > 0)
+  if (!depth_image_files_.empty ())
     sort (depth_image_files_.begin (), depth_image_files_.end ());
   else
     PCL_ERROR ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no depth images added");
-  if (rgb_image_files_.size () > 0)
+  if (!rgb_image_files_.empty ())
     sort (rgb_image_files_.begin (), rgb_image_files_.end ());
   else
     PCL_ERROR ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no rgb images added");
@@ -427,7 +427,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
     }
   }
   sort (depth_pclzf_files_.begin (), depth_pclzf_files_.end ());
-  if (rgb_pclzf_files_.size () > 0)
+  if (!rgb_pclzf_files_.empty ())
     sort (rgb_pclzf_files_.begin (), rgb_pclzf_files_.end ());
   sort (xml_files_.begin(), xml_files_.end());
   if (depth_pclzf_files_.size() != xml_files_.size())
@@ -435,7 +435,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
     PCL_ERROR("[pcl::ImageGrabber::loadPCLZFFiles] # depth clouds != # xml files\n");
     return;
   }
-  if (depth_pclzf_files_.size() != rgb_pclzf_files_.size() && rgb_pclzf_files_.size() > 0)
+  if (depth_pclzf_files_.size() != rgb_pclzf_files_.size() && !rgb_pclzf_files_.empty ())
   {
     PCL_ERROR("[pcl::ImageGrabber::loadPCLZFFiles] # depth clouds != # rgb clouds\n");
     return;
@@ -500,7 +500,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudAt (size_t idx,
                                                      double &cx, 
                                                      double &cy) const
 {
-  if (depth_image_files_.size () > 0)
+  if (!depth_image_files_.empty ())
   {
     fx = focal_length_x_;
     fy = focal_length_y_;
@@ -508,7 +508,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudAt (size_t idx,
     cy = principal_point_y_;
     return (getCloudVTK (idx, blob, origin, orientation) );
   }
-  else if (depth_pclzf_files_.size () > 0)
+  else if (!depth_pclzf_files_.empty ())
     return (getCloudPCLZF (idx, blob, origin, orientation, fx, fy, cx, cy) );
   else
   {
@@ -534,7 +534,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
   vtkSmartPointer<vtkImageData> rgb_image;
   const std::string &depth_image_file = depth_image_files_[idx];
   // If there are RGB files, load an rgb image
-  if (rgb_image_files_.size () != 0)
+  if (!rgb_image_files_.empty ())
   {
     const std::string &rgb_image_file = rgb_image_files_[idx];
     // If we were unable to pull a Vtk image, throw an error
@@ -570,7 +570,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
     centerY = ((float)dims[1] - 1.f)/2.f;
   }
 
-  if(rgb_image_files_.size() > 0)
+  if(!rgb_image_files_.empty ())
   {
     pcl::PointCloud<pcl::PointXYZRGBA> cloud_color;
     cloud_color.width = dims[0];
@@ -669,7 +669,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
   // Get the proper files
   const std::string &depth_pclzf_file = depth_pclzf_files_[idx];
   const std::string &xml_file = xml_files_[idx];
-  if (rgb_pclzf_files_.size () > 0)
+  if (!rgb_pclzf_files_.empty ())
   {
     pcl::PointCloud<pcl::PointXYZRGBA> cloud_color;
     const std::string &rgb_pclzf_file = rgb_pclzf_files_[idx];

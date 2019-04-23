@@ -234,7 +234,7 @@ namespace pcl
         {
           this->clear();
 
-          if ( objects.size () == 0 )
+          if ( objects.empty () )
             return;
 
           sorted_objects_ = &objects;

@@ -81,7 +81,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     typename pcl::PointCloud<FeatureT>::CloudVectorType signatures;
     std::vector < Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > centroids;
 
-    if (indices_.size ())
+    if (!indices_.empty ())
     {
       pcl::copyPointCloud (*input_, indices_, *in);
     }
@@ -93,7 +93,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     estimator_->estimate (in, processed, signatures, centroids);
     std::vector<index_score> indices_scores;
 
-    if (signatures.size () > 0)
+    if (!signatures.empty ())
     {
       for (size_t idx = 0; idx < signatures.size (); idx++)
       {

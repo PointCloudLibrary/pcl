@@ -345,7 +345,7 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
     {
       if (firing_data.rotationalPosition < last_azimuth_)
       {
-        if (current_sweep_xyzrgba_->size () > 0)
+        if (!current_sweep_xyzrgba_->empty ())
         {
           current_sweep_xyz_->is_dense = current_sweep_xyzrgba_->is_dense = current_sweep_xyzi_->is_dense = false;
           current_sweep_xyz_->header.stamp = velodyne_time;

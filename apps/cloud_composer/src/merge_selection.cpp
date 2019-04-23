@@ -37,7 +37,7 @@ pcl::cloud_composer::MergeSelection::performAction (ConstItemList input_data, Po
   QList <CloudComposerItem*> output;
 
   // Check input data length
-  if ( input_data.size () == 0 && selected_item_index_map_.isEmpty() )
+  if ( input_data.empty () && selected_item_index_map_.isEmpty() )
   {
     qCritical () << "Empty input in MergeSelection!";
     return output;

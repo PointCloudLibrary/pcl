@@ -141,7 +141,7 @@ pcl::ihs::OfflineIntegration::computationThread ()
   Base::setPivot ("model");
   Base::addMesh (mesh_model_, "model");
 
-  if (filenames.size () < 1)
+  if (filenames.empty ())
   {
     return;
   }

@@ -318,7 +318,7 @@ TEST (TestAddDeleteFace, NonManifold2)
   }
 
   // Delete all faces
-  while (expected.size ())
+  while (!expected.empty ())
   {
     mesh.deleteFace (FaceIndex (0));
     mesh.cleanUp ();

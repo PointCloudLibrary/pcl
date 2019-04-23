@@ -1477,7 +1477,7 @@ namespace pcl
             PCL_DEBUG ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Points in box: %d\n", __FUNCTION__, indices.size () );
             PCL_DEBUG ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Points remaining: %d\n", __FUNCTION__, tmp_cloud->width*tmp_cloud->height - indices.size () );
 
-            if ( indices.size () > 0 )
+            if ( !indices.empty () )
             {
               if( dst_blob->width*dst_blob->height > 0 )
               {

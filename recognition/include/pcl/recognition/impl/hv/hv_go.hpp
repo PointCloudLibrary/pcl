@@ -522,7 +522,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
     recog_model->cloud_->height = 1;
   }
 
-  if (recog_model->cloud_->points.size () <= 0)
+  if (recog_model->cloud_->points.empty ())
   {
     PCL_WARN("The model cloud has no points..\n");
     return false;
@@ -604,7 +604,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
   recog_model->outlier_indices_.resize (o);
 
   recog_model->outliers_weight_ = (std::accumulate (outliers_weight.begin (), outliers_weight.end (), 0.f) / static_cast<float> (outliers_weight.size ()));
-  if (outliers_weight.size () == 0)
+  if (outliers_weight.empty ())
     recog_model->outliers_weight_ = 1.f;
 
   pcl::IndicesPtr indices_scene (new std::vector<int>);

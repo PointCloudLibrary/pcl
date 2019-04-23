@@ -39,7 +39,7 @@ namespace pcl
             return false;
           }
 
-          if (keypoint_extractor_.size() == 0)
+          if (keypoint_extractor_.empty ())
           {
             PCL_ERROR("SHOTLocalEstimation :: This feature needs a keypoint extractor... please provide one\n");
             return false;
@@ -99,7 +99,7 @@ namespace pcl
           keypoint_extractor_->setSupportRadius(support_radius_);
           keypoint_extractor_->compute (keypoints);*/
 
-          if (keypoints->points.size () == 0)
+          if (keypoints->points.empty ())
           {
             PCL_WARN("SHOTLocalEstimation :: No keypoints were found\n");
             return false;

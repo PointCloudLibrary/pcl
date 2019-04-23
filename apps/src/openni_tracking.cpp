@@ -573,7 +573,7 @@ public:
         PCL_INFO ("segmentation, please wait...\n");
         std::vector<pcl::PointIndices> cluster_indices;
         euclideanSegment (target_cloud, cluster_indices);
-        if (cluster_indices.size () > 0)
+        if (!cluster_indices.empty ())
         {
           // select the cluster to track
           CloudPtr temp_cloud (new Cloud);

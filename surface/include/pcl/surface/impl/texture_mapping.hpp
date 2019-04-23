@@ -554,7 +554,7 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
     return (-1);
   }
 
-  if (cameras.size () == 0)
+  if (cameras.empty ())
   {
     PCL_ERROR ("Must provide at least one camera info!\n");
     return (-1);

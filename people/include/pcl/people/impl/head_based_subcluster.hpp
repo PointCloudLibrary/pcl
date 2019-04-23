@@ -260,7 +260,7 @@ pcl::people::HeadBasedSubclustering<PointT>::subcluster (std::vector<pcl::people
     PCL_ERROR ("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Floor parameters have not been set or they are not valid!\n");
     return;
   }
-  if (cluster_indices_.size() == 0)
+  if (cluster_indices_.empty ())
   {
     PCL_ERROR ("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Cluster indices have not been set!\n");
     return;

@@ -232,7 +232,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     std::vector<pcl::PointCloud<FeatureT>, Eigen::aligned_allocator<pcl::PointCloud<FeatureT> > > signatures;
     std::vector < Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > centroids;
 
-    if (indices_.size ())
+    if (!indices_.empty ())
       pcl::copyPointCloud (*input_, indices_, *in);
     else
       in = input_;
@@ -245,13 +245,13 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     std::vector<index_score> indices_scores;
     descriptor_distances_.clear ();
 
-    if (signatures.size () > 0)
+    if (!signatures.empty ())
     {
 
       {
         pcl::ScopeTime t_matching ("Matching and roll...");
 
-        if (use_single_categories_ && (categories_to_be_searched_.size () > 0))
+        if (use_single_categories_ && (!categories_to_be_searched_.empty ()))
         {
 
           //perform search of the different signatures in the categories_to_be_searched_
@@ -643,7 +643,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           PointInTPtr processed (new pcl::PointCloud<PointInT>);
           PointInTPtr view = models->at (i).views_->at (v);
 
-          if (view->points.size () == 0)
+          if (view->points.empty ())
             PCL_WARN("View has no points!!!\n");
 
           if (noisify_)

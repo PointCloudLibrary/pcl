@@ -1294,7 +1294,7 @@ main (int argc, char* argv[])
         
   std::string camera_pose_file;
   boost::shared_ptr<CameraPoseProcessor> pose_processor;
-  if (pc::parse_argument (argc, argv, "-save_pose", camera_pose_file) && camera_pose_file.size () > 0)
+  if (pc::parse_argument (argc, argv, "-save_pose", camera_pose_file) && !camera_pose_file.empty ())
   {
     pose_processor.reset (new CameraPoseWriter (camera_pose_file));
   }

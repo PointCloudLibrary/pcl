@@ -241,7 +241,7 @@ pcl::SVM::adaptInputToLibSVM (std::vector<SVMData> training_set, svm_problem &pr
 bool
 pcl::SVMTrain::trainClassifier ()
 {
-  if (training_set_.size() == 0)
+  if (training_set_.empty ())
   {
     // to be sure to have loaded the training set
     PCL_ERROR ("[pcl::%s::trainClassifier] Training data not set!\n", getClassName ().c_str ());

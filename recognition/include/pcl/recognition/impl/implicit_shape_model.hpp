@@ -758,13 +758,13 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::findObject
 {
   typename pcl::features::ISMVoteList<PointT>::Ptr out_votes (new pcl::features::ISMVoteList<PointT> ());
 
-  if (in_cloud->points.size () == 0)
+  if (in_cloud->points.empty ())
     return (out_votes);
 
   typename pcl::PointCloud<PointT>::Ptr sampled_point_cloud (new pcl::PointCloud<PointT> ());
   typename pcl::PointCloud<NormalT>::Ptr sampled_normal_cloud (new pcl::PointCloud<NormalT> ());
   simplifyCloud (in_cloud, in_normals, sampled_point_cloud, sampled_normal_cloud);
-  if (sampled_point_cloud->points.size () == 0)
+  if (sampled_point_cloud->points.empty ())
     return (out_votes);
 
   typename pcl::PointCloud<pcl::Histogram<FeatureSize> >::Ptr feature_cloud (new pcl::PointCloud<pcl::Histogram<FeatureSize> > ());
@@ -854,7 +854,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
 
   int n_key_points = 0;
 
-  if (training_clouds_.size () == 0 || training_classes_.size () == 0 || feature_estimator_ == nullptr)
+  if (training_clouds_.empty () || training_classes_.empty () || feature_estimator_ == nullptr)
     return (false);
 
   for (size_t i_cloud = 0; i_cloud < training_clouds_.size (); i_cloud++)
@@ -870,7 +870,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
     typename pcl::PointCloud<PointT>::Ptr sampled_point_cloud (new pcl::PointCloud<PointT> ());
     typename pcl::PointCloud<NormalT>::Ptr sampled_normal_cloud (new pcl::PointCloud<NormalT> ());
     simplifyCloud (training_clouds_[i_cloud], training_normals_[i_cloud], sampled_point_cloud, sampled_normal_cloud);
-    if (sampled_point_cloud->points.size () == 0)
+    if (sampled_point_cloud->points.empty ())
       continue;
 
     shiftCloud (training_clouds_[i_cloud], models_center);
@@ -938,7 +938,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::clusterDes
 template <int FeatureSize, typename PointT, typename NormalT> void
 pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateSigmas (std::vector<float>& sigmas)
 {
-  if (training_sigmas_.size () != 0)
+  if (!training_sigmas_.empty ())
   {
     sigmas.resize (training_sigmas_.size (), 0.0f);
     for (size_t i_sigma = 0; i_sigma < training_sigmas_.size (); i_sigma++)

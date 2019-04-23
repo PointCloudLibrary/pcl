@@ -92,7 +92,7 @@ namespace pcl
           const int num_of_sub_nodes = static_cast<int> (sub_nodes.size ());
           stream.write (reinterpret_cast<const char*> (&num_of_sub_nodes), sizeof(num_of_sub_nodes));
 
-          if (sub_nodes.size () > 0)
+          if (!sub_nodes.empty ())
           {
             feature.serialize (stream);
             stream.write (reinterpret_cast<const char*> (&threshold), sizeof(threshold));

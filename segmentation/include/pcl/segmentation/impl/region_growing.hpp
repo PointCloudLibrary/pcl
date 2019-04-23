@@ -308,7 +308,7 @@ template <typename PointT, typename NormalT> bool
 pcl::RegionGrowing<PointT, NormalT>::prepareForSegmentation ()
 {
   // if user forgot to pass point cloud or if it is empty
-  if ( input_->points.size () == 0 )
+  if ( input_->points.empty () )
     return (false);
 
   // if user forgot to pass normals or the sizes of point and normal cloud are different

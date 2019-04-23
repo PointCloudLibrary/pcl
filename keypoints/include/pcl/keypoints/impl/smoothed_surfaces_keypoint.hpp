@@ -193,7 +193,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::initCompute ()
     PCL_ERROR ("[pcl::SmoothedSurfacesKeypoints::initCompute] Input normals were not set\n");
     return false;
   }
-  if (clouds_.size () == 0)
+  if (clouds_.empty ())
   {
     PCL_ERROR ("[pcl::SmoothedSurfacesKeypoints::initCompute] No other clouds were set apart from the input\n");
     return false;

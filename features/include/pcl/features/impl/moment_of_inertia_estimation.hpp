@@ -144,7 +144,7 @@ pcl::MomentOfInertiaEstimation<PointT>::compute ()
 
   if (normalize_)
   {
-    if (indices_->size () > 0)
+    if (!indices_->empty ())
       point_mass_ = 1.0f / static_cast <float> (indices_->size () * indices_->size ());
     else
       point_mass_ = 1.0f;

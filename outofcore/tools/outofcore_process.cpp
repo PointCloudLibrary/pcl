@@ -316,7 +316,7 @@ main (int argc, char* argv[])
   }
 
   // Check if we should process any files
-  if (pcd_paths.size () < 1)
+  if (pcd_paths.empty ())
   {
     PCL_ERROR ("No .pcd files specified\n");
     return -1;

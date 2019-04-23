@@ -216,7 +216,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     else
     {
       processed.reset( (new pcl::PointCloud<PointInT>));
-      if (indices_.size () > 0)
+      if (!indices_.empty ())
       {
         PointInTPtr sub_input (new pcl::PointCloud<PointInT>);
         pcl::copyPointCloud (*input_, indices_, *sub_input);

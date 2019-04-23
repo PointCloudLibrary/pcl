@@ -220,7 +220,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
           cut_support_indices.insert (cut_support_indices.end (), cluster_index.indices.begin (), cluster_index.indices.end ());
         }
       }
-      if (cut_support_indices.size () == 0)
+      if (cut_support_indices.empty ())
       {
 //         std::cout << "Could not find planes which exceed required minimum score (threshold " << min_cut_score_ << "), not cutting" << std::endl;
         continue;

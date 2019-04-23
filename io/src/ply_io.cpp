@@ -618,7 +618,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     const static double d_nan = std::numeric_limits <double>::quiet_NaN ();
     for (size_t r = 0; r < r_size; ++r)
     {
-      if ((*range_grid_)[r].size () == 0)
+      if ((*range_grid_)[r].empty ())
       {
         for (const auto &field : cloud_->fields)
           if (field.datatype == ::pcl::PCLPointField::FLOAT32)
@@ -678,7 +678,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
     const static double d_nan = std::numeric_limits <double>::quiet_NaN ();
     for (size_t r = 0; r < r_size; ++r)
     {
-      if ((*range_grid_)[r].size () == 0)
+      if ((*range_grid_)[r].empty ())
       {
         for (const auto &field : cloud_->fields)
           if (field.datatype == ::pcl::PCLPointField::FLOAT32)

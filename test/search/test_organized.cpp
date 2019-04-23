@@ -156,7 +156,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
       pointCandidates.pop ();
 
     // copy results into vectors
-    while (pointCandidates.size ())
+    while (!pointCandidates.empty ())
     {
       k_indices_bruteforce.push_back (pointCandidates.top ().pointIdx_);
       k_sqr_distances_bruteforce.push_back (float (pointCandidates.top ().pointDistance_));

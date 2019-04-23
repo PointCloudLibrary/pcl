@@ -177,7 +177,7 @@ saveOBJFile (const std::string &file_name,
 
   for (int m = 0; m < nr_meshes; ++m)
   {
-    if(tex_mesh.tex_coordinates.size() == 0)
+    if(tex_mesh.tex_coordinates.empty ())
       continue;
 
     PCL_INFO ("%d vertex textures in submesh %d\n", tex_mesh.tex_coordinates[m].size (), m);
@@ -198,7 +198,7 @@ saveOBJFile (const std::string &file_name,
     if (m > 0) 
       f_idx += tex_mesh.tex_polygons[m-1].size ();
 
-    if(tex_mesh.tex_materials.size() !=0)
+    if(!tex_mesh.tex_materials.empty ())
     {
       fs << "# The material will be used for mesh " << m << std::endl;
       //TODO pbl here with multi texture and unseen faces
@@ -233,7 +233,7 @@ saveOBJFile (const std::string &file_name,
   // Open file
   PCL_INFO ("Writing material files\n");
   //don't do it if no material to write
-  if(tex_mesh.tex_materials.size() ==0)
+  if(tex_mesh.tex_materials.empty ())
     return (0);
 
   std::ofstream m_fs;

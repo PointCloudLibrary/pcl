@@ -106,7 +106,7 @@ namespace pcl
         
         if (bTreeUp)
         {
-          if (stack_.size () > 0)
+          if (!stack_.empty ())
           {
             std::pair<OutofcoreOctreeBaseNode<ContainerT, PointT>*, unsigned char>& stackEntry = stack_.back ();
             stack_.pop_back ();
