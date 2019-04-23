@@ -1495,7 +1495,7 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
     float tmin = 1.0;
     for (unsigned int j = 1; j < 4; j++)
     {
-      tmin = tmin - 0.25f;
+      tmin -= 0.25f;
       Eigen::Vector3f n_p = o + (tmin * dir);
       cloudIn->points[j] = pcl::PointXYZ (n_p[0], n_p[1], n_p[2]);
     }

@@ -294,7 +294,7 @@ pcl::cloud_composer::ComposerMainWindow::on_action_new_project__triggered (/*QSt
     int k = 2;
     while (name_model_map_.contains (name + tr ("-%1").arg (k)))
       ++k;
-    name = name + tr ("-%1").arg (k);
+    name += tr ("-%1").arg (k);
   }
   //qDebug () << "Setting name";
   new_project_model->setName (name);

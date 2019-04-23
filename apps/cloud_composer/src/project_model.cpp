@@ -204,7 +204,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
       ++k;
       items = findItems (short_filename+ tr ("-%1").arg (k));
     }
-    short_filename = short_filename+ tr ("-%1").arg (k);
+    short_filename += tr ("-%1").arg (k);
   }
   CloudItem* new_item = new CloudItem (short_filename, cloud_blob, origin, orientation, true);
    
@@ -337,7 +337,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
       ++k;
       items = findItems (short_filename+ tr ("-%1").arg (k));
     }
-    short_filename = short_filename+ tr ("-%1").arg (k);
+    short_filename += tr ("-%1").arg (k);
   }
 
   CloudItem* new_item = CloudItem::createCloudItemFromTemplate<PointXYZRGB> (short_filename,cloud);

@@ -216,7 +216,7 @@ namespace pcl
 
       // Need to make the bounding box slightly bigger so points that fall on the max side aren't excluded
       double epsilon = 1e-8;
-      tmp_max = tmp_max + epsilon*Eigen::Vector3d (1.0, 1.0, 1.0);
+      tmp_max += epsilon*Eigen::Vector3d (1.0, 1.0, 1.0);
 
       node_metadata_->setBoundingBox (tmp_min, tmp_max);
       node_metadata_->setDirectoryPathname (root_name.parent_path ());

@@ -245,7 +245,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
     float w = (max_dist - d_k);
     Eigen::Vector3f diff = (pvector);
     Eigen::Matrix3f mat = diff * diff.transpose ();
-    scatter = scatter + mat * w;
+    scatter += mat * w;
     sum_w += w;
   }
 

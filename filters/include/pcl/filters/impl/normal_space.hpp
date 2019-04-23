@@ -102,7 +102,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::isEntireBinSampled (boost::dynamic_bi
   bool status = true;
   for (unsigned int i = start_index; i < start_index + length; i++)
   {
-    status = status & array.test (i);
+    status &= array.test (i);
   }
   return status;
 }

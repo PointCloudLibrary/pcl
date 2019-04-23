@@ -89,7 +89,7 @@ static inline double powi (double base, int times)
     if (t % 2 == 1)
       ret *= tmp;
 
-    tmp = tmp * tmp;
+    tmp *= tmp;
   }
 
   return ret;
@@ -2095,7 +2095,7 @@ static void sigmoid_train (
         break;
       }
       else
-        stepsize = stepsize / 2.0;
+        stepsize /= 2.0;
     }
 
     if (stepsize < min_step)
@@ -2333,7 +2333,7 @@ static double svm_svr_probability (
 
   for (int i = 0; i < prob->l; i++)
     if (fabs (ymv[i]) > 5*std)
-      count = count + 1;
+      count += 1;
     else
       mae += fabs (ymv[i]);
 

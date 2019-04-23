@@ -234,7 +234,7 @@ FittingCurve::initNurbsCurve2D (int order, const vector_vec2d &data)
   {
     cv (0) = r * sin (dcv * j);
     cv (1) = r * cos (dcv * j);
-    cv = cv + mean;
+    cv += mean;
     nurbs.SetCV (j, ON_3dPoint (cv (0), cv (1), 0.0));
   }
 
@@ -255,7 +255,7 @@ FittingCurve::initNurbsCurvePCA (int order, const vector_vec3d &data, int ncps, 
 
   NurbsTools::pca (data, mean, eigenvectors, eigenvalues);
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
 
   double r = rf * sqrt (eigenvalues (0));
 
@@ -390,7 +390,7 @@ FittingCurve::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector3d 
     }
     else
     {
-      current = current + delta;
+      current += delta;
 
       if (current < minU)
         current = maxU - (minU - current);

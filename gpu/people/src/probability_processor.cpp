@@ -111,7 +111,7 @@ pcl::gpu::people::ProbabilityProcessor::CreateGaussianKernel ( float sigma,
   // Normalize f
   for(int i = 0; i < kernelSize; i++)
   {
-    f[i] = f[i]/sum;
+    f[i] /=sum;
   }
 
   return f;
