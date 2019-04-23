@@ -746,17 +746,17 @@ TEST (PCL,3DSCEstimation)
 
   //EXPECT_EQ ((*sc3ds)[0].descriptor.size (), 64);
 
-  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[88], 82.906754f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[88], 55.271168f);
   EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[584], 71.108765f);
   EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[1106], 79.5896f);
   EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[1560], 0.f);
-  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[1929], 0.f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[1929], 36.063553f);
 
   EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[67], 0.f);
-  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[548], 0.f);
-  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1091], 0.f);
-  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1421], 0.f);
-  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1900], 0.f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[548], 126.14106f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1091], 30.470392f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1421], 38.08799f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1900], 43.799442f);
 
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
