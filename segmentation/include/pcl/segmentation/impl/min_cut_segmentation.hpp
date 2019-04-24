@@ -76,15 +76,6 @@ pcl::MinCutSegmentation<PointT>::MinCutSegmentation () :
 template <typename PointT>
 pcl::MinCutSegmentation<PointT>::~MinCutSegmentation ()
 {
-  if (search_ != 0)
-    search_.reset ();
-  if (graph_ != 0)
-    graph_.reset ();
-  if (capacity_ != 0)
-    capacity_.reset ();
-  if (reverse_edges_ != 0)
-    reverse_edges_.reset ();
-
   foreground_points_.clear ();
   background_points_.clear ();
   clusters_.clear ();
@@ -167,9 +158,6 @@ pcl::MinCutSegmentation<PointT>::getSearchMethod () const
 template <typename PointT> void
 pcl::MinCutSegmentation<PointT>::setSearchMethod (const KdTreePtr& tree)
 {
-  if (search_ != 0)
-    search_.reset ();
-
   search_ = tree;
 }
 
@@ -327,7 +315,7 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
   if (input_->points.size () == 0 || number_of_points == 0 || foreground_points_.empty () == true )
     return (false);
 
-  if (search_ == 0)
+  if (!search_)
     search_.reset (new pcl::search::KdTree<PointT>);
 
   graph_.reset (new mGraph);

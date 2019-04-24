@@ -138,7 +138,7 @@ namespace pcl
             rgb_ (0.0f, 0.0f, 0.0f),
             normal_ (0.0f, 0.0f, 0.0f, 0.0f),
             curvature_ (0.0f),
-            owner_ (0)
+            owner_ (nullptr)
             {}
 
           /** \brief Gets the data of in the form of a point
