@@ -36,7 +36,10 @@
  *  Author: Victor Lamoine (victor.lamoine@gmail.com)
  */
 
+#include <chrono>
 #include <iostream>
+#include <thread>
+
 #include <pcl/io/ensenso_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 
