@@ -120,7 +120,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
   cloud_out.points.resize (cloud_in.points.size ());
 
-  if (cloud_in.points.size () == 0)
+  if (cloud_in.points.empty ())
     return;
 
   if (isSamePointType<PointInT, PointOutT> ())

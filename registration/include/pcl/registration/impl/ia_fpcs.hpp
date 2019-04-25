@@ -198,14 +198,14 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
             {
               // check and evaluate candidate matches and store them
               handleMatches (base_indices, matches, candidates);
-              if (candidates.size () != 0)
+              if (!candidates.empty ())
                 all_candidates[i] = candidates;
             }
           }
         }
 
         // check terminate early (time or fitness_score threshold reached)
-        abort = (candidates.size () > 0 ? candidates[0].fitness_score < score_threshold_ : abort);
+        abort = (!candidates.empty () ? candidates[0].fitness_score < score_threshold_ : abort);
         abort = (abort ? abort : timer.getTimeSeconds () > max_runtime_);
 
 
@@ -244,7 +244,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
     return (false);
   }
 
-  if (!target_indices_ || target_indices_->size () == 0)
+  if (!target_indices_ || target_indices_->empty ())
   {
     target_indices_.reset (new std::vector <int> (static_cast <int> (target_->size ())));
     int index = 0;
@@ -618,7 +618,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   }
 
   // return success if at least one correspondence was found
-  return (pairs.size () == 0 ? -1 : 0);
+  return (pairs.empty () ? -1 : 0);
 }
 
 
@@ -698,7 +698,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   }
 
   // return unsuccessful if no match was found
-  return (matches.size () > 0 ? 0 : -1);
+  return (!matches.empty () ? 0 : -1);
 }
 
 

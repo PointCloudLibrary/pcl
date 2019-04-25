@@ -173,7 +173,7 @@ namespace pcl
 
        size_t cloud_size = width_arg*height_arg;
        assert (disparityMap_arg.size()==cloud_size);
-       if (colorImage_arg.size())
+       if (!colorImage_arg.empty ())
        {
          assert (colorImage_arg.size()==cloud_size*3);
        }
@@ -220,7 +220,7 @@ namespace pcl
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparity[0]), compressedDisparity.size () * sizeof(uint8_t));
 
        // Compress color information
-       if (colorImage_arg.size() && doColorEncoding)
+       if (!colorImage_arg.empty () && doColorEncoding)
        {
          if (convertToMono)
          {

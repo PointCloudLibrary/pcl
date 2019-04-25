@@ -68,7 +68,7 @@ pcl::SupervoxelClustering<PointT>::~SupervoxelClustering ()
 template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
 {
-  if ( cloud->size () == 0 )
+  if ( cloud->empty () )
   {
     PCL_ERROR ("[pcl::SupervoxelClustering::setInputCloud] Empty cloud set, doing nothing \n");
     return;
@@ -82,7 +82,7 @@ pcl::SupervoxelClustering<PointT>::setInputCloud (const typename pcl::PointCloud
 template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::setNormalCloud (typename NormalCloudT::ConstPtr normal_cloud)
 {
-  if ( normal_cloud->size () == 0 )
+  if ( normal_cloud->empty () )
   {
     PCL_ERROR ("[pcl::SupervoxelClustering::setNormalCloud] Empty cloud set, doing nothing \n");
     return;
@@ -147,7 +147,7 @@ pcl::SupervoxelClustering<PointT>::extract (std::map<uint32_t,typename Supervoxe
 template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::refineSupervoxels (int num_itr, std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters)
 {
-  if (supervoxel_helpers_.size () == 0)
+  if (supervoxel_helpers_.empty ())
   {
     PCL_ERROR ("[pcl::SupervoxelClustering::refineVoxelNormals] Supervoxels not extracted, doing nothing - (Call extract first!) \n");
     return;
@@ -181,7 +181,7 @@ pcl::SupervoxelClustering<PointT>::prepareForSegmentation ()
 {
   
   // if user forgot to pass point cloud or if it is empty
-  if ( input_->points.size () == 0 )
+  if ( input_->points.empty () )
     return (false);
   
   //Add the new cloud of data to the octree

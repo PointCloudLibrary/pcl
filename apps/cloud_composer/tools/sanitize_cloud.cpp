@@ -22,7 +22,7 @@ pcl::cloud_composer::SanitizeCloudTool::performAction (ConstItemList input_data,
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;
   // Check input data length
-  if ( input_data.size () == 0)
+  if ( input_data.empty ())
   {
     qCritical () << "Empty input in SanitizeCloudTool!";
     return output;

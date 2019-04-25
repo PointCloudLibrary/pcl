@@ -51,7 +51,7 @@ bool
 pcl::cloud_composer::CloudCommand::canUseTemplates (ConstItemList &input_data)
 {
   //Make sure the input list isn't empty
-  if (input_data.size () == 0)
+  if (input_data.empty ())
   {
     qCritical () << "Cannot call a templated tool on an empty input in CloudCommand::executeToolOnTemplateCloud!";
     template_type_ = -2;
@@ -118,7 +118,7 @@ bool
 pcl::cloud_composer::CloudCommand::replaceOriginalWithNew (QList <const CloudComposerItem*> originals, QList <CloudComposerItem*> new_items)
 { 
   //Find the input item's parent
-  if (originals.size () < 1)
+  if (originals.empty ())
   {
     qCritical () << "No items to replace specified!";
     return false;
@@ -225,7 +225,7 @@ pcl::cloud_composer::ModifyItemCommand::runCommand (AbstractTool* tool)
       output = tool->performAction (input_list, static_cast<PointTypeFlags::PointType> (template_type_));
     else
       output = tool->performAction (input_list);
-    if (output.size () == 0)
+    if (output.empty ())
       qWarning () << "Warning: Tool " << tool->getToolName () << "returned no item in a ModifyItemCommand";
     else 
     {
@@ -304,7 +304,7 @@ pcl::cloud_composer::NewItemCloudCommand::runCommand (AbstractTool* tool)
       output = tool->performAction (input_list, static_cast<PointTypeFlags::PointType> (template_type_));
     else
       output = tool->performAction (input_list);
-    if (output.size () == 0)
+    if (output.empty ())
       qWarning () << "Warning: Tool " << tool->getToolName () << "returned no item in a NewItemCloudCommand";
     else 
     {
@@ -412,7 +412,7 @@ pcl::cloud_composer::SplitCloudCommand::runCommand (AbstractTool* tool)
       output = tool->performAction (input_list, static_cast<PointTypeFlags::PointType> (template_type_));
     else
       output = tool->performAction (input_list);
-    if (output.size () == 0)
+    if (output.empty ())
       qWarning () << "Warning: Tool " << tool->getToolName () << "returned no item in a SplitCloudCommand";
     else 
     {
@@ -489,7 +489,7 @@ pcl::cloud_composer::DeleteItemCommand::runCommand (AbstractTool*)
     output_data_.append (output_pair);
     this->setText ("Delete "+item->text ());
   }
-  if (original_data_.size () > 0)
+  if (!original_data_.empty ())
     this->setText ("Delete multiple items");
   return true;
 }
@@ -553,7 +553,7 @@ pcl::cloud_composer::MergeCloudCommand::runCommand (AbstractTool* tool)
   OutputPair output_pair = {original_data_, output_items};
   output_data_.append (output_pair);
   
-  if (output_items.size () == 0)
+  if (output_items.empty ())
   {
     qWarning () << "Warning: Tool " << tool->getToolName () << "returned no item in a MergeCloudCommand";
     return false;

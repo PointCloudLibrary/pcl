@@ -176,9 +176,9 @@ namespace pcl
             size_t num_colors = B_color_bimap.size ();
             L.resize (num_equations, num_equations);
             B.resize (num_equations, num_colors);
-            if (L_triplets.size ())
+            if (!L_triplets.empty ())
               L.setFromTriplets(L_triplets.begin(), L_triplets.end());
-            if (B_triplets.size ())
+            if (!B_triplets.empty ())
               B.setFromTriplets(B_triplets.begin(), B_triplets.end());
           }
 

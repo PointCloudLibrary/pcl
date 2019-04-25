@@ -426,7 +426,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
   faceVotesClustering ();
 
-  if (pose_refinement_ && (head_clusters_centers_.size () > 0))
+  if (pose_refinement_ && (!head_clusters_centers_.empty ()))
   {
     Eigen::Matrix4f icp_trans;
     float max_distance = 0.015f;

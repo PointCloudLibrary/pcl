@@ -379,7 +379,7 @@ namespace pcl
                           pcl::PointCloud<PointT>& cloud_arg)
       {
         size_t cloud_size = width_arg*height_arg;
-        bool hasColor = (rgbData_arg.size () > 0);
+        bool hasColor = (!rgbData_arg.empty ());
 
         // Check size of input data
         assert (disparityData_arg.size()==cloud_size);
@@ -481,7 +481,7 @@ namespace pcl
                           pcl::PointCloud<PointT>& cloud_arg)
       {
         size_t cloud_size = width_arg*height_arg;
-        bool hasColor = (rgbData_arg.size () > 0);
+        bool hasColor = (!rgbData_arg.empty ());
 
         // Check size of input data
         assert (depthData_arg.size()==cloud_size);

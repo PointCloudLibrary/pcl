@@ -115,7 +115,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   //for (set<int>::const_iterator it=brute_force_result.begin(); it!=brute_force_result.end(); ++it)
   //cerr << "FLANN missed "<<*it<<"\n";
   
-  bool error = brute_force_result.size () > 0;
+  bool error = !brute_force_result.empty ();
   //if (error)  cerr << "Missed too many neighbors!\n";
   EXPECT_EQ (error, false);
 

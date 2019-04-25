@@ -153,7 +153,7 @@
        }    
      }
      typename PointCloud<PointT>::Ptr leftovers = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
-     if (extracted_indices->size () == 0)
+     if (extracted_indices->empty ())
        pcl::copyPointCloud (*input_cloud,*leftovers);
      else
      {

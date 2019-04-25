@@ -212,7 +212,7 @@ void ICCVTutorial<FeatureType>::segmentation (typename pcl::PointCloud<pcl::Poin
   clustering.setInputCloud(segmented);
   clustering.extract (cluster_indices);
 
-  if (cluster_indices.size() > 0)//use largest cluster
+  if (!cluster_indices.empty ())//use largest cluster
   {
     cout << cluster_indices.size() << " clusters found";
     if (cluster_indices.size() > 1)

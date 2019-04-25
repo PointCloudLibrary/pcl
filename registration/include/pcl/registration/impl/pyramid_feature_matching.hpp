@@ -147,13 +147,13 @@ pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
     return false;
   }
 
-  if (dimension_range_input_.size () == 0)
+  if (dimension_range_input_.empty ())
   {
     PCL_ERROR ("[pcl::PyramidFeatureHistogram::initializeHistogram] Input dimension range was not set\n");
     return false;
   }
 
-  if (dimension_range_target_.size () == 0)
+  if (dimension_range_target_.empty ())
   {
     PCL_ERROR ("[pcl::PyramidFeatureHistogram::initializeHistogram] Target dimension range was not set\n");
     return false;

@@ -92,7 +92,7 @@ namespace pcl
       png_infop info_ptr;
       volatile int channels;
 
-      if (image_arg.size () ==0)
+      if (image_arg.empty ())
         return;
 
       // Get amount of channels
@@ -187,7 +187,7 @@ namespace pcl
 
       png_bytep * row_pointers;
 
-      if (pngData_arg.size () == 0)
+      if (pngData_arg.empty ())
         return;
 
       png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);

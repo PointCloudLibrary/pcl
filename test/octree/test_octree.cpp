@@ -1193,7 +1193,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     unsigned idx = static_cast<unsigned> (pointCandidates.size ());
     k_indices_bruteforce.resize (idx);
     k_sqr_distances_bruteforce.resize (idx);
-    while (pointCandidates.size ())
+    while (!pointCandidates.empty ())
     {
       --idx;
       k_indices_bruteforce [idx] = pointCandidates.top ().pointIdx_;
@@ -1210,7 +1210,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     ASSERT_EQ (k_indices_bruteforce.size (), k_indices.size());
 
     // compare nearest neighbor results of octree with bruteforce search
-    while (k_indices_bruteforce.size ())
+    while (!k_indices_bruteforce.empty ())
     {
       ASSERT_EQ (k_indices_bruteforce.back(), k_indices.back ());
       EXPECT_NEAR (k_sqr_distances_bruteforce.back (), k_sqr_distances.back (), 1e-4);

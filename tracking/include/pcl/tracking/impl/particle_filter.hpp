@@ -224,7 +224,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::testChangeDetection
   std::vector<int> newPointIdxVector;
   change_detector_->getPointIndicesFromNewVoxels (newPointIdxVector, change_detector_filter_);
   change_detector_->switchBuffers ();
-  return newPointIdxVector.size () > 0;
+  return !newPointIdxVector.empty ();
 }
 
 template <typename PointInT, typename StateT> void

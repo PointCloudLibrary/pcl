@@ -831,7 +831,7 @@ pcl::visualization::ImageViewer::markPoints (
     const std::vector<int>& uv, Vector3ub fg_color, Vector3ub bg_color, double size,
     const std::string &layer_id, double opacity)
 {
-  if (uv.size () == 0)
+  if (uv.empty ())
     return;
 
   std::vector<float> float_uv (uv.size ());
@@ -846,7 +846,7 @@ pcl::visualization::ImageViewer::markPoints (
     const std::vector<float>& uv, Vector3ub fg_color, Vector3ub bg_color, double size,
     const std::string &layer_id, double opacity)
 {
-  if (uv.size () == 0)
+  if (uv.empty ())
     return;
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)

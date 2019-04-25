@@ -1701,7 +1701,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     vtkSmartPointer<vtkCellArray> cell_array = vtkSmartPointer<vtkCellArray>::New ();
     vtkIdType *cell = cell_array->WritePointer (vertices.size (), vertices.size () * (max_size_of_polygon + 1));
     int idx = 0;
-    if (lookup.size () > 0)
+    if (!lookup.empty ())
     {
       for (size_t i = 0; i < vertices.size (); ++i, ++idx)
       {
@@ -1743,7 +1743,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     size_t n_points = vertices[0].vertices.size ();
     polygon->GetPointIds ()->SetNumberOfIds (n_points - 1);
 
-    if (lookup.size () > 0)
+    if (!lookup.empty ())
     {
       for (size_t j = 0; j < (n_points - 1); ++j)
         polygon->GetPointIds ()->SetId (j, lookup[vertices[0].vertices[j]]);
@@ -1878,7 +1878,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   cells = vtkSmartPointer<vtkCellArray>::New ();
   vtkIdType *cell = cells->WritePointer (verts.size (), verts.size () * (max_size_of_polygon + 1));
   int idx = 0;
-  if (lookup.size () > 0)
+  if (!lookup.empty ())
   {
     for (size_t i = 0; i < verts.size (); ++i, ++idx)
     {

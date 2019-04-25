@@ -217,7 +217,7 @@ template <typename PointT, typename NormalT> bool
 pcl::RegionGrowingRGB<PointT, NormalT>::prepareForSegmentation ()
 {
   // if user forgot to pass point cloud or if it is empty
-  if ( input_->points.size () == 0 )
+  if ( input_->points.empty () )
     return (false);
 
   // if normal/smoothness test is on then we need to check if all needed variables and parameters

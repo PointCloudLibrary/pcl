@@ -531,7 +531,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
     }
   }
 
-  if (ourcvfh_output.points.size ())
+  if (!ourcvfh_output.points.empty ())
   {
     ourcvfh_output.height = 1;
   }
@@ -649,7 +649,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
       }
 
       //remove last cluster if no points found...
-      if (clusters_[cluster_filtered_idx].indices.size () == 0)
+      if (clusters_[cluster_filtered_idx].indices.empty ())
       {
         clusters_.pop_back ();
         clusters_filtered.pop_back ();
@@ -673,7 +673,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   output.height = 1;
 
   // ---[ Step 1b : check if any dominant cluster was found
-  if (clusters.size () > 0)
+  if (!clusters.empty ())
   { // ---[ Step 1b.1 : If yes, compute CVFH using the cluster information
     for (const auto &cluster : clusters) //for each cluster
     {

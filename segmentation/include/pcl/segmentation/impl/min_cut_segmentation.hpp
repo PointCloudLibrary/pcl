@@ -312,7 +312,7 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
   int number_of_points = static_cast<int> (input_->points.size ());
   int number_of_indices = static_cast<int> (indices_->size ());
 
-  if (input_->points.size () == 0 || number_of_points == 0 || foreground_points_.empty () == true )
+  if (input_->points.empty () || number_of_points == 0 || foreground_points_.empty () == true )
     return (false);
 
   if (!search_)

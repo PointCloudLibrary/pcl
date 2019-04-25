@@ -188,7 +188,7 @@ pcl::gpu::people::PeopleDetector::process ()
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // if we found a neck display the tree, and continue with processing
-  if(sorted[Neck].size() != 0)
+  if(!sorted[Neck].empty ())
   {
     int c = 0;
     Tree2 t;
@@ -215,7 +215,7 @@ pcl::gpu::people::PeopleDetector::process ()
     const RDFBodyPartsDetector::BlobMatrix& sorted2 = rdf_detector_->getBlobMatrix();
 
     //brief Test if the second tree is build up correctly
-    if(sorted2[Neck].size() != 0)
+    if(!sorted2[Neck].empty ())
     {      
       Tree2 t2;
       buildTree(sorted2, cloud_host_, Neck, c, t2);
@@ -327,7 +327,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // if we found a neck display the tree, and continue with processing
-  if(sorted[Neck].size() != 0)
+  if(!sorted[Neck].empty ())
   {
     int c = 0;
     Tree2 t;
@@ -366,7 +366,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
     const RDFBodyPartsDetector::BlobMatrix& sorted2 = rdf_detector_->getBlobMatrix();
 
     //brief Test if the second tree is build up correctly
-    if(sorted2[Neck].size() != 0)
+    if(!sorted2[Neck].empty ())
     {
       Tree2 t2;
       buildTree(sorted2, cloud_host_, Neck, c, t2, person_attribs_);

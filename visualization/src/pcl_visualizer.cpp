@@ -3179,7 +3179,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   cells = vtkSmartPointer<vtkCellArray>::New ();
   vtkIdType *cell = cells->WritePointer (verts.size (), verts.size () * (max_size_of_polygon + 1));
   int idx = 0;
-  if (lookup.size () > 0)
+  if (!lookup.empty ())
   {
     for (size_t i = 0; i < verts.size (); ++i, ++idx)
     {
@@ -3285,7 +3285,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     return (false);
   }
   // no texture materials --> exit
-  if (mesh.tex_materials.size () == 0)
+  if (mesh.tex_materials.empty ())
   {
     PCL_ERROR("[PCLVisualizer::addTextureMesh] No textures found!\n");
     return (false);
@@ -3335,7 +3335,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
   {
     pcl::PointCloud<pcl::PointXYZRGB> cloud;
     pcl::fromPCLPointCloud2 (mesh.cloud, cloud);
-    if (cloud.points.size () == 0)
+    if (cloud.points.empty ())
     {
       PCL_ERROR ("[PCLVisualizer::addTextureMesh] Cloud is empty!\n");
       return (false);
@@ -3358,7 +3358,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
     pcl::fromPCLPointCloud2 (mesh.cloud, *cloud);
     // no points --> exit
-    if (cloud->points.size () == 0)
+    if (cloud->points.empty ())
     {
       PCL_ERROR ("[PCLVisualizer::addTextureMesh] Cloud is empty!\n");
       return (false);
@@ -4584,7 +4584,7 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
   std::ostringstream sstream;
 
   p_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
-  if (p_file_indices.size () != 0)
+  if (!p_file_indices.empty ())
   {
     boost::uuids::detail::sha1 sha1;    
     bool valid = false;

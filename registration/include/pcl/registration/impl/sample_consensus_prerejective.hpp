@@ -326,7 +326,7 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness
   }
 
   // Calculate MSE
-  if (inliers.size () > 0)
+  if (!inliers.empty ())
     fitness_score /= static_cast<float> (inliers.size ());
   else
     fitness_score = std::numeric_limits<float>::max ();

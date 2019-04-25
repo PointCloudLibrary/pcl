@@ -270,7 +270,7 @@ namespace pcl
 
         voxel_centroids_ = PointCloudPtr (new PointCloud (output));
 
-        if (searchable_ && voxel_centroids_->size() > 0)
+        if (searchable_ && !voxel_centroids_->empty ())
         {
           // Initiates kdtree of the centroids of voxels containing a sufficient number of points
           kdtree_.setInputCloud (voxel_centroids_);
@@ -287,7 +287,7 @@ namespace pcl
         voxel_centroids_ = PointCloudPtr (new PointCloud);
         applyFilter (*voxel_centroids_);
 
-        if (searchable_ && voxel_centroids_->size() > 0)
+        if (searchable_ && !voxel_centroids_->empty ())
         {
           // Initiates kdtree of the centroids of voxels containing a sufficient number of points
           kdtree_.setInputCloud (voxel_centroids_);

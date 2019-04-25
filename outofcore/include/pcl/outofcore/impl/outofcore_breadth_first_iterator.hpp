@@ -64,7 +64,7 @@ namespace pcl
     OutofcoreBreadthFirstIterator<PointT, ContainerT>&
     OutofcoreBreadthFirstIterator<PointT, ContainerT>::operator++ ()
     {
-      if (FIFO_.size ())
+      if (!FIFO_.empty ())
       {
         // Get the first entry from the FIFO queue
         OctreeDiskNode *node = FIFO_.front ();
@@ -94,7 +94,7 @@ namespace pcl
       skip_child_voxels_ = false;
 
       // If there's a queue, set the current node to the first entry
-      if (FIFO_.size ())
+      if (!FIFO_.empty ())
       {
         this->currentNode_ = FIFO_.front ();
       }
