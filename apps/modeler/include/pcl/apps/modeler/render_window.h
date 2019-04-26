@@ -55,7 +55,7 @@ namespace pcl
         ~RenderWindow();
 
         QSize
-        sizeHint() const override {return QSize(512, 512);}
+        sizeHint() const override {return {512, 512};}
 
         void
         setActive(bool flag);

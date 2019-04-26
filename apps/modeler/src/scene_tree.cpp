@@ -84,7 +84,7 @@ pcl::modeler::SceneTree::~SceneTree()
 QSize
 pcl::modeler::SceneTree::sizeHint() const
 {
-  return QSize(256, 512);
+  return {256, 512};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
