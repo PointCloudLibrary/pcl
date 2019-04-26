@@ -78,7 +78,7 @@ namespace pcl
 
             operator PtrStep<int>() const
             {
-                return PtrStep<int>((int*)data.ptr(), max_elems * sizeof(int));
+                return {(int*)data.ptr(), max_elems * sizeof(int)};
             }            
 
             size_t neighboors_size() const { return data.size()/max_elems; }
