@@ -126,7 +126,7 @@ pcl::visualization::PCLPlotter::addPlotData (
   line->SetInputData (table, 0, 1);
   line->SetWidth (1);
 
-  if (color == nullptr)    //color automatically based on the ColorScheme
+  if (!color)    //color automatically based on the ColorScheme
   {
     vtkColor3ub vcolor = color_series_->GetColorRepeating (current_plot_);
     line->SetColor (vcolor[0], vcolor[1], vcolor[2], 255);
@@ -653,7 +653,7 @@ pcl::visualization::PCLPlotter::setViewInteractor (
 bool
 pcl::visualization::PCLPlotter::wasStopped () const
 {
-  if (view_->GetInteractor() != nullptr) 
+  if (view_->GetInteractor()) 
     return (stopped_); 
   else 
     return (true);

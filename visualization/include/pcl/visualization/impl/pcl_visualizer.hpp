@@ -658,7 +658,7 @@ pcl::visualization::PCLVisualizer::addText3D (
 
   // check all or an individual viewport for a similar id
   rens_->InitTraversal ();
-  for (size_t i = viewport; rens_->GetNextItem () != nullptr; ++i)
+  for (size_t i = viewport; rens_->GetNextItem (); ++i)
   {
     const std::string uid = tid + std::string (i, '*');
     if (contains (uid))
@@ -685,7 +685,7 @@ pcl::visualization::PCLVisualizer::addText3D (
   rens_->InitTraversal ();
   vtkRenderer* renderer;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != nullptr)
+  while ((renderer = rens_->GetNextItem ()))
   {
     // Should we add the actor to all renderers or just to i-nth renderer?
     if (viewport == 0 || viewport == i)
@@ -745,7 +745,7 @@ pcl::visualization::PCLVisualizer::addText3D (
 
   // check all or an individual viewport for a similar id
   rens_->InitTraversal ();
-  for (size_t i = viewport; rens_->GetNextItem () != nullptr; ++i)
+  for (size_t i = viewport; rens_->GetNextItem (); ++i)
   {
     const std::string uid = tid + std::string (i, '*');
     if (contains (uid))
@@ -779,7 +779,7 @@ pcl::visualization::PCLVisualizer::addText3D (
   rens_->InitTraversal ();
   int i = 0;
   for ( vtkRenderer* renderer = rens_->GetNextItem ();
-        renderer != nullptr;
+        renderer;
         renderer = rens_->GetNextItem (), ++i)
   {
     if (viewport == 0 || viewport == i)

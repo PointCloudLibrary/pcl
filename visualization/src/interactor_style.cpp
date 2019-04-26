@@ -167,7 +167,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters (pcl::visu
   rens_->InitTraversal ();
   vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != nullptr)
+  while (renderer = rens_->GetNextItem ())
   {
     if (viewport++ == i)
     {
@@ -243,7 +243,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const Eig
   rens_->InitTraversal ();
   vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != nullptr)
+  while (renderer = rens_->GetNextItem ())
   {
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i)
@@ -269,7 +269,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const pcl
   rens_->InitTraversal ();
   vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != nullptr)
+  while (renderer = rens_->GetNextItem ())
   {
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i)
@@ -527,7 +527,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
   FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
 
-  if (wif_->GetInput () == nullptr)
+  if (!wif_->GetInput ())
   {
     wif_->SetInput (Interactor->GetRenderWindow ());
     wif_->Modified ();
@@ -974,7 +974,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         vtkAbstractPropPicker *picker;
         if ((picker = vtkAbstractPropPicker::SafeDownCast (Interactor->GetPicker ())))
           path = picker->GetPath ();
-        if (path != nullptr)
+        if (path)
           Interactor->FlyTo (CurrentRenderer, picker->GetPickPosition ());
         AnimState = VTKIS_ANIM_OFF;
       }
@@ -1061,7 +1061,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       if (!keymod)
       {
         FindPokedRenderer(Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
-        if(CurrentRenderer != nullptr)
+        if(CurrentRenderer)
           CurrentRenderer->ResetCamera ();
         else
           PCL_WARN ("no current renderer on the interactor style.");
