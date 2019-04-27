@@ -477,7 +477,7 @@ namespace pcl
           */
         boost::signals2::connection 
         registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), 
-                                  void* cookie = NULL)
+                                  void* cookie = nullptr)
         {
           return (registerKeyboardCallback (boost::bind (callback, _1, cookie)));
         }
@@ -490,7 +490,7 @@ namespace pcl
           */
         template<typename T> boost::signals2::connection 
         registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), 
-                                  T& instance, void* cookie = NULL)
+                                  T& instance, void* cookie = nullptr)
         {
           return (registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie)));
         }
@@ -509,7 +509,7 @@ namespace pcl
           */
         boost::signals2::connection 
         registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), 
-                               void* cookie = NULL)
+                               void* cookie = nullptr)
         {
           return (registerMouseCallback (boost::bind (callback, _1, cookie)));
         }
@@ -522,7 +522,7 @@ namespace pcl
           */
         template<typename T> boost::signals2::connection 
         registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), 
-                               T& instance, void* cookie = NULL)
+                               T& instance, void* cookie = nullptr)
         {
           return (registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }

@@ -109,7 +109,7 @@ namespace pcl
                      unsigned long size, 
                      char const * name = "Y Axis", 
                      int type  = vtkChart::LINE ,
-                     char const *color=NULL);
+                     char const *color=nullptr);
 	
         /** \brief Adds a plot with correspondences in vectors arrayX and arrayY. This is the vector version of the addPlotData function. 
           * \param[in] array_x X coordinates of point correspondence array

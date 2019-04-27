@@ -385,8 +385,8 @@ void pcl::visualization::PCLVisualizer::setupRenderWindow (const std::string& na
 
   // Add all renderers to the window
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  vtkRenderer* renderer = nullptr;
+  while (renderer = rens_->GetNextItem ())
     win_->AddRenderer (renderer);
 }
 
@@ -447,7 +447,7 @@ void pcl::visualization::PCLVisualizer::setupCamera (int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::~PCLVisualizer ()
 {
-  if (interactor_ != NULL)
+  if (interactor_)
     interactor_->DestroyTimer (timer_id_);
   // Clear the collections
   rens_->RemoveAllItems ();
@@ -874,7 +874,7 @@ pcl::visualization::PCLVisualizer::removeText3D (const std::string &id, int view
 
   // check all or an individual viewport for a similar id
   rens_->InitTraversal ();
-  for (size_t i = viewport; rens_->GetNextItem () != NULL; ++i)
+  for (size_t i = viewport; rens_->GetNextItem (); ++i)
   {
     const std::string uid = id + std::string (i, '*');
     ShapeActorMap::iterator am_it = shape_actor_map_->find (uid);
@@ -970,9 +970,9 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
 
   // Add it to all renderers
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     // Should we remove the actor from all renderers?
     if (viewport == 0)
@@ -984,8 +984,8 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
       // Iterate over all actors in this renderer
       vtkPropCollection* actors = renderer->GetViewProps ();
       actors->InitTraversal ();
-      vtkProp* current_actor = NULL;
-      while ((current_actor = actors->GetNextProp ()) != NULL)
+      vtkProp* current_actor = nullptr;
+      while (current_actor = actors->GetNextProp ())
       {
         if (current_actor != actor_to_remove)
           continue;
@@ -1008,9 +1008,9 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
 
   // Add it to all renderers
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     // Should we remove the actor from all renderers?
     if (viewport == 0)
@@ -1022,8 +1022,8 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
       // Iterate over all actors in this renderer
       vtkPropCollection* actors = renderer->GetViewProps ();
       actors->InitTraversal ();
-      vtkProp* current_actor = NULL;
-      while ((current_actor = actors->GetNextProp ()) != NULL)
+      vtkProp* current_actor = nullptr;
+      while (current_actor = actors->GetNextProp ())
       {
         if (current_actor != actor_to_remove)
           continue;
@@ -1044,9 +1044,9 @@ pcl::visualization::PCLVisualizer::addActorToRenderer (const vtkSmartPointer<vtk
 {
   // Add it to all renderers
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     // Should we add the actor to all renderers?
     if (viewport == 0)
@@ -1069,9 +1069,9 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
 
   // Initialize traversal
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     // Should we remove the actor from all renderers?
     if (viewport == 0)
@@ -1083,8 +1083,8 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
       // Iterate over all actors in this renderer
       vtkPropCollection* actors = renderer->GetViewProps ();
       actors->InitTraversal ();
-      vtkProp* current_actor = NULL;
-      while ((current_actor = actors->GetNextProp ()) != NULL)
+      vtkProp* current_actor = nullptr;
+      while (current_actor = actors->GetNextProp ())
       {
         if (current_actor != actor_to_remove)
           continue;
@@ -1314,9 +1314,9 @@ pcl::visualization::PCLVisualizer::setBackgroundColor (
     const double &r, const double &g, const double &b, int viewport)
 {
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     // Should we add the actor to all renderers?
     if (viewport == 0)
@@ -2024,8 +2024,8 @@ pcl::visualization::PCLVisualizer::getCameras (std::vector<pcl::visualization::C
 {
   cameras.clear ();
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  vtkRenderer* renderer = nullptr;
+  while (renderer = rens_->GetNextItem ())
     cameras.emplace_back (*renderer->GetActiveCamera (), *renderer->GetRenderWindow ());
 }
 
@@ -2036,11 +2036,11 @@ pcl::visualization::PCLVisualizer::getViewerPose (int viewport)
   Eigen::Affine3f ret (Eigen::Affine3f::Identity ());
 
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   if (viewport == 0)
     viewport = 1;
   int viewport_i = 1;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     if (viewport_i == viewport)
     {
@@ -2072,8 +2072,8 @@ pcl::visualization::PCLVisualizer::resetCamera ()
 {
   // Update the camera parameters
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  vtkRenderer* renderer = nullptr;
+  while (renderer = rens_->GetNextItem ())
     renderer->ResetCamera ();
 }
 
@@ -2087,9 +2087,9 @@ pcl::visualization::PCLVisualizer::setCameraPosition (
     int viewport)
 {
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i)
@@ -2112,9 +2112,9 @@ pcl::visualization::PCLVisualizer::setCameraPosition (
     double up_x, double up_y, double up_z, int viewport)
 {
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i)
@@ -2149,9 +2149,9 @@ void
 pcl::visualization::PCLVisualizer::setCameraClipDistances (double near, double far, int viewport)
 {
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i)
@@ -2168,9 +2168,9 @@ void
 pcl::visualization::PCLVisualizer::setCameraFieldOfView (double fovy, int viewport)
 {
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i)
@@ -2200,8 +2200,8 @@ pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
 
   // set all renderer to this viewpoint
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  vtkRenderer* renderer = nullptr;
+  while (renderer = rens_->GetNextItem ())
   {
     vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
     cam->SetPosition (camera_pose->GetElement (0, 3),
@@ -2715,9 +2715,9 @@ pcl::visualization::PCLVisualizer::createViewPortCamera (const int viewport)
 {
   vtkSmartPointer<vtkCamera> cam = vtkSmartPointer<vtkCamera>::New ();
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     if (viewport == 0)
       continue;
@@ -3466,13 +3466,13 @@ pcl::visualization::PCLVisualizer::setRepresentationToSurfaceForAllActors ()
 {
   ShapeActorMap::iterator am_it;
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  vtkRenderer* renderer = nullptr;
+  while (renderer = rens_->GetNextItem ())
   {
     vtkActorCollection * actors = renderer->GetActors ();
     actors->InitTraversal ();
     vtkActor * actor;
-    while ((actor = actors->GetNextActor ()) != NULL)
+    while (actor = actors->GetNextActor ())
     {
       actor->GetProperty ()->SetRepresentationToSurface ();
       actor->GetProperty ()->SetLighting (true);
@@ -3486,13 +3486,13 @@ pcl::visualization::PCLVisualizer::setRepresentationToPointsForAllActors ()
 {
   ShapeActorMap::iterator am_it;
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  vtkRenderer* renderer = nullptr;
+  while (renderer = rens_->GetNextItem ())
   {
     vtkActorCollection * actors = renderer->GetActors ();
     actors->InitTraversal ();
     vtkActor * actor;
-    while ((actor = actors->GetNextActor ()) != NULL)
+    while (actor = actors->GetNextActor ())
     {
       actor->GetProperty ()->SetRepresentationToPoints ();
     }
@@ -3505,13 +3505,13 @@ pcl::visualization::PCLVisualizer::setRepresentationToWireframeForAllActors ()
 {
   ShapeActorMap::iterator am_it;
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  vtkRenderer* renderer = nullptr;
+  while (renderer = rens_->GetNextItem ())
   {
     vtkActorCollection * actors = renderer->GetActors ();
     actors->InitTraversal ();
     vtkActor * actor;
-    while ((actor = actors->GetNextActor ()) != NULL)
+    while (actor = actors->GetNextActor ())
     {
       actor->GetProperty ()->SetRepresentationToWireframe ();
       actor->GetProperty ()->SetLighting (false);
@@ -3569,7 +3569,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
   //center object
   double CoM[3];
-  vtkIdType npts_com = 0, *ptIds_com = NULL;
+  vtkIdType npts_com = 0, *ptIds_com = nullptr;
   vtkSmartPointer<vtkCellArray> cells_com = polydata->GetPolys ();
 
   double center[3], p1_com[3], p2_com[3], p3_com[3], totalArea_com = 0;
@@ -3628,7 +3628,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   // * Compute area of the mesh
   //////////////////////////////
   vtkSmartPointer<vtkCellArray> cells = mapper->GetInput ()->GetPolys ();
-  vtkIdType npts = 0, *ptIds = NULL;
+  vtkIdType npts = 0, *ptIds = nullptr;
 
   double p1[3], p2[3], p3[3], totalArea = 0;
   for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds);)
@@ -3847,7 +3847,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     polydata->BuildCells ();
 
     vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys ();
-    vtkIdType npts = 0, *ptIds = NULL;
+    vtkIdType npts = 0, *ptIds = nullptr;
 
     double p1[3], p2[3], p3[3], area, totalArea = 0;
     for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds);)
@@ -4379,7 +4379,7 @@ pcl::visualization::PCLVisualizer::getGeometryHandlerIndex (const std::string &i
 bool
 pcl::visualization::PCLVisualizer::wasStopped () const
 {
-  if (interactor_ != NULL)
+  if (interactor_)
     return (stopped_);
   return (true);
 }
@@ -4388,7 +4388,7 @@ pcl::visualization::PCLVisualizer::wasStopped () const
 void
 pcl::visualization::PCLVisualizer::resetStoppedFlag ()
 {
-  if (interactor_ != NULL)
+  if (interactor_)
     stopped_ = false;
 }
 

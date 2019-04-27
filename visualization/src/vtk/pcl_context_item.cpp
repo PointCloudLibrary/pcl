@@ -259,10 +259,10 @@ pcl::visualization::context_items::Markers::Paint (vtkContext2D *painter)
 
   painter->GetPen ()->SetWidth (size);
   painter->GetPen ()->SetColor (colors[0], colors[1], colors[2], static_cast<unsigned char> ((255.0 * GetOpacity ())));
-  painter->DrawPointSprites (0, &params[0], nb_points);
+  painter->DrawPointSprites (nullptr, &params[0], nb_points);
   painter->GetPen ()->SetWidth (1);
   painter->GetPen ()->SetColor (point_colors[0], point_colors[1], point_colors[2], static_cast<unsigned char> ((255.0 * GetOpacity ())));
-  painter->DrawPointSprites (0, &params[0], nb_points);
+  painter->DrawPointSprites (nullptr, &params[0], nb_points);
   return (true);
 }
 
