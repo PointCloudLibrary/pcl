@@ -28,7 +28,7 @@ target_link_libraries (pcl_sim_test_performance
 set(srcs simulation_io.cpp)
 set(incs simulation_io.hpp)
 set(LIB_NAME pcl_simulation_io)
-PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME}
+PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES
   ${srcs} ${incs} ${compression_incs} ${impl_incs}
   ${VTK_IO_TARGET_LINK_LIBRARIES}
   ${OPENNI_INCLUDES})

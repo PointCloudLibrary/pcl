@@ -188,10 +188,15 @@ endmacro()
 ###############################################################################
 # Add a library target.
 # _name The library name.
-# _component The part of PCL that this library belongs to.
-# ARGN The source files for the library.
-macro(PCL_ADD_LIBRARY _name _component)
-  add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
+# COMPONENT The part of PCL that this library belongs to.
+# SOURCES The source files for the library.
+function(PCL_ADD_LIBRARY _name)
+  set(options)
+  set(oneValueArgs COMPONENT)
+  set(multiValueArgs SOURCES)
+  cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES})
   target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
   # must link explicitly against boost.
   target_link_libraries(${_name} ${Boost_LIBRARIES})
@@ -214,23 +219,28 @@ macro(PCL_ADD_LIBRARY _name _component)
   set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
   install(TARGETS ${_name}
-          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
-          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component}
-          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component})
-endmacro()
+          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT}
+          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT}
+          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT})
+endfunction()
 
 ###############################################################################
 # Add a cuda library target.
 # _name The library name.
-# _component The part of PCL that this library belongs to.
-# ARGN The source files for the library.
-macro(PCL_CUDA_ADD_LIBRARY _name _component)
+# COMPONENT The part of PCL that this library belongs to.
+# SOURCES The source files for the library.
+function(PCL_CUDA_ADD_LIBRARY _name)
+  set(options)
+  set(oneValueArgs COMPONENT)
+  set(multiValueArgs SOURCES)
+  cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
   REMOVE_VTK_DEFINITIONS()
   if(PCL_SHARED_LIBS)
     # to overcome a limitation in cuda_add_library, we add manually PCLAPI_EXPORTS macro
-    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -DPCLAPI_EXPORTS)
+    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES} OPTIONS -DPCLAPI_EXPORTS)
   else()
-    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
+    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES})
   endif()
 
   # must link explicitly against boost.
@@ -243,10 +253,10 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
   set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
   install(TARGETS ${_name}
-          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
-          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component}
-          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component})
-endmacro()
+          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT}
+          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT}
+          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT})
+endfunction()
 
 ###############################################################################
 # Add an executable target.

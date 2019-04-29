@@ -1,5 +1,5 @@
 ### ---[ PCL global CMake
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 if(POLICY CMP0074)
   # 1. Remove with 3.12.4.
