@@ -261,10 +261,15 @@ endfunction()
 ###############################################################################
 # Add an executable target.
 # _name The executable name.
-# _component The part of PCL that this library belongs to.
-# ARGN the source files for the library.
-macro(PCL_ADD_EXECUTABLE _name _component)
-  add_executable(${_name} ${ARGN})
+# COMPONENT The part of PCL that this library belongs to.
+# SOURCES The source files for the library.
+function(PCL_ADD_EXECUTABLE _name)
+  set(options)
+  set(oneValueArgs COMPONENT)
+  set(multiValueArgs SOURCES)
+  cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  add_executable(${_name} ${ADD_LIBRARY_OPTION_SOURCES})
   # must link explicitly against boost.
   if(UNIX AND NOT ANDROID)
     target_link_libraries(${_name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
@@ -279,7 +284,7 @@ macro(PCL_ADD_EXECUTABLE _name _component)
 
   # Some app targets report are defined with subsys other than apps
   # It's simpler check for tools and assume everythin else as an app
-  if(${_component} MATCHES "tools")
+  if(${ADD_LIBRARY_OPTION_COMPONENT} MATCHES "tools")
     set_target_properties(${_name} PROPERTIES FOLDER "Tools")
   else()
     set_target_properties(${_name} PROPERTIES FOLDER "Apps")
@@ -287,11 +292,11 @@ macro(PCL_ADD_EXECUTABLE _name _component)
 
   set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
   install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-          COMPONENT pcl_${_component})
+          COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT})
 
-  string(TOUPPER ${_component} _component_upper)
+  string(TOUPPER ${ADD_LIBRARY_OPTION_COMPONENT} _component_upper)
   list(APPEND PCL_${_component_upper}_ALL_TARGETS ${_name})
-endmacro()
+endfunction()
 
 ###############################################################################
 # Add an executable target as a bundle when available and required

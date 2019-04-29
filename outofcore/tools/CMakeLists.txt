@@ -1,8 +1,8 @@
 # pcl_outofcore_process
-PCL_ADD_EXECUTABLE(pcl_outofcore_process "${SUBSYS_NAME}" outofcore_process.cpp)
+PCL_ADD_EXECUTABLE(pcl_outofcore_process COMPONENT ${SUBSYS_NAME} SOURCES outofcore_process.cpp)
 target_link_libraries(pcl_outofcore_process pcl_common pcl_filters pcl_io pcl_octree pcl_outofcore)
 
-PCL_ADD_EXECUTABLE(pcl_outofcore_print "${SUBSYS_NAME}" outofcore_print.cpp)
+PCL_ADD_EXECUTABLE(pcl_outofcore_print COMPONENT ${SUBSYS_NAME} SOURCES outofcore_print.cpp)
 target_link_libraries(pcl_outofcore_print pcl_common pcl_filters pcl_io pcl_octree pcl_outofcore)
 
 if(NOT VTK_FOUND)

@@ -146,7 +146,7 @@ QT5_WRAP_CPP(cloud_composer_moc ${incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCL
 QT5_ADD_RESOURCES(resource_srcs ${resources})
 
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
-PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${impl_incs})
+PCL_ADD_EXECUTABLE(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${impl_incs})
 target_link_libraries("${EXE_NAME}" pcl_cc_tool_interface pcl_common pcl_io pcl_visualization pcl_filters ${QVTK_LIBRARY} Qt5::Widgets)
 
 # Install include files

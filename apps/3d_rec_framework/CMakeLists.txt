@@ -125,7 +125,7 @@ if(QHULL_FOUND)
   target_link_libraries(pcl_global_classification pcl_apps pcl_3d_rec_framework pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
 endif()
 
-pcl_add_executable(pcl_local_or_mian ${SUBSUBSYS_NAME} src/tools/local_recognition_mian_dataset.cpp)
+PCL_ADD_EXECUTABLE(pcl_local_or_mian COMPONENT ${SUBSUBSYS_NAME} SOURCES src/tools/local_recognition_mian_dataset.cpp)
 target_link_libraries(pcl_local_or_mian pcl_apps pcl_3d_rec_framework pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints)
 
 # Add to the compound apps target
