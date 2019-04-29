@@ -252,10 +252,10 @@ else()
     PCL_ADD_EXECUTABLE(pcl_voxel_grid_occlusion_estimation COMPONENT ${SUBSYS_NAME} SOURCES voxel_grid_occlusion_estimation.cpp)
     target_link_libraries (pcl_voxel_grid_occlusion_estimation pcl_common pcl_io pcl_filters pcl_visualization)
 
-    PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_viewer ${SUBSYS_NAME} pcd_viewer.cpp)
+    PCL_ADD_EXECUTABLE(pcl_viewer COMPONENT ${SUBSYS_NAME} SOURCES pcd_viewer.cpp BUNDLE)
     target_link_libraries(pcl_viewer pcl_common pcl_io pcl_kdtree pcl_visualization pcl_search)
 
-    PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_pcd_image_viewer ${SUBSYS_NAME} image_viewer.cpp)
+    PCL_ADD_EXECUTABLE(pcl_pcd_image_viewer COMPONENT ${SUBSYS_NAME} SOURCES image_viewer.cpp BUNDLE)
     target_link_libraries(pcl_pcd_image_viewer pcl_common pcl_io pcl_kdtree pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_timed_trigger_test COMPONENT ${SUBSYS_NAME} SOURCES timed_trigger_test.cpp)
@@ -271,50 +271,50 @@ else()
       PCL_ADD_EXECUTABLE(pcl_openni_save_image COMPONENT ${SUBSYS_NAME} SOURCES openni_save_image.cpp)
       target_link_libraries(pcl_openni_save_image pcl_common pcl_io pcl_visualization)
 
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_pcd_grabber_viewer ${SUBSYS_NAME} pcd_grabber_viewer.cpp)
+      PCL_ADD_EXECUTABLE(pcl_pcd_grabber_viewer COMPONENT ${SUBSYS_NAME} SOURCES pcd_grabber_viewer.cpp BUNDLE)
       target_link_libraries(pcl_pcd_grabber_viewer pcl_common pcl_io pcl_kdtree pcl_visualization)
 
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_image_grabber_saver ${SUBSYS_NAME} image_grabber_saver.cpp)
+      PCL_ADD_EXECUTABLE(pcl_image_grabber_saver COMPONENT ${SUBSYS_NAME} SOURCES image_grabber_saver.cpp BUNDLE)
       target_link_libraries(pcl_image_grabber_saver pcl_common pcl_io pcl_kdtree pcl_visualization)
 
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_image_grabber_viewer ${SUBSYS_NAME} image_grabber_viewer.cpp)
+      PCL_ADD_EXECUTABLE(pcl_image_grabber_viewer COMPONENT ${SUBSYS_NAME} SOURCES image_grabber_viewer.cpp BUNDLE)
       target_link_libraries(pcl_image_grabber_viewer pcl_common pcl_io pcl_kdtree pcl_visualization)
 
       #PCL_ADD_EXECUTABLE(pcl_openni_viewer_simple COMPONENT ${SUBSYS_NAME} SOURCES openni_viewer_simple.cpp)
       #target_link_libraries(pcl_openni_viewer_simple pcl_common pcl_io pcl_kdtree pcl_visualization)
 
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_oni_viewer ${SUBSYS_NAME} oni_viewer_simple.cpp)
+      PCL_ADD_EXECUTABLE(pcl_oni_viewer COMPONENT ${SUBSYS_NAME} SOURCES oni_viewer_simple.cpp BUNDLE)
       target_link_libraries(pcl_oni_viewer pcl_common pcl_io pcl_kdtree pcl_visualization)
 
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_viewer ${SUBSYS_NAME} openni_viewer.cpp)
+      PCL_ADD_EXECUTABLE(pcl_openni_viewer COMPONENT ${SUBSYS_NAME} SOURCES openni_viewer.cpp BUNDLE)
       target_link_libraries(pcl_openni_viewer pcl_common pcl_io pcl_kdtree pcl_visualization)
 
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_image ${SUBSYS_NAME} openni_image.cpp)
+      PCL_ADD_EXECUTABLE(pcl_openni_image COMPONENT ${SUBSYS_NAME} SOURCES openni_image.cpp BUNDLE)
       target_link_libraries(pcl_openni_image pcl_common pcl_io pcl_kdtree pcl_visualization)
     endif()
 
     if(WITH_OPENNI2)
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni2_viewer ${SUBSYS_NAME} openni2_viewer.cpp)
+      PCL_ADD_EXECUTABLE(pcl_openni2_viewer COMPONENT ${SUBSYS_NAME} SOURCES openni2_viewer.cpp BUNDLE)
       target_link_libraries(pcl_openni2_viewer pcl_common pcl_io pcl_kdtree pcl_visualization)
     endif()
 
     if(WITH_ENSENSO)
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ensenso_viewer ${SUBSYS_NAME} ensenso_viewer.cpp)
+      PCL_ADD_EXECUTABLE(pcl_ensenso_viewer COMPONENT ${SUBSYS_NAME} SOURCES ensenso_viewer.cpp BUNDLE)
       target_link_libraries(pcl_ensenso_viewer pcl_common pcl_io pcl_visualization)
     endif()
 
     if(WITH_DAVIDSDK)
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_davidsdk_viewer ${SUBSYS_NAME} davidsdk_viewer.cpp)
+      PCL_ADD_EXECUTABLE(pcl_davidsdk_viewer COMPONENT ${SUBSYS_NAME} SOURCES davidsdk_viewer.cpp BUNDLE)
       target_link_libraries(pcl_davidsdk_viewer pcl_common pcl_io pcl_visualization)
     endif()
 
     if(WITH_DSSDK)
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_depth_sense_viewer ${SUBSYS_NAME} depth_sense_viewer.cpp)
+      PCL_ADD_EXECUTABLE(pcl_depth_sense_viewer COMPONENT ${SUBSYS_NAME} SOURCES depth_sense_viewer.cpp BUNDLE)
       target_link_libraries(pcl_depth_sense_viewer pcl_common pcl_io pcl_visualization)
     endif()
 
     if(WITH_RSSDK)
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_real_sense_viewer ${SUBSYS_NAME} real_sense_viewer.cpp)
+      PCL_ADD_EXECUTABLE(pcl_real_sense_viewer COMPONENT ${SUBSYS_NAME} SOURCES real_sense_viewer.cpp BUNDLE)
       target_link_libraries(pcl_real_sense_viewer pcl_common pcl_io pcl_visualization)
     endif()
   endif()

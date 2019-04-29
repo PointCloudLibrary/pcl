@@ -25,6 +25,6 @@ else()
          ../src/visualization/viewport.cpp)
 
   # pcl_outofcore_viewer
-  PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_outofcore_viewer "${SUBSYS_NAME}" ${srcs})
+  PCL_ADD_EXECUTABLE(pcl_outofcore_viewer COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} BUNDLE)
   target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_outofcore pcl_visualization pcl_octree pcl_filters)
 endif()
