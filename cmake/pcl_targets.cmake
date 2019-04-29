@@ -306,11 +306,16 @@ endfunction()
 ###############################################################################
 # Add an executable target.
 # _name The executable name.
-# _component The part of PCL that this library belongs to.
-# ARGN the source files for the library.
-macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
+# COMPONENT The part of PCL that this library belongs to.
+# SOURCES The source files for the library.
+function(PCL_CUDA_ADD_EXECUTABLE _name)
+  set(options)
+  set(oneValueArgs COMPONENT)
+  set(multiValueArgs SOURCES)
+  cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
   REMOVE_VTK_DEFINITIONS()
-  cuda_add_executable(${_name} ${ARGN})
+  cuda_add_executable(${_name} ${ADD_LIBRARY_OPTION_SOURCES})
   # must link explicitly against boost.
   target_link_libraries(${_name} ${Boost_LIBRARIES})
 
@@ -324,8 +329,8 @@ macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
 
   set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
   install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-          COMPONENT pcl_${_component})
-endmacro()
+          COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT})
+endfunction()
 
 ###############################################################################
 # Add a test target.
