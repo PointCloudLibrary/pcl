@@ -436,7 +436,7 @@ function(PCL_MAKE_PKGCONFIG _name)
   set(options HEADER_ONLY)
   set(oneValueArgs COMPONENT DESC CFLAGS LIB_FLAGS)
   set(multiValueArgs PCL_DEPS INT_DEPS EXT_DEPS)
-  cmake_parse_arguments(PARSE_ARGV 1 PKGCONFIG "${options}" "${oneValueArgs}" "${multiValueArgs}")
+  cmake_parse_arguments(PKGCONFIG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   
   set(PKG_NAME ${_name})
   set(PKG_DESC ${PKGCONFIG_DESC})
