@@ -1,5 +1,9 @@
 include(${PROJECT_SOURCE_DIR}/cmake/pcl_utils.cmake)
 
+# Store location of current dir, because value of CMAKE_CURRENT_LIST_DIR is
+# set to the directory where a function is used, not where a function is defined
+set(_PCL_TARGET_CMAKE_DIR ${CMAKE_CURRENT_LIST_DIR})
+
 ###############################################################################
 # Add an option to build a subsystem or not.
 # _var The name of the variable to store the option in.
@@ -175,6 +179,25 @@ macro(PCL_SUBSUBSYS_DEPEND _var _parent _name)
 endmacro()
 
 ###############################################################################
+# Adds version information to executable/library in form of a version.rc. This works only with MSVC.
+#
+# _name The library name.
+##
+function(PCL_ADD_VERSION_INFO _name)
+  if(MSVC)
+    string(REPLACE "." "," VERSION_INFO_VERSION_WITH_COMMA ${PCL_VERSION})
+    if (SUBSUBSYS_DESC)
+      set(VERSION_INFO_DISPLAY_NAME ${SUBSUBSYS_DESC})
+    else()
+      set(VERSION_INFO_DISPLAY_NAME ${SUBSYS_DESC})
+    endif()
+    set(VERSION_INFO_ICON_PATH "${_PCL_TARGET_CMAKE_DIR}/images/pcl.ico")
+    configure_file(${_PCL_TARGET_CMAKE_DIR}/version.rc.in ${PROJECT_BINARY_DIR}/${_name}_version.rc @ONLY)
+    target_sources(${_name} PRIVATE ${PROJECT_BINARY_DIR}/${_name}_version.rc)
+  endif()
+endfunction()
+
+###############################################################################
 # Add a set of include files to install.
 # _component The part of PCL that the install files belong to.
 # _subdir The sub-directory for these include files.
@@ -197,6 +220,7 @@ function(PCL_ADD_LIBRARY _name)
   cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES})
+  PCL_ADD_VERSION_INFO(${_name})
   target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
   # must link explicitly against boost.
   target_link_libraries(${_name} ${Boost_LIBRARIES})
@@ -242,6 +266,7 @@ function(PCL_CUDA_ADD_LIBRARY _name)
   else()
     cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES})
   endif()
+  PCL_ADD_VERSION_INFO(${_name})
 
   # must link explicitly against boost.
   target_link_libraries(${_name} ${Boost_LIBRARIES})
@@ -275,7 +300,7 @@ function(PCL_ADD_EXECUTABLE _name)
   else()
     add_executable(${_name} ${ADD_LIBRARY_OPTION_SOURCES})
   endif()
-
+  PCL_ADD_VERSION_INFO(${_name})
   # must link explicitly against boost.
   if(UNIX AND NOT ANDROID)
     target_link_libraries(${_name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
@@ -321,6 +346,8 @@ function(PCL_CUDA_ADD_EXECUTABLE _name)
 
   REMOVE_VTK_DEFINITIONS()
   cuda_add_executable(${_name} ${ADD_LIBRARY_OPTION_SOURCES})
+  PCL_ADD_VERSION_INFO(${_name})
+
   # must link explicitly against boost.
   target_link_libraries(${_name} ${Boost_LIBRARIES})
 
