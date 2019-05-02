@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_VFH_H_
-#define PCL_FEATURES_VFH_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -81,8 +80,8 @@ namespace pcl
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename boost::shared_ptr<VFHEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef typename boost::shared_ptr<const VFHEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+      typedef boost::shared_ptr<VFHEstimation<PointInT, PointNT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const VFHEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
 
 
       /** \brief Empty constructor. */
@@ -227,12 +226,12 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the VFH feature estimates
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
     protected:
       /** \brief This method should get called before starting the actual computation. */
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief Placeholder for the f1 histogram. */
       Eigen::VectorXf hist_f1_;
@@ -272,5 +271,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/vfh.hpp>
 #endif
-
-#endif  //#ifndef PCL_FEATURES_VFH_H_

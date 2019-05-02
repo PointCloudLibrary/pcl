@@ -101,7 +101,6 @@ pcl::VLPGrabber::getDefaultNetworkAddress ()
 void
 pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
 {
-  static uint32_t scan_counter = 0;
   static uint32_t sweep_counter = 0;
   if (sizeof(HDLLaserReturn) != 3)
     return;
@@ -109,8 +108,6 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
   time_t system_time;
   time (&system_time);
   time_t velodyne_time = (system_time & 0x00000000ffffffffl) << 32 | dataPacket->gpsTimestamp;
-
-  scan_counter++;
 
   double interpolated_azimuth_delta;
 
@@ -145,7 +142,7 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
       }
       if (current_azimuth < HDLGrabber::last_azimuth_)
       {
-        if (current_sweep_xyz_->size () > 0)
+        if (!current_sweep_xyz_->empty ())
         {
           current_sweep_xyz_->is_dense = current_sweep_xyzrgba_->is_dense = current_sweep_xyzi_->is_dense = false;
           current_sweep_xyz_->header.stamp = velodyne_time;
@@ -190,7 +187,7 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
         dual_xyzrgba.rgba = laser_rgb_mapping_[j % VLP_MAX_NUM_LASERS].rgba;
       }
 
-      if (! (pcl_isnan (xyz.x) || pcl_isnan (xyz.y) || pcl_isnan (xyz.z)))
+      if (! (std::isnan (xyz.x) || std::isnan (xyz.y) || std::isnan (xyz.z)))
       {
         current_sweep_xyz_->push_back (xyz);
         current_sweep_xyzrgba_->push_back (xyzrgba);
@@ -201,7 +198,7 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
       if (dataPacket->mode == VLP_DUAL_MODE)
       {
         if ((dual_xyz.x != xyz.x || dual_xyz.y != xyz.y || dual_xyz.z != xyz.z)
-            && ! (pcl_isnan (dual_xyz.x) || pcl_isnan (dual_xyz.y) || pcl_isnan (dual_xyz.z)))
+            && ! (std::isnan (dual_xyz.x) || std::isnan (dual_xyz.y) || std::isnan (dual_xyz.z)))
         {
           current_sweep_xyz_->push_back (dual_xyz);
           current_sweep_xyzrgba_->push_back (dual_xyzrgba);

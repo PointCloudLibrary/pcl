@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OUTOFCORE_ITERATOR_BASE_H_
-#define PCL_OUTOFCORE_ITERATOR_BASE_H_
+#pragma once
 
 #include <iterator>
 
@@ -64,8 +63,8 @@ namespace pcl
                                                        const OutofcoreOctreeBaseNode<ContainerT, PointT>&>/*Reference type*/
     {
       public:
-        typedef typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT> OctreeDisk;
-        typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> OctreeDiskNode;
+        typedef pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT> OctreeDisk;
+        typedef pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> OctreeDiskNode;
         
         typedef typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT>::BranchNode BranchNode;
         typedef typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT>::LeafNode LeafNode;
@@ -74,7 +73,7 @@ namespace pcl
 
         explicit
         OutofcoreIteratorBase (OctreeDisk& octree_arg) 
-          : octree_ (octree_arg), currentNode_ (NULL)
+          : octree_ (octree_arg), currentNode_ (nullptr)
         {
           reset ();
         }
@@ -155,5 +154,3 @@ namespace pcl
 #endif
   }
 }
-
-#endif //PCL_OUTOFCORE_ITERATOR_BASE_H_

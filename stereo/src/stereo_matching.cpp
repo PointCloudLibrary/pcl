@@ -46,16 +46,16 @@
 #include "pcl/stereo/stereo_matching.h"
 
 //////////////////////////////////////////////////////////////////////////////
-pcl::StereoMatching::StereoMatching (void)
+pcl::StereoMatching::StereoMatching ()
 {
-  disp_map_ = NULL;
-  disp_map_trg_ = NULL;
+  disp_map_ = nullptr;
+  disp_map_trg_ = nullptr;
 
-  ref_img_ = NULL;
-  trg_img_ = NULL;
+  ref_img_ = nullptr;
+  trg_img_ = nullptr;
 
-  pp_ref_img_ = NULL;
-  pp_trg_img_ = NULL;
+  pp_ref_img_ = nullptr;
+  pp_trg_img_ = nullptr;
 
   width_ = -1; 
   height_ = -1;
@@ -73,31 +73,15 @@ pcl::StereoMatching::StereoMatching (void)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-pcl::StereoMatching::~StereoMatching (void)
+pcl::StereoMatching::~StereoMatching ()
 {
-  if ( disp_map_ != NULL)
-  {
-    delete [] disp_map_;
-    //disp_map_ = NULL;
-  }
+  delete [] disp_map_;
+  delete [] disp_map_trg_;
 
-  if ( disp_map_trg_ != NULL)
-  {
-    delete [] disp_map_trg_;
-    //disp_map_trg_ = NULL;
-  }
-
-  if ( ref_img_ != NULL)
-  {
-    delete [] ref_img_;
-    delete [] trg_img_;
-  }
-
-  if ( pp_ref_img_ != NULL)
-  {
-    delete [] pp_ref_img_;
-    delete [] pp_trg_img_;
-  }
+  delete [] ref_img_;
+  delete [] trg_img_;
+  delete [] pp_ref_img_;
+  delete [] pp_trg_img_;
 
 }
 
@@ -226,7 +210,7 @@ pcl::StereoMatching::getPointCloud (
     pcl::PointCloud<pcl::RGB>::Ptr texture) 
 {
   //disp map has not been computed yet..
-  if (disp_map_ == NULL)
+  if (disp_map_ == nullptr)
   {
     PCL_ERROR ("[pcl::StereoMatching::getPointCloud] Error: a disparity map has not been computed yet. The resulting cloud can not be computed..\n");
 
@@ -306,7 +290,7 @@ pcl::StereoMatching::getPointCloud (
 {
   
   //disp map has not been computed yet..
-  if ( disp_map_ == NULL)
+  if ( disp_map_ == nullptr)
   {
 
     PCL_ERROR(
@@ -385,7 +369,6 @@ pcl::GrayStereoMatching::preProcessing (unsigned char *img, unsigned char *pp_im
   int area = n * n;
   int threshold = 31;
 
-  int sum = 0; 
   int *v = new int[width_];
   memset (v, 0, sizeof (int) * width_);
 
@@ -406,17 +389,17 @@ pcl::GrayStereoMatching::preProcessing (unsigned char *img, unsigned char *pp_im
     for (int x = 0; x <= radius; x++)
       pp_img[y*width_+x] = img[y*width_+x];
 
-    sum = 0;
+    int sum = 0;
     for (int x = 0; x<n; x++)
     {
-      v[x] = v[x] + img[ (y+radius)*width_+x] - img[ (y-radius-1)*width_+x];
+      v[x] += img[ (y+radius)*width_+x] - img[ (y-radius-1)*width_+x];
       sum += v[x];
     }
 
     for (int x = radius + 1; x < width_ - radius; x++)
     {
-      v[x+radius] = v[x+radius] + img[ (y+radius)*width_ + x+radius] - img[ (y-radius-1)*width_+ x+radius];
-      sum = sum + v[x+radius] - v[x-radius-1];
+      v[x+radius] += img[ (y+radius)*width_ + x+radius] - img[ (y-radius-1)*width_+ x+radius];
+      sum += v[x+radius] - v[x-radius-1];
 
       short int temp = static_cast<short int> (img[y*width_+x] - (sum / area));
 
@@ -478,16 +461,16 @@ pcl::GrayStereoMatching::compute (pcl::PointCloud<pcl::RGB> &ref, pcl::PointClou
     return;
   }
 
-  if ( (ref_img_ != NULL) && (width_ != static_cast<int> (ref.width) || height_ != static_cast<int> (ref.height)) )
+  if ( (ref_img_ != nullptr) && (width_ != static_cast<int> (ref.width) || height_ != static_cast<int> (ref.height)) )
   {
     delete [] ref_img_;
     delete [] trg_img_;
 
-    ref_img_ = NULL;
-    trg_img_ = NULL;
+    ref_img_ = nullptr;
+    trg_img_ = nullptr;
   }
 
-  if ( ref_img_ == NULL)
+  if ( ref_img_ == nullptr)
   {
     ref_img_ = new unsigned char[ref.width * ref.height];  
     trg_img_ = new unsigned char[ref.width * ref.height];  
@@ -524,27 +507,21 @@ pcl::GrayStereoMatching::compute (unsigned char* ref_img, unsigned char* trg_img
     return;
   }
 
-  if ( (disp_map_ != NULL) && (width_ != width || height_ != height) )
+  if ( (disp_map_ != nullptr) && (width_ != width || height_ != height) )
   {
     delete [] disp_map_;
-    disp_map_ = NULL;
+    disp_map_ = nullptr;
 
-    if ( disp_map_trg_ != NULL)
-    {
-      delete [] disp_map_trg_;
-      disp_map_trg_ = NULL;
-    }
+    delete [] disp_map_trg_;
+    disp_map_trg_ = nullptr;
 
-    if ( pp_ref_img_ != NULL)
-    {
-      delete [] pp_ref_img_;
-      delete [] pp_trg_img_;
-      pp_ref_img_ = NULL;
-      pp_trg_img_ = NULL;
-    }
+    delete [] pp_ref_img_;
+    delete [] pp_trg_img_;
+    pp_ref_img_ = nullptr;
+    pp_trg_img_ = nullptr;
   }
 
-  if ( disp_map_ == NULL)
+  if ( disp_map_ == nullptr)
   {
     disp_map_ = new short int[width * height];  
       
@@ -553,29 +530,29 @@ pcl::GrayStereoMatching::compute (unsigned char* ref_img, unsigned char* trg_img
   }
     
 
-  if ( is_lr_check_ && disp_map_trg_ == NULL)
+  if ( is_lr_check_ && disp_map_trg_ == nullptr)
   {
     disp_map_trg_ = new short int[width * height];  
   }
 
-  if ( !is_lr_check_ && disp_map_trg_ != NULL)
+  if ( !is_lr_check_ && disp_map_trg_ != nullptr)
   {
     delete [] disp_map_trg_;
-    disp_map_trg_ = NULL;
+    disp_map_trg_ = nullptr;
   }
 
-  if ( is_pre_proc_ && pp_ref_img_ == NULL)
+  if ( is_pre_proc_ && pp_ref_img_ == nullptr)
   {
     pp_ref_img_ = new unsigned char[width_*height_];
     pp_trg_img_ = new unsigned char[width_*height_];
   }
 
-  if ( !is_pre_proc_ && pp_ref_img_ != NULL)
+  if ( !is_pre_proc_ && pp_ref_img_ != nullptr)
   {
     delete [] pp_ref_img_;
     delete [] pp_trg_img_;
-    pp_ref_img_ = NULL;
-    pp_trg_img_ = NULL;
+    pp_ref_img_ = nullptr;
+    pp_trg_img_ = nullptr;
   }
 
   memset(disp_map_, 0, sizeof(short int)*height_*width_);
@@ -631,7 +608,7 @@ pcl::GrayStereoMatching::compute (unsigned char* ref_img, unsigned char* trg_img
   for (int j = 0; j < height_; j++)
     for (int i = 0; i < width_; i++)
       if ( disp_map_[j * width_ + i] > 0)
-	    disp_map_[j * width_ + i] += static_cast<short int> (x_off_ * 16);
+        disp_map_[j * width_ + i] += static_cast<short int> (x_off_ * 16);
 
 }
 

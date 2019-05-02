@@ -72,8 +72,8 @@ namespace pcl
                     Eigen::Vector3f teVecs = camPose.translation ();
 
                     // Create filenames
-                    filename_pose = filename_pose + boost::lexical_cast<std::string> (screenshot_counter) + file_extension_pose;
-                    filename_image = filename_image + boost::lexical_cast<std::string> (screenshot_counter) + file_extension_image;
+                    filename_pose += std::to_string(screenshot_counter) + file_extension_pose;
+                    filename_image += std::to_string(screenshot_counter) + file_extension_image;
 
                     // Write files
                     writePose (filename_pose, teVecs, erreMats);

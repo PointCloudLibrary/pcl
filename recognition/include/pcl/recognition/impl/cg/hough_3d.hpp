@@ -51,7 +51,7 @@
 
 template<typename PointModelT, typename PointSceneT, typename PointModelRfT, typename PointSceneRfT>
 template<typename PointType, typename PointRfType> void
-pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::computeRf (const boost::shared_ptr<const pcl::PointCloud<PointType> > &input, pcl::PointCloud<PointRfType> &rf)
+pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::computeRf (const typename pcl::PointCloud<PointType>::ConstPtr &input, pcl::PointCloud<PointRfType> &rf)
 {
   if (local_rf_search_radius_ == 0)
   {
@@ -92,7 +92,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::tr
   if (!input_rf_)
   {
     ModelRfCloudPtr new_input_rf (new ModelRfCloud ());
-    computeRf (input_, *new_input_rf);
+    computeRf<PointModelT, PointModelRfT> (input_, *new_input_rf);
     input_rf_ = new_input_rf;
     //PCL_ERROR(
     //  "[pcl::Hough3DGrouping::train()] Error! Input reference frame not set.\n");
@@ -152,7 +152,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::ho
   if (!scene_rf_)
   {
     ModelRfCloudPtr new_scene_rf (new ModelRfCloud ());
-    computeRf (scene_, *new_scene_rf);
+    computeRf<PointSceneT, PointSceneRfT> (scene_, *new_scene_rf);
     scene_rf_ = new_scene_rf;
     //PCL_ERROR(
     //  "[pcl::Hough3DGrouping::recognizeModelInstances()] Error! Scene reference frame not set.\n");
@@ -285,9 +285,9 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::cl
   for (size_t j = 0; j < max_values.size (); ++j)
   {
     Correspondences temp_corrs, filtered_corrs;
-    for (size_t i = 0; i < max_ids[j].size (); ++i)
+    for (const int &i : max_ids[j])
     {
-      temp_corrs.push_back (model_scene_corrs_->at (max_ids[j][i]));
+      temp_corrs.push_back (model_scene_corrs_->at (i));
     }
     // RANSAC filtering
     corr_rejector.getRemainingCorrespondences (temp_corrs, filtered_corrs);
@@ -365,7 +365,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
   //}
 
   this->deinitCompute ();
-  return (true);
+  return (transformations.size ());
 }
 
 

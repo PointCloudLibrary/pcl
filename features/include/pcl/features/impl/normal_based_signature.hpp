@@ -113,7 +113,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
         tree_->radiusSearch (zeta_point_pcl, search_radius_, k_indices, k_sqr_distances);
 
         // Do k nearest search if there are no neighbors nearby
-        if (k_indices.size () == 0)
+        if (k_indices.empty ())
         {
           k_indices.resize (5);
           k_sqr_distances.resize (5);
@@ -143,10 +143,10 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
 
       // do DCT on the s_matrix row-wise
       Eigen::VectorXf dct_row (M_);
-      for (int m = 0; m < s_row.size (); ++m)
+      for (Eigen::Index m = 0; m < s_row.size (); ++m)
       {
         float Xk = 0.0f;
-        for (int n = 0; n < s_row.size (); ++n)
+        for (Eigen::Index n = 0; n < s_row.size (); ++n)
           Xk += static_cast<float> (s_row[n] * cos (M_PI / (static_cast<double> (M_ * n) + 0.5) * static_cast<double> (k)));
         dct_row[m] = Xk;
       }

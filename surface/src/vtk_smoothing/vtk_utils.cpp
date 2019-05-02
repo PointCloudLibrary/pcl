@@ -70,11 +70,7 @@ pcl::VTKUtils::convertToVTK (const pcl::PolygonMesh &triangles, vtkSmartPointer<
   mesh2vtk (triangles, vtk_polygons);
 
   vtkSmartPointer<vtkTriangleFilter> vtk_triangles = vtkSmartPointer<vtkTriangleFilter>::New ();
-#if VTK_MAJOR_VERSION < 6
-  vtk_triangles->SetInput (vtk_polygons);
-#else
   vtk_triangles->SetInputData (vtk_polygons);
-#endif
   vtk_triangles->Update();
 
   triangles_out_vtk = vtk_triangles->GetOutput ();
@@ -105,8 +101,8 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
   if (nr_points == 0)
     return 0;
 
-  vtkUnsignedCharArray* poly_colors = NULL;
-  if (poly_data->GetPointData() != NULL)
+  vtkUnsignedCharArray* poly_colors = nullptr;
+  if (poly_data->GetPointData() != nullptr)
     poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("Colors"));
 
   // Some applications do not save the name of scalars (including PCL's native vtk_io)
@@ -166,7 +162,7 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
   while (mesh_polygons->GetNextCell (nr_cell_points, cell_points))
   {
     mesh.polygons[id_poly].vertices.resize (nr_cell_points);
-    for (int i = 0; i < nr_cell_points; ++i)
+    for (vtkIdType i = 0; i < nr_cell_points; ++i)
       mesh.polygons[id_poly].vertices[i] = static_cast<unsigned int> (cell_points[i]);
     ++id_poly;
   }
@@ -265,7 +261,7 @@ pcl::VTKUtils::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyDa
     poly_data->GetPointData()->SetNormals (normals);
   }
 
-  if (poly_data->GetPoints() == NULL)
+  if (poly_data->GetPoints() == nullptr)
     return (0);
   return (static_cast<int> (poly_data->GetPoints()->GetNumberOfPoints ()));
 }

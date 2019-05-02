@@ -42,6 +42,8 @@
 
 #include <pcl/features/rops_estimation.h>
 
+#include <array>
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 pcl::ROPSEstimation <PointInT, PointOutT>::ROPSEstimation () :
@@ -132,7 +134,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::getTriangles (std::vector <pcl::Verti
 template <typename PointInT, typename PointOutT> void
 pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output)
 {
-  if (triangles_.size () == 0)
+  if (triangles_.empty ())
   {
     output.points.clear ();
     return;
@@ -157,12 +159,12 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
     PointCloudIn transformed_cloud;
     transformCloud (input_->points[(*indices_)[i_point]], lrf_matrix, local_points, transformed_cloud);
 
-    PointInT axis[3];
-    axis[0].x = 1.0f; axis[0].y = 0.0f; axis[0].z = 0.0f;
-    axis[1].x = 0.0f; axis[1].y = 1.0f; axis[1].z = 0.0f;
-    axis[2].x = 0.0f; axis[2].y = 0.0f; axis[2].z = 1.0f;
+    std::array<PointInT, 3> axes;
+    axes[0].x = 1.0f; axes[0].y = 0.0f; axes[0].z = 0.0f;
+    axes[1].x = 0.0f; axes[1].y = 1.0f; axes[1].z = 0.0f;
+    axes[2].x = 0.0f; axes[2].y = 0.0f; axes[2].z = 1.0f;
     std::vector <float> feature;
-    for (unsigned int i_axis = 0; i_axis < 3; i_axis++)
+    for (const auto &axis : axes)
     {
       float theta = step_;
       do
@@ -170,7 +172,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
         //rotate local surface and get bounding box
         PointCloudIn rotated_cloud;
         Eigen::Vector3f min, max;
-        rotateCloud (axis[i_axis], theta, transformed_cloud, rotated_cloud, min, max);
+        rotateCloud (axis, theta, transformed_cloud, rotated_cloud, min, max);
 
         //for each projection (XY, XZ and YZ) compute distribution matrix and central moments
         for (unsigned int i_proj = 0; i_proj < 3; i_proj++)
@@ -247,9 +249,8 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
 
   Eigen::Vector3f feature_point (point.x, point.y, point.z);
 
-  std::set <unsigned int>::const_iterator it;
   unsigned int i_triangle = 0;
-  for (it = local_triangles.begin (), i_triangle = 0; it != local_triangles.end (); it++, i_triangle++)
+  for (auto it = local_triangles.cbegin (); it != local_triangles.cend (); it++, i_triangle++)
   {
     Eigen::Vector3f pt[3];
     for (unsigned int i_vertex = 0; i_vertex < 3; i_vertex++)
@@ -268,12 +269,12 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
 
     Eigen::Matrix3f curr_scatter_matrix;
     curr_scatter_matrix.setZero ();
-    for (unsigned int i_pt = 0; i_pt < 3; i_pt++)
+    for (const auto &i_pt : pt)
     {
-      Eigen::Vector3f vec = pt[i_pt] - feature_point;
+      Eigen::Vector3f vec = i_pt - feature_point;
       curr_scatter_matrix += vec * (vec.transpose ());
-      for (unsigned int j_pt = 0; j_pt < 3; j_pt++)
-        curr_scatter_matrix += vec * ((pt[j_pt] - feature_point).transpose ());
+      for (const auto &j_pt : pt)
+        curr_scatter_matrix += vec * ((j_pt - feature_point).transpose ());
     }
     scatter_matrices[i_triangle] = coeff * curr_scatter_matrix;
   }
@@ -299,7 +300,8 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
 
   float h1 = 0.0f;
   float h3 = 0.0f;
-  for (it = local_triangles.begin (), i_triangle = 0; it != local_triangles.end (); it++, i_triangle++)
+  i_triangle = 0;
+  for (auto it = local_triangles.cbegin (); it != local_triangles.cend (); it++, i_triangle++)
   {
     Eigen::Vector3f pt[3];
     for (unsigned int i_vertex = 0; i_vertex < 3; i_vertex++)
@@ -312,9 +314,9 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
 
     float factor1 = 0.0f;
     float factor3 = 0.0f;
-    for (unsigned int i_pt = 0; i_pt < 3; i_pt++)
+    for (const auto &i_pt : pt)
     {
-      Eigen::Vector3f vec = pt[i_pt] - feature_point;
+      Eigen::Vector3f vec = i_pt - feature_point;
       factor1 += vec.dot (v1);
       factor3 += vec.dot (v3);
     }

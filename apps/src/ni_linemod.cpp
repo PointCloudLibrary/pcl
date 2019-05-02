@@ -37,6 +37,8 @@
  *
  */
 
+#include <thread>
+
 #include <pcl/apps/timer.h>
 #include <pcl/common/common.h>
 #include <pcl/common/angles.h>
@@ -64,6 +66,7 @@
 
 using namespace pcl;
 using namespace std;
+using namespace std::chrono_literals;
 
 typedef PointXYZRGBA PointT;
 
@@ -256,8 +259,8 @@ class NILinemod
       Label l; l.label = 0;
       PointCloud<Label>::Ptr scene (new PointCloud<Label> (cloud->width, cloud->height, l));
       // Mask the objects that we want to split into clusters
-      for (int i = 0; i < static_cast<int> (points_above_plane->indices.size ()); ++i)
-        scene->points[points_above_plane->indices[i]].label = 1;
+      for (const int &index : points_above_plane->indices)
+        scene->points[index].label = 1;
       euclidean_cluster_comparator->setLabels (scene);
 
       boost::shared_ptr<std::set<uint32_t> > exclude_labels = boost::make_shared<std::set<uint32_t> > ();
@@ -272,17 +275,17 @@ class NILinemod
 
       // For each cluster found
       bool cluster_found = false;
-      for (size_t i = 0; i < euclidean_label_indices.size (); i++)
+      for (const auto &euclidean_label_index : euclidean_label_indices)
       {
         if (cluster_found)
           break;
         // Check if the point that we picked belongs to it
-        for (size_t j = 0; j < euclidean_label_indices[i].indices.size (); ++j)
+        for (size_t j = 0; j < euclidean_label_index.indices.size (); ++j)
         {
-          if (picked_idx != euclidean_label_indices[i].indices[j])
+          if (picked_idx != euclidean_label_index.indices[j])
             continue;
           //pcl::PointCloud<PointT> cluster;
-          pcl::copyPointCloud (*cloud, euclidean_label_indices[i].indices, object);
+          pcl::copyPointCloud (*cloud, euclidean_label_index.indices, object);
           cluster_found = true;
           break;
           //object_indices = euclidean_label_indices[i].indices;
@@ -497,7 +500,7 @@ class NILinemod
           {
             cloud_viewer_.setPosition (0, 0);
             cloud_viewer_.setSize (cloud->width, cloud->height);
-            cloud_init = !cloud_init;
+            cloud_init = true;
           }
 
           if (!cloud_viewer_.updatePointCloud (cloud, "OpenNICloud"))
@@ -510,7 +513,7 @@ class NILinemod
           {
             image_viewer_.setPosition (cloud->width, 0);
             image_viewer_.setSize (cloud->width, cloud->height);
-            image_init = !image_init;
+            image_init = true;
           }
 
           image_viewer_.showRGBImage<PointT> (cloud);
@@ -527,7 +530,7 @@ class NILinemod
         cloud_viewer_.spinOnce ();
 
         image_viewer_.spinOnce ();
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
       }
 
       grabber_.stop ();

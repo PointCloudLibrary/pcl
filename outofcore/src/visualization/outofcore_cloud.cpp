@@ -33,10 +33,6 @@
 #include <vtkProperty.h>
 #include <vtkSmartPointer.h>
 
-// Boost
-//#include <boost/date_time.hpp>
-//#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
 
 // Forward Declarations
 
@@ -118,11 +114,11 @@ OutofcoreCloud::pcdReaderThread ()
 // Operators
 // -----------------------------------------------------------------------------
 OutofcoreCloud::OutofcoreCloud (std::string name, boost::filesystem::path& tree_root) :
-    Object (name), display_depth_ (1), points_loaded_ (0), data_loaded_(0), render_camera_(NULL), lod_pixel_threshold_(10000)
+    Object (name), display_depth_ (1), points_loaded_ (0), data_loaded_(0), render_camera_(nullptr), lod_pixel_threshold_(10000)
 {
 
   // Create the pcd reader thread once for all outofcore nodes
-  if (OutofcoreCloud::pcd_reader_thread.get() == NULL)
+  if (OutofcoreCloud::pcd_reader_thread.get() == nullptr)
   {
 //    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<boost::thread>(new boost::thread(&OutofcoreCloud::pcdReaderThread, this));
     OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<boost::thread>(new boost::thread(&OutofcoreCloud::pcdReaderThread));
@@ -157,24 +153,16 @@ OutofcoreCloud::updateVoxelData ()
   double voxel_side_length = octree_->getVoxelSideLength (display_depth_);
 
   double s = voxel_side_length / 2;
-  for (size_t i = 0; i < voxel_centers.size (); i++)
+  for (const auto &voxel_center : voxel_centers)
   {
-    double x = voxel_centers[i].x;
-    double y = voxel_centers[i].y;
-    double z = voxel_centers[i].z;
+    double x = voxel_center.x;
+    double y = voxel_center.y;
+    double z = voxel_center.z;
 
-#if VTK_MAJOR_VERSION < 6
-    voxel_data->AddInput (getVtkCube (x - s, x + s, y - s, y + s, z - s, z + s));
-#else
     voxel_data->AddInputData (getVtkCube (x - s, x + s, y - s, y + s, z - s, z + s));
-#endif
   }
 
-#if VTK_MAJOR_VERSION < 6
-  voxel_mapper->SetInput (voxel_data->GetOutput ());
-#else
   voxel_mapper->SetInputData (voxel_data->GetOutput ());
-#endif
 
   voxel_actor_->SetMapper (voxel_mapper);
   voxel_actor_->GetProperty ()->SetRepresentationToWireframe ();
@@ -190,7 +178,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
   Scene *scene = Scene::instance ();
   Camera *camera = scene->getCamera (active_camera);
 
-  if (render_camera_ != NULL && render_camera_->getName() == camera->getName ())
+  if (render_camera_ != nullptr && render_camera_->getName() == camera->getName ())
   {
     renderer->ComputeAspect ();
     //double *aspect = renderer->GetAspect ();
@@ -208,7 +196,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
 
     cloud_actors_->RemoveAllItems ();
 
-    while ( *breadth_first_it !=0 )
+    while ( *breadth_first_it !=nullptr )
     {
       OctreeDiskNode *node = *breadth_first_it;
 
@@ -269,7 +257,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
           cloud_actor->SetMapper (mapper);
           cloud_actor->GetProperty ()->SetColor (0.0, 0.0, 1.0);
           cloud_actor->GetProperty ()->SetPointSize (1);
-          cloud_actor->GetProperty ()->SetLighting (0);
+          cloud_actor->GetProperty ()->SetLighting (false);
 
           cloud_actors_map_[pcd_file] = cloud_actor;
         }

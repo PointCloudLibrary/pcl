@@ -34,8 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_CONTAINERS_DEVICE_MEMORY_HPP_
-#define PCL_GPU_CONTAINERS_DEVICE_MEMORY_HPP_
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <pcl/gpu/containers/kernel_containers.h>
@@ -75,7 +74,7 @@ namespace pcl
             /** \brief Copy constructor. Just increments reference counter. */
             DeviceMemory(const DeviceMemory& other_arg);
 
-            /** \brief Assigment operator. Just increments reference counter. */
+            /** \brief Assignment operator. Just increments reference counter. */
             DeviceMemory& operator=(const DeviceMemory& other_arg);
 
              /** \brief Allocates internal buffer in GPU memory. If internal buffer was created before the function recreates it with new size. If new and old sizes are equal it does nothing.               
@@ -167,7 +166,7 @@ namespace pcl
             /** \brief Copy constructor. Just increments reference counter. */
             DeviceMemory2D(const DeviceMemory2D& other_arg);
 
-            /** \brief Assigment operator. Just increments reference counter. */
+            /** \brief Assignment operator. Just increments reference counter. */
             DeviceMemory2D& operator=(const DeviceMemory2D& other_arg);
 
             /** \brief Allocates internal buffer in GPU memory. If internal buffer was created before the function recreates it with new size. If new and old sizes are equal it does nothing.
@@ -192,7 +191,7 @@ namespace pcl
               * */
             void upload(const void *host_ptr_arg, size_t host_step_arg, int rows_arg, int colsBytes_arg);
 
-            /** \brief Downloads data from internal buffer to CPU memory. User is resposible for correct host buffer size.
+            /** \brief Downloads data from internal buffer to CPU memory. User is responsible for correct host buffer size.
               * \param host_ptr_arg pointer to host buffer to download               
               * \param host_step_arg stride between two consecutive rows in bytes for host buffer             
               * */
@@ -256,5 +255,3 @@ namespace pcl
 }
 
 #include <pcl/gpu/containers/impl/device_memory.hpp>
-
-#endif /* PCL_GPU_CONTAINERS_DEVICE_MEMORY_HPP_ */

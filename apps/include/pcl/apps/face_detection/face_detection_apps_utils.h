@@ -5,8 +5,7 @@
  *      Author: ari
  */
 
-#ifndef FACE_DETECTION_APPS_UTILS_H_
-#define FACE_DETECTION_APPS_UTILS_H_
+#pragma once
 
 namespace face_detection_apps_utils
 {
@@ -86,23 +85,13 @@ namespace face_detection_apps_utils
       {
         //check that it is a ply file and then add, otherwise ignore..
         std::vector < std::string > strs;
-#if BOOST_FILESYSTEM_VERSION == 3
         std::string file = (itr->path().filename()).string();
-#else
-        std::string file = (itr->path ()).filename ();
-#endif
-
         boost::split (strs, file, boost::is_any_of ("."));
         std::string extension = strs[strs.size () - 1];
 
-        if (extension.compare (ext) == 0)
+        if (extension == ext)
         {
-#if BOOST_FILESYSTEM_VERSION == 3
           std::string path = rel_path_so_far + (itr->path().filename()).string();
-#else
-          std::string path = rel_path_so_far + (itr->path ()).filename ();
-#endif
-
           relative_paths.push_back (path);
         }
       }
@@ -145,5 +134,3 @@ namespace face_detection_apps_utils
     }
   }
 }
-
-#endif /* FACE_DETECTION_APPS_UTILS_H_ */

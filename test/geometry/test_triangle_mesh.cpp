@@ -541,15 +541,15 @@ TEST (TestManifoldTriangleMesh, addTrianglePair)
   tmp.push_back (vi [ 6]); tmp.push_back (vi [10]); tmp.push_back (vi [11]); tmp.push_back (vi [ 7]); faces.push_back (tmp); tmp.clear ();
   tmp.push_back (vi [ 5]); tmp.push_back (vi [ 9]); tmp.push_back (vi [10]); tmp.push_back (vi [ 6]); faces.push_back (tmp); tmp.clear ();
 
-  for (unsigned int i=0; i<faces.size (); ++i)
+  for (const auto &face : faces)
   {
     std::pair <FaceIndex, FaceIndex> fip;
-    fip = mesh.addTrianglePair (faces [i]);
+    fip = mesh.addTrianglePair (face);
     ASSERT_TRUE (fip.first.isValid ());
     ASSERT_TRUE (fip.second.isValid ());
   }
 
-  for (unsigned int i=0; i<faces.size (); ++i)
+  for (size_t i=0; i < faces.size (); ++i)
   {
     VertexIndices actual_1, actual_2;
 

@@ -234,10 +234,8 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
 
     size_t max_score = 0;
     size_t copy_back_counter = 0;
-    for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
+    for (const auto &feature : templates_[template_index].features)
     {
-      const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
-
       for (size_t bin_index = 0; bin_index < 8; ++bin_index)
       {
         if ((feature.quantized_value & (0x1<<bin_index)) != 0)
@@ -366,8 +364,8 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
   for (size_t modality_index = 0; modality_index < modality_linearized_maps.size (); ++modality_index)
   {
     modality_energy_maps[modality_index].releaseAll ();
-    for (size_t bin_index = 0; bin_index < modality_linearized_maps[modality_index].size (); ++bin_index)
-      modality_linearized_maps[modality_index][bin_index].releaseAll ();
+    for (auto &bin_index : modality_linearized_maps[modality_index])
+      bin_index.releaseAll ();
   }
 }
 
@@ -555,10 +553,8 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
 
     int max_score = 0;
     size_t copy_back_counter = 0;
-    for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
+    for (const auto &feature : templates_[template_index].features)
     {
-      const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
-
       for (size_t bin_index = 0; bin_index < 8; ++bin_index)
       {
         if ((feature.quantized_value & (0x1<<bin_index)) != 0)
@@ -825,9 +821,9 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
     modality_energy_maps_2[modality_index].releaseAll ();
     modality_energy_maps_3[modality_index].releaseAll ();
 #endif
-    for (size_t bin_index = 0; bin_index < modality_linearized_maps[modality_index].size (); ++bin_index)
+    for (auto &bin_index : modality_linearized_maps[modality_index])
     {
-      modality_linearized_maps[modality_index][bin_index].releaseAll ();
+      bin_index.releaseAll ();
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
       modality_linearized_maps_1[modality_index][bin_index].releaseAll ();
       modality_linearized_maps_2[modality_index][bin_index].releaseAll ();
@@ -1028,10 +1024,8 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 
       int max_score = 0;
       size_t copy_back_counter = 0;
-      for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
+      for (const auto &feature : templates_[template_index].features)
       {
-        const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
-
         for (size_t bin_index = 0; bin_index < 8; ++bin_index)
         {
           if ((feature.quantized_value & (0x1<<bin_index)) != 0)
@@ -1301,9 +1295,9 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
     modality_energy_maps_2[modality_index].releaseAll ();
     modality_energy_maps_3[modality_index].releaseAll ();
 #endif
-    for (size_t bin_index = 0; bin_index < modality_linearized_maps[modality_index].size (); ++bin_index)
+    for (auto &bin_index : modality_linearized_maps[modality_index])
     {
-      modality_linearized_maps[modality_index][bin_index].releaseAll ();
+      bin_index.releaseAll ();
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
       modality_linearized_maps_1[modality_index][bin_index].releaseAll ();
       modality_linearized_maps_2[modality_index][bin_index].releaseAll ();
@@ -1342,10 +1336,10 @@ pcl::LINEMOD::loadTemplates (std::vector<std::string> & file_names)
 {
   templates_.clear ();
 
-  for(size_t i=0; i < file_names.size (); i++)
+  for(const auto &filename : file_names)
   {
     std::ifstream file_stream;
-    file_stream.open (file_names[i].c_str (), std::ofstream::in | std::ofstream::binary);
+    file_stream.open (filename.c_str (), std::ofstream::in | std::ofstream::binary);
 
     int nr_templates;
     read (file_stream, nr_templates);

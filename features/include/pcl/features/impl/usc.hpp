@@ -233,9 +233,9 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
     assert (w >= 0.0);
     if (w == std::numeric_limits<float>::infinity ())
       PCL_ERROR ("Shape Context Error INF!\n");
-    if (w != w)
+    if (std::isnan(w))
       PCL_ERROR ("Shape Context Error IND!\n");
-    /// Accumulate w into correspondant Bin(j,k,l)
+    /// Accumulate w into correspondent Bin(j,k,l)
     desc[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j] += w;
 
     assert (desc[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j] >= 0);
@@ -257,9 +257,9 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
     // If the point is not finite, set the descriptor to NaN and continue
     const PointRFT& current_frame = (*frames_)[point_index];
     if (!isFinite ((*input_)[(*indices_)[point_index]]) ||
-        !pcl_isfinite (current_frame.x_axis[0]) ||
-        !pcl_isfinite (current_frame.y_axis[0]) ||
-        !pcl_isfinite (current_frame.z_axis[0])  )
+        !std::isfinite (current_frame.x_axis[0]) ||
+        !std::isfinite (current_frame.y_axis[0]) ||
+        !std::isfinite (current_frame.z_axis[0])  )
     {
       for (size_t i = 0; i < descriptor_length_; ++i)
         output[point_index].descriptor[i] = std::numeric_limits<float>::quiet_NaN ();

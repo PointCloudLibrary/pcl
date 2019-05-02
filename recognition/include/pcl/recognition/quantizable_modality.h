@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_QUANTIZABLE_MODALITY
-#define PCL_FEATURES_QUANTIZABLE_MODALITY
+#pragma once
 
 #include <vector>
 #include <pcl/pcl_macros.h>
@@ -62,7 +61,7 @@ namespace pcl
       virtual QuantizedMap &
       getQuantizedMap () = 0;
 
-      /** \brief Returns a reference to the internally computed spreaded quantized map. */
+      /** \brief Returns a reference to the internally computed spread quantized map. */
       virtual QuantizedMap &
       getSpreadedQuantizedMap () = 0;
 
@@ -88,5 +87,3 @@ namespace pcl
                        std::vector<QuantizedMultiModFeature> & features) const = 0;
   };
 }
-
-#endif

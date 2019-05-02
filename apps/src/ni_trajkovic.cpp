@@ -38,6 +38,9 @@
  */
 
 #define SHOW_FPS 1
+
+#include <thread>
+
 #include <pcl/apps/timer.h>
 #include <pcl/common/common.h>
 #include <pcl/io/openni_grabber.h>
@@ -48,6 +51,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 
+using namespace std::chrono_literals;
 using namespace pcl;
 typedef PointXYZRGBA PointT;
 typedef PointXYZI KeyPointT;
@@ -147,12 +151,11 @@ class TrajkovicDemo
 
         if (cloud)
         {
-          int w (cloud->width);
           if (!cloud_init)
           {
             cloud_viewer_.setPosition (0, 0);
             cloud_viewer_.setSize (cloud->width, cloud->height);
-            cloud_init = !cloud_init;
+            cloud_init = true;
           }
 
           if (!cloud_viewer_.updatePointCloud (cloud, "OpenNICloud"))
@@ -165,7 +168,7 @@ class TrajkovicDemo
           {
             image_viewer_.setPosition (cloud->width, 0);
             image_viewer_.setSize (cloud->width, cloud->height);
-            image_init = !image_init;
+            image_init = true;
           }
 
           image_viewer_.addRGBImage<PointT> (cloud);
@@ -175,12 +178,10 @@ class TrajkovicDemo
             image_viewer_.removeLayer (getStrBool (keypts));
             std::vector<int> uv;
             uv.reserve (keypoints_indices_->indices.size () * 2);
-            for (std::vector<int>::const_iterator id = keypoints_indices_->indices.begin ();
-                 id != keypoints_indices_->indices.end ();
-                 ++id)
+            for (const int &index : keypoints_indices_->indices)
             {
-              int u (*id % w);
-              int v (*id / w);
+              int u (index % cloud->width);
+              int v (index / cloud->width);
               image_viewer_.markPoint (u, v, visualization::red_color, visualization::blue_color, 5, getStrBool (!keypts), 0.5);
             }
             keypts = !keypts;
@@ -195,7 +196,7 @@ class TrajkovicDemo
 
         cloud_viewer_.spinOnce ();
         image_viewer_.spinOnce ();
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
       }
 
       grabber_.stop ();

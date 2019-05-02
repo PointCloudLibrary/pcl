@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GRAPH_HANDLER_H_
-#define PCL_GRAPH_HANDLER_H_
+#pragma once
 
 #include <pcl/registration/vertex_estimates.h>
 #include <pcl/registration/edge_measurements.h>
@@ -51,7 +50,7 @@ namespace pcl
   namespace registration
   {
     /** \brief @b GraphHandler class is a wrapper for a general SLAM graph
-      * The actual graph class must fulfil the following boost::graph concepts:
+      * The actual graph class must fulfill the following boost::graph concepts:
       * - BidirectionalGraph
       * - AdjacencyGraph
       * - VertexAndEdgeListGraph
@@ -212,5 +211,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_GRAPH_HANDLER_H_

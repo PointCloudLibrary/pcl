@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_BRISK_2D_H_
-#define PCL_FEATURES_BRISK_2D_H_
+#pragma once
 
 // PCL includes
 #include <pcl/features/feature.h>
@@ -71,14 +70,14 @@ namespace pcl
       typedef boost::shared_ptr<BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT> > Ptr;
       typedef boost::shared_ptr<const BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT> > ConstPtr;
 
-      typedef typename pcl::PointCloud<PointInT> PointCloudInT;
-      typedef typename pcl::PointCloud<PointInT>::ConstPtr PointCloudInTConstPtr;
+      typedef pcl::PointCloud<PointInT> PointCloudInT;
+      typedef typename PointCloudInT::ConstPtr PointCloudInTConstPtr;
 
-      typedef typename pcl::PointCloud<KeypointT> KeypointPointCloudT;
-      typedef typename pcl::PointCloud<KeypointT>::Ptr KeypointPointCloudTPtr;
-      typedef typename pcl::PointCloud<KeypointT>::ConstPtr KeypointPointCloudTConstPtr;
+      typedef pcl::PointCloud<KeypointT> KeypointPointCloudT;
+      typedef typename KeypointPointCloudT::Ptr KeypointPointCloudTPtr;
+      typedef typename KeypointPointCloudT::ConstPtr KeypointPointCloudTConstPtr;
 
-      typedef typename pcl::PointCloud<PointOutT> PointCloudOutT;
+      typedef pcl::PointCloud<PointOutT> PointCloudOutT;
 
       /** \brief Constructor. */
       BRISK2DEstimation ();
@@ -140,7 +139,7 @@ namespace pcl
         *
         * \note This should never be called by a regular user. We use a fixed type in PCL 
         * (BRISKSignature512) and tampering with the parameters might lead to a different
-        * size descriptor which the user needs to accomodate in a new point type.
+        * size descriptor which the user needs to accommodate in a new point type.
         */
       void
       generateKernel (std::vector<float> &radius_list,
@@ -262,5 +261,3 @@ namespace pcl
 }
 
 #include <pcl/features/impl/brisk_2d.hpp>
-
-#endif  //#ifndef PCL_FEATURES_BRISK_2D_H_

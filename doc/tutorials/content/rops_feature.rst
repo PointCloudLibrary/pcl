@@ -92,7 +92,7 @@ Here is the place where the instantiation of the ``pcl::ROPSEstimation`` class t
   * PointInT - type of the input points;
   * PointOutT - type of the output points.
 
-Immediately after that we set the input all the necessary data neede for the feature computation.
+Immediately after that we set the input all the necessary data needed for the feature computation.
 
 .. literalinclude:: sources/rops_feature/rops_feature.cpp
    :language: cpp

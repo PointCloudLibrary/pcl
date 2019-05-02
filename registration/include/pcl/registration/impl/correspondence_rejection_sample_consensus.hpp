@@ -124,8 +124,8 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
        if (save_inliers_)
        {
          inlier_indices_.reserve (inliers.size ());
-         for (size_t i = 0; i < inliers.size (); ++i)
-           inlier_indices_.push_back (index_to_correspondence[inliers[i]]);
+         for (const int &inlier : inliers)
+           inlier_indices_.push_back (index_to_correspondence[inlier]);
        }
 
        // get best transformation

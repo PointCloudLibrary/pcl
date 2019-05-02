@@ -103,8 +103,7 @@ depth2xyz (float v_viewing_angle, float h_viewing_angle,
            int image_width, int image_height, int image_x, int image_y,
            float depth, float &x, float &y, float &z)
 {
-  float width, height;
-  static const float PI = 3.1415927;
+  constexpr float PI = 3.1415927;
 
   if (depth <= 0.0f)
   {
@@ -112,8 +111,8 @@ depth2xyz (float v_viewing_angle, float h_viewing_angle,
   }
   else
   {
-    width = depth * std::tan (h_viewing_angle * PI / 180 / 2) * 2;
-    height = depth * std::tan (v_viewing_angle * PI / 180 / 2) * 2;
+    float width = depth * std::tan (h_viewing_angle * PI / 180 / 2) * 2;
+    float height = depth * std::tan (v_viewing_angle * PI / 180 / 2) * 2;
 
     x = (image_x - image_width / 2.0) / image_width * width;
     y = (image_height / 2.0 - image_y) / image_height * height;
@@ -151,7 +150,7 @@ main (int argc, char** argv)
   std::string mode = "DEFAULT";
   if (parse_argument (argc, argv, "-mode", mode) != -1)
   {
-    if (! (mode.compare ("DEFAULT") == 0 || mode.compare ("FORCE_COLOR") == 0 || mode.compare ("FORCE_GRAYSCALE") == 0) )
+    if (! (mode == "DEFAULT" || mode == "FORCE_COLOR" || mode == "FORCE_GRAYSCALE") )
     {
       std::cout << "Wrong mode name.\n";
       printHelp (argc, argv);
@@ -216,7 +215,7 @@ main (int argc, char** argv)
       }
       else
       {
-        print_error ("Unknow depth unit defined.\n");
+        print_error ("Unknown depth unit defined.\n");
         exit (-1);
       }
     }
@@ -231,7 +230,7 @@ main (int argc, char** argv)
 
   std::string intensity_type;
 
-  if (mode.compare ("DEFAULT") == 0)
+  if (mode == "DEFAULT")
   {
     //
     // If the input image is a monochrome image the output cloud will be:
@@ -242,7 +241,7 @@ main (int argc, char** argv)
 
     if (pcl::console::parse_argument (argc, argv, "--intensity_type", intensity_type) != -1)
     {
-      if (intensity_type.compare ("FLOAT") != 0 && intensity_type.compare ("UINT_8") != 0)
+      if (intensity_type != "FLOAT" && intensity_type != "UINT_8")
       {
         print_error ("Wrong intensity option.\n");
         printHelp (argc, argv);
@@ -262,12 +261,9 @@ main (int argc, char** argv)
     PointCloud<PointXYZRGB> rgb_depth_cloud;
     PointCloud<PointXYZRGBA> rgba_depth_cloud;
 
-    int rgb;
-    int rgba;
-
     switch (components)
     {
-      case 1: if (intensity_type.compare ("FLOAT") == 0)
+      case 1: if (intensity_type == "FLOAT")
       {
         if (enable_depth)
         {
@@ -396,9 +392,9 @@ main (int argc, char** argv)
             color.g = static_cast<uint8_t> (pixel[1]);
             color.b = static_cast<uint8_t> (pixel[2]);
 
-            rgb = (static_cast<int> (color.r)) << 16 |
-                (static_cast<int> (color.g)) << 8 |
-                (static_cast<int> (color.b));
+            int rgb = (static_cast<int> (color.r)) << 16 |
+                      (static_cast<int> (color.g)) << 8 |
+                      (static_cast<int> (color.b));
 
             color.rgb = static_cast<float> (rgb);
 
@@ -468,13 +464,13 @@ main (int argc, char** argv)
             color.b = static_cast<uint8_t> (pixel[2]);
             color.a = static_cast<uint8_t> (pixel[3]);
 
-            rgb = (static_cast<int> (color.r)) << 16 |
-                (static_cast<int> (color.g)) << 8 |
-                (static_cast<int> (color.b));
-            rgba = (static_cast<int> (color.a)) << 24 |
-                (static_cast<int> (color.r)) << 16 |
-                (static_cast<int> (color.g)) << 8 |
-                (static_cast<int> (color.b));
+            int rgb = (static_cast<int> (color.r)) << 16 |
+                      (static_cast<int> (color.g)) << 8 |
+                      (static_cast<int> (color.b));
+            int rgba = (static_cast<int> (color.a)) << 24 |
+                       (static_cast<int> (color.r)) << 16 |
+                       (static_cast<int> (color.g)) << 8 |
+                       (static_cast<int> (color.b));
 
             color.rgb = static_cast<float> (rgb);
             color.rgba = static_cast<uint32_t> (rgba);
@@ -489,7 +485,7 @@ main (int argc, char** argv)
       break;
     }
   }
-  else if (mode.compare ("FORCE_COLOR") == 0)
+  else if (mode == "FORCE_COLOR")
   {
     //
     // Force the output cloud to be colored even if the input image is a
@@ -629,7 +625,7 @@ main (int argc, char** argv)
       saveCloud<RGB> (argv[pcd_file_indices[0]], cloud, format);
     }
   }
-  else if (mode.compare ("FORCE_GRAYSCALE") == 0)
+  else if (mode == "FORCE_GRAYSCALE")
   {
     if (enable_depth)
     {
@@ -690,7 +686,7 @@ main (int argc, char** argv)
 
       if (pcl::console::parse_argument (argc, argv, "--intensity_type", intensity_type) != -1)
       {
-        if (intensity_type.compare ("FLOAT") == 0)
+        if (intensity_type == "FLOAT")
         {
           cloud.width = dimensions[0];
           cloud.height = dimensions[1]; // This indicates that the point cloud is organized
@@ -729,7 +725,7 @@ main (int argc, char** argv)
           // Save the point cloud into a PCD file
           saveCloud<Intensity> (argv[pcd_file_indices[0]], cloud, format);
         }
-        else if (intensity_type.compare ("UINT_8") != 0)
+        else if (intensity_type != "UINT_8")
         {
           cloud8u.width = dimensions[0];
           cloud8u.height = dimensions[1]; // This indicates that the point cloud is organized

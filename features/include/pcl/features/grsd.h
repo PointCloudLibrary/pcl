@@ -36,13 +36,11 @@
  *
  */
 
-#ifndef PCL_FEATURES_GRSD_H_
-#define PCL_FEATURES_GRSD_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 #include <pcl/features/rsd.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/kdtree/kdtree_flann.h>
 
 namespace pcl
 {
@@ -127,7 +125,7 @@ namespace pcl
         * \param output the resultant point cloud that contains the GRSD feature
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
     private:
 
@@ -147,5 +145,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/grsd.hpp>
 #endif
-
-#endif /* PCL_FEATURES_GRSD_H_ */

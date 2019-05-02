@@ -71,7 +71,7 @@ main (int argc, char ** argv)
   Eigen::ArrayXf gaussian_kernel(5);
   gaussian_kernel << 1.f/16, 1.f/4, 3.f/8, 1.f/4, 1.f/16;
   pcl::console::print_info ("convolution kernel:");
-  for (int i = 0; i < gaussian_kernel.size (); ++i)
+  for (Eigen::Index i = 0; i < gaussian_kernel.size (); ++i)
     pcl::console::print_info (" %f", gaussian_kernel[i]);
   pcl::console::print_info ("\n");
 
@@ -208,7 +208,7 @@ main (int argc, char ** argv)
 #endif  
   convolved_label << "threads: " << nb_threads;
   // Display
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Convolution"));
+  pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("Convolution"));
   // viewport stuff
   viewer->createViewPort (0, 0, 0.5, 1, viewport_source);
   viewer->createViewPort (0.5, 0, 1, 1, viewport_convolved);

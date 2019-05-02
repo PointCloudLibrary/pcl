@@ -35,8 +35,9 @@
  *
  */
 
-#ifndef DECISION_TREE_DATA_PROVIDER_H_
-#define DECISION_TREE_DATA_PROVIDER_H_
+#pragma once
+
+#include <boost/shared_ptr.hpp>
 
 #include <pcl/common/common.h>
 
@@ -52,6 +53,8 @@ namespace pcl
       std::vector<LabelType> label_data_;
 
     public:
+
+      typedef boost::shared_ptr<DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>> Ptr;
 
       /** \brief Constructor. */
       DecisionTreeTrainerDataProvider()
@@ -70,5 +73,3 @@ namespace pcl
       getDatasetAndLabels(DataSet & data_set, std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples) = 0;
   };
 }
-
-#endif /* DECISION_TREE_DATA_PROVIDER_H_ */

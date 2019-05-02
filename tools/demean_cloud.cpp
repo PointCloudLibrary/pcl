@@ -83,7 +83,7 @@ saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &cloud)
 int
 main (int argc, char** argv)
 {
-  print_info ("Convert a PCD file to PLY format. For more information, use: %s -h\n", argv[0]);
+  print_info ("Convert a PCD file to a de-meaned PCD file. For more information, use: %s -h\n", argv[0]);
 
   if (argc < 3)
   {

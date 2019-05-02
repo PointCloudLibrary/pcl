@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_COLOR_MODALITY
-#define PCL_RECOGNITION_COLOR_MODALITY
+#pragma once
 
 #include <pcl/recognition/quantizable_modality.h>
 #include <pcl/recognition/distance_map.h>
@@ -76,7 +75,7 @@ namespace pcl
       };
 
     public:
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
+      typedef pcl::PointCloud<PointInT> PointCloudIn;
 
       ColorModality ();
   
@@ -547,6 +546,3 @@ pcl::ColorModality<PointInT>::computeDistanceMap (const MaskMap & input,
     current_row -= width;
   }
 }
-
-
-#endif 

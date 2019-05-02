@@ -39,8 +39,7 @@
 /// display.
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef CLOUD_H_
-#define CLOUD_H_
+#pragma once
 
 #include <QtGui/QColor>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -49,6 +48,10 @@
 # include <OpenGL/gl.h>
 # include <OpenGL/glu.h>
 #else
+#if _WIN32
+// Need this to pull in APIENTRY, etc.
+#include "windows.h"
+#endif
 # include <GL/gl.h>
 # include <GL/glu.h>
 #endif
@@ -369,7 +372,7 @@ class Cloud : public Statistics
 
     /// @brief Get statistics of the selected points in string.
     std::string
-    getStat () const;
+    getStat () const override;
 
     /// Default Point Size
     static const float DEFAULT_POINT_DISPLAY_SIZE_;
@@ -409,7 +412,7 @@ class Cloud : public Statistics
     /// The internal representation of the cloud
     Cloud3D cloud_;
 
-    /// @breif A weak pointer pointing to the selection object.
+    /// @brief A weak pointer pointing to the selection object.
     /// @details This implementation uses the weak pointer to allow for a lazy
     /// update of the cloud if the selection object is destroyed.
     boost::weak_ptr<Selection> selection_wk_ptr_;
@@ -468,8 +471,3 @@ class Cloud : public Statistics
     /// The translations on x, y, and z axis on the selected points.
     float select_translate_x_, select_translate_y_, select_translate_z_;
 };
-#endif // CLOUD_H_
-
-
-
-

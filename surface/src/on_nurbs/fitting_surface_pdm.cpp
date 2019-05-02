@@ -86,11 +86,11 @@ FittingSurface::refine (int dim)
   std::vector<double> xi;
   std::vector<double> elements = getElementVector (m_nurbs, dim);
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (unsigned i = 0; i < xi.size (); i++)
-    m_nurbs.InsertKnot (dim, xi[i], 1);
+  for (const double &i : xi)
+    m_nurbs.InsertKnot (dim, i, 1);
 
   m_elementsU = getElementVector (m_nurbs, 0);
   m_elementsV = getElementVector (m_nurbs, 1);
@@ -106,11 +106,11 @@ FittingSurface::refine (ON_NurbsSurface &nurbs, int dim)
   std::vector<double> xi;
   std::vector<double> elements = getElementVector (nurbs, dim);
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (unsigned i = 0; i < xi.size (); i++)
-    nurbs.InsertKnot (dim, xi[i], 1);
+  for (const double &i : xi)
+    nurbs.InsertKnot (dim, i, 1);
 }
 
 void
@@ -412,7 +412,7 @@ FittingSurface::initNurbsPCA (int order, NurbsDataSurface *m_data, Eigen::Vector
   if (eigenvectors.col (2).dot (z) < 0.0)
     flip = true;
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
 
   Eigen::Vector3d sigma (sqrt (eigenvalues (0)), sqrt (eigenvalues (1)), sqrt (eigenvalues (2)));
 
@@ -461,7 +461,7 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
   if (eigenvectors.col (2).dot (z) < 0.0)
     flip = true;
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
   Eigen::Matrix3d eigenvectors_inv = eigenvectors.inverse ();
 
   Eigen::Vector3d v_max (-DBL_MAX, -DBL_MAX, -DBL_MAX);
@@ -488,9 +488,9 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
 
   for (unsigned i = 0; i < s; i++)
   {
-    Eigen::Vector2d &p = m_data->interior_param[i];
     if (v_max (0) > v_min (0) && v_max (0) > v_min (0))
     {
+      Eigen::Vector2d &p = m_data->interior_param[i];
       p (0) = (p (0) - v_min (0)) / (v_max (0) - v_min (0));
       p (1) = (p (1) - v_min (1)) / (v_max (1) - v_min (1));
     }
@@ -1005,7 +1005,7 @@ FittingSurface::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt
     }
     else
     {
-      current = current + delta;
+      current += delta;
 
       if (current (0) < minU)
         current (0) = minU;
@@ -1085,7 +1085,7 @@ FittingSurface::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt
     }
     else
     {
-      current = current + delta;
+      current += delta;
 
       if (current (0) < minU)
         current (0) = minU;
@@ -1120,9 +1120,9 @@ FittingSurface::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const 
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest (DBL_MAX);
-  for (unsigned i = 0; i < elementsU.size () - 1; i++)
+  for (size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (unsigned j = 0; j < elementsV.size () - 1; j++)
+    for (size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
       double d;
@@ -1164,20 +1164,20 @@ FittingSurface::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vect
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   // NORTH - SOUTH
-  for (unsigned i = 0; i < (elementsV.size () - 1); i++)
+  for (size_t i = 0; i < (elementsV.size () - 1); i++)
   {
-    ini_points.push_back (myvec (WEST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i])));
-    ini_points.push_back (myvec (EAST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i])));
+    ini_points.emplace_back(WEST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i]));
+    ini_points.emplace_back(EAST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i]));
   }
 
   // WEST - EAST
-  for (unsigned i = 0; i < (elementsU.size () - 1); i++)
+  for (size_t i = 0; i < (elementsU.size () - 1); i++)
   {
-    ini_points.push_back (myvec (NORTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i])));
-    ini_points.push_back (myvec (SOUTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i])));
+    ini_points.emplace_back(NORTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]));
+    ini_points.emplace_back(SOUTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]));
   }
 
-  for (unsigned i = 0; i < ini_points.size (); i++)
+  for (size_t i = 0; i < ini_points.size (); i++)
   {
 
     Vector2d params = inverseMappingBoundary (nurbs, pt, ini_points[i].side, ini_points[i].hint, err_tmp, p_tmp,
@@ -1317,7 +1317,7 @@ FittingSurface::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vect
     else
     {
 
-      current = current + delta;
+      current += delta;
 
       bool stop = false;
 

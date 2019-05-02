@@ -168,9 +168,9 @@ FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector
 
   Eigen::Vector3d _min (DBL_MAX, DBL_MAX, DBL_MAX);
   Eigen::Vector3d _max (-DBL_MAX, -DBL_MAX, -DBL_MAX);
-  for (int i = 0; i < data->interior.size (); i++)
+  for (const auto &i : data->interior)
   {
-    Eigen::Vector3d p = data->interior[i] - mean;
+    Eigen::Vector3d p = i - mean;
 
     if (p (0) < _min (0))
       _min (0) = p (0);
@@ -481,7 +481,7 @@ FittingSphere::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt,
     }
     else
     {
-      current = current + delta;
+      current += delta;
       if (current (0) < minU)
         current (0) = minU;
       else if (current (0) > maxU)
@@ -515,9 +515,9 @@ FittingSphere::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const V
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest = std::numeric_limits<double>::max ();
-  for (unsigned i = 0; i < elementsU.size () - 1; i++)
+  for (size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (unsigned j = 0; j < elementsV.size () - 1; j++)
+    for (size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
 

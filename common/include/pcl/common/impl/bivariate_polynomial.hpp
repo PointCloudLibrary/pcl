@@ -42,7 +42,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename real>
 pcl::BivariatePolynomialT<real>::BivariatePolynomialT (int new_degree) :
-  degree(0), parameters(NULL), gradient_x(NULL), gradient_y(NULL)
+  degree(0), parameters(nullptr), gradient_x(nullptr), gradient_y(nullptr)
 {
   setDegree(new_degree);
 }
@@ -79,17 +79,17 @@ pcl::BivariatePolynomialT<real>::setDegree (int newDegree)
     delete[] parameters;
     parameters = new real[getNoOfParameters ()];
   }
-  delete gradient_x; gradient_x = NULL;
-  delete gradient_y; gradient_y = NULL;
+  delete gradient_x; gradient_x = nullptr;
+  delete gradient_y; gradient_y = nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename real> void
 pcl::BivariatePolynomialT<real>::memoryCleanUp ()
 {
-  delete[] parameters; parameters = NULL;
-  delete gradient_x; gradient_x = NULL;
-  delete gradient_y; gradient_y = NULL;
+  delete[] parameters; parameters = nullptr;
+  delete gradient_x; gradient_x = nullptr;
+  delete gradient_y; gradient_y = nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,7 +130,7 @@ pcl::BivariatePolynomialT<real>::deepCopy (const pcl::BivariatePolynomialT<real>
 template<typename real> void
 pcl::BivariatePolynomialT<real>::calculateGradient (bool forceRecalc)
 {
-  if (gradient_x!=NULL && !forceRecalc) 
+  if (gradient_x!=NULL && !forceRecalc) return;
   
   if (gradient_x == NULL)
     gradient_x = new pcl::BivariatePolynomialT<real> (degree-1);
@@ -202,7 +202,7 @@ pcl::BivariatePolynomialT<real>::findCriticalPoints (std::vector<real>& x_values
              (parameters[1]*parameters[1] - real(4)*parameters[0]*parameters[3]),
          y = (real(-2)*parameters[0]*x - parameters[2]) / parameters[1];
     
-    if (!pcl_isfinite(x) || !pcl_isfinite(y))
+    if (!std::isfinite(x) || !std::isfinite(y))
       return;
     
     int type = 2;

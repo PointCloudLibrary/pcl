@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_ICP_H_
-#define PCL_ICP_H_
+#pragma once
 
 // PCL includes
 #include <pcl/sample_consensus/ransac.h>
@@ -153,7 +152,7 @@ namespace pcl
       };
 
       /** \brief Empty destructor */
-      virtual ~IterativeClosestPoint () {}
+      ~IterativeClosestPoint () {}
 
       /** \brief Returns a pointer to the DefaultConvergenceCriteria used by the IterativeClosestPoint class.
         * This allows to check the convergence state after the align() method as well as to configure
@@ -174,32 +173,32 @@ namespace pcl
         *
         * \param[in] cloud the input point cloud source
         */
-      virtual void
-      setInputSource (const PointCloudSourceConstPtr &cloud)
+      void
+      setInputSource (const PointCloudSourceConstPtr &cloud) override
       {
         Registration<PointSource, PointTarget, Scalar>::setInputSource (cloud);
         std::vector<pcl::PCLPointField> fields;
         pcl::getFields (*cloud, fields);
         source_has_normals_ = false;
-        for (size_t i = 0; i < fields.size (); ++i)
+        for (const auto &field : fields)
         {
-          if      (fields[i].name == "x") x_idx_offset_ = fields[i].offset;
-          else if (fields[i].name == "y") y_idx_offset_ = fields[i].offset;
-          else if (fields[i].name == "z") z_idx_offset_ = fields[i].offset;
-          else if (fields[i].name == "normal_x") 
+          if      (field.name == "x") x_idx_offset_ = field.offset;
+          else if (field.name == "y") y_idx_offset_ = field.offset;
+          else if (field.name == "z") z_idx_offset_ = field.offset;
+          else if (field.name == "normal_x") 
           {
             source_has_normals_ = true;
-            nx_idx_offset_ = fields[i].offset;
+            nx_idx_offset_ = field.offset;
           }
-          else if (fields[i].name == "normal_y") 
+          else if (field.name == "normal_y") 
           {
             source_has_normals_ = true;
-            ny_idx_offset_ = fields[i].offset;
+            ny_idx_offset_ = field.offset;
           }
-          else if (fields[i].name == "normal_z") 
+          else if (field.name == "normal_z") 
           {
             source_has_normals_ = true;
-            nz_idx_offset_ = fields[i].offset;
+            nz_idx_offset_ = field.offset;
           }
         }
       }
@@ -209,16 +208,16 @@ namespace pcl
         *
         * \param[in] cloud the input point cloud target
         */
-      virtual void
-      setInputTarget (const PointCloudTargetConstPtr &cloud)
+      void
+      setInputTarget (const PointCloudTargetConstPtr &cloud) override
       {
         Registration<PointSource, PointTarget, Scalar>::setInputTarget (cloud);
         std::vector<pcl::PCLPointField> fields;
         pcl::getFields (*cloud, fields);
         target_has_normals_ = false;
-        for (size_t i = 0; i < fields.size (); ++i)
+        for (const auto &field : fields)
         {
-          if (fields[i].name == "normal_x" || fields[i].name == "normal_y" || fields[i].name == "normal_z") 
+          if (field.name == "normal_x" || field.name == "normal_y" || field.name == "normal_z") 
           {
             target_has_normals_ = true;
             break;
@@ -261,8 +260,8 @@ namespace pcl
         * \param output the transformed input point cloud dataset using the rigid transformation found
         * \param guess the initial guess of the transformation to compute
         */
-      virtual void 
-      computeTransformation (PointCloudSource &output, const Matrix4 &guess);
+      void 
+      computeTransformation (PointCloudSource &output, const Matrix4 &guess) override;
 
       /** \brief Looks at the Estimators and Rejectors and determines whether their blob-setter methods need to be called */
       virtual void
@@ -335,5 +334,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/icp.hpp>
-
-#endif  //#ifndef PCL_ICP_H_

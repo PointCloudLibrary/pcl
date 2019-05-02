@@ -64,7 +64,7 @@ class TestMeshConversion : public ::testing::Test
     //  / \       |    |   \       /  //
     // 3 - 4      9 - 10    13 - 14   //
     void
-    SetUp ()
+    SetUp () override
     {
       // Vertices
       pcl::PointXYZRGBNormal pt;
@@ -176,9 +176,9 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
   for (size_t i=0; i<faces.size (); ++i)
   {
     vi.clear ();
-    for (size_t j=0; j<faces [i].size (); ++j)
+    for (const unsigned int &j : faces [i])
     {
-      vi.push_back (VertexIndex (static_cast <int> (faces [i][j])));
+      vi.push_back (VertexIndex (static_cast <int> (j)));
     }
 
     ASSERT_TRUE (half_edge_mesh.addFace (vi).isValid ()) << "Face number " << i;

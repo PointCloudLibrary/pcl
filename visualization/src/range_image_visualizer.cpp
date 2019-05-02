@@ -139,9 +139,8 @@ pcl::visualization::RangeImageVisualizer::getInterestPointsWidget (
   RangeImageVisualizer* widget = new RangeImageVisualizer;
   widget->showFloatImage (interest_image, range_image.width, range_image.height, min_value, max_value);
   widget->setWindowTitle (name);
-  for (unsigned int i=0; i<interest_points.points.size(); ++i)
+  for (const auto &interest_point : interest_points.points)
   {
-    const pcl::InterestPoint& interest_point = interest_points.points[i];
     float image_x, image_y;
     range_image.getImagePoint (interest_point.x, interest_point.y, interest_point.z, image_x, image_y);
     widget->markPoint (static_cast<size_t> (image_x), static_cast<size_t> (image_y), green_color, red_color);

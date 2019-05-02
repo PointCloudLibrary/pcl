@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FPFH_OMP_H_
-#define PCL_FPFH_OMP_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 #include <pcl/features/fpfh.h>
@@ -60,9 +59,9 @@ namespace pcl
     *     In Proceedings of the 22nd IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS),
     *     St. Louis, MO, USA, October 11-15 2009.
     *
-    * \attention 
+    * \attention
     * The convention for FPFH features is:
-    *   - if a query point's nearest neighbors cannot be estimated, the FPFH feature will be set to NaN 
+    *   - if a query point's nearest neighbors cannot be estimated, the FPFH feature will be set to NaN
     *     (not a number)
     *   - it is impossible to estimate a FPFH descriptor for a point that
     *     doesn't have finite 3D coordinates. Therefore, any point that contains
@@ -95,16 +94,18 @@ namespace pcl
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      FPFHEstimationOMP (unsigned int nr_threads = 0) : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), threads_ (nr_threads)
+      FPFHEstimationOMP (unsigned int nr_threads = 0) : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11)
       {
         feature_name_ = "FPFHEstimationOMP";
+
+        setNumberOfThreads(nr_threads);
       }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      inline void 
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+      void
+      setNumberOfThreads (unsigned int nr_threads = 0);
 
     private:
       /** \brief Estimate the Fast Point Feature Histograms (FPFH) descriptors at a set of points given by
@@ -112,8 +113,8 @@ namespace pcl
         * setSearchMethod ()
         * \param[out] output the resultant point cloud model dataset that contains the FPFH feature estimates
         */
-      void 
-      computeFeature (PointCloudOut &output);
+      void
+      computeFeature (PointCloudOut &output) override;
 
     public:
       /** \brief The number of subdivisions for each angular feature interval. */
@@ -127,5 +128,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/fpfh_omp.hpp>
 #endif
-
-#endif  //#ifndef PCL_FPFH_OMP_H_

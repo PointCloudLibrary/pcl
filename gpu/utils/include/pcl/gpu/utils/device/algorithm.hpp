@@ -63,7 +63,7 @@ namespace pcl
                 {
                     first = middle;
                     ++first;
-                    len = len - half - 1;
+                    len -= half + 1;
                 }
                 else
                 {

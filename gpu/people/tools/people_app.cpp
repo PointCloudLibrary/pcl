@@ -129,7 +129,7 @@ savePNGFile(const std::string& filename, const pcl::gpu::DeviceArray2D<T>& arr)
 template <typename T> void
 savePNGFile (const std::string& filename, const pcl::PointCloud<T>& cloud)
 {
-  pcl::io::savePNGFile(filename, cloud);
+  pcl::io::savePNGFile(filename, cloud, "rgb");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,10 +142,10 @@ class PeoplePCDApp
 
     PeoplePCDApp (pcl::Grabber& capture, bool write)
       : capture_(capture),
+        cloud_cb_(true),
         write_ (write),
         exit_(false),
         time_ms_(0),
-        cloud_cb_(true),
         counter_(0),
         final_view_("Final labeling"),
         depth_view_("Depth")
@@ -256,7 +256,7 @@ class PeoplePCDApp
         rgba_host_.points.resize(w * h);
         rgba_host_.width = w;
         rgba_host_.height = h;
-        for(int i = 0; i < rgba_host_.size(); ++i)
+        for(size_t i = 0; i < rgba_host_.size(); ++i)
         {
           const unsigned char *pixel = &rgb_host_[i * 3];
           RGB& rgba = rgba_host_.points[i];         
@@ -379,7 +379,7 @@ int main(int argc, char** argv)
   pcl::gpu::setDevice (device);
   pcl::gpu::printShortCudaDeviceInfo (device);
   
-  bool write = 0;
+  bool write = false;
   pc::parse_argument (argc, argv, "-w", write);
 
   // selecting data source
@@ -423,10 +423,10 @@ int main(int argc, char** argv)
     
   //selecting tree files
   vector<string> tree_files;
-  tree_files.push_back("Data/forest1/tree_20.txt");
-  tree_files.push_back("Data/forest2/tree_20.txt");
-  tree_files.push_back("Data/forest3/tree_20.txt");
-  tree_files.push_back("Data/forest4/tree_20.txt");    
+  tree_files.emplace_back("Data/forest1/tree_20.txt");
+  tree_files.emplace_back("Data/forest2/tree_20.txt");
+  tree_files.emplace_back("Data/forest3/tree_20.txt");
+  tree_files.emplace_back("Data/forest4/tree_20.txt");    
   
   pc::parse_argument (argc, argv, "-tree0", tree_files[0]);
   pc::parse_argument (argc, argv, "-tree1", tree_files[1]);

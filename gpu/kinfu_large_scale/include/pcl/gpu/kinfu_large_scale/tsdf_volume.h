@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KINFU_TSDF_VOLUME_H_
-#define PCL_KINFU_TSDF_VOLUME_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
@@ -112,7 +111,7 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
           */
         TsdfVolume (const Eigen::Vector3i& resolution);           
               
-        /** \brief Sets Tsdf volume size for each dimention
+        /** \brief Sets Tsdf volume size for each dimension
           * \param[in] size size of tsdf volume in meters
           */
         void
@@ -124,7 +123,7 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         void
         setTsdfTruncDist (float distance);
 
-        /** \brief Returns tsdf volume container that point to data in GPU memroy */
+        /** \brief Returns tsdf volume container that point to data in GPU memory */
         DeviceArray2D<int> 
         data () const;
 
@@ -290,5 +289,3 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     }
   }
 }
-
-#endif /* PCL_KINFU_TSDF_VOLUME_H_ */

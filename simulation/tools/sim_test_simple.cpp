@@ -19,6 +19,7 @@
 #include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
+#include <thread>
 #include <boost/shared_ptr.hpp>
 #ifdef _WIN32
 # define WIN32_LEAN_AND_MEAN
@@ -48,7 +49,6 @@
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/gp3.h>
 
@@ -63,14 +63,12 @@
 
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/console/time.h>
 
 // RangeImage:
 #include <pcl/range_image/range_image_planar.h>
 
 // Pop-up viewer
 #include <pcl/visualization/cloud_viewer.h>
-#include <boost/thread/thread.hpp>
 
 using namespace Eigen;
 using namespace pcl;
@@ -79,6 +77,7 @@ using namespace pcl::io;
 using namespace pcl::simulation;
 
 using namespace std;
+using namespace std::chrono_literals;
 
 uint16_t t_gamma[2048];
 
@@ -281,12 +280,12 @@ void display_depth_image(const float* depth_buffer)
 }
 */
 
-boost::shared_ptr<pcl::visualization::PCLVisualizer> simpleVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
+pcl::visualization::PCLVisualizer::Ptr simpleVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
 {
   // --------------------------------------------
   // -----Open 3D viewer and add point cloud-----
   // --------------------------------------------
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
   pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud);
   viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "sample cloud");
@@ -325,9 +324,9 @@ void display ()
   
   range_likelihood_->computeLikelihoods (reference, poses, scores);
   std::cout << "score: ";
-  for (size_t i = 0; i<scores.size (); ++i)
+  for (const float &score : scores)
   {
-    std::cout << " " << scores[i];
+    std::cout << " " << score;
   }
   std::cout << std::endl;
 
@@ -408,22 +407,22 @@ void display ()
 //     viewer.showCloud (pc_out);
 
 
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+  pcl::visualization::PCLVisualizer::Ptr viewer;
   viewer = simpleVis(pc_out);
   while (!viewer->wasStopped ())
   {
     viewer->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }    
   
-  // doesnt work:
+  // doesn't work:
 //    viewer->~PCLVisualizer();
 //    viewer.reset();
     
     
     cout << "done\n";
-    // Problem: vtk and opengl dont seem to play very well together
-    // vtk seems to misbehave after a little while and wont keep the window on the screen
+    // Problem: vtk and opengl don't seem to play very well together
+    // vtk seems to misbehave after a little while and won't keep the window on the screen
 
     // method1: kill with [x] - but eventually it crashes:
     //while (!viewer.wasStopped ()){
@@ -442,7 +441,7 @@ void display ()
 //     //t.tv_nsec = (time_t)(20000000); // short sleep
 //     t.tv_nsec = (time_t)(0);  // long sleep - normal speed
 //     nanosleep (&t, NULL);
-    write_file_ = 0;
+    write_file_ = false;
   }
 }
 
@@ -469,7 +468,7 @@ on_keyboard (unsigned char key, int, int)
   else if (key == 'p' || key == 'P')
     paused_ = !paused_;
   else if (key == 'v' || key == 'V')
-    write_file_ = 1;
+    write_file_ = true;
   
   // Use glutGetModifiers for modifiers
   // GLUT_ACTIVE_SHIFT, GLUT_ACTIVE_CTRL, GLUT_ACTIVE_ALT
@@ -593,8 +592,7 @@ main (int argc, char** argv)
     return (-1);
   }  
   
-  int i;
-  for (i=0; i<2048; i++)
+  for (int i=0; i < 2048; i++)
   {
     float v = i/2048.0;
     v = powf(v, 3)* 6;

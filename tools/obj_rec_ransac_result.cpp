@@ -62,8 +62,10 @@
 #include <cstdio>
 #include <vector>
 #include <list>
+#include <thread>
 
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace io;
 using namespace console;
@@ -142,16 +144,16 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
 
   // The models to be loaded
   list<string> model_names;
-  model_names.push_back (string ("tum_amicelli_box"));
-  model_names.push_back (string ("tum_rusk_box"));
-  model_names.push_back (string ("tum_soda_bottle"));
+  model_names.emplace_back("tum_amicelli_box");
+  model_names.emplace_back("tum_rusk_box");
+  model_names.emplace_back("tum_soda_bottle");
 
   list<PointCloud<PointXYZ>::Ptr> model_points_list;
   list<PointCloud<Normal>::Ptr> model_normals_list;
   list<vtkSmartPointer<vtkPolyData> > vtk_models_list;
 
   // Load the models and add them to the recognizer
-  for ( list<string>::iterator it = model_names.begin () ; it != model_names.end () ; ++it )
+  for (const auto &model_name : model_names)
   {
     PointCloud<PointXYZ>::Ptr model_points (new PointCloud<PointXYZ> ());
     model_points_list.push_back (model_points);
@@ -163,14 +165,14 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
     vtk_models_list.push_back (vtk_model);
 
     // Compose the file
-    string file_name = string("../../test/") + *it + string (".vtk");
+    string file_name = string("../../test/") + model_name + string (".vtk");
 
     // Get the points and normals from the input model
     if ( !vtk2PointCloud (file_name.c_str (), *model_points, *model_normals, vtk_model) )
       continue;
 
     // Add the model
-    objrec.addModel (*model_points, *model_normals, *it, vtk_model);
+    objrec.addModel (*model_points, *model_normals, model_name, vtk_model);
   }
 
   // The scene in which the models are supposed to be recognized
@@ -221,7 +223,7 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
   {
     //main loop of the visualizer
     viz.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
 }
 
@@ -241,8 +243,8 @@ update (CallbackParameters* params)
 {
   // Clear the visualizer from old object instances
   vtkRenderer *renderer = params->viz_.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
-  for ( list<vtkActor*>::iterator it = params->actors_.begin () ; it != params->actors_.end () ; ++it )
-    renderer->RemoveActor (*it);
+  for (const auto &actor : params->actors_)
+    renderer->RemoveActor (actor);
   params->actors_.clear ();
 
   // This will be the output of the recognition
@@ -282,21 +284,13 @@ update (CallbackParameters* params)
     // Setup the transformator
     vtkSmartPointer<vtkTransformPolyDataFilter> vtk_transformator = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
     vtk_transformator->SetTransform (vtk_transform);
-#if VTK_MAJOR_VERSION < 6
-    vtk_transformator->SetInput (vtk_model);
-#else
     vtk_transformator->SetInputData (vtk_model);
-#endif
     vtk_transformator->Update ();
 
     // Visualize
     vtkSmartPointer<vtkActor> vtk_actor = vtkSmartPointer<vtkActor>::New();
     vtkSmartPointer<vtkPolyDataMapper> vtk_mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
-#if VTK_MAJOR_VERSION < 6
-    vtk_mapper->SetInput(vtk_transformator->GetOutput ());
-#else
     vtk_mapper->SetInputData (vtk_transformator->GetOutput ());
-#endif
     vtk_actor->SetMapper(vtk_mapper);
     // Set the appearance & add to the renderer
     vtk_actor->GetProperty ()->SetColor (0.6, 0.7, 0.9);
@@ -325,7 +319,7 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
   PointCloud<Normal>::Ptr all_normals (new PointCloud<Normal> ());
 
   // Get the points and normals from the input scene
-  if ( !vtk2PointCloud (file_name, *all_points, *all_normals, NULL) )
+  if ( !vtk2PointCloud (file_name, *all_points, *all_normals, nullptr) )
     return false;
 
   // Detect the largest plane and remove it from the sets
@@ -343,7 +337,7 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
   seg.setInputCloud (all_points);
   seg.segment (*inliers, *coefficients);
 
-  if (inliers->indices.size () == 0)
+  if (inliers->indices.empty ())
   {
     PCL_ERROR ("Could not estimate a planar model for the given dataset.");
     return false;
@@ -356,27 +350,25 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
 
   // Make sure that the ids are sorted
   sort (inliers->indices.begin (), inliers->indices.end ());
-  size_t i, j, id;
-
-  for ( i = 0, j = 0, id = 0 ; i < inliers->indices.size () ; )
+  size_t j = 0;
+  for ( size_t i = 0, id = 0 ; i < inliers->indices.size () ; )
   {
     if ( static_cast<int> (id) == inliers->indices[i] )
     {
       plane_points.points[i] = all_points->points[id];
-      ++id;
       ++i;
     }
     else
     {
       non_plane_points.points[j] = all_points->points[id];
       non_plane_normals.points[j] = all_normals->points[id];
-      ++id;
       ++j;
     }
+    ++id;
   }
 
   // Just copy the rest of the non-plane points
-  for ( ; id < all_points->size () ; ++id, ++j )
+  for ( size_t id = inliers->indices.size (); id < all_points->size () ; ++id, ++j )
   {
     non_plane_points.points[j] = all_points->points[id];
     non_plane_normals.points[j] = all_normals->points[id];

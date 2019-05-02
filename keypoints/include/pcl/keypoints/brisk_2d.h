@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_KEYPOINTS_BRISK_KEYPOINT_2D_H_
-#define PCL_KEYPOINTS_BRISK_KEYPOINT_2D_H_
+#pragma once
 
 #include <pcl/keypoints/agast_2d.h>
 
@@ -96,7 +95,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~BriskKeypoint2D ()
+      ~BriskKeypoint2D ()
       {
       }
 
@@ -215,11 +214,11 @@ namespace pcl
     protected:
       /** \brief Initializes everything and checks whether input data is fine. */
       bool 
-      initCompute ();
+      initCompute () override;
 
       /** \brief Detects the keypoints. */
       void 
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
 
     private:
       /** \brief Intensity field accessor. */
@@ -250,8 +249,8 @@ namespace pcl
           // constructor arguments
           struct CommonParams
           {
-            static const int HALFSAMPLE = 0;
-            static const int TWOTHIRDSAMPLE = 1;
+            static const int HALFSAMPLE;
+            static const int TWOTHIRDSAMPLE;
           };
 
           /** \brief Constructor.
@@ -384,8 +383,8 @@ namespace pcl
           float offset_;
 
           /** agast */
-          boost::shared_ptr<pcl::keypoints::agast::OastDetector9_16> oast_detector_;
-          boost::shared_ptr<pcl::keypoints::agast::AgastDetector5_8> agast_detector_5_8_;
+          pcl::keypoints::agast::OastDetector9_16::Ptr oast_detector_;
+          pcl::keypoints::agast::AgastDetector5_8::Ptr agast_detector_5_8_;
       };
 
       /** BRISK Scale Space helper. */ 
@@ -483,5 +482,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/brisk_2d.hpp>
-
-#endif

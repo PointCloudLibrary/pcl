@@ -193,9 +193,8 @@ Cloud::setSelection (SelectionPtr selection_ptr)
   partitioned_indices_.resize(cloud_.size());
   std::generate(partitioned_indices_.begin(), partitioned_indices_.end(), inc);
   unsigned int pos = 0;
-  Selection::const_iterator it;
   // assumes selection is sorted small to large
-  for (it = selection_ptr->begin(); it != selection_ptr->end(); ++it, ++pos)
+  for (auto it = selection_ptr->begin(); it != selection_ptr->end(); ++it, ++pos)
   {
     std::swap(partitioned_indices_[pos], partitioned_indices_[*it]);
   }
@@ -330,8 +329,7 @@ void
 Cloud::remove(const Selection& selection)
 {
   unsigned int pos = cloud_.size();
-  Selection::const_reverse_iterator rit;
-  for (rit = selection.rbegin(); rit != selection.rend(); ++rit)
+  for (auto rit = selection.rbegin(); rit != selection.rend(); ++rit)
     std::swap(cloud_.points[--pos], cloud_.points[*rit]);
   resize(cloud_.size()-selection.size());
 }
@@ -420,7 +418,7 @@ Cloud::getDisplaySpacePoint (unsigned int index) const
 void
 Cloud::getDisplaySpacePoints (Point3DVector& pts) const
 {
-  for(unsigned int i = 0; i < cloud_.size(); ++i)
+  for(size_t i = 0; i < cloud_.size(); ++i)
     pts.push_back(getDisplaySpacePoint(i));
 }
 
@@ -442,8 +440,7 @@ Cloud::restore (const CopyBuffer& copy_buffer, const Selection& selection)
 
   append(copied_cloud);
   unsigned int pos = cloud_.size();
-  Selection::const_reverse_iterator rit;
-  for (rit = selection.rbegin(); rit != selection.rend(); ++rit)
+  for (auto rit = selection.rbegin(); rit != selection.rend(); ++rit)
     std::swap(cloud_.points[--pos], cloud_.points[*rit]);
 }
 
@@ -467,7 +464,7 @@ Cloud::updateCloudMembers ()
   float *pt = &(cloud_.points[0].data[X]);
   std::copy(pt, pt+XYZ_SIZE, max_xyz_);
   std::copy(max_xyz_, max_xyz_+XYZ_SIZE, min_xyz_);
-  for (unsigned int i = 1; i < cloud_.size(); ++i)
+  for (size_t i = 1; i < cloud_.size(); ++i)
   {
     for (unsigned int j = 0; j < XYZ_SIZE; ++j)
     {

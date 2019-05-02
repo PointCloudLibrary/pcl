@@ -37,10 +37,10 @@
  *  $Id$
  */
 
-#ifndef PCL_OUTOFCORE_OCTREE_RAM_CONTAINER_H_
-#define PCL_OUTOFCORE_OCTREE_RAM_CONTAINER_H_
+#pragma once
 
 // C++
+#include <random>
 #include <vector>
 
 #include <pcl/outofcore/boost.h>
@@ -65,7 +65,7 @@ namespace pcl
       public:
         typedef typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector AlignedPointTVector;
 
-        /** \brief empty contructor (with a path parameter?)
+        /** \brief empty constructor (with a path parameter?)
           */
         OutofcoreOctreeRamContainer (const boost::filesystem::path&) : container_ () { }
         
@@ -166,9 +166,7 @@ namespace pcl
         AlignedPointTVector container_;
 
         static boost::mutex rng_mutex_;
-        static boost::mt19937 rand_gen_;
+        static std::mt19937 rng_;
     };
   }
 }
-
-#endif //PCL_OUTOFCORE_OCTREE_RAM_CONTAINER_H_

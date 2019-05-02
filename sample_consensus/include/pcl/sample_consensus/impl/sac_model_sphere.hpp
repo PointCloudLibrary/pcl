@@ -54,7 +54,7 @@ pcl::SampleConsensusModelSphere<PointT>::isSampleGood (const std::vector<int> &)
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
-      const std::vector<int> &samples, Eigen::VectorXf &model_coefficients)
+      const std::vector<int> &samples, Eigen::VectorXf &model_coefficients) const
 {
   // Need 4 samples
   if (samples.size () != 4)
@@ -120,7 +120,7 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelSphere<PointT>::getDistancesToModel (
-      const Eigen::VectorXf &model_coefficients, std::vector<double> &distances)
+      const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) const
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -192,7 +192,7 @@ pcl::SampleConsensusModelSphere<PointT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::SampleConsensusModelSphere<PointT>::countWithinDistance (
-      const Eigen::VectorXf &model_coefficients, const double threshold)
+      const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -223,7 +223,7 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
-      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients)
+      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) const
 {
   optimized_coefficients = model_coefficients;
 
@@ -241,9 +241,7 @@ pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
     return;
   }
 
-  tmp_inliers_ = &inliers;
-
-  OptimizationFunctor functor (static_cast<int> (inliers.size ()), this);
+  OptimizationFunctor functor (this, inliers);
   Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, float> lm (num_diff);
   int info = lm.minimize (optimized_coefficients);
@@ -256,7 +254,7 @@ pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelSphere<PointT>::projectPoints (
-      const std::vector<int> &, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool)
+      const std::vector<int> &, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool) const
 {
   // Needs a valid model coefficients
   if (model_coefficients.size () != 4)
@@ -279,7 +277,7 @@ pcl::SampleConsensusModelSphere<PointT>::projectPoints (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelSphere<PointT>::doSamplesVerifyModel (
-      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold)
+      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Needs a valid model coefficients
   if (model_coefficients.size () != 4)
@@ -288,16 +286,16 @@ pcl::SampleConsensusModelSphere<PointT>::doSamplesVerifyModel (
     return (false);
   }
 
-  for (std::set<int>::const_iterator it = indices.begin (); it != indices.end (); ++it)
+  for (const int &index : indices)
     // Calculate the distance from the point to the sphere as the difference between
     //dist(point,sphere_origin) and sphere_radius
     if (fabs (sqrt (
-                    ( input_->points[*it].x - model_coefficients[0] ) *
-                    ( input_->points[*it].x - model_coefficients[0] ) +
-                    ( input_->points[*it].y - model_coefficients[1] ) *
-                    ( input_->points[*it].y - model_coefficients[1] ) +
-                    ( input_->points[*it].z - model_coefficients[2] ) *
-                    ( input_->points[*it].z - model_coefficients[2] )
+                    ( input_->points[index].x - model_coefficients[0] ) *
+                    ( input_->points[index].x - model_coefficients[0] ) +
+                    ( input_->points[index].y - model_coefficients[1] ) *
+                    ( input_->points[index].y - model_coefficients[1] ) +
+                    ( input_->points[index].z - model_coefficients[2] ) *
+                    ( input_->points[index].z - model_coefficients[2] )
                    ) - model_coefficients[3]) > threshold)
       return (false);
 

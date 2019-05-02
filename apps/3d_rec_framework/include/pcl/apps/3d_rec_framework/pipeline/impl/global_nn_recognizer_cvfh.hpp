@@ -5,10 +5,9 @@
  *      Author: aitor
  */
 
+#include <flann/flann.hpp>
 #include <pcl/apps/3d_rec_framework/pipeline/global_nn_recognizer_cvfh.h>
 #include <pcl/registration/icp.h>
-#include <boost/random.hpp>
-#include <boost/random/normal_distribution.hpp>
 #include <pcl/common/time.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
@@ -22,8 +21,9 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       typedef std::pair<std::string, int> mv_pair;
       mv_pair pair_model_view = std::make_pair (model.id_, view_id);
 
-      std::map<mv_pair, Eigen::Matrix4f, std::less<mv_pair>, Eigen::aligned_allocator<std::pair<mv_pair, Eigen::Matrix4f> > >::iterator it =
-          poses_cache_.find (pair_model_view);
+      std::map<mv_pair, Eigen::Matrix4f,
+               std::less<mv_pair>,
+               Eigen::aligned_allocator<std::pair<const mv_pair, Eigen::Matrix4f> > >::iterator it = poses_cache_.find (pair_model_view);
 
       if (it != poses_cache_.end ())
       {
@@ -118,11 +118,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
       for (bf::directory_iterator itr_in (inside); itr_in != end_itr; ++itr_in)
       {
-#if BOOST_FILESYSTEM_VERSION == 3
         std::string file_name = (itr_in->path ().filename ()).string();
-#else
-        std::string file_name = (itr_in->path ()).filename ();
-#endif
 
         std::vector < std::string > strs;
         boost::split (strs, file_name, boost::is_any_of ("_"));
@@ -189,21 +185,19 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     //single categories...
     if (use_single_categories_)
     {
-      std::map<std::string, boost::shared_ptr<std::vector<int> > >::iterator it;
-
       single_categories_data_.resize (single_categories.size ());
       single_categories_index_.resize (single_categories.size ());
       single_categories_pointers_to_models_.resize (single_categories.size ());
 
       int kk = 0;
-      for (it = single_categories.begin (); it != single_categories.end (); it++)
+      for (const auto &single_category : single_categories)
       {
         //create index and flann data
-        convertToFLANN (flann_models_, it->second, single_categories_data_[kk]);
+        convertToFLANN (flann_models_, single_category.second, single_categories_data_[kk]);
         single_categories_index_[kk] = new flann::Index<DistT> (single_categories_data_[kk], flann::LinearIndexParams ());
-        single_categories_pointers_to_models_[kk] = it->second;
+        single_categories_pointers_to_models_[kk] = single_category.second;
 
-        category_to_vectors_indices_[it->first] = kk;
+        category_to_vectors_indices_[single_category.first] = kk;
         kk++;
       }
     }
@@ -238,7 +232,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     std::vector<pcl::PointCloud<FeatureT>, Eigen::aligned_allocator<pcl::PointCloud<FeatureT> > > signatures;
     std::vector < Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > centroids;
 
-    if (indices_.size ())
+    if (!indices_.empty ())
       pcl::copyPointCloud (*input_, indices_, *in);
     else
       in = input_;
@@ -251,13 +245,13 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     std::vector<index_score> indices_scores;
     descriptor_distances_.clear ();
 
-    if (signatures.size () > 0)
+    if (!signatures.empty ())
     {
 
       {
         pcl::ScopeTime t_matching ("Matching and roll...");
 
-        if (use_single_categories_ && (categories_to_be_searched_.size () > 0))
+        if (use_single_categories_ && (!categories_to_be_searched_.empty ()))
         {
 
           //perform search of the different signatures in the categories_to_be_searched_
@@ -649,22 +643,17 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           PointInTPtr processed (new pcl::PointCloud<PointInT>);
           PointInTPtr view = models->at (i).views_->at (v);
 
-          if (view->points.size () == 0)
+          if (view->points.empty ())
             PCL_WARN("View has no points!!!\n");
 
           if (noisify_)
           {
-            double noise_std = noise_;
-            boost::posix_time::ptime time = boost::posix_time::microsec_clock::local_time();
-            boost::posix_time::time_duration duration( time.time_of_day() );
-            boost::mt19937 rng;
-            rng.seed (static_cast<unsigned int> (duration.total_milliseconds()));
-            boost::normal_distribution<> nd (0.0, noise_std);
-            boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
+            std::random_device rd;
+            std::mt19937 rng(rd());
+            std::normal_distribution<float> nd (0.0f, noise_);
             // Noisify each point in the dataset
             for (size_t cp = 0; cp < view->points.size (); ++cp)
-              view->points[cp].z += static_cast<float> (var_nor ());
-
+              view->points[cp].z += nd (rng);
           }
 
           //pro view, compute signatures

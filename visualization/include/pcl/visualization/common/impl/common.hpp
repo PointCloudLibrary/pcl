@@ -70,7 +70,7 @@ namespace pcl
     {
       Eigen::Vector4d pte (pt.x, pt.y, pt.z, 1);
       window_cord = composite_mat * pte;
-      window_cord = window_cord/window_cord (3);
+      window_cord /=window_cord (3);
       window_cord[0] = (window_cord[0]+1.0) / 2.0*window_size[0];
       window_cord[1] = (window_cord[1]+1.0) / 2.0*window_size[1];
       window_cord[2] = (window_cord[2]+1.0) / 2.0;

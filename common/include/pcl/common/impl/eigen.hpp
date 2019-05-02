@@ -116,7 +116,7 @@ pcl::computeRoots (const Matrix& m, Roots& roots)
         std::swap (roots (0), roots (1));
     }
 
-    if (roots (0) <= 0)  // eigenval for symetric positive semi-definite matrix can not be negative! Set it to 0
+    if (roots (0) <= 0)  // eigenval for symmetric positive semi-definite matrix can not be negative! Set it to 0
       computeRoots2 (c2, c1, roots);
   }
 }
@@ -746,9 +746,9 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
   typedef typename Eigen::NumTraits<Scalar>::Real RealScalar;
   typedef typename Derived::Index Index;
 
-  EIGEN_STATIC_ASSERT (!Eigen::NumTraits<Scalar>::IsComplex, NUMERIC_TYPE_MUST_BE_REAL)
-  EIGEN_STATIC_ASSERT ((Eigen::internal::is_same<Scalar, typename Eigen::internal::traits<OtherDerived>::Scalar>::value),
-    YOU_MIXED_DIFFERENT_NUMERIC_TYPES__YOU_NEED_TO_USE_THE_CAST_METHOD_OF_MATRIXBASE_TO_CAST_NUMERIC_TYPES_EXPLICITLY)
+  static_assert (!Eigen::NumTraits<Scalar>::IsComplex, "Numeric type must be real.");
+  static_assert ((Eigen::internal::is_same<Scalar, typename Eigen::internal::traits<OtherDerived>::Scalar>::value),
+    "You mixed different numeric types. You need to use the cast method of matrixbase to cast numeric types explicitly.");
 
   enum { Dimension = PCL_EIGEN_SIZE_MIN_PREFER_DYNAMIC (Derived::RowsAtCompileTime, OtherDerived::RowsAtCompileTime) };
 
@@ -842,6 +842,11 @@ pcl::transformPlane (const Eigen::Matrix<Scalar, 4, 1> &plane_in,
   plane.coeffs () << plane_in;
   plane.transform (transformation);
   plane_out << plane.coeffs ();
+
+  // Versions prior to 3.3.2 don't normalize the result
+  #if !EIGEN_VERSION_AT_LEAST (3, 3, 2)
+    plane_out /= plane_out.template head<3> ().norm ();
+  #endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -850,7 +855,8 @@ pcl::transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
                            pcl::ModelCoefficients::Ptr plane_out,
                      const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
 {
-  Eigen::Matrix < Scalar, 4, 1 > v_plane_in (std::vector < Scalar > (plane_in->values.begin (), plane_in->values.end ()).data ());
+  std::vector<Scalar> values (plane_in->values.begin (), plane_in->values.end ());
+  Eigen::Matrix < Scalar, 4, 1 > v_plane_in (values.data ());
   pcl::transformPlane (v_plane_in, v_plane_in, transformation);
   plane_out->values.resize (4);
   for (int i = 0; i < 4; i++)

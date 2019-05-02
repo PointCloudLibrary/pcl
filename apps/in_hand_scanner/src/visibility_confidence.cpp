@@ -74,7 +74,7 @@ pcl::ihs::Dome::Dome ()
   vertices_.col (29) = Eigen::Vector4f (-0.187592626f, -0.577350378f, 0.794654489f, 0.f);
   vertices_.col (30) = Eigen::Vector4f ( 0.491123348f, -0.356822133f, 0.794654548f, 0.f);
 
-  for (unsigned int i=0; i<vertices_.cols (); ++i)
+  for (Eigen::Index i=0; i < vertices_.cols (); ++i)
   {
     vertices_.col (i).head <3> ().normalize ();
   }

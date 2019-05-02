@@ -179,10 +179,10 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
   uint64_t total_pts = 0;
 
   // Iterate over all pcd files adding points to the octree
-  for (size_t i = 0; i < pcd_paths.size (); i++)
+  for (const auto &pcd_path : pcd_paths)
   {
 
-    PCLPointCloud2::Ptr cloud = getCloudFromFile (pcd_paths[i]);
+    PCLPointCloud2::Ptr cloud = getCloudFromFile (pcd_path);
 
     boost::uint64_t pts = 0;
     
@@ -229,7 +229,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
 void
 printHelp (int, char **argv)
 {
-  print_info ("This program is used to process pcd fiels into an outofcore data structure viewable by the");
+  print_info ("This program is used to process pcd files into an outofcore data structure viewable by the");
   print_info ("pcl_outofcore_viewer\n\n");
   print_info ("%s <options> <input>.pcd <output_tree_dir>\n", argv[0]);
   print_info ("\n");
@@ -303,9 +303,9 @@ main (int argc, char* argv[])
   std::vector<int> file_arg_indices = parse_file_extension_argument (argc, argv, ".pcd");
 
   std::vector<boost::filesystem::path> pcd_paths;
-  for (size_t i = 0; i < file_arg_indices.size (); i++)
+  for (const int &file_arg_index : file_arg_indices)
   {
-    boost::filesystem::path pcd_path (argv[file_arg_indices[i]]);
+    boost::filesystem::path pcd_path (argv[file_arg_index]);
     if (!boost::filesystem::exists (pcd_path))
     {
       PCL_WARN ("File %s doesn't exist", pcd_path.string ().c_str ());
@@ -316,7 +316,7 @@ main (int argc, char* argv[])
   }
 
   // Check if we should process any files
-  if (pcd_paths.size () < 1)
+  if (pcd_paths.empty ())
   {
     PCL_ERROR ("No .pcd files specified\n");
     return -1;

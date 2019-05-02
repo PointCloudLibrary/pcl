@@ -72,7 +72,7 @@ class CameraPoseWriter : public CameraPoseProcessor
     /**
        * @param output_filename name of file to write
        */
-    CameraPoseWriter (std::string output_filename) :
+    CameraPoseWriter (const std::string &output_filename) :
       output_filename_ (output_filename)
     {
       out_stream_.open (output_filename_.c_str () );
@@ -88,7 +88,7 @@ class CameraPoseWriter : public CameraPoseProcessor
     }
 
     void
-    processPose (const Eigen::Affine3f &pose)
+    processPose (const Eigen::Affine3f &pose) override
     {
       if (out_stream_.good ())
       {

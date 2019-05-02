@@ -47,7 +47,7 @@ vtkVertexBufferObjectMapper::vtkVertexBufferObjectMapper()
   initialized = false;
 //  shadersInitialized = false;
 
-  program = NULL;
+  program = nullptr;
   vertexVbo = vtkVertexBufferObject::New();
   indiceVbo = vtkVertexBufferObject::New();
   colorVbo = vtkVertexBufferObject::New();
@@ -103,7 +103,7 @@ void vtkVertexBufferObjectMapper::Render(vtkRenderer *ren, vtkActor *act)
     normalVbo->Bind();
 
   // Draw
-  ren->GetRenderWindow()->GetPainterDeviceAdapter()->DrawElements(VTK_VERTEX, indiceVbo->GetCount(), VTK_UNSIGNED_INT, 0);
+  ren->GetRenderWindow()->GetPainterDeviceAdapter()->DrawElements(VTK_VERTEX, indiceVbo->GetCount(), VTK_UNSIGNED_INT, nullptr);
   //glDrawElements(GL_POINTS, indiceVbo->GetCount(), GL_UNSIGNED_INT, 0);
 
   // Unbind vertices and indices
@@ -147,16 +147,12 @@ void vtkVertexBufferObjectMapper::SetInput(vtkPolyData *input)
 //  std::cout << "SetInput" << endl;
   if(input)
   {
-#if VTK_MAJOR_VERSION < 6
-    this->SetInputConnection(0, input->GetProducerPort());
-#else
     this->SetInputDataObject (0, input);
-#endif
   }
   else
   {
     // Setting a NULL input removes the connection.
-    this->SetInputConnection(0, 0);
+    this->SetInputConnection(0, nullptr);
   }
   initialized = false;
 
@@ -167,16 +163,12 @@ void vtkVertexBufferObjectMapper::SetInput(vtkDataSet *input)
 //  std::cout << "SetInput" << endl;
   if(input)
   {
-#if VTK_MAJOR_VERSION < 6
-    this->SetInputConnection(0, input->GetProducerPort());
-#else
     this->SetInputDataObject (0, input);
-#endif
   }
   else
   {
     // Setting a NULL input removes the connection.
-    this->SetInputConnection(0, 0);
+    this->SetInputConnection(0, nullptr);
   }
 }
 

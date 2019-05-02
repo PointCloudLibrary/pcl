@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_CRH_ESTIMATOR_H_
-#define REC_FRAMEWORK_CRH_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/global/global_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
@@ -43,7 +42,7 @@ namespace pcl
       void
       estimate (PointInTPtr & in, PointInTPtr & processed,
                 std::vector<pcl::PointCloud<FeatureT>, Eigen::aligned_allocator<pcl::PointCloud<FeatureT> > > & signatures,
-                std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
+                std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids) override
       {
 
         if (!feature_estimator_)
@@ -63,7 +62,7 @@ namespace pcl
 
         crh_histograms_.resize(signatures.size());
 
-        typedef typename pcl::CRHEstimation<PointInT, pcl::Normal, pcl::Histogram<90> > CRHEstimation;
+        typedef pcl::CRHEstimation<PointInT, pcl::Normal, pcl::Histogram<90> > CRHEstimation;
         CRHEstimation crh;
         crh.setInputCloud(processed);
         crh.setInputNormals(normals_);
@@ -83,12 +82,10 @@ namespace pcl
       }
 
       bool
-      computedNormals ()
+      computedNormals () override
       {
         return true;
       }
     };
   }
 }
-
-#endif /* REC_FRAMEWORK_CVFH_ESTIMATOR_H_ */

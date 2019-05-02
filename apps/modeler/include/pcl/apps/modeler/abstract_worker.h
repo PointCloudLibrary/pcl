@@ -34,10 +34,9 @@
  *
  */
 
-#ifndef PCL_MODELER_ABSTRACT_WORKER_H_
-#define PCL_MODELER_ABSTRACT_WORKER_H_
+#pragma once
 
-#include <pcl/apps/modeler/qt.h>
+#include <QObject>
 
 namespace pcl
 {
@@ -51,8 +50,8 @@ namespace pcl
       Q_OBJECT
 
       public:
-        AbstractWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
-        ~AbstractWorker(void);
+        AbstractWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=nullptr);
+        ~AbstractWorker();
 
         int
         exec();
@@ -91,5 +90,3 @@ namespace pcl
 
   }
 }
-
-#endif // PCL_MODELER_ABSTRACT_WORKER_H_

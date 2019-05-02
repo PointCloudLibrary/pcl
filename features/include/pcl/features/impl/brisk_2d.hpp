@@ -47,7 +47,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::BRISK2DEstim
   , scale_invariance_enabled_ (true)
   , pattern_scale_ (1.0f)
   , input_cloud_ (), keypoints_ (), scale_range_ (), pattern_points_ (), points_ ()
-  , n_rot_ (1024), scale_list_ (NULL), size_list_ (NULL)
+  , n_rot_ (1024), scale_list_ (nullptr), size_list_ (nullptr)
   , scales_ (64)
   , scalerange_ (30)
   , basic_size_ (12.0)
@@ -469,8 +469,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   kscales.resize (ksize);
  
   // initialize constants
-  static const float log2 = 0.693147180559945f;
-  static const float lb_scalerange = std::log (scalerange_) / (log2);
+  static const float lb_scalerange = std::log2 (scalerange_);
 
   typename std::vector<KeypointT, Eigen::aligned_allocator<KeypointT> >::iterator beginning = keypoints_->points.begin ();
   std::vector<int>::iterator beginningkscales = kscales.begin ();
@@ -479,14 +478,14 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   unsigned int basicscale = 0;
 
   if (!scale_invariance_enabled_)
-    basicscale = std::max (static_cast<int> (float (scales_) / lb_scalerange * (log (1.45f * basic_size_ / (basic_size_06)) / log2) + 0.5f), 0);
+    basicscale = std::max (static_cast<int> (float (scales_) / lb_scalerange * (std::log2 (1.45f * basic_size_ / (basic_size_06))) + 0.5f), 0);
 
   for (size_t k = 0; k < ksize; k++)
   {
     unsigned int scale;
     if (scale_invariance_enabled_)
     {
-      scale = std::max (static_cast<int> (float (scales_) / lb_scalerange * (log (keypoints_->points[k].size / (basic_size_06)) / log2) + 0.5f), 0);
+      scale = std::max (static_cast<int> (float (scales_) / lb_scalerange * (std::log2 (keypoints_->points[k].size / (basic_size_06))) + 0.5f), 0);
       // saturate
       if (scale >= scales_) scale = scales_ - 1;
       kscales[k] = scale;

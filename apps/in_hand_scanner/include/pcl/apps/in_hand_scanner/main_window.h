@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_MAIN_WINDOW_H
-#define PCL_APPS_IN_HAND_SCANNER_MAIN_WINDOW_H
+#pragma once
 
 #include <QMainWindow>
 
@@ -80,7 +79,7 @@ namespace pcl
         typedef pcl::ihs::HelpWindow       HelpWindow;
         typedef InHandScanner::RunningMode RunningMode;
 
-        explicit MainWindow (QWidget* parent = 0);
+        explicit MainWindow (QWidget* parent = nullptr);
         ~MainWindow ();
 
       public Q_SLOTS:
@@ -90,7 +89,7 @@ namespace pcl
 
         // In hand scanner
         void runningModeChanged (const RunningMode mode);
-        void keyPressEvent (QKeyEvent* event);
+        void keyPressEvent (QKeyEvent* event) override;
 
         // Input data processing.
         void setXMin (const int x_min);
@@ -136,5 +135,3 @@ namespace pcl
     };
   } // End namespace ihs
 } // End namespace pcl
-
-#endif // PCL_APPS_IN_HAND_SCANNER_MAIN_WINDOW_H

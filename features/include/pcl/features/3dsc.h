@@ -38,8 +38,9 @@
  *
  */
 
-#ifndef PCL_FEATURES_3DSC_H_
-#define PCL_FEATURES_3DSC_H_
+#pragma once
+
+#include <random>
 
 #include <pcl/point_types.h>
 #include <pcl/features/boost.h>
@@ -103,20 +104,23 @@ namespace pcl
         min_radius_(0.1),
         point_density_radius_(0.2),
         descriptor_length_ (),
-        rng_alg_ (),
-        rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
+        rng_ (),
+        rng_dist_ (0.0f, 1.0f)
       {
         feature_name_ = "ShapeContext3DEstimation";
         search_radius_ = 2.5;
 
         // Create a random number generator object
         if (random)
-          rng_->base ().seed (static_cast<unsigned> (std::time(0)));
+        {
+          std::random_device rd;
+          rng_.seed (rd());
+        }
         else
-          rng_->base ().seed (12345u);
+          rng_.seed (12345u);
       }
 
-      virtual ~ShapeContext3DEstimation() {}
+      ~ShapeContext3DEstimation() {}
 
       //inline void
       //setAzimuthBins (size_t bins) { azimuth_bins_ = bins; }
@@ -163,7 +167,7 @@ namespace pcl
     protected:
       /** \brief Initialize computation by allocating all the intervals and the volume lookup table. */
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief Estimate a descriptor for a given point.
         * \param[in] index the index of the point to estimate a descriptor for
@@ -180,7 +184,7 @@ namespace pcl
         * \param[out] output the resultant feature
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief Values of the radii interval */
       std::vector<float> radii_interval_;
@@ -212,11 +216,11 @@ namespace pcl
       /** \brief Descriptor length */
       size_t descriptor_length_;
 
-      /** \brief Boost-based random number generator algorithm. */
-      boost::mt19937 rng_alg_;
+      /** \brief Random number generator algorithm. */
+      std::mt19937 rng_;
 
-      /** \brief Boost-based random number generator distribution. */
-      boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
+      /** \brief Random number generator distribution. */
+      std::uniform_real_distribution<float> rng_dist_;
 
      /*  \brief Shift computed descriptor "L" times along the azimuthal direction
        * \param[in] block_size the size of each azimuthal block
@@ -227,10 +231,10 @@ namespace pcl
       //shiftAlongAzimuth (size_t block_size, std::vector<float>& desc);
 
       /** \brief Boost-based random number generator. */
-      inline double
+      inline float
       rnd ()
       {
-        return ((*rng_) ());
+        return (rng_dist_ (rng_));
       }
   };
 }
@@ -238,5 +242,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/3dsc.hpp>
 #endif
-
-#endif  //#ifndef PCL_3DSC_H_

@@ -45,10 +45,10 @@
 template <typename PointInT, typename PointOutT>
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::~IntegralImageNormalEstimation ()
 {
-  if (diff_x_ != NULL) delete[] diff_x_;
-  if (diff_y_ != NULL) delete[] diff_y_;
-  if (depth_data_ != NULL) delete[] depth_data_;
-  if (distance_map_ != NULL) delete[] distance_map_;
+  delete[] diff_x_;
+  delete[] diff_y_;
+  delete[] depth_data_;
+  delete[] distance_map_;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -68,14 +68,14 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initData ()
                          "[pcl::IntegralImageNormalEstimation::initData] unknown normal estimation method.");
 
   // compute derivatives
-  if (diff_x_ != NULL) delete[] diff_x_;
-  if (diff_y_ != NULL) delete[] diff_y_;
-  if (depth_data_ != NULL) delete[] depth_data_;
-  if (distance_map_ != NULL) delete[] distance_map_;
-  diff_x_ = NULL;
-  diff_y_ = NULL;
-  depth_data_ = NULL;
-  distance_map_ = NULL;
+  delete[] diff_x_;
+  delete[] diff_y_;
+  delete[] depth_data_;
+  delete[] distance_map_;
+  diff_x_ = nullptr;
+  diff_y_ = nullptr;
+  depth_data_ = nullptr;
+  distance_map_ = nullptr;
 
   if (normal_estimation_method_ == COVARIANCE_MATRIX)
     initCovarianceMatrixMethod ();
@@ -745,13 +745,13 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
       const float depthDependendDepthChange = (max_depth_change_factor_ * (fabsf (depth) + 1.0f) * 2.0f);
 
       if (fabs (depth - depthR) > depthDependendDepthChange
-        || !pcl_isfinite (depth) || !pcl_isfinite (depthR))
+        || !std::isfinite (depth) || !std::isfinite (depthR))
       {
         depthChangeMap[index] = 0;
         depthChangeMap[index+1] = 0;
       }
       if (fabs (depth - depthD) > depthDependendDepthChange
-        || !pcl_isfinite (depth) || !pcl_isfinite (depthD))
+        || !std::isfinite (depth) || !std::isfinite (depthD))
       {
         depthChangeMap[index] = 0;
         depthChangeMap[index + input_->width] = 0;
@@ -761,7 +761,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
   // compute distance map
   //float *distanceMap = new float[input_->points.size ()];
-  if (distance_map_ != NULL) delete[] distance_map_;
+  delete[] distance_map_;
   distance_map_ = new float[input_->points.size ()];
   float *distanceMap = distance_map_;
   for (size_t index = 0; index < input_->points.size (); ++index)
@@ -876,7 +876,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
           index = ri * input_->width + ci;
 
           const float depth = input_->points[index].z;
-          if (!pcl_isfinite (depth))
+          if (!std::isfinite (depth))
           {
             output[index].getNormalVector3fMap ().setConstant (bad_point);
             output[index].curvature = bad_point;
@@ -910,7 +910,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
         {
           index = ri * input_->width + ci;
 
-          if (!pcl_isfinite (input_->points[index].z))
+          if (!std::isfinite (input_->points[index].z))
           {
             output [index].getNormalVector3fMap ().setConstant (bad_point);
             output [index].curvature = bad_point;
@@ -950,7 +950,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
           index = ri * input_->width + ci;
 
           const float depth = input_->points[index].z;
-          if (!pcl_isfinite (depth))
+          if (!std::isfinite (depth))
           {
             output[index].getNormalVector3fMap ().setConstant (bad_point);
             output[index].curvature = bad_point;
@@ -986,7 +986,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
         {
           index = ri * input_->width + ci;
 
-          if (!pcl_isfinite (input_->points[index].z))
+          if (!std::isfinite (input_->points[index].z))
           {
             output [index].getNormalVector3fMap ().setConstant (bad_point);
             output [index].curvature = bad_point;
@@ -1046,7 +1046,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
         }
 
         const float depth = input_->points[pt_index].z;
-        if (!pcl_isfinite (depth))
+        if (!std::isfinite (depth))
         {
           output.points[idx].getNormalVector3fMap ().setConstant (bad_point);
           output.points[idx].curvature = bad_point;
@@ -1089,7 +1089,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
           continue;
         }
 
-        if (!pcl_isfinite (input_->points[pt_index].z))
+        if (!std::isfinite (input_->points[pt_index].z))
         {
           output [idx].getNormalVector3fMap ().setConstant (bad_point);
           output [idx].curvature = bad_point;
@@ -1124,7 +1124,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
         unsigned v = pt_index / input_->width;
 
         const float depth = input_->points[pt_index].z;
-        if (!pcl_isfinite (depth))
+        if (!std::isfinite (depth))
         {
           output[idx].getNormalVector3fMap ().setConstant (bad_point);
           output[idx].curvature = bad_point;
@@ -1154,7 +1154,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
         unsigned u = pt_index % input_->width;
         unsigned v = pt_index / input_->width;
 
-        if (!pcl_isfinite (input_->points[pt_index].z))
+        if (!std::isfinite (input_->points[pt_index].z))
         {
           output [idx].getNormalVector3fMap ().setConstant (bad_point);
           output [idx].curvature = bad_point;

@@ -97,13 +97,13 @@ class Segmentation
 
     void viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
-      static bool first_time = true;
       boost::mutex::scoped_lock l(m_mutex);
       if (new_cloud)
       {
         //typedef pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal> ColorHandler;
         typedef pcl::visualization::PointCloudColorHandlerGenericField <pcl::PointXYZRGBNormal> ColorHandler;
         ColorHandler Color_handler (normal_cloud,"curvature");
+        static bool first_time = true;
         if (!first_time)
         {
           viz.removePointCloud ("normalcloud");
@@ -141,10 +141,10 @@ class Segmentation
 
       // we got a cloud in device..
 
-      boost::shared_ptr<typename Storage<float4>::type> normals;
-      float focallength = 580/2.0;
+      boost::shared_ptr<typename Storage<float4>::type> normals;      
       {
         ScopeTimeCPU time ("TIMING: Normal Estimation");
+        constexpr float focallength = 580/2.0;
         normals = computePointNormals<Storage, typename PointIterator<Storage,PointXYZRGB>::type > (data->points.begin (), data->points.end (), focallength, data, 0.05, 30);
       }
       go_on = false;

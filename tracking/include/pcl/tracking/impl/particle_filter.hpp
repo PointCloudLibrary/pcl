@@ -1,10 +1,11 @@
 #ifndef PCL_TRACKING_IMPL_PARTICLE_FILTER_H_
 #define PCL_TRACKING_IMPL_PARTICLE_FILTER_H_
 
+#include <random>
+
 #include <pcl/common/common.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/transforms.h>
-#include <pcl/tracking/boost.h>
 #include <pcl/tracking/particle_filter.h>
 
 template <typename PointInT, typename StateT> bool
@@ -29,7 +30,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute ()
   coherence_->setTargetCloud (input_);
 
   if (!change_detector_)
-    change_detector_ = boost::shared_ptr<pcl::octree::OctreePointCloudChangeDetector<PointInT> >(new pcl::octree::OctreePointCloudChangeDetector<PointInT> (change_detector_resolution_));
+    change_detector_.reset (new pcl::octree::OctreePointCloudChangeDetector<PointInT> (change_detector_resolution_));
   
   if (!particles_ || particles_->points.empty ())
     initParticles (true);
@@ -40,11 +41,10 @@ template <typename PointInT, typename StateT> int
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::sampleWithReplacement
 (const std::vector<int>& a, const std::vector<double>& q)
 {
-  using namespace boost;
-  static mt19937 gen (static_cast<unsigned int>(time (0)));
-  uniform_real<> dst (0.0, 1.0);
-  variate_generator<mt19937&, uniform_real<> > rand (gen, dst);
-  double rU = rand () * static_cast<double> (particles_->points.size ());
+  static std::mt19937 rng([] { std::random_device rd; return rd(); } ());
+  std::uniform_real_distribution<> rd (0.0, 1.0);
+
+  double rU = rd (rng) * static_cast<double> (particles_->points.size ());
   int k = static_cast<int> (rU);
   rU -= k;    /* rU - [rU] */
   if ( rU < q[k] )
@@ -154,7 +154,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
     if (sum != 0.0)
     {
       for ( size_t i = 0; i < particles_->points.size (); i++ )
-        particles_->points[i].weight =  particles_->points[i].weight / static_cast<float> (sum);
+        particles_->points[i].weight /= static_cast<float> (sum);
     }
     else
     {
@@ -224,7 +224,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::testChangeDetection
   std::vector<int> newPointIdxVector;
   change_detector_->getPointIndicesFromNewVoxels (newPointIdxVector, change_detector_filter_);
   change_detector_->switchBuffers ();
-  return newPointIdxVector.size () > 0;
+  return !newPointIdxVector.empty ();
 }
 
 template <typename PointInT, typename StateT> void
@@ -307,7 +307,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointC
   {
     PointInT input_point = cloud.points[i];
 
-    if (!pcl_isfinite(input_point.x) || !pcl_isfinite(input_point.y) || !pcl_isfinite(input_point.z))
+    if (!std::isfinite(input_point.x) || !std::isfinite(input_point.y) || !std::isfinite(input_point.z))
       continue;
     // take occlusion into account
     Eigen::Vector4f p = input_point.getVector4fMap ();

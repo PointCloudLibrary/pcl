@@ -37,11 +37,10 @@
  *
  */
 
-#ifndef PCL_MOMENT_OF_INERTIA_ESIMATION_H_
-#define PCL_MOMENT_OF_INERTIA_ESIMATION_H_
+#pragma once
 
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include <pcl/features/feature.h>
 #include <pcl/PointIndices.h>
 
@@ -71,26 +70,26 @@ namespace pcl
       /** \brief Provide a pointer to the input dataset
         * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
-      virtual void
-      setInputCloud (const PointCloudConstPtr& cloud);
+      void
+      setInputCloud (const PointCloudConstPtr& cloud) override;
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
         * \param[in] indices a pointer to the vector of indices that represents the input data.
         */
-      virtual void
-      setIndices (const IndicesPtr& indices);
+      void
+      setIndices (const IndicesPtr& indices) override;
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
         * \param[in] indices a pointer to the vector of indices that represents the input data.
         */
-      virtual void
-      setIndices (const IndicesConstPtr& indices);
+      void
+      setIndices (const IndicesConstPtr& indices) override;
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
         * \param[in] indices a pointer to the vector of indices that represents the input data.
         */
-      virtual void
-      setIndices (const PointIndicesConstPtr& indices);
+      void
+      setIndices (const PointIndicesConstPtr& indices) override;
 
       /** \brief Set the indices for the points laying within an interest region of 
         * the point cloud.
@@ -100,14 +99,14 @@ namespace pcl
         * \param[in] nb_rows the number of rows to be considered row_start included
         * \param[in] nb_cols the number of columns to be considered col_start included
         */
-      virtual void
-      setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols);
+      void
+      setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols) override;
 
       /** \brief Constructor that sets default values for member variables. */
       MomentOfInertiaEstimation ();
 
       /** \brief Virtual destructor which frees the memory. */
-      virtual
+      
       ~MomentOfInertiaEstimation ();
 
       /** \brief This method allows to set the angle step. It is used for the rotation
@@ -357,6 +356,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/moment_of_inertia_estimation.hpp>
-#endif
-
 #endif

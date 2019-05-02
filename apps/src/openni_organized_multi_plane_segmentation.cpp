@@ -51,7 +51,7 @@ typedef pcl::PointXYZRGBA PointT;
 class OpenNIOrganizedMultiPlaneSegmentation
 {
   private:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+    pcl::visualization::PCLVisualizer::Ptr viewer;
     pcl::PointCloud<PointT>::ConstPtr prev_cloud;
     boost::mutex cloud_mutex;
 
@@ -64,7 +64,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
     {
     }
 
-    boost::shared_ptr<pcl::visualization::PCLVisualizer>
+    pcl::visualization::PCLVisualizer::Ptr
     cloudViewer (pcl::PointCloud<PointT>::ConstPtr cloud)
     {
       boost::shared_ptr < pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Viewer"));

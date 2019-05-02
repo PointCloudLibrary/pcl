@@ -38,6 +38,9 @@
  */
 
 #define SHOW_FPS 1
+
+#include <thread>
+
 #include <pcl/apps/timer.h>
 #include <pcl/common/common.h>
 #include <pcl/common/angles.h>
@@ -53,6 +56,7 @@
 
 using namespace pcl;
 using namespace std;
+using namespace std::chrono_literals;
 
 typedef PointUV KeyPointT;
 
@@ -221,7 +225,7 @@ class AGASTDemo
       {
         const PointT &pt = (*cloud)(static_cast<long unsigned int> (keypoints->points[i].u), 
                                     static_cast<long unsigned int> (keypoints->points[i].v));
-        if (!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y) || !pcl_isfinite (pt.z))
+        if (!std::isfinite (pt.x) || !std::isfinite (pt.y) || !std::isfinite (pt.z))
           continue;
 
         keypoints3d.points[j].x = pt.x;
@@ -271,7 +275,7 @@ class AGASTDemo
           {
             cloud_viewer_.setPosition (0, 0);
             cloud_viewer_.setSize (cloud->width, cloud->height);
-            cloud_init = !cloud_init;
+            cloud_init = true;
           }
 
           if (!cloud_viewer_.updatePointCloud (cloud, "OpenNICloud"))
@@ -284,7 +288,7 @@ class AGASTDemo
           {
             image_viewer_.setPosition (cloud->width, 0);
             image_viewer_.setSize (cloud->width, cloud->height);
-            image_init = !image_init;
+            image_init = true;
           }
 
           image_viewer_.addRGBImage<PointT> (cloud);
@@ -311,7 +315,7 @@ class AGASTDemo
 
         cloud_viewer_.spinOnce ();
         image_viewer_.spinOnce ();
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
       }
 
       grabber_.stop ();

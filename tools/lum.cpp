@@ -129,7 +129,7 @@ main (int argc, char **argv)
   for(size_t i = 0; i < lum.getNumVertices (); i++)
   {
     std::string result_filename (clouds[i].first);
-    result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
+    result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
     pcl::io::savePCDFileBinary (result_filename.c_str (), *(clouds[i].second));
     //std::cout << "saving result to " << result_filename << std::endl;
   }

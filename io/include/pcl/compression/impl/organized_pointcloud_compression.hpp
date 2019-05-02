@@ -54,7 +54,7 @@
 #include <string>
 #include <vector>
 #include <limits>
-#include <assert.h>
+#include <cassert>
 
 namespace pcl
 {
@@ -88,7 +88,7 @@ namespace pcl
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&cloud_height), sizeof (cloud_height));
       // encode frame max depth
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&maxDepth), sizeof (maxDepth));
-      // encode frame focal lenght
+      // encode frame focal length
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&focalLength), sizeof (focalLength));
       // encode frame disparity scale
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&disparityScale), sizeof (disparityScale));
@@ -173,7 +173,7 @@ namespace pcl
 
        size_t cloud_size = width_arg*height_arg;
        assert (disparityMap_arg.size()==cloud_size);
-       if (colorImage_arg.size())
+       if (!colorImage_arg.empty ())
        {
          assert (colorImage_arg.size()==cloud_size*3);
        }
@@ -186,7 +186,7 @@ namespace pcl
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&height_arg), sizeof (height_arg));
        // encode frame max depth
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&maxDepth), sizeof (maxDepth));
-       // encode frame focal lenght
+       // encode frame focal length
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&focalLength_arg), sizeof (focalLength_arg));
        // encode frame disparity scale
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&disparityScale_arg), sizeof (disparityScale_arg));
@@ -204,8 +204,7 @@ namespace pcl
        uint16_t* depth_ptr = &disparityMap_arg[0];
        uint8_t* color_ptr = &colorImage_arg[0];
 
-       size_t i;
-       for (i=0; i<cloud_size; ++i, ++depth_ptr, color_ptr+=sizeof(uint8_t)*3)
+       for (size_t i = 0; i < cloud_size; ++i, ++depth_ptr, color_ptr += sizeof(uint8_t) * 3)
        {
          if (!(*depth_ptr) || (*depth_ptr==0x7FF))
            memset(color_ptr, 0, sizeof(uint8_t)*3);
@@ -221,18 +220,17 @@ namespace pcl
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparity[0]), compressedDisparity.size () * sizeof(uint8_t));
 
        // Compress color information
-       if (colorImage_arg.size() && doColorEncoding)
+       if (!colorImage_arg.empty () && doColorEncoding)
        {
          if (convertToMono)
          {
-           size_t i, size;
            vector<uint8_t> monoImage;
-           size = width_arg*height_arg;
+           size_t size = width_arg*height_arg;
 
            monoImage.reserve(size);
 
            // grayscale conversion
-           for (i=0; i<size; ++i)
+           for (size_t i = 0; i < size; ++i)
            {
              uint8_t grayvalue = static_cast<uint8_t>(0.2989 * static_cast<float>(colorImage_arg[i*3+0]) +
                                                       0.5870 * static_cast<float>(colorImage_arg[i*3+1]) +
@@ -349,7 +347,7 @@ namespace pcl
         // reconstruct point cloud
         OrganizedConversion<PointT>::convert (disparityData,
                                               colorData,
-                                              static_cast<bool>(png_channels==1),
+                                              (png_channels == 1),
                                               cloud_width,
                                               cloud_height,
                                               focalLength,
@@ -405,29 +403,23 @@ namespace pcl
                                                                    float& maxDepth_arg,
                                                                    float& focalLength_arg) const
     {
-      size_t width, height, it;
-      int centerX, centerY;
-      int x, y;
-      float maxDepth;
-      float focalLength;
-
-      width = cloud_arg->width;
-      height = cloud_arg->height;
+      size_t width = cloud_arg->width;
+      size_t height = cloud_arg->height;
 
       // Center of organized point cloud
-      centerX = static_cast<int> (width / 2);
-      centerY = static_cast<int> (height / 2);
+      int centerX = static_cast<int> (width / 2);
+      int centerY = static_cast<int> (height / 2);
 
       // Ensure we have an organized point cloud
       assert((width>1) && (height>1));
       assert(width*height == cloud_arg->points.size());
 
-      maxDepth = 0;
-      focalLength = 0;
+      float maxDepth = 0;
+      float focalLength = 0;
 
-      it = 0;
-      for (y = -centerY; y < +centerY; ++y)
-        for (x = -centerX; x < +centerX; ++x)
+      size_t it = 0;
+      for (int y = -centerY; y < centerY; ++y )
+        for (int x = -centerX; x < centerX; ++x )
         {
           const PointT& point = cloud_arg->points[it++];
 

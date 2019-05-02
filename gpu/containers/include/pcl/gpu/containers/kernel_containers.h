@@ -34,10 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-
-#ifndef PCL_GPU_CONTAINERS_KERNEL_CONTAINERS_HPP_
-#define PCL_GPU_CONTAINERS_KERNEL_CONTAINERS_HPP_
-
+#pragma once
 
 #if defined(__CUDACC__) 
     #define __PCL_GPU_HOST_DEVICE__ __host__ __device__ __forceinline__ 
@@ -58,7 +55,7 @@ namespace pcl
 
             T* data;
 
-            __PCL_GPU_HOST_DEVICE__ DevPtr() : data(0) {}
+            __PCL_GPU_HOST_DEVICE__ DevPtr() : data(nullptr) {}
             __PCL_GPU_HOST_DEVICE__ DevPtr(T* data_arg) : data(data_arg) {}
 
             __PCL_GPU_HOST_DEVICE__ size_t elemSize() const { return elem_size; }
@@ -109,6 +106,3 @@ namespace pcl
 }
 
 #undef __PCL_GPU_HOST_DEVICE__
-
-#endif /* PCL_GPU_CONTAINERS_KERNEL_CONTAINERS_HPP_ */
-

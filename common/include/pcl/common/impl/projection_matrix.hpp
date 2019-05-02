@@ -102,7 +102,7 @@ pcl::estimateProjectionMatrix (
     unsigned xIdx = pointIt.getCurrentPointIndex () % cloud->width;
     
     const PointT& point = *pointIt;
-    if (pcl_isfinite (point.x))
+    if (std::isfinite (point.x))
     {
       Scalar xx = point.x * point.x;
       Scalar xy = point.x * point.y;

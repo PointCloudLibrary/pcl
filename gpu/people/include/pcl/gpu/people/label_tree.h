@@ -39,8 +39,7 @@
  * @brief This file contains the function prototypes for the tree building functions.
  */
  
-#ifndef PCL_GPU_PEOPLE_LABEL_TREE_H_
-#define PCL_GPU_PEOPLE_LABEL_TREE_H_
+#pragma once
  
 // our headers
 #include "pcl/gpu/people/label_blob2.h"   //this one defines the blob structure
@@ -70,15 +69,15 @@ namespace pcl
     namespace people    
     {           
      /**
-       * @brief This structure containts all parameters to describe the segmented tree
+       * @brief This structure contains all parameters to describe the segmented tree
        */
       struct Tree2 
       {
         //Inline constructor
         Tree2() : id(NO_CHILD), lid(NO_CHILD), nr_parts(0)
         {
-          for(int i=0;i<NUM_PARTS;i++)
-            parts_lid[i] = NO_CHILD;
+          for(int &part : parts_lid)
+            part = NO_CHILD;
         }
        
         int     id;                     // specific identification number of this tree
@@ -123,12 +122,12 @@ namespace pcl
       leafBlobVector(   std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >& sorted,
                             int                               label )
       {
-        if(sorted[label].size() == 0)
+        if(sorted[label].empty ())
           return 0;
-        for(size_t i = 0; i < sorted[label].size(); i++)
+        for(auto &blob : sorted[label])
         {
           for(int j = 0; j < MAX_CHILD; j++)
-            sorted[label][i].child_id[j] = LEAF;
+            blob.child_id[j] = LEAF;
         }
         return 0;
       }
@@ -145,10 +144,10 @@ namespace pcl
                               int                               label,
                               int                               child_number)
       {
-        if(sorted[label].size() == 0)
+        if(sorted[label].empty ())
           return 0;
-        for(size_t i = 0; i < sorted[label].size(); i++){
-          sorted[label][i].child_id[child_number] = NO_CHILD;
+        for(auto &blob : sorted[label]){
+          blob.child_id[child_number] = NO_CHILD;
         }
         return 0;
       }
@@ -162,12 +161,12 @@ namespace pcl
                                   part_t                            label,
                                   int                               child_number)
       {
-        if(sorted[label].size() == 0)
-          return 0;
-        for(size_t i = 0; i < sorted[label].size(); i++)
-          if((sorted[label][i].child_id[child_number] != NO_CHILD) && (sorted[label][i].child_id[child_number] != LEAF))
-            return 1;
-        return 0;
+        if(sorted[label].empty ())
+          return false;
+        for(const auto &blob : sorted[label])
+          if((blob.child_id[child_number] != NO_CHILD) && (blob.child_id[child_number] != LEAF))
+            return true;
+        return false;
       }
 
       /**
@@ -222,7 +221,7 @@ namespace pcl
        * @param[in] parent_label this is the part label that indicates the row
        * @param[in] child_label  this is the part label that indicates the childs needed to be investigated
        * @param[in] child_number the number of this child in the parent, some parents have multiple childs
-       * @return zero if successfull
+       * @return zero if successful
        * @todo once we have good evaluation function reconsider best_value
        **/
       inline int
@@ -237,10 +236,10 @@ namespace pcl
         assert(child_number >= 0);
         assert(child_number < MAX_CHILD);
 
-        if(sorted[parent_label].size() == 0){
+        if(sorted[parent_label].empty ()){
           return 0;   //if my size is 0, this is solved by my parent in his iteration	
         }
-        if(sorted[child_label].size() == 0){
+        if(sorted[child_label].empty ()){
           noChildBlobVector(sorted, parent_label, child_number);
           return 0;
         }
@@ -281,7 +280,7 @@ namespace pcl
        * @param[in] child_label  this is the part label that indicates the childs needed to be investigated
        * @param[in] child_number the number of this child in the parent, some parents have multiple childs
        * @param person_attribs
-       * @return zero if successfull
+       * @return zero if successful
        * @todo once we have good evaluation function reconsider best_value
        **/
       inline int
@@ -297,10 +296,10 @@ namespace pcl
         assert(child_number >= 0);
         assert(child_number < MAX_CHILD);
 
-        if(sorted[parent_label].size() == 0){
+        if(sorted[parent_label].empty ()){
           return 0;   //if my size is 0, this is solved by my parent in his iteration
         }
-        if(sorted[child_label].size() == 0){
+        if(sorted[child_label].empty ()){
           noChildBlobVector(sorted, parent_label, child_number);
           return 0;
         }
@@ -345,7 +344,7 @@ namespace pcl
       buildRelations( std::vector<std::vector<Blob2, Eigen::aligned_allocator<pcl::gpu::people::Blob2> > >& sorted)
       {
         PCL_VERBOSE("[pcl::gpu::people::buildRelations] : (I) : buildRelations : regular version\n");
-        if(sorted.size() == 0){
+        if(sorted.empty ()){
           std::cout << "(E) : Damn you, you gave me an empty matrix!" << std::endl;
           return (-1);
         }
@@ -449,7 +448,7 @@ namespace pcl
                       PersonAttribs::Ptr person_attribs)
       {
         PCL_DEBUG("[pcl::gpu::people::buildRelations] : (D) : person specific version\n");
-        if(sorted.size() == 0){
+        if(sorted.empty ()){
           PCL_ERROR("[pcl::gpu::people::buildRelations] : (E) : Damn you, you gave me an empty matrix!\n");
           return (-1);
         }
@@ -611,7 +610,7 @@ namespace pcl
                              int                                    part_lid,
                              Tree2&                                 tree)
       {
-        if(sorted.size() <= 0)
+        if(sorted.empty ())
         {
           std::cout << "(E) : buildTree(): hey man, don't fool me, you gave me an empty blob matrix" << std::endl;
           return -1;
@@ -641,7 +640,7 @@ namespace pcl
                              Tree2&                                 tree,
                              PersonAttribs::Ptr                     person_attribs)
       {
-        if(sorted.size() <= 0)
+        if(sorted.empty ())
         {
           std::cout << "(E) : buildTree(): hey man, don't fool me, you gave me an empty blob matrix" << std::endl;
           return -1;
@@ -667,4 +666,3 @@ namespace pcl
     } //end namespace people
   } // end namespace gpu
 } // end namespace pcl
-#endif

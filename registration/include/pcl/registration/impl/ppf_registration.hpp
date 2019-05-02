@@ -105,11 +105,10 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
                                      search_method_->getModelDiameter () /2,
                                      indices,
                                      distances);
-    for(size_t i = 0; i < indices.size (); ++i)
+    for(const size_t &scene_point_index : indices)
 //    for(size_t i = 0; i < target_->points.size (); ++i)
     {
       //size_t scene_point_index = i;
-      size_t scene_point_index = indices[i];
       if (scene_reference_index != scene_point_index)
       {
         if (/*pcl::computePPFPairFeature*/pcl::computePairFeatures (target_->points[scene_reference_index].getVector4fMap (),
@@ -131,10 +130,10 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
           alpha_s *= (-1);
 
           // Go through point pairs in the model with the same discretized feature
-          for (std::vector<std::pair<size_t, size_t> >::iterator v_it = nearest_indices.begin (); v_it != nearest_indices.end (); ++ v_it)
+          for (const auto &nearest_index : nearest_indices)
           {
-            size_t model_reference_index = v_it->first,
-                model_point_index = v_it->second;
+            size_t model_reference_index = nearest_index.first;
+            size_t model_point_index = nearest_index.second;
             // Calculate angle alpha = alpha_m - alpha_s
             float alpha = search_method_->alpha_m_[model_reference_index][model_point_index] - alpha_s;
             unsigned int alpha_discretized = static_cast<unsigned int> (floor (alpha) + floor (M_PI / search_method_->getAngleDiscretizationStep ()));
@@ -213,7 +212,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses (typename pcl::PPFR
       }
     }
 
-    if (found_cluster == false)
+    if (!found_cluster)
     {
       // Create a new cluster with the current pose
       PoseWithVotesList new_cluster;

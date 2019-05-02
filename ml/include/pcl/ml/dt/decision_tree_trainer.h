@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_DT_DECISION_TREE_TRAINER_H_
-#define PCL_ML_DT_DECISION_TREE_TRAINER_H_
+#pragma once
 
 #include <pcl/common/common.h>
 
@@ -162,7 +161,7 @@ namespace pcl
         * \param[in] dtdp The data provider that should implement getDatasetAndLabels(...) function
         */
       void
-      setDecisionTreeDataProvider (boost::shared_ptr<pcl::DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType> > & dtdp)
+      setDecisionTreeDataProvider (typename pcl::DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::Ptr& dtdp)
       {
         decision_tree_trainer_data_provider_ = dtdp;
       }
@@ -234,7 +233,7 @@ namespace pcl
       /** \brief Thresholds to be used instead of generating uniform distributed thresholds. */
       std::vector<float> thresholds_;
       /** \brief The data provider which is called before training a specific tree, if pointer is NULL, then data_set_ is used. */
-      boost::shared_ptr<pcl::DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType> > decision_tree_trainer_data_provider_;
+      typename pcl::DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::Ptr decision_tree_trainer_data_provider_;
       /** \brief If true, random features are generated at each node, otherwise, at start of training the tree */
       bool random_features_at_split_node_;
   };
@@ -242,5 +241,3 @@ namespace pcl
 }
 
 #include <pcl/ml/impl/dt/decision_tree_trainer.hpp>
-
-#endif

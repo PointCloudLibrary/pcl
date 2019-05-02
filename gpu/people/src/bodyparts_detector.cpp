@@ -63,15 +63,15 @@ pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<strin
 
   impl_.reset ( new device::MultiTreeLiveProc(rows, cols) );
 
-  for(size_t i = 0; i < tree_files.size(); ++i)
+  for(const auto &tree_file : tree_files)
   {
     // load the tree file
     vector<trees::Node>  nodes;
     vector<trees::Label> leaves;
 
     // this might throw but we haven't done any malloc yet
-    int height = loadTree (tree_files[i], nodes, leaves );
-    impl_->trees.push_back(device::CUDATree(height, nodes, leaves));
+    int height = loadTree (tree_file, nodes, leaves );
+    impl_->trees.emplace_back(height, nodes, leaves);
   }
 
   allocate_buffers(rows, cols);
@@ -159,10 +159,10 @@ pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers(int rows, int cols)
   means_storage_.resize((cols * rows + 1) * 3); // float3 * cols * rows and float3 for cc == -1.
 
   blob_matrix_.resize(NUM_PARTS);
-  for(size_t i = 0; i < blob_matrix_.size(); ++i)
+  for(auto &matrix : blob_matrix_)
   {
-    blob_matrix_[i].clear();
-    blob_matrix_[i].reserve(5000);
+    matrix.clear();
+    matrix.reserve(5000);
   }
 }
 
@@ -209,8 +209,8 @@ pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth
     float3* means = (float3*) &means_storage_[3];
     int *rsizes = &region_sizes_[1];
 
-    for(size_t i = 0; i < blob_matrix_.size(); ++i)
-      blob_matrix_[i].clear();
+    for(auto &matrix : blob_matrix_)
+      matrix.clear();
 
     for(size_t k = 0; k < dst_labels_.size(); ++k)
     {
@@ -249,11 +249,11 @@ pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth
     }
 
     int id = 0;
-    for(size_t label = 0; label < blob_matrix_.size(); ++label)
-      for(size_t b = 0; b < blob_matrix_[label].size(); ++b)
+    for(auto &matrix : blob_matrix_)
+      for(size_t b = 0; b < matrix.size(); ++b)
       {
-        blob_matrix_[label][b].id = id++;
-        blob_matrix_[label][b].lid = static_cast<int> (b);
+        matrix[b].id = id++;
+        matrix[b].lid = static_cast<int> (b);
       }
 
     buildRelations ( blob_matrix_ );
@@ -303,8 +303,8 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth (const pcl::device::Depth&
     float3* means = (float3*) &means_storage_[3];
     int *rsizes = &region_sizes_[1];
 
-    for(size_t i = 0; i < blob_matrix_.size(); ++i)
-      blob_matrix_[i].clear();
+    for(auto &matrix : blob_matrix_)
+      matrix.clear();
 
     for(size_t k = 0; k < dst_labels_.size(); ++k)
     {
@@ -343,11 +343,11 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth (const pcl::device::Depth&
     }
 
     int id = 0;
-    for(size_t label = 0; label < blob_matrix_.size(); ++label)
-      for(size_t b = 0; b < blob_matrix_[label].size(); ++b)
+    for(auto &matrix : blob_matrix_)
+      for(size_t b = 0; b < matrix.size(); ++b)
       {
-        blob_matrix_[label][b].id = id++;
-        blob_matrix_[label][b].lid = static_cast<int> (b);
+        matrix[b].id = id++;
+        matrix[b].lid = static_cast<int> (b);
       }
   }
 }

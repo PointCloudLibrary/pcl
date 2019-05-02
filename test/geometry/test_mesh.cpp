@@ -92,9 +92,9 @@ TEST (TestAddDeleteFace, NonManifold1)
   vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear (); // 0
   vi.push_back (VI (2)); vi.push_back (VI (1)); vi.push_back (VI (4)); faces.push_back (vi); vi.clear (); // 1
   vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (5)); faces.push_back (vi); vi.clear (); // 2
-  for (unsigned int i=0; i<faces.size (); ++i)
+  for (const auto &face : faces)
   {
-    ASSERT_TRUE (mesh.addFace (faces [i]).isValid ());
+    ASSERT_TRUE (mesh.addFace (face).isValid ());
   }
   EXPECT_TRUE (hasFaces (mesh, faces));
 
@@ -154,9 +154,9 @@ TEST (TestAddDeleteFace, NonManifold2)
   // 3 - 4 //
   vi.push_back (VI (0)); vi.push_back (VI (1)); vi.push_back (VI (2)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (4)); faces.push_back (vi); vi.clear ();
-  for (unsigned int i=0; i<faces.size (); ++i)
+  for (const auto &face : faces)
   {
-    ASSERT_TRUE (mesh.addFace (faces [i]).isValid ());
+    ASSERT_TRUE (mesh.addFace (face).isValid ());
   }
   EXPECT_TRUE (hasFaces (mesh, faces));
 
@@ -291,7 +291,7 @@ TEST (TestAddDeleteFace, NonManifold2)
   vi.push_back (VI (0)); vi.push_back (VI (8)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (3)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (0)); vi.push_back (VI (6)); vi.push_back (VI (7)); faces.push_back (vi); vi.clear ();
-  for (unsigned int i=4; i<faces.size (); ++i)
+  for (size_t i = 4; i < faces.size (); ++i)
   {
     EXPECT_TRUE (mesh.addFace (faces [i]).isValid ());
   }
@@ -307,10 +307,10 @@ TEST (TestAddDeleteFace, NonManifold2)
 
   // Copy vertex indices to data
   std::vector <std::vector <int> > expected (faces.size ());
-  for (unsigned int i=0; i<faces.size (); ++i)
+  for (size_t i = 0; i < faces.size (); ++i)
   {
     std::vector <int> tmp (faces [i].size ());
-    for (unsigned int j=0; j<faces [i].size (); ++j)
+    for (size_t j = 0; j < faces [i].size (); ++j)
     {
       tmp [j] = faces [i][j].get ();
     }
@@ -318,7 +318,7 @@ TEST (TestAddDeleteFace, NonManifold2)
   }
 
   // Delete all faces
-  while (expected.size ())
+  while (!expected.empty ())
   {
     mesh.deleteFace (FaceIndex (0));
     mesh.cleanUp ();
@@ -353,10 +353,10 @@ TEST (TestAddDeleteFace, Manifold1)
   vi.push_back (VI (0)); vi.push_back (VI (5)); vi.push_back (VI (6)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (0)); vi.push_back (VI (6)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
 
-  for (unsigned int i=0; i<faces.size (); ++i)
+  for (size_t i = 0; i < faces.size (); ++i)
   {
     std::vector <int> tmp (faces [i].size ());
-    for (unsigned int j=0; j<faces [i].size (); ++j)
+    for (size_t j = 0; j < faces [i].size (); ++j)
     {
       tmp [j] = faces [i][j].get ();
     }
@@ -391,7 +391,7 @@ TEST (TestAddDeleteFace, Manifold1)
   vi.push_back (VI ( 8)); vi.push_back (VI (2)); vi.push_back (VI (9)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (10)); vi.push_back (VI (9)); vi.push_back (VI (2)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (10)); vi.push_back (VI (2)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
-  for (unsigned int i=0; i<faces.size (); ++i)
+  for (size_t i = 0; i < faces.size (); ++i)
   {
     ASSERT_TRUE (mesh.addFace (faces [i]).isValid ()) << "Face " << i;
   }
@@ -518,10 +518,10 @@ TEST (TestDelete, VertexAndEdge)
   vi.push_back (VI (0)); vi.push_back (VI (5)); vi.push_back (VI (6)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (0)); vi.push_back (VI (6)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
 
-  for (unsigned int i=0; i<faces.size (); ++i)
+  for (size_t i = 0; i < faces.size (); ++i)
   {
     std::vector <int> tmp (faces [i].size ());
-    for (unsigned int j=0; j<faces [i].size (); ++j)
+    for (size_t j = 0; j < faces [i].size (); ++j)
     {
       tmp [j] = faces [i][j].get ();
     }
@@ -584,9 +584,9 @@ TEST (TestMesh, IsBoundaryIsManifold)
   vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear (); // 0
   vi.push_back (VI (2)); vi.push_back (VI (1)); vi.push_back (VI (4)); faces.push_back (vi); vi.clear (); // 1
   vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (5)); faces.push_back (vi); vi.clear (); // 2
-  for (unsigned int i=0; i<faces.size (); ++i)
+  for (const auto &face : faces)
   {
-    ASSERT_TRUE (mesh.addFace (faces [i]).isValid ());
+    ASSERT_TRUE (mesh.addFace (face).isValid ());
   }
   EXPECT_TRUE (hasFaces (mesh, faces));
 
@@ -609,7 +609,7 @@ TEST (TestMesh, IsBoundaryIsManifold)
   EXPECT_TRUE  (mesh.isManifold (VI (5)));
   ASSERT_FALSE (mesh.isManifold ());
 
-  for (unsigned int i=0; i<mesh.sizeEdges (); ++i)
+  for (size_t i = 0; i < mesh.sizeEdges (); ++i)
   {
     ASSERT_TRUE (mesh.isBoundary (EdgeIndex (i)));
   }

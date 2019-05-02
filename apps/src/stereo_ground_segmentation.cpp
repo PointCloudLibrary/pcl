@@ -72,8 +72,8 @@ typedef Cloud::ConstPtr CloudConstPtr;
 class HRCSSegmentation
 {
   private:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
-    boost::shared_ptr<pcl::visualization::ImageViewer> image_viewer;
+    pcl::visualization::PCLVisualizer::Ptr viewer;
+    pcl::visualization::ImageViewer::Ptr image_viewer;
     pcl::PointCloud<PointT>::ConstPtr prev_cloud;
     pcl::PointCloud<pcl::Normal>::ConstPtr prev_normal_cloud;
     pcl::PointCloud<pcl::PointXYZ>::ConstPtr prev_ground_cloud;
@@ -100,7 +100,7 @@ class HRCSSegmentation
     int smooth_strong;
 
   public:
-    HRCSSegmentation (std::vector<std::string> left_images, std::vector<std::string> right_images) :
+    HRCSSegmentation (const std::vector<std::string> &left_images, const std::vector<std::string> &right_images) :
       viewer (new pcl::visualization::PCLVisualizer ("3D Viewer")),
       image_viewer (new pcl::visualization::ImageViewer ("Image Viewer")),
       prev_cloud (new pcl::PointCloud<PointT>),
@@ -125,7 +125,7 @@ class HRCSSegmentation
       viewer->setBackgroundColor (0, 0, 0);
       viewer->addCoordinateSystem (1.0, "global");
       viewer->initCameraParameters ();
-      viewer->registerKeyboardCallback (&HRCSSegmentation::keyboardCallback, *this, 0);
+      viewer->registerKeyboardCallback (&HRCSSegmentation::keyboardCallback, *this, nullptr);
       
       // Set up the stereo matching
       stereo.setMaxDisparity(60);
@@ -266,25 +266,25 @@ class HRCSSegmentation
       std::vector<Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> > covariances;
       std::vector<pcl::PointIndices> inlier_indices;
 
-      for (size_t i = 0; i < region_indices.size (); i++)
+      for (const auto &region_index : region_indices)
       {
-        if (region_indices[i].indices.size () > 1000)
+        if (region_index.indices.size () > 1000)
         {
 
-          for (size_t j = 0; j < region_indices[i].indices.size (); j++)
+          for (size_t j = 0; j < region_index.indices.size (); j++)
           {  
-            pcl::PointXYZ ground_pt (cloud->points[region_indices[i].indices[j]].x,
-                                     cloud->points[region_indices[i].indices[j]].y,
-                                     cloud->points[region_indices[i].indices[j]].z);
+            pcl::PointXYZ ground_pt (cloud->points[region_index.indices[j]].x,
+                                     cloud->points[region_index.indices[j]].y,
+                                     cloud->points[region_index.indices[j]].z);
             ground_cloud->points.push_back (ground_pt);
-            ground_image->points[region_indices[i].indices[j]].g = static_cast<pcl::uint8_t> ((cloud->points[region_indices[i].indices[j]].g + 255) / 2);
-            label_image->points[region_indices[i].indices[j]].r = 0;
-            label_image->points[region_indices[i].indices[j]].g = 255;
-            label_image->points[region_indices[i].indices[j]].b = 0;
+            ground_image->points[region_index.indices[j]].g = static_cast<pcl::uint8_t> ((cloud->points[region_index.indices[j]].g + 255) / 2);
+            label_image->points[region_index.indices[j]].r = 0;
+            label_image->points[region_index.indices[j]].g = 255;
+            label_image->points[region_index.indices[j]].b = 0;
           } 
           
           // Compute plane info
-          pcl::computeMeanAndCovarianceMatrix (*cloud, region_indices[i].indices, clust_cov, clust_centroid);
+          pcl::computeMeanAndCovarianceMatrix (*cloud, region_index.indices, clust_cov, clust_centroid);
           Eigen::Vector4f plane_params;
           
           EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
@@ -310,7 +310,7 @@ class HRCSSegmentation
           model.values[2] = plane_params[2];
           model.values[3] = plane_params[3];
           model_coefficients.push_back (model);
-          inlier_indices.push_back (region_indices[i]);
+          inlier_indices.push_back (region_index);
           centroids.push_back (clust_centroid);
           covariances.push_back (clust_cov);
         }
@@ -354,24 +354,24 @@ class HRCSSegmentation
       
       //Note the regions that have been extended
       pcl::PointCloud<PointT> extended_ground_cloud;
-      for (size_t i = 0; i < region_indices.size (); i++)
+      for (const auto &region_index : region_indices)
       {
-        if (region_indices[i].indices.size () > 1000)
+        if (region_index.indices.size () > 1000)
         {
-          for (size_t j = 0; j < region_indices[i].indices.size (); j++)
+          for (size_t j = 0; j < region_index.indices.size (); j++)
           {
             // Check to see if it has already been labeled
-            if (ground_image->points[region_indices[i].indices[j]].g == ground_image->points[region_indices[i].indices[j]].b)
+            if (ground_image->points[region_index.indices[j]].g == ground_image->points[region_index.indices[j]].b)
             {
-              pcl::PointXYZ ground_pt (cloud->points[region_indices[i].indices[j]].x,
-                                       cloud->points[region_indices[i].indices[j]].y,
-                                       cloud->points[region_indices[i].indices[j]].z);
+              pcl::PointXYZ ground_pt (cloud->points[region_index.indices[j]].x,
+                                       cloud->points[region_index.indices[j]].y,
+                                       cloud->points[region_index.indices[j]].z);
               ground_cloud->points.push_back (ground_pt);
-              ground_image->points[region_indices[i].indices[j]].r = static_cast<pcl::uint8_t> ((cloud->points[region_indices[i].indices[j]].r + 255) / 2);
-              ground_image->points[region_indices[i].indices[j]].g = static_cast<pcl::uint8_t> ((cloud->points[region_indices[i].indices[j]].g + 255) / 2);
-              label_image->points[region_indices[i].indices[j]].r = 128;
-              label_image->points[region_indices[i].indices[j]].g = 128;
-              label_image->points[region_indices[i].indices[j]].b = 0;
+              ground_image->points[region_index.indices[j]].r = static_cast<pcl::uint8_t> ((cloud->points[region_index.indices[j]].r + 255) / 2);
+              ground_image->points[region_index.indices[j]].g = static_cast<pcl::uint8_t> ((cloud->points[region_index.indices[j]].g + 255) / 2);
+              label_image->points[region_index.indices[j]].r = 128;
+              label_image->points[region_index.indices[j]].g = 128;
+              label_image->points[region_index.indices[j]].b = 0;
             }
             
           }
@@ -382,7 +382,7 @@ class HRCSSegmentation
       Eigen::Vector4f ground_plane_params (1.0, 0.0, 0.0, 1.0);
       Eigen::Vector4f ground_centroid (0.0, 0.0, 0.0, 0.0);
       
-      if (ground_cloud->points.size () > 0)
+      if (!ground_cloud->points.empty ())
       {
         ground_centroid = centroids[0];
         ground_plane_params = Eigen::Vector4f (model_coefficients[0].values[0], model_coefficients[0].values[1], model_coefficients[0].values[2], model_coefficients[0].values[3]);
@@ -391,7 +391,7 @@ class HRCSSegmentation
       if (detect_obstacles)
       {
         pcl::PointCloud<PointT>::CloudVectorType clusters;
-        if (ground_cloud->points.size () > 0)
+        if (!ground_cloud->points.empty ())
         {
           boost::shared_ptr<std::set<uint32_t> > plane_labels = boost::make_shared<std::set<uint32_t> > ();
           for (size_t i = 0; i < region_indices.size (); ++i)
@@ -410,17 +410,17 @@ class HRCSSegmentation
           euclidean_segmentation.setInputCloud (cloud);
           euclidean_segmentation.segment (euclidean_labels, euclidean_label_indices);
         
-          for (size_t i = 0; i < euclidean_label_indices.size (); i++)
+          for (const auto &euclidean_label_index : euclidean_label_indices)
           {
-            if ((euclidean_label_indices[i].indices.size () > 200))
+            if ((euclidean_label_index.indices.size () > 200))
             {
               pcl::PointCloud<PointT> cluster;
-              pcl::copyPointCloud (*cloud, euclidean_label_indices[i].indices, cluster);
+              pcl::copyPointCloud (*cloud, euclidean_label_index.indices, cluster);
               clusters.push_back (cluster);
 
               Eigen::Vector4f cluster_centroid;
               Eigen::Matrix3f cluster_cov;
-              pcl::computeMeanAndCovarianceMatrix (*cloud, euclidean_label_indices[i].indices, cluster_cov, cluster_centroid);
+              pcl::computeMeanAndCovarianceMatrix (*cloud, euclidean_label_index.indices, cluster_cov, cluster_centroid);
 
               pcl::PointXYZ centroid_pt (cluster_centroid[0], cluster_centroid[1], cluster_centroid[2]);
               double ptp_dist =  pcl::pointToPlaneDistanceSigned (centroid_pt, ground_plane_params[0], ground_plane_params[1], ground_plane_params[2], ground_plane_params[3]);
@@ -428,12 +428,12 @@ class HRCSSegmentation
               if ((ptp_dist > 0.5) && (ptp_dist < 3.0))
               {
               
-                for (size_t j = 0; j < euclidean_label_indices[i].indices.size (); j++)
+                for (size_t j = 0; j < euclidean_label_index.indices.size (); j++)
                 {
-                  ground_image->points[euclidean_label_indices[i].indices[j]].r = 255;
-                  label_image->points[euclidean_label_indices[i].indices[j]].r = 255;
-                  label_image->points[euclidean_label_indices[i].indices[j]].g = 0;
-                  label_image->points[euclidean_label_indices[i].indices[j]].b = 0;
+                  ground_image->points[euclidean_label_index.indices[j]].r = 255;
+                  label_image->points[euclidean_label_index.indices[j]].r = 255;
+                  label_image->points[euclidean_label_index.indices[j]].g = 0;
+                  label_image->points[euclidean_label_index.indices[j]].b = 0;
                 }
 
               }

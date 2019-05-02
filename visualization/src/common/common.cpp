@@ -35,10 +35,14 @@
  *
  */
 
+#include <vtkCamera.h>
+#include <vtkRenderWindow.h>
+
 #include <pcl/point_types.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/console/print.h>
-#include <stdlib.h>
+#include <pcl/common/colors.h>
+#include <cstdlib>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -434,13 +438,79 @@ pcl::visualization::getColormapLUT (LookUpTableRepresentationProperties colormap
                                 red[2] * weight + white[2] * (1 - weight)  );
       }
       break;
-    } 
+    }
+
+    case PCL_VISUALIZER_LUT_VIRIDIS:
+    {
+      table->SetSaturationRange (1, 1);
+      table->SetAlphaRange (1, 1);
+      table->SetNumberOfTableValues (pcl::ViridisLUT::size ());
+      for (size_t i = 0; i < pcl::ViridisLUT::size (); i++)
+      {
+        pcl::RGB c = pcl::ViridisLUT::at (i);
+        table->SetTableValue (i, static_cast<double> (c.r) / 255.0,
+                                 static_cast<double> (c.g) / 255.0,
+                                 static_cast<double> (c.b) / 255.0);
+      }
+      break;
+    }
+
     default:
       PCL_WARN ("[pcl::visualization::getColormapLUT] Requested colormap type does not exist!\n");
       return false;
   }
   table->Build ();
   return true;
+}
+
+pcl::visualization::Camera::Camera ()
+{
+  // Set default camera clipping range to something meaningful
+  clip[0] = 0.01;
+  clip[1] = 1000.01;
+
+  // Look straight along the z-axis
+  focal[0] = 0.0;
+  focal[1] = 0.0;
+  focal[2] = 1.0;
+
+  // Position the camera at the origin
+  pos[0] = 0.0;
+  pos[1] = 0.0;
+  pos[2] = 0.0;
+
+  // Set the up-vector of the camera to be the y-axis
+  view[0] = 0.0;
+  view[1] = 1.0;
+  view[2] = 0.0;
+
+  // Set the camera field of view to about
+  fovy = 0.8575;
+
+  window_pos[0] = 0;
+  window_pos[1] = 0;
+  window_size[0] = 1;
+  window_size[1] = 1;
+}
+
+pcl::visualization::Camera::Camera (vtkCamera& camera)
+{
+  camera.GetFocalPoint (focal);
+  camera.GetPosition (pos);
+  camera.GetViewUp (view);
+  camera.GetClippingRange (clip);
+  fovy = camera.GetViewAngle () / 180.0 * M_PI;
+}
+
+pcl::visualization::Camera::Camera (vtkCamera& camera, vtkRenderWindow& window)
+: Camera (camera)
+{
+  int *win_pos = window.GetPosition ();
+  int *win_size = window.GetSize ();
+  window_pos[0] = win_pos[0];
+  window_pos[1] = win_pos[1];
+  window_size[0] = win_size[0];
+  window_size[1] = win_size[1];
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_PCL_VISUALIZER_H_
-#define PCL_PCL_VISUALIZER_H_
+
+#pragma once
 
 // PCL includes
 #include <pcl/correspondence.h>
@@ -172,7 +172,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection
-        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = NULL)
+        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = nullptr)
         {
           return (registerKeyboardCallback (boost::bind (callback, _1, cookie)));
         }
@@ -184,7 +184,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = NULL)
+        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = nullptr)
         {
           return (registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie)));
         }
@@ -202,7 +202,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection
-        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = NULL)
+        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = nullptr)
         {
           return (registerMouseCallback (boost::bind (callback, _1, cookie)));
         }
@@ -214,7 +214,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = NULL)
+        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = nullptr)
         {
           return (registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }
@@ -232,7 +232,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = NULL);
+        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = nullptr);
 
         /** \brief Register a callback function for point picking events
           * \param[in] callback  the member function that will be registered as a callback for a point picking event
@@ -241,7 +241,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = NULL)
+        registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = nullptr)
         {
           return (registerPointPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }
@@ -259,7 +259,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie = NULL);
+        registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie = nullptr);
 
         /** \brief Register a callback function for area picking events
           * \param[in] callback  the member function that will be registered as a callback for an area picking event
@@ -268,7 +268,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerAreaPickingCallback (void (T::*callback) (const pcl::visualization::AreaPickingEvent&, void*), T& instance, void* cookie = NULL)
+        registerAreaPickingCallback (void (T::*callback) (const pcl::visualization::AreaPickingEvent&, void*), T& instance, void* cookie = nullptr)
         {
           return (registerAreaPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }
@@ -1882,11 +1882,9 @@ namespace pcl
         void
         saveCameraParameters (const std::string &file);
 
-        /** \brief Get camera parameters and save them to a pcl::visualization::Camera.
-          * \param[out] camera the name of the pcl::visualization::Camera
-          */
+        /** \brief Get camera parameters of a given viewport (0 means default viewport). */
         void
-        getCameraParameters (Camera &camera);
+        getCameraParameters (Camera &camera, int viewport = 0) const;
 
         /** \brief Return a pointer to the underlying VTK Render Window used. */
         vtkSmartPointer<vtkRenderWindow>
@@ -1976,11 +1974,7 @@ namespace pcl
         }
       protected:
         /** \brief The render window interactor. */
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
-#else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-#endif
       private:
         /** \brief Internal function for renderer setup
          * \param[in] vtk renderer
@@ -2005,11 +1999,13 @@ namespace pcl
          */
         void setDefaultWindowSizeAndPos ();
 
-        /** \brief Internal function for setting up camera parameters
-         * \param[in] argc
-         * \param[in] argv
+        /** \brief Set up camera parameters.
+         *
+         * Parses command line arguments to find camera parameters (either explicit numbers or a path to a .cam file).
+         * If not found, will generate a unique .cam file path (based on the rest of command line arguments) and try
+         * to load that. If it is also not found, just set the defaults.
          */
-        void setupCamera (int &argc, char **argv);
+        void setupCamera (int argc, char **argv);
 
         struct PCL_EXPORTS ExitMainLoopTimerCallback : public vtkCommand
         {
@@ -2017,8 +2013,8 @@ namespace pcl
           {
             return (new ExitMainLoopTimerCallback);
           }
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void*) override;
 
           int right_timer_id;
           PCLVisualizer* pcl_visualizer;
@@ -2030,8 +2026,8 @@ namespace pcl
           {
             return (new ExitCallback);
           }
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void*) override;
 
           PCLVisualizer* pcl_visualizer;
         };
@@ -2045,8 +2041,8 @@ namespace pcl
           FPSCallback (const FPSCallback& src) : vtkCommand (), actor (src.actor), pcl_visualizer (src.pcl_visualizer), decimated (src.decimated), last_fps (src.last_fps) {}
           FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; last_fps = src.last_fps; return (*this); }
 
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void*) override;
 
           vtkTextActor *actor;
           PCLVisualizer* pcl_visualizer;
@@ -2057,13 +2053,12 @@ namespace pcl
         /** \brief The FPSCallback object for the current visualizer. */
         vtkSmartPointer<FPSCallback> update_fps_;
 
-#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         /** \brief Set to false if the interaction loop is running. */
         bool stopped_;
 
         /** \brief Global timer ID. Used in destructor only. */
         int timer_id_;
-#endif
+
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;
@@ -2311,7 +2306,7 @@ namespace pcl
                                 vtkTexture* vtk_tex) const;
 
         /** \brief Get camera file for camera parameter saving/restoring from command line.
-          * Camera filename is calculated using sha1 value of all pathes of input .pcd files
+          * Camera filename is calculated using sha1 value of all paths of input .pcd files
           * \return empty string if failed.
           */
         std::string
@@ -2350,6 +2345,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/pcl_visualizer.hpp>
-
-#endif
-

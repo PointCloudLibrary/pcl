@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_NORMAL_3D_H_
-#define PCL_CUDA_NORMAL_3D_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 
@@ -69,7 +68,3 @@ namespace pcl
       boost::shared_ptr<typename Storage<float4>::type> computeWeirdPointNormals (InputIteratorT begin, InputIteratorT end, float focallength, const boost::shared_ptr <const PointCloudAOS <Storage> > &input, float radius, int desired_number_neighbors);
   } // namespace
 } // namespace
-
-#endif  
-
-

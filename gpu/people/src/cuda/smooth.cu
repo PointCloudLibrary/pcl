@@ -142,7 +142,7 @@ void pcl::device::smoothLabelImage(const Labels& src, const Depth& depth, Labels
   if (num_parts <= 32)
     pcl::device::smoothKernel<32><<<grid, block>>>(src, depth, dst, patch_size, depthThres, num_parts);
   else
-    throw std::exception(); //should instanciate another smoothKernel<N>
+    throw std::exception(); //should instantiate another smoothKernel<N>
 
   cudaSafeCall( cudaGetLastError() );
   cudaSafeCall( cudaDeviceSynchronize() );

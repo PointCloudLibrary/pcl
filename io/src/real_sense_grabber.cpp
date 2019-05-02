@@ -35,8 +35,6 @@
  *
  */
 
-#include <boost/lexical_cast.hpp>
-
 #include <pxcimage.h>
 #include <pxccapture.h>
 #include <pxcprojection.h>
@@ -121,7 +119,7 @@ pcl::RealSenseGrabber::RealSenseGrabber (const std::string& device_id, const Mod
 , mode_requested_ (mode)
 , strict_ (strict)
 {
-  if (device_id == "")
+  if (device_id.empty())
     device_ = RealSenseDeviceManager::getInstance ()->captureDevice ();
   else if (device_id[0] == '#')
     device_ = RealSenseDeviceManager::getInstance ()->captureDevice (boost::lexical_cast<int> (device_id.substr (1)) - 1);
@@ -323,7 +321,7 @@ pcl::RealSenseGrabber::run ()
       frequency_.event ();
       fps_mutex_.unlock ();
 
-      /* We preform the following steps to convert received data into point clouds:
+      /* We perform the following steps to convert received data into point clouds:
        *
        *   1. Push depth image to the depth buffer
        *   2. Pull filtered depth image from the depth buffer

@@ -64,7 +64,7 @@ pcl::modeler::RenderWindow::RenderWindow(RenderWindowItem* render_window_item, Q
 pcl::modeler::RenderWindow::~RenderWindow()
 {
   DockWidget* dock_widget = dynamic_cast<DockWidget*>(parent());
-  if (dock_widget != NULL)
+  if (dock_widget != nullptr)
   {
     MainWindow::getInstance().removeDockWidget(dock_widget);
     dock_widget->deleteLater();
@@ -115,7 +115,7 @@ void
 pcl::modeler::RenderWindow::setActive(bool flag)
 {
   DockWidget* dock_widget = dynamic_cast<DockWidget*>(parent());
-  if (dock_widget != NULL)
+  if (dock_widget != nullptr)
     dock_widget->setFocusBasedStyle(flag);
 
   return;
@@ -126,7 +126,7 @@ void
 pcl::modeler::RenderWindow::setTitle(const QString& title)
 {
   DockWidget* dock_widget = dynamic_cast<DockWidget*>(parent());
-  if (dock_widget != NULL)
+  if (dock_widget != nullptr)
     dock_widget->setWindowTitle(title);
 
   return;

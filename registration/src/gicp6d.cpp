@@ -58,17 +58,17 @@ namespace pcl
     if (R > 0.04045)
       R = pow ( (R + 0.055) / 1.055, 2.4);
     else
-      R = R / 12.92;
+      R /= 12.92;
 
     if (G > 0.04045)
       G = pow ( (G + 0.055) / 1.055, 2.4);
     else
-      G = G / 12.92;
+      G /= 12.92;
 
     if (B > 0.04045)
       B = pow ( (B + 0.055) / 1.055, 2.4);
     else
-      B = B / 12.92;
+      B /= 12.92;
 
     // postponed:
     //    R *= 100.0;
@@ -311,7 +311,7 @@ namespace pcl
         PCL_DEBUG("[pcl::%s::computeTransformation] Convergence failed\n",
             getClassName ().c_str ());
     }
-    //for some reason the static equivalent methode raises an error
+    //for some reason the static equivalent method raises an error
     // final_transformation_.block<3,3> (0,0) = (transformation_.block<3,3> (0,0)) * (guess.block<3,3> (0,0));
     // final_transformation_.block <3, 1> (0, 3) = transformation_.block <3, 1> (0, 3) + guess.rightCols<1>.block <3, 1> (0, 3);
     final_transformation_.topLeftCorner (3, 3) =

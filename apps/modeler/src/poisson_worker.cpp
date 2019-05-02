@@ -45,13 +45,13 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::PoissonReconstructionWorker::PoissonReconstructionWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :
   AbstractWorker(cloud_mesh_items, parent),
-  depth_(NULL), solver_divide_(NULL), iso_divide_(NULL), degree_(NULL), scale_(NULL), samples_per_node_(NULL)
+  depth_(nullptr), solver_divide_(nullptr), iso_divide_(nullptr), degree_(nullptr), scale_(nullptr), samples_per_node_(nullptr)
 {
 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::PoissonReconstructionWorker::~PoissonReconstructionWorker(void)
+pcl::modeler::PoissonReconstructionWorker::~PoissonReconstructionWorker()
 {
   delete depth_;
   delete solver_divide_;

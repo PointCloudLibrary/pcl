@@ -88,7 +88,7 @@ namespace pcl
       }
       
       // Create root_node_node
-      root_node_ = new OutofcoreOctreeBaseNode<ContainerT, PointT> (root_name, NULL, load_all);
+      root_node_ = new OutofcoreOctreeBaseNode<ContainerT, PointT> (root_name, nullptr, load_all);
       // Set root_node_nodes tree to the newly created tree
       root_node_->m_tree_ = this;
 
@@ -361,7 +361,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> bool
     OutofcoreOctreeBase<ContainerT, PointT>::getBoundingBox (Eigen::Vector3d &min, Eigen::Vector3d &max) const
     {
-      if (root_node_!= NULL)
+      if (root_node_!= nullptr)
       {
         root_node_->getBoundingBox (min, max);
         return true;
@@ -524,7 +524,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> bool
     OutofcoreOctreeBase<ContainerT, PointT>::getBinDimension (double& x, double& y) const
     {
-      if (root_node_== NULL)
+      if (root_node_== nullptr)
       {
         x = 0;
         y = 0;
@@ -559,7 +559,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::buildLOD ()
     {
-      if (root_node_== NULL)
+      if (root_node_== nullptr)
       {
         PCL_ERROR ("Root node is null; aborting buildLOD.\n");
         return;
@@ -569,7 +569,7 @@ namespace pcl
 
       const int number_of_nodes = 1;
 
-      std::vector<BranchNode*> current_branch (number_of_nodes, static_cast<BranchNode*>(0));
+      std::vector<BranchNode*> current_branch (number_of_nodes, static_cast<BranchNode*>(nullptr));
       current_branch[0] = root_node_;
       assert (current_branch.back () != 0);
       this->buildLODRecursive (current_branch);
@@ -671,7 +671,7 @@ namespace pcl
         {
           next_branch.push_back (current_branch.back ()->getChildPtr (i));
           //skip that child if it doesn't exist
-          if (next_branch.back () != 0)
+          if (next_branch.back () != nullptr)
             buildLODRecursive (next_branch);
           
           next_branch.pop_back ();
@@ -700,10 +700,10 @@ namespace pcl
       if (boost::filesystem::extension (path_name) != OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension)
       {
         PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBase] Wrong root node file extension: %s. The tree must have a root node ending in %s\n", boost::filesystem::extension (path_name).c_str (), OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension.c_str () );
-        return (0);
+        return (false);
       }
 
-      return (1);
+      return (true);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -734,7 +734,7 @@ namespace pcl
       if (side_length < leaf_resolution)
           return (0);
           
-      boost::uint64_t res = static_cast<boost::uint64_t> (std::ceil (log2f (static_cast<float> (side_length / leaf_resolution))));
+      boost::uint64_t res = static_cast<boost::uint64_t> (std::ceil (std::log2 (side_length / leaf_resolution)));
       
       PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBase::calculateDepth] Setting depth to %d\n",res);
       return (res);

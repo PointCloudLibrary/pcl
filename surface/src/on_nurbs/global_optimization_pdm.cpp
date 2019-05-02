@@ -115,8 +115,8 @@ GlobalOptimization::assemble (Parameter params)
 
   m_solver.assign (m_nrows, m_ncols, 3);
 
-  for (unsigned i = 0; i < m_data.size (); i++)
-    m_data[i]->common_boundary_param.clear ();
+  for (const auto &i : m_data)
+    i->common_boundary_param.clear ();
 
   // assemble matrix
   unsigned row (0);
@@ -159,10 +159,8 @@ GlobalOptimization::updateSurf (double damp)
 {
   int ncps (0);
 
-  for (unsigned i = 0; i < m_nurbs.size (); i++)
+  for (const auto &nurbs : m_nurbs)
   {
-    ON_NurbsSurface* nurbs = m_nurbs[i];
-
     int ncp = nurbs->CVCount ();
 
     for (int A = 0; A < ncp; A++)
@@ -199,12 +197,12 @@ GlobalOptimization::refine (unsigned id, int dim)
   std::vector<double> xi;
   std::vector<double> elements = FittingSurface::getElementVector (*m_nurbs[id], dim);
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (unsigned i = 0; i < xi.size (); i++)
+  for (const double &i : xi)
   {
-    m_nurbs[id]->InsertKnot (dim, xi[i], 1);
+    m_nurbs[id]->InsertKnot (dim, i, 1);
   }
 }
 
@@ -234,7 +232,7 @@ GlobalOptimization::assembleCommonBoundaries (unsigned id1, double weight, unsig
   if (nurbs1->Order (0) != nurbs1->Order (1))
     printf ("[GlobalOptimization::assembleCommonBoundaries] Warning, order in u and v direction differ (nurbs1).\n");
 
-  for (unsigned i = 0; i < data1->common_boundary_point.size (); i++)
+  for (size_t i = 0; i < data1->common_boundary_point.size (); i++)
   {
     Eigen::Vector3d p1, tu1, tv1, p2, tu2, tv2, t1, t2;
     Eigen::Vector2d params1, params2;
@@ -325,12 +323,12 @@ GlobalOptimization::assembleClosingBoundaries (unsigned id, unsigned samples, do
   ClosingBoundary::sampleFromBoundary (nurbs1, boundary1, params1, samples);
 
   // for each other nurbs
-  for (unsigned n2 = (id + 1); n2 < m_nurbs.size (); n2++)
+  for (size_t n2 = (id + 1); n2 < m_nurbs.size (); n2++)
   {
     ON_NurbsSurface *nurbs2 = m_nurbs[n2];
 
     // find closest point to boundary
-    for (unsigned i = 0; i < boundary1.size (); i++)
+    for (size_t i = 0; i < boundary1.size (); i++)
     {
       double error;
       Eigen::Vector3d p, tu, tv;
@@ -359,7 +357,7 @@ GlobalOptimization::assembleInteriorPoints (unsigned id, int ncps, double weight
 
   ON_NurbsSurface *nurbs = m_nurbs[id];
   NurbsDataSurface *data = m_data[id];
-  unsigned nInt = static_cast<unsigned> (m_data[id]->interior.size ());
+  size_t interiorSize = m_data[id]->interior.size ();
 
   // interior points should lie on surface
   data->interior_line_start.clear ();
@@ -368,7 +366,7 @@ GlobalOptimization::assembleInteriorPoints (unsigned id, int ncps, double weight
   data->interior_normals.clear ();
   //  data->interior_param.clear();
 
-  for (unsigned p = 0; p < nInt; p++)
+  for (size_t p = 0; p < interiorSize; p++)
   {
     Vector3d pcp;
     pcp (0) = data->interior[p] (0);

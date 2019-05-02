@@ -71,9 +71,8 @@ pcl::registration::CorrespondenceRejectorFeatures::hasValidFeatures ()
 {
   if (features_map_.empty ())
     return (false);
-  FeaturesMap::const_iterator feature_itr;
-  for (feature_itr = features_map_.begin (); feature_itr != features_map_.end (); ++feature_itr)
-    if (!feature_itr->second->isValid ())
+  for (const auto &feature : features_map_)
+    if (!feature.second->isValid ())
       return (false);
   return (true);
 }

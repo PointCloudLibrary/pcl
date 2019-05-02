@@ -47,58 +47,51 @@ Now let's study out what is the purpose of this code. First few lines will be om
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 13-15
+   :lines: 16-18
 
 These lines are simply loading the cloud from the .pcd file.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 17-19
+   :lines: 20-22
 
 Here is the line where the instantiation of the ``pcl::MomentOfInertiaEstimation`` class takes place.
 Immediately after that we set the input cloud and start the computational process, that easy.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 21-31
+   :lines: 24-34
 
 This is were we declare all necessary variables needed to store descriptors and bounding boxes.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 33-39
+   :lines: 36-42
 
 These lines show how to access computed descriptors and other features.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 41-46
+   :lines: 44-50
 
-These lines simply create the instance of ``PCLVisualizer`` class for result visualization.
-Here we also add the cloud and the AABB for visualization.
+These lines simply create the instance of ``PCLVisualizer`` class for result
+visualization. Here we also add the cloud and the AABB for visualization. We
+set rendering properties so that the cube is displayed using a wireframe,
+because the default is to use a solid cube.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 48-50
+   :lines: 52-55
 
 Visualization of the OBB is little more complex. So here we create a quaternion from the rotational matrix, set OBBs position
 and pass it to the visualizer.
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
    :language: cpp
-   :lines: 52-58
+   :lines: 57-63
 
-This lines are responsible for eigen vectors visualization.
-
-.. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
-   :language: cpp
-   :lines: 60-98
-
-This huge amount of code shows how to work with the oriented bounding box. Note that you need to rotate each of the vertices of the OBB.
-This code does the same thing as ``PCLVisualizer::addCube ()`` method. Its only purpose is to show how to work with OBB
-if you don't have such usable method as ``PCLVisualizer::addCube ()``.
-
-Few lines that left simply launch the visualization process.
+These lines are responsible for eigen vectors visualization. The few lines that
+are left simply launch the visualization process.
 
 Compiling and running the program
 ---------------------------------

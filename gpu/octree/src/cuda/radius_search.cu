@@ -155,7 +155,7 @@ namespace pcl
                 else                
                     query_index = -1;
 
-                while(__any(active))
+                while(__any_sync(0xFFFFFFFF, active))
                 {                
                     int leaf = -1;                
 
@@ -217,7 +217,7 @@ namespace pcl
 
             __device__ __forceinline__ void processLeaf(int leaf)
             {   
-                int mask = __ballot(leaf != -1);            
+                int mask = __ballot_sync(0xFFFFFFFF, leaf != -1);            
 
                 while(mask)
                 {                
@@ -255,7 +255,7 @@ namespace pcl
                     int *out = batch.output + active_query_index * batch.max_results + active_found_count;                    
                     int length_left = batch.max_results - active_found_count;
 
-                    int test = __any(active_lane == laneId && (leaf & KernelPolicy::CHECK_FLAG));
+                    int test = __any_sync(0xFFFFFFFF, active_lane == laneId && (leaf & KernelPolicy::CHECK_FLAG));
 
                     if (test)
                     {                                        
@@ -329,7 +329,7 @@ namespace pcl
                     total_new += new_nodes;
                     out += new_nodes;                
 
-                    if (__all(idx >= length) || __any(out_of_bounds) || total_new == length_left)
+                    if (__all_sync(0xFFFFFFFF, idx >= length) || __any_sync(0xFFFFFFFF, out_of_bounds) || total_new == length_left)
                         break;
                 }
                 return min(total_new, length_left);
@@ -343,7 +343,7 @@ namespace pcl
 
             bool active = query_index < batch.queries.size;
 
-            if (__all(active == false)) 
+            if (__all_sync(0xFFFFFFFF, active == false)) 
                 return;
 
             Warp_radiusSearch<BatchType> search(batch, query_index);

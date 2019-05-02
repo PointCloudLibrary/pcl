@@ -5,17 +5,19 @@
  *      Author: aitor
  */
 
-#ifndef FACE_DETECTOR_DATA_PROVIDER_H_
-#define FACE_DETECTOR_DATA_PROVIDER_H_
+#pragma once
 
-#include "pcl/common/common.h"
-#include "pcl/recognition/face_detection/face_common.h"
-#include <pcl/ml/dt/decision_tree_data_provider.h>
-#include <boost/filesystem/operations.hpp>
 #include <iostream>
 #include <fstream>
 #include <string>
+
+#include <boost/filesystem/operations.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/algorithm/string.hpp>
+
+#include <pcl/common/common.h>
+#include <pcl/recognition/face_detection/face_common.h>
+#include <pcl/ml/dt/decision_tree_data_provider.h>
 
 namespace bf = boost::filesystem;
 
@@ -42,35 +44,20 @@ namespace pcl
             //check if its a directory, then get models in it
             if (bf::is_directory (*itr))
             {
-#if BOOST_FILESYSTEM_VERSION == 3
               std::string so_far = rel_path_so_far + (itr->path ().filename ()).string () + "/";
-#else
-              std::string so_far = rel_path_so_far + (itr->path ()).filename () + "/";
-#endif
-
               bf::path curr_path = itr->path ();
               getFilesInDirectory (curr_path, so_far, relative_paths, ext);
             } else
             {
               //check that it is a ply file and then add, otherwise ignore..
               std::vector < std::string > strs;
-#if BOOST_FILESYSTEM_VERSION == 3
               std::string file = (itr->path ().filename ()).string ();
-#else
-              std::string file = (itr->path ()).filename ();
-#endif
-
               boost::split (strs, file, boost::is_any_of ("."));
               std::string extension = strs[strs.size () - 1];
 
-              if (extension.compare (ext) == 0)
+              if (extension == ext)
               {
-#if BOOST_FILESYSTEM_VERSION == 3
                 std::string path = rel_path_so_far + (itr->path ().filename ()).string ();
-#else
-                std::string path = rel_path_so_far + (itr->path ()).filename ();
-#endif
-
                 relative_paths.push_back (path);
               }
             }
@@ -103,10 +90,7 @@ namespace pcl
 
         bool check_inside(int col, int row, int min_col, int max_col, int min_row, int max_row)
         {
-          if (col >= min_col && col <= max_col && row >= min_row && row <= max_row)
-            return true;
-
-          return false;
+          return col >= min_col && col <= max_col && row >= min_row && row <= max_row;
         }
 
         template<class PointInT>
@@ -127,6 +111,8 @@ namespace pcl
         }
 
       public:
+
+        typedef boost::shared_ptr<FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>> Ptr;
 
         FaceDetectorDataProvider()
         {
@@ -172,9 +158,7 @@ namespace pcl
         //shuffle file and get the first num_images_ as requested by a tree
         //extract positive and negative samples
         //create training examples and labels
-        void getDatasetAndLabels(DataSet & data_set, std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples);
+        void getDatasetAndLabels(DataSet & data_set, std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples) override;
     };
   }
 }
-
-#endif /* FACE_DETECTOR_DATA_PROVIDER_H_ */

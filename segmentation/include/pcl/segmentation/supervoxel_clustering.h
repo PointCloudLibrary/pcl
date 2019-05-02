@@ -38,8 +38,9 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_SUPERVOXEL_CLUSTERING_H_
-#define PCL_SEGMENTATION_SUPERVOXEL_CLUSTERING_H_
+#pragma once
+
+#include <boost/version.hpp>
 
 #include <pcl/features/normal_3d.h>
 #include <pcl/pcl_base.h>
@@ -137,7 +138,7 @@ namespace pcl
             rgb_ (0.0f, 0.0f, 0.0f),
             normal_ (0.0f, 0.0f, 0.0f, 0.0f),
             curvature_ (0.0f),
-            owner_ (0)
+            owner_ (nullptr)
             {}
 
           /** \brief Gets the data of in the form of a point
@@ -167,11 +168,11 @@ namespace pcl
       typedef pcl::octree::OctreePointCloudAdjacencyContainer<PointT, VoxelData> LeafContainerT;
       typedef std::vector <LeafContainerT*> LeafVectorT;
 
-      typedef typename pcl::PointCloud<PointT> PointCloudT;
-      typedef typename pcl::PointCloud<Normal> NormalCloudT;
-      typedef typename pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT> OctreeAdjacencyT;
-      typedef typename pcl::octree::OctreePointCloudSearch <PointT> OctreeSearchT;
-      typedef typename pcl::search::KdTree<PointT> KdTreeT;
+      typedef pcl::PointCloud<PointT> PointCloudT;
+      typedef pcl::PointCloud<Normal> NormalCloudT;
+      typedef pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT> OctreeAdjacencyT;
+      typedef pcl::octree::OctreePointCloudSearch <PointT> OctreeSearchT;
+      typedef pcl::search::KdTree<PointT> KdTreeT;
       typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
 
       using PCLBase <PointT>::initCompute;
@@ -190,13 +191,13 @@ namespace pcl
        */
       SupervoxelClustering (float voxel_resolution, float seed_resolution);
 
-      PCL_DEPRECATED ("SupervoxelClustering constructor with flag for using the single camera transform is deprecated. Default behavior is now to use the transform for organized clouds, and not use it for unorganized. To force use/disuse of the transform, use the setUseSingleCameraTransform(bool) function.")
-      SupervoxelClustering (float voxel_resolution, float seed_resolution, bool);
+      [[deprecated("constructor with flag for using the single camera transform is deprecated. Default behavior is now to use the transform for organized clouds, and not use it for unorganized. Use setUseSingleCameraTransform() to override the defaults.")]]
+      SupervoxelClustering (float voxel_resolution, float seed_resolution, bool) : SupervoxelClustering (voxel_resolution, seed_resolution) { }
 
       /** \brief This destructor destroys the cloud, normals and search method used for
         * finding neighbors. In other words it frees memory.
         */
-      virtual
+      
       ~SupervoxelClustering ();
 
       /** \brief Set the resolution of the octree voxels */
@@ -250,8 +251,8 @@ namespace pcl
       /** \brief This method sets the cloud to be supervoxelized
        * \param[in] cloud The cloud to be supervoxelize
        */
-      virtual void
-      setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud);
+      void
+      setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud) override;
 
       /** \brief This method sets the normals to be used for supervoxels (should be same size as input cloud)
       * \param[in] normal_cloud The input normals                         
@@ -272,13 +273,13 @@ namespace pcl
         * Points that belong to the same supervoxel have the same color.
         * But this function doesn't guarantee that different segments will have different
         * color(it's random). Points that are unlabeled will be black
-        * \note This will expand the label_colors_ vector so that it can accomodate all labels
+        * \note This will expand the label_colors_ vector so that it can accommodate all labels
         */
-      PCL_DEPRECATED ("SupervoxelClustering::getColoredCloud is deprecated. Use the getLabeledCloud function instead. examples/segmentation/example_supervoxels.cpp shows how to use this to display and save with colorized labels.")
+      [[deprecated("use getLabeledCloud() instead. An example of how to display and save with colorized labels can be found in examples/segmentation/example_supervoxels.cpp")]]
       typename pcl::PointCloud<PointXYZRGBA>::Ptr
       getColoredCloud () const
       { 
-        return boost::shared_ptr<pcl::PointCloud<PointXYZRGBA> > (new pcl::PointCloud<PointXYZRGBA>);
+        return pcl::PointCloud<PointXYZRGBA>::Ptr (new pcl::PointCloud<PointXYZRGBA>);
       }
 
       /** \brief Returns a deep copy of the voxel centroid cloud */
@@ -297,13 +298,13 @@ namespace pcl
        * Points that belong to the same supervoxel have the same color.
        * But this function doesn't guarantee that different segments will have different
        * color(it's random). Points that are unlabeled will be black
-       * \note This will expand the label_colors_ vector so that it can accomodate all labels
+       * \note This will expand the label_colors_ vector so that it can accommodate all labels
        */
-      PCL_DEPRECATED ("SupervoxelClustering::getColoredVoxelCloud is deprecated. Use the getLabeledVoxelCloud function instead. examples/segmentation/example_supervoxels.cpp shows how to use this to display and save with colorized labels.")
+      [[deprecated("use getLabeledVoxelCloud() instead. An example of how to display and save with colorized labels can be found in examples/segmentation/example_supervoxels.cpp")]]
       pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
       getColoredVoxelCloud () const
       {
-        return boost::shared_ptr<pcl::PointCloud<PointXYZRGBA> > (new pcl::PointCloud<PointXYZRGBA>);
+        return pcl::PointCloud<PointXYZRGBA>::Ptr (new pcl::PointCloud<PointXYZRGBA>);
       }
 
       /** \brief Returns labeled voxelized cloud
@@ -525,7 +526,11 @@ namespace pcl
       };
 
       //Make boost::ptr_list can access the private class SupervoxelHelper
+#if BOOST_VERSION >= 107000
+      friend void boost::checked_delete<> (const typename pcl::SupervoxelClustering<PointT>::SupervoxelHelper *) BOOST_NOEXCEPT;
+#else
       friend void boost::checked_delete<> (const typename pcl::SupervoxelClustering<PointT>::SupervoxelHelper *);
+#endif
 
       typedef boost::ptr_list<SupervoxelHelper> HelperListT;
       HelperListT supervoxel_helpers_;
@@ -541,6 +546,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/supervoxel_clustering.hpp>
-#endif
-
 #endif

@@ -40,8 +40,7 @@
 
 // NOTE: This file has been created with 'pcl_src/geometry/include/pcl/geometry/mesh_circulators.py'
 
-#ifndef PCL_GEOMETRY_MESH_CIRCULATORS_H
-#define PCL_GEOMETRY_MESH_CIRCULATORS_H
+#pragma once
 
 #include <pcl/geometry/boost.h>
 #include <pcl/geometry/mesh_indices.h>
@@ -78,7 +77,7 @@ namespace pcl
 
         /** \brief Constructor resulting in an invalid circulator. */
         VertexAroundVertexCirculator ()
-          : mesh_                   (NULL),
+          : mesh_                   (nullptr),
             idx_outgoing_half_edge_ ()
         {
         }
@@ -186,7 +185,7 @@ namespace pcl
 
         /** \brief Constructor resulting in an invalid circulator. */
         OutgoingHalfEdgeAroundVertexCirculator ()
-          : mesh_                   (NULL),
+          : mesh_                   (nullptr),
             idx_outgoing_half_edge_ ()
         {
         }
@@ -294,7 +293,7 @@ namespace pcl
 
         /** \brief Constructor resulting in an invalid circulator. */
         IncomingHalfEdgeAroundVertexCirculator ()
-          : mesh_                   (NULL),
+          : mesh_                   (nullptr),
             idx_incoming_half_edge_ ()
         {
         }
@@ -403,7 +402,7 @@ namespace pcl
 
         /** \brief Constructor resulting in an invalid circulator. */
         FaceAroundVertexCirculator ()
-          : mesh_                   (NULL),
+          : mesh_                   (nullptr),
             idx_outgoing_half_edge_ ()
         {
         }
@@ -512,7 +511,7 @@ namespace pcl
 
         /** \brief Constructor resulting in an invalid circulator. */
         VertexAroundFaceCirculator ()
-          : mesh_                (NULL),
+          : mesh_                (nullptr),
             idx_inner_half_edge_ ()
         {
         }
@@ -620,7 +619,7 @@ namespace pcl
 
         /** \brief Constructor resulting in an invalid circulator. */
         InnerHalfEdgeAroundFaceCirculator ()
-          : mesh_                (NULL),
+          : mesh_                (nullptr),
             idx_inner_half_edge_ ()
         {
         }
@@ -728,7 +727,7 @@ namespace pcl
 
         /** \brief Constructor resulting in an invalid circulator. */
         OuterHalfEdgeAroundFaceCirculator ()
-          : mesh_                (NULL),
+          : mesh_                (nullptr),
             idx_inner_half_edge_ ()
         {
         }
@@ -836,7 +835,7 @@ namespace pcl
 
         /** \brief Constructor resulting in an invalid circulator. */
         FaceAroundFaceCirculator ()
-          : mesh_                (NULL),
+          : mesh_                (nullptr),
             idx_inner_half_edge_ ()
         {
         }
@@ -911,5 +910,3 @@ namespace pcl
     };
   } // End namespace geometry
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_MESH_CIRCULATORS_H

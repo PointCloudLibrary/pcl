@@ -1,4 +1,6 @@
 #include <iostream>
+#include <thread>
+
 #include <pcl/console/parse.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/io/pcd_io.h>
@@ -7,15 +9,16 @@
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <boost/thread/thread.hpp>
 
-boost::shared_ptr<pcl::visualization::PCLVisualizer>
+using namespace std::chrono_literals;
+
+pcl::visualization::PCLVisualizer::Ptr
 simpleVis (pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud)
 {
   // --------------------------------------------
   // -----Open 3D viewer and add point cloud-----
   // --------------------------------------------
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
   viewer->addPointCloud<pcl::PointXYZ> (cloud, "sample cloud");
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
@@ -87,9 +90,9 @@ main(int argc, char** argv)
   // copies all inliers of the model computed to another PointCloud
   pcl::copyPointCloud<pcl::PointXYZ>(*cloud, inliers, *final);
 
-  // creates the visualization object and adds either our orignial cloud or all of the inliers
+  // creates the visualization object and adds either our original cloud or all of the inliers
   // depending on the command line arguments specified.
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+  pcl::visualization::PCLVisualizer::Ptr viewer;
   if (pcl::console::find_argument (argc, argv, "-f") >= 0 || pcl::console::find_argument (argc, argv, "-sf") >= 0)
     viewer = simpleVis(final);
   else
@@ -97,7 +100,7 @@ main(int argc, char** argv)
   while (!viewer->wasStopped ())
   {
     viewer->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
   return 0;
  }

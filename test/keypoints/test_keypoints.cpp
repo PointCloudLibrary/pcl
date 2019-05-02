@@ -159,9 +159,9 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
 
   // Are they all unique?
   set<int> unique_indices;
-  for (size_t i_neighbor = 0; i_neighbor < nn_indices.size (); ++i_neighbor)
+  for (const int &nn_index : nn_indices)
   {
-    unique_indices.insert (nn_indices[i_neighbor]);
+    unique_indices.insert (nn_index);
   }
 
   EXPECT_EQ (nn_indices.size (), unique_indices.size ());

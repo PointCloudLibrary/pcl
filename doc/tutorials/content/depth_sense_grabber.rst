@@ -76,7 +76,7 @@ class that implements the standard PCL grabber interface.
 
 You can run the tool with `--help` option to view the usage guide.
 
-The video below demontrates the features of the DepthSense viewer tool. Please
+The video below demonstrates the features of the DepthSense viewer tool. Please
 note that the bilateral filtering (which can be observed in the end of the
 video) is currently disabled is the tool.
 

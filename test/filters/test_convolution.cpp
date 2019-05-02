@@ -73,20 +73,6 @@ TEST (Convolution, convolveRows)
   j = 47;
   for (uint32_t i = 0; i < output->width ; ++i)
     EXPECT_NEAR ((*output) (i,j).intensity, output_47[i], 1e-3);
-
-  // std::cout << "output size " << output->width << "x" << output->height << std::endl;
-  // for(uint32_t j = 0; j < input.height; ++j)
-  // {
-  //   uint32_t i;
-  //   for (i = 0; i < 3; ++i)
-  //     EXPECT_EQ ((*output) (i,j).intensity, 0);
-  //   for (i = 3; i < 61; ++i)
-  //     std::cout << (*output) (i,j).intensity << " ";
-  //   for (i = 61; i < 64; ++i)
-  //     EXPECT_EQ ((*output) (i,j).intensity, 0);
-  //   std::cout << std::endl;
-  // }
-
 }
 
 int

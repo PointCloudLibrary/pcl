@@ -35,8 +35,7 @@
  *
  */
   
-#ifndef PCL_ML_BRANCH_ESTIMATOR_H_
-#define PCL_ML_BRANCH_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/ml/stats_estimator.h>
@@ -80,11 +79,11 @@ namespace pcl
       /** \brief Constructor. */
       inline BinaryTreeThresholdBasedBranchEstimator () {}
       /** \brief Destructor. */
-      inline virtual ~BinaryTreeThresholdBasedBranchEstimator () {}
+      inline ~BinaryTreeThresholdBasedBranchEstimator () {}
 
       /** \brief Returns the number of branches the corresponding tree has. */
       inline size_t 
-      getNumOfBranches () const
+      getNumOfBranches () const override
       { 
         return 2; 
       }
@@ -100,7 +99,7 @@ namespace pcl
         const float result,
         const unsigned char flag,
         const float threshold,
-        unsigned char & branch_index) const
+        unsigned char & branch_index) const override
       {
         (void)flag;
         branch_index = (result > threshold) ? 1 : 0;
@@ -115,11 +114,11 @@ namespace pcl
       /** \brief Constructor. */
       inline TernaryTreeMissingDataBranchEstimator () {}
       /** \brief Destructor. */
-      inline virtual ~TernaryTreeMissingDataBranchEstimator () {}
+      inline ~TernaryTreeMissingDataBranchEstimator () {}
 
       /** \brief Returns the number of branches the corresponding tree has. */
       inline size_t 
-      getNumOfBranches () const
+      getNumOfBranches () const override
       { 
         return 3; 
       }
@@ -135,7 +134,7 @@ namespace pcl
         const float result,
         const unsigned char flag,
         const float threshold,
-        unsigned char & branch_index) const
+        unsigned char & branch_index) const override
       {
         if (flag == 0)
           branch_index = (result > threshold) ? 1 : 0;
@@ -145,5 +144,3 @@ namespace pcl
   };
 
 }
-
-#endif

@@ -36,10 +36,9 @@
  *
  */
 
-#include "pcl/pcl_config.h"
+#pragma once
 
-#ifndef PCL_IO_HDL_GRABBER_H_
-#define PCL_IO_HDL_GRABBER_H_
+#include "pcl/pcl_config.h"
 
 #include <pcl/io/grabber.h>
 #include <pcl/io/impl/synchronized_queue.hpp>
@@ -76,8 +75,8 @@ namespace pcl
                                                       float,
                                                       float);
 
-      typedef PCL_DEPRECATED ("Use 'sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba' instead")
-      sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb;
+      [[deprecated("use sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba instead")]]
+      typedef sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb;
 
       /** \brief Signal used for a single sector
        *         Represents 1 corrected packet from the HDL Velodyne with the returned intensity.
@@ -108,8 +107,8 @@ namespace pcl
       typedef void
       (sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
 
-      typedef PCL_DEPRECATED ("Use 'sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba' instead")
-      sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb;
+      [[deprecated("use sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba instead")]]
+      typedef sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb;
 
       /** \brief Constructor taking an optional path to an HDL corrections file.  The Grabber will listen on the default IP/port for data packets [192.168.3.255/2368]
        * \param[in] correctionsFile Path to a file which contains the correction parameters for the HDL.  This parameter is mandatory for the HDL-64, optional for the HDL-32
@@ -118,7 +117,7 @@ namespace pcl
       HDLGrabber (const std::string& correctionsFile = "",
                   const std::string& pcapFile = "");
 
-      /** \brief Constructor taking a pecified IP/port and an optional path to an HDL corrections file.
+      /** \brief Constructor taking a specified IP/port and an optional path to an HDL corrections file.
        * \param[in] ipAddress IP Address that should be used to listen for HDL packets
        * \param[in] port UDP Port that should be used to listen for HDL packets
        * \param[in] correctionsFile Path to a file which contains the correction parameters for the HDL.  This field is mandatory for the HDL-64, optional for the HDL-32
@@ -128,33 +127,33 @@ namespace pcl
                   const std::string& correctionsFile = "");
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-      virtual
+      
       ~HDLGrabber () throw ();
 
       /** \brief Starts processing the Velodyne packets, either from the network or PCAP file. */
-      virtual void
-      start ();
+      void
+      start () override;
 
       /** \brief Stops processing the Velodyne packets, either from the network or PCAP file */
-      virtual void
-      stop ();
+      void
+      stop () override;
 
       /** \brief Obtains the name of this I/O Grabber
        *  \return The name of the grabber
        */
-      virtual std::string
-      getName () const;
+      std::string
+      getName () const override;
 
       /** \brief Check if the grabber is still running.
        *  \return TRUE if the grabber is running, FALSE otherwise
        */
-      virtual bool
-      isRunning () const;
+      bool
+      isRunning () const override;
 
       /** \brief Returns the number of frames per second.
        */
-      virtual float
-      getFramesPerSecond () const;
+      float
+      getFramesPerSecond () const override;
 
       /** \brief Allows one to filter packets based on the SOURCE IP address and PORT
        *         This can be used, for instance, if multiple HDL LIDARs are on the same network
@@ -337,5 +336,3 @@ namespace pcl
 
   };
 }
-
-#endif /* PCL_IO_HDL_GRABBER_H_ */

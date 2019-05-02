@@ -43,6 +43,7 @@ namespace pcl
 {
   struct cloud_show_base
   {
+    virtual ~cloud_show_base() = default;
     virtual void pop () = 0;
     virtual bool popped () const = 0;
     typedef boost::shared_ptr<cloud_show_base> Ptr;
@@ -52,7 +53,7 @@ namespace pcl
   struct cloud_show : cloud_show_base
   {
     cloud_show (const std::string &cloud_name, typename CloudT::ConstPtr cloud,
-      boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer) :
+      pcl::visualization::PCLVisualizer::Ptr viewer) :
       cloud_name (cloud_name), cloud (cloud), viewer (viewer),popped_ (false)
     {}
 
@@ -77,17 +78,17 @@ namespace pcl
       popped_ = true;
     }
 
-    virtual void pop ();
+    void pop () override;
     
-    virtual bool
-    popped () const
+    bool
+    popped () const override
     {
       return popped_;
     }
     
     std::string cloud_name;
     typename CloudT::ConstPtr cloud;
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+    pcl::visualization::PCLVisualizer::Ptr viewer;
     bool popped_;
   };
   
@@ -174,11 +175,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     using namespace pcl::visualization;
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-    viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_));
-#else
     viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_, true));
-#endif
     viewer_->setBackgroundColor (0.1, 0.1, 0.1);
     viewer_->addCoordinateSystem (0.1, "global");
 
@@ -247,7 +244,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   }
 
   std::string window_name_;
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
+  pcl::visualization::PCLVisualizer::Ptr viewer_;
   boost::mutex mtx_, spin_mtx_, c_mtx, once_mtx;
   boost::thread viewer_thread_;
   bool has_cloud_;

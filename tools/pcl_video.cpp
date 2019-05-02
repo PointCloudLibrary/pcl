@@ -36,6 +36,7 @@
 
 #include <iostream>
 #include <string>
+#include <thread>
 #include <tide/ebml_element.h>
 #include <tide/file_cluster.h>
 #include <tide/segment.h>
@@ -53,6 +54,7 @@
 #include <pcl/common/time.h>
 #include "boost.h"
 
+using namespace std::chrono_literals;
 namespace bpt = boost::posix_time;
 
 
@@ -160,7 +162,7 @@ class Recorder
             tide::TrackEntry::Ptr track(new tide::TrackEntry(1, 1, "pointcloud2"));
             track->name("3D video");
             track->codec_name("pcl::PCLPointCloud2");
-            // Adding each level 1 element (only the first occurance, in the case of
+            // Adding each level 1 element (only the first occurrence, in the case of
             // clusters) to the index makes opening the file later much faster.
             segment.index.insert(std::make_pair(tracks.id(),
                         segment.to_segment_offset(stream_.tellp())));
@@ -287,7 +289,7 @@ class Player
             tide::Segment segment;
             segment.read(stream);
             // The segment's date is stored as the number of nanoseconds since the
-            // start of the millenium. Boost::Date_Time is invaluable here.
+            // start of the millennium. Boost::Date_Time is invaluable here.
             bpt::ptime basis(boost::gregorian::date(2001, 1, 1));
             bpt::time_duration sd(bpt::microseconds(segment.info.date() / 1000));
             bpt::ptime seg_start(basis + sd);
@@ -387,7 +389,7 @@ class Player
                 played_time = bpt::microsec_clock::local_time() - pb_start;
                 bpt::time_duration sleep_time(blk_offset - played_time);
                 std::cerr << "Will sleep " << sleep_time << " until displaying block\n";
-                boost::this_thread::sleep(sleep_time);
+                std::this_thread::sleep_for(sleep_time);
                 viewer_.showCloud(cloud);
                 //viewer_.removePointCloud("1");
                 //viewer_.addPointCloud(cloud, "1");

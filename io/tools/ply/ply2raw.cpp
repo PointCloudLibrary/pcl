@@ -186,7 +186,7 @@ ply_to_raw_converter::element_definition_callback (const std::string& element_na
     );
   }
   else {
-    return boost::tuple<boost::function<void ()>, boost::function<void ()> > (0, 0);
+    return {};
   }
 }
 
@@ -204,11 +204,11 @@ ply_to_raw_converter::scalar_property_definition_callback (const std::string& el
       return boost::bind (&ply_to_raw_converter::vertex_z, this, _1);
     }
     else {
-      return 0;
+      return {};
     }
   }
   else {
-    return 0;
+    return {};
   }
 }
 
@@ -228,9 +228,7 @@ ply_to_raw_converter::list_property_definition_callback (const std::string& elem
     );
   }
   else {
-    return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, 
-      boost::function<void (pcl::io::ply::int32)>, 
-      boost::function<void ()> > (0, 0, 0);
+    return {};
   }
 }
 
@@ -258,7 +256,7 @@ ply_to_raw_converter::vertex_z (pcl::io::ply::float32 z)
 void
 ply_to_raw_converter::vertex_end ()
 {
-  vertices_.push_back (boost::tuple<pcl::io::ply::float32, pcl::io::ply::float32, pcl::io::ply::float32 > (vertex_x_, vertex_y_, vertex_z_));
+  vertices_.emplace_back(vertex_x_, vertex_y_, vertex_z_);
 }
 
 void

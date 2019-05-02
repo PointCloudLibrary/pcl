@@ -327,44 +327,44 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
   //merge root and leaf nodes in one classifiers array, leaf nodes are sorted behind the root nodes
   Ncv32u offset_root = haarClassifierNodes.size();
 
-  for (Ncv32u i=0; i<haarClassifierNodes.size(); i++)
+  for (auto &haarClassifierNode : haarClassifierNodes)
   {
-      HaarClassifierNodeDescriptor32 node_left = haarClassifierNodes[i].getLeftNodeDesc();
+      HaarClassifierNodeDescriptor32 node_left = haarClassifierNode.getLeftNodeDesc();
       if (!node_left.isLeaf())
       {
           Ncv32u new_offset = node_left.getNextNodeOffset() + offset_root;
           node_left.create(new_offset);
       }
-      haarClassifierNodes[i].setLeftNodeDesc(node_left);
+      haarClassifierNode.setLeftNodeDesc(node_left);
 
-      HaarClassifierNodeDescriptor32 node_right = haarClassifierNodes[i].getRightNodeDesc();
+      HaarClassifierNodeDescriptor32 node_right = haarClassifierNode.getRightNodeDesc();
       if (!node_right.isLeaf())
       {
           Ncv32u new_offset = node_right.getNextNodeOffset() + offset_root;
           node_right.create(new_offset);
       }
-      haarClassifierNodes[i].setRightNodeDesc(node_right);
+      haarClassifierNode.setRightNodeDesc(node_right);
   }
 
-  for (Ncv32u i=0; i<host_temp_classifier_not_root_nodes.size(); i++)
+  for (auto &host_temp_classifier_not_root_node : host_temp_classifier_not_root_nodes)
   {
-      HaarClassifierNodeDescriptor32 node_left = host_temp_classifier_not_root_nodes[i].getLeftNodeDesc();
+      HaarClassifierNodeDescriptor32 node_left = host_temp_classifier_not_root_node.getLeftNodeDesc();
       if (!node_left.isLeaf())
       {
           Ncv32u new_offset = node_left.getNextNodeOffset() + offset_root;
           node_left.create(new_offset);
       }
-      host_temp_classifier_not_root_nodes[i].setLeftNodeDesc(node_left);
+      host_temp_classifier_not_root_node.setLeftNodeDesc(node_left);
 
-      HaarClassifierNodeDescriptor32 node_right = host_temp_classifier_not_root_nodes[i].getRightNodeDesc();
+      HaarClassifierNodeDescriptor32 node_right = host_temp_classifier_not_root_node.getRightNodeDesc();
       if (!node_right.isLeaf())
       {
           Ncv32u new_offset = node_right.getNextNodeOffset() + offset_root;
           node_right.create(new_offset);
       }
-      host_temp_classifier_not_root_nodes[i].setRightNodeDesc(node_right);
+      host_temp_classifier_not_root_node.setRightNodeDesc(node_right);
 
-      haarClassifierNodes.push_back(host_temp_classifier_not_root_nodes[i]);
+      haarClassifierNodes.push_back(host_temp_classifier_not_root_node);
   }
   return (NCV_SUCCESS);
 }
@@ -381,7 +381,7 @@ pcl::gpu::people::FaceDetector::loadFromNVBIN(const std::string &filename,
 {
     size_t readCount;
     FILE *fp = fopen(filename.c_str(), "rb");
-    ncvAssertReturn(fp != NULL, NCV_FILE_ERROR);
+    ncvAssertReturn(fp != nullptr, NCV_FILE_ERROR);
     Ncv32u fileVersion;
     readCount = fread(&fileVersion, sizeof(Ncv32u), 1, fp);
     PCL_ASSERT_ERROR_PRINT_RETURN(1 == readCount, "return NCV_FILE_ERROR", NCV_FILE_ERROR);
@@ -452,7 +452,7 @@ pcl::gpu::people::FaceDetector::ncvHaarLoadFromFile_host(const std::string &file
 
     NCVStatus ncv_return_status;
 
-    std::string fext = filename.substr(filename.find_last_of(".") + 1);
+    std::string fext = filename.substr(filename.find_last_of('.') + 1);
     std::transform(fext.begin(), fext.end(), fext.begin(), ::tolower);
 
     std::vector<HaarStage64> haar_stages;
@@ -494,18 +494,17 @@ pcl::gpu::people::FaceDetector::ncvHaarGetClassifierSize(const std::string &file
                                                          Ncv32u &numNodes,
                                                          Ncv32u &numFeatures)
 {
-    size_t readCount;
     NCVStatus ncv_return_status;
 
-    std::string fext = filename.substr(filename.find_last_of(".") + 1);
+    std::string fext = filename.substr(filename.find_last_of('.') + 1);
     std::transform(fext.begin(), fext.end(), fext.begin(), ::tolower);
 
     if (fext == "nvbin")
     {
         FILE *fp = fopen(filename.c_str(), "rb");
-        PCL_ASSERT_ERROR_PRINT_RETURN(fp != NULL, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
+        PCL_ASSERT_ERROR_PRINT_RETURN(fp != nullptr, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
         Ncv32u fileVersion;
-        readCount = fread(&fileVersion, sizeof(Ncv32u), 1, fp);
+        size_t readCount = fread(&fileVersion, sizeof(Ncv32u), 1, fp);
         PCL_ASSERT_ERROR_PRINT_RETURN(1 == readCount, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
         PCL_ASSERT_ERROR_PRINT_RETURN(fileVersion == NVBIN_HAAR_VERSION, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
         fseek(fp, NVBIN_HAAR_SIZERESERVED, SEEK_SET);
@@ -584,12 +583,12 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
 
   NCV_SKIP_COND_BEGIN
 
-  for(int i=0; i<input_gray.points.size(); i++)
+  for(const auto &point : input_gray.points)
   {
-    memcpy(h_src.ptr(), &input_gray.points[i].intensity, sizeof(input_gray.points[i].intensity));
+    memcpy(h_src.ptr(), &point.intensity, sizeof(point.intensity));
   }
 
-  ncv_return_status = h_src.copySolid(d_src, 0);
+  ncv_return_status = h_src.copySolid(d_src, nullptr);
   PCL_ASSERT_NCVSTAT(ncv_return_status);
   PCL_ASSERT_CUDA_RETURN(cudaStreamSynchronize(0), NCV_CUDA_ERROR);
 
@@ -629,9 +628,9 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
   PCL_ASSERT_CUDA_RETURN(cudaStreamSynchronize(0), NCV_CUDA_ERROR);
 
   // Copy result back into output cloud
-  for(int i=0; i<cloud_out.points.size(); i++)
+  for(auto &point : cloud_out.points)
   {
-    memcpy(&cloud_out.points[i].intensity, h_src.ptr() /* + i * ??? */, sizeof(cloud_out.points[i].intensity));
+    memcpy(&point.intensity, h_src.ptr() /* + i * ??? */, sizeof(point.intensity));
   }
 
   NCV_SKIP_COND_END
@@ -731,21 +730,21 @@ pcl::gpu::people::FaceDetector::process(pcl::PointCloud<pcl::RGB>& cloud_in,
   PCL_DEBUG("[pcl::gpu::people::FaceDetector::process] : (D) : called\n");
   cols_ = cloud_in.width; rows_ = cloud_in.height;
 
-  // TODO do something with the NCVStatus return value
-  NCVStatus status = NCVprocess(cloud_in,
-                                cloud_out,
-                                haar_clas_casc_descr_,
-                                *haar_stages_dev_,
-                                *haar_nodes_dev_,
-                                *haar_features_dev_,
-                                *haar_stages_host_,
-                                *gpu_allocator_,
-                                *cpu_allocator_,
-                                cuda_dev_prop_,
-                                cloud_in.width,
-                                cloud_in.height,
-                                filter_rects_,
-                                largest_object_);
+  // TODO do something with the NCVprocess return value
+  NCVprocess(cloud_in,
+             cloud_out,
+             haar_clas_casc_descr_,
+             *haar_stages_dev_,
+             *haar_nodes_dev_,
+             *haar_features_dev_,
+             *haar_stages_host_,
+             *gpu_allocator_,
+             *cpu_allocator_,
+             cuda_dev_prop_,
+             cloud_in.width,
+             cloud_in.height,
+             filter_rects_,
+             largest_object_);
 
 }
 

@@ -72,9 +72,9 @@ DAMAGE.
 // This should be enabled if GRADIENT_DOMAIN_SOLUTION is not, so that CG doesn't run into trouble.
 
 
-#include "hash.h"
-#include "bspline_data.h"
+#include <unordered_map>
 
+#include "bspline_data.h"
 
 
 namespace pcl
@@ -245,7 +245,7 @@ namespace pcl
           public:
             int fIndex , maxDepth;
             std::vector< std::pair< RootInfo , RootInfo > >* edges;
-            hash_map< long long , std::pair< RootInfo , int > >* vertexCount;
+            std::unordered_map< long long , std::pair< RootInfo , int > >* vertexCount;
             void Function( const TreeOctNode* node1 , const TreeOctNode* node2 );
         };
 
@@ -286,9 +286,9 @@ namespace pcl
         struct RootData : public SortedTreeNodes::CornerTableData , public SortedTreeNodes::EdgeTableData
         {
             // Edge to iso-vertex map
-            hash_map< long long , int > boundaryRoots;
+            std::unordered_map< long long , int > boundaryRoots;
             // Vertex to ( value , normal ) map
-            hash_map< long long , std::pair< Real , pcl::poisson::Point3D< Real > > > *boundaryValues;
+            std::unordered_map< long long , std::pair< Real , pcl::poisson::Point3D< Real > > > *boundaryValues;
             int* interiorRoots;
             Real *cornerValues;
             pcl::poisson::Point3D< Real >* cornerNormals;
@@ -348,7 +348,7 @@ namespace pcl
         Real* GetSolutionGrid( int& res , float isoValue=0.f , int depth=-1 );
 
         template<typename PointNT> int
-        setTree( boost::shared_ptr<const pcl::PointCloud<PointNT> > input_ , int maxDepth , int minDepth ,
+        setTree(typename pcl::PointCloud<PointNT>::ConstPtr input_ , int maxDepth , int minDepth ,
                  int kernelDepth , Real samplesPerNode , Real scaleFactor , Point3D<Real>& center , Real& scale ,
                  int useConfidence , Real constraintWeight , bool adaptiveWeights );
 

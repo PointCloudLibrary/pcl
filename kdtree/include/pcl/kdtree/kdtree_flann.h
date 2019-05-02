@@ -38,18 +38,16 @@
  *
  */
 
-#ifndef PCL_KDTREE_KDTREE_FLANN_H_
-#define PCL_KDTREE_KDTREE_FLANN_H_
+#pragma once
 
 #include <pcl/kdtree/kdtree.h>
-#include <pcl/kdtree/flann.h>
+#include <flann/util/params.h>
 
 #include <boost/shared_array.hpp>
 
 // Forward declarations
 namespace flann
 {
-  struct SearchParams;
   template <typename T> struct L2_Simple;
   template <typename T> class Index;
 }
@@ -123,7 +121,7 @@ namespace pcl
         * \param[in] eps precision (error bound) for nearest neighbors searches
         */
       void
-      setEpsilon (float eps);
+      setEpsilon (float eps) override;
 
       void 
       setSortedResults (bool sorted);
@@ -133,7 +131,7 @@ namespace pcl
       /** \brief Destructor for KdTreeFLANN. 
         * Deletes all allocated data arrays and destroys the kd-tree structures. 
         */
-      virtual ~KdTreeFLANN ()
+      ~KdTreeFLANN ()
       {
         cleanup ();
       }
@@ -143,7 +141,7 @@ namespace pcl
         * \param[in] indices the point indices subset that is to be used from \a cloud - if NULL the whole cloud is used
         */
       void 
-      setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr &indices = IndicesConstPtr ());
+      setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr &indices = IndicesConstPtr ()) override;
 
       /** \brief Search for k-nearest neighbors for the given query point.
         * 
@@ -161,7 +159,7 @@ namespace pcl
         */
       int 
       nearestKSearch (const PointT &point, int k, 
-                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const;
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const override;
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
         * 
@@ -181,7 +179,7 @@ namespace pcl
         */
       int 
       radiusSearch (const PointT &point, double radius, std::vector<int> &k_indices,
-                    std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const;
+                    std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const override;
 
     private:
       /** \brief Internal cleanup method. */
@@ -205,8 +203,8 @@ namespace pcl
 
     private:
       /** \brief Class getName method. */
-      virtual std::string 
-      getName () const { return ("KdTreeFLANN"); }
+      std::string 
+      getName () const override { return ("KdTreeFLANN"); }
 
       /** \brief A FLANN index object. */
       boost::shared_ptr<FLANNIndex> flann_index_;
@@ -217,7 +215,7 @@ namespace pcl
       /** \brief mapping between internal and external indices. */
       std::vector<int> index_mapping_;
       
-      /** \brief whether the mapping bwwteen internal and external indices is identity */
+      /** \brief whether the mapping between internal and external indices is identity */
       bool identity_mapping_;
 
       /** \brief Tree dimensionality (i.e. the number of dimensions per point). */
@@ -236,6 +234,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
-#endif
-
 #endif

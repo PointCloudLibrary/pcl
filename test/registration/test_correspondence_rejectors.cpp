@@ -37,6 +37,8 @@
  *
  */
 
+#include <random>
+
 #include <gtest/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -45,8 +47,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/correspondence_rejection_median_distance.h>
 #include <pcl/registration/correspondence_rejection_poly.h>
-
-#include <boost/random.hpp>
 
 pcl::PointCloud<pcl::PointXYZ> cloud;
 
@@ -97,15 +97,13 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
   pcl::transformPointCloud (cloud, target, t, q);
   
   // Noisify the target with a known seed and N(0, 0.005) using deterministic sampling
-  boost::mt19937 rng;
-  rng.seed (1e6);
-  boost::normal_distribution<> nd (0, 0.005);
-  boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
-  for (pcl::PointCloud<pcl::PointXYZ>::iterator it = target.begin (); it != target.end (); ++it)
+  std::mt19937 rng(1e6);
+  std::normal_distribution<> nd(0, 0.005);
+  for (auto &point : target)
   {
-    it->x += static_cast<float> (var_nor ());
-    it->y += static_cast<float> (var_nor ());
-    it->z += static_cast<float> (var_nor ());
+    point.x += static_cast<float> (nd(rng));
+    point.y += static_cast<float> (nd(rng));
+    point.z += static_cast<float> (nd(rng));
   }
   
   // Ensure deterministic sampling inside the rejector
@@ -138,11 +136,11 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
    * Test criterion 2: expect high precision/recall. The true positives are the unscrambled correspondences
    * where the query/match index are equal.
    */
-  unsigned int true_positives = 0;
-  for (unsigned int i = 0; i < result.size(); ++i)
-    if (result[i].index_query == result[i].index_match)
+  size_t true_positives = 0;
+  for (auto &i : result)
+    if (i.index_query == i.index_match)
       ++true_positives;
-  const unsigned int false_positives = static_cast<unsigned int> (result.size()) - true_positives;
+  const size_t false_positives = result.size() - true_positives;
 
   const double precision = double(true_positives) / double(true_positives+false_positives);
   const double recall = double(true_positives) / double(size-last);

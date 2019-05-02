@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_WARP_POINT_RIGID_H_
-#define PCL_WARP_POINT_RIGID_H_
+#pragma once
 
 #include <pcl/registration/eigen.h>
 
@@ -129,5 +128,3 @@ namespace pcl
     };
   } // namespace registration
 } // namespace pcl
-
-#endif

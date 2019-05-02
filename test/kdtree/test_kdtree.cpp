@@ -40,11 +40,11 @@
 #include <iostream>  // For debug
 #include <map>
 #include <pcl/common/time.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/distances.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -64,9 +64,6 @@ struct MyPoint : public PointXYZ
 
 PointCloud<MyPoint> cloud, cloud_big;
 
-// Includ the implementation so that KdTree<MyPoint> works
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
-
 void 
 init ()
 {
@@ -74,18 +71,18 @@ init ()
   for (float z = -0.5f; z <= 0.5f; z += resolution)
     for (float y = -0.5f; y <= 0.5f; y += resolution)
       for (float x = -0.5f; x <= 0.5f; x += resolution)
-        cloud.points.push_back (MyPoint (x, y, z));
+        cloud.points.emplace_back(x, y, z);
   cloud.width  = static_cast<uint32_t> (cloud.points.size ());
   cloud.height = 1;
 
   cloud_big.width  = 640;
   cloud_big.height = 480;
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   // Randomly create a new point cloud
   for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
-    cloud_big.points.push_back (MyPoint (static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
+    cloud_big.points.emplace_back(static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
                                          static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
-                                         static_cast<float> (1024 * rand () / (RAND_MAX + 1.0))));
+                                         static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +93,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   MyPoint test_point(0.0f, 0.0f, 0.0f);
   double max_dist = 0.15;
   set<int> brute_force_result;
-  for (unsigned int i=0; i<cloud.points.size(); ++i)
+  for (size_t i=0; i < cloud.points.size(); ++i)
     if (euclideanDistance(cloud.points[i], test_point) < max_dist)
       brute_force_result.insert(i);
   vector<int> k_indices;
@@ -105,9 +102,9 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   
   //cout << k_indices.size()<<"=="<<brute_force_result.size()<<"?\n";
   
-  for (size_t i = 0; i < k_indices.size (); ++i)
+  for (const int &k_index : k_indices)
   {
-    set<int>::iterator brute_force_result_it = brute_force_result.find (k_indices[i]);
+    set<int>::iterator brute_force_result_it = brute_force_result.find (k_index);
     bool ok = brute_force_result_it != brute_force_result.end ();
     //if (!ok)  cerr << k_indices[i] << " is not correct...\n";
     //else      cerr << k_indices[i] << " is correct...\n";
@@ -118,7 +115,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   //for (set<int>::const_iterator it=brute_force_result.begin(); it!=brute_force_result.end(); ++it)
   //cerr << "FLANN missed "<<*it<<"\n";
   
-  bool error = brute_force_result.size () > 0;
+  bool error = !brute_force_result.empty ();
   //if (error)  cerr << "Missed too many neighbors!\n";
   EXPECT_EQ (error, false);
 
@@ -128,8 +125,8 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
 
     ScopeTime scopeTime ("FLANN radiusSearch");
     {
-      for (size_t i = 0; i < cloud_big.points.size (); ++i)
-        kdtree.radiusSearch (cloud_big.points[i], 0.1, k_indices, k_distances);
+      for (const auto &point : cloud_big.points)
+        kdtree.radiusSearch (point, 0.1, k_indices, k_distances);
     }
   }
   
@@ -139,8 +136,8 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
 
     ScopeTime scopeTime ("FLANN radiusSearch (max neighbors in radius)");
     {
-      for (size_t i = 0; i < cloud_big.points.size (); ++i)
-        kdtree.radiusSearch (cloud_big.points[i], 0.1, k_indices, k_distances, 10);
+      for (const auto &point : cloud_big.points)
+        kdtree.radiusSearch (point, 0.1, k_indices, k_distances, 10);
     }
   }
   
@@ -151,8 +148,8 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
 
     ScopeTime scopeTime ("FLANN radiusSearch (unsorted results)");
     {
-      for (size_t i = 0; i < cloud_big.points.size (); ++i)
-        kdtree.radiusSearch (cloud_big.points[i], 0.1, k_indices, k_distances);
+      for (const auto &point : cloud_big.points)
+        kdtree.radiusSearch (point, 0.1, k_indices, k_distances);
     }
   }
 }
@@ -187,14 +184,14 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
   // Check if all found neighbors have distance smaller than max_dist
-  for (size_t i = 0; i < k_indices.size (); ++i)
+  for (const int &k_index : k_indices)
   {
-    const MyPoint& point = cloud.points[k_indices[i]];
+    const MyPoint& point = cloud.points[k_index];
     bool ok = euclideanDistance (test_point, point) <= max_dist;
     if (!ok)
       ok = (fabs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;
-    //if (!ok)  cerr << k_indices[i] << " is not correct...\n";
-    //else      cerr << k_indices[i] << " is correct...\n";
+    //if (!ok)  cerr << k_index << " is not correct...\n";
+    //else      cerr << k_index << " is correct...\n";
     EXPECT_EQ (ok, true);
   }
 
@@ -202,8 +199,8 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   {
     KdTreeFLANN<MyPoint> kdtree;
     kdtree.setInputCloud (cloud_big.makeShared ());
-    for (size_t i = 0; i < cloud_big.points.size (); ++i)
-      kdtree.nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+    for (const auto &point : cloud_big.points)
+      kdtree.nearestKSearch (point, no_of_neighbors, k_indices, k_distances);
   }
 }
 
@@ -216,7 +213,7 @@ class MyPointRepresentationXY : public PointRepresentation<MyPoint>
       this->nr_dimensions_ = 2;
     }
 
-    void copyToFloatArray (const MyPoint &p, float *out) const
+    void copyToFloatArray (const MyPoint &p, float *out) const override
     {
       out[0] = p.x;
       out[1] = p.y;
@@ -226,16 +223,16 @@ class MyPointRepresentationXY : public PointRepresentation<MyPoint>
 TEST (PCL, KdTreeFLANN_setPointRepresentation)
 {
   PointCloud<MyPoint>::Ptr random_cloud (new PointCloud<MyPoint> ());
-  random_cloud->points.push_back (MyPoint (86.6f, 42.1f, 92.4f));
-  random_cloud->points.push_back (MyPoint (63.1f, 18.4f, 22.3f));
-  random_cloud->points.push_back (MyPoint (35.5f, 72.5f, 37.3f));
-  random_cloud->points.push_back (MyPoint (99.7f, 37.0f,  8.7f));
-  random_cloud->points.push_back (MyPoint (22.4f, 84.1f, 64.0f));
-  random_cloud->points.push_back (MyPoint (65.2f, 73.4f, 18.0f));
-  random_cloud->points.push_back (MyPoint (60.4f, 57.1f,  4.5f));
-  random_cloud->points.push_back (MyPoint (38.7f, 17.6f, 72.3f));
-  random_cloud->points.push_back (MyPoint (14.2f, 95.7f, 34.7f));
-  random_cloud->points.push_back (MyPoint ( 2.5f, 26.5f, 66.0f));
+  random_cloud->points.emplace_back(86.6f, 42.1f, 92.4f);
+  random_cloud->points.emplace_back(63.1f, 18.4f, 22.3f);
+  random_cloud->points.emplace_back(35.5f, 72.5f, 37.3f);
+  random_cloud->points.emplace_back(99.7f, 37.0f,  8.7f);
+  random_cloud->points.emplace_back(22.4f, 84.1f, 64.0f);
+  random_cloud->points.emplace_back(65.2f, 73.4f, 18.0f);
+  random_cloud->points.emplace_back(60.4f, 57.1f,  4.5f);
+  random_cloud->points.emplace_back(38.7f, 17.6f, 72.3f);
+  random_cloud->points.emplace_back(14.2f, 95.7f, 34.7f);
+  random_cloud->points.emplace_back( 2.5f, 26.5f, 66.0f);
 
   KdTreeFLANN<MyPoint> kdtree;
   kdtree.setInputCloud (random_cloud);

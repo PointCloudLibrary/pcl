@@ -38,7 +38,7 @@
 #include <pcl/gpu/utils/safe_call.hpp>
 
 #include "cuda_runtime_api.h"
-#include "assert.h"
+#include <cassert>
 
 #define HAVE_CUDA
 //#include <pcl_config.h>
@@ -77,24 +77,12 @@ bool pcl::gpu::DeviceMemory2D::empty() const { throw_nogpu(); }
 //////////////////////////    XADD    ///////////////////////////////
 
 #ifdef __GNUC__
-    
-    #if __GNUC__*10 + __GNUC_MINOR__ >= 42
-
-        #if !defined WIN32 && (defined __i486__ || defined __i586__ || defined __i686__ || defined __MMX__ || defined __SSE__  || defined __ppc__)
-            #define CV_XADD __sync_fetch_and_add
-        #else
-            #include <ext/atomicity.h>
-            #define CV_XADD __gnu_cxx::__exchange_and_add
-        #endif
-    #else
-        #include <bits/atomicity.h>
-        #if __GNUC__*10 + __GNUC_MINOR__ >= 34
-            #define CV_XADD __gnu_cxx::__exchange_and_add
-        #else
-            #define CV_XADD __exchange_and_add
-        #endif
+  #if !defined WIN32 && (defined __i486__ || defined __i586__ || defined __i686__ || defined __MMX__ || defined __SSE__  || defined __ppc__)
+    #define CV_XADD __sync_fetch_and_add
+  #else
+    #include <ext/atomicity.h>
+    #define CV_XADD __gnu_cxx::__exchange_and_add
   #endif
-    
 #elif defined WIN32 || defined _WIN32
     #include <intrin.h>
     #define CV_XADD(addr,delta) _InterlockedExchangeAdd((long volatile*)(addr), (delta))
@@ -107,9 +95,9 @@ bool pcl::gpu::DeviceMemory2D::empty() const { throw_nogpu(); }
 
 ////////////////////////    DeviceArray    /////////////////////////////
     
-pcl::gpu::DeviceMemory::DeviceMemory() : data_(0), sizeBytes_(0), refcount_(0) {}
-pcl::gpu::DeviceMemory::DeviceMemory(void *ptr_arg, size_t sizeBytes_arg) : data_(ptr_arg), sizeBytes_(sizeBytes_arg), refcount_(0){}
-pcl::gpu::DeviceMemory::DeviceMemory(size_t sizeBtes_arg)  : data_(0), sizeBytes_(0), refcount_(0) { create(sizeBtes_arg); }
+pcl::gpu::DeviceMemory::DeviceMemory() : data_(nullptr), sizeBytes_(0), refcount_(nullptr) {}
+pcl::gpu::DeviceMemory::DeviceMemory(void *ptr_arg, size_t sizeBytes_arg) : data_(ptr_arg), sizeBytes_(sizeBytes_arg), refcount_(nullptr){}
+pcl::gpu::DeviceMemory::DeviceMemory(size_t sizeBtes_arg)  : data_(nullptr), sizeBytes_(0), refcount_(nullptr) { create(sizeBtes_arg); }
 pcl::gpu::DeviceMemory::~DeviceMemory() { release(); }
 
 pcl::gpu::DeviceMemory::DeviceMemory(const DeviceMemory& other_arg) 
@@ -174,9 +162,9 @@ void pcl::gpu::DeviceMemory::release()
         delete refcount_;
         cudaSafeCall( cudaFree(data_) );
     }
-    data_ = 0;
+    data_ = nullptr;
     sizeBytes_ = 0;
-    refcount_ = 0;
+    refcount_ = nullptr;
 }
 
 void pcl::gpu::DeviceMemory::upload(const void *host_ptr_arg, size_t sizeBytes_arg)
@@ -205,16 +193,16 @@ size_t pcl::gpu::DeviceMemory::sizeBytes() const { return sizeBytes_; }
 
 ////////////////////////    DeviceArray2D    /////////////////////////////
 
-pcl::gpu::DeviceMemory2D::DeviceMemory2D() : data_(0), step_(0), colsBytes_(0), rows_(0), refcount_(0) {}
+pcl::gpu::DeviceMemory2D::DeviceMemory2D() : data_(nullptr), step_(0), colsBytes_(0), rows_(0), refcount_(nullptr) {}
 
 pcl::gpu::DeviceMemory2D::DeviceMemory2D(int rows_arg, int colsBytes_arg) 
-    : data_(0), step_(0), colsBytes_(0), rows_(0), refcount_(0)
+    : data_(nullptr), step_(0), colsBytes_(0), rows_(0), refcount_(nullptr)
 { 
     create(rows_arg, colsBytes_arg); 
 }
 
 pcl::gpu::DeviceMemory2D::DeviceMemory2D(int rows_arg, int colsBytes_arg, void *data_arg, size_t step_arg) 
-    :  data_(data_arg), step_(step_arg), colsBytes_(colsBytes_arg), rows_(rows_arg), refcount_(0) {}
+    :  data_(data_arg), step_(step_arg), colsBytes_(colsBytes_arg), rows_(rows_arg), refcount_(nullptr) {}
 
 pcl::gpu::DeviceMemory2D::~DeviceMemory2D() { release(); }
 
@@ -276,9 +264,9 @@ void pcl::gpu::DeviceMemory2D::release()
 
     colsBytes_ = 0;
     rows_ = 0;    
-    data_ = 0;    
+    data_ = nullptr;    
     step_ = 0;
-    refcount_ = 0;
+    refcount_ = nullptr;
 }
 
 void pcl::gpu::DeviceMemory2D::copyTo(DeviceMemory2D& other) const

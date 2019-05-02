@@ -35,10 +35,8 @@
  *
  */
 
-#ifndef PCL_IO_REAL_SENSE_GRABBER_H
-#define PCL_IO_REAL_SENSE_GRABBER_H
+#pragma once
 
-#include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 
 #include <pcl/io/grabber.h>
@@ -137,7 +135,7 @@ namespace pcl
         * If the default is supplied, then the mode closest to VGA at 30 Hz
         * will be chosen.
         * \param[in] strict if set to \c true, an exception will be thrown if
-        * device does not support exactly the mode requsted. Otherwise the
+        * device does not support exactly the mode requested. Otherwise the
         * closest available mode is selected. */
       RealSenseGrabber (const std::string& device_id = "", const Mode& mode = Mode (), bool strict = false);
 
@@ -275,6 +273,3 @@ namespace pcl
   };
 
 }
-
-#endif /* PCL_IO_REAL_SENSE_GRABBER_H */
-

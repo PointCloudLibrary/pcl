@@ -42,7 +42,6 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/features/fpfh.h>
 #include <pcl/registration/registration.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/joint_icp.h>
@@ -55,13 +54,11 @@
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
 #include <pcl/registration/correspondence_rejection_surface_normal.h>
 #include <pcl/registration/correspondence_estimation_normal_shooting.h>
-#include <pcl/registration/ia_ransac.h>
 #include <pcl/registration/pyramid_feature_matching.h>
 #include <pcl/features/ppf.h>
 #include <pcl/registration/ppf_registration.h>
-#include <pcl/registration/ndt.h>
-#include <pcl/registration/sample_consensus_prerejective.h>
-// We need Histogram<2> to function, so we'll explicitely add kdtree_flann.hpp here
+#include <pcl/filters/voxel_grid.h>
+// We need Histogram<2> to function, so we'll explicitly add kdtree_flann.hpp here
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 //(pcl::Histogram<2>)
 
@@ -268,7 +265,7 @@ TEST (PCL, JointIterativeClosestPoint)
   reg.setMaxCorrespondenceDistance (0.25); // Making sure the correspondence distance > the max translation
   // Add a median distance rejector
   pcl::registration::CorrespondenceRejectorMedianDistance::Ptr rej_med (new pcl::registration::CorrespondenceRejectorMedianDistance);
-  rej_med->setMedianFactor (4.0);
+  rej_med->setMedianFactor (8.0);
   reg.addCorrespondenceRejector (rej_med);
   // Also add a SaC rejector
   pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>::Ptr rej_samp (new pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>);
@@ -592,234 +589,6 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, NormalDistributionsTransform)
-{
-  typedef PointNormal PointT;
-  PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
-  copyPointCloud (cloud_source, *src);
-  PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);
-  copyPointCloud (cloud_target, *tgt);
-  PointCloud<PointT> output;
-
-  NormalDistributionsTransform<PointT, PointT> reg;
-  reg.setStepSize (0.05);
-  reg.setResolution (0.025f);
-  reg.setInputSource (src);
-  reg.setInputTarget (tgt);
-  reg.setMaximumIterations (50);
-  reg.setTransformationEpsilon (1e-8);
-  // Register
-  reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-  EXPECT_LT (reg.getFitnessScore (), 0.001);
-
-  // Check again, for all possible caching schemes
-  for (int iter = 0; iter < 4; iter++)
-  {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
-    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
-    // Ensure that, when force_cache is not set, we are robust to the wrong input
-    if (force_cache)
-      tree->setInputCloud (tgt);
-    reg.setSearchMethodTarget (tree, force_cache);
-
-    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
-    if (force_cache_reciprocal)
-      tree_recip->setInputCloud (src);
-    reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
-
-    // Register
-    reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-    EXPECT_LT (reg.getFitnessScore (), 0.001);
-  }
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, SampleConsensusInitialAlignment)
-{
-  // Transform the source cloud by a large amount
-  Eigen::Vector3f initial_offset (100, 0, 0);
-  float angle = static_cast<float> (M_PI) / 2.0f;
-  Eigen::Quaternionf initial_rotation (cos (angle / 2), 0, 0, sin (angle / 2));
-  PointCloud<PointXYZ> cloud_source_transformed;
-  transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
-
-  // Create shared pointers
-  PointCloud<PointXYZ>::Ptr cloud_source_ptr, cloud_target_ptr;
-  cloud_source_ptr = cloud_source_transformed.makeShared ();
-  cloud_target_ptr = cloud_target.makeShared ();
-
-  // Initialize estimators for surface normals and FPFH features
-  search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ>);
-
-  NormalEstimation<PointXYZ, Normal> norm_est;
-  norm_est.setSearchMethod (tree);
-  norm_est.setRadiusSearch (0.05);
-  PointCloud<Normal> normals;
-
-  FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh_est;
-  fpfh_est.setSearchMethod (tree);
-  fpfh_est.setRadiusSearch (0.05);
-  PointCloud<FPFHSignature33> features_source, features_target;
-
-  // Estimate the FPFH features for the source cloud
-  norm_est.setInputCloud (cloud_source_ptr);
-  norm_est.compute (normals);
-  fpfh_est.setInputCloud (cloud_source_ptr);
-  fpfh_est.setInputNormals (normals.makeShared ());
-  fpfh_est.compute (features_source);
-
-  // Estimate the FPFH features for the target cloud
-  norm_est.setInputCloud (cloud_target_ptr);
-  norm_est.compute (normals);
-  fpfh_est.setInputCloud (cloud_target_ptr);
-  fpfh_est.setInputNormals (normals.makeShared ());
-  fpfh_est.compute (features_target);
-
-  // Initialize Sample Consensus Initial Alignment (SAC-IA)
-  SampleConsensusInitialAlignment<PointXYZ, PointXYZ, FPFHSignature33> reg;
-  reg.setMinSampleDistance (0.05f);
-  reg.setMaxCorrespondenceDistance (0.1);
-  reg.setMaximumIterations (1000);
-
-  reg.setInputSource (cloud_source_ptr);
-  reg.setInputTarget (cloud_target_ptr);
-  reg.setSourceFeatures (features_source.makeShared ());
-  reg.setTargetFeatures (features_target.makeShared ());
-
-  // Register
-  reg.align (cloud_reg);
-  EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
-  EXPECT_LT (reg.getFitnessScore (), 0.0005);
-
-  // Check again, for all possible caching schemes
-  typedef pcl::PointXYZ PointT;
-  for (int iter = 0; iter < 4; iter++)
-  {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
-    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
-    // Ensure that, when force_cache is not set, we are robust to the wrong input
-    if (force_cache)
-      tree->setInputCloud (cloud_target_ptr);
-    reg.setSearchMethodTarget (tree, force_cache);
-
-    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
-    if (force_cache_reciprocal)
-      tree_recip->setInputCloud (cloud_source_ptr);
-    reg.setSearchMethodSource(tree_recip, force_cache_reciprocal);
-
-    // Register
-    reg.align (cloud_reg);
-    EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
-    EXPECT_LT (reg.getFitnessScore (), 0.0005);
-  }
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, SampleConsensusPrerejective)
-{
-  /*
-   * This test is a near-exact copy of the SampleConsensusInitialAlignment test,
-   * with the only modifications that:
-   *   1) the number of iterations is increased 1000 --> 5000
-   *   2) the feature correspondence randomness (the number of kNNs) is decreased 10 --> 2
-   */
-
-  // Transform the source cloud by a large amount
-  Eigen::Vector3f initial_offset (100, 0, 0);
-  float angle = static_cast<float> (M_PI) / 2.0f;
-  Eigen::Quaternionf initial_rotation (cos (angle / 2), 0, 0, sin (angle / 2));
-  PointCloud<PointXYZ> cloud_source_transformed;
-  transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
-
-  // Create shared pointers
-  PointCloud<PointXYZ>::Ptr cloud_source_ptr, cloud_target_ptr;
-  cloud_source_ptr = cloud_source_transformed.makeShared ();
-  cloud_target_ptr = cloud_target.makeShared ();
-
-  // Initialize estimators for surface normals and FPFH features
-  search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ>);
-
-  // Normal estimator
-  NormalEstimation<PointXYZ, Normal> norm_est;
-  norm_est.setSearchMethod (tree);
-  norm_est.setRadiusSearch (0.005);
-  PointCloud<Normal> normals;
-
-  // FPFH estimator
-  FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh_est;
-  fpfh_est.setSearchMethod (tree);
-  fpfh_est.setRadiusSearch (0.05);
-  PointCloud<FPFHSignature33> features_source, features_target;
-
-  // Estimate the normals and the FPFH features for the source cloud
-  norm_est.setInputCloud (cloud_source_ptr);
-  norm_est.compute (normals);
-  fpfh_est.setInputCloud (cloud_source_ptr);
-  fpfh_est.setInputNormals (normals.makeShared ());
-  fpfh_est.compute (features_source);
-
-  // Estimate the normals and the FPFH features for the target cloud
-  norm_est.setInputCloud (cloud_target_ptr);
-  norm_est.compute (normals);
-  fpfh_est.setInputCloud (cloud_target_ptr);
-  fpfh_est.setInputNormals (normals.makeShared ());
-  fpfh_est.compute (features_target);
-
-  // Initialize Sample Consensus Prerejective with 5x the number of iterations and 1/5 feature kNNs as SAC-IA
-  SampleConsensusPrerejective<PointXYZ, PointXYZ, FPFHSignature33> reg;
-  reg.setMaxCorrespondenceDistance (0.1);
-  reg.setMaximumIterations (5000);
-  reg.setSimilarityThreshold (0.6f);
-  reg.setCorrespondenceRandomness (2);
-
-  // Set source and target cloud/features
-  reg.setInputSource (cloud_source_ptr);
-  reg.setInputTarget (cloud_target_ptr);
-  reg.setSourceFeatures (features_source.makeShared ());
-  reg.setTargetFeatures (features_target.makeShared ());
-
-  // Register
-  reg.align (cloud_reg);
-
-  // Check output consistency and quality of alignment
-  EXPECT_EQ (static_cast<int> (cloud_reg.points.size ()), static_cast<int> (cloud_source.points.size ()));
-  float inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.points.size ());
-  EXPECT_GT (inlier_fraction, 0.95f);
-
-  // Check again, for all possible caching schemes
-  typedef pcl::PointXYZ PointT;
-  for (int iter = 0; iter < 4; iter++)
-  {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
-    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
-    // Ensure that, when force_cache is not set, we are robust to the wrong input
-    if (force_cache)
-      tree->setInputCloud (cloud_target_ptr);
-    reg.setSearchMethodTarget (tree, force_cache);
-
-    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
-    if (force_cache_reciprocal)
-      tree_recip->setInputCloud (cloud_source_ptr);
-    reg.setSearchMethodSource(tree_recip, force_cache_reciprocal);
-
-    // Register
-    reg.align (cloud_reg);
-
-    // Check output consistency and quality of alignment
-    EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
-    inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.points.size ());
-    EXPECT_GT (inlier_fraction, 0.95f);
-  }
-}
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PyramidFeatureHistogram)
@@ -854,10 +623,10 @@ TEST (PCL, PyramidFeatureHistogram)
 
 
   vector<pair<float, float> > dim_range_input, dim_range_target;
-  for (size_t i = 0; i < 3; ++i) dim_range_input.push_back (pair<float, float> (static_cast<float> (-M_PI), static_cast<float> (M_PI)));
-  dim_range_input.push_back (pair<float, float> (0.0f, 1.0f));
-  for (size_t i = 0; i < 3; ++i) dim_range_target.push_back (pair<float, float> (static_cast<float> (-M_PI) * 10.0f, static_cast<float> (M_PI) * 10.0f));
-  dim_range_target.push_back (pair<float, float> (0.0f, 50.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_input.emplace_back(static_cast<float> (-M_PI), static_cast<float> (M_PI));
+  dim_range_input.emplace_back(0.0f, 1.0f);
+  for (size_t i = 0; i < 3; ++i) dim_range_target.emplace_back(static_cast<float> (-M_PI) * 10.0f, static_cast<float> (M_PI) * 10.0f);
+  dim_range_target.emplace_back(0.0f, 50.0f);
 
 
   PyramidFeatureHistogram<PPFSignature>::Ptr pyramid_source (new PyramidFeatureHistogram<PPFSignature> ()),
@@ -876,8 +645,8 @@ TEST (PCL, PyramidFeatureHistogram)
   EXPECT_NEAR (similarity_value, 0.74101555347442627, 1e-4);
 
   vector<pair<float, float> > dim_range_target2;
-  for (size_t i = 0; i < 3; ++i) dim_range_target2.push_back (pair<float, float> (static_cast<float> (-M_PI) * 5.0f, static_cast<float> (M_PI) * 5.0f));
-    dim_range_target2.push_back (pair<float, float> (0.0f, 20.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target2.emplace_back(static_cast<float> (-M_PI) * 5.0f, static_cast<float> (M_PI) * 5.0f);
+    dim_range_target2.emplace_back(0.0f, 20.0f);
 
   pyramid_source->setTargetDimensionRange (dim_range_target2);
   pyramid_source->compute ();
@@ -890,8 +659,8 @@ TEST (PCL, PyramidFeatureHistogram)
 
 
   vector<pair<float, float> > dim_range_target3;
-  for (size_t i = 0; i < 3; ++i) dim_range_target3.push_back (pair<float, float> (static_cast<float> (-M_PI) * 2.0f, static_cast<float> (M_PI) * 2.0f));
-  dim_range_target3.push_back (pair<float, float> (0.0f, 10.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target3.emplace_back(static_cast<float> (-M_PI) * 2.0f, static_cast<float> (M_PI) * 2.0f);
+  dim_range_target3.emplace_back(0.0f, 10.0f);
 
   pyramid_source->setTargetDimensionRange (dim_range_target3);
   pyramid_source->compute ();

@@ -37,13 +37,12 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_H_
-#define PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_H_
+
+#pragma once
 
 #include <pcl/point_representation.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/kdtree/kdtree.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/registration/transformation_validation.h>
 
 namespace pcl
@@ -79,8 +78,8 @@ namespace pcl
         typedef boost::shared_ptr<TransformationValidation<PointSource, PointTarget, Scalar> > Ptr;
         typedef boost::shared_ptr<const TransformationValidation<PointSource, PointTarget, Scalar> > ConstPtr;
 
-        typedef typename pcl::search::KdTree<PointTarget> KdTree;
-        typedef typename pcl::search::KdTree<PointTarget>::Ptr KdTreePtr;
+        typedef pcl::search::KdTree<PointTarget> KdTree;
+        typedef typename KdTree::Ptr KdTreePtr;
 
         typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
 
@@ -203,7 +202,7 @@ namespace pcl
             const PointCloudTargetConstPtr &cloud_tgt,
             const Matrix4 &transformation_matrix) const
         {
-          if (pcl_isnan (threshold_))
+          if (std::isnan (threshold_))
           {
             PCL_ERROR ("[pcl::TransformationValidationEuclidean::isValid] Threshold not set! Please use setThreshold () before continuing.");
             return (false);
@@ -265,6 +264,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/transformation_validation_euclidean.hpp>
-
-#endif    // PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_H_
-

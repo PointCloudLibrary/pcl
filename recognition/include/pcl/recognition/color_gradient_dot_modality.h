@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_COLOR_GRADIENT_DOT_MODALITY
-#define PCL_FEATURES_COLOR_GRADIENT_DOT_MODALITY
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
@@ -70,7 +69,7 @@ namespace pcl
     };
 
     public:
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
+      typedef pcl::PointCloud<PointInT> PointCloudIn;
 
       ColorGradientDOTModality (size_t bin_size);
   
@@ -698,5 +697,3 @@ computeInvariantQuantizedMap (const MaskMap & mask,
 
   return map;
 }
-
-#endif

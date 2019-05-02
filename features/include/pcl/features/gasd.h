@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_GASD_H_
-#define PCL_FEATURES_GASD_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 #include <pcl/common/common.h>
@@ -198,7 +197,7 @@ namespace pcl
        * \param[out] output the resultant point cloud model dataset containing the GASD feature
        */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
     private:
       /** \brief Transform that aligns the point cloud to the canonical coordinate system. */
@@ -355,12 +354,10 @@ namespace pcl
        * \param[out] output the resultant point cloud model dataset containing the GASD color feature
        */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
   };
 }  // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/gasd.hpp>
 #endif
-
-#endif  //#ifndef PCL_FEATURES_GASD_H_

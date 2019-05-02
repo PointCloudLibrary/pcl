@@ -35,16 +35,13 @@
  *
  */
 
-#ifndef COLOR_COMPRESSION_H
-#define COLOR_COMPRESSION_H
+#pragma once
 
+#include <cstdio>
+#include <cstring>
+#include <iostream>
 #include <iterator>
-#include <iostream>
 #include <vector>
-#include <string.h>
-#include <iostream>
-#include <stdio.h>
-#include <string.h>
 
 namespace pcl
 {
@@ -168,18 +165,13 @@ namespace pcl
         void
         encodeAverageOfPoints (const typename std::vector<int>& indexVector_arg, unsigned char rgba_offset_arg, PointCloudConstPtr inputCloud_arg)
         {
-          std::size_t i, len;
-
-          unsigned int avgRed;
-          unsigned int avgGreen;
-          unsigned int avgBlue;
-
-          // initialize
-          avgRed = avgGreen = avgBlue = 0;
+          unsigned int avgRed = 0;
+          unsigned int avgGreen = 0;
+          unsigned int avgBlue = 0;
 
           // iterate over points
-          len = indexVector_arg.size ();
-          for (i = 0; i < len; i++)
+          size_t len = indexVector_arg.size ();
+          for (size_t i = 0; i < len; i++)
           {
             // get color information from points
             const int& idx = indexVector_arg[i];
@@ -220,8 +212,6 @@ namespace pcl
         void
         encodePoints (const typename std::vector<int>& indexVector_arg, unsigned char rgba_offset_arg, PointCloudConstPtr inputCloud_arg)
         {
-          std::size_t i, len;
-
           unsigned int avgRed;
           unsigned int avgGreen;
           unsigned int avgBlue;
@@ -230,8 +220,8 @@ namespace pcl
           avgRed = avgGreen = avgBlue = 0;
 
           // iterate over points
-          len = indexVector_arg.size ();
-          for (i = 0; i < len; i++)
+          size_t len = indexVector_arg.size ();
+          for (size_t i = 0; i < len; i++)
           {
             // get color information from point
             const int& idx = indexVector_arg[i];
@@ -257,7 +247,7 @@ namespace pcl
             avgBlue  /= static_cast<unsigned int> (len);
 
             // iterate over points for differential encoding
-            for (i = 0; i < len; i++)
+            for (size_t i = 0; i < len; i++)
             {
               const int& idx = indexVector_arg[i];
               const char* idxPointPtr = reinterpret_cast<const char*> (&inputCloud_arg->points[idx]);
@@ -294,21 +284,17 @@ namespace pcl
 
         /** \brief Decode color information
           * \param outputCloud_arg output point cloud
-          * \param beginIdx_arg index indicating first point to be assiged with color information
-          * \param endIdx_arg index indicating last point to be assiged with color information
+          * \param beginIdx_arg index indicating first point to be assigned with color information
+          * \param endIdx_arg index indicating last point to be assigned with color information
           * \param rgba_offset_arg offset to color information
           */
         void
         decodePoints (PointCloudPtr outputCloud_arg, std::size_t beginIdx_arg, std::size_t endIdx_arg, unsigned char rgba_offset_arg)
         {
-          std::size_t i;
-          unsigned int pointCount;
-          unsigned int colorInt;
-
           assert (beginIdx_arg <= endIdx_arg);
 
           // amount of points to be decoded
-          pointCount = static_cast<unsigned int> (endIdx_arg - beginIdx_arg);
+          unsigned int pointCount = static_cast<unsigned int> (endIdx_arg - beginIdx_arg);
 
           // get averaged color information for current voxel
           unsigned char avgRed = *(pointAvgColorDataVector_Iterator_++);
@@ -321,8 +307,9 @@ namespace pcl
           avgBlue = static_cast<unsigned char> (avgBlue << colorBitReduction_);
 
           // iterate over points
-          for (i = 0; i < pointCount; i++)
+          for (size_t i = 0; i < pointCount; i++)
           {
+            unsigned int colorInt;
             if (pointCount > 1)
             {
               // get differential color information from input vector
@@ -355,23 +342,20 @@ namespace pcl
 
         /** \brief Set default color to points
          * \param outputCloud_arg output point cloud
-         * \param beginIdx_arg index indicating first point to be assiged with color information
-         * \param endIdx_arg index indicating last point to be assiged with color information
+         * \param beginIdx_arg index indicating first point to be assigned with color information
+         * \param endIdx_arg index indicating last point to be assigned with color information
          * \param rgba_offset_arg offset to color information
          * */
         void
         setDefaultColor (PointCloudPtr outputCloud_arg, std::size_t beginIdx_arg, std::size_t endIdx_arg, unsigned char rgba_offset_arg)
         {
-          std::size_t i;
-          unsigned int pointCount;
-
           assert (beginIdx_arg <= endIdx_arg);
 
           // amount of points to be decoded
-          pointCount = static_cast<unsigned int> (endIdx_arg - beginIdx_arg);
+          unsigned int pointCount = static_cast<unsigned int> (endIdx_arg - beginIdx_arg);
 
           // iterate over points
-          for (i = 0; i < pointCount; i++)
+          for (size_t i = 0; i < pointCount; i++)
           {
             char* idxPointPtr = reinterpret_cast<char*> (&outputCloud_arg->points[beginIdx_arg + i]);
             int& pointColor = *reinterpret_cast<int*> (idxPointPtr+rgba_offset_arg);
@@ -416,5 +400,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_ColorCoding(T) template class PCL_EXPORTS pcl::octree::ColorCoding<T>;
-
-#endif

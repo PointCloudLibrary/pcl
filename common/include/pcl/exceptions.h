@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_EXCEPTIONS_H_
-#define PCL_EXCEPTIONS_H_
+
+#pragma once
 
 #include <stdexcept>
 #include <sstream>
@@ -66,8 +66,8 @@ namespace pcl
     public:
 
       PCLException (const std::string& error_description,
-                    const char* file_name = NULL,
-                    const char* function_name = NULL,
+                    const char* file_name = nullptr,
+                    const char* function_name = nullptr,
                     unsigned line_number = 0)
         : std::runtime_error (createDetailedMessage (error_description,
                                                      file_name,
@@ -111,10 +111,10 @@ namespace pcl
                              unsigned line_number)
       {
         std::ostringstream sstream;
-        if (function_name != NULL)
+        if (function_name != nullptr)
           sstream << function_name << " ";
         
-        if (file_name != NULL)
+        if (file_name != nullptr)
         {
           sstream << "in " << file_name << " ";
           if (line_number != 0)
@@ -138,22 +138,22 @@ namespace pcl
     public:
 
       InvalidConversionException (const std::string& error_description,
-                                  const char* file_name = NULL,
-                                  const char* function_name = NULL,
+                                  const char* file_name = nullptr,
+                                  const char* function_name = nullptr,
                                   unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
   /** \class IsNotDenseException
-    * \brief An exception that is thrown when a PointCloud is not dense but is attemped to be used as dense
+    * \brief An exception that is thrown when a PointCloud is not dense but is attempted to be used as dense
     */
   class IsNotDenseException : public PCLException
   {
     public:
 
       IsNotDenseException (const std::string& error_description,
-                           const char* file_name = NULL,
-                           const char* function_name = NULL,
+                           const char* file_name = nullptr,
+                           const char* function_name = nullptr,
                            unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
@@ -167,8 +167,8 @@ namespace pcl
     public:
 
       InvalidSACModelTypeException (const std::string& error_description,
-                                    const char* file_name = NULL,
-                                    const char* function_name = NULL,
+                                    const char* file_name = nullptr,
+                                    const char* function_name = nullptr,
                                     unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
@@ -181,8 +181,8 @@ namespace pcl
     public:
 
       IOException (const std::string& error_description,
-                   const char* file_name = NULL,
-                   const char* function_name = NULL,
+                   const char* file_name = nullptr,
+                   const char* function_name = nullptr,
                    unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
@@ -195,8 +195,8 @@ namespace pcl
   {
     public:
       InitFailedException (const std::string& error_description = "",
-                           const char* file_name = NULL,
-                           const char* function_name = NULL,
+                           const char* file_name = nullptr,
+                           const char* function_name = nullptr,
                            unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
@@ -210,8 +210,8 @@ namespace pcl
     public:
     
       UnorganizedPointCloudException (const std::string& error_description,
-                                      const char* file_name = NULL,
-                                      const char* function_name = NULL,
+                                      const char* file_name = nullptr,
+                                      const char* function_name = nullptr,
                                       unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
@@ -224,8 +224,8 @@ namespace pcl
     public:
     
     KernelWidthTooSmallException (const std::string& error_description,
-                                  const char* file_name = NULL,
-                                  const char* function_name = NULL,
+                                  const char* file_name = nullptr,
+                                  const char* function_name = nullptr,
                                   unsigned line_number = 0)
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
@@ -234,8 +234,8 @@ namespace pcl
   {
     public:
     UnhandledPointTypeException (const std::string& error_description,
-                                 const char* file_name = NULL,
-                                 const char* function_name = NULL,
+                                 const char* file_name = nullptr,
+                                 const char* function_name = nullptr,
                                  unsigned line_number = 0)
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   };
@@ -244,26 +244,22 @@ namespace pcl
   {
     public:
     ComputeFailedException (const std::string& error_description,
-                            const char* file_name = NULL,
-                            const char* function_name = NULL,
+                            const char* file_name = nullptr,
+                            const char* function_name = nullptr,
                             unsigned line_number = 0)
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   };
 
   /** \class BadArgumentException
-    * \brief An exception that is thrown when the argments number or type is wrong/unhandled.
+    * \brief An exception that is thrown when the arguments number or type is wrong/unhandled.
     */
   class BadArgumentException : public PCLException
   {
     public:
     BadArgumentException (const std::string& error_description,
-                          const char* file_name = NULL,
-                          const char* function_name = NULL,
+                          const char* file_name = nullptr,
+                          const char* function_name = nullptr,
                           unsigned line_number = 0)
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   };
 }
-
-
-
-#endif

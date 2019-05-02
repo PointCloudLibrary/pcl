@@ -1,14 +1,9 @@
-#ifndef KISS_FFT_H
-#define KISS_FFT_H
+#pragma once
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-
-#if !defined(__APPLE__)
-#include <malloc.h>
-#endif
 
 #include <pcl/pcl_exports.h>
 
@@ -129,6 +124,4 @@ kiss_fft_next_fast_size(int n);
 
 #ifdef __cplusplus
 } 
-#endif
-
 #endif

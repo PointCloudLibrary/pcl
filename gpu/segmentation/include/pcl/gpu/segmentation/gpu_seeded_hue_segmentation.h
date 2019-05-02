@@ -37,15 +37,12 @@
  *
  */
 
-#ifndef PCL_GPU_SEEDED_HUE_SEGMENTATION_H_
-#define PCL_GPU_SEEDED_HUE_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/gpu/octree/octree.hpp>
-#include <pcl/gpu/containers/device_array.hpp>
 
 namespace pcl
 {
@@ -147,9 +144,3 @@ namespace pcl
     }
   }
 }
-
-#endif //PCL_GPU_SEEDED_HUE_SEGMENTATION_H_
-
-
-
-

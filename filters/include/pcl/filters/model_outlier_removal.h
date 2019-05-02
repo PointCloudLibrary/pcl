@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_FILTERS_MODEL_OUTLIER_REMOVAL_H_
-#define PCL_FILTERS_MODEL_OUTLIER_REMOVAL_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 #include <pcl/ModelCoefficients.h>
@@ -75,8 +74,8 @@ namespace pcl
       typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
 
     public:
-      typedef typename pcl::PointCloud<pcl::Normal>::Ptr PointCloudNPtr;
-      typedef typename pcl::PointCloud<pcl::Normal>::ConstPtr PointCloudNConstPtr;
+      typedef pcl::PointCloud<pcl::Normal>::Ptr PointCloudNPtr;
+      typedef pcl::PointCloud<pcl::Normal>::ConstPtr PointCloudNConstPtr;
 
       /** \brief Constructor.
        * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
@@ -96,7 +95,7 @@ namespace pcl
       setModelCoefficients (const pcl::ModelCoefficients model_coefficients)
       {
         model_coefficients_.resize (model_coefficients.values.size ());
-        for (unsigned int i = 0; i < model_coefficients.values.size (); i++)
+        for (size_t i = 0; i < model_coefficients.values.size (); i++)
         {
           model_coefficients_[i] = model_coefficients.values[i];
         }
@@ -109,7 +108,7 @@ namespace pcl
       {
         pcl::ModelCoefficients mc;
         mc.values.resize (model_coefficients_.size ());
-        for (unsigned int i = 0; i < mc.values.size (); i++)
+        for (size_t i = 0; i < mc.values.size (); i++)
           mc.values[i] = model_coefficients_[i];
         return (mc);
       }
@@ -204,13 +203,13 @@ namespace pcl
        * \param[out] output The resultant point cloud.
        */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Filtered results are indexed by an indices array.
        * \param[out] indices The resultant indices.
        */
       void
-      applyFilter (std::vector<int> &indices)
+      applyFilter (std::vector<int> &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -228,7 +227,7 @@ namespace pcl
       /** \brief The model used to calculate distances */
       SampleConsensusModelPtr model_;
 
-      /** \brief The threshold used to seperate outliers (removed_indices) from inliers (indices) */
+      /** \brief The threshold used to separate outliers (removed_indices) from inliers (indices) */
       float thresh_;
 
       /** \brief The model coefficients */
@@ -253,5 +252,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/model_outlier_removal.hpp>
 #endif
-
-#endif  // PCL_FILTERS_MODEL_OUTLIER_REMOVAL_H_

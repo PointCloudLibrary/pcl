@@ -1,5 +1,9 @@
+#include <ctime>
+#include <random>
+
+#include <boost/math/distributions/normal.hpp>
+
 #include <GL/glew.h>
-#include <time.h>
 
 #include <pcl/pcl_config.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
@@ -14,7 +18,7 @@
 #include <pcl/simulation/range_likelihood.h>
 
 // For adding noise:
-static boost::minstd_rand generator (static_cast<unsigned int> (std::time (0))); // seed
+static std::minstd_rand rng ([] {std::random_device rd; return rd(); } ()); // seed
 
 //#define SIMULATION_DEBUG 1
 #define DO_TIMING_PROFILE 0
@@ -105,8 +109,8 @@ max_level (int a, int b)
   while (true)
   {
     if (a%2 || b%2) return level;
-    a = a / 2;
-    b = b / 2;
+    a /= 2;
+    b /= 2;
     level++;
   }
 }
@@ -211,7 +215,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
   glBindTexture (GL_TEXTURE_2D, 0);
 
   glGenTextures (1, &color_texture_);
@@ -222,7 +226,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
   glBindTexture (GL_TEXTURE_2D, 0);
 
   // Setup texture for incoming image
@@ -234,7 +238,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, col_width, row_height, 0, GL_RED, GL_FLOAT, NULL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, col_width, row_height, 0, GL_RED, GL_FLOAT, nullptr);
   glBindTexture (GL_TEXTURE_2D, 0);
 
   // Texture for to score on each pixel
@@ -246,7 +250,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, width_, height_, 0, GL_RED, GL_FLOAT, NULL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, width_, height_, 0, GL_RED, GL_FLOAT, nullptr);
   glBindTexture (GL_TEXTURE_2D, 0);
 
   // Setup texture for likelihood function
@@ -302,10 +306,10 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
 
   likelihood_program_->link ();
 
-  vertices_.push_back (Eigen::Vector3f (-1.0,  1.0, 0.0));
-  vertices_.push_back (Eigen::Vector3f ( 1.0,  1.0, 0.0));
-  vertices_.push_back (Eigen::Vector3f ( 1.0, -1.0, 0.0));
-  vertices_.push_back (Eigen::Vector3f (-1.0, -1.0, 0.0));
+  vertices_.emplace_back(-1.0,  1.0, 0.0);
+  vertices_.emplace_back( 1.0,  1.0, 0.0);
+  vertices_.emplace_back( 1.0, -1.0, 0.0);
+  vertices_.emplace_back(-1.0, -1.0, 0.0);
 
   glGenBuffers (1, &quad_vbo_);
   glBindBuffer (GL_ARRAY_BUFFER, quad_vbo_);
@@ -343,10 +347,8 @@ pcl::simulation::RangeLikelihood::~RangeLikelihood ()
 double
 pcl::simulation::RangeLikelihood::sampleNormal (double sigma)
 {
-  typedef boost::normal_distribution<double> Normal;
-  Normal dist (0.0, sigma);
-  boost::variate_generator<boost::minstd_rand&, Normal> norm (generator, dist);
-  return (norm ());
+  std::normal_distribution<> dist (0.0, sigma);
+  return (dist (rng));
 }
 
 void
@@ -464,7 +466,7 @@ costFunction2 (float ref_val, float depth_val)
   }
   
   double lhood = 1;
-  if (pcl_isnan (depth_val))
+  if (std::isnan (depth_val))
   { // pixels with nan depth - for openNI null points
     lhood = 1; // log(1) = 0 ---> has no effect
   }
@@ -505,7 +507,7 @@ costFunction3 (float ref_val,float depth_val)
   { // working range
     float min_dist = abs (ref_val - 0.7253f/(1.0360f - (depth_val)));
 
-    int lup = static_cast<int> (ceil (min_dist*100)); // has resulution of 0.01m
+    int lup = static_cast<int> (ceil (min_dist*100)); // has resolution of 0.01m
     if (lup > 300)
     { // implicitly this caps the cost if there is a hole in the model
       lup = 300;
@@ -520,7 +522,7 @@ costFunction4(float ref_val,float depth_val)
 {
   float disparity_diff = abs( ( -0.7253f/ref_val +1.0360f ) -  depth_val );
 
-  int top_lup = static_cast<int> (ceil (disparity_diff*300)); // has resulution of 0.001m
+  int top_lup = static_cast<int> (ceil (disparity_diff*300)); // has resolution of 0.001m
   if (top_lup > 300)
   {
     top_lup =300;
@@ -529,7 +531,7 @@ costFunction4(float ref_val,float depth_val)
 
   // bottom:
   //bottom = bottom_lookup(   round(mu*1000+1));
-  int bottom_lup = static_cast<int> (ceil( (depth_val) * 300)); // has resulution of 0.001m
+  int bottom_lup = static_cast<int> (ceil( (depth_val) * 300)); // has resolution of 0.001m
   if (bottom_lup > 300)
   {
     bottom_lup =300;
@@ -539,7 +541,7 @@ costFunction4(float ref_val,float depth_val)
   float proportion = 0.999f;
   float lhood = proportion + (1-proportion)*(top/bottom);
 
-  // safety fix thats seems to be required due to opengl ayschronizate
+  // safety fix that seems to be required due to opengl asynchronization
   // ask hordur about this
   if (bottom == 0)
   {
@@ -651,7 +653,7 @@ void
 pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
   bool make_global,
   const Eigen::Isometry3d & pose,
-  bool organized)
+  bool organized) const
 {
   // TODO: check if this works for for rows/cols >1  and for width&height != 640x480
   // i.e. multiple tiled images
@@ -734,7 +736,7 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
           0, 1,  0, 0,
           0, 0,  0, 1;
     Eigen::Matrix4f m = pose.matrix ().cast<float> ();
-    m = m * T;
+    m *= T;
     pcl::transformPointCloud (*pc, *pc, m);
   }
   else
@@ -754,7 +756,7 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
                     0, -1, 0, 0,
                     0,  0, 0, 1;
     Eigen::Matrix4f camera = pose.matrix ().cast<float> ();
-    camera = camera * cam_to_body;
+    camera *= cam_to_body;
     pc->sensor_origin_ = camera.rightCols (1);
     Eigen::Quaternion<float> quat (camera.block<3,3> (0,0));
     pc->sensor_orientation_ = quat;
@@ -762,7 +764,7 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
 }
 
 void
-pcl::simulation::RangeLikelihood::getRangeImagePlanar(pcl::RangeImagePlanar &rip)
+pcl::simulation::RangeLikelihood::getRangeImagePlanar(pcl::RangeImagePlanar &rip) const
 {
   rip.setDepthImage (depth_buffer_,
     camera_width_,camera_height_, camera_fx_,camera_fy_,
@@ -784,7 +786,7 @@ pcl::simulation::RangeLikelihood::addNoise ()
   {
     if (depth_buffer_[i] < 1)
     {
-      depth_buffer_[i] = depth_buffer_[i] + variance * static_cast<float> (sampleNormal ());
+      depth_buffer_[i] += variance * static_cast<float> (sampleNormal ());
       if (depth_buffer_[i] > 1)
       {
         depth_buffer_[i] = 1.0;
@@ -1053,7 +1055,7 @@ RangeLikelihood::render (const std::vector<Eigen::Isometry3d, Eigen::aligned_all
 }
 
 const float*
-RangeLikelihood::getDepthBuffer ()
+RangeLikelihood::getDepthBuffer () const
 {
   if (depth_buffer_dirty_)
   {
@@ -1073,7 +1075,7 @@ RangeLikelihood::getDepthBuffer ()
 }
 
 const uint8_t*
-RangeLikelihood::getColorBuffer ()
+RangeLikelihood::getColorBuffer () const
 {
   // It's only possible to read the color buffer if it
   // was rendered in the first place.
@@ -1105,7 +1107,7 @@ RangeLikelihood::getColorBuffer ()
 
 // The scores are in score_texture_
 const float*
-RangeLikelihood::getScoreBuffer ()
+RangeLikelihood::getScoreBuffer () const
 {
   if (score_buffer_dirty_ && !compute_likelihood_on_cpu_)
   {

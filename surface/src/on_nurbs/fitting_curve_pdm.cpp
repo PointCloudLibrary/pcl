@@ -75,7 +75,7 @@ FittingCurve::findElement (double xi, const std::vector<double> &elements)
   if (xi >= elements.back ())
     return (int (elements.size ()) - 2);
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
   {
     if (xi >= elements[i] && xi < elements[i + 1])
     {
@@ -93,13 +93,13 @@ FittingCurve::refine ()
 {
   std::vector<double> xi;
 
-  std::vector<double> elements = this->getElementVector (m_nurbs);
+  std::vector<double> elements = getElementVector (m_nurbs);
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (unsigned i = 0; i < xi.size (); i++)
-    m_nurbs.InsertKnot (xi[i], 1);
+  for (const double &i : xi)
+    m_nurbs.InsertKnot (i, 1);
 }
 
 void
@@ -234,7 +234,7 @@ FittingCurve::initNurbsCurve2D (int order, const vector_vec2d &data)
   {
     cv (0) = r * sin (dcv * j);
     cv (1) = r * cos (dcv * j);
-    cv = cv + mean;
+    cv += mean;
     nurbs.SetCV (j, ON_3dPoint (cv (0), cv (1), 0.0));
   }
 
@@ -255,7 +255,7 @@ FittingCurve::initNurbsCurvePCA (int order, const vector_vec3d &data, int ncps, 
 
   NurbsTools::pca (data, mean, eigenvectors, eigenvalues);
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
 
   double r = rf * sqrt (eigenvalues (0));
 
@@ -390,7 +390,7 @@ FittingCurve::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector3d 
     }
     else
     {
-      current = current + delta;
+      current += delta;
 
       if (current < minU)
         current = maxU - (minU - current);
@@ -422,7 +422,7 @@ FittingCurve::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eige
 
   double d_shortest (DBL_MAX);
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
   {
     double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
 

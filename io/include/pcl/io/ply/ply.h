@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PLY_PLY_H
-#define PLY_PLY_H
+#pragma once
 
 #include <pcl/io/boost.h>
 #include <pcl/io/ply/byte_order.h>
@@ -83,14 +82,14 @@ namespace pcl
         static const char* old_name () { return OLD_NAME; } \
       };
 
-      PLY_TYPE_TRAITS(int8, int16, "int8", "char");
-      PLY_TYPE_TRAITS(int16, int16, "int16", "short");
-      PLY_TYPE_TRAITS(int32, int32, "int32", "int");
-      PLY_TYPE_TRAITS(uint8, uint16, "uint8", "uchar");
-      PLY_TYPE_TRAITS(uint16, uint16, "uint16", "ushort");
-      PLY_TYPE_TRAITS(uint32, uint32, "uint32", "uint");
-      PLY_TYPE_TRAITS(float32, float32, "float32", "float");
-      PLY_TYPE_TRAITS(float64, float64, "float64", "double");
+      PLY_TYPE_TRAITS(int8, int16, "int8", "char")
+      PLY_TYPE_TRAITS(int16, int16, "int16", "short")
+      PLY_TYPE_TRAITS(int32, int32, "int32", "int")
+      PLY_TYPE_TRAITS(uint8, uint16, "uint8", "uchar")
+      PLY_TYPE_TRAITS(uint16, uint16, "uint16", "ushort")
+      PLY_TYPE_TRAITS(uint32, uint32, "uint32", "uint")
+      PLY_TYPE_TRAITS(float32, float32, "float32", "float")
+      PLY_TYPE_TRAITS(float64, float64, "float64", "double")
 
       
 #undef PLY_TYPE_TRAITS
@@ -100,4 +99,3 @@ namespace pcl
     } // namespace ply
   } // namespace io
 } // namespace pcl
-#endif // PCL_IO_PLY_PLY_H

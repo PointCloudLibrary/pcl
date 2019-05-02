@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_PCL_VISUALIZER_VTK_H_
-#define PCL_PCL_VISUALIZER_VTK_H_
+
+#pragma once
 
 #if defined __GNUC__
 #pragma GCC system_header
@@ -116,11 +116,6 @@
 #include <vtkImageImport.h>
 #include <vtkImageViewer.h>
 #include <vtkInteractorStyleImage.h>
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-#include <vtkImageSlice.h>
-#include <vtkImageProperty.h>
-#include <vtkImageSliceMapper.h>
-#endif
 #include <vtkImageFlip.h>
 #include <vtkTIFFWriter.h>
 #include <vtkBMPWriter.h>
@@ -144,25 +139,17 @@
 #include <vtkImageCanvasSource2D.h>
 #include <vtkImageBlend.h>
 #include <vtkImageStencilData.h>
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-#  include <pcl/visualization/interactor.h>
-#else
-#  include <vtkRenderWindowInteractor.h>
-#  include <vtkChartXY.h>
-#  include <vtkPlot.h>
-#  include <vtkTable.h>
-#  include <vtkContextView.h>
-#  include <vtkContextScene.h>
-#  include <vtkColorSeries.h>
-#  include <vtkAxis.h>
-#endif
+#include <vtkRenderWindowInteractor.h>
+#include <vtkChartXY.h>
+#include <vtkPlot.h>
+#include <vtkTable.h>
+#include <vtkContextView.h>
+#include <vtkContextScene.h>
+#include <vtkColorSeries.h>
+#include <vtkAxis.h>
 #include <vtkSelection.h>
 
-#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>4)
 #include <vtkHardwareSelector.h>
-#else
-#include <vtkVisibleCellSelector.h>
-#endif
 
 #include <vtkTriangle.h>
 #include <vtkWorldPointPicker.h>
@@ -183,6 +170,3 @@
 #define __DEPRECATED
 #undef __DEPRECATED_DISABLED__
 #endif
-
-#endif    // PCL_PCL_VISUALIZER_VTK_H_
-

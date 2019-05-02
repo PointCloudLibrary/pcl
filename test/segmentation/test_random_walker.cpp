@@ -173,7 +173,7 @@ TEST_P (RandomWalkerTest, BuildLinearSystem)
   std::vector<Weight> degrees (g.rows, 0.0);
   std::vector<Weight> L_sums (g.rows, 0.0);
   std::vector<Weight> B_sums (g.rows, 0.0);
-  for (int k = 0; k < rw.L.outerSize (); ++k)
+  for (Eigen::Index k = 0; k < rw.L.outerSize (); ++k)
   {
     for (SparseMatrix::InnerIterator it (rw.L, k); it; ++it)
     {
@@ -189,7 +189,7 @@ TEST_P (RandomWalkerTest, BuildLinearSystem)
       }
     }
   }
-  for (int k = 0; k < rw.B.outerSize (); ++k)
+  for (Eigen::Index k = 0; k < rw.B.outerSize (); ++k)
   {
     for (SparseMatrix::InnerIterator it (rw.B, k); it; ++it)
     {
@@ -227,10 +227,12 @@ TEST_P (RandomWalkerTest, GetPotentials)
   ASSERT_EQ (g.colors.size (), p.cols ());
   ASSERT_EQ (g.colors.size (), map.size ());
 
-  for (std::set<Color>::iterator it = g.colors.begin (); it != g.colors.end (); ++it)
+  for (const unsigned int &color : g.colors)
     for (size_t i = 0; i < g.size; ++i)
-      if (g.potentials.count (*it))
-        EXPECT_NEAR (g.potentials[*it] (i), p (i, map[*it]), 0.01);
+      if (g.potentials.count (color))
+      {
+        EXPECT_NEAR (g.potentials[color] (i), p (i, map[color]), 0.01);
+      }
 }
 
 INSTANTIATE_TEST_CASE_P (VariousGraphs,

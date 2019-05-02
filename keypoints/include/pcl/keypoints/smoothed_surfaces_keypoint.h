@@ -35,8 +35,7 @@
  * $Id$
  */
 
-#ifndef PCL_SMOOTHEDSURFACESKEYPOINT_H_
-#define PCL_SMOOTHEDSURFACESKEYPOINT_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 
@@ -111,11 +110,11 @@ namespace pcl
       setInputScale (float input_scale) { input_scale_ = input_scale; }
 
       void
-      detectKeypoints (PointCloudT &output);
+      detectKeypoints (PointCloudT &output) override;
 
     protected:
       bool
-      initCompute ();
+      initCompute () override;
 
     private:
       float neighborhood_constant_;
@@ -132,5 +131,3 @@ namespace pcl
                              const std::pair<float, size_t> &b) { return a.first < b.first; }
   };
 }
-
-#endif /* PCL_SMOOTHEDSURFACESKEYPOINT_H_ */

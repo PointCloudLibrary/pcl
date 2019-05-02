@@ -1,5 +1,4 @@
-#ifndef PCL_OUTOFCORE_OBJECT_H_
-#define PCL_OUTOFCORE_OBJECT_H_
+#pragma once
 
 // C++
 #include <map>
@@ -67,5 +66,3 @@ private:
   std::map<vtkActor*, std::set<vtkRenderer*> > associated_renderers_;
 
 };
-
-#endif

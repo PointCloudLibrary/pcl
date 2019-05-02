@@ -37,6 +37,8 @@
  *
  */
 
+#include <thread>
+
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
@@ -51,6 +53,7 @@
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
+using namespace std::chrono_literals;
 
 float default_th_dd = 0.02f;
 int   default_max_search = 50;
@@ -103,9 +106,9 @@ saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 void 
 keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 {
-  double opacity;
   if (event.keyUp())
   {
+    double opacity;
     switch (event.getKeyCode())
     {
       case '1':
@@ -165,10 +168,10 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   print_info ("Detecting all edges... [done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
 
   // Make gray point clouds
-  for (size_t idx = 0; idx < cloud->points.size (); idx++)
+  for (auto &point : cloud->points)
   {
-    uint8_t gray = uint8_t ((cloud->points[idx].r + cloud->points[idx].g + cloud->points[idx].b) / 3);
-    cloud->points[idx].r = cloud->points[idx].g = cloud->points[idx].b = gray;
+    uint8_t gray = uint8_t ((point.r + point.g + point.b) / 3);
+    point.r = point.g = point.b = gray;
   }
 
   // Display edges in PCLVisualizer
@@ -213,7 +216,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   while (!viewer.wasStopped ())
   {
     viewer.spinOnce ();
-    boost::this_thread::sleep (boost::posix_time::microseconds (100));
+    std::this_thread::sleep_for(100us);
   }
 
   // Combine point clouds and edge labels

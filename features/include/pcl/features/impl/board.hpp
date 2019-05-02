@@ -177,9 +177,9 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::normalDis
   Eigen::Vector3f normal_mean;
   normal_mean.setZero ();
 
-  for (size_t i = 0; i < normal_indices.size (); ++i)
+  for (const int &normal_index : normal_indices)
   {
-    const PointNT& curPt = normal_cloud[normal_indices[i]];
+    const PointNT& curPt = normal_cloud[normal_index];
 
     normal_mean += curPt.getNormalVector3fMap ();
   }

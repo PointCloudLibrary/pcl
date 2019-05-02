@@ -1,5 +1,4 @@
-#ifndef PCL_FEATURES_FROM_MESHES_H_
-#define PCL_FEATURES_FROM_MESHES_H_
+#pragma once
 
 #include "pcl/features/normal_3d.h"
 #include "pcl/Vertices.h"
@@ -83,7 +82,7 @@ namespace pcl
         Eigen::Vector3d y;
         y << 0, 1, 0;
         rot.row(2) = normal;
-        y = y - normal(1) * normal;
+        y -= normal(1) * normal;
         y.normalize();
         rot.row(1) = y;
         rot.row(0) = normal.cross(rot.row(1));
@@ -99,8 +98,3 @@ namespace pcl
 
   }
 }
-
-
-#endif // PCL_FEATURES_FROM_MESHES_H_
-
-

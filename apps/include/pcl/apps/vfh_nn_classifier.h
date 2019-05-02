@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef VFHCLASSIFICATION_H_
-#define VFHCLASSIFICATION_H_
+#pragma once
 
 #include <fstream>
 #include <pcl/point_types.h>
@@ -199,7 +198,7 @@ namespace pcl
         std::ifstream f (labels_file_name.c_str ());
         std::string label;
         while (getline (f, label))
-          if (label.size () > 0)
+          if (!label.empty ())
             labels.push_back(label);
         return addTrainingFeatures (cloud, labels);
       }
@@ -265,5 +264,3 @@ namespace pcl
       }
   };
 }
-
-#endif /* VFHCLASSIFICATION_H_ */

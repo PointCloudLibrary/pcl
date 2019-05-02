@@ -83,7 +83,7 @@ class TestMeshCirculators : public ::testing::Test
     //  \ / \ /  //
     //   3 - 4   //
     void
-    SetUp ()
+    SetUp () override
     {
       for (int i=0; i<7; ++i) mesh_.addVertex ();
 
@@ -309,7 +309,7 @@ TEST_F (TestMeshCirculators, FaceAroundVertexDecrement)
 TEST_F (TestMeshCirculators, VertexAroundFaceIncrement)
 {
   VertexIndices actual;
-  for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
+  for (size_t i=0; i<mesh_.sizeFaces (); ++i)
   {
     VAFC       circ     = mesh_.getVertexAroundFaceCirculator (FaceIndex (i));
     const VAFC circ_end = circ;
@@ -331,7 +331,7 @@ TEST_F (TestMeshCirculators, VertexAroundFaceIncrement)
 TEST_F (TestMeshCirculators, VertexAroundFaceDecrement)
 {
   VertexIndices actual;
-  for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
+  for (size_t i=0; i<mesh_.sizeFaces (); ++i)
   {
     VAFC       circ     = mesh_.getVertexAroundFaceCirculator (FaceIndex (i));
     const VAFC circ_end = circ;
@@ -353,7 +353,7 @@ TEST_F (TestMeshCirculators, VertexAroundFaceDecrement)
 TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForAllFacesIncrement)
 {
   VertexIndices actual;
-  for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
+  for (size_t i=0; i<mesh_.sizeFaces (); ++i)
   {
     IHEAFC       circ     = mesh_.getInnerHalfEdgeAroundFaceCirculator (FaceIndex (i));
     const IHEAFC circ_end = circ;
@@ -376,7 +376,7 @@ TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForAllFacesIncrement)
 TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForAllFacesDecrement)
 {
   VertexIndices actual;
-  for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
+  for (size_t i=0; i<mesh_.sizeFaces (); ++i)
   {
     IHEAFC       circ     = mesh_.getInnerHalfEdgeAroundFaceCirculator (FaceIndex (i));
     const IHEAFC circ_end = circ;
@@ -437,7 +437,7 @@ TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForBoundaryDecrement)
 TEST_F (TestMeshCirculators, OuterHalfEdgeAroundFaceIncrement)
 {
   VertexIndices actual;
-  for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
+  for (size_t i=0; i<mesh_.sizeFaces (); ++i)
   {
     OHEAFC       circ     = mesh_.getOuterHalfEdgeAroundFaceCirculator (FaceIndex (i));
     const OHEAFC circ_end = circ;
@@ -464,7 +464,7 @@ TEST_F (TestMeshCirculators, OuterHalfEdgeAroundFaceIncrement)
 TEST_F (TestMeshCirculators, OuterHalfEdgeAroundFaceDecrement)
 {
   VertexIndices actual;
-  for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
+  for (size_t i=0; i<mesh_.sizeFaces (); ++i)
   {
     OHEAFC       circ     = mesh_.getOuterHalfEdgeAroundFaceCirculator (FaceIndex (i));
     const OHEAFC circ_end = circ;

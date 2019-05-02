@@ -1,6 +1,9 @@
 #include <pcl/apps/cloud_composer/point_selectors/selected_trackball_interactor_style.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 
+#include <QDebug>
+#include <QItemSelectionModel>
+
 namespace pcl
 {
   namespace cloud_composer
@@ -12,8 +15,7 @@ namespace pcl
 pcl::cloud_composer::SelectedTrackballStyleInteractor::SelectedTrackballStyleInteractor ()
   : vtkInteractorStyleTrackballActor ()
 {
-  manipulation_complete_event_ = interactor_events::MANIPULATION_COMPLETE_EVENT;
-  
+  manipulation_complete_event_ = interactor_events::MANIPULATION_COMPLETE_EVENT;  
 }
 
 pcl::cloud_composer::SelectedTrackballStyleInteractor::~SelectedTrackballStyleInteractor ()
@@ -34,13 +36,12 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::setSelectedActors ()
       selected_cloud_ids.append (cloud_item->getId ());
   }
   
-  pcl::visualization::CloudActorMap::iterator it;
-  for (it = actors_->begin (); it != actors_->end (); ++it)
+  for (const auto &actorItem : *actors_)
   {
-    QString id = QString::fromStdString (it->first);
+    QString id = QString::fromStdString (actorItem.first);
     if (selected_cloud_ids.contains (id))
     {
-      vtkLODActor* actor = (it->second).actor;
+      vtkLODActor* actor = actorItem.second.actor;
       qDebug () << "Adding "<<id<< " to selected manip! ptr ="<<actor;
       selected_actors_map_.insert (id ,actor);
       vtkSmartPointer<vtkMatrix4x4> start_matrix = vtkSmartPointer<vtkMatrix4x4>::New ();
@@ -55,8 +56,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::OnLeftButtonDown ()
 {
   vtkInteractorStyleTrackballActor::OnLeftButtonDown();
   
-  setSelectedActors ();
- 
+  setSelectedActors (); 
 }
 
 void
@@ -64,8 +64,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::OnRightButtonDown ()
 {
   vtkInteractorStyleTrackballActor::OnRightButtonDown();
   
-  setSelectedActors ();
-  
+  setSelectedActors ();  
 }
 
 void
@@ -80,8 +79,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::OnLeftButtonUp ()
     vtkSmartPointer<vtkMatrix4x4> end_matrix = vtkSmartPointer<vtkMatrix4x4>::New ();
     actor->GetMatrix (end_matrix);
     manip_event->addManipulation (id, start_matrix_map_.value (id), end_matrix);
-    this->InvokeEvent (this->manipulation_complete_event_, manip_event);
-    
+    this->InvokeEvent (this->manipulation_complete_event_, manip_event);    
   }
 }
 
@@ -97,22 +95,20 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::OnRightButtonUp ()
     vtkSmartPointer<vtkMatrix4x4> end_matrix = vtkSmartPointer<vtkMatrix4x4>::New ();
     actor->GetMatrix (end_matrix);
     manip_event->addManipulation (id, start_matrix_map_.value (id), end_matrix);
-    this->InvokeEvent (this->manipulation_complete_event_, manip_event);
-    
+    this->InvokeEvent (this->manipulation_complete_event_, manip_event);    
   }
 }
 
 void
 pcl::cloud_composer::SelectedTrackballStyleInteractor::Rotate ()
 {
-  if (this->CurrentRenderer == NULL || this->InteractionProp == NULL)
+  if (this->CurrentRenderer == nullptr || this->InteractionProp == nullptr)
   {
     return;
   }
   
   vtkRenderWindowInteractor *rwi = this->Interactor;
   vtkCamera *cam = this->CurrentRenderer->GetActiveCamera();
-  
   
   // First get the origin of the assembly
   double *obj_center = this->InteractionProp->GetCenter();
@@ -202,14 +198,13 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Rotate ()
     this->CurrentRenderer->ResetCameraClippingRange();
   }
     
-  rwi->Render();
-    
+  rwi->Render();    
 }
 
 void
 pcl::cloud_composer::SelectedTrackballStyleInteractor::Spin ()
 {
-  if ( this->CurrentRenderer == NULL || this->InteractionProp == NULL )
+  if ( this->CurrentRenderer == nullptr || this->InteractionProp == nullptr )
   {
     return;
   }
@@ -288,7 +283,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Spin ()
 void
 pcl::cloud_composer::SelectedTrackballStyleInteractor::Pan ()
 {
-  if (this->CurrentRenderer == NULL || this->InteractionProp == NULL)
+  if (this->CurrentRenderer == nullptr || this->InteractionProp == nullptr)
   {
     return;
   }
@@ -322,7 +317,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Pan ()
   foreach (QString id, selected_actors_map_.keys ())
   {
     vtkLODActor* actor = selected_actors_map_.value (id);
-    if (actor->GetUserMatrix() != NULL)
+    if (actor->GetUserMatrix() != nullptr)
     {
       vtkTransform *t = vtkTransform::New();
       t->PostMultiply();
@@ -351,7 +346,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Pan ()
 void
 pcl::cloud_composer::SelectedTrackballStyleInteractor::UniformScale ()
 {
-  if (this->CurrentRenderer == NULL || this->InteractionProp == NULL)
+  if (this->CurrentRenderer == nullptr || this->InteractionProp == nullptr)
   {
     return;
   }
@@ -366,7 +361,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::UniformScale ()
   double yf = dy / center[1] * this->MotionFactor;
   double scaleFactor = pow(1.1, yf);
   
-  double **rotate = NULL;
+  double **rotate = nullptr;
   
   double scale[3];
   scale[0] = scale[1] = scale[2] = scaleFactor;
@@ -386,5 +381,4 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::UniformScale ()
   }
   
   rwi->Render();
-
 }

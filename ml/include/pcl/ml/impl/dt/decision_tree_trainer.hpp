@@ -44,8 +44,8 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   : max_tree_depth_ (15)
   , num_of_features_ (1000)
   , num_of_thresholds_ (10)
-  , feature_handler_ (NULL)
-  , stats_estimator_ (NULL)
+  , feature_handler_ (nullptr)
+  , stats_estimator_ (nullptr)
   , data_set_ ()
   , label_data_ ()
   , examples_ ()
@@ -150,7 +150,7 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
                                        flags );
 
     // get list of thresholds
-    if (thresholds_.size () > 0)
+    if (!thresholds_.empty ())
     {
       // compute information gain for each threshold and store threshold with highest information gain
       for (size_t threshold_index = 0; threshold_index < thresholds_.size (); ++threshold_index)

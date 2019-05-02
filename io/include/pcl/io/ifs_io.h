@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_IFS_IO_H_
-#define PCL_IO_IFS_IO_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/PCLPointCloud2.h>
@@ -254,5 +253,3 @@ namespace pcl
     }
   }
 }
-
-#endif  //#ifndef PCL_IO_IFS_IO_H_

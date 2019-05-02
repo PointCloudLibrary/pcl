@@ -40,7 +40,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::Permutohedral::Permutohedral () :
   N_ (0), M_ (0), d_ (0),
-  blur_neighborsOLD_(NULL), offsetOLD_ (NULL), barycentricOLD_ (NULL) 
+  blur_neighborsOLD_(nullptr), offsetOLD_ (nullptr), barycentricOLD_ (nullptr) 
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,11 +56,11 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
   std::multimap<size_t, int> hash_table;
 
   // reserve class memory
-  if (offset_.size () > 0) 
+  if (!offset_.empty ()) 
     offset_.clear ();
   offset_.resize ((d_ + 1) * N_);
 
-  if (barycentric_.size () > 0) 
+  if (!barycentric_.empty ()) 
     barycentric_.clear ();
   barycentric_.resize ((d_ + 1) * N_);
 
@@ -161,7 +161,7 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
 
       // insert key in hash table      
       size_t hash_key = generateHashKey (key);
-      std::multimap<size_t ,int>::iterator it = hash_table.find (hash_key);
+      auto it = hash_table.find (hash_key);
       int key_index = -1;
       if (it != hash_table.end ())
       {
@@ -170,7 +170,7 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
         // check if key is the right one
         int tmp_key_index = -1;
         //for (int ii = key_index; ii < keys.size (); ii++)
-        for (it = hash_table.find (hash_key); it != hash_table.end (); ++it)
+        for (; it != hash_table.end (); ++it)
         {
           int ii = it->second;
           bool same = true;
@@ -219,7 +219,7 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
   M_ = static_cast<int> (hash_table.size());
 		
   // Create the neighborhood structure
-  if (blur_neighbors_.size () > 0) 
+  if (!blur_neighbors_.empty ()) 
     blur_neighbors_.clear ();
   blur_neighbors_.resize ((d_+1)*M_);
 
@@ -330,9 +330,9 @@ pcl::Permutohedral::initOLD (const std::vector<float> &feature, const int featur
   HashTableOLD hash_table(d_, N_*(d_+1));
 
   // Allocate the class memory
-  if (offsetOLD_) delete [] offsetOLD_;
+  delete [] offsetOLD_;
   offsetOLD_ = new int[ (d_+1)*N_ ];
-  if (barycentricOLD_) delete [] barycentricOLD_;
+  delete [] barycentricOLD_;
   barycentricOLD_ = new float[ (d_+1)*N_ ];
 		
   // Allocate the local memory
@@ -453,7 +453,7 @@ pcl::Permutohedral::initOLD (const std::vector<float> &feature, const int featur
   M_ = hash_table.size();
 		
   // Create the neighborhood structure
-  if(blur_neighborsOLD_) delete[] blur_neighborsOLD_;
+  delete[] blur_neighborsOLD_;
   blur_neighborsOLD_ = new Neighbors[ (d_+1)*M_ ];
 		
   short * n1 = new short[d_+1];

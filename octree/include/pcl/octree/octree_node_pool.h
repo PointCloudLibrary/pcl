@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_OCTREE_NODE_POOL_H
-#define PCL_OCTREE_NODE_POOL_H
+#pragma once
 
 #include <vector>
 
@@ -125,5 +124,3 @@ namespace pcl
 
   }
 }
-
-#endif

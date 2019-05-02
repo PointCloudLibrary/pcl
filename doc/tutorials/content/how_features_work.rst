@@ -102,7 +102,7 @@ Because **setInputCloud()** is always required, there are up to four combination
 
 * **setIndices() = true, setSearchSurface() = true** - this is probably the rarest case, where both indices and a search surface is given. In this case, features will be estimated for only a subset from the <input, indices> pair, using the search surface information given in **setSearchSurface()**.
 
-  Finally, un the figure above, this corresponds to the last (rightmost) case. Here, we assume that q_2's index is not part of the indices vector given for Q, so no neighbors or features will be estimated at q2.
+  Finally, in the figure above, this corresponds to the last (rightmost) case. Here, we assume that q_2's index is not part of the indices vector given for Q, so no neighbors or features will be estimated at q2.
 
 
 The most useful example when **setSearchSurface()** should be used, is when we have a very dense input dataset, but we do not want to estimate features at all the points in it, but rather at some keypoints discovered using the methods in `pcl_keypoints`, or at a downsampled version of the cloud (e.g., obtained using a `pcl::VoxelGrid<T>` filter). In this case, we pass the downsampled/keypoints input via **setInputCloud()**, and the original data as **setSearchSurface()**.
@@ -161,7 +161,7 @@ The following code snippet will estimate a set of surface normals for a subset o
 
      // Create a set of indices to be used. For simplicity, we're going to be using the first 10% of the points in cloud
      std::vector<int> indices (floor (cloud->points.size () / 10));
-     for (size_t i = 0; indices.size (); ++i) indices[i] = i;
+     for (size_t i = 0; i < indices.size (); ++i) indices[i] = i;
 
      // Create the normal estimation class, and pass the input dataset to it
      pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
@@ -229,7 +229,7 @@ Finally, the following code snippet will estimate a set of surface normals for a
      // cloud_normals->points.size () should have the same size as the input cloud_downsampled->points.size ()
    }
 
-.. [RusuDissertation] http://files.rbrusu.com/publications/RusuPhDThesis.pdf
+.. [RusuDissertation] http://mediatum.ub.tum.de/doc/800632/941254.pdf
 .. note::
     @PhDThesis{RusuDoctoralDissertation,
     author = {Radu Bogdan Rusu}, 

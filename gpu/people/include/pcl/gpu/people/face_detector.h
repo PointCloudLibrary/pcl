@@ -34,8 +34,7 @@
  * @author: Koen Buys
  */
 
-#ifndef PCL_GPU_PEOPLE_FACE_DETECTOR_H_
-#define PCL_GPU_PEOPLE_FACE_DETECTOR_H_
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <pcl/point_types.h>
@@ -197,6 +196,3 @@ namespace pcl
     }
   }
 }
-
-
-#endif /* PCL_GPU_PEOPLE_FACE_DETECTOR_H_ */

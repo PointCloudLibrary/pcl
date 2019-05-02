@@ -81,11 +81,11 @@ FittingCylinder::refine (int dim)
   std::vector<double> xi;
   std::vector<double> elements = getElementVector (m_nurbs, dim);
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (unsigned i = 0; i < xi.size (); i++)
-    m_nurbs.InsertKnot (dim, xi[i], 1);
+  for (const double &i : xi)
+    m_nurbs.InsertKnot (dim, i, 1);
 }
 
 void
@@ -95,13 +95,13 @@ FittingCylinder::refine (int dim, double param)
 
   if (param == elements[elements.size () - 1])
   {
-    int i = int (elements.size ()) - 2;
+    size_t i = elements.size () - 2;
     double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
     m_nurbs.InsertKnot (dim, xi);
     return;
   }
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (size_t i = 0; i < elements.size () - 1; i++)
   {
     if (param >= elements[i] && param < elements[i + 1])
     {
@@ -227,7 +227,7 @@ FittingCylinder::initNurbsPCACylinder (int order, NurbsDataSurface *data)
   data->mean = mean;
   data->eigenvectors = eigenvectors;
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
 
   Eigen::Vector3d v_max (0.0, 0.0, 0.0);
   Eigen::Vector3d v_min (DBL_MAX, DBL_MAX, DBL_MAX);
@@ -580,7 +580,7 @@ FittingCylinder::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &p
     }
     else
     {
-      current = current + delta;
+      current += delta;
       if (current (0) < minU)
         current (0) = minU;
       else if (current (0) > maxU)
@@ -614,9 +614,9 @@ FittingCylinder::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest = std::numeric_limits<double>::max ();
-  for (unsigned i = 0; i < elementsU.size () - 1; i++)
+  for (size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (unsigned j = 0; j < elementsV.size () - 1; j++)
+    for (size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
 

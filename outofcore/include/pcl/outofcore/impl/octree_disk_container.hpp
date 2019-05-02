@@ -47,6 +47,9 @@
 
 // Boost
 #include <pcl/outofcore/boost.h>
+#include <boost/random/bernoulli_distribution.hpp>
+#include <boost/random/uniform_int.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 // PCL
 #include <pcl/io/pcd_io.h>
@@ -71,10 +74,10 @@ namespace pcl
     boost::mutex OutofcoreOctreeDiskContainer<PointT>::rng_mutex_;
 
     template<typename PointT> boost::mt19937
-    OutofcoreOctreeDiskContainer<PointT>::rand_gen_ (static_cast<unsigned int> (std::time(NULL)));
+    OutofcoreOctreeDiskContainer<PointT>::rand_gen_ (static_cast<unsigned int> (std::time(nullptr)));
 
     template<typename PointT>
-    boost::uuids::random_generator OutofcoreOctreeDiskContainer<PointT>::uuid_gen_ (&rand_gen_);
+    boost::uuids::basic_random_generator<boost::mt19937> OutofcoreOctreeDiskContainer<PointT>::uuid_gen_ (&rand_gen_);
 
     template<typename PointT>
     const uint64_t OutofcoreOctreeDiskContainer<PointT>::READ_BLOCK_SIZE_ = static_cast<uint64_t> (2e12);
@@ -166,7 +169,7 @@ namespace pcl
     template<typename PointT> void
     OutofcoreOctreeDiskContainer<PointT>::flushWritebuff (const bool force_cache_dealloc)
     {
-      if (writebuff_.size () > 0)
+      if (!writebuff_.empty ())
       {
         //construct the point cloud for this node
         typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
@@ -205,7 +208,7 @@ namespace pcl
 
         PointT temp;
         //open our file
-        FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
+        FILE* f = fopen (disk_storage_filename_->c_str (), "rbe");
         assert (f != NULL);
 
         //seek the right length; 
@@ -245,7 +248,7 @@ namespace pcl
 
       if ((start + count) > size ())
       {
-        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Indicies out of range; start + count exceeds the size of the stored points\n", __FUNCTION__);
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Indices out of range; start + count exceeds the size of the stored points\n", __FUNCTION__);
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeDiskContainer] Outofcore Octree Exception: Read indices exceed range");
       }
 
@@ -331,7 +334,7 @@ namespace pcl
         }
         std::sort (offsets.begin (), offsets.end ());
 
-        FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
+        FILE* f = fopen (disk_storage_filename_->c_str (), "rbe");
         assert (f != NULL);
         PointT p;
         char* loc = reinterpret_cast<char*> (&p);
@@ -430,7 +433,7 @@ namespace pcl
         }
         std::sort (offsets.begin (), offsets.end ());
 
-        FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
+        FILE* f = fopen (disk_storage_filename_->c_str (), "rbe");
         assert (f != NULL);
         PointT p;
         char* loc = reinterpret_cast<char*> (&p);
@@ -593,7 +596,7 @@ namespace pcl
         return (-1);
       }
 
-      if(output_cloud.get () != 0)
+      if(output_cloud.get () != nullptr)
       {
         pcl::concatenatePointCloud (*output_cloud, *temp_output_cloud, *output_cloud);
       }

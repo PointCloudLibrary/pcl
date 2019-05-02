@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_TEXTUREMESH_H_
-#define PCL_TEXTUREMESH_H_
+#pragma once
 
 #include <Eigen/Core>
 #include <string>
@@ -109,6 +108,3 @@ namespace pcl
    typedef boost::shared_ptr<pcl::TextureMesh> TextureMeshPtr;
    typedef boost::shared_ptr<pcl::TextureMesh const> TextureMeshConstPtr;
 } // namespace pcl
-
-#endif /* PCL_TEXTUREMESH_H_ */
-

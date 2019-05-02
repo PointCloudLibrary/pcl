@@ -35,13 +35,11 @@
  *
  */
 
-#ifndef PCL_IO_DEPTH_SENSE_DEVICE_MANAGER_H
-#define PCL_IO_DEPTH_SENSE_DEVICE_MANAGER_H
+#pragma once
 
 #include <boost/utility.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/thread.hpp>
 
 #include <pcl/pcl_exports.h>
 
@@ -156,6 +154,3 @@ namespace pcl
   } // namespace io
 
 } // namespace pcl
-
-#endif /* PCL_IO_DEPTH_SENSE_DEVICE_MANAGER_H */
-

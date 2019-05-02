@@ -1,14 +1,14 @@
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/item_inspector.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
+#include <QTreeView>
 
 pcl::cloud_composer::ItemInspector::ItemInspector (QWidget* parent)
   : QTabWidget(parent)
 {
-  current_item_properties_model_ = 0;
-  current_project_model_ = 0;
-  current_selection_model_ = 0;
+  current_item_properties_model_ = nullptr;
+  current_project_model_ = nullptr;
+  current_selection_model_ = nullptr;
   
   parameter_view_ = new QTreeView ();
   addTab (parameter_view_, "Parameters");
@@ -109,10 +109,10 @@ void
 pcl::cloud_composer::ItemInspector::updateView ()
 {
 
-  current_item_properties_model_ = 0;
+  current_item_properties_model_ = nullptr;
   QModelIndex current_item = current_selection_model_->currentIndex ();
-  const QStandardItemModel* model = 0;
-  CloudComposerItem* cloud_item = 0;
+  const QStandardItemModel* model = nullptr;
+  CloudComposerItem* cloud_item = nullptr;
   if (current_item.isValid ())
     model = dynamic_cast<const QStandardItemModel*> (current_item.model ());
         

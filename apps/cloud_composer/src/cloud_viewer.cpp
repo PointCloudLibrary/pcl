@@ -1,7 +1,8 @@
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/cloud_viewer.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/cloud_view.h>
+
+#include <QItemSelection>
 
 pcl::cloud_composer::CloudViewer::CloudViewer (QWidget* parent)
   : QTabWidget (parent)
@@ -39,7 +40,7 @@ pcl::cloud_composer::ProjectModel*
 pcl::cloud_composer::CloudViewer::getModel () const
 {
   if (this->count() == 0)
-    return 0;
+    return nullptr;
   else
     return dynamic_cast<CloudView*> (currentWidget ())->getModel (); 
 }

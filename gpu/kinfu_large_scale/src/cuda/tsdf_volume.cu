@@ -103,9 +103,9 @@ namespace pcl
       #pragma unroll
                 for(int z = 0; z < buffer.voxels_size.z; ++z, pos+=z_step)
                 {
-                  ///If we went outside of the memory, make sure we go back to the begining of it
+                  ///If we went outside of the memory, make sure we go back to the beginning of it
                   if(pos > buffer.tsdf_memory_end)
-                    pos = pos - size;
+                    pos -= size;
                   
                   if (pos >= buffer.tsdf_memory_start && pos <= buffer.tsdf_memory_end) // quickfix for http://dev.pointclouds.org/issues/894
                     pack_tsdf (0.f, 0, *pos);
@@ -134,16 +134,16 @@ namespace pcl
                   
                 ///We make sure that we are not already before the start of the memory
                 if(pos < buffer.tsdf_memory_start)
-                    pos = pos + size;
+                    pos += size;
 
                 int nbSteps = abs(maxBounds.z);
                 
             #pragma unroll				
                 for(int z = 0; z < nbSteps; ++z, pos+=z_step)
                 {
-                  ///If we went outside of the memory, make sure we go back to the begining of it
+                  ///If we went outside of the memory, make sure we go back to the beginning of it
                   if(pos > buffer.tsdf_memory_end)
-                    pos = pos - size;
+                    pos -= size;
                   
                   if (pos >= buffer.tsdf_memory_start && pos <= buffer.tsdf_memory_end) // quickfix for http://dev.pointclouds.org/issues/894
                     pack_tsdf (0.f, 0, *pos);
@@ -224,7 +224,7 @@ namespace pcl
           {
             float3 v_g = getVoxelGCoo (x, y, z);            //3 // p
 
-            //tranform to curr cam coo space
+            //transform to curr cam coo space
             float3 v = Rcurr_inv * (v_g - tcurr);           //4
 
             int2 coo;           //project to current cam

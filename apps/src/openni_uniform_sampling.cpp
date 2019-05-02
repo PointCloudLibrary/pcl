@@ -33,6 +33,8 @@
  *	
  */
 
+#include <thread>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -41,6 +43,8 @@
 #include <pcl/filters/uniform_sampling.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
+
+using namespace std::chrono_literals;
 
 #define FPS_CALC(_WHAT_) \
 do \
@@ -96,7 +100,7 @@ class OpenNIUniformSampling
       boost::mutex::scoped_lock lock (mtx_);
       if (!keypoints_ && !cloud_)
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
         return;
       }
 
@@ -126,7 +130,7 @@ class OpenNIUniformSampling
       
       while (!viewer.wasStopped ())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
       }
 
       interface->stop ();

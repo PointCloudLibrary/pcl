@@ -6,11 +6,7 @@
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  Q_EXPORT_PLUGIN2(cloud_composer_euclidean_clustering_tool, pcl::cloud_composer::EuclideanClusteringToolFactory)
-#else
-  Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
-#endif
+Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
 
 pcl::cloud_composer::EuclideanClusteringTool::EuclideanClusteringTool (PropertiesModel* parameter_model, QObject* parent)
   : SplitItemTool (parameter_model, parent)
@@ -29,7 +25,7 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;
   // Check input data length
-  if ( input_data.size () == 0)
+  if ( input_data.empty ())
   {
     qCritical () << "Empty input in Euclidean Clustering Tool!";
     return output;
@@ -99,7 +95,7 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
       } 
       //We copy input cloud over for special case that no clusters found, since ExtractIndices doesn't work for 0 length vectors
       pcl::PCLPointCloud2::Ptr remainder_cloud (new pcl::PCLPointCloud2(*input_cloud));
-      if (cluster_indices.size () > 0)
+      if (!cluster_indices.empty ())
       {
         //make a cloud containing all the remaining points
         filter.setIndices (extracted_indices);

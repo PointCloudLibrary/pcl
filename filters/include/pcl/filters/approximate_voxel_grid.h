@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_APPROXIMATE_VOXEL_GRID_MAP_H_
-#define PCL_FILTERS_APPROXIMATE_VOXEL_GRID_MAP_H_
+#pragma once
 
 #include <pcl/filters/boost.h>
 #include <pcl/filters/filter.h>
@@ -234,7 +233,7 @@ namespace pcl
         * \param output the resultant point cloud message
         */
       void 
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Write a single point from the hash to the output cloud
         */
@@ -246,5 +245,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/approximate_voxel_grid.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_VOXEL_GRID_MAP_H_

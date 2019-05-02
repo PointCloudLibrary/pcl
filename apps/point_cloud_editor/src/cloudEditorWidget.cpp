@@ -37,7 +37,7 @@
 /// @details the implementation of class CloudEditorWidget.
 /// @author  Yue Li and Matthew Hielsberg
 
-#include <ctype.h>
+#include <cctype>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMouseEvent>
@@ -90,7 +90,7 @@ CloudEditorWidget::~CloudEditorWidget ()
 void
 CloudEditorWidget::loadFile(const std::string &filename)
 {
-  std::string ext = filename.substr(filename.find_last_of(".")+1);
+  std::string ext = filename.substr(filename.find_last_of('.')+1);
   FileLoadMap::iterator it = cloud_load_func_map_.find(ext);
   if (it != cloud_load_func_map_.end())
     (it->second)(this, filename);
@@ -132,7 +132,7 @@ CloudEditorWidget::save ()
   QString file_path = QFileDialog::getSaveFileName(this,tr("Save point cloud"));
   
   std::string file_path_std = file_path.toStdString();
-  if ( (file_path_std == "") || (!cloud_ptr_) )
+  if ( (file_path_std.empty()) || (!cloud_ptr_) )
     return;
 
   if (is_colored_)
@@ -306,6 +306,11 @@ CloudEditorWidget::denoise ()
     return;
   DenoiseParameterForm form;
   form.exec();
+  // check for cancel.
+  if (!form.ok())
+  {
+	  return;
+  }
   boost::shared_ptr<DenoiseCommand> c(new DenoiseCommand(selection_ptr_,
     cloud_ptr_, form.getMeanK(), form.getStdDevThresh()));
   command_queue_ptr_->execute(c);
@@ -567,12 +572,12 @@ CloudEditorWidget::isColored (const std::string &fileName) const
   pcl::PCLPointCloud2 cloud2;
   pcl::PCDReader reader;
   reader.readHeader(fileName, cloud2);
-  std::vector< pcl::PCLPointField > fs = cloud2.fields;
-  for(unsigned int i = 0; i < fs.size(); ++i)
+  std::vector< pcl::PCLPointField > cloud_fields = cloud2.fields;
+  for(const auto &field : cloud_fields)
   {
-    std::string name(fs[i].name);
+    std::string name(field.name);
     stringToLower(name);
-    if ((name.compare("rgb") == 0) || (name.compare("rgba") == 0))
+    if ((name == "rgb") || (name == "rgba"))
       return true;
   }
   return false;

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_CONVOLUTION_H_
-#define PCL_FILTERS_CONVOLUTION_H_
+#pragma once
 
 #include <pcl/common/eigen.h>
 #include <pcl/common/point_operators.h>
@@ -65,8 +64,8 @@ namespace pcl
       * policies:
       * - Ignoring: elements at special locations are filled with zero
       * (default behaviour)
-      * - Mirroring: the missing rows or columns are obtained throug mirroring
-      * - Duplicating: the missing rows or columns are obtained throug
+      * - Mirroring: the missing rows or columns are obtained through mirroring
+      * - Duplicating: the missing rows or columns are obtained through
       * duplicating
       *
       * \author Nizar Sallem
@@ -77,10 +76,10 @@ namespace pcl
     class Convolution
     {
       public:
-        typedef typename pcl::PointCloud<PointIn> PointCloudIn;
+        typedef pcl::PointCloud<PointIn> PointCloudIn;
         typedef typename PointCloudIn::Ptr PointCloudInPtr;
         typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-        typedef typename pcl::PointCloud<PointOut> PointCloudOut;
+        typedef pcl::PointCloud<PointOut> PointCloudOut;
         typedef boost::shared_ptr< Convolution<PointIn, PointOut> > Ptr;
         typedef boost::shared_ptr< const Convolution<PointIn, PointOut> > ConstPtr;
 
@@ -235,5 +234,3 @@ namespace pcl
 }
 
 #include <pcl/filters/impl/convolution.hpp>
-
-#endif

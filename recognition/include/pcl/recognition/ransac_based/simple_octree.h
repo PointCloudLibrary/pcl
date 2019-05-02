@@ -43,8 +43,7 @@
  *      Author: papazov
  */
 
-#ifndef SIMPLE_OCTREE_H_
-#define SIMPLE_OCTREE_H_
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <set>
@@ -119,7 +118,7 @@ namespace pcl
 
           protected:
             void
-            setData (NodeData* data){ if ( data_ ) delete data_; data_ = data;}
+            setData (NodeData* data){ delete data_; data_ = data;}
 
             inline bool
             createChildren ();
@@ -207,5 +206,3 @@ namespace pcl
 } // namespace pcl
 
 #include <pcl/recognition/impl/ransac_based/simple_octree.hpp>
-
-#endif /* SIMPLE_OCTREE_H_ */

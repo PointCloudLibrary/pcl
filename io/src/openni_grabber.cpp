@@ -47,6 +47,9 @@
 #include <pcl/io/boost.h>
 #include <pcl/exceptions.h>
 #include <iostream>
+#include <thread>
+
+using namespace std::chrono_literals;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
@@ -241,7 +244,7 @@ pcl::OpenNIGrabber::start ()
     PCL_THROW_EXCEPTION (pcl::IOException, "Could not start streams. Reason: " << ex.what ());
   }
   // workaround, since the first frame is corrupted
-  boost::this_thread::sleep (boost::posix_time::seconds (1));
+  std::this_thread::sleep_for(1s);
   unblock_signals ();
 }
 
@@ -366,7 +369,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
   }
   catch (...)
   {
-    PCL_THROW_EXCEPTION (pcl::IOException, "unknown error occured");
+    PCL_THROW_EXCEPTION (pcl::IOException, "unknown error occurred");
   }
 
   XnMapOutputMode depth_md;
@@ -539,21 +542,21 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
 
   cloud->points.resize (cloud->height * cloud->width);
 
-  register float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
-  register float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
-  register float centerX = ((float)cloud->width - 1.f) / 2.f;
-  register float centerY = ((float)cloud->height - 1.f) / 2.f;
+  float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
+  float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
+  float centerX = ((float)cloud->width - 1.f) / 2.f;
+  float centerY = ((float)cloud->height - 1.f) / 2.f;
 
-  if (pcl_isfinite (depth_focal_length_x_))
+  if (std::isfinite (depth_focal_length_x_))
     constant_x =  1.0f / static_cast<float> (depth_focal_length_x_);
 
-  if (pcl_isfinite (depth_focal_length_y_))
+  if (std::isfinite (depth_focal_length_y_))
     constant_y =  1.0f / static_cast<float> (depth_focal_length_y_);
   
-  if (pcl_isfinite (depth_principal_point_x_))
+  if (std::isfinite (depth_principal_point_x_))
     centerX =  static_cast<float> (depth_principal_point_x_);
   
-  if (pcl_isfinite (depth_principal_point_y_))
+  if (std::isfinite (depth_principal_point_y_))
     centerY =  static_cast<float> (depth_principal_point_y_);
 
   if (device_->isDepthRegistered ())
@@ -565,7 +568,7 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   // we have to use Data, since operator[] uses assert -> Debug-mode very slow!
-  register const unsigned short* depth_map = depth_image->getDepthMetaData ().Data ();
+  const unsigned short* depth_map = depth_image->getDepthMetaData ().Data ();
   if (depth_image->getWidth() != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     if (depth_buffer_size_ < depth_width_ * depth_height_)
@@ -577,10 +580,10 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
     depth_map = depth_buffer_.get ();
   }
 
-  register int depth_idx = 0;
+  int depth_idx = 0;
   for (unsigned int v = 0; v < depth_height_; ++v)
   {
-    for (register unsigned int u = 0; u < depth_width_; ++u, ++depth_idx)
+    for (unsigned int u = 0; u < depth_width_; ++u, ++depth_idx)
     {
       pcl::PointXYZ& pt = cloud->points[depth_idx];
       // Check for invalid measurements
@@ -616,24 +619,24 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   cloud->points.resize (cloud->height * cloud->width);
 
   //float constant = 1.0f / device_->getImageFocalLength (depth_width_);
-  register float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
-  register float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
-  register float centerX = ((float)cloud->width - 1.f) / 2.f;
-  register float centerY = ((float)cloud->height - 1.f) / 2.f;
+  float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
+  float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
+  float centerX = ((float)cloud->width - 1.f) / 2.f;
+  float centerY = ((float)cloud->height - 1.f) / 2.f;
 
-  if (pcl_isfinite (depth_focal_length_x_))
+  if (std::isfinite (depth_focal_length_x_))
     constant_x =  1.0f / static_cast<float> (depth_focal_length_x_);
 
-  if (pcl_isfinite (depth_focal_length_y_))
+  if (std::isfinite (depth_focal_length_y_))
     constant_y =  1.0f / static_cast<float> (depth_focal_length_y_);
   
-  if (pcl_isfinite (depth_principal_point_x_))
+  if (std::isfinite (depth_principal_point_x_))
     centerX =  static_cast<float> (depth_principal_point_x_);
   
-  if (pcl_isfinite (depth_principal_point_y_))
+  if (std::isfinite (depth_principal_point_y_))
     centerY =  static_cast<float> (depth_principal_point_y_);
 
-  register const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
+  const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight() != depth_height_)
   {
     if (depth_buffer_size_ < depth_width_ * depth_height_)
@@ -674,7 +677,7 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   int point_idx = 0;
   for (unsigned int v = 0; v < depth_height_; ++v, point_idx += skip)
   {
-    for (register unsigned int u = 0; u < depth_width_; ++u, ++value_idx, point_idx += step)
+    for (unsigned int u = 0; u < depth_width_; ++u, ++value_idx, point_idx += step)
     {
       PointT& pt = cloud->points[point_idx];
       /// @todo Different values for these cases
@@ -731,25 +734,25 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
   cloud->points.resize (cloud->height * cloud->width);
 
   //float constant = 1.0f / device_->getImageFocalLength (cloud->width);
-  register float constant_x = 1.0f / device_->getImageFocalLength (cloud->width);
-  register float constant_y = 1.0f / device_->getImageFocalLength (cloud->width);
-  register float centerX = ((float)cloud->width - 1.f) / 2.f;
-  register float centerY = ((float)cloud->height - 1.f) / 2.f;
+  float constant_x = 1.0f / device_->getImageFocalLength (cloud->width);
+  float constant_y = 1.0f / device_->getImageFocalLength (cloud->width);
+  float centerX = ((float)cloud->width - 1.f) / 2.f;
+  float centerY = ((float)cloud->height - 1.f) / 2.f;
 
-  if (pcl_isfinite (rgb_focal_length_x_))
+  if (std::isfinite (rgb_focal_length_x_))
     constant_x =  1.0f / static_cast<float> (rgb_focal_length_x_);
 
-  if (pcl_isfinite (rgb_focal_length_y_))
+  if (std::isfinite (rgb_focal_length_y_))
     constant_y =  1.0f / static_cast<float> (rgb_focal_length_y_);
 
-  if (pcl_isfinite (rgb_principal_point_x_))
+  if (std::isfinite (rgb_principal_point_x_))
     centerX = static_cast<float>(rgb_principal_point_x_);
   
-  if (pcl_isfinite (rgb_principal_point_y_))
+  if (std::isfinite (rgb_principal_point_y_))
     centerY = static_cast<float>(rgb_principal_point_y_);
 
-  register const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
-  register const XnIRPixel* ir_map = ir_image->getMetaData ().Data ();
+  const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
+  const XnIRPixel* ir_map = ir_image->getMetaData ().Data ();
 
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
@@ -767,12 +770,12 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
     ir_map = ir_buffer_.get ();
   }
 
-  register int depth_idx = 0;
+  int depth_idx = 0;
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   for (unsigned int v = 0; v < depth_height_; ++v)
   {
-    for (register unsigned int u = 0; u < depth_width_; ++u, ++depth_idx)
+    for (unsigned int u = 0; u < depth_width_; ++u, ++depth_idx)
     {
       pcl::PointXYZI& pt = cloud->points[depth_idx];
       /// @todo Different values for these cases
@@ -857,10 +860,10 @@ pcl::OpenNIGrabber::getAvailableDepthModes () const
 {
   XnMapOutputMode dummy;
   std::vector<std::pair<int, XnMapOutputMode> > result;
-  for (std::map<int, XnMapOutputMode>::const_iterator it = config2xn_map_.begin (); it != config2xn_map_.end (); ++it)
+  for (const auto &config2xn : config2xn_map_)
   {
-    if (device_->findCompatibleDepthMode (it->second, dummy))
-      result.push_back (*it);
+    if (device_->findCompatibleDepthMode (config2xn.second, dummy))
+      result.emplace_back(config2xn);
   }
 
   return (result);
@@ -872,10 +875,10 @@ pcl::OpenNIGrabber::getAvailableImageModes () const
 {
   XnMapOutputMode dummy;
   std::vector<std::pair<int, XnMapOutputMode> > result;
-  for (std::map<int, XnMapOutputMode>::const_iterator it = config2xn_map_.begin (); it != config2xn_map_.end (); ++it)
+  for (const auto &config2xn : config2xn_map_)
   {
-    if (device_->findCompatibleImageMode (it->second, dummy))
-      result.push_back (*it);
+    if (device_->findCompatibleImageMode (config2xn.second, dummy))
+      result.emplace_back(config2xn);
   }
 
   return (result);

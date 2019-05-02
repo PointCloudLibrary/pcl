@@ -4,6 +4,8 @@
 #include <pcl/apps/cloud_composer/point_selectors/click_trackball_interactor_style.h>
 #include <pcl/visualization/interactor_style.h>
 
+#include <QDebug>
+
 namespace pcl
 {
   namespace cloud_composer
@@ -29,7 +31,7 @@ pcl::cloud_composer::InteractorStyleSwitch::InteractorStyleSwitch ()
   area_picker_ = vtkSmartPointer<vtkAreaPicker>::New();
   point_picker_ = vtkSmartPointer<vtkPointPicker>::New ();
   
-  current_style_ = 0;
+  current_style_ = nullptr;
   
 }
 
@@ -39,7 +41,7 @@ pcl::cloud_composer::InteractorStyleSwitch::~InteractorStyleSwitch ()
 }
 
 void
-pcl::cloud_composer::InteractorStyleSwitch::initializeInteractorStyles (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis, ProjectModel* model)
+pcl::cloud_composer::InteractorStyleSwitch::initializeInteractorStyles (pcl::visualization::PCLVisualizer::Ptr vis, ProjectModel* model)
 {
   qDebug () << "Initializing Interactor Styles";
   vis_ = vis;
@@ -65,7 +67,7 @@ pcl::cloud_composer::InteractorStyleSwitch::setCurrentInteractorStyle (interacto
   qDebug () << "Setting interactor style";
   vtkSmartPointer <vtkInteractorStyle> style_ptr = name_to_style_map_.value (interactor_style);
   if (current_style_)
-    current_style_->SetInteractor (0);
+    current_style_->SetInteractor (nullptr);
   current_style_= style_ptr;
   
   if (current_style_)

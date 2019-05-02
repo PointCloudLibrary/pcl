@@ -120,11 +120,9 @@ pcl::modeler::CloudMeshItem::savePointCloud(const QList<CloudMeshItem*>& items, 
     return (items.first()->getCloudMesh()->save(filename.toStdString()));
 
   std::vector<const CloudMesh*> cloud_meshes;
-  for (QList<CloudMeshItem*>::const_iterator items_it = items.begin();
-    items_it != items.end();
-    ++ items_it)
+  for (const auto &item : items)
   {
-    cloud_meshes.push_back((*items_it)->getCloudMesh().get());
+    cloud_meshes.push_back(item->getCloudMesh().get());
   }
 
   return (CloudMesh::save(cloud_meshes, filename.toStdString()));

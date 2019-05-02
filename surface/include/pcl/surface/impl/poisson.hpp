@@ -54,7 +54,7 @@
 
 #define MEMORY_ALLOCATOR_BLOCK_SIZE 1<<12
 
-#include <stdarg.h>
+#include <cstdarg>
 #include <string>
 
 using namespace pcl;
@@ -125,8 +125,8 @@ pcl::Poisson<PointNT>::execute (poisson::CoredVectorMeshData &mesh,
   tree.maxMemoryUsage = 0;
 
 
-  int point_count = tree.setTree (input_, depth_, min_depth_, kernel_depth_, samples_per_node_,
-                                  scale_, center, scale, confidence_, point_weight_, !non_adaptive_weights_);
+  int point_count = tree.template setTree<PointNT> (input_, depth_, min_depth_, kernel_depth_, samples_per_node_,
+                                                    scale_, center, scale, confidence_, point_weight_, !non_adaptive_weights_);
 
   tree.ClipTree ();
   tree.finalize ();

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_CRH_H_
-#define PCL_FEATURES_CRH_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -134,12 +133,10 @@ namespace pcl
        * \param[out] output the resultant point cloud with a CRH histogram
        */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/crh.hpp>
 #endif
-
-#endif  //#ifndef PCL_FEATURES_CRH_H_

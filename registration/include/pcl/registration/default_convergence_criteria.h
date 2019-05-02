@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_H_
-#define PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_H_
+#pragma once
 
 #include <pcl/registration/eigen.h>
 #include <pcl/correspondence.h>
@@ -77,7 +76,8 @@ namespace pcl
           CONVERGENCE_CRITERIA_TRANSFORM,
           CONVERGENCE_CRITERIA_ABS_MSE,
           CONVERGENCE_CRITERIA_REL_MSE,
-          CONVERGENCE_CRITERIA_NO_CORRESPONDENCES
+          CONVERGENCE_CRITERIA_NO_CORRESPONDENCES,
+          CONVERGENCE_CRITERIA_FAILURE_AFTER_MAX_ITERATIONS
         };
 
         /** \brief Empty constructor.
@@ -110,16 +110,16 @@ namespace pcl
         }
       
         /** \brief Empty destructor */
-        virtual ~DefaultConvergenceCriteria () {}
+        ~DefaultConvergenceCriteria () {}
 
-        /** \brief Set the maximum number of iterations that the internal rotation, 
+        /** \brief Set the maximum number of consecutive iterations that the internal rotation, 
           * translation, and MSE differences are allowed to be similar. 
           * \param[in] nr_iterations the maximum number of iterations 
           */
         inline void
         setMaximumIterationsSimilarTransforms (const int nr_iterations) { max_iterations_similar_transforms_ = nr_iterations; }
 
-        /** \brief Get the maximum number of iterations that the internal rotation, 
+        /** \brief Get the maximum number of consecutive iterations that the internal rotation, 
           * translation, and MSE differences are allowed to be similar, as set by the user.
           */
         inline int
@@ -189,8 +189,8 @@ namespace pcl
 
 
         /** \brief Check if convergence has been reached. */
-        virtual bool
-        hasConverged ();
+        bool
+        hasConverged () override;
 
         /** \brief Return the convergence state after hasConverged () */
         ConvergenceState
@@ -219,8 +219,8 @@ namespace pcl
         calculateMSE (const pcl::Correspondences &correspondences) const
         {
           double mse = 0;
-          for (size_t i = 0; i < correspondences.size (); ++i)
-            mse += correspondences[i].distance;
+          for (const auto &correspondence : correspondences)
+            mse += correspondence.distance;
           mse /= double (correspondences.size ());
           return (mse);
         }
@@ -276,6 +276,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/default_convergence_criteria.hpp>
-
-#endif    // PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_H_
-

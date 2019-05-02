@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_TRACKING_TRACKER_H_
-#define PCL_TRACKING_TRACKER_H_
+#pragma once
 
 #include <pcl/tracking/tracking.h>
 #include <pcl/pcl_base.h>
@@ -132,5 +131,3 @@ namespace pcl
 }
 
 #include <pcl/tracking/impl/tracker.hpp>
-
-#endif

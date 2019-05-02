@@ -63,7 +63,6 @@
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/gp3.h>
 
@@ -85,8 +84,6 @@
 
 // Pop-up viewer
 #include <pcl/visualization/cloud_viewer.h>
-#include <boost/thread/thread.hpp>
-
 
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
@@ -185,7 +182,7 @@ printHelp (int, char **argv)
 
 // Global visualizer object
 pcl::visualization::PCLHistogramVisualizer ph_global;
-boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
+pcl::visualization::PCLVisualizer::Ptr p;
 
 void
 pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
@@ -225,174 +222,9 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
   ph_global.spinOnce ();
 }
 
-
-/*
-void write_score_image(const float* score_buffer)
+void capture (Eigen::Isometry3d pose_in)
 {
-  int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
-  uint8_t* score_img = new uint8_t[npixels * 3];
-
-  float min_score = score_buffer[0];
-  float max_score = score_buffer[0];
-  for (int i=1; i<npixels; i++)
-  {
-    if (score_buffer[i] < min_score) min_score = score_buffer[i];
-    if (score_buffer[i] > max_score) max_score = score_buffer[i];
-  }
-
-  for (int y = 0; y <  480; ++y)
-  {
-    for (int x = 0; x < 640; ++x)
-    {
-      int i = y*640 + x ;
-      int i_in= (480-1 -y) *640 + x ; // flip up
-
-      float d = (score_buffer[i_in]-min_score)/(max_score-min_score);
-      score_img[3*i+0] = 0;
-      score_img[3*i+1] = d*255;
-      score_img[3*i+2] = 0;
-    }
-  }
-
-  // Write to file:
-  IplImage *cv_ipl = cvCreateImage( cvSize(640 ,480), 8, 3);
-  cv::Mat cv_mat(cv_ipl);
-  cv_mat.data = score_img;
-  cv::imwrite("score_image.png", cv_mat);     
-  
-  delete [] score_img;
-}
-
-void write_depth_image(const float* depth_buffer)
-{
-  int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
-  uint8_t* depth_img = new uint8_t[npixels * 3];
-
-  float min_depth = depth_buffer[0];
-  float max_depth = depth_buffer[0];
-  for (int i=1; i<npixels; i++)
-  {
-    if (depth_buffer[i] < min_depth) min_depth = depth_buffer[i];
-    if (depth_buffer[i] > max_depth) max_depth = depth_buffer[i];
-  }
-
-  for (int y = 0; y <  480; ++y)
-  {
-    for (int x = 0; x < 640; ++x)
-    {
-      int i= y*640 + x ;
-      int i_in= (480-1 -y) *640 + x ; // flip up down
-    
-    
-      float zn = 0.7;
-      float zf = 20.0;
-      float d = depth_buffer[i_in];
-      float z = -zf*zn/((zf-zn)*(d - zf/(zf-zn)));
-      float b = 0.075;
-      float f = 580.0;
-      uint16_t kd = static_cast<uint16_t>(1090 - b*f/z*8);
-      if (kd < 0) kd = 0;
-      else if (kd>2047) kd = 2047;
-
-      int pval = t_gamma[kd];
-      int lb = pval & 0xff;
-      switch (pval>>8) {
-	case 0:
-	    depth_img[3*i+2] = 255;
-	    depth_img[3*i+1] = 255-lb;
-	    depth_img[3*i+0] = 255-lb;
-	    break;
-	case 1:
-	    depth_img[3*i+2] = 255;
-	    depth_img[3*i+1] = lb;
-	    depth_img[3*i+0] = 0;
-	    break;
-	case 2:
-	    depth_img[3*i+2] = 255-lb;
-	    depth_img[3*i+1] = 255;
-	    depth_img[3*i+0] = 0;
-	    break;
-	case 3:
-	    depth_img[3*i+2] = 0;
-	    depth_img[3*i+1] = 255;
-	    depth_img[3*i+0] = lb;
-	    break;
-	case 4:
-	    depth_img[3*i+2] = 0;
-	    depth_img[3*i+1] = 255-lb;
-	    depth_img[3*i+0] = 255;
-	    break;
-	case 5:
-	    depth_img[3*i+2] = 0;
-	    depth_img[3*i+1] = 0;
-	    depth_img[3*i+0] = 255-lb;
-	    break;
-	default:
-	    depth_img[3*i+2] = 0;
-	    depth_img[3*i+1] = 0;
-	    depth_img[3*i+0] = 0;
-	    break;
-      }
-    }
-  }
-
-  // Write to file:
-  IplImage *cv_ipl = cvCreateImage( cvSize(640 ,480), 8, 3);
-  cv::Mat cv_mat(cv_ipl);
-  cv_mat.data = depth_img;
-  cv::imwrite("depth_image.png", cv_mat);     
-  
-  delete [] depth_img;
-}
-
-
-void write_rgb_image(const uint8_t* rgb_buffer)
-{
-  int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
-  uint8_t* rgb_img = new uint8_t[npixels * 3];
-
-  for (int y = 0; y <  480; ++y)
-  {
-    for (int x = 0; x < 640; ++x)
-    {
-      int px = y*640 + x ;
-      rgb_img [3* (px) +0] = rgb_buffer[3*px+0];
-      rgb_img [3* (px) +1] = rgb_buffer[3*px+1];
-      rgb_img [3* (px) +2] = rgb_buffer[3*px+2];      
-    }
-  }  
-  
-  // Write to file:
-  IplImage *cv_ipl = cvCreateImage( cvSize(640 ,480), 8, 3);
-  cv::Mat cv_mat(cv_ipl);
-  cv_mat.data = rgb_img ;
-  cv::imwrite("rgb_image.png", cv_mat);     
-  
-  delete [] rgb_img;
-}
-
-
-boost::shared_ptr<pcl::visualization::PCLVisualizer> simpleVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
-{
-  // Snippet taken from PCLVisualizer tutorial:
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
-  viewer->setBackgroundColor (0, 0, 0);
-  pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud);
-  viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "sample cloud");
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
-  viewer->addCoordinateSystem (1.0);
-  viewer->initCameraParameters ();
-  
-  //viewer->addModelFromPLYFile("/home/mfallon/projects/kmcl/kmcl/models/table_scene/meta_model.ply");
-  
-  
-  return (viewer);
-}
-*/
-
-void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
-{
-  // No reference image - but this is kept for compatability with range_test_v2:
+  // No reference image - but this is kept for compatibility with range_test_v2:
   float* reference = new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
   const float* depth_buffer = range_likelihood_->getDepthBuffer();
   // Copy one image from our last as a reference.
@@ -410,9 +242,9 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
 
   range_likelihood_->computeLikelihoods (reference, poses, scores);
   std::cout << "score: ";
-  for (size_t i = 0; i<scores.size (); ++i)
+  for (const float &score : scores)
   {
-    std::cout << " " << scores[i];
+    std::cout << " " << score;
   }
   std::cout << std::endl;
 
@@ -444,58 +276,6 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
   // total	   0.07222	
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out (new pcl::PointCloud<pcl::PointXYZRGB>);
-  bool write_cloud = true;
-  
-  if (write_cloud)
-  {
-    // Read Color Buffer from the GPU before creating PointCloud:
-    // By default the buffers are not read back from the GPU
-    range_likelihood_->getColorBuffer ();
-    range_likelihood_->getDepthBuffer ();  
-    
-    // Add noise directly to the CPU depth buffer 
-    range_likelihood_->addNoise ();
-
-    // Optional argument to save point cloud in global frame:
-    // Save camera relative:
-    //range_likelihood_->getPointCloud(pc_out);
-    // Save in global frame - applying the camera frame:
-    //range_likelihood_->getPointCloud(pc_out,true,camera_->pose());
-    // Save in local frame
-    range_likelihood_->getPointCloud (pc_out,false,camera_->getPose ());
-    // TODO: what to do when there are more than one simulated view?
-    std::cout << pc_out->points.size() << " points written to file\n";
-   
-    pcl::PCDWriter writer;
-    //writer.write (point_cloud_fname, *pc_out, false);  /// ASCII
-    writer.writeBinary (point_cloud_fname, *pc_out);
-    //cout << "finished writing file\n";
-  }
-  // Disabled all OpenCV stuff for now: dont want the dependency
-  /*
-  bool demo_other_stuff = false;
-  if (demo_other_stuff && write_cloud)
-  {
-    write_score_image (range_likelihood_->getScoreBuffer ());  
-    write_rgb_image (range_likelihood_->getColorBuffer ());  
-    write_depth_image (range_likelihood_->getDepthBuffer ());  
-    
-    // Demo interacton with RangeImage:
-    pcl::RangeImagePlanar rangeImage;
-    range_likelihood_->getRangeImagePlanar (rangeImage);
- 
-    // display viewer: (currently seqfaults on exit of viewer)
-    if (1==0){
-      boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
-      viewer = simpleVis(pc_out);
-    
-      while (!viewer->wasStopped ()){
-	viewer->spinOnce (100);
-	boost::this_thread::sleep (boost::posix_time::microseconds (100000));
-      }
-    }
-  }
-  */
 }
 
 
@@ -540,7 +320,7 @@ void print_Isometry3d(Eigen::Isometry3d pose, std::stringstream &ss){
 void simulate_callback (const pcl::visualization::KeyboardEvent &event,
                         void* viewer_void)
 {
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
+  pcl::visualization::PCLVisualizer::Ptr viewer = *static_cast<pcl::visualization::PCLVisualizer::Ptr *> (viewer_void);
   // I choose v for virtual as s for simulate is takwen
   if (event.getKeySym () == "v" && event.keyDown ())
   {
@@ -614,46 +394,10 @@ void simulate_callback (const pcl::visualization::KeyboardEvent &event,
     std::stringstream ss2;
     ss2.precision(20);
     ss2 << "simulated_pcl_" << tic << ".pcd";
-    capture(init_pose,ss2.str());
+    capture(init_pose);
     cout << (getTime() -tic) << " sec\n";  
-  
-  
-  
-  // these three variables determine the position and orientation of
-    // the camera.
-	      
-	      
-//     double lookat[3]; - focal location
-//     double eye[3]; - my location
-//     double up[3]; - updirection
-     
-	      
-	      
-//    std::cout << view[0]  << "," << view[1]  << "," << view[2] 
-    
-//    cameras.back ().view[2] = renderer->GetActiveCamera ()->GetOrientationWXYZ()[2];    
-    
-//ViewTransform->GetOrientationWXYZ();    
-    
-  //  Superclass::OnKeyUp ();
-    
-//       vtkSmartPointer<vtkCamera> cam = event.Interactor->GetRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
-//       double clip[2], focal[3], pos[3], view[3];
-//       cam->GetClippingRange (clip);
-/*      cam->GetFocalPoint (focal);
-      cam->GetPosition (pos);
-      cam->GetViewUp (view);
-      int *win_pos = Interactor->GetRenderWindow ()->GetPosition ();
-      int *win_size = Interactor->GetRenderWindow ()->GetSize ();
-      std::cerr << clip[0]  << "," << clip[1]  << "/" << focal[0] << "," << focal[1] << "," << focal[2] << "/" <<
-                   pos[0]   << "," << pos[1]   << "," << pos[2]   << "/" << view[0]  << "," << view[1]  << "," << view[2] << "/" <<
-                   cam->GetViewAngle () / 180.0 * M_PI  << "/" << win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
-                << endl;    
-  */  
   }
 }
-
-/* ---[ */
 
 // Read in a 3D model
 void
@@ -690,7 +434,7 @@ initialize (int, char** argv)
 int
 main (int argc, char** argv)
 {
-  srand (time (0));
+  srand (time (nullptr));
 
   print_info ("The viewer window provides interactive commands; for help, press 'h' or 'H' from within the window.\n");
 
@@ -730,26 +474,27 @@ main (int argc, char** argv)
   std::vector<int> p_file_indices   = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
   std::vector<int> vtk_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".vtk");
 
-  if (p_file_indices.size () == 0 && vtk_file_indices.size () == 0)
+  if (p_file_indices.empty () && vtk_file_indices.empty ())
   {
     print_error ("No .PCD or .VTK file given. Nothing to visualize.\n");
     return (-1);
   }
 
   // Multiview enabled?
-  int y_s = 0, x_s = 0;
+  int x_s = 0;
   double x_step = 0, y_step = 0;
   if (mview)
   {
     print_highlight ("Multi-viewport rendering enabled.\n");
 
-    if (p_file_indices.size () != 0)
+    int y_s = 0;
+    if (!p_file_indices.empty ())
     {
       y_s = static_cast<int>(floor (sqrt (static_cast<float>(p_file_indices.size ()))));
       x_s = y_s + static_cast<int>(ceil ((p_file_indices.size () / static_cast<double>(y_s)) - y_s));
       print_highlight ("Preparing to load "); print_value ("%d", p_file_indices.size ());
     }
-    else if (vtk_file_indices.size () != 0)
+    else if (!vtk_file_indices.empty ())
     {
       y_s = static_cast<int>(floor (sqrt (static_cast<float>(vtk_file_indices.size ()))));
       x_s = y_s + static_cast<int>(ceil ((vtk_file_indices.size () / static_cast<double>(y_s)) - y_s));
@@ -764,15 +509,15 @@ main (int argc, char** argv)
   }
 
   // Fix invalid multiple arguments
-  if (psize.size () != p_file_indices.size () && psize.size () > 0)
+  if (psize.size () != p_file_indices.size () && !psize.empty ())
     for (size_t i = psize.size (); i < p_file_indices.size (); ++i)
       psize.push_back (1);
-  if (opaque.size () != p_file_indices.size () && opaque.size () > 0)
+  if (opaque.size () != p_file_indices.size () && !opaque.empty ())
     for (size_t i = opaque.size (); i < p_file_indices.size (); ++i)
       opaque.push_back (1.0);
 
-  // Create the PCLVisualizer object
-  boost::shared_ptr<pcl::visualization::PCLHistogramVisualizer> ph;
+  // Create the PCLHistogramVisualizer object
+  pcl::visualization::PCLHistogramVisualizer::Ptr ph;
 
   // Using min_p, max_p to set the global Y min/max range for the histogram
   float min_p = FLT_MAX; float max_p = -FLT_MAX;
@@ -824,11 +569,11 @@ main (int argc, char** argv)
       p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, fcolor_r[i], fcolor_g[i], fcolor_b[i], cloud_name.str ());
 
     // Change the shape rendered point size
-    if (psize.size () > 0)
+    if (!psize.empty ())
       p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize.at (i), cloud_name.str ());
 
     // Change the shape rendered opacity
-    if (opaque.size () > 0)
+    if (!opaque.empty ())
       p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
   }
 
@@ -1007,11 +752,11 @@ main (int argc, char** argv)
     p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_IMMEDIATE_RENDERING, 1.0, cloud_name.str ());
 
     // Change the cloud rendered point size
-    if (psize.size () > 0)
+    if (!psize.empty ())
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize.at (i), cloud_name.str ());
 
     // Change the cloud rendered opacity
-    if (opaque.size () > 0)
+    if (!opaque.empty ())
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
 
     // Reset camera viewpoint to center of cloud if camera parameters were not passed manually and this is the first loaded cloud
@@ -1106,4 +851,3 @@ main (int argc, char** argv)
   else if (p)
     p->spin ();
 }
-/* ]--- */

@@ -39,6 +39,8 @@
 #ifndef PCL_OCTREE_ITERATOR_HPP_
 #define PCL_OCTREE_ITERATOR_HPP_
 
+#include <pcl/console/print.h>
+
 namespace pcl
 {
   namespace octree
@@ -131,18 +133,16 @@ namespace pcl
         if ( (this->max_octree_depth_>=stack_entry.depth_) &&
              (stack_entry.node_->getNodeType () == BRANCH_NODE) )
         {
-          unsigned char child_idx;
-
           // current node is a branch node
           BranchNode* current_branch =
               static_cast<BranchNode*> (stack_entry.node_);
 
           // add all children to stack
-          for (child_idx = 0; child_idx < 8; ++child_idx)
+          for (int8_t i = 7; i >= 0; --i)
           {
+            const unsigned char child_idx = (unsigned char) i;
 
             // if child exist
-
             if (this->octree_->branchHasChild(*current_branch, child_idx))
             {
               // add child to stack
@@ -232,14 +232,12 @@ namespace pcl
         if ( (this->max_octree_depth_>=FIFO_entry.depth_) &&
              (FIFO_entry.node_->getNodeType () == BRANCH_NODE) )
         {
-          unsigned char child_idx;
-          
           // current node is a branch node
           BranchNode* current_branch =
               static_cast<BranchNode*> (FIFO_entry.node_);
 
           // iterate over all children
-          for (child_idx = 0; child_idx < 8 ; ++child_idx)
+          for (unsigned char child_idx = 0; child_idx < 8 ; ++child_idx)
           {
 
             // if child exist
@@ -268,6 +266,117 @@ namespace pcl
       }
 
       return (*this);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeFixedDepthIterator<OctreeT>::OctreeFixedDepthIterator () :
+        OctreeBreadthFirstIterator<OctreeT> (0u), fixed_depth_ (0u)
+    {}
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeFixedDepthIterator<OctreeT>::OctreeFixedDepthIterator (OctreeT* octree_arg, unsigned int fixed_depth_arg) :
+        OctreeBreadthFirstIterator<OctreeT> (octree_arg, fixed_depth_arg), fixed_depth_ (fixed_depth_arg)
+    {
+      this->reset (fixed_depth_arg);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    void OctreeFixedDepthIterator<OctreeT>::reset (unsigned int fixed_depth_arg)
+    {
+      // Set the desired depth to walk through
+      fixed_depth_ = fixed_depth_arg;
+
+      if (!this->octree_)
+      {
+        return;
+      }
+
+      // If I'm nowhere, reset
+      // If I'm somewhere and I can't guarantee I'm before the first node, reset
+      if ((!this->current_state_) || (fixed_depth_ <= this->getCurrentOctreeDepth ()))
+        OctreeBreadthFirstIterator<OctreeT>::reset ();
+
+      if (this->octree_->getTreeDepth () < fixed_depth_)
+      {
+        PCL_WARN ("[pcl::octree::FixedDepthIterator] The requested fixed depth was bigger than the octree's depth.\n");
+        PCL_WARN ("[pcl::octree::FixedDepthIterator] fixed_depth = %d (instead of %d)\n", this->octree_->getTreeDepth (), fixed_depth_);
+      }
+
+      // By default for the parent class OctreeBreadthFirstIterator, if the
+      // depth argument is equal to 0, the iterator would run over every node.
+      // For the OctreeFixedDepthIterator, whatever the depth ask, set the
+      // max_octree_depth_ accordingly
+      this->max_octree_depth_ = std::min (fixed_depth_, this->octree_->getTreeDepth ());
+
+      // Restore previous state in case breath first iterator had child nodes already set up
+      if (FIFO_.size ())
+        this->current_state_ = &FIFO_.front ();
+
+      // Iterate all the way to the desired level
+      while (this->current_state_ && (this->getCurrentOctreeDepth () != fixed_depth_))
+        OctreeBreadthFirstIterator<OctreeT>::operator++ ();
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>::OctreeLeafNodeBreadthFirstIterator (unsigned int max_depth_arg) :
+        OctreeBreadthFirstIterator<OctreeT> (max_depth_arg)
+    {
+      reset ();
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>::OctreeLeafNodeBreadthFirstIterator (OctreeT* octree_arg, unsigned int max_depth_arg) :
+        OctreeBreadthFirstIterator<OctreeT> (octree_arg, max_depth_arg)
+    {
+      reset ();
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>::OctreeLeafNodeBreadthFirstIterator (OctreeT* octree_arg,
+                                                                           unsigned int max_depth_arg,
+                                                                           IteratorState* current_state,
+                                                                           const std::deque<IteratorState>& fifo)
+        : OctreeBreadthFirstIterator<OctreeT> (octree_arg,
+                                               max_depth_arg,
+                                               current_state,
+                                               fifo)
+    {}
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    void OctreeLeafNodeBreadthFirstIterator<OctreeT>::reset ()
+    {
+      OctreeBreadthFirstIterator<OctreeT>::reset ();
+      ++*this;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>&
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>::operator++ ()
+    {          
+      do
+      {
+        OctreeBreadthFirstIterator<OctreeT>::operator++ ();
+      } while ((this->current_state_) && (this->current_state_->node_->getNodeType () != LEAF_NODE));
+
+      return (*this);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>
+    OctreeLeafNodeBreadthFirstIterator<OctreeT>::operator++ (int)
+    {
+      OctreeLeafNodeBreadthFirstIterator _Tmp = *this;
+      ++*this;
+      return (_Tmp);
     }
   }
 }

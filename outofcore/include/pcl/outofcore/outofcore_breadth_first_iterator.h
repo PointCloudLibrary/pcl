@@ -36,8 +36,7 @@
  * $Id: outofcore_depth_first_iterator.h 7938 2012-11-14 06:27:39Z jrosen $
  */
 
-#ifndef PCL_OUTOFCORE_BREADTH_FIRST_ITERATOR_H_
-#define PCL_OUTOFCORE_BREADTH_FIRST_ITERATOR_H_
+#pragma once
 
 #include <pcl/outofcore/outofcore_iterator_base.h>
 namespace pcl
@@ -55,17 +54,17 @@ namespace pcl
     class OutofcoreBreadthFirstIterator : public OutofcoreIteratorBase<PointT, ContainerT>
     {
       public:
-        typedef typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT> OctreeDisk;
-        typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> OctreeDiskNode;
+        typedef pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT> OctreeDisk;
+        typedef pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> OctreeDiskNode;
 
-        typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> LeafNode;
-        typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> BranchNode;
+        typedef pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> LeafNode;
+        typedef pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> BranchNode;
 
 
         explicit
         OutofcoreBreadthFirstIterator (OctreeDisk& octree_arg);
 
-        virtual
+        
         ~OutofcoreBreadthFirstIterator ();
       
         OutofcoreBreadthFirstIterator&
@@ -79,8 +78,8 @@ namespace pcl
           return (_Tmp);
         }
 
-        virtual inline void
-        reset ()
+        inline void
+        reset () override
         {
           OutofcoreIteratorBase<PointT, ContainerT>::reset();
 
@@ -105,5 +104,3 @@ namespace pcl
     };
   }
 }
-
-#endif //PCL_OUTOFCORE_BREADTH_FIRST_ITERATOR_H_

@@ -69,8 +69,8 @@ TEST (PCL, ConcaveHull_bunny)
 {
   //construct dataset
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2D (new pcl::PointCloud<pcl::PointXYZ> (*cloud));
-  for (size_t i = 0; i < cloud2D->points.size (); i++)
-    cloud2D->points[i].z = 0;
+  for (auto &point : cloud2D->points)
+    point.z = 0;
 
   pcl::PointCloud<pcl::PointXYZ> alpha_shape;
   pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers (new pcl::PointCloud<pcl::PointXYZ>);

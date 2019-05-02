@@ -38,10 +38,9 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_COMMON_TYPES_H
-#define PCL_APPS_IN_HAND_SCANNER_COMMON_TYPES_H
+#pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -93,5 +92,3 @@ namespace pcl
     typedef Mesh::ConstPtr                           MeshConstPtr;
   } // End namespace ihs
 } // End namespace pcl
-
-#endif // PCL_APPS_IN_HAND_SCANNER_COMMON_TYPES_H

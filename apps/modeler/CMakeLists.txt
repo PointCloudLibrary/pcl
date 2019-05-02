@@ -7,21 +7,21 @@ set(REASON "")
 if(NOT VTK_FOUND)
   set(DEFAULT AUTO_OFF)
   set(REASON "VTK was not found.")
-else(NOT VTK_FOUND)
+else()
   set(DEFAULT TRUE)
   set(REASON)
   set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
   include("${VTK_USE_FILE}")
-endif(NOT VTK_FOUND)
+endif()
 
-# QT4 Found?
-if(NOT QT4_FOUND)
+# QT5 Found?
+if(NOT Qt5_FOUND)
   set(DEFAULT AUTO_OFF)
-  set(REASON "Qt4 was not found.")
+  set(REASON "Qt5 was not found.")
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
   set(DEFAULT TRUE)
   set(REASON)
-endif(NOT QT4_FOUND)
+endif()
 
 # QVTK?
 if(NOT VTK_USE_QVTK)
@@ -30,10 +30,10 @@ if(NOT VTK_USE_QVTK)
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
   set(DEFAULT TRUE)
   set(REASON)
-endif(NOT VTK_USE_QVTK)
+endif()
 
 # Default to not building for now
-if (${DEFAULT} STREQUAL "TRUE")
+if(${DEFAULT} STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 
@@ -42,103 +42,116 @@ PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSYS_DE
 
 PCL_ADD_DOC("${SUBSUBSYS_NAME}")
 
-if(build)
-  include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
+if(NOT build)
+  return()
+endif()
 
-  # Set Qt files and resources here 
-  set(uis main_window.ui)
-  set(moc_incs "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
-               "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/scene_tree.h"
-               "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/parameter_dialog.h"
-               "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/thread_controller.h"
-               "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/abstract_worker.h"
-               "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/cloud_mesh_item_updater.h")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-  set(resources resources/resources.qrc)
+# Set Qt files and resources here
+set(uis
+  main_window.ui
+)
 
-  set(incs ${moc_incs}
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/qt.h"
+set(moc_incs
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/scene_tree.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/parameter_dialog.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/thread_controller.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/abstract_worker.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/cloud_mesh_item_updater.h"
+)
 
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/dock_widget.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/abstract_item.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/render_window.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/render_window_item.h"
+set(resources
+  resources/resources.qrc
+)
 
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/parameter.h"
+set(incs
+  ${moc_incs}
 
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/cloud_mesh.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/cloud_mesh_item.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/channel_actor_item.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/points_actor_item.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/normals_actor_item.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/surface_actor_item.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/dock_widget.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/abstract_item.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/render_window.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/render_window_item.h"
 
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/icp_registration_worker.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/voxel_grid_downsample_worker.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/statistical_outlier_removal_worker.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/normal_estimation_worker.h"
-           "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/poisson_worker.h")
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/parameter.h"
 
-  set(srcs src/main.cpp
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/cloud_mesh.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/cloud_mesh_item.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/channel_actor_item.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/points_actor_item.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/normals_actor_item.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/surface_actor_item.h"
 
-           src/main_window.cpp
-           src/dock_widget.cpp
-           src/abstract_item.cpp
-           src/render_window.cpp
-           src/render_window_item.cpp
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/icp_registration_worker.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/voxel_grid_downsample_worker.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/statistical_outlier_removal_worker.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/normal_estimation_worker.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/poisson_worker.h"
+)
 
-           src/parameter.cpp
-           src/parameter_dialog.cpp
+set(srcs
+  src/main.cpp
 
-           src/scene_tree.cpp
+  src/main_window.cpp
+  src/dock_widget.cpp
+  src/abstract_item.cpp
+  src/render_window.cpp
+  src/render_window_item.cpp
 
-           src/cloud_mesh.cpp
-           src/cloud_mesh_item.cpp
-           src/cloud_mesh_item_updater.cpp
-           src/channel_actor_item.cpp
-           src/points_actor_item.cpp
-           src/normals_actor_item.cpp
-           src/surface_actor_item.cpp
+  src/parameter.cpp
+  src/parameter_dialog.cpp
 
-           src/thread_controller.cpp
-           src/abstract_worker.cpp
-           src/icp_registration_worker.cpp
-           src/voxel_grid_downsample_worker.cpp
-           src/statistical_outlier_removal_worker.cpp
-           src/normal_estimation_worker.cpp
-           src/poisson_worker.cpp)
+  src/scene_tree.cpp
 
-  set(impl_incs "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/impl/parameter.hpp"
-                "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/impl/scene_tree.hpp")
+  src/cloud_mesh.cpp
+  src/cloud_mesh_item.cpp
+  src/cloud_mesh_item_updater.cpp
+  src/channel_actor_item.cpp
+  src/points_actor_item.cpp
+  src/normals_actor_item.cpp
+  src/surface_actor_item.cpp
 
-  # Qt stuff
-  QT4_WRAP_UI(ui_srcs ${uis})
-  QT4_WRAP_CPP(moc_srcs ${moc_incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-  QT4_ADD_RESOURCES(resource_srcs ${resources})
+  src/thread_controller.cpp
+  src/abstract_worker.cpp
+  src/icp_registration_worker.cpp
+  src/voxel_grid_downsample_worker.cpp
+  src/statistical_outlier_removal_worker.cpp
+  src/normal_estimation_worker.cpp
+  src/poisson_worker.cpp
+)
 
-  # Organize files
-  SOURCE_GROUP("Resources" FILES ${uis} ${resources} ${EXE_ICON})
-  SOURCE_GROUP("Generated" FILES ${ui_srcs} ${moc_srcs} ${resource_srcs} ${RCS_SOURCES})
-  SET_SOURCE_FILES_PROPERTIES(${srcs} PROPERTIES OBJECT_DEPENDS "${ui_srcs}")
+set(impl_incs
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/impl/parameter.hpp"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/impl/scene_tree.hpp"
+)
 
-  # Generate executable
-  set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
-  PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${ui_srcs} ${moc_srcs} ${resource_srcs} ${srcs} ${incs} ${impl_incs})
-  target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QVTK_LIBRARY} ${QT_LIBRARIES})
+# Qt stuff
+QT5_WRAP_UI(ui_srcs ${uis})
+QT5_WRAP_CPP(moc_srcs ${moc_incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+QT5_ADD_RESOURCES(resource_srcs ${resources})
 
-  # Put the ui in the windows project file
-  IF("${CMAKE_BUILD_TOOL}" MATCHES "msdev")
-    LIST(APPEND srcs ${uis})
-  ELSEIF("${CMAKE_BUILD_TOOL}" MATCHES "devenv")
-    LIST(APPEND srcs ${uis})
-  ENDIF("${CMAKE_BUILD_TOOL}" MATCHES "msdev")
+# Organize files
+source_group("Resources" FILES ${uis} ${resources} ${EXE_ICON})
+source_group("Generated" FILES ${ui_srcs} ${moc_srcs} ${resource_srcs} ${RCS_SOURCES})
+set_source_files_properties(${srcs} PROPERTIES OBJECT_DEPENDS "${ui_srcs}")
 
-  # Install include files
-  PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs})
-  PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}/impl" ${impl_incs})
+# Generate executable
+set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
+PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${ui_srcs} ${moc_srcs} ${resource_srcs} ${srcs} ${incs} ${impl_incs})
+target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QVTK_LIBRARY} Qt5::Widgets)
 
-  PCL_MAKE_PKGCONFIG("${EXE_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" "" "" "" "" "")
+# Put the ui in the windows project file
+if(("${CMAKE_BUILD_TOOL}" MATCHES "msdev") OR("${CMAKE_BUILD_TOOL}" MATCHES "devenv"))
+  list(APPEND srcs ${uis})
+endif()
 
-  add_subdirectory(tools)
+# Install include files
+PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs})
+PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}/impl" ${impl_incs})
 
-endif(build)
+PCL_MAKE_PKGCONFIG(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} DESC ${SUBSUBSYS_DESC})
+
+# Add to the compound apps target
+list(APPEND PCL_APPS_ALL_TARGETS ${EXE_NAME})
+set(PCL_APPS_ALL_TARGETS ${PCL_APPS_ALL_TARGETS} PARENT_SCOPE)

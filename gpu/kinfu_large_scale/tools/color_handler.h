@@ -34,8 +34,7 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#ifndef COLOR_HANDLER_H_
-#define COLOR_HANDLER_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -51,8 +50,8 @@ namespace pcl
       using PointCloudColorHandler<PointT>::capable_;
       using PointCloudColorHandler<PointT>::cloud_;
 
-      typedef typename PointCloudColorHandler<PointT>::PointCloud::ConstPtr PointCloudConstPtr;                            
-      typedef typename pcl::PointCloud<RGB>::ConstPtr RgbCloudConstPtr;
+      typedef typename PointCloudColorHandler<PointT>::PointCloud::ConstPtr PointCloudConstPtr;
+      typedef pcl::PointCloud<RGB>::ConstPtr RgbCloudConstPtr;
 
     public:
       typedef boost::shared_ptr<PointCloudColorHandlerRGBHack<PointT> > Ptr;
@@ -64,8 +63,8 @@ namespace pcl
         capable_ = true;
       }
             
-      virtual bool 
-      getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+      bool 
+      getColor (vtkSmartPointer<vtkDataArray> &scalars) const override
       {
         if (!capable_)
           return (false);
@@ -93,12 +92,9 @@ namespace pcl
       }
     
     private:
-      virtual std::string getFieldName () const { return ("rgb"); }    
-      virtual inline std::string getName () const { return ("PointCloudColorHandlerRGBHack"); }
+      std::string getFieldName () const override { return ("rgb"); }    
+      inline std::string getName () const override { return ("PointCloudColorHandlerRGBHack"); }
       RgbCloudConstPtr rgb_;    
     };
   }
 }
-
-
-#endif /* COLOR_HANDLER_H_ */

@@ -50,19 +50,18 @@ namespace pcl
 {
   namespace outofcore
   {
-
     template<typename PointT>
     boost::mutex OutofcoreOctreeRamContainer<PointT>::rng_mutex_;
 
     template<typename PointT> 
-    boost::mt19937 OutofcoreOctreeRamContainer<PointT>::rand_gen_ (static_cast<unsigned int>(std::time( NULL)));
+    std::mt19937 OutofcoreOctreeRamContainer<PointT>::rng_ ([] {std::random_device rd; return rd(); } ());
 
     template<typename PointT> void
     OutofcoreOctreeRamContainer<PointT>::convertToXYZ (const boost::filesystem::path& path)
     {
       if (!container_.empty ())
       {
-        FILE* fxyz = fopen (path.string ().c_str (), "w");
+        FILE* fxyz = fopen (path.string ().c_str (), "we");
 
         boost::uint64_t num = size ();
         for (boost::uint64_t i = 0; i < num; i++)
@@ -121,16 +120,15 @@ namespace pcl
                                                       const double percent, 
                                                       AlignedPointTVector& v)
     {
-      boost::uint64_t samplesize = static_cast<boost::uint64_t> (percent * static_cast<double> (count));
+      uint64_t samplesize = static_cast<uint64_t> (percent * static_cast<double> (count));
 
       boost::mutex::scoped_lock lock (rng_mutex_);
 
-      boost::uniform_int < boost::uint64_t > buffdist (start, start + count);
-      boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > buffdie (rand_gen_, buffdist);
+      std::uniform_int_distribution < uint64_t > buffdist (start, start + count);
 
-      for (boost::uint64_t i = 0; i < samplesize; i++)
+      for (uint64_t i = 0; i < samplesize; i++)
       {
-        boost::uint64_t buffstart = buffdie ();
+        uint64_t buffstart = buffdist (rng_);
         v.push_back (container_[buffstart]);
       }
     }

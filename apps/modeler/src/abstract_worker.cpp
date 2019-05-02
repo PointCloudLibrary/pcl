@@ -36,7 +36,6 @@
 
 #include <pcl/apps/modeler/abstract_worker.h>
 
-#include <pcl/apps/modeler/qt.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
 
@@ -49,7 +48,7 @@ pcl::modeler::AbstractWorker::AbstractWorker(const QList<CloudMeshItem*>& cloud_
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::AbstractWorker::~AbstractWorker(void)
+pcl::modeler::AbstractWorker::~AbstractWorker()
 {
   parameter_dialog_->deleteLater();
 }
@@ -58,10 +57,8 @@ pcl::modeler::AbstractWorker::~AbstractWorker(void)
 int
 pcl::modeler::AbstractWorker::exec()
 {
-  for (QList<CloudMeshItem*>::iterator cloud_mesh_items_it = cloud_mesh_items_.begin();
-    cloud_mesh_items_it != cloud_mesh_items_.end();
-    ++ cloud_mesh_items_it)
-    initParameters(*cloud_mesh_items_it);
+  for (auto &cloud_mesh_item : cloud_mesh_items_)
+    initParameters(cloud_mesh_item);
 
   setupParameters();
 
@@ -72,11 +69,9 @@ pcl::modeler::AbstractWorker::exec()
 void
 pcl::modeler::AbstractWorker::process()
 {
-  for (QList<CloudMeshItem*>::iterator cloud_mesh_items_it = cloud_mesh_items_.begin();
-    cloud_mesh_items_it != cloud_mesh_items_.end();
-    ++ cloud_mesh_items_it)
+  for (auto &cloud_mesh_item : cloud_mesh_items_)
   {
-    processImpl(*cloud_mesh_items_it);
+    processImpl(cloud_mesh_item);
   }
 
   emit finished();

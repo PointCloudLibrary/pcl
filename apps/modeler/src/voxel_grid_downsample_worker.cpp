@@ -49,12 +49,12 @@ pcl::modeler::VoxelGridDownampleWorker::VoxelGridDownampleWorker(const QList<Clo
   x_min_(std::numeric_limits<double>::max()), x_max_(std::numeric_limits<double>::min()),
   y_min_(std::numeric_limits<double>::max()), y_max_(std::numeric_limits<double>::min()),
   z_min_(std::numeric_limits<double>::max()), z_max_(std::numeric_limits<double>::min()),
-  leaf_size_x_(NULL), leaf_size_y_(NULL), leaf_size_z_(NULL)
+  leaf_size_x_(nullptr), leaf_size_y_(nullptr), leaf_size_z_(nullptr)
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::VoxelGridDownampleWorker::~VoxelGridDownampleWorker(void)
+pcl::modeler::VoxelGridDownampleWorker::~VoxelGridDownampleWorker()
 {
   delete leaf_size_x_;
   delete leaf_size_y_;

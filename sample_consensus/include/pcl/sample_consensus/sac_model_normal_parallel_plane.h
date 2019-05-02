@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_NORMALPARALLELPLANE_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_NORMALPARALLELPLANE_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
 #include <pcl/sample_consensus/model_types.h>
@@ -139,7 +138,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~SampleConsensusModelNormalParallelPlane () {}
+      ~SampleConsensusModelNormalParallelPlane () {}
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
         * \param[in] ax the axis along which we need to search for a plane perpendicular to
@@ -149,7 +148,7 @@ namespace pcl
 
       /** \brief Get the axis along which we need to search for a plane perpendicular to. */
       inline Eigen::Vector3f
-      getAxis () { return (axis_.head<3> ()); }
+      getAxis () const { return (axis_.head<3> ()); }
 
       /** \brief Set the angle epsilon (delta) threshold.
         * \param[in] ea the maximum allowed deviation from 90 degrees between the plane normal and the given axis.
@@ -160,7 +159,7 @@ namespace pcl
 
       /** \brief Get the angle epsilon (delta) threshold. */
       inline double
-      getEpsAngle () { return (eps_angle_); }
+      getEpsAngle () const { return (eps_angle_); }
 
       /** \brief Set the distance we expect the plane to be from the origin
         * \param[in] d distance from the template plane to the origin
@@ -170,7 +169,7 @@ namespace pcl
 
       /** \brief Get the distance of the plane from the origin. */
       inline double
-      getDistanceFromOrigin () { return (distance_from_origin_); }
+      getDistanceFromOrigin () const { return (distance_from_origin_); }
 
       /** \brief Set the distance epsilon (delta) threshold.
         * \param[in] delta the maximum allowed deviation from the template distance from the origin
@@ -180,11 +179,11 @@ namespace pcl
 
       /** \brief Get the distance epsilon (delta) threshold. */
       inline double
-      getEpsDist () { return (eps_dist_); }
+      getEpsDist () const { return (eps_dist_); }
 
       /** \brief Return an unique id for this model (SACMODEL_NORMAL_PARALLEL_PLANE). */
       inline pcl::SacModel
-      getModelType () const { return (SACMODEL_NORMAL_PARALLEL_PLANE); }
+      getModelType () const override { return (SACMODEL_NORMAL_PARALLEL_PLANE); }
 
     	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -195,8 +194,8 @@ namespace pcl
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      virtual bool
-      isModelValid (const Eigen::VectorXf &model_coefficients);
+      bool
+      isModelValid (const Eigen::VectorXf &model_coefficients) const override;
 
    private:
       /** \brief The axis along which we need to search for a plane perpendicular to. */
@@ -218,5 +217,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/sac_model_normal_parallel_plane.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_NORMALPARALLELPLANE_H_

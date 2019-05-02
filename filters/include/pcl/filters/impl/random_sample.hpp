@@ -59,23 +59,23 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
     std::vector<pcl::PCLPointField> fields;
     pcl::getFields (*input_, fields);
     std::vector<size_t> offsets;
-    for (size_t i = 0; i < fields.size (); ++i)
+    for (const auto &field : fields)
     {
-      if (fields[i].name == "x" ||
-          fields[i].name == "y" ||
-          fields[i].name == "z")
-        offsets.push_back (fields[i].offset);
+      if (field.name == "x" ||
+          field.name == "y" ||
+          field.name == "z")
+        offsets.push_back (field.offset);
     }
     // For every "removed" point, set the x,y,z fields to user_filter_value_
     const static float user_filter_value = user_filter_value_;
     for (size_t rii = 0; rii < removed_indices_->size (); ++rii)
     {
       uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output[(*removed_indices_)[rii]]);
-      for (size_t i = 0; i < offsets.size (); ++i)
+      for (const unsigned long &offset : offsets)
       {
-        memcpy (pt_data + offsets[i], &user_filter_value, sizeof (float));
+        memcpy (pt_data + offset, &user_filter_value, sizeof (float));
       }
-      if (!pcl_isfinite (user_filter_value_))
+      if (!std::isfinite (user_filter_value_))
         output.is_dense = false;
     }
   }

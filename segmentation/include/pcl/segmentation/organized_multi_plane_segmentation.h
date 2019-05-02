@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_
-#define PCL_SEGMENTATION_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/segmentation/planar_region.h>
 #include <pcl/pcl_base.h>
@@ -71,19 +70,19 @@ namespace pcl
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
-      typedef typename pcl::PointCloud<PointNT> PointCloudN;
+      typedef pcl::PointCloud<PointNT> PointCloudN;
       typedef typename PointCloudN::Ptr PointCloudNPtr;
       typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
 
-      typedef typename pcl::PointCloud<PointLT> PointCloudL;
+      typedef pcl::PointCloud<PointLT> PointCloudL;
       typedef typename PointCloudL::Ptr PointCloudLPtr;
       typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
 
-      typedef typename pcl::PlaneCoefficientComparator<PointT, PointNT> PlaneComparator;
+      typedef pcl::PlaneCoefficientComparator<PointT, PointNT> PlaneComparator;
       typedef typename PlaneComparator::Ptr PlaneComparatorPtr;
       typedef typename PlaneComparator::ConstPtr PlaneComparatorConstPtr;
 
-      typedef typename pcl::PlaneRefinementComparator<PointT, PointNT, PointLT> PlaneRefinementComparator;
+      typedef pcl::PlaneRefinementComparator<PointT, PointNT, PointLT> PlaneRefinementComparator;
       typedef typename PlaneRefinementComparator::Ptr PlaneRefinementComparatorPtr;
       typedef typename PlaneRefinementComparator::ConstPtr PlaneRefinementComparatorConstPtr;
 
@@ -100,7 +99,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedMultiPlaneSegmentation. */
-      virtual
+      
       ~OrganizedMultiPlaneSegmentation ()
       {
       }
@@ -320,5 +319,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/organized_multi_plane_segmentation.hpp>
 #endif
-
-#endif //#ifndef PCL_SEGMENTATION_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_

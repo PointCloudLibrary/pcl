@@ -34,11 +34,11 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#pragma once
+
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
-
-#ifndef _PCL_OPENNI_OPENNI_H_
-#define _PCL_OPENNI_OPENNI_H_
 
 #if defined __GNUC__
 #  pragma GCC system_header 
@@ -52,4 +52,3 @@
 #include <XnVersion.h>
 
 #endif
-#endif    // _PCL_OPENNI_OPENNI_H_

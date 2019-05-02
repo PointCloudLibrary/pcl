@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_VISUALIZER_H_
-#define PCL_REGISTRATION_VISUALIZER_H_
+#pragma once
 
 // PCL
 #include <pcl/registration/registration.h>
@@ -165,7 +164,7 @@ namespace pcl
       }
 
       /** \brief The registration viewer. */
-      boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
+      pcl::visualization::PCLVisualizer::Ptr viewer_;
 
       /** \brief The thread running the runDisplay() function. */
       boost::thread viewer_thread_;
@@ -206,5 +205,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/registration_visualizer.hpp>
-
-#endif  //#ifndef PCL_REGISTRATION_VISUALIZER_H_

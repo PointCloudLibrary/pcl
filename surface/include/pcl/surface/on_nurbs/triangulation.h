@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef NURBS_TRIANGULATION_H
-#define NURBS_TRIANGULATION_H
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
@@ -125,5 +124,3 @@ namespace pcl
     };
   }
 }
-
-#endif

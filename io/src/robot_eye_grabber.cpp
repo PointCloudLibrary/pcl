@@ -85,7 +85,7 @@ pcl::RobotEyeGrabber::getFramesPerSecond () const
 bool
 pcl::RobotEyeGrabber::isRunning () const
 {
-  return (socket_thread_ != NULL);
+  return (socket_thread_ != nullptr);
 }
 
 /////////////////////////////////////////////////////////////////////////////

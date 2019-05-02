@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_VISUALIZATION_BOOST_H_
-#define PCL_VISUALIZATION_BOOST_H_
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header 
@@ -58,12 +57,9 @@
 #include <boost/bind.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/thread/thread.hpp>
 #include <boost/foreach.hpp>
 #ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
 #endif
 #include <boost/filesystem.hpp>
 #endif
-
-#endif    // PCL_VISUALIZATION_BOOST_H_

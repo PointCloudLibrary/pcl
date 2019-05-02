@@ -165,7 +165,7 @@ TrackBall::update(int s_x, int s_y)
   normalize(cross_x, cross_y, cross_z, nc_x, nc_y, nc_z);
 
   quat_ = quaternionFromAngleAxis(angle, nc_x, nc_y, nc_z);
-  if (quat_.R_component_1() != quat_.R_component_1())
+  if (std::isnan(quat_.R_component_1()))
     quat_ = boost::math::quaternion<float>(1.0f);
 
   origin_x_ = cur_x;

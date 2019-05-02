@@ -55,18 +55,18 @@ init ()
   for (float z = -0.5f; z <= 0.5f; z += resolution)
     for (float y = -0.5f; y <= 0.5f; y += resolution)
       for (float x = -0.5f; x <= 0.5f; x += resolution)
-        cloud.points.push_back (PointXYZ (x, y, z));
+        cloud.points.emplace_back(x, y, z);
   cloud.width = static_cast<uint32_t> (cloud.points.size ());
   cloud.height = 1;
 
   cloud_big.width = 640;
   cloud_big.height = 480;
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   // Randomly create a new point cloud
   for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
-    cloud_big.points.push_back (PointXYZ (static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)), 
+    cloud_big.points.emplace_back(static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)), 
                                           static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
-                                          static_cast<float> (1024 * rand () / (RAND_MAX + 1.0))));
+                                          static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)));
 }
 
 /* Test for KdTree nearestKSearch */TEST (PCL, KdTree_nearestKSearch)
@@ -101,9 +101,9 @@ init ()
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
   // Check if all found neighbors have distance smaller than max_dist
-  for (size_t i = 0; i < k_indices.size (); ++i)
+  for (const int &k_index : k_indices)
   {
-    const PointXYZ& point = cloud.points[k_indices[i]];
+    const PointXYZ& point = cloud.points[k_index];
     bool ok = euclideanDistance (test_point, point) <= max_dist;
     if (!ok)
     ok = (fabs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;
@@ -117,8 +117,8 @@ init ()
     pcl::search::Search<PointXYZ>* kdtree = new pcl::search::KdTree<PointXYZ>();
     //kdtree->initSearchDS ();
     kdtree->setInputCloud (cloud_big.makeShared ());
-    for (size_t i = 0; i < cloud_big.points.size (); ++i)
-    kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+    for (const auto &point : cloud_big.points)
+    kdtree->nearestKSearch (point, no_of_neighbors, k_indices, k_distances);
   }
 }
 

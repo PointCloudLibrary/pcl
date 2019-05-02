@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_COLORSHOT_LOCAL_ESTIMATOR_H_
-#define REC_FRAMEWORK_COLORSHOT_LOCAL_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/local_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
@@ -62,7 +61,7 @@ namespace pcl
           }
 
           //compute signatures
-          typedef typename pcl::SHOTColorEstimation<PointInT, pcl::Normal, pcl::SHOT1344> SHOTEstimator;
+          typedef pcl::SHOTColorEstimation<PointInT, pcl::Normal, pcl::SHOT1344> SHOTEstimator;
           typename pcl::search::KdTree<PointInT>::Ptr tree (new pcl::search::KdTree<PointInT>);
 
           pcl::PointCloud<pcl::SHOT1344>::Ptr shots (new pcl::PointCloud<pcl::SHOT1344>);
@@ -90,5 +89,3 @@ namespace pcl
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_COLORSHOT_LOCAL_ESTIMATOR_H_ */

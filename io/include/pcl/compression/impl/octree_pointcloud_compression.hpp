@@ -43,9 +43,9 @@
 #include <iterator>
 #include <iostream>
 #include <vector>
-#include <string.h>
+#include <cstring>
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 
 namespace pcl
 {
@@ -510,22 +510,21 @@ namespace pcl
         const OctreeKey& key_arg)
     {
       double lowerVoxelCorner[3];
-      std::size_t pointCount, i, cloudSize;
       PointT newPoint;
 
-      pointCount = 1;
+      size_t pointCount = 1;
 
       if (!do_voxel_grid_enDecoding_)
       {
         // get current cloud size
-        cloudSize = output_->points.size ();
+        size_t cloudSize = output_->points.size ();
 
         // get amount of point to be decoded
         pointCount = *point_count_data_vector_iterator_;
         point_count_data_vector_iterator_++;
 
         // increase point cloud by amount of voxel points
-        for (i = 0; i < pointCount; i++)
+        for (size_t i = 0; i < pointCount; i++)
           output_->points.push_back (newPoint);
 
         // calculcate position of lower voxel corner

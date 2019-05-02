@@ -58,10 +58,8 @@ uniform_deviate (int seed)
 
 inline void
 randomPointTriangle (float a1, float a2, float a3, float b1, float b2, float b3, float c1, float c2, float c3,
-                     Eigen::Vector4f& p)
+                     float r1, float r2, Eigen::Vector3f& p)
 {
-  float r1 = static_cast<float> (uniform_deviate (rand ()));
-  float r2 = static_cast<float> (uniform_deviate (rand ()));
   float r1sqr = std::sqrt (r1);
   float OneMinR1Sqr = (1 - r1sqr);
   float OneMinR2 = (1 - r2);
@@ -77,11 +75,10 @@ randomPointTriangle (float a1, float a2, float a3, float b1, float b2, float b3,
   p[0] = c1;
   p[1] = c2;
   p[2] = c3;
-  p[3] = 0;
 }
 
 inline void
-randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, double totalArea, Eigen::Vector4f& p, bool calcNormal, Eigen::Vector3f& n)
+randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, double totalArea, Eigen::Vector3f& p, bool calcNormal, Eigen::Vector3f& n, bool calcColor, Eigen::Vector3f& c)
 {
   float r = static_cast<float> (uniform_deviate (rand ()) * totalArea);
 
@@ -90,7 +87,7 @@ randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, dou
 
   double A[3], B[3], C[3];
   vtkIdType npts = 0;
-  vtkIdType *ptIds = NULL;
+  vtkIdType *ptIds = nullptr;
   polydata->GetCellPoints (el, npts, ptIds);
   polydata->GetPoint (ptIds[0], A);
   polydata->GetPoint (ptIds[1], B);
@@ -103,39 +100,65 @@ randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, dou
     n = v1.cross (v2);
     n.normalize ();
   }
+  float r1 = static_cast<float> (uniform_deviate (rand ()));
+  float r2 = static_cast<float> (uniform_deviate (rand ()));
   randomPointTriangle (float (A[0]), float (A[1]), float (A[2]),
                        float (B[0]), float (B[1]), float (B[2]),
-                       float (C[0]), float (C[1]), float (C[2]), p);
+                       float (C[0]), float (C[1]), float (C[2]), r1, r2, p);
+
+  if (calcColor)
+  {
+    vtkUnsignedCharArray *const colors = vtkUnsignedCharArray::SafeDownCast (polydata->GetPointData ()->GetScalars ());
+    if (colors && colors->GetNumberOfComponents () == 3)
+    {
+      double cA[3], cB[3], cC[3];
+      colors->GetTuple (ptIds[0], cA);
+      colors->GetTuple (ptIds[1], cB);
+      colors->GetTuple (ptIds[2], cC);
+
+      randomPointTriangle (float (cA[0]), float (cA[1]), float (cA[2]),
+                           float (cB[0]), float (cB[1]), float (cB[2]),
+                           float (cC[0]), float (cC[1]), float (cC[2]), r1, r2, c);
+    }
+    else
+    {
+      static bool printed_once = false;
+      if (!printed_once)
+        PCL_WARN ("Mesh has no vertex colors, or vertex colors are not RGB!");
+      printed_once = true;
+    }
+  }
 }
 
 void
-uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, bool calc_normal, pcl::PointCloud<pcl::PointNormal> & cloud_out)
+uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, bool calc_normal, bool calc_color, pcl::PointCloud<pcl::PointXYZRGBNormal> & cloud_out)
 {
   polydata->BuildCells ();
   vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys ();
 
   double p1[3], p2[3], p3[3], totalArea = 0;
   std::vector<double> cumulativeAreas (cells->GetNumberOfCells (), 0);
-  size_t i = 0;
-  vtkIdType npts = 0, *ptIds = NULL;
-  for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds); i++)
+  vtkIdType npts = 0, *ptIds = nullptr;
+  size_t cellId = 0;
+  for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds); cellId++)
   {
     polydata->GetPoint (ptIds[0], p1);
     polydata->GetPoint (ptIds[1], p2);
     polydata->GetPoint (ptIds[2], p3);
     totalArea += vtkTriangle::TriangleArea (p1, p2, p3);
-    cumulativeAreas[i] = totalArea;
+    cumulativeAreas[cellId] = totalArea;
   }
 
   cloud_out.points.resize (n_samples);
   cloud_out.width = static_cast<pcl::uint32_t> (n_samples);
   cloud_out.height = 1;
 
-  for (i = 0; i < n_samples; i++)
+  for (size_t i = 0; i < n_samples; i++)
   {
-    Eigen::Vector4f p;
-    Eigen::Vector3f n;
-    randPSurface (polydata, &cumulativeAreas, totalArea, p, calc_normal, n);
+    Eigen::Vector3f p;
+    Eigen::Vector3f n (0, 0, 0);
+    Eigen::Vector3f c (0, 0, 0);
+    randPSurface (polydata, &cumulativeAreas, totalArea, p, calc_normal, n, calc_color, c);
     cloud_out.points[i].x = p[0];
     cloud_out.points[i].y = p[1];
     cloud_out.points[i].z = p[2];
@@ -144,6 +167,12 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, bool 
       cloud_out.points[i].normal_x = n[0];
       cloud_out.points[i].normal_y = n[1];
       cloud_out.points[i].normal_z = n[2];
+    }
+    if (calc_color)
+    {
+      cloud_out.points[i].r = static_cast<uint8_t>(c[0]);
+      cloud_out.points[i].g = static_cast<uint8_t>(c[1]);
+      cloud_out.points[i].b = static_cast<uint8_t>(c[2]);
     }
   }
 }
@@ -168,6 +197,7 @@ printHelp (int, char **argv)
   print_value ("%f", default_leaf_size);
   print_info (" m)\n");
   print_info ("                     -write_normals = flag to write normals to the output pcd\n");
+  print_info ("                     -write_colors  = flag to write colors to the output pcd\n");
   print_info (
               "                     -no_vis_result = flag to stop visualizing the generated pcd\n");
 }
@@ -192,6 +222,7 @@ main (int argc, char **argv)
   parse_argument (argc, argv, "-leaf_size", leaf_size);
   bool vis_result = ! find_switch (argc, argv, "-no_vis_result");
   const bool write_normals = find_switch (argc, argv, "-write_normals");
+  const bool write_colors = find_switch (argc, argv, "-write_colors");
 
   // Parse the command line arguments for .ply and PCD files
   std::vector<int> pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
@@ -225,11 +256,7 @@ main (int argc, char **argv)
 
   //make sure that the polygons are triangles!
   vtkSmartPointer<vtkTriangleFilter> triangleFilter = vtkSmartPointer<vtkTriangleFilter>::New ();
-#if VTK_MAJOR_VERSION < 6
-  triangleFilter->SetInput (polydata1);
-#else
   triangleFilter->SetInputData (polydata1);
-#endif
   triangleFilter->Update ();
 
   vtkSmartPointer<vtkPolyDataMapper> triangleMapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
@@ -237,54 +264,49 @@ main (int argc, char **argv)
   triangleMapper->Update ();
   polydata1 = triangleMapper->GetInput ();
 
-  bool INTER_VIS = false;
-
-  if (INTER_VIS)
-  {
-    visualization::PCLVisualizer vis;
-    vis.addModelFromPolyData (polydata1, "mesh1", 0);
-    vis.setRepresentationToSurfaceForAllActors ();
-    vis.spin ();
-  }
-
-  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_1 (new pcl::PointCloud<pcl::PointNormal>);
-  uniform_sampling (polydata1, SAMPLE_POINTS_, write_normals, *cloud_1);
-
-  if (INTER_VIS)
-  {
-    visualization::PCLVisualizer vis_sampled;
-    vis_sampled.addPointCloud<pcl::PointNormal> (cloud_1);
-    if (write_normals)
-      vis_sampled.addPointCloudNormals<pcl::PointNormal> (cloud_1, 1, 0.02f, "cloud_normals");
-    vis_sampled.spin ();
-  }
+  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud_1 (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+  uniform_sampling (polydata1, SAMPLE_POINTS_, write_normals, write_colors, *cloud_1);
 
   // Voxelgrid
-  VoxelGrid<PointNormal> grid_;
+  VoxelGrid<PointXYZRGBNormal> grid_;
   grid_.setInputCloud (cloud_1);
   grid_.setLeafSize (leaf_size, leaf_size, leaf_size);
 
-  pcl::PointCloud<pcl::PointNormal>::Ptr voxel_cloud (new pcl::PointCloud<pcl::PointNormal>);
+  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr voxel_cloud (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
   grid_.filter (*voxel_cloud);
 
   if (vis_result)
   {
     visualization::PCLVisualizer vis3 ("VOXELIZED SAMPLES CLOUD");
-    vis3.addPointCloud<pcl::PointNormal> (voxel_cloud);
+    vis3.addPointCloud<pcl::PointXYZRGBNormal> (voxel_cloud);
     if (write_normals)
-      vis3.addPointCloudNormals<pcl::PointNormal> (voxel_cloud, 1, 0.02f, "cloud_normals");
+      vis3.addPointCloudNormals<pcl::PointXYZRGBNormal> (voxel_cloud, 1, 0.02f, "cloud_normals");
     vis3.spin ();
   }
 
-  if (!write_normals)
-  {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
-    // Strip uninitialized normals from cloud:
-    pcl::copyPointCloud (*voxel_cloud, *cloud_xyz);
-    savePCDFileASCII (argv[pcd_file_indices[0]], *cloud_xyz);
-  }
-  else
+  if (write_normals && write_colors)
   {
     savePCDFileASCII (argv[pcd_file_indices[0]], *voxel_cloud);
+  }
+  else if (write_normals)
+  {
+    pcl::PointCloud<pcl::PointNormal>::Ptr cloud_xyzn (new pcl::PointCloud<pcl::PointNormal>);
+    // Strip uninitialized colors from cloud:
+    pcl::copyPointCloud (*voxel_cloud, *cloud_xyzn);
+    savePCDFileASCII (argv[pcd_file_indices[0]], *cloud_xyzn);
+  }
+  else if (write_colors)
+  {
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb (new pcl::PointCloud<pcl::PointXYZRGB>);
+    // Strip uninitialized normals from cloud:
+    pcl::copyPointCloud (*voxel_cloud, *cloud_xyzrgb);
+    savePCDFileASCII (argv[pcd_file_indices[0]], *cloud_xyzrgb);
+  }
+  else // !write_normals && !write_colors
+  {
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
+    // Strip uninitialized normals and colors from cloud:
+    pcl::copyPointCloud (*voxel_cloud, *cloud_xyz);
+    savePCDFileASCII (argv[pcd_file_indices[0]], *cloud_xyz);
   }
 }

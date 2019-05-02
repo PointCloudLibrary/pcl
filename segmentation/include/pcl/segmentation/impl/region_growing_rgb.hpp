@@ -217,7 +217,7 @@ template <typename PointT, typename NormalT> bool
 pcl::RegionGrowingRGB<PointT, NormalT>::prepareForSegmentation ()
 {
   // if user forgot to pass point cloud or if it is empty
-  if ( input_->points.size () == 0 )
+  if ( input_->points.empty () )
     return (false);
 
   // if normal/smoothness test is on then we need to check if all needed variables and parameters
@@ -225,7 +225,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::prepareForSegmentation ()
   if (normal_flag_)
   {
     // if user forgot to pass normals or the sizes of point and normal cloud are different
-    if ( normals_ == 0 || input_->points.size () != normals_->points.size () )
+    if ( !normals_ || input_->points.size () != normals_->points.size () )
       return (false);
   }
 
@@ -317,12 +317,12 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findRegionsKNN (int index, int nghbr_num
   distances.resize (clusters_.size (), max_dist);
 
   int number_of_points = num_pts_in_segment_[index];
-  //loop throug every point in this segment and check neighbours
+  //loop through every point in this segment and check neighbours
   for (int i_point = 0; i_point < number_of_points; i_point++)
   {
     int point_index = clusters_[index].indices[i_point];
     int number_of_neighbours = static_cast<int> (point_neighbours_[point_index].size ());
-    //loop throug every neighbour of the current point, find out to which segment it belongs
+    //loop through every neighbour of the current point, find out to which segment it belongs
     //and if it belongs to neighbouring segment and is close enough then remember segment and its distance
     for (int i_nghbr = 0; i_nghbr < number_of_neighbours; i_nghbr++)
     {
@@ -739,8 +739,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::getSegmentFromPoint (int index, pcl::Poi
     }
     // if we have already made the segmentation, then find the segment
     // to which this point belongs
-    std::vector <pcl::PointIndices>::iterator i_segment;
-    for (i_segment = clusters_.begin (); i_segment != clusters_.end (); i_segment++)
+    for (auto i_segment = clusters_.cbegin (); i_segment != clusters_.cend (); i_segment++)
     {
       bool segment_was_found = false;
       for (size_t i_point = 0; i_point < i_segment->indices.size (); i_point++)

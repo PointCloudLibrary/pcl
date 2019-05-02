@@ -45,7 +45,6 @@
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/rift.h>
 #include <pcl/features/intensity_gradient.h>
 
@@ -86,7 +85,7 @@ main (int, char** argv)
   gradient_est.setSearchMethod(treept2);
   gradient_est.setRadiusSearch(0.25);
   gradient_est.compute(*cloud_ig);
-  std::cout<<" Intesity Gradient estimated";
+  std::cout<<" Intensity Gradient estimated";
   std::cout<<" with size "<< cloud_ig->points.size() <<std::endl;
 
 

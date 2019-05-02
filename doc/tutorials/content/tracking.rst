@@ -18,7 +18,7 @@ Details
 The pcl_tracking library contains data structures and mechanism for 3D tracking which uses Particle Filter Algorithm. This tracking will enable you to implement 6D-pose (position and rotation) tracking which is optimized to run in real time.  
 
 
-At each loop, tracking program proceeds along with following algorythm.(see fig2)
+At each loop, tracking program proceeds along with following algorithm.(see fig2)
 	1. (At  t = t - 1) At first, using previous Pariticle's information about position and rotation, it will predict each position and rotation of them at the next frame.
 
 
@@ -60,44 +60,44 @@ Now, let's break down the code piece by piece.
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 224-239
+   :lines: 227-242
 
 
 First, in main function, these lines set the parameters for tracking. 
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 243-254
+   :lines: 246-257
 
 Here, we set likelihood function which tracker use when calculate weights.  You can add more likelihood function as you like. By default, there are normals likelihood and color likelihood functions. When you want to add other likelihood function, all you have to do is  initialize new Coherence Class and add the Coherence instance to coherence variable with addPointCoherence function.
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 256-269
+   :lines: 259-272
 
 In this part, we set the point cloud loaded from pcd file as reference model to tracker and also set model's transform values.
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 170-177
+   :lines: 173-180
 
 
 Until the counter variable become equal to 10, we ignore the input point cloud, because the point cloud at first few frames often have noise. After counter variable reach to 10 frame, at each loop, we set downsampled input point cloud to tracker and the tracker will compute particles movement.
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 79-79
+   :lines: 82-82
 
 
 In drawParticles function, you can get particles's positions by calling getParticles().
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 113-114
+   :lines: 116-117
 
 
 
-In drawResult function, you can get model infomation about position and rotation.
+In drawResult function, you can get model information about position and rotation.
 
 Compiling and running the program
 ---------------------------------
@@ -116,7 +116,7 @@ If you finish saving CMakeLists.txt, let's prepare for running.
 	3. Don't move the target and the device until you launch tracking program.
 	4. Output only target point cloud with your other code (See :ref:`planar_segmentation` tutorial) and save as tracking_target.pcd
 
-After you created model point cloud and the executable, you can then launch tracking_sample. Set device_id as second arguement and pcd file's name you made in above 4 as third.
+After you created model point cloud and the executable, you can then launch tracking_sample. Set device_id as second argument and pcd file's name you made in above 4 as third.
 
 	$ ./tracking_sample “#1” tracking_target.pcd
 

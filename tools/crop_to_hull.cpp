@@ -183,7 +183,7 @@ main (int argc, char** argv)
   cropToHull (output_cloud, input_cloud, hull_points, hull_polygons, dim);
   
 
-  if (output_cloud->size ())
+  if (!output_cloud->empty ())
     saveCloud (argv[p_file_indices[2]], *output_cloud);
   else
     print_error ("No points passed crop.\n");

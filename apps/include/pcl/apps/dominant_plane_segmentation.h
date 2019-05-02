@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef DOMINANT_PLANE_SEGMENTATION_H_
-#define DOMINANT_PLANE_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/point_cloud.h>
@@ -230,7 +229,7 @@ namespace pcl
             return 1;
           else
           {
-            //compute distance and check aginst max_dist
+            //compute distance and check against max_dist
             if ((p1.getVector3fMap () - p2.getVector3fMap ()).norm () <= max_dist)
             {
               p2.intensity = p1.intensity;
@@ -286,5 +285,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/apps/impl/dominant_plane_segmentation.hpp>
 #endif
-
-#endif /* DOMINANT_PLANE_SEGMENTATION_H_ */

@@ -36,9 +36,10 @@
  */
 
 // Stdlib
-#include <stdlib.h>
+#include <cstdlib>
 #include <cmath>
-#include <limits.h>
+#include <climits>
+#include <thread>
 
 #include <boost/format.hpp>
 
@@ -62,6 +63,8 @@
 #include <vtkImageData.h>
 #include <vtkImageFlip.h>
 #include <vtkPolyLine.h>
+
+using namespace std::chrono_literals;
 
 /// *****  Type Definitions ***** ///
 
@@ -119,12 +122,12 @@ keyboardEventOccurred (const pcl::visualization::KeyboardEvent& event_arg,
 /** \brief Displays info text in the specified PCLVisualizer
  *  \param[in] viewer_arg The PCLVisualizer to modify  */
 void
-printText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg);
+printText (pcl::visualization::PCLVisualizer::Ptr viewer_arg);
 
 /** \brief Removes info text in the specified PCLVisualizer
  *  \param[in] viewer_arg The PCLVisualizer to modify  */
 void
-removeText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg);
+removeText (pcl::visualization::PCLVisualizer::Ptr viewer_arg);
 
 
 /// ---- main ---- ///
@@ -182,7 +185,7 @@ LCCPSegmentation Parameters: \n\
   bool save_binary_pcd = pcl::console::find_switch (argc, argv, "-bin");
   
   /// Create variables needed for preparations
-  std::string outputname ("");
+  std::string outputname;
   pcl::PointCloud<PointT>::Ptr input_cloud_ptr (new pcl::PointCloud<PointT>);
   pcl::PointCloud<pcl::Normal>::Ptr input_normals_ptr (new pcl::PointCloud<pcl::Normal>);
   bool has_normals = false;
@@ -226,7 +229,7 @@ LCCPSegmentation Parameters: \n\
   {
     pcl::console::parse (argc, argv, "-o", outputname);
 
-    // If no filename is given, get output filename from inputname (strip seperators and file extension)
+    // If no filename is given, get output filename from inputname (strip separators and file extension)
     if (outputname.empty () || (outputname.at (0) == '-'))
     {
       outputname = pcd_filename;
@@ -447,7 +450,7 @@ LCCPSegmentation Parameters: \n\
     /// Configure Visualizer
     pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     viewer->setBackgroundColor (0, 0, 0);
-    viewer->registerKeyboardCallback (keyboardEventOccurred, 0);
+    viewer->registerKeyboardCallback (keyboardEventOccurred, nullptr);
     viewer->addPointCloud (lccp_labeled_cloud, "maincloud");
 
     /// Visualization Loop
@@ -492,7 +495,7 @@ LCCPSegmentation Parameters: \n\
           viewer->addText ("Press d to show help", 5, 10, 12, 1.0, 1.0, 1.0, "help_text");
       }
 
-      boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+      std::this_thread::sleep_for(100ms);
     }
   }  /// END if (show_visualization)
 
@@ -503,7 +506,7 @@ LCCPSegmentation Parameters: \n\
 /// -------------------------| Definitions of helper functions|-------------------------
 
 void
-printText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg)
+printText (pcl::visualization::PCLVisualizer::Ptr viewer_arg)
 {
   std::string on_str = "ON";
   std::string off_str = "OFF";
@@ -528,7 +531,7 @@ printText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg)
 }
 
 void
-removeText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg)
+removeText (pcl::visualization::PCLVisualizer::Ptr viewer_arg)
 {
   viewer_arg->removeShape ("hud_text");
   viewer_arg->removeShape ("normals_text");

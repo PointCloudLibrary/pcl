@@ -45,7 +45,7 @@ namespace pcl
 template<class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
 void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::initialize(std::string & data_dir)
 {
-  std::string start = "";
+  std::string start;
   std::string ext = std::string ("pcd");
   bf::path dir = data_dir;
 
@@ -76,24 +76,19 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     }
   }
 
-  for (size_t i = 0; i < files.size (); i++)
+  for (const auto &filename : files)
   {
-    std::stringstream filestream;
-    filestream << data_dir << "/" << files[i];
-    std::string file = filestream.str ();
+    std::string file = data_dir + '/' + filename;
 
-    std::string pose_file (files[i]);
+    std::string pose_file (filename);
     boost::replace_all (pose_file, ".pcd", "_pose.txt");
 
     Eigen::Matrix4f pose_mat;
     pose_mat.setIdentity (4, 4);
 
-    std::stringstream filestream_pose;
-    filestream_pose << data_dir << "/" << pose_file;
-    pose_file = filestream_pose.str ();
+    pose_file = data_dir + '/' + pose_file;
 
-    bool result = readMatrixFromFile (pose_file, pose_mat);
-    if (result)
+    if (readMatrixFromFile (pose_file, pose_mat))
     {
       Eigen::Vector3f ea = pose_mat.block<3, 3> (0, 0).eulerAngles (0, 1, 2);
       ea *= 57.2957795f; //transform it to degrees to do the binning
@@ -152,9 +147,9 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
           yaw_pitch_bins[i][j] = min_images_per_bin_;
         }
 
-        for (size_t ii = 0; ii < image_files_per_bin[i][j].size (); ii++)
+        for (const auto &ii : image_files_per_bin[i][j])
         {
-          image_files_.push_back (image_files_per_bin[i][j][ii]);
+          image_files_.push_back (ii);
         }
       }
     }
@@ -172,7 +167,7 @@ template<class FeatureType, class DataSet, class LabelType, class ExampleIndex, 
 void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::getDatasetAndLabels(DataSet & data_set,
     std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples)
 {
-  srand (static_cast<unsigned int>(time (NULL)));
+  srand (static_cast<unsigned int>(time (nullptr)));
   std::random_shuffle (image_files_.begin (), image_files_.end ());
   std::vector < std::string > files;
   files = image_files_;
@@ -250,7 +245,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     }
 
     //Compute integral image over depth
-    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_depth;
+    pcl::IntegralImage2D<float, 1>::Ptr integral_image_depth;
     integral_image_depth.reset (new pcl::IntegralImage2D<float, 1> (false));
 
     int element_stride = sizeof(pcl::PointXYZ) / sizeof(float);
@@ -263,8 +258,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     if (USE_NORMALS_)
     {
-      typedef typename pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> NormalEstimator_;
-      NormalEstimator_ n3d;
+      pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> n3d;
       n3d.setNormalEstimationMethod (n3d.COVARIANCE_MATRIX);
       n3d.setInputCloud (cloud);
       n3d.setRadiusSearch (0.02);
@@ -277,9 +271,9 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     int element_stride_normal = sizeof(pcl::Normal) / sizeof(float);
     int row_stride_normal = element_stride_normal * normals->width;
-    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_normal_x;
-    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_normal_y;
-    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_normal_z;
+    pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_x;
+    pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_y;
+    pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_z;
 
     if (USE_NORMALS_)
     {
@@ -366,15 +360,14 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     center_point.y = trans_vector[1];
     center_point.z = trans_vector[2];
 
-    int N_patches = patches_per_image_;
-    int pos_extracted = 0;
-    int neg_extracted = 0;
-    int w_size_2 = static_cast<int> (w_size_ / 2);
-
     //************************************************
     //2nd training style, fanelli's journal description
     //************************************************
     {
+      int N_patches = patches_per_image_;
+      int pos_extracted = 0;
+      int neg_extracted = 0;
+      int w_size_2 = static_cast<int> (w_size_ / 2);
 
       typedef std::pair<int, int> pixelpair;
       std::vector < pixelpair > negative_p, positive_p;
@@ -406,11 +399,10 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
       negative_p.resize (N_patches);
 
       //extract positive patch
-      for (size_t p = 0; p < positive_p.size (); p++)
+      for (const auto &p : positive_p)
       {
-        int col, row;
-        col = positive_p[p].first;
-        row = positive_p[p].second;
+        int col = p.first;
+        int row = p.second;
 
         pcl::PointXYZ patch_center_point;
         patch_center_point.x = cloud->at (col + w_size_2, row + w_size_2).x;
@@ -431,7 +423,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
         te.wsize_ = w_size_;
 
         te.trans_ = center_point.getVector3fMap () - patch_center_point.getVector3fMap ();
-        te.trans_ *= 1000.f; //transform it to milimiters
+        te.trans_ *= 1000.f; //transform it to millimeters
         te.rot_ = ea;
         te.rot_ *= 57.2957795f; //transform it to degrees
 
@@ -466,11 +458,10 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
       sleep(2);
 #endif
 
-      for (size_t p = 0; p < negative_p.size (); p++)
+      for (const auto &p : negative_p)
       {
-        int col, row;
-        col = negative_p[p].first;
-        row = negative_p[p].second;
+        int col = p.first;
+        int row = p.second;
 
         TrainingExample te;
         te.iimages_.push_back (integral_image_depth);

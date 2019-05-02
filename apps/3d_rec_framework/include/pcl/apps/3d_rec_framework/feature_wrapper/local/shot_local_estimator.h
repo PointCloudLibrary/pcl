@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_SHOT_LOCAL_ESTIMATOR_H_
-#define REC_FRAMEWORK_SHOT_LOCAL_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/local_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
@@ -31,7 +30,7 @@ namespace pcl
 
       public:
         bool
-        estimate (PointInTPtr & in, PointInTPtr & processed, PointInTPtr & keypoints, FeatureTPtr & signatures)
+        estimate (PointInTPtr & in, PointInTPtr & processed, PointInTPtr & keypoints, FeatureTPtr & signatures) override
         {
 
           if (!normal_estimator_)
@@ -40,7 +39,7 @@ namespace pcl
             return false;
           }
 
-          if (keypoint_extractor_.size() == 0)
+          if (keypoint_extractor_.empty ())
           {
             PCL_ERROR("SHOTLocalEstimation :: This feature needs a keypoint extractor... please provide one\n");
             return false;
@@ -100,7 +99,7 @@ namespace pcl
           keypoint_extractor_->setSupportRadius(support_radius_);
           keypoint_extractor_->compute (keypoints);*/
 
-          if (keypoints->points.size () == 0)
+          if (keypoints->points.empty ())
           {
             PCL_WARN("SHOTLocalEstimation :: No keypoints were found\n");
             return false;
@@ -108,7 +107,7 @@ namespace pcl
 
           std::cout << keypoints->points.size() << " " << normals->points.size() << " " << processed->points.size() << std::endl;
           //compute signatures
-          typedef typename pcl::SHOTEstimation<PointInT, pcl::Normal, pcl::SHOT352> SHOTEstimator;
+          typedef pcl::SHOTEstimation<PointInT, pcl::Normal, pcl::SHOT352> SHOTEstimator;
           typename pcl::search::KdTree<PointInT>::Ptr tree (new pcl::search::KdTree<PointInT>);
 
           pcl::PointCloud<pcl::SHOT352>::Ptr shots (new pcl::PointCloud<pcl::SHOT352>);
@@ -140,5 +139,3 @@ namespace pcl
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_SHOT_LOCAL_ESTIMATOR_H_ */

@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef PCL_PFHRGB_H_
-#define PCL_PFHRGB_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 #include <pcl/features/pfh_tools.h>
@@ -77,7 +76,7 @@ namespace pcl
 
     protected:
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
     private:
       /** \brief The number of subdivisions for each angular feature interval. */
@@ -100,5 +99,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/pfhrgb.hpp>
 #endif
-
-#endif /* PCL_PFHRGB_H_ */

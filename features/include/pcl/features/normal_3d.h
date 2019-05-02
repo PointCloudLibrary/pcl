@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_NORMAL_3D_H_
-#define PCL_NORMAL_3D_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 #include <pcl/common/centroid.h>
@@ -206,9 +205,9 @@ namespace pcl
   {
     Eigen::Vector3f normal_mean = Eigen::Vector3f::Zero ();
 
-    for (size_t i = 0; i < normal_indices.size (); ++i)
+    for (const int &normal_index : normal_indices)
     {
-      const PointNT& cur_pt = normal_cloud[normal_indices[i]];
+      const PointNT& cur_pt = normal_cloud[normal_index];
 
       if (pcl::isFinite (cur_pt))
       {
@@ -269,7 +268,7 @@ namespace pcl
       };
       
       /** \brief Empty destructor */
-      virtual ~NormalEstimation () {}
+      ~NormalEstimation () {}
 
       /** \brief Compute the Least-Squares plane fit for a given set of points, using their indices,
         * and return the estimated plane parameters together with the surface curvature.
@@ -329,8 +328,8 @@ namespace pcl
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
         */
-      virtual inline void 
-      setInputCloud (const PointCloudConstPtr &cloud)
+      inline void 
+      setInputCloud (const PointCloudConstPtr &cloud) override
       {
         input_ = cloud;
         if (use_sensor_origin_)
@@ -400,7 +399,7 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains surface normals and curvatures
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief Values describing the viewpoint ("pinhole" camera model assumed). For per point viewpoints, inherit
         * from NormalEstimation and provide your own computeFeature (). By default, the viewpoint is set to 0,0,0. */
@@ -423,6 +422,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/normal_3d.hpp>
 #endif
-
-#endif  //#ifndef PCL_NORMAL_3D_H_
-

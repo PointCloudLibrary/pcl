@@ -29,8 +29,7 @@
  *      Author: Julius Kammerl (jkammerl@willowgarage.com)
  */
 
-#ifndef PCL_IO_OPENNI2_DEVICE_MANAGER_H_
-#define PCL_IO_OPENNI2_DEVICE_MANAGER_H_
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include "pcl/io/openni2/openni2_device_info.h"
@@ -59,7 +58,7 @@ namespace pcl
         OpenNI2DeviceManager ();
         virtual ~OpenNI2DeviceManager ();
 
-        // This may not actually be a sigleton yet. Need to work out cross-dll incerface.
+        // This may not actually be a singleton yet. Need to work out cross-dll incerface.
         // Based on http://stackoverflow.com/a/13431981/1789618
         static boost::shared_ptr<OpenNI2DeviceManager> getInstance ()
         {
@@ -98,5 +97,3 @@ namespace pcl
     } // namespace
   }
 }
-
-#endif // PCL_IO_OPENNI2_DEVICE_MANAGER_H_

@@ -111,7 +111,7 @@ namespace pcl
       using PointCloudColorHandler<PointT>::cloud_;
 
       typedef typename PointCloudColorHandler<PointT>::PointCloud::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::PointCloud<RGB>::ConstPtr RgbCloudConstPtr;
+      typedef pcl::PointCloud<RGB>::ConstPtr RgbCloudConstPtr;
 
       public:
         typedef boost::shared_ptr<PointCloudColorHandlerRGBCloud<PointT> > Ptr;
@@ -130,8 +130,8 @@ namespace pcl
           * \return true if the operation was successful (the handler is capable and 
           * the input cloud was given as a valid pointer), false otherwise
           */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+        bool
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const override
         {
           if (!capable_ || !cloud_)
             return (false);
@@ -159,10 +159,10 @@ namespace pcl
         }
 
       private:
-        virtual std::string 
-        getFieldName () const { return ("additional rgb"); }
-        virtual std::string 
-        getName () const { return ("PointCloudColorHandlerRGBCloud"); }
+        std::string 
+        getFieldName () const override { return ("additional rgb"); }
+        std::string 
+        getName () const override { return ("PointCloudColorHandlerRGBCloud"); }
         
         RgbCloudConstPtr rgb_;
     };
@@ -187,11 +187,7 @@ vector<string> getPcdFilesInDir(const string& directory)
     if (fs::is_regular_file(pos->status()) )
       if (fs::extension(*pos) == ".pcd")
       {
-#if BOOST_FILESYSTEM_VERSION == 3
         result.push_back (pos->path ().string ());
-#else
-        result.push_back (pos->path ());
-#endif
         cout << "added: " << result.back() << endl;
       }
     
@@ -249,7 +245,7 @@ getViewerPose (visualization::PCLVisualizer& viewer)
                  -1,  0,  0,
                   0, -1,  0;
 
-  rotation = rotation * axis_reorder;
+  rotation *= axis_reorder;
   pose.linear() = rotation;
   return pose;
 }
@@ -368,7 +364,7 @@ struct ImageView
   }
 
   void
-  showScene (KinfuTracker& kinfu, const PtrStepSz<const KinfuTracker::PixelRGB>& rgb24, bool registration, Eigen::Affine3f* pose_ptr = 0)
+  showScene (KinfuTracker& kinfu, const PtrStepSz<const KinfuTracker::PixelRGB>& rgb24, bool registration, Eigen::Affine3f* pose_ptr = nullptr)
   {
     if (pose_ptr)
     {
@@ -822,7 +818,7 @@ struct KinFuApp
     if (viz_ && has_image)
     {
       Eigen::Affine3f viewer_pose = getViewerPose(*scene_cloud_view_.cloud_viewer_);
-      image_view_.showScene (kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : 0);
+      image_view_.showScene (kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : nullptr);
     }    
 
     if (current_frame_cloud_view_)
@@ -971,7 +967,7 @@ struct KinFuApp
     boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1_oni = boost::bind (&KinFuApp::source_cb2_oni, this, _1, _2, _3);
     boost::function<void (const DepthImagePtr&)> func2_oni = boost::bind (&KinFuApp::source_cb1_oni, this, _1);
     
-    bool is_oni = dynamic_cast<pcl::ONIGrabber*>(&capture_) != 0;
+    bool is_oni = dynamic_cast<pcl::ONIGrabber*>(&capture_) != nullptr;
     boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = is_oni ? func1_oni : func1_dev;
     boost::function<void (const DepthImagePtr&)> func2 = is_oni ? func2_oni : func2_dev;
 
@@ -1255,7 +1251,7 @@ main (int argc, char* argv[])
     {
       triggered_capture = true;
       bool repeat = false; // Only run ONI file once
-      capture.reset (new pcl::ONIGrabber (oni_file, repeat, ! triggered_capture));
+      capture.reset (new pcl::ONIGrabber (oni_file, repeat, false));
     }
     else if (pc::parse_argument (argc, argv, "-pcd", pcd_dir) > 0)
     {
@@ -1298,7 +1294,7 @@ main (int argc, char* argv[])
         
   std::string camera_pose_file;
   boost::shared_ptr<CameraPoseProcessor> pose_processor;
-  if (pc::parse_argument (argc, argv, "-save_pose", camera_pose_file) && camera_pose_file.size () > 0)
+  if (pc::parse_argument (argc, argv, "-save_pose", camera_pose_file) && !camera_pose_file.empty ())
   {
     pose_processor.reset (new CameraPoseWriter (camera_pose_file));
   }

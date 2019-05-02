@@ -35,6 +35,8 @@
  *  \author Raphael Favier
  * */
 
+#include <thread>
+
 #include <pcl/io/auto_io.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -51,6 +53,8 @@
 #include <vtkRenderWindow.h>
 #include <vtkCubeSource.h>
 #include <vtkCleanPolyData.h>
+
+using namespace std::chrono_literals;
 
 class OctreeViewer
 {
@@ -73,7 +77,7 @@ public:
       return;
 
     //register keyboard callbacks
-    viz.registerKeyboardCallback(&OctreeViewer::keyboardEventOccurred, *this, 0);
+    viz.registerKeyboardCallback(&OctreeViewer::keyboardEventOccurred, *this, nullptr);
 
     //key legends
     viz.addText ("Keys:", 0, 170, 0.0, 1.0, 0.0, "keys_t");
@@ -191,7 +195,7 @@ private:
     {
       //main loop of the visualizer
       viz.spinOnce(100);
-      boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+      std::this_thread::sleep_for(100ms);
     }
   }
 
@@ -308,22 +312,18 @@ private:
 
     // Create every cubes to be displayed
     double s = voxelSideLen / 2.0;
-    for (size_t i = 0; i < cloudVoxel->points.size (); i++)
+    for (const auto &point : cloudVoxel->points)
     {
-      double x = cloudVoxel->points[i].x;
-      double y = cloudVoxel->points[i].y;
-      double z = cloudVoxel->points[i].z;
+      double x = point.x;
+      double y = point.y;
+      double z = point.z;
 
       vtkSmartPointer<vtkCubeSource> wk_cubeSource = vtkSmartPointer<vtkCubeSource>::New ();
 
       wk_cubeSource->SetBounds (x - s, x + s, y - s, y + s, z - s, z + s);
       wk_cubeSource->Update ();
 
-#if VTK_MAJOR_VERSION < 6
-      appendFilter->AddInput (wk_cubeSource->GetOutput ());
-#else
       appendFilter->AddInputData (wk_cubeSource->GetOutput ());
-#endif
     }
 
     // Remove any duplicate points
@@ -371,20 +371,15 @@ private:
     displayCloud->points.clear();
     cloudVoxel->points.clear();
 
-    pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_it;
-    pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_it_end = octree.end();
-
     pcl::PointXYZ pt_voxel_center;
     pcl::PointXYZ pt_centroid;
     std::cout << "===== Extracting data at depth " << depth << "... " << std::flush;
     double start = pcl::getTime ();
 
-    for (tree_it = octree.begin(depth); tree_it!=tree_it_end; ++tree_it)
+    for (pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::FixedDepthIterator tree_it = octree.fixed_depth_begin (depth);
+         tree_it != octree.fixed_depth_end ();
+         ++tree_it)
     {
-      // If the iterator is not at the right depth, continue
-      if (tree_it.getCurrentOctreeDepth () != (unsigned int) depth)
-        continue;
-
       // Compute the point at the center of the voxel which represents the current OctreeNode
       Eigen::Vector3f voxel_min, voxel_max;
       octree.getVoxelBounds (tree_it, voxel_min, voxel_max);
@@ -411,9 +406,9 @@ private:
 
         // Iterate over the leafs to compute the centroid of all of them
         pcl::CentroidPoint<pcl::PointXYZ> centroid;
-        for (size_t j = 0; j < voxelCentroids.size (); ++j)
+        for (const auto &voxelCentroid : voxelCentroids)
         {
-          centroid.add (voxelCentroids[j]);
+          centroid.add (voxelCentroid);
         }
         centroid.get (pt_centroid);
       }

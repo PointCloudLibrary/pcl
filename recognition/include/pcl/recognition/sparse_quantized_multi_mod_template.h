@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_SPARSE_QUANTIZED_MULTI_MOD_TEMPLATE
-#define PCL_FEATURES_SPARSE_QUANTIZED_MULTI_MOD_TEMPLATE
+#pragma once
 
 #include <vector>
 
@@ -152,5 +151,3 @@ namespace pcl
   };
 
 }
-
-#endif 

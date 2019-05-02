@@ -71,7 +71,7 @@ namespace pcl
       if (this->currentNode_)
       {
         bool bTreeUp = false;
-        OutofcoreOctreeBaseNode<ContainerT, PointT>* itNode = 0;
+        OutofcoreOctreeBaseNode<ContainerT, PointT>* itNode = nullptr;
 
         if (this->currentNode_->getNodeType () == pcl::octree::BRANCH_NODE)
         {
@@ -106,7 +106,7 @@ namespace pcl
         
         if (bTreeUp)
         {
-          if (stack_.size () > 0)
+          if (!stack_.empty ())
           {
             std::pair<OutofcoreOctreeBaseNode<ContainerT, PointT>*, unsigned char>& stackEntry = stack_.back ();
             stack_.pop_back ();
@@ -119,7 +119,7 @@ namespace pcl
           }
           else
           {
-            this->currentNode_ = NULL;
+            this->currentNode_ = nullptr;
           }
             
         }

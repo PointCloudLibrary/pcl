@@ -59,10 +59,10 @@ template<typename ModelT, typename SceneT>
     explained_by_RM_.resize (scene_cloud_downsampled_->points.size ());
     points_explained_by_rm_.resize (scene_cloud_downsampled_->points.size ());
 
-    // initalize model
+    // initialize model
     for (size_t m = 0; m < complete_models_.size (); m++)
     {
-      boost::shared_ptr < RecognitionModel > recog_model (new RecognitionModel);
+      RecognitionModelPtr recog_model (new RecognitionModel);
       // voxelize model cloud
       recog_model->cloud_.reset (new pcl::PointCloud<ModelT>);
       recog_model->complete_cloud_.reset (new pcl::PointCloud<ModelT>);
@@ -112,15 +112,15 @@ template<typename ModelT, typename SceneT>
         recognition_models_.push_back (recog_model);
 
         // update explained_by_RM_, add 1
-        for (size_t i = 0; i < explained_indices.size (); i++)
+        for (const int &explained_index : explained_indices)
         {
-          explained_by_RM_[explained_indices[i]]++;
-          points_explained_by_rm_[explained_indices[i]].push_back (recog_model);
+          explained_by_RM_[explained_index]++;
+          points_explained_by_rm_[explained_index].push_back (recog_model);
         }
       }
       else
       {
-        mask_[m] = false; // the model didnt survive the sequential check...
+        mask_[m] = false; // the model didn't survive the sequential check...
       }
     }
   }
@@ -132,21 +132,21 @@ template<typename ModelT, typename SceneT>
   {
     // iterate over all vertices of the graph and check if they have a better neighbour, then remove that vertex
     typedef typename boost::graph_traits<Graph>::vertex_iterator VertexIterator;
-    VertexIterator vi, vi_end, next;
+    VertexIterator vi, vi_end;
     boost::tie (vi, vi_end) = boost::vertices (conflict_graph_);
 
-    for (next = vi; next != vi_end; next++)
+    for (auto next = vi; next != vi_end; next++)
     {
       const typename Graph::vertex_descriptor v = boost::vertex (*next, conflict_graph_);
       typename boost::graph_traits<Graph>::adjacency_iterator ai;
       typename boost::graph_traits<Graph>::adjacency_iterator ai_end;
 
-      boost::shared_ptr < RecognitionModel > current = static_cast<boost::shared_ptr<RecognitionModel> > (graph_id_model_map_[int (v)]);
+      auto current = boost::static_pointer_cast<RecognitionModel> (graph_id_model_map_[int (v)]);
 
       bool a_better_one = false;
       for (boost::tie (ai, ai_end) = boost::adjacent_vertices (v, conflict_graph_); (ai != ai_end) && !a_better_one; ++ai)
       {
-        boost::shared_ptr < RecognitionModel > neighbour = static_cast<boost::shared_ptr<RecognitionModel> > (graph_id_model_map_[int (*ai)]);
+        auto neighbour = boost::static_pointer_cast<RecognitionModel> (graph_id_model_map_[int (*ai)]);
         if ((neighbour->explained_.size () >= current->explained_.size ()) && mask_[neighbour->id_])
         {
           a_better_one = true;
@@ -169,7 +169,7 @@ template<typename ModelT, typename SceneT>
     for (size_t i = 0; i < (recognition_models_.size ()); i++)
     {
       const typename Graph::vertex_descriptor v = boost::add_vertex (recognition_models_[i], conflict_graph_);
-      graph_id_model_map_[int (v)] = static_cast<boost::shared_ptr<RecognitionModel> > (recognition_models_[i]);
+      graph_id_model_map_[int (v)] = boost::static_pointer_cast<RecognitionModel> (recognition_models_[i]);
     }
 
     // iterate over the remaining models and check for each one if there is a conflict with another one

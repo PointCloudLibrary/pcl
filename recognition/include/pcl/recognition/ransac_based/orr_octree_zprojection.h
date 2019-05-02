@@ -43,13 +43,11 @@
  *      Author: papazov
  */
 
-#ifndef ORR_OCTREE_ZPROJECTION_H_
-#define ORR_OCTREE_ZPROJECTION_H_
+#pragma once
 
 #include "orr_octree.h"
 #include <pcl/pcl_exports.h>
 #include <set>
-
 
 namespace pcl
 {
@@ -96,7 +94,7 @@ namespace pcl
             static inline bool
             compare_nodes_z (ORROctree::Node* node1, ORROctree::Node* node2)
             {
-              return static_cast<bool> (node1->getData ()->get3dIdZ () < node2->getData ()->get3dIdZ ());
+              return node1->getData()->get3dIdZ() < node2->getData()->get3dIdZ();
             }
 
             inline void
@@ -118,8 +116,8 @@ namespace pcl
 
       public:
         ORROctreeZProjection ()
-        : pixels_(NULL),
-          sets_(NULL)
+        : pixels_(nullptr),
+          sets_(nullptr)
         {}
         virtual ~ORROctreeZProjection (){ this->clear();}
 
@@ -141,8 +139,8 @@ namespace pcl
         {
           int x, y; this->getPixelCoordinates (p, x, y);
 
-          if ( x < 0 || x >= num_pixels_x_ ) return (NULL);
-          if ( y < 0 || y >= num_pixels_y_ ) return (NULL);
+          if ( x < 0 || x >= num_pixels_x_ ) return (nullptr);
+          if ( y < 0 || y >= num_pixels_y_ ) return (nullptr);
 
           return (pixels_[x][y]);
         }
@@ -152,8 +150,8 @@ namespace pcl
         {
           int x, y; this->getPixelCoordinates (p, x, y);
 
-          if ( x < 0 || x >= num_pixels_x_ ) return (NULL);
-          if ( y < 0 || y >= num_pixels_y_ ) return (NULL);
+          if ( x < 0 || x >= num_pixels_x_ ) return (nullptr);
+          if ( y < 0 || y >= num_pixels_y_ ) return (nullptr);
 
           return (pixels_[x][y]);
         }
@@ -163,11 +161,11 @@ namespace pcl
         {
           int x, y; this->getPixelCoordinates (p, x, y);
 
-          if ( x < 0 || x >= num_pixels_x_ ) return (NULL);
-          if ( y < 0 || y >= num_pixels_y_ ) return (NULL);
+          if ( x < 0 || x >= num_pixels_x_ ) return (nullptr);
+          if ( y < 0 || y >= num_pixels_y_ ) return (nullptr);
 
           if ( !sets_[x][y] )
-            return NULL;
+            return nullptr;
 
           return (&sets_[x][y]->get_nodes ());
         }
@@ -211,6 +209,3 @@ namespace pcl
     };
   } // namespace recognition
 } // namespace pcl
-
-
-#endif /* ORR_OCTREE_ZPROJECTION_H_ */

@@ -175,7 +175,7 @@ pcl::IntegralImage2D<DataType, Dimension>::computeIntegralImages (
         current_row [colIdx + 1] = previous_row [colIdx + 1] + current_row [colIdx] - previous_row [colIdx];
         count_current_row [colIdx + 1] = count_previous_row [colIdx + 1] + count_current_row [colIdx] - count_previous_row [colIdx];
         const InputType* element = reinterpret_cast <const InputType*> (&data [valIdx]);
-        if (pcl_isfinite (element->sum ()))
+        if (std::isfinite (element->sum ()))
         {
           current_row [colIdx + 1] += element->template cast<typename IntegralImageTypeTraits<DataType>::IntegralType>();
           ++(count_current_row [colIdx + 1]);
@@ -205,7 +205,7 @@ pcl::IntegralImage2D<DataType, Dimension>::computeIntegralImages (
         count_current_row [colIdx + 1] = count_previous_row [colIdx + 1] + count_current_row [colIdx] - count_previous_row [colIdx];
 
         const InputType* element = reinterpret_cast <const InputType*> (&data [valIdx]);
-        if (pcl_isfinite (element->sum ()))
+        if (std::isfinite (element->sum ()))
         {
           current_row [colIdx + 1] += element->template cast<typename IntegralImageTypeTraits<DataType>::IntegralType>();
           ++(count_current_row [colIdx + 1]);
@@ -344,7 +344,7 @@ pcl::IntegralImage2D<DataType, 1>::computeIntegralImages (
       {
         current_row [colIdx + 1] = previous_row [colIdx + 1] + current_row [colIdx] - previous_row [colIdx];
         count_current_row [colIdx + 1] = count_previous_row [colIdx + 1] + count_current_row [colIdx] - count_previous_row [colIdx];
-        if (pcl_isfinite (data [valIdx]))
+        if (std::isfinite (data [valIdx]))
         {
           current_row [colIdx + 1] += data [valIdx];
           ++(count_current_row [colIdx + 1]);
@@ -371,7 +371,7 @@ pcl::IntegralImage2D<DataType, 1>::computeIntegralImages (
         current_row [colIdx + 1] = previous_row [colIdx + 1] + current_row [colIdx] - previous_row [colIdx];
         so_current_row [colIdx + 1] = so_previous_row [colIdx + 1] + so_current_row [colIdx] - so_previous_row [colIdx];
         count_current_row [colIdx + 1] = count_previous_row [colIdx + 1] + count_current_row [colIdx] - count_previous_row [colIdx];
-        if (pcl_isfinite (data[valIdx]))
+        if (std::isfinite (data[valIdx]))
         {
           current_row [colIdx + 1] += data[valIdx];
           so_current_row [colIdx + 1] += data[valIdx] * data[valIdx];

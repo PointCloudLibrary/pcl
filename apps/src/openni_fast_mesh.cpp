@@ -33,6 +33,8 @@
  *	
  */
 
+#include <thread>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -41,12 +43,12 @@
 #include <pcl/surface/organized_fast_mesh.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
-#include <pcl/console/time.h>
 #include <pcl/visualization/cloud_viewer.h>
 
 using namespace pcl;
 using namespace pcl::visualization;
 using namespace std;
+using namespace std::chrono_literals;
 
 #define FPS_CALC(_WHAT_) \
 do \
@@ -117,26 +119,19 @@ class OpenNIFastMesh
       
       CloudConstPtr temp_cloud;
       boost::shared_ptr<std::vector<pcl::Vertices> > temp_verts;
-      pcl::console::TicToc t1;
 
       while (!view->wasStopped ())
-      //while (!viewer.wasStopped ())
       {
-        //boost::this_thread::sleep (boost::posix_time::milliseconds (1));
         if (!cloud_ || !mtx_.try_lock ())
         {
-          boost::this_thread::sleep (boost::posix_time::milliseconds (1));
+          std::this_thread::sleep_for(1ms);
           continue;
         }
 
-        //temp_cloud.reset (new Cloud (*cloud_));
-        //temp_cloud.swap (cloud_);
-        //temp_verts.swap (vertices_);//reset (new std::vector<pcl::Vertices> (*vertices_));
         temp_cloud = cloud_;
-        temp_verts = vertices_;//reset (new std::vector<pcl::Vertices> (*vertices_));
+        temp_verts = vertices_;
         mtx_.unlock ();
 
-        //view->removePolygonMesh ("surface");
         if (!view->updatePolygonMesh<PointType> (temp_cloud, *temp_verts, "surface"))
         {
           view->addPolygonMesh<PointType> (temp_cloud, *temp_verts, "surface");
@@ -152,14 +147,13 @@ class OpenNIFastMesh
 
     pcl::OrganizedFastMesh<PointType> ofm;
     std::string device_id_;
-    //boost::shared_mutex mtx_;
     boost::mutex mtx_;
     // Data
     CloudConstPtr cloud_;
     boost::shared_ptr<std::vector<pcl::Vertices> > vertices_;
     pcl::PolygonMesh::Ptr mesh_;
 
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> view;
+    pcl::visualization::PCLVisualizer::Ptr view;
 };
 
 void

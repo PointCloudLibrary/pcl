@@ -73,7 +73,7 @@ pcl::TimeTrigger::~TimeTrigger ()
   quit_ = true;
   condition_.notify_all (); // notify all threads about updated quit_
   lock.unlock (); // unlock, to join all threads (needs to be done after notify_all)
-  
+
   timer_thread_.join ();
 }
 
@@ -85,7 +85,7 @@ pcl::TimeTrigger::registerCallback (const callback_type& callback)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::TimeTrigger::setInterval (double interval_seconds)
 {
   boost::unique_lock<boost::mutex> lock (condition_mutex_);
@@ -95,7 +95,7 @@ pcl::TimeTrigger::setInterval (double interval_seconds)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::TimeTrigger::start ()
 {
   boost::unique_lock<boost::mutex> lock (condition_mutex_);
@@ -107,7 +107,7 @@ pcl::TimeTrigger::start ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::TimeTrigger::stop ()
 {
   boost::unique_lock<boost::mutex> lock (condition_mutex_);
@@ -119,13 +119,12 @@ pcl::TimeTrigger::stop ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::TimeTrigger::thread_function ()
 {
-  double time = 0;
   while (true)
   {
-    time = getTime ();
+    double time = getTime ();
     boost::unique_lock<boost::mutex> lock (condition_mutex_);
     if(quit_)
       break;
@@ -135,13 +134,7 @@ pcl::TimeTrigger::thread_function ()
     {
       callbacks_();
       double rest = interval_ + time - getTime ();
-#if defined(BOOST_HAS_WINTHREADS) && (BOOST_VERSION < 105500)
-      //infinite timed_wait bug: https://svn.boost.org/trac/boost/ticket/9079
-      if (rest > 0.0) // without a deadlock is possible, until notify() is called
-        condition_.timed_wait (lock, boost::posix_time::microseconds (static_cast<int64_t> ((rest * 1000000))));
-#else
       condition_.timed_wait (lock, boost::posix_time::microseconds (static_cast<int64_t> ((rest * 1000000))));
-#endif
     }
   }
 }

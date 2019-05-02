@@ -37,15 +37,13 @@
  *
  */
 
-#ifndef NNCLASSIFICATION_H_
-#define NNCLASSIFICATION_H_
+#pragma once
 
 #include <cstdlib>
 #include <cfloat>
 #include <algorithm>
 #include <boost/foreach.hpp>
 #include <boost/shared_ptr.hpp>
-#include <pcl/kdtree/kdtree_flann.h>
 
 namespace pcl
 {
@@ -144,7 +142,7 @@ namespace pcl
         std::ifstream f (labels_file_name.c_str ());
         std::string label;
         while (getline (f, label))
-          if (label.size () > 0)
+          if (!label.empty ())
             labels.push_back(label);
         if (labels.size () != cloud->points.size ())
           return (false);
@@ -263,8 +261,8 @@ namespace pcl
             result->second.push_back (sqrt (*it));
             sum_dist += result->second.back ();
           }
-        for (std::vector<float>::iterator it = result->second.begin (); it != result->second.end (); ++it)
-          *it = 1 - *it/sum_dist;
+        for (float &it : result->second)
+          it = 1 - it/sum_dist;
 
         // Return label/score list pair
         return (result);
@@ -299,5 +297,3 @@ namespace pcl
       }
   };
 }
-
-#endif /* NNCLASSIFICATION_H_ */

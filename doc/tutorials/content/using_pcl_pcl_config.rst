@@ -28,7 +28,7 @@ CMakeLists.txt that contains:
    link_directories(${PCL_LIBRARY_DIRS})
    add_definitions(${PCL_DEFINITIONS})
    add_executable(pcd_write_test pcd_write.cpp)
-   target_link_libraries(pcd_write_test ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
+   target_link_libraries(pcd_write_test ${PCL_LIBRARIES})
 
 The explanation
 ---------------
@@ -97,7 +97,7 @@ Windows platform and blank on UNIX) and the permissions.
 
 .. code-block:: cmake
 
-   target_link_libraries(pcd_write_test ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
+   target_link_libraries(pcd_write_test ${PCL_LIBRARIES})
 
 The executable we are building makes call to PCL functions. So far, we
 have only included the PCL headers so the compilers knows about the
@@ -109,7 +109,7 @@ that remains is to trigger the link operation which we do calling
 PCLConfig.cmake uses a CMake special feature named `EXPORT` which
 allows for using others' projects targets as if you built them
 yourself. When you are using such targets they are called `imported
-targets` and acts just like anyother target.
+targets` and acts just like any other target.
 
 Compiling and running the project
 ---------------------------------

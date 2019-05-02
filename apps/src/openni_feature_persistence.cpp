@@ -35,6 +35,8 @@
  *
  */
 
+#include <thread>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -50,6 +52,7 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d_omp.h>
 
+using namespace std::chrono_literals;
 
 #define FPS_CALC(_WHAT_) \
 do \
@@ -92,7 +95,7 @@ class OpenNIFeaturePersistence
                 << "    octree_leaf_size = " << subsampling_leaf_size << "\n"
                 << "    normal_search_radius = " << normal_search_radius << "\n"
                 << "    persistence_alpha = " << alpha << "\n"
-                << "    scales = "; for (size_t i = 0; i < scales_vector.size (); ++i) std::cout << scales_vector[i] << " ";
+                << "    scales = "; for (const float scale : scales_vector) std::cout << scale << " ";
       std::cout << "\n";
 
       subsampling_filter_.setLeafSize (subsampling_leaf_size, subsampling_leaf_size, subsampling_leaf_size);
@@ -158,7 +161,7 @@ class OpenNIFeaturePersistence
       boost::mutex::scoped_lock lock (mtx_);
       if (!cloud_)
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
         return;
       }
 
@@ -196,7 +199,7 @@ class OpenNIFeaturePersistence
 
       while (!viewer.wasStopped ())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
       }
 
       interface->stop ();
@@ -231,7 +234,7 @@ usage (char ** argv)
             << "         -normal_search_radius X = size of the neighborhood to consider for calculating the local plane and extracting the normals (default: " << default_normal_search_radius << "\n"
             << "         -persistence_alpha X = value of alpha for the multiscale feature persistence (default: " << default_alpha << "\n"
             << "         -scales X1 X2 ... = values for the multiple scales for extracting features (default: ";
-  for (size_t i = 0; i < default_scales_vector.size (); ++i) std::cout << default_scales_vector[i] << " ";
+  for (const double &i : default_scales_vector) std::cout << i << " ";
   std::cout << "\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();

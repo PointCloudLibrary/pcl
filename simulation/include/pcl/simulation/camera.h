@@ -1,5 +1,4 @@
-#ifndef PCL_SIMULATION_CAMERA_HPP_
-#define PCL_SIMULATION_CAMERA_HPP_
+#pragma once
 
 #include <boost/shared_ptr.hpp>
 #include <Eigen/Dense>
@@ -118,5 +117,3 @@ namespace pcl
     };
   } // namespace - simulation
 } // namespace - pcl
-
-#endif /* PCL_SIMULATION_CAMERA_HPP_ */

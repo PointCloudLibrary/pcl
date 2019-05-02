@@ -48,6 +48,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <iostream>
+#include <thread>
 
 #include <pcl/console/parse.h>
 
@@ -85,6 +86,7 @@ typedef pcl::ScopeTime ScopeTimeT;
 #include <pcl/gpu/kinfu_large_scale/screenshot_manager.h>
 
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace Eigen;
 
@@ -127,11 +129,7 @@ vector<string> getPcdFilesInDir(const string& directory)
     if (fs::is_regular_file(pos->status()) )
       if (fs::extension(*pos) == ".pcd")
       {
-#if BOOST_FILESYSTEM_VERSION == 3
         result.push_back (pos->path ().string ());
-#else
-        result.push_back (pos->path ());
-#endif
         cout << "added: " << result.back() << endl;
       }
 
@@ -189,7 +187,7 @@ getViewerPose (visualization::PCLVisualizer& viewer)
           -1,  0,  0,
           0, -1,  0;
 
-  rotation = rotation * axis_reorder;
+  rotation *= axis_reorder;
   pose.linear() = rotation;
   return pose;
 }
@@ -303,7 +301,7 @@ struct ImageView
   }
 
   void
-  showScene (KinfuTracker& kinfu, const PtrStepSz<const pcl::gpu::kinfuLS::PixelRGB>& rgb24, bool registration, Eigen::Affine3f* pose_ptr = 0)
+  showScene (KinfuTracker& kinfu, const PtrStepSz<const pcl::gpu::kinfuLS::PixelRGB>& rgb24, bool registration, Eigen::Affine3f* pose_ptr = nullptr)
   {
     if (pose_ptr)
     {
@@ -419,8 +417,6 @@ struct SceneCloudView
     // create a 5-point visual for each camera
     pcl::PointXYZ p1, p2, p3, p4, p5;
     p1.x=0; p1.y=0; p1.z=0;
-    double angleX = RAD2DEG (2.0 * atan (width / (2.0*focal)));
-    double angleY = RAD2DEG (2.0 * atan (height / (2.0*focal)));
     double dist = 0.75;
     double minX, minY, maxX, maxY;
     maxX = dist*tan (atan (width / (2.0*focal)));
@@ -864,7 +860,7 @@ struct KinFuLSApp
     if (has_image)
     {
       Eigen::Affine3f viewer_pose = getViewerPose(scene_cloud_view_.cloud_viewer_);
-      image_view_.showScene (*kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : 0);
+      image_view_.showScene (*kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : nullptr);
     }    
 
     if (current_frame_cloud_view_)
@@ -1018,7 +1014,7 @@ struct KinFuLSApp
         //~ cout << "In main loop" << endl;                  
       } 
       exit_ = true;
-      boost::this_thread::sleep (boost::posix_time::millisec (100));
+      std::this_thread::sleep_for(100ms);
 
       if (!triggered_capture)     
         capture_.stop (); // Stop stream
@@ -1275,7 +1271,7 @@ main (int argc, char* argv[])
     {
       triggered_capture = true;
       bool repeat = false; // Only run ONI file once
-      capture.reset (new pcl::ONIGrabber (oni_file, repeat, !triggered_capture));
+      capture.reset (new pcl::ONIGrabber (oni_file, repeat, false));
     }
     else if (pc::parse_argument (argc, argv, "-pcd", pcd_dir) > 0)
     {

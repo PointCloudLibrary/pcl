@@ -74,10 +74,10 @@ pcl::getMeanStdDev (const std::vector<float> &values, double &mean, double &stdd
 {
   double sum = 0, sq_sum = 0;
 
-  for (size_t i = 0; i < values.size (); ++i)
+  for (const float &value : values)
   {
-    sum += values[i];
-    sq_sum += values[i] * values[i];
+    sum += value;
+    sq_sum += value * value;
   }
   mean = sum / static_cast<double>(values.size ());
   double variance = (sq_sum - sum * sum / static_cast<double>(values.size ())) / (static_cast<double>(values.size ()) - 1);

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_CONVERGENCE_CRIERIA_H_
-#define PCL_REGISTRATION_CONVERGENCE_CRIERIA_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 
@@ -85,6 +84,3 @@ namespace pcl
      };
   }
 }
-
-#endif    // PCL_REGISTRATION_CONVERGENCE_CRIERIA_H_
-

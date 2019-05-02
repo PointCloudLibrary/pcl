@@ -71,6 +71,13 @@ namespace pcl
   }
 
   std::ostream&
+  operator << (std::ostream& os, const Intensity32u& p)
+  {
+    os << "( " << p.intensity << " )";
+    return (os);
+  }
+
+  std::ostream&
   operator << (std::ostream& os, const PointXYZI& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.intensity << ")";
@@ -402,8 +409,8 @@ namespace pcl
   std::ostream& 
   operator << (std::ostream& os, const GFPFHSignature16& p)
   {
-    for (int i = 0; i < p.descriptorSize (); ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < (p.descriptorSize () - 1) ? ", " : ")");
+    for (int i = 0; i < pcl::GFPFHSignature16::descriptorSize (); ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < (pcl::GFPFHSignature16::descriptorSize () - 1) ? ", " : ")");
     return (os);
   }
 

@@ -62,7 +62,7 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   std::ifstream fs;
   std::string line;
 
-  if (file_name == "" || !boost::filesystem::exists (file_name))
+  if (file_name.empty() || !boost::filesystem::exists (file_name))
   {
     PCL_ERROR ("[pcl::IFSReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
@@ -110,7 +110,6 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   char *name = new char [length_of_name];
   fs.read (name, sizeof (char) * length_of_name);
   delete[] name;
-  int offset = 0;
 
   // Read the header and fill it in with wonderful values
   try
@@ -138,6 +137,7 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
         cloud.fields[1].name = "y";
         cloud.fields[2].name = "z";
 
+        int offset = 0;
         for (int i = 0; i < 3; ++i, offset += 4)
         {
           cloud.fields[i].offset   = offset;
@@ -329,7 +329,7 @@ pcl::IFSWriter::write (const std::string &file_name, const pcl::PCLPointCloud2 &
 
   if (!cloud.is_dense)
   {
-    PCL_ERROR ("[pcl::IFSWriter::write] Non dense cloud are not alowed by IFS format!\n");
+    PCL_ERROR ("[pcl::IFSWriter::write] Non dense cloud are not allowed by IFS format!\n");
     return (-1);
   }
 

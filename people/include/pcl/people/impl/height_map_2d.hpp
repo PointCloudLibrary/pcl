@@ -59,12 +59,12 @@ template <typename PointT> void
 pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& cluster)
 {
   // Check if all mandatory variables have been set:
-  if (sqrt_ground_coeffs_ != sqrt_ground_coeffs_)
+  if (std::isnan(sqrt_ground_coeffs_))
   {
     PCL_ERROR ("[pcl::people::HeightMap2D::compute] Floor parameters have not been set or they are not valid!\n");
     return;
   }
-  if (cloud_ == NULL)
+  if (cloud_ == nullptr)
   {
     PCL_ERROR ("[pcl::people::HeightMap2D::compute] Input cloud has not been set!\n");
     return;
@@ -157,7 +157,7 @@ pcl::people::HeightMap2D<PointT>::searchLocalMaxima ()
       maxima_indices_[t] = i - int(offset/2 + 0.5);
       maxima_cloud_indices_[t] = buckets_cloud_indices_[maxima_indices_[t]];
       left = buckets_[i+1];
-      i = i+2;
+      i +=2;
       offset = 0;
       maxima_number_++;
     }
@@ -216,7 +216,7 @@ pcl::people::HeightMap2D<PointT>::filterMaxima ()
       PointT* p_current = &cloud_->points[maxima_cloud_indices_[i]];  // pointcloud point referring to the current maximum
       Eigen::Vector3f p_current_eigen(p_current->x, p_current->y, p_current->z);  // conversion to eigen
       float t = p_current_eigen.dot(ground_coeffs_.head(3)) / std::pow(sqrt_ground_coeffs_, 2); // height from the ground
-      p_current_eigen = p_current_eigen - ground_coeffs_.head(3) * t;       // projection of the point on the groundplane
+      p_current_eigen -= ground_coeffs_.head(3) * t;       // projection of the point on the groundplane
 
       int j = i-1;
       while ((j >= 0) && (good_maximum))
@@ -224,7 +224,7 @@ pcl::people::HeightMap2D<PointT>::filterMaxima ()
         PointT* p_previous = &cloud_->points[maxima_cloud_indices_[j]];         // pointcloud point referring to an already validated maximum
         Eigen::Vector3f p_previous_eigen(p_previous->x, p_previous->y, p_previous->z);  // conversion to eigen
         float t = p_previous_eigen.dot(ground_coeffs_.head(3)) / std::pow(sqrt_ground_coeffs_, 2); // height from the ground
-        p_previous_eigen = p_previous_eigen - ground_coeffs_.head(3) * t;         // projection of the point on the groundplane
+        p_previous_eigen -= ground_coeffs_.head(3) * t;         // projection of the point on the groundplane
 
         // distance of the projection of the points on the groundplane:
         distance = (p_current_eigen-p_previous_eigen).norm();

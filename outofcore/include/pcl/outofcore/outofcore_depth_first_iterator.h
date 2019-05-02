@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_H_
-#define PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_H_
+#pragma once
 
 #include <pcl/outofcore/outofcore_iterator_base.h>
 namespace pcl
@@ -54,16 +53,16 @@ namespace pcl
     class OutofcoreDepthFirstIterator : public OutofcoreIteratorBase<PointT, ContainerT>
     {
       public:
-        typedef typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT> OctreeDisk;
-        typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> OctreeDiskNode;
+        typedef pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT> OctreeDisk;
+        typedef pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> OctreeDiskNode;
 
-        typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> LeafNode;
-        typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> BranchNode;
+        typedef pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> LeafNode;
+        typedef pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> BranchNode;
 
         explicit
         OutofcoreDepthFirstIterator (OctreeDisk& octree_arg);
 
-        virtual
+        
         ~OutofcoreDepthFirstIterator ();
       
         OutofcoreDepthFirstIterator&
@@ -86,5 +85,3 @@ namespace pcl
     };
   }
 }
-
-#endif //PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_H_

@@ -26,13 +26,15 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
+#include <unordered_map>
+
+#include "poisson_exceptions.h"
 #include "octree_poisson.h"
 #include "mat.h"
 
 #if defined WIN32 || defined _WIN32
   #if !defined __MINGW32__
     #include <intrin.h>
-    #include <hash_map>
   #endif
 #endif
 
@@ -40,13 +42,6 @@ DAMAGE.
 #define ITERATION_POWER 1.0/3
 #define MEMORY_ALLOCATOR_BLOCK_SIZE 1<<12
 #define SPLAT_ORDER 2
-
-#ifndef _MSC_VER
-namespace std
-{
-  using namespace __gnu_cxx;
-}
-#endif
 
 namespace pcl
 {
@@ -56,13 +51,6 @@ namespace pcl
     const Real MATRIX_ENTRY_EPSILON = Real(0);
     const Real EPSILON=Real(1e-6);
     const Real ROUND_EPS=Real(1e-5);
-
-#if defined _WIN32 && !defined __MINGW32__
-    using stdext::hash_map;
-#else
-    using std::hash_map;
-#endif
-
 
     void atomicOr(volatile int& dest, int value)
     {
@@ -219,24 +207,31 @@ namespace pcl
       cData.cCount = 0;
       std::vector< int > offsets( threads+1 );
       offsets[0] = 0;
-      for( int t=0 ; t<threads ; t++ ) cData.cCount += count[t] , offsets[t+1] = offsets[t] + count[t];
+      for (int t = 0; t < threads; t++)
+      {
+        cData.cCount += count[t];
+        offsets[t + 1] = offsets[t] + count[t];
+      }
+
+      unsigned int paralellExceptionCount = 0;
 #pragma omp parallel for num_threads( threads )
-      for( int t=0 ; t<threads ; t++ )
-        for( int d=minDepth ; d<=maxDepth ; d++ )
+      for (int t = 0; t < threads; t++)
+      {
+        for (int d = minDepth; d <= maxDepth; d++)
         {
-          int start = spans[d].first , end = spans[d].second , width = end - start;
-          for( int i=start + (width*t)/threads ; i<start+(width*(t+1))/threads ; i++ )
-            for( int c=0 ; c<Cube::CORNERS ; c++ )
+          int start = spans[d].first, end = spans[d].second, width = end - start;
+          for (int i = start + (width*t) / threads; i < start + (width*(t + 1)) / threads; i++)
+          {
+            for (int c = 0; c < Cube::CORNERS; c++)
             {
               int& idx = cData[ treeNodes[i] ][c];
-              if( idx<0 )
+              if ( idx<0 )
               {
-                fprintf( stderr , "[ERROR] Found unindexed corner nodes[%d][%d] = %d (%d,%d)\n" , treeNodes[i]->nodeData.nodeIndex , c , idx , minDepth , maxDepth );
-                int _d , _off[3];
-                treeNodes[i]->depthAndOffset( _d , _off );
-                printf( "(%d [%d %d %d) <-> (%d [%d %d %d])\n" , minDepth , off[0] , off[1] , off[2] , _d , _off[0] , _off[1] , _off[2] );
-                printf( "[%d %d]\n" , spans[d].first , spans[d].second );
-                exit( 0 );
+#pragma omp critical
+                {
+                  // found unindexed corner
+                  ++paralellExceptionCount;
+                }
               }
               else
               {
@@ -245,7 +240,12 @@ namespace pcl
                 idx = rem + offsets[div];
               }
             }
+          }
         }
+      }
+
+      if (paralellExceptionCount > 0)
+        POISSON_THROW_EXCEPTION (pcl::poisson::PoissonOpenMPException, "Found " << paralellExceptionCount << " unindexed corner nodes during openMP loop execution.");
     }
     int SortedTreeNodes::getMaxCornerCount( const TreeOctNode* rootNode , int depth , int maxDepth , int threads ) const
     {
@@ -393,17 +393,32 @@ namespace pcl
       eData.eCount = 0;
       std::vector< int > offsets( threads+1 );
       offsets[0] = 0;
-      for( int t=0 ; t<threads ; t++ ) eData.eCount += count[t] , offsets[t+1] = offsets[t] + count[t];
+      for (int t = 0; t < threads; t++)
+      {
+        eData.eCount += count[t];
+        offsets[t + 1] = offsets[t] + count[t];
+      }
+
+      unsigned int paralellExceptionCount = 0;
 #pragma omp parallel for num_threads( threads )
-      for( int t=0 ; t<threads ; t++ )
-        for( int d=minDepth ; d<=maxDepth ; d++ )
+      for (int t = 0; t < threads; t++)
+      {
+        for (int d = minDepth; d <= maxDepth; d++)
         {
-          int start = spans[d].first , end = spans[d].second , width = end - start;
-          for( int i=start + (width*t)/threads ; i<start+(width*(t+1))/threads ; i++ )
-            for( int e=0 ; e<Cube::EDGES ; e++ )
+          int start = spans[d].first, end = spans[d].second, width = end - start;
+          for (int i = start + (width*t) / threads; i < start + (width*(t + 1)) / threads; i++)
+          {
+            for (int e = 0; e < Cube::EDGES; e++)
             {
-              int& idx = eData[ treeNodes[i] ][e];
-              if( idx<0 ) fprintf( stderr , "[ERROR] Found unindexed edge %d (%d,%d)\n" , idx , minDepth , maxDepth ) , exit( 0 );
+              int& idx = eData[treeNodes[i]][e];
+              if (idx < 0)
+              {
+#pragma omp critical
+                {
+                  // found unindexed edge
+                  ++paralellExceptionCount;
+                }
+              }
               else
               {
                 int div = idx / ( nodeCount*Cube::EDGES );
@@ -411,7 +426,13 @@ namespace pcl
                 idx = rem + offsets[div];
               }
             }
+          }
         }
+      }
+
+      if(paralellExceptionCount > 0)
+        POISSON_THROW_EXCEPTION (pcl::poisson::PoissonOpenMPException, "Found " << paralellExceptionCount << " unindexed edges during openMP loop execution.");
+
     }
     int SortedTreeNodes::getMaxEdgeCount( const TreeOctNode* rootNode , int depth , int threads ) const
     {
@@ -739,7 +760,7 @@ namespace pcl
     }
 
     template< int Degree > template<typename PointNT> int
-    Octree<Degree>::setTree( boost::shared_ptr<const pcl::PointCloud<PointNT> > input_, int maxDepth , int minDepth ,
+    Octree<Degree>::setTree(typename pcl::PointCloud<PointNT>::ConstPtr input_, int maxDepth , int minDepth ,
                              int kernelDepth , Real samplesPerNode , Real scaleFactor , Point3D<Real>& center , Real& scale ,
                              int useConfidence , Real constraintWeight , bool adaptiveWeights )
     {
@@ -2306,7 +2327,6 @@ namespace pcl
       if( !node1->children && MarchingCubes::HasRoots( node1->nodeData.mcIndex ) )
       {
         RootInfo ri1 , ri2;
-        hash_map< long long , std::pair< RootInfo , int > >::iterator iter;
         int isoTri[DIMENSION*MarchingCubes::MAX_TRIANGLES];
         int count=MarchingCubes::AddTriangleIndices( node1->nodeData.mcIndex , isoTri );
 
@@ -2317,14 +2337,12 @@ namespace pcl
               {
                 long long key1=ri1.key , key2=ri2.key;
                 edges->push_back( std::pair< RootInfo , RootInfo >( ri2 , ri1 ) );
-                iter = vertexCount->find( key1 );
-                if( iter==vertexCount->end() )
+                if( vertexCount->count( key1 )==0 )
                 {
                   (*vertexCount)[key1].first = ri1;
                   (*vertexCount)[key1].second=0;
                 }
-                iter=vertexCount->find(key2);
-                if( iter==vertexCount->end() )
+                if( vertexCount->count( key2 )==0 )
                 {
                   (*vertexCount)[key2].first = ri2;
                   (*vertexCount)[key2].second=0;
@@ -2426,7 +2444,7 @@ namespace pcl
 #pragma omp parallel for num_threads( threads )
       for( int i=0 ; i<_sNodes.nodeCount[maxDepth+1] ; i++ ) _sNodes.treeNodes[i]->nodeData.mcIndex = 0;
 
-      rootData.boundaryValues = new hash_map< long long , std::pair< Real , Point3D< Real > > >();
+      rootData.boundaryValues = new std::unordered_map< long long , std::pair< Real , Point3D< Real > > >();
       int offSet = 0;
 
       int maxCCount = _sNodes.getMaxCornerCount( &tree , sDepth , maxDepth , threads );
@@ -2537,7 +2555,7 @@ namespace pcl
       delete[] rootData.edgesSet ; rootData.edgesSet = NULL;
       coarseRootData.interiorRoots = NULL;
       coarseRootData.boundaryValues = rootData.boundaryValues;
-      for( poisson::hash_map< long long , int >::iterator iter=rootData.boundaryRoots.begin() ; iter!=rootData.boundaryRoots.end() ; iter++ )
+      for( auto iter=rootData.boundaryRoots.cbegin() ; iter!=rootData.boundaryRoots.cend() ; iter++ )
         coarseRootData.boundaryRoots[iter->first] = iter->second;
 
       for( int d=sDepth ; d>=0 ; d-- )
@@ -3041,8 +3059,8 @@ namespace pcl
         {
 #pragma omp critical (normal_hash_access)
           {
-            haveKey1 = ( rootData.boundaryValues->find( key1 )!=rootData.boundaryValues->end() );
-            haveKey2 = ( rootData.boundaryValues->find( key2 )!=rootData.boundaryValues->end() );
+            haveKey1 = ( rootData.boundaryValues->count( key1 )>0 );
+            haveKey2 = ( rootData.boundaryValues->count( key2 )>0 );
             if( haveKey1 ) keyValue1 = (*rootData.boundaryValues)[key1];
             if( haveKey2 ) keyValue2 = (*rootData.boundaryValues)[key2];
           }
@@ -3316,8 +3334,7 @@ namespace pcl
     int Octree< Degree >::GetRootIndex( const RootInfo& ri , RootData& rootData , CoredPointIndex& index )
     {
       long long key = ri.key;
-      hash_map< long long , int >::iterator rootIter;
-      rootIter = rootData.boundaryRoots.find( key );
+      auto rootIter = rootData.boundaryRoots.find( key );
       if( rootIter!=rootData.boundaryRoots.end() )
       {
         index.inCore = 1;
@@ -3354,7 +3371,7 @@ namespace pcl
           key = ri.key;
           if( !rootData.interiorRoots || IsBoundaryEdge( node , i , j , k , sDepth ) )
           {
-            poisson::hash_map< long long , int >::iterator iter , end;
+            std::unordered_map< long long , int >::iterator iter , end;
             // Check if the root has already been set
 #pragma omp critical (boundary_roots_hash_access)
             {
@@ -3452,8 +3469,7 @@ namespace pcl
       int isoTri[ DIMENSION * MarchingCubes::MAX_TRIANGLES ];
       FaceEdgesFunction fef;
       int ref , fIndex;
-      hash_map< long long , std::pair< RootInfo , int > >::iterator iter;
-      hash_map< long long , std::pair< RootInfo , int > > vertexCount;
+      std::unordered_map< long long , std::pair< RootInfo , int > > vertexCount;
 
       fef.edges = &edges;
       fef.maxDepth = fData.depth;
@@ -3478,14 +3494,12 @@ namespace pcl
                 {
                   long long key1 = ri1.key , key2 = ri2.key;
                   edges.push_back( std::pair< RootInfo , RootInfo >( ri1 , ri2 ) );
-                  iter=vertexCount.find( key1 );
-                  if( iter==vertexCount.end() )
+                  if( vertexCount.count( key1 )==0 )
                   {
                     vertexCount[key1].first = ri1;
                     vertexCount[key1].second = 0;
                   }
-                  iter=vertexCount.find( key2 );
-                  if( iter==vertexCount.end() )
+                  if( vertexCount.count( key2 )==0 )
                   {
                     vertexCount[key2].first = ri2;
                     vertexCount[key2].second = 0;
@@ -3503,15 +3517,13 @@ namespace pcl
       }
       for( int i=0 ; i<int(edges.size()) ; i++ )
       {
-        iter = vertexCount.find( edges[i].first.key );
-        if( iter==vertexCount.end() ) printf( "Could not find vertex: %lld\n" , edges[i].first );
+        if( vertexCount.count( edges[i].first.key )==0 ) printf( "Could not find vertex: %lld\n" , edges[i].first );
         else if( vertexCount[ edges[i].first.key ].second )
         {
           RootInfo ri;
           GetRootPair( vertexCount[edges[i].first.key].first , fData.depth , ri );
           long long key = ri.key;
-          iter = vertexCount.find( key );
-          if( iter==vertexCount.end() )
+          if( vertexCount.count( key )==0 )
           {
             int d , off[3];
             node->depthAndOffset( d , off );
@@ -3525,15 +3537,13 @@ namespace pcl
           }
         }
 
-        iter = vertexCount.find( edges[i].second.key );
-        if( iter==vertexCount.end() ) printf( "Could not find vertex: %lld\n" , edges[i].second );
+        if( vertexCount.count( edges[i].second.key )==0 ) printf( "Could not find vertex: %lld\n" , edges[i].second );
         else if( vertexCount[edges[i].second.key].second )
         {
           RootInfo ri;
           GetRootPair( vertexCount[edges[i].second.key].first , fData.depth , ri );
           long long key = ri.key;
-          iter=vertexCount.find( key );
-          if( iter==vertexCount.end() )
+          if( vertexCount.count( key ) )
           {
             int d , off[3];
             node->depthAndOffset( d , off );

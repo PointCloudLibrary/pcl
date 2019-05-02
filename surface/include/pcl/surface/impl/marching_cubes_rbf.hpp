@@ -43,7 +43,6 @@
 #include <pcl/common/common.h>
 #include <pcl/common/vector_average.h>
 #include <pcl/Vertices.h>
-#include <pcl/kdtree/kdtree_flann.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
@@ -63,11 +62,11 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
   for (unsigned int row_i = 0; row_i < 2*N; ++row_i)
   {
     // boolean variable to determine whether we are in the off_surface domain for the rows
-    bool row_off = (row_i >= N) ? 1 : 0;
+    bool row_off = (row_i >= N);
     for (unsigned int col_i = 0; col_i < 2*N; ++col_i)
     {
       // boolean variable to determine whether we are in the off_surface domain for the columns
-      bool col_off = (col_i >= N) ? 1 : 0;
+      bool col_off = (col_i >= N);
       M (row_i, col_i) = kernel (Eigen::Vector3f (input_->points[col_i%N].getVector3fMap ()).cast<double> () + Eigen::Vector3f (input_->points[col_i%N].getNormalVector3fMap ()).cast<double> () * col_off * off_surface_epsilon_,
                                  Eigen::Vector3f (input_->points[row_i%N].getVector3fMap ()).cast<double> () + Eigen::Vector3f (input_->points[row_i%N].getNormalVector3fMap ()).cast<double> () * row_off * off_surface_epsilon_);
     }

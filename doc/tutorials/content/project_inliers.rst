@@ -97,7 +97,7 @@ A graphical display of the projection process is shown below.
 
 .. image:: images/project_inliers_2.png
 
-Note that the coordinate axis are represented as red (x), green (y), and blue
+Note that the coordinate axes are represented as red (x), green (y), and blue
 (z). The five points are represented with red as the points before projection
 and green as the points after projection. Note that their z now lies on the X-Y
 plane.

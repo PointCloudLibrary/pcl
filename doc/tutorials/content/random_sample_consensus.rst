@@ -38,7 +38,7 @@ From [Wikipedia]_:
    :align: right
    :height: 200px
 
-The pictures to the left and right (From [Wikipedia]_) show a simple application of the RANSAC algorithm on a 2-dimensional set of data. The image on our left is a visual representation of a data set containg both inliers and outliers.  The image on our right shows all of the outliers in red, and shows inliers in blue.  The blue line is the result of the work done by RANSAC.  In this case the model that we are trying to fit to the data is a line, and it looks like it's a fairly good fit to our data.
+The pictures to the left and right (From [Wikipedia]_) show a simple application of the RANSAC algorithm on a 2-dimensional set of data. The image on our left is a visual representation of a data set containing both inliers and outliers.  The image on our right shows all of the outliers in red, and shows inliers in blue.  The blue line is the result of the work done by RANSAC.  In this case the model that we are trying to fit to the data is a line, and it looks like it's a fairly good fit to our data.
 
 The code
 --------
@@ -56,19 +56,19 @@ The following source code initializes two PointClouds and fills one of them with
 
 .. literalinclude:: sources/random_sample_consensus/random_sample_consensus.cpp
    :language: cpp
-   :lines: 30-63
+   :lines: 33-66
 
 Next we create a vector of ints that can store the locations of our inlier points from our PointCloud and now we can build our RandomSampleConsensus object using either a plane or a sphere model from our input cloud.
 
 .. literalinclude:: sources/random_sample_consensus/random_sample_consensus.cpp
    :language: cpp
-   :lines: 65-85
+   :lines: 68-88
 
 This last bit of code copies all of the points that fit our model to another cloud and then display either that or our original cloud in the viewer.
 
 .. literalinclude:: sources/random_sample_consensus/random_sample_consensus.cpp
    :language: cpp
-   :lines: 87-96
+   :lines: 90-99
 
 There is some extra code that relates to the display of the PointClouds in the 3D Viewer, but I'm not going to explain that here.
 
@@ -95,7 +95,7 @@ Hit 'r' on your keyboard to scale and center the viewer.  You can then click and
 
   $ ./random_sample_consensus -f
 
-the program will display only the indices of the original PointCloud which satisfy the paticular model we have chosen (in this case plane) as found by RandomSampleConsens in the viewer.
+the program will display only the indices of the original PointCloud which satisfy the particular model we have chosen (in this case plane) as found by RandomSampleConsens in the viewer.
 
 .. image:: images/ransac_inliers_plane.png
    :align: center

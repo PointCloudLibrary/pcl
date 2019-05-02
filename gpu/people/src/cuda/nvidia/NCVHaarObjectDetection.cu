@@ -911,15 +911,14 @@ void initializeMaskVectorDynTemplate(NcvBool tbMaskByInmask,
 Ncv32u getStageNumWithNotLessThanNclassifiers(Ncv32u N, HaarClassifierCascadeDescriptor &haar,
                                               NCVVector<HaarStage64> &h_HaarStages)
 {
-    Ncv32u i = 0;
-    for (; i<haar.NumStages; i++)
+    for (Ncv32u i = 0; i<haar.NumStages; i++)
     {
         if (h_HaarStages.ptr()[i].getNumClassifierRootNodes() >= N)
         {
-            break;
+            return i;
         }
     }
-    return i;
+    return haar.NumStages;
 }
 
 
@@ -1456,8 +1455,7 @@ NCVStatus ncvGrowDetectionsVector_device(NCVVector<Ncv32u> &pixelMask,
     ncvAssertReturn(rectWidth > 0 && rectHeight > 0 && curScale > 0, NCV_INVALID_ROI);
     ncvAssertReturn(curScale > 0, NCV_INVALID_SCALE);
     ncvAssertReturn(totalMaxDetections <= hypotheses.length() &&
-                    numPixelMaskDetections <= pixelMask.length() &&
-                    totalMaxDetections <= totalMaxDetections, NCV_INCONSISTENT_INPUT);
+                    numPixelMaskDetections <= pixelMask.length(), NCV_INCONSISTENT_INPUT);
 
     NCVStatus ncvStat = NCV_SUCCESS;
     Ncv32u numDetsToCopy = numPixelMaskDetections;
@@ -2032,8 +2030,7 @@ NCVStatus ncvGrowDetectionsVector_host(NCVVector<Ncv32u> &pixelMask,
     ncvAssertReturn(rectWidth > 0 && rectHeight > 0 && curScale > 0, NCV_INVALID_ROI);
     ncvAssertReturn(curScale > 0, NCV_INVALID_SCALE);
     ncvAssertReturn(totalMaxDetections <= hypotheses.length() &&
-                    numPixelMaskDetections <= pixelMask.length() &&
-                    totalMaxDetections <= totalMaxDetections, NCV_INCONSISTENT_INPUT);
+                    numPixelMaskDetections <= pixelMask.length(), NCV_INCONSISTENT_INPUT);
 
     NCVStatus ncvStat = NCV_SUCCESS;
     Ncv32u numDetsToCopy = numPixelMaskDetections;

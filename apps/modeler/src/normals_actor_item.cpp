@@ -72,7 +72,7 @@ pcl::modeler::NormalsActorItem::createNormalLines()
   if (cloud->empty())
     return;
 
-  if (points->GetData() == NULL)
+  if (points->GetData() == nullptr)
     points->SetData(vtkSmartPointer<vtkFloatArray>::New ());
 
   vtkFloatArray* data = dynamic_cast<vtkFloatArray*>(points->GetData());
@@ -137,11 +137,7 @@ pcl::modeler::NormalsActorItem::initImpl()
   createNormalLines();
 
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New();
-#if VTK_MAJOR_VERSION < 6
-  mapper->SetInput(poly_data_);
-#else
   mapper->SetInputData (poly_data_);
-#endif
 
   vtkSmartPointer<vtkDataArray> scalars;
   cloud_mesh_->getColorScalarsFromField(scalars, color_scheme_);

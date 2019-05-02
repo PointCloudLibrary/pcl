@@ -202,15 +202,15 @@ pcl::BoxClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& clou
   if (indices.empty ())
   {
     clipped.reserve (cloud_in.size ());
-    for (register unsigned pIdx = 0; pIdx < cloud_in.size (); ++pIdx)
+    for (size_t pIdx = 0; pIdx < cloud_in.size (); ++pIdx)
       if (clipPoint3D (cloud_in[pIdx]))
         clipped.push_back (pIdx);
   }
   else
   {
-    for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
-      if (clipPoint3D (cloud_in[*iIt]))
-        clipped.push_back (*iIt);
+    for (const int &index : indices)
+      if (clipPoint3D (cloud_in[index]))
+        clipped.push_back (index);
   }
 }
 #endif //PCL_FILTERS_IMPL_BOX_CLIPPER3D_HPP

@@ -153,7 +153,7 @@
        }    
      }
      typename PointCloud<PointT>::Ptr leftovers = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
-     if (extracted_indices->size () == 0)
+     if (extracted_indices->empty ())
        pcl::copyPointCloud (*input_cloud,*leftovers);
      else
      {
@@ -175,7 +175,7 @@
  }
  
  
- #define PCL_INSTANTIATE_performTemplatedAction(T) template PCL_EXPORTS void pcl::cloud_composer::OrganizedSegmentationTool::performTemplatedAction<T> (QList <const CloudComposerItem*>);
+ #define PCL_INSTANTIATE_performTemplatedAction(T) template void pcl::cloud_composer::OrganizedSegmentationTool::performTemplatedAction<T> (QList <const CloudComposerItem*>);
  
  
  

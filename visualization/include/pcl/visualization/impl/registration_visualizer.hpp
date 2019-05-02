@@ -36,6 +36,8 @@
  *
  */
 
+#include <thread>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointSource, typename PointTarget> void
 pcl::RegistrationVisualizer<PointSource, PointTarget>::startDisplay ()
@@ -58,7 +60,7 @@ pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
 {
   // Open 3D viewer
   viewer_
-      = boost::shared_ptr<pcl::visualization::PCLVisualizer> (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+      = pcl::visualization::PCLVisualizer::Ptr (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer_->initCameraParameters ();
 
   // Create the handlers for the three point clouds buffers: cloud_source_, cloud_target_ and cloud_intermediate_
@@ -172,8 +174,8 @@ pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
 
     // Render visualizer updated buffers
     viewer_->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
-
+    using namespace std::chrono_literals;
+    std::this_thread::sleep_for(100ms);
   }
 }
 

@@ -379,14 +379,14 @@ pcl::ihs::ICP::selectModelPoints (const MeshConstPtr&    mesh_model,
 
   const Mesh::VertexDataCloud& cloud = mesh_model->getVertexDataCloud ();
 
-  for (Mesh::VertexDataCloud::const_iterator it=cloud.begin (); it!=cloud.end (); ++it)
+  for (const auto &vertex_data : cloud)
   {
     // Don't consider points that are facing away from the camera.
-    if ((T_inv.lazyProduct (it->getNormalVector4fMap ())).z () < 0.f)
+    if ((T_inv.lazyProduct (vertex_data.getNormalVector4fMap ())).z () < 0.f)
     {
       PointNormal pt;
-      pt.getVector4fMap ()       = it->getVector4fMap ();
-      pt.getNormalVector4fMap () = it->getNormalVector4fMap ();
+      pt.getVector4fMap ()       = vertex_data.getVector4fMap ();
+      pt.getNormalVector4fMap () = vertex_data.getNormalVector4fMap ();
 
       // NOTE: Not the transformed points!!
       cloud_model_out->push_back (pt);
@@ -404,14 +404,13 @@ pcl::ihs::ICP::selectDataPoints (const CloudXYZRGBNormalConstPtr& cloud_data) co
   const CloudNormalPtr cloud_data_out (new CloudNormal ());
   cloud_data_out->reserve (cloud_data->size ());
 
-  CloudXYZRGBNormal::const_iterator it_in = cloud_data->begin ();
-  for (; it_in!=cloud_data->end (); ++it_in)
+  for (const auto &vertex_data : *cloud_data)
   {
-    if (!boost::math::isnan (it_in->x))
+    if (!std::isnan (vertex_data.x))
     {
       PointNormal pt;
-      pt.getVector4fMap ()       = it_in->getVector4fMap ();
-      pt.getNormalVector4fMap () = it_in->getNormalVector4fMap ();
+      pt.getVector4fMap ()       = vertex_data.getVector4fMap ();
+      pt.getNormalVector4fMap () = vertex_data.getNormalVector4fMap ();
 
       cloud_data_out->push_back (pt);
     }
@@ -500,7 +499,6 @@ pcl::ihs::ICP::minimizePointPlane (const CloudNormal& cloud_source,
   Vec4Xf::const_iterator it_nor_t = nor_t.begin ();
 
   Eigen::Vector4f cross;
-  float dot;
   for (; it_xyz_s!=xyz_s.end (); ++it_xyz_s, ++it_xyz_t, ++it_nor_t)
   {
     cross    = it_xyz_s->cross3 (*it_nor_t);
@@ -509,7 +507,7 @@ pcl::ihs::ICP::minimizePointPlane (const CloudNormal& cloud_source,
     C_tr_bl += cross     * it_nor_t->transpose ();
     C_br    += *it_nor_t * it_nor_t->transpose ();
 
-    dot      = (*it_xyz_t-*it_xyz_s).dot (*it_nor_t);
+    float dot = (*it_xyz_t-*it_xyz_s).dot (*it_nor_t);
 
     b_t     += cross     * dot;
     b_b     += *it_nor_t * dot;

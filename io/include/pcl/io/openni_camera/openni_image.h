@@ -33,11 +33,11 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#pragma once
+ 
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
-
-#ifndef __OPENNI_IMAGE__
-#define __OPENNI_IMAGE__
 
 #include <pcl/pcl_exports.h>
 #include "openni.h"
@@ -206,4 +206,3 @@ namespace openni_wrapper
   }
 } // namespace
 #endif
-#endif //__OPENNI_IMAGE__

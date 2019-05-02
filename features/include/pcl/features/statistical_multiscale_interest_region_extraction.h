@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_
-#define STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <list>
@@ -66,8 +65,8 @@ namespace pcl
   {
     public:
       typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
-      typedef typename boost::shared_ptr<StatisticalMultiscaleInterestRegionExtraction<PointT> > Ptr;
-      typedef typename boost::shared_ptr<const StatisticalMultiscaleInterestRegionExtraction<PointT> > ConstPtr;
+      typedef boost::shared_ptr<StatisticalMultiscaleInterestRegionExtraction<PointT> > Ptr;
+      typedef boost::shared_ptr<const StatisticalMultiscaleInterestRegionExtraction<PointT> > ConstPtr;
 
 
       /** \brief Empty constructor */
@@ -126,5 +125,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/statistical_multiscale_interest_region_extraction.hpp>
 #endif
-
-#endif /* STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_ */

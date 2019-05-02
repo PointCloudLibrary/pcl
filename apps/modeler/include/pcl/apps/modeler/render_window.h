@@ -34,11 +34,11 @@
  *
  */
 
-#ifndef PCL_MODELER_RENDER_WINDOW_H_
-#define PCL_MODELER_RENDER_WINDOW_H_
+#pragma once
 
-#include <pcl/apps/modeler/qt.h>
 #include <vtkSmartPointer.h>
+
+#include <QVTKWidget.h>
 
 class vtkCubeAxesActor;
 
@@ -51,11 +51,11 @@ namespace pcl
     class RenderWindow : public QVTKWidget
     {
       public:
-        RenderWindow(RenderWindowItem* render_window_item, QWidget *parent = 0, Qt::WindowFlags flags = 0);
+        RenderWindow(RenderWindowItem* render_window_item, QWidget *parent = nullptr, Qt::WindowFlags flags = nullptr);
         ~RenderWindow();
 
-        virtual QSize
-        sizeHint() const {return QSize(512, 512);}
+        QSize
+        sizeHint() const override {return {512, 512};}
 
         void
         setActive(bool flag);
@@ -83,7 +83,7 @@ namespace pcl
 
       protected:
         void
-        focusInEvent(QFocusEvent * event);
+        focusInEvent(QFocusEvent * event) override;
 
       private:
         void
@@ -94,5 +94,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_RENDER_WINDOW_H_

@@ -170,7 +170,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       img.step = img.width * sizeof (unsigned char) * 3;
       img.data.resize (img.step * img.height);
 
-      std::srand(std::time(0));
+      std::srand(std::time(nullptr));
       std::map<uint32_t, size_t> colormap;
 
       for (size_t i = 0; i < cloud.points.size (); ++i)
@@ -199,7 +199,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       img.step = img.width * sizeof (unsigned char) * 3;
       img.data.resize (img.step * img.height);
 
-      std::srand(std::time(0));
+      std::srand(std::time(nullptr));
       std::set<uint32_t> labels;
       std::map<uint32_t, size_t> colormap;
 
@@ -218,9 +218,9 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       // Note: the color LUT has a finite size (256 colors), therefore when
       // there are more labels the colors will repeat
       size_t color = 0;
-      for (std::set<uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter)
+      for (const uint32_t &label : labels)
       {
-        colormap[*iter] = color % GlasbeyLUT::size ();
+        colormap[label] = color % GlasbeyLUT::size ();
         ++color;
       }
 

@@ -35,10 +35,8 @@
  *
  */
 
-#ifndef PCL_IO_REAL_SENSE_DEVICE_MANAGER_H
-#define PCL_IO_REAL_SENSE_DEVICE_MANAGER_H
+#pragma once
 
-#include <boost/thread.hpp>
 #include <boost/utility.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/shared_ptr.hpp>
@@ -170,6 +168,3 @@ namespace pcl
   } // namespace io
 
 } // namespace pcl
-
-#endif /* PCL_IO_REAL_SENSE_DEVICE_MANAGER_H */
-

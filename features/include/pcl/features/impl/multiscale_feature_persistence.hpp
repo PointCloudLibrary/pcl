@@ -143,9 +143,9 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::calculateMeanFeatu
   float normalization_factor = 0.0f;
   for (std::vector<std::vector<std::vector<float> > >::iterator scale_it = features_at_scale_vectorized_.begin (); scale_it != features_at_scale_vectorized_.end(); ++scale_it) {
     normalization_factor += static_cast<float> (scale_it->size ());
-    for (std::vector<std::vector<float> >::iterator feature_it = scale_it->begin (); feature_it != scale_it->end (); ++feature_it)
+    for (const auto &feature : *scale_it)
       for (int dim_i = 0; dim_i < feature_representation_->getNumberOfDimensions (); ++dim_i)
-        mean_feature_[dim_i] += (*feature_it)[dim_i];
+        mean_feature_[dim_i] += feature[dim_i];
   }
 
   for (int dim_i = 0; dim_i < feature_representation_->getNumberOfDimensions (); ++dim_i)

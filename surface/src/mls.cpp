@@ -37,18 +37,17 @@
  *
  */
 
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
 #include <pcl/surface/mls.h>
 #include <pcl/surface/impl/mls.hpp>
 
-// Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal))
-                                            ((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal)))
-
-#ifdef _OPENMP
-PCL_INSTANTIATE_PRODUCT(MovingLeastSquaresOMP, ((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal))
-                                               ((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal)))
+#ifndef PCL_NO_PRECOMPILE
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+ // Instantiations of specific point types
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal))
+                                              ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal)))
+#else
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES))
 #endif
-/// Ideally, we should instantiate like below, but it takes large amounts of main memory for compilation
-//PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES))
+#endif    // PCL_NO_PRECOMPILE

@@ -40,8 +40,10 @@
 #define PCL_KDTREE_KDTREE_IMPL_FLANN_H_
 
 #include <cstdio>
+
+#include <flann/flann.hpp>
+
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/flann.h>
 #include <pcl/console/print.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +107,7 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
     PCL_ERROR ("[pcl::KdTreeFLANN::setInputCloud] Invalid input!\n");
     return;
   }
-  if (indices != NULL)
+  if (indices != nullptr)
   {
     convertCloudToArray (*input_, *indices_);
   }
@@ -279,16 +281,16 @@ pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud, co
   // But we can not guarantee that => identity_mapping_ = false
   identity_mapping_ = false;
   
-  for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
+  for (const int &index : indices)
   {
     // Check if the point is invalid
-    if (!point_representation_->isValid (cloud.points[*iIt]))
+    if (!point_representation_->isValid (cloud.points[index]))
       continue;
 
     // map from 0 - N -> indices [0] - indices [N]
-    index_mapping_.push_back (*iIt);  // If the returned index should be for the indices vector
+    index_mapping_.push_back (index);  // If the returned index should be for the indices vector
     
-    point_representation_->vectorize (cloud.points[*iIt], cloud_ptr);
+    point_representation_->vectorize (cloud.points[index], cloud_ptr);
     cloud_ptr += dim_;
   }
 }

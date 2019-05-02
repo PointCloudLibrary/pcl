@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KEYPOINT_H_
-#define PCL_KEYPOINT_H_
+#pragma once
 
 // PCL includes
 #include <pcl/pcl_base.h>
@@ -62,8 +61,8 @@ namespace pcl
       using PCLBase<PointInT>::input_;
 
       typedef PCLBase<PointInT> BaseClass;
-      typedef typename pcl::search::Search<PointInT> KdTree;
-      typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
+      typedef pcl::search::Search<PointInT> KdTree;
+      typedef typename KdTree::Ptr KdTreePtr;
       typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
@@ -86,7 +85,7 @@ namespace pcl
       {};
       
       /** \brief Empty destructor */
-      virtual ~Keypoint () {}
+      ~Keypoint () {}
 
       /** \brief Provide a pointer to the input dataset that we need to estimate features at every point for.
         * \param cloud the const boost shared pointer to a PointCloud message
@@ -207,5 +206,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/keypoint.hpp>
-
-#endif  //#ifndef PCL_KEYPOINT_H_

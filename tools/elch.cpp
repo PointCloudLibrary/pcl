@@ -146,11 +146,11 @@ main (int argc, char **argv)
     }
   }
 
-  for (size_t i = 0; i < clouds.size (); i++)
+  for (const auto &cloud : clouds)
   {
-    std::string result_filename (clouds[i].first);
-    result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
-    pcl::io::savePCDFileBinary (result_filename.c_str (), *(clouds[i].second));
+    std::string result_filename (cloud.first);
+    result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
+    pcl::io::savePCDFileBinary (result_filename.c_str (), *(cloud.second));
     std::cout << "saving result to " << result_filename << std::endl;
   }
 

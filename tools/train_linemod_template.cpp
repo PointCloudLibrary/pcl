@@ -35,7 +35,7 @@
  *
  */
 
-#include <math.h>
+#include <cmath>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -133,8 +133,8 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
   seg.segment (*inliers, *coefficients);  
   
   // Mask off the plane inliers
-  for (size_t i = 0; i < inliers->indices.size (); ++i)
-    foreground_mask[inliers->indices[i]] = false;
+  for (const int &index : inliers->indices)
+    foreground_mask[index] = false;
 
   // Mask off any foreground points that are too high above the detected plane
   const std::vector<float> & c = coefficients->values;
@@ -262,10 +262,10 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-max_height", max_height);
 
   // Segment and create templates for each input file
-  for (size_t i_file = 0; i_file < p_file_indices.size (); ++i_file)
+  for (const int &p_file_index : p_file_indices)
   {
     // Load input file
-    const std::string input_filename = argv[p_file_indices[i_file]];
+    const std::string input_filename = argv[p_file_index];
     PointCloudXYZRGBA::Ptr cloud (new PointCloudXYZRGBA);
     if (!loadCloud (input_filename, *cloud)) 
       return (-1);

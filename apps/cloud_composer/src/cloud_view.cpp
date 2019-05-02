@@ -1,10 +1,13 @@
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/cloud_view.h>
 #include <pcl/apps/cloud_composer/cloud_composer.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 
 #include <pcl/apps/cloud_composer/point_selectors/selection_event.h>
 #include <pcl/apps/cloud_composer/point_selectors/manipulation_event.h>
+
+#include <QDebug>
+
+#include <QVTKWidget.h>
 
 pcl::cloud_composer::CloudView::CloudView (QWidget* parent)
   : QWidget (parent)
@@ -303,8 +306,7 @@ pcl::cloud_composer::CloudView::manipulationCompleted (vtkObject*, unsigned long
   if (manip_event)
   {
     qDebug () << "Manipulation event received in cloud view!";
-    model_->manipulateClouds (manip_event);
-   
+    model_->manipulateClouds (manip_event);   
   }
 }
 

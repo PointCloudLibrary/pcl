@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_H_
+
+#pragma once
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/warp_point_rigid.h>
@@ -103,7 +103,7 @@ namespace pcl
         }
 
          /** \brief Destructor. */
-        virtual ~TransformationEstimationLM () {};
+        ~TransformationEstimationLM () {};
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
           * \param[in] cloud_src the source point cloud dataset
@@ -114,7 +114,7 @@ namespace pcl
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
           * \param[in] cloud_src the source point cloud dataset
@@ -127,13 +127,13 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
           * \param[in] cloud_src the source point cloud dataset
           * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
           * \param[in] cloud_tgt the target point cloud dataset
-          * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from 
+          * \param[in] indices_tgt the vector of indices describing the correspondences of the interest points from 
           * \a indices_src
           * \param[out] transformation_matrix the resultant transformation matrix
           */
@@ -143,7 +143,7 @@ namespace pcl
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const std::vector<int> &indices_tgt,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
           * \param[in] cloud_src the source point cloud dataset
@@ -156,13 +156,13 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const pcl::Correspondences &correspondences,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const override;
 
         /** \brief Set the function we use to warp points. Defaults to rigid 6D warp.
           * \param[in] warp_fcn a shared pointer to an object that warps points
           */
         void
-        setWarpFunction (const boost::shared_ptr<WarpPointRigid<PointSource, PointTarget, MatScalar> > &warp_fcn)
+        setWarpFunction (const typename WarpPointRigid<PointSource, PointTarget, MatScalar>::Ptr &warp_fcn)
         {
           warp_point_ = warp_fcn;
         }
@@ -215,11 +215,11 @@ namespace pcl
         mutable const std::vector<int> *tmp_idx_tgt_;
 
         /** \brief The parameterized function used to warp the source to the target. */
-        boost::shared_ptr<pcl::registration::WarpPointRigid<PointSource, PointTarget, MatScalar> > warp_point_;
+        typename pcl::registration::WarpPointRigid<PointSource, PointTarget, MatScalar>::Ptr warp_point_;
         
         /** Base functor all the models that need non linear optimization must
           * define their own one and implement operator() (const Eigen::VectorXd& x, Eigen::VectorXd& fvec)
-          * or operator() (const Eigen::VectorXf& x, Eigen::VectorXf& fvec) dependening on the choosen _Scalar
+          * or operator() (const Eigen::VectorXf& x, Eigen::VectorXf& fvec) depending on the chosen _Scalar
           */
         template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
         struct Functor
@@ -234,7 +234,7 @@ namespace pcl
           typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,1> ValueType;
           typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
 
-          /** \brief Empty Construtor. */
+          /** \brief Empty Constructor. */
           Functor () : m_data_points_ (ValuesAtCompileTime) {}
 
           /** \brief Constructor
@@ -287,7 +287,7 @@ namespace pcl
           }
 
           /** \brief Destructor. */
-          virtual ~OptimizationFunctor () {}
+          ~OptimizationFunctor () {}
 
           /** Fill fvec from x. For the current state vector x fill the f values
             * \param[in] x state vector
@@ -333,7 +333,7 @@ namespace pcl
           }
 
           /** \brief Destructor. */
-          virtual ~OptimizationFunctorWithIndices () {}
+          ~OptimizationFunctorWithIndices () {}
 
           /** Fill fvec from x. For the current state vector x fill the f values
             * \param[in] x state vector
@@ -351,6 +351,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/transformation_estimation_lm.hpp>
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_H_ */
-

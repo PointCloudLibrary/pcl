@@ -77,36 +77,36 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::calculateCombinedCovar (con
 {
   memset (coefficients, 0, sizeof (float) * 21);
   unsigned count = 0;
-  for (std::vector<int>::const_iterator iIt = neighbors.begin(); iIt != neighbors.end(); ++iIt)
+  for (const int &neighbor : neighbors)
   {
-    if (pcl_isfinite (normals_->points[*iIt].normal_x) && pcl_isfinite (intensity_gradients_->points[*iIt].gradient [0]))
+    if (std::isfinite (normals_->points[neighbor].normal_x) && std::isfinite (intensity_gradients_->points[neighbor].gradient [0]))
     {
-      coefficients[ 0] += normals_->points[*iIt].normal_x * normals_->points[*iIt].normal_x;
-      coefficients[ 1] += normals_->points[*iIt].normal_x * normals_->points[*iIt].normal_y;
-      coefficients[ 2] += normals_->points[*iIt].normal_x * normals_->points[*iIt].normal_z;
-      coefficients[ 3] += normals_->points[*iIt].normal_x * intensity_gradients_->points[*iIt].gradient [0];
-      coefficients[ 4] += normals_->points[*iIt].normal_x * intensity_gradients_->points[*iIt].gradient [1];
-      coefficients[ 5] += normals_->points[*iIt].normal_x * intensity_gradients_->points[*iIt].gradient [2];
+      coefficients[ 0] += normals_->points[neighbor].normal_x * normals_->points[neighbor].normal_x;
+      coefficients[ 1] += normals_->points[neighbor].normal_x * normals_->points[neighbor].normal_y;
+      coefficients[ 2] += normals_->points[neighbor].normal_x * normals_->points[neighbor].normal_z;
+      coefficients[ 3] += normals_->points[neighbor].normal_x * intensity_gradients_->points[neighbor].gradient [0];
+      coefficients[ 4] += normals_->points[neighbor].normal_x * intensity_gradients_->points[neighbor].gradient [1];
+      coefficients[ 5] += normals_->points[neighbor].normal_x * intensity_gradients_->points[neighbor].gradient [2];
 
-      coefficients[ 6] += normals_->points[*iIt].normal_y * normals_->points[*iIt].normal_y;
-      coefficients[ 7] += normals_->points[*iIt].normal_y * normals_->points[*iIt].normal_z;
-      coefficients[ 8] += normals_->points[*iIt].normal_y * intensity_gradients_->points[*iIt].gradient [0];
-      coefficients[ 9] += normals_->points[*iIt].normal_y * intensity_gradients_->points[*iIt].gradient [1];
-      coefficients[10] += normals_->points[*iIt].normal_y * intensity_gradients_->points[*iIt].gradient [2];
+      coefficients[ 6] += normals_->points[neighbor].normal_y * normals_->points[neighbor].normal_y;
+      coefficients[ 7] += normals_->points[neighbor].normal_y * normals_->points[neighbor].normal_z;
+      coefficients[ 8] += normals_->points[neighbor].normal_y * intensity_gradients_->points[neighbor].gradient [0];
+      coefficients[ 9] += normals_->points[neighbor].normal_y * intensity_gradients_->points[neighbor].gradient [1];
+      coefficients[10] += normals_->points[neighbor].normal_y * intensity_gradients_->points[neighbor].gradient [2];
 
-      coefficients[11] += normals_->points[*iIt].normal_z * normals_->points[*iIt].normal_z;
-      coefficients[12] += normals_->points[*iIt].normal_z * intensity_gradients_->points[*iIt].gradient [0];
-      coefficients[13] += normals_->points[*iIt].normal_z * intensity_gradients_->points[*iIt].gradient [1];
-      coefficients[14] += normals_->points[*iIt].normal_z * intensity_gradients_->points[*iIt].gradient [2];
+      coefficients[11] += normals_->points[neighbor].normal_z * normals_->points[neighbor].normal_z;
+      coefficients[12] += normals_->points[neighbor].normal_z * intensity_gradients_->points[neighbor].gradient [0];
+      coefficients[13] += normals_->points[neighbor].normal_z * intensity_gradients_->points[neighbor].gradient [1];
+      coefficients[14] += normals_->points[neighbor].normal_z * intensity_gradients_->points[neighbor].gradient [2];
 
-      coefficients[15] += intensity_gradients_->points[*iIt].gradient [0] * intensity_gradients_->points[*iIt].gradient [0];
-      coefficients[16] += intensity_gradients_->points[*iIt].gradient [0] * intensity_gradients_->points[*iIt].gradient [1];
-      coefficients[17] += intensity_gradients_->points[*iIt].gradient [0] * intensity_gradients_->points[*iIt].gradient [2];
+      coefficients[15] += intensity_gradients_->points[neighbor].gradient [0] * intensity_gradients_->points[neighbor].gradient [0];
+      coefficients[16] += intensity_gradients_->points[neighbor].gradient [0] * intensity_gradients_->points[neighbor].gradient [1];
+      coefficients[17] += intensity_gradients_->points[neighbor].gradient [0] * intensity_gradients_->points[neighbor].gradient [2];
 
-      coefficients[18] += intensity_gradients_->points[*iIt].gradient [1] * intensity_gradients_->points[*iIt].gradient [1];
-      coefficients[19] += intensity_gradients_->points[*iIt].gradient [1] * intensity_gradients_->points[*iIt].gradient [2];
+      coefficients[18] += intensity_gradients_->points[neighbor].gradient [1] * intensity_gradients_->points[neighbor].gradient [1];
+      coefficients[19] += intensity_gradients_->points[neighbor].gradient [1] * intensity_gradients_->points[neighbor].gradient [2];
 
-      coefficients[20] += intensity_gradients_->points[*iIt].gradient [2] * intensity_gradients_->points[*iIt].gradient [2];
+      coefficients[20] += intensity_gradients_->points[neighbor].gradient [2] * intensity_gradients_->points[neighbor].gradient [2];
 
       ++count;
     }
@@ -187,7 +187,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 #ifdef _OPENMP
   #pragma omp parallel for num_threads(threads_) default (shared)
 #endif    
-  for (unsigned idx = 0; idx < intensity_gradients_->size (); ++idx)
+  for (size_t idx = 0; idx < intensity_gradients_->size (); ++idx)
   {
     float len = intensity_gradients_->points [idx].gradient_x * intensity_gradients_->points [idx].gradient_x +
                 intensity_gradients_->points [idx].gradient_y * intensity_gradients_->points [idx].gradient_y +
@@ -209,7 +209,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     }
   }
 
-  boost::shared_ptr<pcl::PointCloud<PointOutT> > response (new pcl::PointCloud<PointOutT> ());
+  typename pcl::PointCloud<PointOutT>::Ptr response (new pcl::PointCloud<PointOutT>);
   response->points.reserve (input_->points.size());
   responseTomasi(*response);
 

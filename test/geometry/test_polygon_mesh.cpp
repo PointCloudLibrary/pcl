@@ -178,9 +178,9 @@ TYPED_TEST (TestPolygonMesh, ThreePolygons)
   faces.push_back (vi);
   vi.clear ();
 
-  for (unsigned int i=0; i<faces.size (); ++i)
+  for (const auto &face : faces)
   {
-    ASSERT_TRUE (mesh.addFace (faces [i]).isValid ());
+    ASSERT_TRUE (mesh.addFace (face).isValid ());
   }
 
   ASSERT_TRUE (hasFaces (mesh, faces));

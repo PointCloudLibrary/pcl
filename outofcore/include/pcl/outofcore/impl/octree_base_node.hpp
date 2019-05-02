@@ -78,7 +78,7 @@ namespace pcl
     boost::mutex OutofcoreOctreeBaseNode<ContainerT, PointT>::rng_mutex_;
 
     template<typename ContainerT, typename PointT>
-    boost::mt19937 OutofcoreOctreeBaseNode<ContainerT, PointT>::rand_gen_;
+    std::mt19937 OutofcoreOctreeBaseNode<ContainerT, PointT>::rng_;
 
     template<typename ContainerT, typename PointT>
     const double OutofcoreOctreeBaseNode<ContainerT, PointT>::sample_percent_ = .125;
@@ -92,7 +92,7 @@ namespace pcl
       , root_node_ (NULL)
       , parent_ (NULL)
       , depth_ (0)
-      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*>(0)))
+      , children_ (8, nullptr)
       , num_children_ (0)
       , num_loaded_children_ (0)
       , payload_ ()
@@ -110,7 +110,7 @@ namespace pcl
       , root_node_ ()
       , parent_ (super)
       , depth_ ()
-      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*>(0)))
+      , children_ (8, nullptr)
       , num_children_ (0)
       , num_loaded_children_ (0)
       , payload_ ()
@@ -120,7 +120,7 @@ namespace pcl
       node_metadata_->setOutofcoreVersion (3);
 
       //Check if this is the first node created/loaded (this is true if super, i.e. node's parent is NULL)
-      if (super == NULL)
+      if (super == nullptr)
       {
         node_metadata_->setDirectoryPathname (directory_path.parent_path ());
         node_metadata_->setMetadataFilename (directory_path);
@@ -143,7 +143,7 @@ namespace pcl
         boost::filesystem::directory_iterator directory_it_end; //empty constructor creates end of iterator
 
         //flag to test if the desired metadata file was found
-        bool b_loaded = 0;
+        bool b_loaded = false;
 
         for (boost::filesystem::directory_iterator directory_it (node_metadata_->getDirectoryPathname ()); directory_it != directory_it_end; ++directory_it)
         {
@@ -185,7 +185,7 @@ namespace pcl
       , root_node_ ()
       , parent_ ()
       , depth_ ()
-      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*> (0)))
+      , children_ (8, nullptr)
       , num_children_ (0)
       , num_loaded_children_ (0)
       , payload_ ()
@@ -203,7 +203,7 @@ namespace pcl
     {
       assert (tree != NULL);
 
-      parent_ = NULL;
+      parent_ = nullptr;
       root_node_ = this;
       m_tree_ = tree;
       depth_ = 0;
@@ -216,7 +216,7 @@ namespace pcl
 
       // Need to make the bounding box slightly bigger so points that fall on the max side aren't excluded
       double epsilon = 1e-8;
-      tmp_max = tmp_max + epsilon*Eigen::Vector3d (1.0, 1.0, 1.0);
+      tmp_max += epsilon*Eigen::Vector3d (1.0, 1.0, 1.0);
 
       node_metadata_->setBoundingBox (tmp_min, tmp_max);
       node_metadata_->setDirectoryPathname (root_name.parent_path ());
@@ -271,7 +271,7 @@ namespace pcl
       
       for(size_t i=0; i<8; i++)
       {
-        boost::filesystem::path child_path = this->node_metadata_->getDirectoryPathname () / boost::filesystem::path (boost::lexical_cast<std::string> (i));
+        boost::filesystem::path child_path = this->node_metadata_->getDirectoryPathname () / boost::filesystem::path (std::to_string(i));
         if (boost::filesystem::exists (child_path))
           child_count++;
       }
@@ -316,9 +316,9 @@ namespace pcl
         //check all 8 possible child directories
         for (int i = 0; i < 8; i++)
         {
-          boost::filesystem::path child_dir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (boost::lexical_cast<std::string> (i));
+          boost::filesystem::path child_dir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (std::to_string(i));
           //if the directory exists and the child hasn't been created (set to 0 by this node's constructor)
-          if (boost::filesystem::exists (child_dir) && this->children_[i] == 0)
+          if (boost::filesystem::exists (child_dir) && this->children_[i] == nullptr)
           {
             //load the child node
             this->children_[i] = new OutofcoreOctreeBaseNode<ContainerT, PointT> (child_dir, this, recursive);
@@ -347,7 +347,7 @@ namespace pcl
           delete (current);
         }
       }
-      children_.resize (8, static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>* > (0));
+      children_.resize (8, static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>* > (nullptr));
       num_children_ = 0;
     }
     ////////////////////////////////////////////////////////////////////////////////
@@ -519,7 +519,7 @@ namespace pcl
         if(hasUnloadedChildren ())
           loadChildren (false);
 
-      if( skip_bb_check == false )
+      if( !skip_bb_check )
       {
 
         //indices to store the points for each bin
@@ -541,7 +541,7 @@ namespace pcl
           if ( indices[i].empty () )
             continue;
 
-          if (children_[i] == 0)
+          if (children_[i] == nullptr)
           {
             createChild (i);
           }
@@ -597,13 +597,12 @@ namespace pcl
 
         // Create random number generator
         boost::mutex::scoped_lock lock(rng_mutex_);
-        boost::uniform_int<boost::uint64_t> buffdist(0, inputsize-1);
-        boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > buffdie(rand_gen_, buffdist);
+        std::uniform_int_distribution<uint64_t> buffdist(0, inputsize-1);
 
         // Randomly pick sampled points
-        for(boost::uint64_t i = 0; i < samplesize; ++i)
+        for(uint64_t i = 0; i < samplesize; ++i)
         {
-          boost::uint64_t buffstart = buffdie();
+          uint64_t buffstart = buffdist(rng_);
           insertBuff[i] = ( sampleBuff[buffstart] );
         }
       }
@@ -611,11 +610,10 @@ namespace pcl
       else
       {
         boost::mutex::scoped_lock lock(rng_mutex_);
-        boost::bernoulli_distribution<double> buffdist(percent);
-        boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > buffcoin(rand_gen_, buffdist);
+        std::bernoulli_distribution buffdist(percent);
 
-        for(boost::uint64_t i = 0; i < inputsize; ++i)
-          if(buffcoin())
+        for(uint64_t i = 0; i < inputsize; ++i)
+          if(buffdist(rng_))
             insertBuff.push_back( p[i] );
       }
     }
@@ -666,7 +664,7 @@ namespace pcl
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataAtMaxDepth (const pcl::PCLPointCloud2::Ptr input_cloud, const bool skip_bb_check)
     {
       //this assumes data is already in the correct bin
-      if(skip_bb_check == true)
+      if(skip_bb_check)
       {
         PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Adding %u points at max depth, %u\n",__FUNCTION__, input_cloud->width*input_cloud->height, this->depth_);
         
@@ -796,7 +794,7 @@ namespace pcl
         if(indices[i].empty ())
           continue;
 
-        if (children_[i] == 0)
+        if (children_[i] == nullptr)
         {
           assert (i < 8);
           createChild (i);
@@ -915,7 +913,7 @@ namespace pcl
       childbb_min[0] = start[0] + static_cast<double> (x) * step[0];
       childbb_max[0] = start[0] + static_cast<double> (x + 1) * step[0];
 
-      boost::filesystem::path childdir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (boost::lexical_cast<std::string> (idx));
+      boost::filesystem::path childdir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (std::to_string(idx));
       children_[idx] = new OutofcoreOctreeBaseNode<ContainerT, PointT> (childbb_min, childbb_max, childdir.string ().c_str (), this);
 
       num_children_++;
@@ -1479,7 +1477,7 @@ namespace pcl
             PCL_DEBUG ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Points in box: %d\n", __FUNCTION__, indices.size () );
             PCL_DEBUG ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Points remaining: %d\n", __FUNCTION__, tmp_cloud->width*tmp_cloud->height - indices.size () );
 
-            if ( indices.size () > 0 )
+            if ( !indices.empty () )
             {
               if( dst_blob->width*dst_blob->height > 0 )
               {
@@ -1602,7 +1600,7 @@ namespace pcl
               for (size_t i=0; i<8; i++)
               {
                 //recursively traverse (depth first)
-                if (children_[i]!=0)
+                if (children_[i]!=nullptr)
                   children_[i]->queryBBIncludes_subsample (min_bb, max_bb, query_depth, dst_blob, percent);
               }
               return;
@@ -1732,7 +1730,7 @@ namespace pcl
       , root_node_ ()
       , parent_ ()
       , depth_ ()
-      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*>(0)))
+      , children_ (8, nullptr)
       , num_children_ ()
       , num_loaded_children_ (0)
       , payload_ ()
@@ -1741,7 +1739,7 @@ namespace pcl
       node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
       node_metadata_->setOutofcoreVersion (3);
       
-      if (super == NULL)
+      if (super == nullptr)
       {
         PCL_ERROR ( "[pc::outofcore::OutofcoreOctreeBaseNode] Super is null - don't make a root node this way!\n" );
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBaseNode] Outofcore Exception: Bad parent");
@@ -1944,7 +1942,7 @@ namespace pcl
       
       for (size_t i=0; i<8; i++)
       {
-        if (children_[i] != 0)
+        if (children_[i] != nullptr)
           loaded_children_count++;
       }
       
@@ -2026,7 +2024,7 @@ namespace pcl
         local_pt.y = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + y_offset]));
         local_pt.z = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + z_offset]));
 
-        if (!pcl_isfinite (local_pt.x) || !pcl_isfinite (local_pt.y) || !pcl_isfinite (local_pt.z))
+        if (!std::isfinite (local_pt.x) || !std::isfinite (local_pt.y) || !std::isfinite (local_pt.z))
           continue;
 
         if(!this->pointInBoundingBox (local_pt))

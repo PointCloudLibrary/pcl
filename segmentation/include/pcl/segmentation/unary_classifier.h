@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_UNARY_CLASSIFIER_H_
-#define PCL_UNARY_CLASSIFIER_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -174,6 +173,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/unary_classifier.hpp>
-#endif
-
 #endif

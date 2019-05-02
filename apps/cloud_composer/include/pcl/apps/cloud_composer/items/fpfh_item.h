@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef FPFH_ITEM_H_
-#define FPFH_ITEM_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/fpfh.h>
@@ -44,6 +43,7 @@
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 #include <pcl/visualization/pcl_plotter.h>
 
+class QVTKWidget;
 
 namespace pcl
 {
@@ -58,32 +58,28 @@ namespace pcl
                      pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr,
                      double radius);
         FPFHItem (const FPFHItem& to_copy);
-        virtual ~FPFHItem ();
+        ~FPFHItem ();
         
-        inline virtual int 
-        type () const { return FPFH_ITEM; }
+        inline int 
+        type () const override { return FPFH_ITEM; }
 
-        virtual FPFHItem*
-        clone () const;
+        FPFHItem*
+        clone () const override;
         
         /** \brief Inspector additional tabs paint function - get the histogram plot widget*/
-        virtual QMap <QString, QWidget*>
-        getInspectorTabs ();
+        QMap <QString, QWidget*>
+        getInspectorTabs () override;
         
       private:
         pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr_;
         double radius_;
-        boost::shared_ptr<pcl::visualization::PCLPlotter> plot_;
+        pcl::visualization::PCLPlotter::Ptr plot_;
         QVTKWidget *qvtk_;
         QWidget *hist_page_;
     };
-    
-    
-    
+
   }
 }
 
 Q_DECLARE_METATYPE (pcl::PointCloud<pcl::FPFHSignature33>::Ptr);
 Q_DECLARE_METATYPE (pcl::PointCloud<pcl::FPFHSignature33>::ConstPtr);
-
-#endif //NORMALS_ITEM_H_

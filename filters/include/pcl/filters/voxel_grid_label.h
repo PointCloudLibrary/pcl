@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_VOXEL_GRID_LABEL_H_
-#define PCL_VOXEL_GRID_LABEL_H_
+#pragma once
 
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/point_types.h>
@@ -67,9 +66,7 @@ namespace pcl
         * \param[out] output cloud containing centroids of voxels containing a sufficient number of points
         */
       void 
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
   };
 }
-
-#endif  //#ifndef PCL_VOXEL_GRID_LABEL_H_

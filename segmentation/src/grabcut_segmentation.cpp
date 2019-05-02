@@ -227,11 +227,11 @@ pcl::segmentation::grabcut::BoykovKolmogorov::reset ()
   flow_value_ = 0.0;
   std::fill (source_edges_.begin (), source_edges_.end (), 0.0);
   std::fill (target_edges_.begin (), target_edges_.end (), 0.0);
-  for (int u = 0; u < (int)nodes_.size (); u++)
+  for (auto &node : nodes_)
   {
-    for (capacitated_edge::iterator it = nodes_[u].begin (); it != nodes_[u].end (); ++it)
+    for (auto &edge : node)
     {
-      it->second = 0.0;
+      edge.second = 0.0;
     }
   }
   std::fill (cut_.begin (), cut_.end (), FREE);

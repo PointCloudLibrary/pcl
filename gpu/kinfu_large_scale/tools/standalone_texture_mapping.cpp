@@ -38,22 +38,15 @@
 
 
 #include <boost/filesystem.hpp>
-#include <boost/thread/thread.hpp>
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
 #include <pcl/common/transforms.h>
-
-#include <pcl/kdtree/kdtree_flann.h>
-
 #include <pcl/features/normal_3d.h>
-
 #include <pcl/visualization/pcl_visualizer.h>
-
 #include <pcl/surface/texture_mapping.h>
-
 #include <pcl/io/vtk_lib_io.h>
 
 using namespace pcl;
@@ -75,7 +68,7 @@ saveOBJFile (const std::string &file_name,
   fs.open (file_name.c_str ());
 
   // Define material file
-  std::string mtl_file_name = file_name.substr (0, file_name.find_last_of (".")) + ".mtl";
+  std::string mtl_file_name = file_name.substr (0, file_name.find_last_of ('.')) + ".mtl";
   // Strip path for "mtllib" command
   std::string mtl_file_name_nopath = mtl_file_name;
   mtl_file_name_nopath.erase (0, mtl_file_name.find_last_of ('/') + 1);
@@ -113,7 +106,6 @@ saveOBJFile (const std::string &file_name,
       int count = tex_mesh.cloud.fields[d].count;
       if (count == 0)
         count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
-      int c = 0;
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
                 tex_mesh.cloud.fields[d].name == "x" ||
@@ -127,7 +119,7 @@ saveOBJFile (const std::string &file_name,
             v_written = true;
         }
         float value;
-        memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset], sizeof (float));
         fs << value;
         if (++xyz == 3)
             break;
@@ -154,7 +146,6 @@ saveOBJFile (const std::string &file_name,
       int count = tex_mesh.cloud.fields[d].count;
       if (count == 0)
       count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
-      int c = 0;
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
       tex_mesh.cloud.fields[d].name == "normal_x" ||
@@ -168,7 +159,7 @@ saveOBJFile (const std::string &file_name,
           v_written = true;
         }
         float value;
-        memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset], sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -186,28 +177,28 @@ saveOBJFile (const std::string &file_name,
 
   for (int m = 0; m < nr_meshes; ++m)
   {
-    if(tex_mesh.tex_coordinates.size() == 0)
+    if(tex_mesh.tex_coordinates.empty ())
       continue;
 
     PCL_INFO ("%d vertex textures in submesh %d\n", tex_mesh.tex_coordinates[m].size (), m);
     fs << "# " << tex_mesh.tex_coordinates[m].size() << " vertex textures in submesh " << m <<  std::endl;
-    for (size_t i = 0; i < tex_mesh.tex_coordinates[m].size (); ++i)
+    for (const auto &coordinate : tex_mesh.tex_coordinates[m])
     {
       fs << "vt ";
-      fs <<  tex_mesh.tex_coordinates[m][i][0] << " " << tex_mesh.tex_coordinates[m][i][1] << std::endl;
+      fs <<  coordinate[0] << " " << coordinate[1] << std::endl;
     }
   }
 
   int f_idx = 0;
 
   // int idx_vt =0;
-  PCL_INFO ("Writting faces...\n");
+  PCL_INFO ("Writing faces...\n");
   for (int m = 0; m < nr_meshes; ++m)
   {
     if (m > 0) 
       f_idx += tex_mesh.tex_polygons[m-1].size ();
 
-    if(tex_mesh.tex_materials.size() !=0)
+    if(!tex_mesh.tex_materials.empty ())
     {
       fs << "# The material will be used for mesh " << m << std::endl;
       //TODO pbl here with multi texture and unseen faces
@@ -218,10 +209,9 @@ saveOBJFile (const std::string &file_name,
     {
       // Write faces with "f"
       fs << "f";
-      size_t j = 0;
       // There's one UV per vertex per face, i.e., the same vertex can have
       // different UV depending on the face.
-      for (j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
+      for (size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
         unsigned int idx = tex_mesh.tex_polygons[m][i].vertices[j] + 1;
         fs << " " << idx
@@ -239,11 +229,11 @@ saveOBJFile (const std::string &file_name,
   PCL_INFO ("Closing obj file\n");
   fs.close ();
 
-  /* Write material defination for OBJ file*/
+  /* Write material definition for OBJ file*/
   // Open file
   PCL_INFO ("Writing material files\n");
-  //dont do it if no material to write
-  if(tex_mesh.tex_materials.size() ==0)
+  //don't do it if no material to write
+  if(tex_mesh.tex_materials.empty ())
     return (0);
 
   std::ofstream m_fs;
@@ -280,7 +270,7 @@ void showCameras (pcl::texture_mapping::CameraVector cams, pcl::PointCloud<pcl::
   pcl::visualization::PCLVisualizer visu ("cameras");
 
   // add a visual for each camera at the correct pose
-  for(int i = 0 ; i < cams.size () ; ++i)
+  for(size_t i = 0 ; i < cams.size () ; ++i)
   {
     // read current camera
     pcl::TextureMapping<pcl::PointXYZ>::Camera cam = cams[i];
@@ -291,8 +281,6 @@ void showCameras (pcl::texture_mapping::CameraVector cams, pcl::PointCloud<pcl::
     // create a 5-point visual for each camera
     pcl::PointXYZ p1, p2, p3, p4, p5;
     p1.x=0; p1.y=0; p1.z=0;
-    double angleX = RAD2DEG (2.0 * atan (width / (2.0*focal)));
-    double angleY = RAD2DEG (2.0 * atan (height / (2.0*focal)));
     double dist = 0.75;
     double minX, minY, maxX, maxY;
     maxX = dist*tan (atan (width / (2.0*focal)));
@@ -356,14 +344,14 @@ void showCameras (pcl::texture_mapping::CameraVector cams, pcl::PointCloud<pcl::
 std::ifstream& GotoLine(std::ifstream& file, unsigned int num)
 {
   file.seekg (std::ios::beg);
-  for(int i=0; i < num - 1; ++i)
+  for(unsigned int i=0; i < num - 1; ++i)
   {
     file.ignore (std::numeric_limits<std::streamsize>::max (),'\n');
   }
   return (file);
 }
 
-/** \brief Helper function that reads a camera file outputed by Kinfu */
+/** \brief Helper function that reads a camera file outputted by Kinfu */
 bool readCamPoseFile(std::string filename, pcl::TextureMapping<pcl::PointXYZ>::Camera &cam)
 {
   ifstream myReadFile;
@@ -375,7 +363,6 @@ bool readCamPoseFile(std::string filename, pcl::TextureMapping<pcl::PointXYZ>::C
   }
   myReadFile.seekg(ios::beg);
 
-  char current_line[1024];
   double val;
   
   // go to line 2 to read translations
@@ -450,7 +437,6 @@ main (int argc, char** argv)
   
   const boost::filesystem::path base_dir (".");
   std::string extension (".txt");
-  int cpt_cam = 0;
   for (boost::filesystem::directory_iterator it (base_dir); it != boost::filesystem::directory_iterator (); ++it)
   {
     if(boost::filesystem::is_regular_file (it->status ()) && boost::filesystem::extension (it->path ()) == extension)
@@ -459,7 +445,6 @@ main (int argc, char** argv)
       readCamPoseFile(it->path ().string (), cam);
       cam.texture_file = boost::filesystem::basename (it->path ()) + ".png";
       my_cams.push_back (cam);
-      cpt_cam++ ;
     }
   }
   PCL_INFO ("\tLoaded %d textures.\n", my_cams.size ());
@@ -472,7 +457,7 @@ main (int argc, char** argv)
 
   // Create materials for each texture (and one extra for occluded faces)
   mesh.tex_materials.resize (my_cams.size () + 1);
-  for(int i = 0 ; i <= my_cams.size() ; ++i)
+  for(size_t i = 0 ; i <= my_cams.size() ; ++i)
   {
     pcl::TexMaterial mesh_material;
     mesh_material.tex_Ka.r = 0.2f;
@@ -511,7 +496,7 @@ main (int argc, char** argv)
   
   
   PCL_INFO ("Sorting faces by cameras done.\n");
-  for(int i = 0 ; i <= my_cams.size() ; ++i)
+  for(size_t i = 0 ; i <= my_cams.size() ; ++i)
   {
     PCL_INFO ("\tSub mesh %d contains %d faces and %d UV coordinates.\n", i, mesh.tex_polygons[i].size (), mesh.tex_coordinates[i].size ());
   }

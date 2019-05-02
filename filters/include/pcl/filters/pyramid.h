@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_PYRAMID_H_
-#define PCL_FILTERS_PYRAMID_H_
+#pragma once
 
 #include <pcl/common/point_operators.h>
 #include <pcl/point_cloud.h>
@@ -165,5 +164,3 @@ namespace pcl
     };
   }
 }
-
-#endif

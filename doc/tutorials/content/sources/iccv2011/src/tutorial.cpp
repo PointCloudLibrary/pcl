@@ -38,9 +38,9 @@ template<typename FeatureType>
 class ICCVTutorial
 {
   public:
-    ICCVTutorial (boost::shared_ptr<pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI> > keypoint_detector,
+    ICCVTutorial (pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI>::Ptr keypoint_detector,
                   typename pcl::Feature<pcl::PointXYZRGB, FeatureType>::Ptr feature_extractor,
-                  boost::shared_ptr<pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal> > surface_reconstructor,
+                  pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal>::Ptr surface_reconstructor,
                   typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr source,
                   typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr target);
     
@@ -110,9 +110,9 @@ class ICCVTutorial
     pcl::visualization::PCLVisualizer visualizer_;
     pcl::PointCloud<pcl::PointXYZI>::Ptr source_keypoints_;
     pcl::PointCloud<pcl::PointXYZI>::Ptr target_keypoints_;
-    boost::shared_ptr<pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI> > keypoint_detector_;
+    pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI>::Ptr keypoint_detector_;
     typename pcl::Feature<pcl::PointXYZRGB, FeatureType>::Ptr feature_extractor_;
-    boost::shared_ptr<pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal> > surface_reconstructor_;
+    pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal>::Ptr surface_reconstructor_;
     typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr source_;
     typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr target_;
     typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr source_segmented_;
@@ -133,9 +133,9 @@ class ICCVTutorial
 };
 
 template<typename FeatureType>
-ICCVTutorial<FeatureType>::ICCVTutorial(boost::shared_ptr<pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI> >keypoint_detector,
+ICCVTutorial<FeatureType>::ICCVTutorial(pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI>::Ptr keypoint_detector,
                                         typename pcl::Feature<pcl::PointXYZRGB, FeatureType>::Ptr feature_extractor,
-                                        boost::shared_ptr<pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal> > surface_reconstructor,
+                                        pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal>::Ptr surface_reconstructor,
                                         typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr source,
                                         typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr target)
 : source_keypoints_ (new pcl::PointCloud<pcl::PointXYZI> ())
@@ -318,8 +318,8 @@ void ICCVTutorial<FeatureType>::filterCorrespondences ()
   }
   
   pcl::registration::CorrespondenceRejectorSampleConsensus<pcl::PointXYZI> rejector;
-  rejector.setInputCloud(source_keypoints_);
-  rejector.setTargetCloud(target_keypoints_);
+  rejector.setInputSource(source_keypoints_);
+  rejector.setInputTarget(target_keypoints_);
   rejector.setInputCorrespondences(correspondences_);
   rejector.getCorrespondences(*correspondences_);
   cout << "OK" << endl;
@@ -540,7 +540,7 @@ main (int argc, char ** argv)
   int descriptor_type = atoi (argv[4]);
   int surface_type    = atoi (argv[5]);
   
-  boost::shared_ptr<pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI> > keypoint_detector;
+  pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI>::Ptr keypoint_detector;
   
   if (keypoint_type == 1)
   {
@@ -585,7 +585,7 @@ main (int argc, char ** argv)
     
   }
   
-  boost::shared_ptr<pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal> > surface_reconstruction;
+  pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal>::Ptr surface_reconstruction;
   
   if (surface_type == 1)
   {

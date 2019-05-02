@@ -38,7 +38,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
@@ -202,7 +201,6 @@ TEST (RegionGrowingTest, SegmentFromPoint)
   EXPECT_NE (0, cluster.indices.size());
 }
 
-#if (BOOST_VERSION >= 104400)
 ////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (MinCutSegmentationTest, Segment)
 {
@@ -335,7 +333,6 @@ TEST (MinCutSegmentationTest, SegmentWithWrongParameters)
   int num_of_segments = static_cast<int> (clusters.size ());
   EXPECT_EQ (2, num_of_segments);
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SegmentDifferences, Segmentation)

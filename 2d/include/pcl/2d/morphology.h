@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_2D_MORPHOLOGY_H_
-#define PCL_2D_MORPHOLOGY_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 
@@ -46,7 +45,7 @@ namespace pcl
   class Morphology : public PCLBase<PointT>
   {
     private:
-      typedef typename pcl::PointCloud<PointT> PointCloudIn;
+      typedef pcl::PointCloud<PointT> PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
 
       PointCloudInPtr structuring_element_;
@@ -196,5 +195,3 @@ namespace pcl
 }
 
 #include <pcl/2d/impl/morphology.hpp>
-
-#endif    // PCL_2D_MORPHOLOGY_H_

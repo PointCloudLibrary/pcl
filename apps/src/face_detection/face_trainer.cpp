@@ -13,7 +13,7 @@ int main(int argc, char ** argv)
   int ntrees = 10;
   std::string forest_fn = "forest.txt";
   int n_features = 1000;
-  std::string directory = "";
+  std::string directory;
   int use_normals = 0;
   int num_images = 3000;
 

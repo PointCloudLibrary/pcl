@@ -40,15 +40,12 @@
 
 #include <pcl/2d/convolution.h>
 #include <pcl/common/common_headers.h> // rad2deg()
-#include <pcl/console/time.h>
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
 pcl::Edge<PointInT, PointOutT>::detectEdgeSobel (
     pcl::PointCloud<PointOutT> &output)
 {
-  //pcl::console::TicToc tt;
-  //tt.tic ();
   convolution_.setInputCloud (input_);
   pcl::PointCloud<PointXYZI>::Ptr kernel_x (new pcl::PointCloud<PointXYZI>);
   pcl::PointCloud<PointXYZI>::Ptr magnitude_x (new pcl::PointCloud<PointXYZI>);
@@ -56,7 +53,6 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeSobel (
   kernel_.fetchKernel (*kernel_x);
   convolution_.setKernel (*kernel_x);
   convolution_.filter (*magnitude_x);
-  //PCL_ERROR ("Convolve X: %g\n", tt.toc ()); tt.tic ();
 
   pcl::PointCloud<PointXYZI>::Ptr kernel_y (new pcl::PointCloud<PointXYZI>);
   pcl::PointCloud<PointXYZI>::Ptr magnitude_y (new pcl::PointCloud<PointXYZI>);
@@ -64,7 +60,6 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeSobel (
   kernel_.fetchKernel (*kernel_y);
   convolution_.setKernel (*kernel_y);
   convolution_.filter (*magnitude_y);
-  //PCL_ERROR ("Convolve Y: %g\n", tt.toc ()); tt.tic ();
 
   const int height = input_->height;
   const int width = input_->width;
@@ -83,7 +78,6 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeSobel (
     output[i].direction = 
       atan2f ((*magnitude_y)[i].intensity, (*magnitude_x)[i].intensity);
   }
-  //PCL_ERROR ("Rest: %g\n", tt.toc ());
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -273,8 +267,8 @@ pcl::Edge<PointInT, PointOutT>::suppressNonMaxima (
   maxima.width = width;
   maxima.resize (height * width);
 
-  for (size_t i = 0; i < maxima.size (); ++i)
-    maxima[i].intensity = 0.0f;
+  for (auto &point : maxima)
+    point.intensity = 0.0f;
 
   // tHigh and non-maximal supression
   for (int i = 1; i < height - 1; i++)
@@ -337,9 +331,6 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeCanny (pcl::PointCloud<PointOutT> &out
   output.height = height;
   output.width = width;
 
-  //pcl::console::TicToc tt;
-  //tt.tic ();
-  
   // Noise reduction using gaussian blurring
   pcl::PointCloud<PointXYZI>::Ptr gaussian_kernel (new pcl::PointCloud<PointXYZI>);
   PointCloudInPtr smoothed_cloud (new PointCloudIn);
@@ -350,22 +341,18 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeCanny (pcl::PointCloud<PointOutT> &out
   convolution_.setKernel (*gaussian_kernel);
   convolution_.setInputCloud (input_);
   convolution_.filter (*smoothed_cloud);
-  //PCL_ERROR ("Gaussian blur: %g\n", tt.toc ()); tt.tic ();
   
-  // Edge detection usign Sobel
+  // Edge detection using Sobel
   pcl::PointCloud<PointXYZIEdge>::Ptr edges (new pcl::PointCloud<PointXYZIEdge>);
   setInputCloud (smoothed_cloud);
   detectEdgeSobel (*edges);
-  //PCL_ERROR ("Sobel: %g\n", tt.toc ()); tt.tic ();
   
   // Edge discretization
   discretizeAngles (*edges);
-  //PCL_ERROR ("Discretize: %g\n", tt.toc ()); tt.tic ();
 
   // tHigh and non-maximal supression
   pcl::PointCloud<PointXYZI>::Ptr maxima (new pcl::PointCloud<PointXYZI>);
   suppressNonMaxima (*edges, *maxima, tLow);
-  //PCL_ERROR ("NM suppress: %g\n", tt.toc ()); tt.tic ();
 
   // Edge tracing
   for (int i = 0; i < height; i++)
@@ -386,7 +373,6 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeCanny (pcl::PointCloud<PointOutT> &out
       cannyTraceEdge ( 1, -1, i, j, *maxima);
     }
   }
-  //PCL_ERROR ("Edge tracing: %g\n", tt.toc ());
 
   // Final thresholding
   for (size_t i = 0; i < input_->size (); ++i)
@@ -431,7 +417,7 @@ pcl::Edge<PointInT, PointOutT>::canny (
   convolution_.filter (smoothed_cloud_y);
 
 
-  // Edge detection usign Sobel
+  // Edge detection using Sobel
   pcl::PointCloud<PointXYZIEdge>::Ptr edges (new pcl::PointCloud<PointXYZIEdge>);
   sobelMagnitudeDirection (smoothed_cloud_x, smoothed_cloud_y, *edges.get ());
 

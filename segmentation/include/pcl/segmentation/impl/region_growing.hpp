@@ -50,7 +50,7 @@
 #include <queue>
 #include <list>
 #include <cmath>
-#include <time.h>
+#include <ctime>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
@@ -79,11 +79,6 @@ pcl::RegionGrowing<PointT, NormalT>::RegionGrowing () :
 template <typename PointT, typename NormalT>
 pcl::RegionGrowing<PointT, NormalT>::~RegionGrowing ()
 {
-  if (search_ != 0)
-    search_.reset ();
-  if (normals_ != 0)
-    normals_.reset ();
-
   point_neighbours_.clear ();
   point_labels_.clear ();
   num_pts_in_segment_.clear ();
@@ -233,9 +228,6 @@ pcl::RegionGrowing<PointT, NormalT>::getSearchMethod () const
 template <typename PointT, typename NormalT> void
 pcl::RegionGrowing<PointT, NormalT>::setSearchMethod (const KdTreePtr& tree)
 {
-  if (search_ != 0)
-    search_.reset ();
-
   search_ = tree;
 }
 
@@ -250,9 +242,6 @@ pcl::RegionGrowing<PointT, NormalT>::getInputNormals () const
 template <typename PointT, typename NormalT> void
 pcl::RegionGrowing<PointT, NormalT>::setInputNormals (const NormalPtr& norm)
 {
-  if (normals_ != 0)
-    normals_.reset ();
-
   normals_ = norm;
 }
 
@@ -308,11 +297,11 @@ template <typename PointT, typename NormalT> bool
 pcl::RegionGrowing<PointT, NormalT>::prepareForSegmentation ()
 {
   // if user forgot to pass point cloud or if it is empty
-  if ( input_->points.size () == 0 )
+  if ( input_->points.empty () )
     return (false);
 
   // if user forgot to pass normals or the sizes of point and normal cloud are different
-  if ( normals_ == 0 || input_->points.size () != normals_->points.size () )
+  if ( !normals_ || input_->points.size () != normals_->points.size () )
     return (false);
 
   // if residual test is on then we need to check if all needed parameters were correctly initialized
@@ -468,7 +457,7 @@ pcl::RegionGrowing<PointT, NormalT>::growRegion (int initial_seed, int segment_n
       bool is_a_seed = false;
       bool belongs_to_segment = validatePoint (initial_seed, curr_seed, index, is_a_seed);
 
-      if (belongs_to_segment == false)
+      if (!belongs_to_segment)
       {
         i_nghbr++;
         continue;
@@ -622,8 +611,7 @@ pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint (int index, pcl::PointI
     }
     // if we have already made the segmentation, then find the segment
     // to which this point belongs
-    std::vector <pcl::PointIndices>::iterator i_segment;
-    for (i_segment = clusters_.begin (); i_segment != clusters_.end (); i_segment++)
+    for (auto i_segment = clusters_.cbegin (); i_segment != clusters_.cend (); i_segment++)
     {
       bool segment_was_found = false;
       for (size_t i_point = 0; i_point < i_segment->indices.size (); i_point++)
@@ -657,7 +645,7 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
   {
     colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
 
-    srand (static_cast<unsigned int> (time (0)));
+    srand (static_cast<unsigned int> (time (nullptr)));
     std::vector<unsigned char> colors;
     for (size_t i_segment = 0; i_segment < clusters_.size (); i_segment++)
     {
@@ -681,12 +669,10 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
       colored_cloud->points.push_back (point);
     }
 
-    std::vector< pcl::PointIndices >::iterator i_segment;
     int next_color = 0;
-    for (i_segment = clusters_.begin (); i_segment != clusters_.end (); i_segment++)
+    for (auto i_segment = clusters_.cbegin (); i_segment != clusters_.cend (); i_segment++)
     {
-      std::vector<int>::iterator i_point;
-      for (i_point = i_segment->indices.begin (); i_point != i_segment->indices.end (); i_point++)
+      for (auto i_point = i_segment->indices.cbegin (); i_point != i_segment->indices.cend (); i_point++)
       {
         int index;
         index = *i_point;
@@ -711,7 +697,7 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
   {
     colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGBA>)->makeShared ();
 
-    srand (static_cast<unsigned int> (time (0)));
+    srand (static_cast<unsigned int> (time (nullptr)));
     std::vector<unsigned char> colors;
     for (size_t i_segment = 0; i_segment < clusters_.size (); i_segment++)
     {
@@ -736,15 +722,12 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
       colored_cloud->points.push_back (point);
     }
 
-    std::vector< pcl::PointIndices >::iterator i_segment;
     int next_color = 0;
-    for (i_segment = clusters_.begin (); i_segment != clusters_.end (); i_segment++)
+    for (auto i_segment = clusters_.cbegin (); i_segment != clusters_.cend (); i_segment++)
     {
-      std::vector<int>::iterator i_point;
-      for (i_point = i_segment->indices.begin (); i_point != i_segment->indices.end (); i_point++)
+      for (auto i_point = i_segment->indices.cbegin (); i_point != i_segment->indices.cend (); i_point++)
       {
-        int index;
-        index = *i_point;
+        int index = *i_point;
         colored_cloud->points[index].r = colors[3 * next_color];
         colored_cloud->points[index].g = colors[3 * next_color + 1];
         colored_cloud->points[index].b = colors[3 * next_color + 2];

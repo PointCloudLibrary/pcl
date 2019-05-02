@@ -52,10 +52,10 @@ pcl::registration::getCorDistMeanStd (const pcl::Correspondences &correspondence
 
   double sum = 0, sq_sum = 0;
 
-  for (size_t i = 0; i < correspondences.size (); ++i)
+  for (const auto &correspondence : correspondences)
   {
-    sum += correspondences[i].distance;
-    sq_sum += correspondences[i].distance * correspondences[i].distance;
+    sum += correspondence.distance;
+    sq_sum += correspondence.distance * correspondence.distance;
   }
   mean = sum / static_cast<double> (correspondences.size ());
   double variance = (sq_sum - sum * sum / static_cast<double> (correspondences.size ())) / static_cast<double> (correspondences.size () - 1);

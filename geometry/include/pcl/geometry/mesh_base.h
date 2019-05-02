@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_MESH_BASE_H
-#define PCL_GEOMETRY_MESH_BASE_H
+#pragma once
 
 #include <vector>
 
@@ -288,13 +287,10 @@ namespace pcl
           // Remove deleted edge data
           if (HasEdgeData::value)
           {
-            typename EdgeDataCloud::const_iterator it_ed_old = edge_data_cloud_.begin ();
-            typename EdgeDataCloud::iterator       it_ed_new = edge_data_cloud_.begin ();
+            auto it_ed_old = edge_data_cloud_.begin ();
+            auto it_ed_new = edge_data_cloud_.begin ();
 
-            HalfEdgeIndices::const_iterator it_ind     = new_half_edge_indices.begin ();
-            HalfEdgeIndices::const_iterator it_ind_end = new_half_edge_indices.end ();
-
-            for (; it_ind!=it_ind_end; it_ind+=2, ++it_ed_old)
+            for (auto it_ind = new_half_edge_indices.cbegin (), it_ind_end = new_half_edge_indices.cend (); it_ind!=it_ind_end; it_ind+=2, ++it_ed_old)
             {
               if (it_ind->isValid ())
               {
@@ -575,13 +571,13 @@ namespace pcl
           if (this->sizeHalfEdges () != other.sizeHalfEdges ()) return (false);
           if (this->sizeFaces     () != other.sizeFaces     ()) return (false);
 
-          for (unsigned int i=0; i<this->sizeVertices (); ++i)
+          for (size_t i=0; i<this->sizeVertices (); ++i)
           {
             if (this->getOutgoingHalfEdgeIndex (VertexIndex (i)) !=
                 other.getOutgoingHalfEdgeIndex (VertexIndex (i))) return (false);
           }
 
-          for (unsigned int i=0; i<this->sizeHalfEdges (); ++i)
+          for (size_t i=0; i<this->sizeHalfEdges (); ++i)
           {
             if (this->getTerminatingVertexIndex (HalfEdgeIndex (i)) !=
                 other.getTerminatingVertexIndex (HalfEdgeIndex (i))) return (false);
@@ -596,7 +592,7 @@ namespace pcl
                 other.getFaceIndex (HalfEdgeIndex (i))) return (false);
           }
 
-          for (unsigned int i=0; i<this->sizeFaces (); ++i)
+          for (size_t i=0; i<this->sizeFaces (); ++i)
           {
             if (this->getInnerHalfEdgeIndex (FaceIndex (i)) !=
                 other.getInnerHalfEdgeIndex (FaceIndex (i))) return (false);
@@ -1154,17 +1150,16 @@ namespace pcl
           free_he_.resize       (n);
           is_new_.resize        (n);
           make_adjacent_.resize (n);
-          int i, j;
-          for (i=0; i<n; ++i)
+          for (int i=0; i<n; ++i)
           {
             if (!this->checkTopology1 (vertices [i], vertices [(i+1)%n], inner_he_ [i], is_new_ [i], IsManifold ()))
             {
               return (FaceIndex ());
             }
           }
-          for (i=0; i<n; ++i)
+          for (int i=0; i<n; ++i)
           {
-            j = (i+1)%n;
+            int j = (i+1)%n;
             if (!this->checkTopology2 (inner_he_ [i], inner_he_ [j], is_new_ [i], is_new_ [j], this->isIsolated (vertices [j]), make_adjacent_ [i], free_he_ [i], IsManifold ()))
             {
               return (FaceIndex ());
@@ -1174,7 +1169,7 @@ namespace pcl
           // Reconnect the existing half-edges if needed
           if (!IsManifold::value)
           {
-            for (i=0; i<n; ++i)
+            for (int i=0; i<n; ++i)
             {
               if (make_adjacent_ [i])
               {
@@ -1184,7 +1179,7 @@ namespace pcl
           }
 
           // Add new half-edges if needed
-          for (i=0; i<n; ++i)
+          for (int i=0; i<n; ++i)
           {
             if (is_new_ [i])
             {
@@ -1193,9 +1188,9 @@ namespace pcl
           }
 
           // Connect
-          for (i=0; i<n; ++i)
+          for (int i=0; i<n; ++i)
           {
-            j = (i+1)%n;
+            int j = (i+1)%n;
             if      ( is_new_ [i] &&  is_new_ [j]) this->connectNewNew (inner_he_ [i], inner_he_ [j], vertices [j], IsManifold ());
             else if ( is_new_ [i] && !is_new_ [j]) this->connectNewOld (inner_he_ [i], inner_he_ [j], vertices [j]);
             else if (!is_new_ [i] &&  is_new_ [j]) this->connectOldNew (inner_he_ [i], inner_he_ [j], vertices [j]);
@@ -1386,9 +1381,9 @@ namespace pcl
 
           const FaceIndex idx_face (static_cast <int> (this->sizeFaces () - 1));
 
-          for (HalfEdgeIndices::const_iterator it=inner_he.begin (); it!=inner_he.end (); ++it)
+          for (const auto &idx_half_edge : inner_he)
           {
-            this->setFaceIndex (*it, idx_face);
+            this->setFaceIndex (idx_half_edge, idx_face);
           }
 
           return (idx_face);
@@ -1958,7 +1953,7 @@ namespace pcl
         bool
         isManifold (boost::false_type /*is_manifold*/) const
         {
-          for (unsigned int i=0; i<this->sizeVertices (); ++i)
+          for (size_t i=0; i<this->sizeVertices (); ++i)
           {
             if (!this->isManifold (VertexIndex (i))) return (false);
           }
@@ -2151,5 +2146,3 @@ namespace pcl
     };
   } // End namespace geometry
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_MESH_BASE_H

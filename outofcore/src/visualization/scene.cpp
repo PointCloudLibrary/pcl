@@ -4,7 +4,7 @@
 #include <pcl/outofcore/visualization/scene.h>
 #include <pcl/outofcore/visualization/viewport.h>
 
-Scene* Scene::instance_ = NULL;
+Scene* Scene::instance_ = nullptr;
 
 Scene::Scene ()
 {
@@ -28,25 +28,25 @@ Scene::getCameras ()
 Camera*
 Scene::getCamera (vtkCamera *camera)
 {
-  for (size_t i = 0; i < cameras_.size (); i++)
+  for (const auto &c : cameras_)
   {
-    if (cameras_[i]->getCamera ().GetPointer () == camera)
+    if (c->getCamera ().GetPointer () == camera)
     {
-      return cameras_[i];
+      return c;
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 Camera*
 Scene::getCamera (std::string name)
 {
-  for (size_t i = 0; i < cameras_.size (); i++)
-    if (cameras_[i]->getName () == name)
-      return cameras_[i];
+  for (const auto &camera : cameras_)
+    if (camera->getName () == name)
+      return camera;
 
-  return NULL;
+  return nullptr;
 }
 
 // Accessors - Objects
@@ -60,11 +60,11 @@ Scene::addObject (Object *object)
 Object*
 Scene::getObjectByName (std::string name)
 {
-  for (size_t i = 0; i < objects_.size (); i++)
-    if (objects_[i]->getName () == name)
-      return objects_[i];
+  for (const auto &object : objects_)
+    if (object->getName () == name)
+      return object;
 
-  return NULL;
+  return nullptr;
 }
 
 std::vector<Object*>

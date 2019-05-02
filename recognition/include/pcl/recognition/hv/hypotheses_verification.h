@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RECOGNITION_HYPOTHESIS_VERIFICATION_H_
-#define PCL_RECOGNITION_HYPOTHESIS_VERIFICATION_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include "pcl/recognition/hv/occlusion_reasoning.h"
@@ -143,6 +142,9 @@ namespace pcl
       requires_normals_ = false;
     }
 
+    virtual
+    ~HypothesisVerification() = default;
+
     bool getRequiresNormals() {
       return requires_normals_;
     }
@@ -228,7 +230,7 @@ namespace pcl
       else
       {
         //we need to reason about occlusions before setting the model
-        if (scene_cloud_ == 0)
+        if (scene_cloud_ == nullptr)
         {
           PCL_ERROR("setSceneCloud should be called before adding the model if reasoning about occlusions...");
         }
@@ -326,5 +328,3 @@ namespace pcl
   };
 
 }
-
-#endif /* PCL_RECOGNITION_HYPOTHESIS_VERIFICATION_H_ */

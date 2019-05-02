@@ -154,7 +154,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (
   point_picker->Pick (mouse_x, mouse_y, 0.0, ren);
 
   int idx = static_cast<int> (point_picker->GetPointId ());
-  if (point_picker->GetDataSet () != NULL)
+  if (point_picker->GetDataSet ())
   {
     double p[3];
     point_picker->GetDataSet ()->GetPoint (idx, p);
@@ -193,11 +193,7 @@ pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowIntera
     vtkSmartPointer<vtkExtractGeometry> extract_geometry = vtkSmartPointer<vtkExtractGeometry>::New ();
     extract_geometry->SetImplicitFunction (frustum);
 
-#if VTK_MAJOR_VERSION < 6
-    extract_geometry->SetInput (picker->GetDataSet ());
-#else
     extract_geometry->SetInputData (picker->GetDataSet ());
-#endif
 
     extract_geometry->Update ();
 

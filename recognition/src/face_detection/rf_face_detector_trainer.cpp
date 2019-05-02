@@ -49,8 +49,7 @@ void pcl::RFFaceDetectorTrainer::trainWithDataProvider()
   dft.setRandomFeaturesAtSplitNode (true);
   dft.setThresholds (thresholds_);
 
-  boost::shared_ptr < face_detection::FaceDetectorDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>
-      > dtdp;
+  typename face_detection::FaceDetectorDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>::Ptr dtdp;
   dtdp.reset (new face_detection::FaceDetectorDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>);
   dtdp->setUseNormals (use_normals_);
   dtdp->setWSize (w_size_);
@@ -59,10 +58,7 @@ void pcl::RFFaceDetectorTrainer::trainWithDataProvider()
 
   dtdp->initialize (directory_);
 
-  boost::shared_ptr < pcl::DecisionTreeTrainerDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>
-      > cast_dtdp;
-  cast_dtdp = boost::dynamic_pointer_cast
-      < pcl::DecisionTreeTrainerDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType> > (dtdp);
+  auto cast_dtdp = boost::dynamic_pointer_cast<pcl::DecisionTreeTrainerDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>> (dtdp);
   dft.setDecisionTreeDataProvider (cast_dtdp);
 
   pcl::DecisionForest<NodeType> forest;
@@ -167,7 +163,7 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
         }
       }
 
-      mean = mean / static_cast<float> (good_votes);
+      mean /= static_cast<float> (good_votes);
       clusters_mean[i] = mean;
     }
 
@@ -191,9 +187,9 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
     {
       //compute rotation using the first less uncertain votes
       std::vector < std::pair<int, float> > uncertainty;
-      for (size_t j = 0; j < votes_indices[i].size (); j++)
+      for (const int &index : votes_indices[i])
       {
-        uncertainty.push_back (std::make_pair (votes_indices[i][j], uncertainties_[votes_indices[i][j]]));
+        uncertainty.emplace_back (index, uncertainties_[index]);
       }
 
       std::sort (uncertainty.begin (), uncertainty.end (), boost::bind (&std::pair<int, float>::second, _1) < boost::bind (&std::pair<int, float>::second, _2));
@@ -206,14 +202,14 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
         rot += angle_votes_[uncertainty[j].first];
       }
 
-      rot = rot / static_cast<float> (num);
+      rot /= static_cast<float> (num);
 
       Eigen::Vector3f pos;
       pos.setZero ();
       for (int j = 0; j < num; j++)
         pos += head_center_votes_[uncertainty[j].first];
 
-      pos = pos / static_cast<float> (num);
+      pos /= static_cast<float> (num);
 
       head_clusters_centers_.push_back (pos); //clusters_mean[i]
       head_clusters_rotation_.push_back (rot);
@@ -273,7 +269,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
   pass_.filter (*cloud);
 
   //compute depth integral image
-  boost::shared_ptr<pcl::IntegralImage2D<float, 1> > integral_image_depth;
+  pcl::IntegralImage2D<float, 1>::Ptr integral_image_depth;
   integral_image_depth.reset (new pcl::IntegralImage2D<float, 1> (false));
 
   int element_stride = sizeof(pcl::PointXYZ) / sizeof(float);
@@ -297,9 +293,9 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
   int element_stride_normal = sizeof(pcl::Normal) / sizeof(float);
   int row_stride_normal = element_stride_normal * normals->width;
-  boost::shared_ptr<pcl::IntegralImage2D<float, 1> > integral_image_normal_x;
-  boost::shared_ptr<pcl::IntegralImage2D<float, 1> > integral_image_normal_y;
-  boost::shared_ptr<pcl::IntegralImage2D<float, 1> > integral_image_normal_z;
+  pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_x;
+  pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_y;
+  pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_z;
 
   if (use_normals_)
   {
@@ -369,16 +365,16 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
           std::vector<NodeType> leaves;
           dfe.evaluate (forest_, fhda, rse, eval_examples, 0, leaves);
 
-          for (size_t l = 0; l < leaves.size (); l++)
+          for (const auto &leaf : leaves)
           {
-            if (leaves[l].value >= thres_face_)
+            if (leaf.value >= thres_face_)
             {
-              if ((leaves[l].covariance_trans_.trace () + leaves[l].covariance_rot_.trace ()) > trans_max_variance_)
+              if ((leaf.covariance_trans_.trace () + leaf.covariance_rot_.trace ()) > trans_max_variance_)
                 continue;
 
-              Eigen::Vector3f head_center = Eigen::Vector3f (static_cast<float>(leaves[l].trans_mean_[0]),
-                                                             static_cast<float>(leaves[l].trans_mean_[1]),
-                                                             static_cast<float>(leaves[l].trans_mean_[2]));
+              Eigen::Vector3f head_center = Eigen::Vector3f (static_cast<float>(leaf.trans_mean_[0]),
+                                                             static_cast<float>(leaf.trans_mean_[1]),
+                                                             static_cast<float>(leaf.trans_mean_[2]));
               head_center *= 0.001f;
 
               pcl::PointXYZ patch_center_point;
@@ -393,7 +389,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
               if (!pcl::isFinite (ppp))
                 continue;
 
-              //this is a good leave
+              //this is a good leaf
               for (int j = te.col_; j < (te.col_ + w_size_); j++)
               {
                 for (int k = te.row_; k < (te.row_ + w_size_); k++)
@@ -402,11 +398,10 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
               head_center_votes_.push_back (head_center);
               float mult_fact = 0.0174532925f;
-              angle_votes_.push_back (
-                  Eigen::Vector3f (static_cast<float>(leaves[l].rot_mean_[0]) * mult_fact,
-                                   static_cast<float>(leaves[l].rot_mean_[1]) * mult_fact,
-                                   static_cast<float>(leaves[l].rot_mean_[2]) * mult_fact));
-              uncertainties_.push_back (static_cast<float>(leaves[l].covariance_trans_.trace () + leaves[l].covariance_rot_.trace ()));
+              angle_votes_.emplace_back(static_cast<float>(leaf.rot_mean_[0]) * mult_fact,
+                                   static_cast<float>(leaf.rot_mean_[1]) * mult_fact,
+                                   static_cast<float>(leaf.rot_mean_[2]) * mult_fact);
+              uncertainties_.push_back (static_cast<float>(leaf.covariance_trans_.trace () + leaf.covariance_rot_.trace ()));
             }
           }
         }
@@ -431,7 +426,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
   faceVotesClustering ();
 
-  if (pose_refinement_ && (head_clusters_centers_.size () > 0))
+  if (pose_refinement_ && (!head_clusters_centers_.empty ()))
   {
     Eigen::Matrix4f icp_trans;
     float max_distance = 0.015f;

@@ -134,11 +134,11 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
     hist_incr_size_component = 0.0;
 
   // Iterate over all the points in the neighborhood
-  for (size_t idx = 0; idx < indices.size (); ++idx)
+  for (const int &index : indices)
   {
     // Compute the pair P to NNi
-    if (!computePairFeatures (centroid_p, centroid_n, cloud.points[indices[idx]].getVector4fMap (),
-                              normals.points[indices[idx]].getNormalVector4fMap (), pfh_tuple[0], pfh_tuple[1],
+    if (!computePairFeatures (centroid_p, centroid_n, cloud.points[index].getVector4fMap (),
+                              normals.points[index].getNormalVector4fMap (), pfh_tuple[0], pfh_tuple[1],
                               pfh_tuple[2], pfh_tuple[3]))
       continue;
 
@@ -211,11 +211,11 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     {
       for (size_t i = 0; i < indices_->size (); ++i)
       {
-        if (!pcl_isfinite (normals_->points[(*indices_)[i]].normal[0])
+        if (!std::isfinite (normals_->points[(*indices_)[i]].normal[0])
             ||
-            !pcl_isfinite (normals_->points[(*indices_)[i]].normal[1])
+            !std::isfinite (normals_->points[(*indices_)[i]].normal[1])
             ||
-            !pcl_isfinite (normals_->points[(*indices_)[i]].normal[2]))
+            !std::isfinite (normals_->points[(*indices_)[i]].normal[2]))
           continue;
         normal_centroid += normals_->points[(*indices_)[i]].getNormalVector4fMap ();
         cp++;
@@ -238,19 +238,19 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   output.height = 1;
 
   // Estimate the FPFH at nn_indices[0] using the entire cloud and copy the resultant signature
-  for (int d = 0; d < hist_f1_.size (); ++d)
+  for (Eigen::Index d = 0; d < hist_f1_.size (); ++d)
     output.points[0].histogram[d + 0] = hist_f1_[d];
 
   size_t data_size = hist_f1_.size ();
-  for (int d = 0; d < hist_f2_.size (); ++d)
+  for (Eigen::Index d = 0; d < hist_f2_.size (); ++d)
     output.points[0].histogram[d + data_size] = hist_f2_[d];
 
   data_size += hist_f2_.size ();
-  for (int d = 0; d < hist_f3_.size (); ++d)
+  for (Eigen::Index d = 0; d < hist_f3_.size (); ++d)
     output.points[0].histogram[d + data_size] = hist_f3_[d];
 
   data_size += hist_f3_.size ();
-  for (int d = 0; d < hist_f4_.size (); ++d)
+  for (Eigen::Index d = 0; d < hist_f4_.size (); ++d)
     output.points[0].histogram[d + data_size] = hist_f4_[d];
 
   // ---[ Step 2 : obtain the viewpoint component
@@ -279,7 +279,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   }
   data_size += hist_f4_.size ();
   // Copy the resultant signature
-  for (int d = 0; d < hist_vp_.size (); ++d)
+  for (Eigen::Index d = 0; d < hist_vp_.size (); ++d)
     output.points[0].histogram[d + data_size] = hist_vp_[d];
 }
 

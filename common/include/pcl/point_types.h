@@ -36,8 +36,8 @@
  * $Id$
  *
  */
-#ifndef PCL_DATA_TYPES_H_
-#define PCL_DATA_TYPES_H_
+
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <bitset>
@@ -834,5 +834,3 @@ namespace pcl
   #pragma warning(default: 4201)
 #endif
 //#pragma warning(pop)
-
-#endif  //#ifndef PCL_DATA_TYPES_H_

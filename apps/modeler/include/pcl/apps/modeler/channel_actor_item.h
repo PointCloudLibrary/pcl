@@ -33,13 +33,14 @@
  *
  *
  */
-#ifndef PCL_MODELER_CHANNEL_ACTOR_ITEM_H_
-#define PCL_MODELER_CHANNEL_ACTOR_ITEM_H_
+
+#pragma once
+
+#include <QTreeWidgetItem>
 
 #include <vtkSmartPointer.h>
 #include <boost/shared_ptr.hpp>
 #include <pcl/common/eigen.h>
-#include <pcl/apps/modeler/qt.h>
 #include <pcl/apps/modeler/abstract_item.h>
 
 class vtkActor;
@@ -86,8 +87,8 @@ namespace pcl
         virtual void
         updateImpl() = 0;
 
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
+        void
+        prepareContextMenu(QMenu* menu) const override;
 
         boost::shared_ptr<CloudMesh>      cloud_mesh_;
         vtkSmartPointer<vtkPolyData>      poly_data_;
@@ -100,5 +101,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_MODELER_CHANNEL_ACTOR_ITEM_H_

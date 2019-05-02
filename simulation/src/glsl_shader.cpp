@@ -15,7 +15,7 @@ char*
 readTextFile (const char* filename)
 {
   using namespace std;
-  char* buf = NULL;
+  char* buf = nullptr;
   ifstream file;
   file.open (filename, ios::in|ios::binary|ios::ate);
   if (file.is_open ())
@@ -110,7 +110,7 @@ pcl::simulation::gllib::Program::addShaderText (const std::string& text, ShaderT
   id = glCreateShader (shader_type);
   const char* source_list = text.c_str ();
 
-  glShaderSource (id, 1, &source_list, NULL);
+  glShaderSource (id, 1, &source_list, nullptr);
 
   glCompileShader (id);
   printShaderInfoLog (id);
@@ -127,9 +127,7 @@ bool
 pcl::simulation::gllib::Program::addShaderFile (const std::string& filename, ShaderType shader_type)
 {
   char* text = readTextFile (filename.c_str ());
-  if(text == NULL)  return (false);
-
-  std::string source(text);
+  if(text == nullptr)  return (false);
 
   bool rval = addShaderText (text, shader_type);
   delete [] text;
@@ -142,8 +140,7 @@ pcl::simulation::gllib::Program::link ()
   glLinkProgram (program_id_);
   printProgramInfoLog (program_id_);
 
-  if (getGLError () != GL_NO_ERROR) return false;
-  return true;
+  return getGLError () == GL_NO_ERROR;
 }
 
 void pcl::simulation::gllib::Program::use ()

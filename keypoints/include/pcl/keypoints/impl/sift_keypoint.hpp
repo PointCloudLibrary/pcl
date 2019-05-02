@@ -112,7 +112,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
   output.points.clear ();
 
   // Create a local copy of the input cloud that will be resized for each octave
-  boost::shared_ptr<pcl::PointCloud<PointInT> > cloud (new pcl::PointCloud<PointInT> (*input_));
+  typename pcl::PointCloud<PointInT>::Ptr cloud (new pcl::PointCloud<PointInT> (*input_));
 
   VoxelGrid<PointInT> voxel_grid;
   // Search for keypoints at each octave
@@ -123,7 +123,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
     const float s = 1.0f * scale; // note: this can be adjusted
     voxel_grid.setLeafSize (s, s, s);
     voxel_grid.setInputCloud (cloud);
-    boost::shared_ptr<pcl::PointCloud<PointInT> > temp (new pcl::PointCloud<PointInT>);    
+    typename pcl::PointCloud<PointInT>::Ptr temp (new pcl::PointCloud<PointInT>);
     voxel_grid.filter (*temp);
     cloud = temp;
 
@@ -191,11 +191,9 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
   else
   {
     // Add keypoints to output
-    for (size_t i_keypoint = 0; i_keypoint < extrema_indices.size (); ++i_keypoint)
+    for (const int &keypoint_index : extrema_indices)
     {
       PointOutT keypoint;
-      const int &keypoint_index = extrema_indices[i_keypoint];
-   
       keypoint.x = input.points[keypoint_index].x;
       keypoint.y = input.points[keypoint_index].y;
       keypoint.z = input.points[keypoint_index].z;

@@ -65,7 +65,7 @@ is needed only to build PCL tests. We do not provide GTest installers. **optiona
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
-   build system (http://www.cmake.org/), at least version **2.8.7**. A Git client
+   build system (http://www.cmake.org/), at least version **3.1.0**. A Git client
    for Windows is also required to download the PCL source code.
 
 Downloading PCL source code
@@ -109,7 +109,7 @@ Now hit the "Configure" button. You will be asked for a `generator`. A generator
 	"**Visual Studio 10**" generator. If you want to build 64bit PCL, then pick the "**Visual Studio 10 Win64**".
 
 	Make sure you have installed the right third party dependencies. You cannot mix 32bit and 64bit code, and it is 
-	highly recommanded to not mix codes compiled with different compilers.
+	highly recommended to not mix codes compiled with different compilers.
 	
 .. image:: images/windows/cmake_generator.png
     :alt: Choosing a generator
@@ -146,7 +146,7 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		:alt: Boost
 		:align: center	
 	
-	Let's tell CMake where boost headers are by specifiying the headers path in **Boost_INCLUDE_DIR** variable. For example, my boost 
+	Let's tell CMake where boost headers are by specifying the headers path in **Boost_INCLUDE_DIR** variable. For example, my boost 
 	headers are in C:\\Program Files\\PCL-Boost\\include (C:\\Program Files\\Boost\\include for newer installers). 
 	Then, let's hit `configure` again ! Hopefully, CMake is now able to find all the other items (the libraries).
 
@@ -162,7 +162,7 @@ Let's check whether CMake did actually find the needed third party dependencies 
 
 - **Eigen** : 
 
-	Eigen is a header-only library, thus, we need only **EIGEN_INCLUDE_DIR** to be set. Hopefully, CMake did fing Eigen.
+	Eigen is a header-only library, thus, we need only **EIGEN_INCLUDE_DIR** to be set. Hopefully, CMake did find Eigen.
 
 	.. image:: images/windows/cmake_eigen_include_dir.png
 		:alt: Eigen include dir
@@ -245,22 +245,17 @@ Once CMake has found all the needed dependencies, let's see the PCL specific CMa
 	:alt: PCL
 	:align: center
 	
-- **PCL_SHARED_LIBS** is checked by default. Uncheck it if you want static PCL libs (not recommanded).
+- **PCL_SHARED_LIBS** is checked by default. Uncheck it if you want static PCL libs (not recommended).
 
 - **CMAKE_INSTALL_PREFIX** is where PCL will be installed after building it (more information on this later).
 	
-If you have the Pro version of Microsoft Visual Studio, you can check **USE_PROJECT_FOLDERS** checkbox to organize PCL
-projects in folders within the PCL solution. If you have an express edition, it is recommended to keep it unchecked, as in
-express editions, project folders are disabled.
-
 Once PCL configuration is ok, hit the `Generate` button. CMake will then generate Visual Studio project files (vcproj files) 
 and the main solution file (PCL.sln) in C:\\PCL directory.
 
 Building PCL
 --------------
   
-Open that generated solution file (PCL.sln) to finally build the PCL libraries. This is how your solution will look like
-whether you enabled **USE_PROJECT_FOLDERS** (left) or not (right).
+Open that generated solution file (PCL.sln) to finally build the PCL libraries. This is how your solution will look like.
 
 .. image:: images/windows/pcl_solution_with_projects_folder.png
    :alt: PCL solution with project folders
@@ -278,7 +273,7 @@ Building the "ALL_BUILD" project will build everything.
 Installing PCL
 --------------
 
-To install the built libraries and executbles, you need to build the "INSTALL" project in the solution explorer. 
+To install the built libraries and executables, you need to build the "INSTALL" project in the solution explorer. 
 This utility project will copy PCL headers, libraries and executable to the directory defined by the **CMAKE_INSTALL_PREFIX** 
 CMake variable.
 
@@ -291,7 +286,7 @@ CMake variable.
 
 .. note::
 
-	It is highly recommanded to add the bin folder in PCL installation tree (e.g. C:\\Program Files\\PCL\\bin)
+	It is highly recommended to add the bin folder in PCL installation tree (e.g. C:\\Program Files\\PCL\\bin)
 	to your **PATH** environment variable.
 
 Advanced topics

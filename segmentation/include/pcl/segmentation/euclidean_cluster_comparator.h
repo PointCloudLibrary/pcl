@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_EUCLIDEAN_CLUSTER_COMPARATOR_H_
-#define PCL_SEGMENTATION_EUCLIDEAN_CLUSTER_COMPARATOR_H_
+#pragma once
 
 #include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/comparator.h>
@@ -59,7 +58,7 @@ namespace pcl
         using typename Comparator<PointT>::PointCloud;
         using typename Comparator<PointT>::PointCloudConstPtr;
 
-        typedef typename pcl::PointCloud<PointLT> PointCloudL;
+        typedef pcl::PointCloud<PointLT> PointCloudL;
         typedef typename PointCloudL::Ptr PointCloudLPtr;
         typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
 
@@ -77,8 +76,8 @@ namespace pcl
           , z_axis_ ()
         {}
 
-        virtual void
-        setInputCloud (const PointCloudConstPtr& cloud)
+        void
+        setInputCloud (const PointCloudConstPtr& cloud) override
         {
           input_ = cloud;
           Eigen::Matrix3f rot = input_->sensor_orientation_.toRotationMatrix ();
@@ -131,8 +130,8 @@ namespace pcl
           * \param idx1 The first index for the comparison
           * \param idx2 The second index for the comparison
           */
-        virtual bool
-        compare (int idx1, int idx2) const
+        bool
+        compare (int idx1, int idx2) const override
         {
           if (labels_ && exclude_labels_)
           {
@@ -202,7 +201,7 @@ namespace pcl
 
     public:
 
-      typedef typename pcl::PointCloud<PointNT> PointCloudN;
+      typedef pcl::PointCloud<PointNT> PointCloudN;
       typedef typename PointCloudN::Ptr PointCloudNPtr;
       typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
 
@@ -212,7 +211,7 @@ namespace pcl
       using experimental::EuclideanClusterComparator<PointT, PointLT>::setExcludeLabels;
 
       /** \brief Default constructor for EuclideanClusterComparator. */
-      PCL_DEPRECATED ("Remove PointNT from template parameters.")
+      [[deprecated("remove PointNT from template parameters")]]
       EuclideanClusterComparator ()
         : normals_ ()
         , angular_threshold_ (0.0f)
@@ -221,47 +220,39 @@ namespace pcl
       /** \brief Provide a pointer to the input normals.
        * \param[in] normals the input normal cloud
        */
+      [[deprecated("EuclideadClusterComparator never actually used normals and angular threshold, this function has no effect on the behavior of the comparator. It is deprecated and will be removed in future releases.")]]
       inline void
-      PCL_DEPRECATED ("EuclideadClusterComparator never actually used normals and angular threshold, "
-                      "this function has no effect on the behavior of the comparator. Therefore it is "
-                      "deprecated and will be removed in future releases.")
       setInputNormals (const PointCloudNConstPtr& normals) { normals_ = normals; }
 
       /** \brief Get the input normals. */
+      [[deprecated("EuclideadClusterComparator never actually used normals and angular threshold, this function has no effect on the behavior of the comparator. It is deprecated and will be removed in future releases.")]]
       inline PointCloudNConstPtr
-      PCL_DEPRECATED ("EuclideadClusterComparator never actually used normals and angular threshold, "
-                      "this function has no effect on the behavior of the comparator. Therefore it is "
-                      "deprecated and will be removed in future releases.")
       getInputNormals () const { return (normals_); }
 
       /** \brief Set the tolerance in radians for difference in normal direction between neighboring points, to be considered part of the same plane.
         * \param[in] angular_threshold the tolerance in radians
         */
+      [[deprecated("EuclideadClusterComparator never actually used normals and angular threshold, this function has no effect on the behavior of the comparator. It is deprecated and will be removed in future releases.")]]
       inline void
-      PCL_DEPRECATED ("EuclideadClusterComparator never actually used normals and angular threshold, "
-                      "this function has no effect on the behavior of the comparator. Therefore it is "
-                      "deprecated and will be removed in future releases.")
       setAngularThreshold (float angular_threshold)
       {
         angular_threshold_ = std::cos (angular_threshold);
       }
 
       /** \brief Get the angular threshold in radians for difference in normal direction between neighboring points, to be considered part of the same plane. */
+      [[deprecated("EuclideadClusterComparator never actually used normals and angular threshold, this function has no effect on the behavior of the comparator. It is deprecated and will be removed in future releases.")]]
       inline float
-      PCL_DEPRECATED ("EuclideadClusterComparator never actually used normals and angular threshold, "
-                      "this function has no effect on the behavior of the comparator. Therefore it is "
-                      "deprecated and will be removed in future releases.")
       getAngularThreshold () const { return (std::acos (angular_threshold_) ); }
 
       /** \brief Set labels in the label cloud to exclude.
         * \param[in] exclude_labels a vector of bools corresponding to whether or not a given label should be considered
         */
+      [[deprecated("use setExcludeLabels(const ExcludeLabelSetConstPtr &) instead")]]
       void
-      PCL_DEPRECATED ("Use setExcludeLabels (const ExcludeLabelSetConstPtr &) instead")
       setExcludeLabels (const std::vector<bool>& exclude_labels)
       {
         exclude_labels_ = boost::make_shared<std::set<uint32_t> > ();
-        for (uint32_t i = 0; i < exclude_labels.size (); ++i)
+        for (size_t i = 0; i < exclude_labels.size (); ++i)
           if (exclude_labels[i])
             exclude_labels_->insert (i);
       }
@@ -277,5 +268,3 @@ namespace pcl
   class EuclideanClusterComparator<PointT, PointLT, deprecated::T>
     : public experimental::EuclideanClusterComparator<PointT, PointLT> {};
 }
-
-#endif // PCL_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_

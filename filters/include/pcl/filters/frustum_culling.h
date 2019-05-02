@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef PCL_FILTERS_FRUSTUM_CULLING_H_
-#define PCL_FILTERS_FRUSTUM_CULLING_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/filters/filter_indices.h>
@@ -209,13 +207,13 @@ namespace pcl
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (std::vector<int> &indices) override;
 
     private:
 
@@ -237,6 +235,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/frustum_culling.hpp>
-#endif
-
 #endif

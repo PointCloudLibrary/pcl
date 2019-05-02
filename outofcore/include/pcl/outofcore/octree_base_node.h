@@ -37,8 +37,9 @@
  *  $Id$
  */
 
-#ifndef PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
-#define PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
+#pragma once
+
+#include <random>
 
 #include <pcl/common/io.h>
 #include <pcl/PCLPointCloud2.h>
@@ -125,7 +126,7 @@ namespace pcl
         OutofcoreOctreeBaseNode (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &root_name);
 
         /** \brief Will recursively delete all children calling recFreeChildrein */
-        virtual
+        
         ~OutofcoreOctreeBaseNode ();
 
         //query
@@ -246,8 +247,8 @@ namespace pcl
         virtual int
         read (pcl::PCLPointCloud2::Ptr &output_cloud);
 
-        virtual inline node_type_t
-        getNodeType () const
+        inline node_type_t
+        getNodeType () const override
         {
           if(this->getNumChildren () > 0)
           {
@@ -259,11 +260,11 @@ namespace pcl
           }
         }
         
-        virtual
+        
         OutofcoreOctreeBaseNode* 
-        deepCopy () const
+        deepCopy () const override
         {
-          OutofcoreOctreeBaseNode* res = NULL;
+          OutofcoreOctreeBaseNode* res = nullptr;
           PCL_THROW_EXCEPTION (PCLException, "Not implemented\n");
           return (res);
         }
@@ -328,7 +329,7 @@ namespace pcl
          *
          * \param bb_min triple of x,y,z minima for bounding box
          * \param bb_max triple of x,y,z maxima for bounding box
-         * \param tree adress of the tree data structure that will hold this initial root node
+         * \param tree address of the tree data structure that will hold this initial root node
          * \param rootname Root directory for location of on-disk octree storage; if directory 
          * doesn't exist, it is created; if "rootname" is an existing file, 
          * 
@@ -562,10 +563,8 @@ namespace pcl
 
         /** \brief Mersenne Twister: A 623-dimensionally equidistributed uniform
          * pseudo-random number generator */
-        static boost::mt19937 rand_gen_;
+        static std::mt19937 rng_;
 
-        /** \brief Random number generator seed */
-        const static boost::uint32_t rngseed = 0xAABBCCDD;
         /** \brief Extension for this class to find the pcd files on disk */
         const static std::string pcd_extension;
 
@@ -573,5 +572,3 @@ namespace pcl
     };
   }//namespace outofcore
 }//namespace pcl
-
-#endif //PCL_OUTOFCORE_OCTREE_BASE_NODE_H_

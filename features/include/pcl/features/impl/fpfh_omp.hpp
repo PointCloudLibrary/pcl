@@ -45,6 +45,20 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
+pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::setNumberOfThreads (unsigned int nr_threads)
+{
+  if (nr_threads == 0)
+#ifdef _OPENMP
+    threads_ = omp_get_num_procs();
+#else
+    threads_ = 1;
+#endif
+  else
+    threads_ = nr_threads;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   std::vector<int> spfh_indices_vec;
@@ -62,7 +76,8 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     for (size_t idx = 0; idx < indices_->size (); ++idx)
     {
       int p_idx = (*indices_)[idx];
-      if (this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists) == 0)
+      if (!isFinite ((*input_)[p_idx]) ||
+          this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists) == 0)
         continue;
       
       spfh_indices_set.insert (nn_indices.begin (), nn_indices.end ());
@@ -98,7 +113,8 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     int p_idx = spfh_indices_vec[i];
 
     // Find the neighborhood around p_idx
-    if (this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists) == 0)
+    if (!isFinite ((*input_)[p_idx]) ||
+        this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists) == 0)
       continue;
 
     // Estimate the SPFH signature around p_idx
@@ -108,7 +124,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     spfh_hist_lookup[p_idx] = i;
   }
 
-  // Intialize the array that will store the FPFH signature
+  // Initialize the array that will store the FPFH signature
   int nr_bins = nr_bins_f1_ + nr_bins_f2_ + nr_bins_f3_;
 
   nn_indices.clear();
@@ -134,8 +150,8 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
     // ... and remap the nn_indices values so that they represent row indices in the spfh_hist_* matrices 
     // instead of indices into surface_->points
-    for (size_t i = 0; i < nn_indices.size (); ++i)
-      nn_indices[i] = spfh_hist_lookup[nn_indices[i]];
+    for (int &nn_index : nn_indices)
+      nn_index = spfh_hist_lookup[nn_index];
 
     // Compute the FPFH signature (i.e. compute a weighted combination of local SPFH signatures) ...
     Eigen::VectorXf fpfh_histogram = Eigen::VectorXf::Zero (nr_bins);

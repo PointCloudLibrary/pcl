@@ -26,6 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
+#include "poisson_exceptions.h"
 
 namespace pcl
 {
@@ -84,6 +85,8 @@ namespace pcl
     {
       vvDotTable = dvDotTable = ddDotTable = NULL;
       valueTables = dValueTables = NULL;
+      baseFunctions = NULL;
+      baseBSplines = NULL;
       functionCount = sampleCount = 0;
     }
 
@@ -98,9 +101,14 @@ namespace pcl
 
         if(  valueTables ) delete[]  valueTables;
         if( dValueTables ) delete[] dValueTables;
+        
+        if( baseFunctions ) delete[] baseFunctions;
+        if(  baseBSplines ) delete[]  baseBSplines;
       }
       vvDotTable = dvDotTable = ddDotTable = NULL;
       valueTables = dValueTables=NULL;
+      baseFunctions = NULL;
+      baseBSplines = NULL;
       functionCount = 0;
     }
 
@@ -436,8 +444,7 @@ namespace pcl
     template< int Degree >
     void BSplineElements< Degree >::upSample( BSplineElements< Degree >& high ) const
     {
-      fprintf( stderr , "[ERROR] B-spline up-sampling not supported for degree %d\n" , Degree );
-      exit( 0 );
+      POISSON_THROW_EXCEPTION (pcl::poisson::PoissonBadArgumentException, "B-spline up-sampling not supported for degree " << Degree);
     }
     template<>
     void BSplineElements< 1 >::upSample( BSplineElements< 1 >& high ) const

@@ -37,8 +37,7 @@
  *  Email  : jpapon@gmail.com
  */
 
-#ifndef PCL_OCTREE_POINTCLOUD_ADJACENCY_CONTAINER_H_
-#define PCL_OCTREE_POINTCLOUD_ADJACENCY_CONTAINER_H_
+#pragma once
 
 namespace pcl
 { 
@@ -72,7 +71,7 @@ namespace pcl
       }
       
       /** \brief Empty class deconstructor. */
-      virtual ~OctreePointCloudAdjacencyContainer ()
+      ~OctreePointCloudAdjacencyContainer ()
       {
       }
       
@@ -102,8 +101,8 @@ namespace pcl
       /** \brief  virtual method to get size of container 
        * \return number of points added to leaf node container.
        */
-      virtual size_t
-      getSize () const
+      size_t
+      getSize () const override
       {
         return num_points_;
       }
@@ -147,8 +146,8 @@ namespace pcl
       setPointCounter (int points_arg) { num_points_ = points_arg; }
       
       /** \brief Clear the voxel centroid */
-      virtual void 
-      reset ()
+      void 
+      reset () override
       {
         neighbors_.clear ();
         num_points_ = 0;
@@ -196,5 +195,3 @@ namespace pcl
     };
   }
 }
-
-#endif

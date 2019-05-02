@@ -131,9 +131,9 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[cp].x) || 
-            !pcl_isfinite (input_->points[cp].y) || 
-            !pcl_isfinite (input_->points[cp].z))
+        if (!std::isfinite (input_->points[cp].x) || 
+            !std::isfinite (input_->points[cp].y) || 
+            !std::isfinite (input_->points[cp].z))
           continue;
 
       // Get the distance value
@@ -160,7 +160,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.push_back (cloud_point_index_idx (static_cast<unsigned int> (idx), cp));
+      index_vector.emplace_back(static_cast<unsigned int> (idx), cp);
     }
   }
   // No distance filtering, process all data
@@ -173,9 +173,9 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[cp].x) || 
-            !pcl_isfinite (input_->points[cp].y) || 
-            !pcl_isfinite (input_->points[cp].z))
+        if (!std::isfinite (input_->points[cp].x) || 
+            !std::isfinite (input_->points[cp].y) || 
+            !std::isfinite (input_->points[cp].z))
           continue;
 
       int ijk0 = static_cast<int> (floor (input_->points[cp].x * inverse_leaf_size_[0]) - min_b_[0]);
@@ -184,7 +184,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.push_back (cloud_point_index_idx (static_cast<unsigned int> (idx), cp));
+      index_vector.emplace_back(static_cast<unsigned int> (idx), cp);
     }
   }
 
@@ -332,21 +332,17 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
       if (label_index >= 0)
       {
         // find the label with the highest occurrence
-        std::map<int, int>::iterator it = labels.begin ();
-        int n_occurrence = it->second;
-        int label = it->first;
-        if (it != labels.end ())
+        int n_occurrence = labels.begin()->second;
+        int best_label = labels.begin()->first;
+        for (const auto &label : labels)
         {
-          for (it = labels.begin (); it != labels.end (); ++it)
+          if (n_occurrence < label.second)
           {
-            if (n_occurrence < it->second)
-            {
-              n_occurrence = it->second;
-              label = it->first;
-            }
+            n_occurrence = label.second;
+            best_label = label.first;
           }
         }
-        output.points[index].label = label;
+        output.points[index].label = best_label;
       }
     }
     cp = i;

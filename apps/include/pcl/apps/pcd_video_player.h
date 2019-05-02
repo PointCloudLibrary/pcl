@@ -37,7 +37,7 @@
 #include <ui_pcd_video_player.h>
 
 #include <iostream>
-#include <time.h>
+#include <ctime>
 
 // QT4
 #include <QMainWindow>
@@ -45,7 +45,6 @@
 #include <QTimer>
 
 // Boost
-#include <boost/thread/thread.hpp>
 #include <boost/filesystem.hpp>
 
 // PCL
@@ -104,7 +103,7 @@ class PCDVideoPlayer : public QMainWindow
     ~PCDVideoPlayer () {}
 
   protected:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
+    pcl::visualization::PCLVisualizer::Ptr vis_;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_;
 
     QMutex mtx_;
@@ -128,7 +127,7 @@ class PCDVideoPlayer : public QMainWindow
     /** \brief Indicate that the timeoutSlot needs to reload the pointcloud */
     bool cloud_modified_;
 
-    /** \brief Indicate that files should play continiously */
+    /** \brief Indicate that files should play continuously */
     bool play_mode_;
     /** \brief In play mode only update if speed_counter_ == speed_value */
     unsigned int speed_counter_;

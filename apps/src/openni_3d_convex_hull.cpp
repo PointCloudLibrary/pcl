@@ -33,6 +33,8 @@
  *	
  */
 
+#include <thread>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -44,9 +46,10 @@
 #include <pcl/common/time.h>
 #include <pcl/visualization/cloud_viewer.h>
 
+using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::visualization;
-using namespace std;
 
 #define FPS_CALC(_WHAT_) \
 do \
@@ -104,7 +107,7 @@ class OpenNI3DConvexHull
     {
       if (!cloud_ || !new_cloud_)
       {
-        boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+        std::this_thread::sleep_for(1ms);
         return;
       }
 
@@ -143,7 +146,7 @@ class OpenNI3DConvexHull
       
       while (!viewer.wasStopped ())
       {
-        boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+        std::this_thread::sleep_for(1ms);
       }
 
       interface->stop ();

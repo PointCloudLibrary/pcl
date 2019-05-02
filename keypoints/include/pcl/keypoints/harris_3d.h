@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_HARRIS_KEYPOINT_3D_H_
-#define PCL_HARRIS_KEYPOINT_3D_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 
@@ -60,7 +59,7 @@ namespace pcl
       typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
 
-      typedef typename pcl::PointCloud<NormalT> PointCloudN;
+      typedef pcl::PointCloud<NormalT> PointCloudN;
       typedef typename PointCloudN::Ptr PointCloudNPtr;
       typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
 
@@ -95,13 +94,13 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~HarrisKeypoint3D () {}
+      ~HarrisKeypoint3D () {}
 
       /** \brief Provide a pointer to the input dataset
         * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
-      virtual void
-      setInputCloud (const PointCloudInConstPtr &cloud);
+      void
+      setInputCloud (const PointCloudInConstPtr &cloud) override;
 
       /** \brief Set the method of the response to be calculated.
         * \param[in] type
@@ -149,8 +148,8 @@ namespace pcl
         * need to compute the features for a downsampled cloud.
         * \param[in] cloud a pointer to a PointCloud message
         */
-      virtual void
-      setSearchSurface (const PointCloudInConstPtr &cloud) { surface_ = cloud; normals_.reset(); }
+      void
+      setSearchSurface (const PointCloudInConstPtr &cloud) override { surface_ = cloud; normals_.reset(); }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
@@ -159,8 +158,8 @@ namespace pcl
       setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
     protected:
       bool
-      initCompute ();
-      void detectKeypoints (PointCloudOut &output);
+      initCompute () override;
+      void detectKeypoints (PointCloudOut &output) override;
       /** \brief gets the corner response for valid input points*/
       void responseHarris (PointCloudOut &output) const;
       void responseNoble (PointCloudOut &output) const;
@@ -181,6 +180,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/harris_3d.hpp>
-
-#endif // #ifndef PCL_HARRIS_KEYPOINT_3D_H_
-

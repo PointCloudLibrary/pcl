@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_BOOST_H_
-#define PCL_SURFACE_BOOST_H_
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header 
@@ -46,9 +45,6 @@
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
-#include <boost/random.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 #include <boost/shared_ptr.hpp>
-
-#endif    // PCL_SURFACE_BOOST_H_

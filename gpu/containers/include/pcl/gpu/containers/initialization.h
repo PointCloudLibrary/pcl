@@ -34,8 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_CONTAINERS_INITIALISATION_H_
-#define PCL_GPU_CONTAINERS_INITIALISATION_H_
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <string>
@@ -50,20 +49,20 @@ namespace pcl
         /** \brief Sets active device to work with. */
         PCL_EXPORTS void setDevice(int device);
 
-        /** \brief Return devuce name for gived device. */
+        /** \brief Return device name for given device. */
         PCL_EXPORTS std::string getDeviceName(int device);
 
-        /** \brief Prints infromatoin about given cuda deivce or about all deivces
-         *  \param device: if < 0 prints info for all devices, otherwise the function interpets is as device id.
+        /** \brief Prints information about given cuda device or about all devices
+         *  \param device: if < 0 prints info for all devices, otherwise the function interprets it as device id.
          */
         void PCL_EXPORTS printCudaDeviceInfo(int device = -1);
 
-        /** \brief Prints infromatoin about given cuda deivce or about all deivces
-         *  \param device: if < 0 prints info for all devices, otherwise the function interpets is as device id.
+        /** \brief Prints information about given cuda device or about all devices
+         *  \param device: if < 0 prints info for all devices, otherwise the function interprets it as device id.
          */
         void PCL_EXPORTS printShortCudaDeviceInfo(int device = -1);
 
-        /** \brief Returns true if pre-Fermi generaton GPU. 
+        /** \brief Returns true if pre-Fermi generator GPU. 
           * \param device: device id to check, if < 0 checks current device.
           */
         bool PCL_EXPORTS checkIfPreFermiGPU(int device = -1);
@@ -72,5 +71,3 @@ namespace pcl
         void PCL_EXPORTS error(const char *error_string, const char *file, const int line, const char *func = "");        
     }
 }
-
-#endif /* PCL_GPU_CONTAINERS_INITIALISATION_H_ */

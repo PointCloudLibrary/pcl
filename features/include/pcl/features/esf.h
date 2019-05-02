@@ -37,8 +37,8 @@
  * $Id: pfh.hpp 5027 2012-03-12 03:10:45Z rusu $
  *
  */
-#ifndef PCL_ESF_H_
-#define PCL_ESF_H_
+
+#pragma once
 
 #include <pcl/features/feature.h>
 #define GRIDSIZE 64
@@ -70,7 +70,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::input_;
       using Feature<PointInT, PointOutT>::surface_;
 
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
+      typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Empty constructor. */
@@ -102,7 +102,7 @@ namespace pcl
         * \param output the resultant point cloud model histogram that contains the ESF feature estimates
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief ... */
       int
@@ -139,5 +139,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/esf.hpp>
 #endif
-
-#endif // #

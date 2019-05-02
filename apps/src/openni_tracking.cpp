@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#include <thread>
+
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/particle_filter.h>
 #include <pcl/tracking/kld_adaptive_particle_filter_omp.h>
@@ -104,6 +107,7 @@
   }
 
 using namespace pcl::tracking;
+using namespace std::chrono_literals;
 
 template <typename PointType>
 class OpenNISegmentTracking
@@ -116,16 +120,16 @@ public:
   
   typedef pcl::PointCloud<PointType> Cloud;
   typedef pcl::PointCloud<RefPointType> RefCloud;
-  typedef typename RefCloud::Ptr RefCloudPtr;
-  typedef typename RefCloud::ConstPtr RefCloudConstPtr;
+  typedef RefCloud::Ptr RefCloudPtr;
+  typedef RefCloud::ConstPtr RefCloudConstPtr;
   typedef typename Cloud::Ptr CloudPtr;
   typedef typename Cloud::ConstPtr CloudConstPtr;
   //typedef KLDAdaptiveParticleFilterTracker<RefPointType, ParticleT> ParticleFilter;
   //typedef KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT> ParticleFilter;
   //typedef ParticleFilterOMPTracker<RefPointType, ParticleT> ParticleFilter;
   typedef ParticleFilterTracker<RefPointType, ParticleT> ParticleFilter;
-  typedef typename ParticleFilter::CoherencePtr CoherencePtr;
-  typedef typename pcl::search::KdTree<PointType> KdTree;
+  typedef ParticleFilter::CoherencePtr CoherencePtr;
+  typedef pcl::search::KdTree<PointType> KdTree;
   typedef typename KdTree::Ptr KdTreePtr;
   OpenNISegmentTracking (const std::string& device_id, int thread_nr, double downsampling_grid_size,
                          bool use_convex_hull,
@@ -191,8 +195,7 @@ public:
     // NearestPairPointCloudCoherence<RefPointType>::Ptr coherence = NearestPairPointCloudCoherence<RefPointType>::Ptr
     //   (new NearestPairPointCloudCoherence<RefPointType> ());
     
-    boost::shared_ptr<DistanceCoherence<RefPointType> > distance_coherence
-      = boost::shared_ptr<DistanceCoherence<RefPointType> > (new DistanceCoherence<RefPointType> ());
+    DistanceCoherence<RefPointType>::Ptr distance_coherence (new DistanceCoherence<RefPointType>);
     coherence->addPointCoherence (distance_coherence);
     
     boost::shared_ptr<HSVColorCoherence<RefPointType> > color_coherence
@@ -217,14 +220,9 @@ public:
       if (visualize_particles_)
       {
         pcl::PointCloud<pcl::PointXYZ>::Ptr particle_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-        for (size_t i = 0; i < particles->points.size (); i++)
+        for (const auto &point : particles->points)
         {
-          pcl::PointXYZ point;
-          
-          point.x = particles->points[i].x;
-          point.y = particles->points[i].y;
-          point.z = particles->points[i].z;
-          particle_cloud->points.push_back (point);
+          particle_cloud->points.emplace_back (point.x, point.y, point.z);
         }
         
         {
@@ -271,7 +269,7 @@ public:
     
     if (!cloud_pass_)
     {
-      boost::this_thread::sleep (boost::posix_time::seconds (1));
+      std::this_thread::sleep_for(1s);
       return;
     }
     
@@ -497,9 +495,9 @@ public:
       if (!(fabs(point.x) < 0.01 &&
             fabs(point.y) < 0.01 &&
             fabs(point.z) < 0.01) &&
-          !pcl_isnan(point.x) &&
-          !pcl_isnan(point.y) &&
-          !pcl_isnan(point.z))
+          !std::isnan(point.x) &&
+          !std::isnan(point.y) &&
+          !std::isnan(point.z))
         result.points.push_back(point);
     }
 
@@ -509,14 +507,14 @@ public:
   }
   
   void extractSegmentCluster (const CloudConstPtr &cloud,
-                              const std::vector<pcl::PointIndices> cluster_indices,
+                              const std::vector<pcl::PointIndices> &cluster_indices,
                               const int segment_index,
                               Cloud &result)
   {
     pcl::PointIndices segmented_indices = cluster_indices[segment_index];
-    for (size_t i = 0; i < segmented_indices.indices.size (); i++)
+    for (const int &index : segmented_indices.indices)
     {
-      PointType point = cloud->points[segmented_indices.indices[i]];
+      PointType point = cloud->points[index];
       result.points.push_back (point);
     }
     result.width = pcl::uint32_t (result.points.size ());
@@ -570,12 +568,12 @@ public:
         target_cloud = cloud_pass_downsampled_;
       }
       
-      if (target_cloud != NULL)
+      if (target_cloud != nullptr)
       {
         PCL_INFO ("segmentation, please wait...\n");
         std::vector<pcl::PointIndices> cluster_indices;
         euclideanSegment (target_cloud, cluster_indices);
-        if (cluster_indices.size () > 0)
+        if (!cluster_indices.empty ())
         {
           // select the cluster to track
           CloudPtr temp_cloud (new Cloud);
@@ -662,7 +660,7 @@ public:
     interface->start ();
       
     while (!viewer_.wasStopped ())
-      boost::this_thread::sleep(boost::posix_time::seconds(1));
+      std::this_thread::sleep_for(1s);
     interface->stop ();
   }
   

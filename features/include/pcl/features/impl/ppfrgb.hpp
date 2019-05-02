@@ -123,7 +123,7 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
 {
   PCL_INFO ("before computing output size: %u\n", output.size ());
   output.resize (indices_->size ());
-  for (int index_i = 0; index_i < static_cast<int> (indices_->size ()); ++index_i)
+  for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
     int i = (*indices_)[index_i];
     std::vector<int> nn_indices;
@@ -135,9 +135,8 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
     average_feature_nn.f1 = average_feature_nn.f2 = average_feature_nn.f3 = average_feature_nn.f4 =
         average_feature_nn.r_ratio = average_feature_nn.g_ratio = average_feature_nn.b_ratio = 0.0f;
 
-    for (std::vector<int>::iterator nn_it = nn_indices.begin (); nn_it != nn_indices.end (); ++nn_it)
+    for (const int &j : nn_indices)
     {
-      int j = *nn_it;
       if (i != j)
       {
         float f1, f2, f3, f4, r_ratio, g_ratio, b_ratio;

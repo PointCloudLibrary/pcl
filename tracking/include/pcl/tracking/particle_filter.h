@@ -1,5 +1,6 @@
-#ifndef PCL_TRACKING_PARTICLE_FILTER_H_
-#define PCL_TRACKING_PARTICLE_FILTER_H_
+#pragma once
+
+#include <boost/shared_ptr.hpp>
 
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/tracker.h>
@@ -31,6 +32,8 @@ namespace pcl
         using Tracker<PointInT, StateT>::indices_;
         using Tracker<PointInT, StateT>::getClassName;
         
+        typedef boost::shared_ptr<ParticleFilterTracker<PointInT, StateT>> Ptr;
+
         typedef Tracker<PointInT, StateT> BaseClass;
         
         typedef typename Tracker<PointInT, StateT>::PointCloudIn PointCloudIn;
@@ -197,7 +200,7 @@ namespace pcl
 	        * This function returns the particle that represents the transform between the reference point cloud at the 
           * beginning and the best guess about its location in the most recent frame.
 	        */
-        virtual inline StateT getResult () const { return representative_state_; }
+        inline StateT getResult () const override { return representative_state_; }
         
         /** \brief Convert a state to affine transformation from the world coordinates frame.
           * \param[in] particle an instance of StateT.
@@ -351,7 +354,7 @@ namespace pcl
 
         
         /** \brief This method should get called before starting the actual computation. */
-        virtual bool initCompute ();
+        bool initCompute () override;
         
         /** \brief Weighting phase of particle filter method. Calculate the likelihood of all of the particles and set the weights. */
         virtual void weight ();
@@ -371,7 +374,7 @@ namespace pcl
         void initParticles (bool reset);
         
         /** \brief Track the pointcloud using particle filter method. */
-        virtual void computeTracking ();
+        void computeTracking () override;
         
         /** \brief Implementation of "sample with replacement" using Walker's alias method.
             about Walker's alias method, you can check the paper below:
@@ -480,7 +483,7 @@ namespace pcl
         std::vector<PointCloudInPtr> transed_reference_vector_;
 
         /** \brief Change detector used as a trigger to track. */
-        boost::shared_ptr<pcl::octree::OctreePointCloudChangeDetector<PointInT> > change_detector_;
+        typename pcl::octree::OctreePointCloudChangeDetector<PointInT>::Ptr change_detector_;
 
         /** \brief A flag to be true when change of pointclouds is detected. */
         bool changed_;
@@ -507,5 +510,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/tracking/impl/particle_filter.hpp>
 #endif
-
-#endif //PCL_TRACKING_PARTICLE_FILTER_H_

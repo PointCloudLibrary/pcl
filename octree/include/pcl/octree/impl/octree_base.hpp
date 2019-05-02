@@ -79,7 +79,7 @@ namespace pcl
         assert(max_voxel_index_arg>0);
 
         // tree depth == bitlength of maxVoxels
-        tree_depth = std::min (static_cast<unsigned int> (OctreeKey::maxDepth), static_cast<unsigned int> (std::ceil (Log2 (max_voxel_index_arg))));
+        tree_depth = std::min (static_cast<unsigned int> (OctreeKey::maxDepth), static_cast<unsigned int> (std::ceil (std::log2 (max_voxel_index_arg))));
 
         // define depthMask_ by setting a single bit to 1 at bit position == tree depth
         depth_mask_ = (1 << (tree_depth - 1));
@@ -186,7 +186,7 @@ namespace pcl
         binary_tree_out_arg.clear ();
         binary_tree_out_arg.reserve (this->branch_count_);
 
-        serializeTreeRecursive (root_node_, new_key, &binary_tree_out_arg, 0);
+        serializeTreeRecursive (root_node_, new_key, &binary_tree_out_arg, nullptr);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -220,7 +220,7 @@ namespace pcl
 
         leaf_container_vector_arg.reserve (this->leaf_count_);
 
-        serializeTreeRecursive (root_node_, new_key, 0, &leaf_container_vector_arg);
+        serializeTreeRecursive (root_node_, new_key, nullptr, &leaf_container_vector_arg);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,8 +242,8 @@ namespace pcl
                                   new_key,
                                   binary_tree_out_it,
                                   binary_tree_out_it_end,
-                                  0,
-                                  0);
+                                  nullptr,
+                                  nullptr);
 
       }
 
@@ -443,9 +443,6 @@ namespace pcl
                                                                             std::vector<char>* binary_tree_out_arg,
                                                                             typename std::vector<LeafContainerT*>* leaf_container_vector_arg) const
       {
-
-        // child iterator
-        unsigned char child_idx;
         char node_bit_pattern;
 
         // branch occupancy bit pattern
@@ -456,7 +453,7 @@ namespace pcl
           binary_tree_out_arg->push_back (node_bit_pattern);
 
         // iterate over all children
-        for (child_idx = 0; child_idx < 8; child_idx++)
+        for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
         {
 
           // if child exist
@@ -506,8 +503,6 @@ namespace pcl
                                                                               typename std::vector<LeafContainerT*>::const_iterator* leaf_container_vector_it_arg,
                                                                               typename std::vector<LeafContainerT*>::const_iterator* leaf_container_vector_it_end_arg)
       {
-        // child iterator
-        unsigned char child_idx;
         char node_bits;
 
         if (binary_tree_input_it_arg != binary_tree_input_it_end_arg)
@@ -517,7 +512,7 @@ namespace pcl
           binary_tree_input_it_arg++;
 
           // iterate over all children
-          for (child_idx = 0; child_idx < 8; child_idx++)
+          for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
           {
             // if occupancy bit for child_idx is set..
             if (node_bits & (1 << child_idx))

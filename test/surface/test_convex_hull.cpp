@@ -39,6 +39,8 @@
 
 #include <gtest/gtest.h>
 
+#include <random>
+
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
@@ -321,15 +323,14 @@ TEST (PCL, ConvexHull_2dsquare)
   input_cloud->points.resize (input_cloud->width * input_cloud->height);
   
   //rng
-  boost::mt19937 rng_alg;
-  boost::uniform_01<boost::mt19937> rng (rng_alg);
-  rng.base ().seed (12345u);
+  std::mt19937 rng(12345u);
+  std::uniform_real_distribution<float> rd (-1.0f, 1.0f);
 
-  for (size_t i = 0; i < input_cloud->points.size (); i++)
+  for (auto &point : input_cloud->points)
   {
-    input_cloud->points[i].x = (2.0f * float (rng ()))-1.0f;
-    input_cloud->points[i].y = (2.0f * float (rng ()))-1.0f;
-    input_cloud->points[i].z = 1.0f;
+    point.x = rd (rng);
+    point.y = rd (rng);
+    point.z = 1.0f;
   }
 
   //Set up for creating a hull
@@ -348,21 +349,21 @@ TEST (PCL, ConvexHull_2dsquare)
 
   //Make sure they're actually near some edge
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > facets;
-  facets.push_back (Eigen::Vector4f (-1.0, 0.0, 0.0, 1.0));
-  facets.push_back (Eigen::Vector4f (-1.0, 0.0, 0.0, -1.0));
-  facets.push_back (Eigen::Vector4f (0.0, -1.0, 0.0, 1.0));
-  facets.push_back (Eigen::Vector4f (0.0, -1.0, 0.0, -1.0));
+  facets.emplace_back(-1.0, 0.0, 0.0, 1.0);
+  facets.emplace_back(-1.0, 0.0, 0.0, -1.0);
+  facets.emplace_back(0.0, -1.0, 0.0, 1.0);
+  facets.emplace_back(0.0, -1.0, 0.0, -1.0);
 
   //Make sure they're in the plane
-  for (size_t i = 0; i < hull.points.size (); i++)
+  for (const auto &point : hull.points)
   {
-    float dist = fabs (hull.points[i].getVector4fMap ().dot (plane_normal));
+    float dist = fabs (point.getVector4fMap ().dot (plane_normal));
     EXPECT_NEAR (dist, 0.0, 1e-2);
 
     float min_dist = std::numeric_limits<float>::infinity ();
-    for (size_t j = 0; j < facets.size (); j++)
+    for (const auto &facet : facets)
     {
-      float d2 = fabs (hull.points[i].getVector4fMap ().dot (facets[j]));
+      float d2 = fabs (point.getVector4fMap ().dot (facet));
       
       if (d2 < min_dist)
         min_dist = d2;
@@ -380,16 +381,15 @@ TEST (PCL, ConvexHull_3dcube)
   input_cloud->height = 1;
   input_cloud->points.resize (input_cloud->width * input_cloud->height);
   
-  //rng
-  boost::mt19937 rng_alg;
-  boost::uniform_01<boost::mt19937> rng (rng_alg);
-  rng.base ().seed (12345u);
+  //rd
+  std::mt19937 gen(12345u);
+  std::uniform_real_distribution<float> rd (-1.0f, 1.0f);
 
-  for (size_t i = 0; i < input_cloud->points.size (); i++)
+  for (auto &point : input_cloud->points)
   {
-    input_cloud->points[i].x =  (2.0f * float (rng ()))-1.0f;
-    input_cloud->points[i].y =  (2.0f * float (rng ()))-1.0f;
-    input_cloud->points[i].z =  (2.0f * float (rng ()))-1.0f;
+    point.x = rd (gen);
+    point.y = rd (gen);
+    point.z = rd (gen);
   }
 
   //Set up for creating a hull
@@ -404,20 +404,20 @@ TEST (PCL, ConvexHull_3dcube)
   
   //Make sure they're actually near some edge
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > facets;
-  facets.push_back (Eigen::Vector4f (-1.0f, 0.0f, 0.0f, 1.0f));
-  facets.push_back (Eigen::Vector4f (-1.0f, 0.0f, 0.0f, -1.0f));
-  facets.push_back (Eigen::Vector4f (0.0f, -1.0f, 0.0f, 1.0f));
-  facets.push_back (Eigen::Vector4f (0.0f, -1.0f, 0.0f, -1.0f));
-  facets.push_back (Eigen::Vector4f (0.0f, 0.0f, -1.0f, 1.0f));
-  facets.push_back (Eigen::Vector4f (0.0f, 0.0f, -1.0f, -1.0f));
+  facets.emplace_back(-1.0f, 0.0f, 0.0f, 1.0f);
+  facets.emplace_back(-1.0f, 0.0f, 0.0f, -1.0f);
+  facets.emplace_back(0.0f, -1.0f, 0.0f, 1.0f);
+  facets.emplace_back(0.0f, -1.0f, 0.0f, -1.0f);
+  facets.emplace_back(0.0f, 0.0f, -1.0f, 1.0f);
+  facets.emplace_back(0.0f, 0.0f, -1.0f, -1.0f);
 
   //Make sure they're near a facet
-  for (size_t i = 0; i < hull.points.size (); i++)
+  for (const auto &point : hull.points)
   {
     float min_dist = std::numeric_limits<float>::infinity ();
-    for (size_t j = 0; j < facets.size (); j++)
+    for (const auto &facet : facets)
     {
-      float dist = fabs (hull.points[i].getVector4fMap ().dot (facets[j]));
+      float dist = fabs (point.getVector4fMap ().dot (facet));
       
       if (dist < min_dist)
         min_dist = dist;

@@ -125,14 +125,14 @@ saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 
 int
 batchProcess (const vector<string> &pcd_files, string &output_dir,
-              std::string field_name, float min, float max, bool inside, bool keep_organized)
+              const std::string &field_name, float min, float max, bool inside, bool keep_organized)
 {
   vector<string> st;
-  for (size_t i = 0; i < pcd_files.size (); ++i)
+  for (const auto &pcd_file : pcd_files)
   {
     // Load the first file
     pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
-    if (!loadCloud (pcd_files[i], *cloud)) 
+    if (!loadCloud (pcd_file, *cloud)) 
       return (-1);
 
     // Perform the feature estimation
@@ -140,7 +140,7 @@ batchProcess (const vector<string> &pcd_files, string &output_dir,
     compute (cloud, output, field_name, min, max, inside, keep_organized);
 
     // Prepare output file name
-    string filename = pcd_files[i];
+    string filename = pcd_file;
     boost::trim (filename);
     boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
     
@@ -216,7 +216,7 @@ main (int argc, char** argv)
   }
   else
   {
-    if (input_dir != "" && boost::filesystem::exists (input_dir))
+    if (!input_dir.empty() && boost::filesystem::exists (input_dir))
     {
       vector<string> pcd_files;
       boost::filesystem::directory_iterator end_itr;

@@ -50,9 +50,7 @@
 #include <QFileDialog>
 #include <QtCore>
 #include <QKeyEvent>
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#include <QtConcurrent/QtConcurrent>
-#endif
+#include <QtConcurrent>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/transforms.h>
@@ -98,7 +96,7 @@ pcl::ihs::OfflineIntegration::~OfflineIntegration ()
 void
 pcl::ihs::OfflineIntegration::start ()
 {
-  QString dir = QFileDialog::getExistingDirectory (0, "Please select a directory containing .pcd and .transform files.");
+  QString dir = QFileDialog::getExistingDirectory (nullptr, "Please select a directory containing .pcd and .transform files.");
 
   if (dir.isEmpty ())
   {
@@ -143,12 +141,12 @@ pcl::ihs::OfflineIntegration::computationThread ()
   Base::setPivot ("model");
   Base::addMesh (mesh_model_, "model");
 
-  if (filenames.size () < 1)
+  if (filenames.empty ())
   {
     return;
   }
 
-  for (unsigned int i=1; i<filenames.size (); ++i)
+  for (size_t i=1; i<filenames.size (); ++i)
   {
     std::cerr << "Processing file " << std::setw (5) << i+1 << " / " << filenames.size () << std::endl;
 
@@ -192,7 +190,7 @@ pcl::ihs::OfflineIntegration::getFilesFromDirectory (const std::string          
                                                      const std::string          extension,
                                                      std::vector <std::string>& files) const
 {
-  if (path_dir == "" || !boost::filesystem::exists (path_dir))
+  if (path_dir.empty() || !boost::filesystem::exists (path_dir))
   {
     std::cerr << "ERROR in offline_integration.cpp: Invalid path\n  '" << path_dir << "'\n";
     return (false);
@@ -286,7 +284,7 @@ pcl::ihs::OfflineIntegration::load (const std::string&    filename,
   // Load the transformation.
   std::string fn_transform = filename;
 
-  size_t pos = fn_transform.find_last_of (".");
+  size_t pos = fn_transform.find_last_of ('.');
   if (pos == std::string::npos || pos == (fn_transform.size () - 1))
   {
     std::cerr << "ERROR in offline_integration.cpp: No file extension\n";

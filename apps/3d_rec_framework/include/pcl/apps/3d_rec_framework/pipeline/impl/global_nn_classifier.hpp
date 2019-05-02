@@ -20,11 +20,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
       for (bf::directory_iterator itr_in (inside); itr_in != end_itr; ++itr_in)
       {
-#if BOOST_FILESYSTEM_VERSION == 3
         std::string file_name = (itr_in->path ().filename ()).string();
-#else
-        std::string file_name = (itr_in->path ()).filename ();
-#endif
 
         std::vector < std::string > strs;
         boost::split (strs, file_name, boost::is_any_of ("_"));
@@ -85,7 +81,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     typename pcl::PointCloud<FeatureT>::CloudVectorType signatures;
     std::vector < Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > centroids;
 
-    if (indices_.size ())
+    if (!indices_.empty ())
     {
       pcl::copyPointCloud (*input_, indices_, *in);
     }
@@ -97,7 +93,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     estimator_->estimate (in, processed, signatures, centroids);
     std::vector<index_score> indices_scores;
 
-    if (signatures.size () > 0)
+    if (!signatures.empty ())
     {
       for (size_t idx = 0; idx < signatures.size (); idx++)
       {
@@ -128,13 +124,12 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       first_nn_category_ = flann_models_[indices_scores[0].idx_models_].first.class_;
 
       std::map<std::string, int> category_map;
-      std::map<std::string, int>::iterator it;
       int num_n = std::min (NN_, static_cast<int> (indices_scores.size ()));
 
       for (int i = 0; i < num_n; ++i)
       {
         std::string cat = flann_models_[indices_scores[i].idx_models_].first.class_;
-        it = category_map.find (cat);
+        auto it = category_map.find (cat);
         if (it == category_map.end ())
         {
           category_map[cat] = 1;
@@ -145,10 +140,10 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         }
       }
 
-      for (it = category_map.begin (); it != category_map.end (); it++)
+      for (const auto &category : category_map)
       {
-        float prob = static_cast<float> (it->second) / static_cast<float> (num_n);
-        categories_.push_back (it->first);
+        float prob = static_cast<float> (category.second) / static_cast<float> (num_n);
+        categories_.push_back (category.first);
         confidences_.push_back (prob);
       }
 

@@ -47,6 +47,7 @@
 #include <vector>
 #include <cstdio>
 #include <iostream>
+#include <random>
 using namespace std;
 
 #include <pcl/common/time.h>
@@ -62,9 +63,6 @@ using namespace std;
 
 using namespace pcl::outofcore;
 
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_real.hpp>
-#include <boost/random/normal_distribution.hpp>
 #include <boost/foreach.hpp>
 
 /** \brief Unit tests for UR out of core octree code which test public interface of OutofcoreOctreeBase 
@@ -74,7 +72,7 @@ using namespace pcl::outofcore;
 // set much higher
 const static uint64_t numPts (10000);
 
-const static boost::uint32_t rngseed = 0xAAFF33DD;
+constexpr uint32_t rngseed = 0xAAFF33DD;
 
 const static boost::filesystem::path filename_otreeA = "treeA/tree_test.oct_idx";
 const static boost::filesystem::path filename_otreeB = "treeB/tree_test.oct_idx";
@@ -103,10 +101,7 @@ AlignedPointTVector points;
 bool 
 compPt (const PointT &p1, const PointT &p2)
 {
-  if (p1.x != p2.x || p1.y != p2.y || p1.z != p2.z)
-    return false;
-  
-  return true;
+  return !(p1.x != p2.x || p1.y != p2.y || p1.z != p2.z);
 }
 
 TEST (PCL, Outofcore_Octree_Build)
@@ -125,13 +120,13 @@ TEST (PCL, Outofcore_Octree_Build)
   octree_disk treeB (4, min, max, filename_otreeB, "ECEF");
 
   // Equidistributed uniform pseudo-random number generator
-  boost::mt19937 rng(rngseed);
+  std::mt19937 rng (rngseed);
 
   // For testing sparse 
-  //boost::uniform_real<double> dist(0,1);
+  //std::uniform_real_distribution<double> dist(0.0, 1.0);
 
   // For testing less sparse
-  boost::normal_distribution<float> dist (0.5f, .1f);
+  std::normal_distribution<float> dist (0.5f, .1f);
 
   // Create a point
   PointT p;
@@ -176,11 +171,11 @@ TEST (PCL, Outofcore_Octree_Build_LOD)
   octree_disk treeB (4, min, max, filename_otreeB_LOD, "ECEF");
 
   // Equidistributed uniform pseudo-random number generator
-  boost::mt19937 rng (rngseed);
+  std::mt19937 rng (rngseed);
   // For testing sparse
-  //boost::uniform_real<double> dist(0,1);
+  //std::uniform_real_distribution<double> dist(0.0, 1.0);
   // For testing less sparse
-  boost::normal_distribution<float> dist (0.5f, .1f);
+  std::normal_distribution<float> dist (0.5f, .1f);
 
   // Create a point
   PointT p;
@@ -248,8 +243,8 @@ TEST(PCL, Outofcore_Bounding_Box)
 void 
 point_test (octree_disk& t)
 {
-  boost::mt19937 rng (rngseed);
-  boost::uniform_real<float> dist(0,1);
+  std::mt19937 rng (rngseed);
+  std::uniform_real_distribution<float> dist(0.0, 1.0);
 
   Eigen::Vector3d query_box_min;
   Eigen::Vector3d qboxmax;
@@ -277,11 +272,11 @@ point_test (octree_disk& t)
     //query the list
     AlignedPointTVector pointsinregion;
 
-    for (AlignedPointTVector::iterator pointit = points.begin (); pointit != points.end (); ++pointit)
+    for (const auto &point : points)
     {
-      if ((query_box_min[0] <= pointit->x) && (pointit->x < qboxmax[0]) && (query_box_min[1] < pointit->y) && (pointit->y < qboxmax[1]) && (query_box_min[2] <= pointit->z) && (pointit->z < qboxmax[2]))
+      if ((query_box_min[0] <= point.x) && (point.x < qboxmax[0]) && (query_box_min[1] < point.y) && (point.y < qboxmax[1]) && (query_box_min[2] <= point.z) && (point.z < qboxmax[2]))
       {
-        pointsinregion.push_back (*pointit);
+        pointsinregion.push_back (point);
       }
     }
 
@@ -327,9 +322,9 @@ TEST (PCL, Outofcore_Ram_Tree)
 
   octree_ram t (min, max, .1, filename_otreeA, "ECEF");
 
-  boost::mt19937 rng (rngseed);
-  //boost::uniform_real<double> dist(0,1);//for testing sparse
-  boost::normal_distribution<float> dist (0.5f, .1f);//for testing less sparse
+  std::mt19937 rng (rngseed);
+  //std::uniform_real_distribution<double> dist(0.0, 1.0); //for testing sparse
+  std::normal_distribution<float> dist (0.5f, .1f); //for testing less sparse
   PointT p;
 
   points.resize (numPts);
@@ -404,12 +399,12 @@ class OutofcoreTest : public testing::Test
 
     OutofcoreTest () : smallest_voxel_dim () {}
 
-    virtual void SetUp ()
+    void SetUp () override
     {
       smallest_voxel_dim = 3.0f;
     }
 
-    virtual void TearDown ()
+    void TearDown () override
     {
 
     }
@@ -491,7 +486,6 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
 
   //(Case 4): Load existing tree from disk
   octree_disk octree_from_disk (filename_otreeB, true);
-  vector<uint64_t> numPoints = octree_from_disk.getNumPointsVector ();
   EXPECT_EQ (numPts , octree_from_disk.getNumPointsAtDepth (octree_from_disk.getDepth ())) << "Failure to count the number of points in a tree already existing on disk\n";
 }
 
@@ -756,7 +750,7 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
   point_cloud.height = 1;
 
   for (size_t i=0; i < numPts; i++)
-    point_cloud.points.push_back (PointT (static_cast<float>(rand () % 10), static_cast<float>(rand () % 10), static_cast<float>(rand () % 10)));
+    point_cloud.points.emplace_back(static_cast<float>(rand () % 10), static_cast<float>(rand () % 10), static_cast<float>(rand () % 10));
 
 
   pcl::PCLPointCloud2::Ptr input_cloud (new pcl::PCLPointCloud2 ());

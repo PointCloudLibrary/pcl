@@ -47,8 +47,6 @@
 #include <pcl/filters/uniform_sampling.h>
 #include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/common/eigen.h>
 
 using namespace std;
@@ -84,10 +82,10 @@ computeRmsE (const PointCloud<PointType>::ConstPtr &model, const PointCloud<Poin
 
   vector<int> neigh_indices (1);
   vector<float> neigh_sqr_dists (1);
-  for (size_t i = 0; i < transformed_model.size (); ++i)
+  for (const auto &model : transformed_model)
   {
 
-    int found_neighs = tree.nearestKSearch (transformed_model.at (i), 1, neigh_indices, neigh_sqr_dists);
+    int found_neighs = tree.nearestKSearch (model, 1, neigh_indices, neigh_sqr_dists);
     if(found_neighs == 1)
     {
       ++found_points;
@@ -130,12 +128,17 @@ TEST (PCL, Hough3DGrouping)
   clusterer.setSceneRf (scene_rf);
   clusterer.setModelSceneCorrespondences (model_scene_corrs_);
   clusterer.setHoughBinSize (0.03);
-  clusterer.setHoughThreshold (25);
+  clusterer.setHoughThreshold (10);
   EXPECT_TRUE (clusterer.recognize (rototranslations));
 
   //Assertions
-  EXPECT_EQ (rototranslations.size (), 1);
-  EXPECT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-2);
+  ASSERT_GE (rototranslations.size (), 1);
+
+  // Pick transformation with lowest error
+  double min_rms_e = std::numeric_limits<double>::max ();
+  for (const auto &rototranslation : rototranslations)
+    min_rms_e = std::min (min_rms_e, computeRmsE (model_, scene_, rototranslation));
+  EXPECT_LT (min_rms_e, 1E-2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,7 +220,7 @@ main (int argc, char** argv)
 
   for (size_t i = 0; i < scene_descriptors_->size (); ++i)
   {
-    if ( pcl_isfinite( scene_descriptors_->at (i).descriptor[0] ) )
+    if ( std::isfinite( scene_descriptors_->at (i).descriptor[0] ) )
     {
       vector<int> neigh_indices (1);
       vector<float> neigh_sqr_dists (1);

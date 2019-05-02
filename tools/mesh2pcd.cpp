@@ -58,7 +58,7 @@ printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.{ply,obj} output.pcd <options>\n", argv[0]);
   print_info ("  where options are:\n");
-  print_info ("                     -level X      = tesselated sphere level (default: ");
+  print_info ("                     -level X      = tessellated sphere level (default: ");
   print_value ("%d", default_tesselated_sphere_level);
   print_info (")\n");
   print_info ("                     -resolution X = the sphere resolution in angle increments (default: ");
@@ -125,8 +125,6 @@ main (int argc, char **argv)
     polydata1 = readerQuery->GetOutput ();
   }
 
-  bool INTER_VIS = false;
-
   visualization::PCLVisualizer vis;
   vis.addModelFromPolyData (polydata1, "mesh1", 0);
   vis.setRepresentationToSurfaceForAllActors ();
@@ -148,23 +146,10 @@ main (int argc, char **argv)
     aligned_clouds.push_back (cloud);
   }
 
-  if (INTER_VIS)
-  {
-    visualization::PCLVisualizer vis2 ("visualize");
-
-    for (size_t i = 0; i < aligned_clouds.size (); i++)
-    {
-      std::stringstream name;
-      name << "cloud_" << i;
-      vis2.addPointCloud (aligned_clouds[i], name.str ());
-      vis2.spin ();
-    }
-  }
-
   // Fuse clouds
   PointCloud<PointXYZ>::Ptr big_boy (new PointCloud<PointXYZ> ());
-  for (size_t i = 0; i < aligned_clouds.size (); i++)
-    *big_boy += *aligned_clouds[i];
+  for (const auto &aligned_cloud : aligned_clouds)
+    *big_boy += *aligned_cloud;
 
   if (vis_result)
   {

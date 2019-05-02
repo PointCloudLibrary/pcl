@@ -122,8 +122,7 @@ namespace pcl
           Eigen::Vector2d sx  = Eigen::Vector2d::Zero ();
           Eigen::Matrix2d sxx = Eigen::Matrix2d::Zero ();
           
-          std::vector<size_t>::const_iterator i;
-          for (i = pt_indices_.begin (); i != pt_indices_.end (); i++)
+          for (auto i = pt_indices_.cbegin (); i != pt_indices_.cend (); i++)
           {
             Eigen::Vector2d p (cloud[*i]. x, cloud[*i]. y);
             sx  += p;
@@ -217,9 +216,9 @@ namespace pcl
     template <typename PointT> 
     class NDTSingleGrid: public boost::noncopyable
     {
-      typedef typename pcl::PointCloud<PointT> PointCloud;
-      typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::ndt2d::NormalDist<PointT> NormalDist;
+      typedef pcl::PointCloud<PointT> PointCloud;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      typedef pcl::ndt2d::NormalDist<PointT> NormalDist;
 
       public:
         NDTSingleGrid (PointCloudConstPtr cloud,
@@ -281,7 +280,7 @@ namespace pcl
           Eigen::Vector2i idxi = idxf.cast<int> ();
           for (size_t i = 0; i < 2; i++)
             if (idxi[i] >= cells_[i] || idxi[i] < 0)
-              return NULL;
+              return nullptr;
           // const cast to avoid duplicating this function in const and
           // non-const variants...
           return const_cast<NormalDist*> (&normal_distributions_.coeffRef (idxi[0], idxi[1]));
@@ -304,8 +303,8 @@ namespace pcl
     template <typename PointT> 
     class NDT2D: public boost::noncopyable
     {
-      typedef typename pcl::PointCloud<PointT> PointCloud;
-      typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
+      typedef pcl::PointCloud<PointT> PointCloud;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
       typedef NDTSingleGrid<PointT> SingleGrid;
 
       public:
@@ -322,10 +321,10 @@ namespace pcl
         {
           Eigen::Vector2f dx (step[0]/2, 0);
           Eigen::Vector2f dy (0, step[1]/2);
-          single_grids_[0] = boost::make_shared<SingleGrid> (cloud, about,        extent, step);
-          single_grids_[1] = boost::make_shared<SingleGrid> (cloud, about +dx,    extent, step);
-          single_grids_[2] = boost::make_shared<SingleGrid> (cloud, about +dy,    extent, step);
-          single_grids_[3] = boost::make_shared<SingleGrid> (cloud, about +dx+dy, extent, step);
+          single_grids_[0].reset(new SingleGrid (cloud, about,        extent, step));
+          single_grids_[1].reset(new SingleGrid (cloud, about +dx,    extent, step));
+          single_grids_[2].reset(new SingleGrid (cloud, about +dy,    extent, step));
+          single_grids_[3].reset(new SingleGrid (cloud, about +dx+dy, extent, step));
         }
         
         /** \brief Return the 'score' (denormalised likelihood) and derivatives of score of the point p given this distribution.
@@ -337,8 +336,8 @@ namespace pcl
         test (const PointT& transformed_pt, const double& cos_theta, const double& sin_theta) const
         {
           ValueAndDerivatives<3,double> r = ValueAndDerivatives<3,double>::Zero ();
-          for (size_t i = 0; i < 4; i++)
-              r += single_grids_[i]->test (transformed_pt, cos_theta, sin_theta);
+          for (const auto &single_grid : single_grids_)
+              r += single_grid->test (transformed_pt, cos_theta, sin_theta);
           return r;
         }
 
@@ -470,7 +469,7 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
 
     nr_iterations_++;
     
-    if (update_visualizer_ != 0)
+    if (!update_visualizer_.empty())
       update_visualizer_ (output, *indices_, *target_, *indices_);
 
     //std::cout << "eps=" << fabs ((transformation - previous_transformation_).sum ()) << std::endl;

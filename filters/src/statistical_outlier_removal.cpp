@@ -214,9 +214,9 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
   // Go over all the points and calculate the mean or smallest distance
   for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
-    if (!pcl_isfinite (cloud->points[(*indices_)[cp]].x) || 
-        !pcl_isfinite (cloud->points[(*indices_)[cp]].y) ||
-        !pcl_isfinite (cloud->points[(*indices_)[cp]].z))
+    if (!std::isfinite (cloud->points[(*indices_)[cp]].x) || 
+        !std::isfinite (cloud->points[(*indices_)[cp]].y) ||
+        !std::isfinite (cloud->points[(*indices_)[cp]].z))
     {
       distances[cp] = 0;
       continue;
@@ -239,10 +239,10 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
 
   // Estimate the mean and the standard deviation of the distance vector
   double sum = 0, sq_sum = 0;
-  for (size_t i = 0; i < distances.size (); ++i)
+  for (const float &distance : distances)
   {
-    sum += distances[i];
-    sq_sum += distances[i] * distances[i];
+    sum += distance;
+    sq_sum += distance * distance;
   }
 
   mean = sum / static_cast<double>(valid_distances);

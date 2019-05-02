@@ -161,10 +161,10 @@ pcl::GrabCut<PointT>::setBackgroundPointsIndices (const PointIndicesConstPtr &in
 
   std::fill (trimap_.begin (), trimap_.end (), TrimapBackground);
   std::fill (hard_segmentation_.begin (), hard_segmentation_.end (), SegmentationBackground);
-  for (std::vector<int>::const_iterator idx = indices->indices.begin (); idx != indices->indices.end (); ++idx)
+  for (const int &index : indices->indices)
   {
-    trimap_[*idx] = TrimapUnknown;
-    hard_segmentation_[*idx] = SegmentationForeground;
+    trimap_[index] = TrimapUnknown;
+    hard_segmentation_[index] = SegmentationForeground;
   }
 
   if (!initialized_)
@@ -245,18 +245,17 @@ template <typename PointT> void
 pcl::GrabCut<PointT>::setTrimap (const PointIndicesConstPtr &indices, segmentation::grabcut::TrimapValue t)
 {
   using namespace pcl::segmentation::grabcut;
-  std::vector<int>::const_iterator idx = indices->indices.begin ();
-  for (; idx != indices->indices.end (); ++idx)
-    trimap_[*idx] = t;
+  for (const int &index : indices->indices)
+    trimap_[index] = t;
 
   // Immediately set the hard segmentation as well so that the display will update.
   if (t == TrimapForeground)
-    for (idx = indices->indices.begin (); idx != indices->indices.end (); ++idx)
-      hard_segmentation_[*idx] = SegmentationForeground;
+    for (const int &index : indices->indices)
+      hard_segmentation_[index] = SegmentationForeground;
   else
     if (t == TrimapBackground)
-      for (idx = indices->indices.begin (); idx != indices->indices.end (); ++idx)
-        hard_segmentation_[*idx] = SegmentationBackground;
+      for (const int &index : indices->indices)
+        hard_segmentation_[index] = SegmentationBackground;
 }
 
 template <typename PointT> void
@@ -312,9 +311,8 @@ pcl::GrabCut<PointT>::initGraph ()
     if (n_link.nb_links > 0)
     {
       int point_index = (*indices_) [i_point];
-      std::vector<int>::const_iterator indices_it    = n_link.indices.begin ();
       std::vector<float>::const_iterator weights_it  = n_link.weights.begin ();
-      for (; indices_it != n_link.indices.end (); ++indices_it, ++weights_it)
+      for (auto indices_it = n_link.indices.cbegin (); indices_it != n_link.indices.cend (); ++indices_it, ++weights_it)
       {
         if ((*indices_it != point_index) && (*indices_it > -1))
         {
@@ -335,10 +333,9 @@ pcl::GrabCut<PointT>::computeNLinksNonOrganized ()
     if (n_link.nb_links > 0)
     {
       int point_index = (*indices_) [i_point];
-      std::vector<int>::const_iterator indices_it = n_link.indices.begin ();
-      std::vector<float>::const_iterator dists_it = n_link.dists.begin   ();
-      std::vector<float>::iterator weights_it     = n_link.weights.begin ();
-      for (; indices_it != n_link.indices.end (); ++indices_it, ++dists_it, ++weights_it)
+      auto dists_it = n_link.dists.cbegin ();
+      auto weights_it = n_link.weights.begin ();
+      for (auto indices_it = n_link.indices.cbegin (); indices_it != n_link.indices.cend (); ++indices_it, ++dists_it, ++weights_it)
       {
         if (*indices_it != point_index)
         {

@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_POLY_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_POLY_H_
+
+#pragma once
 
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/point_cloud.h>
@@ -95,7 +95,7 @@ namespace pcl
           */
         void 
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
-                                     pcl::Correspondences& remaining_correspondences);
+                                     pcl::Correspondences& remaining_correspondences) override;
 
         /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.
           * \param[in] cloud a cloud containing XYZ data
@@ -128,12 +128,12 @@ namespace pcl
         
         /** \brief See if this rejector requires source points */
         bool
-        requiresSourcePoints () const
+        requiresSourcePoints () const override
         { return (true); }
 
         /** \brief Blob method for setting the source cloud */
         void
-        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
         { 
           PointCloudSourcePtr cloud (new PointCloudSource);
           fromPCLPointCloud2 (*cloud2, *cloud);
@@ -142,12 +142,12 @@ namespace pcl
         
         /** \brief See if this rejector requires a target cloud */
         bool
-        requiresTargetPoints () const
+        requiresTargetPoints () const override
         { return (true); }
 
         /** \brief Method for setting the target cloud */
         void
-        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
         { 
           PointCloudTargetPtr cloud (new PointCloudTarget);
           fromPCLPointCloud2 (*cloud2, *cloud);
@@ -262,7 +262,7 @@ namespace pcl
           * \param[out] correspondences the set of resultant correspondences.
           */
         inline void 
-        applyRejection (pcl::Correspondences &correspondences)
+        applyRejection (pcl::Correspondences &correspondences) override
         {
           getRemainingCorrespondences (*input_correspondences_, correspondences);
         }
@@ -381,5 +381,3 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/correspondence_rejection_poly.hpp>
-
-#endif    // PCL_REGISTRATION_CORRESPONDENCE_REJECTION_POLY_H_

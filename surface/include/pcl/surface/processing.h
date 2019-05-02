@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_MESH_PROCESSING_H_
-#define PCL_MESH_PROCESSING_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
@@ -71,7 +70,7 @@ namespace pcl
       {};
       
       /** \brief Empty destructor */
-      virtual ~CloudSurfaceProcessing () {}
+      ~CloudSurfaceProcessing () {}
 
       /** \brief Process the input cloud and store the results
         * \param[out] output the cloud where the results will be stored
@@ -149,6 +148,3 @@ namespace pcl
 }
 
 #include "pcl/surface/impl/processing.hpp"
-
-#endif  /* PCL_MESH_PROCESSING_H_ */
-

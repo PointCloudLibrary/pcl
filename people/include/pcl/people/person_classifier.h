@@ -38,8 +38,7 @@
  * Author: Matteo Munaro
  */
  
-#ifndef PCL_PEOPLE_PERSON_CLASSIFIER_H_
-#define PCL_PEOPLE_PERSON_CLASSIFIER_H_
+#pragma once
 
 #include <pcl/people/person_cluster.h>
 #include <pcl/people/hog.h>
@@ -164,4 +163,3 @@ namespace pcl
   } /* namespace people */
 } /* namespace pcl */
 #include <pcl/people/impl/person_classifier.hpp>
-#endif /* PCL_PEOPLE_PERSON_CLASSIFIER_H_ */

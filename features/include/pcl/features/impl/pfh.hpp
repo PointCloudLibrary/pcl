@@ -133,9 +133,9 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
       // Copy into the histogram
       h_index = 0;
       h_p     = 1;
-      for (int d = 0; d < 3; ++d)
+      for (const int &d : f_index_)
       {
-        h_index += h_p * f_index_[d];
+        h_index += h_p * d;
         h_p     *= nr_split;
       }
       pfh_histogram[h_index] += hist_incr;
@@ -184,7 +184,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        for (int d = 0; d < pfh_histogram_.size (); ++d)
+        for (Eigen::Index d = 0; d < pfh_histogram_.size (); ++d)
           output.points[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
 
         output.is_dense = false;
@@ -195,7 +195,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
       computePointPFHSignature (*surface_, *normals_, nn_indices, nr_subdiv_, pfh_histogram_);
 
       // Copy into the resultant cloud
-      for (int d = 0; d < pfh_histogram_.size (); ++d)
+      for (Eigen::Index d = 0; d < pfh_histogram_.size (); ++d)
         output.points[idx].histogram[d] = pfh_histogram_[d];
     }
   }
@@ -207,7 +207,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        for (int d = 0; d < pfh_histogram_.size (); ++d)
+        for (Eigen::Index d = 0; d < pfh_histogram_.size (); ++d)
           output.points[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
 
         output.is_dense = false;
@@ -218,7 +218,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
       computePointPFHSignature (*surface_, *normals_, nn_indices, nr_subdiv_, pfh_histogram_);
 
       // Copy into the resultant cloud
-      for (int d = 0; d < pfh_histogram_.size (); ++d)
+      for (Eigen::Index d = 0; d < pfh_histogram_.size (); ++d)
         output.points[idx].histogram[d] = pfh_histogram_[d];
     }
   }

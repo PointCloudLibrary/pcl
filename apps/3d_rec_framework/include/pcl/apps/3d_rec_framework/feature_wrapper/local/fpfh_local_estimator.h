@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_FPFH_LOCAL_ESTIMATOR_H_
-#define REC_FRAMEWORK_FPFH_LOCAL_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/local_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
@@ -30,7 +29,7 @@ namespace pcl
 
       public:
         bool
-        estimate (PointInTPtr & in, PointInTPtr & processed, PointInTPtr & keypoints, FeatureTPtr & signatures)
+        estimate (PointInTPtr & in, PointInTPtr & processed, PointInTPtr & keypoints, FeatureTPtr & signatures) override
         {
 
           if (!normal_estimator_)
@@ -39,7 +38,7 @@ namespace pcl
             return false;
           }
 
-          if (keypoint_extractor_.size() == 0)
+          if (keypoint_extractor_.empty ())
           {
             PCL_ERROR("FPFHLocalEstimation :: This feature needs a keypoint extractor... please provide one\n");
             return false;
@@ -52,7 +51,7 @@ namespace pcl
           this->computeKeypoints(processed, keypoints, normals);
           std::cout << " " << normals->points.size() << " " << processed->points.size() << std::endl;
 
-          if (keypoints->points.size () == 0)
+          if (keypoints->points.empty ())
           {
             PCL_WARN("FPFHLocalEstimation :: No keypoints were found\n");
             return false;
@@ -61,7 +60,7 @@ namespace pcl
           assert (processed->points.size () == normals->points.size ());
 
           //compute signatures
-          typedef typename pcl::FPFHEstimation<PointInT, pcl::Normal, pcl::FPFHSignature33> FPFHEstimator;
+          typedef pcl::FPFHEstimation<PointInT, pcl::Normal, pcl::FPFHSignature33> FPFHEstimator;
           typename pcl::search::KdTree<PointInT>::Ptr tree (new pcl::search::KdTree<PointInT>);
 
           pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfhs (new pcl::PointCloud<pcl::FPFHSignature33>);
@@ -89,5 +88,3 @@ namespace pcl
       };
   }
 }
-
-#endif /* REC_FRAMEWORK_FPFH_LOCAL_ESTIMATOR_H_ */

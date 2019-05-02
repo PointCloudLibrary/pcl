@@ -5,10 +5,10 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_GLOBAL_RECOGNIZER_CVFH_H_
-#define REC_FRAMEWORK_GLOBAL_RECOGNIZER_CVFH_H_
+#pragma once
 
-#include <flann/flann.h>
+#include <flann/util/matrix.h>
+
 #include <pcl/common/common.h>
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/global/global_estimator.h>
@@ -95,7 +95,7 @@ namespace pcl
             else
             {
 
-              if (this->model.id_.compare (other.model.id_) == 0)
+              if (this->model.id_ == other.model.id_)
               {
                 //check view id
                 if ((this->view_id < other.view_id))
@@ -138,8 +138,9 @@ namespace pcl
         bool use_single_categories_;
 
         bool use_cache_;
-        std::map<std::pair<std::string, int>, Eigen::Matrix4f, std::less<std::pair<std::string, int> >, Eigen::aligned_allocator<std::pair<std::pair<
-            std::string, int>, Eigen::Matrix4f> > > poses_cache_;
+        std::map<std::pair<std::string, int>, Eigen::Matrix4f,
+                 std::less<std::pair<std::string, int> >,
+                 Eigen::aligned_allocator<std::pair<const std::pair<std::string, int>, Eigen::Matrix4f> > > poses_cache_;
         std::map<std::pair<std::string, int>, Eigen::Vector3f> centroids_cache_;
 
         std::vector<int> indices_;
@@ -168,7 +169,7 @@ namespace pcl
         }
 
         inline void
-        convertToFLANN (const std::vector<flann_model> &models, boost::shared_ptr<std::vector<int> > & indices, flann::Matrix<float> &data)
+        convertToFLANN (const std::vector<flann_model> &models, const boost::shared_ptr<std::vector<int> > & indices, flann::Matrix<float> &data)
         {
           data.rows = indices->size ();
           data.cols = models[0].descr.size (); // number of histogram bins
@@ -352,4 +353,3 @@ namespace pcl
       };
   }
 }
-#endif /* REC_FRAMEWORK_GLOBAL_PIPELINE_H_ */

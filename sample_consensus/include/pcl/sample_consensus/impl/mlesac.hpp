@@ -78,7 +78,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   int n_inliers_count = 0;
   size_t indices_size;
   unsigned skipped_count = 0;
-  // supress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
+  // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
   const unsigned max_skip = max_iterations_ * 10;
   
   // Iterate
@@ -147,8 +147,8 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
 
       n_inliers_count = 0;
       // Need to compute the number of inliers for this model to adapt k
-      for (size_t i = 0; i < distances.size (); ++i)
-        if (distances[i] <= 2 * sigma_)
+      for (const double &distance : distances)
+        if (distance <= 2 * sigma_)
           n_inliers_count++;
 
       // Compute the k parameter (k=log(z)/log(1-w^n))
@@ -207,7 +207,7 @@ template <typename PointT> double
 pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedianAbsoluteDeviation (
     const PointCloudConstPtr &cloud, 
     const boost::shared_ptr <std::vector<int> > &indices, 
-    double sigma)
+    double sigma) const
 {
   std::vector<double> distances (indices->size ());
 
@@ -241,7 +241,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::getMinMax (
     const PointCloudConstPtr &cloud, 
     const boost::shared_ptr <std::vector<int> > &indices, 
     Eigen::Vector4f &min_p, 
-    Eigen::Vector4f &max_p)
+    Eigen::Vector4f &max_p) const
 {
   min_p.setConstant (FLT_MAX);
   max_p.setConstant (-FLT_MAX);
@@ -264,7 +264,7 @@ template <typename PointT> void
 pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedian (
     const PointCloudConstPtr &cloud, 
     const boost::shared_ptr <std::vector<int> > &indices, 
-    Eigen::Vector4f &median)
+    Eigen::Vector4f &median) const
 {
   // Copy the values to vectors for faster sorting
   std::vector<float> x (indices->size ());

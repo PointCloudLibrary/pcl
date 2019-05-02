@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_H_
-#define PCL_GEOMETRY_H_
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header
@@ -160,6 +159,3 @@ namespace pcl
 
   }
 }
-
-/*@}*/
-#endif  //#ifndef PCL_GEOMETRY_H_

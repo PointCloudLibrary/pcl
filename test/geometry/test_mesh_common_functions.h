@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_TEST_GEOMETRY_TEST_MESH_COMMON_FUNCTIONS_H
-#define PCL_TEST_GEOMETRY_TEST_MESH_COMMON_FUNCTIONS_H
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -54,7 +53,7 @@ const unsigned int max_number_boundary_vertices = 100;
 
 /** \brief Check if the faces of the mesh are equal to the reference faces (defined by a vector of vertices). */
 template <class MeshT> bool
-hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> faces, const bool verbose = false)
+hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> &faces, const bool verbose = false)
 {
   typedef typename MeshT::VertexAroundFaceCirculator VAFC;
   typedef typename MeshT::VertexIndices              VertexIndices;
@@ -70,7 +69,7 @@ hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> f
   }
 
   VertexIndices vi;
-  for (unsigned int i=0; i<mesh.sizeFaces (); ++i)
+  for (size_t i = 0; i < mesh.sizeFaces (); ++i)
   {
     if (verbose) std::cerr << "Face " << std::setw (2) << i << ": ";
     VAFC       circ     = mesh.getVertexAroundFaceCirculator (FaceIndex (i));
@@ -96,7 +95,7 @@ hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> f
       return (false);
     }
     if (verbose) std::cerr << "\texpected: ";
-    for (unsigned int j=0; j<vi.size (); ++j)
+    for (size_t j = 0; j < vi.size (); ++j)
     {
       if (verbose) std::cerr << std::setw (2) << faces [i][j] << " ";
       if (vi [j] != faces [i][j])
@@ -115,7 +114,7 @@ hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> f
  *  \note This method assumes that the vertex data is of type 'int'.
  */
 template <class MeshT> bool
-hasFaces (const MeshT& mesh, const std::vector <std::vector <int> > faces, const bool verbose = false)
+hasFaces (const MeshT& mesh, const std::vector <std::vector <int> > &faces, const bool verbose = false)
 {
   typedef typename MeshT::VertexAroundFaceCirculator VAFC;
   typedef typename MeshT::FaceIndex                  FaceIndex;
@@ -132,7 +131,7 @@ hasFaces (const MeshT& mesh, const std::vector <std::vector <int> > faces, const
 
   const VertexDataCloud& vdc = mesh.getVertexDataCloud ();
   std::vector <int> vv;
-  for (unsigned int i=0; i<mesh.sizeFaces (); ++i)
+  for (size_t i = 0; i < mesh.sizeFaces (); ++i)
   {
     if (verbose) std::cerr << "Face " << std::setw (2) << i << ": ";
     VAFC       circ     = mesh.getVertexAroundFaceCirculator (FaceIndex (i));
@@ -158,7 +157,7 @@ hasFaces (const MeshT& mesh, const std::vector <std::vector <int> > faces, const
       return (false);
     }
     if (verbose) std::cerr << "\texpected: ";
-    for (unsigned int j=0; j<vv.size (); ++j)
+    for (size_t j=0; j<vv.size (); ++j)
     {
       if (verbose) std::cerr << std::setw (2) << faces [i][j] << " ";
       if (vv [j] != faces [i][j])
@@ -294,7 +293,7 @@ isCircularPermutation (const ContainerT& expected, const ContainerT& actual, con
 
 /** \brief Check if both the inner and outer input vector are a circular permutation. */
 template <class ContainerT> bool
-isCircularPermutationVec (const std::vector <ContainerT> expected, const std::vector <ContainerT> actual, const bool verbose = false)
+isCircularPermutationVec (const std::vector <ContainerT> &expected, const std::vector <ContainerT> &actual, const bool verbose = false)
 {
   const unsigned int n = static_cast<unsigned int> (expected.size ());
   EXPECT_EQ (n, actual.size ());
@@ -371,5 +370,3 @@ checkHalfEdge (const MeshT&                        mesh,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif // PCL_TEST_GEOMETRY_TEST_MESH_COMMON_FUNCTIONS_H

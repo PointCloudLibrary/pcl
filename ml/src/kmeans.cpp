@@ -66,11 +66,9 @@ pcl::Kmeans::~Kmeans ()
 void 
 pcl::Kmeans::initialClusterPoints()
 {
-  ClusterId i = 0;
-  unsigned int dim;
-  for (; i < num_clusters_; i++){
+  for (ClusterId i = 0; i < num_clusters_; i++){
     Point point;   // each centroid is a point
-    for (dim=0; dim<num_dimensions_; dim++) 
+    for (unsigned int dim=0; dim<num_dimensions_; dim++) 
       point.push_back(0.0);
     SetPoints set_of_points;
 
@@ -98,25 +96,23 @@ pcl::Kmeans::initialClusterPoints()
 void 
 pcl::Kmeans::computeCentroids()
 {    
-  unsigned int i;
   ClusterId cid = 0;
-  PointId num_points_in_cluster;
   // For each centroid
   BOOST_FOREACH(Centroids::value_type& centroid, centroids_)
   {
-    num_points_in_cluster = 0;
+    PointId num_points_in_cluster = 0;
 
-    // For earch PointId in this set
+    // For each PointId in this set
     BOOST_FOREACH(SetPoints::value_type pid, clusters_to_points_[cid])
     {
       Point p = data_[pid];
       //Point p = ps__.getPoint(pid);
-      for (i=0; i<num_dimensions_; i++)
-        centroid[i] += p[i];	
+      for (unsigned int i=0; i<num_dimensions_; i++)
+        centroid[i] += p[i];
       num_points_in_cluster++;
     }
     // if no point in the clusters, this goes to inf (correct!)
-    for (i=0; i<num_dimensions_; i++)
+    for (unsigned int i=0; i<num_dimensions_; i++)
     {
       centroid[i] /= static_cast<float> (num_points_in_cluster);
       //std::cout << centroid[i] << " ";
@@ -132,9 +128,6 @@ void
 pcl::Kmeans::kMeans ()
 {
   bool not_converged = true;
-  bool move;
-  unsigned int num_iterations = 0;
-  PointId pid;
   ClusterId cid, to_cluster;
   float d, min;
 
@@ -149,14 +142,14 @@ pcl::Kmeans::kMeans ()
     computeCentroids();
 
     // for each point
-    for (pid=0; pid<num_points_; pid++)
+    for (PointId pid=0; pid<num_points_; pid++)
     {
       // distance from current cluster
       min = distance(centroids_[points_to_clusters_[pid]], data_[pid]);
 
       // foreach centroid
       cid = 0; 
-      move = false;
+      bool move = false;
       BOOST_FOREACH(Centroids::value_type c, centroids_)
       {
         d = distance(c, data_[pid]);
@@ -181,7 +174,6 @@ pcl::Kmeans::kMeans ()
         clusters_to_points_[to_cluster].insert(pid);
       }
     }
-    num_iterations++;
   } // end while
 }
 
@@ -258,7 +250,7 @@ pcl::Kmeans::cluster (std::vector<PointIndices> &clusters)
     
     /*    
   }
-  // if cluster field name is set, check if field name is valied
+  // if cluster field name is set, check if field name is valid
   else
   {
     user_index = pcl::getFieldIndex (point, cluster_field_name_.c_str (), fields);

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_GP3_H_
-#define PCL_GP3_H_
+#pragma once
 
 // PCL includes
 #include <pcl/surface/reconstruction.h>
@@ -46,7 +45,6 @@
 
 #include <pcl/conversions.h>
 #include <pcl/kdtree/kdtree.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/PolygonMesh.h>
 
 #include <fstream>
@@ -60,8 +58,8 @@ namespace pcl
     * when taking into account the segment between the points S1 and S2
     * \param X 2D coordinate of the point
     * \param S1 2D coordinate of the segment's first point
-    * \param S2 2D coordinate of the segment's secont point
-    * \param R 2D coorddinate of the reference point (defaults to 0,0)
+    * \param S2 2D coordinate of the segment's second point
+    * \param R 2D coordinate of the reference point (defaults to 0,0)
     * \ingroup surface
     */
   inline bool 
@@ -145,8 +143,8 @@ namespace pcl
       using MeshConstruction<PointInT>::input_;
       using MeshConstruction<PointInT>::indices_;
 
-      typedef typename pcl::KdTree<PointInT> KdTree;
-      typedef typename pcl::KdTree<PointInT>::Ptr KdTreePtr;
+      typedef pcl::KdTree<PointInT> KdTree;
+      typedef typename KdTree::Ptr KdTreePtr;
 
       typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
@@ -416,20 +414,20 @@ namespace pcl
       /** \brief 2D coordinates of the second fringe neighbor of the next point **/
       Eigen::Vector2f uvn_next_sfn_;
 
-      /** \brief Temporary variable to store 3 coordiantes **/
+      /** \brief Temporary variable to store 3 coordinates **/
       Eigen::Vector3f tmp_;
 
       /** \brief The actual surface reconstruction method.
         * \param[out] output the resultant polygonal mesh
         */
       void 
-      performReconstruction (pcl::PolygonMesh &output);
+      performReconstruction (pcl::PolygonMesh &output) override;
 
       /** \brief The actual surface reconstruction method.
         * \param[out] polygons the resultant polygons, as a set of vertices. The Vertices structure contains an array of point indices.
         */
       void 
-      performReconstruction (std::vector<pcl::Vertices> &polygons);
+      performReconstruction (std::vector<pcl::Vertices> &polygons) override;
 
       /** \brief The actual surface reconstruction method.
         * \param[out] polygons the resultant polygons, as a set of vertices. The Vertices structure contains an array of point indices.
@@ -439,7 +437,7 @@ namespace pcl
 
       /** \brief Class get name method. */
       std::string 
-      getClassName () const { return ("GreedyProjectionTriangulation"); }
+      getClassName () const override { return ("GreedyProjectionTriangulation"); }
 
       /** \brief Forms a new triangle by connecting the current neighbor to the query point 
         * and the previous neighbor
@@ -543,6 +541,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/gp3.hpp>
 #endif
-
-#endif  //#ifndef PCL_GP3_H_
-

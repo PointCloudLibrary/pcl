@@ -5,8 +5,7 @@
  * Author : Cedric Cagniart 
  * ************************************************* */
 
-#ifndef PCL_GPU_PEOPLE_TREE_TRAIN_H_
-#define PCL_GPU_PEOPLE_TREE_TRAIN_H_
+#pragma once
 
 #include "tree.h"
 #include <boost/array.hpp>
@@ -227,4 +226,3 @@ namespace pcl
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl
-#endif

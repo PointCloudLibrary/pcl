@@ -358,7 +358,7 @@ typedef Ncv32u NCVStatus;
 
 typedef struct _NcvTimer *NcvTimer;
 
-NCV_EXPORTS NcvTimer ncvStartTimer(void);
+NCV_EXPORTS NcvTimer ncvStartTimer();
 
 NCV_EXPORTS double ncvEndQueryTimerUs(NcvTimer t);
 
@@ -423,12 +423,12 @@ public:
     virtual NCVStatus alloc(NCVMemSegment &seg, size_t size) = 0;
     virtual NCVStatus dealloc(NCVMemSegment &seg) = 0;
 
-    virtual NcvBool isInitialized(void) const = 0;
-    virtual NcvBool isCounting(void) const = 0;
+    virtual NcvBool isInitialized() const = 0;
+    virtual NcvBool isCounting() const = 0;
     
-    virtual NCVMemoryType memType(void) const = 0;
-    virtual Ncv32u alignment(void) const = 0;
-    virtual size_t maxSize(void) const = 0;
+    virtual NCVMemoryType memType() const = 0;
+    virtual Ncv32u alignment() const = 0;
+    virtual size_t maxSize() const = 0;
 };
 
 inline INCVMemAllocator::~INCVMemAllocator() {}
@@ -445,18 +445,18 @@ class NCV_EXPORTS NCVMemStackAllocator : public INCVMemAllocator
 public:
 
     explicit NCVMemStackAllocator(Ncv32u alignment);
-    NCVMemStackAllocator(NCVMemoryType memT, size_t capacity, Ncv32u alignment, void *reusePtr=NULL);
+    NCVMemStackAllocator(NCVMemoryType memT, size_t capacity, Ncv32u alignment, void *reusePtr=nullptr);
     virtual ~NCVMemStackAllocator();
 
     virtual NCVStatus alloc(NCVMemSegment &seg, size_t size);
     virtual NCVStatus dealloc(NCVMemSegment &seg);
 
-    virtual NcvBool isInitialized(void) const;
-    virtual NcvBool isCounting(void) const;
+    virtual NcvBool isInitialized() const;
+    virtual NcvBool isCounting() const;
 
-    virtual NCVMemoryType memType(void) const;
-    virtual Ncv32u alignment(void) const;
-    virtual size_t maxSize(void) const;
+    virtual NCVMemoryType memType() const;
+    virtual Ncv32u alignment() const;
+    virtual size_t maxSize() const;
 
 private:
 
@@ -484,12 +484,12 @@ public:
     virtual NCVStatus alloc(NCVMemSegment &seg, size_t size);
     virtual NCVStatus dealloc(NCVMemSegment &seg);
 
-    virtual NcvBool isInitialized(void) const;
-    virtual NcvBool isCounting(void) const;
+    virtual NcvBool isInitialized() const;
+    virtual NcvBool isCounting() const;
 
-    virtual NCVMemoryType memType(void) const;
-    virtual Ncv32u alignment(void) const;
-    virtual size_t maxSize(void) const;
+    virtual NCVMemoryType memType() const;
+    virtual Ncv32u alignment() const;
+    virtual size_t maxSize() const;
 
 private:
 
@@ -522,7 +522,7 @@ NCV_EXPORTS NCVStatus memSegCopyHelper2D(void *dst, Ncv32u dstPitch, NCVMemoryTy
 template <class T>
 class NCVVector
 {
-    NCVVector(const NCVVector &);
+    NCVVector(const NCVVector &) = delete;
 
 public:
 
@@ -535,7 +535,7 @@ public:
 
     void clear()
     {
-        _ptr = NULL;
+        _ptr = nullptr;
         _length = 0;
         _memtype = NCVMemoryTypeNone;
     }
@@ -553,8 +553,8 @@ public:
                 this->_length * sizeof(T) >= howMuch &&
                 howMuch > 0, NCV_MEM_COPY_ERROR);
         }
-        ncvAssertReturn((this->_ptr != NULL || this->_memtype == NCVMemoryTypeNone) && 
-                        (dst._ptr != NULL || dst._memtype == NCVMemoryTypeNone), NCV_NULL_PTR);
+        ncvAssertReturn((this->_ptr != nullptr || this->_memtype == NCVMemoryTypeNone) && 
+                        (dst._ptr != nullptr || dst._memtype == NCVMemoryTypeNone), NCV_NULL_PTR);
 
         NCVStatus ncvStat = NCV_SUCCESS;
         if (this->_memtype != NCVMemoryTypeNone)
@@ -585,9 +585,9 @@ protected:
 template <class T>
 class NCVVectorAlloc : public NCVVector<T>
 {
-    NCVVectorAlloc();
-    NCVVectorAlloc(const NCVVectorAlloc &);
-    NCVVectorAlloc& operator=(const NCVVectorAlloc<T>&);	
+    NCVVectorAlloc() = delete;
+    NCVVectorAlloc(const NCVVectorAlloc &) = delete;
+    NCVVectorAlloc& operator=(const NCVVectorAlloc<T>&) = delete;	
 
 public:
 
@@ -620,7 +620,7 @@ public:
 
     NcvBool isMemAllocated() const
     {
-        return (this->allocatedMem.begin.ptr != NULL) || (this->allocator.isCounting());
+        return (this->allocatedMem.begin.ptr != nullptr) || (this->allocator.isCounting());
     }
 
     Ncv32u getAllocatorsAlignment() const
@@ -645,8 +645,8 @@ private:
 template <class T>
 class NCVVectorReuse : public NCVVector<T>
 {
-    NCVVectorReuse();
-    NCVVectorReuse(const NCVVectorReuse &);
+    NCVVectorReuse() = delete;
+    NCVVectorReuse(const NCVVectorReuse &) = delete;
 
 public:
 
@@ -694,7 +694,7 @@ private:
 template <class T>
 class NCVMatrix
 {
-    NCVMatrix(const NCVMatrix &);
+    NCVMatrix(const NCVMatrix &) = delete;
 
 public:
 
@@ -707,7 +707,7 @@ public:
 
     void clear()
     {
-        _ptr = NULL;
+        _ptr = nullptr;
         _pitch = 0;
         _width = 0;
         _height = 0;
@@ -734,8 +734,8 @@ public:
                             this->_pitch * this->_height >= howMuch &&
                             howMuch > 0, NCV_MEM_COPY_ERROR);
         }
-        ncvAssertReturn((this->_ptr != NULL || this->_memtype == NCVMemoryTypeNone) && 
-                        (dst._ptr != NULL || dst._memtype == NCVMemoryTypeNone), NCV_NULL_PTR);
+        ncvAssertReturn((this->_ptr != nullptr || this->_memtype == NCVMemoryTypeNone) && 
+                        (dst._ptr != nullptr || dst._memtype == NCVMemoryTypeNone), NCV_NULL_PTR);
 
         NCVStatus ncvStat = NCV_SUCCESS;
         if (this->_memtype != NCVMemoryTypeNone)
@@ -800,9 +800,9 @@ protected:
 template <class T>
 class NCVMatrixAlloc : public NCVMatrix<T>
 {
-    NCVMatrixAlloc();
-    NCVMatrixAlloc(const NCVMatrixAlloc &);
-    NCVMatrixAlloc& operator=(const NCVMatrixAlloc &);
+    NCVMatrixAlloc() = delete;
+    NCVMatrixAlloc(const NCVMatrixAlloc &) = delete;
+    NCVMatrixAlloc& operator=(const NCVMatrixAlloc &) = delete;
 public:
 
     NCVMatrixAlloc(INCVMemAllocator &allocator, Ncv32u width, Ncv32u height, Ncv32u pitch=0)
@@ -849,7 +849,7 @@ public:
 
     NcvBool isMemAllocated() const
     {
-        return (this->allocatedMem.begin.ptr != NULL) || (this->allocator.isCounting());
+        return (this->allocatedMem.begin.ptr != nullptr) || (this->allocator.isCounting());
     }
 
     Ncv32u getAllocatorsAlignment() const
@@ -875,8 +875,8 @@ private:
 template <class T>
 class NCVMatrixReuse : public NCVMatrix<T>
 {
-    NCVMatrixReuse();
-    NCVMatrixReuse(const NCVMatrixReuse &);
+    NCVMatrixReuse() = delete;
+    NCVMatrixReuse(const NCVMatrixReuse &) = delete;
 
 public:
 

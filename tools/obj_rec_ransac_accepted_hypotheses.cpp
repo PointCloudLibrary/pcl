@@ -61,9 +61,11 @@
 #include <vtkMatrix4x4.h>
 #include <algorithm>
 #include <cstdio>
+#include <thread>
 #include <vector>
 
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace io;
 using namespace console;
@@ -71,7 +73,7 @@ using namespace recognition;
 using namespace visualization;
 
 bool
-vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_dst = NULL);
+vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_dst = nullptr);
 
 //#define _SHOW_SCENE_POINTS_
 #define _SHOW_OCTREE_POINTS_
@@ -158,7 +160,7 @@ vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, Poin
 //===============================================================================================================================
 
 void
-showHypothesisAsCoordinateFrame (Hypothesis& hypo, CallbackParameters* parameters, string frame_name)
+showHypothesisAsCoordinateFrame (Hypothesis& hypo, CallbackParameters* parameters, const string &frame_name)
 {
   float rot_col[3], x_dir[3], y_dir[3], z_dir[3], origin[3], scale = 2.0f*parameters->objrec_.getPairWidth ();
   pcl::ModelCoefficients coeffs; coeffs.values.resize (6);
@@ -209,7 +211,7 @@ showHypothesisAsCoordinateFrame (Hypothesis& hypo, CallbackParameters* parameter
 bool
 compareHypotheses (const Hypothesis& a, const Hypothesis& b)
 {
-  return (static_cast<bool> (a.match_confidence_ > b.match_confidence_));
+  return a.match_confidence_ > b.match_confidence_;
 }
 
 //===============================================================================================================================
@@ -237,12 +239,12 @@ update (CallbackParameters* params)
 
   // Clear the visualizer
   vtkRenderer *renderer = params->viz_.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
-  for ( list<vtkActor*>::iterator it = params->actors_.begin () ; it != params->actors_.end () ; ++it )
-    renderer->RemoveActor (*it);
+  for (const auto &actor : params->actors_)
+    renderer->RemoveActor (actor);
   params->actors_.clear ();
 
-  for ( list<vtkActor*>::iterator it = params->model_actors_.begin () ; it != params->model_actors_.end () ; ++it )
-    renderer->RemoveActor (*it);
+  for (const auto &model_actor : params->model_actors_)
+    renderer->RemoveActor (model_actor);
   params->model_actors_.clear ();
 
   params->viz_.removeAllShapes ();
@@ -324,21 +326,13 @@ update (CallbackParameters* params)
     // Setup the transformator
     vtkSmartPointer<vtkTransformPolyDataFilter> vtk_transformator = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
     vtk_transformator->SetTransform (vtk_transform);
-#if VTK_MAJOR_VERSION < 6
-    vtk_transformator->SetInput (vtk_model);
-#else
     vtk_transformator->SetInputData (vtk_model);
-#endif
     vtk_transformator->Update ();
 
     // Visualize
     vtkSmartPointer<vtkActor> vtk_actor = vtkSmartPointer<vtkActor>::New();
     vtkSmartPointer<vtkPolyDataMapper> vtk_mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
-#if VTK_MAJOR_VERSION < 6
-    vtk_mapper->SetInput(vtk_transformator->GetOutput ());
-#else
     vtk_mapper->SetInputData (vtk_transformator->GetOutput ());
-#endif
     vtk_actor->SetMapper(vtk_mapper);
     // Set the appearance & add to the renderer
     vtk_actor->GetProperty ()->SetColor (0.6, 0.7, 0.9);
@@ -365,9 +359,9 @@ update (CallbackParameters* params)
   axis(2,0) = static_cast<float> (aux::getRandomInteger (-100, 100));
   // Normalize the axis
   float len = std::sqrt (axis(0,0)*axis(0,0) + axis(1,0)*axis(1,0) + axis(2,0)*axis(2,0));
-  axis(0,0) = axis(0,0)/len;
-  axis(1,0) = axis(1,0)/len;
-  axis(2,0) = axis(2,0)/len;
+  axis(0,0) /=len;
+  axis(1,0) /=len;
+  axis(2,0) /=len;
 
   cout << "Input angle = " << angle << endl;
   cout << "Input axis = \n" << axis << endl;
@@ -465,7 +459,7 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle, int num_hy
   {
     //main loop of the visualizer
     viz.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
 
   vtk_model->Delete ();

@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_PCA_H
-#define PCL_PCA_H
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
@@ -47,8 +46,10 @@ namespace pcl
   /** Principal Component analysis (PCA) class.\n
     *  Principal components are extracted by singular values decomposition on the 
     * covariance matrix of the centered input cloud. Available data after pca computation 
-    * are the mean of the input data, the eigenvalues (in descending order) and 
-    * corresponding eigenvectors.\n
+    * are:\n
+    * - The Mean of the input data\n
+    * - The Eigenvectors: Ordered set of vectors representing the resultant principal components and the eigenspace cartesian basis (right-handed coordinate system).\n
+    * - The Eigenvalues: Eigenvectors correspondent loadings ordered in descending order.\n\n
     * Other methods allow projection in the eigenspace, reconstruction from eigenspace and 
     *  update of the eigenspace with a new datum (according Matej Artec, Matjaz Jogan and 
     * Ales Leonardis: "Incremental PCA for On-line Visual Learning and Recognition").
@@ -124,7 +125,7 @@ namespace pcl
         * \param cloud the const boost shared pointer to a PointCloud message
         */
       inline void 
-      setInputCloud (const PointCloudConstPtr &cloud) 
+      setInputCloud (const PointCloudConstPtr &cloud) override 
       { 
         Base::setInputCloud (cloud);
         compute_done_ = false;
@@ -133,8 +134,8 @@ namespace pcl
       /** \brief Provide a pointer to the vector of indices that represents the input data.
         * \param[in] indices a pointer to the indices that represent the input data.
         */
-      virtual void
-      setIndices (const IndicesPtr &indices)
+      void
+      setIndices (const IndicesPtr &indices) override
       {
         Base::setIndices (indices);
         compute_done_ = false;
@@ -143,8 +144,8 @@ namespace pcl
       /** \brief Provide a pointer to the vector of indices that represents the input data.
         * \param[in] indices a pointer to the indices that represent the input data.
         */
-      virtual void
-      setIndices (const IndicesConstPtr &indices)
+      void
+      setIndices (const IndicesConstPtr &indices) override
       {
         Base::setIndices (indices);
         compute_done_ = false;
@@ -153,8 +154,8 @@ namespace pcl
       /** \brief Provide a pointer to the vector of indices that represents the input data.
         * \param[in] indices a pointer to the indices that represent the input data.
         */
-      virtual void
-      setIndices (const PointIndicesConstPtr &indices)
+      void
+      setIndices (const PointIndicesConstPtr &indices) override
       {
         Base::setIndices (indices);
         compute_done_ = false;
@@ -168,8 +169,8 @@ namespace pcl
         * \param[in] nb_rows the number of rows to be considered row_start included
         * \param[in] nb_cols the number of columns to be considered col_start included
         */
-      virtual void
-      setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols)
+      void
+      setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols) override
       {
         Base::setIndices (row_start, col_start, nb_rows, nb_cols);
         compute_done_ = false;
@@ -190,6 +191,7 @@ namespace pcl
       }
 
       /** Eigen Vectors accessor
+        * \return Column ordered eigenvectors, representing the eigenspace cartesian basis (right-handed coordinate system).        
         * \throw InitFailedException
         */
       inline Eigen::Matrix3f& 
@@ -270,7 +272,6 @@ namespace pcl
         */
       inline void
       reconstruct (const PointCloud& projection, PointCloud& input);
-
     private:
       inline bool
       initCompute ();
@@ -285,6 +286,3 @@ namespace pcl
 } // namespace pcl
 
 #include <pcl/common/impl/pca.hpp>
-
-#endif // PCL_PCA_H
-

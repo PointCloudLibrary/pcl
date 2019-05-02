@@ -121,9 +121,9 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
   {
     if (!input_->is_dense)
       // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[*it].x) ||
-          !pcl_isfinite (input_->points[*it].y) ||
-          !pcl_isfinite (input_->points[*it].z))
+      if (!std::isfinite (input_->points[*it].x) ||
+          !std::isfinite (input_->points[*it].y) ||
+          !std::isfinite (input_->points[*it].z))
         continue;
 
     int ijk0 = static_cast<int> (floor (input_->points[*it].x * inverse_resolution_) - static_cast<float> (min_b[0]));
@@ -131,7 +131,7 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
 
     // Compute the grid cell index
     int idx = ijk0 * divb_mul[0] + ijk1 * divb_mul[1];
-    index_vector.push_back (point_index_idx (static_cast<unsigned int> (idx), *it));
+    index_vector.emplace_back(static_cast<unsigned int> (idx), *it);
   }
   
   // Second pass: sort the index_vector vector using value representing target cell as index
@@ -156,7 +156,7 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
     while (i < index_vector.size () && index_vector[i].idx == index_vector[index].idx)
       ++i;
     ++total;
-    first_and_last_indices_vector.push_back (std::pair<unsigned int, unsigned int> (index, i));
+    first_and_last_indices_vector.emplace_back(index, i);
     index = i;
   }
 
@@ -165,10 +165,10 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
 
   index = 0;
 
-  for (unsigned int cp = 0; cp < first_and_last_indices_vector.size (); ++cp)
+  for (const auto &cp : first_and_last_indices_vector)
   {
-    unsigned int first_index = first_and_last_indices_vector[cp].first;
-    unsigned int last_index = first_and_last_indices_vector[cp].second;
+    unsigned int first_index = cp.first;
+    unsigned int last_index = cp.second;
     unsigned int min_index = index_vector[first_index].cloud_point_index;
     float min_z = input_->points[index_vector[first_index].cloud_point_index].z;
 

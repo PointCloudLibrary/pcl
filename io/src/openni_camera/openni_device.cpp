@@ -281,7 +281,7 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context)
     available_image_modes_ (),
     available_depth_modes_ (),
     context_ (context),
-    device_node_info_ (0),
+    device_node_info_ (nullptr),
     depth_generator_ (),
     image_generator_ (),
     ir_generator_ (),
@@ -418,32 +418,25 @@ void openni_wrapper::OpenNIDevice::InitShiftToDepthConversion ()
   {
     // Calculate shift conversion table
 
-    pcl::uint32_t nIndex = 0;
-    pcl::int32_t nShiftValue = 0;
-    double dFixedRefX = 0;
-    double dMetric = 0;
-    double dDepth = 0;
-    double dPlanePixelSize = shift_conversion_parameters_.zero_plane_pixel_size_;
-    double dPlaneDsr = shift_conversion_parameters_.zero_plane_distance_;
-    double dPlaneDcl = shift_conversion_parameters_.emitter_dcmos_distace_;
-    pcl::int32_t nConstShift = shift_conversion_parameters_.param_coeff_ *
-        shift_conversion_parameters_.const_shift_;
-
-    dPlanePixelSize *= shift_conversion_parameters_.pixel_size_factor_;
-    nConstShift /= shift_conversion_parameters_.pixel_size_factor_;
+    const double dPlanePixelSize = shift_conversion_parameters_.zero_plane_pixel_size_ * shift_conversion_parameters_.pixel_size_factor_;
+    const double dPlaneDsr = shift_conversion_parameters_.zero_plane_distance_;
+    const double dPlaneDcl = shift_conversion_parameters_.emitter_dcmos_distace_;
+    const pcl::int32_t nConstShift = (shift_conversion_parameters_.param_coeff_ *
+                                      shift_conversion_parameters_.const_shift_) /
+                                      shift_conversion_parameters_.pixel_size_factor_;
 
     shift_to_depth_table_.resize(shift_conversion_parameters_.device_max_shift_+1);
 
-    for (nIndex = 1; nIndex < shift_conversion_parameters_.device_max_shift_; nIndex++)
+    for (pcl::uint32_t nIndex = 1; nIndex < shift_conversion_parameters_.device_max_shift_; nIndex++)
     {
-      nShiftValue = (pcl::int32_t)nIndex;
+      pcl::int32_t nShiftValue = (pcl::int32_t)nIndex;
 
-      dFixedRefX = (double) (nShiftValue - nConstShift) /
-                   (double) shift_conversion_parameters_.param_coeff_;
+      double dFixedRefX = (double) (nShiftValue - nConstShift) /
+                          (double) shift_conversion_parameters_.param_coeff_;
       dFixedRefX -= 0.375;
-      dMetric = dFixedRefX * dPlanePixelSize;
-      dDepth = shift_conversion_parameters_.shift_scale_ *
-               ((dMetric * dPlaneDsr / (dPlaneDcl - dMetric)) + dPlaneDsr);
+      double dMetric = dFixedRefX * dPlanePixelSize;
+      double dDepth = shift_conversion_parameters_.shift_scale_ *
+                      ((dMetric * dPlaneDsr / (dPlaneDcl - dMetric)) + dPlaneDsr);
 
       // check cut-offs
       if ((dDepth > shift_conversion_parameters_.min_depth_) &&
@@ -880,9 +873,9 @@ openni_wrapper::OpenNIDevice::ImageDataThreadFunction ()
     image_lock.unlock ();
     
     boost::shared_ptr<Image> image = getCurrentImage (image_data);
-    for (std::map< OpenNIDevice::CallbackHandle, ActualImageCallbackFunction >::iterator callbackIt = image_callback_.begin (); callbackIt != image_callback_.end (); ++callbackIt)
+    for (const auto &callback : image_callback_)
     {
-      callbackIt->second.operator()(image);
+      callback.second.operator()(image);
     }
   }
 }
@@ -910,10 +903,9 @@ openni_wrapper::OpenNIDevice::DepthDataThreadFunction ()
 
     boost::shared_ptr<DepthImage> depth_image ( new DepthImage (depth_data, baseline_, getDepthFocalLength (), shadow_value_, no_sample_value_) );
 
-    for (std::map< OpenNIDevice::CallbackHandle, ActualDepthImageCallbackFunction >::iterator callbackIt = depth_callback_.begin ();
-         callbackIt != depth_callback_.end (); ++callbackIt)
+    for (const auto &callback : depth_callback_)
     {
-      callbackIt->second.operator()(depth_image);
+      callback.second.operator()(depth_image);
     }
   }
 }
@@ -941,10 +933,9 @@ openni_wrapper::OpenNIDevice::IRDataThreadFunction ()
 
     boost::shared_ptr<IRImage> ir_image ( new IRImage (ir_data) );
 
-    for (std::map< OpenNIDevice::CallbackHandle, ActualIRImageCallbackFunction >::iterator callbackIt = ir_callback_.begin ();
-         callbackIt != ir_callback_.end (); ++callbackIt)
+    for (const auto &callback : ir_callback_)
     {
-      callbackIt->second.operator()(ir_image);
+      callback.second.operator()(ir_image);
     }
   }
 }
@@ -1124,18 +1115,18 @@ openni_wrapper::OpenNIDevice::findCompatibleImageMode (const XnMapOutputMode& ou
   else
   {
     bool found = false;
-    for (std::vector<XnMapOutputMode>::const_iterator modeIt = available_image_modes_.begin (); modeIt != available_image_modes_.end (); ++modeIt)
+    for (const auto &available_image_mode : available_image_modes_)
     {
-      if (modeIt->nFPS == output_mode.nFPS && isImageResizeSupported (modeIt->nXRes, modeIt->nYRes, output_mode.nXRes, output_mode.nYRes))
+      if (available_image_mode.nFPS == output_mode.nFPS && isImageResizeSupported (available_image_mode.nXRes, available_image_mode.nYRes, output_mode.nXRes, output_mode.nYRes))
       {
         if (found)
         { // check whether the new mode is better -> smaller than the current one.
-          if (mode.nXRes * mode.nYRes > modeIt->nXRes * modeIt->nYRes )
-            mode = *modeIt;
+          if (mode.nXRes * mode.nYRes > available_image_mode.nXRes * available_image_mode.nYRes )
+            mode = available_image_mode;
         }
         else
         {
-          mode = *modeIt;
+          mode = available_image_mode;
           found = true;
         }
       }
@@ -1156,18 +1147,18 @@ openni_wrapper::OpenNIDevice::findCompatibleDepthMode (const XnMapOutputMode& ou
   else
   {
     bool found = false;
-    for (std::vector<XnMapOutputMode>::const_iterator modeIt = available_depth_modes_.begin (); modeIt != available_depth_modes_.end (); ++modeIt)
+    for (const auto &available_depth_mode : available_depth_modes_)
     {
-      if (modeIt->nFPS == output_mode.nFPS && isImageResizeSupported (modeIt->nXRes, modeIt->nYRes, output_mode.nXRes, output_mode.nYRes))
+      if (available_depth_mode.nFPS == output_mode.nFPS && isImageResizeSupported (available_depth_mode.nXRes, available_depth_mode.nYRes, output_mode.nXRes, output_mode.nYRes))
       {
         if (found)
         { // check whether the new mode is better -> smaller than the current one.
-          if (mode.nXRes * mode.nYRes > modeIt->nXRes * modeIt->nYRes )
-            mode = *modeIt;
+          if (mode.nXRes * mode.nYRes > available_depth_mode.nXRes * available_depth_mode.nYRes )
+            mode = available_depth_mode;
         }
         else
         {
-          mode = *modeIt;
+          mode = available_depth_mode;
           found = true;
         }
       }
@@ -1180,9 +1171,9 @@ openni_wrapper::OpenNIDevice::findCompatibleDepthMode (const XnMapOutputMode& ou
 bool 
 openni_wrapper::OpenNIDevice::isImageModeSupported (const XnMapOutputMode& output_mode) const throw ()
 {
-  for (std::vector<XnMapOutputMode>::const_iterator modeIt = available_image_modes_.begin (); modeIt != available_image_modes_.end (); ++modeIt)
+  for (const auto &available_image_mode : available_image_modes_)
   {
-    if (modeIt->nFPS == output_mode.nFPS && modeIt->nXRes == output_mode.nXRes && modeIt->nYRes == output_mode.nYRes)
+    if (available_image_mode.nFPS == output_mode.nFPS && available_image_mode.nXRes == output_mode.nXRes && available_image_mode.nYRes == output_mode.nYRes)
       return (true);
   }
   return (false);
@@ -1192,9 +1183,9 @@ openni_wrapper::OpenNIDevice::isImageModeSupported (const XnMapOutputMode& outpu
 bool 
 openni_wrapper::OpenNIDevice::isDepthModeSupported (const XnMapOutputMode& output_mode) const throw ()
 {
-  for (std::vector<XnMapOutputMode>::const_iterator modeIt = available_depth_modes_.begin (); modeIt != available_depth_modes_.end (); ++modeIt)
+  for (const auto &available_depth_mode : available_depth_modes_)
   {
-    if (modeIt->nFPS == output_mode.nFPS && modeIt->nXRes == output_mode.nXRes && modeIt->nYRes == output_mode.nYRes)
+    if (available_depth_mode.nFPS == output_mode.nFPS && available_depth_mode.nXRes == output_mode.nXRes && available_depth_mode.nYRes == output_mode.nYRes)
       return (true);
   }
   return (false);

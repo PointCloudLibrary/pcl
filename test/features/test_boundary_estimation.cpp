@@ -76,10 +76,10 @@ TEST (PCL, BoundaryEstimation)
   EXPECT_EQ (b.getInputNormals (), normals);
 
   // getCoordinateSystemOnPlane
-  for (size_t i = 0; i < normals->points.size (); ++i)
+  for (const auto &point : normals->points)
   {
-    b.getCoordinateSystemOnPlane (normals->points[i], u, v);
-    Vector4fMap n4uv = normals->points[i].getNormalVector4fMap ();
+    b.getCoordinateSystemOnPlane (point, u, v);
+    Vector4fMapConst n4uv = point.getNormalVector4fMap ();
     EXPECT_NEAR (n4uv.dot(u), 0, 1e-4);
     EXPECT_NEAR (n4uv.dot(v), 0, 1e-4);
     EXPECT_NEAR (u.dot(v), 0, 1e-4);

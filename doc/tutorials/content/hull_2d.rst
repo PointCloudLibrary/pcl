@@ -35,9 +35,9 @@ The explanation
 In the following lines of code, a segmentation object is created and some
 parameters are set.  We use the SACMODEL_PLANE to segment this PointCloud, and
 the method used to find this model is SAC_RANSAC.  The actual segmentation
-takes place when `seg.segment (*inliers, *coefficents);` is called.  This
+takes place when `seg.segment (*inliers, *coefficients);` is called.  This
 function stores all of the inlying points (on the plane) to `inliers`, and it
-stores the coefficents to the plane `(a * x + b * y + c * z = d)` in
+stores the coefficients to the plane `(a * x + b * y + c * z = d)` in
 `coefficients`.
 
 .. literalinclude:: sources/concave_hull_2d/concave_hull_2d.cpp
@@ -46,9 +46,9 @@ stores the coefficents to the plane `(a * x + b * y + c * z = d)` in
 
 The next bit of code projects the inliers onto the plane model and creates
 another cloud.  One way that we could do this is by just extracting the inliers
-that we found before, but in this case we are going to use the coefficents we
+that we found before, but in this case we are going to use the coefficients we
 found before.  We set the model type we are looking for and then set the
-coefficents, and from that the object knows which points to project from
+coefficients, and from that the object knows which points to project from
 cloud_filtered to cloud_projected. 
 
 .. literalinclude:: sources/concave_hull_2d/concave_hull_2d.cpp

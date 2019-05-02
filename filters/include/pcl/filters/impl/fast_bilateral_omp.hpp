@@ -42,8 +42,21 @@
 
 #include <pcl/filters/fast_bilateral_omp.h>
 #include <pcl/common/io.h>
-#include <pcl/console/time.h>
-#include <assert.h>
+#include <cassert>
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::FastBilateralFilterOMP<PointT>::setNumberOfThreads (unsigned int nr_threads)
+{
+  if (nr_threads == 0)
+#ifdef _OPENMP
+    threads_ = omp_get_num_procs();
+#else
+    threads_ = 1;
+#endif
+  else
+    threads_ = nr_threads;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -63,7 +76,7 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
   {
     for (size_t y = 0; y < output.height; ++y)
     {
-      if (pcl_isfinite (output (x, y).z))
+      if (std::isfinite (output (x, y).z))
       {
         if (base_max < output (x, y).z)
           base_max = output (x, y).z;
@@ -82,7 +95,7 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #pragma omp parallel for num_threads (threads_)
 #endif
   for (long int i = 0; i < static_cast<long int> (output.size ()); ++i)
-    if (!pcl_isfinite (output.at(i).z))
+    if (!std::isfinite (output.at(i).z))
       output.at(i).z = base_max;
 
   const float base_delta = base_max - base_min;
