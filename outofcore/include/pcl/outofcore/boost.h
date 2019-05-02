@@ -43,5 +43,4 @@
 #endif
 
 #include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
 #include <boost/foreach.hpp>

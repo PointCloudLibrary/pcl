@@ -393,19 +393,19 @@ openni_wrapper::OpenNIDevice::Init ()
     //focal length from mm -> pixels (valid for 1280x1024)
     depth_focal_length_SXGA_ = static_cast<float> (static_cast<XnDouble> (depth_focal_length_SXGA) / pixel_size);
 
-    depth_thread_ = boost::thread (&OpenNIDevice::DepthDataThreadFunction, this);
+    depth_thread_ = std::thread (&OpenNIDevice::DepthDataThreadFunction, this);
   }
 
   if (hasImageStream ())
   {
     boost::lock_guard<boost::mutex> image_lock (image_mutex_);
-    image_thread_ = boost::thread (&OpenNIDevice::ImageDataThreadFunction, this);
+    image_thread_ = std::thread (&OpenNIDevice::ImageDataThreadFunction, this);
   }
 
   if (hasIRStream ())
   {
     boost::lock_guard<boost::mutex> ir_lock (ir_mutex_);
-    ir_thread_ = boost::thread (&OpenNIDevice::IRDataThreadFunction, this);
+    ir_thread_ = std::thread (&OpenNIDevice::IRDataThreadFunction, this);
   }
 }
 

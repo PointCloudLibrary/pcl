@@ -45,6 +45,8 @@
 
 #include <DepthSense.hxx>
 
+#include <thread>
+
 namespace pcl
 {
 
@@ -136,7 +138,7 @@ namespace pcl
           static boost::mutex mutex_;
 
           /// Thread where the grabbing takes place.
-          boost::thread depth_sense_thread_;
+          std::thread depth_sense_thread_;
 
           struct CapturedDevice
           {

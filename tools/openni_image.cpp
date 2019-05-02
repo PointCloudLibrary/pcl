@@ -348,7 +348,7 @@ class Writer
     Writer (Buffer &buf)
       : buf_ (buf)
     {
-      thread_.reset (new boost::thread (boost::bind (&Writer::receiveAndProcess, this)));
+      thread_.reset (new std::thread (&Writer::receiveAndProcess, this));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -362,7 +362,7 @@ class Writer
 
   private:
     Buffer &buf_;
-    boost::shared_ptr<boost::thread> thread_;
+    boost::shared_ptr<std::thread> thread_;
 };
 
 
@@ -431,7 +431,7 @@ class Driver
       , buf_write_ (buf_write)
       , buf_vis_ (buf_vis)
     {
-      thread_.reset (new boost::thread (boost::bind (&Driver::grabAndSend, this)));
+      thread_.reset (new std::thread (&Driver::grabAndSend, this));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -447,7 +447,7 @@ class Driver
     
     OpenNIGrabber& grabber_;
     Buffer &buf_write_, &buf_vis_;
-    boost::shared_ptr<boost::thread> thread_;
+    boost::shared_ptr<std::thread> thread_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////

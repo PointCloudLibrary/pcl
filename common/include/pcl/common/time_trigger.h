@@ -43,10 +43,11 @@
 #include <boost/function.hpp>
 #include <boost/thread.hpp>
 #include <boost/signals2.hpp>
+#endif
 
 #include <condition_variable>
 #include <mutex>
-#endif
+#include <thread>
 
 namespace pcl
 {
@@ -101,7 +102,7 @@ namespace pcl
       bool quit_;
       bool running_;
 
-      boost::thread timer_thread_;
+      std::thread timer_thread_;
       std::condition_variable condition_;
       std::mutex condition_mutex_;
   };

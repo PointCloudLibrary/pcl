@@ -47,7 +47,7 @@ pcl::io::depth_sense::DepthSenseDeviceManager::DepthSenseDeviceManager ()
   try
   {
     context_ = DepthSense::Context::create ("localhost");
-    depth_sense_thread_ = boost::thread (&DepthSense::Context::run, &context_);
+    depth_sense_thread_ = std::thread (&DepthSense::Context::run, &context_);
   }
   catch (...)
   {
