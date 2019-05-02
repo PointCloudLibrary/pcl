@@ -451,15 +451,15 @@ pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
     {
       mmax[0] = len1;
       evecs.col (0) = vec1 / std::sqrt (len1);
-      min_el = len3 <= mmax[min_el] ? 0 : min_el;
-      max_el = len3 > mmax[max_el] ? 0 : max_el;
+      min_el = len1 <= mmax[min_el] ? 0 : min_el;
+      max_el = len1 > mmax[max_el] ? 0 : max_el;
     }
     else if (len2 >= len1 && len2 >= len3)
     {
       mmax[0] = len2;
       evecs.col (0) = vec2 / std::sqrt (len2);
-      min_el = len3 <= mmax[min_el] ? 0 : min_el;
-      max_el = len3 > mmax[max_el] ? 0 : max_el;
+      min_el = len2 <= mmax[min_el] ? 0 : min_el;
+      max_el = len2 > mmax[max_el] ? 0 : max_el;
     }
     else
     {
