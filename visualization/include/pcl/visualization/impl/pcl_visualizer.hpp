@@ -658,7 +658,7 @@ pcl::visualization::PCLVisualizer::addText3D (
 
   // check all or an individual viewport for a similar id
   rens_->InitTraversal ();
-  for (size_t i = viewport; rens_->GetNextItem () != NULL; ++i)
+  for (size_t i = viewport; rens_->GetNextItem (); ++i)
   {
     const std::string uid = tid + std::string (i, '*');
     if (contains (uid))
@@ -685,7 +685,7 @@ pcl::visualization::PCLVisualizer::addText3D (
   rens_->InitTraversal ();
   vtkRenderer* renderer;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while ((renderer = rens_->GetNextItem ()))
   {
     // Should we add the actor to all renderers or just to i-nth renderer?
     if (viewport == 0 || viewport == i)
@@ -745,7 +745,7 @@ pcl::visualization::PCLVisualizer::addText3D (
 
   // check all or an individual viewport for a similar id
   rens_->InitTraversal ();
-  for (size_t i = viewport; rens_->GetNextItem () != NULL; ++i)
+  for (size_t i = viewport; rens_->GetNextItem (); ++i)
   {
     const std::string uid = tid + std::string (i, '*');
     if (contains (uid))
@@ -779,7 +779,7 @@ pcl::visualization::PCLVisualizer::addText3D (
   rens_->InitTraversal ();
   int i = 0;
   for ( vtkRenderer* renderer = rens_->GetNextItem ();
-        renderer != NULL;
+        renderer;
         renderer = rens_->GetNextItem (), ++i)
   {
     if (viewport == 0 || viewport == i)
@@ -837,7 +837,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
 
 
   vtkIdType nr_normals = 0;
-  float* pts = 0;
+  float* pts = nullptr;
 
   // If the cloud is organized, then distribute the normal step in both directions
   if (cloud->isOrganized () && normals->isOrganized ())
@@ -1701,7 +1701,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     vtkSmartPointer<vtkCellArray> cell_array = vtkSmartPointer<vtkCellArray>::New ();
     vtkIdType *cell = cell_array->WritePointer (vertices.size (), vertices.size () * (max_size_of_polygon + 1));
     int idx = 0;
-    if (lookup.size () > 0)
+    if (!lookup.empty ())
     {
       for (size_t i = 0; i < vertices.size (); ++i, ++idx)
       {
@@ -1743,7 +1743,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     size_t n_points = vertices[0].vertices.size ();
     polygon->GetPointIds ()->SetNumberOfIds (n_points - 1);
 
-    if (lookup.size () > 0)
+    if (!lookup.empty ())
     {
       for (size_t j = 0; j < (n_points - 1); ++j)
         polygon->GetPointIds ()->SetId (j, lookup[vertices[0].vertices[j]]);
@@ -1878,7 +1878,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   cells = vtkSmartPointer<vtkCellArray>::New ();
   vtkIdType *cell = cells->WritePointer (verts.size (), verts.size () * (max_size_of_polygon + 1));
   int idx = 0;
-  if (lookup.size () > 0)
+  if (!lookup.empty ())
   {
     for (size_t i = 0; i < verts.size (); ++i, ++idx)
     {

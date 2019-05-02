@@ -176,7 +176,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   // option flags for qhull, see qh_opt.htm
   char flags[] = "qhull d QJ";
   // output from qh_produce_output(), use NULL to skip qh_produce_output()
-  FILE *outfile = NULL;
+  FILE *outfile = nullptr;
   // error messages from qhull code
   FILE *errfile = stderr;
   // 0 if no error from qhull

@@ -104,7 +104,7 @@ pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) c
 
   memcpy( M+x*h, M2, h*sizeof(float) );
   // compute and store gradient orientation (O) via table lookup
-  if(O!=0) for( y=0; y<h; y++ ) O[x*h+y] = acost[(int)Gx[y]];
+  if(O!=nullptr) for( y=0; y<h; y++ ) O[x*h+y] = acost[(int)Gx[y]];
   }
   alFree(Gx); alFree(Gy); alFree(M2); 
 #else

@@ -89,7 +89,7 @@ namespace pcl
           */
         void reset()
         {
-          if(world_->points.size () != 0)
+          if(!world_->points.empty ())
           {
             PCL_WARN("Clearing world model\n");
             world_->points.clear ();

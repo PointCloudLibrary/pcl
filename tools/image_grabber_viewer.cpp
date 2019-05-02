@@ -129,7 +129,7 @@ mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
 int
 main (int argc, char** argv)
 {
-  srand (unsigned (time (0)));
+  srand (unsigned (time (nullptr)));
 
   if (argc > 1)
   {

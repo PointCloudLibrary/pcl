@@ -307,7 +307,7 @@ OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
   //Segment Objects
   pcl::PointCloud<PointT>::CloudVectorType clusters;
 
-  if (use_clustering_ && regions.size () > 0)
+  if (use_clustering_ && !regions.empty ())
   {
     boost::shared_ptr<std::set<uint32_t> > plane_labels = boost::make_shared<std::set<uint32_t> > ();
     for (size_t i = 0; i < label_indices.size (); ++i)

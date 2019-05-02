@@ -154,7 +154,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
     if (sum != 0.0)
     {
       for ( size_t i = 0; i < particles_->points.size (); i++ )
-        particles_->points[i].weight =  particles_->points[i].weight / static_cast<float> (sum);
+        particles_->points[i].weight /= static_cast<float> (sum);
     }
     else
     {
@@ -224,7 +224,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::testChangeDetection
   std::vector<int> newPointIdxVector;
   change_detector_->getPointIndicesFromNewVoxels (newPointIdxVector, change_detector_filter_);
   change_detector_->switchBuffers ();
-  return newPointIdxVector.size () > 0;
+  return !newPointIdxVector.empty ();
 }
 
 template <typename PointInT, typename StateT> void

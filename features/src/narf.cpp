@@ -57,9 +57,9 @@ int Narf::max_no_of_threads = 1;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Narf::Narf() : 
-  position_ (), transformation_ (), surface_patch_ (NULL), 
+  position_ (), transformation_ (), surface_patch_ (nullptr), 
   surface_patch_pixel_size_ (0), surface_patch_world_size_ (), 
-  surface_patch_rotation_ (), descriptor_ (NULL), descriptor_size_ (0)
+  surface_patch_rotation_ (), descriptor_ (nullptr), descriptor_size_ (0)
 {
   reset();
 }
@@ -72,9 +72,9 @@ Narf::~Narf()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Narf::Narf (const Narf& other) : 
-  position_ (), transformation_ (), surface_patch_ (NULL), 
+  position_ (), transformation_ (), surface_patch_ (nullptr), 
   surface_patch_pixel_size_ (0), surface_patch_world_size_ (), 
-  surface_patch_rotation_ (), descriptor_ (NULL), descriptor_size_ (0)
+  surface_patch_rotation_ (), descriptor_ (nullptr), descriptor_size_ (0)
 {
   deepCopy (other);
 }
@@ -92,10 +92,10 @@ void
 Narf::reset ()
 {
   delete[] descriptor_;
-  descriptor_ = NULL;
+  descriptor_ = nullptr;
   descriptor_size_ = 0;
   delete[] surface_patch_;
-  surface_patch_ = NULL;
+  surface_patch_ = nullptr;
   surface_patch_pixel_size_ = 0;
   surface_patch_world_size_ = 0.0f;
   surface_patch_rotation_ = 0.0f;
@@ -620,7 +620,7 @@ void
 NarfDescriptor::setRangeImage (const RangeImage* range_image, const std::vector<int>* indices)
 {
   range_image_ = range_image;
-  if (indices != NULL)
+  if (indices != nullptr)
   {
     IndicesPtr indicesptr (new std::vector<int> (*indices));
     setIndices (indicesptr);
@@ -635,7 +635,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
   
   output.points.clear();
   
-  if (range_image_==NULL)
+  if (range_image_==nullptr)
   {
     std::cerr << __PRETTY_FUNCTION__
               << ": RangeImage is not set. Sorry, the NARF descriptor calculation works on range images, not on normal point clouds."

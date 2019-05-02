@@ -106,7 +106,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
         std::vector<int> indices;
         octree.voxelSearch (intersected_cells[k], indices);
         int label = emptyLabel ();
-        if (indices.size () != 0)
+        if (!indices.empty ())
         {
           label = getDominantLabel (indices);
         }

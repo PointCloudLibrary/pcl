@@ -40,7 +40,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::Permutohedral::Permutohedral () :
   N_ (0), M_ (0), d_ (0),
-  blur_neighborsOLD_(NULL), offsetOLD_ (NULL), barycentricOLD_ (NULL) 
+  blur_neighborsOLD_(nullptr), offsetOLD_ (nullptr), barycentricOLD_ (nullptr) 
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,11 +56,11 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
   std::multimap<size_t, int> hash_table;
 
   // reserve class memory
-  if (offset_.size () > 0) 
+  if (!offset_.empty ()) 
     offset_.clear ();
   offset_.resize ((d_ + 1) * N_);
 
-  if (barycentric_.size () > 0) 
+  if (!barycentric_.empty ()) 
     barycentric_.clear ();
   barycentric_.resize ((d_ + 1) * N_);
 
@@ -219,7 +219,7 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
   M_ = static_cast<int> (hash_table.size());
 		
   // Create the neighborhood structure
-  if (blur_neighbors_.size () > 0) 
+  if (!blur_neighbors_.empty ()) 
     blur_neighbors_.clear ();
   blur_neighbors_.resize ((d_+1)*M_);
 

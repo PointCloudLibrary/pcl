@@ -68,7 +68,7 @@ namespace pcl
       Q_OBJECT
       
     public:
-      ToolBoxModel (QTreeView* tool_view = 0, QTreeView* parameter_view = 0, QObject *parent = 0);
+      ToolBoxModel (QTreeView* tool_view = nullptr, QTreeView* parameter_view = nullptr, QObject *parent = nullptr);
       ToolBoxModel (const ToolBoxModel& to_copy);
       ~ToolBoxModel ();
       

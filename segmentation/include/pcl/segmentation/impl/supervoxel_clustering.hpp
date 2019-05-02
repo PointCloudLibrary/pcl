@@ -68,7 +68,7 @@ pcl::SupervoxelClustering<PointT>::~SupervoxelClustering ()
 template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
 {
-  if ( cloud->size () == 0 )
+  if ( cloud->empty () )
   {
     PCL_ERROR ("[pcl::SupervoxelClustering::setInputCloud] Empty cloud set, doing nothing \n");
     return;
@@ -82,7 +82,7 @@ pcl::SupervoxelClustering<PointT>::setInputCloud (const typename pcl::PointCloud
 template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::setNormalCloud (typename NormalCloudT::ConstPtr normal_cloud)
 {
-  if ( normal_cloud->size () == 0 )
+  if ( normal_cloud->empty () )
   {
     PCL_ERROR ("[pcl::SupervoxelClustering::setNormalCloud] Empty cloud set, doing nothing \n");
     return;
@@ -147,7 +147,7 @@ pcl::SupervoxelClustering<PointT>::extract (std::map<uint32_t,typename Supervoxe
 template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::refineSupervoxels (int num_itr, std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters)
 {
-  if (supervoxel_helpers_.size () == 0)
+  if (supervoxel_helpers_.empty ())
   {
     PCL_ERROR ("[pcl::SupervoxelClustering::refineVoxelNormals] Supervoxels not extracted, doing nothing - (Call extract first!) \n");
     return;
@@ -181,7 +181,7 @@ pcl::SupervoxelClustering<PointT>::prepareForSegmentation ()
 {
   
   // if user forgot to pass point cloud or if it is empty
-  if ( input_->points.size () == 0 )
+  if ( input_->points.empty () )
     return (false);
   
   //Add the new cloud of data to the octree
@@ -246,7 +246,7 @@ pcl::SupervoxelClustering<PointT>::computeVoxelData ()
     {
       VoxelData& voxel_data = (*leaf_itr)->getData ();
       voxel_data.normal_.normalize ();
-      voxel_data.owner_ = 0;
+      voxel_data.owner_ = nullptr;
       voxel_data.distance_ = std::numeric_limits<float>::max ();
       //Get the number of points in this leaf
       int num_points = (*leaf_itr)->getPointCounter ();
@@ -280,7 +280,7 @@ pcl::SupervoxelClustering<PointT>::computeVoxelData ()
       pcl::flipNormalTowardsViewpoint (voxel_centroid_cloud_->points[new_voxel_data.idx_], 0.0f,0.0f,0.0f, new_voxel_data.normal_);
       new_voxel_data.normal_[3] = 0.0f;
       new_voxel_data.normal_.normalize ();
-      new_voxel_data.owner_ = 0;
+      new_voxel_data.owner_ = nullptr;
       new_voxel_data.distance_ = std::numeric_limits<float>::max ();
     }
   }
@@ -384,7 +384,7 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (std::vector<int
   std::vector<float> distance;
   closest_index.resize(1,0);
   distance.resize(1,0);
-  if (voxel_kdtree_ == 0)
+  if (!voxel_kdtree_)
   {
     voxel_kdtree_.reset (new pcl::search::KdTree<PointT>);
     voxel_kdtree_ ->setInputCloud (voxel_centroid_cloud_);
@@ -781,7 +781,7 @@ pcl::SupervoxelClustering<PointT>::SupervoxelHelper::removeAllLeaves ()
   for (auto leaf_itr = leaves_.cbegin (); leaf_itr != leaves_.cend (); ++leaf_itr)
   {
     VoxelData& voxel = ((*leaf_itr)->getData ());
-    voxel.owner_ = 0;
+    voxel.owner_ = nullptr;
     voxel.distance_ = std::numeric_limits<float>::max ();
   }
   leaves_.clear ();

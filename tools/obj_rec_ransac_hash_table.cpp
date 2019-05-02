@@ -177,7 +177,7 @@ visualize (const ModelLibrary::HashTable& hash_table)
   // Just get the maximal number of entries in the cells
   for ( int i = 0 ; i < num_cells ; ++i, ++cells )
   {
-    if (cells->size ()) // That's the number of models in the cell (it's maximum one, since we loaded only one model)
+    if (!cells->empty ()) // That's the number of models in the cell (it's maximum one, since we loaded only one model)
     {
       size_t num_entries = (*cells->begin ()).second.size(); // That's the number of entries in the current cell for the model we loaded
       // Get the max number of entries
@@ -197,7 +197,7 @@ visualize (const ModelLibrary::HashTable& hash_table)
   for ( int i = 0; i < num_cells ; ++i, ++cells )
   {
     // Does the cell have any entries?
-    if (cells->size ())
+    if (!cells->empty ())
     {
       hash_table.compute3dId (i, id3);
       hash_table.computeVoxelCenter (id3, cell_center);

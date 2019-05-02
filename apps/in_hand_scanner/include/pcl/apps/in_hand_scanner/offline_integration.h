@@ -86,7 +86,7 @@ namespace pcl
         typedef pcl::ihs::OfflineIntegration Self;
 
         /** \brief Constructor. */
-        explicit OfflineIntegration (Base* parent=0);
+        explicit OfflineIntegration (Base* parent=nullptr);
 
         /** \brief Destructor. */
         ~OfflineIntegration ();

@@ -119,7 +119,7 @@ namespace pcl
         getTranslationAndEulerAngles (trans,
                                       trans_x, trans_y, trans_z,
                                       trans_roll, trans_pitch, trans_yaw);
-        return pcl::tracking::ParticleXYZRPY (trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
+        return {trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw};
       }
 
       // a[i]

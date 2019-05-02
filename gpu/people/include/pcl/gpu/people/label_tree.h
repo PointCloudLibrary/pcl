@@ -122,7 +122,7 @@ namespace pcl
       leafBlobVector(   std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >& sorted,
                             int                               label )
       {
-        if(sorted[label].size() == 0)
+        if(sorted[label].empty ())
           return 0;
         for(auto &blob : sorted[label])
         {
@@ -144,7 +144,7 @@ namespace pcl
                               int                               label,
                               int                               child_number)
       {
-        if(sorted[label].size() == 0)
+        if(sorted[label].empty ())
           return 0;
         for(auto &blob : sorted[label]){
           blob.child_id[child_number] = NO_CHILD;
@@ -161,7 +161,7 @@ namespace pcl
                                   part_t                            label,
                                   int                               child_number)
       {
-        if(sorted[label].size() == 0)
+        if(sorted[label].empty ())
           return false;
         for(const auto &blob : sorted[label])
           if((blob.child_id[child_number] != NO_CHILD) && (blob.child_id[child_number] != LEAF))
@@ -236,10 +236,10 @@ namespace pcl
         assert(child_number >= 0);
         assert(child_number < MAX_CHILD);
 
-        if(sorted[parent_label].size() == 0){
+        if(sorted[parent_label].empty ()){
           return 0;   //if my size is 0, this is solved by my parent in his iteration	
         }
-        if(sorted[child_label].size() == 0){
+        if(sorted[child_label].empty ()){
           noChildBlobVector(sorted, parent_label, child_number);
           return 0;
         }
@@ -296,10 +296,10 @@ namespace pcl
         assert(child_number >= 0);
         assert(child_number < MAX_CHILD);
 
-        if(sorted[parent_label].size() == 0){
+        if(sorted[parent_label].empty ()){
           return 0;   //if my size is 0, this is solved by my parent in his iteration
         }
-        if(sorted[child_label].size() == 0){
+        if(sorted[child_label].empty ()){
           noChildBlobVector(sorted, parent_label, child_number);
           return 0;
         }
@@ -344,7 +344,7 @@ namespace pcl
       buildRelations( std::vector<std::vector<Blob2, Eigen::aligned_allocator<pcl::gpu::people::Blob2> > >& sorted)
       {
         PCL_VERBOSE("[pcl::gpu::people::buildRelations] : (I) : buildRelations : regular version\n");
-        if(sorted.size() == 0){
+        if(sorted.empty ()){
           std::cout << "(E) : Damn you, you gave me an empty matrix!" << std::endl;
           return (-1);
         }
@@ -448,7 +448,7 @@ namespace pcl
                       PersonAttribs::Ptr person_attribs)
       {
         PCL_DEBUG("[pcl::gpu::people::buildRelations] : (D) : person specific version\n");
-        if(sorted.size() == 0){
+        if(sorted.empty ()){
           PCL_ERROR("[pcl::gpu::people::buildRelations] : (E) : Damn you, you gave me an empty matrix!\n");
           return (-1);
         }
@@ -610,7 +610,7 @@ namespace pcl
                              int                                    part_lid,
                              Tree2&                                 tree)
       {
-        if(sorted.size() <= 0)
+        if(sorted.empty ())
         {
           std::cout << "(E) : buildTree(): hey man, don't fool me, you gave me an empty blob matrix" << std::endl;
           return -1;
@@ -640,7 +640,7 @@ namespace pcl
                              Tree2&                                 tree,
                              PersonAttribs::Ptr                     person_attribs)
       {
-        if(sorted.size() <= 0)
+        if(sorted.empty ())
         {
           std::cout << "(E) : buildTree(): hey man, don't fool me, you gave me an empty blob matrix" << std::endl;
           return -1;

@@ -227,7 +227,7 @@ namespace pcl
       signals_[typeid (T).name ()] = signal;
       return (signal);
     }
-    return (0);
+    return (nullptr);
   }
 
   template<typename T> boost::signals2::connection

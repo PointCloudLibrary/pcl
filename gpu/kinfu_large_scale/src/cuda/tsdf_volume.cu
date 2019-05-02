@@ -105,7 +105,7 @@ namespace pcl
                 {
                   ///If we went outside of the memory, make sure we go back to the beginning of it
                   if(pos > buffer.tsdf_memory_end)
-                    pos = pos - size;
+                    pos -= size;
                   
                   if (pos >= buffer.tsdf_memory_start && pos <= buffer.tsdf_memory_end) // quickfix for http://dev.pointclouds.org/issues/894
                     pack_tsdf (0.f, 0, *pos);
@@ -134,7 +134,7 @@ namespace pcl
                   
                 ///We make sure that we are not already before the start of the memory
                 if(pos < buffer.tsdf_memory_start)
-                    pos = pos + size;
+                    pos += size;
 
                 int nbSteps = abs(maxBounds.z);
                 
@@ -143,7 +143,7 @@ namespace pcl
                 {
                   ///If we went outside of the memory, make sure we go back to the beginning of it
                   if(pos > buffer.tsdf_memory_end)
-                    pos = pos - size;
+                    pos -= size;
                   
                   if (pos >= buffer.tsdf_memory_start && pos <= buffer.tsdf_memory_end) // quickfix for http://dev.pointclouds.org/issues/894
                     pack_tsdf (0.f, 0, *pos);

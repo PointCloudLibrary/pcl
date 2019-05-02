@@ -72,10 +72,10 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initData ()
   delete[] diff_y_;
   delete[] depth_data_;
   delete[] distance_map_;
-  diff_x_ = NULL;
-  diff_y_ = NULL;
-  depth_data_ = NULL;
-  distance_map_ = NULL;
+  diff_x_ = nullptr;
+  diff_y_ = nullptr;
+  depth_data_ = nullptr;
+  distance_map_ = nullptr;
 
   if (normal_estimation_method_ == COVARIANCE_MATRIX)
     initCovarianceMatrixMethod ();

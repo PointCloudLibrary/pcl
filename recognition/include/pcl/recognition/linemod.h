@@ -93,7 +93,7 @@ namespace pcl
       void 
       initialize (const size_t width, const size_t height, const size_t nr_bins)
       {
-        maps_.resize(nr_bins, NULL);
+        maps_.resize(nr_bins, nullptr);
         width_ = width;
         height_ = height;
         nr_bins_ = nr_bins;
@@ -114,7 +114,7 @@ namespace pcl
       {
         for (auto &map : maps_)
           //if (maps_[map_index] != NULL) delete[] maps_[map_index];
-          if (map != NULL) aligned_free (map);
+          if (map != nullptr) aligned_free (map);
 
         maps_.clear ();
         width_ = 0;
@@ -233,7 +233,7 @@ namespace pcl
       void 
       initialize (const size_t width, const size_t height, const size_t step_size)
       {
-        maps_.resize(step_size*step_size, NULL);
+        maps_.resize(step_size*step_size, nullptr);
         width_ = width;
         height_ = height;
         mem_width_ = width / step_size;
@@ -256,7 +256,7 @@ namespace pcl
       {
         for (auto &map : maps_)
           //if (maps_[map_index] != NULL) delete[] maps_[map_index];
-          if (map != NULL) aligned_free (map);
+          if (map != nullptr) aligned_free (map);
 
         maps_.clear ();
         width_ = 0;

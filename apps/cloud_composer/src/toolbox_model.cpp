@@ -11,7 +11,7 @@ pcl::cloud_composer::ToolBoxModel::ToolBoxModel (QTreeView* tool_view, QTreeView
 : QStandardItemModel (parent)
 , tool_view_ (tool_view)
 , parameter_view_ (parameter_view_)
-, project_model_ (0)
+, project_model_ (nullptr)
 {
   
 }
@@ -55,7 +55,7 @@ QStandardItem*
 pcl::cloud_composer::ToolBoxModel::addToolGroup (QString tool_group_name)
 {
   QList <QStandardItem*> matches_name = findItems (tool_group_name);
-  if (matches_name.size () == 0)
+  if (matches_name.empty ())
   {
     QStandardItem* new_group_item = new QStandardItem (tool_group_name);
     appendRow (new_group_item);
@@ -190,7 +190,7 @@ pcl::cloud_composer::ToolBoxModel::updateEnabledTools (const QItemSelection& cur
       disabled_tools.insert (tool_item, tr("Tool Requires item type %1 selected").arg (ITEM_TYPES_STRINGS.value (input_type - QStandardItem::UserType)));
     }
     //Check if any of selected items have required children
-    else if ( required_children_types.size () > 0)
+    else if ( !required_children_types.empty ())
     {  
       QList <QStandardItem*> matching_selected_items = type_items_map.values (input_type);
       bool found_valid_items = false;

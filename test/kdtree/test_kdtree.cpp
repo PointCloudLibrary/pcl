@@ -77,7 +77,7 @@ init ()
 
   cloud_big.width  = 640;
   cloud_big.height = 480;
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   // Randomly create a new point cloud
   for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
     cloud_big.points.emplace_back(static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
@@ -115,7 +115,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   //for (set<int>::const_iterator it=brute_force_result.begin(); it!=brute_force_result.end(); ++it)
   //cerr << "FLANN missed "<<*it<<"\n";
   
-  bool error = brute_force_result.size () > 0;
+  bool error = !brute_force_result.empty ();
   //if (error)  cerr << "Missed too many neighbors!\n";
   EXPECT_EQ (error, false);
 

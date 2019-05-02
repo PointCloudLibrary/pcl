@@ -163,7 +163,7 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
         }
       }
 
-      mean = mean / static_cast<float> (good_votes);
+      mean /= static_cast<float> (good_votes);
       clusters_mean[i] = mean;
     }
 
@@ -202,14 +202,14 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
         rot += angle_votes_[uncertainty[j].first];
       }
 
-      rot = rot / static_cast<float> (num);
+      rot /= static_cast<float> (num);
 
       Eigen::Vector3f pos;
       pos.setZero ();
       for (int j = 0; j < num; j++)
         pos += head_center_votes_[uncertainty[j].first];
 
-      pos = pos / static_cast<float> (num);
+      pos /= static_cast<float> (num);
 
       head_clusters_centers_.push_back (pos); //clusters_mean[i]
       head_clusters_rotation_.push_back (rot);
@@ -426,7 +426,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
   faceVotesClustering ();
 
-  if (pose_refinement_ && (head_clusters_centers_.size () > 0))
+  if (pose_refinement_ && (!head_clusters_centers_.empty ()))
   {
     Eigen::Matrix4f icp_trans;
     float max_distance = 0.015f;

@@ -286,7 +286,7 @@ namespace pcl
          * */
         inline bool hasChild (unsigned char child_idx_arg) const
         {
-          return (child_node_array_[child_idx_arg] != 0);
+          return (child_node_array_[child_idx_arg] != nullptr);
         }
 
 

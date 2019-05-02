@@ -422,7 +422,7 @@ pcl::GridProjection<PointNT>::getVectorAtPointKNN (const Eigen::Vector4f &p,
   vector_average.getEigenVector1 (out_vector);
   out_vector.normalize ();
   double d1 = getD1AtPoint (p, out_vector, k_indices);
-  out_vector = out_vector * sum;
+  out_vector *= sum;
   vo = ((d1 > 0) ? -1 : 1) * out_vector;
 
 }

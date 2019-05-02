@@ -79,7 +79,7 @@ namespace pcl
         typedef pcl::ihs::HelpWindow       HelpWindow;
         typedef InHandScanner::RunningMode RunningMode;
 
-        explicit MainWindow (QWidget* parent = 0);
+        explicit MainWindow (QWidget* parent = nullptr);
         ~MainWindow ();
 
       public Q_SLOTS:

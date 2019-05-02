@@ -226,7 +226,7 @@ namespace pcl
           * The method returns true if the model was successfully added to the model library and false otherwise (e.g., if 'object_name' is already in use).
           */
         inline bool
-        addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name, void* user_data = NULL)
+        addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name, void* user_data = nullptr)
         {
           return (model_library_.addModel (points, normals, object_name, frac_of_points_for_icp_refinement_, user_data));
         }

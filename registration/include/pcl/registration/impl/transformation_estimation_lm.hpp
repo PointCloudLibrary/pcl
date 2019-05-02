@@ -107,8 +107,8 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   warp_point_->setParam (x);
   transformation_matrix = warp_point_->getTransform ();
 
-  tmp_src_ = NULL;
-  tmp_tgt_ = NULL;
+  tmp_src_ = nullptr;
+  tmp_tgt_ = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -187,9 +187,9 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   warp_point_->setParam (x);
   transformation_matrix = warp_point_->getTransform ();
 
-  tmp_src_ = NULL;
-  tmp_tgt_ = NULL;
-  tmp_idx_src_ = tmp_idx_tgt_ = NULL;
+  tmp_src_ = nullptr;
+  tmp_tgt_ = nullptr;
+  tmp_idx_src_ = tmp_idx_tgt_ = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

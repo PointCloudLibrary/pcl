@@ -147,7 +147,7 @@ ICCVTutorial<FeatureType>::ICCVTutorial(boost::shared_ptr<pcl::Keypoint<pcl::Poi
 , show_target2source_ (false)
 , show_correspondences (false)
 {
-  visualizer_.registerKeyboardCallback(&ICCVTutorial::keyboard_callback, *this, 0);
+  visualizer_.registerKeyboardCallback(&ICCVTutorial::keyboard_callback, *this, nullptr);
 
   segmentation (source_, source_segmented_);
   segmentation (target_, target_segmented_);
@@ -212,7 +212,7 @@ void ICCVTutorial<FeatureType>::segmentation (typename pcl::PointCloud<pcl::Poin
   clustering.setInputCloud(segmented);
   clustering.extract (cluster_indices);
 
-  if (cluster_indices.size() > 0)//use largest cluster
+  if (!cluster_indices.empty ())//use largest cluster
   {
     cout << cluster_indices.size() << " clusters found";
     if (cluster_indices.size() > 1)

@@ -264,7 +264,7 @@ namespace pcl
         OutofcoreOctreeBaseNode* 
         deepCopy () const override
         {
-          OutofcoreOctreeBaseNode* res = NULL;
+          OutofcoreOctreeBaseNode* res = nullptr;
           PCL_THROW_EXCEPTION (PCLException, "Not implemented\n");
           return (res);
         }

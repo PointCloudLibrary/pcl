@@ -319,7 +319,7 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
   PointCloud<Normal>::Ptr all_normals (new PointCloud<Normal> ());
 
   // Get the points and normals from the input scene
-  if ( !vtk2PointCloud (file_name, *all_points, *all_normals, NULL) )
+  if ( !vtk2PointCloud (file_name, *all_points, *all_normals, nullptr) )
     return false;
 
   // Detect the largest plane and remove it from the sets
@@ -337,7 +337,7 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
   seg.setInputCloud (all_points);
   seg.segment (*inliers, *coefficients);
 
-  if (inliers->indices.size () == 0)
+  if (inliers->indices.empty ())
   {
     PCL_ERROR ("Could not estimate a planar model for the given dataset.");
     return false;

@@ -74,7 +74,7 @@ namespace pcl
     boost::mutex OutofcoreOctreeDiskContainer<PointT>::rng_mutex_;
 
     template<typename PointT> boost::mt19937
-    OutofcoreOctreeDiskContainer<PointT>::rand_gen_ (static_cast<unsigned int> (std::time(NULL)));
+    OutofcoreOctreeDiskContainer<PointT>::rand_gen_ (static_cast<unsigned int> (std::time(nullptr)));
 
     template<typename PointT>
     boost::uuids::basic_random_generator<boost::mt19937> OutofcoreOctreeDiskContainer<PointT>::uuid_gen_ (&rand_gen_);
@@ -169,7 +169,7 @@ namespace pcl
     template<typename PointT> void
     OutofcoreOctreeDiskContainer<PointT>::flushWritebuff (const bool force_cache_dealloc)
     {
-      if (writebuff_.size () > 0)
+      if (!writebuff_.empty ())
       {
         //construct the point cloud for this node
         typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
@@ -596,7 +596,7 @@ namespace pcl
         return (-1);
       }
 
-      if(output_cloud.get () != 0)
+      if(output_cloud.get () != nullptr)
       {
         pcl::concatenatePointCloud (*output_cloud, *temp_output_cloud, *output_cloud);
       }

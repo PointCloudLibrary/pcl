@@ -106,7 +106,7 @@ namespace pcl
       
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */
-      RangeImageBorderExtractor (const RangeImage* range_image=NULL);
+      RangeImageBorderExtractor (const RangeImage* range_image=nullptr);
       /** Destructor */
       ~RangeImageBorderExtractor ();
       
@@ -142,7 +142,7 @@ namespace pcl
       getParameters () { return (parameters_); }
 
       bool
-      hasRangeImage () const { return range_image_ != NULL; }
+      hasRangeImage () const { return range_image_ != nullptr; }
 
       const RangeImage&
       getRangeImage () const { return *range_image_; }
@@ -322,7 +322,7 @@ namespace pcl
         */
       inline bool
       get3dDirection (const BorderDescription& border_description, Eigen::Vector3f& direction,
-                      const LocalSurface* local_surface=NULL);
+                      const LocalSurface* local_surface=nullptr);
       
       /** \brief Calculate the main principal curvature (the largest eigenvalue and corresponding eigenvector for the 
         * normals in the area) in the given point

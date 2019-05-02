@@ -52,9 +52,9 @@ namespace pcl
       public:
         
         /** \brief Constructor used for tool parameters */
-        PropertiesModel (QObject *parent = 0);
+        PropertiesModel (QObject *parent = nullptr);
         /** \brief Constructor used for item parameters */
-        PropertiesModel (CloudComposerItem* parent_item, QObject *parent = 0);
+        PropertiesModel (CloudComposerItem* parent_item, QObject *parent = nullptr);
         PropertiesModel (const PropertiesModel& to_copy);
         ~PropertiesModel ();
         

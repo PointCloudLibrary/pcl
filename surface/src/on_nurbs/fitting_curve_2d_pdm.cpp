@@ -427,7 +427,7 @@ FittingCurve2dPDM::initNurbsCurve2D (int order, const vector_vec2d &data, int nc
   {
     cv (0) = r * sin (dcv * j);
     cv (1) = r * cos (dcv * j);
-    cv = cv + mean;
+    cv += mean;
     nurbs.SetCV (j, ON_3dPoint (cv (0), cv (1), 0.0));
   }
 
@@ -608,7 +608,7 @@ FittingCurve2dPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vect
     }
     else
     {
-      current = current + delta;
+      current += delta;
 
       if (current < minU)
         current = maxU - (minU - current);

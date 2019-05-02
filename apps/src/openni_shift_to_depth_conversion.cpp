@@ -66,7 +66,7 @@ class SimpleOpenNIViewer
   public:
     SimpleOpenNIViewer () :
       viewer_ ("Input Point Cloud - Shift-to-depth conversion viewer"),
-      grabber_(0)
+      grabber_(nullptr)
     {
     }
 

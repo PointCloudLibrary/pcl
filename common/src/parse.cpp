@@ -427,7 +427,7 @@ pcl::console::parse_multiple_arguments (int argc, const char * const * argv, con
       values.push_back (val);
     }
   }
-  if (values.size () == 0)
+  if (values.empty ())
     return (false);
   else
     return (true);
@@ -446,7 +446,7 @@ pcl::console::parse_multiple_arguments (int argc, const char * const * argv, con
       values.push_back (val);
     }
   }
-  if (values.size () == 0)
+  if (values.empty ())
     return (false);
   else
     return (true);
@@ -465,7 +465,7 @@ pcl::console::parse_multiple_arguments (int argc, const char * const * argv, con
       values.push_back (val);
     }
   }
-  if (values.size () == 0)
+  if (values.empty ())
     return (false);
   else
     return (true);
@@ -483,7 +483,7 @@ pcl::console::parse_multiple_arguments (int argc, const char * const * argv, con
       values.emplace_back(argv[i]);
     }
   }
-  if (values.size () == 0)
+  if (values.empty ())
     return (false);
   else
     return (true);
@@ -513,7 +513,7 @@ pcl::console::parse_multiple_2x_arguments (int argc, const char * const * argv, 
       values_s.push_back (s);
     }
   }
-  if (values_f.size () == 0)
+  if (values_f.empty ())
     return (false);
   else
     return (true);
@@ -548,7 +548,7 @@ pcl::console::parse_multiple_3x_arguments (int argc, const char * const * argv, 
       values_t.push_back (t);
     }
   }
-  if (values_f.size () == 0)
+  if (values_f.empty ())
     return (false);
   else
     return (true);

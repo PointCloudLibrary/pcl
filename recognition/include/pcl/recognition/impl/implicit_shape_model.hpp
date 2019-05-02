@@ -89,7 +89,7 @@ pcl::features::ISMVoteList<PointT>::getColoredCloud (typename pcl::PointCloud<Po
   colored_cloud->height = 0;
   colored_cloud->width = 1;
 
-  if (cloud != 0)
+  if (cloud != nullptr)
   {
     colored_cloud->height += static_cast<uint32_t> (cloud->points.size ());
     point.r = 255;
@@ -227,7 +227,7 @@ pcl::features::ISMVoteList<PointT>::validateTree ()
 {
   if (!tree_is_valid_)
   {
-    if (tree_ == 0)
+    if (tree_ == nullptr)
       tree_.reset (new pcl::KdTreeFLANN<pcl::InterestPoint>);
     tree_->setInputCloud (votes_);
     k_ind_.resize ( votes_->points.size (), -1 );
@@ -427,7 +427,7 @@ pcl::features::ISMModel::loadModelFromfile (std::string& file_name)
   char line[256];
 
   input_file.getline (line, 256, ' ');
-  number_of_classes_ = static_cast<unsigned int> (strtol (line, 0, 10));
+  number_of_classes_ = static_cast<unsigned int> (strtol (line, nullptr, 10));
   input_file.getline (line, 256, ' '); number_of_visual_words_ = atoi (line);
   input_file.getline (line, 256, ' '); number_of_clusters_ = atoi (line);
   input_file.getline (line, 256, ' '); descriptors_dimension_ = atoi (line);
@@ -700,7 +700,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::trainISM (
 {
   bool success = true;
 
-  if (trained_model == 0)
+  if (trained_model == nullptr)
     return (false);
   trained_model->reset ();
 
@@ -758,13 +758,13 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::findObject
 {
   typename pcl::features::ISMVoteList<PointT>::Ptr out_votes (new pcl::features::ISMVoteList<PointT> ());
 
-  if (in_cloud->points.size () == 0)
+  if (in_cloud->points.empty ())
     return (out_votes);
 
   typename pcl::PointCloud<PointT>::Ptr sampled_point_cloud (new pcl::PointCloud<PointT> ());
   typename pcl::PointCloud<NormalT>::Ptr sampled_normal_cloud (new pcl::PointCloud<NormalT> ());
   simplifyCloud (in_cloud, in_normals, sampled_point_cloud, sampled_normal_cloud);
-  if (sampled_point_cloud->points.size () == 0)
+  if (sampled_point_cloud->points.empty ())
     return (out_votes);
 
   typename pcl::PointCloud<pcl::Histogram<FeatureSize> >::Ptr feature_cloud (new pcl::PointCloud<pcl::Histogram<FeatureSize> > ());
@@ -854,7 +854,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
 
   int n_key_points = 0;
 
-  if (training_clouds_.size () == 0 || training_classes_.size () == 0 || feature_estimator_ == 0)
+  if (training_clouds_.empty () || training_classes_.empty () || feature_estimator_ == nullptr)
     return (false);
 
   for (size_t i_cloud = 0; i_cloud < training_clouds_.size (); i_cloud++)
@@ -870,7 +870,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
     typename pcl::PointCloud<PointT>::Ptr sampled_point_cloud (new pcl::PointCloud<PointT> ());
     typename pcl::PointCloud<NormalT>::Ptr sampled_normal_cloud (new pcl::PointCloud<NormalT> ());
     simplifyCloud (training_clouds_[i_cloud], training_normals_[i_cloud], sampled_point_cloud, sampled_normal_cloud);
-    if (sampled_point_cloud->points.size () == 0)
+    if (sampled_point_cloud->points.empty ())
       continue;
 
     shiftCloud (training_clouds_[i_cloud], models_center);
@@ -938,7 +938,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::clusterDes
 template <int FeatureSize, typename PointT, typename NormalT> void
 pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateSigmas (std::vector<float>& sigmas)
 {
-  if (training_sigmas_.size () != 0)
+  if (!training_sigmas_.empty ())
   {
     sigmas.resize (training_sigmas_.size (), 0.0f);
     for (size_t i_sigma = 0; i_sigma < training_sigmas_.size (); i_sigma++)
@@ -1272,7 +1272,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::computeKMe
   int feature_dimension = points_to_cluster.rows () > 1 ? FeatureSize : 1;
 
   attempts = std::max (attempts, 1);
-  srand (static_cast<unsigned int> (time (0)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   Eigen::MatrixXi labels (number_of_points, 1);
 

@@ -117,7 +117,7 @@ Selection::invertSelect ()
 std::string
 Selection::getStat () const
 {
-  if (selected_indices_.size() == 0)
+  if (selected_indices_.empty ())
     return ("");
   std::string title = "Total number of selected points: ";
   std::string num_str;

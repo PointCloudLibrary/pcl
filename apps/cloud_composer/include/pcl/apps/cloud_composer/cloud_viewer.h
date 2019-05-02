@@ -58,7 +58,7 @@ namespace pcl
 
       public:
         
-        CloudViewer (QWidget* parent = 0);
+        CloudViewer (QWidget* parent = nullptr);
         ~CloudViewer();
         ProjectModel* getModel () const;
 

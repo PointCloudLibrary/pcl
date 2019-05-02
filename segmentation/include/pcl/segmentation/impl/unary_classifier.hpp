@@ -68,9 +68,6 @@ pcl::UnaryClassifier<PointT>::~UnaryClassifier ()
 template <typename PointT> void
 pcl::UnaryClassifier<PointT>::setInputCloud (typename pcl::PointCloud<PointT>::Ptr input_cloud)
 {
-  if (input_cloud_ != NULL)
-    input_cloud_.reset ();
-
   input_cloud_ = input_cloud;
 
   pcl::PointCloud <PointT> point;
@@ -406,7 +403,7 @@ pcl::UnaryClassifier<PointT>::trainWithLabel (
 template <typename PointT> void
 pcl::UnaryClassifier<PointT>::segment (pcl::PointCloud<pcl::PointXYZRGBL>::Ptr &out)
 {
-  if (trained_features_.size () > 0)
+  if (!trained_features_.empty ())
   {
     // convert cloud into cloud with XYZ
     pcl::PointCloud<pcl::PointXYZ>::Ptr tmp_cloud (new pcl::PointCloud<pcl::PointXYZ>);

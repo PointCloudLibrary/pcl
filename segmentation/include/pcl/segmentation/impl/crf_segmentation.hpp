@@ -71,9 +71,6 @@ pcl::CrfSegmentation<PointT>::~CrfSegmentation ()
 template <typename PointT> void
 pcl::CrfSegmentation<PointT>::setInputCloud (typename pcl::PointCloud<PointT>::Ptr input_cloud)
 {
-  if (input_cloud_ != NULL)
-    input_cloud_.reset ();
-
   input_cloud_ = input_cloud;
 }
 
@@ -81,9 +78,6 @@ pcl::CrfSegmentation<PointT>::setInputCloud (typename pcl::PointCloud<PointT>::P
 template <typename PointT> void
 pcl::CrfSegmentation<PointT>::setAnnotatedCloud (typename pcl::PointCloud<pcl::PointXYZRGBL>::Ptr anno_cloud)
 {
-  if (anno_cloud_ != NULL)
-    anno_cloud_.reset ();
-
   anno_cloud_ = anno_cloud;
 }
 
@@ -91,9 +85,6 @@ pcl::CrfSegmentation<PointT>::setAnnotatedCloud (typename pcl::PointCloud<pcl::P
 template <typename PointT> void
 pcl::CrfSegmentation<PointT>::setNormalCloud (typename pcl::PointCloud<pcl::PointNormal>::Ptr normal_cloud)
 {
-  if (normal_cloud_ != NULL)
-    normal_cloud_.reset ();
-
   normal_cloud_ = normal_cloud;
 }
 
@@ -165,7 +156,7 @@ pcl::CrfSegmentation<PointT>::createVoxelGrid ()
   voxel_grid_.filter (*filtered_cloud_);
 
   // Filter the annotated cloud
-  if (anno_cloud_->points.size () > 0)
+  if (!anno_cloud_->points.empty ())
   {
     pcl::VoxelGridLabel vg;
 
@@ -181,7 +172,7 @@ pcl::CrfSegmentation<PointT>::createVoxelGrid ()
   }
 
   // Filter the annotated cloud
-  if (normal_cloud_->points.size () > 0)
+  if (!normal_cloud_->points.empty ())
   {
     pcl::VoxelGrid<pcl::PointNormal> vg;
     vg.setInputCloud (normal_cloud_);
@@ -329,7 +320,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
                                                      unsigned int n_labels)
 {
   /* initialize random seed: */
-  srand ( static_cast<unsigned int> (time (NULL)) );
+  srand ( static_cast<unsigned int> (time (nullptr)) );
   //srand ( time (NULL) );
 
   // Certainty that the groundtruth is correct
@@ -342,7 +333,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
   {
     int label = filtered_anno_->points[k].label;
 
-    if (labels.size () == 0 && label > 0)
+    if (labels.empty () && label > 0)
       labels.push_back (label);
 
     // add color to the color vector if not added yet
@@ -408,7 +399,7 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
   // create unary potentials
   std::vector<int> labels;
   std::vector<float> unary;
-  if (anno_cloud_->points.size () > 0)
+  if (!anno_cloud_->points.empty ())
   {
     unary.resize (N * n_labels);
     createUnaryPotentials (unary, labels, n_labels);

@@ -165,9 +165,9 @@ void
 pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters (pcl::visualization::Camera &camera, int viewport) const
 {
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     if (viewport++ == i)
     {
@@ -241,9 +241,9 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const Eig
 
 
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i)
@@ -267,9 +267,9 @@ void
 pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const pcl::visualization::Camera &camera, int viewport)
 {
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while (renderer = rens_->GetNextItem ())
   {
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i)
@@ -527,7 +527,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
   FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
 
-  if (wif_->GetInput () == NULL)
+  if (!wif_->GetInput ())
   {
     wif_->SetInput (Interactor->GetRenderWindow ());
     wif_->Modified ();
@@ -854,7 +854,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     case 'j': case 'J':
     {
       char cam_fn[80], snapshot_fn[80];
-      unsigned t = static_cast<unsigned> (time (0));
+      unsigned t = static_cast<unsigned> (time (nullptr));
       sprintf (snapshot_fn, "screenshot-%d.png" , t);
       saveScreenshot (snapshot_fn);
 
@@ -969,12 +969,12 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       else
       {
         AnimState = VTKIS_ANIM_ON;
-        vtkAssemblyPath *path = NULL;
+        vtkAssemblyPath *path = nullptr;
         Interactor->GetPicker ()->Pick (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1], 0.0, CurrentRenderer);
         vtkAbstractPropPicker *picker;
         if ((picker = vtkAbstractPropPicker::SafeDownCast (Interactor->GetPicker ())))
           path = picker->GetPath ();
-        if (path != NULL)
+        if (path)
           Interactor->FlyTo (CurrentRenderer, picker->GetPickPosition ());
         AnimState = VTKIS_ANIM_OFF;
       }
@@ -1061,7 +1061,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       if (!keymod)
       {
         FindPokedRenderer(Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
-        if(CurrentRenderer != 0)
+        if(CurrentRenderer)
           CurrentRenderer->ResetCamera ();
         else
           PCL_WARN ("no current renderer on the interactor style.");

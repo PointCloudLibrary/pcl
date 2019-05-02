@@ -96,7 +96,7 @@ pcl::ihs::OfflineIntegration::~OfflineIntegration ()
 void
 pcl::ihs::OfflineIntegration::start ()
 {
-  QString dir = QFileDialog::getExistingDirectory (0, "Please select a directory containing .pcd and .transform files.");
+  QString dir = QFileDialog::getExistingDirectory (nullptr, "Please select a directory containing .pcd and .transform files.");
 
   if (dir.isEmpty ())
   {
@@ -141,7 +141,7 @@ pcl::ihs::OfflineIntegration::computationThread ()
   Base::setPivot ("model");
   Base::addMesh (mesh_model_, "model");
 
-  if (filenames.size () < 1)
+  if (filenames.empty ())
   {
     return;
   }

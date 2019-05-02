@@ -200,7 +200,7 @@ void run (const char* file_name, float voxel_size)
 
   // Build the octree with the desired resolution
   ORROctree octree;
-  if ( normals_in->size () )
+  if ( !normals_in->empty () )
     octree.build (*points_in, voxel_size, &*normals_in);
   else
     octree.build (*points_in, voxel_size);
@@ -211,7 +211,7 @@ void run (const char* file_name, float voxel_size)
   // Get the average points in every full octree leaf
   octree.getFullLeavesPoints (*points_out);
   // Get the average normal at the points in each leaf
-  if ( normals_in->size () )
+  if ( !normals_in->empty () )
     octree.getNormalsOfFullLeaves (*normals_out);
 
   // The visualizer
@@ -224,7 +224,7 @@ void run (const char* file_name, float voxel_size)
   // Add the point clouds
   viz.addPointCloud (points_in, "cloud in");
   viz.addPointCloud (points_out, "cloud out");
-  if ( normals_in->size () )
+  if ( !normals_in->empty () )
     viz.addPointCloudNormals<PointXYZ,Normal> (points_out, normals_out, 1, 6.0f, "normals out");
 
   // Change the appearance

@@ -64,7 +64,7 @@ namespace pcl
     OutofcoreBreadthFirstIterator<PointT, ContainerT>&
     OutofcoreBreadthFirstIterator<PointT, ContainerT>::operator++ ()
     {
-      if (FIFO_.size ())
+      if (!FIFO_.empty ())
       {
         // Get the first entry from the FIFO queue
         OctreeDiskNode *node = FIFO_.front ();
@@ -75,7 +75,7 @@ namespace pcl
         {
           // Get the branch node
           BranchNode* branch = static_cast<BranchNode*> (node);
-          OctreeDiskNode* child = 0;
+          OctreeDiskNode* child = nullptr;
 
           // Iterate over the branches children
           for (unsigned char child_idx = 0; child_idx < 8 ; child_idx++)
@@ -94,13 +94,13 @@ namespace pcl
       skip_child_voxels_ = false;
 
       // If there's a queue, set the current node to the first entry
-      if (FIFO_.size ())
+      if (!FIFO_.empty ())
       {
         this->currentNode_ = FIFO_.front ();
       }
       else
       {
-        this->currentNode_ = NULL;
+        this->currentNode_ = nullptr;
       }
 
       return (*this);

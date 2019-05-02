@@ -220,7 +220,7 @@ namespace pcl
 
         multAB[nbins_ - 1].r = input_ftt_negate.points[0].histogram[nbins_ - 1] * target_ftt.points[0].histogram[nbins_ - 1];
 
-        kiss_fft_cfg mycfg = kiss_fft_alloc (nr_bins_after_padding, 1, NULL, NULL);
+        kiss_fft_cfg mycfg = kiss_fft_alloc (nr_bins_after_padding, 1, nullptr, nullptr);
         kiss_fft_cpx * invAB = new kiss_fft_cpx[nr_bins_after_padding];
         kiss_fft (mycfg, multAB, invAB);
 

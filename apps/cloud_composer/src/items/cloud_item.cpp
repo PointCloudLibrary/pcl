@@ -122,18 +122,18 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
     if (field_names.contains ("x") && field_names.contains ("y") && field_names.contains ("z"))
       point_type_ = (point_type_ | PointTypeFlags::XYZ);  
     if (field_names.contains ("rgb"))
-      point_type_ = point_type_ | PointTypeFlags::RGB;
+      point_type_ |= PointTypeFlags::RGB;
     if (field_names.contains ("rgba"))
-      point_type_ = point_type_ | PointTypeFlags::RGBA;
+      point_type_ |= PointTypeFlags::RGBA;
     if (field_names.contains ("normal_x") && field_names.contains ("normal_y") && field_names.contains ("normal_z"))
     {
       if (field_names.contains ("curvature"))
-        point_type_ = point_type_ | PointTypeFlags::NORMAL;
+        point_type_ |= PointTypeFlags::NORMAL;
       else
-        point_type_ = point_type_ | PointTypeFlags::AXIS;
+        point_type_ |= PointTypeFlags::AXIS;
     }
     if (field_names.contains ("h") && field_names.contains ("s") && field_names.contains ("v"))
-      point_type_ = point_type_ | PointTypeFlags::HSV; 
+      point_type_ |= PointTypeFlags::HSV; 
     
     QVariant cloud_pointer_variant;
     QVariant kd_tree_variant;
@@ -172,7 +172,7 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
       }
         
       case (PointTypeFlags::NONE):
-        QMessageBox::warning (0,"Unknown blob type!", "Could not find appropriate template type for this cloud blob! Only blob functionality enabled!");
+        QMessageBox::warning (nullptr,"Unknown blob type!", "Could not find appropriate template type for this cloud blob! Only blob functionality enabled!");
     }
     
     this->setData (cloud_pointer_variant, ItemDataRole::CLOUD_TEMPLATED);

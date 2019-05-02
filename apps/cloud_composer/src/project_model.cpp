@@ -112,7 +112,7 @@ pcl::cloud_composer::ProjectModel::setPointSelection (boost::shared_ptr<Selectio
   {
     pcl::PointIndices::Ptr found_indices = boost::make_shared<pcl::PointIndices>();
     selected_event->findIndicesInItem (cloud_item, found_indices);
-    if (found_indices->indices.size () > 0)
+    if (!found_indices->indices.empty ())
     {
       qDebug () << "Found "<<found_indices->indices.size ()<<" points in "<<cloud_item->text ();
       selected_item_index_map_. insert (cloud_item, found_indices);
@@ -162,7 +162,7 @@ void
 pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
 {
   qDebug () << "Inserting cloud from file...";
-  QString filename = QFileDialog::getOpenFileName (0,tr ("Select cloud to open"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
+  QString filename = QFileDialog::getOpenFileName (nullptr,tr ("Select cloud to open"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
   if ( filename.isNull ())
   {
     qWarning () << "No file selected, no cloud loaded";
@@ -195,16 +195,16 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
   QString short_filename = file_info.baseName ();
   //Check if this name already exists in the project - if so, append digit
   QList <QStandardItem*> items = findItems (short_filename);
-  if (items.size () > 0)
+  if (!items.empty ())
   {
     int k = 2;
     items = findItems (short_filename+ tr ("-%1").arg (k));
-    while (items.size () > 0)
+    while (!items.empty ())
     {  
       ++k;
       items = findItems (short_filename+ tr ("-%1").arg (k));
     }
-    short_filename = short_filename+ tr ("-%1").arg (k);
+    short_filename += tr ("-%1").arg (k);
   }
   CloudItem* new_item = new CloudItem (short_filename, cloud_blob, origin, orientation, true);
    
@@ -216,7 +216,7 @@ void
 pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
 {
   qDebug () << "Inserting cloud from RGB and Depth files...";
-  QString rgb_filename = QFileDialog::getOpenFileName (0,tr ("Select rgb image file to open"), last_directory_.absolutePath (), tr ("Images(*.png *.bmp *.tif *.ppm)"));
+  QString rgb_filename = QFileDialog::getOpenFileName (nullptr,tr ("Select rgb image file to open"), last_directory_.absolutePath (), tr ("Images(*.png *.bmp *.tif *.ppm)"));
   QString depth_filename;
   if ( rgb_filename.isNull ())
   {
@@ -232,7 +232,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
     depth_filter << base_name.split("_").at(0) + "_depth.*";
     last_directory_.setNameFilters (depth_filter);
     QFileInfoList depth_info_list = last_directory_.entryInfoList ();
-    if (depth_info_list.size () == 0)
+    if (depth_info_list.empty ())
     {
       qCritical () << "Could not find depth file in format (rgb file base name)_depth.*";
       return;
@@ -328,16 +328,16 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
   QString short_filename = file_info.baseName ();
   //Check if this name already exists in the project - if so, append digit
   QList <QStandardItem*> items = findItems (short_filename);
-  if (items.size () > 0)
+  if (!items.empty ())
   {
     int k = 2;
     items = findItems (short_filename+ tr ("-%1").arg (k));
-    while (items.size () > 0)
+    while (!items.empty ())
     {  
       ++k;
       items = findItems (short_filename+ tr ("-%1").arg (k));
     }
-    short_filename = short_filename+ tr ("-%1").arg (k);
+    short_filename += tr ("-%1").arg (k);
   }
 
   CloudItem* new_item = CloudItem::createCloudItemFromTemplate<PointXYZRGB> (short_filename,cloud);
@@ -350,7 +350,7 @@ pcl::cloud_composer::ProjectModel::saveSelectedCloudToFile ()
 {
   qDebug () << "Saving cloud to file...";
   QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
-  if (selected_indexes.size () == 0)
+  if (selected_indexes.empty ())
   {
     QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "No Cloud Selected", "Cannot save, no cloud is selected in the browser or cloud view");
     return;
@@ -369,7 +369,7 @@ pcl::cloud_composer::ProjectModel::saveSelectedCloudToFile ()
     return;
   }
   
-  QString filename = QFileDialog::getSaveFileName (0,tr ("Save Cloud"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
+  QString filename = QFileDialog::getSaveFileName (nullptr,tr ("Save Cloud"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
   if ( filename.isNull ())
   {
     qWarning () << "No file selected, not saving";
@@ -395,7 +395,7 @@ pcl::cloud_composer::ProjectModel::enqueueToolAction (AbstractTool* tool)
   //Get the currently selected item(s), put them in a list, and create the command
   ConstItemList input_data;
   QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
-  if (selected_indexes.size () == 0)
+  if (selected_indexes.empty ())
   {
     QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "No Items Selected", "Cannot use tool, no item is selected in the browser or cloud view");
     return;
@@ -458,7 +458,7 @@ pcl::cloud_composer::ProjectModel::deleteSelectedItems ()
 {
   
   QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
-  if (selected_indexes.size () == 0)
+  if (selected_indexes.empty ())
   {
     QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "No Items Selected", "Cannot execute delete command, no item is selected in the browser or cloud view");
     return;
@@ -475,7 +475,7 @@ pcl::cloud_composer::ProjectModel::deleteSelectedItems ()
  // qDebug () << "Input for command is "<<input_data.size () << " element(s)";
   DeleteItemCommand* delete_command = new DeleteItemCommand (ConstItemList ());
   delete_command->setInputData (input_data);
-  if (delete_command->runCommand (0))
+  if (delete_command->runCommand (nullptr))
     commandCompleted(delete_command);
   else
     qCritical () << "Execution of delete command failed!";

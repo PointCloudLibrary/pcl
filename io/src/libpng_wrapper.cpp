@@ -92,7 +92,7 @@ namespace pcl
       png_infop info_ptr;
       volatile int channels;
 
-      if (image_arg.size () ==0)
+      if (image_arg.empty ())
         return;
 
       // Get amount of channels
@@ -119,7 +119,7 @@ namespace pcl
       assert (image_arg.size () == width_arg*height_arg*channels);
 
       // Initialize write structure
-      png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING, 0, 0, 0);
+      png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
       assert (png_ptr && "creating png_create_write_structpng_create_write_struct failed");
 
       // Initialize info structure
@@ -163,12 +163,12 @@ namespace pcl
       }
 
       // End write
-      png_write_end (png_ptr, 0);
+      png_write_end (png_ptr, nullptr);
 
       if (info_ptr)
         png_free_data (png_ptr, info_ptr, PNG_FREE_ALL, -1);
       if (png_ptr)
-        png_destroy_write_struct (&png_ptr, 0);
+        png_destroy_write_struct (&png_ptr, nullptr);
     }
     
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -187,10 +187,10 @@ namespace pcl
 
       png_bytep * row_pointers;
 
-      if (pngData_arg.size () == 0)
+      if (pngData_arg.empty ())
         return;
 
-      png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING, 0, 0, 0);
+      png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
       assert (png_ptr && "creating png_create_write_structpng_create_write_struct failed");
 
       // Initialize info structure
@@ -206,7 +206,7 @@ namespace pcl
       png_read_info (png_ptr, info_ptr);
 
       png_get_IHDR (png_ptr, info_ptr, &png_width, &png_height, &png_bit_depth,
-          &png_color_type, &png_interlace_type, NULL, NULL);
+          &png_color_type, &png_interlace_type, nullptr, nullptr);
 
       // ensure a color bit depth of 8
       assert(png_bit_depth==sizeof(T)*8);
@@ -248,7 +248,7 @@ namespace pcl
       if (info_ptr)
         png_free_data (png_ptr, info_ptr, PNG_FREE_ALL, -1);
       if (png_ptr)
-        png_destroy_read_struct (&png_ptr, 0, 0);
+        png_destroy_read_struct (&png_ptr, nullptr, nullptr);
       if (row_pointers)
         free (row_pointers);
     }

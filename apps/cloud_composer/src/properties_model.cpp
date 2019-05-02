@@ -49,7 +49,7 @@ pcl::cloud_composer::PropertiesModel::addProperty (const QString prop_name, QVar
   if (category.size () > 0)
   {
     QList<QStandardItem*> items = findItems (category);
-    if (items.size () == 0)
+    if (items.empty ())
       qWarning () << "No category named "<<prop_name<<" found in "<<parent_item_->text ()<<" adding to root";
     else if (items.size () > 1)
       qCritical () << "Multiple categories with same name found!! This is not good...";
@@ -82,7 +82,7 @@ pcl::cloud_composer::PropertiesModel::getProperty (const QString prop_name) cons
 {
   //qDebug () << "Searching for property " << prop_name;
   QList<QStandardItem*> items = findItems (prop_name, Qt::MatchExactly | Qt::MatchRecursive, 0);
-  if (items.size () == 0)
+  if (items.empty ())
   {
     qWarning () << "No property named "<<prop_name<<" found in "<<parent_item_->text ();
     return QVariant ();
@@ -97,7 +97,7 @@ pcl::cloud_composer::PropertiesModel::getProperty (const QString prop_name) cons
  // qDebug () << "Prop name="<<prop_name<<" row="<<property->row ()<<" col="<<property->column();
   int row = property->row ();
   QStandardItem* parent_item = property->parent ();
-  if (parent_item == 0)
+  if (parent_item == nullptr)
     parent_item = invisibleRootItem ();
   return parent_item->child (row,1)->data (Qt::EditRole);
 }

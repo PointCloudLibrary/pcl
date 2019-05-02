@@ -465,7 +465,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
     }
   }
 
-  if (material_files.size () > 0)
+  if (!material_files.empty ())
   {
     for (const auto &material_file : material_files)
     {

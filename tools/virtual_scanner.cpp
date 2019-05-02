@@ -94,7 +94,7 @@ loadDataSet (const char* file_name)
   else
   {
     PCL_ERROR ("Needs a VTK/PLY file to continue.\n");
-    return (NULL);
+    return (nullptr);
   }
 }
 

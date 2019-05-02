@@ -114,11 +114,11 @@ OutofcoreCloud::pcdReaderThread ()
 // Operators
 // -----------------------------------------------------------------------------
 OutofcoreCloud::OutofcoreCloud (std::string name, boost::filesystem::path& tree_root) :
-    Object (name), display_depth_ (1), points_loaded_ (0), data_loaded_(0), render_camera_(NULL), lod_pixel_threshold_(10000)
+    Object (name), display_depth_ (1), points_loaded_ (0), data_loaded_(0), render_camera_(nullptr), lod_pixel_threshold_(10000)
 {
 
   // Create the pcd reader thread once for all outofcore nodes
-  if (OutofcoreCloud::pcd_reader_thread.get() == NULL)
+  if (OutofcoreCloud::pcd_reader_thread.get() == nullptr)
   {
 //    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<boost::thread>(new boost::thread(&OutofcoreCloud::pcdReaderThread, this));
     OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<boost::thread>(new boost::thread(&OutofcoreCloud::pcdReaderThread));
@@ -178,7 +178,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
   Scene *scene = Scene::instance ();
   Camera *camera = scene->getCamera (active_camera);
 
-  if (render_camera_ != NULL && render_camera_->getName() == camera->getName ())
+  if (render_camera_ != nullptr && render_camera_->getName() == camera->getName ())
   {
     renderer->ComputeAspect ();
     //double *aspect = renderer->GetAspect ();
@@ -196,7 +196,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
 
     cloud_actors_->RemoveAllItems ();
 
-    while ( *breadth_first_it !=0 )
+    while ( *breadth_first_it !=nullptr )
     {
       OctreeDiskNode *node = *breadth_first_it;
 

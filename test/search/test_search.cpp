@@ -291,7 +291,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
   vector<bool> indices_mask (point_cloud->size (), true);
   vector<bool> nan_mask (point_cloud->size (), true);
   
-  if (input_indices.size () != 0)
+  if (!input_indices.empty ())
   {
     indices_mask.assign (point_cloud->size (), false);
     for (const int &input_index : input_indices)
@@ -307,7 +307,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
   }
   
   boost::shared_ptr<vector<int> > input_indices_;
-  if (input_indices.size ())
+  if (!input_indices.empty ())
     input_indices_.reset (new vector<int> (input_indices));
   
   #pragma omp parallel for
@@ -361,7 +361,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
   vector<bool> indices_mask (point_cloud->size (), true);
   vector<bool> nan_mask (point_cloud->size (), true);
   
-  if (input_indices.size () != 0)
+  if (!input_indices.empty ())
   {
     indices_mask.assign (point_cloud->size (), false);
     for (const int &input_index : input_indices)
@@ -377,7 +377,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
   }
   
   boost::shared_ptr<vector<int> > input_indices_;
-  if (input_indices.size ())
+  if (!input_indices.empty ())
     input_indices_.reset (new vector<int> (input_indices));
   
   #pragma omp parallel for

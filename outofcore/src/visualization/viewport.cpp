@@ -172,7 +172,7 @@ Viewport::viewportHudUpdate ()
   for (const auto &object : objects)
   {
     const auto cloud = dynamic_cast<const OutofcoreCloud*> (object);
-    if (cloud != NULL)
+    if (cloud != nullptr)
     {
       points_loaded += cloud->getPointsLoaded ();
       data_loaded += cloud->getDataLoaded ();

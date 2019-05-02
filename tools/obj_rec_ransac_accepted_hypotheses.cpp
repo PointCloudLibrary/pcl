@@ -73,7 +73,7 @@ using namespace recognition;
 using namespace visualization;
 
 bool
-vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_dst = NULL);
+vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_dst = nullptr);
 
 //#define _SHOW_SCENE_POINTS_
 #define _SHOW_OCTREE_POINTS_
@@ -359,9 +359,9 @@ update (CallbackParameters* params)
   axis(2,0) = static_cast<float> (aux::getRandomInteger (-100, 100));
   // Normalize the axis
   float len = std::sqrt (axis(0,0)*axis(0,0) + axis(1,0)*axis(1,0) + axis(2,0)*axis(2,0));
-  axis(0,0) = axis(0,0)/len;
-  axis(1,0) = axis(1,0)/len;
-  axis(2,0) = axis(2,0)/len;
+  axis(0,0) /=len;
+  axis(1,0) /=len;
+  axis(2,0) /=len;
 
   cout << "Input angle = " << angle << endl;
   cout << "Input axis = \n" << axis << endl;

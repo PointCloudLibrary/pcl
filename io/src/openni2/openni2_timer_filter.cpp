@@ -56,7 +56,7 @@ namespace pcl
 
       double OpenNI2TimerFilter::getMedian ()
       {
-        if (buffer_.size ()>0)
+        if (!buffer_.empty ())
         {
           std::deque<double> sort_buffer = buffer_;
 
@@ -70,7 +70,7 @@ namespace pcl
       double
       OpenNI2TimerFilter::getMovingAvg ()
       {
-        if (buffer_.size () > 0)
+        if (!buffer_.empty ())
         {
           double sum = 0;
 

@@ -216,7 +216,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
 int
 main (int argc, char** argv)
 {
-  srand (static_cast<unsigned int> (time (0)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   print_info ("The viewer window provides interactive commands; for help, press 'h' or 'H' from within the window.\n");
 
@@ -235,7 +235,7 @@ main (int argc, char** argv)
   std::vector<int> p_file_indices   = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
   std::vector<int> vtk_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".vtk");
 
-  if (p_file_indices.size () == 0 && vtk_file_indices.size () == 0)
+  if (p_file_indices.empty () && vtk_file_indices.empty ())
   {
     print_error ("No .PCD or .VTK file given. Nothing to visualize.\n");
     return (-1);
@@ -306,12 +306,12 @@ main (int argc, char** argv)
     int y_s = static_cast<int>(floor (sqrt (static_cast<float>(p_file_indices.size () + vtk_file_indices.size ()))));
     x_s = y_s + static_cast<int>(ceil (double (p_file_indices.size () + vtk_file_indices.size ()) / double (y_s) - y_s));
 
-    if (p_file_indices.size () != 0)
+    if (!p_file_indices.empty ())
     {
       print_highlight ("Preparing to load "); print_value ("%d", p_file_indices.size ()); print_info (" pcd files.\n");
     }
 
-    if (vtk_file_indices.size () != 0)
+    if (!vtk_file_indices.empty ())
     {
       print_highlight ("Preparing to load "); print_value ("%d", vtk_file_indices.size ()); print_info (" vtk files.\n");
     }
@@ -324,14 +324,14 @@ main (int argc, char** argv)
   }
 
   // Fix invalid multiple arguments
-  if (psize.size () != p_file_indices.size () && psize.size () > 0)
+  if (psize.size () != p_file_indices.size () && !psize.empty ())
     for (size_t i = psize.size (); i < p_file_indices.size (); ++i)
       psize.push_back (1);
-  if (opaque.size () != p_file_indices.size () && opaque.size () > 0)
+  if (opaque.size () != p_file_indices.size () && !opaque.empty ())
     for (size_t i = opaque.size (); i < p_file_indices.size (); ++i)
       opaque.push_back (1.0);
 
-  if (shadings.size () != p_file_indices.size () && shadings.size () > 0)
+  if (shadings.size () != p_file_indices.size () && !shadings.empty ())
     for (size_t i = shadings.size (); i < p_file_indices.size (); ++i)
       shadings.emplace_back("flat");
 
@@ -387,15 +387,15 @@ main (int argc, char** argv)
       p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, fcolor_r[i], fcolor_g[i], fcolor_b[i], cloud_name.str ());
 
     // Change the shape rendered point size
-    if (psize.size () > 0)
+    if (!psize.empty ())
       p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize.at (i), cloud_name.str ());
 
     // Change the shape rendered opacity
-    if (opaque.size () > 0)
+    if (!opaque.empty ())
       p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
 
     // Change the shape rendered shading
-    if (shadings.size () > 0)
+    if (!shadings.empty ())
     {
       if (shadings[i] == "flat")
       {
@@ -650,11 +650,11 @@ main (int argc, char** argv)
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_IMMEDIATE_RENDERING, 1.0, cloud_name.str ());
 
     // Change the cloud rendered point size
-    if (psize.size () > 0)
+    if (!psize.empty ())
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize.at (i), cloud_name.str ());
 
     // Change the cloud rendered opacity
-    if (opaque.size () > 0)
+    if (!opaque.empty ())
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
 
     // Reset camera viewpoint to center of cloud if camera parameters were not passed manually and this is the first loaded cloud

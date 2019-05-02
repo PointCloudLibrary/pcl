@@ -734,29 +734,29 @@ TEST (PCL,3DSCEstimation)
   //EXPECT_NEAR ((*sc3ds)[0].rf[7], -0.6074f, 1e-4f);
   //EXPECT_NEAR ((*sc3ds)[0].rf[8], -0.7843f, 1e-4f);
 
-  EXPECT_NEAR ((*sc3ds)[0].rf[0], 0.0f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[0].rf[1], 0.0f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[0].rf[2], 0.0f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[0].rf[3], 0.0f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[0].rf[4], 0.0f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[0].rf[5], 0.0f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[0].rf[6], 0.0f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[0].rf[7], 0.0f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[0].rf[8], 0.0f, 1e-4f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[0], 0.0f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[1], 0.0f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[2], 0.0f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[3], 0.0f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[4], 0.0f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[5], 0.0f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[6], 0.0f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[7], 0.0f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[8], 0.0f);
 
   //EXPECT_EQ ((*sc3ds)[0].descriptor.size (), 64);
 
-  EXPECT_NEAR ((*sc3ds)[94].descriptor[88], 55.2712f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[94].descriptor[584], 71.1088f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[94].descriptor[1106], 79.5896f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[94].descriptor[1560], 0.f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[94].descriptor[1929], 36.0636f, 1e-4f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[88], 55.271168f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[584], 71.108765f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[1106], 79.5896f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[1560], 0.f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[1929], 36.063553f);
 
-  EXPECT_NEAR ((*sc3ds)[108].descriptor[67], 0.f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[108].descriptor[548], 126.141f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[108].descriptor[1091], 30.4704f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[108].descriptor[1421], 38.088f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[108].descriptor[1900], 43.7994f, 1e-4f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[67], 0.f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[548], 126.14106f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1091], 30.470392f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1421], 38.08799f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1900], 43.799442f);
 
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));

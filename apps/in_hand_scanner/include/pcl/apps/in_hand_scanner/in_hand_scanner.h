@@ -120,7 +120,7 @@ namespace pcl
         } FileType;
 
         /** \brief Constructor. */
-        explicit InHandScanner (Base* parent=0);
+        explicit InHandScanner (Base* parent=nullptr);
 
         /** \brief Destructor. */
         ~InHandScanner ();

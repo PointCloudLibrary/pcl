@@ -219,7 +219,7 @@ pcl::people::HeadBasedSubclustering<PointT>::createSubClusters (pcl::people::Per
     PointT* current_point = &cloud_->points[*points_iterator];        // current point cloud point
     Eigen::Vector3f p_current_eigen(current_point->x, current_point->y, current_point->z);  // conversion to eigen
     float t = p_current_eigen.dot(head_ground_coeffs) / normalize_factor;       // height from the ground
-    p_current_eigen = p_current_eigen - head_ground_coeffs * t;       // projection of the point on the groundplane
+    p_current_eigen -= head_ground_coeffs * t;       // projection of the point on the groundplane
 
     int i = 0;
     bool correspondence_detected = false;
@@ -260,12 +260,12 @@ pcl::people::HeadBasedSubclustering<PointT>::subcluster (std::vector<pcl::people
     PCL_ERROR ("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Floor parameters have not been set or they are not valid!\n");
     return;
   }
-  if (cluster_indices_.size() == 0)
+  if (cluster_indices_.empty ())
   {
     PCL_ERROR ("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Cluster indices have not been set!\n");
     return;
   }
-  if (cloud_ == NULL)
+  if (cloud_ == nullptr)
   {
     PCL_ERROR ("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Input cloud has not been set!\n");
     return;

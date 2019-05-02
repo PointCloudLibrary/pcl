@@ -134,7 +134,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::getTriangles (std::vector <pcl::Verti
 template <typename PointInT, typename PointOutT> void
 pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output)
 {
-  if (triangles_.size () == 0)
+  if (triangles_.empty ())
   {
     output.points.clear ();
     return;

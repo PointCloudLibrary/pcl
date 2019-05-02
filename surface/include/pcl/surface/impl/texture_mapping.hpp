@@ -55,19 +55,19 @@ pcl::TextureMapping<PointInT>::mapTexture2Face (
   Eigen::Vector3f p2p3 (p3[0] - p2[0], p3[1] - p2[1], p3[2] - p2[2]);
 
   // Normalize
-  p1p2 = p1p2 / std::sqrt (p1p2.dot (p1p2));
-  p1p3 = p1p3 / std::sqrt (p1p3.dot (p1p3));
-  p2p3 = p2p3 / std::sqrt (p2p3.dot (p2p3));
+  p1p2 /= std::sqrt (p1p2.dot (p1p2));
+  p1p3 /= std::sqrt (p1p3.dot (p1p3));
+  p2p3 /= std::sqrt (p2p3.dot (p2p3));
 
   // compute vector normal of a face
   Eigen::Vector3f f_normal = p1p2.cross (p1p3);
-  f_normal = f_normal / std::sqrt (f_normal.dot (f_normal));
+  f_normal /= std::sqrt (f_normal.dot (f_normal));
 
   // project vector field onto the face: vector v1_projected = v1 - Dot(v1, n) * n;
   Eigen::Vector3f f_vector_field = vector_field_ - vector_field_.dot (f_normal) * f_normal;
 
   // Normalize
-  f_vector_field = f_vector_field / std::sqrt (f_vector_field.dot (f_vector_field));
+  f_vector_field /= std::sqrt (f_vector_field.dot (f_vector_field));
 
   // texture coordinates
   Eigen::Vector2f tp1, tp2, tp3;
@@ -122,15 +122,15 @@ pcl::TextureMapping<PointInT>::mapTexture2Face (
 
   if (min_x < 0)
   {
-    tp1[0] = tp1[0] - min_x;
-    tp2[0] = tp2[0] - min_x;
-    tp3[0] = tp3[0] - min_x;
+    tp1[0] -= min_x;
+    tp2[0] -= min_x;
+    tp3[0] -= min_x;
   }
   if (min_y < 0)
   {
-    tp1[1] = tp1[1] - min_y;
-    tp2[1] = tp2[1] - min_y;
-    tp3[1] = tp3[1] - min_y;
+    tp1[1] -= min_y;
+    tp2[1] -= min_y;
+    tp3[1] -= min_y;
   }
 
   tex_coordinates.push_back (tp1);
@@ -554,7 +554,7 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
     return (-1);
   }
 
-  if (cameras.size () == 0)
+  if (cameras.empty ())
   {
     PCL_ERROR ("Must provide at least one camera info!\n");
     return (-1);

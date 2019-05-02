@@ -136,7 +136,7 @@ pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeTy
 
     NodeType * node = &(tree.getRoot ());
 
-    while (node->sub_nodes.size () != 0)
+    while (!node->sub_nodes.empty ())
     {
       float feature_result = 0.0f;
       unsigned char flag = 0;

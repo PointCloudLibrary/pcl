@@ -936,7 +936,7 @@ bool
 RangeImage::getNormalForClosestNeighbors (int x, int y, int radius, const PointWithRange& point,
                                               int no_of_nearest_neighbors, Eigen::Vector3f& normal, int step_size) const
 {
-  return getNormalForClosestNeighbors (x, y, radius, Eigen::Vector3f (point.x, point.y, point.z), no_of_nearest_neighbors, normal, NULL, step_size);
+  return getNormalForClosestNeighbors (x, y, radius, Eigen::Vector3f (point.x, point.y, point.z), no_of_nearest_neighbors, normal, nullptr, step_size);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -969,11 +969,11 @@ RangeImage::getSurfaceInformation (int x, int y, int radius, const Eigen::Vector
 {
   max_closest_neighbor_distance_squared=0.0f;
   normal.setZero (); mean.setZero (); eigen_values.setZero ();
-  if (normal_all_neighbors!=NULL)
+  if (normal_all_neighbors!=nullptr)
     normal_all_neighbors->setZero ();
-  if (mean_all_neighbors!=NULL)
+  if (mean_all_neighbors!=nullptr)
     mean_all_neighbors->setZero ();
-  if (eigen_values_all_neighbors!=NULL)
+  if (eigen_values_all_neighbors!=nullptr)
     eigen_values_all_neighbors->setZero ();
   
   int blocksize = static_cast<int> (pow (static_cast<double> ( (2.0 * radius + 1.0)), 2.0));
@@ -1027,7 +1027,7 @@ RangeImage::getSurfaceInformation (int x, int y, int radius, const Eigen::Vector
     normal *= -1.0f;
   mean = vector_average.getMean ();
   
-  if (normal_all_neighbors==NULL)
+  if (normal_all_neighbors==nullptr)
     return true;
   
   // Add remaining neighbors
@@ -1086,7 +1086,7 @@ RangeImage::getNormalForClosestNeighbors (int x, int y, int radius, const Eigen:
   
   if (ret)
   {
-    if (point_on_plane != NULL)
+    if (point_on_plane != nullptr)
       *point_on_plane = (normal.dot (mean) - normal.dot (point))*normal + point;
   }
   return ret;

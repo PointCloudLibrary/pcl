@@ -107,7 +107,7 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
     PCL_ERROR ("[pcl::KdTreeFLANN::setInputCloud] Invalid input!\n");
     return;
   }
-  if (indices != NULL)
+  if (indices != nullptr)
   {
     convertCloudToArray (*input_, *indices_);
   }

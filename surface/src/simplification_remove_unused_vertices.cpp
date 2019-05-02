@@ -45,7 +45,7 @@
 void
 pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices)
 {
-  if (input.polygons.size () == 0)
+  if (input.polygons.empty ())
     return;
 
   unsigned int nr_points = input.cloud.width * input.cloud.height;

@@ -102,7 +102,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::OnRightButtonUp ()
 void
 pcl::cloud_composer::SelectedTrackballStyleInteractor::Rotate ()
 {
-  if (this->CurrentRenderer == NULL || this->InteractionProp == NULL)
+  if (this->CurrentRenderer == nullptr || this->InteractionProp == nullptr)
   {
     return;
   }
@@ -204,7 +204,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Rotate ()
 void
 pcl::cloud_composer::SelectedTrackballStyleInteractor::Spin ()
 {
-  if ( this->CurrentRenderer == NULL || this->InteractionProp == NULL )
+  if ( this->CurrentRenderer == nullptr || this->InteractionProp == nullptr )
   {
     return;
   }
@@ -283,7 +283,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Spin ()
 void
 pcl::cloud_composer::SelectedTrackballStyleInteractor::Pan ()
 {
-  if (this->CurrentRenderer == NULL || this->InteractionProp == NULL)
+  if (this->CurrentRenderer == nullptr || this->InteractionProp == nullptr)
   {
     return;
   }
@@ -317,7 +317,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Pan ()
   foreach (QString id, selected_actors_map_.keys ())
   {
     vtkLODActor* actor = selected_actors_map_.value (id);
-    if (actor->GetUserMatrix() != NULL)
+    if (actor->GetUserMatrix() != nullptr)
     {
       vtkTransform *t = vtkTransform::New();
       t->PostMultiply();
@@ -346,7 +346,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Pan ()
 void
 pcl::cloud_composer::SelectedTrackballStyleInteractor::UniformScale ()
 {
-  if (this->CurrentRenderer == NULL || this->InteractionProp == NULL)
+  if (this->CurrentRenderer == nullptr || this->InteractionProp == nullptr)
   {
     return;
   }
@@ -361,7 +361,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::UniformScale ()
   double yf = dy / center[1] * this->MotionFactor;
   double scaleFactor = pow(1.1, yf);
   
-  double **rotate = NULL;
+  double **rotate = nullptr;
   
   double scale[3];
   scale[0] = scale[1] = scale[2] = scaleFactor;
