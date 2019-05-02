@@ -4,7 +4,7 @@
 Compiling PCL from source on POSIX compliant systems
 ====================================================
 
-Though not a dependency per se, don’t forget that you also need the `CMake build system <http://www.cmake.org/download/>`_, at least version 3.1.0.
+Though not a dependency per se, don’t forget that you also need the `CMake build system <http://www.cmake.org/download/>`_, at least version 3.5.0.
 Additional help on how to use the CMake build system is available `here <http://www.pointclouds.org/documentation/tutorials/building_pcl.php#building-pcl>`_.
 
 Please note that the following installation instructions are only valid for POSIX systems (e.g., Linux, MacOS) with an already installed make/gnu toolchain.
