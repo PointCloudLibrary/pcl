@@ -243,7 +243,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
       // Picking up a sample at random from jth bin
       do
       {
-        random_index = static_cast<unsigned int> (uniform_distrib (rng) % M);
+        random_index = uniform_distrib (rng) % M;
         pos = start_index[j] + random_index;
       } while (is_sampled_flag.test (pos));
 
