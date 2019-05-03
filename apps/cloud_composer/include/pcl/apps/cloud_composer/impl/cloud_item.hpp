@@ -45,7 +45,6 @@
 template <typename PointT> void
 pcl::cloud_composer::CloudItem::printNumPoints () const
 {
-  //boost::shared_ptr <PointCloud<PointT> > cloud = this->data (ItemDataRole::CLOUD_TEMPLATED).value <boost::shared_ptr <PointCloud<PointT> > > ();
   QVariant variant = this->data (ItemDataRole::CLOUD_TEMPLATED);
   typename PointCloud<PointT>::Ptr cloud;
   if ( variant.canConvert <typename PointCloud<PointT>::Ptr> () )
