@@ -24,6 +24,6 @@ if(NOT build)
 endif()
 
 if(VTK_FOUND AND WITH_OPENNI)
-  PCL_CUDA_ADD_EXECUTABLE(kinect_viewer_cuda "${SUBSYS_NAME}" src/kinect_viewer_cuda.cpp)
+  PCL_CUDA_ADD_EXECUTABLE(kinect_viewer_cuda COMPONENT ${SUBSYS_NAME} SOURCES src/kinect_viewer_cuda.cpp)
   target_link_libraries (kinect_viewer_cuda pcl_io pcl_cuda_io pcl_visualization pcl_common pcl_kdtree)
 endif()

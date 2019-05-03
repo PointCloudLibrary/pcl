@@ -22,7 +22,7 @@ set(srcs kinfu_app.cpp capture.cpp evaluation.cpp)
 
 source_group("Source Files" FILES ${srcs})
 
-PCL_ADD_EXECUTABLE_OPT_BUNDLE("${the_target}" "${SUBSYS_NAME}" ${srcs} ${hdrs})
+PCL_ADD_EXECUTABLE(${the_target} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${hdrs} BUNDLE)
 target_link_libraries("${the_target}" pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)
 
 if(OpenCV_FOUND)
@@ -33,5 +33,5 @@ endif()
 set(the_target pcl_record_tsdfvolume)
 set(srcs record_tsdfvolume.cpp capture.cpp)
 
-PCL_ADD_EXECUTABLE("${the_target}" "${SUBSYS_NAME}" ${srcs} ${hdrs})
+PCL_ADD_EXECUTABLE(${the_target} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${hdrs})
 target_link_libraries("${the_target}" pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)
