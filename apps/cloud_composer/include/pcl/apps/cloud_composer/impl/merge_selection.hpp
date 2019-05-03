@@ -67,7 +67,7 @@ pcl::cloud_composer::MergeSelection::performTemplatedAction (QList <const CloudC
   }  
 
   pcl::ExtractIndices<PointT> filter;
-  typename PointCloud<PointT>::Ptr merged_cloud = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
+  typename PointCloud<PointT>::Ptr merged_cloud (new PointCloud<PointT>);
 
   foreach (const CloudItem* input_cloud_item, selected_item_index_map_.keys ())
   {
@@ -79,11 +79,11 @@ pcl::cloud_composer::MergeSelection::performTemplatedAction (QList <const CloudC
       qDebug () << "Extracting "<<selected_item_index_map_.value(input_cloud_item)->indices.size() << " points out of "<<input_cloud->width;
       filter.setInputCloud (input_cloud);
       filter.setIndices (selected_item_index_map_.value (input_cloud_item));
-      typename PointCloud<PointT>::Ptr original_minus_indices = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
+      typename PointCloud<PointT>::Ptr original_minus_indices (new PointCloud<PointT>);
       filter.setNegative (true);
       filter.filter (*original_minus_indices);
       filter.setNegative (false);
-      typename PointCloud<PointT>::Ptr selected_points = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
+      typename PointCloud<PointT>::Ptr selected_points (new PointCloud<PointT>);
       filter.filter (*selected_points);
       
       qDebug () << "Original minus indices is "<<original_minus_indices->width;

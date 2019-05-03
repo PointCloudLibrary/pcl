@@ -103,14 +103,13 @@
      std::vector<pcl::PointIndices> boundary_indices;
      mps.segmentAndRefine (regions, model_coefficients, inlier_indices, labels, label_indices, boundary_indices);
      
-     boost::shared_ptr<std::set<uint32_t> > plane_labels = boost::make_shared<std::set<uint32_t> > ();
+     auto plane_labels = boost::make_shared<std::set<uint32_t> > ();
      for (size_t i = 0; i < label_indices.size (); ++i)
       if (label_indices[i].indices.size () > (size_t) min_plane_size)
         plane_labels->insert (i);
      typename PointCloud<PointT>::CloudVectorType clusters;
      
-     typename EuclideanClusterComparator<PointT, pcl::Label>::Ptr euclidean_cluster_comparator =
-        boost::make_shared <EuclideanClusterComparator<PointT, pcl::Label> > ();
+     typename EuclideanClusterComparator<PointT, pcl::Label>::Ptr euclidean_cluster_comparator(new EuclideanClusterComparator<PointT, pcl::Label>);
      euclidean_cluster_comparator->setInputCloud (input_cloud);
      euclidean_cluster_comparator->setLabels (labels);
      euclidean_cluster_comparator->setExcludeLabels (plane_labels);
@@ -127,7 +126,7 @@
      {
        if (euclidean_label_indices[i].indices.size () >= (size_t) min_cluster_size)
        {
-         typename PointCloud<PointT>::Ptr cluster = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
+         typename PointCloud<PointT>::Ptr cluster (new PointCloud<PointT>);
          pcl::copyPointCloud (*input_cloud,euclidean_label_indices[i].indices,*cluster);
          qDebug () << "Found cluster with size " << cluster->width;
          QString name = input_item->text () + tr ("- Clstr %1").arg (i);
@@ -142,7 +141,7 @@
      {
        if (label_indices[i].indices.size () >= (size_t) min_plane_size)
        {
-         typename PointCloud<PointT>::Ptr plane = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
+         typename PointCloud<PointT>::Ptr plane (new PointCloud<PointT>);
          pcl::copyPointCloud (*input_cloud,label_indices[i].indices,*plane);
          qDebug () << "Found plane with size " << plane->width;
          QString name = input_item->text () + tr ("- Plane %1").arg (i);
@@ -152,7 +151,7 @@
          
        }    
      }
-     typename PointCloud<PointT>::Ptr leftovers = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
+     typename PointCloud<PointT>::Ptr leftovers (new PointCloud<PointT>);
      if (extracted_indices->empty ())
        pcl::copyPointCloud (*input_cloud,*leftovers);
      else

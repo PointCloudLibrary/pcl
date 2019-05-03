@@ -96,9 +96,8 @@ namespace pcl
       , num_children_ (0)
       , num_loaded_children_ (0)
       , payload_ ()
-      , node_metadata_ ()
+      , node_metadata_ (new OutofcoreOctreeNodeMetadata)
     {
-      node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
       node_metadata_->setOutofcoreVersion (3);
     }
 
@@ -114,9 +113,8 @@ namespace pcl
       , num_children_ (0)
       , num_loaded_children_ (0)
       , payload_ ()
-      , node_metadata_ ()
+      , node_metadata_ (new OutofcoreOctreeNodeMetadata)
     {
-      node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
       node_metadata_->setOutofcoreVersion (3);
 
       //Check if this is the first node created/loaded (this is true if super, i.e. node's parent is NULL)
@@ -250,7 +248,7 @@ namespace pcl
       node_metadata_->serializeMetadataToDisk ();
 
       // Create data container, ie octree_disk_container, octree_ram_container
-      payload_ = boost::shared_ptr<ContainerT> (new ContainerT (node_metadata_->getPCDFilename ()));
+      payload_.reset (new ContainerT (node_metadata_->getPCDFilename ()));
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -1734,9 +1732,8 @@ namespace pcl
       , num_children_ ()
       , num_loaded_children_ (0)
       , payload_ ()
-      , node_metadata_ ()
+      , node_metadata_ (new OutofcoreOctreeNodeMetadata)
     {
-      node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
       node_metadata_->setOutofcoreVersion (3);
       
       if (super == nullptr)
@@ -1771,7 +1768,7 @@ namespace pcl
 
       boost::filesystem::create_directory (node_metadata_->getDirectoryPathname ());
 
-      payload_ = boost::shared_ptr<ContainerT> (new ContainerT (node_metadata_->getPCDFilename ()));
+      payload_.reset (new ContainerT (node_metadata_->getPCDFilename ()));
       this->saveIdx (false);
     }
 
@@ -1964,7 +1961,7 @@ namespace pcl
         recFreeChildren ();      
 
       this->num_children_ = 0;
-      this->payload_ = boost::shared_ptr<ContainerT> (new ContainerT (node_metadata_->getPCDFilename ()));
+      this->payload_.reset (new ContainerT (node_metadata_->getPCDFilename ()));
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -2119,7 +2116,7 @@ namespace pcl
 
         f.close ();
 
-        thisnode->payload_ = boost::shared_ptr<ContainerT> (new ContainerT (thisnode->thisnodestorage_));
+        thisnode->payload_.reset (new ContainerT (thisnode->thisnodestorage_));
       }
 
       thisnode->parent_ = super;
