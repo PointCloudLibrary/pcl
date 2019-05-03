@@ -279,7 +279,7 @@ OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
   ne.setInputCloud (cloud);
   ne.compute (*normal_cloud);
   float* distance_map = ne.getDistanceMap ();
-  boost::shared_ptr<pcl::EdgeAwarePlaneComparator<PointT,pcl::Normal> > eapc = boost::dynamic_pointer_cast<pcl::EdgeAwarePlaneComparator<PointT,pcl::Normal> >(edge_aware_comparator_);
+  pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal>::Ptr eapc = boost::dynamic_pointer_cast<pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal> >(edge_aware_comparator_);
   eapc->setDistanceMap (distance_map);
   eapc->setDistanceThreshold (0.01f, false);
 
@@ -309,7 +309,7 @@ OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
 
   if (use_clustering_ && !regions.empty ())
   {
-    boost::shared_ptr<std::set<uint32_t> > plane_labels = boost::make_shared<std::set<uint32_t> > ();
+    pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSetPtr plane_labels (new pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSet);
     for (size_t i = 0; i < label_indices.size (); ++i)
       if (label_indices[i].indices.size () > 10000)
         plane_labels->insert (i);
