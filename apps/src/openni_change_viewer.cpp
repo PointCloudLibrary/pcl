@@ -78,12 +78,12 @@ class OpenNIChangeViewer
       octree->addPointsFromInputCloud ();
 
       std::cerr << octree->getLeafCount() << " -- ";
-      boost::shared_ptr<std::vector<int> > newPointIdxVector (new std::vector<int>);
+      std::vector<int> newPointIdxVector;
 
       // get a vector of new points, which did not exist in previous buffer
-      octree->getPointIndicesFromNewVoxels (*newPointIdxVector, noise_filter_);
+      octree->getPointIndicesFromNewVoxels (newPointIdxVector, noise_filter_);
 
-      std::cerr << newPointIdxVector->size() << std::endl;
+      std::cerr << newPointIdxVector.size() << std::endl;
 
       pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filtered_cloud;
 
@@ -91,9 +91,9 @@ class OpenNIChangeViewer
       {
         case REDDIFF_MODE:
           filtered_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA> (*cloud));
-          filtered_cloud->points.reserve(newPointIdxVector->size());
+          filtered_cloud->points.reserve(newPointIdxVector.size());
 
-          for (const int &idx : *newPointIdxVector)
+          for (const int &idx : newPointIdxVector)
             filtered_cloud->points[idx].rgba = 255<<16;
 
           if (!viewer.wasStopped())
@@ -103,9 +103,9 @@ class OpenNIChangeViewer
         case ONLYDIFF_MODE:
           filtered_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-          filtered_cloud->points.reserve(newPointIdxVector->size());
+          filtered_cloud->points.reserve(newPointIdxVector.size());
 
-          for (const int &idx : *newPointIdxVector)
+          for (const int &idx : newPointIdxVector)
             filtered_cloud->points.push_back(cloud->points[idx]);
 
 
