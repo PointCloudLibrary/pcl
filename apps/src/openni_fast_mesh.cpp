@@ -89,18 +89,13 @@ class OpenNIFastMesh
       ofm.setInputCloud (cloud);
 
       // Store the results in a temporary object
-      boost::shared_ptr<std::vector<pcl::Vertices> > temp_verts (new std::vector<pcl::Vertices>);
-      ofm.reconstruct (*temp_verts);
+      std::vector<pcl::Vertices> temp_verts;
+      ofm.reconstruct (temp_verts);
 
       // Lock and copy
       {
         boost::mutex::scoped_lock lock (mtx_);
-        //boost::unique_lock<boost::shared_mutex> lock (mtx_);
-
-//        if (!vertices_)
-//          vertices_.reset (new std::vector<pcl::Vertices>);
-        //vertices_.reset (new std::vector<pcl::Vertices> (*temp_verts));
-        vertices_= temp_verts;
+        vertices_ = std::move (temp_verts);
         cloud_ = cloud;//reset (new Cloud (*cloud));
       }
     }
@@ -118,7 +113,7 @@ class OpenNIFastMesh
       interface->start ();
       
       CloudConstPtr temp_cloud;
-      boost::shared_ptr<std::vector<pcl::Vertices> > temp_verts;
+      std::vector<pcl::Vertices> temp_verts;
 
       while (!view->wasStopped ())
       {
@@ -129,12 +124,12 @@ class OpenNIFastMesh
         }
 
         temp_cloud = cloud_;
-        temp_verts = vertices_;
+        temp_verts = std::move (vertices_);
         mtx_.unlock ();
 
-        if (!view->updatePolygonMesh<PointType> (temp_cloud, *temp_verts, "surface"))
+        if (!view->updatePolygonMesh<PointType> (temp_cloud, temp_verts, "surface"))
         {
-          view->addPolygonMesh<PointType> (temp_cloud, *temp_verts, "surface");
+          view->addPolygonMesh<PointType> (temp_cloud, temp_verts, "surface");
           view->resetCameraViewpoint ("surface");
         }
 
@@ -150,7 +145,7 @@ class OpenNIFastMesh
     boost::mutex mtx_;
     // Data
     CloudConstPtr cloud_;
-    boost::shared_ptr<std::vector<pcl::Vertices> > vertices_;
+    std::vector<pcl::Vertices> vertices_;
     pcl::PolygonMesh::Ptr mesh_;
 
     pcl::visualization::PCLVisualizer::Ptr view;
