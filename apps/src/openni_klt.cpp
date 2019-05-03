@@ -302,7 +302,7 @@ class OpenNIViewer
     boost::shared_ptr<openni_wrapper::Image> image_;
     unsigned char* rgb_data_;
     unsigned rgb_data_size_;
-    boost::shared_ptr<pcl::tracking::PyramidalKLTTracker<PointType> > tracker_;
+    typename pcl::tracking::PyramidalKLTTracker<PointType>::Ptr tracker_;
     pcl::PointCloud<pcl::PointUV>::ConstPtr keypoints_;
     pcl::PointIndicesConstPtr points_;
     pcl::PointIndicesConstPtr points_status_;

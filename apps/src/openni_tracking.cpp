@@ -198,8 +198,7 @@ public:
     DistanceCoherence<RefPointType>::Ptr distance_coherence (new DistanceCoherence<RefPointType>);
     coherence->addPointCoherence (distance_coherence);
     
-    boost::shared_ptr<HSVColorCoherence<RefPointType> > color_coherence
-      = boost::shared_ptr<HSVColorCoherence<RefPointType> > (new HSVColorCoherence<RefPointType> ());
+    HSVColorCoherence<RefPointType>::Ptr color_coherence (new HSVColorCoherence<RefPointType>);
     color_coherence->setWeight (0.1);
     coherence->addPointCoherence (color_coherence);
     

@@ -47,7 +47,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::ChannelActorItem::ChannelActorItem(QTreeWidgetItem* parent,
-  const boost::shared_ptr<CloudMesh>& cloud_mesh,
+  const CloudMesh::Ptr& cloud_mesh,
   const vtkSmartPointer<vtkRenderWindow>& render_window,
   const vtkSmartPointer<vtkActor>& actor,
   const std::string& channel_name)

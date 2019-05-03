@@ -634,7 +634,7 @@ namespace pcl
         /** \brief shared mutex for controlling read/write access to disk */
         mutable boost::shared_mutex read_write_mutex_;
 
-        boost::shared_ptr<OutofcoreOctreeBaseMetadata> metadata_;
+        OutofcoreOctreeBaseMetadata::Ptr metadata_;
         
         /** \brief defined as ".octree" to append to treepath files
          *  \note this might change

@@ -47,8 +47,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::NormalsActorItem::NormalsActorItem(QTreeWidgetItem* parent,
-                                               const boost::shared_ptr<CloudMesh>& cloud_mesh,
-                                               const vtkSmartPointer<vtkRenderWindow>& render_window)
+                                                 const CloudMesh::Ptr& cloud_mesh,
+                                                 const vtkSmartPointer<vtkRenderWindow>& render_window)
   :ChannelActorItem(parent, cloud_mesh, render_window, vtkSmartPointer<vtkLODActor>::New(), "Normals"),
   level_(10), scale_(0.1)
 {

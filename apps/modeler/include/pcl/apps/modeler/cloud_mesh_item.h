@@ -57,12 +57,13 @@ namespace pcl
         CloudMeshItem(QTreeWidgetItem* parent, const CloudMeshItem& cloud_mesh_item);
         ~CloudMeshItem();
 
-        inline boost::shared_ptr<CloudMesh>&
+        inline CloudMesh::Ptr&
         getCloudMesh()
         {
           return cloud_mesh_;
         }
-        inline const boost::shared_ptr<CloudMesh>&
+
+        inline const CloudMesh::Ptr&
         getCloudMesh() const
         {
           return cloud_mesh_;
@@ -98,7 +99,7 @@ namespace pcl
 
       private:
         std::string                           filename_;
-        boost::shared_ptr<CloudMesh>          cloud_mesh_;
+        CloudMesh::Ptr                        cloud_mesh_;
 
         DoubleParameter*                      translation_x_;
         DoubleParameter*                      translation_y_;
