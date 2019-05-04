@@ -51,11 +51,10 @@
 #include <pcl/visualization/mouse_event.h>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/thread/mutex.hpp>
 
+#include <mutex>
 #include <vector>
 #include <string>
-#include <thread>
 #include <typeinfo>
 
 using namespace std;
@@ -108,7 +107,7 @@ class SimpleVLPViewer
     cloud_callback (const CloudConstPtr& cloud)
     {
       FPS_CALC("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
     }
 
@@ -202,8 +201,8 @@ class SimpleVLPViewer
     boost::shared_ptr<ImageViewer> image_viewer_;
 
     Grabber& grabber_;
-    boost::mutex cloud_mutex_;
-    boost::mutex image_mutex_;
+    std::mutex cloud_mutex_;
+    std::mutex image_mutex_;
 
     CloudConstPtr cloud_;
     PointCloudColorHandler<PointType> *handler_;

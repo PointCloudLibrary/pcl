@@ -43,8 +43,8 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 #include "boost.h"
-#include <boost/thread/mutex.hpp>
 
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -96,7 +96,7 @@ class SimpleOpenNIViewer
                     const openni_wrapper::DepthImage::Ptr &depth_image, float)
     {
       FPS_CALC ("image callback");
-      boost::mutex::scoped_lock lock (image_mutex_);
+      std::lock_guard<std::mutex> lock (image_mutex_);
       image_ = image;
       depth_image_ = depth_image;
     }
@@ -115,7 +115,7 @@ class SimpleOpenNIViewer
        
       while (true)
       {
-        boost::mutex::scoped_lock lock (image_mutex_);
+        std::lock_guard<std::mutex> lock (image_mutex_);
 
         std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
         if (image_)
@@ -180,7 +180,7 @@ class SimpleOpenNIViewer
     }
 
     pcl::OpenNIGrabber& grabber_;
-    boost::mutex image_mutex_;
+    std::mutex image_mutex_;
     openni_wrapper::Image::Ptr image_;
     openni_wrapper::DepthImage::Ptr depth_image_;
     vtkSmartPointer<vtkImageImport> importer_, depth_importer_;

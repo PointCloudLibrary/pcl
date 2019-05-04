@@ -48,8 +48,11 @@
 #include <pcl/console/parse.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/mouse_event.h>
+
 #include <vtkImageViewer.h>
 #include <vtkImageImport.h>
+
+#include <mutex>
 #include <vector>
 #include <string>
 
@@ -97,7 +100,7 @@ class SimpleOpenNIViewer
     cloud_callback (const CloudConstPtr& cloud)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
     }
 
@@ -105,14 +108,14 @@ class SimpleOpenNIViewer
     image_callback (const boost::shared_ptr<openni_wrapper::Image>& image)
     {
       FPS_CALC ("image callback");
-      boost::mutex::scoped_lock lock (image_mutex_);
+      std::lock_guard<std::mutex> lock (image_mutex_);
       image_ = image;
     }
     
     boost::shared_ptr<openni_wrapper::Image>
     getLatestImage ()
     {
-      boost::mutex::scoped_lock lock(image_mutex_);
+      std::lock_guard<std::mutex> lock(image_mutex_);
       boost::shared_ptr<openni_wrapper::Image> temp_image;
       temp_image.swap (image_);
       return (temp_image);
@@ -149,7 +152,7 @@ class SimpleOpenNIViewer
     getLatestCloud ()
     {
       //lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock(cloud_mutex_);
+      std::lock_guard<std::mutex> lock(cloud_mutex_);
       CloudConstPtr temp_cloud;
       temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
       //it is safe to set it again from our
@@ -227,10 +230,10 @@ class SimpleOpenNIViewer
 
     pcl::visualization::CloudViewer cloud_viewer_;
     pcl::OpenNIGrabber& grabber_;
-    boost::mutex cloud_mutex_;
+    std::mutex cloud_mutex_;
     CloudConstPtr cloud_;
     
-    boost::mutex image_mutex_;
+    std::mutex image_mutex_;
     boost::shared_ptr<openni_wrapper::Image> image_;
     pcl::visualization::ImageViewer image_viewer_;
 };

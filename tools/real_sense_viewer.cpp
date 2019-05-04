@@ -35,12 +35,6 @@
  *
  */
 
-#include <iostream>
-
-#include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/thread/mutex.hpp>
-
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
@@ -48,6 +42,12 @@
 #include <pcl/io/io_exception.h>
 #include <pcl/io/real_sense_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
+
+#include <boost/format.hpp>
+#include <boost/shared_ptr.hpp>
+
+#include <iostream>
+#include <mutex>
 
 
 using namespace pcl::console;
@@ -179,7 +179,7 @@ class RealSenseViewer
       {
         if (new_cloud_)
         {
-          boost::mutex::scoped_lock lock (new_cloud_mutex_);
+          std::lock_guard<std::mutex> lock (new_cloud_mutex_);
           if (!viewer_.updatePointCloud (new_cloud_, "cloud"))
           {
             viewer_.addPointCloud (new_cloud_, "cloud");
@@ -201,7 +201,7 @@ class RealSenseViewer
     {
       if (!viewer_.wasStopped ())
       {
-        boost::mutex::scoped_lock lock (new_cloud_mutex_);
+        std::lock_guard<std::mutex> lock (new_cloud_mutex_);
         new_cloud_ = cloud;
       }
     }
@@ -330,7 +330,7 @@ class RealSenseViewer
     int threshold_;
     pcl::RealSenseGrabber::TemporalFilteringType temporal_filtering_;
 
-    mutable boost::mutex new_cloud_mutex_;
+    mutable std::mutex new_cloud_mutex_;
     typename PointCloudT::ConstPtr new_cloud_;
     typename PointCloudT::ConstPtr last_cloud_;
 
