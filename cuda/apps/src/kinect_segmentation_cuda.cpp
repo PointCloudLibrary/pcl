@@ -102,7 +102,7 @@ class Segmentation
     void viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
       static bool last_enable_normal_viz = enable_normal_viz;
-      boost::mutex::scoped_lock l(m_mutex);
+      std::lock_guard<std::mutex> l(m_mutex);
       if (new_cloud)
       {
         double psize = 1.0,opacity = 1.0,linesize =1.0;
@@ -175,7 +175,7 @@ class Segmentation
       }
       go_on = false;
 
-      boost::mutex::scoped_lock l(m_mutex);
+      std::lock_guard<std::mutex> l(m_mutex);
       normal_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
       toPCL (*data, *normals, *normal_cloud);
       new_cloud = true;
@@ -343,7 +343,7 @@ class Segmentation
             cv::cvtColor(cv::Mat(normal_image),temp,CV_BGR2RGB);
           cv::imshow ("NormalImage", temp);
 
-          boost::mutex::scoped_lock l(m_mutex);
+          std::lock_guard<std::mutex> l(m_mutex);
           normal_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
           toPCL (*data, *normals, *normal_cloud);
           new_cloud = true;
@@ -419,7 +419,7 @@ class Segmentation
     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr normal_cloud;
     DisparityToCloud d2c;
     pcl::visualization::CloudViewer viewer;
-    boost::mutex m_mutex;
+    std::mutex m_mutex;
     bool new_cloud, go_on;
     int enable_color;
     int normal_method;

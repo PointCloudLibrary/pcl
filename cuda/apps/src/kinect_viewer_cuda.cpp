@@ -90,7 +90,7 @@ class KinectViewerCuda
 
     pcl::cuda::DisparityToCloud d2c;
     pcl::visualization::CloudViewer viewer;
-    boost::mutex mutex_;
+    std::mutex mutex_;
     bool downsample_;
 };
 

@@ -216,7 +216,7 @@ class SimpleKinectTool
 
     pcl_cuda::DisparityToCloud d2c;
     //pcl::visualization::CloudViewer viewer;
-    boost::mutex mutex_;
+    std::mutex mutex_;
     bool go_on;
 };
 

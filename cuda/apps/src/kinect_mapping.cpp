@@ -101,7 +101,7 @@ class MultiRansac
 
     void viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
-      boost::mutex::scoped_lock l(m_mutex);
+      std::lock_guard<std::mutex> l(m_mutex);
       if (new_cloud)
       {
         typedef pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal> ColorHandler;
@@ -225,7 +225,7 @@ class MultiRansac
       {
         typename Storage<float4>::type normals = sac_model->getNormals ();
 
-        boost::mutex::scoped_lock l(m_mutex);
+        std::lock_guard<std::mutex> l(m_mutex);
         normal_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
         pcl_cuda::toPCL (*data, normals, *normal_cloud);
         new_cloud = true;
@@ -271,7 +271,7 @@ class MultiRansac
     pcl_cuda::DisparityToCloud d2c;
     pcl::visualization::CloudViewer viewer;
    
-    boost::mutex::mutex m_mutex;
+    std::mutex m_mutex;
     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr normal_cloud;
     bool new_cloud;
     bool use_viewer;

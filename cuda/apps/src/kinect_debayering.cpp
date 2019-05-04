@@ -85,7 +85,7 @@ class SimpleKinectTool
     }
 
     pcl_cuda::Debayering<pcl_cuda::Host> debayering;
-    boost::mutex mutex_;
+    std::mutex mutex_;
     bool init_;
 };
 
