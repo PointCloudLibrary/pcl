@@ -75,7 +75,7 @@ namespace pcl
     const std::string OutofcoreOctreeBaseNode<ContainerT, PointT>::node_container_extension = ".oct_dat";
 
     template<typename ContainerT, typename PointT>
-    boost::mutex OutofcoreOctreeBaseNode<ContainerT, PointT>::rng_mutex_;
+    std::mutex OutofcoreOctreeBaseNode<ContainerT, PointT>::rng_mutex_;
 
     template<typename ContainerT, typename PointT>
     std::mt19937 OutofcoreOctreeBaseNode<ContainerT, PointT>::rng_;
@@ -594,7 +594,7 @@ namespace pcl
         insertBuff.resize(samplesize);
 
         // Create random number generator
-        boost::mutex::scoped_lock lock(rng_mutex_);
+        std::lock_guard<std::mutex> lock(rng_mutex_);
         std::uniform_int_distribution<uint64_t> buffdist(0, inputsize-1);
 
         // Randomly pick sampled points
@@ -607,7 +607,7 @@ namespace pcl
       // Have to do it the slow way
       else
       {
-        boost::mutex::scoped_lock lock(rng_mutex_);
+        std::lock_guard<std::mutex> lock(rng_mutex_);
         std::bernoulli_distribution buffdist(percent);
 
         for(uint64_t i = 0; i < inputsize; ++i)
@@ -1791,7 +1791,6 @@ namespace pcl
       payload_->readRange (0, payload_->size (), payload_cache);
 
       {
-        //boost::mutex::scoped_lock lock(queryBBIncludes_vector_mutex);
         v.insert (v.end (), payload_cache.begin (), payload_cache.end ());
       }
     }

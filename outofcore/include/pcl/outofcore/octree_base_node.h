@@ -559,7 +559,7 @@ namespace pcl
         boost::shared_ptr<ContainerT> payload_;
 
         /** \brief Random number generator mutex */
-        static boost::mutex rng_mutex_;
+        static std::mutex rng_mutex_;
 
         /** \brief Mersenne Twister: A 623-dimensionally equidistributed uniform
          * pseudo-random number generator */

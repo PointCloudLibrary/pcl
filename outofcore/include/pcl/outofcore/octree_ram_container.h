@@ -165,7 +165,7 @@ namespace pcl
         /** \brief linear container to hold the points */
         AlignedPointTVector container_;
 
-        static boost::mutex rng_mutex_;
+        static std::mutex rng_mutex_;
         static std::mt19937 rng_;
     };
   }

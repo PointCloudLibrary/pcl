@@ -1,6 +1,4 @@
 // PCL
-//#include <pcl/common/time.h>
-//#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
 #include <pcl/io/pcd_io.h>
@@ -33,18 +31,21 @@
 #include <vtkProperty.h>
 #include <vtkSmartPointer.h>
 
+#include <condition_variable>
+#include <mutex>
+
 
 // Forward Declarations
 
-boost::condition OutofcoreCloud::pcd_queue_ready;
-boost::mutex OutofcoreCloud::pcd_queue_mutex;
+std::condition_variable OutofcoreCloud::pcd_queue_ready;
+std::mutex OutofcoreCloud::pcd_queue_mutex;
 
 boost::shared_ptr<std::thread> OutofcoreCloud::pcd_reader_thread;
 //MonitorQueue<std::string> OutofcoreCloud::pcd_queue;
 
 //std::map<std::string, vtkSmartPointer<vtkPolyData> > OutofcoreCloud::cloud_data_cache;
 OutofcoreCloud::CloudDataCache OutofcoreCloud::cloud_data_cache(524288);
-boost::mutex OutofcoreCloud::cloud_data_cache_mutex;
+std::mutex OutofcoreCloud::cloud_data_cache_mutex;
 
 OutofcoreCloud::PcdQueue OutofcoreCloud::pcd_queue;
 
@@ -57,12 +58,8 @@ OutofcoreCloud::pcdReaderThread ()
 
   while (true)
   {
-    //{
-      //boost::mutex::scoped_lock lock (pcd_queue_mutex);
-      //pcd_queue_mutex.wait (lock);
-      pcd_queue_ready.wait(pcd_queue_mutex);
-    //}
-    //pcd_queue_ready
+    std::unique_lock<std::mutex> lock (pcd_queue_mutex);
+    pcd_queue_ready.wait(lock);
 
     int queue_size = pcd_queue.size ();
     for (int i=0; i < queue_size; i++)

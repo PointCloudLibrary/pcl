@@ -42,7 +42,6 @@
 #include <vector>
 
 #include <pcl/outofcore/boost.h>
-#include <boost/thread/mutex.hpp>
 
 namespace pcl
 {
@@ -96,7 +95,7 @@ namespace pcl
 
         AlignedPointTVector container_;
         
-        static boost::mutex rng_mutex_;
+        static std::mutex rng_mutex_;
     };
   }//namespace outofcore
 }//namespace pcl
