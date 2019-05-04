@@ -35,6 +35,8 @@
 
 #pragma once
 
+#include <mutex>
+
 namespace pcl
 {
   /** /brief This template class synchronizes two data streams of different types.
@@ -50,9 +52,9 @@ namespace pcl
   {
     typedef std::pair<unsigned long, T1> T1Stamped;
     typedef std::pair<unsigned long, T2> T2Stamped;
-    boost::mutex mutex1_;
-    boost::mutex mutex2_;
-    boost::mutex publish_mutex_;
+    std::mutex mutex1_;
+    std::mutex mutex2_;
+    std::mutex publish_mutex_;
     std::deque<T1Stamped> queueT1;
     std::deque<T2Stamped> queueT2;
 
@@ -67,7 +69,7 @@ namespace pcl
     int
     addCallback (const CallbackFunction& callback)
     {
-      boost::unique_lock<boost::mutex> publish_lock (publish_mutex_);
+      std::unique_lock<std::mutex> publish_lock (publish_mutex_);
       cb_[callback_counter] = callback;
       return callback_counter++;
     }
@@ -75,7 +77,7 @@ namespace pcl
     void
     removeCallback (int i)
     {
-      boost::unique_lock<boost::mutex> publish_lock (publish_mutex_);
+      std::unique_lock<std::mutex> publish_lock (publish_mutex_);
       cb_.erase (i);
     }
 
@@ -102,8 +104,8 @@ namespace pcl
     void
     publishData ()
     {
-      boost::unique_lock<boost::mutex> lock1 (mutex1_);
-      boost::unique_lock<boost::mutex> lock2 (mutex2_);
+      std::unique_lock<std::mutex> lock1 (mutex1_);
+      std::unique_lock<std::mutex> lock2 (mutex2_);
 
       for (typename std::map<int, CallbackFunction>::iterator cb = cb_.begin (); cb != cb_.end (); ++cb)
       {
@@ -121,15 +123,15 @@ namespace pcl
     publish ()
     {
       // only one publish call at once allowed
-      boost::unique_lock<boost::mutex> publish_lock (publish_mutex_);
+      std::unique_lock<std::mutex> publish_lock (publish_mutex_);
 
-      boost::unique_lock<boost::mutex> lock1 (mutex1_);
+      std::unique_lock<std::mutex> lock1 (mutex1_);
       if (queueT1.empty ())
         return;
       T1Stamped t1 = queueT1.front ();
       lock1.unlock ();
 
-      boost::unique_lock<boost::mutex> lock2 (mutex2_);
+      std::unique_lock<std::mutex> lock2 (mutex2_);
       if (queueT2.empty ())
         return;
       T2Stamped t2 = queueT2.front ();
