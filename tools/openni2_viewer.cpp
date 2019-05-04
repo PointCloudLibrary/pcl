@@ -46,6 +46,7 @@
 #include <pcl/console/parse.h>
 
 #include <boost/chrono.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include "pcl/io/openni2/openni.h"
 

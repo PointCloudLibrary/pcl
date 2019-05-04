@@ -45,8 +45,6 @@
  * In Proceedings of the International Conference on Intelligent Robots and Systems (IROS) 2012, Vilamoura (Portugal), 2012.
  */
 
-#include <thread>
-
 #include <pcl/console/parse.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>    
@@ -54,6 +52,10 @@
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/people/ground_based_people_detection_app.h>
 #include <pcl/common/time.h>
+
+#include <boost/thread/mutex.hpp>
+
+#include <thread>
 
 using namespace std::chrono_literals;
 

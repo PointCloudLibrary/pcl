@@ -33,8 +33,6 @@
  *	
  */
 
-#include <thread>
-
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -45,6 +43,10 @@
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/cloud_viewer.h>
+
+#include <boost/thread/mutex.hpp>
+
+#include <thread>
 
 using namespace pcl;
 using namespace pcl::visualization;

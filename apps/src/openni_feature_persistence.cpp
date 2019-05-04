@@ -35,8 +35,6 @@
  *
  */
 
-#include <thread>
-
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -45,12 +43,15 @@
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/cloud_viewer.h>
-
 #include <pcl/features/multiscale_feature_persistence.h>
 #include <pcl/features/fpfh_omp.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d_omp.h>
+
+#include <boost/thread/mutex.hpp>
+
+#include <thread>
 
 using namespace std::chrono_literals;
 

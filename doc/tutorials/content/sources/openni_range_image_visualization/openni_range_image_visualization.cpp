@@ -10,6 +10,8 @@ using namespace std;
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/parse.h>
 
+#include <boost/thread/mutex.hpp>
+
 std::string device_id = "#1";
 
 float angular_resolution = -1.0f;

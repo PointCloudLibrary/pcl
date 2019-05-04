@@ -35,8 +35,6 @@
  *
  */
 
-#include <thread>
-
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/particle_filter.h>
 #include <pcl/tracking/kld_adaptive_particle_filter_omp.h>
@@ -85,6 +83,9 @@
 #include <pcl/common/transforms.h>
 
 #include <boost/format.hpp>
+#include <boost/thread/mutex.hpp>
+
+#include <thread>
 
 #define FPS_CALC_BEGIN                          \
     static double duration = 0;                 \

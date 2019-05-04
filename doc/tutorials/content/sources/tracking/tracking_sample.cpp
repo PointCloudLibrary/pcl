@@ -1,5 +1,3 @@
-#include <thread>
-
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -21,8 +19,6 @@
 #include <pcl/search/pcl_search.h>
 #include <pcl/common/transforms.h>
 
-#include <boost/format.hpp>
-
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/particle_filter.h>
 #include <pcl/tracking/kld_adaptive_particle_filter_omp.h>
@@ -32,6 +28,11 @@
 #include <pcl/tracking/hsv_color_coherence.h>
 #include <pcl/tracking/approx_nearest_pair_point_cloud_coherence.h>
 #include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
+
+#include <boost/format.hpp>
+#include <boost/thread/mutex.hpp>
+
+#include <thread>
 
 using namespace pcl::tracking;
 using namespace std::chrono_literals;

@@ -42,6 +42,8 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
+#include <boost/thread/mutex.hpp>
+
 
 #define FPS_CALC(_WHAT_) \
 do \

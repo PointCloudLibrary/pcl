@@ -39,6 +39,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/boost.h>
 
+#include <mutex>
 #include <thread>
 
 namespace pcl
@@ -151,7 +152,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     cloud_show_base::Ptr cs (new cloud_show<T>(name,cloud,viewer_));
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       cloud_shows_.push_back (cs);
     }
     while (!cs->popped ())
@@ -165,7 +166,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     cloud_show_base::Ptr cs (new cloud_show<T>(name,cloud,viewer_));
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
 
       cloud_shows_.push_back (cs);
     }
@@ -184,7 +185,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
     while (!quit_)
     {
       {
-        boost::mutex::scoped_lock lock (mtx_);
+        std::lock_guard<std::mutex> lock (mtx_);
         while (!cloud_shows_.empty ())
         {
           cloud_shows_.back ()->pop ();
@@ -192,7 +193,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
         }
       }
       {
-        boost::mutex::scoped_lock lock (once_mtx);
+        std::lock_guard<std::mutex> lock (once_mtx);
         BOOST_FOREACH (CallableList::value_type& x, callables_once)
         {
           (x)(*viewer_);
@@ -200,7 +201,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
         callables_once.clear ();
       }
       {
-        boost::mutex::scoped_lock lock (c_mtx);
+        std::lock_guard<std::mutex> lock (c_mtx);
         BOOST_FOREACH (CallableMap::value_type& x, callables)
         {
           (x.second)(*viewer_);
@@ -211,7 +212,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
           quit_ = true;
       }else
       {
-        boost::mutex::scoped_lock lock (spin_mtx_);
+        std::lock_guard<std::mutex> lock (spin_mtx_);
         //TODO some smart waitkey like stuff here, so that wasStoped() can hold for a long time
         //maybe a counter
         viewer_->spinOnce (10); // Give the GUI millis to handle events, then return
@@ -225,14 +226,14 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   void
   post (VizCallable x, const std::string &key)
   {
-    boost::mutex::scoped_lock lock (c_mtx);
+    std::lock_guard<std::mutex> lock (c_mtx);
     callables[key] = x;
   }
 
   void
   post (VizCallable x)
   {
-    boost::mutex::scoped_lock lock (once_mtx);
+    std::lock_guard<std::mutex> lock (once_mtx);
     callables_once.push_back (x);
   }
 
@@ -240,14 +241,14 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   void
   remove (const std::string &key)
   {
-    boost::mutex::scoped_lock lock (c_mtx);
+    std::lock_guard<std::mutex> lock (c_mtx);
     if (callables.find (key) != callables.end ())
       callables.erase (key);
   }
 
   std::string window_name_;
   pcl::visualization::PCLVisualizer::Ptr viewer_;
-  boost::mutex mtx_, spin_mtx_, c_mtx, once_mtx;
+  std::mutex mtx_, spin_mtx_, c_mtx, once_mtx;
   std::thread viewer_thread_;
   bool has_cloud_;
   bool quit_;

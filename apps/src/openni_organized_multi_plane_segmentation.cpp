@@ -46,6 +46,9 @@
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/filters/extract_indices.h>
 
+#include <boost/thread/mutex.hpp>
+
+
 typedef pcl::PointXYZRGBA PointT;
 
 class OpenNIOrganizedMultiPlaneSegmentation
