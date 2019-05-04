@@ -32,7 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
+#include <mutex>
 #include <thread>
 
 #include <pcl/point_cloud.h>
@@ -133,7 +133,7 @@ class PCLMobileServer
       PointCloudBuffers::Ptr new_buffers = PointCloudBuffers::Ptr (new PointCloudBuffers);
       CopyPointCloudToBuffers (temp_cloud, *new_buffers);
 
-      boost::mutex::scoped_lock lock (mutex_);
+      std::lock_guard<std::mutex> lock (mutex_);
       filtered_cloud_ = temp_cloud;
       buffers_ = new_buffers;
     }
@@ -141,14 +141,14 @@ class PCLMobileServer
     PointCloudBuffers::Ptr
     getLatestBuffers ()
     {
-      boost::mutex::scoped_lock lock (mutex_);
+      std::lock_guard<std::mutex> lock (mutex_);
       return (buffers_);
     }
 
     CloudPtr
     getLatestPointCloud ()
     {
-      boost::mutex::scoped_lock lock (mutex_);
+      std::lock_guard<std::mutex> lock (mutex_);
       return (filtered_cloud_);
     }
 
@@ -218,7 +218,7 @@ class PCLMobileServer
 
     int port_;
     std::string device_id_;
-    boost::mutex mutex_;
+    std::mutex mutex_;
 
     pcl::VoxelGrid<PointType> voxel_grid_filter_;
     pcl::visualization::CloudViewer viewer_;

@@ -49,8 +49,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 
-#include <boost/thread/mutex.hpp>
-
+#include <mutex>
 #include <thread>
 
 using namespace std::chrono_literals;
@@ -79,7 +78,7 @@ class TrajkovicDemo
     cloud_callback_3d (const CloudConstPtr& cloud)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
 
       // Compute TRAJKOVIC keypoints 3D
@@ -96,7 +95,7 @@ class TrajkovicDemo
     cloud_callback_2d (const CloudConstPtr& cloud)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
 
       // Compute TRAJKOVIC keypoints 2D
@@ -207,7 +206,7 @@ class TrajkovicDemo
 
     visualization::PCLVisualizer cloud_viewer_;
     Grabber& grabber_;
-    boost::mutex cloud_mutex_;
+    std::mutex cloud_mutex_;
     CloudConstPtr cloud_;
 
     visualization::ImageViewer image_viewer_;

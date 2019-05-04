@@ -99,7 +99,7 @@ class OpenNIGrabFrame
       if (quit_)
         return;
       
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
         cloud_ = cloud;
         
       if (continuous_ || trigger_)
@@ -141,7 +141,7 @@ class OpenNIGrabFrame
     getLatestCloud ()
     {
       //lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock(cloud_mutex_);
+      std::lock_guard<std::mutex> lock(cloud_mutex_);
       CloudConstPtr temp_cloud;
       temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
       //it is safe to set it again from our
@@ -261,7 +261,7 @@ class OpenNIGrabFrame
     std::string dir_name_;
     unsigned format_;
     CloudConstPtr cloud_;
-    mutable boost::mutex cloud_mutex_;
+    mutable std::mutex cloud_mutex_;
     pcl::OpenNIGrabber &grabber_;
     bool visualizer_enable_;
 };

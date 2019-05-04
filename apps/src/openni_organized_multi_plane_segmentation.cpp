@@ -56,7 +56,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
   private:
     pcl::visualization::PCLVisualizer::Ptr viewer;
     pcl::PointCloud<PointT>::ConstPtr prev_cloud;
-    boost::mutex cloud_mutex;
+    std::mutex cloud_mutex;
 
   public:
     OpenNIOrganizedMultiPlaneSegmentation ()

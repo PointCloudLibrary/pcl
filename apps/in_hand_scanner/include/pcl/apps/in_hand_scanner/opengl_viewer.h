@@ -392,7 +392,7 @@ namespace pcl
         ////////////////////////////////////////////////////////////////////////
 
         /** \brief Synchronization. */
-        boost::mutex mutex_vis_;
+        std::mutex mutex_vis_;
 
         /** \brief Visualization timer. */
         boost::shared_ptr <QTimer> timer_vis_;

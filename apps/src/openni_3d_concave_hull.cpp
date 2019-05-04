@@ -87,7 +87,7 @@ class OpenNI3DConcaveHull
     void 
     cloud_cb (const CloudConstPtr& cloud)
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       FPS_CALC ("computation");
 
       cloud_pass_.reset (new Cloud);
@@ -116,7 +116,7 @@ class OpenNI3DConcaveHull
       }
 
       {
-        boost::mutex::scoped_lock lock (mtx_);
+        std::lock_guard<std::mutex> lock (mtx_);
         FPS_CALC ("visualization");
         CloudPtr temp_cloud;
         temp_cloud.swap (cloud_pass_);
@@ -160,7 +160,7 @@ class OpenNI3DConcaveHull
     pcl::visualization::CloudViewer viewer;
 
     std::string device_id_;
-    boost::mutex mtx_;
+    std::mutex mtx_;
     // Data
     CloudConstPtr cloud_;
     CloudPtr cloud_pass_, cloud_hull_;

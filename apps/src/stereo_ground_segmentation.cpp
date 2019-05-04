@@ -81,7 +81,7 @@ class HRCSSegmentation
     pcl::PointCloud<PointT>::ConstPtr prev_label_image;
     Eigen::Vector4f prev_ground_normal;
     Eigen::Vector4f prev_ground_centroid;
-    boost::mutex cloud_mutex;
+    std::mutex cloud_mutex;
 
     pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
     pcl::GroundPlaneComparator<PointT, pcl::Normal>::Ptr road_comparator;

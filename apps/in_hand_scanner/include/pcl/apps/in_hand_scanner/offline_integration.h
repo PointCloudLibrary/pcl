@@ -190,10 +190,10 @@ namespace pcl
         //////////////////////////////////////////////////////////////////////////
 
         /** \brief Synchronization. */
-        boost::mutex mutex_;
+        std::mutex mutex_;
 
         /** \brief Wait until the data finished processing. */
-        boost::mutex mutex_quit_;
+        std::mutex mutex_quit_;
 
         /** \brief Please have a look at the documentation of ComputationFPS. */
         ComputationFPS computation_fps_;

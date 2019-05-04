@@ -83,7 +83,7 @@ class OpenNIPlanarSegmentation
     set (const CloudConstPtr& cloud)
     {
       //lock while we set our cloud;
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       cloud_  = cloud;
     }
 
@@ -91,7 +91,7 @@ class OpenNIPlanarSegmentation
     get ()
     {
       //lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       CloudPtr temp_cloud (new Cloud);
       CloudPtr temp_cloud2 (new Cloud);
 
@@ -145,7 +145,7 @@ class OpenNIPlanarSegmentation
     pcl::ConvexHull<PointType> chull_;
 
     std::string device_id_;
-    boost::mutex mtx_;
+    std::mutex mtx_;
     CloudConstPtr cloud_;
 };
 

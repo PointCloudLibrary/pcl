@@ -263,7 +263,7 @@ public:
   void
   viz_cb (pcl::visualization::PCLVisualizer& viz)
   {
-    boost::mutex::scoped_lock lock (mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     
     if (!cloud_pass_)
     {
@@ -523,7 +523,7 @@ public:
   void
   cloud_cb (const CloudConstPtr &cloud)
   {
-    boost::mutex::scoped_lock lock (mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     double start = pcl::getTime ();
     FPS_CALC_BEGIN;
     cloud_pass_.reset (new Cloud);
@@ -674,7 +674,7 @@ public:
   std::vector<pcl::Vertices> hull_vertices_;
   
   std::string device_id_;
-  boost::mutex mtx_;
+  std::mutex mtx_;
   bool new_cloud_;
   pcl::NormalEstimationOMP<PointType, pcl::Normal> ne_; // to store threadpool
   ParticleFilter::Ptr tracker_;

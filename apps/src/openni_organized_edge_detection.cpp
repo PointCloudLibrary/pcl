@@ -50,7 +50,7 @@ class OpenNIOrganizedEdgeDetection
   private:
     pcl::visualization::PCLVisualizer::Ptr viewer;
     pcl::PointCloud<PointT> cloud_;
-    boost::mutex cloud_mutex;
+    std::mutex cloud_mutex;
 
   public:
     OpenNIOrganizedEdgeDetection ()
