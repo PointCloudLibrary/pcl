@@ -36,7 +36,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
-#include <boost/thread/condition.hpp>
 #include <boost/circular_buffer.hpp>
 #include <csignal>
 #include <limits>
@@ -52,7 +51,7 @@ using namespace pcl;
 using namespace pcl::console;
 
 bool is_done = false;
-boost::mutex io_mutex;
+std::mutex io_mutex;
 
 #if defined(__linux__) || defined (TARGET_OS_MAC)
 #include <unistd.h>
@@ -112,21 +111,21 @@ class PCDBuffer
     inline bool 
     isFull ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       return (buffer_.full ());
     }
 
     inline bool
     isEmpty ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       return (buffer_.empty ());
     }
 
     inline int 
     getSize ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       return (int (buffer_.size ()));
     }
 
@@ -139,7 +138,7 @@ class PCDBuffer
     inline void 
     setCapacity (int buff_size)
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       buffer_.set_capacity (buff_size);
     }
 
@@ -147,8 +146,8 @@ class PCDBuffer
     PCDBuffer (const PCDBuffer&) = delete; // Disabled copy constructor
     PCDBuffer& operator = (const PCDBuffer&) = delete; // Disabled assignment operator
 
-    boost::mutex bmutex_;
-    boost::condition_variable buff_empty_;
+    std::mutex bmutex_;
+    std::condition_variable buff_empty_;
     boost::circular_buffer<typename PointCloud<PointT>::ConstPtr> buffer_;
 };
 
@@ -158,7 +157,7 @@ PCDBuffer<PointT>::pushBack (typename PointCloud<PointT>::ConstPtr cloud)
 {
   bool retVal = false;
   {
-    boost::mutex::scoped_lock buff_lock (bmutex_);
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
     if (!buffer_.full ())
       retVal = true;
     buffer_.push_back (cloud);
@@ -173,13 +172,13 @@ PCDBuffer<PointT>::getFront ()
 {
   typename PointCloud<PointT>::ConstPtr cloud;
   {
-    boost::mutex::scoped_lock buff_lock (bmutex_);
+    std::unique_lock<std::mutex> buff_lock (bmutex_);
     while (buffer_.empty ())
     {
       if (is_done)
         break;
       {
-        boost::mutex::scoped_lock io_lock (io_mutex);
+        std::lock_guard<std::mutex> io_lock (io_mutex);
         //cerr << "No data in buffer_ yet or buffer is empty." << endl;
       }
       buff_empty_.wait (buff_lock);
@@ -218,7 +217,7 @@ class Producer
       if (!buf_.pushBack (cloud))
       {
         {
-          boost::mutex::scoped_lock io_lock (io_mutex);
+          std::lock_guard<std::mutex> io_lock (io_mutex);
           print_warn ("Warning! Buffer was full, overwriting data!\n");
         }
       }
@@ -259,7 +258,7 @@ class Producer
     stop ()
     {
       thread_->join ();
-      boost::mutex::scoped_lock io_lock (io_mutex);
+      std::lock_guard<std::mutex> io_lock (io_mutex);
       print_highlight ("Producer done.\n");
     }
 
@@ -299,7 +298,7 @@ class Consumer
       }
 
       {
-        boost::mutex::scoped_lock io_lock (io_mutex);
+        std::lock_guard<std::mutex> io_lock (io_mutex);
         print_info ("Writing remaining %ld clouds in the buffer to disk...\n", buf_.getSize ());
       }
       while (!buf_.isEmpty ())
@@ -318,7 +317,7 @@ class Consumer
     stop ()
     {
       thread_->join ();
-      boost::mutex::scoped_lock io_lock (io_mutex);
+      std::lock_guard<std::mutex> io_lock (io_mutex);
       print_highlight ("Consumer done.\n");
     }
 
@@ -332,7 +331,7 @@ class Consumer
 void 
 ctrlC (int)
 {
-  boost::mutex::scoped_lock io_lock (io_mutex);
+  std::lock_guard<std::mutex> io_lock (io_mutex);
   print_info ("\nCtrl-C detected, exit condition set to true.\n");
   is_done = true;
 }

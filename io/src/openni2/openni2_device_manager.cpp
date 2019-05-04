@@ -112,7 +112,7 @@ namespace pcl
           void
           onDeviceConnected (const openni::DeviceInfo* pInfo) override
           {
-            boost::mutex::scoped_lock l (device_mutex_);
+            std::lock_guard<std::mutex> l (device_mutex_);
 
             const OpenNI2DeviceInfo device_info_wrapped = openni2_convert (pInfo);
 
@@ -124,7 +124,7 @@ namespace pcl
           void
           onDeviceDisconnected (const openni::DeviceInfo* pInfo) override
           {
-            boost::mutex::scoped_lock l (device_mutex_);
+            std::lock_guard<std::mutex> l (device_mutex_);
 
             const OpenNI2DeviceInfo device_info_wrapped = openni2_convert (pInfo);
             device_set_.erase (device_info_wrapped);
@@ -133,7 +133,7 @@ namespace pcl
           boost::shared_ptr<std::vector<std::string> >
           getConnectedDeviceURIs ()
           {
-            boost::mutex::scoped_lock l (device_mutex_);
+            std::lock_guard<std::mutex> l (device_mutex_);
 
             boost::shared_ptr<std::vector<std::string> > result = boost::make_shared<std::vector<std::string> >();
 
@@ -151,7 +151,7 @@ namespace pcl
           boost::shared_ptr<std::vector<OpenNI2DeviceInfo> >
           getConnectedDeviceInfos ()
           {
-            boost::mutex::scoped_lock l (device_mutex_);
+            std::lock_guard<std::mutex> l (device_mutex_);
 
             boost::shared_ptr<std::vector<OpenNI2DeviceInfo> > result = boost::make_shared<std::vector<OpenNI2DeviceInfo> >();
 
@@ -166,12 +166,12 @@ namespace pcl
           std::size_t
           getNumOfConnectedDevices ()
           {
-            boost::mutex::scoped_lock l (device_mutex_);
+            std::lock_guard<std::mutex> l (device_mutex_);
 
             return device_set_.size ();
           }
 
-          boost::mutex device_mutex_;
+          std::mutex device_mutex_;
           DeviceSet device_set_;
       };
 

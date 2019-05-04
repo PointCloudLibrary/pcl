@@ -443,7 +443,7 @@ pcl::DinastGrabber::captureThreadFunction ()
   while (true)
   {
     // Lock before checking running flag
-    boost::unique_lock<boost::mutex> capture_lock (capture_mutex_);
+    std::unique_lock<std::mutex> capture_lock (capture_mutex_);
     if(running_)
     {
       readImage ();

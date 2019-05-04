@@ -98,7 +98,7 @@ pcl::io::depth_sense::DepthSenseGrabberImpl::stop ()
 float
 pcl::io::depth_sense::DepthSenseGrabberImpl::getFramesPerSecond () const
 {
-  boost::mutex::scoped_lock lock (fps_mutex_);
+  std::lock_guard<std::mutex> lock (fps_mutex_);
   return (frequency_.getFrequency ());
 }
 
