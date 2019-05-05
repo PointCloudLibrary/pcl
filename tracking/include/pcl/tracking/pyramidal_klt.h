@@ -69,6 +69,8 @@ namespace pcl
         typedef pcl::PointCloud<float> FloatImage;
         typedef FloatImage::Ptr FloatImagePtr;
         typedef FloatImage::ConstPtr FloatImageConstPtr;
+        typedef boost::shared_ptr<PyramidalKLTTracker> Ptr;
+        typedef boost::shared_ptr<const PyramidalKLTTracker> ConstPtr;
 
         using TrackerBase::tracker_name_;
         using TrackerBase::input_;

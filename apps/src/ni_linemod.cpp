@@ -263,9 +263,6 @@ class NILinemod
         scene->points[index].label = 1;
       euclidean_cluster_comparator->setLabels (scene);
 
-      boost::shared_ptr<std::set<uint32_t> > exclude_labels = boost::make_shared<std::set<uint32_t> > ();
-      exclude_labels->insert (0);
-
       OrganizedConnectedComponentSegmentation<PointT, Label> euclidean_segmentation (euclidean_cluster_comparator);
       euclidean_segmentation.setInputCloud (cloud);
 

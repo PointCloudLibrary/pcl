@@ -214,8 +214,8 @@ struct EventHelper
   }
 
   void
-  image_callback (const boost::shared_ptr<openni_wrapper::Image> &image,
-                  const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, float)
+  image_callback (const openni_wrapper::Image::Ptr &image,
+                  const openni_wrapper::DepthImage::Ptr &depth_image, float)
   {
 
     vector<uint16_t> disparity_data;
@@ -271,7 +271,8 @@ struct EventHelper
       // Set the depth output format
       grabber.getDevice ()->setDepthOutputFormat (static_cast<openni_wrapper::OpenNIDevice::DepthMode> (depthformat));
 
-      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float) > image_cb = boost::bind (&EventHelper::image_callback, this, _1, _2, _3);
+      boost::function<void (const openni_wrapper::Image::Ptr&, const openni_wrapper::DepthImage::Ptr&, float) > image_cb
+        = boost::bind (&EventHelper::image_callback, this, _1, _2, _3);
       boost::signals2::connection image_connection = grabber.registerCallback (image_cb);
 
       grabber.start ();

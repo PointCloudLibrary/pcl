@@ -56,6 +56,7 @@ namespace pcl
       typedef pcl::PointCloud<PointT>             PointCloud;
       typedef PointCloud::Ptr                     PointCloudPtr;
       typedef PointCloud::ConstPtr                PointCloudConstPtr;
+      typedef boost::shared_ptr<CloudMesh>        Ptr;
 
       CloudMesh ();
       CloudMesh (PointCloudPtr cloud);
