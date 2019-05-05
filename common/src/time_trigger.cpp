@@ -136,7 +136,7 @@ pcl::TimeTrigger::thread_function ()
 
       callbacks_();
       double rest = interval_ + time - getTime ();
-      condition_.wait_for (lock, rest * 1000000us);
+      condition_.wait_for (lock, rest * 1s);
     }
   }
 }
