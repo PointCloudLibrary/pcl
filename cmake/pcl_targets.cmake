@@ -270,7 +270,12 @@ function(PCL_ADD_EXECUTABLE _name)
   set(multiValueArgs SOURCES)
   cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-  add_executable(${_name} ${ADD_LIBRARY_OPTION_SOURCES})
+  if(ADD_LIBRARY_OPTION_BUNDLE AND APPLE AND VTK_USE_COCOA)
+    add_executable(${_name} MACOSX_BUNDLE ${ADD_LIBRARY_OPTION_SOURCES})
+  else()
+    add_executable(${_name} ${ADD_LIBRARY_OPTION_SOURCES})
+  endif()
+
   # must link explicitly against boost.
   if(UNIX AND NOT ANDROID)
     target_link_libraries(${_name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
