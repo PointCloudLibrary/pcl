@@ -100,7 +100,6 @@ namespace pcl
         */
       Filter (bool extract_removed_indices = false) :
         removed_indices_ (new std::vector<int>),
-        filter_name_ (),
         extract_removed_indices_ (extract_removed_indices)
       {
       }
@@ -206,8 +205,7 @@ namespace pcl
         */
       Filter (bool extract_removed_indices = false) :
         removed_indices_ (new std::vector<int>),
-        extract_removed_indices_ (extract_removed_indices),
-        filter_name_ ()
+        extract_removed_indices_ (extract_removed_indices)
       {
       }
 

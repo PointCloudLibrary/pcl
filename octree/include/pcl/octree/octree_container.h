@@ -133,14 +133,12 @@ namespace pcl
     {
     public:
       /** \brief Empty constructor. */
-      OctreeContainerEmpty () :
-          OctreeContainerBase ()
+      OctreeContainerEmpty ()
       {
       }
 
       /** \brief Empty constructor. */
-      OctreeContainerEmpty (const OctreeContainerEmpty&) :
-          OctreeContainerBase ()
+      OctreeContainerEmpty (const OctreeContainerEmpty&)
       {
       }
 
@@ -208,14 +206,14 @@ namespace pcl
       public:
         /** \brief Empty constructor. */
         OctreeContainerPointIndex () :
-            OctreeContainerBase (), data_ ()
+            data_ ()
         {
           reset ();
         }
 
         /** \brief Empty constructor. */
         OctreeContainerPointIndex (const OctreeContainerPointIndex& source) :
-            OctreeContainerBase (), data_ (source.data_)
+            data_ (source.data_)
         {
         }
 
@@ -300,14 +298,13 @@ namespace pcl
       {
       public:
         /** \brief Empty constructor. */
-        OctreeContainerPointIndices () :
-          OctreeContainerBase (), leafDataTVector_ ()
+        OctreeContainerPointIndices ()  
         {
         }
 
         /** \brief Empty constructor. */
         OctreeContainerPointIndices (const OctreeContainerPointIndices& source) :
-            OctreeContainerBase (), leafDataTVector_ (source.leafDataTVector_)
+            leafDataTVector_ (source.leafDataTVector_)
         {
         }
 

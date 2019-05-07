@@ -41,13 +41,9 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::TimeTrigger::TimeTrigger (double interval, const callback_type& callback)
-: callbacks_ ()
-, interval_ (interval)
+: interval_ (interval)
 , quit_ (false)
 , running_ (false)
-, timer_thread_ ()
-, condition_ ()
-, condition_mutex_ ()
 {
   timer_thread_ = std::thread (&TimeTrigger::thread_function, this);
   registerCallback (callback);
@@ -55,13 +51,9 @@ pcl::TimeTrigger::TimeTrigger (double interval, const callback_type& callback)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::TimeTrigger::TimeTrigger (double interval)
-: callbacks_ ()
-, interval_ (interval)
+: interval_ (interval)
 , quit_ (false)
 , running_ (false)
-, timer_thread_ ()
-, condition_ ()
-, condition_mutex_ ()
 {
   timer_thread_ = std::thread (&TimeTrigger::thread_function, this);
 }

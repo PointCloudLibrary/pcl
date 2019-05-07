@@ -100,10 +100,7 @@ namespace pcl
         */
       PFHEstimation () : 
         nr_subdiv_ (5), 
-        pfh_histogram_ (),
-        pfh_tuple_ (),
         d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI))), 
-        feature_map_ (),
         key_list_ (),
         // Default 1GB memory size. Need to set it to something more conservative.
         max_cache_size_ ((1ul*1024ul*1024ul*1024ul) / sizeof (std::pair<std::pair<int, int>, Eigen::Vector4f>)),

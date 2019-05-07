@@ -70,7 +70,7 @@ namespace pcl
   public:
 
     /** \brief Empty constructor. */
-    AdaptiveRangeCoder () : outputCharVector_ ()
+    AdaptiveRangeCoder ()
     {
     }
 
@@ -119,7 +119,7 @@ namespace pcl
     public:
       /** \brief Constructor. */
       StaticRangeCoder () :
-        cFreqTable_ (65537), outputCharVector_ ()
+        cFreqTable_ (65537)
       {
       }
 

@@ -77,7 +77,6 @@ namespace pcl
           cloud_normals_ (),
           cloud_trees_ (),
           normals_ (),
-          scales_ (),
           input_scale_ (0.0f),
           input_index_ ()
       {

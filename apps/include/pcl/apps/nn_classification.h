@@ -67,7 +67,7 @@ namespace pcl
 
     public:
 
-      NNClassification () : tree_ (), classes_ (), labels_idx_ () {}
+      NNClassification () : tree_ () {}
 
       /** \brief Result is a list of class labels and scores */
       typedef std::pair<std::vector<std::string>, std::vector<float> > Result;

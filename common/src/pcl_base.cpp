@@ -40,9 +40,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::PCLBase<pcl::PCLPointCloud2>::PCLBase ()
-  : input_ ()
-  , indices_ ()
-  , use_indices_ (false)
+  : use_indices_ (false)
   , fake_indices_ (false)
   , field_sizes_ (0)
   , x_idx_ (-1)

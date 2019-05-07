@@ -168,15 +168,11 @@ namespace pcl
       /** \brief Structure for representing a single pyramid histogram level */
       struct PyramidFeatureHistogramLevel
       {
-        PyramidFeatureHistogramLevel () :
-          hist (), 
-          bins_per_dimension (),
-          bin_step ()
+        PyramidFeatureHistogramLevel () 
         {
         }
 
         PyramidFeatureHistogramLevel (std::vector<size_t> &a_bins_per_dimension, std::vector<float> &a_bin_step) : 
-          hist (), 
           bins_per_dimension (a_bins_per_dimension),
           bin_step (a_bin_step)
         {

@@ -46,7 +46,7 @@ namespace pcl
 
 /////////////////////////////////////////////////////////////////////////
 NarfKeypoint::NarfKeypoint (RangeImageBorderExtractor* range_image_border_extractor, float support_size) :
-    BaseClass (), interest_image_ (nullptr), interest_points_ (nullptr)
+    interest_image_ (nullptr), interest_points_ (nullptr)
 {
   name_ = "NarfKeypoint";
   clearData ();

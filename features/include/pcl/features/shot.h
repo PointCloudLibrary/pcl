@@ -90,7 +90,7 @@ namespace pcl
         */
       SHOTEstimationBase (int nr_shape_bins = 10) :
         nr_shape_bins_ (nr_shape_bins),
-        shot_ (), lrf_radius_ (0),
+        lrf_radius_ (0),
         sqradius_ (0), radius3_4_ (0), radius1_4_ (0), radius1_2_ (0),
         nr_grid_sector_ (32),
         maxAngularSectors_ (32),

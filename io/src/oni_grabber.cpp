@@ -67,10 +67,7 @@ namespace pcl
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)
-  : rgb_sync_ ()
-  , ir_sync_ ()
-  , device_ ()
-  , rgb_frame_id_ ("/openni_rgb_optical_frame")
+  : rgb_frame_id_ ("/openni_rgb_optical_frame")
   , depth_frame_id_ ("/openni_depth_optical_frame")
   , running_ (false)
   , image_width_ ()

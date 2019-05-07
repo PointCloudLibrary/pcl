@@ -79,16 +79,11 @@ namespace pcl
         */
       SampleConsensusModel (bool random = false) 
         : input_ ()
-        , indices_ ()
         , radius_min_ (-std::numeric_limits<double>::max ())
         , radius_max_ (std::numeric_limits<double>::max ())
         , samples_radius_ (0.)
         , samples_radius_search_ ()
-        , shuffled_indices_ ()
-        , rng_alg_ ()
         , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
-        , rng_gen_ ()
-        , error_sqr_dists_ ()
       {
         // Create a random number generator object
         if (random)
@@ -106,16 +101,11 @@ namespace pcl
         */
       SampleConsensusModel (const PointCloudConstPtr &cloud, bool random = false) 
         : input_ ()
-        , indices_ ()
         , radius_min_ (-std::numeric_limits<double>::max ())
         , radius_max_ (std::numeric_limits<double>::max ())
         , samples_radius_ (0.)
         , samples_radius_search_ ()
-        , shuffled_indices_ ()
-        , rng_alg_ ()
         , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
-        , rng_gen_ ()
-        , error_sqr_dists_ ()
       {
         if (random)
           rng_alg_.seed (static_cast<unsigned> (std::time (nullptr)));
@@ -143,11 +133,7 @@ namespace pcl
         , radius_max_ (std::numeric_limits<double>::max ())
         , samples_radius_ (0.)
         , samples_radius_search_ ()
-        , shuffled_indices_ ()
-        , rng_alg_ ()
         , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
-        , rng_gen_ ()
-        , error_sqr_dists_ ()
       {
         if (random)
           rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));

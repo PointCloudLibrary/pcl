@@ -53,7 +53,7 @@ namespace pcl
     public:
 
       SynchronizedQueue () :
-        queue_(), mutex_(), cond_(), request_to_end_(false), enqueue_data_(true) { }
+        queue_(), request_to_end_(false), enqueue_data_(true) { }
 
       void
       enqueue (const T& data)

@@ -14,7 +14,7 @@ namespace pcl
 {
   struct PCLHeader
   {
-    PCLHeader (): seq (0), stamp (), frame_id ()
+    PCLHeader (): seq (0), stamp ()
     {}
 
     /** \brief Sequence number */

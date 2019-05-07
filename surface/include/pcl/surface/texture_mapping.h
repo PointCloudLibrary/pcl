@@ -61,8 +61,8 @@ namespace pcl
       */
     struct Camera
     {
-      Camera () : pose (), focal_length (), focal_length_w (-1), focal_length_h (-1),
-        center_w (-1), center_h (-1), height (), width (), texture_file () {}
+      Camera () : focal_length (), focal_length_w (-1), focal_length_h (-1),
+        center_w (-1), center_h (-1), height (), width () {}
       Eigen::Affine3f pose;
       double focal_length;
       double focal_length_w;  // optional
@@ -114,7 +114,7 @@ namespace pcl
 
       /** \brief Constructor. */
       TextureMapping () :
-        f_ (), vector_field_ (), tex_files_ (), tex_material_ ()
+        f_ ()
       {
       }
 

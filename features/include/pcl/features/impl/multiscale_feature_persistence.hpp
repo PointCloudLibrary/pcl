@@ -45,16 +45,11 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointFeature>
 pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::MultiscaleFeaturePersistence () : 
-  scale_values_ (), 
   alpha_ (0), 
   distance_metric_ (L1),
   feature_estimator_ (),
   features_at_scale_ (),
-  features_at_scale_vectorized_ (),
-  mean_feature_ (),
-  feature_representation_ (),
-  unique_features_indices_ (),
-  unique_features_table_ ()
+  feature_representation_ ()
 {
   feature_representation_.reset (new DefaultPointRepresentation<PointFeature>);
   // No input is needed, hack around the initCompute () check from PCLBase

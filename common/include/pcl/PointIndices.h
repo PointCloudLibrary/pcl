@@ -11,7 +11,7 @@ namespace pcl
 {
   struct PointIndices
   {
-    PointIndices () : header (), indices ()
+    PointIndices ()
     {}
 
     ::pcl::PCLHeader header;

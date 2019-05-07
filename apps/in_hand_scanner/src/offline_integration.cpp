@@ -61,11 +61,6 @@
 
 pcl::ihs::OfflineIntegration::OfflineIntegration (Base* parent)
   : Base               (parent),
-    mutex_             (),
-    mutex_quit_        (),
-    computation_fps_   (),
-    visualization_fps_ (),
-    path_dir_          (),
     mesh_model_        (new Mesh ()),
     normal_estimation_ (new NormalEstimation ()),
     integration_       (new Integration ()),

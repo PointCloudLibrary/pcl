@@ -51,7 +51,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, const std::string& filename)
   :QTreeWidgetItem(parent),
-  AbstractItem(),
   filename_(filename),
   cloud_mesh_(new CloudMesh),
   translation_x_(new DoubleParameter("Translation X", "Translation X", 0.0, -1.0, 1.0)),
@@ -68,7 +67,6 @@ pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, const std::
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, CloudMesh::PointCloudPtr cloud)
   :QTreeWidgetItem(parent),
-  AbstractItem(),
   filename_("unnamed point cloud"),
   cloud_mesh_(new CloudMesh (cloud)),
   translation_x_(new DoubleParameter("Translation X", "Translation X", 0.0, -1.0, 1.0)),
@@ -89,7 +87,6 @@ pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, CloudMesh::
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::CloudMeshItem::CloudMeshItem(QTreeWidgetItem* parent,  const CloudMeshItem& cloud_mesh_item)
   :QTreeWidgetItem(parent),
-  AbstractItem(),
   filename_(cloud_mesh_item.filename_),
   cloud_mesh_(cloud_mesh_item.cloud_mesh_),
   translation_x_(new DoubleParameter("Translation X", "Translation X", 0.0, -1.0, 1.0)),

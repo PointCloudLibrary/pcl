@@ -97,7 +97,6 @@ namespace pcl
         Leaf () :
           nr_points (0),
           mean_ (Eigen::Vector3d::Zero ()),
-          centroid (),
           cov_ (Eigen::Matrix3d::Identity ()),
           icov_ (Eigen::Matrix3d::Zero ()),
           evecs_ (Eigen::Matrix3d::Identity ()),
@@ -203,7 +202,6 @@ namespace pcl
         min_covar_eigvalue_mult_ (0.01),
         leaves_ (),
         voxel_centroids_ (),
-        voxel_centroids_leaf_indices_ (),
         kdtree_ ()
       {
         downsample_all_data_ = false;

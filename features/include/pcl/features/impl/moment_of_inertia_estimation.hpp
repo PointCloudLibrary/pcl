@@ -56,14 +56,11 @@ pcl::MomentOfInertiaEstimation<PointT>::MomentOfInertiaEstimation () :
   major_value_ (0.0f),
   middle_value_ (0.0f),
   minor_value_ (0.0f),
-  moment_of_inertia_ (),
-  eccentricity_ (),
   aabb_min_point_ (),
   aabb_max_point_ (),
   obb_min_point_ (),
   obb_max_point_ (),
-  obb_position_ (0.0f, 0.0f, 0.0f),
-  obb_rotational_matrix_ ()
+  obb_position_ (0.0f, 0.0f, 0.0f)
 {
 }
 

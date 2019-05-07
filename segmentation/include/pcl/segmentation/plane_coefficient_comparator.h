@@ -69,7 +69,6 @@ namespace pcl
       /** \brief Empty constructor for PlaneCoefficientComparator. */
       PlaneCoefficientComparator ()
         : normals_ ()
-        , plane_coeff_d_ ()
         , angular_threshold_ (pcl::deg2rad (2.0f))
         , distance_threshold_ (0.02f)
         , depth_dependent_ (true)

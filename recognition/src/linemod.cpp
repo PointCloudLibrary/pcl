@@ -52,7 +52,6 @@ pcl::LINEMOD::LINEMOD ()
   : template_threshold_ (0.75f)
   , use_non_max_suppression_ (false)
   , average_detections_ (false)
-  , templates_ ()
 {
 }
 

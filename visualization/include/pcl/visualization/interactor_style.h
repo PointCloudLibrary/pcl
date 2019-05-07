@@ -114,11 +114,10 @@ namespace pcl
 
         /** \brief Empty constructor. */
         PCLVisualizerInteractorStyle () : 
-          init_ (), rens_ (), cloud_actors_ (), shape_actors_ (), win_height_ (), win_width_ (), win_pos_x_ (), win_pos_y_ (),
-          max_win_height_ (), max_win_width_ (), use_vbos_ (false), grid_enabled_ (), grid_actor_ (), lut_enabled_ (),
-          lut_actor_ (), snapshot_writer_ (), wif_ (), mouse_signal_ (), keyboard_signal_ (),
-          point_picking_signal_ (), area_picking_signal_ (), stereo_anaglyph_mask_default_ (),
-          mouse_callback_ (), modifier_ (), camera_file_ (), camera_ (), camera_saved_ (), win_ (), lut_actor_id_ ("")
+          init_ (), win_height_ (), win_width_ (), win_pos_x_ (), win_pos_y_ (),
+          max_win_height_ (), max_win_width_ (), use_vbos_ (false), grid_enabled_ (), lut_enabled_ (),
+          stereo_anaglyph_mask_default_ (),
+          modifier_ (), camera_saved_ (), lut_actor_id_ ("")
         {}
       
         /** \brief Empty destructor */
@@ -410,7 +409,7 @@ namespace pcl
         static PCLHistogramVisualizerInteractorStyle *New ();
 
         /** \brief Empty constructor. */
-        PCLHistogramVisualizerInteractorStyle () : wins_ (), init_ (false) {}
+        PCLHistogramVisualizerInteractorStyle () : init_ (false) {}
 
         /** \brief Initialization routine. Must be called before anything else. */
         void 

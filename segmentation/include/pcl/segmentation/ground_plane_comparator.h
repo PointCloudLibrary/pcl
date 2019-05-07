@@ -69,7 +69,6 @@ namespace pcl
       /** \brief Empty constructor for GroundPlaneComparator. */
       GroundPlaneComparator ()
         : normals_ ()
-        , plane_coeff_d_ ()
         , angular_threshold_ (cosf (pcl::deg2rad (2.0f)))
         , road_angular_threshold_ ( cosf(pcl::deg2rad (10.0f)))
         , distance_threshold_ (0.1f)

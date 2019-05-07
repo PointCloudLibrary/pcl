@@ -104,7 +104,6 @@ namespace pcl
         min_radius_(0.1),
         point_density_radius_(0.2),
         descriptor_length_ (),
-        rng_ (),
         rng_dist_ (0.0f, 1.0f)
       {
         feature_name_ = "ShapeContext3DEstimation";

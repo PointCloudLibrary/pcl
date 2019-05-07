@@ -110,7 +110,7 @@ namespace pcl
 
     public:
 
-      VFHClassifierNN () : training_features_ (), labels_ (), classifier_ ()
+      VFHClassifierNN ()
       {
         reset ();
       }

@@ -76,10 +76,7 @@ namespace pcl
 
       /** \brief Empty constructor for PlaneCoefficientComparator. */
      PlaneRefinementComparator ()
-        : models_ ()
-        , labels_ ()
-        , refine_labels_ ()
-        , label_to_model_ ()
+        : labels_ ()
         , depth_dependent_ (false)
       {
       }
@@ -93,7 +90,6 @@ namespace pcl
         : models_ (models)
         , labels_ ()
         , refine_labels_ (refine_labels)
-        , label_to_model_ ()
         , depth_dependent_ (false)
       {
       }

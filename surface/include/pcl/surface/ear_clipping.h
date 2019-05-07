@@ -58,7 +58,7 @@ namespace pcl
       using MeshProcessing::input_mesh_;
       using MeshProcessing::initCompute;
       /** \brief Empty constructor */
-      EarClipping () : MeshProcessing (), points_ ()
+      EarClipping ()
       { 
       };
 

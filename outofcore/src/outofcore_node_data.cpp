@@ -54,13 +54,7 @@ namespace pcl
   {
     
     OutofcoreOctreeNodeMetadata::OutofcoreOctreeNodeMetadata () 
-      : min_bb_ (),
-        max_bb_ (),
-        binary_point_filename_ (),
-        midpoint_xyz_ (),
-        directory_ (),
-        metadata_filename_ (),
-        outofcore_version_ ()
+      : outofcore_version_ ()
     {
     }
 

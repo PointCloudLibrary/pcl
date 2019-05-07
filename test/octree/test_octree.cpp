@@ -1103,7 +1103,7 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
 class prioPointQueueEntry
 {
 public:
-  prioPointQueueEntry () : point_ (), pointDistance_ (), pointIdx_ ()
+  prioPointQueueEntry () : pointDistance_ (), pointIdx_ ()
   {
   }
   prioPointQueueEntry (PointXYZ& point_arg, double pointDistance_arg, int pointIdx_arg) :

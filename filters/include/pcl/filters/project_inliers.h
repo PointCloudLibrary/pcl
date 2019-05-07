@@ -84,7 +84,7 @@ namespace pcl
 
 
       /** \brief Empty constructor. */
-      ProjectInliers () : model_ (), sacmodel_ (), model_type_ (), copy_all_data_ (false)
+      ProjectInliers () : sacmodel_ (), model_type_ (), copy_all_data_ (false)
       {
         filter_name_ = "ProjectInliers";
       }
@@ -188,7 +188,7 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      ProjectInliers () : model_type_ (), copy_all_data_ (false), copy_all_fields_ (true), model_ (), sacmodel_ ()
+      ProjectInliers () : model_type_ (), copy_all_data_ (false), copy_all_fields_ (true)
       {
         filter_name_ = "ProjectInliers";
       }

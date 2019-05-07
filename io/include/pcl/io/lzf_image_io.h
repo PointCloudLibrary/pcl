@@ -190,8 +190,7 @@ namespace pcl
 
         /** Empty constructor */
         LZFDepth16ImageReader () 
-          : LZFImageReader () 
-          , z_multiplication_factor_ (0.001)      // Set default multiplication factor
+          : z_multiplication_factor_ (0.001)      // Set default multiplication factor
         {}
 
         /** Empty destructor */
@@ -243,7 +242,7 @@ namespace pcl
         using LZFImageReader::readParameters;
 
         /** Empty constructor */
-        LZFRGB24ImageReader () : LZFImageReader () {}
+        LZFRGB24ImageReader () {}
         /** Empty destructor */
         ~LZFRGB24ImageReader () {}
 
@@ -290,7 +289,7 @@ namespace pcl
         using LZFRGB24ImageReader::readParameters;
 
         /** Empty constructor */
-        LZFYUV422ImageReader () : LZFRGB24ImageReader () {}
+        LZFYUV422ImageReader () {}
         /** Empty destructor */
         ~LZFYUV422ImageReader () {}
 
@@ -328,7 +327,7 @@ namespace pcl
         using LZFRGB24ImageReader::readParameters;
 
         /** Empty constructor */
-        LZFBayer8ImageReader () : LZFRGB24ImageReader () {}
+        LZFBayer8ImageReader () {}
         /** Empty destructor */
         ~LZFBayer8ImageReader () {}
 
@@ -482,8 +481,7 @@ namespace pcl
       public:
         /** Empty constructor */
         LZFDepth16ImageWriter () 
-          : LZFImageWriter ()
-          , z_multiplication_factor_ (0.001)      // Set default multiplication factor
+          : z_multiplication_factor_ (0.001)      // Set default multiplication factor
         {}
 
         /** Empty destructor */
@@ -538,7 +536,7 @@ namespace pcl
     {
       public:
         /** Empty constructor */
-        LZFRGB24ImageWriter () : LZFImageWriter () {}
+        LZFRGB24ImageWriter () {}
         /** Empty destructor */
         ~LZFRGB24ImageWriter () {}
 
@@ -580,7 +578,7 @@ namespace pcl
     {
       public:
         /** Empty constructor */
-        LZFYUV422ImageWriter () : LZFRGB24ImageWriter () {}
+        LZFYUV422ImageWriter () {}
         /** Empty destructor */
         ~LZFYUV422ImageWriter () {}
 
@@ -611,7 +609,7 @@ namespace pcl
     {
       public:
         /** Empty constructor */
-        LZFBayer8ImageWriter () : LZFRGB24ImageWriter () {}
+        LZFBayer8ImageWriter () {}
         /** Empty destructor */
         ~LZFBayer8ImageWriter () {}
 

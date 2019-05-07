@@ -61,9 +61,6 @@ pcl::MinCutSegmentation<PointT>::MinCutSegmentation () :
   foreground_points_ (0),
   background_points_ (0),
   clusters_ (0),
-  graph_ (),
-  capacity_ (),
-  reverse_edges_ (),
   vertices_ (0),
   edge_marker_ (0),
   source_ (),/////////////////////////////////

@@ -117,7 +117,6 @@ pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (con
 template <typename PointFeature>
 pcl::PyramidFeatureHistogram<PointFeature>::PyramidFeatureHistogram () :
   nr_dimensions (0), nr_levels (0), nr_features (0),
-  dimension_range_input_ (), dimension_range_target_ (),
   feature_representation_ (new DefaultPointRepresentation<PointFeature>),
   is_computed_ (false),
   hist_levels ()

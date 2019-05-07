@@ -279,11 +279,7 @@ ColorGradientModality ()
   , feature_selection_method_ (DISTANCE_MAGNITUDE_SCORE)
   , gradient_magnitude_threshold_ (10.0f)
   , gradient_magnitude_threshold_feature_extraction_ (55.0f)
-  , color_gradients_ ()
   , spreading_size_ (8)
-  , quantized_color_gradients_ ()
-  , filtered_quantized_color_gradients_ ()
-  , spreaded_filtered_quantized_color_gradients_ ()
 {
 }
 

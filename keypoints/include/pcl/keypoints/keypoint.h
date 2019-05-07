@@ -74,8 +74,6 @@ namespace pcl
       /** \brief Empty constructor. */
       Keypoint () : 
         BaseClass (), 
-        name_ (),
-        search_method_ (),
         search_method_surface_ (),
         surface_ (), 
         tree_ (), 

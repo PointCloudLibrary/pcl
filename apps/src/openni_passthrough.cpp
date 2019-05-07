@@ -52,12 +52,7 @@ using namespace std::chrono_literals;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 OpenNIPassthrough::OpenNIPassthrough (pcl::OpenNIGrabber& grabber) 
-  : vis_ ()
-  , grabber_(grabber)
-  , device_id_ ()
-  , cloud_pass_()
-  , pass_ ()
-  , mtx_ ()
+  : grabber_(grabber)
   , ui_ (new Ui::MainWindow)
   , vis_timer_ (new QTimer (this))
 {

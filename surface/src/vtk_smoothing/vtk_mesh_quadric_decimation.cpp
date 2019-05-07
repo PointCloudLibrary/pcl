@@ -44,8 +44,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::MeshQuadricDecimationVTK::MeshQuadricDecimationVTK ()
-  : pcl::MeshProcessing (),
-    target_reduction_factor_ (0.5f)
+  : target_reduction_factor_ (0.5f)
 {
 }
 

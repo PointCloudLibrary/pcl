@@ -13,7 +13,6 @@ namespace pcl
 }
 
 pcl::cloud_composer::SelectedTrackballStyleInteractor::SelectedTrackballStyleInteractor ()
-  : vtkInteractorStyleTrackballActor ()
 {
   manipulation_complete_event_ = interactor_events::MANIPULATION_COMPLETE_EVENT;  
 }

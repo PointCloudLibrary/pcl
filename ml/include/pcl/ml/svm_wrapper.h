@@ -176,8 +176,7 @@ namespace pcl
     public:
       /** \brief  Constructor. */
       SVM () : 
-        training_set_ (), prob_ (), model_ (), scaling_ (), param_ (), 
-        class_name_ (), line_ (nullptr), max_line_len_ (10000), labelled_training_set_ (true)
+        prob_ (), line_ (nullptr), max_line_len_ (10000), labelled_training_set_ (true)
       {
       }
 

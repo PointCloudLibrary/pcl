@@ -58,7 +58,6 @@ using namespace std::chrono_literals;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () : 
-  wins_ (),
   exit_main_loop_timer_callback_ (vtkSmartPointer<ExitMainLoopTimerCallback>::New ()), 
   exit_callback_ (vtkSmartPointer<ExitCallback>::New ()), 
   stopped_ ()

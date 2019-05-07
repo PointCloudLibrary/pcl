@@ -119,7 +119,6 @@ namespace pcl
       IntegralImage2D (bool compute_second_order_integral_images) :
         first_order_integral_image_ (),
         second_order_integral_image_ (),
-        finite_values_integral_image_ (),
         width_ (1), 
         height_ (1), 
         compute_second_order_integral_images_ (compute_second_order_integral_images)
@@ -244,7 +243,7 @@ namespace pcl
       IntegralImage2D (bool compute_second_order_integral_images) : 
         first_order_integral_image_ (),
         second_order_integral_image_ (),
-        finite_values_integral_image_ (),
+        
         width_ (1), height_ (1), 
         compute_second_order_integral_images_ (compute_second_order_integral_images)
       {

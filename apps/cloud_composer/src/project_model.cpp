@@ -53,7 +53,6 @@ pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
 }
 
 pcl::cloud_composer::ProjectModel::ProjectModel (const ProjectModel&)
-  : QStandardItemModel ()
 {
 }
 
