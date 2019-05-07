@@ -203,7 +203,7 @@ namespace pcl
       private:
         /** \brief Private implementation. */
         struct CloudViewer_impl;
-	boost::scoped_ptr<CloudViewer_impl> impl_;
+        boost::scoped_ptr<CloudViewer_impl> impl_;
         
         boost::signals2::connection 
         registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)>);

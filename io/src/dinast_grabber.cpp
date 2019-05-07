@@ -107,7 +107,7 @@ void
 pcl::DinastGrabber::onInit (const int device_position)
 {
   setupDevice (device_position);
-  capture_thread_ = boost::thread (&DinastGrabber::captureThreadFunction, this);
+  capture_thread_ = std::thread (&DinastGrabber::captureThreadFunction, this);
   image_ = new unsigned char [image_size_];
 }
 

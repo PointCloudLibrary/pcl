@@ -42,6 +42,7 @@
 #include <vector>
 
 #include <pcl/outofcore/boost.h>
+#include <boost/thread/mutex.hpp>
 
 namespace pcl
 {

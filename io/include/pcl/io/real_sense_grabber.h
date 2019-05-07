@@ -44,6 +44,8 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
 
+#include <thread>
+
 namespace pcl
 {
 
@@ -265,7 +267,7 @@ namespace pcl
       EventFrequency frequency_;
       mutable boost::mutex fps_mutex_;
 
-      boost::thread thread_;
+      std::thread thread_;
 
       /// Depth buffer to perform temporal filtering of the depth images
       boost::shared_ptr<pcl::io::Buffer<unsigned short> > depth_buffer_;

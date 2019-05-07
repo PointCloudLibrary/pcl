@@ -41,6 +41,8 @@
 #include <pcl/registration/registration.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include <thread>
+
 namespace pcl
 {
   /** \brief @b RegistrationVisualizer represents the base class for rendering
@@ -167,7 +169,7 @@ namespace pcl
       pcl::visualization::PCLVisualizer::Ptr viewer_;
 
       /** \brief The thread running the runDisplay() function. */
-      boost::thread viewer_thread_;
+      std::thread viewer_thread_;
 
       /** \brief The name of the registration method whose intermediate results are rendered. */
       std::string registration_method_name_;

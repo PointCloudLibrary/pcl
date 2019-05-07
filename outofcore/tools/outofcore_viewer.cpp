@@ -131,7 +131,6 @@ typedef Eigen::aligned_allocator<PointT> AlignedPointT;
 // Boost
 #include <boost/date_time.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
 
 // Globals
 vtkSmartPointer<vtkRenderWindow> window;

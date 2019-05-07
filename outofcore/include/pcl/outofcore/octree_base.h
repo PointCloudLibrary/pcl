@@ -63,6 +63,8 @@
 
 #include <pcl/PCLPointCloud2.h>
 
+#include <boost/thread/shared_mutex.hpp>
+
 namespace pcl
 {
   namespace outofcore

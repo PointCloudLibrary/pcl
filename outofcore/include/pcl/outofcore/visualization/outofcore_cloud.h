@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <thread>
 
 // PCL
 //#include <pcl/common/time.h>
@@ -58,7 +59,7 @@ class OutofcoreCloud : public Object
 //    typedef std::map<std::string, vtkSmartPointer<vtkPolyData> >::iterator CloudDataCacheIterator;
 
 
-    static boost::shared_ptr<boost::thread> pcd_reader_thread;
+    static boost::shared_ptr<std::thread> pcd_reader_thread;
     //static MonitorQueue<std::string> pcd_queue;
 
     struct PcdQueueItem

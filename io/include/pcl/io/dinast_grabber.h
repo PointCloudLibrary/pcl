@@ -47,6 +47,8 @@
 #include <libusb-1.0/libusb.h>
 #include <boost/circular_buffer.hpp>
 
+#include <thread>
+
 namespace pcl
 {
   /** \brief Grabber for DINAST devices (i.e., IPA-1002, IPA-1110, IPA-2001)
@@ -206,7 +208,7 @@ namespace pcl
       
       bool running_;
       
-      boost::thread capture_thread_;
+      std::thread capture_thread_;
       
       mutable boost::mutex capture_mutex_;
       boost::signals2::signal<sig_cb_dinast_point_cloud>* point_cloud_signal_;
