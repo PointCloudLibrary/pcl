@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <random>
+
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 
@@ -178,7 +180,7 @@ namespace pcl
 
           void refresh(mets::feasible_solution& /*s*/)
           {
-            std::random_shuffle (moves_m.begin (), moves_m.end ());
+            std::shuffle (moves_m.begin (), moves_m.end (), std::mt19937(std::random_device()()));
           }
 
       };

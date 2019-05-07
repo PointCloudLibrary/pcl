@@ -44,6 +44,7 @@
 // C++
 #include <iostream>
 #include <fstream>
+#include <random>
 #include <sstream>
 #include <string>
 #include <exception>
@@ -1682,7 +1683,7 @@ namespace pcl
           }//force the payload cache to deconstruct here
 
           //use STL random_shuffle and push back a random selection of the points onto our list
-          std::random_shuffle (payload_cache_within_region.begin (), payload_cache_within_region.end ());
+          std::shuffle (payload_cache_within_region.begin (), payload_cache_within_region.end (), std::mt19937(std::random_device()()));
           size_t numpick = static_cast<size_t> (percent * static_cast<double> (payload_cache_within_region.size ()));;
 
           for (size_t i = 0; i < numpick; i++)
