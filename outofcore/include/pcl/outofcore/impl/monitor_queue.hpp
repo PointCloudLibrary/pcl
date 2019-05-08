@@ -22,7 +22,7 @@ public:
   DataT
   pop ()
   {
-    std::lock_guard<std::mutex> lock (monitor_mutex_);
+    std::unique_lock<std::mutex> lock (monitor_mutex_);
 
     if (queue_.empty ())
     {

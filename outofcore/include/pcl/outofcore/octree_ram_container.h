@@ -40,6 +40,7 @@
 #pragma once
 
 // C++
+#include <mutex>
 #include <random>
 #include <vector>
 

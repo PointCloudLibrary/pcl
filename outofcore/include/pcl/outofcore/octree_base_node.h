@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <mutex>
 #include <random>
 
 #include <pcl/common/io.h>
