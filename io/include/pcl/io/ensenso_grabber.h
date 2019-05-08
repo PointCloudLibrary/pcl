@@ -460,7 +460,7 @@ namespace pcl
       pcl::EventFrequency frequency_;
 
       /** @brief Mutual exclusion for FPS computation */
-      mutable boost::mutex fps_mutex_;
+      mutable std::mutex fps_mutex_;
 
       /** @brief Convert an Ensenso time stamp into a PCL/ROS time stamp
        * @param[in] ensenso_stamp

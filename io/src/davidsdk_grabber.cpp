@@ -352,7 +352,7 @@ pcl::DavidSDKGrabber::grabSingleMesh (pcl::PolygonMesh &mesh)
 float
 pcl::DavidSDKGrabber::getFramesPerSecond () const
 {
-  boost::mutex::scoped_lock lock (fps_mutex_);
+  std::lock_guard<std::mutex> lock (fps_mutex_);
   return (frequency_.getFrequency ());
 }
 

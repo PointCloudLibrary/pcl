@@ -39,7 +39,7 @@
 
 #include <pcl/io/real_sense/real_sense_device_manager.h>
 
-boost::mutex pcl::io::real_sense::RealSenseDeviceManager::mutex_;
+std::mutex pcl::io::real_sense::RealSenseDeviceManager::mutex_;
 
 using namespace pcl::io;
 
@@ -126,7 +126,7 @@ pcl::io::real_sense::RealSenseDeviceManager::~RealSenseDeviceManager ()
 pcl::io::real_sense::RealSenseDevice::Ptr
 pcl::io::real_sense::RealSenseDeviceManager::captureDevice ()
 {
-  boost::mutex::scoped_lock lock (mutex_);
+  std::lock_guard<std::mutex> lock (mutex_);
   if (device_list_.size () == 0)
     THROW_IO_EXCEPTION ("no connected devices");
   for (size_t i = 0; i < device_list_.size (); ++i)
@@ -139,7 +139,7 @@ pcl::io::real_sense::RealSenseDeviceManager::captureDevice ()
 pcl::io::real_sense::RealSenseDevice::Ptr
 pcl::io::real_sense::RealSenseDeviceManager::captureDevice (size_t index)
 {
-  boost::mutex::scoped_lock lock (mutex_);
+  std::lock_guard<std::mutex> lock (mutex_);
   if (index >= device_list_.size ())
     THROW_IO_EXCEPTION ("device with index %i is not connected", index + 1);
   if (device_list_[index].isCaptured ())
@@ -150,7 +150,7 @@ pcl::io::real_sense::RealSenseDeviceManager::captureDevice (size_t index)
 pcl::io::real_sense::RealSenseDevice::Ptr
 pcl::io::real_sense::RealSenseDeviceManager::captureDevice (const std::string& sn)
 {
-  boost::mutex::scoped_lock lock (mutex_);
+  std::lock_guard<std::mutex> lock (mutex_);
   for (size_t i = 0; i < device_list_.size (); ++i)
   {
     if (device_list_[i].serial == sn)

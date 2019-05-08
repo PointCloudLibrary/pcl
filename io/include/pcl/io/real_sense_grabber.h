@@ -37,8 +37,6 @@
 
 #pragma once
 
-#include <boost/thread/mutex.hpp>
-
 #include <pcl/io/grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -265,7 +263,7 @@ namespace pcl
       bool need_xyzrgba_;
 
       EventFrequency frequency_;
-      mutable boost::mutex fps_mutex_;
+      mutable std::mutex fps_mutex_;
 
       std::thread thread_;
 

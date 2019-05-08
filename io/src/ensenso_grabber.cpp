@@ -638,7 +638,7 @@ pcl::EnsensoGrabber::setExtrinsicCalibration (const Eigen::Affine3d &transformat
 float
 pcl::EnsensoGrabber::getFramesPerSecond () const
 {
-  boost::mutex::scoped_lock lock (fps_mutex_);
+  std::lock_guard<std::mutex> lock (fps_mutex_);
   return (frequency_.getFrequency ());
 }
 

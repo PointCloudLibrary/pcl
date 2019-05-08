@@ -99,7 +99,7 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
 
   // Mutex to ensure that two quick consecutive triggers do not cause
   // simultaneous asynchronous read-aheads
-  boost::mutex read_ahead_mutex_;
+  std::mutex read_ahead_mutex_;
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW 
 };
@@ -280,7 +280,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::openTARFile (const std::string &file_name)
 void 
 pcl::PCDGrabberBase::PCDGrabberImpl::trigger ()
 {
-  boost::mutex::scoped_lock read_ahead_lock(read_ahead_mutex_);
+  std::lock_guard<std::mutex> read_ahead_lock(read_ahead_mutex_);
   if (valid_)
     grabber_.publish (next_cloud_,origin_,orientation_, next_file_name_);
 

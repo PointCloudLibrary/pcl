@@ -3,6 +3,8 @@
 #ifndef PCL_OUTOFCORE_MONITOR_QUEUE_IMPL_H_
 #define PCL_OUTOFCORE_MONITOR_QUEUE_IMPL_H_
 
+#include <boost/thread/condition.hpp>
+
 #include <queue>
 
 template<typename DataT>

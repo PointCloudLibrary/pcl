@@ -258,7 +258,7 @@ namespace pcl
       pcl::EventFrequency frequency_;
 
       /** @brief Mutual exclusion for FPS computation */
-      mutable boost::mutex fps_mutex_;
+      mutable std::mutex fps_mutex_;
 
       /** @brief Continuously asks for images and or point clouds/meshes data from the device and publishes them if available. */
       void
