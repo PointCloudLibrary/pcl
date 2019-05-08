@@ -60,20 +60,6 @@ class Selection : public Statistics
         registerStats();
     }
 
-    /// @brief Copy constructor
-    /// @param copy The selection object to be copied
-    Selection (const Selection& copy)
-    : Statistics (copy)
-    , cloud_ptr_(copy.cloud_ptr_)
-    , selected_indices_(copy.selected_indices_)
-    {
-    }
-
-    /// @brief Destructor.
-    ~Selection ()
-    {
-    }
-
     /// @brief Equal operator
     /// @param selection a const reference to a selection object whose
     /// properties will be copied.

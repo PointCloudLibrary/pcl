@@ -55,9 +55,6 @@ class TransformCommand : public Command
     TransformCommand (ConstSelectionPtr selection_ptr, CloudPtr cloud_ptr,
                       const float* matrix, float translate_x,
                       float translate_y, float translate_z);
-  
-    /// @brief Destructor
-    ~TransformCommand () = default;
 
   protected:
     // Transforms the coorindates of the selected points according to the transform

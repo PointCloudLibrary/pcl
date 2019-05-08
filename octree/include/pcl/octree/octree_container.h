@@ -54,10 +54,6 @@ namespace pcl
     class OctreeContainerBase
     {
     public:
-      OctreeContainerBase () = default;
-
-      OctreeContainerBase (const OctreeContainerBase&) = default;
-
       virtual ~OctreeContainerBase () = default;
 
       /** \brief Equal comparison operator
@@ -122,12 +118,6 @@ namespace pcl
     class OctreeContainerEmpty : public OctreeContainerBase
     {
     public:
-      OctreeContainerEmpty () = default;
-
-      OctreeContainerEmpty (const OctreeContainerEmpty&) = default;
-
-      ~OctreeContainerEmpty () = default;
-
       /** \brief Octree deep copy method */
       virtual OctreeContainerEmpty *
       deepCopy () const
@@ -190,17 +180,6 @@ namespace pcl
         {
           reset ();
         }
-
-        /** \brief Empty constructor. */
-        OctreeContainerPointIndex (const OctreeContainerPointIndex& source)
-        : OctreeContainerBase (source)
-        , data_ (source.data_)
-        {
-        }
-
-        /** \brief Empty deconstructor. */
-        
-        ~OctreeContainerPointIndex () = default;
 
         /** \brief Octree deep copy method */
         virtual OctreeContainerPointIndex*
@@ -276,18 +255,6 @@ namespace pcl
       class OctreeContainerPointIndices : public OctreeContainerBase
       {
       public:
-        OctreeContainerPointIndices () = default;
-
-        /** \brief Copy constructor. */
-        OctreeContainerPointIndices (const OctreeContainerPointIndices& source)
-        : OctreeContainerBase (source)
-        , leafDataTVector_ (source.leafDataTVector_)
-        {
-        }
-
-        /** \brief Empty deconstructor. */
-        ~OctreeContainerPointIndices () = default;
-
         /** \brief Octree deep copy method */
         virtual OctreeContainerPointIndices *
         deepCopy () const

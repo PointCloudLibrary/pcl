@@ -62,9 +62,6 @@ public:
   {
   }
 
-  /// @brief Destructor
-  ~DenoiseCommand () = default;
-
 protected:
   /// @brief Runs the denois algorithm to remove all the outliers.
   void

@@ -60,9 +60,6 @@ class CopyCommand : public Command
       has_undo_ = false;
     }
 
-    /// @brief Destructor
-    ~CopyCommand () = default;
-
   protected:
     /// @brief Copy the selected points into the copy buffer.
     /// @pre Assumes the constructor was given appropriate pointers to the

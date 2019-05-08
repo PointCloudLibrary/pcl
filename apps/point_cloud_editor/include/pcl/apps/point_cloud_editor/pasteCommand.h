@@ -54,9 +54,6 @@ class PasteCommand : public Command
                   SelectionPtr selection_ptr, CloudPtr cloud_ptr);
     // comment that the selection is updated (also resets the matrix in cloud)
 
-    /// @brief Destructor
-    ~PasteCommand () = default;
-
   protected:
     /// @brief Appends the points in the copy buffer into the cloud.
     /// @details After appending the points to the cloud, this function also
