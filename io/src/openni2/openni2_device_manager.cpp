@@ -36,6 +36,7 @@
 
 #include <boost/make_shared.hpp>
 
+#include <mutex>
 #include <set>
 #include <string>
 
