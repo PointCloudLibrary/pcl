@@ -54,21 +54,11 @@ namespace pcl
     class OctreeContainerBase
     {
     public:
-      /** \brief Empty constructor. */
-      OctreeContainerBase ()
-      {
-      }
+      OctreeContainerBase () = default;
 
-      /** \brief Empty constructor. */
-      OctreeContainerBase (const OctreeContainerBase&)
-      {
-      }
+      OctreeContainerBase (const OctreeContainerBase&) = default;
 
-      /** \brief Empty deconstructor. */
-      virtual
-      ~OctreeContainerBase ()
-      {
-      }
+      virtual ~OctreeContainerBase () = default;
 
       /** \brief Equal comparison operator
        */
@@ -132,21 +122,11 @@ namespace pcl
     class OctreeContainerEmpty : public OctreeContainerBase
     {
     public:
-      /** \brief Empty constructor. */
-      OctreeContainerEmpty ()
-      {
-      }
+      OctreeContainerEmpty () = default;
 
-      /** \brief Empty constructor. */
-      OctreeContainerEmpty (const OctreeContainerEmpty&)
-      {
-      }
+      OctreeContainerEmpty (const OctreeContainerEmpty&) = default;
 
-      /** \brief Empty deconstructor. */
-      
-      ~OctreeContainerEmpty ()
-      {
-      }
+      ~OctreeContainerEmpty () = default;
 
       /** \brief Octree deep copy method */
       virtual OctreeContainerEmpty *
@@ -212,16 +192,15 @@ namespace pcl
         }
 
         /** \brief Empty constructor. */
-        OctreeContainerPointIndex (const OctreeContainerPointIndex& source) :
-            data_ (source.data_)
+        OctreeContainerPointIndex (const OctreeContainerPointIndex& source)
+        : OctreeContainerBase (source)
+        , data_ (source.data_)
         {
         }
 
         /** \brief Empty deconstructor. */
         
-        ~OctreeContainerPointIndex ()
-        {
-        }
+        ~OctreeContainerPointIndex () = default;
 
         /** \brief Octree deep copy method */
         virtual OctreeContainerPointIndex*
@@ -297,22 +276,17 @@ namespace pcl
       class OctreeContainerPointIndices : public OctreeContainerBase
       {
       public:
-        /** \brief Empty constructor. */
-        OctreeContainerPointIndices ()  
-        {
-        }
+        OctreeContainerPointIndices () = default;
 
-        /** \brief Empty constructor. */
-        OctreeContainerPointIndices (const OctreeContainerPointIndices& source) :
-            leafDataTVector_ (source.leafDataTVector_)
+        /** \brief Copy constructor. */
+        OctreeContainerPointIndices (const OctreeContainerPointIndices& source)
+        : OctreeContainerBase (source)
+        , leafDataTVector_ (source.leafDataTVector_)
         {
         }
 
         /** \brief Empty deconstructor. */
-        
-        ~OctreeContainerPointIndices ()
-        {
-        }
+        ~OctreeContainerPointIndices () = default;
 
         /** \brief Octree deep copy method */
         virtual OctreeContainerPointIndices *
