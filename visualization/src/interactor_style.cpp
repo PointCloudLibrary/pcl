@@ -167,7 +167,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters (pcl::visu
   rens_->InitTraversal ();
   vtkRenderer* renderer = nullptr;
   int i = 0;
-  while (renderer = rens_->GetNextItem ())
+  while ((renderer = rens_->GetNextItem ()))
   {
     if (viewport++ == i)
     {
@@ -243,7 +243,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const Eig
   rens_->InitTraversal ();
   vtkRenderer* renderer = nullptr;
   int i = 0;
-  while (renderer = rens_->GetNextItem ())
+  while ((renderer = rens_->GetNextItem ()))
   {
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i)
@@ -269,7 +269,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const pcl
   rens_->InitTraversal ();
   vtkRenderer* renderer = nullptr;
   int i = 0;
-  while (renderer = rens_->GetNextItem ())
+  while ((renderer = rens_->GetNextItem ()))
   {
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i)
