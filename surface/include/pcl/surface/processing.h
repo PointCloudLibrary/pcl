@@ -99,7 +99,7 @@ namespace pcl
       typedef PolygonMesh::ConstPtr PolygonMeshConstPtr;
 
       /** \brief Constructor. */
-      MeshProcessing () : input_mesh_ () {}
+      MeshProcessing () {}
 
       /** \brief Destructor. */
       virtual ~MeshProcessing () {}

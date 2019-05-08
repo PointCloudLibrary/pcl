@@ -51,11 +51,6 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributions
   , gauss_d1_ ()
   , gauss_d2_ ()
   , trans_probability_ ()
-  , j_ang_a_ (), j_ang_b_ (), j_ang_c_ (), j_ang_d_ (), j_ang_e_ (), j_ang_f_ (), j_ang_g_ (), j_ang_h_ ()
-  , h_ang_a2_ (), h_ang_a3_ (), h_ang_b2_ (), h_ang_b3_ (), h_ang_c2_ (), h_ang_c3_ (), h_ang_d1_ (), h_ang_d2_ ()
-  , h_ang_d3_ (), h_ang_e1_ (), h_ang_e2_ (), h_ang_e3_ (), h_ang_f1_ (), h_ang_f2_ (), h_ang_f3_ ()
-  , point_gradient_ ()
-  , point_hessian_ ()
 {
   reg_name_ = "NormalDistributionsTransform";
 

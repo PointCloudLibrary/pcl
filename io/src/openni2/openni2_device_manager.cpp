@@ -68,9 +68,6 @@ namespace pcl
       {
         public:
           OpenNI2DeviceListener ()
-            : openni::OpenNI::DeviceConnectedListener ()
-            , openni::OpenNI::DeviceDisconnectedListener ()
-            , openni::OpenNI::DeviceStateChangedListener ()
           {
             openni::OpenNI::addDeviceConnectedListener (this);
             openni::OpenNI::addDeviceDisconnectedListener (this);

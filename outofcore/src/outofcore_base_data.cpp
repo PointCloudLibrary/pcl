@@ -53,13 +53,9 @@ namespace pcl
   namespace outofcore
   {
     OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata () 
-      : metadata_filename_ ()
-      , outofcore_version_ ()
-      , coordinate_system_ ()
-      , tree_name_ ()
+      : outofcore_version_ ()
       , point_type_ ("urp")
       , levels_of_depth_ ()
-      , LOD_num_points_ ()
     {
     }
       
@@ -68,11 +64,8 @@ namespace pcl
     OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata (const boost::filesystem::path& metadata_filename) 
       : metadata_filename_ (metadata_filename)
       , outofcore_version_ ()
-      , coordinate_system_ ()
-      , tree_name_ ()
       , point_type_ ("urp")
       , levels_of_depth_ ()
-      , LOD_num_points_ ()
     {
       //read metadata from file and store in fields
       loadMetadataFromDisk ();
@@ -88,8 +81,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata (const OutofcoreOctreeBaseMetadata& orig) 
-      : OutofcoreAbstractMetadata ()
-      , metadata_filename_ (orig.metadata_filename_)
+      : metadata_filename_ (orig.metadata_filename_)
       , outofcore_version_ (orig.outofcore_version_)
       , coordinate_system_ (orig.coordinate_system_)
       , tree_name_ (orig.tree_name_)

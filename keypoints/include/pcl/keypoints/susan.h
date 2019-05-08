@@ -95,7 +95,6 @@ namespace pcl
         , normals_ (new pcl::PointCloud<NormalT>)
         , threads_ (0)
         , label_idx_ (-1)
-        , out_fields_ ()
       {
         name_ = "SUSANKeypoint";
         search_radius_ = radius;

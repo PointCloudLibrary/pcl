@@ -55,7 +55,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      EnergyMaps () : width_ (0), height_ (0), nr_bins_ (0), maps_ () 
+      EnergyMaps () : width_ (0), height_ (0), nr_bins_ (0)
       {
       }
 
@@ -200,7 +200,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      LinearizedMaps () : width_ (0), height_ (0), mem_width_ (0), mem_height_ (0), step_size_ (0), maps_ ()
+      LinearizedMaps () : width_ (0), height_ (0), mem_width_ (0), mem_height_ (0), step_size_ (0)
       {
       }
       

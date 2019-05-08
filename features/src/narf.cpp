@@ -57,7 +57,7 @@ int Narf::max_no_of_threads = 1;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Narf::Narf() : 
-  position_ (), transformation_ (), surface_patch_ (nullptr), 
+  surface_patch_ (nullptr), 
   surface_patch_pixel_size_ (0), surface_patch_world_size_ (), 
   surface_patch_rotation_ (), descriptor_ (nullptr), descriptor_size_ (0)
 {
@@ -72,7 +72,7 @@ Narf::~Narf()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Narf::Narf (const Narf& other) : 
-  position_ (), transformation_ (), surface_patch_ (nullptr), 
+  surface_patch_ (nullptr), 
   surface_patch_pixel_size_ (0), surface_patch_world_size_ (), 
   surface_patch_rotation_ (), descriptor_ (nullptr), descriptor_size_ (0)
 {
@@ -605,7 +605,7 @@ Narf::loadBinary (const std::string& filename)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 NarfDescriptor::NarfDescriptor (const RangeImage* range_image, const std::vector<int>* indices) : 
-  BaseClass (), range_image_ (), parameters_ ()
+  range_image_ ()
 {
   setRangeImage (range_image, indices);
 }

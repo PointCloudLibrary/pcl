@@ -53,8 +53,7 @@ namespace pcl
     public:
       /** \brief Empty constructor that sets the values of the algorithm parameters to the VTK defaults */
       MeshSmoothingWindowedSincVTK ()
-        : MeshProcessing (),
-          num_iter_ (20),
+        : num_iter_ (20),
           pass_band_ (0.1f),
           feature_edge_smoothing_ (false),
           feature_angle_ (45.f),

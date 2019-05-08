@@ -263,7 +263,7 @@ namespace pcl
         public:
           /** \brief Empty constructor  */
           prioBranchQueueEntry () :
-              node (), point_distance (0), key ()
+              node (), point_distance (0)
           {
           }
 

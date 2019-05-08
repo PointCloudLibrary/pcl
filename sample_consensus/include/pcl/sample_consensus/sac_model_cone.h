@@ -122,7 +122,7 @@ namespace pcl
       SampleConsensusModelCone (const SampleConsensusModelCone &source) :
         SampleConsensusModel<PointT> (), 
         SampleConsensusModelFromNormals<PointT, PointNT> (),
-        axis_ (), eps_angle_ (), min_angle_ (), max_angle_ ()
+        eps_angle_ (), min_angle_ (), max_angle_ ()
       {
         *this = source;
         model_name_ = "SampleConsensusModelCone";

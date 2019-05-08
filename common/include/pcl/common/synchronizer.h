@@ -64,7 +64,7 @@ namespace pcl
     int callback_counter;
   public:
 
-    Synchronizer () : mutex1_ (), mutex2_ (), publish_mutex_ (), queueT1 (), queueT2 (), cb_ (), callback_counter (0) { };
+    Synchronizer () : queueT1 (), queueT2 (), cb_ (), callback_counter (0) { };
 
     int
     addCallback (const CallbackFunction& callback)

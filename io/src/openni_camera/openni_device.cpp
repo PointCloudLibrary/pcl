@@ -67,16 +67,8 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (
     const xn::NodeInfo& ir_node
 #endif
   )
-  : image_callback_ (),
-    depth_callback_ (),
-    ir_callback_ (),
-    available_image_modes_ (),
-    available_depth_modes_ (),
-    context_ (context),
+  : context_ (context),
     device_node_info_ (device_node),
-    depth_generator_ (),
-    image_generator_ (),
-    ir_generator_ (),
     depth_callback_handle_ (),
     image_callback_handle_ (),
     ir_callback_handle_ (),
@@ -89,10 +81,7 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (
     image_callback_handle_counter_ (),
     depth_callback_handle_counter_ (),
     ir_callback_handle_counter_ (),
-    quit_ (),
-    image_mutex_ (), depth_mutex_ (), ir_mutex_ (),
-    image_condition_ (), depth_condition_ (), ir_condition_ (), 
-    image_thread_ (), depth_thread_ (), ir_thread_ ()
+    quit_ () 
 {
 // workaround for MAC from Alex Ichim
 #ifdef __APPLE__
@@ -183,16 +172,8 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
     const xn::NodeInfo& ir_node
 #endif
     )
-  : image_callback_ (),
-    depth_callback_ (),
-    ir_callback_ (),
-    available_image_modes_ (),
-    available_depth_modes_ (),
-    context_ (context),
+  : context_ (context),
     device_node_info_ (device_node),
-    depth_generator_ (),
-    image_generator_ (),
-    ir_generator_ (),
     depth_callback_handle_ (),
     image_callback_handle_ (),
     ir_callback_handle_ (),
@@ -205,10 +186,7 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
     image_callback_handle_counter_ (),
     depth_callback_handle_counter_ (),
     ir_callback_handle_counter_ (),
-    quit_ (),
-    image_mutex_ (), depth_mutex_ (), ir_mutex_ (),
-    image_condition_ (), depth_condition_ (), ir_condition_ (), 
-    image_thread_ (), depth_thread_ (), ir_thread_ ()
+    quit_ () 
 {
 // workaround for MAC from Alex Ichim
 #ifdef __APPLE__
@@ -275,16 +253,8 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // For ONI Player devices
 openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context)
-  : image_callback_ (),
-    depth_callback_ (),
-    ir_callback_ (),
-    available_image_modes_ (),
-    available_depth_modes_ (),
-    context_ (context),
+  : context_ (context),
     device_node_info_ (nullptr),
-    depth_generator_ (),
-    image_generator_ (),
-    ir_generator_ (),
     depth_callback_handle_ (),
     image_callback_handle_ (),
     ir_callback_handle_ (),
@@ -297,10 +267,7 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context)
     image_callback_handle_counter_ (),
     depth_callback_handle_counter_ (),
     ir_callback_handle_counter_ (),
-    quit_ (),
-    image_mutex_ (), depth_mutex_ (), ir_mutex_ (),
-    image_condition_ (), depth_condition_ (), ir_condition_ (), 
-    image_thread_ (), depth_thread_ (), ir_thread_ ()
+    quit_ () 
 {
 }
 

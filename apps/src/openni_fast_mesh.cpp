@@ -73,7 +73,7 @@ class OpenNIFastMesh
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
     OpenNIFastMesh (const std::string& device_id = "")
-      : device_id_(device_id), vertices_ ()
+      : device_id_(device_id)
     {
       ofm.setTrianglePixelSize (3);
       ofm.setTriangulationType (pcl::OrganizedFastMesh<PointType>::QUAD_MESH);

@@ -13,7 +13,7 @@ namespace pcl
     */
   struct Vertices
   {
-    Vertices () : vertices ()
+    Vertices ()
     {}
 
     std::vector<uint32_t> vertices;

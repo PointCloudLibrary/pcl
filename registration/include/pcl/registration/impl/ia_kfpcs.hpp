@@ -43,7 +43,6 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
   lower_trl_boundary_ (-1.f),
   upper_trl_boundary_ (-1.f),  
   lambda_ (0.5f),
-  candidates_ (),
   use_trl_score_ (false),
   indices_validation_ (new std::vector <int>)
 {

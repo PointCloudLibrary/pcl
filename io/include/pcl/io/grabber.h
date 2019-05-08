@@ -59,7 +59,7 @@ namespace pcl
     public:
 
       /** \brief Constructor. */
-      Grabber () : signals_ (), connections_ (), shared_connections_ () {}
+      Grabber () {}
 
       /** \brief virtual destructor. */
       virtual inline ~Grabber () throw ();

@@ -63,7 +63,7 @@ namespace pcl
       public:
         /** \brief Constructor. */
         PointCoding () :
-          output_ (), pointDiffDataVector_ (), pointDiffDataVectorIterator_ (), 
+          output_ (),
           pointCompressionResolution_ (0.001f) // 1mm
         {
         }

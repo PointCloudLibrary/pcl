@@ -380,7 +380,7 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
 //////////////////////////////////////////////////////////////////////////
 template<typename PointT>
 pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison () :
-  comp_matr_ (), comp_vect_ (), comp_scalar_ (0.0)
+  comp_scalar_ (0.0)
 {
   // get all the fields
   std::vector<pcl::PCLPointField> point_fields;
@@ -445,7 +445,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison (const pcl::Comp
                                                                  const Eigen::Vector3f &comparison_vector,
                                                                  const float &comparison_scalar,
                                                                  const Eigen::Affine3f &comparison_transform) :
-  comp_matr_ (), comp_vect_ (), comp_scalar_ (comparison_scalar)
+  comp_scalar_ (comparison_scalar)
 {
   // get all the fields
   std::vector<pcl::PCLPointField> point_fields;

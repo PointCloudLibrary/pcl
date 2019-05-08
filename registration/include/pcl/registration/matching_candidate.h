@@ -56,7 +56,6 @@ namespace pcl
       /** \brief Constructor. */
       MatchingCandidate () :
         fitness_score (FLT_MAX),
-        correspondences (),
         transformation (Eigen::Matrix4f::Identity ())
       {};
 

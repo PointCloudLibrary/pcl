@@ -92,7 +92,7 @@ namespace pcl
       typedef boost::shared_ptr< const ComparisonBase<PointT> > ConstPtr;
 
       /** \brief Constructor. */
-      ComparisonBase () : capable_ (false), field_name_ (), offset_ (), op_ () {}
+      ComparisonBase () : capable_ (false), offset_ (), op_ () {}
 
       /** \brief Destructor. */
       virtual ~ComparisonBase () {}
@@ -228,7 +228,7 @@ namespace pcl
 
     private:
       PackedRGBComparison () :
-        component_name_ (), component_offset_ (), compare_val_ ()
+        component_offset_ (), compare_val_ ()
       {
       } // not allowed
 
@@ -285,7 +285,7 @@ namespace pcl
 
     private:
       PackedHSIComparison () :
-        component_name_ (), component_id_ (), compare_val_ (), rgb_offset_ ()
+        component_id_ (), compare_val_ (), rgb_offset_ ()
       {
       } // not allowed
   };

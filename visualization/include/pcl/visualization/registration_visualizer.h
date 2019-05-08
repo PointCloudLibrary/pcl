@@ -59,17 +59,11 @@ namespace pcl
     public:
       /** \brief Empty constructor. */
       RegistrationVisualizer () : 
-        viewer_ (),
-        viewer_thread_ (),
-        registration_method_name_ (),
         update_visualizer_ (),
         first_update_flag_ (),
         cloud_source_ (),
         cloud_target_ (),
-        visualizer_updating_mutex_ (),
         cloud_intermediate_ (),
-        cloud_intermediate_indices_ (),
-        cloud_target_indices_ (),
         maximum_displayed_correspondences_ (0)
       {}
 

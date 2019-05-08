@@ -48,7 +48,7 @@ namespace pcl
   /** \author Khai Tran */
   struct TexMaterial
   {
-    TexMaterial () : tex_name (), tex_file (), tex_Ka (), tex_Kd (), tex_Ks (), tex_d (), tex_Ns (), tex_illum () {}
+    TexMaterial () : tex_Ka (), tex_Kd (), tex_Ks (), tex_d (), tex_Ns (), tex_illum () {}
 
     struct RGB
     {
@@ -89,8 +89,7 @@ namespace pcl
   /** \author Khai Tran */
   struct TextureMesh
   {
-    TextureMesh () : 
-      cloud (), tex_polygons (), tex_coordinates (), tex_materials () {}
+    TextureMesh () {}
 
     pcl::PCLPointCloud2  cloud;
     pcl::PCLHeader  header;

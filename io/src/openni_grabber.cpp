@@ -53,12 +53,7 @@ using namespace std::chrono_literals;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
-  : rgb_sync_ ()
-  , ir_sync_ ()
-  , device_ ()
-  , rgb_frame_id_ ()
-  , depth_frame_id_ ()
-  , image_width_ ()
+  : image_width_ ()
   , image_height_ ()
   , depth_width_ ()
   , depth_height_ ()
@@ -69,7 +64,7 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
   , image_signal_ (), depth_image_signal_ (), ir_image_signal_ (), image_depth_image_signal_ ()
   , ir_depth_image_signal_ (), point_cloud_signal_ (), point_cloud_i_signal_ ()
   , point_cloud_rgb_signal_ (), point_cloud_rgba_signal_ ()
-  , config2xn_map_ (), depth_callback_handle (), image_callback_handle (), ir_callback_handle ()
+  , depth_callback_handle (), image_callback_handle (), ir_callback_handle ()
   , running_ (false)
   , rgb_array_size_ (0)
   , depth_buffer_size_ (0)

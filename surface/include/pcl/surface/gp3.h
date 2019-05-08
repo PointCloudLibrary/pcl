@@ -169,16 +169,8 @@ namespace pcl
         eps_angle_(M_PI/4), //45 degrees,
         consistent_(false), 
         consistent_ordering_ (false),
-        triangle_ (),
-        coords_ (),
         angles_ (),
         R_ (),
-        state_ (),
-        source_ (),
-        ffn_ (),
-        sfn_ (),
-        part_ (),
-        fringe_queue_ (),
         is_current_free_ (false),
         current_index_ (),
         prev_is_ffn_ (false),
@@ -188,15 +180,7 @@ namespace pcl
         changed_1st_fn_ (false),
         changed_2nd_fn_ (false),
         new2boundary_ (),
-        already_connected_ (false),
-        proj_qp_ (),
-        u_ (),
-        v_ (),
-        uvn_ffn_ (),
-        uvn_sfn_ (),
-        uvn_next_ffn_ (),
-        uvn_next_sfn_ (),
-        tmp_ ()
+        already_connected_ (false)
       {};
 
       /** \brief Set the multiplier of the nearest neighbor distance to obtain the final search radius for each point
@@ -345,7 +329,7 @@ namespace pcl
       /** \brief Struct for storing the edges starting from a fringe point **/
       struct doubleEdge
       {
-        doubleEdge () : index (0), first (), second () {}
+        doubleEdge () : index (0) {}
         int index;
         Eigen::Vector2f first;
         Eigen::Vector2f second;

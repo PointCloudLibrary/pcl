@@ -208,7 +208,7 @@ namespace pcl
       /** \brief Empty constructor. */
       RadiusOutlierRemoval (bool extract_removed_indices = false) :
         Filter<pcl::PCLPointCloud2>::Filter (extract_removed_indices),
-        search_radius_ (0.0), min_pts_radius_ (1), tree_ ()
+        search_radius_ (0.0), min_pts_radius_ (1)
       {
         filter_name_ = "RadiusOutlierRemoval";
       }

@@ -91,7 +91,6 @@ namespace pcl
           , KR_KRT_ (Eigen::Matrix<float, 3, 3, Eigen::RowMajor>::Zero ())
           , eps_ (eps)
           , pyramid_level_ (pyramid_level)
-          , mask_ ()
         {
         }
 

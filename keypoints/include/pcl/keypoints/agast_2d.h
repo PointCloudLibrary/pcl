@@ -572,7 +572,6 @@ namespace pcl
         : threshold_ (10)
         , apply_non_max_suppression_ (true)
         , bmax_ (255)
-        , detector_ ()
         , nr_max_keypoints_ (std::numeric_limits<unsigned int>::max ())
       {
         k_ = 1;

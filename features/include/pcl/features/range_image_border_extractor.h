@@ -65,8 +65,7 @@ namespace pcl
       struct LocalSurface
       {
         LocalSurface () : 
-          normal (), neighborhood_mean (), eigen_values (), normal_no_jumps (), 
-          neighborhood_mean_no_jumps (), eigen_values_no_jumps (), max_neighbor_distance_squared () {}
+           max_neighbor_distance_squared () {}
 
         Eigen::Vector3f normal;
         Eigen::Vector3f neighborhood_mean;

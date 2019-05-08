@@ -55,7 +55,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      inline LINEMOD_OrientationMap () : width_ (0), height_ (0), map_ () {}
+      inline LINEMOD_OrientationMap () : width_ (0), height_ (0) {}
       /** \brief Destructor. */
       inline ~LINEMOD_OrientationMap () {}
 
@@ -297,7 +297,7 @@ namespace pcl
       struct Candidate
       {
         /** \brief Constructor. */
-        Candidate () : normal (), distance (0.0f), bin_index (0), x (0), y (0) {}
+        Candidate () : distance (0.0f), bin_index (0), x (0), y (0) {}
 
         /** \brief Normal. */
         Normal normal;
@@ -490,13 +490,7 @@ SurfaceNormalModality ()
   : variable_feature_nr_ (false)
   , feature_distance_threshold_ (2.0f)
   , min_distance_to_border_ (2.0f)
-  , normal_lookup_ ()
   , spreading_size_ (8)
-  , surface_normals_ ()
-  , quantized_surface_normals_ ()
-  , filtered_quantized_surface_normals_ ()
-  , spreaded_quantized_surface_normals_ ()
-  , surface_normal_orientations_ ()
 {
 }
 

@@ -45,8 +45,7 @@ pcl::DOTMOD::
 DOTMOD(size_t template_width,
        size_t template_height) :
   template_width_ (template_width),
-  template_height_ (template_height),
-  templates_ ()
+  template_height_ (template_height)
 {
 }
 

@@ -94,7 +94,6 @@ namespace pcl
           loop_start_ (0), 
           loop_end_ (0), 
           reg_ (new pcl::IterativeClosestPoint<PointT, PointT>), 
-          loop_transform_ (),
           compute_loop_ (true),
           vd_ ()
         {};

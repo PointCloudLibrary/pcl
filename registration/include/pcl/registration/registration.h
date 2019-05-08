@@ -97,8 +97,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       Registration () 
-        : reg_name_ ()
-        , tree_ (new KdTree)
+        : tree_ (new KdTree)
         , tree_reciprocal_ (new KdTreeReciprocal)
         , nr_iterations_ (0)
         , max_iterations_ (10)
@@ -117,7 +116,6 @@ namespace pcl
         , correspondences_ (new Correspondences)
         , transformation_estimation_ ()
         , correspondence_estimation_ ()
-        , correspondence_rejectors_ ()
         , target_cloud_updated_ (true)
         , source_cloud_updated_ (true)
         , force_no_recompute_ (false)

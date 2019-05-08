@@ -11,7 +11,7 @@ namespace pcl
 {
   struct ModelCoefficients
   {
-    ModelCoefficients () : header (), values ()
+    ModelCoefficients ()
     {
     }
 

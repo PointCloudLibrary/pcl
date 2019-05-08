@@ -52,17 +52,10 @@
 pcl::visualization::Window::Window (const std::string& window_name)
   : stopped_ ()
   , timer_id_ ()
-  , mouse_signal_ ()
-  , keyboard_signal_ ()
-  , win_ ()
-  , interactor_ ()
   , mouse_command_ (vtkCallbackCommand::New ())
   , keyboard_command_ (vtkCallbackCommand::New ())
   , style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ())
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
-  , exit_main_loop_timer_callback_ ()
-  , exit_callback_ ()
-
 {
   mouse_command_->SetClientData (this);
   mouse_command_->SetCallback (Window::MouseCallback);
@@ -337,7 +330,7 @@ pcl::visualization::Window::ExitMainLoopTimerCallback::ExitMainLoopTimerCallback
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::Window::ExitMainLoopTimerCallback::ExitMainLoopTimerCallback (
     const pcl::visualization::Window::ExitMainLoopTimerCallback& src) 
-  : vtkCommand (), right_timer_id (src.right_timer_id), window (src.window) 
+  : right_timer_id (src.right_timer_id), window (src.window) 
 {
 }
 
@@ -374,7 +367,7 @@ pcl::visualization::Window::ExitCallback::ExitCallback ()
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::Window::ExitCallback::ExitCallback (
     const pcl::visualization::Window::ExitCallback &src) 
-  : vtkCommand (), window (src.window)
+  : window (src.window)
 {
 }
 

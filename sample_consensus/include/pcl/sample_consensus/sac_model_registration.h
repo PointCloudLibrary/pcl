@@ -77,8 +77,6 @@ namespace pcl
                                         bool random = false) 
         : SampleConsensusModel<PointT> (cloud, random)
         , target_ ()
-        , indices_tgt_ ()
-        , correspondences_ ()
         , sample_dist_thresh_ (0)
       {
         // Call our own setInputCloud
@@ -98,8 +96,6 @@ namespace pcl
                                         bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random)
         , target_ ()
-        , indices_tgt_ ()
-        , correspondences_ ()
         , sample_dist_thresh_ (0)
       {
         computeOriginalIndexMapping ();

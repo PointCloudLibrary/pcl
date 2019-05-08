@@ -75,8 +75,7 @@ namespace pcl
        */
       PPFHashMapSearch (float angle_discretization_step = 12.0f / 180.0f * static_cast<float> (M_PI),
                         float distance_discretization_step = 0.01f)
-        : alpha_m_ ()
-        , feature_hash_map_ (new FeatureHashMapType)
+        : feature_hash_map_ (new FeatureHashMapType)
         , internals_initialized_ (false)
         , angle_discretization_step_ (angle_discretization_step)
         , distance_discretization_step_ (distance_discretization_step)
@@ -178,7 +177,6 @@ namespace pcl
       /** \brief Empty constructor that initializes all the parameters of the algorithm with default values */
       PPFRegistration ()
       :  Registration<PointSource, PointTarget> (),
-         search_method_ (),
          scene_reference_point_sampling_rate_ (5),
          clustering_position_diff_threshold_ (0.01f),
          clustering_rotation_diff_threshold_ (20.0f / 180.0f * static_cast<float> (M_PI))

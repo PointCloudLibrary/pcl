@@ -72,8 +72,7 @@ namespace pcl
          *
          * */
         ColorCoding () :
-          output_ (), pointAvgColorDataVector_ (), pointAvgColorDataVector_Iterator_ (),
-          pointDiffColorDataVector_ (), pointDiffColorDataVector_Iterator_ (), colorBitReduction_ (0)
+          output_ (), colorBitReduction_ (0)
         {
         }
 

@@ -74,7 +74,7 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Empty constructor. */
-      ESFEstimation () : lut_ (), local_cloud_ ()
+      ESFEstimation () : local_cloud_ ()
       {
         feature_name_ = "ESFEstimation";
         lut_.resize (GRIDSIZE);

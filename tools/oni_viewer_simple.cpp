@@ -80,7 +80,6 @@ public:
   SimpleONIViewer(pcl::ONIGrabber& grabber)
     : viewer("PCL OpenNI Viewer")
     , grabber_(grabber)
-    , mtx_ ()
     , cloud_ ()
   {
   }

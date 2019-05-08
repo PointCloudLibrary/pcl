@@ -7,7 +7,7 @@ namespace OpenNIFrameSource
 {
 
   OpenNIFrameSource::OpenNIFrameSource(const std::string& device_id) :
-      grabber_ (device_id), most_recent_frame_ (), frame_counter_ (0), active_ (true)
+      grabber_ (device_id), frame_counter_ (0), active_ (true)
   {
     boost::function<void(const PointCloudConstPtr&)> frame_cb = boost::bind (&OpenNIFrameSource::onNewFrame, this, _1);
     grabber_.registerCallback (frame_cb);

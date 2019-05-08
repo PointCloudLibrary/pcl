@@ -83,9 +83,7 @@ namespace pcl
       };
       
       PLYReader ()
-        : FileReader ()
-        , parser_ ()
-        , origin_ (Eigen::Vector4f::Zero ())
+        : origin_ (Eigen::Vector4f::Zero ())
         , orientation_ (Eigen::Matrix3f::Zero ())
         , cloud_ ()
         , vertex_count_ (0)
@@ -99,9 +97,7 @@ namespace pcl
       {}
 
       PLYReader (const PLYReader &p)
-        : FileReader ()
-        , parser_ ()
-        , origin_ (Eigen::Vector4f::Zero ())
+        : origin_ (Eigen::Vector4f::Zero ())
         , orientation_ (Eigen::Matrix3f::Zero ())
         , cloud_ ()
         , vertex_count_ (0)
@@ -548,7 +544,7 @@ namespace pcl
   {
     public:
       ///Constructor
-      PLYWriter () : FileWriter () {};
+      PLYWriter () {};
 
       ///Destructor
       ~PLYWriter () {};

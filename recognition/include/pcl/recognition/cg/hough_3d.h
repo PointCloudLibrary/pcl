@@ -165,15 +165,12 @@ namespace pcl
         : input_rf_ ()
         , scene_rf_ ()
         , needs_training_ (true)
-        , model_votes_ ()
-        , hough_threshold_ (-1)
+        ,hough_threshold_ (-1)
         , hough_bin_size_ (1.0)
         , use_interpolation_ (true)
         , use_distance_weight_ (false)
         , local_rf_normals_search_radius_ (0.0f)
         , local_rf_search_radius_ (0.0f)
-        , hough_space_ ()
-        , found_transformations_ ()
         , hough_space_initialized_ (false)
       {}
 

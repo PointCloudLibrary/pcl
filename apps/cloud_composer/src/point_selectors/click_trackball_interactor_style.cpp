@@ -13,7 +13,6 @@ namespace pcl
 }
 
 pcl::cloud_composer::ClickTrackballStyleInteractor::ClickTrackballStyleInteractor ()
-  : vtkInteractorStyleTrackballActor ()
 {
   manipulation_complete_event_ = interactor_events::MANIPULATION_COMPLETE_EVENT;
   start_matrix_= vtkSmartPointer<vtkMatrix4x4>::New ();

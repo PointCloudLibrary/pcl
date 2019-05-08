@@ -76,7 +76,6 @@ class AGASTDemo
       , bmax_ (255)
       , threshold_ (30)
       , detector_type_ (0)
-      , timer_ ()
     {
     }
 

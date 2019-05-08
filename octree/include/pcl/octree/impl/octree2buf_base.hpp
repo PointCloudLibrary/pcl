@@ -50,7 +50,6 @@ namespace pcl
       branch_count_ (1),
       root_node_ (new BranchNode ()),
       depth_mask_ (0), 
-      max_key_ (),
       buffer_selector_ (0),
       tree_dirty_flag_ (false),
       octree_depth_ (0),
