@@ -176,11 +176,6 @@ class Selection : public Statistics
     getStat () const override;
 
   private:
-    /// @brief Default constructor - object is not default constructable
-    Selection ()
-    {
-    }
-
     /// a pointer to the cloud
     ConstCloudPtr cloud_ptr_;
 
