@@ -57,9 +57,7 @@ class TransformCommand : public Command
                       float translate_y, float translate_z);
   
     /// @brief Destructor
-    ~TransformCommand ()
-    {
-    }
+    ~TransformCommand () = default;
 
   protected:
     // Transforms the coorindates of the selected points according to the transform
@@ -73,16 +71,11 @@ class TransformCommand : public Command
 
   private:
     /// @brief Copy constructor  - object is not copy-constructable
-    TransformCommand (const TransformCommand&)
-    {
-    }
+    TransformCommand (const TransformCommand&) = delete;
 
     /// @brief Equal operator - object is non-copyable
     TransformCommand&
-    operator= (const TransformCommand&)
-    {
-      assert(false); return (*this);
-    }
+    operator= (const TransformCommand&) = delete;
 
     /// @brief Applies the transformation to the point values
     /// @param sel_ptr A pointer to the selection object whose points are to be

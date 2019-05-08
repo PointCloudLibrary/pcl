@@ -63,9 +63,7 @@ public:
   }
 
   /// @brief Destructor
-  ~DenoiseCommand ()
-  {
-  }
+  ~DenoiseCommand () = default;
 
 protected:
   /// @brief Runs the denois algorithm to remove all the outliers.
@@ -83,18 +81,11 @@ private:
   }
 
   /// @brief Copy constructor - commands are non-copyable
-  DenoiseCommand (const DenoiseCommand&)
-    : removed_indices_(CloudPtr())
-  {
-    assert(false);
-  }
+  DenoiseCommand (const DenoiseCommand&) = delete;
 
   /// @brief Equal operator - commands are non-copyable
   DenoiseCommand&
-  operator= (const DenoiseCommand&)
-  {
-    assert(false); return (*this);
-  }
+  operator= (const DenoiseCommand&) = delete;
 
   /// A shared pointer pointing to the selection object of the widget
   SelectionPtr selection_ptr_;

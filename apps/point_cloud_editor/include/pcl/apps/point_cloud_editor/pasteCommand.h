@@ -55,10 +55,8 @@ class PasteCommand : public Command
     // comment that the selection is updated (also resets the matrix in cloud)
 
     /// @brief Destructor
-    ~PasteCommand ()
-    {
-    }
-  
+    ~PasteCommand () = default;
+
   protected:
     /// @brief Appends the points in the copy buffer into the cloud.
     /// @details After appending the points to the cloud, this function also
@@ -73,22 +71,14 @@ class PasteCommand : public Command
 
   private:
     /// @brief Default constructor - object is not default constructable
-    PasteCommand ()
-    {
-    }
-    
+    PasteCommand () = delete;
+
     /// @brief Copy constructor - commands are non-copyable
-    PasteCommand (const PasteCommand&)
-    {
-      assert(false);
-    }
+    PasteCommand (const PasteCommand&) = delete;
 
     /// @brief Equal operator - commands are non-copyable
     PasteCommand&
-    operator= (const PasteCommand&)
-    {
-      assert(false); return (*this);
-    }
+    operator= (const PasteCommand&) = delete;
 
     /// a pointer pointing to the copy buffer.
     ConstCopyBufferPtr copy_buffer_ptr_;

@@ -63,7 +63,9 @@ class Selection : public Statistics
     /// @brief Copy constructor
     /// @param copy The selection object to be copied
     Selection (const Selection& copy)
-      : cloud_ptr_(copy.cloud_ptr_), selected_indices_(copy.selected_indices_)
+    : Statistics (copy)
+    , cloud_ptr_(copy.cloud_ptr_)
+    , selected_indices_(copy.selected_indices_)
     {
     }
 

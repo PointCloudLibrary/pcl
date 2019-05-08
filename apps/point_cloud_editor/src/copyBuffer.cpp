@@ -42,8 +42,9 @@
 #include <pcl/apps/point_cloud_editor/statistics.h>
 #include <pcl/apps/point_cloud_editor/common.h>
 
-CopyBuffer::CopyBuffer (const CopyBuffer& copy_buffer) :
-  buffer_(copy_buffer.buffer_)
+CopyBuffer::CopyBuffer (const CopyBuffer& copy_buffer)
+: Statistics (copy_buffer)
+, buffer_(copy_buffer.buffer_)
 {
 }
 

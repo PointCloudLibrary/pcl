@@ -63,10 +63,8 @@ class CopyBuffer : public Statistics
     CopyBuffer (const CopyBuffer& copy);
 
     /// @brief Destructor
-    ~CopyBuffer ()
-    {
-    }
-    
+    ~CopyBuffer () = default;
+
     /// @brief Equal Operator
     /// @details Copy all the internal states to the this copy buffer object.
     /// @param copy_buffer the copy buffer object used to update the this object

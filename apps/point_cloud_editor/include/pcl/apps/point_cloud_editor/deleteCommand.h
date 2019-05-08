@@ -54,10 +54,8 @@ class DeleteCommand : public Command
     DeleteCommand (SelectionPtr selection_ptr, CloudPtr cloud_ptr);
    
     /// @brief Destructor
-    ~DeleteCommand ()
-    {
-    }
-    
+    ~DeleteCommand () = default;
+
   protected:
     /// @brief Removes the selected points and maintains a backup for undo.
     void 
@@ -69,24 +67,14 @@ class DeleteCommand : public Command
 
   private:
     /// @brief Default constructor - object is not default constructable
-    DeleteCommand ():  deleted_selection_(CloudPtr())
-    {
-      assert(false);
-    }
-    
+    DeleteCommand () = delete;
+
     /// @brief Copy constructor - commands are non-copyable
-    DeleteCommand (const DeleteCommand& c)
-      : deleted_selection_(c.deleted_selection_)
-    {
-      assert(false);
-    }
+    DeleteCommand (const DeleteCommand& c) = delete;
 
     /// @brief Equal operator - commands are non-copyable
     DeleteCommand&
-    operator= (const DeleteCommand&)
-    {
-      assert(false); return (*this);
-    }
+    operator= (const DeleteCommand&) = delete;
 
     /// a pointer pointing to the cloud
     CloudPtr cloud_ptr_;
