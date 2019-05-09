@@ -95,6 +95,18 @@ namespace pcl
       typedef typename CorrespondenceEstimation::Ptr CorrespondenceEstimationPtr;
       typedef typename CorrespondenceEstimation::ConstPtr CorrespondenceEstimationConstPtr;
 
+      /** \brief The callback signature to the function updating intermediate source point cloud position
+        * during it's registration to the target point cloud.
+        * \param[in] cloud_src - the point cloud which will be updated to match target
+        * \param[in] indices_src - a selector of points in cloud_src
+        * \param[in] cloud_tgt - the point cloud we want to register against
+        * \param[in] indices_tgt - a selector of points in cloud_tgt
+        */
+      using UpdateVisualizerCallbackSignature = void (const pcl::PointCloud<PointSource>&,
+                                                      const std::vector<int>&,
+                                                      const pcl::PointCloud<PointTarget>&,
+                                                      const std::vector<int>&);
+
       /** \brief Empty constructor. */
       Registration () 
         : tree_ (new KdTree)
@@ -367,10 +379,10 @@ namespace pcl
        * in order to update point cloud obtained after each iteration
        * \param[in] visualizerCallback reference of the user callback function
        */
-      template<typename FunctionSignature> inline bool
-      registerVisualizationCallback (boost::function<FunctionSignature> &visualizerCallback)
+      inline bool
+      registerVisualizationCallback (std::function<UpdateVisualizerCallbackSignature> &visualizerCallback)
       {
-        if (!visualizerCallback.empty())
+        if (visualizerCallback)
         {
           update_visualizer_ = visualizerCallback;
           return (true);
@@ -572,10 +584,7 @@ namespace pcl
       /** \brief Callback function to update intermediate source point cloud position during it's registration
         * to the target point cloud.
         */
-      boost::function<void(const pcl::PointCloud<PointSource> &cloud_src,
-                           const std::vector<int> &indices_src,
-                           const pcl::PointCloud<PointTarget> &cloud_tgt,
-                           const std::vector<int> &indices_tgt)> update_visualizer_;
+      std::function<UpdateVisualizerCallbackSignature> update_visualizer_;
 
       /** \brief Search for the closest nearest neighbor of a given point.
         * \param cloud the point cloud dataset to use for nearest neighbor search

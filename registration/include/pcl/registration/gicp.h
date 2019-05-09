@@ -354,7 +354,7 @@ namespace pcl
         const GeneralizedIterativeClosestPoint *gicp_;
       };
       
-      boost::function<void(const pcl::PointCloud<PointSource> &cloud_src,
+      std::function<void(const pcl::PointCloud<PointSource> &cloud_src,
                            const std::vector<int> &src_indices,
                            const pcl::PointCloud<PointTarget> &cloud_tgt,
                            const std::vector<int> &tgt_indices,

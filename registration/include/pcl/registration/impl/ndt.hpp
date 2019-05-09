@@ -148,7 +148,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
     p += delta_p;
 
     // Update Visualizer (untested)
-    if (!update_visualizer_.empty())
+    if (update_visualizer_)
       update_visualizer_ (output, std::vector<int>(), *target_, std::vector<int>() );
 
     double cos_angle = 0.5 * (transformation_.coeff (0, 0) + transformation_.coeff (1, 1) + transformation_.coeff (2, 2) - 1);
