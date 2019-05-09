@@ -77,32 +77,32 @@ namespace pcl
       {
         public:
 
-          typedef boost::function<void (std::size_t, const std::string&)> info_callback_type;
-          typedef boost::function<void (std::size_t, const std::string&)> warning_callback_type;
-          typedef boost::function<void (std::size_t, const std::string&)> error_callback_type;
+          typedef std::function<void (std::size_t, const std::string&)> info_callback_type;
+          typedef std::function<void (std::size_t, const std::string&)> warning_callback_type;
+          typedef std::function<void (std::size_t, const std::string&)> error_callback_type;
          
-          typedef boost::function<void ()> magic_callback_type;
-          typedef boost::function<void (format_type, const std::string&)> format_callback_type;
-          typedef boost::function<void (const std::string&)> comment_callback_type;
-          typedef boost::function<void (const std::string&)> obj_info_callback_type;
-          typedef boost::function<bool ()> end_header_callback_type;
+          typedef std::function<void ()> magic_callback_type;
+          typedef std::function<void (format_type, const std::string&)> format_callback_type;
+          typedef std::function<void (const std::string&)> comment_callback_type;
+          typedef std::function<void (const std::string&)> obj_info_callback_type;
+          typedef std::function<bool ()> end_header_callback_type;
          
-          typedef boost::function<void ()> begin_element_callback_type;
-          typedef boost::function<void ()> end_element_callback_type;
+          typedef std::function<void ()> begin_element_callback_type;
+          typedef std::function<void ()> end_element_callback_type;
           typedef boost::tuple<begin_element_callback_type, end_element_callback_type> element_callbacks_type;
-          typedef boost::function<element_callbacks_type (const std::string&, std::size_t)> element_definition_callback_type;
+          typedef std::function<element_callbacks_type (const std::string&, std::size_t)> element_definition_callback_type;
          
           template <typename ScalarType>
           struct scalar_property_callback_type
           {
-            typedef boost::function<void (ScalarType)> type;
+            typedef std::function<void (ScalarType)> type;
           };
 
           template <typename ScalarType>
           struct scalar_property_definition_callback_type
           {
             typedef typename scalar_property_callback_type<ScalarType>::type scalar_property_callback_type;
-            typedef boost::function<scalar_property_callback_type (const std::string&, const std::string&)> type;
+            typedef std::function<scalar_property_callback_type (const std::string&, const std::string&)> type;
           };
        
           typedef boost::mpl::vector<int8, int16, int32, uint8, uint16, uint32, float32, float64> scalar_types;
@@ -169,19 +169,19 @@ namespace pcl
           template <typename SizeType, typename ScalarType>
           struct list_property_begin_callback_type
           {
-            typedef boost::function<void (SizeType)> type;
+            typedef std::function<void (SizeType)> type;
           };
          
           template <typename SizeType, typename ScalarType>
           struct list_property_element_callback_type
           {
-            typedef boost::function<void (ScalarType)> type;
+            typedef std::function<void (ScalarType)> type;
           };
        
           template <typename SizeType, typename ScalarType>
           struct list_property_end_callback_type
           {
-            typedef boost::function<void ()> type;
+            typedef std::function<void ()> type;
           };
 
           template <typename SizeType, typename ScalarType>
@@ -190,7 +190,7 @@ namespace pcl
             typedef typename list_property_begin_callback_type<SizeType, ScalarType>::type list_property_begin_callback_type;
             typedef typename list_property_element_callback_type<SizeType, ScalarType>::type list_property_element_callback_type;
             typedef typename list_property_end_callback_type<SizeType, ScalarType>::type list_property_end_callback_type;
-            typedef boost::function<
+            typedef std::function<
             boost::tuple<
             list_property_begin_callback_type,
               list_property_element_callback_type,
