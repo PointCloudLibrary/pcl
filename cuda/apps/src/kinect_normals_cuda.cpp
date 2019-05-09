@@ -54,6 +54,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <functional>
 #include <iostream>
 #include <mutex>
 
@@ -193,13 +194,13 @@ class NormalEstimation
         if (use_device)
         {
           std::cerr << "[NormalEstimation] Using GPU..." << std::endl;
-          boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&NormalEstimation::file_cloud_cb<Device>, this, _1);
+          std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&NormalEstimation::file_cloud_cb<Device>, this, _1);
           filegrabber->registerCallback (f);
         }
         else
         {
           std::cerr << "[NormalEstimation] Using CPU..." << std::endl;
-          boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&NormalEstimation::file_cloud_cb<Host>, this, _1);
+          std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&NormalEstimation::file_cloud_cb<Host>, this, _1);
           filegrabber->registerCallback (f);
         }
 
@@ -218,13 +219,13 @@ class NormalEstimation
         if (use_device)
         {
           std::cerr << "[NormalEstimation] Using GPU..." << std::endl;
-          boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&NormalEstimation::cloud_cb<Device>, this, _1, _2, _3);
+          std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&NormalEstimation::cloud_cb<Device>, this, _1, _2, _3);
           c = grabber->registerCallback (f);
         }
         else
         {
           std::cerr << "[NormalEstimation] Using CPU..." << std::endl;
-          boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&NormalEstimation::cloud_cb<Host>, this, _1, _2, _3);
+          std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&NormalEstimation::cloud_cb<Host>, this, _1, _2, _3);
           c = grabber->registerCallback (f);
         }
 

@@ -45,6 +45,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <functional>
 #include <iostream>
 #include <mutex>
 
@@ -75,7 +76,7 @@ class KinectViewerCuda
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
 
-      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)>
+      std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)>
         f = boost::bind (&KinectViewerCuda::cloud_cb_, this, _1, _2, _3);
 
       boost::signals2::connection c = interface->registerCallback (f);
