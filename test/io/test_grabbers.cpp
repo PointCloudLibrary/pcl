@@ -45,7 +45,7 @@ TEST (PCL, PCDGrabber)
   pcl::PCDGrabber<PointT> grabber (pcd_files_, 10, false); // TODO add directory functionality
   EXPECT_EQ (grabber.size (), pcds_.size ());
   vector<CloudT::ConstPtr> grabbed_clouds;
-  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
+  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
     fxn = boost::bind (cloud_callback_vector, &grabbed_clouds, _1);
   grabber.registerCallback (fxn);
   grabber.start ();
@@ -116,7 +116,7 @@ TEST (PCL, ImageGrabberTIFF)
   vector<CloudT::ConstPtr> tiff_clouds;
   CloudT::ConstPtr cloud_buffer;
   bool signal_received = false;
-  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
+  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
     fxn = boost::bind (cloud_callback, &signal_received, &cloud_buffer, _1);
   grabber.registerCallback (fxn);
   grabber.setCameraIntrinsics (525., 525., 320., 240.); // Setting old intrinsics which were used to generate these tests
@@ -199,7 +199,7 @@ TEST (PCL, ImageGrabberPCLZF)
   vector <CloudT::ConstPtr> pclzf_clouds;
   CloudT::ConstPtr cloud_buffer;
   bool signal_received = false;
-  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
+  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
     fxn = boost::bind (cloud_callback, &signal_received, &cloud_buffer, _1);
   grabber.registerCallback (fxn);
   grabber.start ();
@@ -278,7 +278,7 @@ TEST (PCL, ImageGrabberOMP)
   vector <CloudT::ConstPtr> pclzf_clouds;
   CloudT::ConstPtr cloud_buffer;
   bool signal_received = false;
-  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
+  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
     fxn = boost::bind (cloud_callback, &signal_received, &cloud_buffer, _1);
   grabber.registerCallback (fxn);
   grabber.setNumberOfThreads (0); // Let OMP select
@@ -371,7 +371,7 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
   vector <CloudT::ConstPtr> tiff_clouds;
   CloudT::ConstPtr cloud_buffer;
   bool signal_received = false;
-  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
+  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
     fxn = boost::bind (cloud_callback, &signal_received, &cloud_buffer, _1);
   grabber.registerCallback (fxn);
   grabber.start ();
@@ -449,7 +449,7 @@ TEST (PCL, ImageGrabberSetIntrinsicsPCLZF)
   vector <CloudT::ConstPtr> pclzf_clouds;
   CloudT::ConstPtr cloud_buffer;
   bool signal_received = false;
-  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
+  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
     fxn = boost::bind (cloud_callback, &signal_received, &cloud_buffer, _1);
   grabber.registerCallback (fxn);
   grabber.start ();
