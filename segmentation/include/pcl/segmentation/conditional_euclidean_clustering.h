@@ -37,10 +37,10 @@
 
 #pragma once
 
-#include <boost/function.hpp>
-
 #include <pcl/pcl_base.h>
 #include <pcl/search/pcl_search.h>
+
+#include <functional>
 
 namespace pcl
 {
@@ -148,7 +148,7 @@ namespace pcl
       /** \brief Set the condition that needs to hold for neighboring points to be considered part of the same cluster.
         * This is an overloaded function provided for convenience. See the documentation for setConditionFunction(). */
       inline void
-      setConditionFunction (boost::function<bool (const PointT&, const PointT&, float)> condition_function)
+      setConditionFunction (std::function<bool (const PointT&, const PointT&, float)> condition_function)
       {
         condition_function_ = condition_function;
       }
@@ -237,7 +237,7 @@ namespace pcl
       SearcherPtr searcher_;
 
       /** \brief The condition function that needs to hold for clustering */
-      boost::function<bool (const PointT&, const PointT&, float)> condition_function_;
+      std::function<bool (const PointT&, const PointT&, float)> condition_function_;
 
       /** \brief The distance to scan for cluster candidates (default = 0.0) */
       float cluster_tolerance_;

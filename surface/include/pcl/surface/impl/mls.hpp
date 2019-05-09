@@ -719,7 +719,7 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
                                    const std::vector<int> &nn_indices,
                                    double search_radius,
                                    int polynomial_order,
-                                   boost::function<double(const double)> weight_func)
+                                   std::function<double(const double)> weight_func)
 {
   // Compute the plane coefficients
   EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix;
@@ -777,7 +777,7 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
     {
       // Note: The max_sq_radius parameter is only used if weight_func was not defined
       double max_sq_radius = 1;
-      if (weight_func.empty())
+      if (!weight_func)
       {
         max_sq_radius = search_radius * search_radius;
         weight_func = boost::bind (&pcl::MLSResult::computeMLSWeight, this, _1, max_sq_radius);
