@@ -22,6 +22,7 @@ pcl::cloud_composer::PropertiesModel::PropertiesModel (CloudComposerItem* parent
 }
 
 pcl::cloud_composer::PropertiesModel::PropertiesModel (const PropertiesModel& to_copy)
+: QStandardItemModel ()
 {
   for (int i=0; i < to_copy.rowCount (); ++i){
     QList <QStandardItem*> new_row;

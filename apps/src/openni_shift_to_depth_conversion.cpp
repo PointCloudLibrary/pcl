@@ -194,20 +194,16 @@ protected:
           newPoint.x = static_cast<float> (x) * depth * fl_const;
           newPoint.y = static_cast<float> (y) * depth * fl_const;
 
-          const uint8_t& pixel_r = rgbData_arg[i * 3 + 0];
-          const uint8_t& pixel_g = rgbData_arg[i * 3 + 1];
-          const uint8_t& pixel_b = rgbData_arg[i * 3 + 2];
-
           // Define point color
-          uint32_t rgb = (static_cast<uint32_t> (pixel_r) << 16 | static_cast<uint32_t> (pixel_g) << 8
-              | static_cast<uint32_t> (pixel_b));
-          newPoint.rgb = *reinterpret_cast<float*> (&rgb);
+          newPoint.r = rgbData_arg[i * 3 + 0];
+          newPoint.g = rgbData_arg[i * 3 + 1];
+          newPoint.b = rgbData_arg[i * 3 + 2];
         }
         else
         {
           // Define bad point
           newPoint.x = newPoint.y = newPoint.z = bad_point;
-          newPoint.rgb = 0.0f;
+          newPoint.rgba = 0;
         }
 
         // Add point to cloud

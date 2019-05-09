@@ -54,21 +54,7 @@ namespace pcl
     class OctreeContainerBase
     {
     public:
-      /** \brief Empty constructor. */
-      OctreeContainerBase ()
-      {
-      }
-
-      /** \brief Empty constructor. */
-      OctreeContainerBase (const OctreeContainerBase&)
-      {
-      }
-
-      /** \brief Empty deconstructor. */
-      virtual
-      ~OctreeContainerBase ()
-      {
-      }
+      virtual ~OctreeContainerBase () = default;
 
       /** \brief Equal comparison operator
        */
@@ -132,22 +118,6 @@ namespace pcl
     class OctreeContainerEmpty : public OctreeContainerBase
     {
     public:
-      /** \brief Empty constructor. */
-      OctreeContainerEmpty ()
-      {
-      }
-
-      /** \brief Empty constructor. */
-      OctreeContainerEmpty (const OctreeContainerEmpty&)
-      {
-      }
-
-      /** \brief Empty deconstructor. */
-      
-      ~OctreeContainerEmpty ()
-      {
-      }
-
       /** \brief Octree deep copy method */
       virtual OctreeContainerEmpty *
       deepCopy () const
@@ -209,18 +179,6 @@ namespace pcl
             data_ ()
         {
           reset ();
-        }
-
-        /** \brief Empty constructor. */
-        OctreeContainerPointIndex (const OctreeContainerPointIndex& source) :
-            data_ (source.data_)
-        {
-        }
-
-        /** \brief Empty deconstructor. */
-        
-        ~OctreeContainerPointIndex ()
-        {
         }
 
         /** \brief Octree deep copy method */
@@ -297,23 +255,6 @@ namespace pcl
       class OctreeContainerPointIndices : public OctreeContainerBase
       {
       public:
-        /** \brief Empty constructor. */
-        OctreeContainerPointIndices ()  
-        {
-        }
-
-        /** \brief Empty constructor. */
-        OctreeContainerPointIndices (const OctreeContainerPointIndices& source) :
-            leafDataTVector_ (source.leafDataTVector_)
-        {
-        }
-
-        /** \brief Empty deconstructor. */
-        
-        ~OctreeContainerPointIndices ()
-        {
-        }
-
         /** \brief Octree deep copy method */
         virtual OctreeContainerPointIndices *
         deepCopy () const

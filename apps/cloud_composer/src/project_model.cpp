@@ -53,6 +53,7 @@ pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
 }
 
 pcl::cloud_composer::ProjectModel::ProjectModel (const ProjectModel&)
+: QStandardItemModel ()
 {
 }
 
@@ -313,9 +314,10 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
         new_point.y = ((float)(centerY - y)) * depth * fl_const; // vtk seems to start at the bottom left image corner
         new_point.z = depth;
       }
-      
-      uint32_t rgb = (uint32_t)color_pixel[0] << 16 | (uint32_t)color_pixel[1] << 8 | (uint32_t)color_pixel[2];
-      new_point.rgb = *reinterpret_cast<float*> (&rgb);
+
+      new_point.r = color_pixel[0];
+      new_point.g = color_pixel[1];
+      new_point.b = color_pixel[2];
       cloud->points.push_back (new_point);
       //   qDebug () << "depth = "<<depth << "x,y,z="<<data[0]<<","<<data[1]<<","<<data[2];
       //qDebug() << "r ="<<color_pixel[0]<<" g="<<color_pixel[1]<<" b="<<color_pixel[2];

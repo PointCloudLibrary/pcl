@@ -74,23 +74,14 @@ class CutCommand : public Command
 
   private:
     /// @brief Default constructor - object is not default constructable
-    CutCommand () : cut_selection_(CloudPtr())
-    {
-      assert(false);
-    }
-    
+    CutCommand () = delete;
+
     /// @brief Copy constructor - commands are non-copyable
-    CutCommand (const CutCommand&) : cut_selection_(CloudPtr())
-    {
-      assert(false);
-    }
+    CutCommand (const CutCommand&) = delete;
 
     /// @brief Equal operator - commands are non-copyable
     CutCommand&
-    operator= (const CutCommand&)
-    {
-      assert(false); return (*this);
-    }
+    operator= (const CutCommand&) = delete;
 
     /// A shared pointer pointing to the selection object.
     SelectionPtr selection_ptr_;
