@@ -419,23 +419,19 @@ pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
     {
       mmax[1] = len1;
       evecs.col (1) = vec1 / std::sqrt (len1);
-      min_el = len1 <= mmax[min_el] ? 1 : min_el;
-      max_el = len1 > mmax[max_el] ? 1 : max_el;
     }
     else if (len2 >= len1 && len2 >= len3)
     {
       mmax[1] = len2;
       evecs.col (1) = vec2 / std::sqrt (len2);
-      min_el = len2 <= mmax[min_el] ? 1 : min_el;
-      max_el = len2 > mmax[max_el] ? 1 : max_el;
     }
     else
     {
       mmax[1] = len3;
       evecs.col (1) = vec3 / std::sqrt (len3);
-      min_el = len3 <= mmax[min_el] ? 1 : min_el;
-      max_el = len3 > mmax[max_el] ? 1 : max_el;
     }
+    min_el = mmax[1] <= mmax[min_el] ? 1 : min_el;
+    max_el = mmax[1] > mmax[max_el] ? 1 : max_el;
 
     tmp = scaledMat;
     tmp.diagonal ().array () -= evals (0);
@@ -451,23 +447,19 @@ pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
     {
       mmax[0] = len1;
       evecs.col (0) = vec1 / std::sqrt (len1);
-      min_el = len1 <= mmax[min_el] ? 0 : min_el;
-      max_el = len1 > mmax[max_el] ? 0 : max_el;
     }
     else if (len2 >= len1 && len2 >= len3)
     {
       mmax[0] = len2;
-      evecs.col (0) = vec2 / std::sqrt (len2);
-      min_el = len2 <= mmax[min_el] ? 0 : min_el;
-      max_el = len2 > mmax[max_el] ? 0 : max_el;
+      evecs.col (0) = vec2 / std::sqrt (len2);      
     }
     else
     {
       mmax[0] = len3;
       evecs.col (0) = vec3 / std::sqrt (len3);
-      min_el = len3 <= mmax[min_el] ? 0 : min_el;
-      max_el = len3 > mmax[max_el] ? 0 : max_el;
     }
+    min_el = mmax[0] <= mmax[min_el] ? 0 : min_el;
+    max_el = mmax[0] > mmax[max_el] ? 0 : max_el;
 
     unsigned mid_el = 3 - min_el - max_el;
     evecs.col (min_el) = evecs.col ( (min_el + 1) % 3).cross (evecs.col ( (min_el + 2) % 3)).normalized ();
