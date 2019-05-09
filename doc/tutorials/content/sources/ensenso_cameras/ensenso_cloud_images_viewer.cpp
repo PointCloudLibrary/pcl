@@ -129,7 +129,7 @@ main (void)
   //ensenso_ptr->initExtrinsicCalibration (5); // Disable projector if you want good looking images.
   // You won't be able to detect a calibration pattern with the projector enabled!
 
-  boost::function<void (const PointCloudT::Ptr&, const PairOfImagesPtr&)> f = boost::bind (&grabberCallback, _1, _2);
+  std::function<void (const PointCloudT::Ptr&, const PairOfImagesPtr&)> f = boost::bind (&grabberCallback, _1, _2);
   ensenso_ptr->registerCallback (f);
 
   cv::namedWindow ("Ensenso images", cv::WINDOW_AUTOSIZE);
