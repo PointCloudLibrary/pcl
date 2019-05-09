@@ -51,7 +51,7 @@ namespace pcl
   namespace outofcore
   {
     template<typename PointT>
-    boost::mutex OutofcoreOctreeRamContainer<PointT>::rng_mutex_;
+    std::mutex OutofcoreOctreeRamContainer<PointT>::rng_mutex_;
 
     template<typename PointT> 
     std::mt19937 OutofcoreOctreeRamContainer<PointT>::rng_ ([] {std::random_device rd; return rd(); } ());
@@ -122,7 +122,7 @@ namespace pcl
     {
       uint64_t samplesize = static_cast<uint64_t> (percent * static_cast<double> (count));
 
-      boost::mutex::scoped_lock lock (rng_mutex_);
+      std::lock_guard<std::mutex> lock (rng_mutex_);
 
       std::uniform_int_distribution < uint64_t > buffdist (start, start + count);
 

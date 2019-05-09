@@ -40,6 +40,7 @@
 #pragma once
 
 // C++
+#include <mutex>
 #include <vector>
 #include <string>
 
@@ -296,7 +297,7 @@ namespace pcl
 
         static const uint64_t WRITE_BUFF_MAX_;
 
-        static boost::mutex rng_mutex_;
+        static std::mutex rng_mutex_;
         static boost::mt19937 rand_gen_;
         static boost::uuids::basic_random_generator<boost::mt19937> uuid_gen_;
 

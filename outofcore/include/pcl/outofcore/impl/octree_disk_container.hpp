@@ -71,7 +71,7 @@ namespace pcl
   namespace outofcore
   {
     template<typename PointT>
-    boost::mutex OutofcoreOctreeDiskContainer<PointT>::rng_mutex_;
+    std::mutex OutofcoreOctreeDiskContainer<PointT>::rng_mutex_;
 
     template<typename PointT> boost::mt19937
     OutofcoreOctreeDiskContainer<PointT>::rand_gen_ (static_cast<unsigned int> (std::time(nullptr)));
@@ -89,7 +89,7 @@ namespace pcl
     {
       boost::uuids::uuid u;
       {
-        boost::mutex::scoped_lock lock (rng_mutex_);
+        std::lock_guard<std::mutex> lock (rng_mutex_);
         u = uuid_gen_ ();
       }
 
@@ -297,7 +297,7 @@ namespace pcl
       if (buffcount > 0)
       {
         {
-          boost::mutex::scoped_lock lock (rng_mutex_);
+          std::lock_guard<std::mutex> lock (rng_mutex_);
           boost::bernoulli_distribution<double> buffdist (percent);
           boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > buffcoin (rand_gen_, buffdist);
 
@@ -316,7 +316,7 @@ namespace pcl
         //pregen and then sort the offsets to reduce the amount of seek
         std::vector < uint64_t > offsets;
         {
-          boost::mutex::scoped_lock lock (rng_mutex_);
+          std::lock_guard<std::mutex> lock (rng_mutex_);
 
           boost::bernoulli_distribution<double> filedist (percent);
           boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > filecoin (rand_gen_, filedist);
@@ -398,7 +398,7 @@ namespace pcl
       if (buffcount > 0)
       {
         {
-          boost::mutex::scoped_lock lock (rng_mutex_);
+          std::lock_guard<std::mutex> lock (rng_mutex_);
 
           boost::uniform_int < uint64_t > buffdist (0, buffcount - 1);
           boost::variate_generator<boost::mt19937&, boost::uniform_int<uint64_t> > buffdie (rand_gen_, buffdist);
@@ -416,7 +416,7 @@ namespace pcl
         //pregen and then sort the offsets to reduce the amount of seek
         std::vector < uint64_t > offsets;
         {
-          boost::mutex::scoped_lock lock (rng_mutex_);
+          std::lock_guard<std::mutex> lock (rng_mutex_);
 
           offsets.resize (filesamp);
           boost::uniform_int < uint64_t > filedist (filestart, filestart + filecount - 1);
