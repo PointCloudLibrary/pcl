@@ -111,7 +111,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber ();
 
-      boost::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f = boost::bind (&OpenNIOrganizedMultiPlaneSegmentation::cloud_cb_, this, _1);
+      std::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f = boost::bind (&OpenNIOrganizedMultiPlaneSegmentation::cloud_cb_, this, _1);
 
       //make a viewer
       pcl::PointCloud<PointT>::Ptr init_cloud_ptr (new pcl::PointCloud<PointT>);
