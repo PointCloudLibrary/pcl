@@ -231,14 +231,14 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
   Eigen::Vector4f plane_parameters;
 
   // Use Least-Squares to fit the plane through all the given sample points and find out its coefficients
-  EIGEN_ALIGN32 Eigen::Matrix3d covariance_matrix;
-  Eigen::Vector4d xyz_centroid;
+  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
+  Eigen::Vector4f xyz_centroid;
 
   computeMeanAndCovarianceMatrix (*input_, inliers, covariance_matrix, xyz_centroid);
 
   // Compute the model coefficients
-  EIGEN_ALIGN32 Eigen::Vector3d::Scalar eigen_value;
-  EIGEN_ALIGN32 Eigen::Vector3d eigen_vector;
+  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
+  EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
   pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
 
   // Hessian form (D = nc . p_plane (centroid here) + p)
@@ -247,7 +247,7 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
   optimized_coefficients[1] = eigen_vector [1];
   optimized_coefficients[2] = eigen_vector [2];
   optimized_coefficients[3] = 0;
-  optimized_coefficients[3] = -1 * optimized_coefficients.dot (xyz_centroid.cast<float>());
+  optimized_coefficients[3] = -1 * optimized_coefficients.dot (xyz_centroid);
 
   // Make sure it results in a valid model
   if (!isModelValid (optimized_coefficients))
