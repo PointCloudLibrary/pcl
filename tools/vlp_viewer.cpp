@@ -36,8 +36,6 @@
  * Author: Keven Ring <keven@mitre.org>
  */
 
-#include <thread>
-
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
@@ -51,10 +49,13 @@
 #include <pcl/console/parse.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/mouse_event.h>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/thread/mutex.hpp>
+
 #include <vector>
 #include <string>
+#include <thread>
 #include <typeinfo>
 
 using namespace std;
