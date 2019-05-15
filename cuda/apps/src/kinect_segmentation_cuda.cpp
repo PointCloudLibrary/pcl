@@ -35,16 +35,6 @@
  *
  */
 
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/highgui/highgui_c.h>
-#include "opencv2/gpu/gpu.hpp"
-
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/pcl_macros.h>
-
-#include <boost/shared_ptr.hpp>
-
 #include <pcl/cuda/features/normal_3d.h>
 #include <pcl/cuda/time_cpu.h>
 #include <pcl/cuda/time_gpu.h>
@@ -55,12 +45,21 @@
 #include <pcl/cuda/sample_consensus/sac_model_1point_plane.h>
 #include <pcl/cuda/sample_consensus/multi_ransac.h>
 #include <pcl/cuda/segmentation/connected_components.h>
-
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/pcl_macros.h>
+
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui/highgui_c.h>
+#include <opencv2/gpu/gpu.hpp>
+
+#include <boost/shared_ptr.hpp>
 
 #include <iostream>
+#include <mutex>
 
 using namespace pcl::cuda;
 
