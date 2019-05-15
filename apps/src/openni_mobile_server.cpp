@@ -45,6 +45,7 @@
 #include <pcl/common/time.h>
 
 #include <boost/asio.hpp>
+#include <boost/thread/mutex.hpp>
 
 using boost::asio::ip::tcp;
 using namespace std::chrono_literals;

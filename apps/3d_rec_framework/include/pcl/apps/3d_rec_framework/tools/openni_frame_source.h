@@ -3,6 +3,8 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include <boost/thread/mutex.hpp>
+
 namespace OpenNIFrameSource
 {
 

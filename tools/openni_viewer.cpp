@@ -44,6 +44,8 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 
+#include <boost/thread/mutex.hpp>
+
 #define SHOW_FPS 1
 #if SHOW_FPS
 #define FPS_CALC(_WHAT_) \

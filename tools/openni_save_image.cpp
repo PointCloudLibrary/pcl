@@ -39,12 +39,15 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
-#include <vector>
-#include <string>
-
 #include <pcl/visualization/vtk.h>
 #include <pcl/visualization/pcl_visualizer.h>
+
 #include "boost.h"
+#include <boost/thread/mutex.hpp>
+
+#include <string>
+#include <vector>
+
 
 #define SHOW_FPS 1
 #if SHOW_FPS

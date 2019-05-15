@@ -39,8 +39,6 @@
 
 #define SHOW_FPS 1
 
-#include <thread>
-
 #include <pcl/apps/timer.h>
 #include <pcl/common/common.h>
 #include <pcl/common/angles.h>
@@ -53,6 +51,10 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
+
+#include <boost/thread/mutex.hpp>
+
+#include <thread>
 
 using namespace pcl;
 using namespace std;
