@@ -53,8 +53,7 @@
 #include <pcl/people/ground_based_people_detection_app.h>
 #include <pcl/common/time.h>
 
-#include <boost/thread/mutex.hpp>
-
+#include <mutex>
 #include <thread>
 
 using namespace std::chrono_literals;
@@ -66,7 +65,7 @@ typedef pcl::PointCloud<PointT> PointCloudT;
 pcl::visualization::PCLVisualizer viewer("PCL Viewer");
 
 // Mutex: //
-boost::mutex cloud_mutex;
+std::mutex cloud_mutex;
 
 enum { COLS = 640, ROWS = 480 };
 
