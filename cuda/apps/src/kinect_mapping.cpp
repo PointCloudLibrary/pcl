@@ -35,37 +35,36 @@
  *
  */
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-
-#include <boost/filesystem.hpp>
-#include <boost/shared_ptr.hpp>
-
 #include <pcl_cuda/time_cpu.h>
 #include <pcl_cuda/time_gpu.h>
 #include <pcl_cuda/io/cloud_to_pcl.h>
 #include <pcl_cuda/io/extract_indices.h>
 #include <pcl_cuda/io/disparity_to_cloud.h>
+#include <pcl_cuda/sample_consensus/sac_model_1point_plane.h>
+#include <pcl_cuda/sample_consensus/multi_ransac.h>
+#include <pcl_cuda/segmentation/connected_components.h>
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
-
 #include <pcl/common/transform.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
-#include <iostream>
 
-#include <pcl_cuda/sample_consensus/sac_model_1point_plane.h>
-#include <pcl_cuda/sample_consensus/multi_ransac.h>
-#include <pcl_cuda/segmentation/connected_components.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/gpu/gpu.hpp>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include "opencv2/opencv.hpp"
-#include "opencv2/gpu/gpu.hpp"
+#include <boost/filesystem.hpp>
+#include <boost/shared_ptr.hpp>
+
+#include <iostream>
+#include <mutex>
 
 using namespace pcl_cuda;
 
@@ -101,7 +100,7 @@ class MultiRansac
 
     void viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
-      boost::mutex::scoped_lock l(m_mutex);
+      std::lock_guard<std::mutex> l(m_mutex);
       if (new_cloud)
       {
         typedef pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal> ColorHandler;
@@ -225,7 +224,7 @@ class MultiRansac
       {
         typename Storage<float4>::type normals = sac_model->getNormals ();
 
-        boost::mutex::scoped_lock l(m_mutex);
+        std::lock_guard<std::mutex> l(m_mutex);
         normal_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
         pcl_cuda::toPCL (*data, normals, *normal_cloud);
         new_cloud = true;
@@ -271,7 +270,7 @@ class MultiRansac
     pcl_cuda::DisparityToCloud d2c;
     pcl::visualization::CloudViewer viewer;
    
-    boost::mutex::mutex m_mutex;
+    std::mutex m_mutex;
     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr normal_cloud;
     bool new_cloud;
     bool use_viewer;

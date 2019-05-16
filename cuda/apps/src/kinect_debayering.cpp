@@ -37,12 +37,15 @@
 
 #include <pcl_cuda/io/cloud_to_pcl.h>
 #include <pcl_cuda/io/debayering.h>
-
-#include <pcl/io/kinect_grabber.h>
-#include <boost/shared_ptr.hpp>
-#include <iostream>
-#include <opencv2/opencv.hpp>
 #include <pcl_cuda/time_cpu.h>
+#include <pcl/io/kinect_grabber.h>
+
+#include <opencv2/opencv.hpp>
+
+#include <boost/shared_ptr.hpp>
+
+#include <iostream>
+#include <mutex>
 
 class SimpleKinectTool
 {
@@ -85,7 +88,7 @@ class SimpleKinectTool
     }
 
     pcl_cuda::Debayering<pcl_cuda::Host> debayering;
-    boost::mutex mutex_;
+    std::mutex mutex_;
     bool init_;
 };
 
