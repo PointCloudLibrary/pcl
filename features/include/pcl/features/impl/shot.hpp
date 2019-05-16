@@ -81,7 +81,7 @@ areEquals (double val1, double val2, double zeroDoubleEps = zeroDoubleEps15)
 inline bool
 areEquals (float val1, float val2, float zeroFloatEps = zeroFloatEps8)
 {
-  return (fabs (val1 - val2)<zeroFloatEps);
+  return (std::fabs (val1 - val2)<zeroFloatEps);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -703,7 +703,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSH
       a /= 120.0f;
       b /= 120.0f;   //normalized LAB components (0<L<1, -1<a<1, -1<b<1)
 
-      double colorDistance = (fabs (LRef - L) + ((fabs (aRef - a) + fabs (bRef - b)) / 2)) /3;
+      double colorDistance = (std::fabs (LRef - L) + ((std::fabs (aRef - a) + std::fabs (bRef - b)) / 2)) /3;
 
       if (colorDistance > 1.0)
         colorDistance = 1.0;

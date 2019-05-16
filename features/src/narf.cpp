@@ -289,8 +289,8 @@ Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
     for (int x=0; x<new_pixel_size; ++x)
     {
       float& integral_pixel = *(integral_image_ptr++);
-      int old_x = static_cast<int> (pcl_lrint (floor (new_to_old_factor * float (x)))),
-          old_y = static_cast<int> (pcl_lrint (floor (new_to_old_factor * float (y))));
+      int old_x = static_cast<int> (pcl_lrint (std::floor (new_to_old_factor * float (x)))),
+          old_y = static_cast<int> (pcl_lrint (std::floor (new_to_old_factor * float (y))));
       integral_pixel = surface_patch_[old_y*surface_patch_pixel_size_ + old_x];
       if (std::isinf(integral_pixel))
         integral_pixel = 0.5f*surface_patch_world_size_;

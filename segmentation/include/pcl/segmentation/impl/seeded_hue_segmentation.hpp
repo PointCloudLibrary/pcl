@@ -100,7 +100,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>          &cloud,
         PointXYZHSV h_l;
         PointXYZRGBtoXYZHSV(p_l, h_l);
 
-        if (fabs(h_l.h - h.h) < delta_hue)
+        if (std::fabs(h_l.h - h.h) < delta_hue)
         {
           seed_queue.push_back (nn_indices[j]);
           processed[nn_indices[j]] = true;
@@ -174,7 +174,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>            &cloud,
         PointXYZHSV h_l;
         PointXYZRGBtoXYZHSV(p_l, h_l);
 
-        if (fabs(h_l.h - h.h) < delta_hue)
+        if (std::fabs(h_l.h - h.h) < delta_hue)
         {
           seed_queue.push_back (nn_indices[j]);
           processed[nn_indices[j]] = true;

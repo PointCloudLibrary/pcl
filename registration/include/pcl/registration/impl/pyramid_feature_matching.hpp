@@ -249,7 +249,7 @@ pcl::PyramidFeatureHistogram<PointFeature>::at (std::vector<float> &feature,
 
   std::vector<size_t> access;
   for (size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i)
-    access.push_back (static_cast<size_t> (floor ((feature[dim_i] - dimension_range_target_[dim_i].first) / hist_levels[level].bin_step[dim_i])));
+    access.push_back (static_cast<size_t> (std::floor ((feature[dim_i] - dimension_range_target_[dim_i].first) / hist_levels[level].bin_step[dim_i])));
 
   return at (access, level);
 }

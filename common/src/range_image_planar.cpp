@@ -65,7 +65,7 @@ namespace pcl
     float original_angular_resolution = atanf (0.5f * static_cast<float> (di_width) / static_cast<float> (focal_length)) / (0.5f * static_cast<float> (di_width));
     int skip = 1;
     if (desired_angular_resolution >= 2.0f*original_angular_resolution)
-      skip = static_cast<int> (pcl_lrint (floor (desired_angular_resolution / original_angular_resolution)));
+      skip = static_cast<int> (pcl_lrint (std::floor (desired_angular_resolution / original_angular_resolution)));
 
     setAngularResolution (original_angular_resolution * static_cast<float> (skip));
     width  = di_width / skip;
@@ -124,7 +124,7 @@ namespace pcl
     float original_angular_resolution = asinf (0.5f*static_cast<float> (di_width)/static_cast<float> (di_focal_length_x)) / (0.5f*static_cast<float> (di_width));
     int skip = 1;
     if (desired_angular_resolution >= 2.0f*original_angular_resolution)
-      skip = static_cast<int> (pcl_lrint (floor (desired_angular_resolution / original_angular_resolution)));
+      skip = static_cast<int> (pcl_lrint (std::floor (desired_angular_resolution / original_angular_resolution)));
 
     setAngularResolution (original_angular_resolution * static_cast<float> (skip));
     width  = di_width / skip;
@@ -170,7 +170,7 @@ namespace pcl
     float original_angular_resolution = asinf (0.5f*static_cast<float> (di_width)/static_cast<float> (di_focal_length_x)) / (0.5f*static_cast<float> (di_width));
     int skip = 1;
     if (desired_angular_resolution >= 2.0f*original_angular_resolution)
-      skip = static_cast<int> (pcl_lrint (floor (desired_angular_resolution/original_angular_resolution)));
+      skip = static_cast<int> (pcl_lrint (std::floor (desired_angular_resolution/original_angular_resolution)));
 
     setAngularResolution (original_angular_resolution * static_cast<float> (skip));
     width  = di_width / skip;
