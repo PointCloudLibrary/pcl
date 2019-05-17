@@ -2985,221 +2985,10 @@ namespace pcl
                           return false;
                   else
                     return false;
-        else if (p[offset0] < c_b)
-          if (p[offset5] < c_b)
-            if (p[offset9] > cb)
-              if ((p[offset2] <= cb) && (p[offset2] < c_b))
-                if (p[offset7] > cb)
-                  if ((p[offset1] <= cb) && (p[offset1] < c_b))
-                    if (p[offset6] < c_b)
-                      return ((p[offset3] < c_b) && (p[offset4] < c_b));
-                    else
-                      return ((p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset11] < c_b));
-                  else
-                    return false;
-                else
-                  if (p[offset7] < c_b)
-                    if (p[offset1] > cb)
-                      if (p[offset6] <= cb)
-                        return ((p[offset6] < c_b) && (p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset8] < c_b));
-                      else
-                        return false;
-                    else
-                      if (p[offset1] < c_b)
-                        if (p[offset6] < c_b)
-                          return ((p[offset3] < c_b) && (p[offset4] < c_b));
-                        else
-                          return ((p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset11] < c_b));
-                      else
-                        if (p[offset6] <= cb)
-                          return ((p[offset6] < c_b) && (p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset8] < c_b));
-                        else
-                          return false;
-                  else
-                    if ((p[offset1] <= cb) && (p[offset1] < c_b))
-                      if (p[offset6] < c_b)
-                        return ((p[offset3] < c_b) && (p[offset4] < c_b));
-                      else
-                        return ((p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset11] < c_b));
-                    else
-                      return false;
-              else
-                return false;
-            else
-              if (p[offset9] < c_b)
-                if (p[offset7] > cb)
-                  if ((p[offset1] <= cb) && (p[offset1] < c_b) && (p[offset2] <= cb) && (p[offset2] < c_b))
-                    if (p[offset6] > cb)
-                      if (p[offset11] < c_b)
-                        if (p[offset3] < c_b)
-                          return ((p[offset4] < c_b) || (p[offset10] < c_b));
-                        else
-                          return ((p[offset8] < c_b) && (p[offset10] < c_b));
-                      else
-                        return false;
-                    else
-                      if (p[offset6] < c_b)
-                        if (p[offset3] < c_b)
-                          if (p[offset4] < c_b)
-                            return true;
-                          else
-                            return ((p[offset10] < c_b) && (p[offset11] < c_b));
-                        else
-                          return ((p[offset8] < c_b) && (p[offset10] < c_b) && (p[offset11] < c_b));
-                      else
-                        if (p[offset11] < c_b)
-                          if (p[offset3] < c_b)
-                            return ((p[offset4] < c_b) || (p[offset10] < c_b));
-                          else
-                            return ((p[offset8] < c_b) && (p[offset10] < c_b));
-                        else
-                          return false;
-                  else
-                    return false;
-                else
-                  if (p[offset7] < c_b)
-                    if (p[offset2] > cb)
-                      if (p[offset1] > cb)
-                        if ((p[offset6] <= cb) && (p[offset6] < c_b) && (p[offset8] < c_b))
-                          if (p[offset4] < c_b)
-                            return ((p[offset3] < c_b) || (p[offset10] < c_b));
-                          else
-                            return ((p[offset10] < c_b) && (p[offset11] < c_b));
-                        else
-                          return false;
-                      else
-                        if (p[offset1] < c_b)
-                          if (p[offset6] > cb)
-                            return ((p[offset8] < c_b) && (p[offset10] < c_b) && (p[offset11] < c_b));
-                          else
-                            if (p[offset6] < c_b)
-                              if (p[offset8] < c_b)
-                                if (p[offset4] < c_b)
-                                  return ((p[offset3] < c_b) || (p[offset10] < c_b));
-                                else
-                                  return ((p[offset10] < c_b) && (p[offset11] < c_b));
-                              else
-                                return false;
-                            else
-                              return ((p[offset8] < c_b) && (p[offset10] < c_b) && (p[offset11] < c_b));
-                        else
-                          if ((p[offset6] <= cb) && (p[offset6] < c_b) && (p[offset8] < c_b))
-                            if (p[offset4] < c_b)
-                              return ((p[offset3] < c_b) || (p[offset10] < c_b));
-                            else
-                              return ((p[offset10] < c_b) && (p[offset11] < c_b));
-                          else
-                            return false;
-                    else
-                      if (p[offset2] < c_b)
-                        if (p[offset1] > cb)
-                          if ((p[offset6] <= cb) && (p[offset6] < c_b) && (p[offset8] < c_b))
-                            if (p[offset4] < c_b)
-                              return ((p[offset3] < c_b) || (p[offset10] < c_b));
-                            else
-                              return ((p[offset10] < c_b) && (p[offset11] < c_b));
-                          else
-                            return false;
-                        else
-                          if (p[offset1] < c_b)
-                            if (p[offset6] > cb)
-                              if (p[offset11] < c_b)
-                                if (p[offset3] < c_b)
-                                  return ((p[offset4] < c_b) || (p[offset10] < c_b));
-                                else
-                                  return ((p[offset8] < c_b) && (p[offset10] < c_b));
-                              else
-                                return false;
-                            else
-                              if (p[offset6] < c_b)
-                                if (p[offset3] < c_b)
-                                  if (p[offset4] < c_b)
-                                    return true;
-                                  else
-                                    return ((p[offset10] < c_b) && (p[offset11] < c_b));
-                                else
-                                  if ((p[offset8] < c_b) && (p[offset10] < c_b))
-                                    return ((p[offset4] < c_b) || (p[offset11] < c_b));
-                                  else
-                                    return false;
-                              else
-                                if (p[offset11] < c_b)
-                                  if (p[offset3] < c_b)
-                                    return ((p[offset4] < c_b) || (p[offset10] < c_b));
-                                  else
-                                    return ((p[offset8] < c_b) && (p[offset10] < c_b));
-                                else
-                                  return false;
-                          else
-                            if ((p[offset6] <= cb) && (p[offset6] < c_b) && (p[offset8] < c_b))
-                              if (p[offset4] < c_b)
-                                return ((p[offset3] < c_b) || (p[offset10] < c_b));
-                              else
-                                return ((p[offset10] < c_b) && (p[offset11] < c_b));
-                            else
-                              return false;
-                      else
-                        if (p[offset1] > cb)
-                          if ((p[offset6] <= cb) && (p[offset6] < c_b) && (p[offset8] < c_b))
-                            if (p[offset4] < c_b)
-                              return ((p[offset3] < c_b) || (p[offset10] < c_b));
-                            else
-                              return ((p[offset10] < c_b) && (p[offset11] < c_b));
-                          else
-                            return false;
-                        else
-                          if (p[offset1] < c_b)
-                            if (p[offset6] > cb)
-                              return ((p[offset8] < c_b) && (p[offset10] < c_b) && (p[offset11] < c_b));
-                            else
-                              if (p[offset6] < c_b)
-                                if (p[offset8] < c_b)
-                                  if (p[offset4] < c_b)
-                                    return ((p[offset3] < c_b) || (p[offset10] < c_b));
-                                  else
-                                    return ((p[offset10] < c_b) && (p[offset11] < c_b));
-                                else
-                                  return false;
-                              else
-                                return ((p[offset8] < c_b) && (p[offset10] < c_b) && (p[offset11] < c_b));
-                          else
-                            if ((p[offset6] <= cb) && (p[offset6] < c_b) && (p[offset8] < c_b))
-                              if (p[offset4] < c_b)
-                                return ((p[offset3] < c_b) || (p[offset10] < c_b));
-                              else
-                                return ((p[offset10] < c_b) && (p[offset11] < c_b));
-                            else
-                              return false;
-                  else
-                    if ((p[offset1] <= cb) && (p[offset1] < c_b) && (p[offset2] <= cb) && (p[offset2] < c_b))
-                      if (p[offset6] > cb)
-                        if (p[offset11] < c_b)
-                          if (p[offset3] < c_b)
-                            return ((p[offset4] < c_b) || (p[offset10] < c_b));
-                          else
-                            return ((p[offset8] < c_b) && (p[offset10] < c_b));
-                        else
-                          return false;
-                      else
-                        if (p[offset6] < c_b)
-                          if (p[offset3] < c_b)
-                            if (p[offset4] < c_b)
-                              return true;
-                            else
-                              return ((p[offset10] < c_b) && (p[offset11] < c_b));
-                          else
-                            return ((p[offset8] < c_b) && (p[offset10] < c_b) && (p[offset11] < c_b));
-                        else
-                          if (p[offset11] < c_b)
-                            if (p[offset3] < c_b)
-                              return ((p[offset4] < c_b) || (p[offset10] < c_b));
-                            else
-                              return ((p[offset8] < c_b) && (p[offset10] < c_b));
-                          else
-                            return false;
-                    else
-                      return false;
-              else
+        else
+          if (p[offset0] < c_b)
+            if (p[offset5] < c_b)
+              if (p[offset9] > cb)
                 if ((p[offset2] <= cb) && (p[offset2] < c_b))
                   if (p[offset7] > cb)
                     if ((p[offset1] <= cb) && (p[offset1] < c_b))
@@ -3237,6 +3026,218 @@ namespace pcl
                         return false;
                 else
                   return false;
+              else
+                if (p[offset9] < c_b)
+                  if (p[offset7] > cb)
+                    if ((p[offset1] <= cb) && (p[offset1] < c_b) && (p[offset2] <= cb) && (p[offset2] < c_b))
+                      if (p[offset6] > cb)
+                        if (p[offset11] < c_b)
+                          if (p[offset3] < c_b)
+                            return ((p[offset4] < c_b) || (p[offset10] < c_b));
+                          else
+                            return ((p[offset8] < c_b) && (p[offset10] < c_b));
+                        else
+                          return false;
+                      else
+                        if (p[offset6] < c_b)
+                          if (p[offset3] < c_b)
+                            if (p[offset4] < c_b)
+                              return true;
+                            else
+                              return ((p[offset10] < c_b) && (p[offset11] < c_b));
+                          else
+                            return ((p[offset8] < c_b) && (p[offset10] < c_b) && (p[offset11] < c_b));
+                        else
+                          if (p[offset11] < c_b)
+                            if (p[offset3] < c_b)
+                              return ((p[offset4] < c_b) || (p[offset10] < c_b));
+                            else
+                              return ((p[offset8] < c_b) && (p[offset10] < c_b));
+                          else
+                            return false;
+                    else
+                      return false;
+                  else
+                    if (p[offset7] < c_b)
+                      if (p[offset2] > cb)
+                        if (p[offset1] > cb)
+                          if ((p[offset6] <= cb) && (p[offset6] < c_b) && (p[offset8] < c_b))
+                            if (p[offset4] < c_b)
+                              return ((p[offset3] < c_b) || (p[offset10] < c_b));
+                            else
+                              return ((p[offset10] < c_b) && (p[offset11] < c_b));
+                          else
+                            return false;
+                        else
+                          if (p[offset1] < c_b)
+                            if (p[offset6] > cb)
+                              return ((p[offset8] < c_b) && (p[offset10] < c_b) && (p[offset11] < c_b));
+                            else
+                              if (p[offset6] < c_b)
+                                if (p[offset8] < c_b)
+                                  if (p[offset4] < c_b)
+                                    return ((p[offset3] < c_b) || (p[offset10] < c_b));
+                                  else
+                                    return ((p[offset10] < c_b) && (p[offset11] < c_b));
+                                else
+                                  return false;
+                              else
+                                return ((p[offset8] < c_b) && (p[offset10] < c_b) && (p[offset11] < c_b));
+                          else
+                            if ((p[offset6] <= cb) && (p[offset6] < c_b) && (p[offset8] < c_b))
+                              if (p[offset4] < c_b)
+                                return ((p[offset3] < c_b) || (p[offset10] < c_b));
+                              else
+                                return ((p[offset10] < c_b) && (p[offset11] < c_b));
+                            else
+                              return false;
+                      else
+                        if (p[offset2] < c_b)
+                          if (p[offset1] > cb)
+                            if ((p[offset6] <= cb) && (p[offset6] < c_b) && (p[offset8] < c_b))
+                              if (p[offset4] < c_b)
+                                return ((p[offset3] < c_b) || (p[offset10] < c_b));
+                              else
+                                return ((p[offset10] < c_b) && (p[offset11] < c_b));
+                            else
+                              return false;
+                          else
+                            if (p[offset1] < c_b)
+                              if (p[offset6] > cb)
+                                if (p[offset11] < c_b)
+                                  if (p[offset3] < c_b)
+                                    return ((p[offset4] < c_b) || (p[offset10] < c_b));
+                                  else
+                                    return ((p[offset8] < c_b) && (p[offset10] < c_b));
+                                else
+                                  return false;
+                              else
+                                if (p[offset6] < c_b)
+                                  if (p[offset3] < c_b)
+                                    if (p[offset4] < c_b)
+                                      return true;
+                                    else
+                                      return ((p[offset10] < c_b) && (p[offset11] < c_b));
+                                  else
+                                    if ((p[offset8] < c_b) && (p[offset10] < c_b))
+                                      return ((p[offset4] < c_b) || (p[offset11] < c_b));
+                                    else
+                                      return false;
+                                else
+                                  if (p[offset11] < c_b)
+                                    if (p[offset3] < c_b)
+                                      return ((p[offset4] < c_b) || (p[offset10] < c_b));
+                                    else
+                                      return ((p[offset8] < c_b) && (p[offset10] < c_b));
+                                  else
+                                    return false;
+                            else
+                              if ((p[offset6] <= cb) && (p[offset6] < c_b) && (p[offset8] < c_b))
+                                if (p[offset4] < c_b)
+                                  return ((p[offset3] < c_b) || (p[offset10] < c_b));
+                                else
+                                  return ((p[offset10] < c_b) && (p[offset11] < c_b));
+                              else
+                                return false;
+                        else
+                          if (p[offset1] > cb)
+                            if ((p[offset6] <= cb) && (p[offset6] < c_b) && (p[offset8] < c_b))
+                              if (p[offset4] < c_b)
+                                return ((p[offset3] < c_b) || (p[offset10] < c_b));
+                              else
+                                return ((p[offset10] < c_b) && (p[offset11] < c_b));
+                            else
+                              return false;
+                          else
+                            if (p[offset1] < c_b)
+                              if (p[offset6] > cb)
+                                return ((p[offset8] < c_b) && (p[offset10] < c_b) && (p[offset11] < c_b));
+                              else
+                                if (p[offset6] < c_b)
+                                  if (p[offset8] < c_b)
+                                    if (p[offset4] < c_b)
+                                      return ((p[offset3] < c_b) || (p[offset10] < c_b));
+                                    else
+                                      return ((p[offset10] < c_b) && (p[offset11] < c_b));
+                                  else
+                                    return false;
+                                else
+                                  return ((p[offset8] < c_b) && (p[offset10] < c_b) && (p[offset11] < c_b));
+                            else
+                              if ((p[offset6] <= cb) && (p[offset6] < c_b) && (p[offset8] < c_b))
+                                if (p[offset4] < c_b)
+                                  return ((p[offset3] < c_b) || (p[offset10] < c_b));
+                                else
+                                  return ((p[offset10] < c_b) && (p[offset11] < c_b));
+                              else
+                                return false;
+                    else
+                      if ((p[offset1] <= cb) && (p[offset1] < c_b) && (p[offset2] <= cb) && (p[offset2] < c_b))
+                        if (p[offset6] > cb)
+                          if (p[offset11] < c_b)
+                            if (p[offset3] < c_b)
+                              return ((p[offset4] < c_b) || (p[offset10] < c_b));
+                            else
+                              return ((p[offset8] < c_b) && (p[offset10] < c_b));
+                          else
+                            return false;
+                        else
+                          if (p[offset6] < c_b)
+                            if (p[offset3] < c_b)
+                              if (p[offset4] < c_b)
+                                return true;
+                              else
+                                return ((p[offset10] < c_b) && (p[offset11] < c_b));
+                            else
+                              return ((p[offset8] < c_b) && (p[offset10] < c_b) && (p[offset11] < c_b));
+                          else
+                            if (p[offset11] < c_b)
+                              if (p[offset3] < c_b)
+                                return ((p[offset4] < c_b) || (p[offset10] < c_b));
+                              else
+                                return ((p[offset8] < c_b) && (p[offset10] < c_b));
+                            else
+                              return false;
+                      else
+                        return false;
+                else
+                  if ((p[offset2] <= cb) && (p[offset2] < c_b))
+                    if (p[offset7] > cb)
+                      if ((p[offset1] <= cb) && (p[offset1] < c_b))
+                        if (p[offset6] < c_b)
+                          return ((p[offset3] < c_b) && (p[offset4] < c_b));
+                        else
+                          return ((p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset11] < c_b));
+                      else
+                        return false;
+                    else
+                      if (p[offset7] < c_b)
+                        if (p[offset1] > cb)
+                          if (p[offset6] <= cb)
+                            return ((p[offset6] < c_b) && (p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset8] < c_b));
+                          else
+                            return false;
+                        else
+                          if (p[offset1] < c_b)
+                            if (p[offset6] < c_b)
+                              return ((p[offset3] < c_b) && (p[offset4] < c_b));
+                            else
+                              return ((p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset11] < c_b));
+                          else
+                            if (p[offset6] <= cb)
+                              return ((p[offset6] < c_b) && (p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset8] < c_b));
+                            else
+                              return false;
+                      else
+                        if ((p[offset1] <= cb) && (p[offset1] < c_b))
+                          if (p[offset6] < c_b)
+                            return ((p[offset3] < c_b) && (p[offset4] < c_b));
+                          else
+                            return ((p[offset3] < c_b) && (p[offset4] < c_b) && (p[offset11] < c_b));
+                        else
+                          return false;
+                  else
+                    return false;
           else
             if (p[offset5] > cb)
               if (p[offset2] > cb)
