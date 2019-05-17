@@ -379,9 +379,9 @@ pcl::registration::LUM<PointT>::computeEdge (const Edge &e)
   // Compute s^2
   float ss = 0.0f;
   for (int ci = 0; ci != oci; ++ci)  // ci = correspondence iterator
-    ss += static_cast<float> (pow (corrs_diff[ci] (0) - (D (0) + corrs_aver[ci] (2) * D (5) - corrs_aver[ci] (1) * D (4)), 2.0f)
-                            + pow (corrs_diff[ci] (1) - (D (1) + corrs_aver[ci] (0) * D (4) - corrs_aver[ci] (2) * D (3)), 2.0f)
-                            + pow (corrs_diff[ci] (2) - (D (2) + corrs_aver[ci] (1) * D (3) - corrs_aver[ci] (0) * D (5)), 2.0f));
+    ss += static_cast<float> (std::pow (corrs_diff[ci] (0) - (D (0) + corrs_aver[ci] (2) * D (5) - corrs_aver[ci] (1) * D (4)), 2.0f)
+                            + std::pow (corrs_diff[ci] (1) - (D (1) + corrs_aver[ci] (0) * D (4) - corrs_aver[ci] (2) * D (3)), 2.0f)
+                            + std::pow (corrs_diff[ci] (2) - (D (2) + corrs_aver[ci] (1) * D (3) - corrs_aver[ci] (0) * D (5)), 2.0f));
 
   // When reaching the limitations of computation due to linearization
   if (ss < 0.0000000000001 || !std::isfinite (ss))

@@ -405,7 +405,7 @@ pcl::GridProjection<PointNT>::getVectorAtPointKNN (const Eigen::Vector4f &p,
   for (int i = 0; i < k_; i++)
   {
     //k_weight[i] = pow (M_E, -pow (k_squared_distances[i], 2.0) / gaussian_scale_);
-    k_weight[i] = std::pow (static_cast<float>(M_E), static_cast<float>(-pow (static_cast<float>(k_squared_distances[i]), 2.0f) / gaussian_scale_));
+    k_weight[i] = std::pow (static_cast<float>(M_E), static_cast<float>(-std::pow (static_cast<float>(k_squared_distances[i]), 2.0f) / gaussian_scale_));
     sum += k_weight[i];
   }
   pcl::VectorAverage3f vector_average;

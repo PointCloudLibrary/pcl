@@ -66,7 +66,7 @@ pcl::registration::CorrespondenceRejectionOrganizedBoundary::getRemainingCorresp
             y + y_d >= 0 && y + y_d < static_cast<int> (cloud->height))
         {
           if (!std::isfinite ((*cloud)(x + x_d, y + y_d).z) ||
-              fabs ((*cloud)(x, y).z - (*cloud)(x + x_d, y + y_d).z) > depth_step_threshold_)
+              std::fabs ((*cloud)(x, y).z - (*cloud)(x + x_d, y + y_d).z) > depth_step_threshold_)
             nan_count_tgt ++;
         }
 

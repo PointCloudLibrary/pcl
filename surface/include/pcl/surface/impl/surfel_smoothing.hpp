@@ -174,7 +174,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothPoint (size_t &point_index,
   int big_iterations = 0;
   int max_big_iterations = 500;
 
-  while (fabs (error_residual) < fabs (last_error_residual) -error_residual_threshold_ &&
+  while (std::fabs (error_residual) < std::fabs (last_error_residual) -error_residual_threshold_ &&
          big_iterations < max_big_iterations)
   {
     average_normal = Eigen::Vector4f::Zero ();
@@ -201,7 +201,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothPoint (size_t &point_index,
     float e_residual_along_normal = 2, last_e_residual_along_normal = 3;
     int small_iterations = 0;
     int max_small_iterations = 10;
-    while ( fabs (e_residual_along_normal) < fabs (last_e_residual_along_normal) &&
+    while ( std::fabs (e_residual_along_normal) < std::fabs (last_e_residual_along_normal) &&
         small_iterations < max_small_iterations)
     {
       small_iterations ++;

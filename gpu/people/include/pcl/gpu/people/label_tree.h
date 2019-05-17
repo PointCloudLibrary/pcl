@@ -183,7 +183,7 @@ namespace pcl
         float root = sqrt(pow(parent.mean(0) - child.mean(0), 2) +
                           pow(parent.mean(1) - child.mean(1), 2) +
                           pow(parent.mean(2) - child.mean(2), 2));
-        float offset = fabs(LUT_ideal_length[(int)parent.label][child_nr] - root);
+        float offset = std::fabs(LUT_ideal_length[(int)parent.label][child_nr] - root);
         if(offset > LUT_max_length_offset[(int)parent.label][child_nr])
           return -1.0;
         else
@@ -208,7 +208,7 @@ namespace pcl
         float root = sqrt(pow(parent.mean(0) - child.mean(0), 2) +
                           pow(parent.mean(1) - child.mean(1), 2) +
                           pow(parent.mean(2) - child.mean(2), 2));
-        float offset = fabs(person_attribs->part_ideal_length_[(int)parent.label][child_nr] - root);
+        float offset = std::fabs(person_attribs->part_ideal_length_[(int)parent.label][child_nr] - root);
         if(offset > person_attribs->max_length_offset_[(int)parent.label][child_nr])
           return -1.0;
         else

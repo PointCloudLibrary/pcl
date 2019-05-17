@@ -405,8 +405,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           // Pruning by visibility criterion 
           if ((state_[nnIdx[i]] == FRINGE) && (ffn_[R_] != nnIdx[i]) && (sfn_[R_] != nnIdx[i]))
           {
-            double angle1 = atan2(e.first[1] - uvn_nn[i][1], e.first[0] - uvn_nn[i][0]);
-            double angle2 = atan2(e.second[1] - uvn_nn[i][1], e.second[0] - uvn_nn[i][0]);
+            double angle1 = std::atan2(e.first[1] - uvn_nn[i][1], e.first[0] - uvn_nn[i][0]);
+            double angle2 = std::atan2(e.second[1] - uvn_nn[i][1], e.second[0] - uvn_nn[i][0]);
             double angleMin, angleMax;
             if (angle1 < angle2)
             {
@@ -439,7 +439,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
               tmp_ = coords_[source_[nnIdx[i]]] - proj_qp_;
               uvn_s[0] = tmp_.dot(u_);
               uvn_s[1] = tmp_.dot(v_);
-              double angleS = atan2(uvn_s[1] - uvn_nn[i][1], uvn_s[0] - uvn_nn[i][0]);
+              double angleS = std::atan2(uvn_s[1] - uvn_nn[i][1], uvn_s[0] - uvn_nn[i][0]);
               if ((angleMin < angleS) && (angleS < angleMax))
               {
                 if ((angleMin < angleR) && (angleR < angleMax))

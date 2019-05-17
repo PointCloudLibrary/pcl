@@ -57,8 +57,8 @@ namespace pcl
   inline bool
   comparePoints2D (const std::pair<int, Eigen::Vector4f> & p1, const std::pair<int, Eigen::Vector4f> & p2)
   {
-    double angle1 = atan2 (p1.second[1], p1.second[0]) + M_PI;
-    double angle2 = atan2 (p2.second[1], p2.second[0]) + M_PI;
+    double angle1 = std::atan2 (p1.second[1], p1.second[0]) + M_PI;
+    double angle2 = std::atan2 (p2.second[1], p2.second[0]) + M_PI;
     return (angle1 > angle2);
   }
 

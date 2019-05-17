@@ -103,7 +103,7 @@ namespace pcl
             if (e <= threshold_)
               return (0.5 * e*e); 
             else
-              return (0.5 * threshold_ * (2.0 * fabs (e) - threshold_));
+              return (0.5 * threshold_ * (2.0 * std::fabs (e) - threshold_));
           }
         protected:
           float threshold_;

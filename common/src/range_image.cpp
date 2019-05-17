@@ -149,11 +149,11 @@ RangeImage::createEmpty (float angular_resolution_x, float angular_resolution_y,
                          RangeImage::CoordinateFrame coordinate_frame, float angle_width, float angle_height)
 {
   setAngularResolution(angular_resolution_x, angular_resolution_y);
-  width  = static_cast<uint32_t> (pcl_lrint (floor (angle_width * angular_resolution_x_reciprocal_)));
-  height = static_cast<uint32_t> (pcl_lrint (floor (angle_height * angular_resolution_y_reciprocal_)));
+  width  = static_cast<uint32_t> (pcl_lrint (std::floor (angle_width * angular_resolution_x_reciprocal_)));
+  height = static_cast<uint32_t> (pcl_lrint (std::floor (angle_height * angular_resolution_y_reciprocal_)));
 
-  int full_width  = static_cast<int> (pcl_lrint (floor (pcl::deg2rad (360.0f)*angular_resolution_x_reciprocal_))),
-      full_height = static_cast<int> (pcl_lrint (floor (pcl::deg2rad (180.0f)*angular_resolution_y_reciprocal_)));
+  int full_width  = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (360.0f)*angular_resolution_x_reciprocal_))),
+      full_height = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (180.0f)*angular_resolution_y_reciprocal_)));
   image_offset_x_ = (full_width-width)/2;
   image_offset_y_ = (full_height-height)/2;
   is_dense = false;

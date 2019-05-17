@@ -307,7 +307,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
                               surface_->at (curr_neigh_idx).getVector3fMap (), indicating_normal_vect);
       float angle = getAngleBetweenUnitVectors (x_axis, indicating_normal_vect, fitted_normal);
 
-      int check_margin_array_idx = std::min (static_cast<int> (floor (angle / max_boundary_angle)), check_margin_array_size_ - 1);
+      int check_margin_array_idx = std::min (static_cast<int> (std::floor (angle / max_boundary_angle)), check_margin_array_size_ - 1);
       check_margin_array_[check_margin_array_idx] = true;
 
       if (angle < margin_array_min_angle_[check_margin_array_idx])

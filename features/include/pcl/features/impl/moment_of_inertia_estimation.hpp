@@ -465,8 +465,8 @@ pcl::MomentOfInertiaEstimation<PointT>::rotateVector (const Eigen::Vector3f& vec
   const float y = axis (1);
   const float z = axis (2);
   const float rad = M_PI / 180.0f;
-  const float cosine = cos (angle * rad);
-  const float sine = sin (angle * rad);
+  const float cosine = std::cos (angle * rad);
+  const float sine = std::sin (angle * rad);
   rotation_matrix << cosine + (1 - cosine) * x * x,      (1 - cosine) * x * y - sine * z,    (1 - cosine) * x * z + sine * y,
                      (1 - cosine) * y * x + sine * z,    cosine + (1 - cosine) * y * y,      (1 - cosine) * y * z - sine * x,
                      (1 - cosine) * z * x - sine * y,    (1 - cosine) * z * y + sine * x,    cosine + (1 - cosine) * z * z;
@@ -540,13 +540,13 @@ pcl::MomentOfInertiaEstimation<PointT>::computeEccentricity (const Eigen::Matrix
   float eccentricity = 0.0f;
 
   if (major >= middle && major >= minor && middle_value != 0.0f)
-    eccentricity = pow (1.0f - (minor_value * minor_value) / (middle_value * middle_value), 0.5f);
+    eccentricity = std::pow (1.0f - (minor_value * minor_value) / (middle_value * middle_value), 0.5f);
 
   if (middle >= major && middle >= minor && major_value != 0.0f)
-    eccentricity = pow (1.0f - (minor_value * minor_value) / (major_value * major_value), 0.5f);
+    eccentricity = std::pow (1.0f - (minor_value * minor_value) / (major_value * major_value), 0.5f);
 
   if (minor >= major && minor >= middle && major_value != 0.0f)
-    eccentricity = pow (1.0f - (middle_value * middle_value) / (major_value * major_value), 0.5f);
+    eccentricity = std::pow (1.0f - (middle_value * middle_value) / (major_value * major_value), 0.5f);
 
   return (eccentricity);
 }
