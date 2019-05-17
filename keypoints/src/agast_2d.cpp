@@ -2445,35 +2445,25 @@ namespace pcl
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      // Helper method for AgastDetector7_12s::computeCornerScore
-      template <typename T1, typename T2> int
-      AgastDetector7_12s_computeCornerScore (
-          const T1* p,
-          double im_bmax,
-          double score_threshold,
-          const std::array<int_fast16_t, 12> &offset)
+      // Helper method for AgastDetector7_12s_computeCornerScore
+      template <typename T1, typename T2> bool
+      AgastDetector7_12s_is_a_corner (
+          const T1* p, 
+          const T2 cb,
+          const T2 c_b,
+          int_fast16_t offset0,
+          int_fast16_t offset1,
+          int_fast16_t offset2,
+          int_fast16_t offset3,
+          int_fast16_t offset4,
+          int_fast16_t offset5,
+          int_fast16_t offset6,
+          int_fast16_t offset7,
+          int_fast16_t offset8,
+          int_fast16_t offset9,
+          int_fast16_t offset10,
+          int_fast16_t offset11)
       {
-        T2 bmin = T2 (score_threshold);
-        T2 bmax = T2 (im_bmax); // 255;
-        int b_test = int ((bmax + bmin) / 2);
-
-        int_fast16_t offset0  = offset[0];
-        int_fast16_t offset1  = offset[1];
-        int_fast16_t offset2  = offset[2];
-        int_fast16_t offset3  = offset[3];
-        int_fast16_t offset4  = offset[4];
-        int_fast16_t offset5  = offset[5];
-        int_fast16_t offset6  = offset[6];
-        int_fast16_t offset7  = offset[7];
-        int_fast16_t offset8  = offset[8];
-        int_fast16_t offset9  = offset[9];
-        int_fast16_t offset10 = offset[10];
-        int_fast16_t offset11 = offset[11];
-
-        while (true)
-        {
-          const T2 cb = *p + T2 (b_test);
-          const T2 c_b = *p - T2 (b_test);
           if (p[offset0] > cb)
             if (p[offset5] > cb)
               if (p[offset2] < c_b)
@@ -6160,14 +6150,50 @@ namespace pcl
                 goto is_not_a_corner;
 
           is_a_corner:
-            bmin = T2 (b_test);
-            goto end;
+            return true;
 
           is_not_a_corner:
-            bmax = T2 (b_test);
-            goto end;
+            return false;
+      }
 
-          end:
+      ///////////////////////////////////////////////////////////////////////////////////
+      // Helper method for AgastDetector7_12s::computeCornerScore
+      template <typename T1, typename T2> int
+      AgastDetector7_12s_computeCornerScore (
+          const T1* p,
+          double im_bmax,
+          double score_threshold,
+          const std::array<int_fast16_t, 12> &offset)
+      {
+        T2 bmin = T2 (score_threshold);
+        T2 bmax = T2 (im_bmax); // 255;
+        int b_test = int ((bmax + bmin) / 2);
+
+        while (true)
+        {
+          const T2 cb = *p + T2 (b_test);
+          const T2 c_b = *p - T2 (b_test);
+
+          if (AgastDetector7_12s_is_a_corner(p, cb, c_b,
+            offset[0], 
+            offset[1],
+            offset[2],
+            offset[3],
+            offset[4],
+            offset[5],
+            offset[6],
+            offset[7],
+            offset[8],
+            offset[9],
+            offset[10],
+            offset[11]))
+          {
+            bmin = T2 (b_test);
+          }
+          else
+          {
+            bmax = T2 (b_test);
+          }
 
           if (bmin == bmax - 1 || bmin == bmax)
             return (int (bmin));
