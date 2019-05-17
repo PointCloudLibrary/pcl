@@ -44,8 +44,10 @@
 #include <pcl/io/oni_grabber.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <vector>
 #include <pcl/common/time_trigger.h>
+
+#include <mutex>
+#include <vector>
 
 #define SHOW_FPS 1
 #if SHOW_FPS
@@ -92,7 +94,7 @@ public:
   cloud_cb_ (const CloudConstPtr& cloud)
   {
     FPS_CALC ("callback");
-    boost::mutex::scoped_lock lock (mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     cloud_ = cloud;
   }
 
@@ -104,7 +106,7 @@ public:
   getLatestCloud ()
   {
     //lock while we swap our cloud and reset it.
-    boost::mutex::scoped_lock lock(mtx_);
+    std::lock_guard<std::mutex> lock(mtx_);
     CloudConstPtr temp_cloud;
     temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
     //it is safe to set it again from our
@@ -141,7 +143,7 @@ public:
 
   pcl::visualization::CloudViewer viewer;
   pcl::ONIGrabber& grabber_;
-  boost::mutex mtx_;
+  std::mutex mtx_;
   CloudConstPtr cloud_;
 };
 
