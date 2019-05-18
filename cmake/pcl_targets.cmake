@@ -315,7 +315,7 @@ function(PCL_ADD_EXECUTABLE _name)
 
   # Some app targets report are defined with subsys other than apps
   # It's simpler check for tools and assume everythin else as an app
-  if(${ADD_LIBRARY_OPTION_COMPONENT} MATCHES "tools")
+  if(${ADD_LIBRARY_OPTION_COMPONENT} STREQUAL "tools")
     set_target_properties(${_name} PROPERTIES FOLDER "Tools")
   else()
     set_target_properties(${_name} PROPERTIES FOLDER "Apps")
@@ -330,7 +330,7 @@ function(PCL_ADD_EXECUTABLE _name)
   endif()
 
   string(TOUPPER ${ADD_LIBRARY_OPTION_COMPONENT} _component_upper)
-  list(APPEND PCL_${_component_upper}_ALL_TARGETS ${_name})
+  set(PCL_${_component_upper}_ALL_TARGETS ${PCL_${_component_upper}_ALL_TARGETS} ${_name} PARENT_SCOPE)
 endfunction()
 
 ###############################################################################
