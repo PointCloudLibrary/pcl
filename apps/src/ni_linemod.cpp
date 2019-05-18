@@ -61,8 +61,7 @@
 #include <pcl/segmentation/edge_aware_plane_comparator.h>
 #include <pcl/geometry/polygon_operations.h>
 
-#include <boost/thread/mutex.hpp>
-
+#include <mutex>
 #include <thread>
 
 using namespace pcl;

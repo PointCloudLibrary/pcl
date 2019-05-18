@@ -44,7 +44,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/harris_2d.h>
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 #define SHOW_FPS 1
 #if SHOW_FPS

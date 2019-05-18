@@ -45,7 +45,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/extract_indices.h>
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 
 template <typename PointType>

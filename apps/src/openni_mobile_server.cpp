@@ -32,9 +32,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <mutex>
-#include <thread>
-
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -45,7 +42,10 @@
 #include <pcl/common/time.h>
 
 #include <boost/asio.hpp>
-#include <boost/thread/mutex.hpp>
+
+#include <mutex>
+#include <thread>
+
 
 using boost::asio::ip::tcp;
 using namespace std::chrono_literals;

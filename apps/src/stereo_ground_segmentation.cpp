@@ -53,12 +53,11 @@
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
-//#include <pcl/stereo/stereo_grabber.h>
 #include <pcl/stereo/stereo_matching.h>
 #include <pcl/segmentation/ground_plane_comparator.h>
 #include <pcl/segmentation/euclidean_cluster_comparator.h>
 
-
+#include <mutex>
 
 typedef pcl::PointXYZRGB PointT;
 typedef pcl::PointCloud<PointT> Cloud;

@@ -44,8 +44,7 @@
 #include <pcl/common/time.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-#include <boost/thread/mutex.hpp>
-
+#include <mutex>
 #include <thread>
 
 using namespace std;

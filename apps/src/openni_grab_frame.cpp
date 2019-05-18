@@ -42,8 +42,11 @@
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <boost/filesystem.hpp>
 #include <pcl/visualization/pcl_visualizer.h>
+
+#include <boost/filesystem.hpp>
+
+#include <mutex>
 
 using namespace std::chrono_literals;
 

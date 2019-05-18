@@ -40,14 +40,15 @@
 
 #pragma once
 
-#include <string>
-#include <sstream>
-#include <iomanip>
-
 #include <pcl/pcl_exports.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/opengl_viewer.h>
+
+#include <mutex>
+#include <string>
+#include <sstream>
+#include <iomanip>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations

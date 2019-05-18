@@ -43,7 +43,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 
 #define FPS_CALC(_WHAT_) \

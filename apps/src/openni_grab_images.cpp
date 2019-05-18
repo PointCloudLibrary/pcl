@@ -41,10 +41,13 @@
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <boost/filesystem.hpp>
 #include <pcl/visualization/vtk.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/common/float_image_utils.h>
+
+#include <boost/filesystem.hpp>
+
+#include <mutex>
 
 using namespace pcl::console;
 using namespace boost::filesystem;
