@@ -113,7 +113,7 @@ So let's look at the code. The following represents a simplified version of *vis
 
        void cloud_callback (const CloudConstPtr& cloud)
        {
-         boost::mutex::scoped_lock lock (cloud_mutex_);
+         std::lock_guard<std::mutex> lock (cloud_mutex_);
          cloud_ = cloud;
        }
 
@@ -166,7 +166,7 @@ So let's look at the code. The following represents a simplified version of *vis
        pcl::visualization::PCLVisualizer::Ptr cloud_viewer_;
 
        pcl::Grabber& grabber_;
-       boost::mutex cloud_mutex_;
+       std::mutex cloud_mutex_;
 
        CloudConstPtr cloud_;
        pcl::visualization::PointCloudColorHandler<pcl::PointXYZI> &handler_;

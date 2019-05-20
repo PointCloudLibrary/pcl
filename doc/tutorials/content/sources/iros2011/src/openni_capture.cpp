@@ -1,6 +1,6 @@
 #include "openni_capture.h"
 #include <pcl/io/pcd_io.h>
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 #include <boost/make_shared.hpp>
 
 OpenNICapture::OpenNICapture (const std::string& device_id)

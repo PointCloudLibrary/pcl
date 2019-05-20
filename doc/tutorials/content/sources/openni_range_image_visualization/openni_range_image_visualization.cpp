@@ -10,13 +10,13 @@ using namespace std;
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/parse.h>
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 std::string device_id = "#1";
 
 float angular_resolution = -1.0f;
 
-boost::mutex depth_image_mutex;
+std::mutex depth_image_mutex;
 openni_wrapper::DepthImage::Ptr depth_image_ptr;
 bool received_new_depth_data = false;
 

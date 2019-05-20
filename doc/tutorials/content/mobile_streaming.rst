@@ -124,7 +124,7 @@ method:
       PointCloudBuffers::Ptr new_buffers = PointCloudBuffers::Ptr (new PointCloudBuffers);
       CopyPointCloudToBuffers (temp_cloud, *new_buffers);
 
-      boost::mutex::scoped_lock lock (mutex_);
+      std::lock_guard<std::mutex> lock (mutex_);
       filtered_cloud_ = temp_cloud;
       buffers_ = new_buffers;
     }
