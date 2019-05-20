@@ -831,7 +831,7 @@ struct KinFuApp
   void source_cb1_device(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper)  
   {        
     {
-      boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+      std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
       if (exit_ || !lock)
           return;
       
@@ -849,7 +849,7 @@ struct KinFuApp
   void source_cb2_device(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
   {
     {
-      boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+      std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
       if (exit_ || !lock)
           return;
                   
@@ -876,7 +876,7 @@ struct KinFuApp
    void source_cb1_oni(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper)  
   {        
     {
-      boost::mutex::scoped_lock lock(data_ready_mutex_);
+      std::lock_guard<std::mutex> lock(data_ready_mutex_);
       if (exit_)
           return;
       
@@ -894,7 +894,7 @@ struct KinFuApp
   void source_cb2_oni(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
   {
     {
-      boost::mutex::scoped_lock lock(data_ready_mutex_);
+      std::lock_guard<std::mutex> lock(data_ready_mutex_);
       if (exit_)
           return;
                   
@@ -921,7 +921,7 @@ struct KinFuApp
   source_cb3 (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & DC3)
   {
     {
-      boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+      std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
       if (exit_ || !lock)
         return;
       int width  = DC3->width;
@@ -981,7 +981,7 @@ struct KinFuApp
     boost::signals2::connection c = pcd_source_? capture_.registerCallback (func3) : need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
 
     {
-      boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
+      std::unique_lock<std::mutex> lock(data_ready_mutex_);
 
       if (!triggered_capture)
           capture_.start (); // Start stream
@@ -1097,8 +1097,8 @@ struct KinFuApp
 
   Evaluation::Ptr evaluation_ptr_;
   
-  boost::mutex data_ready_mutex_;
-  boost::condition_variable data_ready_cond_;
+  std::mutex data_ready_mutex_;
+  std::condition_variable data_ready_cond_;
  
   std::vector<KinfuTracker::PixelRGB> source_image_data_;
   std::vector<unsigned short> source_depth_data_;
