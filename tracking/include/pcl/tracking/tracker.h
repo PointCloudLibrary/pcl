@@ -78,7 +78,7 @@ namespace pcl
       
     public:
       /** \brief Empty constructor. */
-      Tracker (): tracker_name_ (), search_ () {}
+      Tracker (): search_ () {}
       
       /** \brief Base method for tracking for all points given in 
         * <setInputCloud (), setIndices ()> using the indices in setIndices () 

@@ -35,8 +35,6 @@
  *
  */
 
-#include <thread>
-
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/particle_filter.h>
 #include <pcl/tracking/kld_adaptive_particle_filter_omp.h>
@@ -85,6 +83,9 @@
 #include <pcl/common/transforms.h>
 
 #include <boost/format.hpp>
+#include <boost/thread/mutex.hpp>
+
+#include <thread>
 
 #define FPS_CALC_BEGIN                          \
     static double duration = 0;                 \
@@ -158,13 +159,13 @@ public:
     std::vector<double> default_initial_mean = std::vector<double> (6, 0.0);
     if (use_fixed)
     {
-      boost::shared_ptr<ParticleFilterOMPTracker<RefPointType, ParticleT> > tracker
+      ParticleFilterOMPTracker<RefPointType, ParticleT>::Ptr tracker
         (new ParticleFilterOMPTracker<RefPointType, ParticleT> (thread_nr));
       tracker_ = tracker;
     }
     else
     {
-      boost::shared_ptr<KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT> > tracker
+      KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT>::Ptr tracker
         (new KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT> (thread_nr));
       tracker->setMaximumParticleNum (500);
       tracker->setDelta (0.99);
@@ -198,14 +199,11 @@ public:
     DistanceCoherence<RefPointType>::Ptr distance_coherence (new DistanceCoherence<RefPointType>);
     coherence->addPointCoherence (distance_coherence);
     
-    boost::shared_ptr<HSVColorCoherence<RefPointType> > color_coherence
-      = boost::shared_ptr<HSVColorCoherence<RefPointType> > (new HSVColorCoherence<RefPointType> ());
+    HSVColorCoherence<RefPointType>::Ptr color_coherence (new HSVColorCoherence<RefPointType>);
     color_coherence->setWeight (0.1);
     coherence->addPointCoherence (color_coherence);
     
-    //boost::shared_ptr<pcl::search::KdTree<RefPointType> > search (new pcl::search::KdTree<RefPointType> (false));
-    boost::shared_ptr<pcl::search::Octree<RefPointType> > search (new pcl::search::Octree<RefPointType> (0.01));
-    //boost::shared_ptr<pcl::search::OrganizedNeighbor<RefPointType> > search (new pcl::search::OrganizedNeighbor<RefPointType>);
+    pcl::search::Octree<RefPointType>::Ptr search (new pcl::search::Octree<RefPointType> (0.01));
     coherence->setSearchMethod (search);
     coherence->setMaximumDistance (0.01);
     tracker_->setCloudCoherence (coherence);
@@ -679,7 +677,7 @@ public:
   boost::mutex mtx_;
   bool new_cloud_;
   pcl::NormalEstimationOMP<PointType, pcl::Normal> ne_; // to store threadpool
-  boost::shared_ptr<ParticleFilter> tracker_;
+  ParticleFilter::Ptr tracker_;
   int counter_;
   bool use_convex_hull_;
   bool visualize_non_downsample_;

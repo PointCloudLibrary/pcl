@@ -165,7 +165,7 @@ pcl::StereoMatching::getVisualMap (pcl::PointCloud<pcl::RGB>::Ptr vMap)
       }
       else
       {
-        unsigned char val = static_cast<unsigned char> (floor (scale*disp_map_[y * width_+ x]));
+        unsigned char val = static_cast<unsigned char> (std::floor (scale*disp_map_[y * width_+ x]));
         vMap->at (x, y).r = val;
         vMap->at (x, y).g = val;
         vMap->at (x, y).b = val;

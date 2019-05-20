@@ -349,7 +349,6 @@ pcl::io::LZFBayer8ImageWriter::write (const char *data,
 pcl::io::LZFImageReader::LZFImageReader ()
   : width_ ()
   , height_ ()
-  , image_type_identifier_ ()
   , parameters_ ()
 {
 }

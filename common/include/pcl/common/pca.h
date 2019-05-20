@@ -89,10 +89,6 @@ namespace pcl
         : Base ()
         , compute_done_ (false)
         , basis_only_ (basis_only) 
-        , eigenvectors_ ()
-        , coefficients_ ()
-        , mean_ ()
-        , eigenvalues_  ()
       {}
 
       /** Copy Constructor

@@ -60,11 +60,6 @@ class CopyCommand : public Command
       has_undo_ = false;
     }
 
-    /// @brief Destructor
-    ~CopyCommand ()
-    {
-    }
-  
   protected:
     /// @brief Copy the selected points into the copy buffer.
     /// @pre Assumes the constructor was given appropriate pointers to the
@@ -86,23 +81,14 @@ class CopyCommand : public Command
 
   private:
     /// @brief Default constructor - object is not default constructable
-    CopyCommand ()
-    {
-      assert(false);
-    }
+    CopyCommand () = delete;
 
     /// @brief Copy constructor - commands are non-copyable
-    CopyCommand (const CopyCommand&)
-    {
-      assert(false);
-    }
+    CopyCommand (const CopyCommand&) = delete;
 
     /// @brief Equal operator - commands are non-copyable
     CopyCommand&
-    operator= (const CopyCommand&)
-    {
-      assert(false); return (*this);
-    }
+    operator= (const CopyCommand&) = delete;
 
     /// a pointer to the copy buffer.
     CopyBufferPtr copy_buffer_ptr_;

@@ -287,7 +287,7 @@ pcl::people::HOG::normalization (float *H, int h, int w, int bin_size, int n_ori
   N = (float*) calloc(nb,sizeof(float));
   for( o=0; o<n_orients; o++ ) for( x=0; x<nb; x++ ) N[x]+=H[x+o*nb]*H[x+o*nb];
   for( x=0; x<wb-1; x++ ) for( y=0; y<hb-1; y++ ) {
-    N1=N+x*hb+y; *N1=1/float(sqrt( N1[0] + N1[1] + N1[hb] + N1[hb+1] +eps )); }
+    N1=N+x*hb+y; *N1=1/float(std::sqrt( N1[0] + N1[1] + N1[hb] + N1[hb+1] +eps )); }
   // perform 4 normalizations per spatial block (handling boundary regions)
   #define U(a,b) Gs[a][y]=H1[y]*N1[y-(b)]; if(Gs[a][y]>clip) Gs[a][y]=clip;
   for( o=0; o<n_orients; o++ ) for( x=0; x<wb; x++ ) {
@@ -453,7 +453,7 @@ pcl::people::HOG::acosTable () const
   {
     float t = i*ni - 1.01f;
     t = t<-1 ? -1 : (t>1 ? 1 : t);
-    t = (float) acos( t );
+    t = (float) std::acos( t );
     a[i] = (t <= M_PI-1e-5f) ? t : 0;
   }
   init = true;

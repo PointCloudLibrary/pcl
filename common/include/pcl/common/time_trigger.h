@@ -45,6 +45,10 @@
 #include <boost/signals2.hpp>
 #endif
 
+#include <condition_variable>
+#include <mutex>
+#include <thread>
+
 namespace pcl
 {
   /** \brief Timer class that invokes registered callback methods periodically.
@@ -98,8 +102,8 @@ namespace pcl
       bool quit_;
       bool running_;
 
-      boost::thread timer_thread_;
-      boost::condition_variable condition_;
-      boost::mutex condition_mutex_;
+      std::thread timer_thread_;
+      std::condition_variable condition_;
+      std::mutex condition_mutex_;
   };
 }

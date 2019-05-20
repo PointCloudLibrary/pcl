@@ -64,7 +64,6 @@ namespace pcl
       GeometricConsistencyGrouping () 
         : gc_threshold_ (3)
         , gc_size_ (1.0)
-        , found_transformations_ ()
       {}
 
       

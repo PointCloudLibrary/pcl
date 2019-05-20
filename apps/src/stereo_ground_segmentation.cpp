@@ -329,7 +329,7 @@ class HRCSSegmentation
         grow_labels[model_label] = true;
       }
       
-      boost::shared_ptr<pcl::PointCloud<pcl::Label> > labels_ptr (new pcl::PointCloud<pcl::Label>());
+      pcl::PointCloud<pcl::Label>::Ptr labels_ptr (new pcl::PointCloud<pcl::Label>);
       *labels_ptr = labels;
       pcl::OrganizedMultiPlaneSegmentation<PointT, pcl::Normal, pcl::Label> mps;
       pcl::PlaneRefinementComparator<PointT, pcl::Normal, pcl::Label>::Ptr refinement_compare (new pcl::PlaneRefinementComparator<PointT, pcl::Normal, pcl::Label>());
@@ -393,7 +393,7 @@ class HRCSSegmentation
         pcl::PointCloud<PointT>::CloudVectorType clusters;
         if (!ground_cloud->points.empty ())
         {
-          boost::shared_ptr<std::set<uint32_t> > plane_labels = boost::make_shared<std::set<uint32_t> > ();
+          pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSetPtr plane_labels (new pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSet);
           for (size_t i = 0; i < region_indices.size (); ++i)
             if ((region_indices[i].indices.size () > mps.getMinInliers ()))
               plane_labels->insert (i);

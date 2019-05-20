@@ -394,7 +394,7 @@ pcl::TextureMapping<PointInT>::isPointOccluded (const PointInT &pt, OctreePtr oc
      continue;
    }
 
-   if (fabs (cloud->points[index].z - pt.z) <= distance_threshold)
+   if (std::fabs (cloud->points[index].z - pt.z) <= distance_threshold)
    {
      // points are very close to each-other, we do not consider the occlusion
      nbocc--;
@@ -450,7 +450,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
         continue;
       }
 
-      if (fabs (input_cloud->points[index].z - input_cloud->points[i].z) <= maxDeltaZ)
+      if (std::fabs (input_cloud->points[index].z - input_cloud->points[i].z) <= maxDeltaZ)
       {
         // points are very close to each-other, we do not consider the occlusion
         nbocc--;
@@ -692,14 +692,14 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
       {
         nbocc--;
       }
-      else if (fabs (input_cloud->points[index].z - pt.z) <= maxDeltaZ)
+      else if (std::fabs (input_cloud->points[index].z - pt.z) <= maxDeltaZ)
       {
         // points are very close to each-other, we do not consider the occlusion
         nbocc--;
       }
       else
       {
-        zDist.push_back (fabs (input_cloud->points[index].z - pt.z));
+        zDist.push_back (std::fabs (input_cloud->points[index].z - pt.z));
         ptDist.push_back (pcl::euclideanDistance (input_cloud->points[index], pt));
       }
     }
@@ -1002,7 +1002,7 @@ pcl::TextureMapping<PointInT>::getTriangleCircumcenterAndSize(const pcl::PointXY
     circomcenter.y = static_cast<float> (p1.y + (ptB.x*(cx2 + cy2) - ptC.x*(bx2 + by2)) / D);
   }
 
-  radius = sqrt( (circomcenter.x - p1.x)*(circomcenter.x - p1.x)  + (circomcenter.y - p1.y)*(circomcenter.y - p1.y));//2.0* (p1.x*(p2.y - p3.y)  + p2.x*(p3.y - p1.y) + p3.x*(p1.y - p2.y));
+  radius = std::sqrt( (circomcenter.x - p1.x)*(circomcenter.x - p1.x)  + (circomcenter.y - p1.y)*(circomcenter.y - p1.y));//2.0* (p1.x*(p2.y - p3.y)  + p2.x*(p3.y - p1.y) + p3.x*(p1.y - p2.y));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

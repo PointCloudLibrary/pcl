@@ -46,6 +46,9 @@
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/filters/extract_indices.h>
 
+#include <boost/thread/mutex.hpp>
+
+
 typedef pcl::PointXYZRGBA PointT;
 
 class OpenNIOrganizedMultiPlaneSegmentation
@@ -67,7 +70,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
     pcl::visualization::PCLVisualizer::Ptr
     cloudViewer (pcl::PointCloud<PointT>::ConstPtr cloud)
     {
-      boost::shared_ptr < pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Viewer"));
+      pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("Viewer"));
       viewer->setBackgroundColor (0, 0, 0);
       pcl::visualization::PointCloudColorHandlerCustom<PointT> single_color (cloud, 0, 255, 0);
       viewer->addPointCloud<PointT> (cloud, single_color, "cloud");

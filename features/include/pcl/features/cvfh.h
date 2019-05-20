@@ -87,9 +87,7 @@ namespace pcl
         cluster_tolerance_ (leaf_size_ * 3), 
         eps_angle_threshold_ (0.125f), 
         min_points_ (50),
-        radius_normals_ (leaf_size_ * 3),
-        centroids_dominant_orientations_ (),
-        dominant_normals_ ()
+        radius_normals_ (leaf_size_ * 3)
       {
         search_radius_ = 0;
         k_ = 1;

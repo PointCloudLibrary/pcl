@@ -44,7 +44,6 @@
 template <typename PointT>
 pcl::search::Search<PointT>::Search (const std::string& name, bool sorted)
   : input_ () 
-  , indices_ ()
   , sorted_results_ (sorted)
   , name_ (name)
 {

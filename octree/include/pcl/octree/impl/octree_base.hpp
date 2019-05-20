@@ -55,8 +55,7 @@ namespace pcl
           root_node_ (new BranchNode ()),
           depth_mask_ (0),
           octree_depth_ (0),
-          dynamic_depth_enabled_ (false),
-          max_key_ ()
+          dynamic_depth_enabled_ (false)
       {
       }
 

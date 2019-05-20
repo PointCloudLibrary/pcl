@@ -36,7 +36,7 @@
 
 #include <pcl/visualization/range_image_visualizer.h>
 
-pcl::visualization::RangeImageVisualizer::RangeImageVisualizer (const std::string& name) : ImageViewer (name), name_ ()
+pcl::visualization::RangeImageVisualizer::RangeImageVisualizer (const std::string& name) : ImageViewer (name)
 {
 }
 

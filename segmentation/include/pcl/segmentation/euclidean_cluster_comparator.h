@@ -73,7 +73,6 @@ namespace pcl
         EuclideanClusterComparator ()
           : distance_threshold_ (0.005f)
           , depth_dependent_ ()
-          , z_axis_ ()
         {}
 
         void

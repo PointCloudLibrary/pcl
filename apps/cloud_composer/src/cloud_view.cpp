@@ -42,8 +42,7 @@ pcl::cloud_composer::CloudView::CloudView (ProjectModel* model, QWidget* parent)
 }
 
 pcl::cloud_composer::CloudView::CloudView (const CloudView& to_copy)
-  : QWidget ()
-  , vis_ (to_copy.vis_)
+  : vis_ (to_copy.vis_)
   , model_ (to_copy.model_)
   , qvtk_ (to_copy.qvtk_)
 {

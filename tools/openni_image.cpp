@@ -39,11 +39,6 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
-#include <boost/thread/condition.hpp>
-#include <boost/circular_buffer.hpp>
-#include <csignal>
-#include <limits>
-#include <thread>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/common/float_image_utils.h>
@@ -52,13 +47,20 @@
 #include <pcl/console/parse.h>
 #include <pcl/visualization/mouse_event.h>
 
+#include <boost/circular_buffer.hpp>
+
+#include <csignal>
+#include <limits>
+#include <mutex>
+#include <thread>
+
 using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
 
 bool global_visualize = true, is_done = false, save_data = false, toggle_one_frame_capture = false, visualize = true;
-boost::mutex io_mutex;
+std::mutex io_mutex;
 int nr_frames_total = 0;
 
 #if defined(__linux__) 
@@ -174,7 +176,7 @@ class Buffer
     {
       bool retVal = false;
       {
-        boost::mutex::scoped_lock buff_lock (bmutex_);
+        std::lock_guard<std::mutex> buff_lock (bmutex_);
         if (!buffer_.full ())
           retVal = true;
         buffer_.push_back (frame);
@@ -188,13 +190,13 @@ class Buffer
     {
       Frame::ConstPtr cloud;
       {
-        boost::mutex::scoped_lock buff_lock (bmutex_);
+        std::unique_lock<std::mutex> buff_lock (bmutex_);
         while (buffer_.empty ())
         {
           if (is_done)
             break;
           {
-            boost::mutex::scoped_lock io_lock (io_mutex);
+            std::lock_guard<std::mutex> io_lock (io_mutex);
             //cerr << "No data in buffer_ yet or buffer is empty." << endl;
           }
           buff_empty_.wait (buff_lock);
@@ -208,21 +210,21 @@ class Buffer
     inline bool 
     isFull ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       return (buffer_.full ());
     }
 		
     inline bool
     isEmpty ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
     	return (buffer_.empty ());
     }
 		
     inline int 
     getSize ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       return (int (buffer_.size ()));
     }
 		
@@ -235,14 +237,14 @@ class Buffer
     inline void 
     setCapacity (int buff_size)
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       buffer_.set_capacity (buff_size);
     }
 
     inline void 
     clear ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       buffer_.clear ();
     }
 
@@ -250,8 +252,8 @@ class Buffer
 		Buffer (const Buffer&) = delete;            // Disabled copy constructor
 		Buffer& operator =(const Buffer&) = delete; // Disabled assignment operator
 		
-    boost::mutex bmutex_;
-		boost::condition_variable buff_empty_;
+    std::mutex bmutex_;
+		std::condition_variable buff_empty_;
 		boost::circular_buffer<Frame::ConstPtr> buffer_;
 };
 
@@ -330,13 +332,13 @@ class Writer
       if (save_data && buf_.getSize () > 0)
       {
         {
-          boost::mutex::scoped_lock io_lock (io_mutex);
+          std::lock_guard<std::mutex> io_lock (io_mutex);
           print_info ("Writing remaining %ld clouds in the buffer to disk...\n", buf_.getSize ());
         }
         while (!buf_.isEmpty ())
         {
           {
-            boost::mutex::scoped_lock io_lock (io_mutex);
+            std::lock_guard<std::mutex> io_lock (io_mutex);
             print_info ("Clearing buffer... %ld remaining...\n", buf_.getSize ());
           }
           writeToDisk (buf_.popFront ());
@@ -348,7 +350,7 @@ class Writer
     Writer (Buffer &buf)
       : buf_ (buf)
     {
-      thread_.reset (new boost::thread (boost::bind (&Writer::receiveAndProcess, this)));
+      thread_.reset (new std::thread (&Writer::receiveAndProcess, this));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -356,13 +358,13 @@ class Writer
     stop ()
     {
       thread_->join ();
-      boost::mutex::scoped_lock io_lock (io_mutex);
+      std::lock_guard<std::mutex> io_lock (io_mutex);
       print_highlight ("Writer done.\n");
     }
 
   private:
     Buffer &buf_;
-    boost::shared_ptr<boost::thread> thread_;
+    boost::shared_ptr<std::thread> thread_;
 };
 
 
@@ -397,13 +399,13 @@ class Driver
 
       if ((save_data || toggle_one_frame_capture) && !buf_write_.pushBack (frame))
       {
-        boost::mutex::scoped_lock io_lock (io_mutex);
+        std::lock_guard<std::mutex> io_lock (io_mutex);
         print_warn ("Warning! Write buffer was full, overwriting data!\n");
       }
 
       if (global_visualize && visualize && !buf_vis_.pushBack (frame))
       {
-        boost::mutex::scoped_lock io_lock (io_mutex);
+        std::lock_guard<std::mutex> io_lock (io_mutex);
         print_warn ("Warning! Visualization buffer was full, overwriting data!\n");
       }
     }
@@ -431,7 +433,7 @@ class Driver
       , buf_write_ (buf_write)
       , buf_vis_ (buf_vis)
     {
-      thread_.reset (new boost::thread (boost::bind (&Driver::grabAndSend, this)));
+      thread_.reset (new std::thread (&Driver::grabAndSend, this));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -439,7 +441,7 @@ class Driver
     stop ()
     {
       thread_->join ();
-      boost::mutex::scoped_lock io_lock (io_mutex);
+      std::lock_guard<std::mutex> io_lock (io_mutex);
       print_highlight ("Grabber done.\n");
     }
 
@@ -447,7 +449,7 @@ class Driver
     
     OpenNIGrabber& grabber_;
     Buffer &buf_write_, &buf_vis_;
-    boost::shared_ptr<boost::thread> thread_;
+    boost::shared_ptr<std::thread> thread_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -557,7 +559,7 @@ class Viewer
     void
     stop ()
     {
-      boost::mutex::scoped_lock io_lock (io_mutex);
+      std::lock_guard<std::mutex> io_lock (io_mutex);
       print_highlight ("Viewer done.\n");
     }
 
@@ -656,7 +658,7 @@ usage (char ** argv)
 void 
 ctrlC (int)
 {
-	boost::mutex::scoped_lock io_lock (io_mutex);
+	std::lock_guard<std::mutex> io_lock (io_mutex);
 	print_info ("\nCtrl-C detected, exit condition set to true.\n");
 	is_done = true;
 }

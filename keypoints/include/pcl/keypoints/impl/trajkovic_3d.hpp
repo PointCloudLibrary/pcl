@@ -129,8 +129,8 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
         float d = std::min (r1, r2);
         if (d < first_threshold_) continue;
 
-        sn1 = sqrt (sn1);
-        sn2 = sqrt (sn2);
+        sn1 = std::sqrt (sn1);
+        sn2 = std::sqrt (sn2);
         float b1 = normalsDiff (right, up) * sn1;
         b1+= normalsDiff (left, down) * sn2;
         float b2 = normalsDiff (right, down) * sn2;

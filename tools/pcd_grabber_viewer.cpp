@@ -36,9 +36,6 @@
  *
  *
  */
-
-#include <thread>
-
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
@@ -46,12 +43,15 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
 
+#include <mutex>
+#include <thread>
+
 using namespace std::chrono_literals;
 using pcl::console::print_error;
 using pcl::console::print_info;
 using pcl::console::print_value;
 
-boost::mutex mutex_;
+std::mutex mutex_;
 boost::shared_ptr<pcl::PCDGrabber<pcl::PointXYZRGBA> > grabber;
 pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud_;
 

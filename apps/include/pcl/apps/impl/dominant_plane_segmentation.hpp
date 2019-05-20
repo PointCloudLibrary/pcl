@@ -33,7 +33,6 @@
  *
  */
 
-#include <pcl/apps/dominant_plane_segmentation.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/common/time.h>

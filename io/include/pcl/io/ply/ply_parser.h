@@ -299,7 +299,6 @@ namespace pcl
           enum flags { };
 
           ply_parser () :
-            comment_callback_ (), obj_info_callback_ (), end_header_callback_ (), 
             line_number_ (0), current_element_ ()
           {}
               
@@ -376,7 +375,6 @@ namespace pcl
               , count (count)
               , begin_element_callback (begin_element_callback)
               , end_element_callback (end_element_callback)
-              , properties ()
             {}
             std::string name;
             std::size_t count;

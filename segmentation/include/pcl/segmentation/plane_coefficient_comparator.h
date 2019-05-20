@@ -69,7 +69,6 @@ namespace pcl
       /** \brief Empty constructor for PlaneCoefficientComparator. */
       PlaneCoefficientComparator ()
         : normals_ ()
-        , plane_coeff_d_ ()
         , angular_threshold_ (pcl::deg2rad (2.0f))
         , distance_threshold_ (0.02f)
         , depth_dependent_ (true)
@@ -194,7 +193,7 @@ namespace pcl
           float z = vec.dot (z_axis_);
           threshold *= z * z;
         }
-        return ( (fabs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < threshold)
+        return ( (std::fabs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < threshold)
                  && (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ) );
       }
       

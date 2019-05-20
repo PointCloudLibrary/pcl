@@ -68,7 +68,7 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Empty constructor. */
-      MomentInvariantsEstimation () : xyz_centroid_ (), temp_pt_ ()
+      MomentInvariantsEstimation ()
       {
         feature_name_ = "MomentInvariantsEstimation";
       };

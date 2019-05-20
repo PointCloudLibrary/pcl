@@ -69,8 +69,7 @@ namespace pcl
         typedef boost::shared_ptr<const CorrespondenceRejectorDistance> ConstPtr;
 
         /** \brief Empty constructor. */
-        CorrespondenceRejectorDistance () : max_distance_(std::numeric_limits<float>::max ()),
-                                            data_container_ ()
+        CorrespondenceRejectorDistance () : max_distance_(std::numeric_limits<float>::max ())
         {
           rejection_name_ = "CorrespondenceRejectorDistance";
         }

@@ -50,7 +50,6 @@ pcl::features::ISMVoteList<PointT>::ISMVoteList () :
   tree_is_valid_ (false),
   votes_origins_ (new pcl::PointCloud<PointT> ()),
   votes_class_ (0),
-  tree_ (),
   k_ind_ (0),
   k_sqr_dist_ (0)
 {
@@ -301,8 +300,6 @@ pcl::features::ISMModel::ISMModel () :
   learned_weights_ (0),
   classes_ (0),
   sigmas_ (0),
-  directions_to_center_ (),
-  clusters_centers_ (),
   clusters_ (0),
   number_of_classes_ (0),
   number_of_visual_words_ (0),

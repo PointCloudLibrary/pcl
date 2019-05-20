@@ -54,7 +54,6 @@ using std::vector;
 typedef boost::chrono::high_resolution_clock hr_clock;
 
 pcl::io::openni2::OpenNI2Device::OpenNI2Device (const std::string& device_URI) :
-  openni_device_(),
   ir_video_started_(false),
   color_video_started_(false),
   depth_video_started_(false)

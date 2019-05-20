@@ -137,7 +137,7 @@ pcl::DavidSDKGrabber::start ()
 
   frequency_.reset ();
   running_ = true;
-  grabber_thread_ = boost::thread (&pcl::DavidSDKGrabber::processGrabbing, this);
+  grabber_thread_ = std::thread (&pcl::DavidSDKGrabber::processGrabbing, this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -352,7 +352,7 @@ pcl::DavidSDKGrabber::grabSingleMesh (pcl::PolygonMesh &mesh)
 float
 pcl::DavidSDKGrabber::getFramesPerSecond () const
 {
-  boost::mutex::scoped_lock lock (fps_mutex_);
+  std::lock_guard<std::mutex> lock (fps_mutex_);
   return (frequency_.getFrequency ());
 }
 

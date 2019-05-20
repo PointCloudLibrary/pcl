@@ -47,17 +47,15 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::GridProjection<PointNT>::GridProjection () :
-  cell_hash_map_ (), min_p_ (), max_p_ (), leaf_size_ (0.001), gaussian_scale_ (),
-  data_size_ (0), max_binary_search_level_ (10), k_ (50), padding_size_ (3), data_ (),
-  vector_at_data_point_ (), surface_ (), occupied_cell_list_ ()
+  cell_hash_map_ (), leaf_size_ (0.001), gaussian_scale_ (),
+  data_size_ (0), max_binary_search_level_ (10), k_ (50), padding_size_ (3), data_ () 
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::GridProjection<PointNT>::GridProjection (double resolution) :
-  cell_hash_map_ (), min_p_ (), max_p_ (), leaf_size_ (resolution), gaussian_scale_ (),
-  data_size_ (0), max_binary_search_level_ (10), k_ (50), padding_size_ (3), data_ (),
-  vector_at_data_point_ (), surface_ (), occupied_cell_list_ ()
+  cell_hash_map_ (), leaf_size_ (resolution), gaussian_scale_ (),
+  data_size_ (0), max_binary_search_level_ (10), k_ (50), padding_size_ (3), data_ () 
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -407,7 +405,7 @@ pcl::GridProjection<PointNT>::getVectorAtPointKNN (const Eigen::Vector4f &p,
   for (int i = 0; i < k_; i++)
   {
     //k_weight[i] = pow (M_E, -pow (k_squared_distances[i], 2.0) / gaussian_scale_);
-    k_weight[i] = std::pow (static_cast<float>(M_E), static_cast<float>(-pow (static_cast<float>(k_squared_distances[i]), 2.0f) / gaussian_scale_));
+    k_weight[i] = std::pow (static_cast<float>(M_E), static_cast<float>(-std::pow (static_cast<float>(k_squared_distances[i]), 2.0f) / gaussian_scale_));
     sum += k_weight[i];
   }
   pcl::VectorAverage3f vector_average;

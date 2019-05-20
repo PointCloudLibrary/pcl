@@ -88,8 +88,7 @@ namespace pcl
       VFHEstimation () :
         nr_bins_f1_ (45), nr_bins_f2_ (45), nr_bins_f3_ (45), nr_bins_f4_ (45), nr_bins_vp_ (128),
         vpx_ (0), vpy_ (0), vpz_ (0),
-        hist_f1_ (), hist_f2_ (), hist_f3_ (), hist_f4_ (), hist_vp_ (),
-        normal_to_use_ (), centroid_to_use_ (), use_given_normal_ (false), use_given_centroid_ (false),
+        use_given_normal_ (false), use_given_centroid_ (false),
         normalize_bins_ (true), normalize_distances_ (false), size_component_ (false),
         d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI)))
       {

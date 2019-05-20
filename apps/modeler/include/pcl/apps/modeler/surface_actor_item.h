@@ -57,7 +57,7 @@ namespace pcl
         typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
         SurfaceActorItem(QTreeWidgetItem* parent,
-                        const boost::shared_ptr<CloudMesh>& cloud_mesh,
+                        const CloudMesh::Ptr& cloud_mesh,
                         const vtkSmartPointer<vtkRenderWindow>& render_window);
         ~SurfaceActorItem ();
 

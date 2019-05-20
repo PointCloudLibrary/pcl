@@ -14,7 +14,7 @@ namespace pcl
 {
   struct PCLPointField
   {
-    PCLPointField () : name (), offset (0), datatype (0), count (0)
+    PCLPointField () : offset (0), datatype (0), count (0)
     {}
 
     std::string name;

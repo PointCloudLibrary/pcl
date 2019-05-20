@@ -216,7 +216,7 @@ namespace pcl
       /** \brief Empty constructor. */
       StatisticalOutlierRemoval (bool extract_removed_indices = false) :
         FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices), mean_k_ (2),
-        std_mul_ (0.0), tree_ ()
+        std_mul_ (0.0)
       {
         filter_name_ = "StatisticalOutlierRemoval";
       }

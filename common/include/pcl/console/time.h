@@ -50,7 +50,7 @@ namespace pcl
     {
       public:
 
-        TicToc () : tictic_ () {}
+        TicToc () {}
 
         void 
         tic ()

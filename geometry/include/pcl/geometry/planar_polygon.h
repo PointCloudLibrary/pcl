@@ -56,7 +56,7 @@ namespace pcl
       typedef boost::shared_ptr<const PlanarPolygon<PointT> > ConstPtr;
 
        /** \brief Empty constructor for PlanarPolygon */
-      PlanarPolygon () : contour_ (), coefficients_ ()
+      PlanarPolygon () : contour_ ()
       {}
       
       /** \brief Constructor for PlanarPolygon

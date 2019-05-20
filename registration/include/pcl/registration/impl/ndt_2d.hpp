@@ -99,7 +99,7 @@ namespace pcl
 
       public:
         NormalDist ()
-          : min_n_ (3), n_ (0), pt_indices_ (), mean_ (), covar_inv_ ()
+          : min_n_ (3), n_ (0)
         {
         }
         

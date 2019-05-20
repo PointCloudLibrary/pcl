@@ -45,11 +45,14 @@
 #include <pcl/console/parse.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/mouse_event.h>
-#include <vector>
+
+#include <boost/algorithm/string.hpp>
+
+#include <mutex>
 #include <string>
 #include <thread>
-#include <boost/algorithm/string.hpp>
 #include <typeinfo>
+#include <vector>
 
 using namespace std;
 using namespace std::chrono_literals;
@@ -100,7 +103,7 @@ class SimpleHDLViewer
     cloud_callback (const CloudConstPtr& cloud)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
       //std::cout << cloud->points[0] << " " << cloud->size () << std::endl;
     }
@@ -111,7 +114,7 @@ class SimpleHDLViewer
                     float /*endAngle*/)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
     }
 
@@ -191,8 +194,8 @@ class SimpleHDLViewer
     boost::shared_ptr<ImageViewer> image_viewer_;
 
     Grabber& grabber_;
-    boost::mutex cloud_mutex_;
-    boost::mutex image_mutex_;
+    std::mutex cloud_mutex_;
+    std::mutex image_mutex_;
 
     CloudConstPtr cloud_;
     PointCloudColorHandler<PointType> &handler_;

@@ -39,17 +39,14 @@
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/common/angles.h>
 #include <pcl/io/openni2_grabber.h>
+#include <pcl/io/openni2/openni.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 
-#include <boost/chrono.hpp>
-
-#include "pcl/io/openni2/openni.h"
-
-typedef boost::chrono::high_resolution_clock HRClock;
+#include <mutex>
 
 #define SHOW_FPS 1
 #if SHOW_FPS
@@ -117,7 +114,6 @@ public:
 
   OpenNI2Viewer (pcl::io::OpenNI2Grabber& grabber)
     : cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL OpenNI2 cloud"))
-    , image_viewer_ ()
     , grabber_ (grabber)
     , rgb_data_ (nullptr), rgb_data_size_ (0)
   {
@@ -127,7 +123,7 @@ public:
   cloud_callback (const CloudConstPtr& cloud)
   {
     FPS_CALC ("cloud callback");
-    boost::mutex::scoped_lock lock (cloud_mutex_);
+    std::lock_guard<std::mutex> lock (cloud_mutex_);
     cloud_ = cloud;
   }
 
@@ -135,7 +131,7 @@ public:
   image_callback (const boost::shared_ptr<pcl::io::openni2::Image>& image)
   {
     FPS_CALC ("image callback");
-    boost::mutex::scoped_lock lock (image_mutex_);
+    std::lock_guard<std::mutex> lock (image_mutex_);
     image_ = image;
 
     if (image->getEncoding () != pcl::io::openni2::Image::RGB)
@@ -271,8 +267,8 @@ public:
   pcl::visualization::ImageViewer::Ptr image_viewer_;
 
   pcl::io::OpenNI2Grabber& grabber_;
-  boost::mutex cloud_mutex_;
-  boost::mutex image_mutex_;
+  std::mutex cloud_mutex_;
+  std::mutex image_mutex_;
 
   CloudConstPtr cloud_;
   boost::shared_ptr<pcl::io::openni2::Image> image_;

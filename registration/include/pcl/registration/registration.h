@@ -97,8 +97,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       Registration () 
-        : reg_name_ ()
-        , tree_ (new KdTree)
+        : tree_ (new KdTree)
         , tree_reciprocal_ (new KdTreeReciprocal)
         , nr_iterations_ (0)
         , max_iterations_ (10)
@@ -117,7 +116,6 @@ namespace pcl
         , correspondences_ (new Correspondences)
         , transformation_estimation_ ()
         , correspondence_estimation_ ()
-        , correspondence_rejectors_ ()
         , target_cloud_updated_ (true)
         , source_cloud_updated_ (true)
         , force_no_recompute_ (false)
@@ -381,14 +379,14 @@ namespace pcl
           return (false);
       }
 
-      /** \brief Obtain the Euclidean fitness score (e.g., sum of squared distances from the source to the target)
+      /** \brief Obtain the Euclidean fitness score (e.g., mean of squared distances from the source to the target)
         * \param[in] max_range maximum allowable distance between a point and its correspondence in the target 
         * (default: double::max)
         */
       inline double 
       getFitnessScore (double max_range = std::numeric_limits<double>::max ());
 
-      /** \brief Obtain the Euclidean fitness score (e.g., sum of squared distances from the source to the target)
+      /** \brief Obtain the Euclidean fitness score (e.g., mean of squared distances from the source to the target)
         * from two sets of correspondence distances (distances between source and target points)
         * \param[in] distances_a the first set of distances between correspondences
         * \param[in] distances_b the second set of distances between correspondences

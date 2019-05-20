@@ -107,7 +107,7 @@ namespace pcl
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
-      SeededHueSegmentation () : tree_ (), cluster_tolerance_ (0), delta_hue_ (0.0)
+      SeededHueSegmentation () : cluster_tolerance_ (0), delta_hue_ (0.0)
       {};
 
       /** \brief Provide a pointer to the search object.

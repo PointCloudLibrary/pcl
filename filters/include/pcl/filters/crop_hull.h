@@ -66,7 +66,6 @@ namespace pcl
 
       /** \brief Empty Constructor. */
       CropHull () :
-        hull_polygons_(),
         hull_cloud_(),
         dim_(3),
         crop_outside_(true)

@@ -95,7 +95,6 @@ namespace pcl
       /** \brief Empty constructor. */
       FPFHEstimation () : 
         nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), 
-        hist_f1_ (), hist_f2_ (), hist_f3_ (), fpfh_histogram_ (),
         d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI)))
       {
         feature_name_ = "FPFHEstimation";

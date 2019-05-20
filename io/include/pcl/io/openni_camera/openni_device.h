@@ -40,9 +40,12 @@
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
+#include <condition_variable>
 #include <map>
-#include <vector>
+#include <mutex>
+#include <thread>
 #include <utility>
+#include <vector>
 #include "openni_exception.h"
 #include "openni.h"
 
@@ -543,15 +546,15 @@ namespace openni_wrapper
       OpenNIDevice::CallbackHandle ir_callback_handle_counter_;
 
       bool quit_;
-      mutable boost::mutex image_mutex_;
-      mutable boost::mutex depth_mutex_;
-      mutable boost::mutex ir_mutex_;
-      boost::condition_variable image_condition_;
-      boost::condition_variable depth_condition_;
-      boost::condition_variable ir_condition_;
-      boost::thread image_thread_;
-      boost::thread depth_thread_;
-      boost::thread ir_thread_;
+      mutable std::mutex image_mutex_;
+      mutable std::mutex depth_mutex_;
+      mutable std::mutex ir_mutex_;
+      std::condition_variable image_condition_;
+      std::condition_variable depth_condition_;
+      std::condition_variable ir_condition_;
+      std::thread image_thread_;
+      std::thread depth_thread_;
+      std::thread ir_thread_;
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

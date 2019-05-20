@@ -46,9 +46,7 @@
 namespace pcl
 {
 /////////////////////////////////////////////////////////
-BearingAngleImage::BearingAngleImage () :
-  BearingAngleImage::BaseClass (),
-  unobserved_point_ ()
+BearingAngleImage::BearingAngleImage () 
 {
   reset ();
   unobserved_point_.x = unobserved_point_.y = unobserved_point_.z = 0.0;

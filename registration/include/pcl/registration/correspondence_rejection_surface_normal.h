@@ -70,7 +70,6 @@ namespace pcl
         /** \brief Empty constructor. Sets the threshold to 1.0. */
         CorrespondenceRejectorSurfaceNormal () 
           : threshold_ (1.0)
-          , data_container_ ()
         {
           rejection_name_ = "CorrespondenceRejectorSurfaceNormal";
         }

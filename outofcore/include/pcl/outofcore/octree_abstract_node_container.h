@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -95,7 +96,7 @@ namespace pcl
 
         AlignedPointTVector container_;
         
-        static boost::mutex rng_mutex_;
+        static std::mutex rng_mutex_;
     };
   }//namespace outofcore
 }//namespace pcl

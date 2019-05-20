@@ -5,6 +5,8 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include <boost/thread/mutex.hpp>
+
 /* A simple class for capturing data from an OpenNI camera */
 class OpenNICapture
 {

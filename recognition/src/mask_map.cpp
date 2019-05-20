@@ -47,7 +47,7 @@ pcl::MaskMap::MaskMap ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::MaskMap::MaskMap (const size_t width, const size_t height)
-  : data_ (), width_ (width), height_ (height)
+  : width_ (width), height_ (height)
 {
   data_.resize (width*height);
 }  

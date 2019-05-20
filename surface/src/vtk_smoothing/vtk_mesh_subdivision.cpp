@@ -47,8 +47,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::MeshSubdivisionVTK::MeshSubdivisionVTK ()
-  : pcl::MeshProcessing (),
-    filter_type_ (LINEAR)
+  : filter_type_ (LINEAR)
 {
 }
 

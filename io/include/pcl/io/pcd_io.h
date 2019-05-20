@@ -52,7 +52,7 @@ namespace pcl
   {
     public:
       /** Empty constructor */
-      PCDReader () : FileReader () {}
+      PCDReader () {}
       /** Empty destructor */
       ~PCDReader () {}
 
@@ -294,7 +294,7 @@ namespace pcl
   class PCL_EXPORTS PCDWriter : public FileWriter
   {
     public:
-      PCDWriter() : FileWriter(), map_synchronization_(false) {}
+      PCDWriter() : map_synchronization_(false) {}
       ~PCDWriter() {}
 
       /** \brief Set whether mmap() synchornization via msync() is desired before munmap() calls. 

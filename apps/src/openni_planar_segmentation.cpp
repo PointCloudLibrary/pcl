@@ -45,6 +45,8 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/extract_indices.h>
 
+#include <boost/thread/mutex.hpp>
+
 
 template <typename PointType>
 class OpenNIPlanarSegmentation

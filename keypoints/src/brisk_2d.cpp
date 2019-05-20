@@ -1455,8 +1455,8 @@ pcl::keypoints::brisk::Layer::getValue (
   (void)height;
   assert (!mat.empty ());
   // get the position
-  const int x = int (floor (xf));
-  const int y = int (floor (yf));
+  const int x = int (std::floor (xf));
+  const int y = int (std::floor (yf));
   const std::vector<unsigned char>& image = mat;
   const int& imagecols = width;
 

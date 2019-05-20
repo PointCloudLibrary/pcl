@@ -37,8 +37,6 @@
  *
  */
 
-#include <thread>
-
 #include <pcl/apps/timer.h>
 #include <pcl/common/common.h>
 #include <pcl/common/angles.h>
@@ -52,7 +50,6 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
-//#include <pcl/io/tar_io.h>
 #include <pcl/surface/convex_hull.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -63,6 +60,10 @@
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/segmentation/edge_aware_plane_comparator.h>
 #include <pcl/geometry/polygon_operations.h>
+
+#include <boost/thread/mutex.hpp>
+
+#include <thread>
 
 using namespace pcl;
 using namespace std;
@@ -262,9 +263,6 @@ class NILinemod
       for (const int &index : points_above_plane->indices)
         scene->points[index].label = 1;
       euclidean_cluster_comparator->setLabels (scene);
-
-      boost::shared_ptr<std::set<uint32_t> > exclude_labels = boost::make_shared<std::set<uint32_t> > ();
-      exclude_labels->insert (0);
 
       OrganizedConnectedComponentSegmentation<PointT, Label> euclidean_segmentation (euclidean_cluster_comparator);
       euclidean_segmentation.setInputCloud (cloud);

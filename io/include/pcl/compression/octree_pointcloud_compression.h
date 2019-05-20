@@ -108,13 +108,8 @@ namespace pcl
                                const unsigned char colorBitResolution_arg = 6) :
           OctreePointCloud<PointT, LeafT, BranchT, OctreeT> (octreeResolution_arg),
           output_ (PointCloudPtr ()),
-          binary_tree_data_vector_ (),
-          binary_color_tree_vector_ (),
-          point_count_data_vector_ (),
-          point_count_data_vector_iterator_ (),
           color_coder_ (),
           point_coder_ (),
-          entropy_coder_ (),
           do_voxel_grid_enDecoding_ (doVoxelGridDownDownSampling_arg), i_frame_rate_ (iFrameRate_arg),
           i_frame_counter_ (0), frame_ID_ (0), point_count_ (0), i_frame_ (true),
           do_color_encoding_ (doColorEncoding_arg), cloud_with_color_ (false), data_with_color_ (false),

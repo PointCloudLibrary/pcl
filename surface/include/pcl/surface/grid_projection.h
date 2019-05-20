@@ -85,7 +85,7 @@ namespace pcl
       /** \brief Data leaf. */
       struct Leaf
       {
-        Leaf () : data_indices (), pt_on_surface (), vect_at_grid_pt () {}
+        Leaf () {}
 
         std::vector<int> data_indices;
         Eigen::Vector4f pt_on_surface; 

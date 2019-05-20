@@ -47,6 +47,8 @@
 
 #include <david.h>
 
+#include <thread>
+
 namespace pcl
 {
   struct PointXYZ;
@@ -217,7 +219,7 @@ namespace pcl
 
     protected:
       /** @brief Grabber thread */
-      boost::thread grabber_thread_;
+      std::thread grabber_thread_;
 
       /** @brief Boost point cloud signal */
       boost::signals2::signal<sig_cb_davidsdk_point_cloud>* point_cloud_signal_;
@@ -256,7 +258,7 @@ namespace pcl
       pcl::EventFrequency frequency_;
 
       /** @brief Mutual exclusion for FPS computation */
-      mutable boost::mutex fps_mutex_;
+      mutable std::mutex fps_mutex_;
 
       /** @brief Continuously asks for images and or point clouds/meshes data from the device and publishes them if available. */
       void

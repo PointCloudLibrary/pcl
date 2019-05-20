@@ -260,8 +260,6 @@ namespace pcl
       : vpx_ (0)
       , vpy_ (0)
       , vpz_ (0)
-      , covariance_matrix_ ()
-      , xyz_centroid_ ()
       , use_sensor_origin_ (true)
       {
         feature_name_ = "NormalEstimation";

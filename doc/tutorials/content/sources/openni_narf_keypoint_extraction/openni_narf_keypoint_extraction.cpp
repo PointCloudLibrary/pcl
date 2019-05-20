@@ -12,6 +12,8 @@ using namespace std;
 #include <pcl/keypoints/narf_keypoint.h>
 #include <pcl/console/parse.h>
 
+#include <boost/thread/mutex.hpp>
+
 std::string device_id = "#1";
 
 float angular_resolution = 0.5;

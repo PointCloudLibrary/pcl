@@ -55,24 +55,6 @@ class CopyBuffer : public Statistics
       if (register_stats)
         registerStats();
     }
-    
-    /// @brief Copy Constructor
-    /// @details create a copy buffer by copying all the internal states of the
-    /// passed copy buffer.
-    /// @param copy the copy buffer object used to initialize this object
-    CopyBuffer (const CopyBuffer& copy);
-
-    /// @brief Destructor
-    ~CopyBuffer ()
-    {
-    }
-    
-    /// @brief Equal Operator
-    /// @details Copy all the internal states to the this copy buffer object.
-    /// @param copy_buffer the copy buffer object used to update the this object
-    /// @return A reference to this.
-    CopyBuffer&
-    operator= (const CopyBuffer& copy_buffer);
 
     /// @brief Sets the points in the copy buffer.
     /// @details The passed selection pointer is used to get specified points

@@ -77,8 +77,7 @@ namespace pcl
           factor_ (),
           min_ratio_ (0.05),
           max_ratio_ (0.95),
-          lambda_ (0.95),
-          data_container_ ()
+          lambda_ (0.95)
         {
           rejection_name_ = "CorrespondenceRejectorVarTrimmed";
         }

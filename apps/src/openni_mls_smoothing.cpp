@@ -42,6 +42,8 @@
 #include <pcl/common/time.h>
 #include <pcl/surface/mls.h>
 
+#include <boost/thread/mutex.hpp>
+
 #define FPS_CALC(_WHAT_) \
 do \
 { \

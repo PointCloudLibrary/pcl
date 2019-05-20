@@ -107,7 +107,7 @@ void
 pcl::DinastGrabber::onInit (const int device_position)
 {
   setupDevice (device_position);
-  capture_thread_ = boost::thread (&DinastGrabber::captureThreadFunction, this);
+  capture_thread_ = std::thread (&DinastGrabber::captureThreadFunction, this);
   image_ = new unsigned char [image_size_];
 }
 
@@ -443,7 +443,7 @@ pcl::DinastGrabber::captureThreadFunction ()
   while (true)
   {
     // Lock before checking running flag
-    boost::unique_lock<boost::mutex> capture_lock (capture_mutex_);
+    std::unique_lock<std::mutex> capture_lock (capture_mutex_);
     if(running_)
     {
       readImage ();

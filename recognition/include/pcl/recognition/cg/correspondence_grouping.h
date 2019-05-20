@@ -59,7 +59,7 @@ namespace pcl
       typedef typename SceneCloud::ConstPtr SceneCloudConstPtr;
 
       /** \brief Empty constructor. */
-      CorrespondenceGrouping () : scene_ (), model_scene_corrs_ () {}
+      CorrespondenceGrouping () : scene_ () {}
 
       /** \brief destructor. */
       ~CorrespondenceGrouping() 

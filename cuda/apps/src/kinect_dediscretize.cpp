@@ -39,14 +39,17 @@
 #include <pcl_cuda/io/disparity_to_cloud.h>
 #include <pcl_cuda/sample_consensus/sac_model_plane.h>
 #include <pcl_cuda/sample_consensus/ransac.h>
+#include <pcl_cuda/time_cpu.h>
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl_cuda/time_cpu.h>
-#include <boost/shared_ptr.hpp>
 #include <pcl/visualization/cloud_viewer.h>
+
+#include <boost/shared_ptr.hpp>
+
 #include <iostream>
+#include <mutex>
 
 class SimpleKinectTool
 {
@@ -90,7 +93,7 @@ class SimpleKinectTool
 
     pcl_cuda::DisparityToCloud d2c;
     pcl::visualization::CloudViewer viewer;
-    boost::mutex mutex_;
+    std::mutex mutex_;
     bool init_;
 };
 

@@ -79,7 +79,6 @@ namespace pcl
           , input_ ()
           , input_transformed_ ()
           , target_ ()
-          , best_transformation_ ()
           , refine_ (false)
           , save_inliers_ (false)
         {

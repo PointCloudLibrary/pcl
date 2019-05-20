@@ -77,8 +77,8 @@ class SimpleOpenNIViewer
     }
 
     void
-    image_callback (const boost::shared_ptr<openni_wrapper::Image> &image,
-                    const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, float)
+    image_callback (const openni_wrapper::Image::Ptr &image,
+                    const openni_wrapper::DepthImage::Ptr &depth_image, float)
     {
 
       vector<uint16_t> raw_shift_data;
@@ -134,7 +134,7 @@ class SimpleOpenNIViewer
 
       // define image callback
       boost::function<void
-      (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float)> image_cb =
+      (const openni_wrapper::Image::Ptr&, const openni_wrapper::DepthImage::Ptr&, float)> image_cb =
           boost::bind (&SimpleOpenNIViewer::image_callback, this, _1, _2, _3);
       boost::signals2::connection image_connection = grabber_->registerCallback (image_cb);
 
@@ -194,20 +194,16 @@ protected:
           newPoint.x = static_cast<float> (x) * depth * fl_const;
           newPoint.y = static_cast<float> (y) * depth * fl_const;
 
-          const uint8_t& pixel_r = rgbData_arg[i * 3 + 0];
-          const uint8_t& pixel_g = rgbData_arg[i * 3 + 1];
-          const uint8_t& pixel_b = rgbData_arg[i * 3 + 2];
-
           // Define point color
-          uint32_t rgb = (static_cast<uint32_t> (pixel_r) << 16 | static_cast<uint32_t> (pixel_g) << 8
-              | static_cast<uint32_t> (pixel_b));
-          newPoint.rgb = *reinterpret_cast<float*> (&rgb);
+          newPoint.r = rgbData_arg[i * 3 + 0];
+          newPoint.g = rgbData_arg[i * 3 + 1];
+          newPoint.b = rgbData_arg[i * 3 + 2];
         }
         else
         {
           // Define bad point
           newPoint.x = newPoint.y = newPoint.z = bad_point;
-          newPoint.rgb = 0.0f;
+          newPoint.rgba = 0;
         }
 
         // Add point to cloud

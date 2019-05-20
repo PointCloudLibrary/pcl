@@ -75,7 +75,7 @@ namespace pcl
     const std::string OutofcoreOctreeBaseNode<ContainerT, PointT>::node_container_extension = ".oct_dat";
 
     template<typename ContainerT, typename PointT>
-    boost::mutex OutofcoreOctreeBaseNode<ContainerT, PointT>::rng_mutex_;
+    std::mutex OutofcoreOctreeBaseNode<ContainerT, PointT>::rng_mutex_;
 
     template<typename ContainerT, typename PointT>
     std::mt19937 OutofcoreOctreeBaseNode<ContainerT, PointT>::rng_;
@@ -96,9 +96,8 @@ namespace pcl
       , num_children_ (0)
       , num_loaded_children_ (0)
       , payload_ ()
-      , node_metadata_ ()
+      , node_metadata_ (new OutofcoreOctreeNodeMetadata)
     {
-      node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
       node_metadata_->setOutofcoreVersion (3);
     }
 
@@ -114,9 +113,8 @@ namespace pcl
       , num_children_ (0)
       , num_loaded_children_ (0)
       , payload_ ()
-      , node_metadata_ ()
+      , node_metadata_ (new OutofcoreOctreeNodeMetadata)
     {
-      node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
       node_metadata_->setOutofcoreVersion (3);
 
       //Check if this is the first node created/loaded (this is true if super, i.e. node's parent is NULL)
@@ -250,7 +248,7 @@ namespace pcl
       node_metadata_->serializeMetadataToDisk ();
 
       // Create data container, ie octree_disk_container, octree_ram_container
-      payload_ = boost::shared_ptr<ContainerT> (new ContainerT (node_metadata_->getPCDFilename ()));
+      payload_.reset (new ContainerT (node_metadata_->getPCDFilename ()));
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -596,7 +594,7 @@ namespace pcl
         insertBuff.resize(samplesize);
 
         // Create random number generator
-        boost::mutex::scoped_lock lock(rng_mutex_);
+        std::lock_guard<std::mutex> lock(rng_mutex_);
         std::uniform_int_distribution<uint64_t> buffdist(0, inputsize-1);
 
         // Randomly pick sampled points
@@ -609,7 +607,7 @@ namespace pcl
       // Have to do it the slow way
       else
       {
-        boost::mutex::scoped_lock lock(rng_mutex_);
+        std::lock_guard<std::mutex> lock(rng_mutex_);
         std::bernoulli_distribution buffdist(percent);
 
         for(uint64_t i = 0; i < inputsize; ++i)
@@ -1734,9 +1732,8 @@ namespace pcl
       , num_children_ ()
       , num_loaded_children_ (0)
       , payload_ ()
-      , node_metadata_ ()
+      , node_metadata_ (new OutofcoreOctreeNodeMetadata)
     {
-      node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
       node_metadata_->setOutofcoreVersion (3);
       
       if (super == nullptr)
@@ -1771,7 +1768,7 @@ namespace pcl
 
       boost::filesystem::create_directory (node_metadata_->getDirectoryPathname ());
 
-      payload_ = boost::shared_ptr<ContainerT> (new ContainerT (node_metadata_->getPCDFilename ()));
+      payload_.reset (new ContainerT (node_metadata_->getPCDFilename ()));
       this->saveIdx (false);
     }
 
@@ -1794,7 +1791,6 @@ namespace pcl
       payload_->readRange (0, payload_->size (), payload_cache);
 
       {
-        //boost::mutex::scoped_lock lock(queryBBIncludes_vector_mutex);
         v.insert (v.end (), payload_cache.begin (), payload_cache.end ());
       }
     }
@@ -1964,7 +1960,7 @@ namespace pcl
         recFreeChildren ();      
 
       this->num_children_ = 0;
-      this->payload_ = boost::shared_ptr<ContainerT> (new ContainerT (node_metadata_->getPCDFilename ()));
+      this->payload_.reset (new ContainerT (node_metadata_->getPCDFilename ()));
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -2119,7 +2115,7 @@ namespace pcl
 
         f.close ();
 
-        thisnode->payload_ = boost::shared_ptr<ContainerT> (new ContainerT (thisnode->thisnodestorage_));
+        thisnode->payload_.reset (new ContainerT (thisnode->thisnodestorage_));
       }
 
       thisnode->parent_ = super;

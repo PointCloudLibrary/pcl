@@ -131,7 +131,7 @@ namespace pcl
         class ComputationFPS : public Base::FPS
         {
           public:
-            ComputationFPS () : Base::FPS () {}
+            ComputationFPS () {}
             ~ComputationFPS () {}
         };
 
@@ -140,7 +140,7 @@ namespace pcl
         class VisualizationFPS : public Base::FPS
         {
           public:
-            VisualizationFPS () : Base::FPS () {}
+            VisualizationFPS () {}
             ~VisualizationFPS () {}
         };
 

@@ -45,9 +45,6 @@
 #ifndef __CUDACC__
 #include <boost/version.hpp>
 #include <boost/numeric/conversion/cast.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/condition.hpp>
-#include <boost/thread.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/bind.hpp>
 #include <boost/cstdint.hpp>

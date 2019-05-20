@@ -72,7 +72,6 @@ namespace pcl
         CorrespondenceRejectorMedianDistance () 
           : median_distance_ (0)
           , factor_ (1.0)
-          , data_container_ ()
         {
           rejection_name_ = "CorrespondenceRejectorMedianDistance";
         }

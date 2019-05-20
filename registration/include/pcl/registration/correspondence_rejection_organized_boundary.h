@@ -63,7 +63,6 @@ namespace pcl
         : boundary_nans_threshold_ (8)
         , window_size_ (5)
         , depth_step_threshold_ (0.025f)
-        , data_container_ ()
       { }
 
       void

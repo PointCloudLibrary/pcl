@@ -63,8 +63,6 @@ namespace pcl
 
         /** \brief Empty constructor. */
         CorrespondenceRejector () 
-          : rejection_name_ ()
-          , input_correspondences_ () 
         {}
 
         /** \brief Empty destructor. */

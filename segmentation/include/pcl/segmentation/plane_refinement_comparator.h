@@ -76,10 +76,7 @@ namespace pcl
 
       /** \brief Empty constructor for PlaneCoefficientComparator. */
      PlaneRefinementComparator ()
-        : models_ ()
-        , labels_ ()
-        , refine_labels_ ()
-        , label_to_model_ ()
+        : labels_ ()
         , depth_dependent_ (false)
       {
       }
@@ -93,7 +90,6 @@ namespace pcl
         : models_ (models)
         , labels_ ()
         , refine_labels_ (refine_labels)
-        , label_to_model_ ()
         , depth_dependent_ (false)
       {
       }
@@ -190,7 +186,7 @@ namespace pcl
         const pcl::ModelCoefficients& model_coeff = (*models_)[(*label_to_model_)[current_label]];
         
         PointT pt = input_->points[idx2];
-        double ptp_dist = fabs (model_coeff.values[0] * pt.x + 
+        double ptp_dist = std::fabs (model_coeff.values[0] * pt.x + 
                                 model_coeff.values[1] * pt.y + 
                                 model_coeff.values[2] * pt.z +
                                 model_coeff.values[3]);

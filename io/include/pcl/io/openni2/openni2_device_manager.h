@@ -34,7 +34,6 @@
 #include <pcl/pcl_exports.h>
 #include "pcl/io/openni2/openni2_device_info.h"
 
-#include <boost/thread/mutex.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 

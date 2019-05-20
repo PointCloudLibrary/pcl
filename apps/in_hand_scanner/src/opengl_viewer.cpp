@@ -64,9 +64,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::detail::FaceVertexMesh::FaceVertexMesh ()
-  : vertices       (),
-    triangles      (),
-    transformation (Eigen::Isometry3d::Identity ())
+  : transformation (Eigen::Isometry3d::Identity ())
 {
 }
 
@@ -74,7 +72,6 @@ pcl::ihs::detail::FaceVertexMesh::FaceVertexMesh ()
 
 pcl::ihs::detail::FaceVertexMesh::FaceVertexMesh (const Mesh& mesh, const Eigen::Isometry3d& T)
   : vertices       (mesh.getVertexDataCloud ()),
-    triangles      (),
     transformation (T)
 {
   if (typeid (Mesh::MeshTag) != typeid (pcl::geometry::TriangleMeshTag))
@@ -108,15 +105,12 @@ pcl::ihs::detail::FaceVertexMesh::FaceVertexMesh (const Mesh& mesh, const Eigen:
 
 pcl::ihs::OpenGLViewer::OpenGLViewer (QWidget* parent)
   : QGLWidget            (parent),
-    mutex_vis_           (),
     timer_vis_           (new QTimer (this)),
     colormap_            (Colormap::Constant (255)),
     vis_conf_norm_       (1),
-    drawn_meshes_        (),
     mesh_representation_ (MR_POINTS),
     coloring_            (COL_RGB),
     draw_box_            (false),
-    box_coefficients_    (),
     scaling_factor_      (1.),
     R_cam_               (1., 0., 0., 0.),
     t_cam_               (0., 0., 0.),

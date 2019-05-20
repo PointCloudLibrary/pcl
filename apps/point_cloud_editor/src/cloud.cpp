@@ -98,7 +98,7 @@ Cloud::Cloud (const Cloud3D &cloud, bool register_stats)
 }
 
 Cloud::Cloud (const Cloud &copy)
-  : cloud_(copy.cloud_), selection_wk_ptr_(copy.selection_wk_ptr_),
+  : Statistics (copy), cloud_(copy.cloud_), selection_wk_ptr_(copy.selection_wk_ptr_),
   use_color_ramp_(copy.use_color_ramp_),
   color_ramp_axis_(copy.color_ramp_axis_),
   display_scale_(copy.display_scale_),

@@ -63,11 +63,6 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::OpenNIDriver::OpenNIDriver ()
-  : device_context_ ()
-  , context_ ()
-  , bus_map_ ()
-  , serial_map_ ()
-  , connection_string_map_ ()
 {
   // Initialize the Engine
   XnStatus status = context_.Init ();
@@ -550,7 +545,6 @@ openni_wrapper::OpenNIDriver::DeviceContext::DeviceContext (const xn::NodeInfo& 
 , image_node (image)
 , depth_node (depth)
 , ir_node (ir)
-, device ()
 {
 }
 
@@ -560,7 +554,6 @@ openni_wrapper::OpenNIDriver::DeviceContext::DeviceContext (const xn::NodeInfo& 
 , image_node (static_cast<xn::NodeInfo*> (nullptr))
 , depth_node (static_cast<xn::NodeInfo*> (nullptr))
 , ir_node (static_cast<xn::NodeInfo*> (nullptr))
-, device ()
 {
 }
 

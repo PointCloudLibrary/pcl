@@ -73,8 +73,6 @@ pcl::HDLGrabber::HDLGrabber (const std::string& correctionsFile,
     scan_xyz_signal_ (),
     scan_xyzrgba_signal_ (),
     scan_xyzi_signal_ (),
-    hdl_data_ (),
-    udp_listener_endpoint_ (),
     source_address_filter_ (),
     source_port_filter_ (443),
     hdl_read_socket_service_ (),
@@ -105,13 +103,11 @@ pcl::HDLGrabber::HDLGrabber (const boost::asio::ip::address& ipAddress,
     scan_xyz_signal_ (),
     scan_xyzrgba_signal_ (),
     scan_xyzi_signal_ (),
-    hdl_data_ (),
     udp_listener_endpoint_ (ipAddress, port),
     source_address_filter_ (),
     source_port_filter_ (443),
     hdl_read_socket_service_ (),
     hdl_read_socket_ (nullptr),
-    pcap_file_name_ (),
     queue_consumer_thread_ (nullptr),
     hdl_read_packet_thread_ (nullptr),
     min_distance_threshold_ (0.0),
@@ -494,7 +490,7 @@ pcl::HDLGrabber::start ()
   if (isRunning ())
     return;
 
-  queue_consumer_thread_ = new boost::thread (boost::bind (&HDLGrabber::processVelodynePackets, this));
+  queue_consumer_thread_ = new std::thread (&HDLGrabber::processVelodynePackets, this);
 
   if (pcap_file_name_.empty ())
   {
@@ -524,12 +520,12 @@ pcl::HDLGrabber::start ()
       PCL_ERROR("[pcl::HDLGrabber::start] Unable to bind to socket! %s\n", e.what ());
       return;
     }
-    hdl_read_packet_thread_ = new boost::thread (boost::bind (&HDLGrabber::readPacketsFromSocket, this));
+    hdl_read_packet_thread_ = new std::thread (&HDLGrabber::readPacketsFromSocket, this);
   }
   else
   {
 #ifdef HAVE_PCAP
-    hdl_read_packet_thread_ = new boost::thread (boost::bind (&HDLGrabber::readPacketsFromPcap, this));
+    hdl_read_packet_thread_ = new std::thread (&HDLGrabber::readPacketsFromPcap, this);
 #endif // #ifdef HAVE_PCAP
   }
 }
@@ -538,12 +534,12 @@ pcl::HDLGrabber::start ()
 void
 pcl::HDLGrabber::stop ()
 {
+  // triggers the exit condition
   terminate_read_packet_thread_ = true;
   hdl_data_.stopQueue ();
 
   if (hdl_read_packet_thread_ != nullptr)
   {
-    hdl_read_packet_thread_->interrupt ();
     hdl_read_packet_thread_->join ();
     delete hdl_read_packet_thread_;
     hdl_read_packet_thread_ = nullptr;
@@ -566,7 +562,7 @@ pcl::HDLGrabber::stop ()
 bool
 pcl::HDLGrabber::isRunning () const
 {
-  return (!hdl_data_.isEmpty () || (hdl_read_packet_thread_ != nullptr && !hdl_read_packet_thread_->timed_join (boost::posix_time::milliseconds (10))));
+  return (!hdl_data_.isEmpty () || hdl_read_packet_thread_);
 }
 
 /////////////////////////////////////////////////////////////////////////////

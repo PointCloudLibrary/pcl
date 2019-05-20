@@ -364,7 +364,7 @@ namespace pcl
           float cos_angle = dir_a.dot (dir_b) / (distance_to_points*distance_between_points);
           if (std::isnan(cos_angle))
             cos_angle = 1.0f;
-          bool check_angle = fabs (cos_angle) >= cos_angle_tolerance_;
+          bool check_angle = std::fabs (cos_angle) >= cos_angle_tolerance_;
 
           bool check_distance = true;
           if (check_angle && (distance_tolerance_ > 0))
@@ -388,9 +388,9 @@ namespace pcl
         {
           float dist = (use_depth_as_distance_ ? std::max(point_a.z, point_b.z) : distance_to_points);
           float dist_thresh = max_edge_length_a_;
-          if (fabs(max_edge_length_b_) > std::numeric_limits<float>::min())
+          if (std::fabs(max_edge_length_b_) > std::numeric_limits<float>::min())
             dist_thresh += max_edge_length_b_ * dist;
-          if (fabs(max_edge_length_c_) > std::numeric_limits<float>::min())
+          if (std::fabs(max_edge_length_c_) > std::numeric_limits<float>::min())
             dist_thresh += max_edge_length_c_ * dist * dist;
           valid = (distance_between_points <= dist_thresh);
         }

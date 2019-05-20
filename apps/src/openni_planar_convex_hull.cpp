@@ -46,6 +46,8 @@
 #include <pcl/filters/project_inliers.h>
 #include <pcl/surface/convex_hull.h>
 
+#include <boost/thread/mutex.hpp>
+
 template <typename PointType>
 class OpenNIPlanarSegmentation
 {

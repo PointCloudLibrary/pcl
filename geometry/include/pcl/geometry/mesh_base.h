@@ -153,17 +153,7 @@ namespace pcl
           : vertex_data_cloud_ (),
             half_edge_data_cloud_ (),
             edge_data_cloud_ (),
-            face_data_cloud_ (),
-            vertices_ (),
-            half_edges_ (),
-            faces_ (),
-            inner_he_ (),
-            free_he_ (),
-            is_new_ (),
-            make_adjacent_ (),
-            is_boundary_ (),
-            delete_faces_vertex_ (),
-            delete_faces_face_ ()
+            face_data_cloud_ ()
         {
         }
 

@@ -70,8 +70,7 @@ namespace pcl
 
 
       /** \brief Empty constructor */
-      StatisticalMultiscaleInterestRegionExtraction () :
-        scale_values_ (), geodesic_distances_ (), F_scales_ ()
+      StatisticalMultiscaleInterestRegionExtraction ()
       {};
 
       /** \brief Method that generates the underlying nearest neighbor graph based on the

@@ -54,22 +54,16 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
-  : interactor_ ()
-  , mouse_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
+  : mouse_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
   , keyboard_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
-  , exit_main_loop_timer_callback_ ()
-  , exit_callback_ ()
   , win_ (vtkSmartPointer<vtkRenderWindow>::New ())
   , ren_ (vtkSmartPointer<vtkRenderer>::New ())
   , slice_ (vtkSmartPointer<vtkImageSlice>::New ())
   , interactor_style_ (vtkSmartPointer<ImageViewerInteractorStyle>::New ())
-  , data_ ()
   , data_size_ (0)
   , stopped_ ()
   , timer_id_ ()
-  , layer_map_ ()
   , algo_ (vtkSmartPointer<vtkImageFlip>::New ())
-  , image_data_ ()
 {
   interactor_ = vtkSmartPointer <vtkRenderWindowInteractor>::Take (vtkRenderWindowInteractorFixNew ());
 

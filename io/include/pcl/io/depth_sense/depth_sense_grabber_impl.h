@@ -37,13 +37,14 @@
 
 #pragma once
 
-#include <boost/thread/mutex.hpp>
-
 #include <DepthSense.hxx>
 
 #include <pcl/common/time.h>
 #include <pcl/io/buffers.h>
 #include <pcl/io/depth_sense_grabber.h>
+
+#include <mutex>
+
 
 namespace pcl
 {
@@ -87,7 +88,7 @@ namespace pcl
         bool need_xyzrgba_;
 
         EventFrequency frequency_;
-        mutable boost::mutex fps_mutex_;
+        mutable std::mutex fps_mutex_;
 
         /// Temporary buffer to store color data
         std::vector<uint8_t> color_data_;

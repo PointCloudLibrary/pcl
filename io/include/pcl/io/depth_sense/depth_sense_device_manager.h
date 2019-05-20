@@ -39,11 +39,12 @@
 
 #include <boost/utility.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/thread/mutex.hpp>
 
 #include <pcl/pcl_exports.h>
 
 #include <DepthSense.hxx>
+
+#include <thread>
 
 namespace pcl
 {
@@ -71,7 +72,7 @@ namespace pcl
             static Ptr instance;
             if (!instance)
             {
-              boost::mutex::scoped_lock lock (mutex_);
+              std::lock_guard<std::mutex> lock (mutex_);
               if (!instance)
                 instance.reset (new DepthSenseDeviceManager);
             }
@@ -133,10 +134,10 @@ namespace pcl
 
           DepthSense::Context context_;
 
-          static boost::mutex mutex_;
+          static std::mutex mutex_;
 
           /// Thread where the grabbing takes place.
-          boost::thread depth_sense_thread_;
+          std::thread depth_sense_thread_;
 
           struct CapturedDevice
           {

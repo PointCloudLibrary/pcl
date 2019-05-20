@@ -45,7 +45,6 @@
 template <typename PointT>
 pcl::PCLBase<PointT>::PCLBase ()
   : input_ ()
-  , indices_ ()
   , use_indices_ (false)
   , fake_indices_ (false)
 {

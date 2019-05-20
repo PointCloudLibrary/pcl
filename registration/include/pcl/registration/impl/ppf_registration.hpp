@@ -125,7 +125,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
 
           Eigen::Vector3f scene_point_transformed = transform_sg * scene_point;
           float alpha_s = atan2f ( -scene_point_transformed(2), scene_point_transformed(1));
-          if (sin (alpha_s) * scene_point_transformed(2) < 0.0f)
+          if (std::sin (alpha_s) * scene_point_transformed(2) < 0.0f)
             alpha_s *= (-1);
           alpha_s *= (-1);
 
@@ -136,7 +136,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
             size_t model_point_index = nearest_index.second;
             // Calculate angle alpha = alpha_m - alpha_s
             float alpha = search_method_->alpha_m_[model_reference_index][model_point_index] - alpha_s;
-            unsigned int alpha_discretized = static_cast<unsigned int> (floor (alpha) + floor (M_PI / search_method_->getAngleDiscretizationStep ()));
+            unsigned int alpha_discretized = static_cast<unsigned int> (std::floor (alpha) + floor (M_PI / search_method_->getAngleDiscretizationStep ()));
             accumulator_array[model_reference_index][alpha_discretized] ++;
           }
         }

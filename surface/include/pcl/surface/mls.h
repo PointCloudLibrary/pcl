@@ -295,9 +295,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       MovingLeastSquares () : CloudSurfaceProcessing<PointInT, PointOutT> (),
-                              normals_ (),
                               distinct_cloud_ (),
-                              search_method_ (),
                               tree_ (),
                               order_ (2),
                               search_radius_ (0.0),
@@ -308,14 +306,11 @@ namespace pcl
                               upsampling_step_ (0.0),
                               desired_num_points_in_radius_ (0),
                               cache_mls_results_ (true),
-                              mls_results_ (),
                               projection_method_ (MLSResult::SIMPLE),
                               threads_ (1),
                               voxel_size_ (1.0),
                               dilation_iteration_num_ (0),
                               nr_coeff_ (),
-                              corresponding_input_indices_ (),
-                              rng_ (),
                               rng_uniform_distribution_ ()
                               {};
 

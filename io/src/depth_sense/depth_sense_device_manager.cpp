@@ -40,14 +40,14 @@
 #include <pcl/io/depth_sense/depth_sense_grabber_impl.h>
 #include <pcl/io/depth_sense/depth_sense_device_manager.h>
 
-boost::mutex pcl::io::depth_sense::DepthSenseDeviceManager::mutex_;
+std::mutex pcl::io::depth_sense::DepthSenseDeviceManager::mutex_;
 
 pcl::io::depth_sense::DepthSenseDeviceManager::DepthSenseDeviceManager ()
 {
   try
   {
     context_ = DepthSense::Context::create ("localhost");
-    depth_sense_thread_ = boost::thread (&DepthSense::Context::run, &context_);
+    depth_sense_thread_ = std::thread (&DepthSense::Context::run, &context_);
   }
   catch (...)
   {
@@ -71,7 +71,7 @@ pcl::io::depth_sense::DepthSenseDeviceManager::~DepthSenseDeviceManager ()
 std::string
 pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberImpl* grabber)
 {
-  boost::mutex::scoped_lock lock (mutex_);
+  std::lock_guard<std::mutex> lock (mutex_);
   std::vector<DepthSense::Device> devices = context_.getDevices ();
   if (devices.size () == 0)
     THROW_IO_EXCEPTION ("no connected devices");
@@ -85,7 +85,7 @@ pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberI
 std::string
 pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberImpl* grabber, size_t index)
 {
-  boost::mutex::scoped_lock lock (mutex_);
+  std::lock_guard<std::mutex> lock (mutex_);
   if (index >= context_.getDevices ().size ())
     THROW_IO_EXCEPTION ("device with index %i is not connected", index + 1);
   if (isCaptured (context_.getDevices ().at (index).getSerialNumber ()))
@@ -96,7 +96,7 @@ pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberI
 std::string
 pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberImpl* grabber, const std::string& sn)
 {
-  boost::mutex::scoped_lock lock (mutex_);
+  std::lock_guard<std::mutex> lock (mutex_);
   std::vector<DepthSense::Device> devices = context_.getDevices ();
   for (size_t i = 0; i < devices.size (); ++i)
   {
@@ -114,7 +114,7 @@ pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberI
 void
 pcl::io::depth_sense::DepthSenseDeviceManager::reconfigureDevice (const std::string& sn)
 {
-  boost::mutex::scoped_lock lock (mutex_);
+  std::lock_guard<std::mutex> lock (mutex_);
   const CapturedDevice& dev = captured_devices_[sn];
   context_.requestControl (dev.depth_node, 0);
   dev.grabber->configureDepthNode (dev.depth_node);
@@ -160,7 +160,7 @@ pcl::io::depth_sense::DepthSenseDeviceManager::stopDevice (const std::string& sn
 void
 pcl::io::depth_sense::DepthSenseDeviceManager::releaseDevice (const std::string& sn)
 {
-  boost::mutex::scoped_lock lock (mutex_);
+  std::lock_guard<std::mutex> lock (mutex_);
   const CapturedDevice& dev = captured_devices_[sn];
   dev.depth_node.newSampleReceivedEvent ().disconnect (dev.grabber, &DepthSenseGrabberImpl::onDepthDataReceived);
   dev.color_node.newSampleReceivedEvent ().disconnect (dev.grabber, &DepthSenseGrabberImpl::onColorDataReceived);
