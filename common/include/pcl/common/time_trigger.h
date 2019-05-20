@@ -41,7 +41,6 @@
 #include <pcl/pcl_macros.h>
 #ifndef Q_MOC_RUN
 #include <boost/function.hpp>
-#include <boost/thread.hpp>
 #include <boost/signals2.hpp>
 #endif
 
