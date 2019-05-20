@@ -12,7 +12,7 @@ using namespace std;
 #include <pcl/keypoints/narf_keypoint.h>
 #include <pcl/console/parse.h>
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 std::string device_id = "#1";
 
@@ -22,7 +22,7 @@ bool set_unseen_to_max_range = true;
 int max_no_of_threads = 1;
 float min_interest_value = 0.5;
 
-boost::mutex depth_image_mutex,
+std::mutex depth_image_mutex,
              ir_image_mutex,
              image_mutex;
 pcl::PointCloud<pcl::PointXYZ>::ConstPtr point_cloud_ptr;

@@ -30,8 +30,8 @@
 #include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
 
 #include <boost/format.hpp>
-#include <boost/thread/mutex.hpp>
 
+#include <mutex>
 #include <thread>
 
 using namespace pcl::tracking;
@@ -48,7 +48,7 @@ CloudPtr cloud_pass_;
 CloudPtr cloud_pass_downsampled_;
 CloudPtr target_cloud;
 
-boost::mutex mtx_;
+std::mutex mtx_;
 ParticleFilter::Ptr tracker_;
 bool new_cloud_;
 double downsampling_grid_size_;
@@ -135,7 +135,7 @@ drawResult (pcl::visualization::PCLVisualizer& viz)
 void
 viz_cb (pcl::visualization::PCLVisualizer& viz)
 {
-  boost::mutex::scoped_lock lock (mtx_);
+  std::lock_guard<std::mutex> lock (mtx_);
     
   if (!cloud_pass_)
     {
@@ -165,7 +165,7 @@ viz_cb (pcl::visualization::PCLVisualizer& viz)
 void
 cloud_cb (const CloudConstPtr &cloud)
 {
-  boost::mutex::scoped_lock lock (mtx_);
+  std::lock_guard<std::mutex> lock (mtx_);
   cloud_pass_.reset (new Cloud);
   cloud_pass_downsampled_.reset (new Cloud);
   filterPassThrough (cloud, *cloud_pass_);
