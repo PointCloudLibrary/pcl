@@ -3,7 +3,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 namespace OpenNIFrameSource
 {
@@ -34,7 +34,7 @@ namespace OpenNIFrameSource
     pcl::OpenNIGrabber grabber_;
     PointCloudPtr most_recent_frame_;
     int frame_counter_;
-    boost::mutex mutex_;
+    std::mutex mutex_;
     bool active_;
   };
 

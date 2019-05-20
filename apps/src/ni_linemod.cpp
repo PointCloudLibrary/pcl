@@ -61,8 +61,7 @@
 #include <pcl/segmentation/edge_aware_plane_comparator.h>
 #include <pcl/geometry/polygon_operations.h>
 
-#include <boost/thread/mutex.hpp>
-
+#include <mutex>
 #include <thread>
 
 using namespace pcl;
@@ -111,7 +110,7 @@ class NILinemod
     cloud_callback (const CloudConstPtr& cloud)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
       search_.setInputCloud (cloud);
 
@@ -173,7 +172,7 @@ class NILinemod
     getLatestCloud ()
     {
       // Lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       CloudConstPtr temp_cloud;
       temp_cloud.swap (cloud_);
       return (temp_cloud);
@@ -378,7 +377,7 @@ class NILinemod
       vector<float> distances (1);
 
       // Use mutices to make sure we get the right cloud
-      boost::mutex::scoped_lock lock1 (cloud_mutex_);
+      std::lock_guard<std::mutex> lock1 (cloud_mutex_);
 
       // Get the point that was picked
       PointT picked_pt;
@@ -538,7 +537,7 @@ class NILinemod
     
     visualization::PCLVisualizer cloud_viewer_;
     Grabber& grabber_;
-    boost::mutex cloud_mutex_;
+    std::mutex cloud_mutex_;
     CloudConstPtr cloud_;
     
     visualization::ImageViewer image_viewer_;

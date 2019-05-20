@@ -43,8 +43,7 @@
 #include <pcl/common/time.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-#include <boost/thread/mutex.hpp>
-
+#include <mutex>
 #include <thread>
 
 using namespace pcl;
@@ -96,7 +95,7 @@ class OpenNIFastMesh
 
       // Lock and copy
       {
-        boost::mutex::scoped_lock lock (mtx_);
+        std::lock_guard<std::mutex> lock (mtx_);
         vertices_ = std::move (temp_verts);
         cloud_ = cloud;//reset (new Cloud (*cloud));
       }
@@ -144,7 +143,7 @@ class OpenNIFastMesh
 
     pcl::OrganizedFastMesh<PointType> ofm;
     std::string device_id_;
-    boost::mutex mtx_;
+    std::mutex mtx_;
     // Data
     CloudConstPtr cloud_;
     std::vector<pcl::Vertices> vertices_;

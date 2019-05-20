@@ -49,8 +49,7 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d_omp.h>
 
-#include <boost/thread/mutex.hpp>
-
+#include <mutex>
 #include <thread>
 
 using namespace std::chrono_literals;
@@ -120,7 +119,7 @@ class OpenNIFeaturePersistence
     void
     cloud_cb (const CloudConstPtr& cloud)
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       //lock while we set our cloud;
       FPS_CALC ("computation");
 
@@ -159,7 +158,7 @@ class OpenNIFeaturePersistence
     void
     viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       if (!cloud_)
       {
         std::this_thread::sleep_for(1s);
@@ -215,7 +214,7 @@ class OpenNIFeaturePersistence
 
     pcl::visualization::CloudViewer viewer;
     std::string device_id_;
-    boost::mutex mtx_;
+    std::mutex mtx_;
     // Data
     CloudPtr feature_locations_, cloud_subsampled_;
     pcl::PointCloud<pcl::Normal>::Ptr normals_;

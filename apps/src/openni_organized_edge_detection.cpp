@@ -41,7 +41,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 typedef pcl::PointXYZRGBA PointT;
 
@@ -50,7 +50,7 @@ class OpenNIOrganizedEdgeDetection
   private:
     pcl::visualization::PCLVisualizer::Ptr viewer;
     pcl::PointCloud<PointT> cloud_;
-    boost::mutex cloud_mutex;
+    std::mutex cloud_mutex;
 
   public:
     OpenNIOrganizedEdgeDetection ()

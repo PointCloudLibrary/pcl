@@ -43,6 +43,8 @@
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
 
+#include <mutex>
+
 #define FPS_CALC(_WHAT_) \
 do \
 { \
@@ -105,7 +107,7 @@ class OpenNIPassthrough
     void
     cloud_cb_ (const CloudConstPtr& cloud)
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       FPS_CALC ("computation");
 
       cloud_color_.reset (new Cloud);
@@ -125,7 +127,7 @@ class OpenNIPassthrough
       {
         if (cloud_color_)
         {
-          boost::mutex::scoped_lock lock (mtx_);
+          std::lock_guard<std::mutex> lock (mtx_);
 
           FPS_CALC ("visualization");
           CloudPtr temp_cloud;
@@ -141,7 +143,7 @@ class OpenNIPassthrough
     pcl::visualization::CloudViewer viewer;
     pcl::OpenNIGrabber& grabber_;
     std::string device_id_;
-    boost::mutex mtx_;
+    std::mutex mtx_;
     CloudConstPtr cloud_;
     CloudPtr cloud_color_;
 };

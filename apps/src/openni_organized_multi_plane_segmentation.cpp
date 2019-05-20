@@ -46,7 +46,7 @@
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/filters/extract_indices.h>
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 
 typedef pcl::PointXYZRGBA PointT;
@@ -56,7 +56,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
   private:
     pcl::visualization::PCLVisualizer::Ptr viewer;
     pcl::PointCloud<PointT>::ConstPtr prev_cloud;
-    boost::mutex cloud_mutex;
+    std::mutex cloud_mutex;
 
   public:
     OpenNIOrganizedMultiPlaneSegmentation ()
