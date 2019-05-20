@@ -60,10 +60,9 @@ int main (int argc, char* argv[])
       ++argi;
       break;
     }
-    char short_opt, *long_opt, *opt_arg;
+    char short_opt, *long_opt;
     if (argv[argi][1] != '-') {
       short_opt = argv[argi][1];
-      opt_arg = &argv[argi][2];
       long_opt = &argv[argi][2];
       while (*long_opt != '\0') {
         ++long_opt;
@@ -72,7 +71,7 @@ int main (int argc, char* argv[])
     else {
       short_opt = 0;
       long_opt = &argv[argi][2];
-      opt_arg = long_opt;
+      char *opt_arg = long_opt;
       while ((*opt_arg != '=') && (*opt_arg != '\0')) {
         ++opt_arg;
       }

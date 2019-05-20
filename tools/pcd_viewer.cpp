@@ -249,8 +249,8 @@ main (int argc, char** argv)
   bool fcolorparam = pcl::console::parse_multiple_3x_arguments (argc, argv, "-fc", fcolor_r, fcolor_g, fcolor_b);
 
   std::vector<double> pose_x, pose_y, pose_z, pose_roll, pose_pitch, pose_yaw;
-  bool poseparam = pcl::console::parse_multiple_3x_arguments (argc, argv, "-position", pose_x, pose_y, pose_z);
-  poseparam &= pcl::console::parse_multiple_3x_arguments (argc, argv, "-orientation", pose_roll, pose_pitch, pose_yaw);
+  pcl::console::parse_multiple_3x_arguments (argc, argv, "-position", pose_x, pose_y, pose_z);
+  pcl::console::parse_multiple_3x_arguments (argc, argv, "-orientation", pose_roll, pose_pitch, pose_yaw);
 
   std::vector<int> psize;
   pcl::console::parse_multiple_arguments (argc, argv, "-ps", psize);
@@ -730,7 +730,6 @@ main (int argc, char** argv)
       {
         if (p->wasStopped ())
         {
-          stopped = true;
           break;
         }
         p->spinOnce ();

@@ -600,7 +600,6 @@ pcl::getRandomColor (double min, double max)
   double r, g, b;
   do
   {
-    sum = 0;
     r = (rand () % stepRGBA) / static_cast<double> (stepRGBA);
     while ((g = (rand () % stepRGBA) / static_cast<double> (stepRGBA)) == r) {}
     while (((b = (rand () % stepRGBA) / static_cast<double> (stepRGBA)) == r) && (b == g)) {}

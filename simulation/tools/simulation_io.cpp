@@ -270,12 +270,6 @@ pcl::simulation::SimExample::write_depth_image_uint(const float* depth_buffer, s
       if ( z_new < 18000){
 	  cout << z_new << " " << d << " " << x << "\n";  
       }
-	
-      float z = 1000*( -zf*zn/((zf-zn)*(d - zf/(zf-zn))));
-      float b = 0.075;
-      float f = 580.0;
-      uint16_t kd = static_cast<uint16_t>(1090 - b*f/z*8);
-      if (kd>2047) kd = 2047;
 
       depth_img[i] = z_new;
     }

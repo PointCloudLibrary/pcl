@@ -548,12 +548,10 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
 
       if (row >= int (m_cloud->height) || row < 0)
       {
-        j = max_length;
         break;
       }
       if (col >= int (m_cloud->width) || col < 0)
       {
-        j = max_length;
         break;
       }
 

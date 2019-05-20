@@ -394,11 +394,11 @@ int main(int argc, char ** argv)
           // Continue with the next depth entry
           continue;
         }
-        if(found == 0)
-        {
-          std::cout << "We couldn't find a Depth file for this RGB image" << std::endl;
-        }
       } //for depth_paths
+      if(found == 0)
+      {
+        std::cout << "We couldn't find a Depth file for this RGB image" << std::endl;
+      }
     } //if ret = 2 or 3
   } //for rgb paths
   return 0;

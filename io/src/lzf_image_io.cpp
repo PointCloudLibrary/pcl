@@ -458,7 +458,6 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
 #endif
   raw_close (fd);
 
-  data_size = compressed_size;      // We only care about this from here on
   return (true);
 }
 

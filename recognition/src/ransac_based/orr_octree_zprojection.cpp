@@ -177,7 +177,6 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
     float best_min = (*node)->getBounds ()[4];
     float best_max = (*node)->getBounds ()[5];
     float cur_min = best_min;
-    float cur_max = best_max;
     int id_z1 = (*node)->getData ()->get3dIdZ ();
     int maxlen = 1;
     int len = 1;
@@ -186,7 +185,7 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
     for ( ++node ; node != full_set->get_nodes ().end () ; ++node )
     {
       int id_z2 = (*node)->getData ()->get3dIdZ ();
-      cur_max = (*node)->getBounds()[5];
+      float cur_max = (*node)->getBounds()[5];
 
       if ( id_z2 - id_z1 > 1 ) // This connected component is over
       {

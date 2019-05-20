@@ -223,22 +223,18 @@ pcl::RobotEyeGrabber::computeXYZI (pcl::PointXYZI& point, unsigned char* point_d
   double range = 0.0;
   uint16_t intensity = 0;
 
-  buffer = 0x00;
   buffer = point_data[0] << 8;
   buffer |= point_data[1]; // First 2-byte read will be Azimuth
   az = (buffer / 100.0);
 
-  buffer = 0x00;
   buffer =  point_data[2] << 8;
   buffer |= point_data[3]; // Second 2-byte read will be Elevation
   el = (signed short int)buffer / 100.0;
 
-  buffer = 0x00;
   buffer =  point_data[4] << 8;
   buffer |= point_data[5]; // Third 2-byte read will be Range
   range = (signed short int)buffer / 100.0;
 
-  buffer = 0x00;
   buffer =  point_data[6] << 8;
   buffer |= point_data[7]; // Fourth 2-byte read will be Intensity
   intensity = buffer;
@@ -253,9 +249,7 @@ pcl::RobotEyeGrabber::computeXYZI (pcl::PointXYZI& point, unsigned char* point_d
 void
 pcl::RobotEyeGrabber::computeTimestamp (boost::uint32_t& timestamp, unsigned char* point_data)
 {
-  boost::uint32_t buffer = 0;
-
-  buffer = 0x00;
+  boost::uint32_t buffer;
   buffer = point_data[0] << 24;
   buffer |= point_data[1] << 16;
   buffer |= point_data[2] << 8;
