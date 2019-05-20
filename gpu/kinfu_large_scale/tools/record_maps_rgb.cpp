@@ -32,21 +32,22 @@
  *  Author: Raphael Favier, Technical University Eindhoven, (r.mysurname < aT > tue.nl)
  */
 
-#include <csignal>
-#include <ctime>
-#include <thread>
-
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
-#include <boost/thread/condition.hpp>
-#include <boost/circular_buffer.hpp>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h> //fps calculations
-
 #include <pcl/gpu/containers/kernel_containers.h>
 #include <pcl/io/png_io.h>
 #include <pcl/console/print.h>
+
+#include <boost/circular_buffer.hpp>
+
+#include <condition_variable>
+#include <csignal>
+#include <ctime>
+#include <mutex>
+#include <thread>
 
 using namespace std::chrono_literals;
 
@@ -66,7 +67,7 @@ do \
 }while(false)
 
 bool is_done = false;
-boost::mutex io_mutex;
+std::mutex io_mutex;
 
 const int BUFFER_SIZE = 1000;
 static int counter = 1;
@@ -98,21 +99,21 @@ class MapsBuffer
     inline bool 
     isFull ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       return (buffer_.full ());
     }
                 
     inline bool
     isEmpty ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       return (buffer_.empty ());
     }
                 
     inline int 
     getSize ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       return (int (buffer_.size ()));
     }
                 
@@ -125,7 +126,7 @@ class MapsBuffer
     inline void 
     setCapacity (int buff_size)
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       buffer_.set_capacity (buff_size);
     }
   
@@ -133,8 +134,8 @@ class MapsBuffer
     MapsBuffer (const MapsBuffer&) = delete; // Disabled copy constructor
     MapsBuffer& operator =(const MapsBuffer&) = delete; // Disabled assignment operator
 
-    boost::mutex bmutex_;
-    boost::condition_variable buff_empty_;
+    std::mutex bmutex_;
+    std::condition_variable buff_empty_;
     boost::circular_buffer<boost::shared_ptr<const MapsRgb> > buffer_;                                     
 
 };
@@ -146,7 +147,7 @@ MapsBuffer::pushBack(boost::shared_ptr<const MapsRgb> maps_rgb )
 {
   bool retVal = false;
   {
-    boost::mutex::scoped_lock buff_lock (bmutex_);
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
     if (!buffer_.full ())
       retVal = true;
     buffer_.push_back (maps_rgb);
@@ -162,13 +163,13 @@ MapsBuffer::getFront(bool print)
 {
   boost::shared_ptr< const MapsBuffer::MapsRgb > depth_rgb;
   {
-    boost::mutex::scoped_lock buff_lock (bmutex_);
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
     while (buffer_.empty ())
     {
       if (is_done)
         break;
       {
-        boost::mutex::scoped_lock io_lock (io_mutex);
+        std::lock_guard<std::mutex> io_lock (io_mutex);
               //std::cout << "No data in buffer_ yet or buffer is empty." << std::endl;
       }
       buff_empty_.wait (buff_lock);
@@ -242,7 +243,7 @@ grabberMapsCallBack(const boost::shared_ptr<openni_wrapper::Image>& image_wrappe
   if (!buff.pushBack (ptr))
   {
     {
-      boost::mutex::scoped_lock io_lock(io_mutex);
+      std::lock_guard<std::mutex> io_lock(io_mutex);
       PCL_WARN ("Warning! Buffer was full, overwriting data\n");
     }
   }
@@ -287,7 +288,7 @@ receiveAndProcess ()
   }
 
   {
-    boost::mutex::scoped_lock io_lock (io_mutex);
+    std::lock_guard<std::mutex> io_lock (io_mutex);
     PCL_INFO ("Writing remaining %d maps in the buffer to disk...\n", buff.getSize ());
   }
   while (!buff.isEmpty ())
@@ -300,7 +301,7 @@ receiveAndProcess ()
 void 
 ctrlC (int)
 {
-  boost::mutex::scoped_lock io_lock (io_mutex);
+  std::lock_guard<std::mutex> io_lock (io_mutex);
   std::cout << std::endl;
   PCL_WARN ("Ctrl-C detected, exit condition set to true\n");
   is_done = true;
@@ -331,7 +332,7 @@ main (int argc, char** argv)
   signal (SIGINT, ctrlC);
   producer.join ();
   {
-    boost::mutex::scoped_lock io_lock (io_mutex);
+    std::lock_guard<std::mutex> io_lock (io_mutex);
     PCL_WARN ("Producer done\n");
   }
   consumer.join ();

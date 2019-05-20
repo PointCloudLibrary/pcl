@@ -890,7 +890,7 @@ struct KinFuLSApp
   void source_cb1(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper)  
   {        
     {
-      boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+      std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
       if (exit_ || !lock)
         return;
 
@@ -908,7 +908,7 @@ struct KinFuLSApp
   void source_cb2(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
   {
     {
-      boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+      std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
 
       if (exit_ || !lock)
       {
@@ -939,7 +939,7 @@ struct KinFuLSApp
   {
     {                             
       //std::cout << "Giving colors1\n";
-      boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+      std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
       //std::cout << lock << std::endl; //causes compile errors 
       if (exit_ || !lock)
         return;
@@ -994,7 +994,7 @@ struct KinFuLSApp
     boost::signals2::connection c = pcd_source_? capture_.registerCallback (func3) : need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
 
     {
-      boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
+      std::unique_lock<std::mutex> lock(data_ready_mutex_);
 
       if (!triggered_capture) 
         capture_.start ();
@@ -1109,8 +1109,8 @@ struct KinFuLSApp
 
   Evaluation::Ptr evaluation_ptr_;
 
-  boost::mutex data_ready_mutex_;
-  boost::condition_variable data_ready_cond_;
+  std::mutex data_ready_mutex_;
+  std::condition_variable data_ready_cond_;
 
   std::vector<pcl::gpu::kinfuLS::PixelRGB> source_image_data_;
   std::vector<unsigned short> source_depth_data_;
