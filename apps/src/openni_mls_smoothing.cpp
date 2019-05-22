@@ -42,7 +42,7 @@
 #include <pcl/common/time.h>
 #include <pcl/surface/mls.h>
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 #define FPS_CALC(_WHAT_) \
 do \
@@ -163,7 +163,7 @@ class OpenNISmoothing
     pcl::MovingLeastSquares<PointType, PointType> smoother_;
     pcl::visualization::PCLVisualizer viewer;
     std::string device_id_;
-    boost::mutex mtx_;
+    std::mutex mtx_;
     CloudConstPtr cloud_;
     CloudPtr cloud_smoothed_;
     int viewport_input_, viewport_smoothed_;

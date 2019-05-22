@@ -40,15 +40,16 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
-
 #include <pcl/pcl_exports.h>
 #include <pcl/common/time.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
 #include <pcl/apps/in_hand_scanner/opengl_viewer.h>
+
+#include <mutex>
+#include <vector>
+#include <string>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
@@ -190,10 +191,10 @@ namespace pcl
         //////////////////////////////////////////////////////////////////////////
 
         /** \brief Synchronization. */
-        boost::mutex mutex_;
+        std::mutex mutex_;
 
         /** \brief Wait until the data finished processing. */
-        boost::mutex mutex_quit_;
+        std::mutex mutex_quit_;
 
         /** \brief Please have a look at the documentation of ComputationFPS. */
         ComputationFPS computation_fps_;

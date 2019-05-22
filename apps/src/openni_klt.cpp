@@ -44,7 +44,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/harris_2d.h>
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 #define SHOW_FPS 1
 #if SHOW_FPS
@@ -136,7 +136,7 @@ class OpenNIViewer
     cloud_callback (const CloudConstPtr& cloud)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
       // Compute Tomasi keypoints
       tracker_->setInputCloud (cloud_);
@@ -157,7 +157,7 @@ class OpenNIViewer
     image_callback (const openni_wrapper::Image::Ptr& image)
     {
       FPS_CALC ("image callback");
-      boost::mutex::scoped_lock lock (image_mutex_);
+      std::lock_guard<std::mutex> lock (image_mutex_);
       image_ = image;
 
       if (image->getEncoding () != openni_wrapper::Image::RGB)
@@ -182,7 +182,7 @@ class OpenNIViewer
       {
         if ((event.getKeyCode () == 's') || (event.getKeyCode () == 'S'))
         {
-          boost::mutex::scoped_lock lock (cloud_mutex_);
+          std::lock_guard<std::mutex> lock (cloud_mutex_);
           frame.str ("frame-");
           frame << boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ()) << ".pcd";
           writer.writeBinaryCompressed (frame.str (), *cloud_);
@@ -295,9 +295,9 @@ class OpenNIViewer
     pcl::visualization::ImageViewer::Ptr image_viewer_;
 
     pcl::Grabber& grabber_;
-    boost::mutex cloud_mutex_;
-    boost::mutex image_mutex_;
-    boost::mutex points_mutex_;
+    std::mutex cloud_mutex_;
+    std::mutex image_mutex_;
+    std::mutex points_mutex_;
 
     CloudConstPtr cloud_;
     openni_wrapper::Image::Ptr image_;

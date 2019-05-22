@@ -214,7 +214,7 @@ class PeoplePCDApp
     void source_cb1(const boost::shared_ptr<const PointCloud<PointXYZRGBA> >& cloud)
     {
       {          
-        boost::mutex::scoped_lock lock(data_ready_mutex_);
+        std::lock_guard<std::mutex> lock(data_ready_mutex_);
         if (exit_)
           return;
 
@@ -226,7 +226,7 @@ class PeoplePCDApp
     void source_cb2(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
     {
       {                    
-        boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+        std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
 
         if (exit_ || !lock)
           return;
@@ -286,7 +286,7 @@ class PeoplePCDApp
       boost::signals2::connection c = cloud_cb_ ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
 
       {
-        boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
+        std::unique_lock<std::mutex> lock(data_ready_mutex_);
         
         try 
         { 
@@ -319,8 +319,8 @@ class PeoplePCDApp
       c.disconnect();
     }
 
-    boost::mutex data_ready_mutex_;
-    boost::condition_variable data_ready_cond_;
+    std::mutex data_ready_mutex_;
+    std::condition_variable data_ready_cond_;
 
     pcl::Grabber& capture_;
     

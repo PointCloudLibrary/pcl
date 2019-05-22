@@ -53,12 +53,11 @@
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
-//#include <pcl/stereo/stereo_grabber.h>
 #include <pcl/stereo/stereo_matching.h>
 #include <pcl/segmentation/ground_plane_comparator.h>
 #include <pcl/segmentation/euclidean_cluster_comparator.h>
 
-
+#include <mutex>
 
 typedef pcl::PointXYZRGB PointT;
 typedef pcl::PointCloud<PointT> Cloud;
@@ -81,7 +80,7 @@ class HRCSSegmentation
     pcl::PointCloud<PointT>::ConstPtr prev_label_image;
     Eigen::Vector4f prev_ground_normal;
     Eigen::Vector4f prev_ground_centroid;
-    boost::mutex cloud_mutex;
+    std::mutex cloud_mutex;
 
     pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
     pcl::GroundPlaneComparator<PointT, pcl::Normal>::Ptr road_comparator;

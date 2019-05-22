@@ -40,16 +40,17 @@
 
 #pragma once
 
-#include <iomanip>
-#include <string>
-
-#include <QGLWidget>
-
 #include <pcl/pcl_exports.h>
 #include <pcl/common/time.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
+
+#include <QGLWidget>
+
+#include <mutex>
+#include <iomanip>
+#include <string>
 
 namespace pcl
 {
@@ -392,7 +393,7 @@ namespace pcl
         ////////////////////////////////////////////////////////////////////////
 
         /** \brief Synchronization. */
-        boost::mutex mutex_vis_;
+        std::mutex mutex_vis_;
 
         /** \brief Visualization timer. */
         boost::shared_ptr <QTimer> timer_vis_;

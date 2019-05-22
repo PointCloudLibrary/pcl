@@ -81,8 +81,8 @@ pcl::ihs::OfflineIntegration::OfflineIntegration (Base* parent)
 
 pcl::ihs::OfflineIntegration::~OfflineIntegration ()
 {
-  boost::mutex::scoped_lock lock (mutex_);
-  boost::mutex::scoped_lock lock_quit (mutex_quit_);
+  std::lock_guard<std::mutex> lock (mutex_);
+  std::lock_guard<std::mutex> lock_quit (mutex_quit_);
   destructor_called_ = true;
 }
 
@@ -146,10 +146,10 @@ pcl::ihs::OfflineIntegration::computationThread ()
     std::cerr << "Processing file " << std::setw (5) << i+1 << " / " << filenames.size () << std::endl;
 
     {
-      boost::mutex::scoped_lock lock (mutex_);
+      std::lock_guard<std::mutex> lock (mutex_);
       if (destructor_called_) return;
     }
-    boost::mutex::scoped_lock lock_quit (mutex_quit_);
+    std::unique_lock<std::mutex> lock_quit (mutex_quit_);
 
     CloudXYZRGBNormalPtr cloud_data (new CloudXYZRGBNormal ());
     if (!this->load (filenames [i], cloud_data, T))
@@ -168,7 +168,7 @@ pcl::ihs::OfflineIntegration::computationThread ()
 
     {
       lock_quit.unlock ();
-      boost::mutex::scoped_lock lock (mutex_);
+      std::lock_guard<std::mutex> lock (mutex_);
       if (destructor_called_) return;
 
       Base::addMesh (mesh_model_, "model", Eigen::Isometry3d (T.inverse ().cast <double> ()));
@@ -312,7 +312,7 @@ pcl::ihs::OfflineIntegration::paintEvent (QPaintEvent* event)
 
   std::string vis_fps ("Visualization: "), comp_fps ("Computation: ");
   {
-    boost::mutex::scoped_lock lock (mutex_);
+    std::lock_guard<std::mutex> lock (mutex_);
     this->calcFPS (visualization_fps_);
 
     vis_fps.append  (visualization_fps_.str ()).append (" fps");
@@ -331,7 +331,7 @@ pcl::ihs::OfflineIntegration::keyPressEvent (QKeyEvent* event)
 {
   if (event->key () == Qt::Key_Escape)
   {
-    boost::mutex::scoped_lock lock (mutex_);
+    std::lock_guard<std::mutex> lock (mutex_);
     QApplication::quit ();
   }
 

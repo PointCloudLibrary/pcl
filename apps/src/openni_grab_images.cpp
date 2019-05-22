@@ -41,10 +41,13 @@
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <boost/filesystem.hpp>
 #include <pcl/visualization/vtk.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/common/float_image_utils.h>
+
+#include <boost/filesystem.hpp>
+
+#include <mutex>
 
 using namespace pcl::console;
 using namespace boost::filesystem;
@@ -76,7 +79,7 @@ class OpenNIGrabFrame
     image_callback (const openni_wrapper::Image::Ptr &image,
                     const openni_wrapper::DepthImage::Ptr &depth_image, float)
     {
-      boost::mutex::scoped_lock lock (image_mutex_);
+      std::lock_guard<std::mutex> lock (image_mutex_);
       image_ = image;
       depth_image_ = depth_image;
       lock.unlock ();
@@ -293,7 +296,7 @@ class OpenNIGrabFrame
     bool quit_;
     bool continuous_;
     bool trigger_;
-    mutable boost::mutex image_mutex_;
+    mutable std::mutex image_mutex_;
     openni_wrapper::Image::Ptr image_;
     openni_wrapper::DepthImage::Ptr depth_image_;
     vtkSmartPointer<vtkImageImport> importer_, depth_importer_;

@@ -138,7 +138,6 @@ GrabCutHelper::setTrimap(int x1, int y1, int x2, int y2, const pcl::segmentation
 void
 GrabCutHelper::refine ()
 {
-//  boost::lock_guard<boost::mutex> lock (refine_mutex);
   pcl::GrabCut<pcl::PointXYZRGB>::refine ();
   buildImages ();
 }
@@ -147,7 +146,6 @@ GrabCutHelper::refine ()
 int
 GrabCutHelper::refineOnce ()
 {
-  //  boost::lock_guard<boost::mutex> lock (refine_once_mutex);
   int result = pcl::GrabCut<pcl::PointXYZRGB>::refineOnce ();
   buildImages ();
   return (result);
@@ -157,7 +155,6 @@ GrabCutHelper::refineOnce ()
 void
 GrabCutHelper::fitGMMs ()
 {
-//  boost::lock_guard<boost::mutex> lock (fit_gmms_mutex);
   pcl::GrabCut<pcl::PointXYZRGB>::fitGMMs ();
   buildImages ();
 }
