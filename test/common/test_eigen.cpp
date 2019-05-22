@@ -680,6 +680,26 @@ TEST (PCL, eigen33d)
   const Scalar epsilon = 2e-5;
   const unsigned iterations = 1000000;
 
+
+  ////special case
+  r_matrix.setZero();
+  r_matrix.col(0)[0] = 3;
+  r_matrix.col(1)[1] = 2;
+  r_matrix.col(2)[2] = 1;
+  c_matrix = r_matrix;
+
+  eigen33(r_matrix, r_vectors, r_eigenvalues);
+  //check if the main vector is the positive Z direction. In this case it is equal to (0,0,1)
+  EXPECT_LE(fabs(r_vectors.col(0)[0]), epsilon);
+  EXPECT_LE(fabs(r_vectors.col(0)[1]), epsilon);
+  EXPECT_LE(fabs(r_vectors.col(0)[2] - 1), epsilon);
+
+  eigen33(c_matrix, c_vectors, c_eigenvalues);
+  EXPECT_LE(fabs(c_vectors.col(0)[0]), epsilon);
+  EXPECT_LE(fabs(c_vectors.col(0)[1]), epsilon);
+  EXPECT_LE(fabs(c_vectors.col(0)[2] - 1), epsilon);
+
+
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
