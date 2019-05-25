@@ -259,7 +259,7 @@ class PeoplePCDApp
           capture_.start ();
           while (!exit_ && !final_view_.wasStopped())
           {
-            bool has_data = data_ready_cond_.timed_wait(lock, boost::posix_time::millisec(100));
+            bool has_data = (data_ready_cond_.wait_for(lock, 100ms) == std::cv_status::no_timeout);
             if(has_data)
             {
               SampledScopeTime fps(time_ms_);

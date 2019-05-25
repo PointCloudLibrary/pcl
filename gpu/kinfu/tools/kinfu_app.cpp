@@ -993,7 +993,7 @@ struct KinFuApp
       { 
         if (triggered_capture)
             capture_.start(); // Triggers new frame
-        bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));        
+        bool has_data = (data_ready_cond_.wait_for(lock, 100ms) == std::cv_status::no_timeout);
                        
         try { this->execute (depth_, rgb24_, has_data); }
         catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
