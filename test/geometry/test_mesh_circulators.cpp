@@ -64,7 +64,7 @@ class TestMeshCirculators : public ::testing::Test
       typedef pcl::geometry::NoData HalfEdgeData;
       typedef pcl::geometry::NoData EdgeData;
       typedef pcl::geometry::NoData FaceData;
-      typedef boost::true_type      IsManifold;
+      typedef std::true_type      IsManifold;
     };
 
     typedef pcl::geometry::TriangleMesh <MeshTraits>     Mesh;

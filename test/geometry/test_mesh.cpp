@@ -67,7 +67,7 @@ struct MeshTraits
     typedef pcl::geometry::NoData                        HalfEdgeData;
     typedef pcl::geometry::NoData                        EdgeData;
     typedef pcl::geometry::NoData                        FaceData;
-    typedef boost::integral_constant <bool, IsManifoldT> IsManifold;
+    typedef std::integral_constant <bool, IsManifoldT> IsManifold;
 };
 
 typedef pcl::geometry::TriangleMesh <MeshTraits <true > > ManifoldTriangleMesh;
