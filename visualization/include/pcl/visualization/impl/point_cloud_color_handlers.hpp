@@ -73,6 +73,47 @@ pcl::visualization::PointCloudColorHandlerCustom<PointT>::getColor (vtkSmartPoin
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::visualization::PointCloudColorHandlerCustomIndividual<PointT>::setInputCloud (
+    const PointCloudConstPtr &cloud)
+{
+  PointCloudColorHandler<PointT>::setInputCloud (cloud);
+  
+  if (cloud_->points.size () == rgb_values_.size())
+    capable_ = true;
+  else
+    capable_ = false;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::visualization::PointCloudColorHandlerCustomIndividual<PointT>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+{
+  if (!capable_ || !cloud_)
+    return (false);
+
+  if (!scalars)
+    scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  scalars->SetNumberOfComponents (3);
+  
+  vtkIdType nr_points = cloud_->points.size ();
+  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
+
+  // Get a random color
+  unsigned char* colors = new unsigned char[nr_points * 3];
+
+  // Color every point
+  for (vtkIdType cp = 0; cp < nr_points; ++cp)
+  {
+    colors[cp * 3 + 0] = static_cast<unsigned char> (rgb_values_[cp].r * 255);
+    colors[cp * 3 + 1] = static_cast<unsigned char> (rgb_values_[cp].g * 255);
+    colors[cp * 3 + 2] = static_cast<unsigned char> (rgb_values_[cp].b * 255);
+  }
+  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * nr_points, 0);
+  return (true);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::visualization::PointCloudColorHandlerRandom<PointT>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
