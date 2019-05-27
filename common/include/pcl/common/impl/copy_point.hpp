@@ -77,7 +77,7 @@ namespace pcl
     struct CopyPointHelper { };
 
     template <typename PointInT, typename PointOutT>
-    struct CopyPointHelper<PointInT, PointOutT, typename boost::enable_if<boost::is_same<PointInT, PointOutT> >::type>
+    struct CopyPointHelper<PointInT, PointOutT, std::enable_if_t<std::is_same<PointInT, PointOutT>::value>>
     {
       void operator () (const PointInT& point_in, PointOutT& point_out) const
       {
@@ -87,13 +87,13 @@ namespace pcl
 
     template <typename PointInT, typename PointOutT>
     struct CopyPointHelper<PointInT, PointOutT,
-                           typename boost::enable_if<boost::mpl::and_<boost::mpl::not_<boost::is_same<PointInT, PointOutT> >,
-                                                                      boost::mpl::or_<boost::mpl::not_<pcl::traits::has_color<PointInT> >,
-                                                                                      boost::mpl::not_<pcl::traits::has_color<PointOutT> >,
-                                                                                      boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
-                                                                                                       pcl::traits::has_field<PointOutT, pcl::fields::rgb> >,
-                                                                                      boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgba>,
-                                                                                                       pcl::traits::has_field<PointOutT, pcl::fields::rgba> > > > >::type>
+                           std::enable_if_t<boost::mpl::and_<boost::mpl::not_<std::is_same<PointInT, PointOutT>>,
+                                                             boost::mpl::or_<boost::mpl::not_<pcl::traits::has_color<PointInT>>,
+                                                                             boost::mpl::not_<pcl::traits::has_color<PointOutT>>,
+                                                                             boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
+                                                                                              pcl::traits::has_field<PointOutT, pcl::fields::rgb>>,
+                                                                             boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgba>,
+                                                                                              pcl::traits::has_field<PointOutT, pcl::fields::rgba>>>>::value>>
     {
       void operator () (const PointInT& point_in, PointOutT& point_out) const
       {
@@ -106,11 +106,11 @@ namespace pcl
 
     template <typename PointInT, typename PointOutT>
     struct CopyPointHelper<PointInT, PointOutT,
-                           typename boost::enable_if<boost::mpl::and_<boost::mpl::not_<boost::is_same<PointInT, PointOutT> >,
-                                                                      boost::mpl::or_<boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
-                                                                                                       pcl::traits::has_field<PointOutT, pcl::fields::rgba> >,
-                                                                                      boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgba>,
-                                                                                                       pcl::traits::has_field<PointOutT, pcl::fields::rgb> > > > >::type>
+                           std::enable_if_t<boost::mpl::and_<boost::mpl::not_<std::is_same<PointInT, PointOutT>>,
+                                            boost::mpl::or_<boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
+                                                                             pcl::traits::has_field<PointOutT, pcl::fields::rgba>>,
+                                                            boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgba>,
+                                                                             pcl::traits::has_field<PointOutT, pcl::fields::rgb>>>>::value>>
     {
       void operator () (const PointInT& point_in, PointOutT& point_out) const
       {
