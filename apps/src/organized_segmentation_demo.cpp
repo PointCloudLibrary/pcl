@@ -256,7 +256,7 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo (pcl::Grabber& grabber) : g
   euclidean_cluster_comparator_ = boost::make_shared<pcl::EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label> > ();
 
   // Set up Organized Multi Plane Segmentation
-  mps.setMinInliers (10000);
+  mps.setMinInliers (10000u);
 
 
   PCL_INFO ("starting grabber\n");
