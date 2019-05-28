@@ -308,7 +308,7 @@ OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
   {
     pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSetPtr plane_labels = boost::make_shared<pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSet> ();
     for (size_t i = 0; i < label_indices.size (); ++i)
-      if (label_indices[i].indices.size () > 10000)
+      if (label_indices[i].indices.size () > mps.getMinInliers())
         plane_labels->insert (i);
 
     euclidean_cluster_comparator_->setInputCloud (cloud);
