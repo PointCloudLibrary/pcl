@@ -44,6 +44,8 @@
 #include <pcl/registration/registration.h>
 #include <pcl/features/ppf.h>
 
+#include <unordered_map>
+
 namespace pcl
 {
   class PCL_EXPORTS PPFHashMapSearch
@@ -64,7 +66,7 @@ namespace pcl
           this->second.second.second = d;
         }
       };
-      typedef boost::unordered_multimap<HashKeyStruct, std::pair<size_t, size_t> > FeatureHashMapType;
+      typedef std::unordered_multimap<HashKeyStruct, std::pair<size_t, size_t>, boost::hash<HashKeyStruct>> FeatureHashMapType;
       typedef boost::shared_ptr<FeatureHashMapType> FeatureHashMapTypePtr;
       typedef boost::shared_ptr<PPFHashMapSearch> Ptr;
 

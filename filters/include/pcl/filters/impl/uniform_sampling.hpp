@@ -133,8 +133,8 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   output.points.resize (leaves_.size ());
   int cp = 0;
 
-  for (typename boost::unordered_map<size_t, Leaf>::const_iterator it = leaves_.begin (); it != leaves_.end (); ++it)
-    output.points[cp++] = input_->points[it->second.idx];
+  for (const auto& leaf : leaves_)
+    output.points[cp++] = input_->points[leaf.second.idx];
   output.width = static_cast<uint32_t> (output.points.size ());
 }
 

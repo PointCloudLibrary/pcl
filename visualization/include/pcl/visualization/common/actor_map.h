@@ -37,15 +37,16 @@
 
 #pragma once
 
+#include <pcl/visualization/boost.h>
 #include <pcl/visualization/point_cloud_handlers.h>
-#include <vector>
-#include <map>
 #include <pcl/PCLPointCloud2.h>
-#include <boost/unordered_map.hpp>
+
 #include <vtkLODActor.h>
 #include <vtkSmartPointer.h>
-#include <pcl/PCLPointCloud2.h>
-#include <pcl/visualization/boost.h>
+
+#include <map>
+#include <unordered_map>
+#include <vector>
 
 template <typename T> class vtkSmartPointer;
 class vtkLODActor;
@@ -96,13 +97,13 @@ namespace pcl
         vtkSmartPointer<vtkIdTypeArray> cells;
     };
 
-    typedef boost::unordered_map<std::string, CloudActor> CloudActorMap;
+    typedef std::unordered_map<std::string, CloudActor> CloudActorMap;
     typedef boost::shared_ptr<CloudActorMap> CloudActorMapPtr;
 
-    typedef boost::unordered_map<std::string, vtkSmartPointer<vtkProp> > ShapeActorMap;
+    typedef std::unordered_map<std::string, vtkSmartPointer<vtkProp> > ShapeActorMap;
     typedef boost::shared_ptr<ShapeActorMap> ShapeActorMapPtr;
 
-    typedef boost::unordered_map<std::string, vtkSmartPointer<vtkProp> > CoordinateActorMap;
+    typedef std::unordered_map<std::string, vtkSmartPointer<vtkProp> > CoordinateActorMap;
     typedef boost::shared_ptr<CoordinateActorMap> CoordinateActorMapPtr;
   }
 }

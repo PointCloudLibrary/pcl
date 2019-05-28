@@ -40,7 +40,7 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
@@ -113,7 +113,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
          best_transformation_.setIdentity ();
          return;
        }
-       boost::unordered_map<int, int> index_to_correspondence;
+       std::unordered_map<int, int> index_to_correspondence;
        for (int i = 0; i < nr_correspondences; ++i)
          index_to_correspondence[original_correspondences[i].index_query] = i;
 
