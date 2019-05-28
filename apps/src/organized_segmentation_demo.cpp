@@ -324,7 +324,7 @@ OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
 
     for (const auto &euclidean_label_index : euclidean_label_indices)
     {
-      if (euclidean_label_index.indices.size () > 1000)
+      if (euclidean_label_index.indices.size () > 1000u)
       {
         pcl::PointCloud<PointT> cluster;
         pcl::copyPointCloud (*cloud, euclidean_label_index.indices,cluster);
