@@ -20,7 +20,7 @@ displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allo
   unsigned char grn [6] = {  0, 255,   0, 255,   0, 255};
   unsigned char blu [6] = {  0,   0, 255,   0, 255, 255};
 
-  pcl::PointCloud<PointT>::Ptr contour = boost::make_shared<pcl::PointCloud<PointT> > ();
+  pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT>);
 
   for (size_t i = 0; i < regions.size (); i++)
   {
@@ -54,7 +54,7 @@ displayEuclideanClusters (const pcl::PointCloud<PointT>::CloudVectorType &cluste
   for (size_t i = 0; i < clusters.size (); i++)
   {
     sprintf (name, "cluster_%d" , int (i));
-    pcl::PointCloud<PointT>::ConstPtr cluster_cloud = boost::make_shared<pcl::PointCloud<PointT> > (clusters[i]);
+    pcl::PointCloud<PointT>::ConstPtr cluster_cloud (new pcl::PointCloud<PointT> (clusters[i]));
     pcl::visualization::PointCloudColorHandlerCustom<PointT> color0(cluster_cloud,red[i%6],grn[i%6],blu[i%6]);
     if (!viewer->updatePointCloud (cluster_cloud,color0,name))
       viewer->addPointCloud (cluster_cloud,color0,name);
@@ -205,7 +205,7 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo (pcl::Grabber& grabber) : g
   ui_->setupUi (this);
 
   this->setWindowTitle ("PCL Organized Connected Component Segmentation Demo");
-  vis_ = boost::make_shared<pcl::visualization::PCLVisualizer> ("", false);
+  vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
   ui_->qvtk_widget->SetRenderWindow (vis_->getRenderWindow ());
   vis_->setupInteractor (ui_->qvtk_widget->GetInteractor (), ui_->qvtk_widget->GetRenderWindow ());
   vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
@@ -249,11 +249,11 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo (pcl::Grabber& grabber) : g
   ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
   ne.setNormalSmoothingSize (20.0f);
 
-  plane_comparator_ = boost::make_shared<pcl::PlaneCoefficientComparator<PointT, pcl::Normal> > ();
-  euclidean_comparator_ = boost::make_shared<pcl::EuclideanPlaneCoefficientComparator<PointT, pcl::Normal> > ();
-  rgb_comparator_ = boost::make_shared<pcl::RGBPlaneCoefficientComparator<PointT, pcl::Normal> > ();
-  edge_aware_comparator_ = boost::make_shared<pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal> > ();
-  euclidean_cluster_comparator_ = boost::make_shared<pcl::EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label> > ();
+  plane_comparator_.reset (new pcl::PlaneCoefficientComparator<PointT, pcl::Normal> ());
+  euclidean_comparator_.reset (new pcl::EuclideanPlaneCoefficientComparator<PointT, pcl::Normal> ());
+  rgb_comparator_.reset (new pcl::RGBPlaneCoefficientComparator<PointT, pcl::Normal> ());
+  edge_aware_comparator_.reset (new pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal> ());
+  euclidean_cluster_comparator_ = pcl::EuclideanClusterComparator<PointT, pcl::Label>::Ptr (new pcl::EuclideanClusterComparator<PointT, pcl::Label> ());
 
   // Set up Organized Multi Plane Segmentation
   mps.setMinInliers (10000u);
@@ -272,7 +272,7 @@ OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
   FPS_CALC ("computation");
 
   // Estimate Normals
-  pcl::PointCloud<pcl::Normal>::Ptr normal_cloud = boost::make_shared<pcl::PointCloud<pcl::Normal> > ();
+  pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (new pcl::PointCloud<pcl::Normal>);
   ne.setInputCloud (cloud);
   ne.compute (*normal_cloud);
   float* distance_map = ne.getDistanceMap ();
@@ -285,7 +285,7 @@ OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
   std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allocator<pcl::PlanarRegion<PointT> > > regions;
   std::vector<pcl::ModelCoefficients> model_coefficients;
   std::vector<pcl::PointIndices> inlier_indices;
-  pcl::PointCloud<pcl::Label>::Ptr labels = boost::make_shared<pcl::PointCloud<pcl::Label> > ();
+  pcl::PointCloud<pcl::Label>::Ptr labels (new pcl::PointCloud<pcl::Label>);
   std::vector<pcl::PointIndices> label_indices;
   std::vector<pcl::PointIndices> boundary_indices;
   mps.setInputNormals (normal_cloud);
@@ -306,7 +306,7 @@ OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
 
   if (use_clustering_ && !regions.empty ())
   {
-    pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSetPtr plane_labels = boost::make_shared<pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSet> ();
+    pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSetPtr plane_labels (new pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSet);
     for (size_t i = 0; i < label_indices.size (); ++i)
       if (label_indices[i].indices.size () > mps.getMinInliers())
         plane_labels->insert (i);
