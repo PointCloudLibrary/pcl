@@ -223,7 +223,7 @@ function(PCL_ADD_LIBRARY _name)
   PCL_ADD_VERSION_INFO(${_name})
   target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
   # must link explicitly against boost.
-  target_link_libraries(${_name} ${Boost_LIBRARIES})
+  target_link_libraries(${_name} ${Boost_LIBRARIES} Threads::Threads)
   if((UNIX AND NOT ANDROID) OR MINGW)
     target_link_libraries(${_name} m)
   endif()
@@ -302,11 +302,7 @@ function(PCL_ADD_EXECUTABLE _name)
   endif()
   PCL_ADD_VERSION_INFO(${_name})
   # must link explicitly against boost.
-  if(UNIX AND NOT ANDROID)
-    target_link_libraries(${_name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
-  else()
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
-  endif()
+  target_link_libraries(${_name} ${Boost_LIBRARIES} Threads::Threads)
 
   if(WIN32 AND MSVC)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
@@ -384,12 +380,7 @@ macro(PCL_ADD_TEST _name _exename)
   #target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
   target_link_libraries(${_exename} ${PCL_ADD_TEST_LINK_WITH} ${CLANG_LIBRARIES})
 
-  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    target_link_libraries(${_exename} pthread)
-  elseif(UNIX AND NOT ANDROID)
-    # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
-    target_link_libraries(${_exename} pthread)
-  endif()
+  target_link_libraries(${_exename} Threads::Threads)
 
   # must link explicitly against boost only on Windows
   target_link_libraries(${_exename} ${Boost_LIBRARIES})
