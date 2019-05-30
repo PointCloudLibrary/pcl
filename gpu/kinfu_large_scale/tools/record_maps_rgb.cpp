@@ -163,7 +163,7 @@ MapsBuffer::getFront(bool print)
 {
   boost::shared_ptr< const MapsBuffer::MapsRgb > depth_rgb;
   {
-    std::lock_guard<std::mutex> buff_lock (bmutex_);
+    std::unique_lock<std::mutex> buff_lock (bmutex_);
     while (buffer_.empty ())
     {
       if (is_done)
