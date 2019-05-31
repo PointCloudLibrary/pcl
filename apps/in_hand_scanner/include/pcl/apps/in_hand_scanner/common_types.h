@@ -83,7 +83,7 @@ namespace pcl
       typedef pcl::geometry::NoData HalfEdgeData;
       typedef pcl::geometry::NoData EdgeData;
       typedef pcl::geometry::NoData FaceData;
-      typedef boost::true_type      IsManifold;
+      typedef std::true_type      IsManifold;
     };
 
     // NOTE: The drawMesh method in pcl::ihs::InHandScanner only supports triangles!

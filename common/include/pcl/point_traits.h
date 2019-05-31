@@ -45,8 +45,6 @@
 #include "pcl/pcl_macros.h"
 
 #include <pcl/PCLPointField.h>
-#include <boost/type_traits/remove_all_extents.hpp>
-#include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/assert.hpp>
 
 // This is required for the workaround at line 109
@@ -54,6 +52,8 @@
 #include <Eigen/Core>
 #include <Eigen/src/StlSupport/details.h>
 #endif
+
+#include <type_traits>
 
 namespace pcl
 {
@@ -98,7 +98,7 @@ namespace pcl
     // its scalar type and total number of elements.
     template<typename T> struct decomposeArray
     {
-      typedef typename boost::remove_all_extents<T>::type type;
+      typedef std::remove_all_extents_t<T> type;
       static const uint32_t value = sizeof (T) / sizeof (type);
     };
 
@@ -144,7 +144,7 @@ namespace pcl
       // static const char value[];
 
       // Avoid infinite compile-time recursion
-      BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
+      BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
 
@@ -156,7 +156,7 @@ namespace pcl
       // static const size_t value;
 
       // Avoid infinite compile-time recursion
-      BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
+      BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
 
@@ -170,7 +170,7 @@ namespace pcl
       // static const uint32_t size;
 
       // Avoid infinite compile-time recursion
-      BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
+      BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
 
@@ -182,20 +182,9 @@ namespace pcl
       // typedef boost::mpl::vector<...> type;
 
       // Avoid infinite compile-time recursion
-      BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
+      BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
-#if PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) == PCL_LINEAR_VERSION(4,4,3)
-    /*
-      At least on GCC 4.4.3, but not later versions, some valid usages of the above traits for
-      non-POD (but registered) point types fail with:
-      error: ‘!(bool)mpl_::bool_<false>::value’ is not a valid template argument for type ‘bool’ because it is a non-constant expression
-
-      "Priming the pump" with the trivial assertion below somehow fixes the problem...
-     */
-    //BOOST_MPL_ASSERT_MSG((!bool (mpl_::bool_<false>::value)), WTF_GCC443, (bool));
-    BOOST_MPL_ASSERT_MSG((!bool (boost::mpl::bool_<false>::value)), WTF_GCC443, (bool));
-#endif
   } //namespace traits
 
   // Return true if the PCLPointField matches the expected name and data type.

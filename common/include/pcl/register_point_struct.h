@@ -60,10 +60,10 @@
 #include <boost/preprocessor/seq/transform.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/comparison.hpp>
-#include <boost/utility.hpp>
-#include <boost/type_traits.hpp>
 #endif
-#include <stddef.h> //offsetof
+
+#include <cstddef> //offsetof
+#include <type_traits>
 
 // Must be used in global namespace with name fully qualified
 #define POINT_CLOUD_REGISTER_POINT_STRUCT(name, fseq)               \
@@ -94,102 +94,102 @@ namespace pcl
   namespace traits
   {
     template<typename T> inline
-    typename boost::disable_if_c<boost::is_array<T>::value>::type
+    std::enable_if_t<!std::is_array<T>::value>
     plus (T &l, const T &r)
     {
       l += r;
     }
 
     template<typename T> inline
-    typename boost::enable_if_c<boost::is_array<T>::value>::type
-    plus (typename boost::remove_const<T>::type &l, const T &r)
+    std::enable_if_t<std::is_array<T>::value>
+    plus (std::remove_const_t<T> &l, const T &r)
     {
-      typedef typename boost::remove_all_extents<T>::type type;
+      typedef std::remove_all_extents_t<T> type;
       static const uint32_t count = sizeof (T) / sizeof (type);
       for (int i = 0; i < count; ++i)
         l[i] += r[i];
     }
 
     template<typename T1, typename T2> inline
-    typename boost::disable_if_c<boost::is_array<T1>::value>::type
+    std::enable_if_t<!std::is_array<T1>::value>
     plusscalar (T1 &p, const T2 &scalar)
     {
       p += scalar;
     }
 
     template<typename T1, typename T2> inline
-    typename boost::enable_if_c<boost::is_array<T1>::value>::type
+    std::enable_if_t<std::is_array<T1>::value>
     plusscalar (T1 &p, const T2 &scalar)
     {
-      typedef typename boost::remove_all_extents<T1>::type type;
+      typedef std::remove_all_extents_t<T1> type;
       static const uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
         p[i] += scalar;
     }
 
     template<typename T> inline
-    typename boost::disable_if_c<boost::is_array<T>::value>::type
+    std::enable_if_t<!std::is_array<T>::value>
     minus (T &l, const T &r)
     {
       l -= r;
     }
 
     template<typename T> inline
-    typename boost::enable_if_c<boost::is_array<T>::value>::type
-    minus (typename boost::remove_const<T>::type &l, const T &r)
+    std::enable_if_t<std::is_array<T>::value>
+    minus (std::remove_const_t<T> &l, const T &r)
     {
-      typedef typename boost::remove_all_extents<T>::type type;
+      typedef std::remove_all_extents_t<T> type;
       static const uint32_t count = sizeof (T) / sizeof (type);
       for (int i = 0; i < count; ++i)
         l[i] -= r[i];
     }
 
     template<typename T1, typename T2> inline
-    typename boost::disable_if_c<boost::is_array<T1>::value>::type
+    std::enable_if_t<!std::is_array<T1>::value>
     minusscalar (T1 &p, const T2 &scalar)
     {
       p -= scalar;
     }
 
     template<typename T1, typename T2> inline
-    typename boost::enable_if_c<boost::is_array<T1>::value>::type
+    std::enable_if_t<std::is_array<T1>::value>
     minusscalar (T1 &p, const T2 &scalar)
     {
-      typedef typename boost::remove_all_extents<T1>::type type;
+      typedef std::remove_all_extents_t<T1> type;
       static const uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
         p[i] -= scalar;
     }
 
     template<typename T1, typename T2> inline
-    typename boost::disable_if_c<boost::is_array<T1>::value>::type
+    std::enable_if_t<!std::is_array<T1>::value>
     mulscalar (T1 &p, const T2 &scalar)
     {
       p *= scalar;
     }
 
     template<typename T1, typename T2> inline
-    typename boost::enable_if_c<boost::is_array<T1>::value>::type
+    std::enable_if_t<std::is_array<T1>::value>
     mulscalar (T1 &p, const T2 &scalar)
     {
-      typedef typename boost::remove_all_extents<T1>::type type;
+      typedef std::remove_all_extents_t<T1> type;
       static const uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
         p[i] *= scalar;
     }
 
     template<typename T1, typename T2> inline
-    typename boost::disable_if_c<boost::is_array<T1>::value>::type
+    std::enable_if_t<!std::is_array<T1>::value>
     divscalar (T1 &p, const T2 &scalar)
     {
       p /= scalar;
     }
 
     template<typename T1, typename T2> inline
-    typename boost::enable_if_c<boost::is_array<T1>::value>::type
+    std::enable_if_t<std::is_array<T1>::value>
     divscalar (T1 &p, const T2 &scalar)
     {
-      typedef typename boost::remove_all_extents<T1>::type type;
+      typedef std::remove_all_extents_t<T1> type;
       static const uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
         p[i] /= scalar;
@@ -231,7 +231,7 @@ namespace pcl
   /***/
 
 // Construct type traits given full sequence of (type, name, tag) triples
-//  BOOST_MPL_ASSERT_MSG(boost::is_pod<name>::value,
+//  BOOST_MPL_ASSERT_MSG(std::is_pod<name>::value,
 //                       REGISTERED_POINT_TYPE_MUST_BE_PLAIN_OLD_DATA, (name));
 #define POINT_CLOUD_REGISTER_POINT_STRUCT_I(name, seq)                           \
   namespace pcl                                                                  \
