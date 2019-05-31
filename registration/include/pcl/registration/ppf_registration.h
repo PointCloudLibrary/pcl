@@ -44,6 +44,8 @@
 #include <pcl/registration/registration.h>
 #include <pcl/features/ppf.h>
 
+#include <unordered_map>
+
 namespace pcl
 {
   class PCL_EXPORTS PPFHashMapSearch
@@ -56,6 +58,8 @@ namespace pcl
         */
       struct HashKeyStruct : public std::pair <int, std::pair <int, std::pair <int, int> > >
       {
+        HashKeyStruct () = default;
+
         HashKeyStruct(int a, int b, int c, int d)
         {
           this->first = a;
@@ -63,8 +67,17 @@ namespace pcl
           this->second.second.first = c;
           this->second.second.second = d;
         }
+
+        std::size_t operator()(const HashKeyStruct& s) const noexcept
+        {
+            const std::size_t h1 = std::hash<int>{} (s.first);
+            const std::size_t h2 = std::hash<int>{} (s.second.first);
+            const std::size_t h3 = std::hash<int>{} (s.second.second.first);
+            const std::size_t h4 = std::hash<int>{} (s.second.second.second);
+            return h1 ^ (h2 << 1) ^ (h3 << 2) ^ (h4 << 3);
+        }
       };
-      typedef boost::unordered_multimap<HashKeyStruct, std::pair<size_t, size_t> > FeatureHashMapType;
+      typedef std::unordered_multimap<HashKeyStruct, std::pair<size_t, size_t>, HashKeyStruct> FeatureHashMapType;
       typedef boost::shared_ptr<FeatureHashMapType> FeatureHashMapTypePtr;
       typedef boost::shared_ptr<PPFHashMapSearch> Ptr;
 

@@ -45,6 +45,8 @@
 #include <pcl/point_representation.h>
 #include <pcl/registration/boost.h>
 
+#include <unordered_map>
+
 namespace pcl
 {
   namespace registration
@@ -163,7 +165,7 @@ namespace pcl
             typedef boost::shared_ptr<FeatureContainerInterface> Ptr;
         };
 
-        typedef boost::unordered_map<std::string, FeatureContainerInterface::Ptr> FeaturesMap;
+        typedef std::unordered_map<std::string, FeatureContainerInterface::Ptr> FeaturesMap;
 
         /** \brief An STL map containing features to use when performing the correspondence search.*/
         FeaturesMap features_map_;

@@ -51,6 +51,7 @@
 #include <mutex>
 #include <iomanip>
 #include <string>
+#include <unordered_map>
 
 namespace pcl
 {
@@ -332,7 +333,7 @@ namespace pcl
         typedef Eigen::Matrix <unsigned char, 3, Eigen::Dynamic> Colors;
         typedef Eigen::Matrix <unsigned char, 3, 256           > Colormap;
 
-        typedef boost::unordered_map <std::string, CloudXYZRGBNormalPtr> CloudXYZRGBNormalMap;
+        typedef std::unordered_map <std::string, CloudXYZRGBNormalPtr> CloudXYZRGBNormalMap;
 
         typedef pcl::ihs::PointIHS         PointIHS;
         typedef pcl::ihs::CloudIHS         CloudIHS;
@@ -342,7 +343,7 @@ namespace pcl
         typedef pcl::ihs::detail::FaceVertexMesh                      FaceVertexMesh;
         typedef boost::shared_ptr <      FaceVertexMesh>              FaceVertexMeshPtr;
         typedef boost::shared_ptr <const FaceVertexMesh>              FaceVertexMeshConstPtr;
-        typedef boost::unordered_map <std::string, FaceVertexMeshPtr> FaceVertexMeshMap;
+        typedef std::unordered_map <std::string, FaceVertexMeshPtr> FaceVertexMeshMap;
 
         /** \brief Check if the mesh with the given id is added.
           * \note Must lock the mutex before calling this method.

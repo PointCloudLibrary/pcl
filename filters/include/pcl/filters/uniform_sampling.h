@@ -40,7 +40,8 @@
 #pragma once
 
 #include <pcl/filters/filter.h>
-#include <boost/unordered_map.hpp>
+
+#include <unordered_map>
 
 namespace pcl
 {
@@ -115,7 +116,7 @@ namespace pcl
       };
 
       /** \brief The 3D grid leaves. */
-      boost::unordered_map<size_t, Leaf> leaves_;
+      std::unordered_map<size_t, Leaf> leaves_;
 
       /** \brief The size of a leaf. */
       Eigen::Vector4f leaf_size_;

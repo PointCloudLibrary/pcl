@@ -40,6 +40,8 @@
 #include <pcl/surface/boost.h>
 #include <pcl/surface/reconstruction.h>
 
+#include <unordered_map>
+
 namespace pcl
 {
   /** \brief The 12 edges of a cell. */
@@ -92,7 +94,7 @@ namespace pcl
         Eigen::Vector3f vect_at_grid_pt;
       };
 
-      typedef boost::unordered_map<int, Leaf, boost::hash<int>, std::equal_to<int>, Eigen::aligned_allocator<int> > HashMap;
+      typedef std::unordered_map<int, Leaf, std::hash<int>, std::equal_to<int>, Eigen::aligned_allocator<std::pair<const int, Leaf>>> HashMap;
 
       /** \brief Constructor. */ 
       GridProjection ();

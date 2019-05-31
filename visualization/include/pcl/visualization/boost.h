@@ -54,7 +54,6 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/bind.hpp>
-#include <boost/unordered_map.hpp>
 #include <boost/foreach.hpp>
 #ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>

@@ -43,6 +43,8 @@
 #include <pcl/recognition/boost.h>
 #include <pcl/point_types.h>
 
+#include <unordered_map>
+
 namespace pcl
 {
   namespace recognition
@@ -122,10 +124,9 @@ namespace pcl
 
         /** \brief The Hough Space. */
         std::vector<double> hough_space_;
-        //boost::unordered_map<int, double> hough_space_;
 
         /** \brief List of voters for each bin. */
-        boost::unordered_map<int, std::vector<int> > voter_ids_;
+        std::unordered_map<int, std::vector<int> > voter_ids_;
     };
   }
 
