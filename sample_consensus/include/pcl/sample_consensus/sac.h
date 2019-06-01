@@ -311,13 +311,13 @@ namespace pcl
       /** \brief Maximum number of iterations before giving up. */
       int max_iterations_;
 
-      /** \brief Boost-based random number generator algorithm. */
+      /** \brief Random number generator algorithm. */
       std::mt19937 rng_;
 
-      /** \brief Boost-based random number generator distribution. */
+      /** \brief Random number generator distribution. */
       std::uniform_real_distribution<> rng_dist_;
 
-      /** \brief Boost-based random number generator. */
+      /** \brief Random number generator. */
       inline double
       rnd ()
       {
