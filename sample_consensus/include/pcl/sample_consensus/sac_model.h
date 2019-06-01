@@ -83,7 +83,6 @@ namespace pcl
         : radius_min_ (-std::numeric_limits<double>::max ())
         , radius_max_ (std::numeric_limits<double>::max ())
         , samples_radius_ (0.)
-        , rng_dist_ (new std::uniform_int_distribution<> ())
       {
         // Create a random number generator object
         if (random)
@@ -522,7 +521,7 @@ namespace pcl
       std::mt19937 rng_;
 
       /** \brief Random number generator distribution. */
-      std::shared_ptr<std::uniform_int_distribution<> > rng_dist_;
+      std::uniform_int_distribution<> rng_dist_;
 
       /** \brief A vector holding the distances to the computed model. Used internally. */
       std::vector<double> error_sqr_dists_;
@@ -537,7 +536,7 @@ namespace pcl
       inline int
       rnd ()
       {
-        return ((*rng_dist_) (rng_));
+        return (rng_dist_ (rng_));
       }
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
