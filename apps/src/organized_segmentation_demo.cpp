@@ -247,6 +247,7 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo (pcl::Grabber& grabber) : g
   // Set up Normal Estimation
   //ne.setNormalEstimationMethod (ne.SIMPLE_3D_GRADIENT);
   ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
+  ne.setMaxDepthChangeFactor (0.02f);
   ne.setNormalSmoothingSize (20.0f);
 
   plane_comparator_.reset (new pcl::PlaneCoefficientComparator<PointT, pcl::Normal> ());
@@ -257,6 +258,8 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo (pcl::Grabber& grabber) : g
 
   // Set up Organized Multi Plane Segmentation
   mps.setMinInliers (10000u);
+  mps.setAngularThreshold (pcl::deg2rad (3.0)); //3 degrees
+  mps.setDistanceThreshold (0.02); //2cm
 
 
   PCL_INFO ("starting grabber\n");
