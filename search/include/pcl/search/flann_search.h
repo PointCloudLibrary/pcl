@@ -66,14 +66,14 @@ namespace pcl
       * 
       * \code
       * // Feature and distance type
-      * typedef SHOT352 FeatureT;
-      * typedef flann::L2<float> DistanceT;
+      * using FeatureT = SHOT352;
+      * using DistanceT = flann::L2<float>;
       * 
       * // Search and index types
-      * typedef search::FlannSearch<FeatureT, DistanceT> SearchT;
-      * typedef typename SearchT::FlannIndexCreatorPtr CreatorPtrT;
-      * typedef typename SearchT::KdTreeMultiIndexCreator IndexT;
-      * typedef typename SearchT::PointRepresentationPtr RepresentationPtrT;
+      * using SearchT = search::FlannSearch<FeatureT, DistanceT>;
+      * using CreatorPtrT = typename SearchT::FlannIndexCreatorPtr;
+      * using IndexT = typename SearchT::KdTreeMultiIndexCreator;
+      * using RepresentationPtrT = typename SearchT::PointRepresentationPtr;
       * 
       * // Features
       * PointCloud<FeatureT>::Ptr query, target;
@@ -104,24 +104,24 @@ namespace pcl
       using Search<PointT>::sorted_results_;
 
       public:
-        typedef boost::shared_ptr<FlannSearch<PointT, FlannDistance> > Ptr;
-        typedef boost::shared_ptr<const FlannSearch<PointT, FlannDistance> > ConstPtr;
+        using Ptr = boost::shared_ptr<FlannSearch<PointT, FlannDistance> >;
+        using ConstPtr = boost::shared_ptr<const FlannSearch<PointT, FlannDistance> >;
         
-        typedef typename Search<PointT>::PointCloud PointCloud;
-        typedef typename Search<PointT>::PointCloudConstPtr PointCloudConstPtr;
+        using PointCloud = typename Search<PointT>::PointCloud;
+        using PointCloudConstPtr = typename Search<PointT>::PointCloudConstPtr;
 
-        typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
-        typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
+        using IndicesPtr = boost::shared_ptr<std::vector<int> >;
+        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
 
-        typedef boost::shared_ptr<flann::Matrix <float> > MatrixPtr;
-        typedef boost::shared_ptr<const flann::Matrix <float> > MatrixConstPtr;
+        using MatrixPtr = boost::shared_ptr<flann::Matrix<float> >;
+        using MatrixConstPtr = boost::shared_ptr<const flann::Matrix<float> >;
 
-        typedef flann::NNIndex< FlannDistance > Index;
-        typedef boost::shared_ptr<flann::NNIndex <FlannDistance > > IndexPtr;
+        using Index = flann::NNIndex<FlannDistance>;
+        using IndexPtr = boost::shared_ptr<flann::NNIndex<FlannDistance> >;
 
-        typedef pcl::PointRepresentation<PointT> PointRepresentation;
-        typedef boost::shared_ptr<PointRepresentation> PointRepresentationPtr;
-        typedef boost::shared_ptr<const PointRepresentation> PointRepresentationConstPtr;
+        using PointRepresentation = pcl::PointRepresentation<PointT>;
+        using PointRepresentationPtr = boost::shared_ptr<PointRepresentation>;
+        using PointRepresentationConstPtr = boost::shared_ptr<const PointRepresentation>;
 
         /** \brief Helper class that creates a FLANN index from a given FLANN matrix. To
           * use a FLANN index type with FlannSearch, implement this interface and
@@ -141,7 +141,7 @@ namespace pcl
             */
             virtual ~FlannIndexCreator () {}
         };
-        typedef boost::shared_ptr<FlannIndexCreator> FlannIndexCreatorPtr;
+        using FlannIndexCreatorPtr = boost::shared_ptr<FlannIndexCreator>;
 
         /** \brief Creates a FLANN KdTreeSingleIndex from the given input data.
           */

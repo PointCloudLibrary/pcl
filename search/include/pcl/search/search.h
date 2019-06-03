@@ -73,15 +73,15 @@ namespace pcl
     class Search
     {
       public:
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef typename PointCloud::Ptr PointCloudPtr;
-        typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = typename PointCloud::Ptr;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        typedef boost::shared_ptr<pcl::search::Search<PointT> > Ptr;
-        typedef boost::shared_ptr<const pcl::search::Search<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<pcl::search::Search<PointT> >;
+        using ConstPtr = boost::shared_ptr<const pcl::search::Search<PointT> >;
 
-        typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
-        typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
+        using IndicesPtr = boost::shared_ptr<std::vector<int> >;
+        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
 
         /** Constructor. */
         Search (const std::string& name = "", bool sorted = false);
@@ -231,9 +231,9 @@ namespace pcl
                          std::vector< std::vector<float> > &k_sqr_distances) const
         {
           // Copy all the data fields from the input cloud to the output one
-          typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
-          typedef typename pcl::traits::fieldList<PointTDiff>::type FieldListOutT;
-          typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
+          using FieldListInT = typename pcl::traits::fieldList<PointT>::type;
+          using FieldListOutT = typename pcl::traits::fieldList<PointTDiff>::type;
+          using FieldList = typename pcl::intersect<FieldListInT, FieldListOutT>::type;
 
           pcl::PointCloud<PointT> pc;
           if (indices.empty ())
@@ -374,9 +374,9 @@ namespace pcl
                        unsigned int max_nn = 0) const
         {
           // Copy all the data fields from the input cloud to the output one
-          typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
-          typedef typename pcl::traits::fieldList<PointTDiff>::type FieldListOutT;
-          typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
+          using FieldListInT = typename pcl::traits::fieldList<PointT>::type;
+          using FieldListOutT = typename pcl::traits::fieldList<PointTDiff>::type;
+          using FieldList = typename pcl::intersect<FieldListInT, FieldListOutT>::type;
 
           pcl::PointCloud<PointT> pc;
           if (indices.empty ())
