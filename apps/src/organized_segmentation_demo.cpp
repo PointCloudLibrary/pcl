@@ -247,7 +247,7 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo (pcl::Grabber& grabber) : g
   // Set up Normal Estimation
   //ne.setNormalEstimationMethod (ne.SIMPLE_3D_GRADIENT);
   ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
-  ne.setMaxDepthChangeFactor (0.02f);
+  ne.setMaxDepthChangeFactor (0.02f); // set as default, well performing for tabletop objects as imaged by a primesense sensor
   ne.setNormalSmoothingSize (20.0f);
 
   plane_comparator_.reset (new pcl::PlaneCoefficientComparator<PointT, pcl::Normal> ());
@@ -258,8 +258,8 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo (pcl::Grabber& grabber) : g
 
   // Set up Organized Multi Plane Segmentation
   mps.setMinInliers (10000u);
-  mps.setAngularThreshold (pcl::deg2rad (3.0)); //3 degrees
-  mps.setDistanceThreshold (0.02); //2cm
+  mps.setAngularThreshold (pcl::deg2rad (3.0)); // 3 degrees, set as default, well performing for tabletop objects as imaged by a primesense sensor
+  mps.setDistanceThreshold (0.02); // 2cm, set as default, well performing for tabletop objects as imaged by a primesense sensor
 
 
   PCL_INFO ("starting grabber\n");
