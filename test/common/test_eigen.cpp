@@ -57,9 +57,9 @@ namespace
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, InverseGeneral3x3f)
 {
-  typedef float Scalar;
-  typedef Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor> RMatrix;
-  typedef Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor> CMatrix;
+  using Scalar = float;
+  using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
+  using CMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor>;
   RMatrix r_matrix = RMatrix::Zero ();
   RMatrix r_inverse = RMatrix::Zero ();
   CMatrix c_matrix = CMatrix::Zero ();
@@ -116,9 +116,9 @@ TEST (PCL, InverseGeneral3x3f)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, InverseGeneral3x3d)
 {
-  typedef double Scalar;
-  typedef Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor> RMatrix;
-  typedef Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor> CMatrix;
+  using Scalar = double;
+  using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
+  using CMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor>;
   RMatrix r_matrix = RMatrix::Zero ();
   RMatrix r_inverse = RMatrix::Zero ();
   CMatrix c_matrix = CMatrix::Zero ();
@@ -175,9 +175,9 @@ TEST (PCL, InverseGeneral3x3d)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, InverseSymmetric3x3f)
 {
-  typedef float Scalar;
-  typedef Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor> RMatrix;
-  typedef Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor> CMatrix;
+  using Scalar = float;
+  using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
+  using CMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor>;
   RMatrix r_matrix = RMatrix::Zero ();
   RMatrix r_inverse = RMatrix::Zero ();
   CMatrix c_matrix = CMatrix::Zero ();
@@ -240,9 +240,9 @@ TEST (PCL, InverseSymmetric3x3f)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, InverseSymmetric3x3d)
 {
-  typedef double Scalar;
-  typedef Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor> RMatrix;
-  typedef Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor> CMatrix;
+  using Scalar = double;
+  using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
+  using CMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor>;
   RMatrix r_matrix = RMatrix::Zero ();
   RMatrix r_inverse = RMatrix::Zero ();
   CMatrix c_matrix = CMatrix::Zero ();
@@ -306,9 +306,9 @@ TEST (PCL, InverseSymmetric3x3d)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Inverse2x2f)
 {
-  typedef float Scalar;
-  typedef Eigen::Matrix<Scalar, 2, 2, Eigen::RowMajor> RMatrix;
-  typedef Eigen::Matrix<Scalar, 2, 2, Eigen::ColMajor> CMatrix;
+  using Scalar = float;
+  using RMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::RowMajor>;
+  using CMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::ColMajor>;
   RMatrix r_matrix = RMatrix::Zero ();
   RMatrix r_inverse = RMatrix::Zero ();
   CMatrix c_matrix = CMatrix::Zero ();
@@ -364,9 +364,9 @@ TEST (PCL, Inverse2x2f)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Inverse2x2d)
 {
-  typedef double Scalar;
-  typedef Eigen::Matrix<Scalar, 2, 2, Eigen::RowMajor> RMatrix;
-  typedef Eigen::Matrix<Scalar, 2, 2, Eigen::ColMajor> CMatrix;
+  using Scalar = double;
+  using RMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::RowMajor>;
+  using CMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::ColMajor>;
   RMatrix r_matrix = RMatrix::Zero ();
   RMatrix r_inverse = RMatrix::Zero ();
   CMatrix c_matrix = CMatrix::Zero ();
@@ -422,7 +422,7 @@ TEST (PCL, Inverse2x2d)
 template<class Matrix>
 inline void generateSymPosMatrix2x2 (Matrix& matrix)
 {
-  typedef typename Matrix::Scalar Scalar;
+  using Scalar = typename Matrix::Scalar;
 
   unsigned test_case = rand_uint (rng) % 10;
 
@@ -464,9 +464,9 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, eigen22d)
 {
-  typedef double Scalar;
-  typedef Eigen::Matrix<Scalar, 2, 2, Eigen::RowMajor> RMatrix;
-  typedef Eigen::Matrix<Scalar, 2, 2, Eigen::ColMajor> CMatrix;
+  using Scalar = double;
+  using RMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::RowMajor>;
+  using CMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::ColMajor>;
   RMatrix r_matrix;
   RMatrix r_vectors;
   Eigen::Matrix<Scalar, 2, 1> r_eigenvalues;
@@ -522,9 +522,9 @@ TEST (PCL, eigen22d)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, eigen22f)
 {
-  typedef float Scalar;
-  typedef Eigen::Matrix<Scalar, 2, 2, Eigen::RowMajor> RMatrix;
-  typedef Eigen::Matrix<Scalar, 2, 2, Eigen::ColMajor> CMatrix;
+  using Scalar = float;
+  using RMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::RowMajor>;
+  using CMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::ColMajor>;
   RMatrix r_matrix;
   RMatrix r_vectors;
   Eigen::Matrix<Scalar, 2, 1> r_eigenvalues;
@@ -582,7 +582,7 @@ TEST (PCL, eigen22f)
 template<class Matrix>
 inline void generateSymPosMatrix3x3 (Matrix& matrix)
 {
-  typedef typename Matrix::Scalar Scalar;
+  using Scalar = typename Matrix::Scalar;
 
   // 3 equal elements != 0
   // 2 equal elements none 0
@@ -661,9 +661,9 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, eigen33d)
 {
-  typedef double Scalar;
-  typedef Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor> RMatrix;
-  typedef Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor> CMatrix;
+  using Scalar = double;
+  using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
+  using CMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor>;
   RMatrix r_matrix;
   RMatrix r_vectors;
   Eigen::Matrix<Scalar, 3, 1> r_eigenvalues;
@@ -721,9 +721,9 @@ TEST (PCL, eigen33d)
 // some errors > 0.2 but less than 1% is > 1e-3 -> we will just check whether the failure rate is below 1%
 TEST (PCL, eigen33f)
 {
-  typedef float Scalar;
-  typedef Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor> RMatrix;
-  typedef Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor> CMatrix;
+  using Scalar = float;
+  using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
+  using CMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor>;
   RMatrix r_matrix;
   RMatrix r_vectors;
   Eigen::Matrix<Scalar, 3, 1> r_eigenvalues;

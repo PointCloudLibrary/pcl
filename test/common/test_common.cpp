@@ -298,7 +298,7 @@ TEST (PCL, PointTypes)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T> class XYZPointTypesTest : public ::testing::Test { };
-typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_XYZ_POINT_TYPES)> XYZPointTypes;
+using XYZPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_XYZ_POINT_TYPES)>;
 TYPED_TEST_CASE(XYZPointTypesTest, XYZPointTypes);
 TYPED_TEST(XYZPointTypesTest, GetVectorXfMap)
 {
@@ -319,7 +319,7 @@ TYPED_TEST(XYZPointTypesTest, GetArrayXfMap)
 }
 
 template <typename T> class NormalPointTypesTest : public ::testing::Test { };
-typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_NORMAL_POINT_TYPES)> NormalPointTypes;
+using NormalPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_NORMAL_POINT_TYPES)>;
 TYPED_TEST_CASE(NormalPointTypesTest, NormalPointTypes);
 TYPED_TEST(NormalPointTypesTest, GetNormalVectorXfMap)
 {
@@ -331,7 +331,7 @@ TYPED_TEST(NormalPointTypesTest, GetNormalVectorXfMap)
 }
 
 template <typename T> class RGBPointTypesTest : public ::testing::Test { };
-typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_RGB_POINT_TYPES)> RGBPointTypes;
+using RGBPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_RGB_POINT_TYPES)>;
 TYPED_TEST_CASE(RGBPointTypesTest, RGBPointTypes);
 TYPED_TEST(RGBPointTypesTest, GetRGBVectorXi)
 {
@@ -390,7 +390,7 @@ TEST (PCL, CopyIfFieldExists)
   p.r = 127; p.g = 64; p.b = 254;
   p.normal_x = 1.0; p.normal_y = 0.0; p.normal_z = 0.0;
 
-  typedef pcl::traits::fieldList<PointXYZRGBNormal>::type FieldList;
+  using FieldList = pcl::traits::fieldList<PointXYZRGBNormal>::type;
   bool is_x = false, is_y = false, is_z = false, is_rgb = false, 
        is_normal_x = false, is_normal_y = false, is_normal_z = false;
 
@@ -443,7 +443,7 @@ TEST (PCL, SetIfFieldExists)
   p.r = p.g = p.b = 0;
   p.normal_x = p.normal_y = p.normal_z = 0.0;
 
-  typedef pcl::traits::fieldList<PointXYZRGBNormal>::type FieldList;
+  using FieldList = pcl::traits::fieldList<PointXYZRGBNormal>::type;
   pcl::for_each_type<FieldList> (SetIfFieldExists<PointXYZRGBNormal, float> (p, "x", 1.0));
   EXPECT_EQ (p.x, 1.0);
   pcl::for_each_type<FieldList> (SetIfFieldExists<PointXYZRGBNormal, float> (p, "y", 2.0));

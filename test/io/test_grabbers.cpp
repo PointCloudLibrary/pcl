@@ -12,8 +12,8 @@
 using namespace std;
 using namespace std::chrono_literals;
 
-typedef pcl::PointXYZRGBA PointT;
-typedef pcl::PointCloud<PointT> CloudT;
+using PointT = pcl::PointXYZRGBA;
+using CloudT = pcl::PointCloud<PointT>;
 
 string tiff_dir_;
 string pclzf_dir_;

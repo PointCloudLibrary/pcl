@@ -47,8 +47,8 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
-typedef PointXYZRGBA PointT;
-typedef PointWithScale KeyPointT;
+using PointT = PointXYZRGBA;
+using KeyPointT = PointWithScale;
 
 
 PointCloud<PointT>::Ptr cloud_image (new PointCloud<PointT>);

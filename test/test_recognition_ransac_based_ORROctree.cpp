@@ -50,11 +50,11 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::recognition;
 
-typedef pcl::PointXYZ PointT;
-typedef pcl::PointCloud<PointT> PointCloudT;
-typedef pcl::PointCloud<pcl::Normal> PointCloudTN;
-typedef pcl::PointCloud<PointT>::Ptr PointCloudTPtr;
-typedef pcl::PointCloud<pcl::Normal>::Ptr PointCloudTNPtr;
+using PointT = pcl::PointXYZ;
+using PointCloudT = pcl::PointCloud<PointT>;
+using PointCloudTN = pcl::PointCloud<pcl::Normal>;
+using PointCloudTPtr = pcl::PointCloud<PointT>::Ptr;
+using PointCloudTNPtr = pcl::PointCloud<pcl::Normal>::Ptr;
 
 PointCloud<PointXYZ>::Ptr cloud_;
 PointCloudTPtr model_cloud(new pcl::PointCloud<PointT>);

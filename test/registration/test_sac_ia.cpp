@@ -112,7 +112,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
   EXPECT_LT (reg.getFitnessScore (), 0.0005);
 
   // Check again, for all possible caching schemes
-  typedef pcl::PointXYZ PointT;
+  using PointT = pcl::PointXYZ;
   for (int iter = 0; iter < 4; iter++)
   {
     bool force_cache = (bool) iter/2;
@@ -209,7 +209,7 @@ TEST (PCL, SampleConsensusPrerejective)
   EXPECT_GT (inlier_fraction, 0.95f);
 
   // Check again, for all possible caching schemes
-  typedef pcl::PointXYZ PointT;
+  using PointT = pcl::PointXYZ;
   for (int iter = 0; iter < 4; iter++)
   {
     bool force_cache = (bool) iter/2;
