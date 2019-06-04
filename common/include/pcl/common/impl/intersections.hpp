@@ -78,10 +78,10 @@ pcl::planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
                                  Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line,
                                  double angular_tolerance)
 {
-  typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
-  typedef Eigen::Matrix<Scalar, 4, 1> Vector4;
-  typedef Eigen::Matrix<Scalar, 5, 1> Vector5;
-  typedef Eigen::Matrix<Scalar, 5, 5> Matrix5;
+  using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
+  using Vector4 = Eigen::Matrix<Scalar, 4, 1>;
+  using Vector5 = Eigen::Matrix<Scalar, 5, 1>;
+  using Matrix5 = Eigen::Matrix<Scalar, 5, 5>;
 
   // Normalize plane normals
   Vector3 plane_a_norm (plane_a.template head<3> ());
@@ -127,8 +127,8 @@ pcl::threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
                               Eigen::Matrix<Scalar, 3, 1> &intersection_point,
                               double determinant_tolerance)
 {
-  typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
-  typedef Eigen::Matrix<Scalar, 3, 3> Matrix3;
+  using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
+  using Matrix3 = Eigen::Matrix<Scalar, 3, 3>;
 
   // TODO: Using Eigen::HyperPlanes is better to solve this problem
   // Check if some planes are parallel

@@ -308,7 +308,7 @@ namespace pcl
   /** \brief Data type to store extended information about a transition from foreground to backgroundSpecification of the fields for BorderDescription::traits.
     * \ingroup common
     */
-  typedef std::bitset<32> BorderTraits;
+  using BorderTraits = std::bitset<32>;
 
   /** \brief Specification of the fields for BorderDescription::traits.
     * \ingroup common

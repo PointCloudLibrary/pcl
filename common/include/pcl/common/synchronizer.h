@@ -50,15 +50,15 @@ namespace pcl
   template <typename T1, typename T2>
   class Synchronizer
   {
-    typedef std::pair<unsigned long, T1> T1Stamped;
-    typedef std::pair<unsigned long, T2> T2Stamped;
+    using T1Stamped = std::pair<unsigned long, T1>;
+    using T2Stamped = std::pair<unsigned long, T2>;
     std::mutex mutex1_;
     std::mutex mutex2_;
     std::mutex publish_mutex_;
     std::deque<T1Stamped> queueT1;
     std::deque<T2Stamped> queueT2;
 
-    typedef boost::function<void(T1, T2, unsigned long, unsigned long) > CallbackFunction;
+    using CallbackFunction = boost::function<void (T1, T2, unsigned long, unsigned long)>;
 
     std::map<int, CallbackFunction> cb_;
     int callback_counter;

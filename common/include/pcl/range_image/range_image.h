@@ -55,10 +55,10 @@ namespace pcl
   {
     public:
       // =====TYPEDEFS=====
-      typedef pcl::PointCloud<PointWithRange> BaseClass;
-      typedef std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > VectorOfEigenVector3f;
-      typedef boost::shared_ptr<RangeImage> Ptr;
-      typedef boost::shared_ptr<const RangeImage> ConstPtr;
+      using BaseClass = pcl::PointCloud<PointWithRange>;
+      using VectorOfEigenVector3f = std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> >;
+      using Ptr = boost::shared_ptr<RangeImage>;
+      using ConstPtr = boost::shared_ptr<const RangeImage>;
       
       enum CoordinateFrame
       {

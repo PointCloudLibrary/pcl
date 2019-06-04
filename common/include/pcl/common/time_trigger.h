@@ -56,7 +56,7 @@ namespace pcl
   class PCL_EXPORTS TimeTrigger
   {
     public:
-      typedef boost::function<void() > callback_type;
+      using callback_type = boost::function<void ()>;
 
       /** \brief Timer class that calls a callback method periodically. Due to possible blocking calls, only one callback method can be registered per instance.
         * \param[in] interval_seconds interval in seconds

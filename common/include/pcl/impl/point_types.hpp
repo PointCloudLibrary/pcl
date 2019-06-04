@@ -160,21 +160,21 @@
 namespace pcl
 {
 
-  typedef Eigen::Map<Eigen::Array3f> Array3fMap;
-  typedef const Eigen::Map<const Eigen::Array3f> Array3fMapConst;
-  typedef Eigen::Map<Eigen::Array4f, Eigen::Aligned> Array4fMap;
-  typedef const Eigen::Map<const Eigen::Array4f, Eigen::Aligned> Array4fMapConst;
-  typedef Eigen::Map<Eigen::Vector3f> Vector3fMap;
-  typedef const Eigen::Map<const Eigen::Vector3f> Vector3fMapConst;
-  typedef Eigen::Map<Eigen::Vector4f, Eigen::Aligned> Vector4fMap;
-  typedef const Eigen::Map<const Eigen::Vector4f, Eigen::Aligned> Vector4fMapConst;
+  using Array3fMap = Eigen::Map<Eigen::Array3f>;
+  using Array3fMapConst = const Eigen::Map<const Eigen::Array3f>;
+  using Array4fMap = Eigen::Map<Eigen::Array4f, Eigen::Aligned>;
+  using Array4fMapConst = const Eigen::Map<const Eigen::Array4f, Eigen::Aligned>;
+  using Vector3fMap = Eigen::Map<Eigen::Vector3f>;
+  using Vector3fMapConst = const Eigen::Map<const Eigen::Vector3f>;
+  using Vector4fMap = Eigen::Map<Eigen::Vector4f, Eigen::Aligned>;
+  using Vector4fMapConst = const Eigen::Map<const Eigen::Vector4f, Eigen::Aligned>;
 
-  typedef Eigen::Matrix<uint8_t, 3, 1> Vector3c;
-  typedef Eigen::Map<Vector3c> Vector3cMap;
-  typedef const Eigen::Map<const Vector3c> Vector3cMapConst;
-  typedef Eigen::Matrix<uint8_t, 4, 1> Vector4c;
-  typedef Eigen::Map<Vector4c, Eigen::Aligned> Vector4cMap;
-  typedef const Eigen::Map<const Vector4c, Eigen::Aligned> Vector4cMapConst;
+  using Vector3c = Eigen::Matrix<uint8_t, 3, 1>;
+  using Vector3cMap = Eigen::Map<Vector3c>;
+  using Vector3cMapConst = const Eigen::Map<const Vector3c>;
+  using Vector4c = Eigen::Matrix<uint8_t, 4, 1>;
+  using Vector4cMap = Eigen::Map<Vector4c, Eigen::Aligned>;
+  using Vector4cMapConst = const Eigen::Map<const Vector4c, Eigen::Aligned>;
 
 #define PCL_ADD_UNION_POINT4D \
   union EIGEN_ALIGN16 { \

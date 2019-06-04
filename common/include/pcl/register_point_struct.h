@@ -75,7 +75,7 @@
   BOOST_MPL_ASSERT_MSG(sizeof(wrapper) == sizeof(pod), POINT_WRAPPER_AND_POD_TYPES_HAVE_DIFFERENT_SIZES, (wrapper&, pod&)); \
   namespace pcl {                                           \
     namespace traits {                                      \
-      template<> struct POD<wrapper> { typedef pod type; }; \
+      template<> struct POD<wrapper> { using type = pod; }; \
     }                                                       \
   }                                                         \
   /***/
@@ -104,7 +104,7 @@ namespace pcl
     std::enable_if_t<std::is_array<T>::value>
     plus (std::remove_const_t<T> &l, const T &r)
     {
-      typedef std::remove_all_extents_t<T> type;
+      using type = std::remove_all_extents_t<T>;
       static const uint32_t count = sizeof (T) / sizeof (type);
       for (int i = 0; i < count; ++i)
         l[i] += r[i];
@@ -121,7 +121,7 @@ namespace pcl
     std::enable_if_t<std::is_array<T1>::value>
     plusscalar (T1 &p, const T2 &scalar)
     {
-      typedef std::remove_all_extents_t<T1> type;
+      using type = std::remove_all_extents_t<T1>;
       static const uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
         p[i] += scalar;
@@ -138,7 +138,7 @@ namespace pcl
     std::enable_if_t<std::is_array<T>::value>
     minus (std::remove_const_t<T> &l, const T &r)
     {
-      typedef std::remove_all_extents_t<T> type;
+      using type = std::remove_all_extents_t<T>;
       static const uint32_t count = sizeof (T) / sizeof (type);
       for (int i = 0; i < count; ++i)
         l[i] -= r[i];
@@ -155,7 +155,7 @@ namespace pcl
     std::enable_if_t<std::is_array<T1>::value>
     minusscalar (T1 &p, const T2 &scalar)
     {
-      typedef std::remove_all_extents_t<T1> type;
+      using type = std::remove_all_extents_t<T1>;
       static const uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
         p[i] -= scalar;
@@ -172,7 +172,7 @@ namespace pcl
     std::enable_if_t<std::is_array<T1>::value>
     mulscalar (T1 &p, const T2 &scalar)
     {
-      typedef std::remove_all_extents_t<T1> type;
+      using type = std::remove_all_extents_t<T1>;
       static const uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
         p[i] *= scalar;
@@ -189,7 +189,7 @@ namespace pcl
     std::enable_if_t<std::is_array<T1>::value>
     divscalar (T1 &p, const T2 &scalar)
     {
-      typedef std::remove_all_extents_t<T1> type;
+      using type = std::remove_all_extents_t<T1>;
       static const uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
         p[i] /= scalar;
@@ -336,13 +336,13 @@ namespace pcl
 
 // \note: the mpl::identity weirdness is to support array types without requiring the
 // user to wrap them. The basic problem is:
-// typedef float[81] type; // SYNTAX ERROR!
-// typedef float type[81]; // OK, can now use "type" as a synonym for float[81]
+// using type = float[81]; // SYNTAX ERROR!
+// using type[81] = float; // OK, can now use "type" as a synonym for float[81]
 #define POINT_CLOUD_REGISTER_FIELD_DATATYPE(r, name, elem)              \
   template<> struct datatype<name, pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem)> \
   {                                                                     \
-    typedef boost::mpl::identity<BOOST_PP_TUPLE_ELEM(3, 0, elem)>::type type; \
-    typedef decomposeArray<type> decomposed;                            \
+    using type = boost::mpl::identity<BOOST_PP_TUPLE_ELEM(3, 0, elem)>::type; \
+    using decomposed = decomposeArray<type>;                            \
     static const uint8_t value = asEnum<decomposed::type>::value;       \
     static const uint32_t size = decomposed::value;                     \
   };                                                                    \
@@ -355,7 +355,7 @@ namespace pcl
 #define POINT_CLOUD_REGISTER_POINT_FIELD_LIST(name, seq)        \
   template<> struct fieldList<name>                             \
   {                                                             \
-    typedef boost::mpl::vector<BOOST_PP_SEQ_ENUM(seq)> type;    \
+    using type = boost::mpl::vector<BOOST_PP_SEQ_ENUM(seq)>;    \
   };                                                            \
   /***/
 
