@@ -49,7 +49,7 @@
 #include <mutex>
 
 
-typedef pcl::PointXYZRGBA PointT;
+using PointT = pcl::PointXYZRGBA;
 
 class OpenNIOrganizedMultiPlaneSegmentation
 {

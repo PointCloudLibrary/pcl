@@ -58,16 +58,16 @@ using namespace pcl;
 using namespace std;
 using namespace std::chrono_literals;
 
-typedef PointXYZRGBA PointT;
-typedef PointXYZRGBL KeyPointT;
+using PointT = PointXYZRGBA;
+using KeyPointT = PointXYZRGBL;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class SUSANDemo
 {
   public:
-    typedef PointCloud<PointT> Cloud;
-    typedef Cloud::Ptr CloudPtr;
-    typedef Cloud::ConstPtr CloudConstPtr;
+    using Cloud = PointCloud<PointT>;
+    using CloudPtr = Cloud::Ptr;
+    using CloudConstPtr = Cloud::ConstPtr;
 
     SUSANDemo (Grabber& grabber)
       : cloud_viewer_ ("SUSAN 2D Keypoints -- PointCloud")

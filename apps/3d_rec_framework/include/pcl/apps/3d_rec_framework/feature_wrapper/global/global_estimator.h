@@ -17,8 +17,8 @@ namespace pcl
     class GlobalEstimator {
       protected:
         bool computed_normals_;
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
-        typedef typename pcl::PointCloud<FeatureT>::Ptr FeatureTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
+        using FeatureTPtr = typename pcl::PointCloud<FeatureT>::Ptr;
 
         typename boost::shared_ptr<PreProcessorAndNormalEstimator<PointInT, pcl::Normal> > normal_estimator_;
 

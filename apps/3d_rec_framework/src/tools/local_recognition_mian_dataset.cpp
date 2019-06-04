@@ -94,8 +94,8 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
     std::sort (files.begin (), files.end (), sortFiles);
 
     typename boost::shared_ptr<pcl::rec_3d_framework::Source<PointT> > model_source_ = local.getDataSource ();
-    typedef typename pcl::PointCloud<PointT>::ConstPtr ConstPointInTPtr;
-    typedef pcl::rec_3d_framework::Model<PointT> ModelT;
+    using ConstPointInTPtr = typename pcl::PointCloud<PointT>::ConstPtr;
+    using ModelT = pcl::rec_3d_framework::Model<PointT>;
 
     if (!single_model)
     {
@@ -273,7 +273,7 @@ getModelsInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector
   }
 }
 
-typedef pcl::ReferenceFrame RFType;
+using RFType = pcl::ReferenceFrame;
 
 int CG_SIZE_ = 3;
 float CG_THRESHOLD_ = 0.005f;

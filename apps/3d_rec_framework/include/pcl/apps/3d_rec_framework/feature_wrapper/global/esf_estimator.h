@@ -18,7 +18,7 @@ namespace pcl
       class ESFEstimation : public GlobalEstimator<PointInT, FeatureT>
       {
 
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
 
       public:
         void
@@ -27,7 +27,7 @@ namespace pcl
                   std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids) override
         {
 
-          typedef pcl::ESFEstimation<PointInT, FeatureT> ESFEstimation;
+          using ESFEstimation = pcl::ESFEstimation<PointInT, FeatureT>;
           pcl::PointCloud<FeatureT> ESF_signature;
 
           ESFEstimation esf;

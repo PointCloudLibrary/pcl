@@ -69,9 +69,9 @@ template <typename PointType>
 class OpenNIFastMesh
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudPtr = typename Cloud::Ptr;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     OpenNIFastMesh (const std::string& device_id = "")
       : device_id_(device_id)

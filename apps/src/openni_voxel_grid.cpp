@@ -66,9 +66,9 @@ template <typename PointType>
 class OpenNIVoxelGrid
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudPtr = typename Cloud::Ptr;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     OpenNIVoxelGrid (const std::string& device_id = "", 
                      const std::string& = "z", float = 0, float = 5.0,

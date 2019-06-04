@@ -54,16 +54,16 @@
 
 using namespace std::chrono_literals;
 using namespace pcl;
-typedef PointXYZRGBA PointT;
-typedef PointXYZI KeyPointT;
+using PointT = PointXYZRGBA;
+using KeyPointT = PointXYZI;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class TrajkovicDemo
 {
   public:
-    typedef PointCloud<PointT> Cloud;
-    typedef Cloud::Ptr CloudPtr;
-    typedef Cloud::ConstPtr CloudConstPtr;
+    using Cloud = PointCloud<PointT>;
+    using CloudPtr = Cloud::Ptr;
+    using CloudConstPtr = Cloud::ConstPtr;
 
   TrajkovicDemo (Grabber& grabber, bool enable_3d)
       : cloud_viewer_ ("TRAJKOVIC 3D Keypoints -- PointCloud")

@@ -59,10 +59,10 @@
 
 #include <mutex>
 
-typedef pcl::PointXYZRGB PointT;
-typedef pcl::PointCloud<PointT> Cloud;
-typedef Cloud::Ptr CloudPtr;
-typedef Cloud::ConstPtr CloudConstPtr;
+using PointT = pcl::PointXYZRGB;
+using Cloud = pcl::PointCloud<PointT>;
+using CloudPtr = Cloud::Ptr;
+using CloudConstPtr = Cloud::ConstPtr;
 
   /** \brief StereoGroundSegmentation is a demonstration application for using PCL's stereo tools and segmentation tools to detect smooth surfaces suitable for driving.
     *

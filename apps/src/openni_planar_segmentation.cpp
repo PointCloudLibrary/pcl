@@ -52,9 +52,9 @@ template <typename PointType>
 class OpenNIPlanarSegmentation
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudPtr = typename Cloud::Ptr;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     OpenNIPlanarSegmentation (const std::string& device_id = "", double threshold = 0.01)
       : viewer ("PCL OpenNI Planar Segmentation Viewer"),

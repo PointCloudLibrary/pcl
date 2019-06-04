@@ -52,9 +52,9 @@
 
 using namespace std::chrono_literals;
 
-typedef pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
-typedef ColorHandler::Ptr ColorHandlerPtr;
-typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
+using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>;
+using ColorHandlerPtr = ColorHandler::Ptr;
+using ColorHandlerConstPtr = ColorHandler::ConstPtr;
 
 #define FPS_CALC(_WHAT_) \
 do \
@@ -74,9 +74,9 @@ do \
 class OpenNIIntegralImageNormalEstimation
 {
   public:
-    typedef pcl::PointCloud<pcl::PointXYZRGBNormal> Cloud;
-    typedef Cloud::Ptr CloudPtr;
-    typedef Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<pcl::PointXYZRGBNormal>;
+    using CloudPtr = Cloud::Ptr;
+    using CloudConstPtr = Cloud::ConstPtr;
 
     OpenNIIntegralImageNormalEstimation (const std::string& device_id = "")
       : viewer ("PCL OpenNI NormalEstimation Viewer") 

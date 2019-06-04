@@ -17,45 +17,45 @@ namespace Metrics
   template<typename T>
     struct Accumulator
     {
-      typedef T Type;
+      using Type = T;
     };
 
   template<>
     struct Accumulator<unsigned char>
     {
-      typedef float Type;
+      using Type = float;
     };
   template<>
     struct Accumulator<unsigned short>
     {
-      typedef float Type;
+      using Type = float;
     };
   template<>
     struct Accumulator<unsigned int>
     {
-      typedef float Type;
+      using Type = float;
     };
   template<>
     struct Accumulator<char>
     {
-      typedef float Type;
+      using Type = float;
     };
   template<>
     struct Accumulator<short>
     {
-      typedef float Type;
+      using Type = float;
     };
   template<>
     struct Accumulator<int>
     {
-      typedef float Type;
+      using Type = float;
     };
 
   template<class T>
     struct HistIntersectionUnionDistance
     {
-      typedef T ElementType;
-      typedef typename Accumulator<T>::Type ResultType;
+      using ElementType = T;
+      using ResultType = typename Accumulator<T>::Type;
 
       /**
        *  Compute a distance between two vectors using (1 - (1 + sum(min(a_i,b_i))) / (1 + sum(max(a_i, b_i))) )

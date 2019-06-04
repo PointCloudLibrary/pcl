@@ -20,8 +20,8 @@ namespace pcl
       class SHOTLocalEstimation : public LocalEstimator<PointInT, FeatureT>
       {
 
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
-        typedef typename pcl::PointCloud<FeatureT>::Ptr FeatureTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
+        using FeatureTPtr = typename pcl::PointCloud<FeatureT>::Ptr;
 
         using LocalEstimator<PointInT, FeatureT>::support_radius_;
         using LocalEstimator<PointInT, FeatureT>::normal_estimator_;
@@ -107,7 +107,7 @@ namespace pcl
 
           std::cout << keypoints->points.size() << " " << normals->points.size() << " " << processed->points.size() << std::endl;
           //compute signatures
-          typedef pcl::SHOTEstimation<PointInT, pcl::Normal, pcl::SHOT352> SHOTEstimator;
+          using SHOTEstimator = pcl::SHOTEstimation<PointInT, pcl::Normal, pcl::SHOT352>;
           typename pcl::search::KdTree<PointInT>::Ptr tree (new pcl::search::KdTree<PointInT>);
 
           pcl::PointCloud<pcl::SHOT352>::Ptr shots (new pcl::PointCloud<pcl::SHOT352>);

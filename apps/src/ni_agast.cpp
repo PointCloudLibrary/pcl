@@ -59,16 +59,16 @@ using namespace pcl;
 using namespace std;
 using namespace std::chrono_literals;
 
-typedef PointUV KeyPointT;
+using KeyPointT = PointUV;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 class AGASTDemo
 {
   public:
-    typedef PointCloud<PointT> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = PointCloud<PointT>;
+    using CloudPtr = typename Cloud::Ptr;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     AGASTDemo (Grabber& grabber)
       : cloud_viewer_ ("AGAST 2D Keypoints -- PointCloud")

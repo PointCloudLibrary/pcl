@@ -79,8 +79,8 @@ using namespace boost::filesystem;
 template<typename PointType>
 class OpenNIGrabFrame
 {
-  typedef pcl::PointCloud<PointType> Cloud;
-  typedef typename Cloud::ConstPtr CloudConstPtr;  
+  using Cloud = pcl::PointCloud<PointType>;
+  using CloudConstPtr = typename Cloud::ConstPtr;  
   public:
     OpenNIGrabFrame (pcl::OpenNIGrabber &grabber)
     : visualizer_ (new pcl::visualization::PCLVisualizer ("OpenNI Viewer"))

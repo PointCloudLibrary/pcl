@@ -107,8 +107,8 @@ template <typename PointType>
 class OpenNIViewer
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     OpenNIViewer (pcl::Grabber& grabber)
       : grabber_ (grabber)

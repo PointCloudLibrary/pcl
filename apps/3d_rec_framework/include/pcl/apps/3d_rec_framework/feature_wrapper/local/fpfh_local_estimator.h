@@ -19,9 +19,9 @@ namespace pcl
       class FPFHLocalEstimation : public LocalEstimator<PointInT, FeatureT>
       {
 
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
-        typedef typename pcl::PointCloud<FeatureT>::Ptr FeatureTPtr;
-        typedef pcl::PointCloud<pcl::PointXYZ> KeypointCloud;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
+        using FeatureTPtr = typename pcl::PointCloud<FeatureT>::Ptr;
+        using KeypointCloud = pcl::PointCloud<pcl::PointXYZ>;
 
         using LocalEstimator<PointInT, FeatureT>::support_radius_;
         using LocalEstimator<PointInT, FeatureT>::normal_estimator_;
@@ -60,7 +60,7 @@ namespace pcl
           assert (processed->points.size () == normals->points.size ());
 
           //compute signatures
-          typedef pcl::FPFHEstimation<PointInT, pcl::Normal, pcl::FPFHSignature33> FPFHEstimator;
+          using FPFHEstimator = pcl::FPFHEstimation<PointInT, pcl::Normal, pcl::FPFHSignature33>;
           typename pcl::search::KdTree<PointInT>::Ptr tree (new pcl::search::KdTree<PointInT>);
 
           pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfhs (new pcl::PointCloud<pcl::FPFHSignature33>);

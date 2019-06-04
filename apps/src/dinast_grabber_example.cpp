@@ -49,8 +49,8 @@ class DinastProcessor
 {
   public:
     
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudConstPtr = typename Cloud::ConstPtr;
     
     DinastProcessor(pcl::Grabber& grabber) : interface(grabber), viewer("Dinast Cloud Viewer") {}
 

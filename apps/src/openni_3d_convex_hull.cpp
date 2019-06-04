@@ -70,9 +70,9 @@ template <typename PointType>
 class OpenNI3DConvexHull
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudPtr = typename Cloud::Ptr;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     OpenNI3DConvexHull (const std::string& device_id = "")
       : viewer ("PCL OpenNI 3D Convex Hull Viewer") 
