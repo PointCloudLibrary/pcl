@@ -62,7 +62,7 @@ namespace pcl
 {
   namespace visualization
   {
-    typedef Eigen::Array<unsigned char, 3, 1> Vector3ub;
+    using Vector3ub = Eigen::Array<unsigned char, 3, 1>;
     static const Vector3ub green_color (0, 255, 0);
     static const Vector3ub red_color (255, 0, 0);
     static const Vector3ub blue_color (0, 0, 255);
@@ -117,7 +117,7 @@ namespace pcl
     class PCL_EXPORTS ImageViewer
     {
       public:
-        typedef boost::shared_ptr<ImageViewer> Ptr;
+        using Ptr = boost::shared_ptr<ImageViewer>;
 
         /** \brief Constructor.
           * \param[in] window_title the title of the window
@@ -963,7 +963,7 @@ namespace pcl
           std::string layer_name;
         };
 
-        typedef std::vector<Layer> LayerMap;
+        using LayerMap = std::vector<Layer>;
 
         /** \brief Add a new 2D rendering layer to the viewer. 
           * \param[in] layer_id the name of the layer

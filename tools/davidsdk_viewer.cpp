@@ -43,10 +43,10 @@
 using namespace std::chrono_literals;
 
 /** @brief Convenience typedef */
-typedef pcl::visualization::CloudViewer CloudViewer;
+using CloudViewer = pcl::visualization::CloudViewer;
 
 /** @brief Convenience typedef for XYZ point clouds */
-typedef pcl::PointCloud<pcl::PointXYZ> PointCloudXYZ;
+using PointCloudXYZ = pcl::PointCloud<pcl::PointXYZ>;
 
 /** @brief CloudViewer pointer */
 boost::shared_ptr<CloudViewer> viewer_ptr;

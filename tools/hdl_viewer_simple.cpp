@@ -88,8 +88,8 @@ template<typename PointType>
 class SimpleHDLViewer
 {
   public:
-    typedef PointCloud<PointType> Cloud;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = PointCloud<PointType>;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     SimpleHDLViewer (Grabber& grabber,
                      PointCloudColorHandler<PointType> &handler) 

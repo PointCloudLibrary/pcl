@@ -54,9 +54,9 @@ float default_leaf_size = 0.005f;
 double default_feature_threshold = 5.0;
 double default_normal_radius_search = 0.03;
 
-typedef PointXYZRGBA PointT;
-typedef PointCloud<PointT> CloudT;
-typedef PointCloud<PointXYZRGBL> CloudLT;
+using PointT = PointXYZRGBA;
+using CloudT = PointCloud<PointT>;
+using CloudLT = PointCloud<PointXYZRGBL>;
 
 void
 printHelp (int, char **argv)

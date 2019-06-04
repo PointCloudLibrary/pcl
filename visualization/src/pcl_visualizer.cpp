@@ -4478,7 +4478,7 @@ pcl::visualization::PCLVisualizer::textureFromTexMaterial (const pcl::TexMateria
         return (-1);
       }
 
-      typedef std::vector<boost::filesystem::path> paths_vector;
+      using paths_vector = std::vector<boost::filesystem::path>;
       paths_vector paths;
       std::copy (boost::filesystem::directory_iterator (parent_dir),
                  boost::filesystem::directory_iterator (),

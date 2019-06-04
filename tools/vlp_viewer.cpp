@@ -91,9 +91,9 @@ template <typename PointType>
 class SimpleVLPViewer
 {
   public:
-    typedef PointCloud<PointType> Cloud;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
-    typedef typename Cloud::Ptr CloudPtr;
+    using Cloud = PointCloud<PointType>;
+    using CloudConstPtr = typename Cloud::ConstPtr;
+    using CloudPtr = typename Cloud::Ptr;
 
     SimpleVLPViewer (Grabber& grabber,
                      PointCloudColorHandler<PointType> *handler) :

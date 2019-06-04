@@ -92,7 +92,7 @@ printHelp (int, char **argv)
 void
 printDeviceList ()
 {
-  typedef boost::shared_ptr<pcl::DepthSenseGrabber> DepthSenseGrabberPtr;
+  using DepthSenseGrabberPtr = boost::shared_ptr<pcl::DepthSenseGrabber>;
   std::vector<DepthSenseGrabberPtr> grabbers;
   std::cout << "Connected devices: ";
   boost::format fmt ("\n  #%i  %s");
@@ -120,7 +120,7 @@ class DepthSenseViewer
 
   public:
 
-    typedef pcl::PointCloud<PointT> PointCloudT;
+    using PointCloudT = pcl::PointCloud<PointT>;
 
     DepthSenseViewer (pcl::DepthSenseGrabber& grabber)
     : grabber_ (grabber)

@@ -49,7 +49,7 @@ namespace pcl
     virtual ~cloud_show_base() = default;
     virtual void pop () = 0;
     virtual bool popped () const = 0;
-    typedef boost::shared_ptr<cloud_show_base> Ptr;
+    using Ptr = boost::shared_ptr<cloud_show_base>;
   };
 
   template <typename CloudT> 
@@ -95,10 +95,10 @@ namespace pcl
     bool popped_;
   };
   
-  typedef pcl::PointCloud<pcl::PointXYZRGBA> cca;
-  typedef pcl::PointCloud<pcl::PointXYZRGB> cc;
-  typedef pcl::PointCloud<pcl::PointXYZI> gc;
-  typedef pcl::PointCloud<pcl::PointXYZ> mc;
+  using cca = pcl::PointCloud<pcl::PointXYZRGBA>;
+  using cc = pcl::PointCloud<pcl::PointXYZRGB>;
+  using gc = pcl::PointCloud<pcl::PointXYZI>;
+  using mc = pcl::PointCloud<pcl::PointXYZ>;
 
   template <> void
   cloud_show<cca>::pop ()
@@ -253,9 +253,9 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   bool has_cloud_;
   bool quit_;
   std::list<boost::shared_ptr<cloud_show_base> > cloud_shows_;
-  typedef std::map<std::string, VizCallable> CallableMap;
+  using CallableMap = std::map<std::string, VizCallable>;
   CallableMap callables;
-  typedef std::list<VizCallable> CallableList;
+  using CallableList = std::list<VizCallable>;
   CallableList callables_once;
 };
 

@@ -45,8 +45,8 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::console;
 
-typedef PointCloud<PointXYZRGBA> Cloud;
-typedef Cloud::ConstPtr CloudConstPtr;
+using Cloud = PointCloud<PointXYZRGBA>;
+using CloudConstPtr = Cloud::ConstPtr;
 
 int i = 0;
 char buf[4096];
