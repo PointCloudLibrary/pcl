@@ -50,8 +50,8 @@
 #include <pcl/registration/correspondence_sorting.h>
 */
 
-typedef pcl::IterativeClosestPoint<pcl::PointXYZ,pcl::PointXYZ> IterativeClosestPoint;
-typedef pcl::IterativeClosestPointNonLinear<pcl::PointXYZ,pcl::PointXYZ> IterativeClosestPointNonLinear;
+using IterativeClosestPoint = pcl::IterativeClosestPoint<pcl::PointXYZ,pcl::PointXYZ>;
+using IterativeClosestPointNonLinear = pcl::IterativeClosestPointNonLinear<pcl::PointXYZ,pcl::PointXYZ>;
 //PLUGINLIB_DECLARE_CLASS (pcl, IterativeClosestPoint, IterativeClosestPoint, nodelet::Nodelet);
 //PLUGINLIB_DECLARE_CLASS (pcl, IterativeClosestPointNonLinear, IterativeClosestPointNonLinear, nodelet::Nodelet);
 

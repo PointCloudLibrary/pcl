@@ -57,10 +57,10 @@ namespace pcl
     class TransformationEstimationDualQuaternion : public TransformationEstimation<PointSource, PointTarget, Scalar>
     {
       public:
-        typedef boost::shared_ptr<TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar> > Ptr;
-        typedef boost::shared_ptr<const TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar> > ConstPtr;
+        using Ptr = boost::shared_ptr<TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = boost::shared_ptr<const TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar> >;
 
-        typedef typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
+        using Matrix4 = typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
 
         TransformationEstimationDualQuaternion () {};
         ~TransformationEstimationDualQuaternion () {};

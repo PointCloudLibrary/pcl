@@ -80,7 +80,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
    {
      // From the set of correspondences found, attempt to remove outliers
      // Create the registration model
-     typedef typename pcl::SampleConsensusModelRegistration<PointT>::Ptr SampleConsensusModelRegistrationPtr;
+     using SampleConsensusModelRegistrationPtr = typename pcl::SampleConsensusModelRegistration<PointT>::Ptr;
      SampleConsensusModelRegistrationPtr model;
      model.reset (new pcl::SampleConsensusModelRegistration<PointT> (input_, source_indices));
      // Pass the target_indices

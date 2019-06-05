@@ -95,7 +95,7 @@ namespace pcl
     template <typename PointT>
     class NormalDist
     {
-      typedef pcl::PointCloud<PointT> PointCloud;
+      using PointCloud = pcl::PointCloud<PointT>;
 
       public:
         NormalDist ()
@@ -216,9 +216,9 @@ namespace pcl
     template <typename PointT> 
     class NDTSingleGrid: public boost::noncopyable
     {
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      typedef pcl::ndt2d::NormalDist<PointT> NormalDist;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
+      using NormalDist = pcl::ndt2d::NormalDist<PointT>;
 
       public:
         NDTSingleGrid (PointCloudConstPtr cloud,
@@ -303,9 +303,9 @@ namespace pcl
     template <typename PointT> 
     class NDT2D: public boost::noncopyable
     {
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      typedef NDTSingleGrid<PointT> SingleGrid;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
+      using SingleGrid = NDTSingleGrid<PointT>;
 
       public:
         /** \brief
@@ -356,8 +356,8 @@ namespace Eigen
    */
   template<typename PointT> struct NumTraits<pcl::ndt2d::NormalDist<PointT> >
   {
-    typedef double Real;
-    typedef double Literal;
+    using Real = double;
+    using Literal = double;
     static Real dummy_precision () { return 1.0; }
     enum {
       IsComplex = 0,
