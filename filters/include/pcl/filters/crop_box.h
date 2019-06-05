@@ -57,14 +57,14 @@ namespace pcl
   {
     using Filter<PointT>::getClassName;
 
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = typename Filter<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      typedef boost::shared_ptr< CropBox<PointT> > Ptr;
-      typedef boost::shared_ptr< const CropBox<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<CropBox<PointT> >;
+      using ConstPtr = boost::shared_ptr<const CropBox<PointT> >;
 
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
@@ -211,9 +211,9 @@ namespace pcl
     using Filter<pcl::PCLPointCloud2>::filter_name_;
     using Filter<pcl::PCLPointCloud2>::getClassName;
 
-    typedef pcl::PCLPointCloud2 PCLPointCloud2;
-    typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
-    typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
+    using PCLPointCloud2 = pcl::PCLPointCloud2;
+    using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+    using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
     public:
       /** \brief Constructor.

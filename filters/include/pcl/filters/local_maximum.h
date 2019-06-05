@@ -60,8 +60,8 @@ namespace pcl
   class LocalMaximum: public FilterIndices<PointT>
   {
     protected:
-      typedef typename FilterIndices<PointT>::PointCloud PointCloud;
-      typedef typename pcl::search::Search<PointT>::Ptr SearcherPtr;
+      using PointCloud = typename FilterIndices<PointT>::PointCloud;
+      using SearcherPtr = typename pcl::search::Search<PointT>::Ptr;
 
     public:
       /** \brief Empty constructor. */

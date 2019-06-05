@@ -57,13 +57,13 @@ namespace pcl
   {
     using Filter<PointT>::input_;
     using Filter<PointT>::indices_;
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename pcl::search::Search<PointT>::Ptr KdTreePtr;
+    using PointCloud = typename Filter<PointT>::PointCloud;
+    using KdTreePtr = typename pcl::search::Search<PointT>::Ptr;
 
     public:
 
-      typedef boost::shared_ptr< BilateralFilter<PointT> > Ptr;
-      typedef boost::shared_ptr< const BilateralFilter<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<BilateralFilter<PointT> >;
+      using ConstPtr = boost::shared_ptr<const BilateralFilter<PointT> >;
  
 
       /** \brief Constructor. 

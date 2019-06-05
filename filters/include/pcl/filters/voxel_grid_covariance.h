@@ -76,15 +76,15 @@ namespace pcl
       using VoxelGrid<PointT>::divb_mul_;
 
 
-      typedef typename pcl::traits::fieldList<PointT>::type FieldList;
-      typedef typename Filter<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using FieldList = typename pcl::traits::fieldList<PointT>::type;
+      using PointCloud = typename Filter<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      typedef boost::shared_ptr< VoxelGrid<PointT> > Ptr;
-      typedef boost::shared_ptr< const VoxelGrid<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<VoxelGrid<PointT> >;
+      using ConstPtr = boost::shared_ptr<const VoxelGrid<PointT> >;
 
 
       /** \brief Simple structure to hold a centroid, covarince and the number of points in a leaf.
@@ -186,10 +186,10 @@ namespace pcl
       };
 
       /** \brief Pointer to VoxelGridCovariance leaf structure */
-      typedef Leaf* LeafPtr;
+      using LeafPtr = Leaf *;
 
       /** \brief Const pointer to VoxelGridCovariance leaf structure */
-      typedef const Leaf* LeafConstPtr;
+      using LeafConstPtr = const Leaf *;
 
     public:
 

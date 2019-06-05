@@ -190,9 +190,9 @@ namespace pcl
     using Filter<NormalT>::filter_name_;
     using Filter<NormalT>::getClassName;
 
-    typedef typename Filter<NormalT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = typename Filter<NormalT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
       /** \brief Empty constructor, sets default convergence parameters
