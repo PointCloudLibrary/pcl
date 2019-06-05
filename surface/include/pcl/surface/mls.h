@@ -743,23 +743,8 @@ namespace pcl
       getClassName () const { return ("MovingLeastSquares"); }
   };
 
-  /** \brief MovingLeastSquaresOMP implementation has been merged into MovingLeastSquares for better maintainability.
-  * \note Keeping this empty child class for backwards compatibility.
-  * \author Robert Huitl
-  * \ingroup surface
-  */
   template <typename PointInT, typename PointOutT>
-  class MovingLeastSquaresOMP : public MovingLeastSquares<PointInT, PointOutT>
-  {
-    public:
-      /** \brief Constructor for parallelized Moving Least Squares
-      * \param threads the maximum number of hardware threads to use (0 sets the value to 1)
-      */
-      MovingLeastSquaresOMP (unsigned int threads = 1)
-      {
-        this->setNumberOfThreads (threads);
-      }
-  };
+  using MovingLeastSquaresOMP [[deprecated("use MovingLeastSquares instead, it supports OpenMP now")]] = MovingLeastSquares<PointInT, PointOutT>;
 }
 
 #ifdef PCL_NO_PRECOMPILE
