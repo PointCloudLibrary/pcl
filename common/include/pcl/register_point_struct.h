@@ -334,10 +334,6 @@ namespace pcl
   };                                                                    \
   /***/
 
-// \note: the mpl::identity weirdness is to support array types without requiring the
-// user to wrap them. The basic problem is:
-// using type = float[81]; // SYNTAX ERROR!
-// using type[81] = float; // OK, can now use "type" as a synonym for float[81]
 #define POINT_CLOUD_REGISTER_FIELD_DATATYPE(r, name, elem)              \
   template<> struct datatype<name, pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem)> \
   {                                                                     \
