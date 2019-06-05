@@ -341,21 +341,21 @@ pcl::visualization::CloudViewer::wasStopped (int)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::CloudViewer::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
+pcl::visualization::CloudViewer::registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
   return impl_->viewer_->registerKeyboardCallback (callback);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::CloudViewer::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
+pcl::visualization::CloudViewer::registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
   return impl_->viewer_->registerMouseCallback (callback);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::CloudViewer::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
+pcl::visualization::CloudViewer::registerPointPickingCallback (std::function<void (const pcl::visualization::PointPickingEvent&)> callback)
 {
   return (impl_->viewer_->registerPointPickingCallback (callback));
 }

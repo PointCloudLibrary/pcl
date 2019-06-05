@@ -35,6 +35,7 @@
 
 #pragma once
 
+#include <functional>
 #include <mutex>
 
 namespace pcl
@@ -58,7 +59,7 @@ namespace pcl
     std::deque<T1Stamped> queueT1;
     std::deque<T2Stamped> queueT2;
 
-    using CallbackFunction = boost::function<void (T1, T2, unsigned long, unsigned long)>;
+    using CallbackFunction = std::function<void(T1, T2, unsigned long, unsigned long)>;
 
     std::map<int, CallbackFunction> cb_;
     int callback_counter;
@@ -109,7 +110,7 @@ namespace pcl
 
       for (typename std::map<int, CallbackFunction>::iterator cb = cb_.begin (); cb != cb_.end (); ++cb)
       {
-        if (!cb->second.empty ())
+        if (cb->second)
         {
           cb->second.operator()(queueT1.front ().second, queueT2.front ().second, queueT1.front ().first, queueT2.front ().first);
         }

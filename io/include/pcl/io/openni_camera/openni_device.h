@@ -40,18 +40,19 @@
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
-#include <condition_variable>
-#include <map>
-#include <mutex>
-#include <thread>
-#include <utility>
-#include <vector>
 #include "openni_exception.h"
 #include "openni.h"
 
 #include <pcl/io/boost.h>
 #include <pcl/pcl_macros.h>
 
+#include <condition_variable>
+#include <functional>
+#include <map>
+#include <mutex>
+#include <thread>
+#include <utility>
+#include <vector>
 
 /// @todo Get rid of all exception-specifications, these are useless and soon to be deprecated
 
@@ -79,9 +80,9 @@ namespace openni_wrapper
       } DepthMode;
 
       typedef boost::shared_ptr<OpenNIDevice> Ptr;
-      typedef boost::function<void(boost::shared_ptr<Image>, void* cookie) > ImageCallbackFunction;
-      typedef boost::function<void(boost::shared_ptr<DepthImage>, void* cookie) > DepthImageCallbackFunction;
-      typedef boost::function<void(boost::shared_ptr<IRImage>, void* cookie) > IRImageCallbackFunction;
+      typedef std::function<void(boost::shared_ptr<Image>, void* cookie) > ImageCallbackFunction;
+      typedef std::function<void(boost::shared_ptr<DepthImage>, void* cookie) > DepthImageCallbackFunction;
+      typedef std::function<void(boost::shared_ptr<IRImage>, void* cookie) > IRImageCallbackFunction;
       typedef unsigned CallbackHandle;
 
     public:
@@ -280,7 +281,7 @@ namespace openni_wrapper
       virtual bool 
       isIRStreamRunning () const throw ();
 
-      /** \brief registers a callback function of boost::function type for the image stream with an optional user defined parameter.
+      /** \brief registers a callback function of std::function type for the image stream with an optional user defined parameter.
         *        The callback will always be called with a new image and the user data "cookie".
         * \param[in] callback the user callback to be called if a new image is available
         * \param[in] cookie the cookie that needs to be passed to the callback together with the new image.
@@ -308,7 +309,7 @@ namespace openni_wrapper
       unregisterImageCallback (const CallbackHandle& callbackHandle) throw ();
 
 
-      /** \brief registers a callback function of boost::function type for the depth stream with an optional user defined parameter.
+      /** \brief registers a callback function of std::function type for the depth stream with an optional user defined parameter.
         *        The callback will always be called with a new depth image and the user data "cookie".
         * \param[in] callback the user callback to be called if a new depth image is available
         * \param[in] cookie the cookie that needs to be passed to the callback together with the new depth image.
@@ -335,7 +336,7 @@ namespace openni_wrapper
       bool 
       unregisterDepthCallback (const CallbackHandle& callbackHandle) throw ();
 
-      /** \brief registers a callback function of boost::function type for the IR stream with an optional user defined parameter.
+      /** \brief registers a callback function of std::function type for the IR stream with an optional user defined parameter.
         *        The callback will always be called with a new IR image and the user data "cookie".
         * \param[in] callback the user callback to be called if a new IR image is available
         * \param[in] cookie the cookie that needs to be passed to the callback together with the new IR image.
@@ -445,9 +446,9 @@ namespace openni_wrapper
       OpenNIDevice (OpenNIDevice const &);
       OpenNIDevice& operator=(OpenNIDevice const &);
     protected:
-      typedef boost::function<void(boost::shared_ptr<Image>) > ActualImageCallbackFunction;
-      typedef boost::function<void(boost::shared_ptr<DepthImage>) > ActualDepthImageCallbackFunction;
-      typedef boost::function<void(boost::shared_ptr<IRImage>) > ActualIRImageCallbackFunction;
+      typedef std::function<void(boost::shared_ptr<Image>) > ActualImageCallbackFunction;
+      typedef std::function<void(boost::shared_ptr<DepthImage>) > ActualDepthImageCallbackFunction;
+      typedef std::function<void(boost::shared_ptr<IRImage>) > ActualIRImageCallbackFunction;
 
       OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
       OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);

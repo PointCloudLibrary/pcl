@@ -481,7 +481,7 @@ pcl::ihs::InHandScanner::startGrabberImpl ()
   lock.lock ();
   if (destructor_called_) return;
 
-  boost::function <void (const CloudXYZRGBAConstPtr&)> new_data_cb = boost::bind (&pcl::ihs::InHandScanner::newDataCallback, this, _1);
+  std::function <void (const CloudXYZRGBAConstPtr&)> new_data_cb = boost::bind (&pcl::ihs::InHandScanner::newDataCallback, this, _1);
   new_data_connection_ = grabber_->registerCallback (new_data_cb);
   grabber_->start ();
 

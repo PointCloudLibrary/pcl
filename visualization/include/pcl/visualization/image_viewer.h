@@ -495,14 +495,14 @@ namespace pcl
           return (registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie)));
         }
         
-        /** \brief Register a callback boost::function for keyboard events
+        /** \brief Register a callback std::function for keyboard events
           * \param[in] cb the boost function that will be registered as a callback for a keyboard event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
-        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> cb);
+        registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> cb);
 
-        /** \brief Register a callback boost::function for mouse events
+        /** \brief Register a callback std::function for mouse events
           * \param[in] callback  the function that will be registered as a callback for a mouse event
           * \param[in] cookie    user data that is passed to the callback
           * \return a connection object that allows to disconnect the callback function.
@@ -532,7 +532,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */        
         boost::signals2::connection 
-        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> cb);
+        registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> cb);
         
         /** \brief Set the position in screen coordinates.
           * \param[in] x where to move the window to (X)

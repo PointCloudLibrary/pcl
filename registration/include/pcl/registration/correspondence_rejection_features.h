@@ -181,7 +181,7 @@ namespace pcl
         {
           public:
             typedef typename pcl::PointCloud<FeatureT>::ConstPtr FeatureCloudConstPtr;
-            typedef boost::function<int (const pcl::PointCloud<FeatureT> &, int, std::vector<int> &, 
+            typedef std::function<int (const pcl::PointCloud<FeatureT> &, int, std::vector<int> &, 
                                           std::vector<float> &)> SearchMethod;
             
             typedef typename pcl::PointRepresentation<FeatureT>::ConstPtr PointRepresentationConstPtr;

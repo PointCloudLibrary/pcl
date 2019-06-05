@@ -93,7 +93,7 @@ main (int argc,
   //davidsdk_ptr->setFileFormatToPLY();
   std::cout << "Using " << davidsdk_ptr->getFileFormat () << " file format" << std::endl;
 
-  boost::function<void
+  std::function<void
   (const PointCloudXYZ::Ptr&)> f = boost::bind (&grabberCallback, _1);
   davidsdk_ptr->registerCallback (f);
   davidsdk_ptr->start ();

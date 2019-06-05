@@ -28,7 +28,7 @@ segmentAndClassify (typename pcl::rec_3d_framework::GlobalNNPipeline<DistT, Poin
   pcl::visualization::PCLVisualizer vis ("kinect");
 
   //keyboard callback to stop getting frames and finalize application
-  boost::function<void
+  std::function<void
   (const pcl::visualization::KeyboardEvent&)> keyboard_cb = boost::bind (&OpenNIFrameSource::OpenNIFrameSource::onKeyboardEvent, &camera, _1);
   vis.registerKeyboardCallback (keyboard_cb);
   size_t previous_cluster_size = 0;

@@ -39,10 +39,9 @@
 
 #pragma once
 
+#include <functional>
 #include <map>
 #include <random>
-
-#include <boost/function.hpp>
 
 // PCL includes
 #include <pcl/pcl_base.h>
@@ -210,7 +209,7 @@ namespace pcl
                        const std::vector<int> &nn_indices,
                        double search_radius,
                        int polynomial_order = 2,
-                       boost::function<double(const double)> weight_func = {});
+                       std::function<double(const double)> weight_func = {});
 
     Eigen::Vector3d query_point;  /**< \brief The query point about which the mls surface was generated */
     Eigen::Vector3d mean;         /**< \brief The mean point of all the neighbors. */
@@ -274,7 +273,7 @@ namespace pcl
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
 
-      typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
+      typedef std::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
 
       enum UpsamplingMethod
       {

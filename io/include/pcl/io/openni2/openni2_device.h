@@ -38,7 +38,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/bind.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -73,12 +73,12 @@ namespace pcl
       {
         public:
 
-          typedef boost::function<void(boost::shared_ptr<Image>, void* cookie) > ImageCallbackFunction;
-          typedef boost::function<void(boost::shared_ptr<DepthImage>, void* cookie) > DepthImageCallbackFunction;
-          typedef boost::function<void(boost::shared_ptr<IRImage>, void* cookie) > IRImageCallbackFunction;
+          typedef std::function<void(boost::shared_ptr<Image>, void* cookie) > ImageCallbackFunction;
+          typedef std::function<void(boost::shared_ptr<DepthImage>, void* cookie) > DepthImageCallbackFunction;
+          typedef std::function<void(boost::shared_ptr<IRImage>, void* cookie) > IRImageCallbackFunction;
           typedef unsigned CallbackHandle;
 
-          typedef boost::function<void(openni::VideoStream& stream)> StreamCallbackFunction;
+          typedef std::function<void(openni::VideoStream& stream)> StreamCallbackFunction;
 
           OpenNI2Device (const std::string& device_URI);
           virtual ~OpenNI2Device ();
