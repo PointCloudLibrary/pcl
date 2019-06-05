@@ -49,9 +49,9 @@ namespace cuda
   class PCLCUDABase
   {
     public:
-      typedef CloudT PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = CloudT;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       /** \brief Empty constructor. */
       PCLCUDABase () : input_() {};

@@ -98,7 +98,7 @@ template <typename T>
 class Graph
 {
 public:
-    typedef GraphEdge<T> Edge;
+    using Edge = GraphEdge<T>;
 
     Graph(int numv, int nume_max);
 

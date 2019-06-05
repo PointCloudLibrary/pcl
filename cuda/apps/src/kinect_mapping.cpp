@@ -71,19 +71,19 @@ using namespace pcl_cuda;
 template <template <typename> class Storage>
 struct ImageType
 {
-  typedef void type;
+  using type = void;
 };
 
 template <>
 struct ImageType<pcl_cuda::Device>
 {
-  typedef cv::gpu::GpuMat type;
+  using type = cv::gpu::GpuMat;
 };
 
 template <>
 struct ImageType<pcl_cuda::Host>
 {
-  typedef cv::Mat type;
+  using type = cv::Mat;
 };
 
 class MultiRansac
@@ -103,7 +103,7 @@ class MultiRansac
       std::lock_guard<std::mutex> l(m_mutex);
       if (new_cloud)
       {
-        typedef pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal> ColorHandler;
+        using ColorHandler = pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal>;
 
         ColorHandler Color_handler (normal_cloud);
         static bool first_time = true;
