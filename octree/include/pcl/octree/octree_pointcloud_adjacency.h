@@ -80,31 +80,31 @@ namespace pcl
 
       public:
 
-        typedef OctreeBase<LeafContainerT, BranchContainerT> OctreeBaseT;
+        using OctreeBaseT = OctreeBase<LeafContainerT, BranchContainerT>;
 
-        typedef OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT> OctreeAdjacencyT;
-        typedef boost::shared_ptr<OctreeAdjacencyT> Ptr;
-        typedef boost::shared_ptr<const OctreeAdjacencyT> ConstPtr;
+        using OctreeAdjacencyT = OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>;
+        using Ptr = boost::shared_ptr<OctreeAdjacencyT>;
+        using ConstPtr = boost::shared_ptr<const OctreeAdjacencyT>;
 
-        typedef OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeBaseT> OctreePointCloudT;
-        typedef typename OctreePointCloudT::LeafNode LeafNode;
-        typedef typename OctreePointCloudT::BranchNode BranchNode;
+        using OctreePointCloudT = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeBaseT>;
+        using LeafNode = typename OctreePointCloudT::LeafNode;
+        using BranchNode = typename OctreePointCloudT::BranchNode;
 
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-        typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = boost::shared_ptr<PointCloud>;
+        using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
 
         // BGL graph
-        typedef boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, PointT, float> VoxelAdjacencyList;
-        typedef typename VoxelAdjacencyList::vertex_descriptor VoxelID;
-        typedef typename VoxelAdjacencyList::edge_descriptor EdgeID;
+        using VoxelAdjacencyList = boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, PointT, float>;
+        using VoxelID = typename VoxelAdjacencyList::vertex_descriptor;
+        using EdgeID = typename VoxelAdjacencyList::edge_descriptor;
 
         // Leaf vector - pointers to all leaves
-        typedef std::vector<LeafContainerT*> LeafVectorT;
+        using LeafVectorT = std::vector<LeafContainerT *>;
 
         // Fast leaf iterators that don't require traversing tree
-        typedef typename LeafVectorT::iterator iterator;
-        typedef typename LeafVectorT::const_iterator const_iterator;
+        using iterator = typename LeafVectorT::iterator;
+        using const_iterator = typename LeafVectorT::const_iterator;
 
         inline iterator begin () { return (leaf_vector_.begin ()); }
         inline iterator end ()   { return (leaf_vector_.end ()); }

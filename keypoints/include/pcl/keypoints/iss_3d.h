@@ -84,18 +84,18 @@ namespace pcl
   class ISSKeypoint3D : public Keypoint<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<ISSKeypoint3D<PointInT, PointOutT, NormalT> > Ptr;
-      typedef boost::shared_ptr<const ISSKeypoint3D<PointInT, PointOutT, NormalT> > ConstPtr;
+      using Ptr = boost::shared_ptr<ISSKeypoint3D<PointInT, PointOutT, NormalT> >;
+      using ConstPtr = boost::shared_ptr<const ISSKeypoint3D<PointInT, PointOutT, NormalT> >;
 
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
 
-      typedef pcl::PointCloud<NormalT> PointCloudN;
-      typedef typename PointCloudN::Ptr PointCloudNPtr;
-      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+      using PointCloudN = pcl::PointCloud<NormalT>;
+      using PointCloudNPtr = typename PointCloudN::Ptr;
+      using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
 
-      typedef pcl::octree::OctreePointCloudSearch<PointInT> OctreeSearchIn;
-      typedef typename OctreeSearchIn::Ptr OctreeSearchInPtr;
+      using OctreeSearchIn = pcl::octree::OctreePointCloudSearch<PointInT>;
+      using OctreeSearchInPtr = typename OctreeSearchIn::Ptr;
 
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;

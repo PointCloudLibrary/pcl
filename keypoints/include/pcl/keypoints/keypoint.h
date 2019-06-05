@@ -54,21 +54,21 @@ namespace pcl
   class Keypoint : public PCLBase<PointInT>
   {
     public:
-      typedef boost::shared_ptr<Keypoint<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const Keypoint<PointInT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<Keypoint<PointInT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const Keypoint<PointInT, PointOutT> >;
 
       using PCLBase<PointInT>::indices_;
       using PCLBase<PointInT>::input_;
 
-      typedef PCLBase<PointInT> BaseClass;
-      typedef pcl::search::Search<PointInT> KdTree;
-      typedef typename KdTree::Ptr KdTreePtr;
-      typedef pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename PointCloudIn::Ptr PointCloudInPtr;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-      typedef pcl::PointCloud<PointOutT> PointCloudOut;
-      typedef std::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
-      typedef std::function<int (const PointCloudIn &cloud, int index, double, std::vector<int> &, std::vector<float> &)> SearchMethodSurface;
+      using BaseClass = PCLBase<PointInT>;
+      using KdTree = pcl::search::Search<PointInT>;
+      using KdTreePtr = typename KdTree::Ptr;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
+      using PointCloudInPtr = typename PointCloudIn::Ptr;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+      using PointCloudOut = pcl::PointCloud<PointOutT>;
+      using SearchMethod = std::function<int (int, double, std::vector<int> &, std::vector<float> &)>;
+      using SearchMethodSurface = std::function<int (const PointCloudIn &cloud, int index, double, std::vector<int> &, std::vector<float> &)>;
 
     public:
       /** \brief Empty constructor. */

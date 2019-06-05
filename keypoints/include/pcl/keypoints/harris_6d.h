@@ -49,13 +49,13 @@ namespace pcl
   class HarrisKeypoint6D : public Keypoint<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<HarrisKeypoint6D<PointInT, PointOutT, NormalT> > Ptr;
-      typedef boost::shared_ptr<const HarrisKeypoint6D<PointInT, PointOutT, NormalT> > ConstPtr;
+      using Ptr = boost::shared_ptr<HarrisKeypoint6D<PointInT, PointOutT, NormalT> >;
+      using ConstPtr = boost::shared_ptr<const HarrisKeypoint6D<PointInT, PointOutT, NormalT> >;
 
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+      using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+      using KdTree = typename Keypoint<PointInT, PointOutT>::KdTree;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;
