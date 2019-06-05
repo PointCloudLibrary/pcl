@@ -60,7 +60,7 @@ pcl::computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
 template <typename Matrix, typename Roots> inline void
 pcl::computeRoots (const Matrix& m, Roots& roots)
 {
-  typedef typename Matrix::Scalar Scalar;
+  using Scalar = typename Matrix::Scalar;
 
   // The characteristic equation is x^3 - c2*x^2 + c1*x - c0 = 0.  The
   // eigenvalues are the roots to this equation, all guaranteed to be
@@ -218,7 +218,7 @@ pcl::eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
 template <typename Matrix, typename Vector> inline void
 pcl::computeCorrespondingEigenVector (const Matrix& mat, const typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
 {
-  typedef typename Matrix::Scalar Scalar;
+  using Scalar = typename Matrix::Scalar;
   // Scale the matrix so its entries are in [-1,1].  The scaling is applied
   // only when at least one matrix entry has magnitude larger than 1.
 
@@ -250,7 +250,7 @@ pcl::computeCorrespondingEigenVector (const Matrix& mat, const typename Matrix::
 template <typename Matrix, typename Vector> inline void
 pcl::eigen33 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
 {
-  typedef typename Matrix::Scalar Scalar;
+  using Scalar = typename Matrix::Scalar;
   // Scale the matrix so its entries are in [-1,1].  The scaling is applied
   // only when at least one matrix entry has magnitude larger than 1.
 
@@ -287,7 +287,7 @@ pcl::eigen33 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& ei
 template <typename Matrix, typename Vector> inline void
 pcl::eigen33 (const Matrix& mat, Vector& evals)
 {
-  typedef typename Matrix::Scalar Scalar;
+  using Scalar = typename Matrix::Scalar;
   Scalar scale = mat.cwiseAbs ().maxCoeff ();
   if (scale <= std::numeric_limits < Scalar > ::min ())
     scale = Scalar (1.0);
@@ -301,7 +301,7 @@ pcl::eigen33 (const Matrix& mat, Vector& evals)
 template <typename Matrix, typename Vector> inline void
 pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
 {
-  typedef typename Matrix::Scalar Scalar;
+  using Scalar = typename Matrix::Scalar;
   // Scale the matrix so its entries are in [-1,1].  The scaling is applied
   // only when at least one matrix entry has magnitude larger than 1.
 
@@ -484,7 +484,7 @@ pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
 template <typename Matrix> inline typename Matrix::Scalar
 pcl::invert2x2 (const Matrix& matrix, Matrix& inverse)
 {
-  typedef typename Matrix::Scalar Scalar;
+  using Scalar = typename Matrix::Scalar;
   Scalar det = matrix.coeff (0) * matrix.coeff (3) - matrix.coeff (1) * matrix.coeff (2);
 
   if (det != 0)
@@ -503,7 +503,7 @@ pcl::invert2x2 (const Matrix& matrix, Matrix& inverse)
 template <typename Matrix> inline typename Matrix::Scalar
 pcl::invert3x3SymMatrix (const Matrix& matrix, Matrix& inverse)
 {
-  typedef typename Matrix::Scalar Scalar;
+  using Scalar = typename Matrix::Scalar;
   // elements
   // a b c
   // b d e
@@ -538,7 +538,7 @@ pcl::invert3x3SymMatrix (const Matrix& matrix, Matrix& inverse)
 template <typename Matrix> inline typename Matrix::Scalar
 pcl::invert3x3Matrix (const Matrix& matrix, Matrix& inverse)
 {
-  typedef typename Matrix::Scalar Scalar;
+  using Scalar = typename Matrix::Scalar;
 
   //| a b c |-1             |   ie-hf    hc-ib   fb-ec  |
   //| d e f |    =  1/det * |   gf-id    ia-gc   dc-fa  |
@@ -741,10 +741,10 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
 #if EIGEN_VERSION_AT_LEAST (3, 3, 0)
   return Eigen::umeyama (src, dst, with_scaling);
 #else
-  typedef typename Eigen::internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type TransformationMatrixType;
-  typedef typename Eigen::internal::traits<TransformationMatrixType>::Scalar Scalar;
-  typedef typename Eigen::NumTraits<Scalar>::Real RealScalar;
-  typedef typename Derived::Index Index;
+  using TransformationMatrixType = typename Eigen::internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type;
+  using Scalar = typename Eigen::internal::traits<TransformationMatrixType>::Scalar;
+  using RealScalar = typename Eigen::NumTraits<Scalar>::Real;
+  using Index = typename Derived::Index;
 
   static_assert (!Eigen::NumTraits<Scalar>::IsComplex, "Numeric type must be real.");
   static_assert ((Eigen::internal::is_same<Scalar, typename Eigen::internal::traits<OtherDerived>::Scalar>::value),
@@ -752,9 +752,9 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
 
   enum { Dimension = PCL_EIGEN_SIZE_MIN_PREFER_DYNAMIC (Derived::RowsAtCompileTime, OtherDerived::RowsAtCompileTime) };
 
-  typedef Eigen::Matrix<Scalar, Dimension, 1> VectorType;
-  typedef Eigen::Matrix<Scalar, Dimension, Dimension> MatrixType;
-  typedef typename Eigen::internal::plain_matrix_type_row_major<Derived>::type RowMajorMatrixType;
+  using VectorType = Eigen::Matrix<Scalar, Dimension, 1>;
+  using MatrixType = Eigen::Matrix<Scalar, Dimension, Dimension>;
+  using RowMajorMatrixType = typename Eigen::internal::plain_matrix_type_row_major<Derived>::type;
 
   const Index m = src.rows (); // dimension
   const Index n = src.cols (); // number of measurements

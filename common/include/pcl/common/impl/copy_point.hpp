@@ -97,9 +97,9 @@ namespace pcl
     {
       void operator () (const PointInT& point_in, PointOutT& point_out) const
       {
-        typedef typename pcl::traits::fieldList<PointInT>::type FieldListInT;
-        typedef typename pcl::traits::fieldList<PointOutT>::type FieldListOutT;
-        typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
+        using FieldListInT = typename pcl::traits::fieldList<PointInT>::type;
+        using FieldListOutT = typename pcl::traits::fieldList<PointOutT>::type;
+        using FieldList = typename pcl::intersect<FieldListInT, FieldListOutT>::type;
         pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (point_in, point_out));
       }
     };
@@ -114,9 +114,9 @@ namespace pcl
     {
       void operator () (const PointInT& point_in, PointOutT& point_out) const
       {
-        typedef typename pcl::traits::fieldList<PointInT>::type FieldListInT;
-        typedef typename pcl::traits::fieldList<PointOutT>::type FieldListOutT;
-        typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
+        using FieldListInT = typename pcl::traits::fieldList<PointInT>::type;
+        using FieldListOutT = typename pcl::traits::fieldList<PointOutT>::type;
+        using FieldList = typename pcl::intersect<FieldListInT, FieldListOutT>::type;
         const uint32_t offset_in  = boost::mpl::if_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
                                                     pcl::traits::offset<PointInT, pcl::fields::rgb>,
                                                     pcl::traits::offset<PointInT, pcl::fields::rgba> >::type::value;

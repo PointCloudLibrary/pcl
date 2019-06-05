@@ -71,8 +71,8 @@ namespace pcl
       bool trivial_;
 
     public:
-      typedef boost::shared_ptr<PointRepresentation<PointT> > Ptr;
-      typedef boost::shared_ptr<const PointRepresentation<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<PointRepresentation<PointT> >;
+      using ConstPtr = boost::shared_ptr<const PointRepresentation<PointT> >;
 
       /** \brief Empty constructor */
       PointRepresentation () : nr_dimensions_ (0), alpha_ (0), trivial_ (false) {}
@@ -182,8 +182,8 @@ namespace pcl
 
     public:
       // Boost shared pointers
-      typedef boost::shared_ptr<DefaultPointRepresentation<PointDefault> > Ptr;
-      typedef boost::shared_ptr<const DefaultPointRepresentation<PointDefault> > ConstPtr;
+      using Ptr = boost::shared_ptr<DefaultPointRepresentation<PointDefault> >;
+      using ConstPtr = boost::shared_ptr<const DefaultPointRepresentation<PointDefault> >;
 
       DefaultPointRepresentation ()
       {
@@ -242,14 +242,14 @@ namespace pcl
 
     struct NdCopyPointFunctor
     {
-      typedef typename traits::POD<PointDefault>::type Pod;
+      using Pod = typename traits::POD<PointDefault>::type;
 
       NdCopyPointFunctor (const PointDefault &p1, float * p2)
         : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2), f_idx_ (0) { }
 
       template<typename Key> inline void operator() ()
       {
-        typedef typename pcl::traits::datatype<PointDefault, Key>::type FieldT;
+        using FieldT = typename pcl::traits::datatype<PointDefault, Key>::type;
         const int NrDims = pcl::traits::datatype<PointDefault, Key>::size;
         Helper<Key, FieldT, NrDims>::copyPoint (p1_, p2_, f_idx_);
       }
@@ -290,9 +290,9 @@ namespace pcl
 
     public:
       // Boost shared pointers
-      typedef typename boost::shared_ptr<DefaultFeatureRepresentation<PointDefault> > Ptr;
-      typedef typename boost::shared_ptr<const DefaultFeatureRepresentation<PointDefault> > ConstPtr;
-      typedef typename pcl::traits::fieldList<PointDefault>::type FieldList;
+      using Ptr = typename boost::shared_ptr<DefaultFeatureRepresentation<PointDefault> >;
+      using ConstPtr = typename boost::shared_ptr<const DefaultFeatureRepresentation<PointDefault> >;
+      using FieldList = typename pcl::traits::fieldList<PointDefault>::type;
 
       DefaultFeatureRepresentation ()
       {
@@ -536,8 +536,8 @@ namespace pcl
 
     public:
       // Boost shared pointers
-      typedef boost::shared_ptr<CustomPointRepresentation<PointDefault> > Ptr;
-      typedef boost::shared_ptr<const CustomPointRepresentation<PointDefault> > ConstPtr;
+      using Ptr = boost::shared_ptr<CustomPointRepresentation<PointDefault> >;
+      using ConstPtr = boost::shared_ptr<const CustomPointRepresentation<PointDefault> >;
 
       /** \brief Constructor
         * \param[in] max_dim the maximum number of dimensions to use

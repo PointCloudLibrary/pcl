@@ -27,12 +27,12 @@ namespace pcl
     /** \brief Coordinate frame ID */
     std::string frame_id;
 
-    typedef boost::shared_ptr<PCLHeader> Ptr;
-    typedef boost::shared_ptr<PCLHeader const> ConstPtr;
+    using Ptr = boost::shared_ptr<PCLHeader>;
+    using ConstPtr = boost::shared_ptr<const PCLHeader>;
   }; // struct PCLHeader
 
-  typedef boost::shared_ptr<PCLHeader> HeaderPtr;
-  typedef boost::shared_ptr<PCLHeader const> HeaderConstPtr;
+  using HeaderPtr = boost::shared_ptr<PCLHeader>;
+  using HeaderConstPtr = boost::shared_ptr<const PCLHeader>;
 
   inline std::ostream& operator << (std::ostream& out, const PCLHeader &h)
   {
