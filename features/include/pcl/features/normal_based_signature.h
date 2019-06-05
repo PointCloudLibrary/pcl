@@ -66,9 +66,9 @@ namespace pcl
       using PCLBase<PointT>::indices_;
       using FeatureFromNormals<PointT, PointNT, PointFeature>::normals_;
 
-      typedef pcl::PointCloud<PointFeature> FeatureCloud;
-      typedef boost::shared_ptr<NormalBasedSignatureEstimation<PointT, PointNT, PointFeature> > Ptr;
-      typedef boost::shared_ptr<const NormalBasedSignatureEstimation<PointT, PointNT, PointFeature> > ConstPtr;
+      using FeatureCloud = pcl::PointCloud<PointFeature>;
+      using Ptr = boost::shared_ptr<NormalBasedSignatureEstimation<PointT, PointNT, PointFeature> >;
+      using ConstPtr = boost::shared_ptr<const NormalBasedSignatureEstimation<PointT, PointNT, PointFeature> >;
 
 
 

@@ -74,8 +74,8 @@ namespace pcl
   class FPFHEstimationOMP : public FPFHEstimation<PointInT, PointNT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<FPFHEstimationOMP<PointInT, PointNT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const FPFHEstimationOMP<PointInT, PointNT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<FPFHEstimationOMP<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const FPFHEstimationOMP<PointInT, PointNT, PointOutT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;
@@ -89,7 +89,7 @@ namespace pcl
       using FPFHEstimation<PointInT, PointNT, PointOutT>::hist_f3_;
       using FPFHEstimation<PointInT, PointNT, PointOutT>::weightPointSPFHSignature;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)

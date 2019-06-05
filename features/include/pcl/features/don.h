@@ -70,13 +70,13 @@ namespace pcl
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::feature_name_;
       using PCLBase<PointInT>::input_;
-      typedef pcl::PointCloud<PointNT> PointCloudN;
-      typedef typename PointCloudN::Ptr PointCloudNPtr;
-      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudN = pcl::PointCloud<PointNT>;
+      using PointCloudNPtr = typename PointCloudN::Ptr;
+      using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
     public:
-      typedef boost::shared_ptr<DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT> >;
 
       /**
         * Creates a new Difference of Normals filter.

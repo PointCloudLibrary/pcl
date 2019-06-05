@@ -58,8 +58,8 @@ namespace pcl
   class IntensitySpinEstimation: public Feature<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<IntensitySpinEstimation<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const IntensitySpinEstimation<PointInT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<IntensitySpinEstimation<PointInT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const IntensitySpinEstimation<PointInT, PointOutT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
 
@@ -70,8 +70,8 @@ namespace pcl
       using Feature<PointInT, PointOutT>::tree_;
       using Feature<PointInT, PointOutT>::search_radius_;
       
-      typedef pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
       /** \brief Empty constructor. */
       IntensitySpinEstimation () : nr_distance_bins_ (4), nr_intensity_bins_ (5), sigma_ (1.0)
