@@ -73,16 +73,16 @@ namespace pcl
   class GridProjection : public SurfaceReconstruction<PointNT>
   {
     public:
-      typedef boost::shared_ptr<GridProjection<PointNT> > Ptr;
-      typedef boost::shared_ptr<const GridProjection<PointNT> > ConstPtr;
+      using Ptr = boost::shared_ptr<GridProjection<PointNT> >;
+      using ConstPtr = boost::shared_ptr<const GridProjection<PointNT> >;
 
       using SurfaceReconstruction<PointNT>::input_;
       using SurfaceReconstruction<PointNT>::tree_;
 
-      typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudPtr;
+      using PointCloudPtr = typename pcl::PointCloud<PointNT>::Ptr;
 
-      typedef pcl::KdTree<PointNT> KdTree;
-      typedef typename KdTree::Ptr KdTreePtr;
+      using KdTree = pcl::KdTree<PointNT>;
+      using KdTreePtr = typename KdTree::Ptr;
 
       /** \brief Data leaf. */
       struct Leaf
