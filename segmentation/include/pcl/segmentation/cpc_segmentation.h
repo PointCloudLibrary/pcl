@@ -66,11 +66,11 @@ namespace pcl
   template <typename PointT>
   class CPCSegmentation : public LCCPSegmentation<PointT>
   {
-      typedef PointXYZINormal WeightSACPointType;
-      typedef LCCPSegmentation<PointT> LCCP;
+      using WeightSACPointType = PointXYZINormal;
+      using LCCP = LCCPSegmentation<PointT>;
       // LCCP typedefs
-      typedef typename LCCP::EdgeID EdgeID;
-      typedef typename LCCP::EdgeIterator EdgeIterator;
+      using EdgeID = typename LCCP::EdgeID;
+      using EdgeIterator = typename LCCP::EdgeIterator;
       // LCCP methods
       using LCCP::calculateConvexConnections;
       using LCCP::applyKconvexity;
@@ -174,11 +174,11 @@ namespace pcl
       
       class WeightedRandomSampleConsensus : public SampleConsensus<WeightSACPointType>
       {
-          typedef SampleConsensusModel<WeightSACPointType>::Ptr SampleConsensusModelPtr;
+          using SampleConsensusModelPtr = SampleConsensusModel<WeightSACPointType>::Ptr;
 
         public:
-          typedef boost::shared_ptr<WeightedRandomSampleConsensus> Ptr;
-          typedef boost::shared_ptr<const WeightedRandomSampleConsensus> ConstPtr;
+          using Ptr = boost::shared_ptr<WeightedRandomSampleConsensus>;
+          using ConstPtr = boost::shared_ptr<const WeightedRandomSampleConsensus>;
 
           /** \brief WeightedRandomSampleConsensus (Weighted RAndom SAmple Consensus) main constructor
             * \param[in] model a Sample Consensus model

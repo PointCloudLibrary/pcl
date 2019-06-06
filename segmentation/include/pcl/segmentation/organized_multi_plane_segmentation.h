@@ -66,25 +66,25 @@ namespace pcl
     using PCLBase<PointT>::deinitCompute;
 
     public:
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      typedef pcl::PointCloud<PointNT> PointCloudN;
-      typedef typename PointCloudN::Ptr PointCloudNPtr;
-      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+      using PointCloudN = pcl::PointCloud<PointNT>;
+      using PointCloudNPtr = typename PointCloudN::Ptr;
+      using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
 
-      typedef pcl::PointCloud<PointLT> PointCloudL;
-      typedef typename PointCloudL::Ptr PointCloudLPtr;
-      typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+      using PointCloudL = pcl::PointCloud<PointLT>;
+      using PointCloudLPtr = typename PointCloudL::Ptr;
+      using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
-      typedef pcl::PlaneCoefficientComparator<PointT, PointNT> PlaneComparator;
-      typedef typename PlaneComparator::Ptr PlaneComparatorPtr;
-      typedef typename PlaneComparator::ConstPtr PlaneComparatorConstPtr;
+      using PlaneComparator = pcl::PlaneCoefficientComparator<PointT, PointNT>;
+      using PlaneComparatorPtr = typename PlaneComparator::Ptr;
+      using PlaneComparatorConstPtr = typename PlaneComparator::ConstPtr;
 
-      typedef pcl::PlaneRefinementComparator<PointT, PointNT, PointLT> PlaneRefinementComparator;
-      typedef typename PlaneRefinementComparator::Ptr PlaneRefinementComparatorPtr;
-      typedef typename PlaneRefinementComparator::ConstPtr PlaneRefinementComparatorConstPtr;
+      using PlaneRefinementComparator = pcl::PlaneRefinementComparator<PointT, PointNT, PointLT>;
+      using PlaneRefinementComparatorPtr = typename PlaneRefinementComparator::Ptr;
+      using PlaneRefinementComparatorConstPtr = typename PlaneRefinementComparator::ConstPtr;
 
       /** \brief Constructor for OrganizedMultiPlaneSegmentation. */
       OrganizedMultiPlaneSegmentation () :

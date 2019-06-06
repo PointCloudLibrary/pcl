@@ -85,7 +85,7 @@ pcl::CPCSegmentation<PointT>::segment ()
 template <typename PointT> void
 pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
 {
-  typedef std::map<uint32_t, pcl::PointCloud<WeightSACPointType>::Ptr> SegLabel2ClusterMap;
+  using SegLabel2ClusterMap = std::map<uint32_t, pcl::PointCloud<WeightSACPointType>::Ptr>;
   
   pcl::console::print_info ("Cutting at level %d (maximum %d)\n", max_cuts_ - depth_levels_left + 1, max_cuts_);
   // stop if we reached the 0 level

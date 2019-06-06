@@ -81,14 +81,14 @@ namespace pcl
     public:
 
       // Adjacency list with nodes holding labels (uint32_t) and edges holding EdgeProperties.
-      typedef boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, uint32_t, EdgeProperties> SupervoxelAdjacencyList;
-      typedef typename boost::graph_traits<SupervoxelAdjacencyList>::vertex_iterator VertexIterator;
-      typedef typename boost::graph_traits<SupervoxelAdjacencyList>::adjacency_iterator AdjacencyIterator;
+      using SupervoxelAdjacencyList = boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, uint32_t, EdgeProperties>;
+      using VertexIterator = typename boost::graph_traits<SupervoxelAdjacencyList>::vertex_iterator;
+      using AdjacencyIterator = typename boost::graph_traits<SupervoxelAdjacencyList>::adjacency_iterator;
 
-      typedef typename boost::graph_traits<SupervoxelAdjacencyList>::vertex_descriptor VertexID;
-      typedef typename boost::graph_traits<SupervoxelAdjacencyList>::edge_iterator EdgeIterator;
-      typedef typename boost::graph_traits<SupervoxelAdjacencyList>::out_edge_iterator OutEdgeIterator;
-      typedef typename boost::graph_traits<SupervoxelAdjacencyList>::edge_descriptor EdgeID;
+      using VertexID = typename boost::graph_traits<SupervoxelAdjacencyList>::vertex_descriptor;
+      using EdgeIterator = typename boost::graph_traits<SupervoxelAdjacencyList>::edge_iterator;
+      using OutEdgeIterator = typename boost::graph_traits<SupervoxelAdjacencyList>::out_edge_iterator;
+      using EdgeID = typename boost::graph_traits<SupervoxelAdjacencyList>::edge_descriptor;
 
       LCCPSegmentation ();
       virtual
