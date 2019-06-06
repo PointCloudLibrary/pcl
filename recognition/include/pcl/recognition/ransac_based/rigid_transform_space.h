@@ -183,7 +183,7 @@ namespace pcl
         }
     };
 
-    typedef SimpleOctree<RotationSpaceCell, RotationSpaceCellCreator, float> CellOctree;
+    using CellOctree = SimpleOctree<RotationSpaceCell, RotationSpaceCellCreator, float>;
 
     /** \brief This is a class for a discrete representation of the rotation space based on the axis-angle representation.
       * This class is not supposed to be very general. That's why it is dependent on the class ModelLibrary.
@@ -335,7 +335,7 @@ namespace pcl
         std::list<RotationSpace*> rotation_spaces_;
     };
 
-    typedef SimpleOctree<RotationSpace, RotationSpaceCreator, float> RotationSpaceOctree;
+    using RotationSpaceOctree = SimpleOctree<RotationSpace, RotationSpaceCreator, float>;
 
     class PCL_EXPORTS RigidTransformSpace
     {

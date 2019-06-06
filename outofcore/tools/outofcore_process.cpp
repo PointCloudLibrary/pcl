@@ -54,7 +54,7 @@
 
 // todo: Read clouds as PCLPointCloud2 so we don't need to define PointT explicitly.
 //       This also requires our octree to take PCLPointCloud2 as an input.
-typedef pcl::PointXYZ PointT;
+using PointT = pcl::PointXYZ;
 
 using namespace pcl;
 using namespace pcl::outofcore;
@@ -68,7 +68,7 @@ using pcl::console::print_info;
 
 #include <boost/foreach.hpp>
 
-typedef OutofcoreOctreeBase<> octree_disk;
+using octree_disk = OutofcoreOctreeBase<>;
 
 const int OCTREE_DEPTH (0);
 const int OCTREE_RESOLUTION (1);

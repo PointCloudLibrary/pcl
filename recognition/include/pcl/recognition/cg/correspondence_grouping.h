@@ -54,9 +54,9 @@ namespace pcl
   class CorrespondenceGrouping : public PCLBase<PointModelT>
   {
     public:
-      typedef pcl::PointCloud<PointSceneT> SceneCloud;
-      typedef typename SceneCloud::Ptr SceneCloudPtr;
-      typedef typename SceneCloud::ConstPtr SceneCloudConstPtr;
+      using SceneCloud = pcl::PointCloud<PointSceneT>;
+      using SceneCloudPtr = typename SceneCloud::Ptr;
+      using SceneCloudConstPtr = typename SceneCloud::ConstPtr;
 
       /** \brief Empty constructor. */
       CorrespondenceGrouping () : scene_ () {}

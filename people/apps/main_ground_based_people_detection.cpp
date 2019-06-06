@@ -58,8 +58,8 @@
 
 using namespace std::chrono_literals;
 
-typedef pcl::PointXYZRGBA PointT;
-typedef pcl::PointCloud<PointT> PointCloudT;
+using PointT = pcl::PointXYZRGBA;
+using PointCloudT = pcl::PointCloud<PointT>;
 
 // PCL viewer //
 pcl::visualization::PCLVisualizer viewer("PCL Viewer");

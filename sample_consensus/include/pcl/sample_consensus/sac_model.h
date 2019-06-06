@@ -65,13 +65,13 @@ namespace pcl
   class SampleConsensusModel
   {
     public:
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename pcl::search::Search<PointT>::Ptr SearchPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using SearchPtr = typename pcl::search::Search<PointT>::Ptr;
 
-      typedef boost::shared_ptr<SampleConsensusModel> Ptr;
-      typedef boost::shared_ptr<const SampleConsensusModel> ConstPtr;
+      using Ptr = boost::shared_ptr<SampleConsensusModel<PointT> >;
+      using ConstPtr = boost::shared_ptr<const SampleConsensusModel<PointT> >;
 
     protected:
       /** \brief Empty constructor for base SampleConsensusModel.
@@ -576,11 +576,11 @@ namespace pcl
   class SampleConsensusModelFromNormals //: public SampleConsensusModel<PointT>
   {
     public:
-      typedef typename pcl::PointCloud<PointNT>::ConstPtr PointCloudNConstPtr;
-      typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudNPtr;
+      using PointCloudNConstPtr = typename pcl::PointCloud<PointNT>::ConstPtr;
+      using PointCloudNPtr = typename pcl::PointCloud<PointNT>::Ptr;
 
-      typedef boost::shared_ptr<SampleConsensusModelFromNormals> Ptr;
-      typedef boost::shared_ptr<const SampleConsensusModelFromNormals> ConstPtr;
+      using Ptr = boost::shared_ptr<SampleConsensusModelFromNormals<PointT, PointNT> >;
+      using ConstPtr = boost::shared_ptr<const SampleConsensusModelFromNormals<PointT, PointNT> >;
 
       /** \brief Empty constructor for base SampleConsensusModelFromNormals. */
       SampleConsensusModelFromNormals () : normal_distance_weight_ (0.0), normals_ () {};
@@ -637,16 +637,16 @@ namespace pcl
   template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
   struct Functor
   {
-    typedef _Scalar Scalar;
+    using Scalar = _Scalar;
     enum 
     {
       InputsAtCompileTime = NX,
       ValuesAtCompileTime = NY
     };
 
-    typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,1> ValueType;
-    typedef Eigen::Matrix<Scalar,InputsAtCompileTime,1> InputType;
-    typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
+    using ValueType = Eigen::Matrix<Scalar,ValuesAtCompileTime,1>;
+    using InputType = Eigen::Matrix<Scalar,InputsAtCompileTime,1>;
+    using JacobianType = Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime>;
 
     /** \brief Empty Constructor. */
     Functor () : m_data_points_ (ValuesAtCompileTime) {}

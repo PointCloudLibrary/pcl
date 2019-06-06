@@ -81,7 +81,7 @@ namespace pcl
       };
 
     public:
-      typedef pcl::PointCloud<PointInT> PointCloudIn;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
 
       /** \brief Different methods for feature selection/extraction. */
       enum FeatureSelectionMethod
