@@ -68,8 +68,8 @@ using namespace std::chrono_literals;
 
 /// *****  Type Definitions ***** ///
 
-typedef pcl::PointXYZRGBA PointT;  // The point type used for input
-typedef pcl::LCCPSegmentation<PointT>::SupervoxelAdjacencyList SuperVoxelAdjacencyList;
+using PointT = pcl::PointXYZRGBA;  // The point type used for input
+using SuperVoxelAdjacencyList = pcl::LCCPSegmentation<PointT>::SupervoxelAdjacencyList;
 
 /// Callback and variables
 
@@ -448,9 +448,9 @@ CPCSegmentation Parameters: \n\
     // Currently this is a work-around creating a polygon mesh consisting of two triangles for each edge
     using namespace pcl;
 
-    typedef LCCPSegmentation<PointT>::VertexIterator VertexIterator;
-    typedef LCCPSegmentation<PointT>::AdjacencyIterator AdjacencyIterator;
-    typedef LCCPSegmentation<PointT>::EdgeID EdgeID;
+    using VertexIterator = LCCPSegmentation<PointT>::VertexIterator;
+    using AdjacencyIterator = LCCPSegmentation<PointT>::AdjacencyIterator;
+    using EdgeID = LCCPSegmentation<PointT>::EdgeID;
 
     std::set<EdgeID> edge_drawn;
 
