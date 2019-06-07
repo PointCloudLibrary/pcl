@@ -351,22 +351,6 @@ using NCVStatus = Ncv32u;
 
 //==============================================================================
 //
-// Timer
-//
-//==============================================================================
-
-
-using NcvTimer = struct _NcvTimer *;
-
-NCV_EXPORTS NcvTimer ncvStartTimer();
-
-NCV_EXPORTS double ncvEndQueryTimerUs(NcvTimer t);
-
-NCV_EXPORTS double ncvEndQueryTimerMs(NcvTimer t);
-
-
-//==============================================================================
-//
 // Memory management classes template compound types
 //
 //==============================================================================
