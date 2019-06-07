@@ -82,7 +82,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #endif
-typedef pcl::ScopeTime ScopeTimeT;
+using ScopeTimeT = pcl::ScopeTime;
 
 #include <pcl/gpu/kinfu_large_scale/screenshot_manager.h>
 
@@ -979,8 +979,8 @@ struct KinFuLSApp
   startMainLoop (bool triggered_capture)
   {   
     using namespace openni_wrapper;
-    typedef boost::shared_ptr<DepthImage> DepthImagePtr;
-    typedef boost::shared_ptr<Image>      ImagePtr;
+    using DepthImagePtr = boost::shared_ptr<DepthImage>;
+    using ImagePtr = boost::shared_ptr<Image>;
 
     std::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = boost::bind (&KinFuLSApp::source_cb2, this, _1, _2, _3);
     std::function<void (const DepthImagePtr&)> func2 = boost::bind (&KinFuLSApp::source_cb1, this, _1);

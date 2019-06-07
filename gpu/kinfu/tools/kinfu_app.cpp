@@ -79,7 +79,7 @@
   #include <opencv2/imgproc/imgproc.hpp>
 //#include "video_recorder.h"
 #endif
-typedef pcl::ScopeTime ScopeTimeT;
+using ScopeTimeT = pcl::ScopeTime;
 
 #include "../src/internal.h"
 
@@ -111,12 +111,12 @@ namespace pcl
       using PointCloudColorHandler<PointT>::capable_;
       using PointCloudColorHandler<PointT>::cloud_;
 
-      typedef typename PointCloudColorHandler<PointT>::PointCloud::ConstPtr PointCloudConstPtr;
-      typedef pcl::PointCloud<RGB>::ConstPtr RgbCloudConstPtr;
+      using PointCloudConstPtr = typename PointCloudColorHandler<PointT>::PointCloud::ConstPtr;
+      using RgbCloudConstPtr = pcl::PointCloud<RGB>::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerRGBCloud<PointT> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerRGBCloud<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerRGBCloud<PointT> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerRGBCloud<PointT> >;
         
         /** \brief Constructor. */
         PointCloudColorHandlerRGBCloud (const PointCloudConstPtr& cloud, const RgbCloudConstPtr& colors)
@@ -959,8 +959,8 @@ struct KinFuApp
   startMainLoop (bool triggered_capture)
   {   
     using namespace openni_wrapper;
-    typedef boost::shared_ptr<DepthImage> DepthImagePtr;
-    typedef boost::shared_ptr<Image> ImagePtr;
+    using DepthImagePtr = boost::shared_ptr<DepthImage>;
+    using ImagePtr = boost::shared_ptr<Image>;
         
     std::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1_dev = boost::bind (&KinFuApp::source_cb2_device, this, _1, _2, _3);
     std::function<void (const DepthImagePtr&)> func2_dev = boost::bind (&KinFuApp::source_cb1_device, this, _1);

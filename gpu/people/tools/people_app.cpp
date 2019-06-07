@@ -137,7 +137,7 @@ savePNGFile (const std::string& filename, const pcl::PointCloud<T>& cloud)
 class PeoplePCDApp
 {
   public:
-    typedef pcl::gpu::people::PeopleDetector PeopleDetector;
+    using PeopleDetector = pcl::gpu::people::PeopleDetector;
 
     enum { COLS = 640, ROWS = 480 };
 
@@ -279,8 +279,8 @@ class PeoplePCDApp
       if (ispcd)
         cloud_cb_= true;
         
-      typedef boost::shared_ptr<openni_wrapper::DepthImage> DepthImagePtr;
-      typedef boost::shared_ptr<openni_wrapper::Image> ImagePtr;
+      using DepthImagePtr = boost::shared_ptr<openni_wrapper::DepthImage>;
+      using ImagePtr = boost::shared_ptr<openni_wrapper::Image>;
       
       std::function<void (const boost::shared_ptr<const PointCloud<PointXYZRGBA> >&)> func1 = boost::bind (&PeoplePCDApp::source_cb1, this, _1);
       std::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func2 = boost::bind (&PeoplePCDApp::source_cb2, this, _1, _2, _3);                  
@@ -448,7 +448,7 @@ int main(int argc, char** argv)
   try
   {
     // loading trees
-    typedef pcl::gpu::people::RDFBodyPartsDetector RDFBodyPartsDetector;
+    using RDFBodyPartsDetector = pcl::gpu::people::RDFBodyPartsDetector;
     RDFBodyPartsDetector::Ptr rdf(new RDFBodyPartsDetector(tree_files));
     PCL_VERBOSE("[Main] : Loaded files into rdf");
 

@@ -67,7 +67,7 @@ namespace pcl
       {
         public:
 
-          typedef pcl::gpu::kinfuLS::PixelRGB PixelRGB;
+          using PixelRGB = pcl::gpu::kinfuLS::PixelRGB;
 
           /** Constructor */
           ScreenshotManager();

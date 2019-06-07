@@ -48,8 +48,8 @@
 class Evaluation
 {
 public:
-  typedef boost::shared_ptr<Evaluation> Ptr; 
-  typedef /*pcl::gpu::KinfuTracker::PixelRGB*/ pcl::gpu::kinfuLS::PixelRGB RGB;
+  using Ptr = boost::shared_ptr<Evaluation>; 
+  using RGB = pcl::gpu::kinfuLS::PixelRGB;
 
   Evaluation(const std::string& folder);
 

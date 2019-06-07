@@ -77,9 +77,9 @@ namespace pcl
       class StandaloneMarchingCubes
       {
       public:
-          typedef pcl::PointCloud<PointT> PointCloud;
-          typedef typename PointCloud::Ptr PointCloudPtr;
-          typedef boost::shared_ptr<pcl::PolygonMesh> MeshPtr;
+          using PointCloud = pcl::PointCloud<PointT>;
+          using PointCloudPtr = typename PointCloud::Ptr;
+          using MeshPtr = boost::shared_ptr<pcl::PolygonMesh>;
 
       /** \brief Constructor        
         */

@@ -45,7 +45,7 @@ namespace pcl
         template<int CTA_SIZE, int STACK_DEPTH>
         struct OctreeIteratorDevice
         {       
-            typedef int Storage[STACK_DEPTH][CTA_SIZE];
+            using Storage = int[STACK_DEPTH][CTA_SIZE];
 
             int level;
             Storage& storage;

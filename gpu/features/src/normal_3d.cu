@@ -143,7 +143,7 @@ namespace pcl
                 if (lane == 0)
                 {
                     // Extract the eigenvalues and eigenvectors
-                    typedef Eigen33::Mat33 Mat33;
+                    using Mat33 = Eigen33::Mat33;
                     Eigen33 eigen33(&cov[lane]);
 
                     Mat33&     tmp = (Mat33&)cov_buffer[1][tid - lane];

@@ -47,7 +47,7 @@ namespace pcl
 {
     namespace device
     {           
-        typedef OctreeImpl::PointType PointType;
+        using PointType = OctreeImpl::PointType;
 
         template<typename RadiusStrategy, typename FetchStrategy>
         struct Batch : public RadiusStrategy, public FetchStrategy
@@ -132,7 +132,7 @@ namespace pcl
         struct Warp_radiusSearch
         {   
         public:                
-            typedef OctreeIteratorDeviceNS OctreeIterator;
+            using OctreeIterator = OctreeIteratorDeviceNS;
 
             const BatchType& batch;
             OctreeIterator iterator;        
@@ -378,7 +378,7 @@ void pcl::device::OctreeImpl::radiusSearchEx(BatchType& batch, const Queries& qu
 
 void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, float radius, NeighborIndices& results)
 {        
-    typedef Batch<SharedRadius, DirectQuery> BatchType;
+    using BatchType = Batch<SharedRadius, DirectQuery>;
 
     BatchType batch;
     batch.radius = radius;
@@ -388,7 +388,7 @@ void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, float radius,
 
 void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results)
 {
-    typedef Batch<IndividualRadius, DirectQuery> BatchType;
+    using BatchType = Batch<IndividualRadius, DirectQuery>;
 
     BatchType batch;
     batch.radiuses = radiuses;
@@ -398,7 +398,7 @@ void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Radiuse
 
 void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Indices& indices, float radius, NeighborIndices& results)
 {
-    typedef Batch<SharedRadius, IndicesQuery> BatchType;
+    using BatchType = Batch<SharedRadius, IndicesQuery>;
 
     BatchType batch;
     batch.radius = radius;

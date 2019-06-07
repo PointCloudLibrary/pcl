@@ -45,7 +45,7 @@
 
 namespace pcl { namespace device { namespace knn_search
 {   
-    typedef OctreeImpl::PointType PointType;
+    using PointType = OctreeImpl::PointType;
     
     struct Batch
     {           
@@ -81,7 +81,7 @@ namespace pcl { namespace device { namespace knn_search
     struct Warp_knnSearch
     {   
     public:                        
-        typedef OctreeIteratorDeviceNS OctreeIterator;
+        using OctreeIterator = OctreeIteratorDeviceNS;
 
         const Batch& batch;
 
@@ -322,7 +322,7 @@ namespace pcl { namespace device { namespace knn_search
 
 void pcl::device::OctreeImpl::nearestKSearchBatch(const Queries& queries, int /*k*/, NeighborIndices& results) const
 {              
-    typedef pcl::device::knn_search::Batch BatchType;
+    using BatchType = pcl::device::knn_search::Batch;
 
     BatchType batch;      
     batch.octree = octreeGlobal;

@@ -53,7 +53,7 @@ namespace pcl
       class CaptureOpenNI
       {
   public:
-      typedef pcl::gpu::kinfuLS::PixelRGB RGB;
+      using RGB = pcl::gpu::kinfuLS::PixelRGB;
 
       enum { PROP_OPENNI_REGISTRATION_ON  = 104 };
 
