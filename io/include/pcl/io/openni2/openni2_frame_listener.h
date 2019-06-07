@@ -48,7 +48,7 @@ namespace pcl
     namespace openni2
     {
 
-      typedef std::function<void(openni::VideoStream& stream)> StreamCallbackFunction;
+      using StreamCallbackFunction = std::function<void(openni::VideoStream& stream)>;
 
       /* Each NewFrameListener may only listen to one VideoStream at a time.
       **/

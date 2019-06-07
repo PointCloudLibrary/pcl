@@ -56,7 +56,7 @@ using namespace pcl::io::openni2;
 namespace
 {
   // Treat color as chars, float32, or uint32
-  typedef union
+  union RGBValue
   {
     struct
     {
@@ -67,7 +67,7 @@ namespace
     };
     float float_value;
     uint32_t long_value;
-  } RGBValue;
+  };
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -343,7 +343,7 @@ pcl::io::OpenNI2Grabber::setupDevice (const std::string& device_id, const Mode& 
     PCL_THROW_EXCEPTION (pcl::IOException, "unknown error occurred");
   }
 
-  typedef pcl::io::openni2::OpenNI2VideoMode VideoMode;
+  using VideoMode = pcl::io::openni2::OpenNI2VideoMode;
 
   VideoMode depth_md;
   // Set the selected output mode
@@ -802,7 +802,7 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
 void
 pcl::io::OpenNI2Grabber::updateModeMaps ()
 {
-  typedef pcl::io::openni2::OpenNI2VideoMode VideoMode;
+  using VideoMode = pcl::io::openni2::OpenNI2VideoMode;
 
 pcl::io::openni2::OpenNI2VideoMode output_mode;
 

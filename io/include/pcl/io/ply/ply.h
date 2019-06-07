@@ -55,15 +55,15 @@ namespace pcl
   {
     namespace ply 
     {
-      typedef boost::int8_t int8;
-      typedef boost::int16_t int16;
-      typedef boost::int32_t int32;
-      typedef boost::uint8_t uint8;
-      typedef boost::uint16_t uint16;
-      typedef boost::uint32_t uint32;         
+      using int8 = boost::int8_t;
+      using int16 = boost::int16_t;
+      using int32 = boost::int32_t;
+      using uint8 = boost::uint8_t;
+      using uint16 = boost::uint16_t;
+      using uint32 = boost::uint32_t;         
       
-      typedef float float32;
-      typedef double float64;
+      using float32 = float;
+      using float64 = double;
       
       template <typename ScalarType>
         struct type_traits;
@@ -76,8 +76,8 @@ namespace pcl
       template <>                                           \
       struct type_traits<TYPE>                              \
       {                                                     \
-        typedef TYPE type;                                  \
-        typedef PARSE_TYPE parse_type;                      \
+        using type = TYPE;                                  \
+        using parse_type = PARSE_TYPE;                      \
         static const char* name () { return NAME; }         \
         static const char* old_name () { return OLD_NAME; } \
       };
@@ -94,7 +94,7 @@ namespace pcl
       
 #undef PLY_TYPE_TRAITS
       
-      typedef int format_type;
+      using format_type = int;
       enum format { ascii_format, binary_little_endian_format, binary_big_endian_format, unknown };  
     } // namespace ply
   } // namespace io

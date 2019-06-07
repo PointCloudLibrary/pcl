@@ -48,7 +48,7 @@
 
 namespace
 {
-  typedef union
+  union RGBValue
   {
     struct /*anonymous*/
     {
@@ -59,7 +59,7 @@ namespace
     };
     float float_value;
     long long_value;
-  } RGBValue;
+  };
 }
 
 namespace pcl

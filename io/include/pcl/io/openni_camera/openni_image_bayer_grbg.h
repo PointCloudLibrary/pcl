@@ -53,12 +53,12 @@ namespace openni_wrapper
   class PCL_EXPORTS ImageBayerGRBG : public Image
   {
     public:
-      typedef enum
+      enum DebayeringMethod
       {
         Bilinear = 0,
         EdgeAware,
         EdgeAwareWeighted
-      } DebayeringMethod;
+      };
 
       ImageBayerGRBG (boost::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) throw ();
       ~ImageBayerGRBG () throw ();
