@@ -44,7 +44,6 @@
 #  pragma GCC system_header 
 #endif
 
-#include <boost/bind.hpp>
 // PCL includes
 #include <pcl/pcl_base.h>
 #include <pcl/search/search.h>
