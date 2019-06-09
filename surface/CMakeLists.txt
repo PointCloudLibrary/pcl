@@ -29,9 +29,6 @@ if(QHULL_FOUND)
 endif()
 
 if(VTK_FOUND AND NOT ANDROID)
-  set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
-  include("${VTK_USE_FILE}")
-
   set(VTK_SMOOTHING_INCLUDES
     "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk.h"
     "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_utils.h"

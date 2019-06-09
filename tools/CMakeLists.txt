@@ -175,8 +175,6 @@ if(NOT VTK_FOUND)
 else()
   set(DEFAULT TRUE)
   set(REASON)
-  set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
-  include("${VTK_USE_FILE}")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
   PCL_ADD_EXECUTABLE(pcl_png2pcd COMPONENT ${SUBSYS_NAME} SOURCES png2pcd.cpp)
