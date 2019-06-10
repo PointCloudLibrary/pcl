@@ -306,9 +306,9 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
       nan_mask [pIdx] = false;
   }
   
-  boost::shared_ptr<vector<int> > input_indices_;
+  pcl::IndicesPtr input_indices_;
   if (!input_indices.empty ())
-    input_indices_.reset (new vector<int> (input_indices));
+    input_indices_.reset (new pcl::Indices (input_indices));
   
   #pragma omp parallel for
   for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
@@ -376,9 +376,9 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
       nan_mask [pIdx] = false;
   }
   
-  boost::shared_ptr<vector<int> > input_indices_;
+  pcl::IndicesPtr input_indices_;
   if (!input_indices.empty ())
-    input_indices_.reset (new vector<int> (input_indices));
+    input_indices_.reset (new pcl::Indices (input_indices));
   
   #pragma omp parallel for
   for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
