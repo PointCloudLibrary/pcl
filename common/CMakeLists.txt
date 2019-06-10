@@ -75,6 +75,7 @@ set(incs
   include/pcl/PointIndices.h
   include/pcl/register_point_struct.h
   include/pcl/conversions.h
+  include/pcl/make_shared.h
 )
 
 set(common_incs
@@ -147,6 +148,7 @@ set(impl_incs
   include/pcl/impl/instantiate.hpp
   include/pcl/impl/point_types.hpp
   include/pcl/impl/cloud_iterator.hpp
+  include/pcl/impl/make_shared.hpp
 )
 
 set(tools_incs
