@@ -51,8 +51,8 @@
 #include <pcl/features/gfpfh.h>
 #include <pcl/io/pcd_io.h>
 
-typedef pcl::PointNormal PointT;
-typedef pcl::search::KdTree<PointT>::Ptr KdTreePtr;
+using PointT = pcl::PointNormal;
+using KdTreePtr = pcl::search::KdTree<PointT>::Ptr;
 using pcl::PointCloud;
 
 static PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
@@ -66,8 +66,8 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
                              const boost::shared_ptr<std::vector<int> > & indices, int ndims)
 
 {
-  typedef pcl::search::KdTree<PointT> KdTreeT;
-  typedef FeatureEstimation<PointT, NormalT, OutputT> FeatureEstimationT;
+  using KdTreeT = pcl::search::KdTree<PointT>;
+  using FeatureEstimationT = FeatureEstimation<PointT, NormalT, OutputT>;
 
   //
   // Test setIndices and setSearchSurface
@@ -291,8 +291,9 @@ struct FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >
 };
 
 // Types which will be instantiated
-typedef ::testing::Types<FPFHEstimation<PointT, PointT, FPFHSignature33>,
-                         FPFHEstimationOMP<PointT, PointT, FPFHSignature33> > FPFHEstimatorTypes;
+using FPFHEstimatorTypes = ::testing::Types
+        <FPFHEstimation<PointT, PointT, FPFHSignature33>,
+         FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >;
 TYPED_TEST_CASE (FPFHTest, FPFHEstimatorTypes);
 
 // This is a copy of the old FPFHEstimation test which will now

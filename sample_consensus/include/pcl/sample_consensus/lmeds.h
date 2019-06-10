@@ -55,11 +55,11 @@ namespace pcl
   template <typename PointT>
   class LeastMedianSquares : public SampleConsensus<PointT>
   {
-    typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
+    using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
 
     public:
-      typedef boost::shared_ptr<LeastMedianSquares> Ptr;
-      typedef boost::shared_ptr<const LeastMedianSquares> ConstPtr;
+      using Ptr = boost::shared_ptr<LeastMedianSquares<PointT> >;
+      using ConstPtr = boost::shared_ptr<const LeastMedianSquares<PointT> >;
 
       using SampleConsensus<PointT>::max_iterations_;
       using SampleConsensus<PointT>::threshold_;

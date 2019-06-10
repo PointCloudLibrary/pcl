@@ -54,15 +54,15 @@ namespace pcl
   template <typename T>
   class SampleConsensus
   {
-    typedef typename SampleConsensusModel<T>::Ptr SampleConsensusModelPtr;
+    using SampleConsensusModelPtr = typename SampleConsensusModel<T>::Ptr;
 
     private:
       /** \brief Constructor for base SAC. */
       SampleConsensus () {};
 
     public:
-      typedef boost::shared_ptr<SampleConsensus> Ptr;
-      typedef boost::shared_ptr<const SampleConsensus> ConstPtr;
+      using Ptr = boost::shared_ptr<SampleConsensus<T> >;
+      using ConstPtr = boost::shared_ptr<const SampleConsensus<T> >;
 
       /** \brief Constructor for base SAC.
         * \param[in] model a Sample Consensus model

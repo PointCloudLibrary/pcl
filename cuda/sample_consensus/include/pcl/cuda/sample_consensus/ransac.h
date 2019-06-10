@@ -64,10 +64,10 @@ namespace pcl
       using SampleConsensus<Storage>::inliers_stencil_;
       using SampleConsensus<Storage>::probability_;
 
-      typedef typename SampleConsensusModel<Storage>::Ptr SampleConsensusModelPtr;
-      typedef typename SampleConsensusModel<Storage>::Coefficients Coefficients;
-      typedef typename SampleConsensusModel<Storage>::Indices Indices;
-      typedef typename SampleConsensusModel<Storage>::Hypotheses Hypotheses;
+      using SampleConsensusModelPtr = typename SampleConsensusModel<Storage>::Ptr;
+      using Coefficients = typename SampleConsensusModel<Storage>::Coefficients;
+      using Indices = typename SampleConsensusModel<Storage>::Indices;
+      using Hypotheses = typename SampleConsensusModel<Storage>::Hypotheses;
 
       public:
         /** \brief RANSAC (RAndom SAmple Consensus) main constructor

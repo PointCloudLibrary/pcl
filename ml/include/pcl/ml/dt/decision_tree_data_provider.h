@@ -54,7 +54,7 @@ namespace pcl
 
     public:
 
-      typedef boost::shared_ptr<DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>> Ptr;
+      using Ptr = boost::shared_ptr<DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>>;
 
       /** \brief Constructor. */
       DecisionTreeTrainerDataProvider()

@@ -32,16 +32,16 @@ namespace pcl
     private:
 
       /** \brief Sorts peaks */
-      typedef struct
+      struct peaks_ordering
       {
         bool
         operator() (std::pair<float, int> const& a, std::pair<float, int> const& b)
         {
           return a.first > b.first;
         }
-      } peaks_ordering;
+      };
 
-      typedef typename pcl::PointCloud<PointT>::Ptr PointTPtr;
+      using PointTPtr = typename pcl::PointCloud<PointT>::Ptr;
 
       /** \brief View of the model to be aligned to input_view_ */
       PointTPtr target_view_;

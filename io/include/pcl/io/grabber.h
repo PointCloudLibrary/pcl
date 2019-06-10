@@ -68,8 +68,20 @@ namespace pcl
         * \param[in] callback: the callback function/method
         * \return Connection object, that can be used to disconnect the callback method from the signal again.
         */
-      template<typename T> boost::signals2::connection 
-      registerCallback (const boost::function<T>& callback);
+      template<typename T> boost::signals2::connection
+      registerCallback (const std::function<T>& callback);
+
+      /** \brief registers a callback function/method to a signal with the corresponding signature
+        * \param[in] callback: the callback function/method
+        * \return Connection object, that can be used to disconnect the callback method from the signal again.
+        */
+      template<typename T, template<typename> class FunctionT>
+      [[deprecated ("please assign the callback to a std::function.")]]
+      boost::signals2::connection
+      registerCallback (const FunctionT<T>& callback)
+      {
+        return registerCallback (std::function<T> (callback));
+      }
 
       /** \brief indicates whether a signal with given parameter-type exists or not
         * \return true if signal exists, false otherwise
@@ -231,7 +243,7 @@ namespace pcl
   }
 
   template<typename T> boost::signals2::connection
-  Grabber::registerCallback (const boost::function<T> & callback)
+  Grabber::registerCallback (const std::function<T> & callback)
   {
     typedef boost::signals2::signal<T> Signal;
     if (signals_.find (typeid (T).name ()) == signals_.end ())

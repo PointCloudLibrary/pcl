@@ -55,12 +55,12 @@ namespace pcl
   template <typename PointT>
   class MaximumLikelihoodSampleConsensus : public SampleConsensus<PointT>
   {
-    typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
-    typedef typename SampleConsensusModel<PointT>::PointCloudConstPtr PointCloudConstPtr; 
+    using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
+    using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr; 
 
     public:
-      typedef boost::shared_ptr<MaximumLikelihoodSampleConsensus> Ptr;
-      typedef boost::shared_ptr<const MaximumLikelihoodSampleConsensus> ConstPtr;
+      using Ptr = boost::shared_ptr<MaximumLikelihoodSampleConsensus<PointT> >;
+      using ConstPtr = boost::shared_ptr<const MaximumLikelihoodSampleConsensus<PointT> >;
 
       using SampleConsensus<PointT>::max_iterations_;
       using SampleConsensus<PointT>::threshold_;

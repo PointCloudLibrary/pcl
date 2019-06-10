@@ -154,7 +154,7 @@ namespace pcl
           * \param[in] transform_func A boost:function pointer to the transform to be used. The transform must have one
           * parameter (a point) which it modifies in place. */
         void
-        setTransformFunction (boost::function<void (PointT &p)> transform_func)
+        setTransformFunction (std::function<void (PointT &p)> transform_func)
         {
           transform_func_ = transform_func;
         }
@@ -216,7 +216,7 @@ namespace pcl
         /// Local leaf pointer vector used to make iterating through leaves fast.
         LeafVectorT leaf_vector_;
 
-        boost::function<void (PointT &p)> transform_func_;
+        std::function<void (PointT &p)> transform_func_;
 
     };
 

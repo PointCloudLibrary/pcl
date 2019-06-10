@@ -99,14 +99,14 @@ class SimpleOpenNIProcessor
       interface.getDevice ()->setDepthOutputFormat (mode);
 
       // make callback function from member function
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+      std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
         boost::bind (&SimpleOpenNIProcessor::cloud_cb_, this, _1);
 
       // connect callback function for desired signal. In this case its a point cloud with color values
       boost::signals2::connection c = interface.registerCallback (f);
 
       // make callback function from member function
-      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)> f2 =
+      std::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)> f2 =
         boost::bind (&SimpleOpenNIProcessor::imageDepthImageCallback, this, _1, _2, _3);
 
       // connect callback function for desired signal. In this case its a point cloud with color values

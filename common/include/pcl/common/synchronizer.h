@@ -35,6 +35,7 @@
 
 #pragma once
 
+#include <functional>
 #include <mutex>
 
 namespace pcl
@@ -50,15 +51,15 @@ namespace pcl
   template <typename T1, typename T2>
   class Synchronizer
   {
-    typedef std::pair<unsigned long, T1> T1Stamped;
-    typedef std::pair<unsigned long, T2> T2Stamped;
+    using T1Stamped = std::pair<unsigned long, T1>;
+    using T2Stamped = std::pair<unsigned long, T2>;
     std::mutex mutex1_;
     std::mutex mutex2_;
     std::mutex publish_mutex_;
     std::deque<T1Stamped> queueT1;
     std::deque<T2Stamped> queueT2;
 
-    typedef boost::function<void(T1, T2, unsigned long, unsigned long) > CallbackFunction;
+    using CallbackFunction = std::function<void(T1, T2, unsigned long, unsigned long)>;
 
     std::map<int, CallbackFunction> cb_;
     int callback_counter;
@@ -109,7 +110,7 @@ namespace pcl
 
       for (typename std::map<int, CallbackFunction>::iterator cb = cb_.begin (); cb != cb_.end (); ++cb)
       {
-        if (!cb->second.empty ())
+        if (cb->second)
         {
           cb->second.operator()(queueT1.front ().second, queueT2.front ().second, queueT1.front ().first, queueT2.front ().first);
         }

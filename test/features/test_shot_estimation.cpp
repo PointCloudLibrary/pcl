@@ -51,7 +51,7 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
+using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
 vector<int> indices;
@@ -368,8 +368,9 @@ struct SHOTShapeTest<SHOTEstimationOMP<PointXYZ, Normal, SHOT352> >
 };
 
 // Types which will be instantiated
-typedef ::testing::Types<SHOTEstimation<PointXYZ, Normal, SHOT352>,
-                         SHOTEstimationOMP<PointXYZ, Normal, SHOT352> > SHOTEstimatorTypes;
+using SHOTEstimatorTypes = ::testing::Types
+        <SHOTEstimation<PointXYZ, Normal, SHOT352>,
+         SHOTEstimationOMP<PointXYZ, Normal, SHOT352> >;
 TYPED_TEST_CASE (SHOTShapeTest, SHOTEstimatorTypes);
 
 // This is a copy of the old SHOTShapeEstimation test which will now
@@ -556,8 +557,9 @@ struct SHOTShapeAndColorTest<SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT13
 };
 
 // Types which will be instantiated
-typedef ::testing::Types<SHOTColorEstimation<PointXYZRGBA, Normal, SHOT1344>,
-                         SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> > SHOTColorEstimatorTypes;
+using SHOTColorEstimatorTypes= ::testing::Types
+        <SHOTColorEstimation<PointXYZRGBA, Normal, SHOT1344>,
+         SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> >;
 TYPED_TEST_CASE (SHOTShapeAndColorTest, SHOTColorEstimatorTypes);
 
 // This is a copy of the old SHOTShapeAndColorEstimation test which will now

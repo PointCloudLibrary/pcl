@@ -62,7 +62,7 @@ namespace ba = boost::accumulators;
 
 // todo: Read clouds as PCLPointCloud2 so we don't need to define PointT explicitly.
 //       This also requires our octree to take PCLPointCloud2 as an input.
-typedef pcl::PointXYZ PointT;
+using PointT = pcl::PointXYZ;
 
 using namespace pcl;
 using namespace pcl::outofcore;
@@ -77,12 +77,12 @@ using pcl::console::print;
 
 #include <boost/foreach.hpp>
 
-typedef OutofcoreOctreeBase<> OctreeDisk;
-typedef OutofcoreOctreeBaseNode<> OctreeDiskNode;
-typedef OutofcoreBreadthFirstIterator<> OctreeBreadthFirstIterator;
-typedef OutofcoreDepthFirstIterator<> OctreeDepthFirstIterator;
+using OctreeDisk = OutofcoreOctreeBase<>;
+using OctreeDiskNode = OutofcoreOctreeBaseNode<>;
+using OctreeBreadthFirstIterator = OutofcoreBreadthFirstIterator<>;
+using OctreeDepthFirstIterator = OutofcoreDepthFirstIterator<>;
 
-typedef Eigen::aligned_allocator<PointT> AlignedPointT;
+using AlignedPointT = Eigen::aligned_allocator<PointT>;
 
 void
 printDepth(size_t depth)

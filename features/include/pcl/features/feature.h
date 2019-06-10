@@ -44,11 +44,12 @@
 #  pragma GCC system_header 
 #endif
 
-#include <boost/function.hpp>
 #include <boost/bind.hpp>
 // PCL includes
 #include <pcl/pcl_base.h>
 #include <pcl/search/search.h>
+
+#include <functional>
 
 namespace pcl
 {
@@ -121,8 +122,8 @@ namespace pcl
 
       using PointCloudOut = pcl::PointCloud<PointOutT>;
 
-      using SearchMethod = boost::function<int (size_t, double, std::vector<int> &, std::vector<float> &)>;
-      using SearchMethodSurface = boost::function<int (const PointCloudIn &cloud, size_t index, double, std::vector<int> &, std::vector<float> &)>;
+      using SearchMethod = std::function<int (size_t, double, std::vector<int> &, std::vector<float> &)>;
+      using SearchMethodSurface = std::function<int (const PointCloudIn &cloud, size_t index, double, std::vector<int> &, std::vector<float> &)>;
 
     public:
       /** \brief Empty constructor. */

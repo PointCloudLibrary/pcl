@@ -56,6 +56,7 @@
 #include <pcl/io/png_io.h>
 #include <boost/filesystem.hpp>
 
+#include <functional>
 #include <iostream>
 
 namespace pc = pcl::console;
@@ -281,8 +282,8 @@ class PeoplePCDApp
       typedef boost::shared_ptr<openni_wrapper::DepthImage> DepthImagePtr;
       typedef boost::shared_ptr<openni_wrapper::Image> ImagePtr;
       
-      boost::function<void (const boost::shared_ptr<const PointCloud<PointXYZRGBA> >&)> func1 = boost::bind (&PeoplePCDApp::source_cb1, this, _1);
-      boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func2 = boost::bind (&PeoplePCDApp::source_cb2, this, _1, _2, _3);                  
+      std::function<void (const boost::shared_ptr<const PointCloud<PointXYZRGBA> >&)> func1 = boost::bind (&PeoplePCDApp::source_cb1, this, _1);
+      std::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func2 = boost::bind (&PeoplePCDApp::source_cb2, this, _1, _2, _3);                  
       boost::signals2::connection c = cloud_cb_ ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
 
       {

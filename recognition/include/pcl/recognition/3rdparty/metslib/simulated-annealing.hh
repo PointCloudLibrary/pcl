@@ -72,7 +72,7 @@ namespace mets {
   class simulated_annealing : public mets::abstract_search<move_manager_type>
   {
   public:
-    typedef simulated_annealing<move_manager_type> search_type;
+    using search_type = simulated_annealing<move_manager_type>;
     /// @brief Creates a search by simulated annealing instance.
     ///
     /// @param working The working solution (this will be modified
@@ -223,7 +223,7 @@ void
 mets::simulated_annealing<move_manager_t>::search()
   throw(no_moves_error)
 {
-  typedef abstract_search<move_manager_t> base_t;
+  using base_t = abstract_search<move_manager_t>;
 
   current_temp_m = starting_temp_m;
   while(!termination_criteria_m(base_t::working_solution_m) 

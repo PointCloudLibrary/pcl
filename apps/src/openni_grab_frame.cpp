@@ -186,7 +186,7 @@ class OpenNIGrabFrame
       
 
       // make callback function from member function
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIGrabFrame::cloud_cb_, this, _1);
+      std::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIGrabFrame::cloud_cb_, this, _1);
 
       // connect callback function for desired signal. In this case its a point cloud with color values
       boost::signals2::connection c = grabber_.registerCallback (f);

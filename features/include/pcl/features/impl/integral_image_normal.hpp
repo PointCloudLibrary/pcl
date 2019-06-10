@@ -391,7 +391,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 template <typename T>
 void
 sumArea (int start_x, int start_y, int end_x, int end_y, const int width, const int height,
-  const boost::function<T(unsigned, unsigned, unsigned, unsigned)> &f, 
+  const std::function<T(unsigned, unsigned, unsigned, unsigned)> &f, 
   T & result)
 {
   if (start_x < 0)

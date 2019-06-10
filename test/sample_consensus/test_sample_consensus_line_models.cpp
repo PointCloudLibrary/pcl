@@ -47,8 +47,8 @@
 
 using namespace pcl;
 
-typedef SampleConsensusModelLine<PointXYZ>::Ptr SampleConsensusModelLinePtr;
-typedef SampleConsensusModelParallelLine<PointXYZ>::Ptr SampleConsensusModelParallelLinePtr;
+using SampleConsensusModelLinePtr = SampleConsensusModelLine<PointXYZ>::Ptr;
+using SampleConsensusModelParallelLinePtr = SampleConsensusModelParallelLine<PointXYZ>::Ptr;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SampleConsensusModelLine, RANSAC)

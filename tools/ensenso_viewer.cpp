@@ -76,7 +76,7 @@ main (void)
   ensenso_ptr->openTcpPort ();
   ensenso_ptr->openDevice ();
 
-  boost::function<void
+  std::function<void
   (const PointCloudXYZ::Ptr&)> f = boost::bind (&grabberCallback, _1);
   ensenso_ptr->registerCallback (f);
   ensenso_ptr->start ();

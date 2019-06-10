@@ -568,7 +568,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     if (true) // kp.angle==-1
     {
       if (!rotation_invariance_enabled_)
-        // don't compute the gradient direction, just assign a rotation of 0°
+        // don't compute the gradient direction, just assign a rotation of 0 degree
         theta = 0;
       else
       {

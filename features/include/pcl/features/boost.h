@@ -43,6 +43,5 @@
 #  pragma GCC system_header 
 #endif
 
-#include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/property_map/property_map.hpp>

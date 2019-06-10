@@ -55,9 +55,9 @@
 using namespace pcl;
 using namespace pcl::io;
 
-typedef SampleConsensusModelPlane<PointXYZ>::Ptr SampleConsensusModelPlanePtr;
-typedef SampleConsensusModelNormalPlane<PointXYZ, Normal>::Ptr SampleConsensusModelNormalPlanePtr;
-typedef SampleConsensusModelNormalParallelPlane<PointXYZ, Normal>::Ptr SampleConsensusModelNormalParallelPlanePtr;
+using SampleConsensusModelPlanePtr = SampleConsensusModelPlane<PointXYZ>::Ptr;
+using SampleConsensusModelNormalPlanePtr = SampleConsensusModelNormalPlane<PointXYZ, Normal>::Ptr;
+using SampleConsensusModelNormalParallelPlanePtr = SampleConsensusModelNormalParallelPlane<PointXYZ, Normal>::Ptr;
 
 PointCloud<PointXYZ>::Ptr cloud_ (new PointCloud<PointXYZ> ());
 PointCloud<Normal>::Ptr normals_ (new PointCloud<Normal> ());

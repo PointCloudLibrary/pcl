@@ -62,15 +62,15 @@
 
 #include "test_registration_api_data.h"
 
-typedef pcl::PointXYZ              PointXYZ;
-typedef pcl::PointCloud <PointXYZ> CloudXYZ;
-typedef CloudXYZ::Ptr              CloudXYZPtr;
-typedef CloudXYZ::ConstPtr         CloudXYZConstPtr;
+using PointXYZ = pcl::PointXYZ;
+using CloudXYZ = pcl::PointCloud<PointXYZ>;
+using CloudXYZPtr = CloudXYZ::Ptr;
+using CloudXYZConstPtr = CloudXYZ::ConstPtr;
 
-typedef pcl::PointNormal              PointNormal;
-typedef pcl::PointCloud <PointNormal> CloudNormal;
-typedef CloudNormal::Ptr              CloudNormalPtr;
-typedef CloudNormal::ConstPtr         CloudNormalConstPtr;
+using PointNormal = pcl::PointNormal;
+using CloudNormal = pcl::PointCloud<PointNormal>;
+using CloudNormalPtr = CloudNormal::Ptr;
+using CloudNormalConstPtr = CloudNormal::ConstPtr;
 
 CloudXYZ cloud_source, cloud_target, cloud_reg;
 
