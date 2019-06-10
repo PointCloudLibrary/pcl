@@ -43,6 +43,7 @@
 #include <cfloat>
 #include <ctime>
 #include <climits>
+#include <memory>
 #include <set>
 
 #include <pcl/console/print.h>
@@ -545,10 +546,10 @@ namespace pcl
       boost::mt19937 rng_alg_;
 
       /** \brief Boost-based random number generator distribution. */
-      boost::shared_ptr<boost::uniform_int<> > rng_dist_;
+      std::shared_ptr<boost::uniform_int<> > rng_dist_;
 
       /** \brief Boost-based random number generator. */
-      boost::shared_ptr<boost::variate_generator< boost::mt19937&, boost::uniform_int<> > > rng_gen_;
+      std::shared_ptr<boost::variate_generator< boost::mt19937&, boost::uniform_int<> > > rng_gen_;
 
       /** \brief A vector holding the distances to the computed model. Used internally. */
       std::vector<double> error_sqr_dists_;

@@ -88,7 +88,7 @@ using octree_disk = OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<PointT>, Po
 using octree_disk_node = OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<PointT>, PointT>;
 
 //using octree_disk = octree_base<OutofcoreOctreeDiskContainer<PointT> , PointT>;
-using OctreeDiskPtr = boost::shared_ptr<octree_disk>;
+using OctreeDiskPtr = octree_disk::Ptr;
 //using octree_disk_node = octree_base_node<octree_disk_container<PointT> , PointT>;
 using AlignedPointT = Eigen::aligned_allocator<PointT>;
 

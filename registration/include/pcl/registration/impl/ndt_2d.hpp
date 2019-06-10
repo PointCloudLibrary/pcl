@@ -39,10 +39,12 @@
  */
 #ifndef PCL_NDT_2D_IMPL_H_
 #define PCL_NDT_2D_IMPL_H_
-#include <cmath>
 
 #include <pcl/registration/eigen.h>
 #include <pcl/registration/boost.h>
+
+#include <cmath>
+#include <memory>
 
 namespace pcl
 {
@@ -342,7 +344,7 @@ namespace pcl
         }
 
       protected:
-        boost::shared_ptr<SingleGrid> single_grids_[4];
+        std::shared_ptr<SingleGrid> single_grids_[4];
     };
 
   } // namespace ndt2d

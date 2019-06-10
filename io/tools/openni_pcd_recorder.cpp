@@ -37,13 +37,15 @@
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
 #include <boost/circular_buffer.hpp>
-#include <csignal>
-#include <limits>
-#include <thread>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h> //fps calculations
+
+#include <csignal>
+#include <limits>
+#include <memory>
+#include <thread>
 
 using namespace std;
 using namespace std::chrono_literals;
@@ -265,7 +267,7 @@ class Producer
   private:
     PCDBuffer<PointT> &buf_;
     openni_wrapper::OpenNIDevice::DepthMode depth_mode_;
-    boost::shared_ptr<std::thread> thread_;
+    std::shared_ptr<std::thread> thread_;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -323,7 +325,7 @@ class Consumer
 
   private:
     PCDBuffer<PointT> &buf_;
-    boost::shared_ptr<std::thread> thread_;
+    std::shared_ptr<std::thread> thread_;
     PCDWriter writer_;
 };
 
