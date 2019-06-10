@@ -95,7 +95,7 @@ namespace pcl
     class DebayeringDownsampling
     {
       public:
-        typedef typename Storage<OpenNIRGB>::type RGBImageType;
+        using RGBImageType = typename Storage<OpenNIRGB>::type;
         void
         compute (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, RGBImageType& rgb_image) const;
     };
@@ -115,7 +115,7 @@ namespace pcl
     class YUV2RGB
     {
       public:
-        typedef typename Storage<OpenNIRGB>::type RGBImageType;
+        using RGBImageType = typename Storage<OpenNIRGB>::type;
         void
         compute (const boost::shared_ptr<openni_wrapper::Image>& yuv_image, RGBImageType& rgb_image) const;
     };
@@ -124,7 +124,7 @@ namespace pcl
     class Debayering
     {
       public:
-        typedef typename Storage<OpenNIRGB>::type RGBImageType;
+        using RGBImageType = typename Storage<OpenNIRGB>::type;
         void
         computeBilinear (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, RGBImageType& rgb_image) const;
         

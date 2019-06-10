@@ -71,8 +71,8 @@ class NormalEstimation
       std::lock_guard<std::mutex> l(m_mutex);
       if (new_cloud)
       {
-        //typedef pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal> ColorHandler;
-        typedef pcl::visualization::PointCloudColorHandlerGenericField <pcl::PointXYZRGBNormal> ColorHandler;
+        //using ColorHandler = pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal>;
+        using ColorHandler = pcl::visualization::PointCloudColorHandlerGenericField <pcl::PointXYZRGBNormal>;
         //ColorHandler Color_handler (normal_cloud);
         ColorHandler Color_handler (normal_cloud,"curvature");
         static bool first_time = true;
