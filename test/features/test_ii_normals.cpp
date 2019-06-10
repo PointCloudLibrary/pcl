@@ -46,7 +46,7 @@
 using namespace pcl;
 using namespace std;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
+using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 PointCloud<PointXYZ> cloud;
 KdTreePtr tree;
 

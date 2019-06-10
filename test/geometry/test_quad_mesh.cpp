@@ -49,35 +49,35 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef pcl::geometry::VertexIndex   VertexIndex;
-typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
-typedef pcl::geometry::EdgeIndex     EdgeIndex;
-typedef pcl::geometry::FaceIndex     FaceIndex;
+using VertexIndex = pcl::geometry::VertexIndex;
+using HalfEdgeIndex = pcl::geometry::HalfEdgeIndex;
+using EdgeIndex = pcl::geometry::EdgeIndex;
+using FaceIndex = pcl::geometry::FaceIndex;
 
-typedef std::vector <VertexIndex>   VertexIndices;
-typedef std::vector <HalfEdgeIndex> HalfEdgeIndices;
-typedef std::vector <FaceIndex>     FaceIndices;
+using VertexIndices = std::vector<VertexIndex>;
+using HalfEdgeIndices = std::vector<HalfEdgeIndex>;
+using FaceIndices = std::vector<FaceIndex>;
 
 template <bool IsManifoldT>
 struct MeshTraits
 {
-    typedef int                                          VertexData;
-    typedef pcl::geometry::NoData                        HalfEdgeData;
-    typedef pcl::geometry::NoData                        EdgeData;
-    typedef pcl::geometry::NoData                        FaceData;
-    typedef std::integral_constant <bool, IsManifoldT> IsManifold;
+    using VertexData = int;
+    using HalfEdgeData = pcl::geometry::NoData;
+    using EdgeData = pcl::geometry::NoData;
+    using FaceData = pcl::geometry::NoData;
+    using IsManifold = std::integral_constant <bool, IsManifoldT>;
 };
 
-typedef pcl::geometry::QuadMesh <MeshTraits <true > > ManifoldQuadMesh;
-typedef pcl::geometry::QuadMesh <MeshTraits <false> > NonManifoldQuadMesh;
+using ManifoldQuadMesh = pcl::geometry::QuadMesh<MeshTraits<true> >;
+using NonManifoldQuadMesh = pcl::geometry::QuadMesh<MeshTraits<false> >;
 
-typedef testing::Types <ManifoldQuadMesh, NonManifoldQuadMesh> QuadMeshTypes;
+using QuadMeshTypes = testing::Types <ManifoldQuadMesh, NonManifoldQuadMesh>;
 
 template <class MeshT>
 class TestQuadMesh : public testing::Test
 {
   protected:
-    typedef MeshT Mesh;
+    using Mesh = MeshT;
 };
 
 TYPED_TEST_CASE (TestQuadMesh, QuadMeshTypes);
@@ -86,8 +86,8 @@ TYPED_TEST_CASE (TestQuadMesh, QuadMeshTypes);
 
 TYPED_TEST (TestQuadMesh, CorrectMeshTag)
 {
-  typedef typename TestFixture::Mesh Mesh;
-  typedef typename Mesh::MeshTag     MeshTag;
+  using Mesh = typename TestFixture::Mesh;
+  using MeshTag = typename Mesh::MeshTag;
 
   ASSERT_EQ (typeid (pcl::geometry::QuadMeshTag), typeid (MeshTag));
 }
@@ -97,7 +97,7 @@ TYPED_TEST (TestQuadMesh, CorrectMeshTag)
 TYPED_TEST (TestQuadMesh, CorrectNumberOfVertices)
 {
   // Make sure that only quads can be added
-  typedef typename TestFixture::Mesh Mesh;
+  using Mesh = typename TestFixture::Mesh;
 
   for (unsigned int n=1; n<=5; ++n)
   {
@@ -119,7 +119,7 @@ TYPED_TEST (TestQuadMesh, CorrectNumberOfVertices)
 
 TYPED_TEST (TestQuadMesh, OneQuad)
 {
-  typedef typename TestFixture::Mesh Mesh;
+  using Mesh = typename TestFixture::Mesh;
 
   // 3 - 2 //
   // |   | //
@@ -221,7 +221,7 @@ TYPED_TEST (TestQuadMesh, OneQuad)
 
 TYPED_TEST (TestQuadMesh, NineQuads)
 {
-  typedef typename TestFixture::Mesh Mesh;
+  using Mesh = typename TestFixture::Mesh;
   const int int_max = std::numeric_limits <int>::max ();
 
   // Order
@@ -329,7 +329,7 @@ TYPED_TEST (TestQuadMesh, NineQuads)
   // 08 - 09 - 10 - 11 //
   //  |    |    |    | //
   // 12 - 13 - 14 - 15 //
-  typedef VertexIndex VI;
+  using VI = VertexIndex;
   std::vector <VertexIndices> faces;
   VertexIndices vi;
   vi.push_back (VI ( 0)); vi.push_back (VI ( 4)); vi.push_back (VI ( 5)); vi.push_back (VI ( 1)); faces.push_back (vi); vi.clear ();

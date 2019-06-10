@@ -48,8 +48,8 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
-typedef PointCloud<PointXYZ>::Ptr CloudPtr;
+using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
+using CloudPtr = PointCloud<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
 vector<int> indices;
