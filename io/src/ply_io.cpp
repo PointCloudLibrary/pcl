@@ -46,6 +46,12 @@
 #include <pcl/io/boost.h>
 #include <sstream>
 
+// https://www.boost.org/doc/libs/1_70_0/libs/filesystem/doc/index.htm#Coding-guidelines
+#define BOOST_FILESYSTEM_NO_DEPRECATED
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
+
 boost::tuple<std::function<void ()>, std::function<void ()> >
 pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std::size_t count)
 {
@@ -602,6 +608,12 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   int data_type;
   unsigned int data_idx;
 
+  if (!fs::exists (file_name))
+  {
+    PCL_ERROR ("[pcl::PLYReader::read] File (%s) not found!\n",file_name.c_str ());
+    return (-1);
+  }
+
   if (this->readHeader (file_name, cloud, origin, orientation, ply_version, data_type, data_idx))
   {
     PCL_ERROR ("[pcl::PLYReader::read] problem parsing header!\n");
@@ -662,6 +674,13 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
   int data_type;
   unsigned int data_idx;
   polygons_ = &(mesh.polygons);
+
+  if (!fs::exists (file_name))
+  {
+    PCL_ERROR ("[pcl::PLYReader::read] File (%s) not found!\n",file_name.c_str ());
+    return (-1);
+  }
+
   if (this->readHeader (file_name, mesh.cloud, origin, orientation, ply_version, data_type, data_idx, offset))
   {
     PCL_ERROR ("[pcl::PLYReader::read] problem parsing header!\n");
