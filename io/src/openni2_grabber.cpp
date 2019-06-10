@@ -305,7 +305,7 @@ void
 pcl::io::OpenNI2Grabber::setupDevice (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
 {
   // Initialize the openni device
-  boost::shared_ptr<OpenNI2DeviceManager> deviceManager = OpenNI2DeviceManager::getInstance ();
+  auto deviceManager = OpenNI2DeviceManager::getInstance ();
 
   try
   {
@@ -889,9 +889,9 @@ void pcl::io::OpenNI2Grabber::processColorFrame (openni::VideoStream& stream)
 
   // Convert frame to PCL image type, based on pixel format
   if (format == openni::PIXEL_FORMAT_YUV422)
-    image = boost::make_shared<ImageYUV422> (frameWrapper, t_callback);
+    image.reset (new ImageYUV422 (frameWrapper, t_callback));
   else //if (format == PixelFormat::PIXEL_FORMAT_RGB888)
-    image = boost::make_shared<ImageRGB24> (frameWrapper, t_callback);
+    image.reset (new ImageRGB24 (frameWrapper, t_callback));
 
   imageCallback (image, nullptr);
 }
