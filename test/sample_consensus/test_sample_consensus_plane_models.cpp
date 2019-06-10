@@ -123,7 +123,7 @@ TEST (SampleConsensusModelPlane, Base)
   cloud = model->getInputCloud ();
   ASSERT_EQ (cloud_->points.size (), cloud->points.size ());
 
-  boost::shared_ptr<std::vector<int> > indices = model->getIndices ();
+  auto indices = model->getIndices ();
   ASSERT_EQ (indices_.size (), indices->size ());
   model->setIndices (indices_);
   indices = model->getIndices ();
