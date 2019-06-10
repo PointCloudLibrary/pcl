@@ -42,7 +42,7 @@ namespace mets {
   /// You should be able to change this to "int" for your uses
   /// to improve performance if it suffice, no guarantee.
   ///
-  typedef double gol_type;
+  using gol_type = double;
 
   /// @brief Exception risen when some algorithm has no more moves to
   /// make.
@@ -522,10 +522,10 @@ namespace mets {
     refresh(mets::feasible_solution& s) = 0;
     
     /// @brief Iterator type to iterate over moves of the neighborhood
-    typedef std::deque<move*>::iterator iterator;
+    using iterator = std::deque<move *>::iterator;
     
     /// @brief Size type
-    typedef std::deque<move*>::size_type size_type;
+    using size_type = std::deque<move *>::size_type;
 
     /// @brief Begin iterator of available moves queue.
     iterator begin() 

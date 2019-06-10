@@ -60,7 +60,7 @@ namespace pcl
       
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-        typedef boost::shared_ptr<HoughSpace3D> Ptr;
+        using Ptr = boost::shared_ptr<HoughSpace3D>;
       
         /** \brief Constructor
           *
@@ -147,19 +147,19 @@ namespace pcl
   class Hough3DGrouping : public CorrespondenceGrouping<PointModelT, PointSceneT>
   {
     public:
-      typedef pcl::PointCloud<PointModelRfT> ModelRfCloud;
-      typedef typename ModelRfCloud::Ptr ModelRfCloudPtr;
-      typedef typename ModelRfCloud::ConstPtr ModelRfCloudConstPtr;
+      using ModelRfCloud = pcl::PointCloud<PointModelRfT>;
+      using ModelRfCloudPtr = typename ModelRfCloud::Ptr;
+      using ModelRfCloudConstPtr = typename ModelRfCloud::ConstPtr;
 
-      typedef pcl::PointCloud<PointSceneRfT> SceneRfCloud;
-      typedef typename SceneRfCloud::Ptr SceneRfCloudPtr;
-      typedef typename SceneRfCloud::ConstPtr SceneRfCloudConstPtr;
+      using SceneRfCloud = pcl::PointCloud<PointSceneRfT>;
+      using SceneRfCloudPtr = typename SceneRfCloud::Ptr;
+      using SceneRfCloudConstPtr = typename SceneRfCloud::ConstPtr;
 
-      typedef pcl::PointCloud<PointModelT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointModelT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      typedef typename pcl::CorrespondenceGrouping<PointModelT, PointSceneT>::SceneCloudConstPtr SceneCloudConstPtr;
+      using SceneCloudConstPtr = typename pcl::CorrespondenceGrouping<PointModelT, PointSceneT>::SceneCloudConstPtr;
 
       /** \brief Constructor */
       Hough3DGrouping () 

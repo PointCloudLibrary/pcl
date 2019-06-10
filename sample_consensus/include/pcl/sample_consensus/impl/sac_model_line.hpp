@@ -256,7 +256,7 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
     projected_points.width    = input_->width;
     projected_points.height   = input_->height;
 
-    typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
     for (size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
@@ -283,7 +283,7 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
     projected_points.width    = static_cast<uint32_t> (inliers.size ());
     projected_points.height   = 1;
 
-    typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
     for (size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
