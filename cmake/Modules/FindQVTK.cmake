@@ -10,6 +10,7 @@
 if(";${VTK_MODULES_ENABLED};" MATCHES ";vtkGUISupportQt;" AND ";${VTK_MODULES_ENABLED};" MATCHES ";vtkRenderingQt;")
   set(VTK_USE_QVTK ON)
   set(QVTK_LIBRARY vtkRenderingQt vtkGUISupportQt)
+  list(APPEND PCL_VTK_COMPONENTS vtkRenderingQt vtkGUISupportQt)
 else()
   unset(QVTK_FOUND)
 endif()

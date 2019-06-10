@@ -355,7 +355,28 @@ endif()
 # Find VTK
 option(WITH_VTK "Build VTK-Visualizations" TRUE)
 if(WITH_VTK AND NOT ANDROID)
-  find_package(VTK)
+  set(PCL_VTK_COMPONENTS
+    vtkChartsCore
+    vtkCommonCore
+    vtkCommonDataModel
+    vtkCommonExecutionModel
+    vtkFiltersCore
+    vtkFiltersExtraction
+    vtkFiltersModeling
+    vtkImagingCore
+    vtkImagingSources
+    vtkInteractionStyle
+    vtkInteractionWidgets
+    vtkIOCore
+    vtkIOGeometry
+    vtkIOImage
+    vtkIOLegacy
+    vtkIOPLY
+    vtkRenderingAnnotation
+    vtkRenderingLOD
+    vtkViewsContext2D
+  )
+  find_package(VTK COMPONENTS ${PCL_VTK_COMPONENTS})
   if(VTK_FOUND AND ("${VTK_VERSION}" VERSION_LESS 6.2))
     message(WARNING "The minimum required version of VTK is 6.2, but found ${VTK_VERSION}")
     set(VTK_FOUND FALSE)
@@ -367,6 +388,8 @@ if(WITH_VTK AND NOT ANDROID)
       # safe to assume OpenGL backend
       set(VTK_RENDERING_BACKEND "OpenGL")
     endif()
+    list(APPEND PCL_VTK_COMPONENTS vtkRenderingContext${VTK_RENDERING_BACKEND})
+    find_package(VTK COMPONENTS ${PCL_VTK_COMPONENTS})
     message(STATUS "VTK_MAJOR_VERSION ${VTK_MAJOR_VERSION}, rendering backend: ${VTK_RENDERING_BACKEND}")
     if(PCL_SHARED_LIBS OR (NOT (PCL_SHARED_LIBS) AND NOT (VTK_BUILD_SHARED_LIBS)))
       set(VTK_FOUND TRUE)
