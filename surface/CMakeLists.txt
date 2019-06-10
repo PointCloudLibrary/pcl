@@ -45,8 +45,6 @@ if(VTK_FOUND AND NOT ANDROID)
     src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
     src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp
   )
-
-  set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommonCore vtkCommonDataModel vtkCommonExecutionModel vtkFiltersModeling)
 endif()
 
 set(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS")
