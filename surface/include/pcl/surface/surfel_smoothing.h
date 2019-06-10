@@ -96,7 +96,7 @@ namespace pcl
       void
       extractSalientFeaturesBetweenScales (PointCloudInPtr &cloud2,
                                            NormalCloudPtr &cloud2_normals,
-                                           boost::shared_ptr<std::vector<int> > &output_features);
+                                           pcl::IndicesPtr &output_features);
 
     private:
       float scale_, scale_squared_;

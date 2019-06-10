@@ -261,10 +261,10 @@ namespace pcl
           std::vector<double> weights_;
           
           /** \brief  The indices used for estimating the RANSAC model. Only those whose weight is > 0 */
-          boost::shared_ptr<std::vector<int> > model_pt_indices_;
+          pcl::IndicesPtr model_pt_indices_;
           
           /** \brief  The complete list of indices used for the model evaluation */
-          boost::shared_ptr<std::vector<int> > full_cloud_pt_indices_;
+          pcl::IndicesPtr full_cloud_pt_indices_;
           
           /** \brief  Pointer to the input PointCloud */
           pcl::PointCloud<WeightSACPointType>::ConstPtr point_cloud_ptr_;

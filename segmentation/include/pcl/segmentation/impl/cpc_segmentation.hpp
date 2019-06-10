@@ -324,7 +324,7 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
     // weight distances to get the score (only using connected inliers)
     sac_model_->setIndices (full_cloud_pt_indices_);
 
-    boost::shared_ptr<std::vector<int> > current_inliers (new std::vector<int>);
+    pcl::IndicesPtr current_inliers (new std::vector<int>);
     sac_model_->selectWithinDistance (model_coefficients, threshold_, *current_inliers);
     double current_score = 0;
     Eigen::Vector3f plane_normal (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
