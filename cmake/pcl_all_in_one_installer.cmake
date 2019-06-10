@@ -29,7 +29,7 @@ foreach(dep Eigen Boost Qhull FLANN VTK)
 endforeach()
 
 if(WITH_RSSDK2)
-  get_filename_component(RSSDK2_ROOT "@RSSDK2_INCLUDE_DIRS@" PATH)
+  get_filename_component(RSSDK2_ROOT "${RSSDK2_INCLUDE_DIRS}" PATH)
   install(
           DIRECTORY "${RSSDK2_ROOT}/"
           DESTINATION 3rdParty/librealsense2

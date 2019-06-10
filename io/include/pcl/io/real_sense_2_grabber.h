@@ -38,11 +38,13 @@
 #ifndef PCL_IO_REAL_SENSE_2_GRABBER_H
 #define PCL_IO_REAL_SENSE_2_GRABBER_H
 
+#include <thread>
+#include <mutex>
+
 #include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-
 
 #include <librealsense2/rs.hpp>
 
@@ -65,7 +67,7 @@ namespace pcl
     RealSense2Grabber ( const std::string& file_name_or_serial_number = "", const bool repeat_playback = true );
 
     /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-    virtual ~RealSense2Grabber () throw ();
+    virtual ~RealSense2Grabber () noexcept(true);
 
     /** \brief Set the device options
     * \param[in] width resolution
@@ -79,34 +81,34 @@ namespace pcl
       device_height_ = height;
       target_fps_ = fps;
 
-      ReInitialize ();
+      reInitialize ();
     }
 
     /** \brief Start the data acquisition. */
-    virtual void
-    start ();
+    void
+    start () override;
 
     /** \brief Stop the data acquisition. */
-    virtual void
-    stop ();
+    void
+    stop () override;
 
     /** \brief Check if the data acquisition is still running. */
-    virtual bool
-    isRunning () const;
+    bool
+    isRunning () const override;
 
     /** \brief Obtain the number of frames per second (FPS). */
-    virtual float
-    getFramesPerSecond () const;
+    float
+    getFramesPerSecond () const override;
 
     /** \brief defined grabber name*/
-    virtual std::string
-    getName () const { return std::string ( "RealSense2Grabber" ); }
+    std::string
+    getName () const override { return std::string ( "RealSense2Grabber" ); }
 
     //define callback signature typedefs
-    typedef void (signal_librealsense_PointXYZ) ( const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ>>& );
-    typedef void (signal_librealsense_PointXYZI) ( const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI>>& );
-    typedef void (signal_librealsense_PointXYZRGB) ( const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB>>& );
-    typedef void (signal_librealsense_PointXYZRGBA) ( const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA>>& );
+    typedef void (signal_librealsense_PointXYZ) ( const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& );
+    typedef void (signal_librealsense_PointXYZI) ( const pcl::PointCloud<pcl::PointXYZI>::ConstPtr& );
+    typedef void (signal_librealsense_PointXYZRGB) ( const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& );
+    typedef void (signal_librealsense_PointXYZRGBA) ( const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& );
 
   protected:
 
@@ -117,8 +119,8 @@ namespace pcl
 
     /** \brief Handle when a signal callback has been changed
     */
-    virtual void
-    signalsChanged ();
+    void
+    signalsChanged () override;
 
     /** \brief the thread function
     */
@@ -128,7 +130,7 @@ namespace pcl
     /** \brief Dynamic reinitialization.
     */
     void
-    ReInitialize ();
+    reInitialize ();
 
     /** \brief Convert a Depth image to a pcl::PointCloud<pcl::PointXYZ>
     * \param[in] points the depth points
@@ -164,6 +166,14 @@ namespace pcl
     template <typename PointT, typename Functor>
     typename pcl::PointCloud<PointT>::Ptr
     convertRealsensePointsToPointCloud ( const rs2::points& points, Functor mapColorFunc );
+
+    /** \brief Retrieve pixel index for UV texture coordinate
+    * \param[in] texture the texture
+    * \param[in] u 2D coordinate
+    * \param[in] v 2D coordinate
+    */
+    static const size_t
+    getTextureIdx (const rs2::video_frame & texture, float u, float v);
 
     /** \brief Retrieve RGB color from texture video frame
     * \param[in] texture the texture

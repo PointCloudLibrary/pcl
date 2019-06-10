@@ -157,7 +157,7 @@ namespace pcl
   void
   RealSense2Grabber::signalsChanged ()
   {
-    ReInitialize ();
+    reInitialize ();
   }
 
   void
@@ -226,7 +226,7 @@ namespace pcl
     }
   }
 
-  void RealSense2Grabber::ReInitialize ()
+  void RealSense2Grabber::reInitialize ()
   {
     if (isRunning ())
     {
@@ -321,13 +321,19 @@ namespace pcl
     return cloud;
   }
 
+  const size_t
+  RealSense2Grabber::getTextureIdx (const rs2::video_frame & texture, float u, float v)
+  {
+    const int w = texture.get_width (), h = texture.get_height ();
+    int x = std::min (std::max (int (u*w + .5f), 0), w - 1);
+    int y = std::min (std::max (int (v*h + .5f), 0), h - 1);
+    return x * texture.get_bytes_per_pixel () + y * texture.get_stride_in_bytes ();
+  }
+
   pcl::RGB
   RealSense2Grabber::getTextureColor ( const rs2::video_frame& texture, float u, float v )
   {
-    const int w = texture.get_width (), h = texture.get_height ();
-    int x = std::min ( std::max ( int ( u*w + .5f ), 0 ), w - 1 );
-    int y = std::min ( std::max ( int ( v*h + .5f ), 0 ), h - 1 );
-    int idx = x * texture.get_bytes_per_pixel () + y * texture.get_stride_in_bytes ();
+    const auto idx = getTextureIdx (texture, u, v);
     const auto texture_data = reinterpret_cast<const uint8_t*>(texture.get_data ());
 
     pcl::RGB rgb;
@@ -340,17 +346,8 @@ namespace pcl
   uint8_t
   RealSense2Grabber::getTextureIntensity ( const rs2::video_frame& texture, float u, float v )
   {
-    const int w = texture.get_width (), h = texture.get_height ();
-    int x = std::min ( std::max ( int ( u*w + .5f ), 0 ), w - 1 );
-    int y = std::min ( std::max ( int ( v*h + .5f ), 0 ), h - 1 );
-    int idx = x * texture.get_bytes_per_pixel () + y * texture.get_stride_in_bytes ();
+    const auto idx = getTextureIdx (texture, u, v);
     const auto texture_data = reinterpret_cast<const uint8_t*>(texture.get_data ());
     return texture_data[idx];
   }
 }
-
-
-
-
-
-
