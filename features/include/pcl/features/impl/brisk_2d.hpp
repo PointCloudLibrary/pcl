@@ -628,7 +628,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
       *(pvalues++) = smoothedIntensity (image_data, width, height, integral, x, y, scale, theta, i);
 
 #ifdef __GNUC__
-      typedef uint32_t __attribute__ ((__may_alias__)) UINT32_ALIAS;
+      using UINT32_ALIAS = uint32_t;
 #endif
 #ifdef _MSC_VER
       // Todo: find the equivalent to may_alias
