@@ -81,11 +81,11 @@ namespace pcl
 
       using typename Feature<PointInT, PointOutT>::KdTreePtr;
 
-      typedef pcl::PointCloud<SignedDistanceT> PointCloudSignedDistance;
-      typedef typename PointCloudSignedDistance::Ptr PointCloudSignedDistancePtr;
+      using PointCloudSignedDistance = pcl::PointCloud<SignedDistanceT>;
+      using PointCloudSignedDistancePtr = typename PointCloudSignedDistance::Ptr;
 
-      typedef boost::shared_ptr<FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> >;
 
     public:
       /** \brief Constructor. */

@@ -241,8 +241,8 @@ namespace pcl
   class NormalEstimation: public Feature<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<NormalEstimation<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const NormalEstimation<PointInT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<NormalEstimation<PointInT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const NormalEstimation<PointInT, PointOutT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;
@@ -252,8 +252,8 @@ namespace pcl
       using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::search_parameter_;
       
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudConstPtr PointCloudConstPtr;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using PointCloudConstPtr = typename Feature<PointInT, PointOutT>::PointCloudConstPtr;
       
       /** \brief Empty constructor. */
       NormalEstimation () 

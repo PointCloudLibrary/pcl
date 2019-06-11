@@ -60,8 +60,8 @@ namespace pcl
       using Feature <PointInT, PointOutT>::surface_;
       using Feature <PointInT, PointOutT>::tree_;
 
-      typedef typename pcl::Feature <PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename pcl::Feature <PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      using PointCloudOut = typename pcl::Feature <PointInT, PointOutT>::PointCloudOut;
+      using PointCloudIn = typename pcl::Feature <PointInT, PointOutT>::PointCloudIn;
 
     public:
 

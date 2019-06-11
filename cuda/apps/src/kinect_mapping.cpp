@@ -35,24 +35,23 @@
  *
  */
 
-#include <pcl_cuda/time_cpu.h>
-#include <pcl_cuda/time_gpu.h>
 #include <pcl_cuda/io/cloud_to_pcl.h>
 #include <pcl_cuda/io/extract_indices.h>
 #include <pcl_cuda/io/disparity_to_cloud.h>
 #include <pcl_cuda/sample_consensus/sac_model_1point_plane.h>
 #include <pcl_cuda/sample_consensus/multi_ransac.h>
 #include <pcl_cuda/segmentation/connected_components.h>
+#include <pcl_cuda/time_cpu.h>
+#include <pcl_cuda/time_gpu.h>
 
+#include <pcl/common/transform.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/common/transform.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/gpu/gpu.hpp>
@@ -63,6 +62,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include <functional>
 #include <iostream>
 #include <mutex>
 
@@ -71,19 +71,19 @@ using namespace pcl_cuda;
 template <template <typename> class Storage>
 struct ImageType
 {
-  typedef void type;
+  using type = void;
 };
 
 template <>
 struct ImageType<pcl_cuda::Device>
 {
-  typedef cv::gpu::GpuMat type;
+  using type = cv::gpu::GpuMat;
 };
 
 template <>
 struct ImageType<pcl_cuda::Host>
 {
-  typedef cv::Mat type;
+  using type = cv::Mat;
 };
 
 class MultiRansac
@@ -103,7 +103,7 @@ class MultiRansac
       std::lock_guard<std::mutex> l(m_mutex);
       if (new_cloud)
       {
-        typedef pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal> ColorHandler;
+        using ColorHandler = pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal>;
 
         ColorHandler Color_handler (normal_cloud);
         static bool first_time = true;
@@ -243,13 +243,13 @@ class MultiRansac
       if (use_device)
       {
         std::cerr << "[RANSAC] Using GPU..." << std::endl;
-        boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&MultiRansac::cloud_cb<pcl_cuda::Device>, this, _1, _2, _3);
+        std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&MultiRansac::cloud_cb<pcl_cuda::Device>, this, _1, _2, _3);
         c = interface->registerCallback (f);
       }
       else
       {
         std::cerr << "[RANSAC] Using CPU..." << std::endl;
-        boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&MultiRansac::cloud_cb<pcl_cuda::Host>, this, _1, _2, _3);
+        std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&MultiRansac::cloud_cb<pcl_cuda::Host>, this, _1, _2, _3);
         c = interface->registerCallback (f);
       }
 

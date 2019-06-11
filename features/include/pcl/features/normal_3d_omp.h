@@ -53,8 +53,8 @@ namespace pcl
   class NormalEstimationOMP: public NormalEstimation<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<NormalEstimationOMP<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const NormalEstimationOMP<PointInT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<NormalEstimationOMP<PointInT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const NormalEstimationOMP<PointInT, PointOutT> >;
       using NormalEstimation<PointInT, PointOutT>::feature_name_;
       using NormalEstimation<PointInT, PointOutT>::getClassName;
       using NormalEstimation<PointInT, PointOutT>::indices_;
@@ -67,7 +67,7 @@ namespace pcl
       using NormalEstimation<PointInT, PointOutT>::surface_;
       using NormalEstimation<PointInT, PointOutT>::getViewPoint;
 
-      typedef typename NormalEstimation<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudOut = typename NormalEstimation<PointInT, PointOutT>::PointCloudOut;
 
     public:
       /** \brief Initialize the scheduler and set the number of threads to use.

@@ -160,7 +160,7 @@ class SimpleVLPViewer
       cloud_viewer_->setCameraClipDistances (0.0, 50.0);
       cloud_viewer_->registerKeyboardCallback (&SimpleVLPViewer::keyboard_callback, *this);
 
-      boost::function<void
+      std::function<void
       (const CloudConstPtr&)> cloud_cb = boost::bind (&SimpleVLPViewer::cloud_callback, this, _1);
       boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
 

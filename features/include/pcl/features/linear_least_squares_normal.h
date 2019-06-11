@@ -51,10 +51,10 @@ namespace pcl
   class LinearLeastSquaresNormalEstimation : public Feature<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<LinearLeastSquaresNormalEstimation<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const LinearLeastSquaresNormalEstimation<PointInT, PointOutT> > ConstPtr;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using Ptr = boost::shared_ptr<LinearLeastSquaresNormalEstimation<PointInT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const LinearLeastSquaresNormalEstimation<PointInT, PointOutT> >;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
       using Feature<PointInT, PointOutT>::input_;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::tree_;

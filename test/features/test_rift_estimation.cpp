@@ -103,7 +103,7 @@ TEST (PCL, RIFTEstimation)
   }
 
   // Compute the RIFT features
-  typedef Histogram<32> RIFTDescriptor;
+  using RIFTDescriptor = Histogram<32>;
   RIFTEstimation<PointXYZI, IntensityGradient, RIFTDescriptor> rift_est;
   search::KdTree<PointXYZI>::Ptr treept4 (new search::KdTree<PointXYZI> (false));
   rift_est.setSearchMethod (treept4);

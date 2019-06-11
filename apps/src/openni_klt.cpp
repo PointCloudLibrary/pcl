@@ -206,14 +206,14 @@ class OpenNIViewer
     void
     run ()
     {
-      boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&OpenNIViewer::cloud_callback, this, _1);
+      std::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&OpenNIViewer::cloud_callback, this, _1);
       boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
 
       boost::signals2::connection image_connection;
       if (grabber_.providesCallback<void (const openni_wrapper::Image::Ptr&)>())
       {
         image_viewer_.reset (new pcl::visualization::ImageViewer ("Pyramidal KLT Tracker"));
-        boost::function<void (const openni_wrapper::Image::Ptr&) > image_cb = boost::bind (&OpenNIViewer::image_callback, this, _1);
+        std::function<void (const openni_wrapper::Image::Ptr&) > image_cb = boost::bind (&OpenNIViewer::image_callback, this, _1);
         image_connection = grabber_.registerCallback (image_cb);
       }
 

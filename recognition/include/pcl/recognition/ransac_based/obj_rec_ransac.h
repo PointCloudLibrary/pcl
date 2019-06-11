@@ -85,10 +85,10 @@ namespace pcl
     class PCL_EXPORTS ObjRecRANSAC
     {
       public:
-        typedef ModelLibrary::PointCloudIn PointCloudIn;
-        typedef ModelLibrary::PointCloudN PointCloudN;
+        using PointCloudIn = ModelLibrary::PointCloudIn;
+        using PointCloudN = ModelLibrary::PointCloudN;
 
-        typedef BVH<Hypothesis*> BVHH;
+        using BVHH = BVH<Hypothesis *>;
 
         /** \brief This is an output item of the ObjRecRANSAC::recognize() method. It contains the recognized model, its name (the ones passed to
           * ObjRecRANSAC::addModel()), the rigid transform which aligns the model with the input scene and the match confidence which is a number
@@ -138,7 +138,7 @@ namespace pcl
             Hypothesis* create (const SimpleOctree<Hypothesis, HypothesisCreator, float>::Node* ) const { return new Hypothesis ();}
         };
 
-        typedef SimpleOctree<Hypothesis, HypothesisCreator, float> HypothesisOctree;
+        using HypothesisOctree = SimpleOctree<Hypothesis, HypothesisCreator, float>;
 
       public:
         /** \brief Constructor with some important parameters which can not be changed once an instance of that class is created.

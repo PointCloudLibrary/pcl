@@ -240,7 +240,7 @@ namespace mets {
   class search_listener : public observer<abstract_search<move_manager_type> >
   {
   public:
-    typedef abstract_search<move_manager_type> search_type;
+    using search_type = abstract_search<move_manager_type>;
     /// @brief A new observer (listener) of a search process, remember
     /// to attach the created object to the search process to be
     /// observed (mets::search_type::attach())

@@ -323,7 +323,7 @@ namespace pcl
       };
 
     public:
-      typedef pcl::PointCloud<PointInT> PointCloudIn;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
 
       /** \brief Constructor. */
       SurfaceNormalModality ();

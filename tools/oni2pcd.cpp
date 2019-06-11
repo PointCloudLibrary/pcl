@@ -83,7 +83,7 @@ main (int argc, char **argv)
   }
 
   pcl::ONIGrabber* grabber = new pcl::ONIGrabber (argv[1], false, false);
-  boost::function<void (const CloudConstPtr&) > f = boost::bind (&cloud_cb, _1);
+  std::function<void (const CloudConstPtr&) > f = boost::bind (&cloud_cb, _1);
   boost::signals2::connection c = grabber->registerCallback (f);
 
   while (grabber->hasDataLeft ())

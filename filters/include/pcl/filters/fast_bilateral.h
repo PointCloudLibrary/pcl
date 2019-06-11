@@ -46,7 +46,7 @@ namespace pcl
 {
   /** \brief Implementation of a fast bilateral filter for smoothing depth information in organized point clouds
    *  Based on the following paper:
-   *    * Sylvain Paris and Frédo Durand
+   *    * Sylvain Paris and Fredo Durand
    *      "A Fast Approximation of the Bilateral Filter using a Signal Processing Approach"
    *       European Conference on Computer Vision (ECCV'06)
    *

@@ -109,7 +109,7 @@ namespace pcl
 
         /** Visualization callable function, may be used for running things on the UI thread.
          */
-        using VizCallable = boost::function1<void, pcl::visualization::PCLVisualizer&>;
+        using VizCallable = std::function1<void, pcl::visualization::PCLVisualizer&>;
 
         /** \brief Run a callbable object on the UI thread. Will persist until removed
          * @param x Use boost::ref(x) for a function object that you would like to not copy
@@ -206,13 +206,13 @@ namespace pcl
         boost::scoped_ptr<CloudViewer_impl> impl_;
         
         boost::signals2::connection 
-        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)>);
+        registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)>);
 
         boost::signals2::connection 
-        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)>);
+        registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)>);
 
         boost::signals2::connection 
-        registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)>);
+        registerPointPickingCallback (std::function<void (const pcl::visualization::PointPickingEvent&)>);
     };
   }
 }

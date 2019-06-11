@@ -174,7 +174,7 @@ class OpenNIViewer
     {
       cloud_viewer_->registerMouseCallback (&OpenNIViewer::mouse_callback, *this);
       cloud_viewer_->registerKeyboardCallback(&OpenNIViewer::keyboard_callback, *this);
-      boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&OpenNIViewer::cloud_callback, this, _1);
+      std::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&OpenNIViewer::cloud_callback, this, _1);
       boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
       
       boost::signals2::connection image_connection;
@@ -183,7 +183,7 @@ class OpenNIViewer
         image_viewer_.reset (new pcl::visualization::ImageViewer ("PCL OpenNI image"));
         image_viewer_->registerMouseCallback (&OpenNIViewer::mouse_callback, *this);
         image_viewer_->registerKeyboardCallback(&OpenNIViewer::keyboard_callback, *this);
-        boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&OpenNIViewer::image_callback, this, _1);
+        std::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&OpenNIViewer::image_callback, this, _1);
         image_connection = grabber_.registerCallback (image_cb);
       }
       

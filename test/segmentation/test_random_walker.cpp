@@ -51,28 +51,28 @@
 
 std::string TEST_DATA_DIR;
 
-typedef float Weight;
-typedef uint32_t Color;
-typedef boost::adjacency_list
+using Weight = float;
+using Color = uint32_t;
+using Graph = boost::adjacency_list
         <boost::vecS,
          boost::vecS,
          boost::undirectedS,
          boost::property<boost::vertex_color_t, Color,
          boost::property<boost::vertex_degree_t, Weight> >,
-         boost::property<boost::edge_weight_t, Weight> > Graph;
-typedef boost::graph_traits<Graph> GraphTraits;
-typedef GraphTraits::edge_descriptor EdgeDescriptor;
-typedef GraphTraits::vertex_descriptor VertexDescriptor;
-typedef GraphTraits::edge_iterator EdgeIterator;
-typedef GraphTraits::vertex_iterator VertexIterator;
-typedef boost::property_map<Graph, boost::edge_weight_t>::type EdgeWeightMap;
-typedef boost::property_map<Graph, boost::vertex_color_t>::type VertexColorMap;
-typedef Eigen::SparseMatrix<Weight> SparseMatrix;
-typedef Eigen::Matrix<Weight, Eigen::Dynamic, Eigen::Dynamic> Matrix;
-typedef Eigen::Matrix<Weight, Eigen::Dynamic, 1> Vector;
-typedef boost::bimap<size_t, VertexDescriptor> VertexDescriptorBimap;
-typedef boost::bimap<size_t, Color> ColorBimap;
-typedef pcl::segmentation::detail::RandomWalker<Graph, EdgeWeightMap, VertexColorMap> RandomWalker;
+         boost::property<boost::edge_weight_t, Weight> >;
+using GraphTraits = boost::graph_traits<Graph>;
+using EdgeDescriptor = GraphTraits::edge_descriptor;
+using VertexDescriptor = GraphTraits::vertex_descriptor;
+using EdgeIterator = GraphTraits::edge_iterator;
+using VertexIterator = GraphTraits::vertex_iterator;
+using EdgeWeightMap = boost::property_map<Graph, boost::edge_weight_t>::type;
+using VertexColorMap = boost::property_map<Graph, boost::vertex_color_t>::type;
+using SparseMatrix = Eigen::SparseMatrix<Weight>;
+using Matrix = Eigen::Matrix<Weight, Eigen::Dynamic, Eigen::Dynamic>;
+using Vector = Eigen::Matrix<Weight, Eigen::Dynamic, 1>;
+using VertexDescriptorBimap = boost::bimap<size_t, VertexDescriptor>;
+using ColorBimap = boost::bimap<size_t, Color>;
+using RandomWalker = pcl::segmentation::detail::RandomWalker<Graph, EdgeWeightMap, VertexColorMap>;
 
 
 struct GraphInfo

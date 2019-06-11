@@ -89,9 +89,9 @@ namespace pcl
   /** \brief overloaded << operator */
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Correspondence& c);
 
-  typedef std::vector< pcl::Correspondence, Eigen::aligned_allocator<pcl::Correspondence> > Correspondences;
-  typedef boost::shared_ptr<Correspondences> CorrespondencesPtr;
-  typedef boost::shared_ptr<const Correspondences > CorrespondencesConstPtr;
+  using Correspondences = std::vector< pcl::Correspondence, Eigen::aligned_allocator<pcl::Correspondence> >;
+  using CorrespondencesPtr = boost::shared_ptr<Correspondences>;
+  using CorrespondencesConstPtr = boost::shared_ptr<const Correspondences >;
 
   /**
     * \brief Get the query points of correspondences that are present in
@@ -130,7 +130,7 @@ namespace pcl
     
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
-  typedef std::vector<PointCorrespondence3D, Eigen::aligned_allocator<PointCorrespondence3D> > PointCorrespondences3DVector;
+  using PointCorrespondences3DVector = std::vector<PointCorrespondence3D, Eigen::aligned_allocator<PointCorrespondence3D> >;
 
   /**
     * \brief Representation of a (possible) correspondence between two points (e.g. from feature matching),
@@ -146,7 +146,7 @@ namespace pcl
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
-  typedef std::vector<PointCorrespondence6D, Eigen::aligned_allocator<PointCorrespondence6D> > PointCorrespondences6DVector;
+  using PointCorrespondences6DVector = std::vector<PointCorrespondence6D, Eigen::aligned_allocator<PointCorrespondence6D> >;
 
   /**
     * \brief Comparator to enable us to sort a vector of PointCorrespondences according to their scores using

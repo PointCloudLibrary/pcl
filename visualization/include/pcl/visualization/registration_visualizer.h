@@ -170,7 +170,7 @@ namespace pcl
       std::string registration_method_name_;
 
       /** \brief Callback function linked to pcl::Registration::update_visualizer_ */
-      boost::function<void
+      std::function<void
       (const pcl::PointCloud<PointSource> &cloud_src, const std::vector<int> &indices_src, const pcl::PointCloud<
           PointTarget> &cloud_tgt, const std::vector<int> &indices_tgt)> update_visualizer_;
 

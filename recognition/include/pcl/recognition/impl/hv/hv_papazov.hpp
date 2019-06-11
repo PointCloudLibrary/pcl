@@ -131,7 +131,7 @@ template<typename ModelT, typename SceneT>
   pcl::PapazovHV<ModelT, SceneT>::nonMaximaSuppresion ()
   {
     // iterate over all vertices of the graph and check if they have a better neighbour, then remove that vertex
-    typedef typename boost::graph_traits<Graph>::vertex_iterator VertexIterator;
+    using VertexIterator = typename boost::graph_traits<Graph>::vertex_iterator;
     VertexIterator vi, vi_end;
     boost::tie (vi, vi_end) = boost::vertices (conflict_graph_);
 
