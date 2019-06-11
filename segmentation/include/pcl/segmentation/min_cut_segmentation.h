@@ -297,10 +297,10 @@ namespace pcl
       mGraphPtr graph_;
 
       /** \brief Stores the capacity of every edge in the graph. */
-      boost::shared_ptr<CapacityMap> capacity_;
+      std::shared_ptr<CapacityMap> capacity_;
 
       /** \brief Stores reverse edges for every edge in the graph. */
-      boost::shared_ptr<ReverseEdgeMap> reverse_edges_;
+      std::shared_ptr<ReverseEdgeMap> reverse_edges_;
 
       /** \brief Stores the vertices of the graph. */
       std::vector< VertexDescriptor > vertices_;

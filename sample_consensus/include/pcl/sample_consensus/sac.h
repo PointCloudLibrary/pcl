@@ -42,7 +42,9 @@
 
 #include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/sac_model.h>
+
 #include <ctime>
+#include <memory>
 #include <set>
 
 namespace pcl
@@ -325,7 +327,7 @@ namespace pcl
       boost::mt19937 rng_alg_;
 
       /** \brief Boost-based random number generator distribution. */
-      boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
+      std::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
 
       /** \brief Boost-based random number generator. */
       inline double
