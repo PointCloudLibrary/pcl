@@ -47,7 +47,7 @@ namespace pcl
     class MouseEvent
     {
       public:
-        typedef enum
+        enum Type
         {
           MouseMove = 1,
           MouseButtonPress,
@@ -55,16 +55,16 @@ namespace pcl
           MouseScrollDown,
           MouseScrollUp,
           MouseDblClick
-        } Type;
+        };
 
-        typedef enum
+        enum MouseButton
         {
           NoButton      = 0,
           LeftButton,
           MiddleButton,
           RightButton,
           VScroll /*other buttons, scroll wheels etc. may follow*/
-        } MouseButton;
+        };
 
         /** Constructor.
           * \param[in] type   event type

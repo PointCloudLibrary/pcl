@@ -142,8 +142,8 @@ do \
 //////////////////////////////////////////////////////////////////////////////////////////
 struct Frame
 {
-  typedef boost::shared_ptr<Frame> Ptr;
-  typedef boost::shared_ptr<const Frame> ConstPtr;
+  using Ptr = boost::shared_ptr<Frame>;
+  using ConstPtr = boost::shared_ptr<const Frame>;
 
   Frame (const boost::shared_ptr<openni_wrapper::Image> &_image,
          const boost::shared_ptr<openni_wrapper::DepthImage> &_depth_image,

@@ -76,16 +76,16 @@ namespace pcl
     class PCL_EXPORTS PCLPlotter
     {
       public:
-        typedef boost::shared_ptr<PCLPlotter> Ptr;
-        typedef boost::shared_ptr<const PCLPlotter> ConstPtr;
+        using Ptr = boost::shared_ptr<PCLPlotter>;
+        using ConstPtr = boost::shared_ptr<const PCLPlotter>;
 
         /**\brief A representation of polynomial function. i'th element of the vector denotes the coefficient of x^i of the polynomial in variable x. 
          */
-        typedef std::vector<double> PolynomialFunction;
+        using PolynomialFunction = std::vector<double>;
         
         /**\brief A representation of rational function, defined as the ratio of two polynomial functions. pair::first denotes the numerator and pair::second denotes the denominator of the Rational function. 
          */
-        typedef std::pair<PolynomialFunction, PolynomialFunction> RationalFunction;
+        using RationalFunction = std::pair<PolynomialFunction, PolynomialFunction>;
         
         /** \brief PCL Plotter constructor.  
           * \param[in] name Name of the window

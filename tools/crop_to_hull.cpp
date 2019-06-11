@@ -49,8 +49,8 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-typedef PointXYZ PointT;
-typedef PointCloud<PointT> CloudT;
+using PointT = PointXYZ;
+using CloudT = PointCloud<PointT>;
 
 const static double default_alpha = 1e3f;
 

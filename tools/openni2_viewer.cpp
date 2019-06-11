@@ -109,8 +109,8 @@ template <typename PointType>
 class OpenNI2Viewer
 {
 public:
-  typedef pcl::PointCloud<PointType> Cloud;
-  typedef typename Cloud::ConstPtr CloudConstPtr;
+  using Cloud = pcl::PointCloud<PointType>;
+  using CloudConstPtr = typename Cloud::ConstPtr;
 
   OpenNI2Viewer (pcl::io::OpenNI2Grabber& grabber)
     : cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL OpenNI2 cloud"))

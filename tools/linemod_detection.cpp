@@ -15,7 +15,7 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudXYZRGBA;
+using PointCloudXYZRGBA = pcl::PointCloud<pcl::PointXYZRGBA>;
 
 void
 printHelp (int, char **argv)
