@@ -67,16 +67,16 @@ namespace pcl
 
   RealSense2Grabber::~RealSense2Grabber ()
   {
-    stop ();
+    try
+    {
+      stop ( );
 
-    disconnect_all_slots<signal_librealsense_PointXYZ> ();
-    disconnect_all_slots<signal_librealsense_PointXYZI> ();
-    disconnect_all_slots<signal_librealsense_PointXYZRGB> ();
-    disconnect_all_slots<signal_librealsense_PointXYZRGBA> ();
-
-    thread_.join ();
-
-    pipe_.stop ();
+      disconnect_all_slots<signal_librealsense_PointXYZ> ( );
+      disconnect_all_slots<signal_librealsense_PointXYZI> ( );
+      disconnect_all_slots<signal_librealsense_PointXYZRGB> ( );
+      disconnect_all_slots<signal_librealsense_PointXYZRGBA> ( );
+    } 
+    catch ( ... ) {}
   }
 
   void
@@ -93,6 +93,7 @@ namespace pcl
       return;
 
     running_ = true;
+    quit_ = false;
 
     rs2::config cfg;
 
@@ -136,10 +137,17 @@ namespace pcl
   void
   RealSense2Grabber::stop ()
   {
+    if ( !isRunning ( ) )
+      return;
+
     std::lock_guard<std::mutex> guard ( mutex_ );
 
     running_ = false;
     quit_ = true;
+
+    thread_.join ( );
+
+    pipe_.stop ( );
   }
 
   bool
@@ -321,7 +329,7 @@ namespace pcl
     return cloud;
   }
 
-  const size_t
+  size_t
   RealSense2Grabber::getTextureIdx (const rs2::video_frame & texture, float u, float v)
   {
     const int w = texture.get_width (), h = texture.get_height ();
