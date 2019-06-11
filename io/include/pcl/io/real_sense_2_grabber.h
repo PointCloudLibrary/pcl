@@ -180,7 +180,7 @@ namespace pcl
     * \param[in] u 2D coordinate
     * \param[in] v 2D coordinate
     */
-    pcl::RGB
+    static pcl::RGB
     getTextureColor ( const rs2::video_frame& texture, float u, float v );
 
     /** \brief Retrieve color intensity from texture video frame
@@ -188,7 +188,7 @@ namespace pcl
     * \param[in] u 2D coordinate
     * \param[in] v 2D coordinate
     */
-    uint8_t
+    static uint8_t
     getTextureIntensity ( const rs2::video_frame& texture, float u, float v );
 
 
