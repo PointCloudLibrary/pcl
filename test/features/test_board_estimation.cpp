@@ -61,7 +61,7 @@ TEST (PCL, BOARDLocalReferenceFrameEstimation)
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   PointCloud<ReferenceFrame> bunny_LRF;
 
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
 
   // Compute normals
   NormalEstimation<PointXYZ, Normal> ne;

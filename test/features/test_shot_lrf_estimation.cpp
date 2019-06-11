@@ -59,7 +59,7 @@ TEST (PCL, SHOTLocalReferenceFrameEstimation)
 {
   PointCloud<ReferenceFrame> bunny_LRF;
 
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
 
   // Compute SHOT LRF
   SHOTLocalReferenceFrameEstimation<PointXYZ, ReferenceFrame> lrf_estimator;

@@ -76,7 +76,7 @@ TEST (PCL, MomentInvariantsEstimation)
 
   // set parameters
   mi.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
   mi.setIndices (indicesptr);
   mi.setSearchMethod (tree);
   mi.setKSearch (static_cast<int> (indices.size ()));
