@@ -62,7 +62,7 @@ namespace pcl
     class TransformationEstimation
     {
       public:
-        typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
+        using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
 
         TransformationEstimation () {};
         virtual ~TransformationEstimation () {};
@@ -120,8 +120,8 @@ namespace pcl
             Matrix4 &transformation_matrix) const = 0;
 
 
-        typedef boost::shared_ptr<TransformationEstimation<PointSource, PointTarget, Scalar> > Ptr;
-        typedef boost::shared_ptr<const TransformationEstimation<PointSource, PointTarget, Scalar> > ConstPtr;
+        using Ptr = boost::shared_ptr<TransformationEstimation<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = boost::shared_ptr<const TransformationEstimation<PointSource, PointTarget, Scalar> >;
     };
   }
 }

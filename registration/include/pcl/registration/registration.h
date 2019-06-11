@@ -60,40 +60,40 @@ namespace pcl
   class Registration : public PCLBase<PointSource>
   {
     public:
-      typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
+      using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
 
       // using PCLBase<PointSource>::initCompute;
       using PCLBase<PointSource>::deinitCompute;
       using PCLBase<PointSource>::input_;
       using PCLBase<PointSource>::indices_;
 
-      typedef boost::shared_ptr< Registration<PointSource, PointTarget, Scalar> > Ptr;
-      typedef boost::shared_ptr< const Registration<PointSource, PointTarget, Scalar> > ConstPtr;
+      using Ptr = boost::shared_ptr< Registration<PointSource, PointTarget, Scalar> >;
+      using ConstPtr = boost::shared_ptr< const Registration<PointSource, PointTarget, Scalar> >;
 
-      typedef pcl::registration::CorrespondenceRejector::Ptr CorrespondenceRejectorPtr;
-      typedef pcl::search::KdTree<PointTarget> KdTree;
-      typedef typename KdTree::Ptr KdTreePtr;
+      using CorrespondenceRejectorPtr = pcl::registration::CorrespondenceRejector::Ptr;
+      using KdTree = pcl::search::KdTree<PointTarget>;
+      using KdTreePtr = typename KdTree::Ptr;
 
-      typedef pcl::search::KdTree<PointSource> KdTreeReciprocal;
-      typedef typename KdTreeReciprocal::Ptr KdTreeReciprocalPtr;
+      using KdTreeReciprocal = pcl::search::KdTree<PointSource>;
+      using KdTreeReciprocalPtr = typename KdTreeReciprocal::Ptr;
      
-      typedef pcl::PointCloud<PointSource> PointCloudSource;
-      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+      using PointCloudSource = pcl::PointCloud<PointSource>;
+      using PointCloudSourcePtr = typename PointCloudSource::Ptr;
+      using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
-      typedef pcl::PointCloud<PointTarget> PointCloudTarget;
-      typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
-      typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
+      using PointCloudTarget = pcl::PointCloud<PointTarget>;
+      using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
+      using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
-      typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
+      using PointRepresentationConstPtr = typename KdTree::PointRepresentationConstPtr;
       
-      typedef typename pcl::registration::TransformationEstimation<PointSource, PointTarget, Scalar> TransformationEstimation;
-      typedef typename TransformationEstimation::Ptr TransformationEstimationPtr;
-      typedef typename TransformationEstimation::ConstPtr TransformationEstimationConstPtr;
+      using TransformationEstimation = typename pcl::registration::TransformationEstimation<PointSource, PointTarget, Scalar>;
+      using TransformationEstimationPtr = typename TransformationEstimation::Ptr;
+      using TransformationEstimationConstPtr = typename TransformationEstimation::ConstPtr;
 
-      typedef pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> CorrespondenceEstimation;
-      typedef typename CorrespondenceEstimation::Ptr CorrespondenceEstimationPtr;
-      typedef typename CorrespondenceEstimation::ConstPtr CorrespondenceEstimationConstPtr;
+      using CorrespondenceEstimation = pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>;
+      using CorrespondenceEstimationPtr = typename CorrespondenceEstimation::Ptr;
+      using CorrespondenceEstimationConstPtr = typename CorrespondenceEstimation::ConstPtr;
 
       /** \brief The callback signature to the function updating intermediate source point cloud position
         * during it's registration to the target point cloud.
