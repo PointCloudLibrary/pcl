@@ -182,14 +182,14 @@ namespace pcl
       using Filter<PointT>::input_;
       using Filter<PointT>::indices_;
 
-      typedef typename Filter<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = typename Filter<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      typedef boost::shared_ptr< VoxelGrid<PointT> > Ptr;
-      typedef boost::shared_ptr< const VoxelGrid<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<VoxelGrid<PointT> >;
+      using ConstPtr = boost::shared_ptr<const VoxelGrid<PointT> >;
 
       /** \brief Empty constructor. */
       VoxelGrid () :
@@ -485,7 +485,7 @@ namespace pcl
       /** \brief Minimum number of points per voxel for the centroid to be computed */
       unsigned int min_points_per_voxel_;
 
-      typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+      using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
         * \param[out] output the resultant point cloud message
@@ -512,9 +512,9 @@ namespace pcl
     using Filter<pcl::PCLPointCloud2>::filter_name_;
     using Filter<pcl::PCLPointCloud2>::getClassName;
 
-    typedef pcl::PCLPointCloud2 PCLPointCloud2;
-    typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
-    typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
+    using PCLPointCloud2 = pcl::PCLPointCloud2;
+    using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+    using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
     public:
       /** \brief Empty constructor. */

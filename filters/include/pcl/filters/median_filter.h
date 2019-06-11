@@ -60,7 +60,7 @@ namespace pcl
   class MedianFilter : public pcl::Filter<PointT>
   {
       using pcl::Filter<PointT>::input_;
-      typedef typename pcl::Filter<PointT>::PointCloud PointCloud;
+      using PointCloud = typename pcl::Filter<PointT>::PointCloud;
 
     public:
       /** \brief Empty constructor. */

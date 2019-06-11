@@ -69,15 +69,15 @@ namespace pcl
   class ExtractIndices : public FilterIndices<PointT>
   {
     protected:
-      typedef typename FilterIndices<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+      using PointCloud = typename FilterIndices<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
+      using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
     public:
 
-      typedef boost::shared_ptr< ExtractIndices<PointT> > Ptr;
-      typedef boost::shared_ptr< const ExtractIndices<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<ExtractIndices<PointT> >;
+      using ConstPtr = boost::shared_ptr<const ExtractIndices<PointT> >;
 
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
@@ -160,9 +160,9 @@ namespace pcl
   class PCL_EXPORTS ExtractIndices<pcl::PCLPointCloud2> : public FilterIndices<pcl::PCLPointCloud2>
   {
     public:
-      typedef pcl::PCLPointCloud2 PCLPointCloud2;
-      typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
-      typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
+      using PCLPointCloud2 = pcl::PCLPointCloud2;
+      using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+      using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
       /** \brief Empty constructor. */
       ExtractIndices ()

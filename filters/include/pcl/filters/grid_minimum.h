@@ -67,7 +67,7 @@ namespace pcl
       using Filter<PointT>::input_;
       using Filter<PointT>::indices_;
 
-      typedef typename FilterIndices<PointT>::PointCloud PointCloud;
+      using PointCloud = typename FilterIndices<PointT>::PointCloud;
 
     public:
       /** \brief Empty constructor. */

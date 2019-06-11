@@ -179,7 +179,7 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
 
   valid_setup &= initSACModel (model_type_);
 
-  typedef SampleConsensusModelFromNormals<PointT, pcl::Normal> SACModelFromNormals;
+  using SACModelFromNormals = SampleConsensusModelFromNormals<PointT, pcl::Normal>;
   // Returns NULL if cast isn't possible
   SACModelFromNormals *model_from_normals = dynamic_cast<SACModelFromNormals *> (& (*model_));
 
