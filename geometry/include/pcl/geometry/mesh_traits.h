@@ -63,13 +63,13 @@ namespace pcl
               class FaceDataT     = pcl::geometry::NoData>
     struct DefaultMeshTraits
     {
-      typedef VertexDataT   VertexData;
-      typedef HalfEdgeDataT HalfEdgeData;
-      typedef EdgeDataT     EdgeData;
-      typedef FaceDataT     FaceData;
+      using VertexData = VertexDataT;
+      using HalfEdgeData = HalfEdgeDataT;
+      using EdgeData = EdgeDataT;
+      using FaceData = FaceDataT;
 
       /** \brief Specifies whether the mesh is manifold or not (only non-manifold vertices can be represented). */
-      typedef std::false_type IsManifold;
+      using IsManifold = std::false_type;
     };
   } // End namespace geometry
 } // End namespace pcl

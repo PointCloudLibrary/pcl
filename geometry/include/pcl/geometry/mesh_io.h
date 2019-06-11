@@ -63,19 +63,19 @@ namespace pcl
     {
       public:
 
-        typedef MeshT Mesh;
+        using Mesh = MeshT;
 
-        typedef typename Mesh::Vertex   Vertex;
-        typedef typename Mesh::HalfEdge HalfEdge;
-        typedef typename Mesh::Face     Face;
+        using Vertex = typename Mesh::Vertex;
+        using HalfEdge = typename Mesh::HalfEdge;
+        using Face = typename Mesh::Face;
 
-        typedef typename Mesh::Vertices  Vertices;
-        typedef typename Mesh::HalfEdges HalfEdges;
-        typedef typename Mesh::Faces     Faces;
+        using Vertices = typename Mesh::Vertices;
+        using HalfEdges = typename Mesh::HalfEdges;
+        using Faces = typename Mesh::Faces;
 
-        typedef typename Mesh::VertexIndex   VertexIndex;
-        typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
-        typedef typename Mesh::FaceIndex     FaceIndex;
+        using VertexIndex = typename Mesh::VertexIndex;
+        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+        using FaceIndex = typename Mesh::FaceIndex;
 
         /** \brief Constructor. */
         MeshIO ()
