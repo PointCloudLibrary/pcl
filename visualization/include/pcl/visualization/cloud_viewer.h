@@ -109,7 +109,7 @@ namespace pcl
 
         /** Visualization callable function, may be used for running things on the UI thread.
          */
-        using VizCallable = std::function1<void, pcl::visualization::PCLVisualizer&>;
+        using VizCallable = std::function<void (pcl::visualization::PCLVisualizer&)>;
 
         /** \brief Run a callbable object on the UI thread. Will persist until removed
          * @param x Use boost::ref(x) for a function object that you would like to not copy
