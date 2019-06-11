@@ -51,8 +51,8 @@ namespace openni_wrapper
 class PCL_EXPORTS IRImage
 {
 public:
-  typedef boost::shared_ptr<IRImage> Ptr;
-  typedef boost::shared_ptr<const IRImage> ConstPtr;
+  using Ptr = boost::shared_ptr<IRImage>;
+  using ConstPtr = boost::shared_ptr<const IRImage>;
 
   inline IRImage (boost::shared_ptr<xn::IRMetaData> ir_meta_data) throw ();
   inline virtual ~IRImage () throw ();

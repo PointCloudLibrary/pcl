@@ -51,7 +51,7 @@ using namespace pcl::io::openni2;
 using openni::VideoMode;
 using std::vector;
 
-typedef boost::chrono::high_resolution_clock hr_clock;
+using hr_clock = boost::chrono::high_resolution_clock;
 
 pcl::io::openni2::OpenNI2Device::OpenNI2Device (const std::string& device_URI) :
   ir_video_started_(false),

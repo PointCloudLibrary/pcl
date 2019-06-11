@@ -61,8 +61,7 @@ namespace pcl
        * This signal is sent when the accumulated number of points reaches
        * the limit specified by setSignalPointCloudSize().
        */
-      typedef void (sig_cb_robot_eye_point_cloud_xyzi) (
-          const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
+      using sig_cb_robot_eye_point_cloud_xyzi = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> > &);
 
       /** \brief RobotEyeGrabber default constructor. */
       RobotEyeGrabber ();

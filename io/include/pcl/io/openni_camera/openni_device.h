@@ -73,17 +73,17 @@ namespace openni_wrapper
   class PCL_EXPORTS OpenNIDevice
   {
     public:
-      typedef enum
+      enum DepthMode
       {
         OpenNI_shift_values = 0, // Shift values (disparity)
         OpenNI_12_bit_depth = 1, // Default mode: regular 12-bit depth
-      } DepthMode;
+      };
 
-      typedef boost::shared_ptr<OpenNIDevice> Ptr;
-      typedef std::function<void(boost::shared_ptr<Image>, void* cookie) > ImageCallbackFunction;
-      typedef std::function<void(boost::shared_ptr<DepthImage>, void* cookie) > DepthImageCallbackFunction;
-      typedef std::function<void(boost::shared_ptr<IRImage>, void* cookie) > IRImageCallbackFunction;
-      typedef unsigned CallbackHandle;
+      using Ptr = boost::shared_ptr<OpenNIDevice>;
+      using ImageCallbackFunction = std::function<void(boost::shared_ptr<Image>, void* cookie) >;
+      using DepthImageCallbackFunction = std::function<void(boost::shared_ptr<DepthImage>, void* cookie) >;
+      using IRImageCallbackFunction = std::function<void(boost::shared_ptr<IRImage>, void* cookie) >;
+      using CallbackHandle = unsigned;
 
     public:
 
@@ -446,9 +446,9 @@ namespace openni_wrapper
       OpenNIDevice (OpenNIDevice const &);
       OpenNIDevice& operator=(OpenNIDevice const &);
     protected:
-      typedef std::function<void(boost::shared_ptr<Image>) > ActualImageCallbackFunction;
-      typedef std::function<void(boost::shared_ptr<DepthImage>) > ActualDepthImageCallbackFunction;
-      typedef std::function<void(boost::shared_ptr<IRImage>) > ActualIRImageCallbackFunction;
+      using ActualImageCallbackFunction = std::function<void(boost::shared_ptr<Image>) >;
+      using ActualDepthImageCallbackFunction = std::function<void(boost::shared_ptr<DepthImage>) >;
+      using ActualIRImageCallbackFunction = std::function<void(boost::shared_ptr<IRImage>) >;
 
       OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
       OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
