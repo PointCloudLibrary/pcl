@@ -172,7 +172,7 @@ namespace pcl
     * \param[in] u 2D coordinate
     * \param[in] v 2D coordinate
     */
-    static const size_t
+    static size_t
     getTextureIdx (const rs2::video_frame & texture, float u, float v);
 
     /** \brief Retrieve RGB color from texture video frame
