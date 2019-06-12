@@ -34,6 +34,8 @@
 #include <condition_variable>
 #include <mutex>
 
+#include "pcl/make_shared.h"
+
 
 // Forward Declarations
 
@@ -118,11 +120,11 @@ OutofcoreCloud::OutofcoreCloud (std::string name, boost::filesystem::path& tree_
   if (OutofcoreCloud::pcd_reader_thread.get() == nullptr)
   {
 //    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<std::thread>(new std::thread(&OutofcoreCloud::pcdReaderThread, this));
-    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<std::thread>(new std::thread(&OutofcoreCloud::pcdReaderThread));
+    OutofcoreCloud::pcd_reader_thread = pcl::make_shared<std::thread>(&OutofcoreCloud::pcdReaderThread);
   }
 
 
-  octree_.reset (new OctreeDisk (tree_root, true));
+  octree_ = pcl::make_shared<OctreeDisk> (tree_root, true);
   octree_->getBoundingBox (bbox_min_, bbox_max_);
 
   voxel_actor_ = vtkSmartPointer<vtkActor>::New ();
