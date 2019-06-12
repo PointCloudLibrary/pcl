@@ -60,6 +60,8 @@
 #include <pcl/filters/voxel_grid.h>
 // We need Histogram<2> to function, so we'll explicitly add kdtree_flann.hpp here
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
+
+#include "pcl/make_shared.h"
 //(pcl::Histogram<2>)
 
 using namespace pcl;
@@ -214,11 +216,11 @@ TEST (PCL, IterativeClosestPointWithRejectors)
   reg.setTransformationEpsilon (1e-8);
   reg.setMaxCorrespondenceDistance (0.15);
   // Add a median distance rejector
-  pcl::registration::CorrespondenceRejectorMedianDistance::Ptr rej_med (new pcl::registration::CorrespondenceRejectorMedianDistance);
+  pcl::registration::CorrespondenceRejectorMedianDistance::Ptr rej_med = pcl::make_shared<pcl::registration::CorrespondenceRejectorMedianDistance> ();
   rej_med->setMedianFactor (4.0);
   reg.addCorrespondenceRejector (rej_med);
   // Also add a SaC rejector
-  pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>::Ptr rej_samp (new pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>);
+  pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>::Ptr rej_samp = pcl::make_shared<pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>> ();
   reg.addCorrespondenceRejector (rej_samp);
 
   size_t ntransforms = 10;
@@ -232,8 +234,8 @@ TEST (PCL, IterativeClosestPointWithRejectors)
     sampleRandomTransform (net_transform, 2*M_PI, 10.);
 
     PointCloud<PointXYZ>::ConstPtr source (cloud_source.makeShared ());
-    PointCloud<PointXYZ>::Ptr source_trans (new PointCloud<PointXYZ>);
-    PointCloud<PointXYZ>::Ptr target_trans (new PointCloud<PointXYZ>);
+    PointCloud<PointXYZ>::Ptr source_trans = pcl::make_shared<PointCloud<PointXYZ>> ();
+    PointCloud<PointXYZ>::Ptr target_trans = pcl::make_shared<PointCloud<PointXYZ>> ();
 
     pcl::transformPointCloud (*source, *source_trans, delta_transform.inverse () * net_transform);
     pcl::transformPointCloud (*source, *target_trans, net_transform);
@@ -264,11 +266,11 @@ TEST (PCL, JointIterativeClosestPoint)
   reg.setTransformationEpsilon (1e-8);
   reg.setMaxCorrespondenceDistance (0.25); // Making sure the correspondence distance > the max translation
   // Add a median distance rejector
-  pcl::registration::CorrespondenceRejectorMedianDistance::Ptr rej_med (new pcl::registration::CorrespondenceRejectorMedianDistance);
+  pcl::registration::CorrespondenceRejectorMedianDistance::Ptr rej_med = pcl::make_shared<pcl::registration::CorrespondenceRejectorMedianDistance> ();
   rej_med->setMedianFactor (8.0);
   reg.addCorrespondenceRejector (rej_med);
   // Also add a SaC rejector
-  pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>::Ptr rej_samp (new pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>);
+  pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>::Ptr rej_samp = pcl::make_shared<pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>> ();
   reg.addCorrespondenceRejector (rej_samp);
 
   size_t ntransforms = 10;
@@ -288,8 +290,8 @@ TEST (PCL, JointIterativeClosestPoint)
       Eigen::Affine3f net_transform;
       sampleRandomTransform (net_transform, 2*M_PI, 10.);
       // And apply it to the source and target
-      PointCloud<PointXYZ>::Ptr source_trans (new PointCloud<PointXYZ>);
-      PointCloud<PointXYZ>::Ptr target_trans (new PointCloud<PointXYZ>);
+      PointCloud<PointXYZ>::Ptr source_trans = pcl::make_shared<PointCloud<PointXYZ>> ();
+      PointCloud<PointXYZ>::Ptr target_trans = pcl::make_shared<PointCloud<PointXYZ>> ();
       pcl::transformPointCloud (*source, *source_trans, delta_transform.inverse () * net_transform);
       pcl::transformPointCloud (*source, *target_trans, net_transform);
       // Add these to the joint solver
@@ -316,9 +318,9 @@ TEST (PCL, JointIterativeClosestPoint)
 TEST (PCL, IterativeClosestPointNonLinear)
 {
   typedef PointXYZRGB PointT;
-  PointCloud<PointT>::Ptr temp_src (new PointCloud<PointT>);
+  PointCloud<PointT>::Ptr temp_src = pcl::make_shared<PointCloud<PointT>> ();
   copyPointCloud (cloud_source, *temp_src);
-  PointCloud<PointT>::Ptr temp_tgt (new PointCloud<PointT>);
+  PointCloud<PointT>::Ptr temp_tgt = pcl::make_shared<PointCloud<PointT>> ();
   copyPointCloud (cloud_target, *temp_tgt);
   PointCloud<PointT> output;
 
@@ -364,13 +366,13 @@ TEST (PCL, IterativeClosestPointNonLinear)
   {
     bool force_cache = static_cast<bool> (iter / 2);
     bool force_cache_reciprocal = static_cast<bool> (iter % 2);
-    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+    pcl::search::KdTree<PointT>::Ptr tree = pcl::make_shared<pcl::search::KdTree<PointT>> ();
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
       tree->setInputCloud (temp_tgt);
     reg.setSearchMethodTarget (tree, force_cache);
 
-    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
+    pcl::search::KdTree<PointT>::Ptr tree_recip = pcl::make_shared<pcl::search::KdTree<PointT>> ();
     if (force_cache_reciprocal)
       tree_recip->setInputCloud (temp_src);
     reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
@@ -387,31 +389,31 @@ TEST (PCL, IterativeClosestPointNonLinear)
 TEST (PCL, IterativeClosestPoint_PointToPlane)
 {
   typedef PointNormal PointT;
-  PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
+  PointCloud<PointT>::Ptr src = pcl::make_shared<PointCloud<PointT>> ();
   copyPointCloud (cloud_source, *src);
-  PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);
+  PointCloud<PointT>::Ptr tgt = pcl::make_shared<PointCloud<PointT>> ();
   copyPointCloud (cloud_target, *tgt);
   PointCloud<PointT> output;
 
   NormalEstimation<PointNormal, PointNormal> norm_est;
-  norm_est.setSearchMethod (search::KdTree<PointNormal>::Ptr (new search::KdTree<PointNormal>));
+  norm_est.setSearchMethod (pcl::make_shared<search::KdTree<PointNormal>> ());
   norm_est.setKSearch (10);
   norm_est.setInputCloud (tgt);
   norm_est.compute (*tgt);
 
   IterativeClosestPoint<PointT, PointT> reg;
   typedef registration::TransformationEstimationPointToPlane<PointT, PointT> PointToPlane;
-  boost::shared_ptr<PointToPlane> point_to_plane (new PointToPlane);
+  boost::shared_ptr<PointToPlane> point_to_plane = pcl::make_shared<PointToPlane> ();
   reg.setTransformationEstimation (point_to_plane);
   reg.setInputSource (src);
   reg.setInputTarget (tgt);
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
   // Use a correspondence estimator which needs normals
-  registration::CorrespondenceEstimationNormalShooting<PointT, PointT, PointT>::Ptr ce (new registration::CorrespondenceEstimationNormalShooting<PointT, PointT, PointT>);
+  registration::CorrespondenceEstimationNormalShooting<PointT, PointT, PointT>::Ptr ce = pcl::make_shared<registration::CorrespondenceEstimationNormalShooting<PointT, PointT, PointT>> ();
   reg.setCorrespondenceEstimation (ce);
   // Add rejector
-  registration::CorrespondenceRejectorSurfaceNormal::Ptr rej (new registration::CorrespondenceRejectorSurfaceNormal);
+  registration::CorrespondenceRejectorSurfaceNormal::Ptr rej = pcl::make_shared<registration::CorrespondenceRejectorSurfaceNormal> ();
   rej->setThreshold (0); //Could be a lot of rotation -- just make sure they're at least within 0 degrees
   reg.addCorrespondenceRejector (rej);
 
@@ -425,13 +427,13 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   {
     bool force_cache = (bool) iter/2;
     bool force_cache_reciprocal = (bool) iter%2;
-    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+    pcl::search::KdTree<PointT>::Ptr tree = pcl::make_shared<pcl::search::KdTree<PointT>> ();
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
       tree->setInputCloud (tgt);
     reg.setSearchMethodTarget (tree, force_cache);
 
-    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
+    pcl::search::KdTree<PointT>::Ptr tree_recip = pcl::make_shared<pcl::search::KdTree<PointT>> ();
     if (force_cache_reciprocal)
       tree_recip->setInputCloud (src);
     reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
@@ -476,9 +478,9 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
 TEST (PCL, GeneralizedIterativeClosestPoint)
 {
   typedef PointXYZ PointT;
-  PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
+  PointCloud<PointT>::Ptr src = pcl::make_shared<PointCloud<PointT>> ();
   copyPointCloud (cloud_source, *src);
-  PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);
+  PointCloud<PointT>::Ptr tgt = pcl::make_shared<PointCloud<PointT>> ();
   copyPointCloud (cloud_target, *tgt);
   PointCloud<PointT> output;
 
@@ -498,13 +500,13 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
   {
     bool force_cache = (bool) iter/2;
     bool force_cache_reciprocal = (bool) iter%2;
-    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+    pcl::search::KdTree<PointT>::Ptr tree = pcl::make_shared<pcl::search::KdTree<PointT>> ();
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
       tree->setInputCloud (tgt);
     reg.setSearchMethodTarget (tree, force_cache);
 
-    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
+    pcl::search::KdTree<PointT>::Ptr tree_recip = pcl::make_shared<pcl::search::KdTree<PointT>> ();
     if (force_cache_reciprocal)
       tree_recip->setInputCloud (src);
     reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
@@ -520,7 +522,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
                                                  * Eigen::AngleAxisf (0.50 * M_PI, Eigen::Vector3f::UnitY ())
                                                  * Eigen::AngleAxisf (0.33 * M_PI, Eigen::Vector3f::UnitZ ()));
   transform.translation () = Eigen::Vector3f (0.1, 0.2, 0.3);
-  PointCloud<PointT>::Ptr transformed_tgt (new PointCloud<PointT>);
+  PointCloud<PointT>::Ptr transformed_tgt = pcl::make_shared<PointCloud<PointT>> ();
   pcl::transformPointCloud (*tgt, *transformed_tgt, transform.matrix ()); // transformed_tgt is now a copy of tgt with a transformation matrix applied
 
   GeneralizedIterativeClosestPoint<PointT, PointT> reg_guess;
@@ -538,16 +540,16 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
 {
   typedef PointXYZRGBA PointT;
   Eigen::Affine3f delta_transform;
-  PointCloud<PointT>::Ptr src_full (new PointCloud<PointT>);
+  PointCloud<PointT>::Ptr src_full = pcl::make_shared<PointCloud<PointT>> ();
   copyPointCloud (cloud_with_color, *src_full);
-  PointCloud<PointT>::Ptr tgt_full (new PointCloud<PointT>);
+  PointCloud<PointT>::Ptr tgt_full = pcl::make_shared<PointCloud<PointT>> ();
   sampleRandomTransform (delta_transform, M_PI/0.1, .03);
   pcl::transformPointCloud (cloud_with_color, *tgt_full, delta_transform);
   PointCloud<PointT> output;
 
   // VoxelGrid filter
-  PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
-  PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);
+  PointCloud<PointT>::Ptr src = pcl::make_shared<PointCloud<PointT>> ();
+  PointCloud<PointT>::Ptr tgt = pcl::make_shared<PointCloud<PointT>> ();
   pcl::VoxelGrid<PointT> sor;
   sor.setLeafSize (0.02f, 0.02f, 0.02f);
   sor.setInputCloud (src_full);
@@ -571,13 +573,13 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
   {
     bool force_cache = (bool) iter/2;
     bool force_cache_reciprocal = (bool) iter%2;
-    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+    pcl::search::KdTree<PointT>::Ptr tree = pcl::make_shared<pcl::search::KdTree<PointT>> ();
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
       tree->setInputCloud (tgt);
     reg.setSearchMethodTarget (tree, force_cache);
 
-    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
+    pcl::search::KdTree<PointT>::Ptr tree_recip = pcl::make_shared<pcl::search::KdTree<PointT>> ();
     if (force_cache_reciprocal)
       tree_recip->setInputCloud (src);
     reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
@@ -597,9 +599,9 @@ TEST (PCL, PyramidFeatureHistogram)
    PointCloud<PointXYZ>::Ptr cloud_source_ptr = cloud_source.makeShared (),
        cloud_target_ptr = cloud_target.makeShared ();
 
-  PointCloud<Normal>::Ptr cloud_source_normals (new PointCloud<Normal> ()),
-      cloud_target_normals (new PointCloud<Normal> ());
-  search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ>);
+  PointCloud<Normal>::Ptr cloud_source_normals = pcl::make_shared<PointCloud<Normal>> (),
+      cloud_target_normals = pcl::make_shared<PointCloud<Normal>> ();
+  search::KdTree<PointXYZ>::Ptr tree = pcl::make_shared<search::KdTree<PointXYZ>> ();
   NormalEstimation<PointXYZ, Normal> normal_estimator;
   normal_estimator.setSearchMethod (tree);
   normal_estimator.setRadiusSearch (0.05);
@@ -610,8 +612,8 @@ TEST (PCL, PyramidFeatureHistogram)
   normal_estimator.compute (*cloud_target_normals);
 
 
-  PointCloud<PPFSignature>::Ptr ppf_signature_source (new PointCloud<PPFSignature> ()),
-      ppf_signature_target (new PointCloud<PPFSignature> ());
+  PointCloud<PPFSignature>::Ptr ppf_signature_source = pcl::make_shared<PointCloud<PPFSignature>> (),
+      ppf_signature_target = pcl::make_shared<PointCloud<PPFSignature>> ();
   PPFEstimation<PointXYZ, Normal, PPFSignature> ppf_estimator;
   ppf_estimator.setInputCloud (cloud_source_ptr);
   ppf_estimator.setInputNormals (cloud_source_normals);
@@ -629,8 +631,8 @@ TEST (PCL, PyramidFeatureHistogram)
   dim_range_target.emplace_back(0.0f, 50.0f);
 
 
-  PyramidFeatureHistogram<PPFSignature>::Ptr pyramid_source (new PyramidFeatureHistogram<PPFSignature> ()),
-      pyramid_target (new PyramidFeatureHistogram<PPFSignature> ());
+  PyramidFeatureHistogram<PPFSignature>::Ptr pyramid_source = pcl::make_shared<PyramidFeatureHistogram<PPFSignature>> (),
+      pyramid_target = pcl::make_shared<PyramidFeatureHistogram<PPFSignature>> ();
   pyramid_source->setInputCloud (ppf_signature_source);
   pyramid_source->setInputDimensionRange (dim_range_input);
   pyramid_source->setTargetDimensionRange (dim_range_target);
@@ -693,32 +695,31 @@ TEST (PCL, PPFRegistration)
 
   // Estimate normals for both clouds
   NormalEstimation<PointXYZ, Normal> normal_estimation;
-  search::KdTree<PointXYZ>::Ptr search_tree (new search::KdTree<PointXYZ> ());
+  search::KdTree<PointXYZ>::Ptr search_tree = pcl::make_shared<search::KdTree<PointXYZ>> ();
   normal_estimation.setSearchMethod (search_tree);
   normal_estimation.setRadiusSearch (0.05);
-  PointCloud<Normal>::Ptr normals_target (new PointCloud<Normal> ()),
-      normals_source_transformed (new PointCloud<Normal> ());
+  PointCloud<Normal>::Ptr normals_target = pcl::make_shared<PointCloud<Normal>> (),
+      normals_source_transformed = pcl::make_shared<PointCloud<Normal>> ();
   normal_estimation.setInputCloud (cloud_target_ptr);
   normal_estimation.compute (*normals_target);
   normal_estimation.setInputCloud (cloud_source_transformed_ptr);
   normal_estimation.compute (*normals_source_transformed);
 
-  PointCloud<PointNormal>::Ptr cloud_target_with_normals (new PointCloud<PointNormal> ()),
-      cloud_source_transformed_with_normals (new PointCloud<PointNormal> ());
+  PointCloud<PointNormal>::Ptr cloud_target_with_normals = pcl::make_shared<PointCloud<PointNormal>> (),
+      cloud_source_transformed_with_normals = pcl::make_shared<PointCloud<PointNormal>> ();
   concatenateFields (*cloud_target_ptr, *normals_target, *cloud_target_with_normals);
   concatenateFields (*cloud_source_transformed_ptr, *normals_source_transformed, *cloud_source_transformed_with_normals);
 
   // Compute PPFSignature feature clouds for source cloud
   PPFEstimation<PointXYZ, Normal, PPFSignature> ppf_estimator;
-  PointCloud<PPFSignature>::Ptr features_source_transformed (new PointCloud<PPFSignature> ());
+  PointCloud<PPFSignature>::Ptr features_source_transformed = pcl::make_shared<PointCloud<PPFSignature>> ();
   ppf_estimator.setInputCloud (cloud_source_transformed_ptr);
   ppf_estimator.setInputNormals (normals_source_transformed);
   ppf_estimator.compute (*features_source_transformed);
 
 
   // Train the source cloud - create the hash map search structure
-  PPFHashMapSearch::Ptr hash_map_search (new PPFHashMapSearch (15.0 / 180 * M_PI,
-                                                               0.05));
+  PPFHashMapSearch::Ptr hash_map_search = pcl::make_shared<PPFHashMapSearch> (15.0 / 180 * M_PI, 0.05);
   hash_map_search->setInputFeatureCloud (features_source_transformed);
 
   // Finally, do the registration

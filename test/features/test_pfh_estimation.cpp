@@ -51,6 +51,8 @@
 #include <pcl/features/gfpfh.h>
 #include <pcl/io/pcd_io.h>
 
+#include "pcl/make_shared.h"
+
 typedef pcl::PointNormal PointT;
 typedef pcl::search::KdTree<PointT>::Ptr KdTreePtr;
 using pcl::PointCloud;
@@ -538,7 +540,7 @@ main (int argc, char** argv)
   for (size_t i = 0; i < cloud->size (); ++i)
     indices.push_back (static_cast<int> (i));
 
-  tree.reset (new pcl::search::KdTree<PointT> (false));
+  tree = pcl::make_shared<pcl::search::KdTree<PointT>> (false);
   tree->setInputCloud (cloud);
 
   testing::InitGoogleTest (&argc, argv);

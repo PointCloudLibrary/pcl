@@ -49,6 +49,8 @@
 #include <pcl/recognition/implicit_shape_model.h>
 #include <pcl/recognition/impl/implicit_shape_model.hpp>
 
+#include "pcl/make_shared.h"
+
 pcl::PointCloud<pcl::PointXYZ>::Ptr training_cloud;
 pcl::PointCloud<pcl::PointXYZ>::Ptr testing_cloud;
 pcl::PointCloud<pcl::Normal>::Ptr training_normals;
@@ -70,7 +72,7 @@ TEST (ISM, TrainRecognize)
   fpfh->setRadiusSearch (30.0);
   pcl::Feature< pcl::PointXYZ, pcl::Histogram<153> >::Ptr feature_estimator(fpfh);
 
-  pcl::ism::ImplicitShapeModelEstimation<153, pcl::PointXYZ, pcl::Normal>::ISMModelPtr model = boost::shared_ptr<pcl::features::ISMModel> (new pcl::features::ISMModel);
+  pcl::ism::ImplicitShapeModelEstimation<153, pcl::PointXYZ, pcl::Normal>::ISMModelPtr model = pcl::make_shared<pcl::features::ISMModel> ();
 
   pcl::ism::ImplicitShapeModelEstimation<153, pcl::PointXYZ, pcl::Normal> ism;
   ism.setFeatureEstimator(feature_estimator);

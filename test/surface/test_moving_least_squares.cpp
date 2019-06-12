@@ -46,6 +46,8 @@
 #include <pcl/surface/mls.h>
 #include <pcl/common/common.h>
 
+#include "pcl/make_shared.h"
+
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
@@ -189,7 +191,7 @@ main (int argc, char** argv)
   fromPCLPointCloud2 (cloud_blob, *cloud);
 
   // Create search tree
-  tree.reset (new search::KdTree<PointXYZ> (false));
+  tree = pcl::make_shared<search::KdTree<PointXYZ>> (false);
   tree->setInputCloud (cloud);
 
   // Normal estimation
@@ -205,7 +207,7 @@ main (int argc, char** argv)
   pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
       
   // Create search tree
-  tree2.reset (new search::KdTree<PointNormal>);
+  tree2 = pcl::make_shared<search::KdTree<PointNormal>> ();
   tree2->setInputCloud (cloud_with_normals);
 
   // Process for update cloud
@@ -214,7 +216,7 @@ main (int argc, char** argv)
     loadPCDFile (argv[2], cloud_blob1);
     fromPCLPointCloud2 (cloud_blob1, *cloud1);
         // Create search tree
-    tree3.reset (new search::KdTree<PointXYZ> (false));
+    tree3 = pcl::make_shared<search::KdTree<PointXYZ>> (false);
     tree3->setInputCloud (cloud1);
 
     // Normal estimation
@@ -229,7 +231,7 @@ main (int argc, char** argv)
     // Concatenate XYZ and normal information
     pcl::concatenateFields (*cloud1, *normals1, *cloud_with_normals1);
     // Create search tree
-    tree4.reset (new search::KdTree<PointNormal>);
+    tree4 = pcl::make_shared<search::KdTree<PointNormal>> ();
     tree4->setInputCloud (cloud_with_normals1);
   }
 

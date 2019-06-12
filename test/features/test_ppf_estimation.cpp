@@ -43,6 +43,8 @@
 #include <pcl/features/ppf.h>
 #include <pcl/io/pcd_io.h>
 
+#include "pcl/make_shared.h"
+
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
@@ -119,7 +121,7 @@ main (int argc, char** argv)
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
     indices[i] = i;
 
-  tree.reset (new search::KdTree<PointXYZ> (false));
+  tree = pcl::make_shared<search::KdTree<PointXYZ>> (false);
   tree->setInputCloud (cloud.makeShared ());
 
   testing::InitGoogleTest (&argc, argv);

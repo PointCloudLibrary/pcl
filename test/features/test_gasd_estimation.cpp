@@ -41,6 +41,8 @@
 #include <pcl/features/gasd.h>
 #include <pcl/io/pcd_io.h>
 
+#include "pcl/make_shared.h"
+
 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -321,7 +323,7 @@ main (int argc,
     return (-1);
   }
 
-  cloud.reset (new pcl::PointCloud<pcl::PointXYZ>);
+  cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
 
   if (pcl::io::loadPCDFile < pcl::PointXYZ > (argv[1], *cloud) < 0)
   {

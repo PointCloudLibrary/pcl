@@ -40,6 +40,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/iss_3d.h>
 
+#include "pcl/make_shared.h"
+
 using namespace pcl;
 using namespace pcl::io;
 
@@ -96,7 +98,7 @@ TEST (PCL, ISSKeypoint3D_WBE)
     EXPECT_NEAR (keypoints.points[i].z, correct_keypoints[i][2], 1e-6);
   }
 
-  tree.reset (new search::KdTree<PointXYZ> ());
+  tree = pcl::make_shared<search::KdTree<PointXYZ>> ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +152,7 @@ TEST (PCL, ISSKeypoint3D_BE)
     EXPECT_NEAR (keypoints.points[i].z, correct_keypoints[i][2], 1e-6);
   }
 
-  tree.reset (new search::KdTree<PointXYZ> ());
+  tree = pcl::make_shared<search::KdTree<PointXYZ>> ();
 }
 
 //* ---[ */

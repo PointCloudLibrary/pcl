@@ -44,6 +44,8 @@
 #include <pcl/features/spin_image.h>
 #include <pcl/features/intensity_spin.h>
 
+#include "pcl/make_shared.h"
+
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
@@ -300,7 +302,7 @@ main (int argc, char** argv)
   for (size_t i = 0; i < indices.size (); ++i)
     indices[i] = static_cast<int> (i);
 
-  tree.reset (new search::KdTree<PointXYZ> (false));
+  tree = pcl::make_shared<search::KdTree<PointXYZ>> (false);
   tree->setInputCloud (cloud.makeShared ());
 
   testing::InitGoogleTest (&argc, argv);

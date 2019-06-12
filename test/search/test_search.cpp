@@ -39,6 +39,8 @@
 
 #include <random>
 
+#include "pcl/make_shared.h"
+
 #include <pcl/search/brute_force.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/search/organized.h>
@@ -308,7 +310,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
   
   boost::shared_ptr<vector<int> > input_indices_;
   if (!input_indices.empty ())
-    input_indices_.reset (new vector<int> (input_indices));
+    input_indices_ = pcl::make_shared<vector<int>> (input_indices);
   
   #pragma omp parallel for
   for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
@@ -378,7 +380,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
   
   boost::shared_ptr<vector<int> > input_indices_;
   if (!input_indices.empty ())
-    input_indices_.reset (new vector<int> (input_indices));
+    input_indices_ = pcl::make_shared<vector<int>> (input_indices);
   
   #pragma omp parallel for
   for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)

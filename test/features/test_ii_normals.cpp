@@ -43,6 +43,8 @@
 
 #include <iostream>
 
+#include "pcl/make_shared.h"
+
 using namespace pcl;
 using namespace std;
 
@@ -345,7 +347,7 @@ TEST(PCL, IntegralImage3D)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, NormalEstimation)
 {
-  tree.reset (new search::KdTree<PointXYZ> (false));
+  tree = pcl::make_shared<search::KdTree<PointXYZ>> (false);
   n.setSearchMethod (tree);
   n.setKSearch (10);
 
