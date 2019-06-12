@@ -3,6 +3,8 @@
 
 #include <pcl/tracking/kld_adaptive_particle_filter_omp.h>
 
+#include "pcl/make_shared.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename StateT> void
 pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::setNumberOfThreads (unsigned int nr_threads)
@@ -72,7 +74,7 @@ pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight ()
     std::vector<IndicesPtr> indices_list (particle_num_);
     for (int i = 0; i < particle_num_; i++)
     {
-      indices_list[i] = IndicesPtr (new std::vector<int>);
+      indices_list[i] = pcl::make_shared<std::vector<int>>();
     }
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(threads_)
