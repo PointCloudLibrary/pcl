@@ -54,30 +54,30 @@ namespace pcl
   class JointIterativeClosestPoint : public IterativeClosestPoint<PointSource, PointTarget, Scalar>
   {
     public:
-      typedef typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudSource PointCloudSource;
-      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+      using PointCloudSource = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudSource;
+      using PointCloudSourcePtr = typename PointCloudSource::Ptr;
+      using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
-      typedef typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudTarget PointCloudTarget;
-      typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
-      typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
+      using PointCloudTarget = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudTarget;
+      using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
+      using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
-      typedef pcl::search::KdTree<PointTarget> KdTree;
-      typedef typename KdTree::Ptr KdTreePtr;
+      using KdTree = pcl::search::KdTree<PointTarget>;
+      using KdTreePtr = typename KdTree::Ptr;
 
-      typedef pcl::search::KdTree<PointSource> KdTreeReciprocal;
-      typedef typename KdTree::Ptr KdTreeReciprocalPtr;
+      using KdTreeReciprocal = pcl::search::KdTree<PointSource>;
+      using KdTreeReciprocalPtr = typename KdTree::Ptr;
 
 
-      typedef PointIndices::Ptr PointIndicesPtr;
-      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+      using PointIndicesPtr = PointIndices::Ptr;
+      using PointIndicesConstPtr = PointIndices::ConstPtr;
 
-      typedef boost::shared_ptr<JointIterativeClosestPoint<PointSource, PointTarget, Scalar> > Ptr;
-      typedef boost::shared_ptr<const JointIterativeClosestPoint<PointSource, PointTarget, Scalar> > ConstPtr;
+      using Ptr = boost::shared_ptr<JointIterativeClosestPoint<PointSource, PointTarget, Scalar> >;
+      using ConstPtr = boost::shared_ptr<const JointIterativeClosestPoint<PointSource, PointTarget, Scalar> >;
 
-      typedef pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> CorrespondenceEstimation;
-      typedef typename CorrespondenceEstimation::Ptr CorrespondenceEstimationPtr;
-      typedef typename CorrespondenceEstimation::ConstPtr CorrespondenceEstimationConstPtr;
+      using CorrespondenceEstimation = pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>;
+      using CorrespondenceEstimationPtr = typename CorrespondenceEstimation::Ptr;
+      using CorrespondenceEstimationConstPtr = typename CorrespondenceEstimation::ConstPtr;
 
 
       using IterativeClosestPoint<PointSource, PointTarget, Scalar>::reg_name_;
@@ -112,7 +112,7 @@ namespace pcl
       using IterativeClosestPoint<PointSource, PointTarget, Scalar>::need_target_blob_;
 
 
-      typedef typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
+      using Matrix4 = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4;
 
       /** \brief Empty constructor. */
       JointIterativeClosestPoint ()

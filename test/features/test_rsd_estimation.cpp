@@ -82,10 +82,7 @@ TEST (PCL, RSDEstimation)
   rsd.setSaveHistograms (true);
   rsd.compute (*rsds);
 
-  typedef std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > vec_matrixXf;
-  boost::shared_ptr<vec_matrixXf> mat (new vec_matrixXf);
-
-  mat = rsd.getHistograms();
+  auto mat = rsd.getHistograms();
 
   EXPECT_EQ (1, (*mat)[140](0, 0));
   EXPECT_EQ (3, (*mat)[140](0, 1));

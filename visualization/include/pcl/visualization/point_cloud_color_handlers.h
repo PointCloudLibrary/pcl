@@ -64,12 +64,12 @@ namespace pcl
     class PointCloudColorHandler
     {
       public:
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef typename PointCloud::Ptr PointCloudPtr;
-        typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = typename PointCloud::Ptr;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        typedef boost::shared_ptr<PointCloudColorHandler<PointT> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandler<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandler<PointT> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandler<PointT> >;
 
         /** \brief Constructor. */
         PointCloudColorHandler () :
@@ -137,13 +137,13 @@ namespace pcl
     template <typename PointT>
     class PointCloudColorHandlerRandom : public PointCloudColorHandler<PointT>
     {
-      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = typename PointCloudColorHandler<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerRandom<PointT> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerRandom<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerRandom<PointT> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerRandom<PointT> >;
 
         /** \brief Constructor. */
         PointCloudColorHandlerRandom () :
@@ -190,13 +190,13 @@ namespace pcl
     template <typename PointT>
     class PointCloudColorHandlerCustom : public PointCloudColorHandler<PointT>
     {
-      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = typename PointCloudColorHandler<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerCustom<PointT> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerCustom<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerCustom<PointT> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerCustom<PointT> >;
 
         /** \brief Constructor. */
         PointCloudColorHandlerCustom (double r, double g, double b)
@@ -256,13 +256,13 @@ namespace pcl
     template <typename PointT>
     class PointCloudColorHandlerRGBField : public PointCloudColorHandler<PointT>
     {
-      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = typename PointCloudColorHandler<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerRGBField<PointT> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerRGBField<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerRGBField<PointT> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerRGBField<PointT> >;
 
         /** \brief Constructor. */
         PointCloudColorHandlerRGBField ()
@@ -319,13 +319,13 @@ namespace pcl
     template <typename PointT>
     class PointCloudColorHandlerHSVField : public PointCloudColorHandler<PointT>
     {
-      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = typename PointCloudColorHandler<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerHSVField<PointT> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerHSVField<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerHSVField<PointT> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerHSVField<PointT> >;
 
         /** \brief Constructor. */
         PointCloudColorHandlerHSVField (const PointCloudConstPtr &cloud);
@@ -372,13 +372,13 @@ namespace pcl
     template <typename PointT>
     class PointCloudColorHandlerGenericField : public PointCloudColorHandler<PointT>
     {
-      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = typename PointCloudColorHandler<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerGenericField<PointT> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerGenericField<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerGenericField<PointT> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerGenericField<PointT> >;
 
         /** \brief Constructor. */
         PointCloudColorHandlerGenericField (const std::string &field_name)
@@ -441,13 +441,13 @@ namespace pcl
     template <typename PointT>
     class PointCloudColorHandlerRGBAField : public PointCloudColorHandler<PointT>
     {
-      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = typename PointCloudColorHandler<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerRGBAField<PointT> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerRGBAField<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerRGBAField<PointT> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerRGBAField<PointT> >;
 
         /** \brief Constructor. */
         PointCloudColorHandlerRGBAField ()
@@ -505,13 +505,13 @@ namespace pcl
     template <typename PointT>
     class PointCloudColorHandlerLabelField : public PointCloudColorHandler<PointT>
     {
-      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = typename PointCloudColorHandler<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerLabelField<PointT> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerLabelField<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerLabelField<PointT> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerLabelField<PointT> >;
 
         /** \brief Constructor.
           * \param[in] static_mapping Use a static colormapping from label_id to color (default true) */
@@ -576,12 +576,12 @@ namespace pcl
     class PCL_EXPORTS PointCloudColorHandler<pcl::PCLPointCloud2>
     {
       public:
-        typedef pcl::PCLPointCloud2 PointCloud;
-        typedef PointCloud::Ptr PointCloudPtr;
-        typedef PointCloud::ConstPtr PointCloudConstPtr;
+        using PointCloud = pcl::PCLPointCloud2;
+        using PointCloudPtr = PointCloud::Ptr;
+        using PointCloudConstPtr = PointCloud::ConstPtr;
 
-        typedef boost::shared_ptr<PointCloudColorHandler<PointCloud> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandler<PointCloud> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandler<PointCloud> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandler<PointCloud> >;
 
         /** \brief Constructor. */
         PointCloudColorHandler (const PointCloudConstPtr &cloud) :
@@ -641,13 +641,13 @@ namespace pcl
     template <>
     class PCL_EXPORTS PointCloudColorHandlerRandom<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
-      typedef PointCloud::Ptr PointCloudPtr;
-      typedef PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud;
+      using PointCloudPtr = PointCloud::Ptr;
+      using PointCloudConstPtr = PointCloud::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerRandom<PointCloud> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerRandom<PointCloud> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerRandom<PointCloud> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerRandom<PointCloud> >;
 
         /** \brief Constructor. */
         PointCloudColorHandlerRandom (const PointCloudConstPtr &cloud) :
@@ -685,9 +685,9 @@ namespace pcl
     template <>
     class PCL_EXPORTS PointCloudColorHandlerCustom<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
-      typedef PointCloud::Ptr PointCloudPtr;
-      typedef PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud;
+      using PointCloudPtr = PointCloud::Ptr;
+      using PointCloudConstPtr = PointCloud::ConstPtr;
 
       public:
         /** \brief Constructor. */
@@ -732,13 +732,13 @@ namespace pcl
     template <>
     class PCL_EXPORTS PointCloudColorHandlerRGBField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
-      typedef PointCloud::Ptr PointCloudPtr;
-      typedef PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud;
+      using PointCloudPtr = PointCloud::Ptr;
+      using PointCloudConstPtr = PointCloud::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerRGBField<PointCloud> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerRGBField<PointCloud> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerRGBField<PointCloud> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerRGBField<PointCloud> >;
 
         /** \brief Constructor. */
         PointCloudColorHandlerRGBField (const PointCloudConstPtr &cloud);
@@ -772,13 +772,13 @@ namespace pcl
     template <>
     class PCL_EXPORTS PointCloudColorHandlerHSVField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
-      typedef PointCloud::Ptr PointCloudPtr;
-      typedef PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud;
+      using PointCloudPtr = PointCloud::Ptr;
+      using PointCloudConstPtr = PointCloud::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerHSVField<PointCloud> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerHSVField<PointCloud> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerHSVField<PointCloud> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerHSVField<PointCloud> >;
 
         /** \brief Constructor. */
         PointCloudColorHandlerHSVField (const PointCloudConstPtr &cloud);
@@ -819,13 +819,13 @@ namespace pcl
     template <>
     class PCL_EXPORTS PointCloudColorHandlerGenericField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
-      typedef PointCloud::Ptr PointCloudPtr;
-      typedef PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud;
+      using PointCloudPtr = PointCloud::Ptr;
+      using PointCloudConstPtr = PointCloud::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerGenericField<PointCloud> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerGenericField<PointCloud> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerGenericField<PointCloud> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerGenericField<PointCloud> >;
 
         /** \brief Constructor. */
         PointCloudColorHandlerGenericField (const PointCloudConstPtr &cloud,
@@ -865,13 +865,13 @@ namespace pcl
     template <>
     class PCL_EXPORTS PointCloudColorHandlerRGBAField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
-      typedef PointCloud::Ptr PointCloudPtr;
-      typedef PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud;
+      using PointCloudPtr = PointCloud::Ptr;
+      using PointCloudConstPtr = PointCloud::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerRGBAField<PointCloud> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerRGBAField<PointCloud> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerRGBAField<PointCloud> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerRGBAField<PointCloud> >;
 
         /** \brief Constructor. */
         PointCloudColorHandlerRGBAField (const PointCloudConstPtr &cloud);
@@ -906,13 +906,13 @@ namespace pcl
     template <>
     class PCL_EXPORTS PointCloudColorHandlerLabelField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
-      typedef PointCloud::Ptr PointCloudPtr;
-      typedef PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud;
+      using PointCloudPtr = PointCloud::Ptr;
+      using PointCloudConstPtr = PointCloud::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<PointCloudColorHandlerLabelField<PointCloud> > Ptr;
-        typedef boost::shared_ptr<const PointCloudColorHandlerLabelField<PointCloud> > ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudColorHandlerLabelField<PointCloud> >;
+        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerLabelField<PointCloud> >;
 
         /** \brief Constructor.
           * \param[in] static_mapping Use a static colormapping from label_id to color (default true) */

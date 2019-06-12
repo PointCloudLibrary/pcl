@@ -54,11 +54,11 @@ namespace pcl
     class OutofcoreBreadthFirstIterator : public OutofcoreIteratorBase<PointT, ContainerT>
     {
       public:
-        typedef pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT> OctreeDisk;
-        typedef pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> OctreeDiskNode;
+        using OctreeDisk = pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT>;
+        using OctreeDiskNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
 
-        typedef pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> LeafNode;
-        typedef pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> BranchNode;
+        using LeafNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
+        using BranchNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
 
 
         explicit

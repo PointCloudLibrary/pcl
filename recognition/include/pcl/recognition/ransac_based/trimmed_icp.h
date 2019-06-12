@@ -61,10 +61,10 @@ namespace pcl
     class PCL_EXPORTS TrimmedICP: public pcl::registration::TransformationEstimationSVD<PointT, PointT, Scalar>
     {
       public:
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        typedef typename Eigen::Matrix<Scalar, 4, 4> Matrix4;
+        using Matrix4 = typename Eigen::Matrix<Scalar, 4, 4>;
 
       public:
         TrimmedICP ()

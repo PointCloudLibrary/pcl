@@ -64,7 +64,7 @@ namespace pcl
 
         public:
 
-          typedef boost::shared_ptr<DepthSenseDeviceManager> Ptr;
+          using Ptr = boost::shared_ptr<DepthSenseDeviceManager>;
 
           static Ptr&
           getInstance ()

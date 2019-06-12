@@ -75,11 +75,11 @@ namespace pcl {
     template <typename PointT, typename Scalar = float>
     class MetaRegistration {
       public:
-        typedef typename pcl::PointCloud<PointT>::Ptr PointCloudPtr;
-        typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
+        using PointCloudPtr = typename pcl::PointCloud<PointT>::Ptr;
+        using PointCloudConstPtr = typename pcl::PointCloud<PointT>::ConstPtr;
 
-        typedef typename pcl::Registration<PointT,PointT,Scalar>::Ptr RegistrationPtr;
-        typedef typename pcl::Registration<PointT,PointT,Scalar>::Matrix4 Matrix4;
+        using RegistrationPtr = typename pcl::Registration<PointT,PointT,Scalar>::Ptr;
+        using Matrix4 = typename pcl::Registration<PointT,PointT,Scalar>::Matrix4;
 
         MetaRegistration ();
 

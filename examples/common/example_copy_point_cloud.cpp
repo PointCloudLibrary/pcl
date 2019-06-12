@@ -73,7 +73,7 @@ main ()
 void
 sameType ()
 {
-  typedef pcl::PointCloud<pcl::PointXYZ> CloudType;
+  using CloudType = pcl::PointCloud<pcl::PointXYZ>;
   CloudType::Ptr cloud (new CloudType);
 
   CloudType::PointType p;
@@ -91,7 +91,7 @@ sameType ()
 void
 differenceType ()
 {
-  typedef pcl::PointCloud<pcl::PointXYZ> CloudType;
+  using CloudType = pcl::PointCloud<pcl::PointXYZ>;
   CloudType::Ptr cloud (new CloudType);
 
   CloudType::PointType p;
@@ -99,7 +99,7 @@ differenceType ()
   cloud->push_back(p);
   std::cout << p.x << " " << p.y << " " << p.z << std::endl;
 
-  typedef pcl::PointCloud<pcl::PointNormal> CloudType2;
+  using CloudType2 = pcl::PointCloud<pcl::PointNormal>;
   CloudType2::Ptr cloud2(new CloudType2);
   copyPointCloud(*cloud, *cloud2);
 
@@ -114,7 +114,7 @@ error: ‘pcl::PointCloud<pcl::Normal>::PointType’ has no member named ‘x’
 void
 badConversion ()
 {
-  typedef pcl::PointCloud<pcl::PointXYZ> CloudType;
+  using CloudType = pcl::PointCloud<pcl::PointXYZ>;
   CloudType::Ptr cloud (new CloudType);
   
   CloudType::PointType p;
@@ -122,7 +122,7 @@ badConversion ()
   cloud->push_back(p);
   std::cout << p.x << " " << p.y << " " << p.z << std::endl;
 
-  typedef pcl::PointCloud<pcl::Normal> CloudType2;
+  using CloudType2 = pcl::PointCloud<pcl::Normal>;
   CloudType2::Ptr cloud2(new CloudType2);
   copyPointCloud(*cloud, *cloud2);
   

@@ -51,7 +51,7 @@ namespace pcl
   namespace tracking
   {
     // utility
-    typedef union
+    union RGBValue
     {
       struct /*anonymous*/
       {
@@ -61,7 +61,7 @@ namespace pcl
       };
       float float_value;
       int int_value;
-    } RGBValue;
+    };
 
     /** \brief Convert a RGB tuple to an HSV one.
       * \param[in] r the input Red component

@@ -76,12 +76,12 @@ namespace pcl
     class Convolution
     {
       public:
-        typedef pcl::PointCloud<PointIn> PointCloudIn;
-        typedef typename PointCloudIn::Ptr PointCloudInPtr;
-        typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-        typedef pcl::PointCloud<PointOut> PointCloudOut;
-        typedef boost::shared_ptr< Convolution<PointIn, PointOut> > Ptr;
-        typedef boost::shared_ptr< const Convolution<PointIn, PointOut> > ConstPtr;
+        using PointCloudIn = pcl::PointCloud<PointIn>;
+        using PointCloudInPtr = typename PointCloudIn::Ptr;
+        using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+        using PointCloudOut = pcl::PointCloud<PointOut>;
+        using Ptr = boost::shared_ptr< Convolution<PointIn, PointOut> >;
+        using ConstPtr = boost::shared_ptr< const Convolution<PointIn, PointOut> >;
 
 
         /// The borders policy available

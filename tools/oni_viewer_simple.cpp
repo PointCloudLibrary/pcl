@@ -76,8 +76,8 @@ template <typename PointType>
 class SimpleONIViewer
 {
 public:
-  typedef pcl::PointCloud<PointType> Cloud;
-  typedef typename Cloud::ConstPtr CloudConstPtr;
+  using Cloud = pcl::PointCloud<PointType>;
+  using CloudConstPtr = typename Cloud::ConstPtr;
 
   SimpleONIViewer(pcl::ONIGrabber& grabber)
     : viewer("PCL OpenNI Viewer")
@@ -122,7 +122,7 @@ public:
   {
     //pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id_, pcl::OpenNIGrabber::OpenNI_QQVGA_30Hz, pcl::OpenNIGrabber::OpenNI_VGA_30Hz);
 
-    boost::function<void (const CloudConstPtr&) > f = boost::bind (&SimpleONIViewer::cloud_cb_, this, _1);
+    std::function<void (const CloudConstPtr&) > f = boost::bind (&SimpleONIViewer::cloud_cb_, this, _1);
 
     boost::signals2::connection c = grabber_.registerCallback (f);
 

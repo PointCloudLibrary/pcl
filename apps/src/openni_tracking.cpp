@@ -638,7 +638,7 @@ public:
   run ()
   {
     pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
-    boost::function<void (const CloudConstPtr&)> f =
+    std::function<void (const CloudConstPtr&)> f =
       boost::bind (&OpenNISegmentTracking::cloud_cb, this, _1);
     interface->registerCallback (f);
     

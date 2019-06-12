@@ -53,10 +53,10 @@ namespace pcl
   class GraphRegistration
   {
     public:
-      typedef pcl::registration::GraphHandler<GraphT> GraphHandler;
-      typedef typename pcl::registration::GraphHandler<GraphT>::Ptr GraphHandlerPtr;
-      typedef typename pcl::registration::GraphHandler<GraphT>::ConstPtr GraphHandlerConstPtr;
-      typedef typename pcl::registration::GraphHandler<GraphT>::Vertex GraphHandlerVertex;
+      using GraphHandler = pcl::registration::GraphHandler<GraphT>;
+      using GraphHandlerPtr = typename pcl::registration::GraphHandler<GraphT>::Ptr;
+      using GraphHandlerConstPtr = typename pcl::registration::GraphHandler<GraphT>::ConstPtr;
+      using GraphHandlerVertex = typename pcl::registration::GraphHandler<GraphT>::Vertex;
 
       /** \brief Empty constructor */
       GraphRegistration ()  : graph_handler_ (new GraphHandler),

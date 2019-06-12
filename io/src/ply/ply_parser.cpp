@@ -343,7 +343,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           }
           if ((size_type_string == type_traits<uint8>::name ()) || (size_type_string == type_traits<uint8>::old_name ()))
           {
-            typedef uint8 size_type;
+            using size_type = uint8;
             if ((scalar_type_string == type_traits<int8>::name ()) || (scalar_type_string == type_traits<int8>::old_name ()))
             {
               parse_list_property_definition<size_type, int8>(name);
@@ -387,7 +387,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           }
           else if ((size_type_string == type_traits<uint16>::name ()) || (size_type_string == type_traits<uint16>::old_name ()))
           {
-            typedef uint16 size_type;
+            using size_type = uint16;
             if ((scalar_type_string == type_traits<int8>::name ()) || (scalar_type_string == type_traits<int8>::old_name ()))
             {
               parse_list_property_definition<size_type, int8>(name);
@@ -429,7 +429,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           }
           else if ((size_type_string == type_traits<uint32>::name ()) || (size_type_string == type_traits<uint32>::old_name ()))
           {
-            typedef uint32 size_type;
+            using size_type = uint32;
             if ((scalar_type_string == type_traits<int8>::name ()) || (scalar_type_string == type_traits<int8>::old_name ()))
             {
               parse_list_property_definition<size_type, int8>(name);

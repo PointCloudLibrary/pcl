@@ -140,7 +140,7 @@ class OpenNI3DConcaveHull
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNI3DConcaveHull::cloud_cb, this, _1);
+      std::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNI3DConcaveHull::cloud_cb, this, _1);
       boost::signals2::connection c = interface->registerCallback (f);
      
       viewer.runOnVisualizationThread (boost::bind(&OpenNI3DConcaveHull::viz_cb, this, _1), "viz_cb");

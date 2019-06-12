@@ -16,8 +16,8 @@ namespace pcl
     class ApproxNearestPairPointCloudCoherence: public NearestPairPointCloudCoherence<PointInT>
     {
     public:
-      typedef typename NearestPairPointCloudCoherence<PointInT>::PointCoherencePtr PointCoherencePtr;
-      typedef typename NearestPairPointCloudCoherence<PointInT>::PointCloudInConstPtr PointCloudInConstPtr;
+      using PointCoherencePtr = typename NearestPairPointCloudCoherence<PointInT>::PointCoherencePtr;
+      using PointCloudInConstPtr = typename NearestPairPointCloudCoherence<PointInT>::PointCloudInConstPtr;
       //using NearestPairPointCloudCoherence<PointInT>::search_;
       using NearestPairPointCloudCoherence<PointInT>::maximum_distance_;
       using NearestPairPointCloudCoherence<PointInT>::target_input_;

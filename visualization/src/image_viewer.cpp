@@ -388,7 +388,7 @@ pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
 //////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
 pcl::visualization::ImageViewer::registerMouseCallback (
-    boost::function<void (const pcl::visualization::MouseEvent&)> callback)
+    std::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
   // just add observer at first time when a callback is registered
   if (mouse_signal_.empty ())
@@ -409,7 +409,7 @@ pcl::visualization::ImageViewer::registerMouseCallback (
 //////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
 pcl::visualization::ImageViewer::registerKeyboardCallback (
-    boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
+    std::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
   // just add observer at first time when a callback is registered
   if (keyboard_signal_.empty ())

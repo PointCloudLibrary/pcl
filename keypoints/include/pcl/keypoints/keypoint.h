@@ -39,10 +39,10 @@
 
 // PCL includes
 #include <pcl/pcl_base.h>
-#include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <pcl/search/pcl_search.h>
 #include <pcl/pcl_config.h>
+#include <functional>
 
 namespace pcl
 {
@@ -67,8 +67,8 @@ namespace pcl
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
       typedef pcl::PointCloud<PointOutT> PointCloudOut;
-      typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
-      typedef boost::function<int (const PointCloudIn &cloud, int index, double, std::vector<int> &, std::vector<float> &)> SearchMethodSurface;
+      typedef std::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
+      typedef std::function<int (const PointCloudIn &cloud, int index, double, std::vector<int> &, std::vector<float> &)> SearchMethodSurface;
 
     public:
       /** \brief Empty constructor. */

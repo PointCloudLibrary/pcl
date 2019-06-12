@@ -48,57 +48,57 @@ namespace pcl
   template <typename DataType>
   struct IntegralImageTypeTraits
   {
-    typedef DataType Type;
-    typedef DataType IntegralType;
+    using Type = DataType;
+    using IntegralType = DataType;
   };
 
   template <>
   struct IntegralImageTypeTraits<float>
   {
-    typedef float Type;
-    typedef double IntegralType;
+    using Type = float;
+    using IntegralType = double;
   };
 
   template <>
   struct IntegralImageTypeTraits<char>
   {
-    typedef char Type;
-    typedef int IntegralType;
+    using Type = char;
+    using IntegralType = int;
   };
 
   template <>
   struct IntegralImageTypeTraits<short>
   {
-    typedef short Type;
-    typedef long IntegralType;
+    using Type = short;
+    using IntegralType = long;
   };
 
   template <>
   struct IntegralImageTypeTraits<unsigned short>
   {
-    typedef unsigned short Type;
-    typedef unsigned long IntegralType;
+    using Type = unsigned short;
+    using IntegralType = unsigned long;
   };
 
   template <>
   struct IntegralImageTypeTraits<unsigned char>
   {
-    typedef unsigned char Type;
-    typedef unsigned int IntegralType;
+    using Type = unsigned char;
+    using IntegralType = unsigned int;
   };
 
   template <>
   struct IntegralImageTypeTraits<int>
   {
-    typedef int Type;
-    typedef long IntegralType;
+    using Type = int;
+    using IntegralType = long;
   };
 
   template <>
   struct IntegralImageTypeTraits<unsigned int>
   {
-    typedef unsigned int Type;
-    typedef unsigned long IntegralType;
+    using Type = unsigned int;
+    using IntegralType = unsigned long;
   };
 
   /** \brief Determines an integral image representation for a given organized data array
@@ -108,10 +108,10 @@ namespace pcl
   class IntegralImage2D
   {
     public:
-      typedef boost::shared_ptr<IntegralImage2D<DataType, Dimension>> Ptr;
+      using Ptr = boost::shared_ptr<IntegralImage2D<DataType, Dimension>>;
       static const unsigned second_order_size = (Dimension * (Dimension + 1)) >> 1;
-      typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, Dimension, 1> ElementType;
-      typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, second_order_size, 1> SecondOrderType;
+      using ElementType = Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, Dimension, 1>;
+      using SecondOrderType = Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, second_order_size, 1>;
 
       /** \brief Constructor for an Integral Image
         * \param[in] compute_second_order_integral_images set to true if we want to compute a second order image
@@ -201,7 +201,7 @@ namespace pcl
       getFiniteElementsCountSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
 
     private:
-      typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::Type, Dimension, 1> InputType;
+      using InputType = Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::Type, Dimension, 1>;
 
       /** \brief Compute the actual integral image data
         * \param[in] data the input data
@@ -231,11 +231,11 @@ namespace pcl
   class IntegralImage2D <DataType, 1>
   {
     public:
-      typedef boost::shared_ptr<IntegralImage2D<DataType, 1>> Ptr;
+      using Ptr = boost::shared_ptr<IntegralImage2D<DataType, 1>>;
 
       static const unsigned second_order_size = 1;
-      typedef typename IntegralImageTypeTraits<DataType>::IntegralType ElementType;
-      typedef typename IntegralImageTypeTraits<DataType>::IntegralType SecondOrderType;
+      using ElementType = typename IntegralImageTypeTraits<DataType>::IntegralType;
+      using SecondOrderType = typename IntegralImageTypeTraits<DataType>::IntegralType;
 
       /** \brief Constructor for an Integral Image
         * \param[in] compute_second_order_integral_images set to true if we want to compute a second order image
@@ -319,7 +319,7 @@ namespace pcl
       getFiniteElementsCountSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
 
   private:
-    //  typedef typename IntegralImageTypeTraits<DataType>::Type InputType;
+    //  using InputType = typename IntegralImageTypeTraits<DataType>::Type;
 
       /** \brief Compute the actual integral image data
         * \param[in] data the input data

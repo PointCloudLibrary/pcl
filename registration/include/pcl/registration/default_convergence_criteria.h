@@ -64,10 +64,10 @@ namespace pcl
     class DefaultConvergenceCriteria : public ConvergenceCriteria
     {
       public:
-        typedef boost::shared_ptr<DefaultConvergenceCriteria<Scalar> > Ptr;
-        typedef boost::shared_ptr<const DefaultConvergenceCriteria<Scalar> > ConstPtr;
+        using Ptr = boost::shared_ptr<DefaultConvergenceCriteria<Scalar> >;
+        using ConstPtr = boost::shared_ptr<const DefaultConvergenceCriteria<Scalar> >;
 
-        typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
+        using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
 
         enum ConvergenceState
         {

@@ -173,8 +173,8 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
                              typename std::vector<Scalar>::const_iterator& weights_it,
                              Matrix4 &transformation_matrix) const
 {
-  typedef Eigen::Matrix<double, 6, 1> Vector6d;
-  typedef Eigen::Matrix<double, 6, 6> Matrix6d;
+  using Vector6d = Eigen::Matrix<double, 6, 1>;
+  using Matrix6d = Eigen::Matrix<double, 6, 6>;
 
   Matrix6d ATA;
   Vector6d ATb;

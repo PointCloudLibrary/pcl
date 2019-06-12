@@ -64,14 +64,14 @@ namespace pcl
     using FilterIndices<PointT>::extract_removed_indices_;
     using FilterIndices<PointT>::removed_indices_;
 
-    typedef typename FilterIndices<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = typename FilterIndices<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      typedef boost::shared_ptr< RandomSample<PointT> > Ptr;
-      typedef boost::shared_ptr< const RandomSample<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<RandomSample<PointT> >;
+      using ConstPtr = boost::shared_ptr<const RandomSample<PointT> >;
 
       /** \brief Empty constructor. */
       RandomSample (bool extract_removed_indices = false) : 
@@ -156,14 +156,14 @@ namespace pcl
     using FilterIndices<pcl::PCLPointCloud2>::filter_name_;
     using FilterIndices<pcl::PCLPointCloud2>::getClassName;
 
-    typedef pcl::PCLPointCloud2 PCLPointCloud2;
-    typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
-    typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
+    using PCLPointCloud2 = pcl::PCLPointCloud2;
+    using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+    using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
     public:
   
-      typedef boost::shared_ptr<RandomSample<pcl::PCLPointCloud2> > Ptr;
-      typedef boost::shared_ptr<const RandomSample<pcl::PCLPointCloud2> > ConstPtr;
+      using Ptr = boost::shared_ptr<RandomSample<pcl::PCLPointCloud2> >;
+      using ConstPtr = boost::shared_ptr<const RandomSample<pcl::PCLPointCloud2> >;
   
       /** \brief Empty constructor. */
       RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (nullptr)))

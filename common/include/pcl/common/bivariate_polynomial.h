@@ -133,8 +133,8 @@ namespace pcl
   std::ostream&
     operator<< (std::ostream& os, const BivariatePolynomialT<real>& p);
 
-  typedef BivariatePolynomialT<double> BivariatePolynomiald;
-  typedef BivariatePolynomialT<float>  BivariatePolynomial;
+  using BivariatePolynomiald = BivariatePolynomialT<double>;
+  using BivariatePolynomial = BivariatePolynomialT<float>;
 
 }  // end namespace
 

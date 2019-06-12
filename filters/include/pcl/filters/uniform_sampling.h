@@ -60,7 +60,7 @@ namespace pcl
   template <typename PointT>
   class UniformSampling: public Filter<PointT>
   {
-    typedef typename Filter<PointT>::PointCloud PointCloud;
+    using PointCloud = typename Filter<PointT>::PointCloud;
 
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::input_;
@@ -68,8 +68,8 @@ namespace pcl
     using Filter<PointT>::getClassName;
 
     public:
-      typedef boost::shared_ptr<UniformSampling<PointT> > Ptr;
-      typedef boost::shared_ptr<const UniformSampling<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<UniformSampling<PointT> >;
+      using ConstPtr = boost::shared_ptr<const UniformSampling<PointT> >;
 
       /** \brief Empty constructor. */
       UniformSampling (bool extract_removed_indices = false) :

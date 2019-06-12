@@ -464,21 +464,21 @@ pcl::visualization::PCLVisualizer::getCameraParameters (pcl::visualization::Came
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizer::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
+pcl::visualization::PCLVisualizer::registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
   return (style_->registerKeyboardCallback (callback));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizer::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
+pcl::visualization::PCLVisualizer::registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
   return (style_->registerMouseCallback (callback));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizer::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
+pcl::visualization::PCLVisualizer::registerPointPickingCallback (std::function<void (const pcl::visualization::PointPickingEvent&)> callback)
 {
   return (style_->registerPointPickingCallback (callback));
 }
@@ -492,7 +492,7 @@ pcl::visualization::PCLVisualizer::registerPointPickingCallback (void (*callback
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizer::registerAreaPickingCallback (boost::function<void (const pcl::visualization::AreaPickingEvent&)> callback)
+pcl::visualization::PCLVisualizer::registerAreaPickingCallback (std::function<void (const pcl::visualization::AreaPickingEvent&)> callback)
 {
   return (style_->registerAreaPickingCallback (callback));
 }
@@ -4478,7 +4478,7 @@ pcl::visualization::PCLVisualizer::textureFromTexMaterial (const pcl::TexMateria
         return (-1);
       }
 
-      typedef std::vector<boost::filesystem::path> paths_vector;
+      using paths_vector = std::vector<boost::filesystem::path>;
       paths_vector paths;
       std::copy (boost::filesystem::directory_iterator (parent_dir),
                  boost::filesystem::directory_iterator (),

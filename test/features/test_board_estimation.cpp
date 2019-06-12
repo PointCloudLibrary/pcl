@@ -49,7 +49,7 @@ using namespace pcl::test;
 using namespace pcl::io;
 using namespace std;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
+using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
 vector<int> indices;
@@ -61,7 +61,7 @@ TEST (PCL, BOARDLocalReferenceFrameEstimation)
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   PointCloud<ReferenceFrame> bunny_LRF;
 
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
 
   // Compute normals
   NormalEstimation<PointXYZ, Normal> ne;

@@ -49,8 +49,8 @@
 
 using namespace pcl::outofcore;
 
-typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<pcl::PointXYZ>, pcl::PointXYZ> OctreeDisk;
-typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<pcl::PointXY>, pcl::PointXYZ> OctreeDiskNode;
+using OctreeDisk = OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<pcl::PointXYZ>, pcl::PointXYZ>;
+using OctreeDiskNode = OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<pcl::PointXY>, pcl::PointXYZ>;
 
 int main (int, char** argv)
 {

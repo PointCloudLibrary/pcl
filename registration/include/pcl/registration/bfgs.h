@@ -12,7 +12,7 @@ namespace Eigen
   class PolynomialSolver<_Scalar,2> : public PolynomialSolverBase<_Scalar,2>
   {
     public:
-      typedef PolynomialSolverBase<_Scalar,2>    PS_Base;
+      using PS_Base = PolynomialSolverBase<_Scalar,2>;
       EIGEN_POLYNOMIAL_SOLVER_BASE_INHERITED_TYPES( PS_Base )
         
     public:
@@ -72,9 +72,9 @@ namespace Eigen
 template<typename _Scalar, int NX=Eigen::Dynamic>
 struct BFGSDummyFunctor
 {
-  typedef _Scalar Scalar;
+  using Scalar = _Scalar;
   enum { InputsAtCompileTime = NX };
-  typedef Eigen::Matrix<Scalar,InputsAtCompileTime,1> VectorType;
+  using VectorType = Eigen::Matrix<Scalar,InputsAtCompileTime,1>;
 
   const int m_inputs;
 
@@ -113,13 +113,13 @@ template<typename FunctorType>
 class BFGS
 {
 public:
-  typedef typename FunctorType::Scalar Scalar;
-  typedef typename FunctorType::VectorType FVectorType;
+  using Scalar = typename FunctorType::Scalar;
+  using FVectorType = typename FunctorType::VectorType;
 
   BFGS(FunctorType &_functor) 
       : pnorm(0), g0norm(0), iter(-1), functor(_functor) {  }
 
-  typedef Eigen::DenseIndex Index;
+  using Index = Eigen::DenseIndex;
 
   struct Parameters {
     Parameters()

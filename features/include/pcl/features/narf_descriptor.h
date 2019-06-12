@@ -55,10 +55,10 @@ namespace pcl
   class PCL_EXPORTS NarfDescriptor : public Feature<PointWithRange,Narf36>
   {
     public:
-      typedef boost::shared_ptr<NarfDescriptor> Ptr;
-      typedef boost::shared_ptr<const NarfDescriptor> ConstPtr;
+      using Ptr = boost::shared_ptr<NarfDescriptor>;
+      using ConstPtr = boost::shared_ptr<const NarfDescriptor>;
       // =====TYPEDEFS=====
-      typedef Feature<PointWithRange,Narf36> BaseClass;
+      using BaseClass = Feature<PointWithRange,Narf36>;
       
       // =====STRUCTS/CLASSES=====
       struct Parameters

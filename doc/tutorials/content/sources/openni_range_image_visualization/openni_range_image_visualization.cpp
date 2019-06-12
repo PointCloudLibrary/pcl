@@ -94,7 +94,7 @@ int main (int argc, char** argv)
   pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
   EventHelper event_helper;
   
-  boost::function<void (const openni_wrapper::DepthImage::Ptr&) > f_depth_image =
+  std::function<void (const openni_wrapper::DepthImage::Ptr&) > f_depth_image =
     boost::bind (&EventHelper::depth_image_cb, &event_helper, _1);
   boost::signals2::connection c_depth_image = interface->registerCallback (f_depth_image);
   

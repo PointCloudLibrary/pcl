@@ -58,7 +58,7 @@ namespace pcl
         }
       };
 
-      typedef std::set<OpenNI2DeviceInfo, OpenNI2DeviceInfoComparator> DeviceSet;
+      using DeviceSet = std::set<OpenNI2DeviceInfo, OpenNI2DeviceInfoComparator>;
 
 
 

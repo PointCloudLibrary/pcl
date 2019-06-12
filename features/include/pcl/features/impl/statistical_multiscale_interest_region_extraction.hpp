@@ -57,8 +57,8 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::generateCloudGraph (
   kdtree.setInputCloud (input_);
 
   using namespace boost;
-  typedef property<edge_weight_t, float> Weight;
-  typedef adjacency_list<vecS, vecS, undirectedS, no_property, Weight> Graph;
+  using Weight = property<edge_weight_t, float>;
+  using Graph = adjacency_list<vecS, vecS, undirectedS, no_property, Weight>;
   Graph cloud_graph;
 
   for (size_t point_i = 0; point_i < input_->points.size (); ++point_i)

@@ -121,7 +121,7 @@ class OpenNIPlanarSegmentation
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIPlanarSegmentation::cloud_cb_, this, _1);
+      std::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIPlanarSegmentation::cloud_cb_, this, _1);
       boost::signals2::connection c = interface->registerCallback (f);
       
       interface->start ();

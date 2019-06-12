@@ -58,15 +58,15 @@ namespace openni_wrapper
   class PCL_EXPORTS Image
   {
   public:
-    typedef boost::shared_ptr<Image> Ptr;
-    typedef boost::shared_ptr<const Image> ConstPtr;
+    using Ptr = boost::shared_ptr<Image>;
+    using ConstPtr = boost::shared_ptr<const Image>;
 
-    typedef enum
+    enum Encoding
     {
       BAYER_GRBG,
       YUV422,
       RGB
-    } Encoding;
+    };
 
     /**
      * @author Suat Gedikli

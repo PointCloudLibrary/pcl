@@ -50,8 +50,8 @@ namespace pcl
   template<typename PointInT, typename PointOutT>
   struct NdConcatenateFunctor
   {
-    typedef typename traits::POD<PointInT>::type PodIn;
-    typedef typename traits::POD<PointOutT>::type PodOut;
+    using PodIn = typename traits::POD<PointInT>::type;
+    using PodOut = typename traits::POD<PointOutT>::type;
     
     NdConcatenateFunctor (const PointInT &p1, PointOutT &p2)
       : p1_ (reinterpret_cast<const PodIn&> (p1))
@@ -62,8 +62,8 @@ namespace pcl
     {
       // This sucks without Fusion :(
       //boost::fusion::at_key<Key> (p2_) = boost::fusion::at_key<Key> (p1_);
-      typedef typename pcl::traits::datatype<PointInT, Key>::type InT;
-      typedef typename pcl::traits::datatype<PointOutT, Key>::type OutT;
+      using InT = typename pcl::traits::datatype<PointInT, Key>::type;
+      using OutT = typename pcl::traits::datatype<PointOutT, Key>::type;
       // Note: don't currently support different types for the same field (e.g. converting double to float)
       BOOST_MPL_ASSERT_MSG ((std::is_same<InT, OutT>::value),
                             POINT_IN_AND_POINT_OUT_HAVE_DIFFERENT_TYPES_FOR_FIELD,

@@ -229,7 +229,7 @@ RangeImage::createFromPointCloudWithViewpoints (const PointCloudTypeWithViewpoin
 template <typename PointCloudType> void 
 RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, float min_range, int& top, int& right, int& bottom, int& left)
 {
-  typedef typename PointCloudType::PointType PointType2;
+  using PointType2 = typename PointCloudType::PointType;
   const typename pcl::PointCloud<PointType2>::VectorType &points2 = point_cloud.points;
   
   unsigned int size = width*height;

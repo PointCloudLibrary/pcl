@@ -123,7 +123,7 @@ class OpenNIChangeViewer
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = 
+      std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = 
         boost::bind (&OpenNIChangeViewer::cloud_cb_, this, _1);
 
       boost::signals2::connection c = interface->registerCallback (f);

@@ -51,27 +51,27 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef pcl::geometry::VertexIndex   VertexIndex;
-typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
-typedef pcl::geometry::EdgeIndex     EdgeIndex;
-typedef pcl::geometry::FaceIndex     FaceIndex;
+using VertexIndex = pcl::geometry::VertexIndex;
+using HalfEdgeIndex = pcl::geometry::HalfEdgeIndex;
+using EdgeIndex = pcl::geometry::EdgeIndex;
+using FaceIndex = pcl::geometry::FaceIndex;
 
-typedef std::vector <VertexIndex>   VertexIndices;
-typedef std::vector <HalfEdgeIndex> HalfEdgeIndices;
-typedef std::vector <FaceIndex>     FaceIndices;
+using VertexIndices = std::vector<VertexIndex>;
+using HalfEdgeIndices = std::vector<HalfEdgeIndex>;
+using FaceIndices = std::vector<FaceIndex>;
 
 template <bool IsManifoldT>
 struct MeshTraits
 {
-    typedef int                                          VertexData;
-    typedef pcl::geometry::NoData                        HalfEdgeData;
-    typedef pcl::geometry::NoData                        EdgeData;
-    typedef pcl::geometry::NoData                        FaceData;
-    typedef std::integral_constant <bool, IsManifoldT> IsManifold;
+    using VertexData = int;
+    using HalfEdgeData = pcl::geometry::NoData;
+    using EdgeData = pcl::geometry::NoData;
+    using FaceData = pcl::geometry::NoData;
+    using IsManifold = std::integral_constant <bool, IsManifoldT>;
 };
 
-typedef pcl::geometry::TriangleMesh <MeshTraits <true > > ManifoldTriangleMesh;
-typedef pcl::geometry::TriangleMesh <MeshTraits <false> > NonManifoldTriangleMesh;
+using ManifoldTriangleMesh = pcl::geometry::TriangleMesh<MeshTraits<true> >;
+using NonManifoldTriangleMesh = pcl::geometry::TriangleMesh<MeshTraits<false> >;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -86,7 +86,7 @@ TEST (TestAddDeleteFace, NonManifold1)
   NonManifoldTriangleMesh mesh;
   for (unsigned int i=0; i<6; ++i) mesh.addVertex (i);
 
-  typedef VertexIndex VI;
+  using VI = VertexIndex;
   VertexIndices vi;
   std::vector <VertexIndices> faces;
   vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear (); // 0
@@ -143,7 +143,7 @@ TEST (TestAddDeleteFace, NonManifold2)
 {
   NonManifoldTriangleMesh mesh;
   for (unsigned int i=0; i<9; ++i) mesh.addVertex (i);
-  typedef VertexIndex VI;
+  using VI = VertexIndex;
   VertexIndices vi;
   std::vector <VertexIndices> faces;
 
@@ -333,8 +333,8 @@ TEST (TestAddDeleteFace, NonManifold2)
 
 TEST (TestAddDeleteFace, Manifold1)
 {
-  typedef ManifoldTriangleMesh Mesh;
-  typedef VertexIndex          VI;
+  using Mesh = ManifoldTriangleMesh;
+  using VI = VertexIndex;
   Mesh mesh;
   for (unsigned int i=0; i<7; ++i) mesh.addVertex (i);
 
@@ -432,8 +432,8 @@ TEST (TestAddDeleteFace, Manifold1)
 
 TEST (TestAddDeleteFace, Manifold2)
 {
-  typedef ManifoldTriangleMesh Mesh;
-  typedef VertexIndex          VI;
+  using Mesh = ManifoldTriangleMesh;
+  using VI = VertexIndex;
 
   //  1 ----- 3  //
   //  \ \   / /  //
@@ -498,8 +498,8 @@ TEST (TestAddDeleteFace, Manifold2)
 
 TEST (TestDelete, VertexAndEdge)
 {
-  typedef NonManifoldTriangleMesh Mesh;
-  typedef VertexIndex             VI;
+  using Mesh = NonManifoldTriangleMesh;
+  using VI = VertexIndex;
   Mesh mesh;
   for (unsigned int i=0; i<7; ++i) mesh.addVertex (i);
 
@@ -578,7 +578,7 @@ TEST (TestMesh, IsBoundaryIsManifold)
   NonManifoldTriangleMesh mesh;
   for (unsigned int i=0; i<6; ++i) mesh.addVertex (i);
 
-  typedef VertexIndex VI;
+  using VI = VertexIndex;
   VertexIndices vi;
   std::vector <VertexIndices> faces;
   vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear (); // 0

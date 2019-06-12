@@ -24,8 +24,8 @@
 
 #include "cuda_runtime.h"
 
-typedef unsigned int uint;
-typedef unsigned short ushort;
+using uint = unsigned int;
+using ushort = unsigned short;
 
 #ifndef __CUDACC__
 #include <math.h>

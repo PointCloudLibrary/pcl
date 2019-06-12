@@ -191,7 +191,7 @@ class Recorder
             // Set up a callback to get clouds from a grabber and write them to the
             // file.
             pcl::Grabber* interface(new pcl::OpenNIGrabber());
-            boost::function<void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f(
+            std::function<void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f(
                     boost::bind(&Recorder::Callback, this, _1));
             interface->registerCallback(f);
             // Start the first cluster

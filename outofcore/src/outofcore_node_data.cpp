@@ -47,6 +47,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <memory>
 
 namespace pcl
 {
@@ -210,7 +211,7 @@ namespace pcl
     void 
     OutofcoreOctreeNodeMetadata::serializeMetadataToDisk ()
     {
-      boost::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
+      std::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
 
       cJSON* cjson_outofcore_version = cJSON_CreateNumber (outofcore_version_);
   
@@ -275,7 +276,7 @@ namespace pcl
       idx_input.back () = '\0';
       
       //Parse
-      boost::shared_ptr<cJSON> idx (cJSON_Parse (&(idx_input.front ())), cJSON_Delete);
+      std::shared_ptr<cJSON> idx (cJSON_Parse (&(idx_input.front ())), cJSON_Delete);
 
       cJSON* cjson_outofcore_version = cJSON_GetObjectItem (idx.get (), "version");
       cJSON* cjson_bb_min = cJSON_GetObjectItem (idx.get (), "bb_min");

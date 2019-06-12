@@ -25,12 +25,12 @@ namespace pcl
 
 
   public:
-    typedef boost::shared_ptr< ::pcl::PolygonMesh> Ptr;
-    typedef boost::shared_ptr< ::pcl::PolygonMesh const> ConstPtr;
+    using Ptr = boost::shared_ptr< ::pcl::PolygonMesh>;
+    using ConstPtr = boost::shared_ptr<const ::pcl::PolygonMesh>;
   }; // struct PolygonMesh
 
-  typedef boost::shared_ptr< ::pcl::PolygonMesh> PolygonMeshPtr;
-  typedef boost::shared_ptr< ::pcl::PolygonMesh const> PolygonMeshConstPtr;
+  using PolygonMeshPtr = boost::shared_ptr< ::pcl::PolygonMesh>;
+  using PolygonMeshConstPtr = boost::shared_ptr<const ::pcl::PolygonMesh>;
 
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PolygonMesh &v)
   {

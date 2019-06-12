@@ -86,8 +86,8 @@ template <typename PointType>
 class SimpleOpenNIViewer
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     SimpleOpenNIViewer (pcl::OpenNIGrabber& grabber)
       : cloud_viewer_ ("PCL OpenNI Viewer")
@@ -172,7 +172,7 @@ class SimpleOpenNIViewer
       string keyMsg3D("Key event for PCL Visualizer");
       cloud_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg3D));    
       cloud_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg3D));
-      boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&SimpleOpenNIViewer::cloud_callback, this, _1);
+      std::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&SimpleOpenNIViewer::cloud_callback, this, _1);
       boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
       
       boost::signals2::connection image_connection;
@@ -182,7 +182,7 @@ class SimpleOpenNIViewer
           string keyMsg2D("Key event for image viewer");
           image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
           image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
-          boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&SimpleOpenNIViewer::image_callback, this, _1);
+          std::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&SimpleOpenNIViewer::image_callback, this, _1);
           image_connection = grabber_.registerCallback (image_cb);
       }
       unsigned char* rgb_data = 0;
