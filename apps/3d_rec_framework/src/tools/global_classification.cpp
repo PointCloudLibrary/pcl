@@ -17,6 +17,8 @@
 #include <pcl/apps/dominant_plane_segmentation.h>
 #include <pcl/console/parse.h>
 
+#include "pcl/make_shared.h"
+
 template<template<class > class DistT, typename PointT, typename FeatureT>
 void
 segmentAndClassify (typename pcl::rec_3d_framework::GlobalNNPipeline<DistT, PointT, FeatureT> & global)
@@ -162,7 +164,7 @@ main (int argc, char ** argv)
   cast_source = boost::static_pointer_cast<pcl::rec_3d_framework::MeshSource<pcl::PointXYZ> > (mesh_source);
 
   boost::shared_ptr<pcl::rec_3d_framework::PreProcessorAndNormalEstimator<pcl::PointXYZ, pcl::Normal> > normal_estimator;
-  normal_estimator.reset (new pcl::rec_3d_framework::PreProcessorAndNormalEstimator<pcl::PointXYZ, pcl::Normal>);
+  normal_estimator = pcl::make_shared<pcl::rec_3d_framework::PreProcessorAndNormalEstimator<pcl::PointXYZ, pcl::Normal>> ();
   normal_estimator->setCMR (true);
   normal_estimator->setDoVoxelGrid (true);
   normal_estimator->setRemoveOutliers (true);
@@ -171,7 +173,7 @@ main (int argc, char ** argv)
   if (desc_name == "vfh")
   {
     boost::shared_ptr<pcl::rec_3d_framework::VFHEstimation<pcl::PointXYZ, pcl::VFHSignature308> > vfh_estimator;
-    vfh_estimator.reset (new pcl::rec_3d_framework::VFHEstimation<pcl::PointXYZ, pcl::VFHSignature308>);
+    vfh_estimator = pcl::make_shared<pcl::rec_3d_framework::VFHEstimation<pcl::PointXYZ, pcl::VFHSignature308>> ();
     vfh_estimator->setNormalEstimator (normal_estimator);
 
     boost::shared_ptr<pcl::rec_3d_framework::GlobalEstimator<pcl::PointXYZ, pcl::VFHSignature308> > cast_estimator;
@@ -191,7 +193,7 @@ main (int argc, char ** argv)
   if (desc_name == "cvfh")
   {
     boost::shared_ptr<pcl::rec_3d_framework::CVFHEstimation<pcl::PointXYZ, pcl::VFHSignature308> > vfh_estimator;
-    vfh_estimator.reset (new pcl::rec_3d_framework::CVFHEstimation<pcl::PointXYZ, pcl::VFHSignature308>);
+    vfh_estimator = pcl::make_shared<pcl::rec_3d_framework::CVFHEstimation<pcl::PointXYZ, pcl::VFHSignature308>> ();
     vfh_estimator->setNormalEstimator (normal_estimator);
 
     boost::shared_ptr<pcl::rec_3d_framework::GlobalEstimator<pcl::PointXYZ, pcl::VFHSignature308> > cast_estimator;
@@ -211,7 +213,7 @@ main (int argc, char ** argv)
   if (desc_name == "esf")
   {
     boost::shared_ptr<pcl::rec_3d_framework::ESFEstimation<pcl::PointXYZ, pcl::ESFSignature640> > estimator;
-    estimator.reset (new pcl::rec_3d_framework::ESFEstimation<pcl::PointXYZ, pcl::ESFSignature640>);
+    estimator = pcl::make_shared<pcl::rec_3d_framework::ESFEstimation<pcl::PointXYZ, pcl::ESFSignature640>> ();
 
     boost::shared_ptr<pcl::rec_3d_framework::GlobalEstimator<pcl::PointXYZ, pcl::ESFSignature640> > cast_estimator;
     cast_estimator = boost::dynamic_pointer_cast<pcl::rec_3d_framework::ESFEstimation<pcl::PointXYZ, pcl::ESFSignature640> > (estimator);

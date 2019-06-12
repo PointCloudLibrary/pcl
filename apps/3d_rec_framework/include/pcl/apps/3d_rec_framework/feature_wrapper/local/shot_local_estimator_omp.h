@@ -12,6 +12,8 @@
 #include <pcl/features/shot_omp.h>
 #include <pcl/io/pcd_io.h>
 
+#include "pcl/make_shared.h"
+
 namespace pcl
 {
   namespace rec_3d_framework
@@ -63,7 +65,7 @@ namespace pcl
             mls.setUpsamplingStepSize (0.001);
           }
 
-          normals.reset (new pcl::PointCloud<pcl::Normal>);
+          normals = pcl::make_shared<pcl::PointCloud<pcl::Normal>> ();
           {
             pcl::ScopeTime t ("Compute normals");
             normal_estimator_->estimate (in, processed, normals);
@@ -77,7 +79,7 @@ namespace pcl
             mls.process (*filtered);
 
             processed.reset (new pcl::PointCloud<PointInT>);
-            normals.reset (new pcl::PointCloud<pcl::Normal>);
+            normals = pcl::make_shared<pcl::PointCloud<pcl::Normal>> ();
             {
               pcl::ScopeTime t ("Compute normals after MLS");
               filtered->is_dense = false;

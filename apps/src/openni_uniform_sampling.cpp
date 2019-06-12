@@ -45,6 +45,8 @@
 #include <mutex>
 #include <thread>
 
+#include "pcl/make_shared.h"
+
 using namespace std::chrono_literals;
 
 #define FPS_CALC(_WHAT_) \
@@ -84,8 +86,8 @@ class OpenNIUniformSampling
       std::lock_guard<std::mutex> lock (mtx_);
       FPS_CALC ("computation");
 
-      cloud_.reset (new Cloud);
-      keypoints_.reset (new pcl::PointCloud<pcl::PointXYZ>);
+      cloud_ = pcl::make_shared<Cloud> ();
+      keypoints_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
       // Computation goes here
       pass_.setInputCloud (cloud);
       pcl::PointCloud<pcl::PointXYZRGBA> sampled;

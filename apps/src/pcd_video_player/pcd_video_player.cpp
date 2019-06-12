@@ -60,6 +60,8 @@
 #include <QRadioButton>
 #include <QButtonGroup>
 
+#include "pcl/make_shared.h"
+
 // VTK
 #include <vtkRenderWindow.h>
 #include <vtkRendererCollection.h>
@@ -89,10 +91,10 @@ PCDVideoPlayer::PCDVideoPlayer ()
   this->setWindowTitle ("PCL PCD Video Player");
 
   // Setup the cloud pointer
-  cloud_.reset (new pcl::PointCloud<pcl::PointXYZRGBA>);
+  cloud_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZRGBA>> ();
 
   // Set up the qvtk window
-  vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
+  vis_ = pcl::make_shared<pcl::visualization::PCLVisualizer> ("", false);
   ui_->qvtkWidget->SetRenderWindow (vis_->getRenderWindow ());
   vis_->setupInteractor (ui_->qvtkWidget->GetInteractor (), ui_->qvtkWidget->GetRenderWindow ());
   vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);

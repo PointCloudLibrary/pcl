@@ -45,12 +45,14 @@
 #include <vtkDataArray.h>
 #include <vtkCellArray.h>
 
+#include "pcl/make_shared.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::CloudMesh::CloudMesh()
   :vtk_points_(vtkSmartPointer<vtkPoints>::New()),
   vtk_polygons_(vtkSmartPointer<vtkCellArray>::New())
 {
-  cloud_.reset(new pcl::PointCloud<pcl::PointSurfel>());
+  cloud_ = pcl::make_shared<pcl::PointCloud<pcl::PointSurfel>>();
   vtk_points_->SetDataTypeToFloat ();
 }
 

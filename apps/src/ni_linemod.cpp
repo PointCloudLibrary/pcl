@@ -64,6 +64,8 @@
 #include <mutex>
 #include <thread>
 
+#include "pcl/make_shared.h"
+
 using namespace pcl;
 using namespace std;
 using namespace std::chrono_literals;
@@ -95,7 +97,7 @@ class NILinemod
       ne_.setNormalSmoothingSize (20.0f);
 
       // Set the parameters for planar segmentation
-      plane_comparator_.reset (new EdgeAwarePlaneComparator<PointT, Normal>);
+      plane_comparator_ = pcl::make_shared<EdgeAwarePlaneComparator<PointT, Normal>> ();
         plane_comparator_->setDistanceThreshold (0.01f, false);
       mps_.setMinInliers (5000);
       mps_.setAngularThreshold (pcl::deg2rad (3.0)); // 3 degrees
@@ -156,7 +158,7 @@ class NILinemod
         }
         else
         {
-          plane_.reset (new Cloud);
+          plane_ = pcl::make_shared<Cloud> ();
 
           // Compute the convex hull of the plane
           ConvexHull<PointT> chull;
@@ -343,14 +345,14 @@ class NILinemod
       if (idx != -1)
       {
         region = regions[idx]; 
-        plane_indices_.reset (new PointIndices (inlier_indices[idx]));
-        plane_boundary_indices.reset (new PointIndices (boundary_indices[idx]));
+        plane_indices_ = pcl::make_shared<PointIndices> (inlier_indices[idx]);
+        plane_boundary_indices = pcl::make_shared<PointIndices> (boundary_indices[idx]);
       }
 
       // Segment the object of interest
       if (plane_boundary_indices && !plane_boundary_indices->indices.empty ())
       {
-        object.reset (new Cloud);
+        object = pcl::make_shared<Cloud> ();
         segmentObject (picked_idx, search_.getInputCloud (), plane_indices_, plane_boundary_indices, *object);
 
         // Save to disk

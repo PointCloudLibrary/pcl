@@ -12,6 +12,8 @@
 #include <GL/glut.h>
 #if defined (FREEGLUT)
 #include <GL/freeglut_ext.h>
+
+#include "pcl/make_shared.h"
 #elif defined (GLUI_OPENGLUT)
 #include <GL/openglut.h>
 #endif
@@ -81,10 +83,10 @@ GrabCutHelper::setInputCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&
 {
   pcl::GrabCut<pcl::PointXYZRGB>::setInputCloud (cloud);
   // Reset clouds
-  n_links_image_.reset (new pcl::PointCloud<float> (cloud->width, cloud->height, 0));
-  t_links_image_.reset (new pcl::segmentation::grabcut::Image (cloud->width, cloud->height));
-  gmm_image_.reset (new pcl::segmentation::grabcut::Image (cloud->width, cloud->height));
-  alpha_image_.reset (new pcl::PointCloud<float> (cloud->width, cloud->height, 0));
+  n_links_image_ = pcl::make_shared<pcl::PointCloud<float>> (cloud->width, cloud->height, 0);
+  t_links_image_ = pcl::make_shared<pcl::segmentation::grabcut::Image> (cloud->width, cloud->height);
+  gmm_image_ = pcl::make_shared<pcl::segmentation::grabcut::Image> (cloud->width, cloud->height);
+  alpha_image_ = pcl::make_shared<pcl::PointCloud<float>> (cloud->width, cloud->height, 0);
   image_height_1_ = cloud->height-1;
   image_width_1_ = cloud->width-1;
 }
@@ -507,7 +509,7 @@ int main (int argc, char** argv)
 
   display_type = -1;
 
-  display_image.reset (new pcl::segmentation::grabcut::Image (scene->width, scene->height));
+  display_image = pcl::make_shared<pcl::segmentation::grabcut::Image> (scene->width, scene->height);
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp (new pcl::PointCloud<pcl::PointXYZRGB> (scene->width, scene->height));
 
   if (scene->isOrganized ())

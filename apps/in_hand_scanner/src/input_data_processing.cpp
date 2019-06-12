@@ -44,6 +44,8 @@
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
 
+#include "pcl/make_shared.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::InputDataProcessing::InputDataProcessing ()
@@ -93,8 +95,8 @@ pcl::ihs::InputDataProcessing::segment (const CloudXYZRGBAConstPtr& cloud_in,
     return (false);
   }
 
-  if (!cloud_out)       cloud_out       = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
-  if (!cloud_discarded) cloud_discarded = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
+  if (!cloud_out)       cloud_out       = pcl::make_shared<CloudXYZRGBNormal>();
+  if (!cloud_discarded) cloud_discarded = pcl::make_shared<CloudXYZRGBNormal>();
 
   const unsigned int width  = cloud_in->width;
   const unsigned int height = cloud_in->height;
@@ -221,7 +223,7 @@ pcl::ihs::InputDataProcessing::calculateNormals (const CloudXYZRGBAConstPtr& clo
   }
 
   if (!cloud_out)
-    cloud_out = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
+    cloud_out = pcl::make_shared<CloudXYZRGBNormal>();
 
   // Calculate the normals
   CloudNormalsPtr cloud_normals (new CloudNormals ());

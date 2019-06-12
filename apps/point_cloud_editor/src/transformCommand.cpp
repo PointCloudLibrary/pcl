@@ -38,9 +38,11 @@
 /// @author  Yue Li and Matthew Hielsberg
 
 #include <algorithm>
-#include <pcl/apps/point_cloud_editor/transformCommand.h>
-#include <pcl/apps/point_cloud_editor/selection.h>
+
+#include "pcl/make_shared.h"
 #include <pcl/apps/point_cloud_editor/common.h>
+#include <pcl/apps/point_cloud_editor/selection.h>
+#include <pcl/apps/point_cloud_editor/transformCommand.h>
 
 TransformCommand::TransformCommand(ConstSelectionPtr selection_ptr,
                                    CloudPtr cloud_ptr,
@@ -52,7 +54,7 @@ TransformCommand::TransformCommand(ConstSelectionPtr selection_ptr,
     translate_x_(translate_x), translate_y_(translate_y),
     translate_z_(translate_z)
 {
-  internal_selection_ptr_ = SelectionPtr(new Selection(*selection_ptr));
+  internal_selection_ptr_ = pcl::make_shared<Selection>(*selection_ptr);
   std::copy(matrix, matrix+MATRIX_SIZE, transform_matrix_);
   const float *cloud_matrix = cloud_ptr_->getMatrix();
   std::copy(cloud_matrix, cloud_matrix+MATRIX_SIZE, cloud_matrix_);

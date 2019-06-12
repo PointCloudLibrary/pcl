@@ -7,12 +7,14 @@
 
 #include <QDebug>
 
+#include "pcl/make_shared.h"
+
 #include <QVTKWidget.h>
 
 pcl::cloud_composer::CloudView::CloudView (QWidget* parent)
   : QWidget (parent)
 {
-  vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
+  vis_ = pcl::make_shared<pcl::visualization::PCLVisualizer> ("", false);
   vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
   //Create the QVTKWidget
   qvtk_ = new QVTKWidget (this);
@@ -28,7 +30,7 @@ pcl::cloud_composer::CloudView::CloudView (ProjectModel* model, QWidget* parent)
   : QWidget (parent)
 {
   model_ = model;
-  vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
+  vis_ = pcl::make_shared<pcl::visualization::PCLVisualizer> ("", false);
  // vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
   //Create the QVTKWidget
   qvtk_ = new QVTKWidget (this);

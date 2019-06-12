@@ -3,6 +3,8 @@
 
 #include <QGridLayout>
 
+#include "pcl/make_shared.h"
+
 #include <QVTKWidget.h>
 
 pcl::cloud_composer::FPFHItem::FPFHItem (QString name, pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr, double radius)
@@ -39,7 +41,7 @@ pcl::cloud_composer::FPFHItem::getInspectorTabs ()
   //Create the plotter and QVTKWidget if it doesn't exist
   if (!plot_)
   {
-    plot_.reset (new pcl::visualization::PCLPlotter);
+    plot_ = pcl::make_shared<pcl::visualization::PCLPlotter> ();
     qvtk_ = new QVTKWidget ();
     hist_page_ = new QWidget ();
     QGridLayout *mainLayout = new QGridLayout (hist_page_);

@@ -32,7 +32,7 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *
  */
 
 #include <pcl/features/multiscale_feature_persistence.h>
@@ -41,8 +41,10 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh.h>
+#include <pcl/make_shared.h>
 
 #include <pcl/visualization/cloud_viewer.h>
+
 
 using namespace pcl;
 
@@ -55,16 +57,16 @@ subsampleAndCalculateNormals (PointCloud<PointXYZ>::Ptr &cloud,
                               PointCloud<PointXYZ>::Ptr &cloud_subsampled,
                               PointCloud<Normal>::Ptr &cloud_subsampled_normals)
 {
-  cloud_subsampled = PointCloud<PointXYZ>::Ptr (new PointCloud<PointXYZ> ());
+  cloud_subsampled = pcl::make_shared<PointCloud<PointXYZ>> ();
   VoxelGrid<PointXYZ> subsampling_filter;
   subsampling_filter.setInputCloud (cloud);
   subsampling_filter.setLeafSize (subsampling_leaf_size);
   subsampling_filter.filter (*cloud_subsampled);
 
-  cloud_subsampled_normals = PointCloud<Normal>::Ptr (new PointCloud<Normal> ());
+  cloud_subsampled_normals = pcl::make_shared<PointCloud<Normal>> ();
   NormalEstimation<PointXYZ, Normal> normal_estimation_filter;
   normal_estimation_filter.setInputCloud (cloud_subsampled);
-  pcl::search::KdTree<PointXYZ>::Ptr search_tree (new pcl::search::KdTree<PointXYZ>);
+  pcl::search::KdTree<PointXYZ>::Ptr search_tree = pcl::make_shared<pcl::search::KdTree<PointXYZ>> ();
   normal_estimation_filter.setSearchMethod (search_tree);
   normal_estimation_filter.setRadiusSearch (normal_estimation_search_radius);
   normal_estimation_filter.compute (*cloud_subsampled_normals);
@@ -80,7 +82,7 @@ main (int argc, char **argv)
     return -1;
   }
 
-  PointCloud<PointXYZ>::Ptr cloud_scene (new PointCloud<PointXYZ> ());
+  PointCloud<PointXYZ>::Ptr cloud_scene = pcl::make_shared<PointCloud<PointXYZ>> ();
   PCDReader reader;
   reader.read (argv[1], *cloud_scene);
 
@@ -99,16 +101,16 @@ main (int argc, char **argv)
     scale_values.push_back (x / 100.0f);
   feature_persistence.setScalesVector (scale_values);
   feature_persistence.setAlpha (1.3f);
-  FPFHEstimation<PointXYZ, Normal, FPFHSignature33>::Ptr fpfh_estimation (new FPFHEstimation<PointXYZ, Normal, FPFHSignature33> ());
+  FPFHEstimation<PointXYZ, Normal, FPFHSignature33>::Ptr fpfh_estimation = pcl::make_shared<FPFHEstimation<PointXYZ, Normal, FPFHSignature33>> ();
   fpfh_estimation->setInputCloud (cloud_subsampled);
   fpfh_estimation->setInputNormals (cloud_subsampled_normals);
-  pcl::search::KdTree<PointXYZ>::Ptr tree (new pcl::search::KdTree<PointXYZ> ());
+  pcl::search::KdTree<PointXYZ>::Ptr tree = pcl::make_shared<pcl::search::KdTree<PointXYZ>> ();
   fpfh_estimation->setSearchMethod (tree);
   feature_persistence.setFeatureEstimator (fpfh_estimation);
   feature_persistence.setDistanceMetric (pcl::CS);
 
-  PointCloud<FPFHSignature33>::Ptr output_features (new PointCloud<FPFHSignature33> ());
-  boost::shared_ptr<std::vector<int> > output_indices (new std::vector<int> ());
+  PointCloud<FPFHSignature33>::Ptr output_features = pcl::make_shared<PointCloud<FPFHSignature33>> ();
+  boost::shared_ptr<std::vector<int> > output_indices = pcl::make_shared<std::vector<int>> ();
   feature_persistence.determinePersistentFeatures (*output_features, output_indices);
 
   PCL_INFO ("persistent features cloud size: %u\n", output_features->points.size ());
@@ -116,7 +118,7 @@ main (int argc, char **argv)
   ExtractIndices<PointXYZ> extract_indices_filter;
   extract_indices_filter.setInputCloud (cloud_subsampled);
   extract_indices_filter.setIndices (output_indices);
-  PointCloud<PointXYZ>::Ptr persistent_features_locations (new PointCloud<PointXYZ> ());
+  PointCloud<PointXYZ>::Ptr persistent_features_locations = pcl::make_shared<PointCloud<PointXYZ>> ();
   extract_indices_filter.filter (*persistent_features_locations);
 
   viewer.showCloud (persistent_features_locations, "persistent features");

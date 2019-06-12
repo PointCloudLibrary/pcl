@@ -52,6 +52,8 @@
 #include <QKeyEvent>
 #include <QtConcurrent>
 
+#include "pcl/make_shared.h"
+
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/transforms.h>
 #include <pcl/features/integral_image_normal.h>
@@ -256,7 +258,7 @@ pcl::ihs::OfflineIntegration::load (const std::string&    filename,
 {
   if (!cloud)
   {
-    cloud = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
+    cloud = pcl::make_shared<CloudXYZRGBNormal>();
   }
 
   // Load the cloud.

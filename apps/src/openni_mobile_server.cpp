@@ -46,6 +46,8 @@
 #include <mutex>
 #include <thread>
 
+#include "pcl/make_shared.h"
+
 
 using boost::asio::ip::tcp;
 using namespace std::chrono_literals;
@@ -130,7 +132,7 @@ class PCLMobileServer
       voxel_grid_filter_.setInputCloud (new_cloud);
       voxel_grid_filter_.filter (*temp_cloud);
 
-      PointCloudBuffers::Ptr new_buffers = PointCloudBuffers::Ptr (new PointCloudBuffers);
+      PointCloudBuffers::Ptr new_buffers = pcl::make_shared<PointCloudBuffers>();
       CopyPointCloudToBuffers (temp_cloud, *new_buffers);
 
       std::lock_guard<std::mutex> lock (mutex_);

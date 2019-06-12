@@ -41,6 +41,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMouseEvent>
+
+#include "pcl/make_shared.h"
 #include <qgl.h>
 
 #include <pcl/pcl_config.h>
@@ -78,7 +80,7 @@ CloudEditorWidget::CloudEditorWidget (QWidget *parent)
     color_scheme_(COLOR_BY_PURE), is_colored_(false)
 {
   setFocusPolicy(Qt::StrongFocus);
-  command_queue_ptr_ = CommandQueuePtr(new CommandQueue());
+  command_queue_ptr_ = pcl::make_shared<CommandQueue>();
   initFileLoadMap();
   initKeyMap();
 }
@@ -185,8 +187,8 @@ CloudEditorWidget::view ()
 {
   if (!cloud_ptr_)
     return;
-  tool_ptr_ = boost::shared_ptr<CloudTransformTool>(
-              new CloudTransformTool(cloud_ptr_));
+  tool_ptr_ = pcl::make_shared<CloudTransformTool>(
+              cloud_ptr_);
 }
 
 void
@@ -194,8 +196,8 @@ CloudEditorWidget::select1D ()
 {
   if (!cloud_ptr_)
     return;
-  tool_ptr_ = boost::shared_ptr<Select1DTool>(new Select1DTool(selection_ptr_,
-                                                               cloud_ptr_));
+  tool_ptr_ = pcl::make_shared<Select1DTool>(selection_ptr_,
+                                                               cloud_ptr_);
   update();
 }
 
@@ -204,8 +206,8 @@ CloudEditorWidget::select2D ()
 {
   if (!cloud_ptr_)
     return;
-  tool_ptr_ = boost::shared_ptr<Select2DTool>(new Select2DTool(selection_ptr_,
-                                                               cloud_ptr_));
+  tool_ptr_ = pcl::make_shared<Select2DTool>(selection_ptr_,
+                                                               cloud_ptr_);
   update();
 }
 
@@ -294,8 +296,8 @@ CloudEditorWidget::transform ()
 {
   if (!cloud_ptr_ || !selection_ptr_ || selection_ptr_->empty())
     return;
-  tool_ptr_ = boost::shared_ptr<SelectionTransformTool>(
-    new SelectionTransformTool(selection_ptr_, cloud_ptr_, command_queue_ptr_));
+  tool_ptr_ = pcl::make_shared<SelectionTransformTool>(
+    selection_ptr_, cloud_ptr_, command_queue_ptr_);
   update();
 }
 
@@ -534,17 +536,17 @@ CloudEditorWidget::loadFilePCD(const std::string &filename)
   Cloud3D tmp;
   if (pcl::io::loadPCDFile<Point3D>(filename, tmp) == -1)
     throw;
-  pcl_cloud_ptr = PclCloudPtr(new Cloud3D(tmp));
+  pcl_cloud_ptr = pcl::make_shared<Cloud3D>(tmp);
   std::vector<int> index;
   pcl::removeNaNFromPointCloud(*pcl_cloud_ptr, *pcl_cloud_ptr, index);
   Statistics::clear();
-  cloud_ptr_ = CloudPtr(new Cloud(*pcl_cloud_ptr, true));
-  selection_ptr_ = SelectionPtr(new Selection(cloud_ptr_, true));
-  copy_buffer_ptr_ = CopyBufferPtr(new CopyBuffer(true));
+  cloud_ptr_ = pcl::make_shared<Cloud>(*pcl_cloud_ptr, true);
+  selection_ptr_ = pcl::make_shared<Selection>(cloud_ptr_, true);
+  copy_buffer_ptr_ = pcl::make_shared<CopyBuffer>(true);
   cloud_ptr_->setPointSize(point_size_);
   cloud_ptr_->setHighlightPointSize(selected_point_size_);
   tool_ptr_ =
-    boost::shared_ptr<CloudTransformTool>(new CloudTransformTool(cloud_ptr_));
+    pcl::make_shared<CloudTransformTool>(cloud_ptr_);
 
   if (isColored(filename))
   {

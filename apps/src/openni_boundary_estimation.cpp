@@ -50,6 +50,8 @@
 #include <mutex>
 #include <thread>
 
+#include "pcl/make_shared.h"
+
 using namespace std::chrono_literals;
 
 typedef pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
@@ -102,7 +104,7 @@ class OpenNIIntegralImageNormalEstimation
       //lock while we set our cloud;
       FPS_CALC ("computation");
 
-      cloud_.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+      cloud_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZRGBNormal>> ();
 
       // Estimate surface normals
       ne_.setInputCloud (cloud);
@@ -116,7 +118,7 @@ class OpenNIIntegralImageNormalEstimation
 
       be_.setInputCloud (cloud_);
       be_.setInputNormals (cloud_);
-      boundaries_.reset (new pcl::PointCloud<pcl::Boundary>);
+      boundaries_ = pcl::make_shared<pcl::PointCloud<pcl::Boundary>> ();
       be_.compute (*boundaries_);
 
       new_cloud_ = true;

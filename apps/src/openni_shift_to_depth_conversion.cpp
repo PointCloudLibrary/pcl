@@ -41,6 +41,7 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
+#include <pcl/make_shared.h>
 
 #include <iostream>
 #include <vector>
@@ -52,6 +53,7 @@
 #include <thread>
 
 #include <boost/asio.hpp>
+
 
 using boost::asio::ip::tcp;
 
@@ -106,7 +108,7 @@ class SimpleOpenNIViewer
       }
 
       // empty pointcloud
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>());
+      pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
 
       // convert raw depth and rgb data to pointcloud
       convert (raw_depth_data,

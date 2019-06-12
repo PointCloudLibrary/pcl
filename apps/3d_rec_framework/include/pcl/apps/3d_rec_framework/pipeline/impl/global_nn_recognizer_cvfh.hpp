@@ -6,9 +6,11 @@
  */
 
 #include <flann/flann.hpp>
+
+#include "pcl/make_shared.h"
 #include <pcl/apps/3d_rec_framework/pipeline/global_nn_recognizer_cvfh.h>
-#include <pcl/registration/icp.h>
 #include <pcl/common/time.h>
+#include <pcl/registration/icp.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
 template<template<class > class Distance, typename PointInT, typename FeatureT>
@@ -598,7 +600,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms_temp;
 
         models_temp.reset (new std::vector<ModelT>);
-        transforms_temp.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >);
+        transforms_temp = pcl::make_shared<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >> ();
 
         for (size_t i = 0; i < models_->size (); i++)
         {
