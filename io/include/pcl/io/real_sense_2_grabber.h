@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_REAL_SENSE_2_GRABBER_H
-#define PCL_IO_REAL_SENSE_2_GRABBER_H
+#pragma once
 
 #include <thread>
 #include <mutex>
@@ -219,5 +218,3 @@ namespace pcl
   };
 
 }
-
-#endif /* PCL_IO_REAL_SENSE_2_GRABBER_H */

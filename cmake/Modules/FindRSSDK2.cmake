@@ -14,3 +14,7 @@ find_package(realsense2)
 set(RSSDK2_FOUND ${realsense2_FOUND})
 set(RSSDK2_INCLUDE_DIRS ${realsense2_INCLUDE_DIR})
 set(RSSDK2_LIBRARIES ${realsense2_LIBRARY})
+
+if(RSSDK2_FOUND)
+  message(STATUS "RealSense SDK 2 found (include: ${RSSDK2_INCLUDE_DIRS}, lib: ${RSSDK2_LIBRARIES}, version: ${realsense2_VERSION})")
+endif()
