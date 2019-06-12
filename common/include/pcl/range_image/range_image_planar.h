@@ -74,7 +74,7 @@ namespace pcl
       // =====PUBLIC METHODS=====
       /** \brief Get a boost shared pointer of a copy of this */
       inline Ptr 
-      makeShared () { return Ptr (new RangeImagePlanar (*this)); } 
+      makeShared () { return pcl::make_shared<RangeImagePlanar>(*this); } 
       
       /** \brief Create the image from an existing disparity image.
         * \param disparity_image the input disparity image data
@@ -214,3 +214,5 @@ namespace pcl
 
 
 #include <pcl/range_image/impl/range_image_planar.hpp>  // Definitions of templated and inline functions
+
+#include "pcl/make_shared.h"

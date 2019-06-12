@@ -38,6 +38,8 @@
 
 #include <pcl/impl/pcl_base.hpp>
 
+#include <pcl/make_shared.h>
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::PCLBase<pcl::PCLPointCloud2>::PCLBase ()
   : use_indices_ (false)
@@ -133,7 +135,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
   if (!indices_)
   {
     fake_indices_ = true;
-    indices_.reset (new std::vector<int>);
+    indices_ = pcl::make_shared<std::vector<int>> ();
     try
     {
       indices_->resize (input_->width * input_->height);
@@ -168,13 +170,14 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setIndices (const IndicesPtr &indices)
 void
 pcl::PCLBase<pcl::PCLPointCloud2>::setIndices (const PointIndicesConstPtr &indices)
 {
-  indices_.reset (new std::vector<int> (indices->indices));
+  indices_ = pcl::make_shared<std::vector<int>> (indices->indices);
   fake_indices_ = false;
   use_indices_  = true;
 }
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
+
 #include <pcl/point_types.h>
 PCL_INSTANTIATE(PCLBase, PCL_POINT_TYPES)
 #endif    // PCL_NO_PRECOMPILE
