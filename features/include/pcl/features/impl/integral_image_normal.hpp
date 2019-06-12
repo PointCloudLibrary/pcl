@@ -479,7 +479,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     const int end_y = start_y + rect_height_;
 
     unsigned count = 0;
-    auto cb_xyz_fecse = [this] (auto p1, auto p2, auto p3, auto p4) { return integral_image_XYZ_.getFiniteElementsCountSE (p1, p2, p3, p4); };
+    auto cb_xyz_fecse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_XYZ_.getFiniteElementsCountSE (p1, p2, p3, p4); };
     sumArea<unsigned> (start_x, start_y, end_x, end_y, width, height, cb_xyz_fecse, count);
 
     // no valid points within the rectangular region?
@@ -508,9 +508,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     so_elements[4] = 0;
     so_elements[5] = 0;
 
-    auto cb_xyz_fosse = [this] (auto p1, auto p2, auto p3, auto p4) { return integral_image_XYZ_.getFirstOrderSumSE (p1, p2, p3, p4); };
+    auto cb_xyz_fosse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_XYZ_.getFirstOrderSumSE (p1, p2, p3, p4); };
     sumArea<typename IntegralImage2D<float, 3>::ElementType>(start_x, start_y, end_x, end_y, width, height, cb_xyz_fosse, tmp_center);
-    auto cb_xyz_sosse = [this] (auto p1, auto p2, auto p3, auto p4) { return integral_image_XYZ_.getSecondOrderSumSE (p1, p2, p3, p4); };
+    auto cb_xyz_sosse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_XYZ_.getSecondOrderSumSE (p1, p2, p3, p4); };
     sumArea<typename IntegralImage2D<float, 3>::SecondOrderType>(start_x, start_y, end_x, end_y, width, height, cb_xyz_sosse, so_elements);
 
     center[0] = float (tmp_center[0]);
@@ -552,9 +552,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     unsigned count_x = 0;
     unsigned count_y = 0;
 
-    auto cb_dx_fecse = [this] (auto p1, auto p2, auto p3, auto p4) { return integral_image_DX_.getFiniteElementsCountSE (p1, p2, p3, p4); };
+    auto cb_dx_fecse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_DX_.getFiniteElementsCountSE (p1, p2, p3, p4); };
     sumArea<unsigned>(start_x, start_y, end_x, end_y, width, height, cb_dx_fecse, count_x);
-    auto cb_dy_fecse = [this] (auto p1, auto p2, auto p3, auto p4) { return integral_image_DY_.getFiniteElementsCountSE (p1, p2, p3, p4); };
+    auto cb_dy_fecse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_DY_.getFiniteElementsCountSE (p1, p2, p3, p4); };
     sumArea<unsigned>(start_x, start_y, end_x, end_y, width, height, cb_dy_fecse, count_y);
 
 
@@ -566,9 +566,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     Eigen::Vector3d gradient_x (0, 0, 0);
     Eigen::Vector3d gradient_y (0, 0, 0);
 
-    auto cb_dx_fosse = [this] (auto p1, auto p2, auto p3, auto p4) { return integral_image_DX_.getFirstOrderSumSE (p1, p2, p3, p4); };
+    auto cb_dx_fosse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_DX_.getFirstOrderSumSE (p1, p2, p3, p4); };
     sumArea<typename IntegralImage2D<float, 3>::ElementType>(start_x, start_y, end_x, end_y, width, height, cb_dx_fosse, gradient_x);
-    auto cb_dy_fosse = [this] (auto p1, auto p2, auto p3, auto p4) { return integral_image_DY_.getFirstOrderSumSE (p1, p2, p3, p4); };
+    auto cb_dy_fosse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_DY_.getFirstOrderSumSE (p1, p2, p3, p4); };
     sumArea<typename IntegralImage2D<float, 3>::ElementType>(start_x, start_y, end_x, end_y, width, height, cb_dy_fosse, gradient_y);
 
 
@@ -649,7 +649,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     unsigned count_U_z = 0;
     unsigned count_D_z = 0;
 
-    auto cb_fecse = [this] (auto p1, auto p2, auto p3, auto p4) { return integral_image_depth_.getFiniteElementsCountSE (p1, p2, p3, p4); };
+    auto cb_fecse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_depth_.getFiniteElementsCountSE (p1, p2, p3, p4); };
     sumArea<unsigned>(start_x_L, start_y_L, end_x_L, end_y_L, width, height, cb_fecse, count_L_z);
     sumArea<unsigned>(start_x_R, start_y_R, end_x_R, end_y_R, width, height, cb_fecse, count_R_z);
     sumArea<unsigned>(start_x_U, start_y_U, end_x_U, end_y_U, width, height, cb_fecse, count_U_z);
@@ -666,7 +666,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     float mean_U_z = 0;
     float mean_D_z = 0;
 
-    auto cb_fosse = [this] (auto p1, auto p2, auto p3, auto p4) { return integral_image_depth_.getFirstOrderSumSE (p1, p2, p3, p4); };
+    auto cb_fosse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_depth_.getFirstOrderSumSE (p1, p2, p3, p4); };
     sumArea<float>(start_x_L, start_y_L, end_x_L, end_y_L, width, height, cb_fosse, mean_L_z);
     sumArea<float>(start_x_R, start_y_R, end_x_R, end_y_R, width, height, cb_fosse, mean_R_z);
     sumArea<float>(start_x_U, start_y_U, end_x_U, end_y_U, width, height, cb_fosse, mean_U_z);
