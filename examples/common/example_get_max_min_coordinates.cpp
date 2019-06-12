@@ -1,13 +1,14 @@
 #include <iostream>
+
+#include <pcl/make_shared.h>
+#include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include <pcl/common/common.h>
 
-int 
+int
 main (int, char**)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
-  cloud = pcl::PointCloud<pcl::PointXYZ>::Ptr (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
   pcl::io::loadPCDFile<pcl::PointXYZ> ("your_pcd_file.pcd", *cloud);
   pcl::PointXYZ minPt, maxPt;
   pcl::getMinMax3D (*cloud, minPt, maxPt);
