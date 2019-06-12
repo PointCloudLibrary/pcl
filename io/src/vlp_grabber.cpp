@@ -38,6 +38,8 @@
 
 #include <pcl/io/vlp_grabber.h>
 
+#include "pcl/make_shared.h"
+
 using boost::asio::ip::udp;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -156,9 +158,9 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
 
           HDLGrabber::fireCurrentSweep ();
         }
-        current_sweep_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
-        current_sweep_xyzrgba_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
-        current_sweep_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI> ());
+        current_sweep_xyz_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
+        current_sweep_xyzrgba_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZRGBA>> ();
+        current_sweep_xyzi_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZI>> ();
       }
 
       PointXYZ xyz;

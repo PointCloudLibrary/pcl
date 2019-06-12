@@ -38,6 +38,8 @@
 #include <pcl/io/robot_eye_grabber.h>
 #include <pcl/console/print.h>
 
+#include "pcl/make_shared.h"
+
 /////////////////////////////////////////////////////////////////////////////
 pcl::RobotEyeGrabber::RobotEyeGrabber ()
   : terminate_thread_ (false)
@@ -141,7 +143,7 @@ pcl::RobotEyeGrabber::getPointCloud () const
 void
 pcl::RobotEyeGrabber::resetPointCloud ()
 {
-  point_cloud_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI>);
+  point_cloud_xyzi_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZI>> ();
   point_cloud_xyzi_->is_dense = true;
 }
 
@@ -316,7 +318,7 @@ pcl::RobotEyeGrabber::start ()
 
   try
   {
-    socket_.reset (new boost::asio::ip::udp::socket (io_service_, destinationEndpoint));
+    socket_ = pcl::make_shared<boost::asio::ip::udp::socket> (io_service_, destinationEndpoint);
   }
   catch (std::exception &e)
   {
@@ -326,8 +328,8 @@ pcl::RobotEyeGrabber::start ()
 
   terminate_thread_ = false;
   resetPointCloud ();
-  consumer_thread_.reset(new std::thread (&RobotEyeGrabber::consumerThreadLoop, this));
-  socket_thread_.reset(new std::thread (&RobotEyeGrabber::socketThreadLoop, this));
+  consumer_thread_ = pcl::make_shared<std::thread>(&RobotEyeGrabber::consumerThreadLoop, this);
+  socket_thread_ = pcl::make_shared<std::thread>(&RobotEyeGrabber::socketThreadLoop, this);
 }
 
 /////////////////////////////////////////////////////////////////////////////

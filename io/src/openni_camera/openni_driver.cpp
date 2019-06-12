@@ -55,6 +55,8 @@
 #include <cctype>
 #include <map>
 
+#include "pcl/make_shared.h"
+
 #ifndef _WIN32
 #include <libusb-1.0/libusb.h>
 #else
@@ -111,7 +113,7 @@ openni_wrapper::OpenNIDriver::updateDeviceList ()
       if ( connection_string_map_.count ((*neededIt).GetCreationInfo ()) )
       {
         unsigned device_index = connection_string_map_[(*neededIt).GetCreationInfo ()];
-        device_context_[device_index].depth_node.reset (new xn::NodeInfo(*nodeIt));
+        device_context_[device_index].depth_node = pcl::make_shared<xn::NodeInfo> (*nodeIt);
       }
     }
   }
@@ -134,7 +136,7 @@ openni_wrapper::OpenNIDriver::updateDeviceList ()
         if ( connection_string_map_.count ((*neededIt).GetCreationInfo ()) )
         {
           unsigned device_index = connection_string_map_[(*neededIt).GetCreationInfo ()];
-          device_context_[device_index].image_node.reset (new xn::NodeInfo(*nodeIt));
+          device_context_[device_index].image_node = pcl::make_shared<xn::NodeInfo> (*nodeIt);
         }
       }
     }
@@ -154,7 +156,7 @@ openni_wrapper::OpenNIDriver::updateDeviceList ()
       if ( connection_string_map_.count ((*neededIt).GetCreationInfo ()) )
       {
         unsigned device_index = connection_string_map_[(*neededIt).GetCreationInfo ()];
-        device_context_[device_index].ir_node.reset (new xn::NodeInfo(*nodeIt));
+        device_context_[device_index].ir_node = pcl::make_shared<xn::NodeInfo> (*nodeIt);
       }
     }
   }
@@ -260,26 +262,26 @@ openni_wrapper::OpenNIDriver::getDeviceByIndex (unsigned index) const
 
     if (vendor_id == 0x45e)
     {
-      device.reset (new DeviceKinect (context_, 
+      device = pcl::make_shared<DeviceKinect> (context_, 
                                       device_context_[index].device_node,
                                       *device_context_[index].image_node, 
                                       *device_context_[index].depth_node,
-                                      *device_context_[index].ir_node));
+                                      *device_context_[index].ir_node);
       device_context_[index].device = device;
     }
     else if (vendor_id == 0x1d27)
     {
       if (device_context_[index].image_node.get())
-        device.reset (new DevicePrimesense (context_, 
+        device = pcl::make_shared<DevicePrimesense> (context_, 
                                             device_context_[index].device_node, 
                                             *device_context_[index].image_node, 
                                             *device_context_[index].depth_node,
-                                            *device_context_[index].ir_node));
+                                            *device_context_[index].ir_node);
       else
-        device.reset (new DeviceXtionPro (context_, 
+        device = pcl::make_shared<DeviceXtionPro> (context_, 
                                           device_context_[index].device_node, 
                                           *device_context_[index].depth_node, 
-                                          *device_context_[index].ir_node));
+                                          *device_context_[index].ir_node);
       device_context_[index].device = device;
     }
     else
