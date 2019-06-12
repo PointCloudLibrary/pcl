@@ -3,6 +3,8 @@
 
 #include <boost/math/distributions/normal.hpp>
 
+#include "pcl/make_shared.h"
+
 #include <GL/glew.h>
 
 #include <pcl/pcl_config.h>
@@ -290,7 +292,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glBindFramebuffer (GL_FRAMEBUFFER, 0);
 
   // Load shader
-  likelihood_program_ = gllib::Program::Ptr (new gllib::Program ());
+  likelihood_program_ = pcl::make_shared<gllib::Program>();
   // TODO: to remove file dependency include the shader source in the binary
   if (!likelihood_program_->addShaderFile ("compute_score.vert", gllib::VERTEX))
   {

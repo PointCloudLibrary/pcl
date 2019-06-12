@@ -9,6 +9,8 @@
 #include <cmath>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
+
+#include "pcl/make_shared.h"
 #ifdef _WIN32
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
@@ -357,7 +359,7 @@ loadPolygonMeshModel (char* polygon_file)
   pcl::io::loadPolygonFile (polygon_file, mesh);
   pcl::PolygonMesh::Ptr cloud (new pcl::PolygonMesh (mesh));
   
-  TriangleMeshModel::Ptr model = TriangleMeshModel::Ptr (new TriangleMeshModel (cloud));
+  TriangleMeshModel::Ptr model = pcl::make_shared<TriangleMeshModel>(cloud);
   scene_->add (model);
   
   std::cout << "Just read " << polygon_file << std::endl;
@@ -431,11 +433,11 @@ main (int argc, char** argv)
 
   std::cout << "GL_MAX_VIEWPORTS: " << GL_MAX_VIEWPORTS << std::endl;
 
-  camera_ = Camera::Ptr (new Camera ());
-  scene_ = Scene::Ptr (new Scene ());
+  camera_ = pcl::make_shared<Camera>();
+  scene_ = pcl::make_shared<Scene>();
 
-  range_likelihood_visualization_ = RangeLikelihood::Ptr (new RangeLikelihood (1, 1, height, width, scene_));
-  range_likelihood_ = RangeLikelihood::Ptr (new RangeLikelihood (rows, cols, row_height, col_width, scene_));
+  range_likelihood_visualization_ = pcl::make_shared<RangeLikelihood>(1, 1, height, width, scene_);
+  range_likelihood_ = pcl::make_shared<RangeLikelihood>(rows, cols, row_height, col_width, scene_);
 
   // Actually corresponds to default parameters:
   range_likelihood_visualization_->setCameraIntrinsicsParameters (
@@ -450,8 +452,8 @@ main (int argc, char** argv)
   range_likelihood_->setSumOnCPU (false);
   range_likelihood_->setUseColor (false);
 
-  textured_quad_ = TexturedQuad::Ptr (new TexturedQuad (range_likelihood_->getWidth (),
-                                                        range_likelihood_->getHeight ()));
+  textured_quad_ = pcl::make_shared<TexturedQuad>(range_likelihood_->getWidth (),
+                                                        range_likelihood_->getHeight ());
 
   initialize (argc, argv);
 

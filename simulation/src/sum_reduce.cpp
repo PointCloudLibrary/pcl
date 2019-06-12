@@ -1,5 +1,7 @@
 #include <pcl/simulation/sum_reduce.h>
 
+#include "pcl/make_shared.h"
+
 using namespace pcl::simulation;
 
 pcl::simulation::SumReduce::SumReduce (int width, int height, int levels) : levels_ (levels),
@@ -9,7 +11,7 @@ pcl::simulation::SumReduce::SumReduce (int width, int height, int levels) : leve
   std::cout << "SumReduce: levels: " << levels_ << std::endl;
 
   // Load shader
-  sum_program_ = gllib::Program::Ptr (new gllib::Program ());
+  sum_program_ = pcl::make_shared<gllib::Program>();
   // TODO: to remove file dependency include the shader source in the binary
   if (!sum_program_->addShaderFile ("sum_score.vert", gllib::VERTEX))
   {

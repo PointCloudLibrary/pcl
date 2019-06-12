@@ -19,6 +19,7 @@
 # include <windows.h>
 #endif
 
+#include "pcl/make_shared.h"
 #include "simulation_io.hpp"
 
 using namespace Eigen;
@@ -131,7 +132,7 @@ main (int argc, char** argv)
   // 2 Construct the simulation method:
   int width = 640;
   int height = 480;
-  simexample = SimExample::Ptr (new SimExample (argc, argv, height,width ));
+  simexample = pcl::make_shared<SimExample>(argc, argv, height,width );
   
   // 3 Generate a series of simulation poses:
   // -0 100 fixed poses 

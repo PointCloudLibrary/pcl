@@ -9,6 +9,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "pcl/make_shared.h"
+
 using namespace pcl::simulation::gllib;
 
 char*
@@ -205,7 +207,7 @@ Program::Ptr
 pcl::simulation::gllib::Program::loadProgramFromText (const std::string& vertex_shader_text, const std::string& fragment_shader_text)
 {
   // Load shader
-  Program::Ptr program = gllib::Program::Ptr (new gllib::Program ());
+  Program::Ptr program = pcl::make_shared<gllib::Program>();
   if (!program->addShaderText (vertex_shader_text, gllib::VERTEX))
   {
     std::cerr << "Failed loading vertex shader" << std::endl;
@@ -226,7 +228,7 @@ Program::Ptr
 pcl::simulation::gllib::Program::loadProgramFromFile (const std::string& vertex_shader_file, const std::string& fragment_shader_file)
 {
   // Load shader
-  Program::Ptr program = gllib::Program::Ptr (new gllib::Program ());
+  Program::Ptr program = pcl::make_shared<gllib::Program>();
   if (!program->addShaderFile (vertex_shader_file, gllib::VERTEX))
   {
     std::cerr << "Failed loading vertex shader" << std::endl;
