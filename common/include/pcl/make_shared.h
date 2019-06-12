@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2014-, Open Perception, Inc.
+ *  Copyright (c) 2019-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -39,22 +39,41 @@
 
 
 #include <type_traits>
+#include <utility>
+
+#include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
+
+#include <eigen3/Eigen/Core>
+
+
+#define PCL_MAKE_ALIGNED_OPERATOR_NEW \
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
+  using custom_allocator = void;
 
 
 namespace pcl
 {
 
 template<typename T>
-class has_custom_allocator;
+class has_custom_allocator
+{
+  template<typename U, typename = typename U::custom_allocator> static char test(unsigned);
+  template<typename U> static int32_t test(...);
+public:
+  static constexpr bool value = (sizeof(test<T>(0)) == sizeof(char));
+};
 
 template<typename T, typename ... Args>
-std::enable_if_t<has_custom_allocator<T>::value, boost::shared_ptr<T>> make_shared(Args&&... args);
+std::enable_if_t<has_custom_allocator<T>::value, boost::shared_ptr<T>> make_shared(Args&&... args)
+{
+  return boost::allocate_shared<T>(Eigen::aligned_allocator<T>(), std::forward<Args> (args)...);
+}
 
 template<typename T, typename ... Args>
-std::enable_if_t<!has_custom_allocator<T>::value, boost::shared_ptr<T>> make_shared(Args&&... args);
+std::enable_if_t<!has_custom_allocator<T>::value, boost::shared_ptr<T>> make_shared(Args&&... args)
+{
+  return boost::make_shared<T>(std::forward<Args> (args)...);
+}
 
 } // namespace pcl
-
-
-#include <pcl/impl/make_shared.hpp>

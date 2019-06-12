@@ -148,7 +148,6 @@ set(impl_incs
   include/pcl/impl/instantiate.hpp
   include/pcl/impl/point_types.hpp
   include/pcl/impl/cloud_iterator.hpp
-  include/pcl/impl/make_shared.hpp
 )
 
 set(tools_incs
