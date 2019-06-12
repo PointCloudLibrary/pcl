@@ -46,6 +46,8 @@
 
 #include <pcl/search/flann_search.h>
 
+#include "pcl/make_shared.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename FlannDistance>
 typename pcl::search::FlannSearch<PointT, FlannDistance>::IndexPtr
@@ -379,12 +381,12 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
     if (input_->is_dense && point_representation_->isTrivial ())
     {
       // const cast is evil, but flann won't change the data
-      input_flann_ = MatrixPtr (new flann::Matrix<float> (const_cast<float*>(reinterpret_cast<const float*>(&(*input_) [0])), original_no_of_points, point_representation_->getNumberOfDimensions (),sizeof (PointT)));
+      input_flann_ = pcl::make_shared<flann::Matrix<float>>(const_cast<float*>(reinterpret_cast<const float*>(&(*input_) [0])), original_no_of_points, point_representation_->getNumberOfDimensions (),sizeof (PointT));
       input_copied_for_flann_ = false;
     }
     else
     {
-      input_flann_ = MatrixPtr (new flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ()));
+      input_flann_ = pcl::make_shared<flann::Matrix<float>>(new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ());
       float* cloud_ptr = input_flann_->ptr();
       for (size_t i = 0; i < original_no_of_points; ++i)
       {
@@ -406,7 +408,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
   }
   else
   {
-    input_flann_ = MatrixPtr (new flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ()));
+    input_flann_ = pcl::make_shared<flann::Matrix<float>>(new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ());
     float* cloud_ptr = input_flann_->ptr();
     for (size_t indices_index = 0; indices_index < original_no_of_points; ++indices_index)
     {
