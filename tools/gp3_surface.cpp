@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
- *  
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/surface/gp3.h>
+#include <pcl/make_shared.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -84,10 +85,10 @@ compute (const PointCloud<PointNormal>::Ptr &input, pcl::PolygonMesh &output,
   // Estimate
   TicToc tt;
   tt.tic ();
-  
+
   print_highlight (stderr, "Computing ");
 
-  PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal> ());
+  PointCloud<PointNormal>::Ptr cloud = pcl::make_shared<PointCloud<PointNormal>> ();
   for (size_t i = 0; i < input->size (); ++i)
     if (std::isfinite (input->points[i].x))
       cloud->push_back (input->points[i]);
@@ -97,7 +98,7 @@ compute (const PointCloud<PointNormal>::Ptr &input, pcl::PolygonMesh &output,
   cloud->is_dense = true;
 
   GreedyProjectionTriangulation<PointNormal> gpt;
-  gpt.setSearchMethod (pcl::search::KdTree<pcl::PointNormal>::Ptr (new pcl::search::KdTree<pcl::PointNormal>));
+  gpt.setSearchMethod (pcl::make_shared<pcl::search::KdTree<pcl::PointNormal>> ());
   gpt.setInputCloud (cloud);
   gpt.setSearchRadius (radius);
   gpt.setMu (mu);
@@ -152,8 +153,8 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-radius", radius);
 
   // Load the first file
-  PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal>);
-  if (!loadCloud (argv[pcd_file_indices[0]], *cloud)) 
+  PointCloud<PointNormal>::Ptr cloud = pcl::make_shared<PointCloud<PointNormal>> ();
+  if (!loadCloud (argv[pcd_file_indices[0]], *cloud))
     return (-1);
 
   // Perform the surface triangulation

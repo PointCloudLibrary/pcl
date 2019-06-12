@@ -54,6 +54,8 @@
 #include <mutex>
 #include <thread>
 
+#include "pcl/make_shared.h"
+
 using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
@@ -350,7 +352,7 @@ class Writer
     Writer (Buffer &buf)
       : buf_ (buf)
     {
-      thread_.reset (new std::thread (&Writer::receiveAndProcess, this));
+      thread_ = pcl::make_shared<std::thread> (&Writer::receiveAndProcess, this);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -433,7 +435,7 @@ class Driver
       , buf_write_ (buf_write)
       , buf_vis_ (buf_vis)
     {
-      thread_.reset (new std::thread (&Driver::grabAndSend, this));
+      thread_ = pcl::make_shared<std::thread> (&Driver::grabAndSend, this);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -549,8 +551,8 @@ class Viewer
       : buf_ (buf)
       , image_cld_init_ (false), depth_image_cld_init_ (false)
     {
-      image_viewer_.reset (new visualization::ImageViewer ("PCL/OpenNI RGB image viewer"));
-      depth_image_viewer_.reset (new visualization::ImageViewer ("PCL/OpenNI depth image viewer"));
+      image_viewer_ = pcl::make_shared<visualization::ImageViewer> ("PCL/OpenNI RGB image viewer");
+      depth_image_viewer_ = pcl::make_shared<visualization::ImageViewer> ("PCL/OpenNI depth image viewer");
 
       receiveAndView ();
     }
@@ -771,7 +773,7 @@ main (int argc, char ** argv)
   Writer writer (buf_write);
   boost::shared_ptr<Viewer> viewer;
   if (global_visualize)
-    viewer.reset (new Viewer (buf_vis));
+    viewer = pcl::make_shared<Viewer> (buf_vis);
   else
     save_data = true;
 

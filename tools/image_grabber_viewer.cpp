@@ -48,6 +48,8 @@
 #include <mutex>
 #include <thread>
 
+#include "pcl/make_shared.h"
+
 using namespace std::chrono_literals;
 using pcl::console::print_error;
 using pcl::console::print_info;
@@ -156,7 +158,7 @@ main (int argc, char** argv)
   double opaque;
   pcl::console::parse_argument (argc, argv, "-opaque", opaque);
 
-  cloud_viewer.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
+  cloud_viewer = pcl::make_shared<pcl::visualization::PCLVisualizer> (argc, argv, "PCD viewer");
 
 #ifdef DISPLAY_IMAGE
   img_viewer.reset (new pcl::visualization::ImageViewer ("OpenNI Viewer"));
@@ -200,7 +202,7 @@ main (int argc, char** argv)
   std::cout << "path: " << path << std::endl;
   if (!path.empty() && boost::filesystem::exists (path))
   {
-    grabber.reset (new pcl::ImageGrabber<pcl::PointXYZRGBA> (path, frames_per_second, repeat, use_pclzf));
+    grabber = pcl::make_shared<pcl::ImageGrabber<pcl::PointXYZRGBA>> (path, frames_per_second, repeat, use_pclzf);
   }
   else
   {

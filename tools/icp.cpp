@@ -49,6 +49,8 @@
 #include <fstream>
 #include <vector>
 
+#include "pcl/make_shared.h"
+
 typedef pcl::PointXYZ PointType;
 typedef pcl::PointCloud<PointType> Cloud;
 typedef Cloud::ConstPtr CloudConstPtr;
@@ -76,12 +78,12 @@ main (int argc, char **argv)
   if (nonLinear)
   {
     std::cout << "Using IterativeClosestPointNonLinear" << std::endl;
-    icp.reset (new pcl::IterativeClosestPointNonLinear<PointType, PointType> ());
+    icp = pcl::make_shared<pcl::IterativeClosestPointNonLinear<PointType, PointType>> ();
   }
   else
   {
     std::cout << "Using IterativeClosestPoint" << std::endl;
-    icp.reset (new pcl::IterativeClosestPoint<PointType, PointType> ());
+    icp = pcl::make_shared<pcl::IterativeClosestPoint<PointType, PointType>> ();
   }
   icp->setMaximumIterations (iter);
   icp->setMaxCorrespondenceDistance (dist);

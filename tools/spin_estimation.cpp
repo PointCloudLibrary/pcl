@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
- *  
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+#include <pcl/make_shared.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -106,9 +107,9 @@ saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
   tt.tic ();
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
-  
+
   io::savePCDFile (filename, output, translation, orientation, false);
-  
+
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
 
@@ -145,15 +146,15 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-neigh", min_neigh);
 
   // Load the first file
-  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
-  if (!loadCloud (argv[p_file_indices[0]], *cloud)) 
+  pcl::PCLPointCloud2::Ptr cloud = pcl::make_shared<pcl::PCLPointCloud2> ();
+  if (!loadCloud (argv[p_file_indices[0]], *cloud))
     return (-1);
 
   // Perform the feature estimation
   pcl::PCLPointCloud2 output;
-  
+
   // Convert data to PointCloud<T>
-  PointCloud<PointNormal>::Ptr xyznormals (new PointCloud<PointNormal>);
+  PointCloud<PointNormal>::Ptr xyznormals = pcl::make_shared<PointCloud<PointNormal>> ();
   fromPCLPointCloud2 (*cloud, *xyznormals);
 
   // Estimate
@@ -163,11 +164,11 @@ main (int argc, char** argv)
   print_highlight (stderr, "Computing ");
 
   typedef Histogram<153> SpinImage;
-  SpinImageEstimation<PointNormal, PointNormal, SpinImage> spin_est (image_width, support_angle, min_neigh); 
+  SpinImageEstimation<PointNormal, PointNormal, SpinImage> spin_est (image_width, support_angle, min_neigh);
   //spin_est.setInputWithNormals (xyznormals, xyznormals);
   spin_est.setInputCloud (xyznormals);
   spin_est.setInputNormals (xyznormals);
-  spin_est.setSearchMethod (search::KdTree<PointNormal>::Ptr (new search::KdTree<PointNormal>));
+  spin_est.setSearchMethod (pcl::make_shared<pcl::search::KdTree<pcl::PointNormal>> ());
   spin_est.setRadiusSearch (radius);
 
   if (find_argument(argc, argv, "-radial") > 0)
