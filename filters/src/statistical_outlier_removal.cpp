@@ -40,6 +40,7 @@
 
 #include <pcl/filters/impl/statistical_outlier_removal.hpp>
 #include <pcl/conversions.h>
+#include <pcl/make_shared.h>
 
 using namespace std;
 
@@ -191,16 +192,16 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
                                                                          std::vector<float>& distances)
 {
   // Send the input dataset to the spatial locator
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
   pcl::fromPCLPointCloud2 (*input_, *cloud);
 
   // Initialize the spatial locator
   if (!tree_)
   {
     if (cloud->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
+      tree_ = pcl::make_shared<pcl::search::OrganizedNeighbor<pcl::PointXYZ>> ();
     else
-      tree_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
+      tree_ = pcl::make_shared<pcl::search::KdTree<pcl::PointXYZ>> (false);
   }
 
   tree_->setInputCloud (cloud);
@@ -253,6 +254,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
+
 #include <pcl/point_types.h>
 
 // Instantiations of specific point types
