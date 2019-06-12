@@ -150,7 +150,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
 
     for (size_t i = 0; i < output.size (); ++i)
     {
-      typedef typename pcl::traits::fieldList<PointOutT>::type FieldList;
+      using FieldList = typename pcl::traits::fieldList<PointOutT>::type;
       pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_x", normals_->points[i].normal_x));
       pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_y", normals_->points[i].normal_y));
       pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_z", normals_->points[i].normal_z));

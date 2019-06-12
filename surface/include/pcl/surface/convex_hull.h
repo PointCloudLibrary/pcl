@@ -77,14 +77,14 @@ namespace pcl
       using PCLBase<PointInT>::deinitCompute;
 
     public:
-      typedef boost::shared_ptr<ConvexHull<PointInT> > Ptr;
-      typedef boost::shared_ptr<const ConvexHull<PointInT> > ConstPtr;
+      using Ptr = boost::shared_ptr<ConvexHull<PointInT> >;
+      using ConstPtr = boost::shared_ptr<const ConvexHull<PointInT> >;
 
       using MeshConstruction<PointInT>::reconstruct;
 
-      typedef pcl::PointCloud<PointInT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointInT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       /** \brief Empty constructor. */
       ConvexHull () : compute_area_ (false), total_area_ (0), total_volume_ (0), dimension_ (0), 

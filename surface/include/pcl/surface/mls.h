@@ -260,20 +260,20 @@ namespace pcl
       using PCLBase<PointInT>::initCompute;
       using PCLBase<PointInT>::deinitCompute;
 
-      typedef pcl::search::Search<PointInT> KdTree;
-      typedef typename KdTree::Ptr KdTreePtr;
-      typedef pcl::PointCloud<pcl::Normal> NormalCloud;
-      typedef NormalCloud::Ptr NormalCloudPtr;
+      using KdTree = pcl::search::Search<PointInT>;
+      using KdTreePtr = typename KdTree::Ptr;
+      using NormalCloud = pcl::PointCloud<pcl::Normal>;
+      using NormalCloudPtr = NormalCloud::Ptr;
 
-      typedef pcl::PointCloud<PointOutT> PointCloudOut;
-      typedef typename PointCloudOut::Ptr PointCloudOutPtr;
-      typedef typename PointCloudOut::ConstPtr PointCloudOutConstPtr;
+      using PointCloudOut = pcl::PointCloud<PointOutT>;
+      using PointCloudOutPtr = typename PointCloudOut::Ptr;
+      using PointCloudOutConstPtr = typename PointCloudOut::ConstPtr;
 
-      typedef pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename PointCloudIn::Ptr PointCloudInPtr;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
+      using PointCloudInPtr = typename PointCloudIn::Ptr;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
-      typedef std::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
+      using SearchMethod = std::function<int (int, double, std::vector<int> &, std::vector<float> &)>;
 
       enum UpsamplingMethod
       {

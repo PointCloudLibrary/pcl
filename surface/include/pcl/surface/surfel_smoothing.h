@@ -52,12 +52,12 @@ namespace pcl
       typedef boost::shared_ptr<SurfelSmoothing<PointT, PointNT> > Ptr;
       typedef boost::shared_ptr<const SurfelSmoothing<PointT, PointNT> > ConstPtr;
 
-      typedef pcl::PointCloud<PointT> PointCloudIn;
-      typedef typename pcl::PointCloud<PointT>::Ptr PointCloudInPtr;
-      typedef pcl::PointCloud<PointNT> NormalCloud;
-      typedef typename pcl::PointCloud<PointNT>::Ptr NormalCloudPtr;
-      typedef pcl::search::Search<PointT> CloudKdTree;
-      typedef typename pcl::search::Search<PointT>::Ptr CloudKdTreePtr;
+      using PointCloudIn = pcl::PointCloud<PointT>;
+      using PointCloudInPtr = typename pcl::PointCloud<PointT>::Ptr;
+      using NormalCloud = pcl::PointCloud<PointNT>;
+      using NormalCloudPtr = typename pcl::PointCloud<PointNT>::Ptr;
+      using CloudKdTree = pcl::search::Search<PointT>;
+      using CloudKdTreePtr = typename pcl::search::Search<PointT>::Ptr;
 
       SurfelSmoothing (float a_scale = 0.01)
         : PCLBase<PointT> ()
