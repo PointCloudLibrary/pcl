@@ -42,6 +42,8 @@
 #include <mutex>
 #include <thread>
 
+#include "pcl/make_shared.h"
+
 namespace pcl
 {
   struct cloud_show_base
@@ -178,7 +180,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     using namespace pcl::visualization;
 
-    viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_, true));
+    viewer_ = pcl::make_shared<PCLVisualizer>(window_name_, true);
     viewer_->setBackgroundColor (0.1, 0.1, 0.1);
     viewer_->addCoordinateSystem (0.1, "global");
 
