@@ -40,6 +40,8 @@
 
 #include <pcl/segmentation/cpc_segmentation.h>
 
+#include <pcl/make_shared.h>
+
 template <typename PointT>
 pcl::CPCSegmentation<PointT>::CPCSegmentation () :
     max_cuts_ (20),
@@ -129,7 +131,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
     edge_centroid.intensity = sv_adjacency_list_[*edge_itr].is_convex ? -sv_adjacency_list_[*edge_itr].normal_difference : sv_adjacency_list_[*edge_itr].normal_difference;
     if (seg_to_edge_points_map.find (source_segment_label) == seg_to_edge_points_map.end ())
     {
-      seg_to_edge_points_map[source_segment_label] = pcl::PointCloud<WeightSACPointType>::Ptr (new pcl::PointCloud<WeightSACPointType> ());
+      seg_to_edge_points_map[source_segment_label] = pcl::make_shared<pcl::PointCloud<WeightSACPointType>> ();
     }
     seg_to_edge_points_map[source_segment_label]->push_back (edge_centroid);
     seg_to_edgeIDs_map[source_segment_label].push_back (*edge_itr);
@@ -154,7 +156,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
     }
 
     pcl::PointCloud<WeightSACPointType>::Ptr edge_cloud_cluster  = seg_to_edge_points.second;
-    pcl::SampleConsensusModelPlane<WeightSACPointType>::Ptr model_p (new pcl::SampleConsensusModelPlane<WeightSACPointType> (edge_cloud_cluster));
+    pcl::SampleConsensusModelPlane<WeightSACPointType>::Ptr model_p = pcl::make_shared<pcl::SampleConsensusModelPlane<WeightSACPointType>> (edge_cloud_cluster);
 
     WeightedRandomSampleConsensus weight_sac (model_p, seed_resolution_, true);
 
@@ -186,7 +188,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
       // We also just actually cut when the edge goes through the plane. This is why we check the planedistance
       std::vector<pcl::PointIndices> cluster_indices;
       pcl::EuclideanClusterExtraction<WeightSACPointType> euclidean_clusterer;
-      pcl::search::KdTree<WeightSACPointType>::Ptr tree (new pcl::search::KdTree<WeightSACPointType>);
+      pcl::search::KdTree<WeightSACPointType>::Ptr tree = pcl::make_shared<pcl::search::KdTree<WeightSACPointType>> ();
       tree->setInputCloud (edge_cloud_cluster);
       euclidean_clusterer.setClusterTolerance (seed_resolution_);
       euclidean_clusterer.setMinClusterSize (1);
@@ -324,7 +326,7 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
     // weight distances to get the score (only using connected inliers)
     sac_model_->setIndices (full_cloud_pt_indices_);
 
-    boost::shared_ptr<std::vector<int> > current_inliers (new std::vector<int>);
+    boost::shared_ptr<std::vector<int> > current_inliers = pcl::make_shared<std::vector<int>> ();
     sac_model_->selectWithinDistance (model_coefficients, threshold_, *current_inliers);
     double current_score = 0;
     Eigen::Vector3f plane_normal (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
