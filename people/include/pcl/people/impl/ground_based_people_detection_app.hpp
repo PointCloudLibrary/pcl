@@ -43,10 +43,13 @@
 
 #include <pcl/people/ground_based_people_detection_app.h>
 
+#include <pcl/pcl_base.h>
+#include <pcl/make_shared.h>
+
 template <typename PointT>
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::GroundBasedPeopleDetectionApp ()
 {
-  rgb_image_ = pcl::PointCloud<pcl::RGB>::Ptr(new pcl::PointCloud<pcl::RGB>);
+  rgb_image_ = pcl::make_shared<pcl::PointCloud<pcl::RGB>> ();
 
   // set default values for optional parameters:
   sampling_factor_ = 1;
@@ -239,7 +242,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::extractRGBFromPointCloud (Po
 template <typename PointT> void
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::swapDimensions (pcl::PointCloud<pcl::RGB>::Ptr& cloud)
 {
-  pcl::PointCloud<pcl::RGB>::Ptr output_cloud(new pcl::PointCloud<pcl::RGB>);
+  pcl::PointCloud<pcl::RGB>::Ptr output_cloud = pcl::make_shared<pcl::PointCloud<pcl::RGB>> ();
   output_cloud->points.resize(cloud->height*cloud->width);
   output_cloud->width = cloud->height;
   output_cloud->height = cloud->width;
@@ -295,7 +298,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::applyTransformationIntrinsic
 template <typename PointT> void
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::filter ()
 {
-  cloud_filtered_ = PointCloudPtr (new PointCloud);
+  cloud_filtered_ = pcl::make_shared<PointCloud> ();
   pcl::VoxelGrid<PointT> grid;
   grid.setInputCloud(cloud_);
   grid.setLeafSize(voxel_size_, voxel_size_, voxel_size_);
@@ -336,7 +339,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   // Downsample of sampling_factor in every dimension:
   if (sampling_factor_ != 1)
   {
-    PointCloudPtr cloud_downsampled(new PointCloud);
+    PointCloudPtr cloud_downsampled = pcl::make_shared<PointCloud> ();
     cloud_downsampled->width = (cloud_->width)/sampling_factor_;
     cloud_downsampled->height = (cloud_->height)/sampling_factor_;
     cloud_downsampled->points.resize(cloud_downsampled->height*cloud_downsampled->width);
@@ -356,10 +359,10 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   filter();
 
   // Ground removal and update:
-  pcl::IndicesPtr inliers(new std::vector<int>);
-  typename pcl::SampleConsensusModelPlane<PointT>::Ptr ground_model (new pcl::SampleConsensusModelPlane<PointT> (cloud_filtered_));
+  pcl::IndicesPtr inliers = pcl::make_shared<std::vector<int>> ();
+  typename pcl::SampleConsensusModelPlane<PointT>::Ptr ground_model = pcl::make_shared<pcl::SampleConsensusModelPlane<PointT>> (cloud_filtered_);
   ground_model->selectWithinDistance(ground_coeffs_transformed_, 2 * voxel_size_, *inliers);
-  no_ground_cloud_ = PointCloudPtr (new PointCloud);
+  no_ground_cloud_ = pcl::make_shared<PointCloud> ();
   pcl::ExtractIndices<PointT> extract;
   extract.setInputCloud(cloud_filtered_);
   extract.setIndices(inliers);
@@ -372,7 +375,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
 
   // Euclidean Clustering:
   std::vector<pcl::PointIndices> cluster_indices;
-  typename pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT>);
+  typename pcl::search::KdTree<PointT>::Ptr tree = pcl::make_shared <pcl::search::KdTree<PointT>> ();
   tree->setInputCloud(no_ground_cloud_);
   pcl::EuclideanClusterExtraction<PointT> ec;
   ec.setClusterTolerance(2 * voxel_size_);
