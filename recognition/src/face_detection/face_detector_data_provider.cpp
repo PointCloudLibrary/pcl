@@ -1,4 +1,5 @@
 #include "pcl/recognition/face_detection/face_detector_data_provider.h"
+#include "pcl/make_shared.h"
 #include "pcl/recognition/face_detection/face_common.h"
 #include <pcl/common/time.h>
 #include <pcl/features/integral_image_normal.h>
@@ -246,7 +247,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     //Compute integral image over depth
     pcl::IntegralImage2D<float, 1>::Ptr integral_image_depth;
-    integral_image_depth.reset (new pcl::IntegralImage2D<float, 1> (false));
+    integral_image_depth = pcl::make_shared<pcl::IntegralImage2D<float, 1>> (false);
 
     int element_stride = sizeof(pcl::PointXYZ) / sizeof(float);
     int row_stride = element_stride * cloud->width;
@@ -277,15 +278,15 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     if (USE_NORMALS_)
     {
-      integral_image_normal_x.reset (new pcl::IntegralImage2D<float, 1> (false));
+      integral_image_normal_x = pcl::make_shared<pcl::IntegralImage2D<float, 1>> (false);
       const float *data_nx = reinterpret_cast<const float*> (&normals->points[0]);
       integral_image_normal_x->setInput (data_nx, normals->width, normals->height, element_stride_normal, row_stride_normal);
 
-      integral_image_normal_y.reset (new pcl::IntegralImage2D<float, 1> (false));
+      integral_image_normal_y = pcl::make_shared<pcl::IntegralImage2D<float, 1>> (false);
       const float *data_ny = reinterpret_cast<const float*> (&normals->points[0]);
       integral_image_normal_y->setInput (data_ny + 1, normals->width, normals->height, element_stride_normal, row_stride_normal);
 
-      integral_image_normal_z.reset (new pcl::IntegralImage2D<float, 1> (false));
+      integral_image_normal_z = pcl::make_shared<pcl::IntegralImage2D<float, 1>> (false);
       const float *data_nz = reinterpret_cast<const float*> (&normals->points[0]);
       integral_image_normal_z->setInput (data_nz + 2, normals->width, normals->height, element_stride_normal, row_stride_normal);
     }

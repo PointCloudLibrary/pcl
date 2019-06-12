@@ -6,21 +6,22 @@
  */
 
 #include "pcl/recognition/face_detection/rf_face_detector_trainer.h"
-#include "pcl/recognition/face_detection/face_common.h"
-#include "pcl/io/pcd_io.h"
-#include "pcl/ml/dt/decision_tree_trainer.h"
-#include "pcl/ml/dt/decision_tree_evaluator.h"
-#include "pcl/ml/dt/decision_forest_trainer.h"
-#include "pcl/ml/dt/decision_forest_evaluator.h"
 #include "pcl/filters/passthrough.h"
+#include "pcl/filters/voxel_grid.h"
+#include "pcl/io/pcd_io.h"
+#include "pcl/make_shared.h"
+#include "pcl/ml/dt/decision_forest_evaluator.h"
+#include "pcl/ml/dt/decision_forest_trainer.h"
+#include "pcl/ml/dt/decision_tree_evaluator.h"
+#include "pcl/ml/dt/decision_tree_trainer.h"
+#include "pcl/recognition/face_detection/face_common.h"
 #include <pcl/features/integral_image_normal.h>
-#include <pcl/registration/icp.h>
-#include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/recognition/hv/hv_papazov.h>
 #include <pcl/registration/correspondence_estimation_normal_shooting.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
-#include "pcl/filters/voxel_grid.h"
-#include <pcl/recognition/hv/hv_papazov.h>
-#include <pcl/features/normal_3d.h>
+#include <pcl/registration/icp.h>
+#include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
 
 void pcl::RFFaceDetectorTrainer::trainWithDataProvider()
 {
@@ -50,7 +51,7 @@ void pcl::RFFaceDetectorTrainer::trainWithDataProvider()
   dft.setThresholds (thresholds_);
 
   typename face_detection::FaceDetectorDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>::Ptr dtdp;
-  dtdp.reset (new face_detection::FaceDetectorDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>);
+  dtdp = pcl::make_shared<face_detection::FaceDetectorDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>> ();
   dtdp->setUseNormals (use_normals_);
   dtdp->setWSize (w_size_);
   dtdp->setNumImages (num_images_);
@@ -230,7 +231,7 @@ void pcl::RFFaceDetectorTrainer::setModelPath(std::string & model)
   pcl::PointCloud<pcl::PointXYZ>::Ptr model_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
   pcl::io::loadPCDFile (model_path_, *model_cloud);
 
-  model_original_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
+  model_original_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
 
   {
     pcl::VoxelGrid<pcl::PointXYZ> voxel_grid_icp;
@@ -270,7 +271,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
   //compute depth integral image
   pcl::IntegralImage2D<float, 1>::Ptr integral_image_depth;
-  integral_image_depth.reset (new pcl::IntegralImage2D<float, 1> (false));
+  integral_image_depth = pcl::make_shared<pcl::IntegralImage2D<float, 1>> (false);
 
   int element_stride = sizeof(pcl::PointXYZ) / sizeof(float);
   int row_stride = element_stride * cloud->width;
@@ -299,15 +300,15 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
   if (use_normals_)
   {
-    integral_image_normal_x.reset (new pcl::IntegralImage2D<float, 1> (false));
+    integral_image_normal_x = pcl::make_shared<pcl::IntegralImage2D<float, 1>> (false);
     const float *data_nx = reinterpret_cast<const float*> (&normals->points[0]);
     integral_image_normal_x->setInput (data_nx, normals->width, normals->height, element_stride_normal, row_stride_normal);
 
-    integral_image_normal_y.reset (new pcl::IntegralImage2D<float, 1> (false));
+    integral_image_normal_y = pcl::make_shared<pcl::IntegralImage2D<float, 1>> (false);
     const float *data_ny = reinterpret_cast<const float*> (&normals->points[0]);
     integral_image_normal_y->setInput (data_ny + 1, normals->width, normals->height, element_stride_normal, row_stride_normal);
 
-    integral_image_normal_z.reset (new pcl::IntegralImage2D<float, 1> (false));
+    integral_image_normal_z = pcl::make_shared<pcl::IntegralImage2D<float, 1>> (false);
     const float *data_nz = reinterpret_cast<const float*> (&normals->points[0]);
     integral_image_normal_z->setInput (data_nz + 2, normals->width, normals->height, element_stride_normal, row_stride_normal);
   }
@@ -410,7 +411,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
     if (face_heat_map_)
     {
-      face_heat_map_.reset (new pcl::PointCloud<pcl::PointXYZI>);
+      face_heat_map_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZI>> ();
       face_heat_map_->resize (cloud->points.size ());
       face_heat_map_->height = 1;
       face_heat_map_->width = static_cast<unsigned int>(cloud->points.size ());

@@ -40,6 +40,8 @@
 #include <pcl/common/random.h>
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 
+#include "pcl/make_shared.h"
+
 using namespace std;
 using namespace pcl::common;
 
@@ -77,7 +79,7 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
   scene_octree_proj_.build(scene_octree_, abs_zdist_thresh_, abs_zdist_thresh_);
 
   // Needed only if icp hypotheses refinement is to be performed
-  scene_octree_points_ = PointCloudIn::Ptr (new PointCloudIn ());
+  scene_octree_points_ = pcl::make_shared<PointCloudIn>();
   // First, get the scene octree points
   scene_octree_.getFullLeavesPoints (*scene_octree_points_);
 
