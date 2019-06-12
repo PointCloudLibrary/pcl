@@ -348,4 +348,16 @@ namespace pcl
     const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&pt) + field_offset;
     value = *reinterpret_cast<const ValT*>(data_ptr);
   }
+
+  /**
+   * \brief Tests at compile time if type T has a custom allocator
+   */
+  template<typename T>
+  class has_custom_allocator
+  {
+    template<typename U, typename = typename U::custom_allocator_type> static char test(unsigned);
+    template<typename U> static int32_t test(...);
+  public:
+    static constexpr bool value = (sizeof(test<T>(0u)) == sizeof(int8_t));
+  };
 }

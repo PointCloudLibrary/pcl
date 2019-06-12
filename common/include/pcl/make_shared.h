@@ -46,6 +46,8 @@
 
 #include <Eigen/Core>
 
+#include <pcl/point_traits.h>
+
 
 #define PCL_MAKE_ALIGNED_OPERATOR_NEW \
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
@@ -54,15 +56,6 @@
 
 namespace pcl
 {
-
-template<typename T>
-class has_custom_allocator
-{
-  template<typename U, typename = typename U::custom_allocator_type> static char test(unsigned);
-  template<typename U> static int32_t test(...);
-public:
-  static constexpr bool value = (sizeof(test<T>(0u)) == sizeof(int8_t));
-};
 
 /**
  * \brief Returns a boost::shared_ptr regardless of type T's allocation policy
