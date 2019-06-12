@@ -44,12 +44,12 @@
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <eigen3/Eigen/Core>
+#include <Eigen/Core>
 
 
 #define PCL_MAKE_ALIGNED_OPERATOR_NEW \
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
-  using custom_allocator = void;
+  using custom_allocator_type = void;
 
 
 namespace pcl
@@ -58,12 +58,15 @@ namespace pcl
 template<typename T>
 class has_custom_allocator
 {
-  template<typename U, typename = typename U::custom_allocator> static char test(unsigned);
+  template<typename U, typename = typename U::custom_allocator_type> static char test(unsigned);
   template<typename U> static int32_t test(...);
 public:
-  static constexpr bool value = (sizeof(test<T>(0)) == sizeof(char));
+  static constexpr bool value = (sizeof(test<T>(0u)) == sizeof(int8_t));
 };
 
+/**
+ * \brief Returns a boost::shared_ptr regardless of type T's allocation policy
+ */
 template<typename T, typename ... Args>
 std::enable_if_t<has_custom_allocator<T>::value, boost::shared_ptr<T>> make_shared(Args&&... args)
 {
