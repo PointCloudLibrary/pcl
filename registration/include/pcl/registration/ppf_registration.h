@@ -43,6 +43,7 @@
 #include <pcl/registration/boost.h>
 #include <pcl/registration/registration.h>
 #include <pcl/features/ppf.h>
+#include <pcl/make_shared.h>
 
 namespace pcl
 {
@@ -75,7 +76,7 @@ namespace pcl
        */
       PPFHashMapSearch (float angle_discretization_step = 12.0f / 180.0f * static_cast<float> (M_PI),
                         float distance_discretization_step = 0.01f)
-        : feature_hash_map_ (new FeatureHashMapType)
+        : feature_hash_map_ (pcl::make_shared<FeatureHashMapType> ())
         , internals_initialized_ (false)
         , angle_discretization_step_ (angle_discretization_step)
         , distance_discretization_step_ (distance_discretization_step)
@@ -103,7 +104,7 @@ namespace pcl
 
       /** \brief Convenience method for returning a copy of the class instance as a boost::shared_ptr */
       Ptr
-      makeShared() { return Ptr (new PPFHashMapSearch (*this)); }
+      makeShared() { return pcl::make_shared<PPFHashMapSearch>(*this); }
 
       /** \brief Returns the angle discretization step parameter (the step value between each bin of the hash map for the angular values) */
       inline float
@@ -283,3 +284,4 @@ namespace pcl
 }
 
 #include <pcl/registration/impl/ppf_registration.hpp>
+

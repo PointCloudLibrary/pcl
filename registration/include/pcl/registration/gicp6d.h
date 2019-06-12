@@ -42,6 +42,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
+
+#include "pcl/make_shared.h"
 #include <pcl/registration/gicp.h>
 
 namespace pcl
@@ -185,7 +187,7 @@ namespace pcl
           inline Ptr
           makeShared () const
           {
-            return Ptr (new MyPointRepresentation (*this));
+            return pcl::make_shared<MyPointRepresentation>(*this);
           }
 
           void

@@ -38,6 +38,8 @@
 
 #include <pcl/registration/gicp6d.h>
 
+#include "pcl/make_shared.h"
+
 namespace pcl
 {
   // convert sRGB to CIELAB
@@ -193,13 +195,13 @@ namespace pcl
     // Compute target cloud covariance matrices
     if ((!target_covariances_) || (target_covariances_->empty ()))
     {
-      target_covariances_.reset (new MatricesVector);
+      target_covariances_ = pcl::make_shared<MatricesVector> ();
       computeCovariances<PointTarget> (target_, tree_, *target_covariances_);
     }
     // Compute input cloud covariance matrices
     if ((!input_covariances_) || (input_covariances_->empty ()))
     {
-      input_covariances_.reset (new MatricesVector);
+      input_covariances_ = pcl::make_shared<MatricesVector> ();
       computeCovariances<PointSource> (input_, tree_reciprocal_,
           *input_covariances_);
     }

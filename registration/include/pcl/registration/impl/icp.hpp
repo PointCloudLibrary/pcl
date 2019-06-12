@@ -44,6 +44,8 @@
 #include <pcl/registration/boost.h>
 #include <pcl/correspondence.h>
 
+#include "pcl/make_shared.h"
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> void
 pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud (
@@ -175,7 +177,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     PCLPointCloud2::Ptr input_transformed_blob;
     if (need_source_blob_)
     {
-      input_transformed_blob.reset (new PCLPointCloud2);
+      input_transformed_blob = pcl::make_shared<PCLPointCloud2> ();
       toPCLPointCloud2 (*input_transformed, *input_transformed_blob);
     }
     // Save the previously estimated transformation
