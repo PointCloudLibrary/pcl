@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/file_io.h>
 
@@ -284,7 +285,7 @@ namespace pcl
         return (res);
       }
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief Point Cloud Data (PCD) file format writer.

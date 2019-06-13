@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <Eigen/Core>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
@@ -124,7 +125,7 @@ class TemplateAlignment
     {
       float fitness_score;
       Eigen::Matrix4f final_transformation;
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     TemplateAlignment () :

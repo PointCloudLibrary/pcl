@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/io/boost.h>
 #include <pcl/io/file_io.h>
 #include <pcl/io/ply/ply_parser.h>
@@ -527,7 +528,7 @@ namespace pcl
       //face element artifact
       std::vector<pcl::Vertices> *polygons_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
       
     private:
       // RGB values stored by vertexColorCallback()

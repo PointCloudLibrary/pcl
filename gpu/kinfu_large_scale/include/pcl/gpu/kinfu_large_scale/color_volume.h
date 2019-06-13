@@ -97,13 +97,13 @@ namespace pcl
         Eigen::Vector3f volume_size_;
 
         /** \brief Length of running average */
-        int max_weight_;     
+        int max_weight_;
 
         /** \brief color volume data */
         DeviceArray2D<int> color_volume_;
 
 		public:
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
     }
   }

@@ -1037,10 +1037,10 @@ namespace pcl
           {
             return (layer.layer_name == str_);
           }
-        };        
-        
+        };
+
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

@@ -100,17 +100,17 @@ namespace pcl
           }
 
 		  public:
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-        };        
-        
+                    PCL_MAKE_ALIGNED_OPERATOR_NEW
+        };
+
         /** \brief Default buffer size for fetching cloud. It limits max number of points that can be extracted */
         enum { DEFAULT_CLOUD_BUFFER_SIZE = 10 * 1000 * 1000 };
-              
+
         /** \brief Constructor
           * \param[in] resolution volume resolution
           */
-        TsdfVolume (const Eigen::Vector3i& resolution);           
-              
+        TsdfVolume (const Eigen::Vector3i& resolution);
+
         /** \brief Sets Tsdf volume size for each dimension
           * \param[in] size size of tsdf volume in meters
           */
@@ -284,7 +284,7 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         VolumePtr volume_host_;
         WeightsPtr weights_host_;
 public:
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW        
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
     }
   }

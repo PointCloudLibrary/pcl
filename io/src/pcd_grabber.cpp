@@ -35,13 +35,14 @@
  *
  */
 
-#include <pcl/pcl_config.h>
 #include <pcl/io/low_level_io.h>
 #include <pcl/io/pcd_grabber.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/tar.h>
+#include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberImplementation //////////////////////
@@ -101,7 +102,7 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   // simultaneous asynchronous read-aheads
   std::mutex read_ahead_mutex_;
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW 
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////

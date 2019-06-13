@@ -35,6 +35,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/surface/boost.h>
 #include <pcl/surface/reconstruction.h>
 
@@ -517,7 +518,7 @@ namespace pcl
                               std::vector<pcl::Vertices> &polygons) override;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

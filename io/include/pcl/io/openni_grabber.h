@@ -39,6 +39,8 @@
 #pragma once
 
 #include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
+
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/eigen.h>
@@ -492,7 +494,7 @@ namespace pcl
       double depth_principal_point_y_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   boost::shared_ptr<openni_wrapper::OpenNIDevice>

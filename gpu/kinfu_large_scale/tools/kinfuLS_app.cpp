@@ -50,6 +50,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <iostream>
 #include <thread>
 
+#include <pcl/pcl_macros.h>
 #include <pcl/console/parse.h>
 
 #include <boost/filesystem.hpp>
@@ -680,7 +681,7 @@ struct SceneCloudView
   boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_;
 
 public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
 };
 

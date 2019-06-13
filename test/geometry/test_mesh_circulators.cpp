@@ -41,6 +41,8 @@
 #include <gtest/gtest.h>
 
 #include <pcl/geometry/triangle_mesh.h>
+#include <pcl/pcl_macros.h>
+
 #include "test_mesh_common_functions.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -113,7 +115,7 @@ class TestMeshCirculators : public ::testing::Test
     VertexIndices expected_123456_;
     VertexIndices expected_654321_;
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -40,6 +40,7 @@
 #include <QDebug>
 
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/search/kdtree.h>
 
@@ -69,7 +70,7 @@ namespace pcl
       public:
         
         //This is needed because we have members which are Vector4f and Quaternionf
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
         
         CloudItem (const QString name,
                    const pcl::PCLPointCloud2::Ptr cloud_ptr,

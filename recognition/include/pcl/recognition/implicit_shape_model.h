@@ -40,6 +40,7 @@
 #include <limits>
 #include <Eigen/src/Core/Matrix.h>
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_representation.h>
 #include <pcl/features/feature.h>
@@ -63,7 +64,7 @@ namespace pcl
     /** \brief Determines which class this peak belongs. */
     int class_id;
 
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   } EIGEN_ALIGN16;
 
   namespace features
@@ -219,7 +220,7 @@ namespace pcl
       /** \brief Stores descriptors dimension. */
       unsigned int descriptors_dimension_;
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 

@@ -39,7 +39,7 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
-#include <pcl/gpu/kinfu/pixel_rgb.h>
+:#include <pcl/gpu/kinfu/pixel_rgb.h>
 #include <pcl/gpu/kinfu/tsdf_volume.h>
 #include <pcl/gpu/kinfu/color_volume.h>
 #include <pcl/gpu/kinfu/raycaster.h>
@@ -296,7 +296,7 @@ namespace pcl
         reset ();
 
 public:
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     };
   }

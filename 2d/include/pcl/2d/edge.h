@@ -38,6 +38,7 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/2d/convolution.h>
 #include <pcl/2d/kernel.h>
 
@@ -298,7 +299,7 @@ namespace pcl
         input_ = input;
       }
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 #include <pcl/2d/impl/edge.hpp>

@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <vector>
 #include <Eigen/StdVector>
@@ -109,6 +110,6 @@ namespace pcl
         */
       virtual Clipper3D<PointT>*
       clone () const = 0;
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }

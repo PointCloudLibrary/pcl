@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/common/point_operators.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_config.h>
@@ -160,7 +161,7 @@ namespace pcl
         unsigned int threads_;
 
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

@@ -46,6 +46,7 @@
 #include <boost/fusion/include/as_vector.hpp>
 #include <boost/fusion/include/filter_if.hpp>
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 
 namespace pcl
@@ -80,7 +81,7 @@ namespace pcl
       template <typename PointT> void
       get (PointT& t, size_t n) const { t.getVector3fMap () = xyz / n; }
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     };
 
@@ -113,7 +114,7 @@ namespace pcl
 #endif
       }
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     };
 

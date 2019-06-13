@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/features/feature.h>
 #include <pcl/common/centroid.h>
 
@@ -413,7 +414,7 @@ namespace pcl
       bool use_sensor_origin_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

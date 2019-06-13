@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/registration/registration.h>
 #include <pcl/common/common.h>
 
@@ -80,7 +81,7 @@ namespace pcl
       /** \brief Corresponding transformation matrix retrieved using \a corrs. */
       Eigen::Matrix4f transformation;
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     typedef std::vector<MatchingCandidate, Eigen::aligned_allocator<MatchingCandidate> > MatchingCandidates;

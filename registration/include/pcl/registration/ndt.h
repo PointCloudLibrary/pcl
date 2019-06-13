@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/registration/registration.h>
 #include <pcl/filters/voxel_grid_covariance.h>
 
@@ -458,7 +459,7 @@ namespace pcl
       Eigen::Matrix<double, 18, 6> point_hessian_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
 
   };
 

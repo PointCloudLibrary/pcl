@@ -44,14 +44,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <Eigen/Core>
-
 #include <pcl/point_traits.h>
-
-
-#define PCL_MAKE_ALIGNED_OPERATOR_NEW \
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
-  using custom_allocator_type = void;
 
 
 namespace pcl

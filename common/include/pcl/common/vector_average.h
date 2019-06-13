@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/common/eigen.h>
 
 namespace pcl 
@@ -96,7 +97,7 @@ namespace pcl
         inline void
         getEigenVector1 (Eigen::Matrix<real, dimension, 1>& eigen_vector1) const;
 
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
         
         //-----VARIABLES-----
 

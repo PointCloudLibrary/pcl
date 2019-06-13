@@ -44,6 +44,7 @@
 #include <pcl/geometry/quad_mesh.h>
 #include <pcl/geometry/polygon_mesh.h>
 #include <pcl/geometry/mesh_conversion.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
@@ -131,7 +132,7 @@ class TestMeshConversion : public ::testing::Test
     std::vector <std::vector <uint32_t> >    manifold_faces_;
 
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <bool IsManifoldT>

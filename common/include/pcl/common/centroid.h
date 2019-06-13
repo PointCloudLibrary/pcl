@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_traits.h>
 #include <pcl/PointIndices.h>
@@ -1050,7 +1051,7 @@ namespace pcl
         return (num_points_);
       }
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     private:
 

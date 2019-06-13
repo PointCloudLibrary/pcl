@@ -46,6 +46,7 @@
 #include <Eigen/Geometry>
 #include <pcl/PCLHeader.h>
 #include <pcl/exceptions.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_traits.h>
 
 namespace pcl
@@ -94,7 +95,7 @@ namespace pcl
       Pod &p2_;
       int f_idx_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
    };
 
   /** \brief Helper functor structure for copying data between an Eigen type and a PointT. */
@@ -125,7 +126,7 @@ namespace pcl
       Eigen::VectorXf &p2_;
       int f_idx_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   namespace detail
@@ -594,7 +595,7 @@ namespace pcl
       friend boost::shared_ptr<MsgFieldMap>& detail::getMapping<PointT>(pcl::PointCloud<PointT> &p);
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   namespace detail

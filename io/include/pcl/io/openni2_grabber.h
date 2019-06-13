@@ -41,6 +41,7 @@
  
 #ifdef HAVE_OPENNI2
 #include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
 
 #include <pcl/io/eigen.h>
 #include <pcl/io/boost.h>
@@ -491,7 +492,7 @@ namespace pcl
         CameraParameters depth_parameters_;
 
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     boost::shared_ptr<pcl::io::openni2::OpenNI2Device>

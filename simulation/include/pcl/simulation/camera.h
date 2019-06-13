@@ -85,7 +85,6 @@ namespace pcl
         return Eigen::Vector3d (yaw_, pitch_, roll_);
       }
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     private:
       void
       updatePose ();
@@ -95,10 +94,10 @@ namespace pcl
 
       void
       updateProjectionMatrix ();
-    
+
       double x_,y_,z_;
       double roll_,pitch_,yaw_;
-    
+
       Eigen::Isometry3d pose_;
 
       // Camera Intrinsic Parameters
@@ -114,6 +113,9 @@ namespace pcl
       float z_far_;
 
       Eigen::Matrix4f projection_matrix_;
+
+    public:
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   } // namespace - simulation
 } // namespace - pcl

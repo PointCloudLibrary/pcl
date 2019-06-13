@@ -82,7 +82,7 @@ namespace pcl
           bool operator()(const PoseEstimate& pe1, const PoseEstimate& pe2) const { return pe1.score>pe2.score;}
         };
         public:
-          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+          PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
       
       // =====TYPEDEFS=====

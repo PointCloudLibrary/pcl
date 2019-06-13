@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/geometry/mesh_base.h>
 
 namespace pcl
@@ -193,8 +194,7 @@ namespace pcl
         VertexIndices add_quad_;
 
       public:
-
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   } // End namespace geom
 } // End namespace pcl

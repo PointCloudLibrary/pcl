@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/surface/reconstruction.h>
 #include <pcl/common/transforms.h>
 #include <pcl/TextureMesh.h>
@@ -73,7 +74,7 @@ namespace pcl
       double width;
       std::string texture_file;
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     /** \brief Structure that links a uv coordinate to its 3D point and face.
@@ -418,6 +419,6 @@ namespace pcl
       }
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }

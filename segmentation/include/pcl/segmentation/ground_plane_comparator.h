@@ -40,6 +40,7 @@
 #pragma once
 
 #include <pcl/common/angles.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/segmentation/comparator.h>
 #include <boost/make_shared.hpp>
 
@@ -241,6 +242,6 @@ namespace pcl
       Eigen::Vector3f desired_road_axis_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }

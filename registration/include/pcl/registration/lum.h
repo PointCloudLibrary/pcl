@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/pcl_base.h>
 #include <pcl/registration/eigen.h>
 #include <pcl/registration/boost.h>
@@ -120,14 +121,14 @@ namespace pcl
         {
           PointCloudPtr cloud_;
           Eigen::Vector6f pose_;
-          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+          PCL_MAKE_ALIGNED_OPERATOR_NEW
         };
         struct EdgeProperties
         {
           pcl::CorrespondencesPtr corrs_;
           Eigen::Matrix6f cinv_;
           Eigen::Vector6f cinvd_;
-          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+          PCL_MAKE_ALIGNED_OPERATOR_NEW
         };
 
         typedef boost::adjacency_list<boost::eigen_vecS, boost::eigen_vecS, boost::bidirectionalS, VertexProperties, EdgeProperties, boost::no_property, boost::eigen_listS> SLAMGraph;

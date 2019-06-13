@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/surface/reconstruction.h>
 
 namespace pcl
@@ -248,7 +249,7 @@ namespace pcl
                float &scale);
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

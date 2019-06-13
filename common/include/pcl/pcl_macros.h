@@ -61,6 +61,12 @@
 
 #include <boost/cstdint.hpp>
 
+//Eigen has an enum that clashes with X11 Success define, which is ultimately included by pcl
+#ifdef Success
+  #undef Success
+#endif
+#include <Eigen/Core>
+
 #include <pcl/pcl_config.h>
 
 namespace pcl
@@ -320,3 +326,7 @@ aligned_free (void* ptr)
   #error aligned_free not supported on your platform
 #endif
 }
+
+#define PCL_MAKE_ALIGNED_OPERATOR_NEW \
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
+  using custom_allocator_type = void;

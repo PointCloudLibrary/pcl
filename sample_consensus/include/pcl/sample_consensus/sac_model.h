@@ -45,6 +45,7 @@
 #include <climits>
 #include <set>
 
+#include <pcl/pcl_macros.h>
 #include <pcl/console/print.h>
 #include <pcl/point_cloud.h>
 #include <pcl/sample_consensus/boost.h>
@@ -566,7 +567,7 @@ namespace pcl
         return ((*rng_gen_) ());
       }
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
  };
 
   /** \brief @b SampleConsensusModelFromNormals represents the base model class

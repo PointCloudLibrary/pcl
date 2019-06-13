@@ -139,9 +139,9 @@ namespace pcl
       Eigen::Vector3f volume_size_;
 
 public:
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
-    
+
     /** \brief Converts from map representation to organized not-dence point cloud. */
     template<typename PointType>
     void convertMapToOranizedCloud(const RayCaster::MapArr& map, DeviceArray2D<PointType>& cloud);

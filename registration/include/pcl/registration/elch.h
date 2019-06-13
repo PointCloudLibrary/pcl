@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -247,7 +248,7 @@ namespace pcl
         typename boost::graph_traits<LoopGraph>::vertex_descriptor vd_;
 
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

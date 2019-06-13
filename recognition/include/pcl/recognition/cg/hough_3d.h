@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@
 
 #include <pcl/recognition/cg/correspondence_grouping.h>
 #include <pcl/recognition/boost.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 
 namespace pcl
@@ -56,7 +57,7 @@ namespace pcl
 
       public:
       
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
 
         typedef boost::shared_ptr<HoughSpace3D> Ptr;
       

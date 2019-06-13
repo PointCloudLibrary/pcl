@@ -41,6 +41,7 @@
 
 #include <pcl/tracking/tracking.h>
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/search/search.h>
 
 namespace pcl
@@ -125,7 +126,7 @@ namespace pcl
       computeTracking () = 0;
       
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

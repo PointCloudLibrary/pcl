@@ -45,6 +45,7 @@
 #include <pcl/make_shared.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/octree/octree_search.h>
@@ -109,7 +110,7 @@ namespace pcl
       typename pcl::PointCloud<Normal>::Ptr normals_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief Implements a supervoxel algorithm based on voxel structure, normals, and rgb values
@@ -163,7 +164,7 @@ namespace pcl
           SupervoxelHelper* owner_;
 
         public:
-          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+          PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
 
       typedef pcl::octree::OctreePointCloudAdjacencyContainer<PointT, VoxelData> LeafContainerT;
@@ -523,7 +524,7 @@ namespace pcl
           SupervoxelClustering* parent_;
         public:
           //Type VoxelData may have fixed-size Eigen objects inside
-          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+          PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
 
       //Make boost::ptr_list can access the private class SupervoxelHelper
@@ -539,8 +540,7 @@ namespace pcl
       //TODO DEBUG REMOVE
       StopWatch timer_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 }

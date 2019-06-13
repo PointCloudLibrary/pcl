@@ -39,6 +39,7 @@
 #pragma once
 
 #include <pcl/sample_consensus/sac_model_registration.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -215,7 +216,7 @@ namespace pcl
       Eigen::Matrix3f projection_matrix_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

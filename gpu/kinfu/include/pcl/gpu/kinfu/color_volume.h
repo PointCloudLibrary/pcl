@@ -100,7 +100,7 @@ namespace pcl
       DeviceArray2D<int> color_volume_;
 
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     };
   }

@@ -38,8 +38,8 @@
 #pragma once
 
 #include <pcl/make_shared.h>
-#include <pcl/point_cloud.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/common_headers.h>
 #include <pcl/common/vector_average.h>
@@ -806,7 +806,7 @@ namespace pcl
 
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /**

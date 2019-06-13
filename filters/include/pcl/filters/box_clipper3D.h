@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include "clipper3D.h"
 
 namespace pcl
@@ -118,7 +119,7 @@ namespace pcl
       Eigen::Affine3f transformation_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

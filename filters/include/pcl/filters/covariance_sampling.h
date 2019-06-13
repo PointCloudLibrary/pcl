@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/filters/filter_indices.h>
 
 namespace pcl
@@ -158,7 +159,7 @@ namespace pcl
       { return (a.second > b.second); }
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

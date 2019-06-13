@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/registration/registration.h>
 
 namespace pcl
@@ -146,7 +147,7 @@ namespace pcl
       Eigen::Vector2f grid_extent_;
       Eigen::Vector3d newton_lambda_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 } // namespace pcl
