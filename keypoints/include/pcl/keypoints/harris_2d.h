@@ -53,20 +53,20 @@ namespace pcl
   class HarrisKeypoint2D : public Keypoint<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<HarrisKeypoint2D<PointInT, PointOutT, IntensityT> > Ptr;
-      typedef boost::shared_ptr<const HarrisKeypoint2D<PointInT, PointOutT, IntensityT> > ConstPtr;
+      using Ptr = boost::shared_ptr<HarrisKeypoint2D<PointInT, PointOutT, IntensityT> >;
+      using ConstPtr = boost::shared_ptr<const HarrisKeypoint2D<PointInT, PointOutT, IntensityT> >;
 
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+      using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+      using KdTree = typename Keypoint<PointInT, PointOutT>::KdTree;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;
       using Keypoint<PointInT, PointOutT>::indices_;
       using Keypoint<PointInT, PointOutT>::keypoints_indices_;
 
-      typedef enum {HARRIS = 1, NOBLE, LOWE, TOMASI} ResponseMethod;
+      enum ResponseMethod {HARRIS = 1, NOBLE, LOWE, TOMASI};
 
       /** \brief Constructor
         * \param[in] method the method to be used to determine the corner responses

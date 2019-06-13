@@ -54,8 +54,8 @@ namespace pcl
   class SmoothedSurfacesKeypoint : public Keypoint <PointT, PointT>
   {
     public:
-      typedef boost::shared_ptr<SmoothedSurfacesKeypoint<PointT, PointNT> > Ptr;
-      typedef boost::shared_ptr<const SmoothedSurfacesKeypoint<PointT, PointNT> > ConstPtr;
+      using Ptr = boost::shared_ptr<SmoothedSurfacesKeypoint<PointT, PointNT> >;
+      using ConstPtr = boost::shared_ptr<const SmoothedSurfacesKeypoint<PointT, PointNT> >;
 
       using PCLBase<PointT>::input_;
       using Keypoint<PointT, PointT>::name_;
@@ -63,12 +63,12 @@ namespace pcl
       using Keypoint<PointT, PointT>::keypoints_indices_;
       using Keypoint<PointT, PointT>::initCompute;
 
-      typedef pcl::PointCloud<PointT> PointCloudT;
-      typedef typename PointCloudT::ConstPtr PointCloudTConstPtr;
-      typedef pcl::PointCloud<PointNT> PointCloudNT;
-      typedef typename PointCloudNT::ConstPtr PointCloudNTConstPtr;
-      typedef typename PointCloudT::Ptr PointCloudTPtr;
-      typedef typename Keypoint<PointT, PointT>::KdTreePtr KdTreePtr;
+      using PointCloudT = pcl::PointCloud<PointT>;
+      using PointCloudTConstPtr = typename PointCloudT::ConstPtr;
+      using PointCloudNT = pcl::PointCloud<PointNT>;
+      using PointCloudNTConstPtr = typename PointCloudNT::ConstPtr;
+      using PointCloudTPtr = typename PointCloudT::Ptr;
+      using KdTreePtr = typename Keypoint<PointT, PointT>::KdTreePtr;
 
       SmoothedSurfacesKeypoint ()
         : Keypoint<PointT, PointT> (),

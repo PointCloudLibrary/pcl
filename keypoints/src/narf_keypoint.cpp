@@ -716,7 +716,7 @@ NarfKeypoint::calculateInterestPoints ()
   is_interest_point_image_.clear ();
   is_interest_point_image_.resize (size, false);
   
-  typedef double RealForPolynomial;
+  using RealForPolynomial = double;
   PolynomialCalculationsT<RealForPolynomial> polynomial_calculations;
   BivariatePolynomialT<RealForPolynomial> polynomial (2);
   std::vector<Eigen::Matrix<RealForPolynomial, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<RealForPolynomial, 3, 1> > > sample_points;

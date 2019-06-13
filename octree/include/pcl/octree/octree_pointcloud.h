@@ -72,10 +72,10 @@ namespace pcl
     class OctreePointCloud : public OctreeT
     {
       public:
-        typedef OctreeT Base;
+        using Base = OctreeT;
 
-        typedef typename OctreeT::LeafNode LeafNode;
-        typedef typename OctreeT::BranchNode BranchNode;
+        using LeafNode = typename OctreeT::LeafNode;
+        using BranchNode = typename OctreeT::BranchNode;
 
         /** \brief Octree pointcloud constructor.
          * \param[in] resolution_arg octree resolution at lowest octree level
@@ -87,24 +87,24 @@ namespace pcl
         ~OctreePointCloud ();
 
         // public typedefs
-        typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
-        typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
+        using IndicesPtr = boost::shared_ptr<std::vector<int> >;
+        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
 
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-        typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = boost::shared_ptr<PointCloud>;
+        using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
 
         // public typedefs for single/double buffering
-        typedef OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeBase<LeafContainerT> > SingleBuffer;
-       // typedef OctreePointCloud<PointT, LeafContainerT, BranchContainerT, Octree2BufBase<LeafContainerT> > DoubleBuffer;
+        using SingleBuffer = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeBase<LeafContainerT> >;
+       // using DoubleBuffer = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, Octree2BufBase<LeafContainerT> >;
 
         // Boost shared pointers
-        typedef boost::shared_ptr<OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> > Ptr;
-        typedef boost::shared_ptr<const OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> > ConstPtr;
+        using Ptr = boost::shared_ptr<OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> >;
+        using ConstPtr = boost::shared_ptr<const OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> >;
 
         // Eigen aligned allocator
-        typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
-        typedef std::vector<PointXYZ, Eigen::aligned_allocator<PointXYZ> > AlignedPointXYZVector;
+        using AlignedPointTVector = std::vector<PointT, Eigen::aligned_allocator<PointT> >;
+        using AlignedPointXYZVector = std::vector<PointXYZ, Eigen::aligned_allocator<PointXYZ> >;
 
         /** \brief Provide a pointer to the input data set.
          * \param[in] cloud_arg the const boost shared pointer to a PointCloud message

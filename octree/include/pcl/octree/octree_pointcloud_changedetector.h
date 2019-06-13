@@ -69,7 +69,7 @@ namespace pcl
 
       public:
 
-        typedef boost::shared_ptr<OctreePointCloudChangeDetector<PointT, LeafContainerT, BranchContainerT>> Ptr;
+        using Ptr = boost::shared_ptr<OctreePointCloudChangeDetector<PointT, LeafContainerT, BranchContainerT>>;
 
         /** \brief Constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level

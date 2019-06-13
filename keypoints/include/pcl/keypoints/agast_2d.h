@@ -63,8 +63,8 @@ namespace pcl
       class PCL_EXPORTS AbstractAgastDetector
       {
         public:
-          typedef boost::shared_ptr<AbstractAgastDetector> Ptr;
-          typedef boost::shared_ptr<const AbstractAgastDetector> ConstPtr;
+          using Ptr = boost::shared_ptr<AbstractAgastDetector>;
+          using ConstPtr = boost::shared_ptr<const AbstractAgastDetector>;
 
           /** \brief Constructor. 
             * \param[in] width the width of the image to process
@@ -265,8 +265,8 @@ namespace pcl
       class PCL_EXPORTS AgastDetector7_12s : public AbstractAgastDetector
       {
         public:
-          typedef boost::shared_ptr<AgastDetector7_12s> Ptr;
-          typedef boost::shared_ptr<const AgastDetector7_12s> ConstPtr;
+          using Ptr = boost::shared_ptr<AgastDetector7_12s>;
+          using ConstPtr = boost::shared_ptr<const AgastDetector7_12s>;
 
           /** \brief Constructor. 
             * \param[in] width the width of the image to process
@@ -336,8 +336,8 @@ namespace pcl
       class PCL_EXPORTS AgastDetector5_8 : public AbstractAgastDetector
       {
         public:
-          typedef boost::shared_ptr<AgastDetector5_8> Ptr;
-          typedef boost::shared_ptr<const AgastDetector5_8> ConstPtr;
+          using Ptr = boost::shared_ptr<AgastDetector5_8>;
+          using ConstPtr = boost::shared_ptr<const AgastDetector5_8>;
 
           /** \brief Constructor. 
             * \param[in] width the width of the image to process
@@ -407,8 +407,8 @@ namespace pcl
       class PCL_EXPORTS OastDetector9_16 : public AbstractAgastDetector
       {
         public:
-          typedef boost::shared_ptr<OastDetector9_16> Ptr;
-          typedef boost::shared_ptr<const OastDetector9_16> ConstPtr;
+          using Ptr = boost::shared_ptr<OastDetector9_16>;
+          using ConstPtr = boost::shared_ptr<const OastDetector9_16>;
 
           /** \brief Constructor. 
             * \param[in] width the width of the image to process
@@ -555,12 +555,12 @@ namespace pcl
   class AgastKeypoint2DBase : public Keypoint<PointInT, PointOutT>
   {
     public:
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+      using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+      using KdTree = typename Keypoint<PointInT, PointOutT>::KdTree;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
-      typedef pcl::keypoints::agast::AbstractAgastDetector::Ptr AgastDetectorPtr;
+      using AgastDetectorPtr = pcl::keypoints::agast::AbstractAgastDetector::Ptr;
      
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;
@@ -718,7 +718,7 @@ namespace pcl
   class AgastKeypoint2D : public AgastKeypoint2DBase<PointInT, PointOutT, pcl::common::IntensityFieldAccessor<PointInT> >
   {
     public:
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
 
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;

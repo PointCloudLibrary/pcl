@@ -1669,7 +1669,7 @@ pcl::keypoints::brisk::Layer::halfsample (
       // compute horizontal pairwise average and store
       p_dest_char = reinterpret_cast<unsigned char*> (p_dest);
 #ifdef __GNUC__
-      typedef unsigned char __attribute__ ((__may_alias__)) UCHAR_ALIAS;
+      using UCHAR_ALIAS __attribute__ ((__may_alias__)) = unsigned char;
 #endif
 #ifdef _MSC_VER
       // Todo: find the equivalent to may_alias
