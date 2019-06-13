@@ -40,7 +40,7 @@
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void

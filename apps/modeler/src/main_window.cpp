@@ -44,7 +44,7 @@
 #include <QFileInfo>
 #include <QSettings>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #include <vtkActor.h>
 #include <vtkRenderer.h>
 

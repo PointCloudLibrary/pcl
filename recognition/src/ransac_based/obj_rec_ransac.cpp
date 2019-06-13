@@ -40,7 +40,7 @@
 #include <pcl/common/random.h>
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 using namespace std;
 using namespace pcl::common;

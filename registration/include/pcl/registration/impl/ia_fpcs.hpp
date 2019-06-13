@@ -44,7 +44,7 @@
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/registration/transformation_estimation_3point.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline float

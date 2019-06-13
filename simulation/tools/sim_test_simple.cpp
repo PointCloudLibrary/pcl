@@ -56,7 +56,7 @@
 #define VTK_EXCLUDE_STRSTREAM_HEADERS
 #include <pcl/io/vtk_lib_io.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #include "pcl/simulation/camera.h"
 #include "pcl/simulation/model.h"
 #include "pcl/simulation/range_likelihood.h"

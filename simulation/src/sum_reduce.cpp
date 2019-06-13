@@ -1,6 +1,6 @@
 #include <pcl/simulation/sum_reduce.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 using namespace pcl::simulation;
 

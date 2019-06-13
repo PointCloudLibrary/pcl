@@ -44,7 +44,7 @@
 #include <pcl/features/spin_image.h>
 #include <pcl/features/intensity_spin.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 using namespace pcl;
 using namespace pcl::io;

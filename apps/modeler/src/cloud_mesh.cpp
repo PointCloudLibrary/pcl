@@ -45,7 +45,7 @@
 #include <vtkDataArray.h>
 #include <vtkCellArray.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::CloudMesh::CloudMesh()

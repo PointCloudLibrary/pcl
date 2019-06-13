@@ -19,7 +19,7 @@
 # include <windows.h>
 #endif
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #include "simulation_io.hpp"
 
 using namespace Eigen;

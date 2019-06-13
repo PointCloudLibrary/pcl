@@ -40,7 +40,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/iss_3d.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 using namespace pcl;
 using namespace pcl::io;

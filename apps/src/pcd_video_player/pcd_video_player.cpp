@@ -60,7 +60,7 @@
 #include <QRadioButton>
 #include <QButtonGroup>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 // VTK
 #include <vtkRenderWindow.h>

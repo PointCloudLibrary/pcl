@@ -39,7 +39,7 @@
 
 #include <algorithm>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #include <pcl/apps/point_cloud_editor/common.h>
 #include <pcl/apps/point_cloud_editor/selection.h>
 #include <pcl/apps/point_cloud_editor/transformCommand.h>

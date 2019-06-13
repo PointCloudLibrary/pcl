@@ -49,7 +49,7 @@
 #include <boost/bind.hpp>
 #include <boost/math/special_functions.hpp>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #ifdef HAVE_PCAP
 #include <pcap.h>
 #endif // #ifdef HAVE_PCAP

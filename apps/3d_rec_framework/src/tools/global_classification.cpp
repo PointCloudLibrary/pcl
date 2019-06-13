@@ -17,7 +17,7 @@
 #include <pcl/apps/dominant_plane_segmentation.h>
 #include <pcl/console/parse.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 template<template<class > class DistT, typename PointT, typename FeatureT>
 void

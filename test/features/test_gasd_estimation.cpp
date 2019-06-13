@@ -41,7 +41,7 @@
 #include <pcl/features/gasd.h>
 #include <pcl/io/pcd_io.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 

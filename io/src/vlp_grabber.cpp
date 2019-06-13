@@ -38,7 +38,7 @@
 
 #include <pcl/io/vlp_grabber.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 using boost::asio::ip::udp;
 

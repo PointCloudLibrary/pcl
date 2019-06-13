@@ -41,7 +41,7 @@
 
 #include <pcl/segmentation/seeded_hue_segmentation.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

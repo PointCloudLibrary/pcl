@@ -1,6 +1,6 @@
 #include <flann/flann.hpp>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 #include <pcl/apps/3d_rec_framework/pipeline/local_recognizer.h>
 #include <pcl/apps/3d_rec_framework/utils/vtk_model_sampling.h>

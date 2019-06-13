@@ -9,7 +9,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 using namespace pcl::simulation::gllib;
 

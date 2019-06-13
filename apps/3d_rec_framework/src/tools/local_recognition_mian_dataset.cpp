@@ -23,7 +23,7 @@
 #include <pcl/recognition/hv/hv_go.h>
 #include <pcl/recognition/hv/greedy_verification.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 void
 getScenesInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector<std::string> & relative_paths)

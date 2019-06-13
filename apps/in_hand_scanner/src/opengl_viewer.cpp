@@ -58,7 +58,7 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/impl/centroid.hpp> // TODO: PointIHS is not registered
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #include <pcl/apps/in_hand_scanner/visibility_confidence.h>
 
 ////////////////////////////////////////////////////////////////////////////////

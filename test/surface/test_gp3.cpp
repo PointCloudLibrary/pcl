@@ -50,7 +50,7 @@
 #include <pcl/TextureMesh.h>
 #include <pcl/surface/texture_mapping.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;

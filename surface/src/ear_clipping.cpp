@@ -39,7 +39,7 @@
 #include <pcl/conversions.h>
 #include <pcl/pcl_config.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool

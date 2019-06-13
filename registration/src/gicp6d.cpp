@@ -38,7 +38,7 @@
 
 #include <pcl/registration/gicp6d.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 namespace pcl
 {

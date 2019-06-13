@@ -38,7 +38,7 @@
 #include <pcl/io/robot_eye_grabber.h>
 #include <pcl/console/print.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 /////////////////////////////////////////////////////////////////////////////
 pcl::RobotEyeGrabber::RobotEyeGrabber ()

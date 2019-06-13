@@ -8,7 +8,7 @@ using namespace pcl;
 
 #include <iostream>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 using namespace std;
 
 const Eigen::Vector4f subsampling_leaf_size (0.02f, 0.02f, 0.02f, 0.0f);

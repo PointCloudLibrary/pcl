@@ -49,7 +49,7 @@
 #include <pcl/recognition/implicit_shape_model.h>
 #include <pcl/recognition/impl/implicit_shape_model.hpp>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr training_cloud;
 pcl::PointCloud<pcl::PointXYZ>::Ptr testing_cloud;

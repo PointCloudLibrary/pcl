@@ -215,4 +215,4 @@ namespace pcl
 
 #include <pcl/range_image/impl/range_image_planar.hpp>  // Definitions of templated and inline functions
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>

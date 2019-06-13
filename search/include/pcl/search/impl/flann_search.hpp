@@ -46,7 +46,7 @@
 
 #include <pcl/search/flann_search.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename FlannDistance>

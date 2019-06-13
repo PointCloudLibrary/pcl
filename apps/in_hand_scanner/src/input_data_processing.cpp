@@ -44,7 +44,7 @@
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 

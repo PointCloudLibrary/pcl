@@ -13,7 +13,7 @@
 #if defined (FREEGLUT)
 #include <GL/freeglut_ext.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #elif defined (GLUI_OPENGLUT)
 #include <GL/openglut.h>
 #endif

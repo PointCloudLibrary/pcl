@@ -48,7 +48,7 @@
 #include <mutex>
 #include <thread>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 using namespace std::chrono_literals;
 using pcl::console::print_error;

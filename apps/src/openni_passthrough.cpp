@@ -44,7 +44,7 @@
 #include <QEvent>
 #include <QObject>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 // PCL
 #include <pcl/console/parse.h>
 

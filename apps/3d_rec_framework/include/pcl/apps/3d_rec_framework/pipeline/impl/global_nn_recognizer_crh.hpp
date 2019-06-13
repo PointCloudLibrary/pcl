@@ -7,7 +7,7 @@
 
 #include <random>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 #include <pcl/apps/3d_rec_framework/pipeline/global_nn_recognizer_crh.h>
 #include <pcl/recognition/crh_alignment.h>

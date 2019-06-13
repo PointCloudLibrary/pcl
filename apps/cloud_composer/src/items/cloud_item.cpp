@@ -7,7 +7,7 @@
 
 #include <QMessageBox>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 pcl::cloud_composer::CloudItem::CloudItem (QString name,
                                            pcl::PCLPointCloud2::Ptr cloud_ptr,

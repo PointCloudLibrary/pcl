@@ -43,7 +43,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/shot_lrf.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 using namespace pcl;
 using namespace pcl::test;

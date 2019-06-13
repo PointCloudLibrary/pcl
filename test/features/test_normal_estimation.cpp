@@ -43,7 +43,7 @@
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/io/pcd_io.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 using namespace pcl;
 using namespace pcl::io;

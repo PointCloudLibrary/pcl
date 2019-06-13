@@ -12,7 +12,7 @@
 #include <pcl/features/shot.h>
 #include <pcl/io/pcd_io.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 namespace pcl
 {

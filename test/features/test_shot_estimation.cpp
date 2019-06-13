@@ -38,7 +38,7 @@
  */
 
 #include "pcl/features/shot_lrf.h"
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #include <gtest/gtest.h>
 #include <pcl/features/3dsc.h>
 #include <pcl/features/normal_3d_omp.h>

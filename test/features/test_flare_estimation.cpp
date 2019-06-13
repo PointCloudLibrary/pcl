@@ -44,7 +44,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/flare.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 typedef pcl::search::KdTree<pcl::PointXYZ>::Ptr KdTreePtr;
 typedef pcl::PointCloud<pcl::PointXYZ>::Ptr PointCloudPtr;

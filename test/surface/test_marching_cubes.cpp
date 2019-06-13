@@ -49,7 +49,7 @@
 #include <pcl/surface/marching_cubes_rbf.h>
 #include <pcl/common/common.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 using namespace pcl;
 using namespace pcl::io;

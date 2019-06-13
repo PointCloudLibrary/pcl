@@ -46,7 +46,7 @@
 #include <QPainter>
 #include <QtConcurrent>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 #include <pcl/exceptions.h>
 #include <pcl/common/time.h>

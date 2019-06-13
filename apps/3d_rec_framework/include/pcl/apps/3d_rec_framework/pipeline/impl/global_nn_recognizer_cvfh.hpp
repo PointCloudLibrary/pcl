@@ -7,7 +7,7 @@
 
 #include <flann/flann.hpp>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #include <pcl/apps/3d_rec_framework/pipeline/global_nn_recognizer_cvfh.h>
 #include <pcl/common/time.h>
 #include <pcl/registration/icp.h>

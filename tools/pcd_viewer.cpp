@@ -45,7 +45,7 @@
 #include <pcl/io/pcd_io.h>
 #include <cfloat>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #include <pcl/visualization/eigen.h>
 //#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/point_cloud_handlers.h>

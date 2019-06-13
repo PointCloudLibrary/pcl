@@ -60,7 +60,7 @@
 #include <pcl/registration/transformation_estimation_point_to_plane.h>
 #include <pcl/features/normal_3d.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #include "test_registration_api_data.h"
 
 typedef pcl::PointXYZ              PointXYZ;

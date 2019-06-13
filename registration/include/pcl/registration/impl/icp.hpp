@@ -44,7 +44,7 @@
 #include <pcl/registration/boost.h>
 #include <pcl/correspondence.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> void

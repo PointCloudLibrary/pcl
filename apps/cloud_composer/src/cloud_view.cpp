@@ -7,7 +7,7 @@
 
 #include <QDebug>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 #include <QVTKWidget.h>
 

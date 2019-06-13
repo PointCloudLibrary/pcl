@@ -61,7 +61,7 @@
 // We need Histogram<2> to function, so we'll explicitly add kdtree_flann.hpp here
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 //(pcl::Histogram<2>)
 
 using namespace pcl;

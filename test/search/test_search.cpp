@@ -39,7 +39,7 @@
 
 #include <random>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 #include <pcl/search/brute_force.h>
 #include <pcl/search/kdtree.h>

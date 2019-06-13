@@ -43,7 +43,7 @@
 #include <pcl/features/brisk_2d.h>
 #include <set>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 using namespace pcl;
 using namespace pcl::io;

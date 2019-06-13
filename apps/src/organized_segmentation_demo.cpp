@@ -6,7 +6,7 @@
 #include <QEvent>
 #include <QObject>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/surface/convex_hull.h>

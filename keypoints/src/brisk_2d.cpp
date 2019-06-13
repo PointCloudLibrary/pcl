@@ -43,7 +43,7 @@
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #if defined(__SSSE3__) && !defined(__i386__)
 #include <tmmintrin.h>
 #include <emmintrin.h>

@@ -9,7 +9,7 @@
 #include "pcl/filters/passthrough.h"
 #include "pcl/filters/voxel_grid.h"
 #include "pcl/io/pcd_io.h"
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #include "pcl/ml/dt/decision_forest_evaluator.h"
 #include "pcl/ml/dt/decision_forest_trainer.h"
 #include "pcl/ml/dt/decision_tree_evaluator.h"

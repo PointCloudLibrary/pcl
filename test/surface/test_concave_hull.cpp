@@ -48,7 +48,7 @@
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/filters/project_inliers.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 
 using namespace pcl;

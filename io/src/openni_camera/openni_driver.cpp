@@ -55,7 +55,7 @@
 #include <cctype>
 #include <map>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 #ifndef _WIN32
 #include <libusb-1.0/libusb.h>

@@ -1,5 +1,5 @@
 #include "pcl/recognition/face_detection/face_detector_data_provider.h"
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 #include "pcl/recognition/face_detection/face_common.h"
 #include <pcl/common/time.h>
 #include <pcl/features/integral_image_normal.h>

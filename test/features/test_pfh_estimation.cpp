@@ -51,7 +51,7 @@
 #include <pcl/features/gfpfh.h>
 #include <pcl/io/pcd_io.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 typedef pcl::PointNormal PointT;
 typedef pcl::search::KdTree<PointT>::Ptr KdTreePtr;

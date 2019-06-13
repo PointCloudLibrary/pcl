@@ -49,7 +49,7 @@
 #include <fstream>
 #include <vector>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 typedef pcl::PointXYZ PointType;
 typedef pcl::PointCloud<PointType> Cloud;

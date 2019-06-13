@@ -46,7 +46,7 @@
 #include <pcl/surface/ear_clipping.h>
 #include <pcl/common/common.h>
 
-#include "pcl/make_shared.h"
+#include <pcl/make_shared.h>
 
 using namespace pcl;
 using namespace pcl::io;
