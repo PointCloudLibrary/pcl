@@ -103,24 +103,24 @@ template <typename PointType>
 class OpenNISegmentTracking
 {
 public:
-  //typedef pcl::PointXYZRGBANormal RefPointType;
-  typedef pcl::PointXYZRGBA RefPointType;
-  //typedef pcl::PointXYZ RefPointType;
-  typedef ParticleXYZRPY ParticleT;
+  //using RefPointType = pcl::PointXYZRGBANormal;
+  using RefPointType = pcl::PointXYZRGBA;
+  //using RefPointType = pcl::PointXYZ;
+  using ParticleT = ParticleXYZRPY;
   
-  typedef pcl::PointCloud<PointType> Cloud;
-  typedef pcl::PointCloud<RefPointType> RefCloud;
-  typedef RefCloud::Ptr RefCloudPtr;
-  typedef RefCloud::ConstPtr RefCloudConstPtr;
-  typedef typename Cloud::Ptr CloudPtr;
-  typedef typename Cloud::ConstPtr CloudConstPtr;
-  //typedef KLDAdaptiveParticleFilterTracker<RefPointType, ParticleT> ParticleFilter;
-  //typedef KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT> ParticleFilter;
-  //typedef ParticleFilterOMPTracker<RefPointType, ParticleT> ParticleFilter;
-  typedef ParticleFilterTracker<RefPointType, ParticleT> ParticleFilter;
-  typedef ParticleFilter::CoherencePtr CoherencePtr;
-  typedef pcl::search::KdTree<PointType> KdTree;
-  typedef typename KdTree::Ptr KdTreePtr;
+  using Cloud = pcl::PointCloud<PointType>;
+  using RefCloud = pcl::PointCloud<RefPointType>;
+  using RefCloudPtr = RefCloud::Ptr;
+  using RefCloudConstPtr = RefCloud::ConstPtr;
+  using CloudPtr = typename Cloud::Ptr;
+  using CloudConstPtr = typename Cloud::ConstPtr;
+  //using ParticleFilter = KLDAdaptiveParticleFilterTracker<RefPointType, ParticleT>;
+  //using ParticleFilter = KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT>;
+  //using ParticleFilter = ParticleFilterOMPTracker<RefPointType, ParticleT>;
+  using ParticleFilter = ParticleFilterTracker<RefPointType, ParticleT>;
+  using CoherencePtr = ParticleFilter::CoherencePtr;
+  using KdTree = pcl::search::KdTree<PointType>;
+  using KdTreePtr = typename KdTree::Ptr;
   OpenNISegmentTracking (const std::string& device_id, int thread_nr, double downsampling_grid_size,
                          bool use_convex_hull,
                          bool visualize_non_downsample, bool visualize_particles,

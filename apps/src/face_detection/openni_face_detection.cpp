@@ -128,7 +128,7 @@ int main(int argc, char ** argv)
   fb.open (forest_fn.c_str (), std::ios::in);
   std::istream os (&fb);
 
-  typedef pcl::face_detection::RFTreeNode<pcl::face_detection::FeatureType> NodeType;
+  using NodeType = pcl::face_detection::RFTreeNode<pcl::face_detection::FeatureType>;
   pcl::DecisionForest<NodeType> forest;
   forest.deserialize (os);
   fb.close ();

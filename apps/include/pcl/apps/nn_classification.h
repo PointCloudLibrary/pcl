@@ -70,8 +70,8 @@ namespace pcl
       NNClassification () : tree_ () {}
 
       /** \brief Result is a list of class labels and scores */
-      typedef std::pair<std::vector<std::string>, std::vector<float> > Result;
-      typedef boost::shared_ptr<Result> ResultPtr;
+      using Result = std::pair<std::vector<std::string>, std::vector<float> >;
+      using ResultPtr = boost::shared_ptr<Result>;
 
       // TODO setIndices method, distance metrics and reset tree
 

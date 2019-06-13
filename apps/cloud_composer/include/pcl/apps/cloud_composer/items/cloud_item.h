@@ -44,8 +44,8 @@
 #include <pcl/search/kdtree.h>
 
 //Typedefs to make things sane
-typedef pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2> GeometryHandler;
-typedef pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
+using GeometryHandler = pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>;
+using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>;
 
 namespace pcl
 {

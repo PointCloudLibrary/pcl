@@ -49,12 +49,12 @@ namespace pcl
         }
       } sortIndexScoresOp;
 
-      typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
-      typedef typename pcl::PointCloud<PointInT>::ConstPtr ConstPointInTPtr;
+      using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
+      using ConstPointInTPtr = typename pcl::PointCloud<PointInT>::ConstPtr;
 
-      typedef Distance<float> DistT;
-      typedef Model<PointInT> ModelT;
-      typedef pcl::PointCloud<pcl::Histogram<90> > CRHPointCloud;
+      using DistT = Distance<float>;
+      using ModelT = Model<PointInT>;
+      using CRHPointCloud = pcl::PointCloud<pcl::Histogram<90> >;
 
       /** \brief Directory where the trained structure will be saved */
       std::string training_dir_;

@@ -29,8 +29,8 @@ namespace pcl
     template<typename PointT>
       class Model
       {
-        typedef typename pcl::PointCloud<PointT>::Ptr PointTPtr;
-        typedef typename pcl::PointCloud<PointT>::ConstPtr PointTPtrConst;
+        using PointTPtr = typename pcl::PointCloud<PointT>::Ptr;
+        using PointTPtrConst = typename pcl::PointCloud<PointT>::ConstPtr;
 
       public:
         boost::shared_ptr<std::vector<PointTPtr> > views_;
@@ -82,7 +82,7 @@ namespace pcl
     {
 
     protected:
-      typedef Model<PointInT> ModelT;
+      using ModelT = Model<PointInT>;
       std::string path_;
       boost::shared_ptr<std::vector<ModelT> > models_;
       float model_scale_;

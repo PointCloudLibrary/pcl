@@ -30,8 +30,8 @@ namespace pcl
     template<typename PointInT>
       class MeshSource : public Source<PointInT>
       {
-        typedef Source<PointInT> SourceT;
-        typedef Model<PointInT> ModelT;
+        using SourceT = Source<PointInT>;
+        using ModelT = Model<PointInT>;
 
         using SourceT::path_;
         using SourceT::models_;

@@ -85,9 +85,9 @@ template <typename PointType>
 class OpenNISmoothing
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudPtr = typename Cloud::Ptr;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     OpenNISmoothing (double search_radius, bool sqr_gauss_param_set, double sqr_gauss_param,
                      int polynomial_order, const std::string& device_id = "")

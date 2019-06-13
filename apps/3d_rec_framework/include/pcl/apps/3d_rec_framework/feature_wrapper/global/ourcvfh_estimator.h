@@ -21,7 +21,7 @@ namespace pcl
       {
 
       protected:
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
         using GlobalEstimator<PointInT, FeatureT>::normal_estimator_;
         using GlobalEstimator<PointInT, FeatureT>::normals_;
         float eps_angle_threshold_;
@@ -130,7 +130,7 @@ namespace pcl
           /*normals_.reset(new pcl::PointCloud<pcl::Normal>);
            normal_estimator_->estimate (in, processed, normals_);*/
 
-          typedef pcl::OURCVFHEstimation<PointInT, pcl::Normal, pcl::VFHSignature308> OURCVFHEstimation;
+          using OURCVFHEstimation = pcl::OURCVFHEstimation<PointInT, pcl::Normal, pcl::VFHSignature308>;
           pcl::PointCloud<pcl::VFHSignature308> cvfh_signatures;
           typename pcl::search::KdTree<PointInT>::Ptr cvfh_tree (new pcl::search::KdTree<PointInT>);
 
