@@ -73,17 +73,17 @@ if(VTK_FOUND)
   PCL_ADD_EXECUTABLE(pcl_stereo_ground_segmentation COMPONENT ${SUBSYS_NAME} SOURCES src/stereo_ground_segmentation.cpp)
   target_link_libraries(pcl_stereo_ground_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features pcl_stereo)
 
-  if(Qt5_FOUND AND VTK_USE_QVTK)
+  if(Qt5_FOUND AND QVTK_FOUND)
     # Manual registration demo
     QT5_WRAP_UI(manual_registration_ui src/manual_registration/manual_registration.ui)
     QT5_WRAP_CPP(manual_registration_moc include/pcl/apps/manual_registration.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
     PCL_ADD_EXECUTABLE(pcl_manual_registration COMPONENT ${SUBSYS_NAME} SOURCES ${manual_registration_ui} ${manual_registration_moc} src/manual_registration/manual_registration.cpp BUNDLE)
-    target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QVTK_LIBRARY} Qt5::Widgets)
+    target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
 
     QT5_WRAP_UI(pcd_video_player_ui src/pcd_video_player/pcd_video_player.ui)
     QT5_WRAP_CPP(pcd_video_player_moc include/pcl/apps/pcd_video_player.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
     PCL_ADD_EXECUTABLE(pcl_pcd_video_player COMPONENT ${SUBSYS_NAME} SOURCES ${pcd_video_player_ui} ${pcd_video_player_moc} src/pcd_video_player/pcd_video_player.cpp BUNDLE)
-    target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QVTK_LIBRARY} Qt5::Widgets)
+    target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
   endif()
 
   if(WITH_OPENNI)
@@ -137,18 +137,18 @@ if(VTK_FOUND)
     PCL_ADD_EXECUTABLE(pcl_openni_face_detector COMPONENT ${SUBSYS_NAME} SOURCES src/face_detection//openni_face_detection.cpp src/face_detection//openni_frame_source.cpp BUNDLE)
     target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
 
-    if(Qt5_FOUND AND VTK_USE_QVTK)
+    if(Qt5_FOUND AND QVTK_FOUND)
     # OpenNI Passthrough application demo
     QT5_WRAP_UI(openni_passthrough_ui src/openni_passthrough.ui)
     QT5_WRAP_CPP(openni_passthrough_moc include/pcl/apps/openni_passthrough.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
     PCL_ADD_EXECUTABLE(pcl_openni_passthrough COMPONENT ${SUBSYS_NAME} SOURCES ${openni_passthrough_ui} ${openni_passthrough_moc} src/openni_passthrough.cpp)
-    target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization ${QVTK_LIBRARY} Qt5::Widgets)
+    target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization Qt5::Widgets)
 
     # OpenNI Organized Connected Component application demo
     QT5_WRAP_UI(organized_segmentation_demo_ui src/organized_segmentation_demo.ui)
     QT5_WRAP_CPP(organized_segmentation_demo_moc include/pcl/apps/organized_segmentation_demo.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
     PCL_ADD_EXECUTABLE(pcl_organized_segmentation_demo COMPONENT ${SUBSYS_NAME} SOURCES ${organized_segmentation_demo_ui} ${organized_segmentation_demo_moc} src/organized_segmentation_demo.cpp BUNDLE)
-    target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QVTK_LIBRARY} Qt5::Widgets)
+    target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
     endif()
 
     if(QHULL_FOUND)
