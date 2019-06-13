@@ -39,6 +39,7 @@
 #include <pcl/io/eigen.h>
 #include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
+#include <pcl/io/io_exception.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -49,6 +50,8 @@
 
 namespace pcl
 {
+  using namespace io;
+
   RealSense2Grabber::RealSense2Grabber ( const std::string& file_name_or_serial_number, const bool repeat_playback )
     : signal_PointXYZ ( createSignal<signal_librealsense_PointXYZ> () )
     , signal_PointXYZI ( createSignal<signal_librealsense_PointXYZI> () )
@@ -122,6 +125,11 @@ namespace pcl
     }
 
     rs2::pipeline_profile prof = pipe_.start ( cfg );
+
+    if ( prof.get_stream ( RS2_STREAM_COLOR ).format ( ) != RS2_FORMAT_RGB8 ||
+      prof.get_stream ( RS2_STREAM_DEPTH ).format ( ) != RS2_FORMAT_Z16 ||
+      prof.get_stream ( RS2_STREAM_INFRARED ).format ( ) != RS2_FORMAT_Y8 )
+      THROW_IO_EXCEPTION ( "This stream type or format not supported." );
 
     if (signal_PointXYZRGB->num_slots () > 0 || signal_PointXYZRGBA->num_slots () > 0)
     {
