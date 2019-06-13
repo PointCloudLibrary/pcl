@@ -83,7 +83,7 @@ TEST (ExtractIndicesSelf, Filters)
 {
   // Test the PointCloud<PointT> method
   ExtractIndices<PointXYZ> ei;
-  pcl::IndicesPtr indices = pcl::make_shared<vector<int>> (2);
+  pcl::IndicesPtr indices = pcl::make_shared<pcl::Indices> (2);
   (*indices)[0] = 0;
   (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
 
@@ -110,7 +110,7 @@ TEST (ExtractIndices, Filters)
 {
   // Test the PointCloud<PointT> method
   ExtractIndices<PointXYZ> ei;
-  pcl::IndicesPtr indices = pcl::make_shared<vector<int>> (2);
+  pcl::IndicesPtr indices = pcl::make_shared<pcl::Indices> (2);
   (*indices)[0] = 0;
   (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
 
@@ -231,7 +231,7 @@ TEST (ExtractIndices, Filters)
   eie.filter (result);
   EXPECT_EQ (int (result.points.size ()), 0);
 
-  pcl::IndicesPtr idx = pcl::make_shared<vector<int>> (10);
+  pcl::IndicesPtr idx = pcl::make_shared<pcl::Indices> (10);
   eie.setIndices (idx);
   eie.setNegative (false);
   eie.filter (result);
@@ -1644,7 +1644,7 @@ TEST (ConditionalRemovalSetIndices, Filters)
   PointCloud<PointXYZ> output;
 
   // build some indices
-  pcl::IndicesPtr indices = pcl::make_shared<vector<int>> (2);
+  pcl::IndicesPtr indices = pcl::make_shared<pcl::Indices> (2);
   (*indices)[0] = 0;
   (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
 

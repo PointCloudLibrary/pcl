@@ -247,8 +247,8 @@ class PeoplePCDApp
       typedef openni_wrapper::DepthImage::Ptr DepthImagePtr;
       typedef openni_wrapper::Image::Ptr ImagePtr;
 
-      boost::function<void (const PointCloud<PointXYZRGBA>::ConstPtr&)> func1 = boost::bind (&PeoplePCDApp::source_cb1, this, _1);
-      boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func2 = boost::bind (&PeoplePCDApp::source_cb2, this, _1, _2, _3);
+      std::function<void (const PointCloud<PointXYZRGBA>::ConstPtr&)> func1 = boost::bind (&PeoplePCDApp::source_cb1, this, _1);
+      std::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func2 = boost::bind (&PeoplePCDApp::source_cb2, this, _1, _2, _3);
       boost::signals2::connection c = cloud_cb_ ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
 
       {

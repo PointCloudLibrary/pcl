@@ -68,7 +68,7 @@ namespace pcl
 
       public:
 
-        typedef T value_type;
+        using value_type = T;
 
         virtual
         ~Buffer ();

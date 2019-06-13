@@ -48,8 +48,8 @@ namespace pcl
   class Edge
   {
     private:
-      typedef pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename PointCloudIn::Ptr PointCloudInPtr;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
+      using PointCloudInPtr = typename PointCloudIn::Ptr;
 
       PointCloudInPtr input_;
       pcl::Convolution<PointInT> convolution_;
@@ -84,8 +84,8 @@ namespace pcl
                          pcl::PointCloud<pcl::PointXYZI> &maxima, float tLow);
 
     public:
-      typedef boost::shared_ptr<Edge> Ptr;
-      typedef boost::shared_ptr<const Edge> ConstPtr;
+      using Ptr = boost::shared_ptr<Edge<PointInT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const Edge<PointInT, PointOutT> >;
 
       enum OUTPUT_TYPE
       {

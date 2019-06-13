@@ -53,7 +53,7 @@ namespace pcl
     class FrameWrapper
     {
       public:
-        typedef boost::shared_ptr<FrameWrapper> Ptr;
+        using Ptr = boost::shared_ptr<FrameWrapper>;
 
         virtual
         ~FrameWrapper() = default;

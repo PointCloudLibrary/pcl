@@ -87,24 +87,24 @@ namespace pcl
     class SampleConsensusModel
     {
       public:
-        typedef PointCloudAOS<Storage> PointCloud;
-        typedef typename PointCloud::Ptr PointCloudPtr;
-        typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+        using PointCloud = PointCloudAOS<Storage>;
+        using PointCloudPtr = typename PointCloud::Ptr;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        typedef boost::shared_ptr<SampleConsensusModel> Ptr;
-        typedef boost::shared_ptr<const SampleConsensusModel> ConstPtr;
+        using Ptr = boost::shared_ptr<SampleConsensusModel>;
+        using ConstPtr = boost::shared_ptr<const SampleConsensusModel>;
 
-        typedef typename Storage<int>::type Indices;
-        typedef boost::shared_ptr<typename Storage<int>::type> IndicesPtr;
-        typedef boost::shared_ptr<const typename Storage<int>::type> IndicesConstPtr;
+        using Indices = typename Storage<int>::type;
+        using IndicesPtr = boost::shared_ptr<typename Storage<int>::type>;
+        using IndicesConstPtr = boost::shared_ptr<const typename Storage<int>::type>;
 
-        typedef typename Storage<float>::type Coefficients;
-        typedef boost::shared_ptr <Coefficients> CoefficientsPtr;
-        typedef boost::shared_ptr <const Coefficients> CoefficientsConstPtr;
+        using Coefficients = typename Storage<float>::type;
+        using CoefficientsPtr = boost::shared_ptr <Coefficients>;
+        using CoefficientsConstPtr = boost::shared_ptr <const Coefficients>;
 
-        typedef typename Storage<float4>::type Hypotheses;
+        using Hypotheses = typename Storage<float4>::type;
         //TODO: should be vector<int> instead of int. but currently, only 1point plane model supports this
-        typedef typename Storage<int>::type Samples;
+        using Samples = typename Storage<int>::type;
 
       private:
         /** \brief Empty constructor for base SampleConsensusModel. */
@@ -372,11 +372,11 @@ namespace pcl
   //  class SampleConsensusModelFromNormals
   //  {
   //    public:
-  //      typedef typename pcl::PointCloud<PointNT>::ConstPtr PointCloudNConstPtr;
-  //      typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudNPtr;
+  //      using PointCloudNConstPtr = typename pcl::PointCloud<PointNT>::ConstPtr;
+  //      using PointCloudNPtr = typename pcl::PointCloud<PointNT>::Ptr;
   //
-  //      typedef boost::shared_ptr<SampleConsensusModelFromNormals> Ptr;
-  //      typedef boost::shared_ptr<const SampleConsensusModelFromNormals> ConstPtr;
+  //      using Ptr = boost::shared_ptr<SampleConsensusModelFromNormals>;
+  //      using ConstPtr = boost::shared_ptr<const SampleConsensusModelFromNormals>;
   //
   //      /* \brief Empty constructor for base SampleConsensusModelFromNormals. */
   //      SampleConsensusModelFromNormals () : normal_distance_weight_ (0.0) {};

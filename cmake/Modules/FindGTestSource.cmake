@@ -32,7 +32,8 @@ set(GTEST_INCLUDE_DIRS ${GTEST_INCLUDE_DIR})
 set(CMAKE_FIND_FRAMEWORK)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Gtest DEFAULT_MSG GTEST_INCLUDE_DIR GTEST_SRC_DIR)
+find_package_handle_standard_args(GTestSource DEFAULT_MSG GTEST_INCLUDE_DIR GTEST_SRC_DIR)
+set(GTEST_FOUND ${GTestSource_FOUND})
 
 mark_as_advanced(GTEST_INCLUDE_DIR GTEST_SRC_DIR)
 

@@ -112,10 +112,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "-Wabi -Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS_STR}")
   endif()
 
-  if(NOT ANDROID)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-  endif()
-
   if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed")
   endif()
@@ -179,7 +175,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_PATHSCALE)
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    set(CMAKE_CXX_FLAGS "-Wno-uninitialized -zerouv -pthread -mp")
+    set(CMAKE_CXX_FLAGS "-Wno-uninitialized -zerouv -mp")
   endif()
   if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "")
     set(CMAKE_SHARED_LINKER_FLAGS "-mp")
@@ -279,6 +275,9 @@ if(OPENMP_FOUND)
 else()
   message(STATUS "Not found OpenMP")
 endif()
+
+# Threads (required)
+find_package(Threads REQUIRED)
 
 # Eigen (required)
 find_package(Eigen 3.1 REQUIRED)
@@ -420,12 +419,6 @@ set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
 configure_file("${pcl_config_h_in}" "${pcl_config_h}")
 PCL_ADD_INCLUDES(common "" "${pcl_config_h}")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
-
-### ---[ Set up for tests
-enable_testing()
-
-### ---[ Set up for examples
-#include("${PCL_SOURCE_DIR}/cmake/pcl_examples.cmake")
 
 ### ---[ Add the libraries subdirectories
 include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")

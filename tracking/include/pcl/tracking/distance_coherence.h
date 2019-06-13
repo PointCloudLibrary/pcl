@@ -18,7 +18,7 @@ namespace pcl
     {
     public:
 
-      typedef boost::shared_ptr<DistanceCoherence<PointInT>> Ptr;
+      using Ptr = boost::shared_ptr<DistanceCoherence<PointInT> >;
       
       /** \brief initialize the weight to 1.0. */
       DistanceCoherence ()

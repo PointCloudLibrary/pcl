@@ -57,12 +57,12 @@ namespace pcl
     class WarpPointRigid
     {
       public:
-        typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
-        typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorX;
-        typedef Eigen::Matrix<Scalar, 4, 1> Vector4;
+        using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
+        using VectorX = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
+        using Vector4 = Eigen::Matrix<Scalar, 4, 1>;
 
-        typedef boost::shared_ptr<WarpPointRigid<PointSourceT, PointTargetT, Scalar> > Ptr;
-        typedef boost::shared_ptr<const WarpPointRigid<PointSourceT, PointTargetT, Scalar> > ConstPtr;
+        using Ptr = boost::shared_ptr<WarpPointRigid<PointSourceT, PointTargetT, Scalar> >;
+        using ConstPtr = boost::shared_ptr<const WarpPointRigid<PointSourceT, PointTargetT, Scalar> >;
 
         /** \brief Constructor
           * \param[in] nr_dim the number of dimensions

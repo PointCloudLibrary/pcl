@@ -53,8 +53,8 @@ namespace pcl
   class Clipper3D
   {
     public:
-      typedef boost::shared_ptr< Clipper3D<PointT> > Ptr;
-      typedef boost::shared_ptr< const Clipper3D<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<Clipper3D<PointT> >;
+      using ConstPtr = boost::shared_ptr<const Clipper3D<PointT> >;
  
       /**
         * \brief virtual destructor. Never throws an exception.

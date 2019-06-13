@@ -51,9 +51,9 @@ using namespace pcl::io;
 using namespace pcl::console;
 
 
-typedef PointXYZ PointType;
-typedef PointCloud<PointXYZ> Cloud;
-typedef const Cloud::ConstPtr ConstCloudPtr;
+using PointType = PointXYZ;
+using Cloud = PointCloud<PointXYZ>;
+using ConstCloudPtr = const Cloud::ConstPtr;
 
 std::string default_method = "open";
 float default_resolution = 1.0f;

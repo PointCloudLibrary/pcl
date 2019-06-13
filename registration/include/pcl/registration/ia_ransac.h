@@ -69,21 +69,21 @@ namespace pcl
       using Registration<PointSource, PointTarget>::converged_;
       using Registration<PointSource, PointTarget>::getClassName;
 
-      typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
-      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+      using PointCloudSource = typename Registration<PointSource, PointTarget>::PointCloudSource;
+      using PointCloudSourcePtr = typename PointCloudSource::Ptr;
+      using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
-      typedef typename Registration<PointSource, PointTarget>::PointCloudTarget PointCloudTarget;
+      using PointCloudTarget = typename Registration<PointSource, PointTarget>::PointCloudTarget;
 
-      typedef PointIndices::Ptr PointIndicesPtr;
-      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+      using PointIndicesPtr = PointIndices::Ptr;
+      using PointIndicesConstPtr = PointIndices::ConstPtr;
 
-      typedef pcl::PointCloud<FeatureT> FeatureCloud;
-      typedef typename FeatureCloud::Ptr FeatureCloudPtr;
-      typedef typename FeatureCloud::ConstPtr FeatureCloudConstPtr;
+      using FeatureCloud = pcl::PointCloud<FeatureT>;
+      using FeatureCloudPtr = typename FeatureCloud::Ptr;
+      using FeatureCloudConstPtr = typename FeatureCloud::ConstPtr;
 
-      typedef boost::shared_ptr<SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> > Ptr;
-      typedef boost::shared_ptr<const SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> > ConstPtr;
+      using Ptr = boost::shared_ptr<SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> >;
+      using ConstPtr = boost::shared_ptr<const SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> >;
 
 
       class ErrorFunctor
@@ -129,9 +129,9 @@ namespace pcl
           float threshold_;
       };
 
-      typedef boost::shared_ptr<ErrorFunctor> ErrorFunctorPtr;
+      using ErrorFunctorPtr = boost::shared_ptr<ErrorFunctor>;
 
-      typedef typename KdTreeFLANN<FeatureT>::Ptr FeatureKdTreePtr; 
+      using FeatureKdTreePtr = typename KdTreeFLANN<FeatureT>::Ptr; 
       /** \brief Constructor. */
       SampleConsensusInitialAlignment () : 
         input_features_ (), target_features_ (), 

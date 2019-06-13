@@ -158,7 +158,7 @@ class PCLMobileServer
     run ()
     {
       pcl::OpenNIGrabber grabber (device_id_);
-      boost::function<void (const CloudConstPtr&)> handler_function = boost::bind (&PCLMobileServer::handleIncomingCloud, this, _1);
+      std::function<void (const CloudConstPtr&)> handler_function = boost::bind (&PCLMobileServer::handleIncomingCloud, this, _1);
       grabber.registerCallback (handler_function);
       grabber.start ();
 

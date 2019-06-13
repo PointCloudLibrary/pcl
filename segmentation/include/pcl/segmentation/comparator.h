@@ -53,12 +53,12 @@ namespace pcl
   class Comparator
   {
     public:
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      typedef boost::shared_ptr<Comparator<PointT> > Ptr;
-      typedef boost::shared_ptr<const Comparator<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<Comparator<PointT> >;
+      using ConstPtr = boost::shared_ptr<const Comparator<PointT> >;
 
       /** \brief Empty constructor for comparator. */
       Comparator () : input_ ()

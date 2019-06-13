@@ -54,7 +54,7 @@ namespace pcl
   {
     public:
       // ===== TYPEDEFS =====
-      typedef pcl::PointCloud<PointXYZRGBA> BaseClass;
+      using BaseClass = pcl::PointCloud<PointXYZRGBA>;
 
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */

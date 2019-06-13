@@ -47,7 +47,7 @@ namespace pcl
 {
   /** \brief Implementation of a fast bilateral filter for smoothing depth information in organized point clouds
    *  Based on the following paper:
-   *    * Sylvain Paris and Frdo Durand
+   *    * Sylvain Paris and Fredo Durand
    *      "A Fast Approximation of the Bilateral Filter using a Signal Processing Approach"
    *       European Conference on Computer Vision (ECCV'06)
    *
@@ -61,14 +61,14 @@ namespace pcl
     using FastBilateralFilter<PointT>::sigma_s_;
     using FastBilateralFilter<PointT>::sigma_r_;
     using FastBilateralFilter<PointT>::early_division_;
-    typedef typename FastBilateralFilter<PointT>::Array3D Array3D;
+    using Array3D = typename FastBilateralFilter<PointT>::Array3D;
 
-    typedef typename Filter<PointT>::PointCloud PointCloud;
+    using PointCloud = typename Filter<PointT>::PointCloud;
 
     public:
 
-      typedef boost::shared_ptr< FastBilateralFilterOMP<PointT> > Ptr;
-      typedef boost::shared_ptr< const FastBilateralFilterOMP<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<FastBilateralFilterOMP<PointT> >;
+      using ConstPtr = boost::shared_ptr<const FastBilateralFilterOMP<PointT> >;
 
       /** \brief Empty constructor. */
       FastBilateralFilterOMP (unsigned int nr_threads = 0)

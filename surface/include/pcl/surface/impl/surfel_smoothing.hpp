@@ -272,7 +272,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::computeSmoothedCloud (PointCloudInPtr &ou
 template <typename PointT, typename PointNT> void
 pcl::SurfelSmoothing<PointT, PointNT>::extractSalientFeaturesBetweenScales (PointCloudInPtr &cloud2,
                                                                             NormalCloudPtr &cloud2_normals,
-                                                                            boost::shared_ptr<std::vector<int> > &output_features)
+                                                                            pcl::IndicesPtr &output_features)
 {
   if (interm_cloud_->points.size () != cloud2->points.size () || 
       cloud2->points.size () != cloud2_normals->points.size ())

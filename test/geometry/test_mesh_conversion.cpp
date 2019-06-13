@@ -50,6 +50,8 @@
 
 #include "test_mesh_common_functions.h"
 
+#include <type_traits>
+
 ////////////////////////////////////////////////////////////////////////////////
 
 template <class MeshTraitsT>
@@ -57,7 +59,7 @@ class TestMeshConversion : public ::testing::Test
 {
   protected:
 
-    typedef MeshTraitsT MeshTraits;
+    using MeshTraits = MeshTraitsT;
 
     // 2 - 1  7 - 6         17 - 16   //
     //  \ /   |   |        /       \  //
@@ -138,17 +140,17 @@ class TestMeshConversion : public ::testing::Test
 template <bool IsManifoldT>
 struct MeshTraits
 {
-    typedef pcl::PointXYZRGBNormal                       VertexData;
-    typedef pcl::geometry::NoData                        HalfEdgeData;
-    typedef pcl::geometry::NoData                        EdgeData;
-    typedef pcl::geometry::NoData                        FaceData;
-    typedef boost::integral_constant <bool, IsManifoldT> IsManifold;
+    using VertexData = pcl::PointXYZRGBNormal;
+    using HalfEdgeData = pcl::geometry::NoData;
+    using EdgeData = pcl::geometry::NoData;
+    using FaceData = pcl::geometry::NoData;
+    using IsManifold = std::integral_constant <bool, IsManifoldT>;
 };
 
-typedef MeshTraits <true > ManifoldMeshTraits;
-typedef MeshTraits <false> NonManifoldMeshTraits;
+using ManifoldMeshTraits = MeshTraits<true>;
+using NonManifoldMeshTraits = MeshTraits<false>;
 
-typedef testing::Types <ManifoldMeshTraits, NonManifoldMeshTraits> MeshTraitsTypes;
+using MeshTraitsTypes = testing::Types <ManifoldMeshTraits, NonManifoldMeshTraits>;
 
 TYPED_TEST_CASE (TestMeshConversion, MeshTraitsTypes);
 
@@ -156,10 +158,10 @@ TYPED_TEST_CASE (TestMeshConversion, MeshTraitsTypes);
 
 TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
 {
-  typedef typename TestFixture::MeshTraits    Traits;
-  typedef pcl::geometry::PolygonMesh <Traits> Mesh;
-  typedef typename Mesh::VertexIndex          VertexIndex;
-  typedef typename Mesh::VertexIndices        VertexIndices;
+  using Traits = typename TestFixture::MeshTraits;
+  using Mesh = pcl::geometry::PolygonMesh<Traits>;
+  using VertexIndex = typename Mesh::VertexIndex;
+  using VertexIndices = typename Mesh::VertexIndices;
 
   const std::vector <std::vector <uint32_t> > faces =
       Mesh::IsManifold::value ? this->manifold_faces_ :
@@ -223,10 +225,10 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
 
 TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
 {
-  typedef typename TestFixture::MeshTraits          Traits;
-  typedef pcl::geometry::PolygonMesh <Traits>       Mesh;
-  typedef typename Mesh::FaceIndex                  FaceIndex;
-  typedef typename Mesh::VertexAroundFaceCirculator VAFC;
+  using Traits = typename TestFixture::MeshTraits;
+  using Mesh = pcl::geometry::PolygonMesh<Traits>;
+  using FaceIndex = typename Mesh::FaceIndex;
+  using VAFC = typename Mesh::VertexAroundFaceCirculator;
 
   // Generate the mesh
   pcl::PolygonMesh face_vertex_mesh;
@@ -293,8 +295,8 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
 
 //TEST (TestFaceVertexMeshToHalfEdgeMesh, NoVertexData)
 //{
-//  typedef pcl::geometry::DefaultMeshTraits <>     MeshTraits;
-//  typedef pcl::geometry::PolygonMesh <MeshTraits> Mesh;
+//  using MeshTraits = pcl::geometry::DefaultMeshTraits <>;
+//  using Mesh = pcl::geometry::PolygonMesh <MeshTraits>;
 
 //  Mesh half_edge_mesh;
 //  pcl::PolygonMesh face_vertex_mesh;
@@ -306,10 +308,10 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
 
 TYPED_TEST (TestMeshConversion, NonConvertibleCases)
 {
-  typedef typename TestFixture::MeshTraits     Traits;
-  typedef pcl::geometry::TriangleMesh <Traits> TriangleMesh;
-  typedef pcl::geometry::QuadMesh     <Traits> QuadMesh;
-  typedef pcl::geometry::PolygonMesh  <Traits> PolygonMesh;
+  using Traits = typename TestFixture::MeshTraits;
+  using TriangleMesh = pcl::geometry::TriangleMesh<Traits>;
+  using QuadMesh = pcl::geometry::QuadMesh<Traits>;
+  using PolygonMesh = pcl::geometry::PolygonMesh<Traits>;
 
   // Generate the mesh
   pcl::PolygonMesh face_vertex_mesh;

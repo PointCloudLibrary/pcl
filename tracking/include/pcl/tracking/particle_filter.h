@@ -32,25 +32,25 @@ namespace pcl
         using Tracker<PointInT, StateT>::indices_;
         using Tracker<PointInT, StateT>::getClassName;
         
-        typedef boost::shared_ptr<ParticleFilterTracker<PointInT, StateT>> Ptr;
+        using Ptr = boost::shared_ptr<ParticleFilterTracker<PointInT, StateT>>;
 
-        typedef Tracker<PointInT, StateT> BaseClass;
+        using BaseClass = Tracker<PointInT, StateT>;
         
-        typedef typename Tracker<PointInT, StateT>::PointCloudIn PointCloudIn;
-        typedef typename PointCloudIn::Ptr PointCloudInPtr;
-        typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+        using PointCloudIn = typename Tracker<PointInT, StateT>::PointCloudIn;
+        using PointCloudInPtr = typename PointCloudIn::Ptr;
+        using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
-        typedef typename Tracker<PointInT, StateT>::PointCloudState PointCloudState;
-        typedef typename PointCloudState::Ptr PointCloudStatePtr;
-        typedef typename PointCloudState::ConstPtr PointCloudStateConstPtr;
+        using PointCloudState = typename Tracker<PointInT, StateT>::PointCloudState;
+        using PointCloudStatePtr = typename PointCloudState::Ptr;
+        using PointCloudStateConstPtr = typename PointCloudState::ConstPtr;
 
-        typedef PointCoherence<PointInT> Coherence;
-        typedef boost::shared_ptr< Coherence > CoherencePtr;
-        typedef boost::shared_ptr< const Coherence > CoherenceConstPtr;
+        using Coherence = PointCoherence<PointInT>;
+        using CoherencePtr = boost::shared_ptr<Coherence>;
+        using CoherenceConstPtr = boost::shared_ptr<const Coherence>;
 
-        typedef PointCloudCoherence<PointInT> CloudCoherence;
-        typedef boost::shared_ptr< CloudCoherence > CloudCoherencePtr;
-        typedef boost::shared_ptr< const CloudCoherence > CloudCoherenceConstPtr;
+        using CloudCoherence = PointCloudCoherence<PointInT>;
+        using CloudCoherencePtr = boost::shared_ptr<CloudCoherence>;
+        using CloudCoherenceConstPtr = boost::shared_ptr<const CloudCoherence>;
         
         /** \brief Empty constructor. */
         ParticleFilterTracker ()

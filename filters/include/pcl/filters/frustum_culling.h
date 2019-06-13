@@ -76,14 +76,14 @@ namespace pcl
   template <typename PointT>
   class FrustumCulling : public FilterIndices<PointT>
   {
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = typename Filter<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      typedef boost::shared_ptr< FrustumCulling<PointT> > Ptr;
-      typedef boost::shared_ptr< const FrustumCulling<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<FrustumCulling<PointT> >;
+      using ConstPtr = boost::shared_ptr<const FrustumCulling<PointT> >;
 
 
       using Filter<PointT>::getClassName;

@@ -54,7 +54,7 @@
 
 using namespace pcl;
 
-typedef SampleConsensusModelSphere<PointXYZ>::Ptr SampleConsensusModelSpherePtr;
+using SampleConsensusModelSpherePtr = SampleConsensusModelSphere<PointXYZ>::Ptr;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SampleConsensus, Base)

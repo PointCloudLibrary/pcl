@@ -64,7 +64,7 @@ namespace pcl
     class OutofcoreOctreeRamContainer : public OutofcoreAbstractNodeContainer<PointT>
     {
       public:
-        typedef typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector AlignedPointTVector;
+        using AlignedPointTVector = typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector;
 
         /** \brief empty constructor (with a path parameter?)
           */

@@ -46,6 +46,7 @@
 #include <condition_variable>
 #include <csignal>
 #include <ctime>
+#include <functional>
 #include <mutex>
 #include <thread>
 
@@ -163,7 +164,7 @@ MapsBuffer::getFront(bool print)
 {
   boost::shared_ptr< const MapsBuffer::MapsRgb > depth_rgb;
   {
-    std::lock_guard<std::mutex> buff_lock (bmutex_);
+    std::unique_lock<std::mutex> buff_lock (bmutex_);
     while (buffer_.empty ())
     {
       if (is_done)
@@ -257,9 +258,9 @@ void
 grabAndSend ()
 {
   pcl::Grabber* interface = new pcl::OpenNIGrabber ();
-  //boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& )> f = boost::bind(&grabberCallBack, _1);
+  //std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& )> f = boost::bind(&grabberCallBack, _1);
 
-  boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)> f = boost::bind (&grabberMapsCallBack, _1, _2, _3);
+  std::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)> f = boost::bind (&grabberMapsCallBack, _1, _2, _3);
 
 
   interface->registerCallback (f);

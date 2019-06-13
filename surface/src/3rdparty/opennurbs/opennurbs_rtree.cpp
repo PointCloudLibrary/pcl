@@ -43,7 +43,7 @@ struct ON_RTreePartitionVars
   double m_coverSplitArea;
 }; 
 
-typedef bool (*ON_RTreeSearchCallback)(void* a_context, ON__INT_PTR a_id );
+using ON_RTreeSearchCallback = bool (*)(void *, ON__INT_PTR);
 
 struct ON_RTreeSearchResultCallback
 {
@@ -1158,7 +1158,7 @@ bool ON_RTree::Search(
   return true;
 }
 
-typedef void (*ON_RTreePairSearchCallback)(void*, ON__INT_PTR, ON__INT_PTR);
+using ON_RTreePairSearchCallback = void (*)(void *, ON__INT_PTR, ON__INT_PTR);
 
 struct ON_RTreePairSearchCallbackResult
 {
@@ -1167,7 +1167,7 @@ struct ON_RTreePairSearchCallbackResult
   ON_RTreePairSearchCallback m_resultCallback;
 };
 
-typedef bool (*ON_RTreePairSearchCallbackBool)(void*, ON__INT_PTR, ON__INT_PTR);
+using ON_RTreePairSearchCallbackBool = bool (*)(void *, ON__INT_PTR, ON__INT_PTR);
 
 struct ON_RTreePairSearchCallbackResultBool
 {

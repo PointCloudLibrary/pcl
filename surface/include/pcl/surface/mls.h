@@ -39,10 +39,9 @@
 
 #pragma once
 
+#include <functional>
 #include <map>
 #include <random>
-
-#include <boost/function.hpp>
 
 // PCL includes
 #include <pcl/pcl_base.h>
@@ -211,7 +210,7 @@ namespace pcl
                        const std::vector<int> &nn_indices,
                        double search_radius,
                        int polynomial_order = 2,
-                       boost::function<double(const double)> weight_func = {});
+                       std::function<double(const double)> weight_func = {});
 
     Eigen::Vector3d query_point;  /**< \brief The query point about which the mls surface was generated */
     Eigen::Vector3d mean;         /**< \brief The mean point of all the neighbors. */
@@ -262,20 +261,20 @@ namespace pcl
       using PCLBase<PointInT>::initCompute;
       using PCLBase<PointInT>::deinitCompute;
 
-      typedef pcl::search::Search<PointInT> KdTree;
-      typedef typename KdTree::Ptr KdTreePtr;
-      typedef pcl::PointCloud<pcl::Normal> NormalCloud;
-      typedef NormalCloud::Ptr NormalCloudPtr;
+      using KdTree = pcl::search::Search<PointInT>;
+      using KdTreePtr = typename KdTree::Ptr;
+      using NormalCloud = pcl::PointCloud<pcl::Normal>;
+      using NormalCloudPtr = NormalCloud::Ptr;
 
-      typedef pcl::PointCloud<PointOutT> PointCloudOut;
-      typedef typename PointCloudOut::Ptr PointCloudOutPtr;
-      typedef typename PointCloudOut::ConstPtr PointCloudOutConstPtr;
+      using PointCloudOut = pcl::PointCloud<PointOutT>;
+      using PointCloudOutPtr = typename PointCloudOut::Ptr;
+      using PointCloudOutConstPtr = typename PointCloudOut::ConstPtr;
 
-      typedef pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename PointCloudIn::Ptr PointCloudInPtr;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
+      using PointCloudInPtr = typename PointCloudIn::Ptr;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
-      typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
+      using SearchMethod = std::function<int (int, double, std::vector<int> &, std::vector<float> &)>;
 
       enum UpsamplingMethod
       {
@@ -744,23 +743,8 @@ namespace pcl
       getClassName () const { return ("MovingLeastSquares"); }
   };
 
-  /** \brief MovingLeastSquaresOMP implementation has been merged into MovingLeastSquares for better maintainability.
-  * \note Keeping this empty child class for backwards compatibility.
-  * \author Robert Huitl
-  * \ingroup surface
-  */
   template <typename PointInT, typename PointOutT>
-  class MovingLeastSquaresOMP : public MovingLeastSquares<PointInT, PointOutT>
-  {
-    public:
-      /** \brief Constructor for parallelized Moving Least Squares
-      * \param threads the maximum number of hardware threads to use (0 sets the value to 1)
-      */
-      MovingLeastSquaresOMP (unsigned int threads = 1)
-      {
-        this->setNumberOfThreads (threads);
-      }
-  };
+  using MovingLeastSquaresOMP [[deprecated("use MovingLeastSquares instead, it supports OpenMP now")]] = MovingLeastSquares<PointInT, PointOutT>;
 }
 
 #ifdef PCL_NO_PRECOMPILE

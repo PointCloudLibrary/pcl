@@ -90,8 +90,8 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, findFeatureCorrespondences)
 {
-  typedef Histogram<2> FeatureT;
-  typedef PointCloud<FeatureT> FeatureCloud;
+  using FeatureT = Histogram<2>;
+  using FeatureCloud = PointCloud<FeatureT>;
 
   RegistrationWrapper <PointXYZ, PointXYZ> reg;
 
@@ -317,7 +317,7 @@ TEST (PCL, JointIterativeClosestPoint)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, IterativeClosestPointNonLinear)
 {
-  typedef PointXYZRGB PointT;
+  using PointT = PointXYZRGB;
   PointCloud<PointT>::Ptr temp_src = pcl::make_shared<PointCloud<PointT>> ();
   copyPointCloud (cloud_source, *temp_src);
   PointCloud<PointT>::Ptr temp_tgt = pcl::make_shared<PointCloud<PointT>> ();
@@ -388,7 +388,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, IterativeClosestPoint_PointToPlane)
 {
-  typedef PointNormal PointT;
+  using PointT = PointNormal;
   PointCloud<PointT>::Ptr src = pcl::make_shared<PointCloud<PointT>> ();
   copyPointCloud (cloud_source, *src);
   PointCloud<PointT>::Ptr tgt = pcl::make_shared<PointCloud<PointT>> ();
@@ -402,8 +402,8 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   norm_est.compute (*tgt);
 
   IterativeClosestPoint<PointT, PointT> reg;
-  typedef registration::TransformationEstimationPointToPlane<PointT, PointT> PointToPlane;
-  boost::shared_ptr<PointToPlane> point_to_plane = pcl::make_shared<PointToPlane> ();
+  using PointToPlane = registration::TransformationEstimationPointToPlane<PointT, PointT>;
+  PointToPlane::Ptr point_to_plane = pcl::make_shared<PointToPlane> ();
   reg.setTransformationEstimation (point_to_plane);
   reg.setInputSource (src);
   reg.setInputTarget (tgt);
@@ -477,7 +477,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GeneralizedIterativeClosestPoint)
 {
-  typedef PointXYZ PointT;
+  using PointT = PointXYZ;
   PointCloud<PointT>::Ptr src = pcl::make_shared<PointCloud<PointT>> ();
   copyPointCloud (cloud_source, *src);
   PointCloud<PointT>::Ptr tgt = pcl::make_shared<PointCloud<PointT>> ();
@@ -538,7 +538,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GeneralizedIterativeClosestPoint6D)
 {
-  typedef PointXYZRGBA PointT;
+  using PointT = PointXYZRGBA;
   Eigen::Affine3f delta_transform;
   PointCloud<PointT>::Ptr src_full = pcl::make_shared<PointCloud<PointT>> ();
   copyPointCloud (cloud_with_color, *src_full);

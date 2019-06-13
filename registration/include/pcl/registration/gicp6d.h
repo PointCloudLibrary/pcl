@@ -106,8 +106,8 @@ namespace pcl
    */
   class PCL_EXPORTS GeneralizedIterativeClosestPoint6D : public GeneralizedIterativeClosestPoint<PointXYZRGBA, PointXYZRGBA>
   {
-    typedef PointXYZRGBA PointSource;
-    typedef PointXYZRGBA PointTarget;
+    using PointSource = PointXYZRGBA;
+    using PointTarget = PointXYZRGBA;
 
     public:
 
@@ -171,8 +171,8 @@ namespace pcl
           using PointRepresentation<PointXYZLAB>::trivial_;
 
         public:
-          typedef boost::shared_ptr<MyPointRepresentation> Ptr;
-          typedef boost::shared_ptr<const MyPointRepresentation> ConstPtr;
+          using Ptr = boost::shared_ptr<MyPointRepresentation>;
+          using ConstPtr = boost::shared_ptr<const MyPointRepresentation>;
 
           MyPointRepresentation ()
           {

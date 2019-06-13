@@ -53,19 +53,19 @@ namespace pcl
     template <typename T>
     struct uniform_distribution<T, std::enable_if_t<std::is_integral<T>::value>>
     {
-      typedef std::uniform_int_distribution<T> type;
+      using type = std::uniform_int_distribution<T>;
     };
     /// uniform distribution float specialized
     template <typename T>
     struct uniform_distribution<T, std::enable_if_t<std::is_floating_point<T>::value>>
     {
-      typedef std::uniform_real_distribution<T> type;
+      using type = std::uniform_real_distribution<T>;
     };
     ///  normal distribution
     template<typename T> 
     struct normal_distribution
     {
-      typedef std::normal_distribution<T> type;
+      using type = std::normal_distribution<T>;
     };
 
     /** \brief UniformGenerator class generates a random number from range [min, max] at each run picked
@@ -132,7 +132,7 @@ namespace pcl
         run () { return (distribution_ (rng_)); }
 
       private:
-        typedef typename uniform_distribution<T>::type DistributionType;
+        using DistributionType = typename uniform_distribution<T>::type;
         /// parameters
         Parameters parameters_;
         /// random number generator
@@ -203,7 +203,7 @@ namespace pcl
         inline T 
         run () { return (distribution_ (rng_)); }
 
-        typedef typename normal_distribution<T>::type DistributionType;
+        using DistributionType = typename normal_distribution<T>::type;
         /// parameters
         Parameters parameters_;
         /// random number generator

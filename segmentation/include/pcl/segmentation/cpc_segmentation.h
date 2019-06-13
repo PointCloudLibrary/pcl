@@ -66,11 +66,11 @@ namespace pcl
   template <typename PointT>
   class CPCSegmentation : public LCCPSegmentation<PointT>
   {
-      typedef PointXYZINormal WeightSACPointType;
-      typedef LCCPSegmentation<PointT> LCCP;
+      using WeightSACPointType = PointXYZINormal;
+      using LCCP = LCCPSegmentation<PointT>;
       // LCCP typedefs
-      typedef typename LCCP::EdgeID EdgeID;
-      typedef typename LCCP::EdgeIterator EdgeIterator;
+      using EdgeID = typename LCCP::EdgeID;
+      using EdgeIterator = typename LCCP::EdgeIterator;
       // LCCP methods
       using LCCP::calculateConvexConnections;
       using LCCP::applyKconvexity;
@@ -174,11 +174,11 @@ namespace pcl
       
       class WeightedRandomSampleConsensus : public SampleConsensus<WeightSACPointType>
       {
-          typedef SampleConsensusModel<WeightSACPointType>::Ptr SampleConsensusModelPtr;
+          using SampleConsensusModelPtr = SampleConsensusModel<WeightSACPointType>::Ptr;
 
         public:
-          typedef boost::shared_ptr<WeightedRandomSampleConsensus> Ptr;
-          typedef boost::shared_ptr<const WeightedRandomSampleConsensus> ConstPtr;
+          using Ptr = boost::shared_ptr<WeightedRandomSampleConsensus>;
+          using ConstPtr = boost::shared_ptr<const WeightedRandomSampleConsensus>;
 
           /** \brief WeightedRandomSampleConsensus (Weighted RAndom SAmple Consensus) main constructor
             * \param[in] model a Sample Consensus model
@@ -261,10 +261,10 @@ namespace pcl
           std::vector<double> weights_;
           
           /** \brief  The indices used for estimating the RANSAC model. Only those whose weight is > 0 */
-          boost::shared_ptr<std::vector<int> > model_pt_indices_;
+          pcl::IndicesPtr model_pt_indices_;
           
           /** \brief  The complete list of indices used for the model evaluation */
-          boost::shared_ptr<std::vector<int> > full_cloud_pt_indices_;
+          pcl::IndicesPtr full_cloud_pt_indices_;
           
           /** \brief  Pointer to the input PointCloud */
           pcl::PointCloud<WeightSACPointType>::ConstPtr point_cloud_ptr_;

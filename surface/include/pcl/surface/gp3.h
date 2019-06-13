@@ -136,19 +136,19 @@ namespace pcl
   class GreedyProjectionTriangulation : public MeshConstruction<PointInT>
   {
     public:
-      typedef boost::shared_ptr<GreedyProjectionTriangulation<PointInT> > Ptr;
-      typedef boost::shared_ptr<const GreedyProjectionTriangulation<PointInT> > ConstPtr;
+      using Ptr = boost::shared_ptr<GreedyProjectionTriangulation<PointInT> >;
+      using ConstPtr = boost::shared_ptr<const GreedyProjectionTriangulation<PointInT> >;
 
       using MeshConstruction<PointInT>::tree_;
       using MeshConstruction<PointInT>::input_;
       using MeshConstruction<PointInT>::indices_;
 
-      typedef pcl::KdTree<PointInT> KdTree;
-      typedef typename KdTree::Ptr KdTreePtr;
+      using KdTree = pcl::KdTree<PointInT>;
+      using KdTreePtr = typename KdTree::Ptr;
 
-      typedef pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename PointCloudIn::Ptr PointCloudInPtr;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
+      using PointCloudInPtr = typename PointCloudIn::Ptr;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
       enum GP3Type
       { 

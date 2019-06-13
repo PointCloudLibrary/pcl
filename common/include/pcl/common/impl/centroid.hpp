@@ -809,7 +809,7 @@ template <typename PointT, typename Scalar> inline void
 pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
                         Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid)
 {
-  typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+  using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
   // Get the size of the fields
   centroid.setZero (boost::mpl::size<FieldList>::value);
@@ -832,7 +832,7 @@ pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
                         const std::vector<int> &indices,
                         Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid)
 {
-  typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+  using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
   // Get the size of the fields
   centroid.setZero (boost::mpl::size<FieldList>::value);

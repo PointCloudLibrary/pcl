@@ -53,8 +53,8 @@
 
 #include <pcl/make_shared.h>
 
-typedef pcl::PointNormal PointT;
-typedef pcl::search::KdTree<PointT>::Ptr KdTreePtr;
+using PointT = pcl::PointNormal;
+using KdTreePtr = pcl::search::KdTree<PointT>::Ptr;
 using pcl::PointCloud;
 
 static PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
@@ -65,11 +65,11 @@ static KdTreePtr tree;
 template<template<class, class, class> class FeatureEstimation, typename PointT, typename NormalT, typename OutputT> void
 testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
                              const typename PointCloud<NormalT>::Ptr & normals,
-                             const boost::shared_ptr<std::vector<int> > & indices, int ndims)
+                             const pcl::IndicesPtr & indices, int ndims)
 
 {
-  typedef pcl::search::KdTree<PointT> KdTreeT;
-  typedef FeatureEstimation<PointT, NormalT, OutputT> FeatureEstimationT;
+  using KdTreeT = pcl::search::KdTree<PointT>;
+  using FeatureEstimationT = FeatureEstimation<PointT, NormalT, OutputT>;
 
   //
   // Test setIndices and setSearchSurface
@@ -122,7 +122,7 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
   //
   PointCloud<OutputT> output3, output4;
 
-  boost::shared_ptr<std::vector<int> > indices2 (new std::vector<int> (0));
+  pcl::IndicesPtr indices2 (new pcl::Indices (0));
   for (size_t i = 0; i < (indices->size ()/2); ++i)
     indices2->push_back (static_cast<int> (i));
 
@@ -206,7 +206,7 @@ TEST (PCL, PFHEstimation)
 
   // Object
   PointCloud<PFHSignature125>::Ptr pfhs (new PointCloud<PFHSignature125> ());
-  boost::shared_ptr<std::vector<int> > indicesptr (new std::vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
 
   // set parameters
   pfh.setInputCloud (cloud);
@@ -253,7 +253,7 @@ TEST (PCL, PFHEstimation)
 
   // Test results when setIndices and/or setSearchSurface are used
 
-  boost::shared_ptr<std::vector<int> > test_indices (new std::vector<int> (0));
+  pcl::IndicesPtr test_indices (new pcl::Indices (0));
   for (size_t i = 0; i < cloud->size (); i+=3)
     test_indices->push_back (static_cast<int> (i));
 
@@ -293,8 +293,9 @@ struct FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >
 };
 
 // Types which will be instantiated
-typedef ::testing::Types<FPFHEstimation<PointT, PointT, FPFHSignature33>,
-                         FPFHEstimationOMP<PointT, PointT, FPFHSignature33> > FPFHEstimatorTypes;
+using FPFHEstimatorTypes = ::testing::Types
+        <FPFHEstimation<PointT, PointT, FPFHSignature33>,
+         FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >;
 TYPED_TEST_CASE (FPFHTest, FPFHEstimatorTypes);
 
 // This is a copy of the old FPFHEstimation test which will now
@@ -392,7 +393,7 @@ TYPED_TEST (FPFHTest, Estimation)
 
   // Object
   PointCloud<FPFHSignature33>::Ptr fpfhs (new PointCloud<FPFHSignature33> ());
-  boost::shared_ptr<std::vector<int> > indicesptr (new std::vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
 
   // set parameters
   fpfh.setInputCloud (cloud);
@@ -441,7 +442,7 @@ TYPED_TEST (FPFHTest, Estimation)
 
   // Test results when setIndices and/or setSearchSurface are used
 
-  boost::shared_ptr<std::vector<int> > test_indices (new std::vector<int> (0));
+  pcl::IndicesPtr test_indices (new pcl::Indices (0));
   for (size_t i = 0; i < cloud->size (); i+=3)
     test_indices->push_back (static_cast<int> (i));
 
@@ -458,7 +459,7 @@ TEST (PCL, VFHEstimation)
   // Object
   pcl::VFHEstimation<PointT, PointT, VFHSignature308> vfh;
   PointCloud<VFHSignature308>::Ptr vfhs (new PointCloud<VFHSignature308> ());
-  boost::shared_ptr<std::vector<int> > indicesptr (new std::vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
 
   // set parameters
   vfh.setInputCloud (cloud);

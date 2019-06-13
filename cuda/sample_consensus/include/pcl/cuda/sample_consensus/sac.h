@@ -49,24 +49,24 @@ namespace pcl
     template <template <typename> class Storage>
     class SampleConsensus
     {
-      typedef typename SampleConsensusModel<Storage>::Ptr SampleConsensusModelPtr;
-      typedef typename SampleConsensusModel<Storage>::Hypotheses Hypotheses;
+      using SampleConsensusModelPtr = typename SampleConsensusModel<Storage>::Ptr;
+      using Hypotheses = typename SampleConsensusModel<Storage>::Hypotheses;
 
-      typedef typename SampleConsensusModel<Storage>::Indices Indices;
-      typedef typename SampleConsensusModel<Storage>::IndicesPtr IndicesPtr;
-      typedef typename SampleConsensusModel<Storage>::IndicesConstPtr IndicesConstPtr;
+      using Indices = typename SampleConsensusModel<Storage>::Indices;
+      using IndicesPtr = typename SampleConsensusModel<Storage>::IndicesPtr;
+      using IndicesConstPtr = typename SampleConsensusModel<Storage>::IndicesConstPtr;
 
       private:
         /** \brief Constructor for base SAC. */
         SampleConsensus () {};
 
       public:
-        typedef typename Storage<float>::type Coefficients;
-        typedef boost::shared_ptr <Coefficients> CoefficientsPtr;
-        typedef boost::shared_ptr <const Coefficients> CoefficientsConstPtr;
+        using Coefficients = typename Storage<float>::type;
+        using CoefficientsPtr = boost::shared_ptr <Coefficients>;
+        using CoefficientsConstPtr = boost::shared_ptr <const Coefficients>;
 
-        typedef boost::shared_ptr<SampleConsensus> Ptr;
-        typedef boost::shared_ptr<const SampleConsensus> ConstPtr;
+        using Ptr = boost::shared_ptr<SampleConsensus>;
+        using ConstPtr = boost::shared_ptr<const SampleConsensus>;
 
         /** \brief Constructor for base SAC.
           * \param model a Sample Consensus model

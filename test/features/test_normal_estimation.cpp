@@ -49,7 +49,7 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
+using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
 vector<int> indices;
@@ -144,7 +144,7 @@ TEST (PCL, NormalEstimation)
   PointCloud<PointXYZ>::Ptr cloudptr = cloud.makeShared ();
   n.setInputCloud (cloudptr);
   EXPECT_EQ (n.getInputCloud (), cloudptr);
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
   n.setIndices (indicesptr);
   EXPECT_EQ (n.getIndices (), indicesptr);
   n.setSearchMethod (tree);
@@ -195,7 +195,7 @@ TEST (PCL, NormalEstimationOpenMP)
   PointCloud<PointXYZ>::Ptr cloudptr = cloud.makeShared ();
   n.setInputCloud (cloudptr);
   EXPECT_EQ (n.getInputCloud (), cloudptr);
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
   n.setIndices (indicesptr);
   EXPECT_EQ (n.getIndices (), indicesptr);
   n.setSearchMethod (tree);

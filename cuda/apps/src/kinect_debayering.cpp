@@ -44,6 +44,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <functional>
 #include <iostream>
 #include <mutex>
 
@@ -72,7 +73,7 @@ class SimpleKinectTool
 	    cv::namedWindow("test", CV_WINDOW_AUTOSIZE);
       pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
 
-      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image)> f = boost::bind (&SimpleKinectTool::cloud_cb_, this, _1);
+      std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image)> f = boost::bind (&SimpleKinectTool::cloud_cb_, this, _1);
 
       boost::signals2::connection c = interface->registerCallback (f);
 

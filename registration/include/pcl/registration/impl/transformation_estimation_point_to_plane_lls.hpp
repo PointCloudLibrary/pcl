@@ -145,8 +145,8 @@ template <typename PointSource, typename PointTarget, typename Scalar> inline vo
 pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
 estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCloudIterator<PointTarget>& target_it, Matrix4 &transformation_matrix) const
 {
-  typedef Eigen::Matrix<double, 6, 1> Vector6d;
-  typedef Eigen::Matrix<double, 6, 6> Matrix6d;
+  using Vector6d = Eigen::Matrix<double, 6, 1>;
+  using Matrix6d = Eigen::Matrix<double, 6, 6>;
 
   Matrix6d ATA;
   Vector6d ATb;

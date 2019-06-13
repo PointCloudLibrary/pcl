@@ -63,8 +63,8 @@ namespace pcl
       using PCLBase <PointT>::initCompute;
       using PCLBase <PointT>::deinitCompute;
 
-      typedef typename pcl::PCLBase <PointT>::PointCloudConstPtr PointCloudConstPtr;
-      typedef typename pcl::PCLBase <PointT>::PointIndicesConstPtr PointIndicesConstPtr;
+      using PointCloudConstPtr = typename pcl::PCLBase<PointT>::PointCloudConstPtr;
+      using PointIndicesConstPtr = typename pcl::PCLBase<PointT>::PointIndicesConstPtr;
 
     public:
 

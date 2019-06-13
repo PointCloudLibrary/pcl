@@ -56,17 +56,17 @@ namespace pcl
   template <typename PointT, typename PointLT>
   class OrganizedEdgeBase : public PCLBase<PointT>
   {
-    typedef pcl::PointCloud<PointT> PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = pcl::PointCloud<PointT>;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
       
-    typedef pcl::PointCloud<PointLT> PointCloudL;
-    typedef typename PointCloudL::Ptr PointCloudLPtr;
-    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+    using PointCloudL = pcl::PointCloud<PointLT>;
+    using PointCloudLPtr = typename PointCloudL::Ptr;
+    using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
     public:
-      typedef boost::shared_ptr<OrganizedEdgeBase<PointT, PointLT> > Ptr;
-      typedef boost::shared_ptr<const OrganizedEdgeBase<PointT, PointLT> > ConstPtr;
+      using Ptr = boost::shared_ptr<OrganizedEdgeBase<PointT, PointLT> >;
+      using ConstPtr = boost::shared_ptr<const OrganizedEdgeBase<PointT, PointLT> >;
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
       using PCLBase<PointT>::initCompute;
@@ -181,13 +181,13 @@ namespace pcl
   template <typename PointT, typename PointLT>
   class OrganizedEdgeFromRGB : virtual public OrganizedEdgeBase<PointT, PointLT>
   {
-    typedef pcl::PointCloud<PointT> PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = pcl::PointCloud<PointT>;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
       
-    typedef pcl::PointCloud<PointLT> PointCloudL;
-    typedef typename PointCloudL::Ptr PointCloudLPtr;
-    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+    using PointCloudL = pcl::PointCloud<PointLT>;
+    using PointCloudLPtr = typename PointCloudL::Ptr;
+    using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
     public:
       using OrganizedEdgeBase<PointT, PointLT>::input_;
@@ -267,17 +267,17 @@ namespace pcl
   template <typename PointT, typename PointNT, typename PointLT>
   class OrganizedEdgeFromNormals : virtual public OrganizedEdgeBase<PointT, PointLT>
   {
-    typedef pcl::PointCloud<PointT> PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = pcl::PointCloud<PointT>;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
       
-    typedef pcl::PointCloud<PointNT> PointCloudN;
-    typedef typename PointCloudN::Ptr PointCloudNPtr;
-    typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+    using PointCloudN = pcl::PointCloud<PointNT>;
+    using PointCloudNPtr = typename PointCloudN::Ptr;
+    using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
 
-    typedef pcl::PointCloud<PointLT> PointCloudL;
-    typedef typename PointCloudL::Ptr PointCloudLPtr;
-    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+    using PointCloudL = pcl::PointCloud<PointLT>;
+    using PointCloudLPtr = typename PointCloudL::Ptr;
+    using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
     public:
       using OrganizedEdgeBase<PointT, PointLT>::input_;
@@ -377,17 +377,17 @@ namespace pcl
   template <typename PointT, typename PointNT, typename PointLT>
   class OrganizedEdgeFromRGBNormals : public OrganizedEdgeFromRGB<PointT, PointLT>, public OrganizedEdgeFromNormals<PointT, PointNT, PointLT>
   {
-    typedef pcl::PointCloud<PointT> PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = pcl::PointCloud<PointT>;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
       
-    typedef pcl::PointCloud<PointNT> PointCloudN;
-    typedef typename PointCloudN::Ptr PointCloudNPtr;
-    typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+    using PointCloudN = pcl::PointCloud<PointNT>;
+    using PointCloudNPtr = typename PointCloudN::Ptr;
+    using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
 
-    typedef pcl::PointCloud<PointLT> PointCloudL;
-    typedef typename PointCloudL::Ptr PointCloudLPtr;
-    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+    using PointCloudL = pcl::PointCloud<PointLT>;
+    using PointCloudLPtr = typename PointCloudL::Ptr;
+    using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
     public:
       using OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::input_;

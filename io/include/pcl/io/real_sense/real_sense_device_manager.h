@@ -65,7 +65,7 @@ namespace pcl
 
         public:
 
-          typedef boost::shared_ptr<RealSenseDeviceManager> Ptr;
+          using Ptr = boost::shared_ptr<RealSenseDeviceManager>;
 
           static Ptr&
           getInstance ()
@@ -133,7 +133,7 @@ namespace pcl
 
         public:
 
-          typedef boost::shared_ptr<RealSenseDevice> Ptr;
+          using Ptr = boost::shared_ptr<RealSenseDevice>;
 
           inline const std::string&
           getSerialNumber () { return (device_id_); }

@@ -54,8 +54,8 @@
 
 #include <pcl/make_shared.h>
 
-typedef pcl::PointXYZRGB PointT;
-typedef pcl::PointCloud<PointT> PointCloudT;
+using PointT = pcl::PointXYZRGB;
+using PointCloudT = pcl::PointCloud<PointT>;
 
 enum { COLS = 640, ROWS = 480 };
 PointCloudT::Ptr cloud;

@@ -117,7 +117,7 @@ namespace pcl
     template <typename PointT> void
     savePNGFile (const std::string& file_name, const pcl::PointCloud<PointT>& cloud, const std::string& field_name)
     {
-      typedef typename PointCloudImageExtractor<PointT>::Ptr PointCloudImageExtractorPtr;
+      using PointCloudImageExtractorPtr = typename PointCloudImageExtractor<PointT>::Ptr;
       PointCloudImageExtractorPtr pcie;
       if (field_name == "normal")
       {

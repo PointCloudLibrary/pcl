@@ -42,7 +42,7 @@
 std::condition_variable OutofcoreCloud::pcd_queue_ready;
 std::mutex OutofcoreCloud::pcd_queue_mutex;
 
-boost::shared_ptr<std::thread> OutofcoreCloud::pcd_reader_thread;
+std::shared_ptr<std::thread> OutofcoreCloud::pcd_reader_thread;
 //MonitorQueue<std::string> OutofcoreCloud::pcd_queue;
 
 //std::map<std::string, vtkSmartPointer<vtkPolyData> > OutofcoreCloud::cloud_data_cache;
@@ -117,12 +117,8 @@ OutofcoreCloud::OutofcoreCloud (std::string name, boost::filesystem::path& tree_
 {
 
   // Create the pcd reader thread once for all outofcore nodes
-  if (OutofcoreCloud::pcd_reader_thread.get() == nullptr)
-  {
-//    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<std::thread>(new std::thread(&OutofcoreCloud::pcdReaderThread, this));
+  if (!OutofcoreCloud::pcd_reader_thread)
     OutofcoreCloud::pcd_reader_thread = pcl::make_shared<std::thread>(&OutofcoreCloud::pcdReaderThread);
-  }
-
 
   octree_ = pcl::make_shared<OctreeDisk> (tree_root, true);
   octree_->getBoundingBox (bbox_min_, bbox_max_);

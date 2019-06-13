@@ -68,14 +68,14 @@ namespace pcl
   class ModelOutlierRemoval : public FilterIndices<PointT>
   {
     protected:
-      typedef typename FilterIndices<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
+      using PointCloud = typename FilterIndices<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
+      using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
 
     public:
-      typedef pcl::PointCloud<pcl::Normal>::Ptr PointCloudNPtr;
-      typedef pcl::PointCloud<pcl::Normal>::ConstPtr PointCloudNConstPtr;
+      using PointCloudNPtr = pcl::PointCloud<pcl::Normal>::Ptr;
+      using PointCloudNConstPtr = pcl::PointCloud<pcl::Normal>::ConstPtr;
 
       /** \brief Constructor.
        * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
@@ -173,7 +173,7 @@ namespace pcl
        * \param[in] thresh pointer to a threshold function
        */
       void
-      setThresholdFunction (boost::function<bool (double)> thresh)
+      setThresholdFunction (std::function<bool (double)> thresh)
       {
         threshold_function_ = thresh;
       }
@@ -235,7 +235,7 @@ namespace pcl
 
       /** \brief The type of model to use (user given parameter). */
       pcl::SacModel model_type_;
-      boost::function<bool (double)> threshold_function_;
+      std::function<bool (double)> threshold_function_;
 
       inline bool
       checkSingleThreshold (double value)

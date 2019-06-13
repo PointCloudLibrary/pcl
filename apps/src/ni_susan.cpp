@@ -99,7 +99,7 @@ class SUSANDemo
     void
     init ()
     {
-      boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&SUSANDemo::cloud_callback, this, _1);
+      std::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&SUSANDemo::cloud_callback, this, _1);
       cloud_connection = grabber_.registerCallback (cloud_cb);
     }
 

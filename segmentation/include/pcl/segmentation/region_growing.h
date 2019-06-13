@@ -62,11 +62,11 @@ namespace pcl
   {
     public:
 
-      typedef pcl::search::Search <PointT> KdTree;
-      typedef typename KdTree::Ptr KdTreePtr;
-      typedef pcl::PointCloud <NormalT> Normal;
-      typedef typename Normal::Ptr NormalPtr;
-      typedef pcl::PointCloud <PointT> PointCloud;
+      using KdTree = pcl::search::Search<PointT>;
+      using KdTreePtr = typename KdTree::Ptr;
+      using Normal = pcl::PointCloud<NormalT>;
+      using NormalPtr = typename Normal::Ptr;
+      using PointCloud = pcl::PointCloud<PointT>;
 
       using PCLBase <PointT>::input_;
       using PCLBase <PointT>::indices_;

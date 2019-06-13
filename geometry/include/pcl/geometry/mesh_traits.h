@@ -40,22 +40,14 @@
 
 #pragma once
 
-#include <pcl/geometry/boost.h>
+#include <type_traits>
 
 namespace pcl
-{ 
+{
   namespace geometry
   {
     /** \brief No data is associated with the vertices / half-edges / edges / faces. */
-    struct NoData
-    {
-#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION <= 1101
-      operator unsigned char() const
-      {
-        return 0;
-      }
-#endif
-    };
+    struct NoData {};
 
     /** \brief The mesh traits are used to set up compile time settings for the mesh.
       * \tparam VertexDataT   Data stored for each vertex. Defaults to pcl::NoData.
@@ -71,13 +63,13 @@ namespace pcl
               class FaceDataT     = pcl::geometry::NoData>
     struct DefaultMeshTraits
     {
-      typedef VertexDataT   VertexData;
-      typedef HalfEdgeDataT HalfEdgeData;
-      typedef EdgeDataT     EdgeData;
-      typedef FaceDataT     FaceData;
+      using VertexData = VertexDataT;
+      using HalfEdgeData = HalfEdgeDataT;
+      using EdgeData = EdgeDataT;
+      using FaceData = FaceDataT;
 
       /** \brief Specifies whether the mesh is manifold or not (only non-manifold vertices can be represented). */
-      typedef boost::false_type IsManifold;
+      using IsManifold = std::false_type;
     };
   } // End namespace geometry
 } // End namespace pcl

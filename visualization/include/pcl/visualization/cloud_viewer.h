@@ -52,13 +52,13 @@ namespace pcl
     class PCL_EXPORTS CloudViewer : boost::noncopyable
     {
       public:
-        typedef boost::shared_ptr<CloudViewer> Ptr;
-        typedef boost::shared_ptr<const CloudViewer> ConstPtr;
+        using Ptr = boost::shared_ptr<CloudViewer>;
+        using ConstPtr = boost::shared_ptr<const CloudViewer>;
 
-        typedef pcl::PointCloud<pcl::PointXYZRGBA> ColorACloud;
-        typedef pcl::PointCloud<pcl::PointXYZRGB> ColorCloud;
-        typedef pcl::PointCloud<pcl::PointXYZI> GrayCloud;
-        typedef pcl::PointCloud<pcl::PointXYZ> MonochromeCloud;
+        using ColorACloud = pcl::PointCloud<pcl::PointXYZRGBA>;
+        using ColorCloud = pcl::PointCloud<pcl::PointXYZRGB>;
+        using GrayCloud = pcl::PointCloud<pcl::PointXYZI>;
+        using MonochromeCloud = pcl::PointCloud<pcl::PointXYZ>;
 
         /** \brief Construct a cloud viewer, with a window name.
          * \param window_name This is displayed at the top of the window
@@ -109,7 +109,7 @@ namespace pcl
 
         /** Visualization callable function, may be used for running things on the UI thread.
          */
-        typedef boost::function1<void, pcl::visualization::PCLVisualizer&> VizCallable;
+        using VizCallable = std::function<void (pcl::visualization::PCLVisualizer&)>;
 
         /** \brief Run a callbable object on the UI thread. Will persist until removed
          * @param x Use boost::ref(x) for a function object that you would like to not copy
@@ -206,13 +206,13 @@ namespace pcl
         boost::scoped_ptr<CloudViewer_impl> impl_;
         
         boost::signals2::connection 
-        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)>);
+        registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)>);
 
         boost::signals2::connection 
-        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)>);
+        registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)>);
 
         boost::signals2::connection 
-        registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)>);
+        registerPointPickingCallback (std::function<void (const pcl::visualization::PointPickingEvent&)>);
     };
   }
 }

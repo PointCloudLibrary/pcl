@@ -42,7 +42,7 @@
 #include <pcl/common/io.h>
 #include <pcl/filters/impl/voxel_grid.hpp>
 
-typedef Eigen::Array<size_t, 4, 1> Array4size_t;
+using Array4size_t = Eigen::Array<size_t, 4, 1>;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void

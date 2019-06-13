@@ -57,7 +57,7 @@ namespace pcl
   {
     public:
 
-      typedef pcl::PointCloud <PointT> PointCloud;
+      using PointCloud = pcl::PointCloud<PointT>;
 
       using PCLBase <PointT>::input_;
       using PCLBase <PointT>::indices_;

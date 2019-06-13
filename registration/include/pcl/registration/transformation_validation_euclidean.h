@@ -74,18 +74,18 @@ namespace pcl
     class TransformationValidationEuclidean
     {
       public:
-        typedef typename TransformationValidation<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
+        using Matrix4 = typename TransformationValidation<PointSource, PointTarget, Scalar>::Matrix4;
         
-        typedef boost::shared_ptr<TransformationValidation<PointSource, PointTarget, Scalar> > Ptr;
-        typedef boost::shared_ptr<const TransformationValidation<PointSource, PointTarget, Scalar> > ConstPtr;
+        using Ptr = boost::shared_ptr<TransformationValidation<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = boost::shared_ptr<const TransformationValidation<PointSource, PointTarget, Scalar> >;
 
-        typedef pcl::search::KdTree<PointTarget> KdTree;
-        typedef typename KdTree::Ptr KdTreePtr;
+        using KdTree = pcl::search::KdTree<PointTarget>;
+        using KdTreePtr = typename KdTree::Ptr;
 
-        typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
+        using PointRepresentationConstPtr = typename KdTree::PointRepresentationConstPtr;
 
-        typedef typename TransformationValidation<PointSource, PointTarget>::PointCloudSourceConstPtr PointCloudSourceConstPtr;
-        typedef typename TransformationValidation<PointSource, PointTarget>::PointCloudTargetConstPtr PointCloudTargetConstPtr;
+        using PointCloudSourceConstPtr = typename TransformationValidation<PointSource, PointTarget>::PointCloudSourceConstPtr;
+        using PointCloudTargetConstPtr = typename TransformationValidation<PointSource, PointTarget>::PointCloudTargetConstPtr;
 
         /** \brief Constructor.
           * Sets the \a max_range parameter to double::max, \a threshold_ to NaN
@@ -237,8 +237,8 @@ namespace pcl
           using pcl::PointRepresentation<PointTarget>::nr_dimensions_;
           using pcl::PointRepresentation<PointTarget>::trivial_;
           public:
-            typedef boost::shared_ptr<MyPointRepresentation> Ptr;
-            typedef boost::shared_ptr<const MyPointRepresentation> ConstPtr;
+            using Ptr = boost::shared_ptr<MyPointRepresentation>;
+            using ConstPtr = boost::shared_ptr<const MyPointRepresentation>;
             
             MyPointRepresentation ()
             {

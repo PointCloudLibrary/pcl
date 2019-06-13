@@ -6,7 +6,7 @@
 #include <pcl/surface/on_nurbs/fitting_surface_tdm.h>
 #include <pcl/surface/on_nurbs/triangulation.h>
 
-typedef pcl::PointXYZ Point;
+using Point = pcl::PointXYZ;
 
 void
 CreateCylinderPoints (pcl::PointCloud<Point>::Ptr cloud, pcl::on_nurbs::vector_vec3d &data, unsigned npoints,

@@ -71,7 +71,7 @@ namespace pcl
       using PCLBase<PointInT>::deinitCompute;
       using CloudSurfaceProcessing<PointInT, PointOutT>::process;
 
-      typedef pcl::PointCloud<PointOutT> PointCloudOut;
+      using PointCloudOut = pcl::PointCloud<PointOutT>;
 
       Eigen::Matrix3f KinectVGAProjectionMatrix, KinectSXGAProjectionMatrix;
 

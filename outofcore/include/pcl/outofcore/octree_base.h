@@ -155,38 +155,38 @@ namespace pcl
       public:
 
         // public typedefs
-        typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<PointT>, PointT > octree_disk;
-        typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<PointT>, PointT > octree_disk_node;
+        using octree_disk = OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<PointT>, PointT >;
+        using octree_disk_node = OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<PointT>, PointT >;
 
-        typedef OutofcoreOctreeBase<OutofcoreOctreeRamContainer<PointT>, PointT> octree_ram;
-        typedef OutofcoreOctreeBaseNode<OutofcoreOctreeRamContainer<PointT>, PointT> octree_ram_node;
+        using octree_ram = OutofcoreOctreeBase<OutofcoreOctreeRamContainer<PointT>, PointT>;
+        using octree_ram_node = OutofcoreOctreeBaseNode<OutofcoreOctreeRamContainer<PointT>, PointT>;
 
-        typedef OutofcoreOctreeBaseNode<ContainerT, PointT> OutofcoreNodeType;
+        using OutofcoreNodeType = OutofcoreOctreeBaseNode<ContainerT, PointT>;
 
-        typedef OutofcoreOctreeBaseNode<ContainerT, PointT> BranchNode;
-        typedef OutofcoreOctreeBaseNode<ContainerT, PointT> LeafNode;
+        using BranchNode = OutofcoreOctreeBaseNode<ContainerT, PointT>;
+        using LeafNode = OutofcoreOctreeBaseNode<ContainerT, PointT>;
 
-        typedef OutofcoreDepthFirstIterator<PointT, ContainerT> Iterator;
-        typedef const OutofcoreDepthFirstIterator<PointT, ContainerT> ConstIterator;
+        using Iterator = OutofcoreDepthFirstIterator<PointT, ContainerT>;
+        using ConstIterator = const OutofcoreDepthFirstIterator<PointT, ContainerT>;
 
-        typedef OutofcoreBreadthFirstIterator<PointT, ContainerT> BreadthFirstIterator;
-        typedef const OutofcoreBreadthFirstIterator<PointT, ContainerT> BreadthFirstConstIterator;
+        using BreadthFirstIterator = OutofcoreBreadthFirstIterator<PointT, ContainerT>;
+        using BreadthFirstConstIterator = const OutofcoreBreadthFirstIterator<PointT, ContainerT>;
 
-        typedef OutofcoreDepthFirstIterator<PointT, ContainerT> DepthFirstIterator;
-        typedef const OutofcoreDepthFirstIterator<PointT, ContainerT> DepthFirstConstIterator;
+        using DepthFirstIterator = OutofcoreDepthFirstIterator<PointT, ContainerT>;
+        using DepthFirstConstIterator = const OutofcoreDepthFirstIterator<PointT, ContainerT>;
 
-        typedef boost::shared_ptr<OutofcoreOctreeBase<ContainerT, PointT> > Ptr;
-        typedef boost::shared_ptr<const OutofcoreOctreeBase<ContainerT, PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<OutofcoreOctreeBase<ContainerT, PointT> >;
+        using ConstPtr = boost::shared_ptr<const OutofcoreOctreeBase<ContainerT, PointT> >;
 
-        typedef pcl::PointCloud<PointT> PointCloud;
+        using PointCloud = pcl::PointCloud<PointT>;
 
-        typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
-        typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
+        using IndicesPtr = boost::shared_ptr<std::vector<int> >;
+        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
 
-        typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-        typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+        using PointCloudPtr = boost::shared_ptr<PointCloud>;
+        using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
 
-        typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
+        using AlignedPointTVector = std::vector<PointT, Eigen::aligned_allocator<PointT> >;
 
         // Constructors
         // -----------------------------------------------------------------------

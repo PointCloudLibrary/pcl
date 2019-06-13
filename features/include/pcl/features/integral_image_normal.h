@@ -71,8 +71,8 @@ namespace pcl
     using Feature<PointInT, PointOutT>::indices_;
 
     public:
-      typedef boost::shared_ptr<IntegralImageNormalEstimation<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const IntegralImageNormalEstimation<PointInT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<IntegralImageNormalEstimation<PointInT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const IntegralImageNormalEstimation<PointInT, PointOutT> >;
 
       /** \brief Different types of border handling. */
         enum BorderPolicy
@@ -100,8 +100,8 @@ namespace pcl
         SIMPLE_3D_GRADIENT
       };
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
       /** \brief Constructor */
       IntegralImageNormalEstimation ()

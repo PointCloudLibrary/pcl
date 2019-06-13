@@ -77,7 +77,7 @@ namespace pcl
     {
   
       public:
-        typedef typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector AlignedPointTVector;
+        using AlignedPointTVector = typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector;
         
         /** \brief Empty constructor creates disk container and sets filename from random uuid string*/
         OutofcoreOctreeDiskContainer ();

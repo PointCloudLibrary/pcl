@@ -64,13 +64,9 @@ namespace pcl
 
     public:
 
-      typedef
-        void (sig_cb_real_sense_point_cloud)
-          (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+      using sig_cb_real_sense_point_cloud = void () (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
 
-      typedef
-        void (sig_cb_real_sense_point_cloud_rgba)
-          (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
+      using sig_cb_real_sense_point_cloud_rgba = void () (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
 
       /** A descriptor for capturing mode.
         *

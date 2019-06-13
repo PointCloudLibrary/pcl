@@ -77,7 +77,7 @@ namespace pcl
   class DisparityMapConverter
   {
     protected:
-      typedef pcl::PointCloud<PointT> PointCloud;
+      using PointCloud = pcl::PointCloud<PointT>;
 
     public:
       /** \brief DisparityMapConverter constructor. */

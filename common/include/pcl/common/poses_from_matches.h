@@ -86,7 +86,7 @@ namespace pcl
       };
       
       // =====TYPEDEFS=====
-      typedef std::vector<PoseEstimate, Eigen::aligned_allocator<PoseEstimate> > PoseEstimatesVector;
+      using PoseEstimatesVector = std::vector<PoseEstimate, Eigen::aligned_allocator<PoseEstimate> >;
 
       
       // =====STATIC METHODS=====

@@ -22,8 +22,8 @@ namespace pcl
     class PCL_EXPORTS Scene
     {
     public:
-      typedef boost::shared_ptr<Scene> Ptr;
-      typedef boost::shared_ptr<Scene> ConstPtr;
+      using Ptr = boost::shared_ptr<Scene>;
+      using ConstPtr = boost::shared_ptr<Scene>;
 
       void
       draw ();

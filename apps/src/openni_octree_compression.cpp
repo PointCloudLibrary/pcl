@@ -155,7 +155,7 @@ class SimpleOpenNIViewer
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
       // make callback function from member function
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+      std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
         boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
 
       // connect callback function for desired signal. In this case its a point cloud with color values
@@ -210,7 +210,7 @@ struct EventHelper
     pcl::Grabber* interface = new pcl::OpenNIGrabber ();
 
     // make callback function from member function
-    boost::function<void
+    std::function<void
     (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = boost::bind (&EventHelper::cloud_cb_, this, _1);
 
     // connect callback function for desired signal. In this case its a point cloud with color values

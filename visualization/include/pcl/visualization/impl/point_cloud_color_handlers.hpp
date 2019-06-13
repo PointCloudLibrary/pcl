@@ -390,7 +390,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor (vtkSma
   vtkIdType nr_points = cloud_->points.size ();
   reinterpret_cast<vtkFloatArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
 
-  typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+  using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
   float* colors = new float[nr_points];
   float field_data;

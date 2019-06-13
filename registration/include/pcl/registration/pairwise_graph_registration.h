@@ -57,8 +57,8 @@ namespace pcl
       using GraphRegistration<GraphT>::last_aligned_vertex_;
       using GraphRegistration<GraphT>::last_vertices_;
 
-      typedef typename Registration<PointT, PointT>::Ptr RegistrationPtr;
-      typedef typename pcl::registration::GraphHandler<GraphT>::Vertex GraphHandlerVertex;
+      using RegistrationPtr = typename Registration<PointT, PointT>::Ptr;
+      using GraphHandlerVertex = typename pcl::registration::GraphHandler<GraphT>::Vertex;
 
       /** \brief Empty destructor */
       virtual ~PairwiseGraphRegistration () {}
