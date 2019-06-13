@@ -46,5 +46,5 @@ if(CUDA_FOUND)
   APPEND_TARGET_ARCH_FLAGS()
 
   # Prevent compilation issues between recent gcc versions and old CUDA versions
-  list(APPEND CUDA_NVCC_FLAGS "-D_FORCE_INLINES")
+  list(APPEND CUDA_NVCC_FLAGS "-D_FORCE_INLINES" $<$<OR:$<BOOL:CMAKE_COMPILER_IS_GNUXX>,$<BOOL:CMAKE_COMPILER_IS_CLANG>>:-std=c++11>)
 endif()
