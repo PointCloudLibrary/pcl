@@ -69,7 +69,7 @@ namespace pcl
     };
 
     public:
-      typedef pcl::PointCloud<PointInT> PointCloudIn;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
 
       ColorGradientDOTModality (size_t bin_size);
   

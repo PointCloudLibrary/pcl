@@ -39,10 +39,10 @@
 #include <pcl/io/pcd_io.h>
 
 /** @brief PCL point object */
-typedef pcl::PointXYZRGBA PointT;
+using PointT = pcl::PointXYZRGBA;
 
 /** @brief PCL Point cloud object */
-typedef pcl::PointCloud<PointT> PointCloudT;
+using PointCloudT = pcl::PointCloud<PointT>;
 
 int
 main (int argc,

@@ -65,8 +65,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        typedef boost::shared_ptr<CorrespondenceRejectorMedianDistance> Ptr;
-        typedef boost::shared_ptr<const CorrespondenceRejectorMedianDistance> ConstPtr;
+        using Ptr = boost::shared_ptr<CorrespondenceRejectorMedianDistance>;
+        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorMedianDistance>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorMedianDistance () 
@@ -199,7 +199,7 @@ namespace pcl
          */
         double factor_;
 
-        typedef boost::shared_ptr<DataContainerInterface> DataContainerPtr;
+        using DataContainerPtr = boost::shared_ptr<DataContainerInterface>;
 
         /** \brief A pointer to the DataContainer object containing the input and target point clouds */
         DataContainerPtr data_container_;

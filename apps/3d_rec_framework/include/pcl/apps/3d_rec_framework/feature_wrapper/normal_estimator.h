@@ -21,12 +21,12 @@ namespace pcl
       class PreProcessorAndNormalEstimator
       {
 
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
 
         float
         computeMeshResolution (PointInTPtr & input)
         {
-          typedef typename pcl::KdTree<PointInT>::Ptr KdTreeInPtr;
+          using KdTreeInPtr = typename pcl::KdTree<PointInT>::Ptr;
           KdTreeInPtr tree = boost::make_shared<pcl::KdTreeFLANN<PointInT> > (false);
           tree->setInputCloud (input);
 

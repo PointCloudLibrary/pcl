@@ -51,9 +51,9 @@ namespace pcl
           int id_;
       };
 
-      typedef boost::shared_ptr<RecognitionModel> RecognitionModelPtr;
+      using RecognitionModelPtr = boost::shared_ptr<RecognitionModel>;
 
-      typedef GlobalHypothesesVerification<ModelT, SceneT> SAOptimizerT;
+      using SAOptimizerT = GlobalHypothesesVerification<ModelT, SceneT>;
       class SAModel: public mets::evaluable_solution
       {
         public:
@@ -153,7 +153,7 @@ namespace pcl
       {
         public:
           std::vector<move*> moves_m;
-          typedef typename std::vector<move*>::iterator iterator;
+          using iterator = typename std::vector<move *>::iterator;
           iterator begin()
           {
             return moves_m.begin ();
@@ -193,7 +193,7 @@ namespace pcl
       using HypothesisVerification<ModelT, SceneT>::inliers_threshold_;
 
       //class attributes
-      typedef pcl::NormalEstimation<SceneT, pcl::Normal> NormalEstimator_;
+      using NormalEstimator_ = pcl::NormalEstimation<SceneT, pcl::Normal>;
       pcl::PointCloud<pcl::Normal>::Ptr scene_normals_;
       pcl::PointCloud<pcl::PointXYZI>::Ptr clusters_cloud_;
 

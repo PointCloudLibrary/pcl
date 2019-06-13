@@ -58,19 +58,19 @@ namespace pcl
   template <typename PointSource, typename PointTarget>
   class NormalDistributionsTransform2D : public Registration<PointSource, PointTarget>
   {
-    typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
-    typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-    typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+    using PointCloudSource = typename Registration<PointSource, PointTarget>::PointCloudSource;
+    using PointCloudSourcePtr = typename PointCloudSource::Ptr;
+    using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
-    typedef typename Registration<PointSource, PointTarget>::PointCloudTarget PointCloudTarget;
+    using PointCloudTarget = typename Registration<PointSource, PointTarget>::PointCloudTarget;
 
-    typedef PointIndices::Ptr PointIndicesPtr;
-    typedef PointIndices::ConstPtr PointIndicesConstPtr;
+    using PointIndicesPtr = PointIndices::Ptr;
+    using PointIndicesConstPtr = PointIndices::ConstPtr;
 
     public:
 
-        typedef boost::shared_ptr< NormalDistributionsTransform2D<PointSource, PointTarget> > Ptr;
-        typedef boost::shared_ptr< const NormalDistributionsTransform2D<PointSource, PointTarget> > ConstPtr;
+        using Ptr = boost::shared_ptr< NormalDistributionsTransform2D<PointSource, PointTarget> >;
+        using ConstPtr = boost::shared_ptr< const NormalDistributionsTransform2D<PointSource, PointTarget> >;
 
       /** \brief Empty constructor. */
       NormalDistributionsTransform2D ()

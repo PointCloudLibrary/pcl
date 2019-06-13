@@ -56,7 +56,7 @@
 class ply_to_ply_converter
 {
   public:
-    typedef int format_type;
+    using format_type = int;
     enum format
     {
       same_format,

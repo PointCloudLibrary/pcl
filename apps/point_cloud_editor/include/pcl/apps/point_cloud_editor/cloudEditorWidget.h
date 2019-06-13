@@ -253,9 +253,10 @@ class CloudEditorWidget : public QGLWidget
         return lhs.compare(rhs) < 0;
       }
     };
-    typedef std::function<void (CloudEditorWidget*, const std::string&)>
-      FileLoadFunc;
-    typedef std::map<std::string, FileLoadFunc, ExtCompare> FileLoadMap;
+
+    using FileLoadFunc = std::function<void (CloudEditorWidget*, const std::string&)>;
+    using FileLoadMap = std::map<std::string, FileLoadFunc, ExtCompare>;
+
     /// a map of file type extensions to loader functions.
     FileLoadMap cloud_load_func_map_;
     
@@ -303,7 +304,8 @@ class CloudEditorWidget : public QGLWidget
     /// A flag indicates whether the cloud is initially colored or not.
     bool is_colored_;
 
-    typedef std::function<void (CloudEditorWidget*)> KeyMapFunc;
+    using KeyMapFunc = std::function<void (CloudEditorWidget*)>;
+
     /// map between pressed key and the corresponding functor
     std::map<int, KeyMapFunc> key_map_;
 

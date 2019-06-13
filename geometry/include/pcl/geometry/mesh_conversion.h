@@ -56,9 +56,9 @@ namespace pcl
     template <class HalfEdgeMeshT> void
     toFaceVertexMesh (const HalfEdgeMeshT& half_edge_mesh, pcl::PolygonMesh& face_vertex_mesh)
     {
-      typedef HalfEdgeMeshT HalfEdgeMesh;
-      typedef typename HalfEdgeMesh::VertexAroundFaceCirculator VAFC;
-      typedef typename HalfEdgeMesh::FaceIndex FaceIndex;
+      using HalfEdgeMesh = HalfEdgeMeshT;
+      using VAFC = typename HalfEdgeMesh::VertexAroundFaceCirculator;
+      using FaceIndex = typename HalfEdgeMesh::FaceIndex;
 
       pcl::Vertices polygon;
       pcl::toPCLPointCloud2 (half_edge_mesh.getVertexDataCloud (), face_vertex_mesh.cloud);
@@ -87,9 +87,9 @@ namespace pcl
     template <class HalfEdgeMeshT> int
     toHalfEdgeMesh (const pcl::PolygonMesh& face_vertex_mesh, HalfEdgeMeshT& half_edge_mesh)
     {
-      typedef HalfEdgeMeshT                          HalfEdgeMesh;
-      typedef typename HalfEdgeMesh::VertexDataCloud VertexDataCloud;
-      typedef typename HalfEdgeMesh::VertexIndices   VertexIndices;
+      using HalfEdgeMesh = HalfEdgeMeshT;
+      using VertexDataCloud = typename HalfEdgeMesh::VertexDataCloud;
+      using VertexIndices = typename HalfEdgeMesh::VertexIndices;
 
       static_assert (HalfEdgeMesh::HasVertexData::value, "Output mesh must have data associated with the vertices!");
 

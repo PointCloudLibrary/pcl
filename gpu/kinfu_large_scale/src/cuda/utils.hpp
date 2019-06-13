@@ -566,13 +566,9 @@ namespace pcl
         static __device__ __forceinline__ 
         int laneMaskLt()
         {
-  #if (__CUDA_ARCH__ >= 200)
           unsigned int ret;
               asm("mov.u32 %0, %lanemask_lt;" : "=r"(ret) );
               return ret;
-  #else
-          return 0xFFFFFFFF >> (32 - laneId());
-  #endif
         }
 
         static __device__ __forceinline__ int binaryExclScan(int ballot_mask)
@@ -608,13 +604,9 @@ namespace pcl
   #if CUDA_VERSION >= 9000
               (void)cta_buffer;
                   return __ballot_sync (__activemask (), predicate);
-  #elif __CUDA_ARCH__ >= 200
+  #else
               (void)cta_buffer;
                   return __ballot (predicate);
-  #else
-          int tid = Block::flattenedThreadId();				
-                  cta_buffer[tid] = predicate ? (1 << (tid & 31)) : 0;
-                  return warp_reduce(cta_buffer, tid);
   #endif
         }
 
@@ -624,13 +616,9 @@ namespace pcl
   #if CUDA_VERSION >= 9000
               (void)cta_buffer;
                   return __all_sync (__activemask (), predicate);
-  #elif __CUDA_ARCH__ >= 200
+  #else
               (void)cta_buffer;
                   return __all (predicate);
-  #else
-          int tid = Block::flattenedThreadId();				
-                  cta_buffer[tid] = predicate ? 1 : 0;
-          return warp_reduce(cta_buffer, tid) == 32;
   #endif
         }
       };

@@ -82,7 +82,7 @@ TEST (ExtractIndicesSelf, Filters)
 {
   // Test the PointCloud<PointT> method
   ExtractIndices<PointXYZ> ei;
-  boost::shared_ptr<vector<int> > indices (new vector<int> (2));
+  pcl::IndicesPtr indices (new pcl::Indices (2));
   (*indices)[0] = 0;
   (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
 
@@ -109,7 +109,7 @@ TEST (ExtractIndices, Filters)
 {
   // Test the PointCloud<PointT> method
   ExtractIndices<PointXYZ> ei;
-  boost::shared_ptr<vector<int> > indices (new vector<int> (2));
+  pcl::IndicesPtr indices (new pcl::Indices (2));
   (*indices)[0] = 0;
   (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
 
@@ -230,7 +230,7 @@ TEST (ExtractIndices, Filters)
   eie.filter (result);
   EXPECT_EQ (int (result.points.size ()), 0);
 
-  boost::shared_ptr<vector<int> > idx (new vector<int> (10));
+  pcl::IndicesPtr idx (new pcl::Indices (10));
   eie.setIndices (idx);
   eie.setNegative (false);
   eie.filter (result);
@@ -1651,7 +1651,7 @@ TEST (ConditionalRemovalSetIndices, Filters)
   PointCloud<PointXYZ> output;
 
   // build some indices
-  boost::shared_ptr<vector<int> > indices (new vector<int> (2));
+  pcl::IndicesPtr indices (new pcl::Indices (2));
   (*indices)[0] = 0;
   (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
 

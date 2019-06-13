@@ -64,15 +64,15 @@ namespace pcl
   class OrganizedFastMesh : public MeshConstruction<PointInT>
   {
     public:
-      typedef boost::shared_ptr<OrganizedFastMesh<PointInT> > Ptr;
-      typedef boost::shared_ptr<const OrganizedFastMesh<PointInT> > ConstPtr;
+      using Ptr = boost::shared_ptr<OrganizedFastMesh<PointInT> >;
+      using ConstPtr = boost::shared_ptr<const OrganizedFastMesh<PointInT> >;
 
       using MeshConstruction<PointInT>::input_;
       using MeshConstruction<PointInT>::check_tree_;
 
-      typedef typename pcl::PointCloud<PointInT>::Ptr PointCloudPtr;
+      using PointCloudPtr = typename pcl::PointCloud<PointInT>::Ptr;
 
-      typedef std::vector<pcl::Vertices> Polygons;
+      using Polygons = std::vector<pcl::Vertices>;
 
       enum TriangulationType
       {

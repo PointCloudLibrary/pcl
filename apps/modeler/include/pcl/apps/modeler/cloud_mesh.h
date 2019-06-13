@@ -52,11 +52,11 @@ namespace pcl
     class CloudMesh
     {
     public:
-      typedef pcl::PointSurfel                    PointT;
-      typedef pcl::PointCloud<PointT>             PointCloud;
-      typedef PointCloud::Ptr                     PointCloudPtr;
-      typedef PointCloud::ConstPtr                PointCloudConstPtr;
-      typedef boost::shared_ptr<CloudMesh>        Ptr;
+      using PointT = pcl::PointSurfel;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = PointCloud::Ptr;
+      using PointCloudConstPtr = PointCloud::ConstPtr;
+      using Ptr = boost::shared_ptr<CloudMesh>;
 
       CloudMesh ();
       CloudMesh (PointCloudPtr cloud);

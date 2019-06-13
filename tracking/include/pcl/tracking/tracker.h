@@ -61,20 +61,20 @@ namespace pcl
       using PCLBase<PointInT>::indices_;
       using PCLBase<PointInT>::input_;
       
-      typedef PCLBase<PointInT> BaseClass;
-      typedef boost::shared_ptr< Tracker<PointInT, StateT> > Ptr;
-      typedef boost::shared_ptr< const Tracker<PointInT, StateT> > ConstPtr;
+      using BaseClass = PCLBase<PointInT>;
+      using Ptr = boost::shared_ptr< Tracker<PointInT, StateT> >;
+      using ConstPtr = boost::shared_ptr< const Tracker<PointInT, StateT> >;
 
-      typedef boost::shared_ptr<pcl::search::Search<PointInT> > SearchPtr;
-      typedef boost::shared_ptr<const pcl::search::Search<PointInT> > SearchConstPtr;
+      using SearchPtr = boost::shared_ptr<pcl::search::Search<PointInT> >;
+      using SearchConstPtr = boost::shared_ptr<const pcl::search::Search<PointInT> >;
             
-      typedef pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename PointCloudIn::Ptr PointCloudInPtr;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
+      using PointCloudInPtr = typename PointCloudIn::Ptr;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
       
-      typedef pcl::PointCloud<StateT> PointCloudState;
-      typedef typename PointCloudState::Ptr PointCloudStatePtr;
-      typedef typename PointCloudState::ConstPtr PointCloudStateConstPtr;
+      using PointCloudState = pcl::PointCloud<StateT>;
+      using PointCloudStatePtr = typename PointCloudState::Ptr;
+      using PointCloudStateConstPtr = typename PointCloudState::ConstPtr;
       
     public:
       /** \brief Empty constructor. */

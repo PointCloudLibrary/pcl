@@ -88,10 +88,10 @@ namespace pcl
           /** \brief Constructor. Converts the input mesh into a face vertex mesh. */
           FaceVertexMesh (const Mesh& mesh, const Eigen::Isometry3d& T);
 
-          typedef pcl::ihs::PointIHS         PointIHS;
-          typedef pcl::ihs::CloudIHS         CloudIHS;
-          typedef pcl::ihs::CloudIHSPtr      CloudIHSPtr;
-          typedef pcl::ihs::CloudIHSConstPtr CloudIHSConstPtr;
+          using PointIHS = pcl::ihs::PointIHS;
+          using CloudIHS = pcl::ihs::CloudIHS;
+          using CloudIHSPtr = pcl::ihs::CloudIHSPtr;
+          using CloudIHSConstPtr = pcl::ihs::CloudIHSConstPtr;
 
           CloudIHS               vertices;
           std::vector <Triangle> triangles;
@@ -112,30 +112,30 @@ namespace pcl
 
       public:
 
-        typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
-        typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
-        typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
-        typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
+        using PointXYZRGBNormal = pcl::PointXYZRGBNormal;
+        using CloudXYZRGBNormal = pcl::PointCloud<PointXYZRGBNormal>;
+        using CloudXYZRGBNormalPtr = CloudXYZRGBNormal::Ptr;
+        using CloudXYZRGBNormalConstPtr = CloudXYZRGBNormal::ConstPtr;
 
-        typedef pcl::ihs::Mesh         Mesh;
-        typedef pcl::ihs::MeshPtr      MeshPtr;
-        typedef pcl::ihs::MeshConstPtr MeshConstPtr;
+        using Mesh = pcl::ihs::Mesh;
+        using MeshPtr = pcl::ihs::MeshPtr;
+        using MeshConstPtr = pcl::ihs::MeshConstPtr;
 
         /** \brief How to draw the mesh. */
-        typedef enum MeshRepresentation
+        enum MeshRepresentation
         {
           MR_POINTS, /**< Draw the points. */
           MR_EDGES,  /**< Wireframe represen of the mesh. */
           MR_FACES   /**< Draw the faces of the mesh without edges. */
-        } MeshRepresentation;
+        };
 
         /** \brief How to color the shapes. */
-        typedef enum Coloring
+        enum Coloring
         {
           COL_RGB,       /**< Coloring according to the rgb values. */
           COL_ONE_COLOR, /**< Use one color for all points. */
           COL_VISCONF    /**< Coloring according to the visibility confidence. */
-        } Coloring;
+        };
 
         /** \brief Coefficients for the wireframe box. */
         class BoxCoefficients
@@ -329,21 +329,21 @@ namespace pcl
 
       private:
 
-        typedef Eigen::Matrix <unsigned char, 3, 1             > Color;
-        typedef Eigen::Matrix <unsigned char, 3, Eigen::Dynamic> Colors;
-        typedef Eigen::Matrix <unsigned char, 3, 256           > Colormap;
+        using Color = Eigen::Matrix <unsigned char, 3, 1             >;
+        using Colors = Eigen::Matrix <unsigned char, 3, Eigen::Dynamic>;
+        using Colormap = Eigen::Matrix <unsigned char, 3, 256           >;
 
-        typedef std::unordered_map <std::string, CloudXYZRGBNormalPtr> CloudXYZRGBNormalMap;
+        using CloudXYZRGBNormalMap = std::unordered_map <std::string, CloudXYZRGBNormalPtr>;
 
-        typedef pcl::ihs::PointIHS         PointIHS;
-        typedef pcl::ihs::CloudIHS         CloudIHS;
-        typedef pcl::ihs::CloudIHSPtr      CloudIHSPtr;
-        typedef pcl::ihs::CloudIHSConstPtr CloudIHSConstPtr;
+        using PointIHS = pcl::ihs::PointIHS;
+        using CloudIHS = pcl::ihs::CloudIHS;
+        using CloudIHSPtr = pcl::ihs::CloudIHSPtr;
+        using CloudIHSConstPtr = pcl::ihs::CloudIHSConstPtr;
 
-        typedef pcl::ihs::detail::FaceVertexMesh                      FaceVertexMesh;
-        typedef boost::shared_ptr <      FaceVertexMesh>              FaceVertexMeshPtr;
-        typedef boost::shared_ptr <const FaceVertexMesh>              FaceVertexMeshConstPtr;
-        typedef std::unordered_map <std::string, FaceVertexMeshPtr> FaceVertexMeshMap;
+        using FaceVertexMesh = pcl::ihs::detail::FaceVertexMesh;
+        using FaceVertexMeshPtr = boost::shared_ptr<FaceVertexMesh>;
+        using FaceVertexMeshConstPtr = boost::shared_ptr<const FaceVertexMesh>;
+        using FaceVertexMeshMap = std::unordered_map <std::string, FaceVertexMeshPtr>;
 
         /** \brief Check if the mesh with the given id is added.
           * \note Must lock the mutex before calling this method.

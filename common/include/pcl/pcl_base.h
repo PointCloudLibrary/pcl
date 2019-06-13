@@ -57,8 +57,9 @@
 namespace pcl
 {
   // definitions used everywhere
-  using IndicesPtr = boost::shared_ptr <std::vector<int> >;
-  using IndicesConstPtr = boost::shared_ptr <const std::vector<int> >;
+  using Indices = std::vector<int>;
+  using IndicesPtr = boost::shared_ptr<Indices>;
+  using IndicesConstPtr = boost::shared_ptr<const Indices>;
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /** \brief PCL base class. Implements methods that are used by most PCL algorithms.

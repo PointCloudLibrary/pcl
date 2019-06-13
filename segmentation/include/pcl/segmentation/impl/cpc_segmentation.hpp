@@ -85,13 +85,14 @@ pcl::CPCSegmentation<PointT>::segment ()
 template <typename PointT> void
 pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
 {
-  typedef std::map<uint32_t, pcl::PointCloud<WeightSACPointType>::Ptr> SegLabel2ClusterMap;
+  using SegLabel2ClusterMap = std::map<uint32_t, pcl::PointCloud<WeightSACPointType>::Ptr>;
   
   pcl::console::print_info ("Cutting at level %d (maximum %d)\n", max_cuts_ - depth_levels_left + 1, max_cuts_);
   // stop if we reached the 0 level
   if (depth_levels_left <= 0)
     return;
 
+  pcl::IndicesPtr support_indices (new pcl::Indices);
   SegLabel2ClusterMap seg_to_edge_points_map;
   std::map<uint32_t, std::vector<EdgeID> > seg_to_edgeIDs_map;
   EdgeIterator edge_itr, edge_itr_end, next_edge;
@@ -172,11 +173,10 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
 
     model_coefficients[3] += std::numeric_limits<float>::epsilon ();    
 
-    std::vector<int> support_indices;
-    weight_sac.getInliers (support_indices);
+    weight_sac.getInliers (*support_indices);
 
     // the support_indices which are actually cut (if not locally constrain:  cut_support_indices = support_indices
-    std::vector<int> cut_support_indices;
+    pcl::Indices cut_support_indices;
 
     if (use_local_constrains_)
     {
@@ -193,7 +193,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
       euclidean_clusterer.setMaxClusterSize (25000);
       euclidean_clusterer.setSearchMethod (tree);
       euclidean_clusterer.setInputCloud (edge_cloud_cluster);
-      euclidean_clusterer.setIndices (boost::make_shared <std::vector <int> > (support_indices));
+      euclidean_clusterer.setIndices (support_indices);
       euclidean_clusterer.extract (cluster_indices);
 //       sv_adjacency_list_[seg_to_edgeID_map[seg_to_edge_points.first][point_index]].used_for_cutting = true;
 
@@ -229,7 +229,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
     else
     {
       double current_score = weight_sac.getBestScore ();
-      cut_support_indices = support_indices;
+      cut_support_indices = *support_indices;
       // check if the score is below the threshold. If that is the case this segment should not be split
       if (current_score < min_cut_score_)
       {
@@ -324,7 +324,7 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
     // weight distances to get the score (only using connected inliers)
     sac_model_->setIndices (full_cloud_pt_indices_);
 
-    boost::shared_ptr<std::vector<int> > current_inliers (new std::vector<int>);
+    pcl::IndicesPtr current_inliers (new pcl::Indices);
     sac_model_->selectWithinDistance (model_coefficients, threshold_, *current_inliers);
     double current_score = 0;
     Eigen::Vector3f plane_normal (model_coefficients[0], model_coefficients[1], model_coefficients[2]);

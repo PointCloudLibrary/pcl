@@ -90,7 +90,7 @@ class MultiRansac
       {
         double psize = 1.0,opacity = 1.0,linesize =1.0;
         std::string cloud_name ("cloud");
-        typedef pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal> ColorHandler;
+        using ColorHandler = pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal>;
 
         ColorHandler Color_handler (normal_cloud);
         static bool first_time = true;

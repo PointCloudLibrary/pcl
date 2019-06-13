@@ -102,7 +102,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   tt.tic ();
 
   // Refine the plane indices
-  typedef SampleConsensusModelPlane<PointXYZ>::Ptr SampleConsensusModelPlanePtr;
+  using SampleConsensusModelPlanePtr = SampleConsensusModelPlane<PointXYZ>::Ptr;
   SampleConsensusModelPlanePtr model (new SampleConsensusModelPlane<PointXYZ> (xyz));
   RandomSampleConsensus<PointXYZ> sac (model, threshold);
   sac.setMaxIterations (max_iterations);

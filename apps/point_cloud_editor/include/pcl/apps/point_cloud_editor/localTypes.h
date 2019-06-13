@@ -55,54 +55,54 @@ class Cloud;
 // Some helpful typedef's for commonly used objects
 
 /// The type for the 3D points in the point cloud.
-typedef pcl::PointXYZRGBA Point3D;
+using Point3D = pcl::PointXYZRGBA;
 
 /// The type used as internal representation of a cloud object.
-typedef pcl::PointCloud<Point3D> Cloud3D;
+using Cloud3D = pcl::PointCloud<Point3D>;
 
 /// The type for the 3D point vector in the point cloud.
-typedef pcl::PointCloud<Point3D>::VectorType Point3DVector;
+using Point3DVector = pcl::PointCloud<Point3D>::VectorType;
 
 /// The type for boost shared pointer pointing to a PCL cloud object.
-typedef Cloud3D::Ptr PclCloudPtr;
+using PclCloudPtr = Cloud3D::Ptr;
 
 /// The type for boost shared pointer pointing to a cloud object
-typedef boost::shared_ptr<Cloud> CloudPtr;
+using CloudPtr = boost::shared_ptr<Cloud>;
 
 /// The type for boost shared pointer pointing to a constant cloud
 /// object
-typedef boost::shared_ptr<const Cloud> ConstCloudPtr;
+using ConstCloudPtr = boost::shared_ptr<const Cloud>;
 
 /// The type for boost shared pointer pointing to a selection buffer
-typedef boost::shared_ptr<Selection> SelectionPtr;
+using SelectionPtr = boost::shared_ptr<Selection>;
 
 /// The type for boost shared pointer pointing to a constant selection
 /// buffer
-typedef boost::shared_ptr<const Selection> ConstSelectionPtr;
+using ConstSelectionPtr = boost::shared_ptr<const Selection>;
 
 /// The type for boost shared pointer pointing to a copy buffer
-typedef boost::shared_ptr<CopyBuffer> CopyBufferPtr;
+using CopyBufferPtr = boost::shared_ptr<CopyBuffer>;
 
 /// The type for boost shared pointer pointing to a constant copy
 /// buffer
-typedef boost::shared_ptr<const CopyBuffer> ConstCopyBufferPtr;
+using ConstCopyBufferPtr = boost::shared_ptr<const CopyBuffer>;
 
 /// The type for boost shared pointer pointing to a command object
-typedef boost::shared_ptr<Command> CommandPtr;
+using CommandPtr = boost::shared_ptr<Command>;
 
 /// The type used for vectors holding the indices of points in a cloud
-typedef std::vector<unsigned int> IndexVector;
+using IndexVector = std::vector<unsigned int>;
 
 /// The type used for vectors holding the constant indices of points in
 /// a cloud
-typedef std::vector<const int> ConstIndexVector;
+using ConstIndexVector = std::vector<const int>;
 
 /// The type for boost shared pointer pointing to a command queue
 /// object
-typedef boost::shared_ptr<CommandQueue> CommandQueuePtr;
+using CommandQueuePtr = boost::shared_ptr<CommandQueue>;
 
 /// The type for bit masks used for recognizing key pressed by user.
-typedef unsigned int BitMask;
+using BitMask = unsigned int;
 
 /// ID's for the key modifiers.
 enum KeyModifier

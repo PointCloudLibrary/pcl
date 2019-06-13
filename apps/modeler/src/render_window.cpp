@@ -83,7 +83,7 @@ pcl::modeler::RenderWindow::initRenderer()
 
   // FPS callback
   //vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
-  //typedef pcl::visualization::FPSCallback FPSCallback;
+  //using FPSCallback = pcl::visualization::FPSCallback;
   //vtkSmartPointer<FPSCallback> update_fps = vtkSmartPointer<FPSCallback>::New ();
   //update_fps->setTextActor (txt);
   //renderer->AddObserver (vtkCommand::EndEvent, update_fps);

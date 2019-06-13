@@ -159,6 +159,6 @@ namespace pcl
   }
 }
 
-typedef QList<const pcl::cloud_composer::CloudComposerItem*> ConstItemList;
+using ConstItemList = QList<const pcl::cloud_composer::CloudComposerItem *>;
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::CloudComposerItem);

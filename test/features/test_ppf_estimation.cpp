@@ -47,10 +47,10 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
+using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
-vector<int> indices;
+pcl::Indices indices;
 KdTreePtr tree;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ TEST (PCL, PPFEstimation)
   NormalEstimation<PointXYZ, Normal> normal_estimation;
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   normal_estimation.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
   normal_estimation.setIndices (indicesptr);
   normal_estimation.setSearchMethod (tree);
   normal_estimation.setKSearch (10); // Use 10 nearest neighbors to estimate the normals

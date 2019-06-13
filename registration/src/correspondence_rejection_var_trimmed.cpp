@@ -87,7 +87,7 @@ pcl::registration::CorrespondenceRejectorVarTrimmed::optimizeInlierRatio (std::v
   const int min_el = int (floor (min_ratio_ * points_nbr));
   const int max_el = int (floor (max_ratio_ * points_nbr));
 
-  typedef Eigen::Array <double, Eigen::Dynamic, 1> LineArray;
+  using LineArray = Eigen::Array <double, Eigen::Dynamic, 1>;
   Eigen::Map<LineArray> sorted_dist (&dists[0], points_nbr);
 
   const LineArray trunk_sorted_dist = sorted_dist.segment (min_el, max_el-min_el);

@@ -86,16 +86,16 @@ namespace pcl
     class PCL_EXPORTS PCLVisualizer
     {
       public:
-        typedef boost::shared_ptr<PCLVisualizer> Ptr;
-        typedef boost::shared_ptr<const PCLVisualizer> ConstPtr;
+        using Ptr = boost::shared_ptr<PCLVisualizer>;
+        using ConstPtr = boost::shared_ptr<const PCLVisualizer>;
 
-        typedef PointCloudGeometryHandler<pcl::PCLPointCloud2> GeometryHandler;
-        typedef GeometryHandler::Ptr GeometryHandlerPtr;
-        typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
+        using GeometryHandler = PointCloudGeometryHandler<pcl::PCLPointCloud2>;
+        using GeometryHandlerPtr = GeometryHandler::Ptr;
+        using GeometryHandlerConstPtr = GeometryHandler::ConstPtr;
 
-        typedef PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
-        typedef ColorHandler::Ptr ColorHandlerPtr;
-        typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
+        using ColorHandler = PointCloudColorHandler<pcl::PCLPointCloud2>;
+        using ColorHandlerPtr = ColorHandler::Ptr;
+        using ColorHandlerConstPtr = ColorHandler::ConstPtr;
 
         /** \brief PCL Visualizer constructor.
           * \param[in] name the window name (empty by default)

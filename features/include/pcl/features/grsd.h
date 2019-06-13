@@ -82,9 +82,9 @@ namespace pcl
       using Feature<PointInT, PointOutT>::setSearchSurface;
       //using Feature<PointInT, PointOutT>::computeFeature;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudInPtr  PointCloudInPtr;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudInPtr = typename Feature<PointInT, PointOutT>::PointCloudInPtr;
 
       /** \brief Constructor. */
       GRSDEstimation () : additive_ (true)

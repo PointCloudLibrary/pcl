@@ -430,7 +430,7 @@ openni_wrapper::OpenNIDriver::getDeviceType (const std::string& connectionString
 {
 #if _WIN32
     // expected format: "\\?\usb#vid_[ID]&pid_[ID]#[SERIAL]#{GUID}"
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+    using tokenizer = boost::tokenizer<boost::char_separator<char> >;
     boost::char_separator<char> separators("#&_");
     tokenizer tokens (connectionString, separators);
 

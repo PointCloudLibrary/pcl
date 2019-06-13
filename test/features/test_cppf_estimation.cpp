@@ -42,7 +42,7 @@
 #include <pcl/features/cppf.h>
 #include <pcl/io/pcd_io.h>
 
-typedef pcl::PointXYZRGBNormal PointT;
+using PointT = pcl::PointXYZRGBNormal;
 static pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
 
 

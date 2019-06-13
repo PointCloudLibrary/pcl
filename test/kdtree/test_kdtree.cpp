@@ -254,7 +254,7 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
   }
   
   // Find k nearest neighbors with a different point representation
-  boost::shared_ptr<MyPointRepresentationXY> ptrep (new MyPointRepresentationXY);
+  KdTreeFLANN<MyPoint>::PointRepresentationConstPtr ptrep (new MyPointRepresentationXY);
   kdtree.setPointRepresentation (ptrep);
   kdtree.nearestKSearch (p, k, k_indices, k_distances);
   for (int i = 0; i < k; ++i)

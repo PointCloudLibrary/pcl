@@ -59,7 +59,7 @@
 #include <pcl/segmentation/euclidean_cluster_comparator.h>
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 
-typedef pcl::PointXYZRGBA PointT;
+using PointT = pcl::PointXYZRGBA;
 
 // Useful macros
 #define FPS_CALC(_WHAT_) \
@@ -86,9 +86,9 @@ class OrganizedSegmentationDemo : public QMainWindow
 {
   Q_OBJECT
   public:
-    typedef pcl::PointCloud<PointT> Cloud;
-    typedef Cloud::Ptr CloudPtr;
-    typedef Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointT>;
+    using CloudPtr = Cloud::Ptr;
+    using CloudConstPtr = Cloud::ConstPtr;
 
 
     OrganizedSegmentationDemo(pcl::Grabber& grabber);

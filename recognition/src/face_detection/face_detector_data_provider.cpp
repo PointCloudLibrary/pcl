@@ -369,7 +369,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
       int neg_extracted = 0;
       int w_size_2 = static_cast<int> (w_size_ / 2);
 
-      typedef std::pair<int, int> pixelpair;
+      using pixelpair = std::pair<int, int>;
       std::vector < pixelpair > negative_p, positive_p;
       //get negative and positive indices to sample from
       for (int col = 0; col < (static_cast<int> (cloud_labels->width) - w_size_); col++)

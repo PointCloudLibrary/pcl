@@ -38,11 +38,11 @@ namespace pcl
       class PCL_EXPORTS LocalRecognitionPipeline
       {
 
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
-        typedef typename pcl::PointCloud<PointInT>::ConstPtr ConstPointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
+        using ConstPointInTPtr = typename pcl::PointCloud<PointInT>::ConstPtr;
 
-        typedef Distance<float> DistT;
-        typedef Model<PointInT> ModelT;
+        using DistT = Distance<float>;
+        using ModelT = Model<PointInT>;
 
         /** \brief Directory where the trained structure will be saved */
         std::string training_dir_;

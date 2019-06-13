@@ -46,7 +46,7 @@ namespace pcl
   template <typename PointT>
   struct xNdCopyEigenPointFunctor
   {
-    typedef typename traits::POD<PointT>::type Pod;
+    using Pod = typename traits::POD<PointT>::type;
     
     xNdCopyEigenPointFunctor (const Eigen::VectorXf &p1, PointT &p2)
       : p1_ (p1),
@@ -56,7 +56,7 @@ namespace pcl
     template<typename Key> inline void operator() ()
     {
       //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
-      typedef typename pcl::traits::datatype<PointT, Key>::type T;
+      using T = typename pcl::traits::datatype<PointT, Key>::type;
       uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointT, Key>::value;
       *reinterpret_cast<T*>(data_ptr) = static_cast<T> (p1_[f_idx_++]);
     }
@@ -71,7 +71,7 @@ namespace pcl
   template <typename PointT>
   struct xNdCopyPointEigenFunctor
   {
-    typedef typename traits::POD<PointT>::type Pod;
+    using Pod = typename traits::POD<PointT>::type;
     
     xNdCopyPointEigenFunctor (const PointT &p1, Eigen::VectorXf &p2)
       : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2), f_idx_ (0) { }
@@ -79,7 +79,7 @@ namespace pcl
     template<typename Key> inline void operator() ()
     {
       //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
-      typedef typename pcl::traits::datatype<PointT, Key>::type T;
+      using T = typename pcl::traits::datatype<PointT, Key>::type;
       const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointT, Key>::value;
       p2_[f_idx_++] = static_cast<float> (*reinterpret_cast<const T*>(data_ptr));
     }
@@ -103,9 +103,9 @@ namespace pcl
     using Filter<PointT>::input_;
     using Filter<PointT>::indices_;
 
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = typename Filter<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     private:
       struct he
@@ -118,8 +118,8 @@ namespace pcl
 
     public:
 
-      typedef boost::shared_ptr< ApproximateVoxelGrid<PointT> > Ptr;
-      typedef boost::shared_ptr< const ApproximateVoxelGrid<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<ApproximateVoxelGrid<PointT> >;
+      using ConstPtr = boost::shared_ptr<const ApproximateVoxelGrid<PointT> >;
 
 
       /** \brief Empty constructor. */
@@ -227,7 +227,7 @@ namespace pcl
       /** \brief history buffer */
       struct he* history_;
 
-      typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+      using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
         * \param output the resultant point cloud message

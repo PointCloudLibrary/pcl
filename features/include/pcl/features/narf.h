@@ -235,7 +235,7 @@ namespace pcl
       // =====PUBLIC STRUCTS=====
       struct FeaturePointRepresentation : public PointRepresentation<Narf*>
       {
-        typedef Narf* PointT;
+        using PointT = Narf *;
         FeaturePointRepresentation(int nr_dimensions) { this->nr_dimensions_ = nr_dimensions; }
         /** \brief Empty destructor */
         ~FeaturePointRepresentation () {}

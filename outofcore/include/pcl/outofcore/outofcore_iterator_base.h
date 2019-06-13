@@ -63,13 +63,13 @@ namespace pcl
                                                        const OutofcoreOctreeBaseNode<ContainerT, PointT>&>/*Reference type*/
     {
       public:
-        typedef pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT> OctreeDisk;
-        typedef pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> OctreeDiskNode;
+        using OctreeDisk = pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT>;
+        using OctreeDiskNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
         
-        typedef typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT>::BranchNode BranchNode;
-        typedef typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT>::LeafNode LeafNode;
+        using BranchNode = typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT>::BranchNode;
+        using LeafNode = typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT>::LeafNode;
 
-        typedef typename OctreeDisk::OutofcoreNodeType OutofcoreNodeType;
+        using OutofcoreNodeType = typename OctreeDisk::OutofcoreNodeType;
 
         explicit
         OutofcoreIteratorBase (OctreeDisk& octree_arg) 

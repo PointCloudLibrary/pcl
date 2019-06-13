@@ -57,12 +57,12 @@ namespace pcl
   {
     protected:
       using Filter<PointT>::input_;
-      typedef typename Filter<PointT>::PointCloud PointCloud;
+      using PointCloud = typename Filter<PointT>::PointCloud;
 
     public:
     
-      typedef boost::shared_ptr< FastBilateralFilter<PointT> > Ptr;
-      typedef boost::shared_ptr< const FastBilateralFilter<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<FastBilateralFilter<PointT> >;
+      using ConstPtr = boost::shared_ptr<const FastBilateralFilter<PointT> >;
 
       /** \brief Empty constructor. */
       FastBilateralFilter ()

@@ -42,7 +42,9 @@
 
 #include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/sac_model.h>
+
 #include <ctime>
+#include <memory>
 #include <set>
 
 namespace pcl
@@ -54,15 +56,15 @@ namespace pcl
   template <typename T>
   class SampleConsensus
   {
-    typedef typename SampleConsensusModel<T>::Ptr SampleConsensusModelPtr;
+    using SampleConsensusModelPtr = typename SampleConsensusModel<T>::Ptr;
 
     private:
       /** \brief Constructor for base SAC. */
       SampleConsensus () {};
 
     public:
-      typedef boost::shared_ptr<SampleConsensus> Ptr;
-      typedef boost::shared_ptr<const SampleConsensus> ConstPtr;
+      using Ptr = boost::shared_ptr<SampleConsensus<T> >;
+      using ConstPtr = boost::shared_ptr<const SampleConsensus<T> >;
 
       /** \brief Constructor for base SAC.
         * \param[in] model a Sample Consensus model
@@ -325,7 +327,7 @@ namespace pcl
       boost::mt19937 rng_alg_;
 
       /** \brief Boost-based random number generator distribution. */
-      boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
+      std::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
 
       /** \brief Boost-based random number generator. */
       inline double

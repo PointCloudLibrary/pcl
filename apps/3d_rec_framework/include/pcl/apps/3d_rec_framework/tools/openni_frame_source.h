@@ -8,10 +8,10 @@
 namespace OpenNIFrameSource
 {
 
-  typedef pcl::PointXYZRGBA PointT;
-  typedef pcl::PointCloud<PointT> PointCloud;
-  typedef pcl::PointCloud<PointT>::Ptr PointCloudPtr;
-  typedef pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
+  using PointT = pcl::PointXYZRGBA;
+  using PointCloud = pcl::PointCloud<PointT>;
+  using PointCloudPtr = pcl::PointCloud<PointT>::Ptr;
+  using PointCloudConstPtr = pcl::PointCloud<PointT>::ConstPtr;
 
   /* A simple class for capturing data from an OpenNI camera */
   class PCL_EXPORTS OpenNIFrameSource

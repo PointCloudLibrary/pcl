@@ -58,9 +58,9 @@ using namespace std::chrono_literals;
 float default_th_dd = 0.02f;
 int   default_max_search = 50;
 
-typedef pcl::PointCloud<pcl::PointXYZRGBA> Cloud;
-typedef Cloud::Ptr CloudPtr;
-typedef Cloud::ConstPtr CloudConstPtr;
+using Cloud = pcl::PointCloud<pcl::PointXYZRGBA>;
+using CloudPtr = Cloud::Ptr;
+using CloudConstPtr = Cloud::ConstPtr;
 
 pcl::visualization::PCLVisualizer viewer ("3D Edge Viewer");
 

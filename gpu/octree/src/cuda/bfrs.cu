@@ -72,13 +72,6 @@ namespace pcl
     }
 }
 
-#if defined(CUDA_VERSION) && CUDA_VERSION == 4000
-    //workaround of bug in Thrust
-    using It = thrust::counting_iterator<int, thrust::use_default, thrust::use_default, thrust::use_default>;
-    template<> struct thrust::iterator_difference<It> { using type = int; };
-#endif
-
-
 void pcl::device::bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, const OctreeImpl::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer)
 {   
     using PointType = OctreeImpl::PointType;

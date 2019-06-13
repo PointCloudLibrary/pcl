@@ -51,8 +51,8 @@ using namespace pcl::io;
 using namespace pcl::console;
 using namespace pcl::search;
 
-typedef PointXYZ PointType;
-typedef PointCloud<PointXYZ> Cloud;
+using PointType = PointXYZ;
+using Cloud = PointCloud<PointXYZ>;
 
 void
 printHelp (int, char **argv)

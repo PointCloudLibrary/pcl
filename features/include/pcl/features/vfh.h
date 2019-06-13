@@ -79,9 +79,9 @@ namespace pcl
       using Feature<PointInT, PointOutT>::surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef boost::shared_ptr<VFHEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const VFHEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using Ptr = boost::shared_ptr<VFHEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const VFHEstimation<PointInT, PointNT, PointOutT> >;
 
 
       /** \brief Empty constructor. */

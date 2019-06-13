@@ -83,16 +83,16 @@ const static boost::filesystem::path filename_otreeB_LOD = "treeB_LOD/tree_test.
 const static  boost::filesystem::path outofcore_path ("point_cloud_octree/tree_test.oct_idx");
 
 
-typedef pcl::PointXYZ PointT;
+using PointT = pcl::PointXYZ;
 
 // UR Typedefs
-typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer < PointT > , PointT > octree_disk;
-typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer < PointT > , PointT > octree_disk_node;
+using octree_disk = OutofcoreOctreeBase<OutofcoreOctreeDiskContainer < PointT > , PointT >;
+using octree_disk_node = OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer < PointT > , PointT >;
 
-typedef OutofcoreOctreeBase<OutofcoreOctreeRamContainer< PointT> , PointT> octree_ram;
-typedef OutofcoreOctreeBaseNode<OutofcoreOctreeRamContainer<PointT> , PointT> octree_ram_node;
+using octree_ram = OutofcoreOctreeBase<OutofcoreOctreeRamContainer< PointT> , PointT>;
+using octree_ram_node = OutofcoreOctreeBaseNode<OutofcoreOctreeRamContainer<PointT> , PointT>;
 
-typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
+using AlignedPointTVector = std::vector<PointT, Eigen::aligned_allocator<PointT> >;
 
 AlignedPointTVector points;
 
@@ -724,7 +724,7 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
     test_cloud->points.push_back (tmp);
   }
 
-  boost::shared_ptr<pcl::PCLPointCloud2> point_cloud (new pcl::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr point_cloud (new pcl::PCLPointCloud2);
   
   pcl::toPCLPointCloud2 (*test_cloud, *point_cloud);
 

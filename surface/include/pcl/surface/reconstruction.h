@@ -60,11 +60,11 @@ namespace pcl
   class PCLSurfaceBase: public PCLBase<PointInT>
   {
     public:
-      typedef boost::shared_ptr<PCLSurfaceBase<PointInT> > Ptr;
-      typedef boost::shared_ptr<const PCLSurfaceBase<PointInT> > ConstPtr;
+      using Ptr = boost::shared_ptr<PCLSurfaceBase<PointInT> >;
+      using ConstPtr = boost::shared_ptr<const PCLSurfaceBase<PointInT> >;
 
-      typedef pcl::search::Search<PointInT> KdTree;
-      typedef typename KdTree::Ptr KdTreePtr;
+      using KdTree = pcl::search::Search<PointInT>;
+      using KdTreePtr = typename KdTree::Ptr;
 
       /** \brief Empty constructor. */
       PCLSurfaceBase () : tree_ () {}
@@ -118,8 +118,8 @@ namespace pcl
   class SurfaceReconstruction: public PCLSurfaceBase<PointInT>
   {
     public:
-      typedef boost::shared_ptr<SurfaceReconstruction<PointInT> > Ptr;
-      typedef boost::shared_ptr<const SurfaceReconstruction<PointInT> > ConstPtr;
+      using Ptr = boost::shared_ptr<SurfaceReconstruction<PointInT> >;
+      using ConstPtr = boost::shared_ptr<const SurfaceReconstruction<PointInT> >;
 
       using PCLSurfaceBase<PointInT>::input_;
       using PCLSurfaceBase<PointInT>::indices_;
@@ -187,8 +187,8 @@ namespace pcl
   class MeshConstruction: public PCLSurfaceBase<PointInT>
   {
     public:
-      typedef boost::shared_ptr<MeshConstruction<PointInT> > Ptr;
-      typedef boost::shared_ptr<const MeshConstruction<PointInT> > ConstPtr;
+      using Ptr = boost::shared_ptr<MeshConstruction<PointInT> >;
+      using ConstPtr = boost::shared_ptr<const MeshConstruction<PointInT> >;
 
       using PCLSurfaceBase<PointInT>::input_;
       using PCLSurfaceBase<PointInT>::indices_;

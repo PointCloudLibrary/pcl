@@ -68,8 +68,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        typedef boost::shared_ptr<CorrespondenceRejectorVarTrimmed> Ptr;
-        typedef boost::shared_ptr<const CorrespondenceRejectorVarTrimmed> ConstPtr;
+        using Ptr = boost::shared_ptr<CorrespondenceRejectorVarTrimmed>;
+        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorVarTrimmed>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorVarTrimmed () : 
@@ -235,7 +235,7 @@ namespace pcl
          */
         double lambda_;
 
-        typedef boost::shared_ptr<DataContainerInterface> DataContainerPtr;
+        using DataContainerPtr = boost::shared_ptr<DataContainerInterface>;
 
         /** \brief A pointer to the DataContainer object containing the input and target point clouds */
         DataContainerPtr data_container_;

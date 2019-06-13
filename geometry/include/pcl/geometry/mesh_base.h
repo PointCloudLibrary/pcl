@@ -99,55 +99,55 @@ namespace pcl
     {
       public:
 
-        typedef MeshBase <DerivedT, MeshTraitsT, MeshTagT> Self;
-        typedef boost::shared_ptr <Self>                   Ptr;
-        typedef boost::shared_ptr <const Self>             ConstPtr;
+        using Self = MeshBase <DerivedT, MeshTraitsT, MeshTagT>;
+        using Ptr = boost::shared_ptr<Self>;
+        using ConstPtr = boost::shared_ptr<const Self>;
 
-        typedef DerivedT Derived;
+        using Derived = DerivedT;
 
         // These have to be defined in the traits class.
-        typedef typename MeshTraitsT::VertexData   VertexData;
-        typedef typename MeshTraitsT::HalfEdgeData HalfEdgeData;
-        typedef typename MeshTraitsT::EdgeData     EdgeData;
-        typedef typename MeshTraitsT::FaceData     FaceData;
-        typedef typename MeshTraitsT::IsManifold   IsManifold;
+        using VertexData = typename MeshTraitsT::VertexData;
+        using HalfEdgeData = typename MeshTraitsT::HalfEdgeData;
+        using EdgeData = typename MeshTraitsT::EdgeData;
+        using FaceData = typename MeshTraitsT::FaceData;
+        using IsManifold = typename MeshTraitsT::IsManifold;
 
         // Check if the mesh traits are defined correctly.
         static_assert (std::is_convertible<IsManifold, bool>::value, "MeshTraitsT::IsManifold is not convertible to bool");
 
-        typedef MeshTagT MeshTag;
+        using MeshTag = MeshTagT;
 
         // Data
-        typedef std::integral_constant <bool, !std::is_same <VertexData  , pcl::geometry::NoData>::value> HasVertexData;
-        typedef std::integral_constant <bool, !std::is_same <HalfEdgeData, pcl::geometry::NoData>::value> HasHalfEdgeData;
-        typedef std::integral_constant <bool, !std::is_same <EdgeData    , pcl::geometry::NoData>::value> HasEdgeData;
-        typedef std::integral_constant <bool, !std::is_same <FaceData    , pcl::geometry::NoData>::value> HasFaceData;
+        using HasVertexData = std::integral_constant <bool, !std::is_same <VertexData  , pcl::geometry::NoData>::value>;
+        using HasHalfEdgeData = std::integral_constant <bool, !std::is_same <HalfEdgeData, pcl::geometry::NoData>::value>;
+        using HasEdgeData = std::integral_constant <bool, !std::is_same <EdgeData    , pcl::geometry::NoData>::value>;
+        using HasFaceData = std::integral_constant <bool, !std::is_same <FaceData    , pcl::geometry::NoData>::value>;
 
-        typedef pcl::PointCloud <VertexData>   VertexDataCloud;
-        typedef pcl::PointCloud <HalfEdgeData> HalfEdgeDataCloud;
-        typedef pcl::PointCloud <EdgeData>     EdgeDataCloud;
-        typedef pcl::PointCloud <FaceData>     FaceDataCloud;
+        using VertexDataCloud = pcl::PointCloud<VertexData>;
+        using HalfEdgeDataCloud = pcl::PointCloud<HalfEdgeData>;
+        using EdgeDataCloud = pcl::PointCloud<EdgeData>;
+        using FaceDataCloud = pcl::PointCloud<FaceData>;
 
         // Indices
-        typedef pcl::geometry::VertexIndex   VertexIndex;
-        typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
-        typedef pcl::geometry::EdgeIndex     EdgeIndex;
-        typedef pcl::geometry::FaceIndex     FaceIndex;
+        using VertexIndex = pcl::geometry::VertexIndex;
+        using HalfEdgeIndex = pcl::geometry::HalfEdgeIndex;
+        using EdgeIndex = pcl::geometry::EdgeIndex;
+        using FaceIndex = pcl::geometry::FaceIndex;
 
-        typedef std::vector <VertexIndex>   VertexIndices;
-        typedef std::vector <HalfEdgeIndex> HalfEdgeIndices;
-        typedef std::vector <EdgeIndex>     EdgeIndices;
-        typedef std::vector <FaceIndex>     FaceIndices;
+        using VertexIndices = std::vector<VertexIndex>;
+        using HalfEdgeIndices = std::vector<HalfEdgeIndex>;
+        using EdgeIndices = std::vector<EdgeIndex>;
+        using FaceIndices = std::vector<FaceIndex>;
 
         // Circulators
-        typedef pcl::geometry::VertexAroundVertexCirculator           <const Self> VertexAroundVertexCirculator;
-        typedef pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator <const Self> OutgoingHalfEdgeAroundVertexCirculator;
-        typedef pcl::geometry::IncomingHalfEdgeAroundVertexCirculator <const Self> IncomingHalfEdgeAroundVertexCirculator;
-        typedef pcl::geometry::FaceAroundVertexCirculator             <const Self> FaceAroundVertexCirculator;
-        typedef pcl::geometry::VertexAroundFaceCirculator             <const Self> VertexAroundFaceCirculator;
-        typedef pcl::geometry::InnerHalfEdgeAroundFaceCirculator      <const Self> InnerHalfEdgeAroundFaceCirculator;
-        typedef pcl::geometry::OuterHalfEdgeAroundFaceCirculator      <const Self> OuterHalfEdgeAroundFaceCirculator;
-        typedef pcl::geometry::FaceAroundFaceCirculator               <const Self> FaceAroundFaceCirculator;
+        using VertexAroundVertexCirculator = pcl::geometry::VertexAroundVertexCirculator<const Self>;
+        using OutgoingHalfEdgeAroundVertexCirculator = pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator<const Self>;
+        using IncomingHalfEdgeAroundVertexCirculator = pcl::geometry::IncomingHalfEdgeAroundVertexCirculator<const Self>;
+        using FaceAroundVertexCirculator = pcl::geometry::FaceAroundVertexCirculator<const Self>;
+        using VertexAroundFaceCirculator = pcl::geometry::VertexAroundFaceCirculator<const Self>;
+        using InnerHalfEdgeAroundFaceCirculator = pcl::geometry::InnerHalfEdgeAroundFaceCirculator<const Self>;
+        using OuterHalfEdgeAroundFaceCirculator = pcl::geometry::OuterHalfEdgeAroundFaceCirculator<const Self>;
+        using FaceAroundFaceCirculator = pcl::geometry::FaceAroundFaceCirculator<const Self>;
 
         /** \brief Constructor. */
         MeshBase ()
@@ -1110,21 +1110,21 @@ namespace pcl
         ////////////////////////////////////////////////////////////////////////
 
         // Elements
-        typedef pcl::geometry::Vertex   Vertex;
-        typedef pcl::geometry::HalfEdge HalfEdge;
-        typedef pcl::geometry::Face     Face;
+        using Vertex = pcl::geometry::Vertex;
+        using HalfEdge = pcl::geometry::HalfEdge;
+        using Face = pcl::geometry::Face;
 
-        typedef std::vector <Vertex>   Vertices;
-        typedef std::vector <HalfEdge> HalfEdges;
-        typedef std::vector <Face>     Faces;
+        using Vertices = std::vector<Vertex>;
+        using HalfEdges = std::vector<HalfEdge>;
+        using Faces = std::vector<Face>;
 
-        typedef typename Vertices::iterator  VertexIterator;
-        typedef typename HalfEdges::iterator HalfEdgeIterator;
-        typedef typename Faces::iterator     FaceIterator;
+        using VertexIterator = typename Vertices::iterator;
+        using HalfEdgeIterator = typename HalfEdges::iterator;
+        using FaceIterator = typename Faces::iterator;
 
-        typedef typename Vertices::const_iterator  VertexConstIterator;
-        typedef typename HalfEdges::const_iterator HalfEdgeConstIterator;
-        typedef typename Faces::const_iterator     FaceConstIterator;
+        using VertexConstIterator = typename Vertices::const_iterator;
+        using HalfEdgeConstIterator = typename HalfEdges::const_iterator;
+        using FaceConstIterator = typename Faces::const_iterator;
 
         /** \brief General implementation of addFace. */
         FaceIndex
@@ -1741,8 +1741,8 @@ namespace pcl
         template <class ElementContainerT, class DataContainerT, class IndexContainerT, class HasDataT> IndexContainerT
         remove (ElementContainerT& elements, DataContainerT& data_cloud)
         {
-          typedef typename IndexContainerT::value_type   Index;
-          typedef typename ElementContainerT::value_type Element;
+          using Index = typename IndexContainerT::value_type;
+          using Element = typename ElementContainerT::value_type;
 
           if (HasDataT::value) assert (elements.size () == data_cloud.size ());
           else                 assert (data_cloud.empty ()); // Bug in this class!

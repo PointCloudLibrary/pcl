@@ -28,11 +28,11 @@ class LRUCache
 {
 public:
 
-  typedef std::list<KeyT> KeyIndex;
-  typedef typename KeyIndex::iterator KeyIndexIterator;
+  using KeyIndex = std::list<KeyT>;
+  using KeyIndexIterator = typename KeyIndex::iterator;
 
-  typedef std::map<KeyT, std::pair<CacheItemT, typename KeyIndex::iterator> > Cache;
-  typedef typename Cache::iterator CacheIterator;
+  using Cache = std::map<KeyT, std::pair<CacheItemT, typename KeyIndex::iterator> >;
+  using CacheIterator = typename Cache::iterator;
 
   LRUCache (size_t c) :
       capacity_ (c), size_ (0)

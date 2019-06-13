@@ -84,19 +84,19 @@ namespace pcl
         using SampleConsensusModel<Storage>::indices_;
         using SampleConsensusModel<Storage>::rngl_;
 
-        typedef typename SampleConsensusModel<Storage>::PointCloud PointCloud;
-        typedef typename PointCloud::Ptr PointCloudPtr;
-        typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+        using PointCloud = typename SampleConsensusModel<Storage>::PointCloud;
+        using PointCloudPtr = typename PointCloud::Ptr;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        typedef typename SampleConsensusModel<Storage>::Indices Indices;
-        typedef typename SampleConsensusModel<Storage>::IndicesPtr IndicesPtr;
-        typedef typename SampleConsensusModel<Storage>::IndicesConstPtr IndicesConstPtr;
+        using Indices = typename SampleConsensusModel<Storage>::Indices;
+        using IndicesPtr = typename SampleConsensusModel<Storage>::IndicesPtr;
+        using IndicesConstPtr = typename SampleConsensusModel<Storage>::IndicesConstPtr;
 
-        typedef typename SampleConsensusModel<Storage>::Coefficients Coefficients;
-        typedef typename SampleConsensusModel<Storage>::Hypotheses Hypotheses;
-        typedef typename SampleConsensusModel<Storage>::Samples Samples;
+        using Coefficients = typename SampleConsensusModel<Storage>::Coefficients;
+        using Hypotheses = typename SampleConsensusModel<Storage>::Hypotheses;
+        using Samples = typename SampleConsensusModel<Storage>::Samples;
 
-        typedef boost::shared_ptr<SampleConsensusModelPlane> Ptr;
+        using Ptr = boost::shared_ptr<SampleConsensusModelPlane>;
 
         /** \brief Constructor for base SampleConsensusModelPlane.
           * \param cloud the input point cloud dataset
@@ -224,12 +224,12 @@ namespace pcl
     template <template <typename> class Storage>
     struct CreatePlaneHypothesis
     {
-      typedef typename SampleConsensusModel<Storage>::PointCloud PointCloud;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = typename SampleConsensusModel<Storage>::PointCloud;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      typedef typename SampleConsensusModel<Storage>::Indices Indices;
-      typedef typename SampleConsensusModel<Storage>::IndicesPtr IndicesPtr;
-      typedef typename SampleConsensusModel<Storage>::IndicesConstPtr IndicesConstPtr;
+      using Indices = typename SampleConsensusModel<Storage>::Indices;
+      using IndicesPtr = typename SampleConsensusModel<Storage>::IndicesPtr;
+      using IndicesConstPtr = typename SampleConsensusModel<Storage>::IndicesConstPtr;
 
       const PointXYZRGB *input;
       const int *indices;

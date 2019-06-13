@@ -160,7 +160,7 @@ namespace pcl
   template<typename T> boost::signals2::signal<T>*
   Grabber::find_signal () const
   {
-    typedef boost::signals2::signal<T> Signal;
+    using Signal = boost::signals2::signal<T>;
 
     std::map<std::string, boost::signals2::signal_base*>::const_iterator signal_it = signals_.find (typeid (T).name ());
     if (signal_it != signals_.end ())
@@ -172,7 +172,7 @@ namespace pcl
   template<typename T> void
   Grabber::disconnect_all_slots ()
   {
-    typedef boost::signals2::signal<T> Signal;
+    using Signal = boost::signals2::signal<T>;
 
     if (signals_.find (typeid (T).name ()) != signals_.end ())
     {
@@ -216,7 +216,7 @@ namespace pcl
   template<typename T> int
   Grabber::num_slots () const
   {
-    typedef boost::signals2::signal<T> Signal;
+    using Signal = boost::signals2::signal<T>;
 
     // see if we have a signal for this type
     std::map<std::string, boost::signals2::signal_base*>::const_iterator signal_it = signals_.find (typeid (T).name ());
@@ -231,7 +231,7 @@ namespace pcl
   template<typename T> boost::signals2::signal<T>*
   Grabber::createSignal ()
   {
-    typedef boost::signals2::signal<T> Signal;
+    using Signal = boost::signals2::signal<T>;
 
     if (signals_.find (typeid (T).name ()) == signals_.end ())
     {
@@ -245,7 +245,7 @@ namespace pcl
   template<typename T> boost::signals2::connection
   Grabber::registerCallback (const std::function<T> & callback)
   {
-    typedef boost::signals2::signal<T> Signal;
+    using Signal = boost::signals2::signal<T>;
     if (signals_.find (typeid (T).name ()) == signals_.end ())
     {
       std::stringstream sstream;
