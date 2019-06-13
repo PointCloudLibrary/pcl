@@ -193,8 +193,6 @@ namespace pcl
 
     /** \brief handle to the thread */
     std::thread thread_;
-    /** \brief mutex to lock data between thread and UI */
-    mutable std::mutex mutex_;
     /** \brief Defines either a file path to a bag file or a realsense device serial number. */
     std::string file_name_or_serial_number_;
     /** \brief Repeat playback when reading from file */

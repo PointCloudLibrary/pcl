@@ -140,8 +140,6 @@ namespace pcl
     if ( !isRunning ( ) )
       return;
 
-    std::lock_guard<std::mutex> guard ( mutex_ );
-
     running_ = false;
     quit_ = true;
 
@@ -182,32 +180,26 @@ namespace pcl
       rs2::video_frame ir = nullptr;
       rs2::points points;
 
+      // Wait for the next set of frames from the camera
+      auto frames = pipe_.wait_for_frames ();
+
+      depth = frames.get_depth_frame ();
+
+      if (signal_PointXYZI->num_slots () > 0)
       {
-        std::lock_guard<std::mutex> guard ( mutex_ );
-
-        // Wait for the next set of frames from the camera
-        auto frames = pipe_.wait_for_frames ();
-
-        depth = frames.get_depth_frame ();
-
-        if (signal_PointXYZI->num_slots () > 0)
-        {
-          ir = frames.get_infrared_frame ();
-        }
-
-        // Generate the pointcloud and texture mappings
-        points = pc_.calculate ( depth );
-
-        if (signal_PointXYZRGB->num_slots () > 0 || signal_PointXYZRGBA->num_slots () > 0)
-        {
-          rgb = frames.get_color_frame ();
-
-          // Tell pointcloud object to map to this color frame
-          pc_.map_to ( rgb );
-        }
-
+        ir = frames.get_infrared_frame ();
       }
 
+      // Generate the pointcloud and texture mappings
+      points = pc_.calculate ( depth );
+
+      if (signal_PointXYZRGB->num_slots () > 0 || signal_PointXYZRGBA->num_slots () > 0)
+      {
+        rgb = frames.get_color_frame ();
+
+        // Tell pointcloud object to map to this color frame
+        pc_.map_to ( rgb );
+      }
 
       if (signal_PointXYZ->num_slots () > 0)
       {
