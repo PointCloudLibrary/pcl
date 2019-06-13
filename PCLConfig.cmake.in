@@ -222,9 +222,9 @@ macro(find_rssdk2)
   elseif(NOT realsense2_DIR)
     get_filename_component(realsense2_DIR "@REALSENSE2_INCLUDE_DIRS@" PATH)
     set(realsense2_DIR "${realsense2_DIR}/lib/cmake/realsense2" CACHE PATH "The directory containing realsense2Config.cmake")
-  endif(PCL_ALL_IN_ONE_INSTALLER)
+  endif()
   find_package(RSSDK2)
-endmacro(find_rssdk2)
+endmacro()
 
 #remove this as soon as flann is shipped with FindFlann.cmake
 macro(find_flann)

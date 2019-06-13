@@ -37,7 +37,7 @@ if(WITH_RSSDK2)
           PATTERN "*/Uninstall.exe" EXCLUDE
       )
   list(APPEND PCL_3RDPARTY_COMPONENTS rssdk2)
-endif(WITH_RSSDK2)
+endif()
 
 if(WITH_OPENNI)
   if(CMAKE_CL_64)
