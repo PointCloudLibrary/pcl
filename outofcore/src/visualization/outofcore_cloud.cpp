@@ -118,7 +118,7 @@ OutofcoreCloud::OutofcoreCloud (std::string name, boost::filesystem::path& tree_
 
   // Create the pcd reader thread once for all outofcore nodes
   if (!OutofcoreCloud::pcd_reader_thread)
-    OutofcoreCloud::pcd_reader_thread = pcl::make_shared<std::thread>(&OutofcoreCloud::pcdReaderThread);
+    OutofcoreCloud::pcd_reader_thread.reset (new std::thread (&OutofcoreCloud::pcdReaderThread));
 
   octree_ = pcl::make_shared<OctreeDisk> (tree_root, true);
   octree_->getBoundingBox (bbox_min_, bbox_max_);
