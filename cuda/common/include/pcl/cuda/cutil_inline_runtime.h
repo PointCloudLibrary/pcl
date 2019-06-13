@@ -163,12 +163,7 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
 	while ( current_device < device_count ) {
 		cudaGetDeviceProperties( &deviceProp, current_device );
 
-#if CUDA_VERSION >= 3020
 		if (deviceProp.tccDriver) bTCC = 1;
-#else
-		// Assume a Tesla GPU is running in TCC if we are running CUDA 3.1
-		if (deviceProp.name[0] == 'T') bTCC = 1;
-#endif
 
 		if (!bTCC) {
 			if (deviceProp.major > 0 && deviceProp.major < 9999) {
@@ -188,12 +183,7 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
 			sm_per_multiproc = _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
 		}
 
-#if CUDA_VERSION >= 3020
 		if (deviceProp.tccDriver) bTCC = 1;
-#else
-		// Assume a Tesla GPU is running in TCC if we are running CUDA 3.1
-		if (deviceProp.name[0] == 'T') bTCC = 1;
-#endif
 
 		if (!bTCC) // Is this GPU running the TCC driver?  If so we pass on this
 		{

@@ -155,13 +155,8 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
 	while ( current_device < device_count ) {
 		cutilDrvSafeCallNoSync( cuDeviceGetName(deviceName, 256, current_device) );
 		cutilDrvSafeCallNoSync( cuDeviceComputeCapability(&major, &minor, current_device ) );
+		cutilDrvSafeCallNoSync( cuDeviceGetAttribute(&bTCC, CU_DEVICE_ATTRIBUTE_TCC_DRIVER, current_device) );
 
-#if CUDA_VERSION >= 3020
-		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &bTCC,  CU_DEVICE_ATTRIBUTE_TCC_DRIVER, current_device ) );
-#else
-		// Assume a Tesla GPU is running in TCC if we are running CUDA 3.1
-		if (deviceName[0] == 'T') bTCC = 1;
-#endif
 		if (!bTCC) {
 			if (major > 0 && major < 9999) {
 				best_SM_arch = MAX(best_SM_arch, major);
@@ -181,12 +176,7 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
                                                             current_device ) );
 		cutilDrvSafeCallNoSync( cuDeviceComputeCapability(&major, &minor, current_device ) );
 
-#if CUDA_VERSION >= 3020
 		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &bTCC,  CU_DEVICE_ATTRIBUTE_TCC_DRIVER, current_device ) );
-#else
-		// Assume a Tesla GPU is running in TCC if we are running CUDA 3.1
-		if (deviceName[0] == 'T') bTCC = 1;
-#endif
 
 		if (major == 9999 && minor == 9999) {
 		    sm_per_multiproc = 1;
