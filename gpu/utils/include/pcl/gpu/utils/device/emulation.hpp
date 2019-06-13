@@ -47,14 +47,8 @@ namespace pcl
 		{
 			static __forceinline__ __device__ int ballot(int predicate, volatile int* cta_buffer)
 			{
-#if __CUDA_ARCH__ >= 200
 				(void)cta_buffer;
 				return __ballot(predicate);
-#else
-				int tid = threadIdx.x;				
-				cta_buffer[tid] = predicate ? (1 << (tid & 31)) : 0;
-				return warp_reduce(cta_buffer);
-#endif
 			}          
 		};
 	}
