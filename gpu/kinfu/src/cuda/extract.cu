@@ -90,7 +90,7 @@ namespace pcl
         __shared__ int cta_buffer[CTA_SIZE];
 #endif
 
-#if CUDA_VERSION >= 9000
+#if CUDART_VERSION >= 9000
         if (__all_sync (__activemask (), x >= VOLUME_X)
             || __all_sync (__activemask (), y >= VOLUME_Y))
           return;
@@ -191,7 +191,7 @@ namespace pcl
             }              /* if (W != 0 && F != 1.f) */
           }            /* if (x < VOLUME_X && y < VOLUME_Y) */
 
-#if CUDA_VERSION >= 9000
+#if CUDART_VERSION >= 9000
           int total_warp = __popc (__ballot_sync (__activemask (), local_count > 0))
                          + __popc (__ballot_sync (__activemask (), local_count > 1))
                          + __popc (__ballot_sync (__activemask (), local_count > 2));

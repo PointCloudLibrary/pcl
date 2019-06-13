@@ -143,7 +143,7 @@ namespace pcl
 #endif
 
 
-#if CUDA_VERSION >= 9000
+#if CUDART_VERSION >= 9000
         if (__all_sync (__activemask (), x >= VOLUME_X)
             || __all_sync (__activemask (), y >= VOLUME_Y))
           return;
@@ -173,7 +173,7 @@ namespace pcl
             // read number of vertices from texture
             numVerts = (cubeindex == 0 || cubeindex == 255) ? 0 : tex1Dfetch (numVertsTex, cubeindex);
           }
-#if CUDA_VERSION >= 9000
+#if CUDART_VERSION >= 9000
           int total = __popc (__ballot_sync (__activemask (), numVerts > 0));
 #elif __CUDA_ARCH__ >= 200
           int total = __popc (__ballot (numVerts > 0));
@@ -190,7 +190,7 @@ namespace pcl
           }
           int old_global_voxels_count = warps_buffer[warp_id];
 
-#if CUDA_VERSION >= 9000
+#if CUDART_VERSION >= 9000
           int offs = Warp::binaryExclScan (__ballot_sync (__activemask (), numVerts > 0));
 #elif __CUDA_ARCH__ >= 200
           int offs = Warp::binaryExclScan (__ballot (numVerts > 0));
