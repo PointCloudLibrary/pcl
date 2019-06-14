@@ -27,7 +27,7 @@ elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
 endif()
 
 # QVTK?
-if(NOT VTK_USE_QVTK)
+if(NOT QVTK_FOUND)
   set(DEFAULT AUTO_OFF)
   set(REASON "Cloud composer requires QVTK")
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
@@ -147,7 +147,7 @@ QT5_ADD_RESOURCES(resource_srcs ${resources})
 
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
 PCL_ADD_EXECUTABLE(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${impl_incs})
-target_link_libraries("${EXE_NAME}" pcl_cc_tool_interface pcl_common pcl_io pcl_visualization pcl_filters ${QVTK_LIBRARY} Qt5::Widgets)
+target_link_libraries("${EXE_NAME}" pcl_cc_tool_interface pcl_common pcl_io pcl_visualization pcl_filters Qt5::Widgets)
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs} ${item_incs} ${selector_incs})

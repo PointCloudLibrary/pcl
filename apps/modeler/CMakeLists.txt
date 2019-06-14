@@ -24,7 +24,7 @@ elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
 endif()
 
 # QVTK?
-if(NOT VTK_USE_QVTK)
+if(NOT QVTK_FOUND)
   set(DEFAULT AUTO_OFF)
   set(REASON "VTK was not built with Qt support.")
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
@@ -139,7 +139,7 @@ set_source_files_properties(${srcs} PROPERTIES OBJECT_DEPENDS "${ui_srcs}")
 # Generate executable
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
 PCL_ADD_EXECUTABLE(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${ui_srcs} ${moc_srcs} ${resource_srcs} ${srcs} ${incs} ${impl_incs})
-target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QVTK_LIBRARY} Qt5::Widgets)
+target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search Qt5::Widgets)
 
 # Put the ui in the windows project file
 if(("${CMAKE_BUILD_TOOL}" MATCHES "msdev") OR("${CMAKE_BUILD_TOOL}" MATCHES "devenv"))
