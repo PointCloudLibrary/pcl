@@ -5,6 +5,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/point_types.h>
 #include <pcl/PCLPointCloud2.h>
+#include <pcl/make_shared.h>
 
 #ifdef GLUT_IS_A_FRAMEWORK
 #include <GLUT/glut.h>
@@ -13,7 +14,6 @@
 #if defined (FREEGLUT)
 #include <GL/freeglut_ext.h>
 
-#include <pcl/make_shared.h>
 #elif defined (GLUI_OPENGLUT)
 #include <GL/openglut.h>
 #endif
