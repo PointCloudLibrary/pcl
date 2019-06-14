@@ -65,18 +65,18 @@ namespace pcl
     class EuclideanLabeledClusterExtraction
     {
       public:
-        typedef pcl::PointXYZ PointType;
-        typedef pcl::PointCloud<PointT> PointCloudHost;
-        typedef typename PointCloudHost::Ptr PointCloudHostPtr;
-        typedef typename PointCloudHost::ConstPtr PointCloudHostConstPtr;
+        using PointType = pcl::PointXYZ;
+        using PointCloudHost = pcl::PointCloud<PointT>;
+        using PointCloudHostPtr = typename PointCloudHost::Ptr;
+        using PointCloudHostConstPtr = typename PointCloudHost::ConstPtr;
 
-        typedef PointIndices::Ptr PointIndicesPtr;
-        typedef PointIndices::ConstPtr PointIndicesConstPtr;
+        using PointIndicesPtr = PointIndices::Ptr;
+        using PointIndicesConstPtr = PointIndices::ConstPtr;
 
-        typedef pcl::gpu::Octree GPUTree;
-        typedef pcl::gpu::Octree::Ptr GPUTreePtr;
+        using GPUTree = pcl::gpu::Octree;
+        using GPUTreePtr = pcl::gpu::Octree::Ptr;
 
-        typedef pcl::gpu::Octree::PointCloud CloudDevice;
+        using CloudDevice = pcl::gpu::Octree::PointCloud;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief Empty constructor. */

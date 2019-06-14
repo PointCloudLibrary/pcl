@@ -74,7 +74,7 @@ namespace pcl
 
 void pcl::device::bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, const OctreeImpl::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer)
 {   
-    typedef OctreeImpl::PointType PointType;
+    using PointType = OctreeImpl::PointType;
 
     if (buffer.size() < cloud.size())
         buffer.create(cloud.size());

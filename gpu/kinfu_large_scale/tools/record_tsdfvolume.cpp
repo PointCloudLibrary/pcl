@@ -55,9 +55,9 @@
 using namespace std;
 namespace pc = pcl::console;
 
-typedef pcl::PointXYZ    PointT;
-typedef float            VoxelT;
-typedef short            WeightT;
+using PointT = pcl::PointXYZ;
+using VoxelT = float;
+using WeightT = short;
 
 string cloud_file  = "cloud.pcd";
 string volume_file = "tsdf_volume.dat";
@@ -75,8 +75,8 @@ class DeviceVolume
 {
 public:
 
-  typedef boost::shared_ptr<DeviceVolume>       Ptr;
-  typedef boost::shared_ptr<const DeviceVolume> ConstPtr;
+  using Ptr = boost::shared_ptr<DeviceVolume>;
+  using ConstPtr = boost::shared_ptr<const DeviceVolume>;
 
   /** \brief Constructor
    * param[in] volume_size size of the volume in mm
@@ -135,7 +135,7 @@ DeviceVolume::createFromDepth (const pcl::device::PtrStepSz<const unsigned short
 {
   using namespace pcl;
 
-  typedef Eigen::Matrix<float, 3, 3, Eigen::RowMajor> Matrix3frm;
+  using Matrix3frm = Eigen::Matrix<float, 3, 3, Eigen::RowMajor>;
 
   const int rows = 480;
   const int cols = 640;

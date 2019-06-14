@@ -190,8 +190,8 @@ void pcl::gpu::Octree::nearestKSearchBatch(const Queries& queries, int k, Neighb
 
 void pcl::gpu::bruteForceRadiusSearchGPU(const Octree::PointCloud& cloud, const PointXYZ& query,  float radius,  DeviceArray<int>& result,  DeviceArray<int>& buffer)
 {
-    typedef OctreeImpl::PointType PointType;
-    typedef OctreeImpl::PointCloud PointCloud;    
+    using PointType = OctreeImpl::PointType;
+    using PointCloud = OctreeImpl::PointCloud;    
     
     PointType query_local;
     query_local.x = query.x;

@@ -50,7 +50,7 @@ namespace pcl
     {
         template<typename T> struct DevPtr
         {
-            typedef T elem_type;
+            using elem_type = T;
             const static size_t elem_size = sizeof(elem_type);
 
             T* data;

@@ -61,11 +61,11 @@ namespace pcl
       class PCL_EXPORTS TsdfVolume 
       {
       public:
-        typedef boost::shared_ptr<TsdfVolume> Ptr;
+        using Ptr = boost::shared_ptr<TsdfVolume>;
 
         /** \brief Supported Point Types */
-        typedef PointXYZ PointType;
-        typedef Normal  NormalType;
+        using PointType = PointXYZ;
+        using NormalType = Normal;
         
         /** \brief Structure storing voxel grid resolution, volume size (in mm) and element_size of data stored on host*/
         struct Header
@@ -277,8 +277,8 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         
         // The following member are resulting from the merge of TSDFVolume with TsdfVolume class.
         
-        typedef boost::shared_ptr<std::vector<float> > VolumePtr;
-        typedef boost::shared_ptr<std::vector<short> > WeightsPtr;
+        using VolumePtr = boost::shared_ptr<std::vector<float> >;
+        using WeightsPtr = boost::shared_ptr<std::vector<short> >;
         
         Header header_;
         VolumePtr volume_host_;

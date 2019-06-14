@@ -47,7 +47,7 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
-typedef pcl::Histogram<153> SpinImage;
+using SpinImage = pcl::Histogram<153>;
 
 //TEST(PCL_FeaturesGPU, DISABLED_spinImages_rectangular)
 TEST(PCL_FeaturesGPU, spinImages_rectangular)

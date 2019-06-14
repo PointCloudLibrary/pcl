@@ -391,7 +391,7 @@ pcl::device::generateTriangles (const PtrStep<short2>& volume, const DeviceArray
   
   int block_size = prop.major < 2 ? 96 : 256; // please see TrianglesGenerator::CTA_SIZE
 
-  typedef TrianglesGenerator Tg;
+  using Tg = TrianglesGenerator;
   Tg tg;
 
   tg.volume = volume;

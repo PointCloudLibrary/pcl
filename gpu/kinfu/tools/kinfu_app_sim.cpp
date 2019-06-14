@@ -93,7 +93,7 @@
   #include <opencv2/imgproc/imgproc.hpp>
 //#include "video_recorder.h"
 #endif
-typedef pcl::ScopeTime ScopeTimeT;
+using ScopeTimeT = pcl::ScopeTime;
 
 #include "../src/internal.h"
 

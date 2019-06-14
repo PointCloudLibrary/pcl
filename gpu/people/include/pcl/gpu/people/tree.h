@@ -69,10 +69,10 @@ namespace pcl
         using boost::int32_t;
         using boost::uint32_t;
 
-        typedef int16_t Attrib;
-        typedef uint8_t Label;
-        typedef uint32_t Label32;
-        typedef uint16_t Depth;
+        using Attrib = int16_t;
+        using Label = uint8_t;
+        using Label32 = uint32_t;
+        using Depth = uint16_t;
 
         struct AttribLocation
         {

@@ -340,7 +340,7 @@ namespace pcl
 void pcl::device::computeSpinImagesOrigigNormal(bool radial, bool angular, float support_angle_cos, const Indices& indices, const PointCloud& input_cloud, const Normals& input_normals,
 		const PointCloud& surface, const Normals& normals, const NeighborIndices& neighbours, int min_neighb, int image_width, float bin_size, PtrStep<float> output)
 {	
-	typedef void (*originNormal)(float, const Indices&, const PointCloud&, const Normals&, const PointCloud&, const Normals&, const NeighborIndices&, int , int , float, PtrStep<float>);
+	using originNormal = void (*)(float, const Indices&, const PointCloud&, const Normals&, const PointCloud&, const Normals&, const NeighborIndices&, int , int , float, PtrStep<float>);
 
 	const originNormal table[2][2] = 
 	{
@@ -354,7 +354,7 @@ void pcl::device::computeSpinImagesOrigigNormal(bool radial, bool angular, float
 void pcl::device::computeSpinImagesCustomAxes(bool radial, bool angular, float support_angle_cos, const Indices& indices, const PointCloud& input_cloud, const Normals& input_normals,
 		const PointCloud& surface, const Normals& normals, const NeighborIndices& neighbours, int min_neighb, int image_width, float bin_size, const float3& rotation_axis, PtrStep<float> output)
 {
-	typedef void (*customAxes)(float, const Indices&, const PointCloud&, const Normals&, const PointCloud&, const Normals&, const NeighborIndices&, int, int, float, const float3&, PtrStep<float>);
+	using customAxes = void (*)(float, const Indices&, const PointCloud&, const Normals&, const PointCloud&, const Normals&, const NeighborIndices&, int, int, float, const float3&, PtrStep<float>);
 
 	const customAxes table[2][2] = 
 	{
@@ -369,7 +369,7 @@ void pcl::device::computeSpinImagesCustomAxes(bool radial, bool angular, float s
 void pcl::device::computeSpinImagesCustomAxesCloud(bool radial, bool angular, float support_angle_cos, const Indices& indices, const PointCloud& input_cloud, const Normals& input_normals,
 		const PointCloud& surface, const Normals& normals, const NeighborIndices& neighbours, int min_neighb, int image_width, float bin_size, const Normals& rotation_axes_cloud, PtrStep<float> output)
 {
-	typedef void (*customAxesCloud)(float, const Indices&, const PointCloud&, const Normals&, const PointCloud&, const Normals&, const NeighborIndices&, int, int, float, const Normals&, PtrStep<float>);
+	using customAxesCloud = void (*)(float, const Indices&, const PointCloud&, const Normals&, const PointCloud&, const Normals&, const NeighborIndices&, int, int, float, const Normals&, PtrStep<float>);
 
 	const customAxesCloud table[2][2] = 
 	{

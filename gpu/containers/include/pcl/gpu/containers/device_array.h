@@ -57,7 +57,7 @@ namespace pcl
         {
         public:
             /** \brief Element type. */
-            typedef T type;
+            using type = T;
 
             /** \brief Element size. */
             enum { elem_size = sizeof(T) };
@@ -154,7 +154,7 @@ namespace pcl
         {
         public:
             /** \brief Element type. */
-            typedef T type;
+            using type = T;
 
             /** \brief Element size. */
             enum { elem_size = sizeof(T) };
