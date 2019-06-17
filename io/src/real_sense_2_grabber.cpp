@@ -183,31 +183,13 @@ namespace pcl
     {
       sw.reset ();
 
-      rs2::depth_frame depth = nullptr;
-      rs2::video_frame rgb = nullptr;
-      rs2::video_frame ir = nullptr;
-      rs2::points points;
-
       // Wait for the next set of frames from the camera
-      auto frames = pipe_.wait_for_frames ();
+      auto frameset = pipe_.wait_for_frames ();
 
-      depth = frames.get_depth_frame ();
-
-      if (signal_PointXYZI->num_slots () > 0)
-      {
-        ir = frames.get_infrared_frame ();
-      }
+      auto depth = frameset.get_depth_frame ();
 
       // Generate the pointcloud and texture mappings
-      points = pc_.calculate ( depth );
-
-      if (signal_PointXYZRGB->num_slots () > 0 || signal_PointXYZRGBA->num_slots () > 0)
-      {
-        rgb = frames.get_color_frame ();
-
-        // Tell pointcloud object to map to this color frame
-        pc_.map_to ( rgb );
-      }
+      auto points = pc_.calculate ( depth );
 
       if (signal_PointXYZ->num_slots () > 0)
       {
@@ -216,17 +198,26 @@ namespace pcl
 
       if (signal_PointXYZI->num_slots () > 0)
       {
+        auto ir = frameset.get_infrared_frame ();
         (*signal_PointXYZI)(convertIntensityDepthToPointXYZRGBI ( points, ir ));
       }
 
-      if (signal_PointXYZRGB->num_slots () > 0)
+      if (signal_PointXYZRGB->num_slots () > 0 || signal_PointXYZRGBA->num_slots () > 0)
       {
-        (*signal_PointXYZRGB)(convertRGBDepthToPointXYZRGB ( points, rgb ));
-      }
+        auto rgb = frameset.get_color_frame ();
 
-      if (signal_PointXYZRGBA->num_slots () > 0)
-      {
-        (*signal_PointXYZRGBA)(convertRGBADepthToPointXYZRGBA ( points, rgb ));
+        // Tell pointcloud object to map to this color frame
+        pc_.map_to ( rgb );
+
+        if (signal_PointXYZRGB->num_slots () > 0)
+        {
+          (*signal_PointXYZRGB)(convertRGBDepthToPointXYZRGB ( points, rgb ));
+        }
+
+        if (signal_PointXYZRGBA->num_slots () > 0)
+        {
+          (*signal_PointXYZRGBA)(convertRGBADepthToPointXYZRGBA ( points, rgb ));
+        }
       }
 
       fps_ = 1.0f / static_cast <float> (sw.getTimeSeconds ());
