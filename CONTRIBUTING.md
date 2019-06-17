@@ -16,8 +16,17 @@ the preferred channel for submitting [pull requests](#pull-requests) and
 [bug reports](#bugs), but please respect the following
 restrictions:
 
-* Please **do not** use the issue tracker for personal support requests (use
-  [mailing list](http://www.pcl-users.org/)).
+* Please **do not** use the issue tracker for personal support requests. Please
+  consider one of the following alternatives instead:
+  * [Stack Overflow](https://stackoverflow.com/questions/tagged/point-cloud-library)
+  for Q&A as well as support for troubleshooting, installation and debugging. Do
+  remember to tag your questions with the tag `point-cloud-library`.
+  * [Gitter channel](https://gitter.im/PointCloudLibrary/pcl) for live chat with
+  other members of the PCL community and casual discussions
+
+<!-- 
+  * Mailing list: The [PCL Google Group](https://groups.google.com/forum/#!forum/point-cloud-library)
+-->
 
 * Please **do not** derail or troll issues. Keep the discussion on topic and
   respect the opinions of others.
