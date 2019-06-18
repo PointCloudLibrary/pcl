@@ -390,6 +390,67 @@ namespace pcl
         }
       }
       
+      /** \brief Compute the normalized 3x3 covariance matrix and the centroid of a given set of points in a single loop.
+      * Normalized means that every entry has been divided by the number of valid entries in the point cloud.
+      * For small number of points, or if you want explicitly the sample-variance, scale the covariance matrix
+      * with n / (n-1), where n is the number of points used to calculate the covariance matrix and is returned by this function.
+      * Prior to the covariance matrix calculation the center point of the neighborhood is subtracted from all points.
+      * This is done to avoid numerical issues due to loss of significance.
+      * \note This method does not check whether the cloud is dense because it expects finite neighborhoods.
+      * \param[in] cloud the input point cloud
+      * \param[in] indices subset of points given by their indices
+      * \param[out] covariance_matrix the resultant 3x3 covariance matrix
+      * \param[out] centroid the centroid of the set of points in the cloud
+      * \return size of the input cloud.
+      * \ingroup common
+      */
+      inline unsigned int
+      computeMeanAndCovarianceMatrixDemeaned (const pcl::PointCloud<PointInT> &cloud,
+                                              const std::vector<int> &indices,
+                                              Eigen::Matrix<float, 3, 3> &covariance_matrix,
+                                              Eigen::Matrix<float, 4, 1> &centroid)
+      {
+      // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
+      Eigen::Matrix<float, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<float, 1, 9, Eigen::RowMajor>::Zero ();
+      size_t point_count;
+      PointInT center = cloud[indices[0]];
+      PointInT p;
+      
+      point_count = indices.size ();
+      for (const int &index : indices)
+      {
+        //const PointT& point = cloud[*iIt];
+        p.x = cloud[index].x - center.x;
+        p.y = cloud[index].y - center.y;
+        p.z = cloud[index].z - center.z;
+        accu [0] += p.x * p.x;
+        accu [1] += p.x * p.y;
+        accu [2] += p.x * p.z;
+        accu [3] += p.y * p.y;
+        accu [4] += p.z * p.z;
+        accu [5] += p.z * p.z;
+        accu [6] += p.x;
+        accu [7] += p.y;
+        accu [8] += p.z;
+      }
+      
+      accu /= static_cast<float> (point_count);
+      centroid[0] = accu[6] + center.x;
+      centroid[1] = accu[7] + center.y;
+      centroid[2] = accu[8] + center.z;
+      centroid[3] = 1;
+      covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];
+      covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];
+      covariance_matrix.coeffRef (2) = accu [2] - accu [6] * accu [8];
+      covariance_matrix.coeffRef (4) = accu [3] - accu [7] * accu [7];
+      covariance_matrix.coeffRef (5) = accu [4] - accu [7] * accu [8];
+      covariance_matrix.coeffRef (8) = accu [5] - accu [8] * accu [8];
+      covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);
+      covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);
+      covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);
+      return (static_cast<unsigned int> (point_count));
+    }
+      
     protected:
       /** \brief Estimate normals for all points given in <setInputCloud (), setIndices ()> using the surface in
         * setSearchSurface () and the spatial locator in setSearchMethod ()
