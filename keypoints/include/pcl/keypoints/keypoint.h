@@ -39,9 +39,9 @@
 
 // PCL includes
 #include <pcl/pcl_base.h>
-#include <boost/bind.hpp>
 #include <pcl/search/pcl_search.h>
 #include <pcl/pcl_config.h>
+
 #include <functional>
 
 namespace pcl
