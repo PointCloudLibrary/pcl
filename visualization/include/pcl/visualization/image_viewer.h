@@ -479,7 +479,7 @@ namespace pcl
         registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), 
                                   void* cookie = nullptr)
         {
-          return (registerKeyboardCallback (boost::bind (callback, _1, cookie)));
+          return (registerKeyboardCallback ([=] (const pcl::visualization::KeyboardEvent& e) { (*callback) (e, cookie); }));
         }
         
         /** \brief Register a callback function for keyboard events
@@ -492,7 +492,7 @@ namespace pcl
         registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), 
                                   T& instance, void* cookie = nullptr)
         {
-          return (registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie)));
+          return (registerKeyboardCallback ([=, &instance] (const pcl::visualization::KeyboardEvent& e) { (instance.*callback) (e, cookie); }));
         }
         
         /** \brief Register a callback std::function for keyboard events
@@ -511,7 +511,7 @@ namespace pcl
         registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), 
                                void* cookie = nullptr)
         {
-          return (registerMouseCallback (boost::bind (callback, _1, cookie)));
+          return (registerMouseCallback ([=] (const pcl::visualization::MouseEvent& e) { (*callback) (e, cookie); }));
         }
         
         /** \brief Register a callback function for mouse events
@@ -524,7 +524,7 @@ namespace pcl
         registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), 
                                T& instance, void* cookie = nullptr)
         {
-          return (registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
+          return (registerMouseCallback ([=, &instance] (const pcl::visualization::MouseEvent& e) { (instance.*callback) (e, cookie); }));
         }
 
         /** \brief Register a callback function for mouse events
