@@ -59,7 +59,7 @@ namespace pcl
     *
     * \note (This is highly optimized code taken from http://www.visibone.com/inpoly/)
     *       Copyright (c) 1995-1996 Galacticomm, Inc.  Freeware source code.
-    * \param point a 3D point projected onto the same plane as the polygon
+    * \param point a 2D point projected onto the same plane as the polygon
     * \param polygon a polygon
     * \ingroup segmentation
     */
