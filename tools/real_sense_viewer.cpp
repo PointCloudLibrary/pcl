@@ -170,7 +170,7 @@ class RealSenseViewer
     void
     run ()
     {
-      std::function<void (const typename PointCloudT::ConstPtr&)> f = boost::bind (&RealSenseViewer::cloudCallback, this, _1);
+      std::function<void (const typename PointCloudT::ConstPtr&)> f = [this] (const typename PointCloudT::ConstPtr& cloud) { cloudCallback (cloud); };
       connection_ = grabber_.registerCallback (f);
       grabber_.start ();
       printMode (grabber_.getMode ());

@@ -414,7 +414,12 @@ class Driver
     void 
     grabAndSend ()
     {
-      std::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float) > image_cb = boost::bind (&Driver::image_callback, this, _1, _2, _3);
+      std::function<
+        void (const openni_wrapper::Image::Ptr&, const openni_wrapper::DepthImage::Ptr&, float)
+      > image_cb = [this] (const openni_wrapper::Image::Ptr& img, const openni_wrapper::DepthImage::Ptr& depth, float f)
+      {
+        image_callback (img, depth, f);
+      };
       boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);
 
       grabber_.start ();
