@@ -387,8 +387,7 @@ namespace pcl
           update_visualizer_ = visualizerCallback;
           return (true);
         }
-        else
-          return (false);
+        return (false);
       }
 
       /** \brief Obtain the Euclidean fitness score (e.g., mean of squared distances from the source to the target)

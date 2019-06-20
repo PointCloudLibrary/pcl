@@ -96,46 +96,43 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
        best_transformation_.setIdentity ();
        return;
      }
-     else
+     if (refine_ && !sac.refineModel ())
      {
-       if (refine_ && !sac.refineModel ())
-       {
-         PCL_ERROR ("[pcl::registration::CorrespondenceRejectorSampleConsensus::getRemainingCorrespondences] Could not refine the model! Returning an empty solution.\n");
-         return;
-       }
-       
-       std::vector<int> inliers;
-       sac.getInliers (inliers);
-
-       if (inliers.size () < 3)
-       {
-         remaining_correspondences = original_correspondences;
-         best_transformation_.setIdentity ();
-         return;
-       }
-       std::unordered_map<int, int> index_to_correspondence;
-       for (int i = 0; i < nr_correspondences; ++i)
-         index_to_correspondence[original_correspondences[i].index_query] = i;
-
-       remaining_correspondences.resize (inliers.size ());
-       for (size_t i = 0; i < inliers.size (); ++i)
-         remaining_correspondences[i] = original_correspondences[index_to_correspondence[inliers[i]]];
-
-       if (save_inliers_)
-       {
-         inlier_indices_.reserve (inliers.size ());
-         for (const int &inlier : inliers)
-           inlier_indices_.push_back (index_to_correspondence[inlier]);
-       }
-
-       // get best transformation
-       Eigen::VectorXf model_coefficients;
-       sac.getModelCoefficients (model_coefficients);
-       best_transformation_.row (0) = model_coefficients.segment<4>(0);
-       best_transformation_.row (1) = model_coefficients.segment<4>(4);
-       best_transformation_.row (2) = model_coefficients.segment<4>(8);
-       best_transformation_.row (3) = model_coefficients.segment<4>(12);
+       PCL_ERROR ("[pcl::registration::CorrespondenceRejectorSampleConsensus::getRemainingCorrespondences] Could not refine the model! Returning an empty solution.\n");
+       return;
      }
+
+     std::vector<int> inliers;
+     sac.getInliers (inliers);
+
+     if (inliers.size () < 3)
+     {
+       remaining_correspondences = original_correspondences;
+       best_transformation_.setIdentity ();
+       return;
+     }
+     std::unordered_map<int, int> index_to_correspondence;
+     for (int i = 0; i < nr_correspondences; ++i)
+       index_to_correspondence[original_correspondences[i].index_query] = i;
+
+     remaining_correspondences.resize (inliers.size ());
+     for (size_t i = 0; i < inliers.size (); ++i)
+       remaining_correspondences[i] = original_correspondences[index_to_correspondence[inliers[i]]];
+
+     if (save_inliers_)
+     {
+       inlier_indices_.reserve (inliers.size ());
+       for (const int &inlier : inliers)
+         inlier_indices_.push_back (index_to_correspondence[inlier]);
+     }
+
+     // get best transformation
+     Eigen::VectorXf model_coefficients;
+     sac.getModelCoefficients (model_coefficients);
+     best_transformation_.row (0) = model_coefficients.segment<4>(0);
+     best_transformation_.row (1) = model_coefficients.segment<4>(4);
+     best_transformation_.row (2) = model_coefficients.segment<4>(8);
+     best_transformation_.row (3) = model_coefficients.segment<4>(12);
    }
 }
 

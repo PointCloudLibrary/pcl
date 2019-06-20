@@ -491,7 +491,6 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateIntervalMT (d
     return (false);
   }
   // Case U2 in Update Algorithm and Case b in Modified Update Algorithm [More, Thuente 1994]
-  else
   if (g_t * (a_l - a_t) > 0)
   {
     a_l = a_t;
@@ -500,7 +499,6 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateIntervalMT (d
     return (false);
   }
   // Case U3 in Update Algorithm and Case c in Modified Update Algorithm [More, Thuente 1994]
-  else
   if (g_t * (a_l - a_t) < 0)
   {
     a_u = a_l;
@@ -513,8 +511,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateIntervalMT (d
     return (false);
   }
   // Interval Converged
-  else
-    return (true);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -539,11 +536,9 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelection
 
     if (std::fabs (a_c - a_l) < std::fabs (a_q - a_l))
       return (a_c);
-    else
-      return (0.5 * (a_q + a_c));
+    return (0.5 * (a_q + a_c));
   }
   // Case 2 in Trial Value Selection [More, Thuente 1994]
-  else
   if (g_t * g_l < 0)
   {
     // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
@@ -559,11 +554,9 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelection
 
     if (std::fabs (a_c - a_t) >= std::fabs (a_s - a_t))
       return (a_c);
-    else
-      return (a_s);
+    return (a_s);
   }
   // Case 3 in Trial Value Selection [More, Thuente 1994]
-  else
   if (std::fabs (g_t) <= std::fabs (g_l))
   {
     // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
@@ -585,19 +578,15 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelection
 
     if (a_t > a_l)
       return (std::min (a_t + 0.66 * (a_u - a_t), a_t_next));
-    else
-      return (std::max (a_t + 0.66 * (a_u - a_t), a_t_next));
+    return (std::max (a_t + 0.66 * (a_u - a_t), a_t_next));
   }
   // Case 4 in Trial Value Selection [More, Thuente 1994]
-  else
-  {
-    // Calculate the minimizer of the cubic that interpolates f_u, f_t, g_u and g_t
-    // Equation 2.4.52 [Sun, Yuan 2006]
-    double z = 3 * (f_t - f_u) / (a_t - a_u) - g_t - g_u;
-    double w = std::sqrt (z * z - g_t * g_u);
-    // Equation 2.4.56 [Sun, Yuan 2006]
-    return (a_u + (a_t - a_u) * (w - g_u - z) / (g_t - g_u + 2 * w));
-  }
+  // Calculate the minimizer of the cubic that interpolates f_u, f_t, g_u and g_t
+  // Equation 2.4.52 [Sun, Yuan 2006]
+  double z = 3 * (f_t - f_u) / (a_t - a_u) - g_t - g_u;
+  double w = std::sqrt (z * z - g_t * g_u);
+  // Equation 2.4.56 [Sun, Yuan 2006]
+  return (a_u + (a_t - a_u) * (w - g_u - z) / (g_t - g_u + 2 * w));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -618,13 +607,10 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT
     // Not a decent direction
     if (d_phi_0 == 0)
       return 0;
-    else
-    {
-      // Reverse step direction and calculate optimal step.
-      d_phi_0 *= -1;
-      step_dir *= -1;
+    // Reverse step direction and calculate optimal step.
+    d_phi_0 *= -1;
+    step_dir *= -1;
 
-    }
   }
 
   // The Search Algorithm for T(mu) [More, Thuente 1994]

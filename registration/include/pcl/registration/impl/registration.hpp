@@ -144,8 +144,7 @@ pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max
 
   if (nr > 0)
     return (fitness_score / nr);
-  else
-    return (std::numeric_limits<double>::max ());
+  return (std::numeric_limits<double>::max ());
 
 }
 
