@@ -545,10 +545,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
       {
         break;
       }
-      else
-      {
-        ch = hole_end - 1;
-      }
+      ch = hole_end - 1;
     }
   }
 

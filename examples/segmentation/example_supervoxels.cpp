@@ -116,10 +116,8 @@ main (int argc, char ** argv)
     {
       std::cout << "No cloud specified!\n";
       return (1);
-    }else
-    {
-      pcl::console::parse (argc,argv,"-p",pcd_path);
     }
+    pcl::console::parse (argc,argv,"-p",pcd_path);
   }
   
   bool disable_transform = pcl::console::find_switch (argc, argv, "--NT");

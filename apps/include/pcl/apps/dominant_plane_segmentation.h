@@ -227,17 +227,14 @@ namespace pcl
         {
           if (p1.intensity == 0) //new label
             return 1;
-          else
+          //compute distance and check against max_dist
+          if ((p1.getVector3fMap () - p2.getVector3fMap ()).norm () <= max_dist)
           {
-            //compute distance and check against max_dist
-            if ((p1.getVector3fMap () - p2.getVector3fMap ()).norm () <= max_dist)
-            {
-              p2.intensity = p1.intensity;
-              return 0;
-            }
-            else //new label
-              return 1;
+            p2.intensity = p1.intensity;
+            return 0;
           }
+          //new label
+          return 1;
         }
 
         //components needed for cluster segmentation and plane extraction

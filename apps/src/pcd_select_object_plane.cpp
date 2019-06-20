@@ -461,16 +461,13 @@ class ObjectSelection
         return;
       }
       // Else, draw it on screen
-      else
-      {
-        cloud_viewer_->addPolygon (region, 0.0, 0.0, 1.0, "region");
-        cloud_viewer_->setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
+      cloud_viewer_->addPolygon (region, 0.0, 0.0, 1.0, "region");
+      cloud_viewer_->setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
 
-        // Draw in image space
-        if (image_viewer_)
-        {
-          image_viewer_->addPlanarPolygon (search_->getInputCloud (), region, 0.0, 0.0, 1.0, "refined_region", 1.0);
-        }
+      // Draw in image space
+      if (image_viewer_)
+      {
+        image_viewer_->addPlanarPolygon (search_->getInputCloud (), region, 0.0, 0.0, 1.0, "refined_region", 1.0);
       }
 
       // If no object could be determined, exit
@@ -479,23 +476,20 @@ class ObjectSelection
         PCL_ERROR ("No object detected. Please select another point or relax the thresholds and continue.\n");
         return;
       }
-      else
+      // Visualize the object in 3D...
+      visualization::PointCloudColorHandlerCustom<PointT> red (object_, 255, 0, 0);
+      if (!cloud_viewer_->updatePointCloud (object_, red, "object"))
+        cloud_viewer_->addPointCloud (object_, red, "object");
+      // ...and 2D
+      if (image_viewer_)
       {
-        // Visualize the object in 3D...
-        visualization::PointCloudColorHandlerCustom<PointT> red (object_, 255, 0, 0);
-        if (!cloud_viewer_->updatePointCloud (object_, red, "object"))
-          cloud_viewer_->addPointCloud (object_, red, "object");
-        // ...and 2D
-        if (image_viewer_)
-        {
-          image_viewer_->removeLayer ("object");
-          image_viewer_->addMask (search_->getInputCloud (), *object_, "object");
-        }
-
-        // ...and 2D
-        if (image_viewer_)
-          image_viewer_->addRectangle (search_->getInputCloud (), *object_);
+        image_viewer_->removeLayer ("object");
+        image_viewer_->addMask (search_->getInputCloud (), *object_, "object");
       }
+
+      // ...and 2D
+      if (image_viewer_)
+        image_viewer_->addRectangle (search_->getInputCloud (), *object_);
     }
     
     /////////////////////////////////////////////////////////////////////////

@@ -220,11 +220,8 @@ public:
       }
       return true;
     }
-    else
-    {
-      PCL_WARN ("no particles\n");
-      return false;
-    }
+    PCL_WARN ("no particles\n");
+    return false;
   }
   
   void

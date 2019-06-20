@@ -151,11 +151,8 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
             memcpy (&output.data[xyz_offset[2]], &badpt, sizeof (float));
             continue;
           }
-          else
-          {
-            if (extract_removed_indices_)
-              (*removed_indices_)[nr_removed_p++] = cp;
-          }
+          if (extract_removed_indices_)
+            (*removed_indices_)[nr_removed_p++] = cp;
         }
         else
         {
@@ -168,11 +165,8 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
             memcpy (&output.data[xyz_offset[2]], &badpt, sizeof (float));
             continue;
           }
-          else
-          {
-            if (extract_removed_indices_)
-              (*removed_indices_)[nr_removed_p++] = cp;
-          }
+          if (extract_removed_indices_)
+            (*removed_indices_)[nr_removed_p++] = cp;
         }
       }
     }

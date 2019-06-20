@@ -154,16 +154,13 @@ class NILinemod
           first_frame_ = true;
           return;
         }
-        else
-        {
-          plane_.reset (new Cloud);
+        plane_.reset (new Cloud);
 
-          // Compute the convex hull of the plane
-          ConvexHull<PointT> chull;
-          chull.setDimension (2);
-          chull.setInputCloud (plane_inliers);
-          chull.reconstruct (*plane_);
-        }
+        // Compute the convex hull of the plane
+        ConvexHull<PointT> chull;
+        chull.setDimension (2);
+        chull.setInputCloud (plane_inliers);
+        chull.reconstruct (*plane_);
       }
     }
 
@@ -421,20 +418,17 @@ class NILinemod
         return;
       }
       // Else, draw it on screen
-      else
-      {
-        //cloud_viewer_.addPolygon (region, 1.0, 0.0, 0.0, "region");
-        //cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
+      //cloud_viewer_.addPolygon (region, 1.0, 0.0, 0.0, "region");
+      //cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
 
-        PlanarRegion<PointT> refined_region;
-        pcl::approximatePolygon (region, refined_region, 0.01, false, true);
-        PCL_INFO ("Planar region: %lu points initial, %lu points after refinement.\n", region.getContour ().size (), refined_region.getContour ().size ());
-        cloud_viewer_.addPolygon (refined_region, 0.0, 0.0, 1.0, "refined_region");
-        cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "refined_region");
+      PlanarRegion<PointT> refined_region;
+      pcl::approximatePolygon (region, refined_region, 0.01, false, true);
+      PCL_INFO ("Planar region: %lu points initial, %lu points after refinement.\n", region.getContour ().size (), refined_region.getContour ().size ());
+      cloud_viewer_.addPolygon (refined_region, 0.0, 0.0, 1.0, "refined_region");
+      cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "refined_region");
 
-        // Draw in image space
-        image_viewer_.addPlanarPolygon (search_.getInputCloud (), refined_region, 0.0, 0.0, 1.0, "refined_region", 1.0);
-      }
+      // Draw in image space
+      image_viewer_.addPlanarPolygon (search_.getInputCloud (), refined_region, 0.0, 0.0, 1.0, "refined_region", 1.0);
 
       // If no object could be determined, exit
       if (!object)
@@ -442,28 +436,25 @@ class NILinemod
         PCL_ERROR ("No object detected. Please select another point or relax the thresholds and continue.\n");
         return;
       }
-      else
-      {
-        // Visualize the object in 3D...
-        visualization::PointCloudColorHandlerCustom<PointT> red (object, 255, 0, 0);
-        if (!cloud_viewer_.updatePointCloud (object, red, "object"))
-          cloud_viewer_.addPointCloud (object, red, "object");
-        // ...and 2D
-        image_viewer_.removeLayer ("object");
-        image_viewer_.addMask (search_.getInputCloud (), *object, "object");
+      // Visualize the object in 3D...
+      visualization::PointCloudColorHandlerCustom<PointT> red (object, 255, 0, 0);
+      if (!cloud_viewer_.updatePointCloud (object, red, "object"))
+        cloud_viewer_.addPointCloud (object, red, "object");
+      // ...and 2D
+      image_viewer_.removeLayer ("object");
+      image_viewer_.addMask (search_.getInputCloud (), *object, "object");
 
-        // Compute the min/max of the object
-        PointT min_pt, max_pt;
-        getMinMax3D (*object, min_pt, max_pt);
-        stringstream ss;
-        ss << "cube_" << idx;
-        // Visualize the bounding box in 3D...
-        cloud_viewer_.addCube (min_pt.x, max_pt.x, min_pt.y, max_pt.y, min_pt.z, max_pt.z, 0.0, 1.0, 0.0, ss.str ());
-        cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, ss.str ());
+      // Compute the min/max of the object
+      PointT min_pt, max_pt;
+      getMinMax3D (*object, min_pt, max_pt);
+      stringstream ss2;
+      ss2 << "cube_" << idx;
+      // Visualize the bounding box in 3D...
+      cloud_viewer_.addCube (min_pt.x, max_pt.x, min_pt.y, max_pt.y, min_pt.z, max_pt.z, 0.0, 1.0, 0.0, ss2.str ());
+      cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, ss2.str ());
 
-        // ...and 2D
-        image_viewer_.addRectangle (search_.getInputCloud (), *object);
-      }
+      // ...and 2D
+      image_viewer_.addRectangle (search_.getInputCloud (), *object);
     }
     
     /////////////////////////////////////////////////////////////////////////

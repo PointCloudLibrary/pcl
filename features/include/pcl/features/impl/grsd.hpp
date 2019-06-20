@@ -50,14 +50,13 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::getSimpleType (float min_radi
 {
   if (min_radius > min_radius_plane)
     return (1); // plane
-  else if (max_radius > min_radius_cylinder)
+  if (max_radius > min_radius_cylinder)
     return (2); // cylinder (rim)
-  else if (min_radius < max_radius_noise)
+  if (min_radius < max_radius_noise)
     return (0); // noise/corner
-  else if (max_radius - min_radius < max_min_radius_diff)
+  if (max_radius - min_radius < max_min_radius_diff)
     return (3); // sphere/corner
-  else
-    return (4); // edge
+  return (4);   // edge
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

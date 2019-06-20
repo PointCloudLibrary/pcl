@@ -187,10 +187,7 @@ struct HaarClassifierNodeDescriptor32
 
     __host__ bool isLeaf()                                  // TODO: check this hack don't know if is correct
     {
-      if( _ui1.x == 0)
-        return (false);
-      else
-        return (true);
+      return ( _ui1.x != 0);
     }
 
 #ifdef __CUDACC__

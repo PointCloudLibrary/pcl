@@ -78,11 +78,8 @@ float RangeImageBorderExtractor::getNeighborDistanceChangeScore(
   {
     if (neighbor.range < 0.0f)
       return 0.0f;
-    else
-    {
-      //cout << "INF edge -> Setting to 1.0\n";
-      return 1.0f;  // TODO: Something more intelligent
-    }
+    //cout << "INF edge -> Setting to 1.0\n";
+    return 1.0f;  // TODO: Something more intelligent
   }
   
   float neighbor_distance_squared = squaredEuclideanDistance(neighbor, point);

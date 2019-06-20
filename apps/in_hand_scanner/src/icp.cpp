@@ -356,16 +356,13 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
   {
     return (false);
   }
-  else if (delta_fitness <= epsilon_)
+  if (delta_fitness <= epsilon_)
   {
     T_final = T_cur;
     return (true);
   }
-  else
-  {
-    std::cerr << "ERROR in icp.cpp: Congratulations! you found a bug.\n";
-    exit (EXIT_FAILURE);
-  }
+  std::cerr << "ERROR in icp.cpp: Congratulations! you found a bug.\n";
+  exit (EXIT_FAILURE);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

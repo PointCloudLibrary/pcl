@@ -87,7 +87,7 @@ pcl::cloud_composer::PropertiesModel::getProperty (const QString prop_name) cons
     qWarning () << "No property named "<<prop_name<<" found in "<<parent_item_->text ();
     return QVariant ();
   }
-  else if (items.size () > 1)
+  if (items.size () > 1)
   {
     qWarning () << "Multiple properties found with name "<<prop_name<<" in "<<parent_item_->text ();
   }

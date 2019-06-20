@@ -186,17 +186,14 @@ PCDVideoPlayer::selectFolderButtonPressed ()
     cloud_present_ = false;
     return;
   }
-  else
-  {
-    // Reset the Slider
-    ui_->indexSlider->setValue (0);                // set cursor back in the beginning
-    ui_->indexSlider->setRange (0, nr_of_frames_ - 1);  // rescale the slider
+  // Reset the Slider
+  ui_->indexSlider->setValue (0);                // set cursor back in the beginning
+  ui_->indexSlider->setRange (0, nr_of_frames_ - 1);  // rescale the slider
 
-    current_frame_ = 0;
+  current_frame_ = 0;
 
-    cloud_present_ = true;
-    cloud_modified_ = true;
-  }
+  cloud_present_ = true;
+  cloud_modified_ = true;
 }
 
 void 
@@ -218,22 +215,20 @@ PCDVideoPlayer::selectFilesButtonPressed ()
     cloud_present_ = false;
     return;
   }
-  else
+
+  for(int i = 0; i < qt_pcd_files.size (); i++)
   {
-    for(int i = 0; i < qt_pcd_files.size (); i++)
-    {
-      pcd_files_.push_back (qt_pcd_files.at (i).toStdString ());
-    }
-
-    current_frame_ = 0;
-
-    // Reset the Slider
-    ui_->indexSlider->setValue (0);                // set cursor back in the beginning
-    ui_->indexSlider->setRange (0, nr_of_frames_ - 1);  // rescale the slider
-
-    cloud_present_ = true;
-    cloud_modified_ = true;
+    pcd_files_.push_back (qt_pcd_files.at (i).toStdString ());
   }
+
+  current_frame_ = 0;
+
+  // Reset the Slider
+  ui_->indexSlider->setValue (0);                // set cursor back in the beginning
+  ui_->indexSlider->setRange (0, nr_of_frames_ - 1);  // rescale the slider
+
+  cloud_present_ = true;
+  cloud_modified_ = true;
 }
 
 void 

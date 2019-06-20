@@ -250,7 +250,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 
     return;
   }
-  else if (normal_estimation_method_ == AVERAGE_3D_GRADIENT)
+  if (normal_estimation_method_ == AVERAGE_3D_GRADIENT)
   {
     if (!init_average_3d_gradient_)
       initAverage3DGradientMethod ();
@@ -288,7 +288,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     normal.curvature = bad_point;
     return;
   }
-  else if (normal_estimation_method_ == AVERAGE_DEPTH_CHANGE)
+  if (normal_estimation_method_ == AVERAGE_DEPTH_CHANGE)
   {
     if (!init_depth_change_)
       initAverageDepthChangeMethod ();
@@ -347,7 +347,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 
     return;
   }
-  else if (normal_estimation_method_ == SIMPLE_3D_GRADIENT)
+  if (normal_estimation_method_ == SIMPLE_3D_GRADIENT)
   {
     if (!init_simple_3d_gradient_)
       initSimple3DGradientMethod ();
@@ -539,7 +539,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     return;
   }
   // =======================================================
-  else if (normal_estimation_method_ == AVERAGE_3D_GRADIENT) 
+  if (normal_estimation_method_ == AVERAGE_3D_GRADIENT) 
   {
     if (!init_average_3d_gradient_)
       initAverage3DGradientMethod ();
@@ -596,7 +596,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     return;
   }
   // ======================================================
-  else if (normal_estimation_method_ == AVERAGE_DEPTH_CHANGE) 
+  if (normal_estimation_method_ == AVERAGE_DEPTH_CHANGE) 
   {
     if (!init_depth_change_)
       initAverageDepthChangeMethod ();
@@ -716,7 +716,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     return;
   }
   // ========================================================
-  else if (normal_estimation_method_ == SIMPLE_3D_GRADIENT) 
+  if (normal_estimation_method_ == SIMPLE_3D_GRADIENT) 
   {
     PCL_THROW_EXCEPTION (PCLException, "BORDER_POLICY_MIRROR not supported for normal estimation method SIMPLE_3D_GRADIENT");
   }

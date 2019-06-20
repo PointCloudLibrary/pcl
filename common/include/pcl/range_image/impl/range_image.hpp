@@ -414,8 +414,7 @@ RangeImage::getRangeDifference (const Eigen::Vector3f& point) const
   {
     if (image_point_range > 0.0f)
       return std::numeric_limits<float>::infinity ();
-    else
-      return -std::numeric_limits<float>::infinity ();
+    return -std::numeric_limits<float>::infinity ();
   }
   return image_point_range - range;
 }
@@ -866,8 +865,7 @@ RangeImage::getAverageEuclideanDistance (int x, int y, int offset_x, int offset_
       //std::cout << x<<","<<y<<"->"<<x2<<","<<y2<<": "<<pixel_distance<<"\n";
       if (i==0)
         return pixel_distance;
-      else
-        break;
+      break;
     }
     //std::cout << x<<","<<y<<"->"<<x2<<","<<y2<<": "<<std::sqrt (pixel_distance)<<"m\n";
     weight += 1.0f;

@@ -427,10 +427,7 @@ pcl::console::parse_multiple_arguments (int argc, const char * const * argv, con
       values.push_back (val);
     }
   }
-  if (values.empty ())
-    return (false);
-  else
-    return (true);
+  return (!values.empty ());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -446,10 +443,7 @@ pcl::console::parse_multiple_arguments (int argc, const char * const * argv, con
       values.push_back (val);
     }
   }
-  if (values.empty ())
-    return (false);
-  else
-    return (true);
+  return (!values.empty ());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -465,10 +459,7 @@ pcl::console::parse_multiple_arguments (int argc, const char * const * argv, con
       values.push_back (val);
     }
   }
-  if (values.empty ())
-    return (false);
-  else
-    return (true);
+  return (!values.empty ());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -483,10 +474,7 @@ pcl::console::parse_multiple_arguments (int argc, const char * const * argv, con
       values.emplace_back(argv[i]);
     }
   }
-  if (values.empty ())
-    return (false);
-  else
-    return (true);
+  return (!values.empty ());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -513,10 +501,7 @@ pcl::console::parse_multiple_2x_arguments (int argc, const char * const * argv, 
       values_s.push_back (s);
     }
   }
-  if (values_f.empty ())
-    return (false);
-  else
-    return (true);
+  return (!values_f.empty ());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -548,9 +533,6 @@ pcl::console::parse_multiple_3x_arguments (int argc, const char * const * argv, 
       values_t.push_back (t);
     }
   }
-  if (values_f.empty ())
-    return (false);
-  else
-    return (true);
+  return (!values_f.empty ());
 }
 

@@ -918,10 +918,7 @@ namespace pcl
             vertex_data_cloud_ = vertex_data_cloud;
             return (true);
           }
-          else
-          {
-            return (false);
-          }
+          return (false);
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -956,10 +953,7 @@ namespace pcl
             half_edge_data_cloud_ = half_edge_data_cloud;
             return (true);
           }
-          else
-          {
-            return (false);
-          }
+          return (false);
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -994,10 +988,7 @@ namespace pcl
             edge_data_cloud_ = edge_data_cloud;
             return (true);
           }
-          else
-          {
-            return (false);
-          }
+          return (false);
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -1032,10 +1023,7 @@ namespace pcl
             face_data_cloud_ = face_data_cloud;
             return (true);
           }
-          else
-          {
-            return (false);
-          }
+          return (false);
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -1053,10 +1041,7 @@ namespace pcl
             assert (&vertex_data >= &vertex_data_cloud_.front () && &vertex_data <= &vertex_data_cloud_.back ());
             return (VertexIndex (std::distance (&vertex_data_cloud_.front (), &vertex_data)));
           }
-          else
-          {
-            return (VertexIndex ());
-          }
+          return (VertexIndex ());
         }
 
         /** \brief Get the index associated to the given half-edge data. */
@@ -1068,10 +1053,7 @@ namespace pcl
             assert (&half_edge_data >= &half_edge_data_cloud_.front () && &half_edge_data <= &half_edge_data_cloud_.back ());
             return (HalfEdgeIndex (std::distance (&half_edge_data_cloud_.front (), &half_edge_data)));
           }
-          else
-          {
-            return (HalfEdgeIndex ());
-          }
+          return (HalfEdgeIndex ());
         }
 
         /** \brief Get the index associated to the given edge data. */
@@ -1083,10 +1065,7 @@ namespace pcl
             assert (&edge_data >= &edge_data_cloud_.front () && &edge_data <= &edge_data_cloud_.back ());
             return (EdgeIndex (std::distance (&edge_data_cloud_.front (), &edge_data)));
           }
-          else
-          {
-            return (EdgeIndex ());
-          }
+          return (EdgeIndex ());
         }
 
         /** \brief Get the index associated to the given face data. */
@@ -1098,10 +1077,7 @@ namespace pcl
             assert (&face_data >= &face_data_cloud_.front () && &face_data <= &face_data_cloud_.back ());
             return (FaceIndex (std::distance (&face_data_cloud_.front (), &face_data)));
           }
-          else
-          {
-            return (FaceIndex ());
-          }
+          return (FaceIndex ());
         }
 
       protected:
@@ -1287,8 +1263,7 @@ namespace pcl
                         HalfEdgeIndex&                /*idx_free_half_edge*/,
                         std::true_type              /*is_manifold*/) const
         {
-          if (is_new_ab && is_new_bc && !is_isolated_b) return (false);
-          else                                          return (true);
+          return !(is_new_ab && is_new_bc && !is_isolated_b);
         }
 
         /** \brief Check if the half-edge bc is the next half-edge of ab.
@@ -1331,8 +1306,7 @@ namespace pcl
           idx_free_half_edge = circ.getTargetIndex ();
 
           // This would detach the faces around the vertex from each other.
-          if (circ.getTargetIndex () == idx_he_ab) return (false);
-          else                                     return (true);
+          return (circ.getTargetIndex () != idx_he_ab);
         }
 
         /** \brief Make the half-edges bc the next half-edge of ab.
