@@ -127,8 +127,7 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
       pcl::console::print_error (stdout, "[failed]\n");
       return (false);
     }
-    else
-      pcl::console::print_debug ("[success]\n");
+    pcl::console::print_debug ("[success]\n");
  
     pcl::PointCloud<pcl::PointXYZ> cloud_xyz;
     pcl::fromPCLPointCloud2 (cloud, cloud_xyz);
@@ -148,8 +147,7 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
       pcl::console::print_error (stdout, "[failed]\n");
       return (false);
     }
-    else
-      pcl::console::print_debug ("[success]\n");
+    pcl::console::print_debug ("[success]\n");
   }
 
   return (true);

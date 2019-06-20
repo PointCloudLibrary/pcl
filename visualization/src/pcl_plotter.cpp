@@ -655,8 +655,7 @@ pcl::visualization::PCLPlotter::wasStopped () const
 {
   if (view_->GetInteractor()) 
     return (stopped_); 
-  else 
-    return (true);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

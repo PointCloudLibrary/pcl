@@ -1155,7 +1155,8 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   {
     PCL_WARN ("[addCorrespondences] A set of correspondences with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
-  } else if (am_it == shape_actor_map_->end () && overwrite)
+  }
+  if (am_it == shape_actor_map_->end () && overwrite)
   {
     overwrite = false; // Correspondences doesn't exist, add them instead of updating them
   }

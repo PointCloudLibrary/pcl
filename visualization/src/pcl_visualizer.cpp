@@ -1945,8 +1945,7 @@ pcl::visualization::PCLVisualizer::updateShapePose (const std::string &id, const
 
   if (am_it == shape_actor_map_->end ())
     return (false);
-  else
-    actor = vtkLODActor::SafeDownCast (am_it->second);
+  actor = vtkLODActor::SafeDownCast (am_it->second);
 
   if (!actor)
     return (false);
@@ -1971,8 +1970,7 @@ pcl::visualization::PCLVisualizer::updateCoordinateSystemPose (const std::string
 
   if (am_it == coordinate_actor_map_->end ())
     return (false);
-  else
-    actor = vtkLODActor::SafeDownCast (am_it->second);
+  actor = vtkLODActor::SafeDownCast (am_it->second);
 
   if (!actor)
     return (false);
@@ -2227,11 +2225,8 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
         boost::split (camera, argv[i], boost::is_any_of ("/"), boost::token_compress_on);
         return (style_->getCameraParameters (camera));
       }
-      else
-      {
-        // Assume that if we don't have clip/focal/pos/view, a filename.cam was given as a parameter
-        return (style_->loadCameraParameters (camfile));
-      }
+      // Assume that if we don't have clip/focal/pos/view, a filename.cam was given as a parameter
+      return (style_->loadCameraParameters (camfile));
     }
   }
   return (false);
@@ -2709,7 +2704,7 @@ pcl::visualization::PCLVisualizer::createViewPortCamera (const int viewport)
   {
     if (viewport == 0)
       continue;
-    else if (viewport == i)
+    if (viewport == i)
     {
       renderer->SetActiveCamera (cam);
       renderer->ResetCamera ();

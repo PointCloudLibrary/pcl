@@ -154,8 +154,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::initCompute ()
     computePyramids (ref_, ref_pyramid_, pcl::BORDER_REFLECT_101);
     return (true);
   }
-  else
-    initialized_ = true;
+  initialized_ = true;
 
   return (true);
 }

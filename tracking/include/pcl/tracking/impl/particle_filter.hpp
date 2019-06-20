@@ -49,8 +49,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::sampleWithReplacement
   rU -= k;    /* rU - [rU] */
   if ( rU < q[k] )
     return k;
-  else
-    return a[k];
+  return a[k];
 }
 
 template <typename PointInT, typename StateT> void
