@@ -493,14 +493,11 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudAt (size_t idx,
     cy = principal_point_y_;
     return (getCloudVTK (idx, blob, origin, orientation) );
   }
-  else if (!depth_pclzf_files_.empty ())
+  if (!depth_pclzf_files_.empty ())
     return (getCloudPCLZF (idx, blob, origin, orientation, fx, fy, cx, cy) );
-  else
-  {
-    PCL_ERROR ("[pcl::ImageGrabber::getCloudAt] Could not find VTK or PCLZF files.\n");
-    return (false);
-  }
-}  
+  PCL_ERROR ("[pcl::ImageGrabber::getCloudAt] Could not find VTK or PCLZF files.\n");
+  return (false);
+}
 
 bool
 pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx, 
@@ -810,7 +807,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getVtkImage (
     PCL_ERROR ("[pcl::ImageGrabber::getVtkImage] Image file can't be read: %s\n", filename.c_str ());
     return (false);
   }
-  else if (retval == 1)
+  if (retval == 1)
   {
     PCL_ERROR ("[pcl::ImageGrabber::getVtkImage] Can't prove that I can read: %s\n", filename.c_str ());
     return (false);
@@ -828,8 +825,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::numFrames () const
 {
   if (pclzf_mode_)
     return (depth_pclzf_files_.size ());
-  else
-    return (depth_image_files_.size ());
+  return (depth_image_files_.size ());
 }
 
 //////////////////////// GrabberBase //////////////////////
@@ -996,10 +992,7 @@ pcl::ImageGrabberBase::getCloudAt (size_t idx,
 bool
 pcl::ImageGrabberBase::atLastFrame () const
 {
-  if (impl_->cur_frame_ == numFrames () - 1)
-    return (true);
-  else
-    return (false);
+  return (impl_->cur_frame_ == numFrames () - 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

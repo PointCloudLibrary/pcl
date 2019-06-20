@@ -843,10 +843,7 @@ pcl::OpenNIGrabber::mapConfigMode2XnMode (int mode, XnMapOutputMode &xnmode) con
     xnmode = it->second;
     return (true);
   }
-  else
-  {
-    return (false);
-  }
+  return (false);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -456,7 +456,7 @@ main(int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else if ((short_opt == 'v') || (std::strcmp(long_opt, "version") == 0)) {
+    if ((short_opt == 'v') || (std::strcmp(long_opt, "version") == 0)) {
       std::cout << "ply2ply\n";
       std::cout << " Point Cloud Library (PCL) - www.pointclouds.org\n";
       std::cout << " Copyright (c) 2007-2012, Ares Lagae\n";
@@ -489,7 +489,7 @@ main(int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else if ((short_opt == 'f') || (std::strcmp(long_opt, "format") == 0)) {
+    if ((short_opt == 'f') || (std::strcmp(long_opt, "format") == 0)) {
       if (strcmp(opt_arg, "ascii") == 0) {
         ply_to_ply_converter_format = ply_to_ply_converter::ascii_format;
       }

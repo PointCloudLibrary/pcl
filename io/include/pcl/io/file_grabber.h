@@ -79,10 +79,7 @@ namespace pcl
         // Throw error 
         throw pcl::IOException ("[pcl::FileGrabber] Attempted to access element which is out of bounds!");
       }
-      else
-      {
-        return (operator[] (idx));
-      }
+      return (operator[] (idx));
     }
   };
 }

@@ -579,8 +579,7 @@ namespace openni_wrapper
     float scale = static_cast<float> (output_x_resolution) / static_cast<float> (XN_SXGA_X_RES);
     if (isDepthRegistered ())
       return (rgb_focal_length_SXGA_ * scale);
-    else
-      return (depth_focal_length_SXGA_ * scale);
+    return (depth_focal_length_SXGA_ * scale);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

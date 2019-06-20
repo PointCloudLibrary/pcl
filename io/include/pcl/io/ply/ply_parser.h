@@ -572,23 +572,20 @@ inline bool pcl::io::ply::ply_parser::parse_scalar_property (format_type format,
       scalar_property_callback (value);
     return (true);
   }
-  else
+  scalar_type value = std::numeric_limits<scalar_type>::quiet_NaN ();
+  istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
+  if (!istream)
   {
-    scalar_type value = std::numeric_limits<scalar_type>::quiet_NaN ();
-    istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
-    if (!istream)
-    {
-      if (error_callback_)
-        error_callback_ (line_number_, "parse error");
-      return (false);
-    }
-    if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) ||
-        ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
-      swap_byte_order (value);
-    if (scalar_property_callback)
-      scalar_property_callback (value);
-    return (true);
+    if (error_callback_)
+      error_callback_ (line_number_, "parse error");
+    return (false);
   }
+  if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) ||
+      ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
+    swap_byte_order (value);
+  if (scalar_property_callback)
+    scalar_property_callback (value);
+  return (true);
 }
 
 template <typename SizeType, typename ScalarType>
@@ -659,52 +656,49 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
     }
     return (true);
   }
-  else
+  size_type size = std::numeric_limits<size_type>::infinity ();
+  istream.read (reinterpret_cast<char*> (&size), sizeof (size_type));
+  if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) || 
+      ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
   {
-    size_type size = std::numeric_limits<size_type>::infinity ();
-    istream.read (reinterpret_cast<char*> (&size), sizeof (size_type));
-    if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) || 
-        ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
+    swap_byte_order (size);
+  }
+  if (!istream)
+  {
+    if (error_callback_)
     {
-      swap_byte_order (size);
+      error_callback_ (line_number_, "parse error");
     }
-    if (!istream)
-    {
-      if (error_callback_)
-      {
+    return (false);
+  }
+  if (list_property_begin_callback)
+  {
+    list_property_begin_callback (size);
+  }
+  for (std::size_t index = 0; index < size; ++index) {
+    scalar_type value  = std::numeric_limits<scalar_type>::quiet_NaN ();
+    istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
+    if (!istream) {
+      if (error_callback_) {
         error_callback_ (line_number_, "parse error");
       }
       return (false);
     }
-    if (list_property_begin_callback)
+    if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) ||
+        ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
     {
-      list_property_begin_callback (size);
+      swap_byte_order (value);
     }
-    for (std::size_t index = 0; index < size; ++index) {
-      scalar_type value  = std::numeric_limits<scalar_type>::quiet_NaN ();
-      istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
-      if (!istream) {
-        if (error_callback_) {
-          error_callback_ (line_number_, "parse error");
-        }
-        return (false);
-      }
-      if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) ||
-          ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
-      {
-        swap_byte_order (value);
-      }
-      if (list_property_element_callback)
-      {
-        list_property_element_callback (value);
-      }
-    }
-    if (list_property_end_callback)
+    if (list_property_element_callback)
     {
-      list_property_end_callback ();
+      list_property_element_callback (value);
     }
-    return (true);
   }
+  if (list_property_end_callback)
+  {
+    list_property_end_callback ();
+  }
+  return (true);
 }
 
 #ifdef BUILD_Maintainer

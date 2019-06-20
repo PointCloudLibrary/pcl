@@ -73,29 +73,26 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
               boost::bind (&pcl::PLYReader::vertexBeginCallback, this),
               boost::bind (&pcl::PLYReader::vertexEndCallback, this)));
   }
-  else if ((element_name == "face") && polygons_)
+  if ((element_name == "face") && polygons_)
   {
     polygons_->reserve (count);
     return (boost::tuple<std::function<void ()>, std::function<void ()> > (
             boost::bind (&pcl::PLYReader::faceBeginCallback, this),
             boost::bind (&pcl::PLYReader::faceEndCallback, this)));
   }
-  else if (element_name == "camera")
+  if (element_name == "camera")
   {
     cloud_->is_dense = true;
     return {};
   }
-  else if (element_name == "range_grid")
+  if (element_name == "range_grid")
   {
     range_grid_->reserve (count);
     return (boost::tuple<std::function<void ()>, std::function<void ()> > (
               boost::bind (&pcl::PLYReader::rangeGridBeginCallback, this),
               boost::bind (&pcl::PLYReader::rangeGridEndCallback, this)));
   }
-  else
-  {
-    return {};
-  }
+  return {};
 }
 
 bool
@@ -141,65 +138,58 @@ namespace pcl
       appendScalarProperty<pcl::io::ply::float32> (property_name, 1);
       return (boost::bind (&pcl::PLYReader::vertexScalarPropertyCallback<pcl::io::ply::float32>, this, _1));
     }
-    else if (element_name == "camera")
+    if (element_name == "camera")
     {
       if (property_name == "view_px")
       {
         return boost::bind (&pcl::PLYReader::originXCallback, this, _1);
       }
-      else if (property_name == "view_py")
+      if (property_name == "view_py")
       {
         return boost::bind (&pcl::PLYReader::originYCallback, this, _1);
       }
-      else if (property_name == "view_pz")
+      if (property_name == "view_pz")
       {
         return boost::bind (&pcl::PLYReader::originZCallback, this, _1);
       }
-      else if (property_name == "x_axisx")
+      if (property_name == "x_axisx")
       {
         return boost::bind (&pcl::PLYReader::orientationXaxisXCallback, this, _1);
       }
-      else if (property_name == "x_axisy")
+      if (property_name == "x_axisy")
       {
         return boost::bind (&pcl::PLYReader::orientationXaxisYCallback, this, _1);
       }
-      else if (property_name == "x_axisz")
+      if (property_name == "x_axisz")
       {
         return boost::bind (&pcl::PLYReader::orientationXaxisZCallback, this, _1);
       }
-      else if (property_name == "y_axisx")
+      if (property_name == "y_axisx")
       {
         return boost::bind (&pcl::PLYReader::orientationYaxisXCallback, this, _1);
       }
-      else if (property_name == "y_axisy")
+      if (property_name == "y_axisy")
       {
         return boost::bind (&pcl::PLYReader::orientationYaxisYCallback, this, _1);
       }
-      else if (property_name == "y_axisz")
+      if (property_name == "y_axisz")
       {
         return boost::bind (&pcl::PLYReader::orientationYaxisZCallback, this, _1);
       }
-      else if (property_name == "z_axisx")
+      if (property_name == "z_axisx")
       {
         return boost::bind (&pcl::PLYReader::orientationZaxisXCallback, this, _1);
       }
-      else if (property_name == "z_axisy")
+      if (property_name == "z_axisy")
       {
         return boost::bind (&pcl::PLYReader::orientationZaxisYCallback, this, _1);
       }
-      else if (property_name == "z_axisz")
+      if (property_name == "z_axisz")
       {
         return boost::bind (&pcl::PLYReader::orientationZaxisZCallback, this, _1);
       }
-      else
-      {
-        return {};
-      }
     }
-    else
-    {
-      return {};
-    }
+    return {};
   }
 
   template <> std::function<void (pcl::io::ply::uint8)>
@@ -214,24 +204,20 @@ namespace pcl
           appendScalarProperty<pcl::io::ply::float32> ("rgb");
         return boost::bind (&pcl::PLYReader::vertexColorCallback, this, property_name, _1);
       }
-      else if (property_name == "alpha")
+      if (property_name == "alpha")
       {
         amendProperty ("rgb", "rgba", pcl::PCLPointField::UINT32);
         return boost::bind (&pcl::PLYReader::vertexAlphaCallback, this, _1);
       }
-      else if (property_name == "intensity")
+      if (property_name == "intensity")
       {
         appendScalarProperty<pcl::io::ply::float32> (property_name);
         return boost::bind (&pcl::PLYReader::vertexIntensityCallback, this, _1);
       }
-      else
-      {
-        appendScalarProperty<pcl::io::ply::uint8> (property_name);
-        return boost::bind (&pcl::PLYReader::vertexScalarPropertyCallback<pcl::io::ply::uint8>, this, _1);
-      }
+      appendScalarProperty<pcl::io::ply::uint8> (property_name);
+      return boost::bind (&pcl::PLYReader::vertexScalarPropertyCallback<pcl::io::ply::uint8>, this, _1);
     }
-    else
-      return {};
+    return {};
   }
 
   template <> std::function<void (pcl::io::ply::int32)>
@@ -248,15 +234,13 @@ namespace pcl
       {
         return boost::bind (&pcl::PLYReader::cloudWidthCallback, this, _1);
       }
-      else if (property_name == "viewporty")
+      if (property_name == "viewporty")
       {
         return boost::bind (&pcl::PLYReader::cloudHeightCallback, this, _1);
       }
-      else
-        return {};
-    }
-    else
       return {};
+    }
+    return {};
   }
 
   template <typename Scalar> std::function<void (Scalar)>
@@ -334,7 +318,7 @@ namespace pcl
         boost::bind (&pcl::PLYReader::rangeGridVertexIndicesEndCallback, this)
       );
     }
-    else if ((element_name == "face") && (property_name == "vertex_indices" || property_name == "vertex_index") && polygons_)
+    if ((element_name == "face") && (property_name == "vertex_indices" || property_name == "vertex_index") && polygons_)
     {
       return boost::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
         boost::bind (&pcl::PLYReader::faceVertexIndicesBeginCallback, this, _1),
@@ -342,7 +326,7 @@ namespace pcl
         boost::bind (&pcl::PLYReader::faceVertexIndicesEndCallback, this)
       );
     }
-    else if (element_name == "vertex")
+    if (element_name == "vertex")
     {
       cloud_->fields.emplace_back();
       pcl::PCLPointField &current_field = cloud_->fields.back ();
@@ -361,10 +345,7 @@ namespace pcl
         boost::bind (&pcl::PLYReader::vertexListPropertyEndCallback, this)
       );
     }
-    else
-    {
-      return {};
-    }
+    return {};
   }
 
   template <typename SizeType, typename ContentType>
@@ -390,10 +371,7 @@ namespace pcl
         boost::bind (&pcl::PLYReader::vertexListPropertyEndCallback, this)
       );
     }
-    else
-    {
-      return {};
-    }
+    return {};
   }
 }
 

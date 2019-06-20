@@ -65,19 +65,16 @@ pcl::io::loadPolygonFile (const std::string &file_name, pcl::PolygonMesh& mesh)
     mesh.polygons.resize (0);
     return (static_cast<int> (mesh.cloud.width * mesh.cloud.height));
   }
-  else if (extension == "vtk")
+  if (extension == "vtk")
    return (pcl::io::loadPolygonFileVTK (file_name, mesh));
-  else if (extension == "ply")
+  if (extension == "ply")
    return (pcl::io::loadPolygonFilePLY (file_name, mesh));
-  else if (extension == "obj")
+  if (extension == "obj")
     return (pcl::io::loadPolygonFileOBJ (file_name, mesh));
-  else if (extension == "stl" )
+  if (extension == "stl" )
     return (pcl::io::loadPolygonFileSTL (file_name, mesh));
-  else
-  {
-    PCL_ERROR ("[pcl::io::loadPolygonFile]: Unsupported file type (%s)\n", extension.c_str ());
-    return (0);
-  }
+  PCL_ERROR ("[pcl::io::loadPolygonFile]: Unsupported file type (%s)\n", extension.c_str ());
+  return (0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,17 +87,14 @@ pcl::io::savePolygonFile (const std::string &file_name,
   std::string extension = file_name.substr (file_name.find_last_of ('.') + 1);
   if (extension == "pcd")  // no Polygon, but only a point cloud
     return (pcl::io::savePCDFile (file_name, mesh.cloud, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), binary_format) == 0);
-  else if (extension == "vtk")
+  if (extension == "vtk")
     return (pcl::io::savePolygonFileVTK (file_name, mesh, binary_format));
-  else if (extension == "ply")
+  if (extension == "ply")
     return (pcl::io::savePolygonFilePLY (file_name, mesh, binary_format));
-  else if (extension == "stl")
+  if (extension == "stl")
     return (pcl::io::savePolygonFileSTL (file_name, mesh, binary_format));
-  else
-  {
-    PCL_ERROR ("[pcl::io::savePolygonFile]: Unsupported file type (%s)\n", extension.c_str ());
-    return (false);
-  }
+  PCL_ERROR ("[pcl::io::savePolygonFile]: Unsupported file type (%s)\n", extension.c_str ());
+  return (false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

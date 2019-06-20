@@ -221,35 +221,32 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
           materials_.clear ();
           return (-1);
         }
+        pcl::TexMaterial::RGB *rgb = &materials_.back ().tex_Ka;
+        if (st[0] == "Kd")
+          rgb = &materials_.back ().tex_Kd;
+        else if (st[0] == "Ks")
+          rgb = &materials_.back ().tex_Ks;
+
+        if (st[1] == "xyz")
+        {
+          if (fillRGBfromXYZ (st, *rgb))
+          {
+            PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values",
+                       line.c_str ());
+            mtl_file.close ();
+            materials_.clear ();
+            return (-1);
+          }
+        }
         else
         {
-          pcl::TexMaterial::RGB *rgb = &materials_.back ().tex_Ka;
-          if (st[0] == "Kd")
-            rgb = &materials_.back ().tex_Kd;
-          else if (st[0] == "Ks")
-            rgb = &materials_.back ().tex_Ks;
-
-          if (st[1] == "xyz")
+          if (fillRGBfromRGB (st, *rgb))
           {
-            if (fillRGBfromXYZ (st, *rgb))
-            {
-              PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values",
-                         line.c_str ());
-              mtl_file.close ();
-              materials_.clear ();
-              return (-1);
-            }
-          }
-          else
-          {
-            if (fillRGBfromRGB (st, *rgb))
-            {
-              PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values",
-                         line.c_str ());
-              mtl_file.close ();
-              materials_.clear ();
-              return (-1);
-            }
+            PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values",
+                       line.c_str ());
+            mtl_file.close ();
+            materials_.clear ();
+            return (-1);
           }
         }
         continue;
@@ -400,14 +397,14 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
         }
 
         // Vertex texture (vt)
-        else if ((line[1] == 't') && !vertex_texture_found)
+        if ((line[1] == 't') && !vertex_texture_found)
         {
           vertex_texture_found = true;
           continue;
         }
 
         // Vertex normal (vn)
-        else if ((line[1] == 'n') && !vertex_normal_found)
+        if ((line[1] == 'n') && !vertex_normal_found)
         {
           vertex_normal_found = true;
           continue;

@@ -573,52 +573,49 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   }
 
   // binary
-  else
-  {
-    std::streampos data_start = istream.tellg ();
-    istream.close ();
-    istream.open (filename.c_str (), std::ios::in | std::ios::binary);
-    istream.seekg (data_start);
+  std::streampos data_start = istream.tellg ();
+  istream.close ();
+  istream.open (filename.c_str (), std::ios::in | std::ios::binary);
+  istream.seekg (data_start);
 
-    for (std::vector< boost::shared_ptr<element> >::const_iterator element_iterator = elements.begin (); 
-         element_iterator != elements.end (); 
-         ++element_iterator)
+  for (std::vector< boost::shared_ptr<element> >::const_iterator element_iterator = elements.begin (); 
+       element_iterator != elements.end (); 
+       ++element_iterator)
+  {
+    struct element& element = *(element_iterator->get ());
+    for (std::size_t element_index = 0; element_index < element.count; ++element_index)
     {
-      struct element& element = *(element_iterator->get ());
-      for (std::size_t element_index = 0; element_index < element.count; ++element_index)
+      if (element.begin_element_callback) {
+        element.begin_element_callback ();
+      }
+      for (std::vector< boost::shared_ptr<property> >::const_iterator property_iterator = element.properties.begin (); 
+           property_iterator != element.properties.end (); 
+           ++property_iterator)
       {
-        if (element.begin_element_callback) {
-          element.begin_element_callback ();
-        }
-        for (std::vector< boost::shared_ptr<property> >::const_iterator property_iterator = element.properties.begin (); 
-             property_iterator != element.properties.end (); 
-             ++property_iterator)
+        struct property& property = *(property_iterator->get ());
+        if (!property.parse (*this, format, istream))
         {
-          struct property& property = *(property_iterator->get ());
-          if (!property.parse (*this, format, istream))
-          {
-            return false;
-          }
-        }
-        if (element.end_element_callback)
-        {
-          element.end_element_callback ();
+          return false;
         }
       }
-    }
-    if (istream.fail () || istream.bad ())
-    {
-      if (error_callback_)
+      if (element.end_element_callback)
       {
-        error_callback_ (line_number_, "parse error: failed to read from the binary stream");
+        element.end_element_callback ();
       }
-      return false;
     }
-    if (istream.rdbuf ()->sgetc () != std::char_traits<char>::eof ())
-    {
-      if (warning_callback_)
-        warning_callback_ (line_number_, "ignoring extra data at the end of binary stream");
-    }
-    return true;
   }
+  if (istream.fail () || istream.bad ())
+  {
+    if (error_callback_)
+    {
+      error_callback_ (line_number_, "parse error: failed to read from the binary stream");
+    }
+    return false;
+  }
+  if (istream.rdbuf ()->sgetc () != std::char_traits<char>::eof ())
+  {
+    if (warning_callback_)
+      warning_callback_ (line_number_, "ignoring extra data at the end of binary stream");
+  }
+  return true;
 }

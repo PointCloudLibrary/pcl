@@ -244,8 +244,7 @@ ONIGrabber::getFramesPerSecond () const
 {
   if (device_->isStreaming())
     return (static_cast<float> (device_->getDepthOutputMode ().nFPS));
-  else
-    return (0);
+  return (0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
