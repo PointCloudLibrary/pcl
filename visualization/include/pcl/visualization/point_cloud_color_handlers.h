@@ -96,13 +96,29 @@ namespace pcl
         virtual std::string
         getFieldName () const = 0;
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
-          */
+        /** Obtain the actual color for the input dataset as a VTK data array.
+          * Deriving handlers should override this method. The default implementation is
+          * provided only for backwards compatibility with handlers that were written
+          * before PCL 1.10.0 and will be removed in future.
+          * \return smart pointer to VTK array if the operation was successful (the
+          * handler is capable and the input cloud was given), a null pointer otherwise */
+        virtual vtkSmartPointer<vtkDataArray>
+        getColor () const {
+          vtkSmartPointer<vtkDataArray> scalars;
+          getColor (scalars);
+          return scalars;
+        }
+
+        /** Obtain the actual color for the input dataset as a VTK data array.
+          * This virtual method should not be overriden or used. The default implementation
+          * is provided only for backwards compatibility with handlers that were written
+          * before PCL 1.10.0 and will be removed in future. */
+        [[deprecated("use getColor() without parameters instead")]]
         virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const = 0;
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const {
+          scalars = getColor ();
+          return scalars.Get() != nullptr;
+        }
 
         /** \brief Set the input cloud to be used.
           * \param[in] cloud the input cloud to be used by the handler
@@ -167,13 +183,10 @@ namespace pcl
         virtual std::string
         getFieldName () const { return ("[random]"); }
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<PointT>::getColor;
 
       protected:
         // Members derived from the base class
@@ -230,13 +243,10 @@ namespace pcl
         virtual std::string
         getFieldName () const { return (""); }
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<PointT>::getColor;
 
       protected:
         // Members derived from the base class
@@ -284,13 +294,10 @@ namespace pcl
         virtual std::string
         getFieldName () const { return ("rgb"); }
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<PointT>::getColor;
 
         /** \brief Set the input cloud to be used.
           * \param[in] cloud the input cloud to be used by the handler
@@ -337,13 +344,10 @@ namespace pcl
         virtual std::string
         getFieldName () const { return ("hsv"); }
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<PointT>::getColor;
 
       protected:
         /** \brief Class getName method. */
@@ -402,13 +406,10 @@ namespace pcl
         /** \brief Get the name of the field used. */
         virtual std::string getFieldName () const { return (field_name_); }
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<PointT>::getColor;
 
         /** \brief Set the input cloud to be used.
           * \param[in] cloud the input cloud to be used by the handler
@@ -469,13 +470,10 @@ namespace pcl
         virtual std::string
         getFieldName () const { return ("rgba"); }
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<PointT>::getColor;
 
         /** \brief Set the input cloud to be used.
           * \param[in] cloud the input cloud to be used by the handler
@@ -539,13 +537,10 @@ namespace pcl
         virtual std::string
         getFieldName () const { return ("label"); }
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<PointT>::getColor;
 
         /** \brief Set the input cloud to be used.
           * \param[in] cloud the input cloud to be used by the handler
@@ -603,13 +598,29 @@ namespace pcl
         virtual std::string
         getFieldName () const = 0;
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
-          */
+        /** Obtain the actual color for the input dataset as a VTK data array.
+          * Deriving handlers should override this method. The default implementation is
+          * provided only for backwards compatibility with handlers that were written
+          * before PCL 1.10.0 and will be removed in future.
+          * \return smart pointer to VTK array if the operation was successful (the
+          * handler is capable and the input cloud was given), a null pointer otherwise */
+        virtual vtkSmartPointer<vtkDataArray>
+        getColor () const {
+          vtkSmartPointer<vtkDataArray> scalars;
+          getColor (scalars);
+          return scalars;
+        }
+
+        /** Obtain the actual color for the input dataset as a VTK data array.
+          * This virtual method should not be overriden or used. The default implementation
+          * is provided only for backwards compatibility with handlers that were written
+          * before PCL 1.10.0 and will be removed in future. */
+        [[deprecated("use getColor() without parameters instead")]]
         virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const = 0;
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const {
+          scalars = getColor ();
+          return scalars.Get() != nullptr;
+        }
 
         /** \brief Set the input cloud to be used.
           * \param[in] cloud the input cloud to be used by the handler
@@ -667,13 +678,10 @@ namespace pcl
         virtual std::string
         getFieldName () const { return ("[random]"); }
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -710,13 +718,10 @@ namespace pcl
         virtual std::string
         getFieldName () const { return (""); }
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
 
       protected:
         /** \brief Internal R, G, B holding the values given by the user. */
@@ -746,13 +751,10 @@ namespace pcl
         /** \brief Empty destructor */
         virtual ~PointCloudColorHandlerRGBField () {}
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
 
       protected:
         /** \brief Get the name of the class. */
@@ -786,13 +788,10 @@ namespace pcl
         /** \brief Empty destructor */
         virtual ~PointCloudColorHandlerHSVField () {}
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
 
       protected:
         /** \brief Get the name of the class. */
@@ -834,13 +833,10 @@ namespace pcl
         /** \brief Empty destructor */
         virtual ~PointCloudColorHandlerGenericField () {}
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
 
       protected:
         /** \brief Get the name of the class. */
@@ -879,13 +875,10 @@ namespace pcl
         /** \brief Empty destructor */
         virtual ~PointCloudColorHandlerRGBAField () {}
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
 
       protected:
         /** \brief Get the name of the class. */
@@ -922,13 +915,10 @@ namespace pcl
         /** \brief Empty destructor */
         virtual ~PointCloudColorHandlerLabelField () {}
 
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and
-          * the input cloud was given as a valid pointer), false otherwise
-          */
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override;
+
+        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
 
       protected:
         /** \brief Get the name of the class. */
