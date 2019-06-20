@@ -298,10 +298,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> bool
     OutofcoreOctreeBaseNode<ContainerT, PointT>::hasUnloadedChildren () const
     {
-      if (this->getNumLoadedChildren () < this->getNumChildren ())
-        return (true);
-      else
-        return (false);
+      return (this->getNumLoadedChildren () < this->getNumChildren ());
     }
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -428,76 +425,70 @@ namespace pcl
           
           return (p.size ());
         }
-        else//check which points belong to this node, throw away the rest
+        //check which points belong to this node, throw away the rest
+        std::vector<const PointT*> buff;
+        BOOST_FOREACH(const PointT* pt, p)
         {
-          std::vector<const PointT*> buff;
-          BOOST_FOREACH(const PointT* pt, p)
+          if(pointInBoundingBox(*pt))
           {
-            if(pointInBoundingBox(*pt))
-            {
-              buff.push_back(pt);
-            }
+            buff.push_back(pt);
           }
-
-          if (!buff.empty ())
-          {
-            root_node_->m_tree_->incrementPointsInLOD (this->depth_, buff.size ());
-            payload_->insertRange (buff.data (), buff.size ());
-//            payload_->insertRange ( buff );
-            
-          }
-          return (buff.size ());
         }
+
+        if (!buff.empty ())
+        {
+          root_node_->m_tree_->incrementPointsInLOD (this->depth_, buff.size ());
+          payload_->insertRange (buff.data (), buff.size ());
+//          payload_->insertRange ( buff );
+
+        }
+        return (buff.size ());
       }
-      else
+
+      if (this->hasUnloadedChildren ())
       {
-        if (this->hasUnloadedChildren ())
-        {
-          loadChildren (false);
-        }
-
-        std::vector < std::vector<const PointT*> > c;
-        c.resize (8);
-        for (size_t i = 0; i < 8; i++)
-        {
-          c[i].reserve (p.size () / 8);
-        }
-
-        const size_t len = p.size ();
-        for (size_t i = 0; i < len; i++)
-        {
-          //const PointT& pt = p[i];
-          if (!skip_bb_check)
-          {
-            if (!this->pointInBoundingBox (*p[i]))
-            {
-              //	std::cerr << "failed to place point!!!" << std::endl;
-              continue;
-            }
-          }
-
-          uint8_t box = 00;
-          Eigen::Vector3d mid_xyz = node_metadata_->getVoxelCenter ();
-          //hash each coordinate to the appropriate octant
-          box = static_cast<uint8_t> (((p[i]->z >= mid_xyz[2]) << 2) | ((p[i]->y >= mid_xyz[1]) << 1) | ((p[i]->x >= mid_xyz[0] )));
-          //3 bit, 8 octants
-          c[box].push_back (p[i]);
-        }
-        
-        boost::uint64_t points_added = 0;
-        for (size_t i = 0; i < 8; i++)
-        {
-          if (c[i].empty ())
-            continue;
-          if (!children_[i])
-            createChild (i);
-          points_added += children_[i]->addDataToLeaf (c[i], true);
-          c[i].clear ();
-        }
-        return (points_added);
+        loadChildren (false);
       }
-      // std::cerr << "failed to place point!!!" << std::endl;
-      return (0);
+
+      std::vector < std::vector<const PointT*> > c;
+      c.resize (8);
+      for (size_t i = 0; i < 8; i++)
+      {
+        c[i].reserve (p.size () / 8);
+      }
+
+      const size_t len = p.size ();
+      for (size_t i = 0; i < len; i++)
+      {
+        //const PointT& pt = p[i];
+        if (!skip_bb_check)
+        {
+          if (!this->pointInBoundingBox (*p[i]))
+          {
+            // std::cerr << "failed to place point!!!" << std::endl;
+            continue;
+          }
+        }
+
+        uint8_t box = 00;
+        Eigen::Vector3d mid_xyz = node_metadata_->getVoxelCenter ();
+        //hash each coordinate to the appropriate octant
+        box = static_cast<uint8_t> (((p[i]->z >= mid_xyz[2]) << 2) | ((p[i]->y >= mid_xyz[1]) << 1) | ((p[i]->x >= mid_xyz[0] )));
+        //3 bit, 8 octants
+        c[box].push_back (p[i]);
+      }
+
+      boost::uint64_t points_added = 0;
+      for (size_t i = 0; i < 8; i++)
+      {
+        if (c[i].empty ())
+          continue;
+        if (!children_[i])
+          createChild (i);
+        points_added += children_[i]->addDataToLeaf (c[i], true);
+        c[i].clear ();
+      }
+      return (points_added);
     }
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -635,27 +626,23 @@ namespace pcl
       }
 
       // Add points found within the current node's bounding box
-      else
-      {
-        AlignedPointTVector buff;
-        const size_t len = p.size ();
+      AlignedPointTVector buff;
+      const size_t len = p.size ();
 
-        for (size_t i = 0; i < len; i++)
+      for (size_t i = 0; i < len; i++)
+      {
+        if (pointInBoundingBox (p[i]))
         {
-          if (pointInBoundingBox (p[i]))
-          {
-            buff.push_back (p[i]);
-          }
+          buff.push_back (p[i]);
         }
-        
-        if (!buff.empty ())
-        {
-          root_node_->m_tree_->incrementPointsInLOD (this->depth_, buff.size ());
-          payload_->insertRange ( buff );
-          
-        }
-        return (buff.size ());
       }
+
+      if (!buff.empty ())
+      {
+        root_node_->m_tree_->incrementPointsInLOD (this->depth_, buff.size ());
+        payload_->insertRange ( buff );
+      }
+      return (buff.size ());
     }
     ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> boost::uint64_t
@@ -671,11 +658,8 @@ namespace pcl
 
         return (input_cloud->width*input_cloud->height);
       }
-      else
-      {
-        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBaseNode] Not implemented\n");
-        return (0);
-      }
+      PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBaseNode] Not implemented\n");
+      return (0);
     }
 
 
@@ -1452,55 +1436,50 @@ namespace pcl
             PCL_DEBUG ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Points in dst_blob: %ul\n", __FUNCTION__, dst_blob->width*dst_blob->height );
             return;
           }
-          else
-          {
           //otherwise queried bounding box only partially intersects this
           //node's bounding box, so we have to check all the points in
           //this box for intersection with queried bounding box
 
-            
-//            PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Partial extraction of points in bounding box. Desired: %.2lf %.2lf %2lf, %.2lf %.2lf %.2lf; This node BB: %.2lf %.2lf %.2lf, %.2lf %.2lf %.2lf\n", __FUNCTION__, min_bb[0], min_bb[1], min_bb[2], max_bb[0], max_bb[1], max_bb[2], min_[0], min_[1], min_[2], max_[0], max_[1], max_[2] );
-            
-            //put the ros message into a pointxyz point cloud (just to get the indices by using getPointsInBox)
-            typename pcl::PointCloud<PointT>::Ptr tmp_cloud ( new pcl::PointCloud<PointT> () );
-            pcl::fromPCLPointCloud2 ( *tmp_blob, *tmp_cloud );
-            assert (tmp_blob->width*tmp_blob->height == tmp_cloud->width*tmp_cloud->height );
+//          PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Partial extraction of points in bounding box. Desired: %.2lf %.2lf %2lf, %.2lf %.2lf %.2lf; This node BB: %.2lf %.2lf %.2lf, %.2lf %.2lf %.2lf\n", __FUNCTION__, min_bb[0], min_bb[1], min_bb[2], max_bb[0], max_bb[1], max_bb[2], min_[0], min_[1], min_[2], max_[0], max_[1], max_[2] );
+          //put the ros message into a pointxyz point cloud (just to get the indices by using getPointsInBox)
+          typename pcl::PointCloud<PointT>::Ptr tmp_cloud ( new pcl::PointCloud<PointT> () );
+          pcl::fromPCLPointCloud2 ( *tmp_blob, *tmp_cloud );
+          assert (tmp_blob->width*tmp_blob->height == tmp_cloud->width*tmp_cloud->height );
 
-            Eigen::Vector4f min_pt ( static_cast<float> ( min_bb[0] ), static_cast<float> ( min_bb[1] ), static_cast<float> ( min_bb[2] ), 1.0f);
-            Eigen::Vector4f max_pt ( static_cast<float> ( max_bb[0] ), static_cast<float> ( max_bb[1] ) , static_cast<float>( max_bb[2] ), 1.0f );
-                
-            std::vector<int> indices;
+          Eigen::Vector4f min_pt ( static_cast<float> ( min_bb[0] ), static_cast<float> ( min_bb[1] ), static_cast<float> ( min_bb[2] ), 1.0f);
+          Eigen::Vector4f max_pt ( static_cast<float> ( max_bb[0] ), static_cast<float> ( max_bb[1] ) , static_cast<float>( max_bb[2] ), 1.0f );
 
-            pcl::getPointsInBox ( *tmp_cloud, min_pt, max_pt, indices );
-            PCL_DEBUG ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Points in box: %d\n", __FUNCTION__, indices.size () );
-            PCL_DEBUG ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Points remaining: %d\n", __FUNCTION__, tmp_cloud->width*tmp_cloud->height - indices.size () );
+          std::vector<int> indices;
+
+          pcl::getPointsInBox ( *tmp_cloud, min_pt, max_pt, indices );
+          PCL_DEBUG ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Points in box: %d\n", __FUNCTION__, indices.size () );
+          PCL_DEBUG ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Points remaining: %d\n", __FUNCTION__, tmp_cloud->width*tmp_cloud->height - indices.size () );
 
             if ( !indices.empty () )
+          {
+            if( dst_blob->width*dst_blob->height > 0 )
             {
-              if( dst_blob->width*dst_blob->height > 0 )
-              {
-                //need a new tmp destination with extracted points within BB
-                pcl::PCLPointCloud2::Ptr tmp_blob_within_bb (new pcl::PCLPointCloud2 ());
-                
-                //copy just the points marked in indices
-                pcl::copyPointCloud ( *tmp_blob, indices, *tmp_blob_within_bb );
-                assert ( tmp_blob_within_bb->width*tmp_blob_within_bb->height == indices.size () );
-                assert ( tmp_blob->fields.size () == tmp_blob_within_bb->fields.size () );
-                //concatenate those points into the returned dst_blob
-                PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Concatenating point cloud in place\n", __FUNCTION__);
-                boost::uint64_t orig_points_in_destination = dst_blob->width*dst_blob->height;
-                (void)orig_points_in_destination;
-                int res = pcl::concatenatePointCloud (*dst_blob, *tmp_blob_within_bb, *dst_blob);
-                (void)res;
-                assert (res == 1);
-                assert (dst_blob->width*dst_blob->height == indices.size () + orig_points_in_destination);
+              //need a new tmp destination with extracted points within BB
+              pcl::PCLPointCloud2::Ptr tmp_blob_within_bb (new pcl::PCLPointCloud2 ());
 
-              }
-              else
-              {
-                pcl::copyPointCloud ( *tmp_blob, indices, *dst_blob );
-                assert ( dst_blob->width*dst_blob->height == indices.size () );
-              }
+              //copy just the points marked in indices
+              pcl::copyPointCloud ( *tmp_blob, indices, *tmp_blob_within_bb );
+              assert ( tmp_blob_within_bb->width*tmp_blob_within_bb->height == indices.size () );
+              assert ( tmp_blob->fields.size () == tmp_blob_within_bb->fields.size () );
+              //concatenate those points into the returned dst_blob
+              PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Concatenating point cloud in place\n", __FUNCTION__);
+              boost::uint64_t orig_points_in_destination = dst_blob->width*dst_blob->height;
+              (void)orig_points_in_destination;
+              int res = pcl::concatenatePointCloud (*dst_blob, *tmp_blob_within_bb, *dst_blob);
+              (void)res;
+              assert (res == 1);
+              assert (dst_blob->width*dst_blob->height == indices.size () + orig_points_in_destination);
+
+            }
+            else
+            {
+              pcl::copyPointCloud ( *tmp_blob, indices, *dst_blob );
+              assert ( dst_blob->width*dst_blob->height == indices.size () );
             }
           }
         }
@@ -1555,27 +1534,24 @@ namespace pcl
           //otherwise queried bounding box only partially intersects this
           //node's bounding box, so we have to check all the points in
           //this box for intersection with queried bounding box
-          else
+          //read _all_ the points in from the disk container
+          AlignedPointTVector payload_cache;
+          payload_->readRange (0, payload_->size (), payload_cache);
+
+          uint64_t len = payload_->size ();
+          //iterate through each of them
+          for (uint64_t i = 0; i < len; i++)
           {
-            //read _all_ the points in from the disk container
-            AlignedPointTVector payload_cache;
-            payload_->readRange (0, payload_->size (), payload_cache);
-        
-            uint64_t len = payload_->size ();
-            //iterate through each of them
-            for (uint64_t i = 0; i < len; i++)
+            const PointT& p = payload_cache[i];
+            //if it falls within this bounding box
+            if (pointInBoundingBox (min_bb, max_bb, p))
             {
-              const PointT& p = payload_cache[i];
-              //if it falls within this bounding box
-              if (pointInBoundingBox (min_bb, max_bb, p))
-              {
-                //store it in the list
-                v.push_back (p);
-              }
-              else
-              {
-                PCL_DEBUG ("[pcl::outofcore::queryBBIncludes] Point %.2lf %.2lf %.2lf not in bounding box %.2lf %.2lf %.2lf", p.x, p.y, p.z, min_bb[0], min_bb[1], min_bb[2], max_bb[0], max_bb[1], max_bb[2]);
-              }
+              //store it in the list
+              v.push_back (p);
+            }
+            else
+            {
+              PCL_DEBUG ("[pcl::outofcore::queryBBIncludes] Point %.2lf %.2lf %.2lf not in bounding box %.2lf %.2lf %.2lf", p.x, p.y, p.z, min_bb[0], min_bb[1], min_bb[2], max_bb[0], max_bb[1], max_bb[2]);
             }
           }
         }
@@ -1690,31 +1666,28 @@ namespace pcl
             return;
           }
           //otherwise the queried bounding box only partially intersects with this node's bounding box
-          else
+          //brute force selection of all valid points
+          AlignedPointTVector payload_cache_within_region;
           {
-            //brute force selection of all valid points
-            AlignedPointTVector payload_cache_within_region;
+            AlignedPointTVector payload_cache;
+            payload_->readRange (0, payload_->size (), payload_cache);
+            for (size_t i = 0; i < payload_->size (); i++)
             {
-              AlignedPointTVector payload_cache;
-              payload_->readRange (0, payload_->size (), payload_cache);
-              for (size_t i = 0; i < payload_->size (); i++)
+              const PointT& p = payload_cache[i];
+              if (pointInBoundingBox (min_bb, max_bb, p))
               {
-                const PointT& p = payload_cache[i];
-                if (pointInBoundingBox (min_bb, max_bb, p))
-                {
-                  payload_cache_within_region.push_back (p);
-                }
+                payload_cache_within_region.push_back (p);
               }
-            }//force the payload cache to deconstruct here
-
-            //use STL random_shuffle and push back a random selection of the points onto our list
-            std::random_shuffle (payload_cache_within_region.begin (), payload_cache_within_region.end ());
-            size_t numpick = static_cast<size_t> (percent * static_cast<double> (payload_cache_within_region.size ()));;
-
-            for (size_t i = 0; i < numpick; i++)
-            {
-              dst.push_back (payload_cache_within_region[i]);
             }
+          }//force the payload cache to deconstruct here
+
+          //use STL random_shuffle and push back a random selection of the points onto our list
+          std::random_shuffle (payload_cache_within_region.begin (), payload_cache_within_region.end ());
+          size_t numpick = static_cast<size_t> (percent * static_cast<double> (payload_cache_within_region.size ()));;
+
+          for (size_t i = 0; i < numpick; i++)
+          {
+            dst.push_back (payload_cache_within_region[i]);
           }
         }
       }
