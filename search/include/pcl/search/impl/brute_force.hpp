@@ -63,8 +63,7 @@ pcl::search::BruteForce<PointT>::nearestKSearch (
 
   if (input_->is_dense)
     return denseKSearch (point, k, k_indices, k_distances);
-  else
-    return sparseKSearch (point, k, k_indices, k_distances);
+  return sparseKSearch (point, k, k_indices, k_distances);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -345,8 +344,7 @@ pcl::search::BruteForce<PointT>::radiusSearch (
 
   if (input_->is_dense)
     return denseRadiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
-  else
-    return sparseRadiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
+  return sparseRadiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
 }
 
 #define PCL_INSTANTIATE_BruteForce(T) template class PCL_EXPORTS pcl::search::BruteForce<T>;

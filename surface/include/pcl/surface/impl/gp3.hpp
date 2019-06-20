@@ -239,37 +239,34 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         while ((left < nnn_) && ((!angles_[left].visible) || (state_[nnIdx[left]] > FREE))) left++;
         if (left >= nnn_)
           break;
-        else
+        int right = left+1;
+        do
         {
-          int right = left+1;
-          do
+          while ((right < nnn_) && ((!angles_[right].visible) || (state_[nnIdx[right]] > FREE))) right++;
+          if (right >= nnn_)
+            break;
+          if ((coords_[nnIdx[left]] - coords_[nnIdx[right]]).squaredNorm () > sqr_max_edge)
+            right++;
+          else
           {
-            while ((right < nnn_) && ((!angles_[right].visible) || (state_[nnIdx[right]] > FREE))) right++;
-            if (right >= nnn_)
-              break;
-            else if ((coords_[nnIdx[left]] - coords_[nnIdx[right]]).squaredNorm () > sqr_max_edge)
-              right++;
-            else
-            {
-              addFringePoint (nnIdx[right], R_);
-              addFringePoint (nnIdx[left], nnIdx[right]);
-              addFringePoint (R_, nnIdx[left]);
-              state_[R_] = state_[nnIdx[left]] = state_[nnIdx[right]] = FRINGE;
-              ffn_[R_] = nnIdx[left];
-              sfn_[R_] = nnIdx[right];
-              ffn_[nnIdx[left]] = nnIdx[right];
-              sfn_[nnIdx[left]] = R_;
-              ffn_[nnIdx[right]] = R_;
-              sfn_[nnIdx[right]] = nnIdx[left];
-              addTriangle (R_, nnIdx[left], nnIdx[right], polygons);
-              nr_parts++;
-              not_found = false;
-              break;
-            }
+            addFringePoint (nnIdx[right], R_);
+            addFringePoint (nnIdx[left], nnIdx[right]);
+            addFringePoint (R_, nnIdx[left]);
+            state_[R_] = state_[nnIdx[left]] = state_[nnIdx[right]] = FRINGE;
+            ffn_[R_] = nnIdx[left];
+            sfn_[R_] = nnIdx[right];
+            ffn_[nnIdx[left]] = nnIdx[right];
+            sfn_[nnIdx[left]] = R_;
+            ffn_[nnIdx[right]] = R_;
+            sfn_[nnIdx[right]] = nnIdx[left];
+            addTriangle (R_, nnIdx[left], nnIdx[right], polygons);
+            nr_parts++;
+            not_found = false;
+            break;
           }
-          while (true);
-          left++;
         }
+        while (true);
+        left++;
       }
       while (not_found);
     }

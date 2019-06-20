@@ -226,7 +226,7 @@ namespace pcl
               queue.push (Entry (index, squared_distance));
               return queue.size () == k;
             }
-            else if (queue.top ().distance > squared_distance)
+            if (queue.top ().distance > squared_distance)
             {
               queue.pop ();
               queue.push (Entry (index, squared_distance));

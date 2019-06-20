@@ -606,17 +606,12 @@ FittingCurve2dPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vect
       return current;
 
     }
-    else
-    {
-      current += delta;
+    current += delta;
 
-      if (current < minU)
-        current = maxU - (minU - current);
-      else if (current > maxU)
-        current = minU + (current - maxU);
-
-    }
-
+    if (current < minU)
+      current = maxU - (minU - current);
+    else if (current > maxU)
+      current = minU + (current - maxU);
   }
 
   error = r.norm ();
@@ -832,8 +827,7 @@ FittingCurve2dPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const
 
   if (d_shortest_hint < d_shortest_elem)
     return hint;
-  else
-    return param;
+  return param;
 }
 
 double

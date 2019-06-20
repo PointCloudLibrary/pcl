@@ -203,8 +203,7 @@ pcl::GridProjection<PointNT>::createSurfaceForCell (const Eigen::Vector3i &index
     if (cell_hash_map_.find (index_1d) == cell_hash_map_.end () ||
         occupied_cell_list_[index_1d] == 0)
       return;
-    else
-      vector_at_pts[i] = cell_hash_map_.at (index_1d).vect_at_grid_pt;
+    vector_at_pts[i] = cell_hash_map_.at (index_1d).vect_at_grid_pt;
   }
 
   // Go through the 3 edges, test whether they are intersected by the surface
@@ -525,32 +524,29 @@ pcl::GridProjection<PointNT>::findIntersection (int level,
     intersection = start_pt;
     return;
   }
-  else
+  vec.normalize ();
+  if (vec.dot (vect_at_end_pts[0]) < 0)
   {
-    vec.normalize ();
-    if (vec.dot (vect_at_end_pts[0]) < 0)
-    {
-      Eigen::Vector4f new_start_pt = end_pts[0] + (start_pt - end_pts[0]) * 0.5;
-      new_end_pts[0] = end_pts[0];
-      new_end_pts[1] = start_pt;
-      new_vect_at_end_pts[0] = vect_at_end_pts[0];
-      new_vect_at_end_pts[1] = vec;
-      findIntersection (level + 1, new_end_pts, new_vect_at_end_pts, new_start_pt, pt_union_indices, intersection);
-      return;
-    }
-    if (vec.dot (vect_at_end_pts[1]) < 0)
-    {
-      Eigen::Vector4f new_start_pt = start_pt + (end_pts[1] - start_pt) * 0.5;
-      new_end_pts[0] = start_pt;
-      new_end_pts[1] = end_pts[1];
-      new_vect_at_end_pts[0] = vec;
-      new_vect_at_end_pts[1] = vect_at_end_pts[1];
-      findIntersection (level + 1, new_end_pts, new_vect_at_end_pts, new_start_pt, pt_union_indices, intersection);
-      return;
-    }
-    intersection = start_pt;
+    Eigen::Vector4f new_start_pt = end_pts[0] + (start_pt - end_pts[0]) * 0.5;
+    new_end_pts[0] = end_pts[0];
+    new_end_pts[1] = start_pt;
+    new_vect_at_end_pts[0] = vect_at_end_pts[0];
+    new_vect_at_end_pts[1] = vec;
+    findIntersection (level + 1, new_end_pts, new_vect_at_end_pts, new_start_pt, pt_union_indices, intersection);
     return;
   }
+  if (vec.dot (vect_at_end_pts[1]) < 0)
+  {
+    Eigen::Vector4f new_start_pt = start_pt + (end_pts[1] - start_pt) * 0.5;
+    new_end_pts[0] = start_pt;
+    new_end_pts[1] = end_pts[1];
+    new_vect_at_end_pts[0] = vec;
+    new_vect_at_end_pts[1] = vect_at_end_pts[1];
+    findIntersection (level + 1, new_end_pts, new_vect_at_end_pts, new_start_pt, pt_union_indices, intersection);
+    return;
+  }
+  intersection = start_pt;
+  return;
 }
 
 
