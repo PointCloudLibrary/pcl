@@ -581,18 +581,11 @@ namespace pcl
           {
             if (x < z)
               return a;
-            else
-              return c;
+            return c;
           }
-          else
-          {
-            if (y < z)
-              return b;
-            else
-              return c;
-          }
-
-          return 0;
+          if (y < z)
+            return b;
+          return c;
         }
 
       };

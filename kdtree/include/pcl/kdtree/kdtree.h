@@ -205,11 +205,8 @@ namespace pcl
           assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in nearestKSearch!");
           return (nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
         }
-        else
-        {
-          assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in nearestKSearch!");
-          return (nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_sqr_distances));
-        }
+        assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in nearestKSearch!");
+        return (nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_sqr_distances));
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
@@ -299,11 +296,8 @@ namespace pcl
           assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in radiusSearch!");
           return (radiusSearch (input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
         }
-        else
-        {
-          assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in radiusSearch!");
-          return (radiusSearch (input_->points[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
-        }
+        assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in radiusSearch!");
+        return (radiusSearch (input_->points[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
       }
 
       /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.

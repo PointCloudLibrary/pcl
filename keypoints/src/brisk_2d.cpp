@@ -254,23 +254,22 @@ pcl::keypoints::brisk::ScaleSpace::getScoreAbove (
  
     return (score);
   }
-  else
-  { // intra
-    const int eighths_x = 6 * x_layer - 1;
-    const int x_above = eighths_x / 8;
-    const int eighths_y = 6 * y_layer - 1;
-    const int y_above = eighths_y / 8;
-    const int r_x = (eighths_x % 8);
-    const int r_x_1 = 8 - r_x;
-    const int r_y = (eighths_y % 8);
-    const int r_y_1 = 8 - r_y;
-    uint8_t score = static_cast<uint8_t> (
-                    0xFF & ((r_x_1 * r_y_1 * l.getAgastScore (x_above,     y_above,     1) +
-                             r_x   * r_y_1  * l.getAgastScore (x_above + 1, y_above,     1) +
-                             r_x_1 * r_y    * l.getAgastScore (x_above ,    y_above + 1, 1) +
-                             r_x   * r_y    * l.getAgastScore (x_above + 1, y_above + 1, 1) + 32) / 64));
-    return (score);
-  }
+
+  // intra
+  const int eighths_x = 6 * x_layer - 1;
+  const int x_above = eighths_x / 8;
+  const int eighths_y = 6 * y_layer - 1;
+  const int y_above = eighths_y / 8;
+  const int r_x = (eighths_x % 8);
+  const int r_x_1 = 8 - r_x;
+  const int r_y = (eighths_y % 8);
+  const int r_y_1 = 8 - r_y;
+  uint8_t score = static_cast<uint8_t> (
+                  0xFF & ((r_x_1 * r_y_1 * l.getAgastScore (x_above,     y_above,     1) +
+                           r_x   * r_y_1  * l.getAgastScore (x_above + 1, y_above,     1) +
+                           r_x_1 * r_y    * l.getAgastScore (x_above ,    y_above + 1, 1) +
+                           r_x   * r_y    * l.getAgastScore (x_above + 1, y_above + 1, 1) + 32) / 64));
+  return (score);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1277,12 +1276,9 @@ pcl::keypoints::brisk::ScaleSpace::subpixel2D (
       delta_y = delta_x1;
       return (max1);
     }
-    else
-    {
-      delta_x = delta_x2;
-      delta_y = delta_x2;
-      return (max2);
-    }
+    delta_x = delta_x2;
+    delta_y = delta_x2;
+    return (max2);
   }
 
   // this is the case of the maximum inside the boundaries:
@@ -1431,17 +1427,15 @@ pcl::keypoints::brisk::Layer::getAgastScore (float xf, float yf, uint8_t thresho
 
     return (static_cast<uint8_t> (value));
   }
-  else
-  {
-    // this means we overlap area smoothing
-    const float halfscale = scale / 2.0f;
-    // get the scores first:
-    for (int x = int (xf - halfscale); x <= int (xf + halfscale + 1.0f); x++)
-      for (int y = int (yf - halfscale); y <= int (yf + halfscale + 1.0f); y++)
-        getAgastScore (x, y, threshold);
-    // get the smoothed value
-    return (getValue (scores_, img_width_, img_height_, xf, yf, scale));
-  }
+
+  // this means we overlap area smoothing
+  const float halfscale = scale / 2.0f;
+  // get the scores first:
+  for (int x = int (xf - halfscale); x <= int (xf + halfscale + 1.0f); x++)
+    for (int y = int (yf - halfscale); y <= int (yf + halfscale + 1.0f); y++)
+      getAgastScore (x, y, threshold);
+  // get the smoothed value
+  return (getValue (scores_, img_width_, img_height_, xf, yf, scale));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
