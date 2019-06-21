@@ -180,8 +180,6 @@ namespace pcl
           }
 
           ExitMainLoopTimerCallback ();
-          ExitMainLoopTimerCallback (const ExitMainLoopTimerCallback& src);
-          ExitMainLoopTimerCallback& operator = (const ExitMainLoopTimerCallback& src);
 
           void 
           Execute (vtkObject*, unsigned long event_id, void* call_data) override;
@@ -198,8 +196,6 @@ namespace pcl
           }
 
           ExitCallback ();
-          ExitCallback (const ExitCallback &src);
-          ExitCallback& operator = (const ExitCallback &src);
  
           void 
           Execute (vtkObject*, unsigned long event_id, void*) override;

@@ -21,10 +21,6 @@ pcl::cloud_composer::ToolBoxModel::ToolBoxModel (const ToolBoxModel&)
 {
 }
 
-pcl::cloud_composer::ToolBoxModel::~ToolBoxModel ()
-{
-}
-
 void
 pcl::cloud_composer::ToolBoxModel::addTool (ToolFactory* tool_factory)
 {

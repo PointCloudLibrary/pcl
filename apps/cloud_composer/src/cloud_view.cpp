@@ -48,11 +48,6 @@ pcl::cloud_composer::CloudView::CloudView (const CloudView& to_copy)
 {
 }
 
-
-pcl::cloud_composer::CloudView::~CloudView ()
-{
-}
-
 void
 pcl::cloud_composer::CloudView::setModel (ProjectModel* new_model)
 {

@@ -117,8 +117,6 @@ Cloud::Cloud (const Cloud &copy)
   std::copy(copy.highlight_color_, copy.highlight_color_+RGB, highlight_color_);
 }
 
-Cloud::~Cloud () {}
-
 Cloud&
 Cloud::operator= (const Cloud &cloud)
 {

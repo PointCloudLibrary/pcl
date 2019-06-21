@@ -128,6 +128,7 @@ namespace pcl
         friend class AbstractItem;
 
         MainWindow();
+        MainWindow(const MainWindow &) = delete;
         MainWindow& operator=(const MainWindow &) = delete;
         ~MainWindow();
 

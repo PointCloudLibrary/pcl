@@ -70,7 +70,6 @@ namespace pcl
     public:
       ToolBoxModel (QTreeView* tool_view = nullptr, QTreeView* parameter_view = nullptr, QObject *parent = nullptr);
       ToolBoxModel (const ToolBoxModel& to_copy);
-      ~ToolBoxModel ();
       
       void
       addTool (ToolFactory* tool_factory);
