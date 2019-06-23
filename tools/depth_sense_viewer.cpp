@@ -140,7 +140,10 @@ class DepthSenseViewer
     void
     run ()
     {
-      std::function<void (const typename PointCloudT::ConstPtr&)> f = boost::bind (&DepthSenseViewer::cloudCallback, this, _1);
+      std::function<void (const typename PointCloudT::ConstPtr&)> f = [this] (const typename PointCloudT::ConstPtr& cloud)
+      {
+        cloudCallback (cloud);
+      };
       connection_ = grabber_.registerCallback (f);
       grabber_.start ();
       while (!viewer_.wasStopped ())

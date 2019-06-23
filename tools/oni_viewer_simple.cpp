@@ -122,7 +122,7 @@ public:
   {
     //pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id_, pcl::OpenNIGrabber::OpenNI_QQVGA_30Hz, pcl::OpenNIGrabber::OpenNI_VGA_30Hz);
 
-    std::function<void (const CloudConstPtr&) > f = boost::bind (&SimpleONIViewer::cloud_cb_, this, _1);
+    std::function<void (const CloudConstPtr&) > f = [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
 
     boost::signals2::connection c = grabber_.registerCallback (f);
 
@@ -192,7 +192,7 @@ main(int argc, char ** argv)
   {
     grabber = new  pcl::ONIGrabber(arg, true, false);
     trigger.setInterval (1.0 / static_cast<double> (frame_rate));
-    trigger.registerCallback (boost::bind(&pcl::ONIGrabber::start, grabber));
+    trigger.registerCallback ([=] { grabber->start (); });
     trigger.start();
   }
   if (grabber->providesCallback<pcl::ONIGrabber::sig_cb_openni_point_cloud_rgb > () && !pcl::console::find_switch (argc, argv, "-xyz"))

@@ -211,7 +211,10 @@ main (int argc, char** argv)
   }
 
   EventHelper h;
-  std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
+  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = [&] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+  {
+    h.cloud_cb (cloud);
+  };
   boost::signals2::connection c1 = grabber->registerCallback (f);
 
   std::string mouse_msg_3D ("Mouse coordinates in PCL Visualizer");
