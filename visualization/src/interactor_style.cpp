@@ -699,8 +699,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         // Get the new color
         PointCloudColorHandler<pcl::PCLPointCloud2>::ConstPtr color_handler = act.color_handlers[index];
 
-        vtkSmartPointer<vtkDataArray> scalars;
-        color_handler->getColor (scalars);
+        auto scalars = color_handler->getColor ();
         double minmax[2];
         scalars->GetRange (minmax);
         // Update the data
