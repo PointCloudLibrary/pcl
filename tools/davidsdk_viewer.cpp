@@ -93,7 +93,7 @@ main (int argc,
   //davidsdk_ptr->setFileFormatToPLY();
   std::cout << "Using " << davidsdk_ptr->getFileFormat () << " file format" << std::endl;
 
-  std::function<void (const PointCloudXYZ::Ptr&)> f = [=] (const PointCloudXYZ::Ptr& cloud) { grabberCallback (cloud); };
+  std::function<void (const PointCloudXYZ::Ptr&)> f = [] (const PointCloudXYZ::Ptr& cloud) { grabberCallback (cloud); };
   davidsdk_ptr->registerCallback (f);
   davidsdk_ptr->start ();
 
