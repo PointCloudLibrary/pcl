@@ -830,10 +830,7 @@ pcl::io::OpenNI2Grabber::mapMode2XnMode (int mode, OpenNI2VideoMode &xnmode) con
     xnmode = it->second;
     return (true);
   }
-  else
-  {
-    return (false);
-  }
+  return (false);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

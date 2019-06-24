@@ -465,16 +465,13 @@ namespace pcl
           {
             if (mode1.getResolutionX () < mode2.getResolutionX ())
               return true;
-            else if (mode1.getResolutionX () > mode2.getResolutionX ())
+            if (mode1.getResolutionX () > mode2.getResolutionX ())
               return false;
-            else if (mode1.getResolutionY () < mode2.getResolutionY ())
+            if (mode1.getResolutionY () < mode2.getResolutionY ())
               return true;
-            else if (mode1.getResolutionY () > mode2.getResolutionY ())
+            if (mode1.getResolutionY () > mode2.getResolutionY ())
               return false;
-            else if (mode1.getFps () < mode2.getFps () )
-              return true;
-            else
-              return false;
+            return (mode1.getFps () < mode2.getFps ());
           }
         };
 

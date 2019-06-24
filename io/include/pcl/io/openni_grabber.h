@@ -449,16 +449,13 @@ namespace pcl
         {
           if (mode1.nXRes < mode2.nXRes)
             return true;
-          else if (mode1.nXRes > mode2.nXRes)
+          if (mode1.nXRes > mode2.nXRes)
             return false;
-          else if (mode1.nYRes < mode2.nYRes)
+          if (mode1.nYRes < mode2.nYRes)
             return true;
-          else if (mode1.nYRes > mode2.nYRes)
+          if (mode1.nYRes > mode2.nYRes)
             return false;
-          else if (mode1.nFPS < mode2.nFPS)
-            return true;
-          else
-            return false;
+          return (mode1.nFPS < mode2.nFPS);
         }
       } ;
       std::map<int, XnMapOutputMode> config2xn_map_;

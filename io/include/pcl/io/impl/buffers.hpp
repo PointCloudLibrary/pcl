@@ -250,8 +250,7 @@ pcl::io::AverageBuffer<T>::operator[] (size_t idx) const
   assert (idx < size_);
   if (data_invalid_count_[idx] == window_size_)
     return (buffer_traits<T>::invalid ());
-  else
-    return (data_sum_[idx] / static_cast<T> (window_size_ - data_invalid_count_[idx]));
+  return (data_sum_[idx] / static_cast<T> (window_size_ - data_invalid_count_[idx]));
 }
 
 template <typename T> void

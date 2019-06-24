@@ -583,13 +583,10 @@ pcl::io::openni2::OpenNI2Device::findCompatibleIRMode (const OpenNI2VideoMode& r
     actual_mode = requested_mode;
     return (true);
   }
-  else
-  {
-    // Find a resize-compatable mode
-    std::vector<OpenNI2VideoMode> supportedModes = getSupportedIRVideoModes ();
-    bool found = findCompatibleVideoMode (supportedModes, requested_mode, actual_mode);
-    return (found);
-  }
+  // Find a resize-compatable mode
+  std::vector<OpenNI2VideoMode> supportedModes = getSupportedIRVideoModes ();
+  bool found = findCompatibleVideoMode (supportedModes, requested_mode, actual_mode);
+  return (found);
 }
 
 bool
@@ -600,13 +597,10 @@ pcl::io::openni2::OpenNI2Device::findCompatibleColorMode (const OpenNI2VideoMode
     actual_mode = requested_mode;
     return (true);
   }
-  else
-  {
-    // Find a resize-compatable mode
-    std::vector<OpenNI2VideoMode> supportedModes = getSupportedColorVideoModes ();
-    bool found = findCompatibleVideoMode (supportedModes, requested_mode, actual_mode);
-    return (found);
-  }
+  // Find a resize-compatable mode
+  std::vector<OpenNI2VideoMode> supportedModes = getSupportedColorVideoModes ();
+  bool found = findCompatibleVideoMode (supportedModes, requested_mode, actual_mode);
+  return (found);
 }
 
 bool
@@ -617,13 +611,10 @@ pcl::io::openni2::OpenNI2Device::findCompatibleDepthMode (const OpenNI2VideoMode
     actual_mode = requested_mode;
     return (true);
   }
-  else
-  {
-    // Find a resize-compatable mode
-    std::vector<OpenNI2VideoMode> supportedModes = getSupportedDepthVideoModes ();
-    bool found = findCompatibleVideoMode (supportedModes, requested_mode, actual_mode);
-    return (found);
-  }
+  // Find a resize-compatable mode
+  std::vector<OpenNI2VideoMode> supportedModes = getSupportedDepthVideoModes ();
+  bool found = findCompatibleVideoMode (supportedModes, requested_mode, actual_mode);
+  return (found);
 }
 
 // Generic support method for the above findCompatable...Mode calls above

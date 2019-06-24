@@ -633,8 +633,7 @@ namespace pcl
       {
         if (binary)
           return (this->writeBinary (file_name, cloud, origin, orientation, true));
-        else
-          return (this->writeASCII (file_name, cloud, origin, orientation, 8, true));
+        return (this->writeASCII (file_name, cloud, origin, orientation, 8, true));
       }
 
       /** \brief Save point cloud data to a PLY file containing n-D points
@@ -656,8 +655,7 @@ namespace pcl
       {
         if (binary)
           return (this->writeBinary (file_name, cloud, origin, orientation, use_camera));
-        else
-          return (this->writeASCII (file_name, cloud, origin, orientation, 8, use_camera));
+        return (this->writeASCII (file_name, cloud, origin, orientation, 8, use_camera));
       }
 
       /** \brief Save point cloud data to a PLY file containing n-D points

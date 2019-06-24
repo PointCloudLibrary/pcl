@@ -165,16 +165,14 @@ ply_to_obj_converter::element_definition_callback (const std::string& element_na
       boost::bind (&ply_to_obj_converter::vertex_end, this)
     );
   }
-  else if (element_name == "face") 
+  if (element_name == "face") 
   {
     return boost::tuple<std::function<void ()>, std::function<void ()> > (
       boost::bind (&ply_to_obj_converter::face_begin, this),
       boost::bind (&ply_to_obj_converter::face_end, this)
     );
   }
-  else {
-    return {};
-  }
+  return {};
 }
 
 template <> std::function<void (pcl::io::ply::float32)> 
@@ -184,19 +182,14 @@ ply_to_obj_converter::scalar_property_definition_callback (const std::string& el
     if (property_name == "x") {
       return boost::bind (&ply_to_obj_converter::vertex_x, this, _1);
     }
-    else if (property_name == "y") {
+    if (property_name == "y") {
       return boost::bind (&ply_to_obj_converter::vertex_y, this, _1);
     }
-    else if (property_name == "z") {
+    if (property_name == "z") {
       return boost::bind (&ply_to_obj_converter::vertex_z, this, _1);
     }
-    else {
-      return {};
-    }
   }
-  else {
-    return {};
-  }
+  return {};
 }
 
 template <> boost::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > 
@@ -209,9 +202,7 @@ ply_to_obj_converter::list_property_definition_callback (const std::string& elem
       boost::bind (&ply_to_obj_converter::face_vertex_indices_end, this)
     );
   }
-  else {
-    return {};
-  }
+  return {};
 }
 
 void 
@@ -374,7 +365,7 @@ int main (int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else if ((short_opt == 'v') || (std::strcmp (long_opt, "version") == 0)) {
+    if ((short_opt == 'v') || (std::strcmp (long_opt, "version") == 0)) {
       std::cout << "ply2obj \n";
       std::cout << " Point Cloud Library (PCL) - www.pointclouds.org\n";
       std::cout << " Copyright (c) 2007-2012, Ares Lagae\n";
@@ -407,7 +398,7 @@ int main (int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else if ((short_opt == 'f') || (std::strcmp (long_opt, "flag") == 0)) {
+    if ((short_opt == 'f') || (std::strcmp (long_opt, "flag") == 0)) {
       if (strcmp (opt_arg, "triangulate") == 0) {
         ply_to_obj_converter_flags |= ply_to_obj_converter::triangulate;
       }

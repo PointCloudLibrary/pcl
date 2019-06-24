@@ -392,7 +392,7 @@ main (int argc, char** argv)
       printHelp (buff_size, argc, argv);
       return 0;
     }
-    else if (device_id == "-l")
+    if (device_id == "-l")
     {
       if (argc >= 3)
       {
