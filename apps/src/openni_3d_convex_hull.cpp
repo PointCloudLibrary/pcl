@@ -138,10 +138,10 @@ class OpenNI3DConvexHull
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      std::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNI3DConvexHull::cloud_cb, this, _1);
+      std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb (cloud); };
       boost::signals2::connection c = interface->registerCallback (f);
-     
-      viewer.runOnVisualizationThread (boost::bind(&OpenNI3DConvexHull::viz_cb, this, _1), "viz_cb");
+
+      viewer.runOnVisualizationThread ([this] (pcl::visualization::PCLVisualizer& viz) { viz_cb (viz); }, "viz_cb");
 
       interface->start ();
       

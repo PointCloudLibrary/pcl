@@ -73,7 +73,7 @@ class OpenNIPassthrough
     : viewer ("PCL OpenNI ColorFilter Viewer")
     , grabber_(grabber)
     {
-      std::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIPassthrough::cloud_cb_, this, _1);
+      std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
       boost::signals2::connection c = grabber_.registerCallback (f);
 
       std::vector<bool> lookup(1<<24, false);

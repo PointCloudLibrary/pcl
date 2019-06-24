@@ -99,7 +99,7 @@ class BRISKDemo
     void
     init ()
     {
-      std::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&BRISKDemo::cloud_callback, this, _1);
+      std::function<void (const CloudConstPtr&) > cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
       cloud_connection = grabber_.registerCallback (cloud_cb);
     }
 

@@ -159,10 +159,10 @@ class OpenNIIntegralImageNormalEstimation
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &)> f = boost::bind (&OpenNIIntegralImageNormalEstimation::cloud_cb, this, _1);
+      std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &)> f = [this] (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) { cloud_cb (cloud); };
       boost::signals2::connection c = interface->registerCallback (f);
-     
-      viewer.runOnVisualizationThread (boost::bind(&OpenNIIntegralImageNormalEstimation::viz_cb, this, _1), "viz_cb");
+
+      viewer.runOnVisualizationThread ([this] (pcl::visualization::PCLVisualizer& viz) { viz_cb (viz); }, "viz_cb");
 
       interface->start ();
       

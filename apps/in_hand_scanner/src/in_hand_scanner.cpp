@@ -106,7 +106,7 @@ pcl::ihs::InHandScanner::~InHandScanner ()
 void
 pcl::ihs::InHandScanner::startGrabber ()
 {
-  QtConcurrent::run (boost::bind (&pcl::ihs::InHandScanner::startGrabberImpl, this));
+  QtConcurrent::run ([this] { startGrabberImpl (); });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -481,7 +481,7 @@ pcl::ihs::InHandScanner::startGrabberImpl ()
   lock.lock ();
   if (destructor_called_) return;
 
-  std::function <void (const CloudXYZRGBAConstPtr&)> new_data_cb = boost::bind (&pcl::ihs::InHandScanner::newDataCallback, this, _1);
+  std::function <void (const CloudXYZRGBAConstPtr&)> new_data_cb = [this] (const CloudXYZRGBAConstPtr& cloud) { newDataCallback (cloud); };
   new_data_connection_ = grabber_->registerCallback (new_data_cb);
   grabber_->start ();
 

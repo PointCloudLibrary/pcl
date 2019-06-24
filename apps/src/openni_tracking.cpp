@@ -639,10 +639,10 @@ public:
   {
     pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
     std::function<void (const CloudConstPtr&)> f =
-      boost::bind (&OpenNISegmentTracking::cloud_cb, this, _1);
+      [this] (const CloudConstPtr& cloud) { cloud_cb (cloud); };
     interface->registerCallback (f);
-    
-    viewer_.runOnVisualizationThread (boost::bind(&OpenNISegmentTracking::viz_cb, this, _1), "viz_cb");
+
+    viewer_.runOnVisualizationThread ([this] (pcl::visualization::PCLVisualizer& viz) { viz_cb (viz); }, "viz_cb");
     
     interface->start ();
       

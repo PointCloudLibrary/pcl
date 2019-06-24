@@ -145,7 +145,7 @@ class OpenNIOrganizedEdgeDetection
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber ();
 
-      std::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f = boost::bind (&OpenNIOrganizedEdgeDetection::cloud_cb_, this, _1);
+      std::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f = [this] (const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
       // Make and initialize a cloud viewer
       pcl::PointCloud<PointT>::Ptr init_cloud_ptr (new pcl::PointCloud<PointT>);

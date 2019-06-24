@@ -473,7 +473,7 @@ class NILinemod
       cloud_viewer_.registerMouseCallback (&NILinemod::mouse_callback, *this);
       cloud_viewer_.registerKeyboardCallback(&NILinemod::keyboard_callback, *this);
       cloud_viewer_.registerPointPickingCallback (&NILinemod::pp_callback, *this);
-      std::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&NILinemod::cloud_callback, this, _1);
+      std::function<void (const CloudConstPtr&) > cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
       cloud_connection = grabber_.registerCallback (cloud_cb);
       
       image_viewer_.registerMouseCallback (&NILinemod::mouse_callback, *this);

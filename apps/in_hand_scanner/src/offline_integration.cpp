@@ -99,7 +99,7 @@ pcl::ihs::OfflineIntegration::start ()
   }
 
   path_dir_ = dir.toStdString ();
-  QtConcurrent::run (boost::bind (&pcl::ihs::OfflineIntegration::computationThread, this));
+  QtConcurrent::run ([this]{ computationThread (); });
 }
 
 ////////////////////////////////////////////////////////////////////////////////

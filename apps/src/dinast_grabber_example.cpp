@@ -73,10 +73,9 @@ class DinastProcessor
     int 
     run ()
     {
-            
-      std::function<void (const CloudConstPtr&)> f =
-        boost::bind (&DinastProcessor::cloud_cb_, this, _1);
-      
+
+      std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
+
       boost::signals2::connection c = interface.registerCallback (f);
 
       interface.start ();
