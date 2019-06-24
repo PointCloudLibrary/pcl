@@ -43,6 +43,5 @@
 #  pragma GCC system_header 
 #endif
 
-#include <boost/bind.hpp>
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 #include <boost/shared_ptr.hpp>

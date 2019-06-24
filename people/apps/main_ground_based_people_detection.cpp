@@ -143,8 +143,10 @@ int main (int argc, char** argv)
   PointCloudT::Ptr cloud (new PointCloudT);
   bool new_cloud_available_flag = false;
   pcl::Grabber* interface = new pcl::OpenNIGrabber();
-  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-      boost::bind (&cloud_cb_, _1, cloud, &new_cloud_available_flag);
+  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = [&] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& p1)
+  {
+    cloud_cb_ (p1, cloud, &new_cloud_available_flag);
+  };
   interface->registerCallback (f);
   interface->start ();
 
