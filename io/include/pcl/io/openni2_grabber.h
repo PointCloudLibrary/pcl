@@ -38,9 +38,10 @@
  */
 
 #pragma once
- 
-#ifdef HAVE_OPENNI2
+
 #include <pcl/pcl_config.h>
+
+#ifdef HAVE_OPENNI2
 
 #include <pcl/io/eigen.h>
 #include <pcl/io/boost.h>

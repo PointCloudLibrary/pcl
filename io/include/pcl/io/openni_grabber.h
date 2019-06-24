@@ -39,6 +39,7 @@
 #pragma once
 
 #include <pcl/pcl_config.h>
+
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/eigen.h>
