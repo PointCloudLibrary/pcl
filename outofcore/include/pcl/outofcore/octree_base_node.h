@@ -256,10 +256,7 @@ namespace pcl
           {
             return (pcl::octree::BRANCH_NODE);
           }
-          else
-          {
-            return (pcl::octree::LEAF_NODE);
-          }
+          return (pcl::octree::LEAF_NODE);
         }
         
         

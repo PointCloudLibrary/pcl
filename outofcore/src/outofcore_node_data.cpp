@@ -260,7 +260,7 @@ namespace pcl
         PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeNodeMetadata] Can not find index metadata at %s.\n", metadata_filename_.c_str ());
         return (0);
       }
-      else if(boost::filesystem::is_directory (metadata_filename_))
+      if(boost::filesystem::is_directory (metadata_filename_))
       {
         PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeNodeMetadata] Got a directory, but no oct_idx metadata?\n");
         return (0);
