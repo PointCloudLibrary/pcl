@@ -113,9 +113,9 @@ class TrajkovicDemo
     {
       std::function<void (const CloudConstPtr&) > cloud_cb;
       if (enable_3d_)
-        cloud_cb = boost::bind (&TrajkovicDemo::cloud_callback_3d, this, _1);
+        cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback_3d (cloud); };
       else
-        cloud_cb = boost::bind (&TrajkovicDemo::cloud_callback_2d, this, _1);
+        cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback_2d (cloud); };
 
       cloud_connection = grabber_.registerCallback (cloud_cb);
     }

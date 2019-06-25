@@ -156,7 +156,7 @@ class SimpleOpenNIViewer
 
       // make callback function from member function
       std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-        boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
+        [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
       // connect callback function for desired signal. In this case its a point cloud with color values
       boost::signals2::connection c = interface->registerCallback (f);
@@ -211,7 +211,10 @@ struct EventHelper
 
     // make callback function from member function
     std::function<void
-    (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = boost::bind (&EventHelper::cloud_cb_, this, _1);
+    (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+    {
+      cloud_cb_ (cloud);
+    };
 
     // connect callback function for desired signal. In this case its a point cloud with color values
     boost::signals2::connection c = interface->registerCallback (f);

@@ -193,8 +193,8 @@ class AGASTDemo
     void
     init ()
     {
-      std::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&AGASTDemo::cloud_callback, this, _1);
-      cloud_connection = grabber_.registerCallback (cloud_cb);      
+      std::function<void (const CloudConstPtr&) > cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
+      cloud_connection = grabber_.registerCallback (cloud_cb);
     }
 
     /////////////////////////////////////////////////////////////////////////

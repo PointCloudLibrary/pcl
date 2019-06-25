@@ -134,7 +134,7 @@ class OpenNISmoothing
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      std::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNISmoothing::cloud_cb_, this, _1);
+      std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
       boost::signals2::connection c = interface->registerCallback (f);
 
       viewer.registerKeyboardCallback (keyboardEventOccurred, reinterpret_cast<void*> (&stop_computing_));
