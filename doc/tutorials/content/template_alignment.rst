@@ -133,6 +133,10 @@ Next we load the target cloud (from the filename supplied on the command line).
 
 We then perform a little pre-processing on the data to get it ready for alignment.  The first step is to filter out any background points.  In this example we assume the person we're trying to align to will be less than 1 meter away, so we apply a pass-through filter, filtering on the "z" field (i.e., depth) with limits of 0 to 1.
 
+.. note:: This is application and data dependent. You may need to tune the
+          threshold (or drop this filter entirely) to make it work with your
+          data.
+
 .. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 253-260
