@@ -242,7 +242,7 @@ main(int argc, char ** argv)
       usage(argv);
       return 0;
     }
-    else if (device_id == "-l")
+    if (device_id == "-l")
     {
       if (argc >= 3)
       {

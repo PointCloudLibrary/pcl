@@ -77,10 +77,7 @@ getTotalSystemMemory ()
   {
     return std::numeric_limits<size_t>::max ();
   }
-  else
-  {
-    return size_t (pages * page_size);
-  }
+  return size_t (pages * page_size);
 }
 
 const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480) / 2);
@@ -695,7 +692,7 @@ main (int argc, char ** argv)
       usage (argv);
       return (0);
     }
-    else if (device_id == "-l")
+    if (device_id == "-l")
     {
       if (argc >= 3)
       {

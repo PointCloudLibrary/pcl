@@ -208,7 +208,7 @@ testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, con
       validness = false;
       break;
     }
-    else if (!nan_mask [index])
+    if (!nan_mask [index])
     {
 #if DEBUG_OUT
       cerr << name << ": result contains an invalid point: " << index << " = NaN (" << point_cloud->points [index].x << " , " 

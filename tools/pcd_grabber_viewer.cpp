@@ -245,7 +245,7 @@ main (int argc, char** argv)
       std::this_thread::sleep_for(10ms);
       continue;
     }
-    else if (mutex_.try_lock ())
+    if (mutex_.try_lock ())
     {
       pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr temp_cloud;
       temp_cloud.swap (cloud_);

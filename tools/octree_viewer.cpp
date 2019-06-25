@@ -434,8 +434,7 @@ private:
       extractPointsAtLevel(displayedDepth);
       return true;
     }
-    else
-      return false;
+    return false;
   }
 
   /* \brief Helper function to decrease the octree display level by one

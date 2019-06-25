@@ -113,14 +113,8 @@ pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2>::PointCl
     capable_ = true;
     return;
   }
-  else
-  {
-    field_idx_ = pcl::getFieldIndex (*cloud, "rgba");
-    if (field_idx_ != -1)
-      capable_ = true;
-    else
-      capable_ = false;
-  }
+  field_idx_ = pcl::getFieldIndex (*cloud, "rgba");
+  capable_ = (field_idx_ != -1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

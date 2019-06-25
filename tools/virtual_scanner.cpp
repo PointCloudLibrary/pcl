@@ -84,18 +84,15 @@ loadDataSet (const char* file_name)
     reader->Update ();
     return (reader->GetOutput ());
   }
-  else if (extension == ".vtk")
+  if (extension == ".vtk")
   {
     vtkPolyDataReader* reader = vtkPolyDataReader::New ();
     reader->SetFileName (file_name);
     reader->Update ();
     return (reader->GetOutput ());
   }
-  else
-  {
-    PCL_ERROR ("Needs a VTK/PLY file to continue.\n");
-    return (nullptr);
-  }
+  PCL_ERROR ("Needs a VTK/PLY file to continue.\n");
+  return (nullptr);
 }
 
 int
