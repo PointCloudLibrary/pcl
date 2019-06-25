@@ -478,16 +478,12 @@ FittingCurve2d::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2
       return current;
 
     }
-    else
-    {
-      current += delta;
+    current += delta;
 
-      if (current < minU)
-        current = minU;
-      if (current > maxU)
-        current = maxU;
-    }
-
+    if (current < minU)
+      current = minU;
+    if (current > maxU)
+      current = maxU;
   }
 
   error = r.norm ();
@@ -702,7 +698,7 @@ FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Ei
 
   if (d_shortest_hint < d_shortest_elem)
     return hint;
-  else
+  
     return param;
 }
 

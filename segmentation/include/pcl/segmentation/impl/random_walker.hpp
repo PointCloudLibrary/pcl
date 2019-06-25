@@ -248,12 +248,9 @@ namespace pcl
             {
               return bimap.right.at (value);
             }
-            else
-            {
-              size_t s = bimap.size ();
-              bimap.insert (typename boost::bimap<size_t, T>::value_type (s, value));
-              return s;
-            }
+            size_t s = bimap.size ();
+            bimap.insert (typename boost::bimap<size_t, T>::value_type (s, value));
+            return s;
           }
 
           Graph& g_;

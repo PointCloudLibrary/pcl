@@ -57,10 +57,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::isSampleGood (
   p1 -= p0;
   p2 -= p0;
 
-  if (p1.dot (p2) < 0.000001)
-    return (true);
-  else
-    return (false);
+  return (p1.dot (p2) < 0.000001);
 }
 
 //////////////////////////////////////////////////////////////////////////

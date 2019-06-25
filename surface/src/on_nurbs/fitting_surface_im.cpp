@@ -604,22 +604,17 @@ FittingSurfaceIM::inverseMapping (const ON_NurbsSurface &nurbs, const Eigen::Vec
       return current;
 
     }
-    else
-    {
-      current += delta;
+    current += delta;
 
-      if (current (0) < minU)
-        current (0) = minU;
-      else if (current (0) > maxU)
-        current (0) = maxU;
+    if (current (0) < minU)
+      current (0) = minU;
+    else if (current (0) > maxU)
+      current (0) = maxU;
 
-      if (current (1) < minV)
-        current (1) = minV;
-      else if (current (1) > maxV)
-        current (1) = maxV;
-
-    }
-
+    if (current (1) < minV)
+      current (1) = minV;
+    else if (current (1) > maxV)
+      current (1) = maxV;
   }
 
   error = r.norm ();

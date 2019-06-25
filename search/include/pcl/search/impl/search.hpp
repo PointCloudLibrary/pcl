@@ -102,15 +102,12 @@ pcl::search::Search<PointT>::nearestKSearch (
     assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in nearestKSearch!");
     return (nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
   }
-  else
-  {
-    assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in nearestKSearch!");
-    if (index >= static_cast<int> (indices_->size ()) || index < 0)
-      return (0);
-    return (nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_sqr_distances));
-  }
+  assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in nearestKSearch!");
+  if (index >= static_cast<int> (indices_->size ()) || index < 0)
+    return (0);
+  return (nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_sqr_distances));
 }
- 
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::search::Search<PointT>::nearestKSearch (
@@ -156,11 +153,8 @@ pcl::search::Search<PointT>::radiusSearch (
     assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in radiusSearch!");
     return (radiusSearch (input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
   }
-  else
-  {
-    assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in radiusSearch!");
-    return (radiusSearch (input_->points[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
-  }
+  assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in radiusSearch!");
+  return (radiusSearch (input_->points[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
