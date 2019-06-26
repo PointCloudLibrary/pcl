@@ -14,14 +14,18 @@
 #include <pcl/segmentation/extract_labeled_clusters.h>
 #include <pcl/segmentation/seeded_hue_segmentation.h>
 #include <pcl/people/conversion/conversions.h>
-#include <opencv2/opencv.hpp>
 #include <pcl/people/label_skeleton/conversion.h>
 #include <pcl/people/trees/tree_live.h>
-//#include <pcl/filters/passthrough.h>
-//#include <pcl/common/time.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
+
+#include <opencv2/opencv.hpp>
+
+#include <functional>
+#include <thread>
+
+using namespace std::chrono_literals;
 
 class PeopleTrackingApp
 {
@@ -55,7 +59,7 @@ class PeopleTrackingApp
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
+      std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
         boost::bind (&PeopleTrackingApp::cloud_cb_, this, _1);
 
       interface->registerCallback (f);
@@ -63,7 +67,7 @@ class PeopleTrackingApp
 
       while (!viewer.wasStopped())
       {
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+        std::this_thread::sleep_for(1s);
       }
       interface->stop ();
     }

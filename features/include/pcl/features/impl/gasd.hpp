@@ -361,7 +361,7 @@ pcl::GASDColorEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
 
     const float diff_inv = 1.f / static_cast <float> (max - min);
 
-    if (pcl_isfinite (diff_inv))
+    if (std::isfinite (diff_inv))
     {
       if (max == shape_samples_[i].r)
       {

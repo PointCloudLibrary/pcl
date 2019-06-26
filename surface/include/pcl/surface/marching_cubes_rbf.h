@@ -53,8 +53,8 @@ namespace pcl
   class MarchingCubesRBF : public MarchingCubes<PointNT>
   {
     public:
-      typedef boost::shared_ptr<MarchingCubesRBF<PointNT> > Ptr;
-      typedef boost::shared_ptr<const MarchingCubesRBF<PointNT> > ConstPtr;
+      using Ptr = boost::shared_ptr<MarchingCubesRBF<PointNT> >;
+      using ConstPtr = boost::shared_ptr<const MarchingCubesRBF<PointNT> >;
 
       using SurfaceReconstruction<PointNT>::input_;
       using SurfaceReconstruction<PointNT>::tree_;
@@ -66,10 +66,10 @@ namespace pcl
       using MarchingCubes<PointNT>::upper_boundary_;
       using MarchingCubes<PointNT>::lower_boundary_;
 
-      typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudPtr;
+      using PointCloudPtr = typename pcl::PointCloud<PointNT>::Ptr;
 
-      typedef typename pcl::KdTree<PointNT> KdTree;
-      typedef typename pcl::KdTree<PointNT>::Ptr KdTreePtr;
+      using KdTree = pcl::KdTree<PointNT>;
+      using KdTreePtr = typename KdTree::Ptr;
 
 
       /** \brief Constructor. */

@@ -68,21 +68,21 @@ namespace pcl
       using Registration<PointSource, PointTarget>::converged_;
       using Registration<PointSource, PointTarget>::getClassName;
 
-      typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
-      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+      using PointCloudSource = typename Registration<PointSource, PointTarget>::PointCloudSource;
+      using PointCloudSourcePtr = typename PointCloudSource::Ptr;
+      using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
-      typedef typename Registration<PointSource, PointTarget>::PointCloudTarget PointCloudTarget;
+      using PointCloudTarget = typename Registration<PointSource, PointTarget>::PointCloudTarget;
 
-      typedef PointIndices::Ptr PointIndicesPtr;
-      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+      using PointIndicesPtr = PointIndices::Ptr;
+      using PointIndicesConstPtr = PointIndices::ConstPtr;
 
-      typedef pcl::PointCloud<FeatureT> FeatureCloud;
-      typedef typename FeatureCloud::Ptr FeatureCloudPtr;
-      typedef typename FeatureCloud::ConstPtr FeatureCloudConstPtr;
+      using FeatureCloud = pcl::PointCloud<FeatureT>;
+      using FeatureCloudPtr = typename FeatureCloud::Ptr;
+      using FeatureCloudConstPtr = typename FeatureCloud::ConstPtr;
 
-      typedef boost::shared_ptr<SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> > Ptr;
-      typedef boost::shared_ptr<const SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> > ConstPtr;
+      using Ptr = boost::shared_ptr<SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> >;
+      using ConstPtr = boost::shared_ptr<const SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> >;
 
 
       class ErrorFunctor
@@ -103,7 +103,7 @@ namespace pcl
             if (e <= threshold_)
               return (0.5 * e*e); 
             else
-              return (0.5 * threshold_ * (2.0 * fabs (e) - threshold_));
+              return (0.5 * threshold_ * (2.0 * std::fabs (e) - threshold_));
           }
         protected:
           float threshold_;
@@ -128,7 +128,9 @@ namespace pcl
           float threshold_;
       };
 
-      typedef typename KdTreeFLANN<FeatureT>::Ptr FeatureKdTreePtr; 
+      using ErrorFunctorPtr = boost::shared_ptr<ErrorFunctor>;
+
+      using FeatureKdTreePtr = typename KdTreeFLANN<FeatureT>::Ptr; 
       /** \brief Constructor. */
       SampleConsensusInitialAlignment () : 
         input_features_ (), target_features_ (), 
@@ -144,7 +146,7 @@ namespace pcl
         transformation_estimation_.reset (new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>);
       };
 
-      /** \brief Provide a boost shared pointer to the source point cloud's feature descriptors
+      /** \brief Provide a shared pointer to the source point cloud's feature descriptors
         * \param features the source point cloud's features
         */
       void 
@@ -154,7 +156,7 @@ namespace pcl
       inline FeatureCloudConstPtr const 
       getSourceFeatures () { return (input_features_); }
 
-      /** \brief Provide a boost shared pointer to the target point cloud's feature descriptors
+      /** \brief Provide a shared pointer to the target point cloud's feature descriptors
         * \param features the target point cloud's features
         */
       void 
@@ -200,12 +202,12 @@ namespace pcl
        * \param[in] error_functor a shared pointer to a subclass of SampleConsensusInitialAlignment::ErrorFunctor
        */
       void
-      setErrorFunction (const boost::shared_ptr<ErrorFunctor> & error_functor) { error_functor_ = error_functor; }
+      setErrorFunction (const ErrorFunctorPtr & error_functor) { error_functor_ = error_functor; }
 
       /** \brief Get a shared pointer to the ErrorFunctor that is to be minimized  
        * \return A shared pointer to a subclass of SampleConsensusInitialAlignment::ErrorFunctor
        */
-      boost::shared_ptr<ErrorFunctor>
+      ErrorFunctorPtr
       getErrorFunction () { return (error_functor_); }
 
     protected:
@@ -269,8 +271,7 @@ namespace pcl
       /** \brief The KdTree used to compare feature descriptors. */
       FeatureKdTreePtr feature_tree_;               
 
-      /** */
-      boost::shared_ptr<ErrorFunctor> error_functor_;
+      ErrorFunctorPtr error_functor_;
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };

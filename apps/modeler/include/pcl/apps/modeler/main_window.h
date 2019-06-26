@@ -128,8 +128,8 @@ namespace pcl
         friend class AbstractItem;
 
         MainWindow();
-        MainWindow(const MainWindow &) : QMainWindow () {}            // copy ctor hidden
-        MainWindow& operator=(const MainWindow &) { return (*this); } // assign op. hidden
+        MainWindow(const MainWindow &) = delete;
+        MainWindow& operator=(const MainWindow &) = delete;
         ~MainWindow();
 
         Ui::MainWindow                    *ui_; // Designer form

@@ -57,7 +57,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        ItemInspector (QWidget* parent = 0);
+        ItemInspector (QWidget* parent = nullptr);
         ~ItemInspector();
       
       public Q_SLOTS:

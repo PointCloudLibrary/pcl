@@ -67,7 +67,7 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
   const float py = input_->points[index].y;
   const float pz = input_->points[index].z;
 
-  if (pcl_isnan (px)) 
+  if (std::isnan (px)) 
   {
     normal.normal_x = bad_point;
     normal.normal_y = bad_point;
@@ -101,7 +101,7 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
       const float qy = input_->points[index2].y;
       const float qz = input_->points[index2].z;
 
-      if (pcl_isnan (qx)) continue;
+      if (std::isnan (qx)) continue;
 
       const float delta = qz - pz;
       const float i = qx - px;
@@ -110,7 +110,7 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
       float depthChangeThreshold = pz*pz * 0.05f * max_depth_change_factor_;
       if (use_depth_dependent_smoothing_) depthChangeThreshold *= pz;
 
-      const float f = fabs (delta) > depthChangeThreshold ? 0 : 1;
+      const float f = std::fabs (delta) > depthChangeThreshold ? 0 : 1;
 
       matA0 += f * i * i;
       matA1 += f * i * j;
@@ -182,7 +182,7 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
       const float py = input_->points[index].y;
       const float pz = input_->points[index].z;
 
-      if (pcl_isnan(px)) continue;
+      if (std::isnan(px)) continue;
 
       //float depthDependentSmoothingSize = smoothingSize + pz / 10.0f;
 
@@ -212,14 +212,14 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
           const float qy = input_->points[index2].y;
           const float qz = input_->points[index2].z;
 
-          if (pcl_isnan(qx)) continue;
+          if (std::isnan(qx)) continue;
 
           const float delta = qz - pz;
           const float i = qx - px;
           const float j = qy - py;
 
           const float depthDependendDepthChange = (max_depth_change_factor_ * (fabsf (pz) + 1.0f) * 2.0f);
-          const float f = fabs(delta) > depthDependendDepthChange ? 0 : 1;
+          const float f = std::fabs(delta) > depthDependendDepthChange ? 0 : 1;
 
           //float f = fabs(delta) > (pz * 0.05f - 0.3f) ? 0 : 1;
           //const float f = fabs(delta) > (pz*pz * 0.05f * max_depth_change_factor_) ? 0 : 1;

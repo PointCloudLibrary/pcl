@@ -7,7 +7,7 @@
 #include <pcl/apps/cloud_composer/impl/transform_clouds.hpp>
 
 pcl::cloud_composer::TransformClouds::TransformClouds (QMap <QString, vtkSmartPointer<vtkMatrix4x4> > transform_map, QObject* parent)
-  : ModifyItemTool (0, parent)
+  : ModifyItemTool (nullptr, parent)
   , transform_map_ (transform_map)
 {
   

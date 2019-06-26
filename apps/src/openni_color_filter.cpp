@@ -43,6 +43,8 @@
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
 
+#include <mutex>
+
 #define FPS_CALC(_WHAT_) \
 do \
 { \
@@ -63,15 +65,15 @@ template <typename PointType>
 class OpenNIPassthrough
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudPtr = typename Cloud::Ptr;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     OpenNIPassthrough (pcl::OpenNIGrabber& grabber, unsigned char red, unsigned char green, unsigned char blue, unsigned char radius)
     : viewer ("PCL OpenNI ColorFilter Viewer")
     , grabber_(grabber)
     {
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIPassthrough::cloud_cb_, this, _1);
+      std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
       boost::signals2::connection c = grabber_.registerCallback (f);
 
       std::vector<bool> lookup(1<<24, false);
@@ -105,7 +107,7 @@ class OpenNIPassthrough
     void
     cloud_cb_ (const CloudConstPtr& cloud)
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       FPS_CALC ("computation");
 
       cloud_color_.reset (new Cloud);
@@ -125,7 +127,7 @@ class OpenNIPassthrough
       {
         if (cloud_color_)
         {
-          boost::mutex::scoped_lock lock (mtx_);
+          std::lock_guard<std::mutex> lock (mtx_);
 
           FPS_CALC ("visualization");
           CloudPtr temp_cloud;
@@ -141,7 +143,7 @@ class OpenNIPassthrough
     pcl::visualization::CloudViewer viewer;
     pcl::OpenNIGrabber& grabber_;
     std::string device_id_;
-    boost::mutex mtx_;
+    std::mutex mtx_;
     CloudConstPtr cloud_;
     CloudPtr cloud_color_;
 };
@@ -187,11 +189,11 @@ main (int argc, char ** argv)
   unsigned char red = 0, green = 0, blue = 0;
   int rr, gg, bb;
   unsigned char radius = 442; // all colors!
-  int rad;
 
   if (pcl::console::parse_3x_arguments (argc, argv, "-rgb", rr, gg, bb, true) != -1 )
   {
     cout << "-rgb present" << endl;
+    int rad;
     int idx = pcl::console::parse_argument (argc, argv, "-radius", rad);
     if (idx != -1)
     {

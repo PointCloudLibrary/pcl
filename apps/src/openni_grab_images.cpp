@@ -41,10 +41,13 @@
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <boost/filesystem.hpp>
 #include <pcl/visualization/vtk.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/common/float_image_utils.h>
+
+#include <boost/filesystem.hpp>
+
+#include <mutex>
 
 using namespace pcl::console;
 using namespace boost::filesystem;
@@ -73,10 +76,10 @@ class OpenNIGrabFrame
     }
 
     void
-    image_callback (const boost::shared_ptr<openni_wrapper::Image> &image, 
-                    const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, float)
+    image_callback (const openni_wrapper::Image::Ptr &image,
+                    const openni_wrapper::DepthImage::Ptr &depth_image, float)
     {
-      boost::mutex::scoped_lock lock (image_mutex_);
+      std::lock_guard<std::mutex> lock (image_mutex_);
       image_ = image;
       depth_image_ = depth_image;
       lock.unlock ();
@@ -114,22 +117,22 @@ class OpenNIGrabFrame
     void saveImages ()
     {
       std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
-      boost::shared_ptr<openni_wrapper::Image> image;
-      boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
+      openni_wrapper::Image::Ptr image;
+      openni_wrapper::DepthImage::Ptr depth_image;
 
       image_mutex_.lock ();
       image.swap (image_);
       depth_image.swap (depth_image_);
       image_mutex_.unlock ();
 
-      static unsigned char* rgb_data = 0;
-      static unsigned rgb_data_size = 0;
-      
       if (image)
       {
         const void* data;
         if (image->getEncoding() != openni_wrapper::Image::RGB)
         {
+          static unsigned char* rgb_data = 0;
+          static unsigned rgb_data_size = 0;
+
           if (rgb_data_size < image->getWidth () * image->getHeight ())
           {
             if (rgb_data)
@@ -183,8 +186,15 @@ class OpenNIGrabFrame
       image_viewer_.registerKeyboardCallback(&OpenNIGrabFrame::keyboard_callback, *this);
       depth_image_viewer_.registerMouseCallback (&OpenNIGrabFrame::mouse_callback, *this);
       depth_image_viewer_.registerKeyboardCallback(&OpenNIGrabFrame::keyboard_callback, *this);
-      
-      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float) > image_cb = boost::bind (&OpenNIGrabFrame::image_callback, this, _1, _2, _3);
+
+      std::function<void (const openni_wrapper::Image::Ptr&,
+                          const openni_wrapper::DepthImage::Ptr&,
+                          float) > image_cb = [this] (const openni_wrapper::Image::Ptr& img,
+                                                      const openni_wrapper::DepthImage::Ptr& depth,
+                                                      float f)
+      {
+        image_callback (img, depth, f);
+      };
       boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);
       
       // start receiving point clouds
@@ -197,8 +207,8 @@ class OpenNIGrabFrame
       while (!image_viewer_.wasStopped() && !quit_)
       {
         std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
-        boost::shared_ptr<openni_wrapper::Image> image;
-        boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
+        openni_wrapper::Image::Ptr image;
+        openni_wrapper::DepthImage::Ptr depth_image;
         
         if (image_mutex_.try_lock ())
         {
@@ -278,7 +288,6 @@ class OpenNIGrabFrame
         trigger_ = false;
         image_viewer_.spinOnce ();
         depth_image_viewer_.spinOnce ();
-        //boost::this_thread::sleep (boost::posix_time::microseconds (100));
       }
       
       image_mutex_.lock ();
@@ -294,9 +303,9 @@ class OpenNIGrabFrame
     bool quit_;
     bool continuous_;
     bool trigger_;
-    mutable boost::mutex image_mutex_;
-    boost::shared_ptr<openni_wrapper::Image> image_;
-    boost::shared_ptr<openni_wrapper::DepthImage> depth_image_;
+    mutable std::mutex image_mutex_;
+    openni_wrapper::Image::Ptr image_;
+    openni_wrapper::DepthImage::Ptr depth_image_;
     vtkSmartPointer<vtkImageImport> importer_, depth_importer_;
     vtkSmartPointer<vtkTIFFWriter> writer_;
     vtkSmartPointer<vtkImageFlip> flipper_;
@@ -356,7 +365,7 @@ main (int argc, char** argv)
       if (argc >= 3)
       {
         pcl::OpenNIGrabber grabber (argv[2]);
-        boost::shared_ptr<openni_wrapper::OpenNIDevice> device = grabber.getDevice ();
+        auto device = grabber.getDevice ();
         std::vector<std::pair<int, XnMapOutputMode> > modes;
 
         if (device->hasImageStream ())

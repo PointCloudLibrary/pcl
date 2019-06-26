@@ -56,8 +56,8 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-typedef PointXYZ PointT;
-typedef PointCloud<PointT> CloudT;
+using PointT = PointXYZ;
+using CloudT = PointCloud<PointT>;
 
 float default_leaf_size = 0.01f;
 
@@ -90,14 +90,13 @@ getVoxelActors (pcl::PointCloud<pcl::PointXYZ>& voxelCenters,
 {
   vtkSmartPointer < vtkAppendPolyData > treeWireframe = vtkSmartPointer<vtkAppendPolyData>::New ();
   
-  size_t i;
   double s = voxelSideLen/2.0;
   
-  for (i = 0; i < voxelCenters.points.size (); i++)
+  for (const auto &point : voxelCenters.points)
   {
-    double x = voxelCenters.points[i].x;
-    double y = voxelCenters.points[i].y;
-    double z = voxelCenters.points[i].z;
+    double x = point.x;
+    double y = point.y;
+    double z = point.z;
     
     treeWireframe->AddInputData (getCuboid (x - s, x + s, y - s, y + s, z - s, z + s));
   }
@@ -266,7 +265,7 @@ int main (int argc, char** argv)
   vtkActor* a;
   coll->InitTraversal ();
   a = coll->GetNextActor ();
-  while(a!=0)
+  while(a!=nullptr)
     {
       renderer->AddActor (a);
       a = coll->GetNextActor ();

@@ -49,7 +49,7 @@ namespace pcl
     class ICPRegistrationWorker : public AbstractWorker 
     {
       public:
-        ICPRegistrationWorker(CloudMesh::PointCloudPtr cloud, const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
+        ICPRegistrationWorker(CloudMesh::PointCloudPtr cloud, const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=nullptr);
         ~ICPRegistrationWorker();
 
       protected:

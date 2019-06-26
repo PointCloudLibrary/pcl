@@ -64,13 +64,12 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        typedef boost::shared_ptr<CorrespondenceRejectorSurfaceNormal> Ptr;
-        typedef boost::shared_ptr<const CorrespondenceRejectorSurfaceNormal> ConstPtr;
+        using Ptr = boost::shared_ptr<CorrespondenceRejectorSurfaceNormal>;
+        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorSurfaceNormal>;
 
         /** \brief Empty constructor. Sets the threshold to 1.0. */
         CorrespondenceRejectorSurfaceNormal () 
           : threshold_ (1.0)
-          , data_container_ ()
         {
           rejection_name_ = "CorrespondenceRejectorSurfaceNormal";
         }
@@ -163,8 +162,8 @@ namespace pcl
           * confident that the tree will be set correctly.
           */
         template <typename PointT> inline void
-        setSearchMethodTarget (const boost::shared_ptr<pcl::search::KdTree<PointT> > &tree, 
-                               bool force_no_recompute = false) 
+        setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr &tree,
+                               bool force_no_recompute = false)
         { 
           boost::static_pointer_cast< DataContainer<PointT> > 
             (data_container_)->setSearchMethodTarget (tree, force_no_recompute );
@@ -313,7 +312,7 @@ namespace pcl
         /** \brief The median distance threshold between two correspondent points in source <-> target. */
         double threshold_;
 
-        typedef boost::shared_ptr<DataContainerInterface> DataContainerPtr;
+        using DataContainerPtr = boost::shared_ptr<DataContainerInterface>;
         /** \brief A pointer to the DataContainer object containing the input and target point clouds */
         DataContainerPtr data_container_;
     };

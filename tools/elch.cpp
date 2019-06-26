@@ -49,12 +49,12 @@
 
 #include <vector>
 
-typedef pcl::PointXYZ PointType;
-typedef pcl::PointCloud<PointType> Cloud;
-typedef Cloud::ConstPtr CloudConstPtr;
-typedef Cloud::Ptr CloudPtr;
-typedef std::pair<std::string, CloudPtr> CloudPair;
-typedef std::vector<CloudPair> CloudVector;
+using PointType = pcl::PointXYZ;
+using Cloud = pcl::PointCloud<PointType>;
+using CloudConstPtr = Cloud::ConstPtr;
+using CloudPtr = Cloud::Ptr;
+using CloudPair = std::pair<std::string, CloudPtr>;
+using CloudVector = std::vector<CloudPair>;
 
 bool
 loopDetection (int end, const CloudVector &clouds, double dist, int &first, int &last)
@@ -146,11 +146,11 @@ main (int argc, char **argv)
     }
   }
 
-  for (size_t i = 0; i < clouds.size (); i++)
+  for (const auto &cloud : clouds)
   {
-    std::string result_filename (clouds[i].first);
+    std::string result_filename (cloud.first);
     result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
-    pcl::io::savePCDFileBinary (result_filename.c_str (), *(clouds[i].second));
+    pcl::io::savePCDFileBinary (result_filename.c_str (), *(cloud.second));
     std::cout << "saving result to " << result_filename << std::endl;
   }
 

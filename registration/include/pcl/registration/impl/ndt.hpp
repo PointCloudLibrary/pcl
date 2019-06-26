@@ -51,11 +51,6 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributions
   , gauss_d1_ ()
   , gauss_d2_ ()
   , trans_probability_ ()
-  , j_ang_a_ (), j_ang_b_ (), j_ang_c_ (), j_ang_d_ (), j_ang_e_ (), j_ang_f_ (), j_ang_g_ (), j_ang_h_ ()
-  , h_ang_a2_ (), h_ang_a3_ (), h_ang_b2_ (), h_ang_b3_ (), h_ang_c2_ (), h_ang_c3_ (), h_ang_d1_ (), h_ang_d2_ ()
-  , h_ang_d3_ (), h_ang_e1_ (), h_ang_e2_ (), h_ang_e3_ (), h_ang_f1_ (), h_ang_f2_ (), h_ang_f3_ ()
-  , point_gradient_ ()
-  , point_hessian_ ()
 {
   reg_name_ = "NormalDistributionsTransform";
 
@@ -132,7 +127,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
     //Calculate step length with guarnteed sufficient decrease [More, Thuente 1994]
     delta_p_norm = delta_p.norm ();
 
-    if (delta_p_norm == 0 || delta_p_norm != delta_p_norm)
+    if (delta_p_norm == 0 || std::isnan(delta_p_norm))
     {
       trans_probability_ = score / static_cast<double> (input_->points.size ());
       converged_ = delta_p_norm == delta_p_norm;
@@ -150,10 +145,10 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
                        Eigen::AngleAxis<float> (static_cast<float> (delta_p (5)), Eigen::Vector3f::UnitZ ())).matrix ();
 
 
-    p = p + delta_p;
+    p += delta_p;
 
     // Update Visualizer (untested)
-    if (update_visualizer_ != 0)
+    if (update_visualizer_)
       update_visualizer_ (output, std::vector<int>(), *target_, std::vector<int>() );
 
     double cos_angle = 0.5 * (transformation_.coeff (0, 0) + transformation_.coeff (1, 1) + transformation_.coeff (2, 2) - 1);
@@ -368,7 +363,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives (
   e_x_cov_x = gauss_d2_ * e_x_cov_x;
 
   // Error checking for invalid values.
-  if (e_x_cov_x > 1 || e_x_cov_x < 0 || e_x_cov_x != e_x_cov_x)
+  if (e_x_cov_x > 1 || e_x_cov_x < 0 || std::isnan(e_x_cov_x))
     return (0);
 
   // Reusable portion of Equation 6.12 and 6.13 [Magnusson 2009]
@@ -385,7 +380,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives (
 
     if (compute_hessian)
     {
-      for (int j = 0; j < hessian.cols (); j++)
+      for (Eigen::Index j = 0; j < hessian.cols (); j++)
       {
         // Update hessian, Equation 6.13 [Magnusson 2009]
         hessian (i, j) += e_x_cov_x * (-gauss_d2_ * x_trans.dot (cov_dxd_pi) * x_trans.dot (c_inv * point_gradient_.col (j)) +
@@ -459,7 +454,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateHessian (Eige
   double e_x_cov_x = gauss_d2_ * exp (-gauss_d2_ * x_trans.dot (c_inv * x_trans) / 2);
 
   // Error checking for invalid values.
-  if (e_x_cov_x > 1 || e_x_cov_x < 0 || e_x_cov_x != e_x_cov_x)
+  if (e_x_cov_x > 1 || e_x_cov_x < 0 || std::isnan(e_x_cov_x))
     return;
 
   // Reusable portion of Equation 6.12 and 6.13 [Magnusson 2009]
@@ -470,7 +465,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateHessian (Eige
     // Sigma_k^-1 d(T(x,p))/dpi, Reusable portion of Equation 6.12 and 6.13 [Magnusson 2009]
     cov_dxd_pi = c_inv * point_gradient_.col (i);
 
-    for (int j = 0; j < hessian.cols (); j++)
+    for (Eigen::Index j = 0; j < hessian.cols (); j++)
     {
       // Update hessian, Equation 6.13 [Magnusson 2009]
       hessian (i, j) += e_x_cov_x * (-gauss_d2_ * x_trans.dot (cov_dxd_pi) * x_trans.dot (c_inv * point_gradient_.col (j)) +
@@ -733,12 +728,12 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT
       open_interval = false;
 
       // Converts f_l and g_l from psi to phi
-      f_l = f_l + phi_0 - mu * d_phi_0 * a_l;
-      g_l = g_l + mu * d_phi_0;
+      f_l += phi_0 - mu * d_phi_0 * a_l;
+      g_l += mu * d_phi_0;
 
       // Converts f_u and g_u from psi to phi
-      f_u = f_u + phi_0 - mu * d_phi_0 * a_u;
-      g_u = g_u + mu * d_phi_0;
+      f_u += phi_0 - mu * d_phi_0 * a_u;
+      g_u += mu * d_phi_0;
     }
 
     if (open_interval)

@@ -42,10 +42,10 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud, 
-                               const boost::shared_ptr<search::Search<PointT> > &tree,
+pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
+                               const typename search::Search<PointT>::Ptr &tree,
                                float tolerance, std::vector<PointIndices> &clusters,
-                               unsigned int min_pts_per_cluster, 
+                               unsigned int min_pts_per_cluster,
                                unsigned int max_pts_per_cluster)
 {
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
@@ -115,11 +115,11 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** @todo: fix the return value, make sure the exit is not needed anymore*/
 template <typename PointT> void
-pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud, 
+pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
                                const std::vector<int> &indices,
-                               const boost::shared_ptr<search::Search<PointT> > &tree,
+                               const typename search::Search<PointT>::Ptr &tree,
                                float tolerance, std::vector<PointIndices> &clusters,
-                               unsigned int min_pts_per_cluster, 
+                               unsigned int min_pts_per_cluster,
                                unsigned int max_pts_per_cluster)
 {
   // \note If the tree was created over <cloud, indices>, we guarantee a 1-1 mapping between what the tree returns
@@ -143,16 +143,16 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
-  for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
+  for (const int &index : indices)
   {
-    if (processed[indices[i]])
+    if (processed[index])
       continue;
 
     std::vector<int> seed_queue;
     int sq_idx = 0;
-    seed_queue.push_back (indices[i]);
+    seed_queue.push_back (index);
 
-    processed[indices[i]] = true;
+    processed[index] = true;
 
     while (sq_idx < static_cast<int> (seed_queue.size ()))
     {
@@ -210,8 +210,8 @@ template <typename PointT> void
 pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clusters)
 {
   if (!initCompute () || 
-      (input_ != 0   && input_->points.empty ()) ||
-      (indices_ != 0 && indices_->empty ()))
+      (input_   && input_->points.empty ()) ||
+      (indices_ && indices_->empty ()))
   {
     clusters.clear ();
     return;
@@ -240,7 +240,7 @@ pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clu
 }
 
 #define PCL_INSTANTIATE_EuclideanClusterExtraction(T) template class PCL_EXPORTS pcl::EuclideanClusterExtraction<T>;
-#define PCL_INSTANTIATE_extractEuclideanClusters(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const boost::shared_ptr<pcl::search::Search<T> > &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
-#define PCL_INSTANTIATE_extractEuclideanClusters_indices(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const std::vector<int> &, const boost::shared_ptr<pcl::search::Search<T> > &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_extractEuclideanClusters(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_extractEuclideanClusters_indices(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const std::vector<int> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
 
 #endif        // PCL_EXTRACT_CLUSTERS_IMPL_H_

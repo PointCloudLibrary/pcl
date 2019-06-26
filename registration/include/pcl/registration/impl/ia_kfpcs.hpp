@@ -43,7 +43,6 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
   lower_trl_boundary_ (-1.f),
   upper_trl_boundary_ (-1.f),  
   lambda_ (0.5f),
-  candidates_ (),
   use_trl_score_ (false),
   indices_validation_ (new std::vector <int>)
 {
@@ -104,17 +103,17 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
   float fitness_score = FLT_MAX;
 
   // loop over all Candidate matches
-  for (std::vector <std::vector <int> >::iterator match_indices = matches.begin (), it_e = matches.end (); match_indices != it_e; match_indices++)
+  for (auto &match : matches)
   {
     Eigen::Matrix4f transformation_temp;
     pcl::Correspondences correspondences_temp;
     fitness_score = FLT_MAX; // reset to FLT_MAX to accept all candidates and not only best
 
     // determine corresondences between base and match according to their distance to centroid
-    linkMatchWithBase (base_indices, *match_indices, correspondences_temp);
+    linkMatchWithBase (base_indices, match, correspondences_temp);
 
     // check match based on residuals of the corresponding points after transformation
-    if (validateMatch (base_indices, *match_indices, correspondences_temp, transformation_temp) < 0)
+    if (validateMatch (base_indices, match, correspondences_temp, transformation_temp) < 0)
       continue;
 
     // check resulting transformation using a sub sample of the source point cloud
@@ -181,17 +180,15 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
 {
   // reorganize candidates into single vector
   size_t total_size = 0;
-  std::vector <MatchingCandidates>::const_iterator it, it_e = candidates.end ();
-  for (it = candidates.begin (); it != it_e; it++)
-    total_size += it->size ();
+  for (const auto &candidate : candidates)
+    total_size += candidate.size ();
 
   candidates_.clear ();
   candidates_.reserve (total_size);
 
-  MatchingCandidates::const_iterator it_curr, it_curr_e;
-  for (it = candidates.begin (); it != it_e; it++)
-  for (it_curr = it->begin (), it_curr_e = it->end (); it_curr != it_curr_e; it_curr++)
-    candidates_.push_back (*it_curr);
+  for (const auto &candidate : candidates)
+    for (const auto &match : candidate)
+      candidates_.push_back (match);
 
   // sort according to score value
   std::sort (candidates_.begin (), candidates_.end (), by_score ());

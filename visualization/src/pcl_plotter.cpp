@@ -126,7 +126,7 @@ pcl::visualization::PCLPlotter::addPlotData (
   line->SetInputData (table, 0, 1);
   line->SetWidth (1);
 
-  if (color == NULL)    //color automatically based on the ColorScheme
+  if (!color)    //color automatically based on the ColorScheme
   {
     vtkColor3ub vcolor = color_series_->GetColorRepeating (current_plot_);
     line->SetColor (vcolor[0], vcolor[1], vcolor[2], 255);
@@ -144,7 +144,7 @@ pcl::visualization::PCLPlotter::addPlotData (
     int type /* = vtkChart::LINE */, 
     std::vector<char> const &color)
 {
-  this->addPlotData (&array_X[0], &array_Y[0], static_cast<unsigned long> (array_X.size ()), name, type, (color.size () == 0) ? NULL : &color[0]);
+  this->addPlotData (&array_X[0], &array_Y[0], static_cast<unsigned long> (array_X.size ()), name, type, (color.empty ()) ? nullptr : &color[0]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,12 +158,12 @@ pcl::visualization::PCLPlotter::addPlotData (
   double *array_x = new double[plot_data.size ()];
   double *array_y = new double[plot_data.size ()];
 
-  for (unsigned int i = 0; i < plot_data.size (); i++)
+  for (size_t i = 0; i < plot_data.size (); i++)
   {
     array_x[i] = plot_data[i].first;
     array_y[i] = plot_data[i].second;
   }
-  this->addPlotData (array_x, array_y, static_cast<unsigned long> (plot_data.size ()), name, type, (color.size () == 0) ? NULL : &color[0]);
+  this->addPlotData (array_x, array_y, static_cast<unsigned long> (plot_data.size ()), name, type, (color.empty ()) ? nullptr : &color[0]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -352,8 +352,8 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
 
   // Compute the total size of the fields
   unsigned int fsize = 0;
-  for (size_t i = 0; i < cloud.fields.size (); ++i)
-    fsize += cloud.fields[i].count * pcl::getFieldSize (cloud.fields[i].datatype);
+  for (const auto &field : cloud.fields)
+    fsize += field.count * pcl::getFieldSize (field.datatype);
   
   int hsize = cloud.fields[field_idx].count;
   std::vector<double> array_x (hsize), array_y (hsize);
@@ -587,7 +587,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
   double min = data[0], max = data[0];
   for (size_t i = 1; i < data.size (); i++)
   {
-    if (pcl_isfinite (data[i]))
+    if (std::isfinite (data[i]))
     {
       if (data[i] < min) min = data[i];
       if (data[i] > max) max = data[i];
@@ -606,11 +606,11 @@ pcl::visualization::PCLPlotter::computeHistogram (
   }
 
   //fill the freq for each data
-  for (size_t i = 0; i < data.size (); i++)
+  for (const double &value : data)
   {
-    if (pcl_isfinite (data[i]))
+    if (std::isfinite (value))
     {
-      unsigned int index = (unsigned int) (floor ((data[i] - min) / size));
+      unsigned int index = (unsigned int) (floor ((value - min) / size));
       if (index == (unsigned int) nbins) index = nbins - 1; //including right boundary
       histogram[index].second++;
     }
@@ -653,10 +653,9 @@ pcl::visualization::PCLPlotter::setViewInteractor (
 bool
 pcl::visualization::PCLPlotter::wasStopped () const
 {
-  if (view_->GetInteractor() != NULL) 
+  if (view_->GetInteractor()) 
     return (stopped_); 
-  else 
-    return (true);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

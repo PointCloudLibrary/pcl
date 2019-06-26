@@ -47,7 +47,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::PointsActorItem::PointsActorItem(QTreeWidgetItem* parent,
-                                               const boost::shared_ptr<CloudMesh>& cloud_mesh,
+                                               const CloudMesh::Ptr& cloud_mesh,
                                                const vtkSmartPointer<vtkRenderWindow>& render_window)
   :ChannelActorItem(parent, cloud_mesh, render_window, vtkSmartPointer<vtkLODActor>::New(), "Points")
 {

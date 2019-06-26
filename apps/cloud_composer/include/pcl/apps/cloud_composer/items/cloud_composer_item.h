@@ -113,11 +113,11 @@ namespace pcl
         
         /** \brief Paint View function - reimpliment in item subclass if it can be displayed in PCLVisualizer*/
         virtual void
-        paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        paintView (pcl::visualization::PCLVisualizer::Ptr vis) const;
         
         /** \brief Remove from View function - reimpliment in item subclass if it can be displayed in PCLVisualizer*/
         virtual void
-        removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        removeFromView (pcl::visualization::PCLVisualizer::Ptr vis) const;
         
         /** \brief Inspector additional tabs paint function - reimpliment in item subclass if item has additional tabs to show in Inspector*/
         virtual QMap <QString, QWidget*>
@@ -159,6 +159,6 @@ namespace pcl
   }
 }
 
-typedef QList<const pcl::cloud_composer::CloudComposerItem*> ConstItemList;
+using ConstItemList = QList<const pcl::cloud_composer::CloudComposerItem *>;
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::CloudComposerItem);

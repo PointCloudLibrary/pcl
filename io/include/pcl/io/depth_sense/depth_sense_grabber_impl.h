@@ -37,13 +37,14 @@
 
 #pragma once
 
-#include <boost/thread/mutex.hpp>
-
 #include <DepthSense.hxx>
 
 #include <pcl/common/time.h>
 #include <pcl/io/buffers.h>
 #include <pcl/io/depth_sense_grabber.h>
+
+#include <mutex>
+
 
 namespace pcl
 {
@@ -70,8 +71,8 @@ namespace pcl
 
         boost::shared_ptr<DepthSense::ProjectionHelper> projection_;
 
-        typedef DepthSenseGrabber::sig_cb_depth_sense_point_cloud sig_cb_depth_sense_point_cloud;
-        typedef DepthSenseGrabber::sig_cb_depth_sense_point_cloud_rgba sig_cb_depth_sense_point_cloud_rgba;
+        using sig_cb_depth_sense_point_cloud = DepthSenseGrabber::sig_cb_depth_sense_point_cloud;
+        using sig_cb_depth_sense_point_cloud_rgba = DepthSenseGrabber::sig_cb_depth_sense_point_cloud_rgba;
 
         /// Signal to indicate whether new XYZ cloud is available
         boost::signals2::signal<sig_cb_depth_sense_point_cloud>* point_cloud_signal_;
@@ -87,7 +88,7 @@ namespace pcl
         bool need_xyzrgba_;
 
         EventFrequency frequency_;
-        mutable boost::mutex fps_mutex_;
+        mutable std::mutex fps_mutex_;
 
         /// Temporary buffer to store color data
         std::vector<uint8_t> color_data_;

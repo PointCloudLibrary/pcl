@@ -12,8 +12,10 @@
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/apps/3d_rec_framework/utils/vtk_model_sampling.h>
-#include <boost/function.hpp>
+
 #include <vtkTransformPolyDataFilter.h>
+
+#include <functional>
 
 namespace pcl
 {
@@ -28,8 +30,8 @@ namespace pcl
     template<typename PointInT>
       class MeshSource : public Source<PointInT>
       {
-        typedef Source<PointInT> SourceT;
-        typedef Model<PointInT> ModelT;
+        using SourceT = Source<PointInT>;
+        using ModelT = Model<PointInT>;
 
         using SourceT::path_;
         using SourceT::models_;
@@ -42,7 +44,7 @@ namespace pcl
         float radius_sphere_;
         float view_angle_;
         bool gen_organized_;
-        boost::function<bool
+        std::function<bool
         (const Eigen::Vector3f &)> campos_constraints_func_;
 
       public:
@@ -62,7 +64,7 @@ namespace pcl
         }
 
         void
-        setCamPosConstraints (boost::function<bool
+        setCamPosConstraints (std::function<bool
         (const Eigen::Vector3f &)> & bb)
         {
           campos_constraints_func_ = bb;
@@ -114,11 +116,7 @@ namespace pcl
                 std::vector < std::string > strs;
                 std::vector < std::string > strs_;
 
-#if BOOST_FILESYSTEM_VERSION == 3
                 std::string file = (itr->path ().filename ()).string();
-#else
-                std::string file = (itr->path ()).filename ();
-#endif
 
                 boost::split (strs, file, boost::is_any_of ("."));
                 boost::split (strs_, file, boost::is_any_of ("_"));
@@ -127,31 +125,27 @@ namespace pcl
 
                 if (extension == "pcd" && strs_[0] == "view")
                 {
-#if BOOST_FILESYSTEM_VERSION == 3
                   view_filenames.push_back ((itr->path ().filename ()).string());
-#else
-                  view_filenames.push_back ((itr->path ()).filename ());
-#endif
 
                   number_of_views++;
                 }
               }
             }
 
-            for (size_t i = 0; i < view_filenames.size (); i++)
+            for (const auto &view_filename : view_filenames)
             {
               std::stringstream view_file;
-              view_file << pathmodel.str () << "/" << view_filenames[i];
+              view_file << pathmodel.str () << "/" << view_filename;
               typename pcl::PointCloud<PointInT>::Ptr cloud (new pcl::PointCloud<PointInT> ());
               pcl::io::loadPCDFile (view_file.str (), *cloud);
 
               model.views_->push_back (cloud);
 
-              std::string file_replaced1 (view_filenames[i]);
+              std::string file_replaced1 (view_filename);
               boost::replace_all (file_replaced1, "view", "pose");
               boost::replace_all (file_replaced1, ".pcd", ".txt");
 
-              std::string file_replaced2 (view_filenames[i]);
+              std::string file_replaced2 (view_filename);
               boost::replace_all (file_replaced2, "view", "entropy");
               boost::replace_all (file_replaced2, ".pcd", ".txt");
 
@@ -269,18 +263,16 @@ namespace pcl
 
           models_.reset (new std::vector<ModelT>);
 
-          for (size_t i = 0; i < files.size (); i++)
+          for (const auto &filename : files)
           {
             ModelT m;
-            this->getIdAndClassFromFilename (files[i], m.id_, m.class_);
+            this->getIdAndClassFromFilename (filename, m.id_, m.class_);
 
             //check which of them have been trained using training_dir and the model_id_
             //load views, poses and self-occlusions for those that exist
             //generate otherwise
-            std::cout << files[i] << std::endl;
-            std::stringstream model_path;
-            model_path << path_ << "/" << files[i];
-            std::string path_model = model_path.str ();
+            std::cout << filename << std::endl;
+            std::string path_model = path_ + '/' + filename;
             loadOrGenerate (training_dir, path_model, m);
 
             models_->push_back (m);

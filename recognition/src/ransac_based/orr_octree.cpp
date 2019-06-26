@@ -51,7 +51,7 @@ using namespace pcl::recognition;
 pcl::recognition::ORROctree::ORROctree ()
 : voxel_size_ (-1.0),
   tree_levels_ (-1),
-  root_ (NULL)
+  root_ (nullptr)
 {
 }
 
@@ -63,7 +63,7 @@ pcl::recognition::ORROctree::clear ()
   if ( root_ )
   {
     delete root_;
-    root_ = NULL;
+    root_ = nullptr;
   }
 
   full_leaves_.clear();
@@ -106,7 +106,7 @@ pcl::recognition::ORROctree::build (const float* bounds, float voxel_size)
   root_ = new ORROctree::Node();
   root_->setCenter(center);
   root_->setBounds(bounds_);
-  root_->setParent(NULL);
+  root_->setParent(nullptr);
   root_->computeRadius();
 }
 
@@ -137,14 +137,13 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
          "[%f, %f]\n", min.x, max.x, min.y, max.y, min.z, max.z);
 #endif
 
-  int i, num_points = static_cast<int> (points.size ());
-  ORROctree::Node* node;
+  size_t num_points = points.size ();
 
   // Fill the leaves with the points
-  for ( i = 0 ; i < num_points ; ++i )
+  for (size_t i = 0 ; i < num_points ; ++i )
   {
     // Create a leaf which contains the i-th point.
-    node = this->createLeaf (points[i].x, points[i].y, points[i].z);
+    ORROctree::Node* node = this->createLeaf (points[i].x, points[i].y, points[i].z);
 
     // Make sure that the point is within some leaf
     if ( !node )
@@ -163,15 +162,13 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
   // Compute the normals and average points for each full octree node
   if ( normals )
   {
-    float normal_length;
-
-    for ( vector<ORROctree::Node*>::iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; )
+    for ( auto it = full_leaves_.begin() ; it != full_leaves_.end() ; )
     {
       // Compute the average point in the current octree leaf
       (*it)->getData ()->computeAveragePoint ();
 
       // Compute the length of the average normal
-      normal_length = aux::length3 ((*it)->getData ()->getNormal ());
+      float normal_length = aux::length3 ((*it)->getData ()->getNormal ());
 
       // We are suppose to use normals. However, it could be that all normals in this leaf are "illegal", because,
       // e.g., they were not available in the data set. In this case, remove the leaf from the octree.
@@ -190,8 +187,8 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
   else
   {
     // Iterate over all full leaves and average points
-    for ( vector<ORROctree::Node*>::iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it )
-      (*it)->getData ()->computeAveragePoint ();
+    for (const auto &full_leaf : full_leaves_)
+      full_leaf->getData ()->computeAveragePoint ();
   }
 
 #ifdef PCL_REC_ORR_OCTREE_VERBOSE
@@ -297,8 +294,6 @@ pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (const float* p, f
 
   ORROctree::Node *node, *child;
 
-  int i;
-
   while ( !nodes.empty () )
   {
     // Get the last element in the list
@@ -312,7 +307,7 @@ pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (const float* p, f
       // We have an intersection -> push back the children of the current node
       if ( node->hasChildren () )
       {
-        for ( i = 0 ; i < 8 ; ++i )
+        for ( int i = 0 ; i < 8 ; ++i )
         {
           child = node->getChild (i);
           // We do not want to push all children -> only children with children or leaves
@@ -338,7 +333,7 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float ra
   vector<int> tmp_ids;
   tmp_ids.reserve (8);
 
-  pcl::common::UniformGenerator<int> randgen (0, 1, static_cast<uint32_t> (time (NULL)));
+  pcl::common::UniformGenerator<int> randgen (0, 1, static_cast<uint32_t> (time (nullptr)));
 
   list<ORROctree::Node*> nodes;
   nodes.push_back (root_);
@@ -375,7 +370,7 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float ra
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 //================================================================================================================================================================
@@ -386,29 +381,29 @@ pcl::recognition::ORROctree::deleteBranch (Node* node)
   node->deleteChildren ();
   node->deleteData ();
 
-  Node *children, *parent = node->getParent ();
-  int i;
+  Node *parent = node->getParent ();
 
   // Go up until you reach a node which has other non-empty children (i.e., children with other children or with data)
   while ( parent )
   {
-    children = parent->getChildren ();
+    Node *children = parent->getChildren ();
     // Check the children
-	for ( i = 0 ; i < 8 ; ++i )
+    int i;
+    for ( i = 0 ; i < 8 ; ++i )
     {
       if ( children[i].hasData () || children[i].hasChildren () )
         break;
     }
 
-	// There are no children with other children or with data -> delete them all!
-	if ( i == 8 )
+    // There are no children with other children or with data -> delete them all!
+    if ( i == 8 )
     {
       parent->deleteChildren ();
       parent->deleteData ();
       // Go one level up
       parent = parent->getParent ();
     }
-	else
+    else
       // Terminate the deleting process
       break;
   }

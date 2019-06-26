@@ -63,11 +63,11 @@ namespace pcl
       using SampleConsensusModel<PointT>::error_sqr_dists_;
       using SampleConsensusModel<PointT>::isModelValid;
 
-      typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
-      typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
-      typedef typename SampleConsensusModel<PointT>::PointCloudConstPtr PointCloudConstPtr;
+      using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
+      using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
+      using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
 
-      typedef boost::shared_ptr<SampleConsensusModelRegistration> Ptr;
+      using Ptr = boost::shared_ptr<SampleConsensusModelRegistration<PointT> >;
 
       /** \brief Constructor for base SampleConsensusModelRegistration.
         * \param[in] cloud the input point cloud dataset
@@ -77,8 +77,6 @@ namespace pcl
                                         bool random = false) 
         : SampleConsensusModel<PointT> (cloud, random)
         , target_ ()
-        , indices_tgt_ ()
-        , correspondences_ ()
         , sample_dist_thresh_ (0)
       {
         // Call our own setInputCloud
@@ -98,8 +96,6 @@ namespace pcl
                                         bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random)
         , target_ ()
-        , indices_tgt_ ()
-        , correspondences_ ()
         , sample_dist_thresh_ (0)
       {
         computeOriginalIndexMapping ();
@@ -244,7 +240,7 @@ namespace pcl
         // Check if the covariance matrix is finite or not.
         for (int i = 0; i < 3; ++i)
           for (int j = 0; j < 3; ++j)
-            if (!pcl_isfinite (covariance_matrix.coeffRef (i, j)))
+            if (!std::isfinite (covariance_matrix.coeffRef (i, j)))
               PCL_ERROR ("[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold] Covariance matrix has NaN values! Is the input cloud finite?\n");
 
         Eigen::Vector3f eigen_values;
@@ -273,7 +269,7 @@ namespace pcl
         // Check if the covariance matrix is finite or not.
         for (int i = 0; i < 3; ++i)
           for (int j = 0; j < 3; ++j)
-            if (!pcl_isfinite (covariance_matrix.coeffRef (i, j)))
+            if (!std::isfinite (covariance_matrix.coeffRef (i, j)))
               PCL_ERROR ("[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold] Covariance matrix has NaN values! Is the input cloud finite?\n");
 
         Eigen::Vector3f eigen_values;

@@ -43,8 +43,10 @@
 #endif
 
 #include <pcl/io/openni_camera/openni_device_xtion.h>
-#include <sstream>
 #include <pcl/io/boost.h>
+
+#include <mutex>
+#include <sstream>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::DeviceXtionPro::DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node)
@@ -55,7 +57,7 @@ openni_wrapper::DeviceXtionPro::DeviceXtionPro (xn::Context& context, const xn::
   setDepthOutputMode (getDefaultDepthMode ());
   setIROutputMode (getDefaultIRMode ());
 
-  boost::lock_guard<boost::mutex> depth_lock (depth_mutex_);
+  std::lock_guard<std::mutex> depth_lock (depth_mutex_);
   XnStatus status = depth_generator_.SetIntProperty ("RegistrationType", 1);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("Error setting the registration type. Reason: %s", xnGetStatusString (status));

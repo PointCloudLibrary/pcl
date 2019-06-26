@@ -160,7 +160,7 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
     computePointPFHRGBSignature (*surface_, *normals_, nn_indices, nr_subdiv_, pfhrgb_histogram_);
 
     // Copy into the resultant cloud
-    for (int d = 0; d < pfhrgb_histogram_.size (); ++d) {
+    for (Eigen::Index d = 0; d < pfhrgb_histogram_.size (); ++d) {
       output.points[idx].histogram[d] = pfhrgb_histogram_[d];
 //      PCL_INFO ("%f ", pfhrgb_histogram_[d]);
     }

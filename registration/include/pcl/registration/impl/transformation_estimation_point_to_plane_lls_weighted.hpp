@@ -173,8 +173,8 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
                              typename std::vector<Scalar>::const_iterator& weights_it,
                              Matrix4 &transformation_matrix) const
 {
-  typedef Eigen::Matrix<double, 6, 1> Vector6d;
-  typedef Eigen::Matrix<double, 6, 6> Matrix6d;
+  using Vector6d = Eigen::Matrix<double, 6, 1>;
+  using Matrix6d = Eigen::Matrix<double, 6, 6>;
 
   Matrix6d ATA;
   Vector6d ATb;
@@ -183,15 +183,15 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
 
   while (source_it.isValid () && target_it.isValid ())
   {
-    if (!pcl_isfinite (source_it->x) ||
-        !pcl_isfinite (source_it->y) ||
-        !pcl_isfinite (source_it->z) ||
-        !pcl_isfinite (target_it->x) ||
-        !pcl_isfinite (target_it->y) ||
-        !pcl_isfinite (target_it->z) ||
-        !pcl_isfinite (target_it->normal_x) ||
-        !pcl_isfinite (target_it->normal_y) ||
-        !pcl_isfinite (target_it->normal_z))
+    if (!std::isfinite (source_it->x) ||
+        !std::isfinite (source_it->y) ||
+        !std::isfinite (source_it->z) ||
+        !std::isfinite (target_it->x) ||
+        !std::isfinite (target_it->y) ||
+        !std::isfinite (target_it->z) ||
+        !std::isfinite (target_it->normal_x) ||
+        !std::isfinite (target_it->normal_y) ||
+        !std::isfinite (target_it->normal_z))
     {
       ++ source_it;
       ++ target_it;

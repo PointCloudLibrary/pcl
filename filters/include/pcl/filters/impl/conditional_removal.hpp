@@ -49,7 +49,7 @@ template <typename PointT>
 pcl::FieldComparison<PointT>::FieldComparison (
     const std::string &field_name, ComparisonOps::CompareOp op, double compare_val) 
   : ComparisonBase<PointT> ()
-  , compare_val_ (compare_val), point_data_ (NULL)
+  , compare_val_ (compare_val), point_data_ (nullptr)
 {
   field_name_ = field_name;
   op_ = op;
@@ -93,10 +93,10 @@ pcl::FieldComparison<PointT>::FieldComparison (
 template <typename PointT>
 pcl::FieldComparison<PointT>::~FieldComparison () 
 {
-  if (point_data_ != NULL)
+  if (point_data_ != nullptr)
   {
     delete point_data_;
-    point_data_ = NULL;
+    point_data_ = nullptr;
   }
 }
 
@@ -380,7 +380,7 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
 //////////////////////////////////////////////////////////////////////////
 template<typename PointT>
 pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison () :
-  comp_matr_ (), comp_vect_ (), comp_scalar_ (0.0)
+  comp_scalar_ (0.0)
 {
   // get all the fields
   std::vector<pcl::PCLPointField> point_fields;
@@ -445,7 +445,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison (const pcl::Comp
                                                                  const Eigen::Vector3f &comparison_vector,
                                                                  const float &comparison_scalar,
                                                                  const Eigen::Affine3f &comparison_transform) :
-  comp_matr_ (), comp_vect_ (), comp_scalar_ (comparison_scalar)
+  comp_scalar_ (comparison_scalar)
 {
   // get all the fields
   std::vector<pcl::PCLPointField> point_fields;
@@ -682,7 +682,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     return;
   }
 
-  if (condition_.get () == NULL) 
+  if (condition_.get () == nullptr) 
   {
     PCL_WARN ("[pcl::%s::applyFilter] No filtering condition given!\n", getClassName ().c_str ());
     return;
@@ -712,9 +712,9 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     for (size_t cp = 0; cp < Filter<PointT>::indices_->size (); ++cp)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].x)
-          || !pcl_isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].y)
-          || !pcl_isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].z))
+      if (!std::isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].x)
+          || !std::isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].y)
+          || !std::isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].z))
       {
         if (extract_removed_indices_)
         {
@@ -782,7 +782,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
       }
     }
 
-    if (removed_p && !pcl_isfinite (user_filter_value_))
+    if (removed_p && !std::isfinite (user_filter_value_))
       output.is_dense = false;
   }
   removed_indices_->resize (nr_removed_p);

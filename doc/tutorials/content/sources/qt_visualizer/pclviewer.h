@@ -49,7 +49,7 @@ public Q_SLOTS:
   blueSliderValueChanged (int value);
 
 protected:
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+  pcl::visualization::PCLVisualizer::Ptr viewer;
   PointCloudT::Ptr cloud;
 
   unsigned int red;

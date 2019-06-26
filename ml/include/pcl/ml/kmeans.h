@@ -60,35 +60,35 @@ namespace pcl
   class PCL_EXPORTS Kmeans
   {
 /*
-    typedef PCLBase<PointT> BasePCLBase;
+    using BasePCLBase = PCLBase<PointT>;
 
     public:
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      typedef PointIndices::Ptr PointIndicesPtr;
-      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+      using PointIndicesPtr = PointIndices::Ptr;
+      using PointIndicesConstPtr = PointIndices::ConstPtr;
 */
 
     public:
 
-      typedef unsigned int PointId;    // the id of this point
-      typedef unsigned int ClusterId;  // the id of this cluster
+      using PointId = unsigned int;    // the id of this point
+      using ClusterId = unsigned int;  // the id of this cluster
 
 
-      //typedef std::vector<Coord> Point;    // a point (a centroid)
+      //using Point = std::vector<Coord>;    // a point (a centroid)
 
-      typedef std::set<PointId> SetPoints; // set of points
+      using SetPoints = std::set<PointId>; // set of points
 
-      typedef std::vector<float> Point;
+      using Point = std::vector<float>;
 
       // ClusterId -> (PointId, PointId, PointId, .... )
-      typedef std::vector<SetPoints> ClustersToPoints;
+      using ClustersToPoints = std::vector<SetPoints>;
       // PointId -> ClusterId
-      typedef std::vector<ClusterId> PointsToClusters; 
+      using PointsToClusters = std::vector<ClusterId>; 
       // coll of centroids
-      typedef std::vector<Point> Centroids;
+      using Centroids = std::vector<Point>;
 
 
       /** \brief Empty constructor. */
@@ -153,10 +153,8 @@ namespace pcl
         float total = 0.0;
         float diff;
     
-        Point::const_iterator cpx=x.begin(); 
-        Point::const_iterator cpy=y.begin();
-        Point::const_iterator cpx_end=x.end();
-        for(;cpx!=cpx_end;++cpx,++cpy){
+        auto cpy=y.cbegin();
+        for(auto cpx = x.cbegin(), cpx_end = x.cend(); cpx != cpx_end; ++cpx, ++cpy){
           diff = *cpx - *cpy;
           total += (diff * diff); 
         }

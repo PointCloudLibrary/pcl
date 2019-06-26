@@ -39,6 +39,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <climits>
+#include <thread>
 
 #include <boost/format.hpp>
 
@@ -63,10 +64,12 @@
 #include <vtkImageFlip.h>
 #include <vtkPolyLine.h>
 
+using namespace std::chrono_literals;
+
 /// *****  Type Definitions ***** ///
 
-typedef pcl::PointXYZRGBA PointT;  // The point type used for input
-typedef pcl::LCCPSegmentation<PointT>::SupervoxelAdjacencyList SuperVoxelAdjacencyList;
+using PointT = pcl::PointXYZRGBA;  // The point type used for input
+using SuperVoxelAdjacencyList = pcl::LCCPSegmentation<PointT>::SupervoxelAdjacencyList;
 
 /// Callback and variables
 
@@ -119,12 +122,12 @@ keyboardEventOccurred (const pcl::visualization::KeyboardEvent& event_arg,
 /** \brief Displays info text in the specified PCLVisualizer
  *  \param[in] viewer_arg The PCLVisualizer to modify  */
 void
-printText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg);
+printText (pcl::visualization::PCLVisualizer::Ptr viewer_arg);
 
 /** \brief Removes info text in the specified PCLVisualizer
  *  \param[in] viewer_arg The PCLVisualizer to modify  */
 void
-removeText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg);
+removeText (pcl::visualization::PCLVisualizer::Ptr viewer_arg);
 
 
 /// ---- main ---- ///
@@ -370,9 +373,9 @@ LCCPSegmentation Parameters: \n\
     // Currently this is a work-around creating a polygon mesh consisting of two triangles for each edge
     using namespace pcl;
 
-    typedef LCCPSegmentation<PointT>::VertexIterator VertexIterator;
-    typedef LCCPSegmentation<PointT>::AdjacencyIterator AdjacencyIterator;
-    typedef LCCPSegmentation<PointT>::EdgeID EdgeID;
+    using VertexIterator = LCCPSegmentation<PointT>::VertexIterator;
+    using AdjacencyIterator = LCCPSegmentation<PointT>::AdjacencyIterator;
+    using EdgeID = LCCPSegmentation<PointT>::EdgeID;
 
     std::set<EdgeID> edge_drawn;
 
@@ -447,7 +450,7 @@ LCCPSegmentation Parameters: \n\
     /// Configure Visualizer
     pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     viewer->setBackgroundColor (0, 0, 0);
-    viewer->registerKeyboardCallback (keyboardEventOccurred, 0);
+    viewer->registerKeyboardCallback (keyboardEventOccurred, nullptr);
     viewer->addPointCloud (lccp_labeled_cloud, "maincloud");
 
     /// Visualization Loop
@@ -492,7 +495,7 @@ LCCPSegmentation Parameters: \n\
           viewer->addText ("Press d to show help", 5, 10, 12, 1.0, 1.0, 1.0, "help_text");
       }
 
-      boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+      std::this_thread::sleep_for(100ms);
     }
   }  /// END if (show_visualization)
 
@@ -503,7 +506,7 @@ LCCPSegmentation Parameters: \n\
 /// -------------------------| Definitions of helper functions|-------------------------
 
 void
-printText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg)
+printText (pcl::visualization::PCLVisualizer::Ptr viewer_arg)
 {
   std::string on_str = "ON";
   std::string off_str = "OFF";
@@ -528,7 +531,7 @@ printText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg)
 }
 
 void
-removeText (boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_arg)
+removeText (pcl::visualization::PCLVisualizer::Ptr viewer_arg)
 {
   viewer_arg->removeShape ("hud_text");
   viewer_arg->removeShape ("normals_text");

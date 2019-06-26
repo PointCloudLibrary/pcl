@@ -55,9 +55,9 @@
 using namespace pcl;
 using namespace pcl::io;
 
-typedef SampleConsensusModelPlane<PointXYZ>::Ptr SampleConsensusModelPlanePtr;
-typedef SampleConsensusModelNormalPlane<PointXYZ, Normal>::Ptr SampleConsensusModelNormalPlanePtr;
-typedef SampleConsensusModelNormalParallelPlane<PointXYZ, Normal>::Ptr SampleConsensusModelNormalParallelPlanePtr;
+using SampleConsensusModelPlanePtr = SampleConsensusModelPlane<PointXYZ>::Ptr;
+using SampleConsensusModelNormalPlanePtr = SampleConsensusModelNormalPlane<PointXYZ, Normal>::Ptr;
+using SampleConsensusModelNormalParallelPlanePtr = SampleConsensusModelNormalParallelPlane<PointXYZ, Normal>::Ptr;
 
 PointCloud<PointXYZ>::Ptr cloud_ (new PointCloud<PointXYZ> ());
 PointCloud<Normal>::Ptr normals_ (new PointCloud<Normal> ());
@@ -123,7 +123,7 @@ TEST (SampleConsensusModelPlane, Base)
   cloud = model->getInputCloud ();
   ASSERT_EQ (cloud_->points.size (), cloud->points.size ());
 
-  boost::shared_ptr<std::vector<int> > indices = model->getIndices ();
+  auto indices = model->getIndices ();
   ASSERT_EQ (indices_.size (), indices->size ());
   model->setIndices (indices_);
   indices = model->getIndices ();
@@ -250,7 +250,7 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
   cloud.points.resize (10);
   normals.resize (10);
 
-  for (unsigned idx = 0; idx < cloud.size (); ++idx)
+  for (size_t idx = 0; idx < cloud.size (); ++idx)
   {
     cloud.points[idx].x = static_cast<float> ((rand () % 200) - 100);
     cloud.points[idx].y = static_cast<float> ((rand () % 200) - 100);

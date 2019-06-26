@@ -47,8 +47,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::NormalsActorItem::NormalsActorItem(QTreeWidgetItem* parent,
-                                               const boost::shared_ptr<CloudMesh>& cloud_mesh,
-                                               const vtkSmartPointer<vtkRenderWindow>& render_window)
+                                                 const CloudMesh::Ptr& cloud_mesh,
+                                                 const vtkSmartPointer<vtkRenderWindow>& render_window)
   :ChannelActorItem(parent, cloud_mesh, render_window, vtkSmartPointer<vtkLODActor>::New(), "Normals"),
   level_(10), scale_(0.1)
 {
@@ -72,7 +72,7 @@ pcl::modeler::NormalsActorItem::createNormalLines()
   if (cloud->empty())
     return;
 
-  if (points->GetData() == NULL)
+  if (points->GetData() == nullptr)
     points->SetData(vtkSmartPointer<vtkFloatArray>::New ());
 
   vtkFloatArray* data = dynamic_cast<vtkFloatArray*>(points->GetData());

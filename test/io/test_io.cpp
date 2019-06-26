@@ -274,18 +274,18 @@ TEST (PCL, ConcatenatePoints)
   cloud_a.points.resize (cloud_a.width * cloud_a.height);
   cloud_b.points.resize (cloud_b.width * cloud_b.height);
 
-  for (size_t i = 0; i < cloud_a.points.size (); ++i)
+  for (auto &point : cloud_a.points)
   {
-    cloud_a.points[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    cloud_a.points[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    cloud_a.points[i].z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    point.x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    point.y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    point.z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
   }
 
-  for (size_t i = 0; i < cloud_b.points.size (); ++i)
+  for (auto &point : cloud_b.points)
   {
-    cloud_b.points[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    cloud_b.points[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    cloud_b.points[i].z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    point.x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    point.y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    point.z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
   }
 
   // Copy the point cloud data
@@ -363,7 +363,7 @@ TEST (PCL, IO)
   cloud.points.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   size_t nr_p = cloud.points.size ();
   // Randomly create a new point cloud
   for (size_t i = 0; i < nr_p; ++i)
@@ -674,7 +674,7 @@ TEST (PCL, PCDReaderWriter)
   cloud.points.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   size_t nr_p = cloud.points.size ();
   // Randomly create a new point cloud
   for (size_t i = 0; i < nr_p; ++i)
@@ -794,7 +794,7 @@ TEST (PCL, ASCIIRead)
 
   afile<< std::setprecision(10);
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   size_t nr_p = cloud.points.size ();
   // Randomly create a new point cloud
   for (size_t i = 0; i < nr_p; ++i)
@@ -1067,7 +1067,7 @@ TEST (PCL, LZF)
   cloud.points.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   size_t nr_p = cloud.points.size ();
   // Randomly create a new point cloud
   for (size_t i = 0; i < nr_p; ++i)
@@ -1125,7 +1125,7 @@ TEST (PCL, LZFExtended)
   cloud.points.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   size_t nr_p = cloud.points.size ();
   // Randomly create a new point cloud
   for (size_t i = 0; i < nr_p; ++i)
@@ -1178,7 +1178,7 @@ TEST (PCL, LZFInMem)
   cloud.points.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   size_t nr_p = cloud.points.size ();
   // Randomly create a new point cloud
   for (size_t i = 0; i < nr_p; ++i)
@@ -1249,7 +1249,7 @@ TEST (PCL, Locale)
     cloud.points.resize (cloud.width * cloud.height);
     cloud.is_dense = true;
 
-    srand (static_cast<unsigned int> (time (NULL)));
+    srand (static_cast<unsigned int> (time (nullptr)));
     size_t nr_p = cloud.points.size ();
     // Randomly create a new point cloud
     cloud.points[0].x = std::numeric_limits<float>::quiet_NaN ();
@@ -1299,9 +1299,9 @@ TEST (PCL, Locale)
     EXPECT_EQ (cloud2.is_dense, false);
     EXPECT_EQ (cloud2.points.size (), cloud.points.size ());
   
-    EXPECT_TRUE (pcl_isnan(cloud2.points[0].x));
-    EXPECT_TRUE (pcl_isnan(cloud2.points[0].y));
-    EXPECT_TRUE (pcl_isnan(cloud2.points[0].z));
+    EXPECT_TRUE (std::isnan(cloud2.points[0].x));
+    EXPECT_TRUE (std::isnan(cloud2.points[0].y));
+    EXPECT_TRUE (std::isnan(cloud2.points[0].z));
     for (size_t i = 1; i < cloud2.points.size (); ++i)
     {
       ASSERT_FLOAT_EQ (cloud2.points[i].x, cloud.points[i].x);
@@ -1319,7 +1319,7 @@ TEST (PCL, Locale)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> class AutoIOTest : public testing::Test { };
-typedef ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_XYZ_POINT_TYPES PCL_NORMAL_POINT_TYPES)> PCLXyzNormalPointTypes;
+using PCLXyzNormalPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_XYZ_POINT_TYPES PCL_NORMAL_POINT_TYPES)>;
 TYPED_TEST_CASE (AutoIOTest, PCLXyzNormalPointTypes);
 TYPED_TEST (AutoIOTest, AutoLoadCloudFiles)
 {

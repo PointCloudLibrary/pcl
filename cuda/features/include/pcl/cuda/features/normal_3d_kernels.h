@@ -49,7 +49,7 @@ namespace pcl
     template <template <typename> class Storage>
     struct NormalEstimationKernel
     {
-      typedef boost::shared_ptr <const PointCloudAOS <Storage> > CloudConstPtr;
+      using CloudConstPtr = boost::shared_ptr <const PointCloudAOS <Storage> >;
       NormalEstimationKernel (const boost::shared_ptr <const PointCloudAOS <Storage> > &input, float focallength, float sqr_radius, float sqrt_desired_nr_neighbors)
         : points_ (thrust::raw_pointer_cast(&input->points[0]))
         , focallength_ (focallength)
@@ -155,7 +155,7 @@ namespace pcl
     template <template <typename> class Storage>
     struct NormalDeviationKernel
     {
-      typedef boost::shared_ptr <const PointCloudAOS <Storage> > CloudConstPtr;
+      using CloudConstPtr = boost::shared_ptr <const PointCloudAOS <Storage> >;
       NormalDeviationKernel (const boost::shared_ptr <const PointCloudAOS <Storage> > &input, float focallength, float sqr_radius, float sqrt_desired_nr_neighbors)
         : points_ (thrust::raw_pointer_cast(&input->points[0]))
         , focallength_ (focallength)

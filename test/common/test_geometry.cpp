@@ -45,7 +45,7 @@ using namespace pcl;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> class XYZPointTypesTest : public ::testing::Test { };
-typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_XYZ_POINT_TYPES)> XYZPointTypes;
+using XYZPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_XYZ_POINT_TYPES)>;
 TYPED_TEST_CASE(XYZPointTypesTest, XYZPointTypes);
 
 TYPED_TEST(XYZPointTypesTest, Distance)

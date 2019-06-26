@@ -137,7 +137,7 @@ main (int argc, char** argv)
   std::vector<int> pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
   std::vector<int> pclzf_file_indices = parse_file_extension_argument (argc, argv, ".pclzf");
   std::vector<int> xml_file_indices = parse_file_extension_argument (argc, argv, ".xml");
-  if (pcd_file_indices.size () != 1 || pclzf_file_indices.size () < 1 || xml_file_indices.size () != 1)
+  if (pcd_file_indices.size () != 1 || pclzf_file_indices.empty () || xml_file_indices.size () != 1)
   {
     print_error ("Need at least 1 input PCLZF file, one input XML file, and one output PCD file.\n");
     return (-1);

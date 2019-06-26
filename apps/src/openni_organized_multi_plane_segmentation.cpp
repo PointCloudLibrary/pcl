@@ -46,14 +46,17 @@
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/filters/extract_indices.h>
 
-typedef pcl::PointXYZRGBA PointT;
+#include <mutex>
+
+
+using PointT = pcl::PointXYZRGBA;
 
 class OpenNIOrganizedMultiPlaneSegmentation
 {
   private:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+    pcl::visualization::PCLVisualizer::Ptr viewer;
     pcl::PointCloud<PointT>::ConstPtr prev_cloud;
-    boost::mutex cloud_mutex;
+    std::mutex cloud_mutex;
 
   public:
     OpenNIOrganizedMultiPlaneSegmentation ()
@@ -64,10 +67,10 @@ class OpenNIOrganizedMultiPlaneSegmentation
     {
     }
 
-    boost::shared_ptr<pcl::visualization::PCLVisualizer>
+    pcl::visualization::PCLVisualizer::Ptr
     cloudViewer (pcl::PointCloud<PointT>::ConstPtr cloud)
     {
-      boost::shared_ptr < pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Viewer"));
+      pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("Viewer"));
       viewer->setBackgroundColor (0, 0, 0);
       pcl::visualization::PointCloudColorHandlerCustom<PointT> single_color (cloud, 0, 255, 0);
       viewer->addPointCloud<PointT> (cloud, single_color, "cloud");
@@ -108,7 +111,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber ();
 
-      boost::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f = boost::bind (&OpenNIOrganizedMultiPlaneSegmentation::cloud_cb_, this, _1);
+      std::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f = [this] (const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
       //make a viewer
       pcl::PointCloud<PointT>::Ptr init_cloud_ptr (new pcl::PointCloud<PointT>);

@@ -38,10 +38,10 @@
 /* SynchronizedQueue Template, taken from
  * http://stackoverflow.com/questions/10139251/shared-queue-c
  */
+#pragma once
 
-#ifndef SYNCHRONIZED_QUEUE_H_
-#define SYNCHRONIZED_QUEUE_H_
-
+#include <condition_variable>
+#include <mutex>
 #include <queue>
 
 namespace pcl
@@ -53,12 +53,12 @@ namespace pcl
     public:
 
       SynchronizedQueue () :
-        queue_(), mutex_(), cond_(), request_to_end_(false), enqueue_data_(true) { }
+        queue_(), request_to_end_(false), enqueue_data_(true) { }
 
       void
       enqueue (const T& data)
       {
-        boost::unique_lock<boost::mutex> lock (mutex_);
+        std::unique_lock<std::mutex> lock (mutex_);
 
         if (enqueue_data_)
         {
@@ -70,7 +70,7 @@ namespace pcl
       bool
       dequeue (T& result)
       {
-        boost::unique_lock<boost::mutex> lock (mutex_);
+        std::unique_lock<std::mutex> lock (mutex_);
 
         while (queue_.empty () && (!request_to_end_))
         {
@@ -92,7 +92,7 @@ namespace pcl
       void
       stopQueue ()
       {
-        boost::unique_lock<boost::mutex> lock (mutex_);
+        std::unique_lock<std::mutex> lock (mutex_);
         request_to_end_ = true;
         cond_.notify_one ();
       }
@@ -100,14 +100,14 @@ namespace pcl
       unsigned int
       size ()
       {
-        boost::unique_lock<boost::mutex> lock (mutex_);
+        std::unique_lock<std::mutex> lock (mutex_);
         return static_cast<unsigned int> (queue_.size ());
       }
 
       bool
       isEmpty () const
       {
-        boost::unique_lock<boost::mutex> lock (mutex_);
+        std::unique_lock<std::mutex> lock (mutex_);
         return (queue_.empty ());
       }
 
@@ -124,11 +124,10 @@ namespace pcl
       }
 
       std::queue<T> queue_;              // Use STL queue to store data
-      mutable boost::mutex mutex_;       // The mutex to synchronise on
-      boost::condition_variable cond_;   // The condition to wait for
+      mutable std::mutex mutex_;       // The mutex to synchronise on
+      std::condition_variable cond_;   // The condition to wait for
 
       bool request_to_end_;
       bool enqueue_data_;
   };
 }
-#endif /* SYNCHRONIZED_QUEUE_H_ */

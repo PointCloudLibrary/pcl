@@ -55,11 +55,13 @@ class TransformCommand : public Command
     TransformCommand (ConstSelectionPtr selection_ptr, CloudPtr cloud_ptr,
                       const float* matrix, float translate_x,
                       float translate_y, float translate_z);
-  
-    /// @brief Destructor
-    ~TransformCommand ()
-    {
-    }
+
+    /// @brief Copy constructor - object is not copy-constructable
+    TransformCommand (const TransformCommand&) = delete;
+
+    /// @brief Equal operator - object is non-copyable
+    TransformCommand&
+    operator= (const TransformCommand&) = delete;
 
   protected:
     // Transforms the coorindates of the selected points according to the transform
@@ -72,18 +74,6 @@ class TransformCommand : public Command
     undo () override;
 
   private:
-    /// @brief Copy constructor  - object is not copy-constructable
-    TransformCommand (const TransformCommand&)
-    {
-    }
-
-    /// @brief Equal operator - object is non-copyable
-    TransformCommand&
-    operator= (const TransformCommand&)
-    {
-      assert(false); return (*this);
-    }
-
     /// @brief Applies the transformation to the point values
     /// @param sel_ptr A pointer to the selection object whose points are to be
     /// transformed.

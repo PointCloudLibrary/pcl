@@ -62,7 +62,7 @@
 class ply_to_obj_converter
 {
   public:
-    typedef int flags_type;
+    using flags_type = int;
     enum { triangulate = 1 << 0 };
 
     ply_to_obj_converter (flags_type flags = 0);
@@ -81,15 +81,15 @@ class ply_to_obj_converter
     void
     error_callback (const std::string& filename, std::size_t line_number, const std::string& message);
 
-    boost::tuple<boost::function<void ()>, boost::function<void ()> > 
+    boost::tuple<std::function<void ()>, std::function<void ()> > 
     element_definition_callback (const std::string& element_name, std::size_t count);
 
-    template <typename ScalarType> boost::function<void (ScalarType)> 
+    template <typename ScalarType> std::function<void (ScalarType)> 
     scalar_property_definition_callback (const std::string& element_name, const std::string& property_name);
 
-    template <typename SizeType, typename ScalarType> boost::tuple<boost::function<void (SizeType)>, 
-                                                                      boost::function<void (ScalarType)>, 
-                                                                      boost::function<void ()> > 
+    template <typename SizeType, typename ScalarType> boost::tuple<std::function<void (SizeType)>, 
+                                                                      std::function<void (ScalarType)>, 
+                                                                      std::function<void ()> > 
     list_property_definition_callback (const std::string& element_name, const std::string& property_name);
 
     void
@@ -155,63 +155,54 @@ ply_to_obj_converter::error_callback (const std::string& filename, std::size_t l
   std::cerr << filename << ":" << line_number << ": " << "error: " << message << std::endl;
 }
 
-boost::tuple<boost::function<void ()>, boost::function<void ()> > 
+boost::tuple<std::function<void ()>, std::function<void ()> > 
 ply_to_obj_converter::element_definition_callback (const std::string& element_name, std::size_t)
 {
   if (element_name == "vertex") 
   {
-    return boost::tuple<boost::function<void ()>, boost::function<void ()> > (
+    return boost::tuple<std::function<void ()>, std::function<void ()> > (
       boost::bind (&ply_to_obj_converter::vertex_begin, this),
       boost::bind (&ply_to_obj_converter::vertex_end, this)
     );
   }
-  else if (element_name == "face") 
+  if (element_name == "face") 
   {
-    return boost::tuple<boost::function<void ()>, boost::function<void ()> > (
+    return boost::tuple<std::function<void ()>, std::function<void ()> > (
       boost::bind (&ply_to_obj_converter::face_begin, this),
       boost::bind (&ply_to_obj_converter::face_end, this)
     );
   }
-  else {
-    return boost::tuple<boost::function<void ()>, boost::function<void ()> > (0, 0);
-  }
+  return {};
 }
 
-template <> boost::function<void (pcl::io::ply::float32)> 
+template <> std::function<void (pcl::io::ply::float32)> 
 ply_to_obj_converter::scalar_property_definition_callback (const std::string& element_name, const std::string& property_name)
 {
   if (element_name == "vertex") {
     if (property_name == "x") {
       return boost::bind (&ply_to_obj_converter::vertex_x, this, _1);
     }
-    else if (property_name == "y") {
+    if (property_name == "y") {
       return boost::bind (&ply_to_obj_converter::vertex_y, this, _1);
     }
-    else if (property_name == "z") {
+    if (property_name == "z") {
       return boost::bind (&ply_to_obj_converter::vertex_z, this, _1);
     }
-    else {
-      return 0;
-    }
   }
-  else {
-    return 0;
-  }
+  return {};
 }
 
-template <> boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > 
+template <> boost::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > 
 ply_to_obj_converter::list_property_definition_callback (const std::string& element_name, const std::string& property_name)
 {
   if ((element_name == "face") && (property_name == "vertex_indices")) {
-    return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (
+    return boost::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
       boost::bind (&ply_to_obj_converter::face_vertex_indices_begin, this, _1),
       boost::bind (&ply_to_obj_converter::face_vertex_indices_element, this, _1),
       boost::bind (&ply_to_obj_converter::face_vertex_indices_end, this)
     );
   }
-  else {
-    return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (0, 0, 0);
-  }
+  return {};
 }
 
 void 
@@ -374,7 +365,7 @@ int main (int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else if ((short_opt == 'v') || (std::strcmp (long_opt, "version") == 0)) {
+    if ((short_opt == 'v') || (std::strcmp (long_opt, "version") == 0)) {
       std::cout << "ply2obj \n";
       std::cout << " Point Cloud Library (PCL) - www.pointclouds.org\n";
       std::cout << " Copyright (c) 2007-2012, Ares Lagae\n";
@@ -407,7 +398,7 @@ int main (int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else if ((short_opt == 'f') || (std::strcmp (long_opt, "flag") == 0)) {
+    if ((short_opt == 'f') || (std::strcmp (long_opt, "flag") == 0)) {
       if (strcmp (opt_arg, "triangulate") == 0) {
         ply_to_obj_converter_flags |= ply_to_obj_converter::triangulate;
       }

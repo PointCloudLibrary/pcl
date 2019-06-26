@@ -42,27 +42,14 @@
 #include <pcl/apps/point_cloud_editor/statistics.h>
 #include <pcl/apps/point_cloud_editor/common.h>
 
-CopyBuffer::CopyBuffer (const CopyBuffer& copy_buffer) :
-  buffer_(copy_buffer.buffer_)
-{
-}
-
-CopyBuffer&
-CopyBuffer::operator= (const CopyBuffer& copy_buffer)
-{
-  buffer_ = copy_buffer.buffer_;
-  return (*this);
-}
-
 void
 CopyBuffer::set (ConstCloudPtr cloud_ptr, const Selection& selection)
 {
   clean();
   if (!cloud_ptr)
       return;
-  Selection::const_iterator s_it;
-  for(s_it = selection.begin(); s_it != selection.end(); ++s_it)
-    buffer_.append( (*cloud_ptr)[*s_it] );
+  for(const unsigned int &s_it : selection)
+    buffer_.append( (*cloud_ptr)[s_it] );
 }
 
 const Cloud&

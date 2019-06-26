@@ -48,7 +48,6 @@ using pcl::console::print_error;
 using pcl::console::print_info;
 using pcl::console::print_value;
 
-//boost::mutex mutex_;
 boost::shared_ptr<pcl::ImageGrabber<pcl::PointXYZRGBA> > grabber;
 pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud_;
 std::string out_folder;
@@ -112,7 +111,7 @@ main (int argc, char** argv)
 
   pcl::console::parse_argument (argc, argv, "-out_dir", out_folder);
 
-  if (out_folder == "" || !boost::filesystem::exists (out_folder))
+  if (out_folder.empty() || !boost::filesystem::exists (out_folder))
   {
     PCL_INFO("No correct directory was given with the -out_dir flag. Setting to current dir\n");
     out_folder = "./";
@@ -120,7 +119,7 @@ main (int argc, char** argv)
   else
     PCL_INFO("Using %s as output dir", out_folder.c_str());
 
-  if (rgb_path != "" && depth_path != "" && boost::filesystem::exists (rgb_path) && boost::filesystem::exists (depth_path))
+  if (!rgb_path.empty() && !depth_path.empty() && boost::filesystem::exists (rgb_path) && boost::filesystem::exists (depth_path))
   {
     grabber.reset (new pcl::ImageGrabber<pcl::PointXYZRGBA> (depth_path, rgb_path, frames_per_second, false));
   }
@@ -134,7 +133,10 @@ main (int argc, char** argv)
   //grabber->setFocalLength(focal_length); // FIXME
 
   EventHelper h;
-  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
+  std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > f = [&] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+  {
+    h.cloud_cb (cloud);
+  };
   boost::signals2::connection c1 = grabber->registerCallback (f);
 
   do

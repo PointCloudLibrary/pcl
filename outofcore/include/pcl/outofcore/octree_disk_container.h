@@ -40,8 +40,12 @@
 #pragma once
 
 // C++
+#include <mutex>
 #include <vector>
 #include <string>
+
+// Boost
+#include <boost/uuid/random_generator.hpp>
 
 #include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_abstract_node_container.h>
@@ -73,7 +77,7 @@ namespace pcl
     {
   
       public:
-        typedef typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector AlignedPointTVector;
+        using AlignedPointTVector = typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector;
         
         /** \brief Empty constructor creates disk container and sets filename from random uuid string*/
         OutofcoreOctreeDiskContainer ();
@@ -197,7 +201,7 @@ namespace pcl
         inline std::string&
         path ()
         {
-          return (*disk_storage_filename_);
+          return (disk_storage_filename_);
         }
 
         inline void
@@ -206,8 +210,8 @@ namespace pcl
           //clear elements that have not yet been written to disk
           writebuff_.clear ();
           //remove the binary data in the directory
-          PCL_DEBUG ("[Octree Disk Container] Removing the point data from disk, in file %s\n",disk_storage_filename_->c_str ());
-          boost::filesystem::remove (boost::filesystem::path (disk_storage_filename_->c_str ()));
+          PCL_DEBUG ("[Octree Disk Container] Removing the point data from disk, in file %s\n", disk_storage_filename_.c_str ());
+          boost::filesystem::remove (boost::filesystem::path (disk_storage_filename_.c_str ()));
           //reset the size-of-file counter
           filelen_ = 0;
         }
@@ -219,11 +223,11 @@ namespace pcl
         void
         convertToXYZ (const boost::filesystem::path &path) override
         {
-          if (boost::filesystem::exists (*disk_storage_filename_))
+          if (boost::filesystem::exists (disk_storage_filename_))
           {
             FILE* fxyz = fopen (path.string ().c_str (), "we");
 
-            FILE* f = fopen (disk_storage_filename_->c_str (), "rbe");
+            FILE* f = fopen (disk_storage_filename_.c_str (), "rbe");
             assert (f != NULL);
 
             uint64_t num = size ();
@@ -279,7 +283,7 @@ namespace pcl
         flushWritebuff (const bool force_cache_dealloc);
     
         /** \brief Name of the storage file on disk (i.e., the PCD file) */
-        boost::shared_ptr<std::string> disk_storage_filename_;
+        std::string disk_storage_filename_;
 
         //--- possibly deprecated parameter variables --//
 
@@ -293,7 +297,7 @@ namespace pcl
 
         static const uint64_t WRITE_BUFF_MAX_;
 
-        static boost::mutex rng_mutex_;
+        static std::mutex rng_mutex_;
         static boost::mt19937 rand_gen_;
         static boost::uuids::basic_random_generator<boost::mt19937> uuid_gen_;
 

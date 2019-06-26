@@ -43,10 +43,10 @@
 using namespace pcl;
 using namespace std;
 
-typedef PointCloud <PointXYZRGBA>      CloudXYZRGBA;
-typedef PointCloud <PointXYZRGB>       CloudXYZRGB;
-typedef PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
-typedef PointCloud <PointXYZ>          CloudXYZ;
+using CloudXYZRGBA = PointCloud<PointXYZRGBA>;
+using CloudXYZRGB = PointCloud<PointXYZRGB>;
+using CloudXYZRGBNormal = PointCloud<PointXYZRGBNormal>;
+using CloudXYZ = PointCloud<PointXYZ>;
 
 PointXYZRGBA pt_xyz_rgba, pt_xyz_rgba2;
 PointXYZRGB pt_xyz_rgb;

@@ -63,8 +63,8 @@ namespace pcl
   class CVFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<CVFHEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const CVFHEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<CVFHEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const CVFHEstimation<PointInT, PointNT, PointOutT> >;
 
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
@@ -74,9 +74,9 @@ namespace pcl
       using Feature<PointInT, PointOutT>::surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename pcl::search::Search<PointNormal>::Ptr KdTreePtr;
-      typedef typename pcl::VFHEstimation<PointInT, PointNT, pcl::VFHSignature308> VFHEstimator;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using KdTreePtr = typename pcl::search::Search<PointNormal>::Ptr;
+      using VFHEstimator = pcl::VFHEstimation<PointInT, PointNT, pcl::VFHSignature308>;
 
       /** \brief Empty constructor. */
       CVFHEstimation () :
@@ -87,9 +87,7 @@ namespace pcl
         cluster_tolerance_ (leaf_size_ * 3), 
         eps_angle_threshold_ (0.125f), 
         min_points_ (50),
-        radius_normals_ (leaf_size_ * 3),
-        centroids_dominant_orientations_ (),
-        dominant_normals_ ()
+        radius_normals_ (leaf_size_ * 3)
       {
         search_radius_ = 0;
         k_ = 1;

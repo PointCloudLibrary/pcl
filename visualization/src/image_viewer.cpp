@@ -54,22 +54,16 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
-  : interactor_ ()
-  , mouse_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
+  : mouse_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
   , keyboard_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
-  , exit_main_loop_timer_callback_ ()
-  , exit_callback_ ()
   , win_ (vtkSmartPointer<vtkRenderWindow>::New ())
   , ren_ (vtkSmartPointer<vtkRenderer>::New ())
   , slice_ (vtkSmartPointer<vtkImageSlice>::New ())
   , interactor_style_ (vtkSmartPointer<ImageViewerInteractorStyle>::New ())
-  , data_ ()
   , data_size_ (0)
   , stopped_ ()
   , timer_id_ ()
-  , layer_map_ ()
   , algo_ (vtkSmartPointer<vtkImageFlip>::New ())
-  , image_data_ ()
 {
   interactor_ = vtkSmartPointer <vtkRenderWindowInteractor>::Take (vtkRenderWindowInteractorFixNew ());
 
@@ -386,15 +380,15 @@ pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
     interactor_->Start ();
     interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
   );
-  for(unsigned int i = 0; i < image_data_.size(); i++)
-	  delete [] image_data_[i];
+  for(auto &i : image_data_)
+    delete [] i;
   image_data_.clear ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
 pcl::visualization::ImageViewer::registerMouseCallback (
-    boost::function<void (const pcl::visualization::MouseEvent&)> callback)
+    std::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
   // just add observer at first time when a callback is registered
   if (mouse_signal_.empty ())
@@ -415,7 +409,7 @@ pcl::visualization::ImageViewer::registerMouseCallback (
 //////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
 pcl::visualization::ImageViewer::registerKeyboardCallback (
-    boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
+    std::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
   // just add observer at first time when a callback is registered
   if (keyboard_signal_.empty ())
@@ -831,7 +825,7 @@ pcl::visualization::ImageViewer::markPoints (
     const std::vector<int>& uv, Vector3ub fg_color, Vector3ub bg_color, double size,
     const std::string &layer_id, double opacity)
 {
-  if (uv.size () == 0)
+  if (uv.empty ())
     return;
 
   std::vector<float> float_uv (uv.size ());
@@ -846,7 +840,7 @@ pcl::visualization::ImageViewer::markPoints (
     const std::vector<float>& uv, Vector3ub fg_color, Vector3ub bg_color, double size,
     const std::string &layer_id, double opacity)
 {
-  if (uv.size () == 0)
+  if (uv.empty ())
     return;
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -871,8 +865,8 @@ void
 pcl::visualization::ImageViewer::render ()
 {
   win_->Render ();
-  for(unsigned int i = 0; i < image_data_.size(); i++)
-	  delete [] image_data_[i];
+  for(auto &i : image_data_)
+    delete [] i;
   image_data_.clear ();
 }
 
@@ -883,9 +877,9 @@ pcl::visualization::ImageViewer::convertIntensityCloudToUChar (
     boost::shared_array<unsigned char> data)
 {
   int j = 0;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (const auto &point : cloud.points)
   {
-    data[j++] = static_cast <unsigned char> (cloud.points[i].intensity * 255);
+    data[j++] = static_cast <unsigned char> (point.intensity * 255);
   }
 }
 
@@ -896,8 +890,8 @@ pcl::visualization::ImageViewer::convertIntensityCloud8uToUChar (
     boost::shared_array<unsigned char> data)
 {
   int j = 0;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
-    data[j++] = static_cast<unsigned char> (cloud.points[i].intensity);
+  for (const auto &point : cloud.points)
+    data[j++] = static_cast<unsigned char> (point.intensity);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -962,7 +956,7 @@ pcl::visualization::ImageViewerInteractorStyle::OnLeftButtonDown ()
   int y = Interactor->GetEventPosition ()[1];
 
   FindPokedRenderer (x, y);
-  if (CurrentRenderer == NULL)
+  if (!CurrentRenderer)
     return;
 
   // Redefine this button to handle window/level

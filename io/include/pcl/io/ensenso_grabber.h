@@ -46,12 +46,13 @@
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
 #include <pcl/io/boost.h>
-#include <boost/thread.hpp>
 
 #include <pcl/io/grabber.h>
 #include <pcl/common/synchronizer.h>
 
 #include <nxLib.h> // Ensenso SDK
+
+#include <thread>
 
 namespace pcl
 {
@@ -66,23 +67,20 @@ namespace pcl
    */
   class PCL_EXPORTS EnsensoGrabber : public Grabber
   {
-      typedef std::pair<pcl::PCLImage, pcl::PCLImage> PairOfImages;
+      using PairOfImages = std::pair<pcl::PCLImage, pcl::PCLImage>;
 
     public:
       /** @cond */
-      typedef boost::shared_ptr<EnsensoGrabber> Ptr;
-      typedef boost::shared_ptr<const EnsensoGrabber> ConstPtr;
+      using Ptr = boost::shared_ptr<EnsensoGrabber>;
+      using ConstPtr = boost::shared_ptr<const EnsensoGrabber>;
 
       // Define callback signature typedefs
-      typedef void
-      (sig_cb_ensenso_point_cloud) (const pcl::PointCloud<pcl::PointXYZ>::Ptr &);
+      using sig_cb_ensenso_point_cloud = void() (const pcl::PointCloud<pcl::PointXYZ>::Ptr &);
 
-      typedef void
-      (sig_cb_ensenso_images) (const boost::shared_ptr<PairOfImages> &);
+      using sig_cb_ensenso_images void() (const boost::shared_ptr<PairOfImages> &);
 
-      typedef void
-      (sig_cb_ensenso_point_cloud_images) (const pcl::PointCloud<pcl::PointXYZ>::Ptr &,
-                                           const boost::shared_ptr<PairOfImages> &);
+      using sig_cb_ensenso_point_cloud_images = void()
+	    (const pcl::PointCloud<pcl::PointXYZ>::Ptr &, const boost::shared_ptr<PairOfImages> &);
      /** @endcond */
 
       /** @brief Constructor */
@@ -435,7 +433,7 @@ namespace pcl
 
     protected:
       /** @brief Grabber thread */
-      boost::thread grabber_thread_;
+      std::thread grabber_thread_;
 
       /** @brief Boost point cloud signal */
       boost::signals2::signal<sig_cb_ensenso_point_cloud>* point_cloud_signal_;
@@ -459,7 +457,7 @@ namespace pcl
       pcl::EventFrequency frequency_;
 
       /** @brief Mutual exclusion for FPS computation */
-      mutable boost::mutex fps_mutex_;
+      mutable std::mutex fps_mutex_;
 
       /** @brief Convert an Ensenso time stamp into a PCL/ROS time stamp
        * @param[in] ensenso_stamp

@@ -118,7 +118,7 @@ namespace pcl
 
           protected:
             void
-            setData (NodeData* data){ if ( data_ ) delete data_; data_ = data;}
+            setData (NodeData* data){ delete data_; data_ = data;}
 
             inline bool
             createChildren ();

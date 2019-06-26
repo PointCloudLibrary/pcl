@@ -65,10 +65,10 @@ namespace pcl
       class PCL_EXPORTS DominantPlaneSegmentation
       {
       public:
-        typedef pcl::PointCloud<PointType> Cloud;
-        typedef typename Cloud::Ptr CloudPtr;
-        typedef typename Cloud::ConstPtr CloudConstPtr;
-        typedef typename pcl::search::KdTree<PointType>::Ptr KdTreePtr;
+        using Cloud = pcl::PointCloud<PointType>;
+        using CloudPtr = typename Cloud::Ptr;
+        using CloudConstPtr = typename Cloud::ConstPtr;
+        using KdTreePtr = typename pcl::search::KdTree<PointType>::Ptr;
 
         DominantPlaneSegmentation ()
         {

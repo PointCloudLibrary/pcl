@@ -58,13 +58,13 @@ pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT, IntensitySelecto
   Eigen::Matrix3f A = Eigen::Matrix3f::Zero ();
   Eigen::Vector3f b = Eigen::Vector3f::Zero ();
 
-  for (size_t i_point = 0; i_point < indices.size (); ++i_point)
+  for (const int &nn_index : indices)
   {
-    PointInT p = cloud.points[indices[i_point]];
-    if (!pcl_isfinite (p.x) ||
-        !pcl_isfinite (p.y) ||
-        !pcl_isfinite (p.z) ||
-        !pcl_isfinite (intensity_ (p)))
+    PointInT p = cloud.points[nn_index];
+    if (!std::isfinite (p.x) ||
+        !std::isfinite (p.y) ||
+        !std::isfinite (p.z) ||
+        !std::isfinite (intensity_ (p)))
       continue;
 
     p.x -= point[0];
@@ -171,10 +171,10 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
       float mean_intensity = 0;
       // Initialize to 0
       centroid.setZero ();
-      for (size_t i = 0; i < nn_indices.size (); ++i)
+      for (const int &nn_index : nn_indices)
       {
-        centroid += surface_->points[nn_indices[i]].getVector3fMap ();
-        mean_intensity += intensity_ (surface_->points[nn_indices[i]]);
+        centroid += surface_->points[nn_index].getVector3fMap ();
+        mean_intensity += intensity_ (surface_->points[nn_index]);
       }
       centroid /= static_cast<float> (nn_indices.size ());
       mean_intensity /= static_cast<float> (nn_indices.size ());
@@ -209,14 +209,14 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
       // Initialize to 0
       centroid.setZero ();
       unsigned cp = 0;
-      for (size_t i = 0; i < nn_indices.size (); ++i)
+      for (const int &nn_index : nn_indices)
       {
         // Check if the point is invalid
-        if (!isFinite ((*surface_) [nn_indices[i]]))
+        if (!isFinite ((*surface_) [nn_index]))
           continue;
 
-        centroid += surface_->points [nn_indices[i]].getVector3fMap ();
-        mean_intensity += intensity_ (surface_->points [nn_indices[i]]);
+        centroid += surface_->points [nn_index].getVector3fMap ();
+        mean_intensity += intensity_ (surface_->points [nn_index]);
         ++cp;
       }
       centroid /= static_cast<float> (cp);

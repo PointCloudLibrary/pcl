@@ -12,9 +12,9 @@
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline
 pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::Node ()
-: data_ (0),
-  parent_ (0),
-  children_(0)
+: data_ (nullptr),
+  parent_ (nullptr),
+  children_(nullptr)
 {}
 
 //===============================================================================================================================
@@ -157,7 +157,7 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::deleteC
   if ( children_ )
   {
     delete[] children_;
-    children_ = 0;
+    children_ = nullptr;
   }
 }
 
@@ -169,7 +169,7 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::deleteD
   if ( data_ )
   {
     delete data_;
-    data_ = 0;
+    data_ = nullptr;
   }
 }
 
@@ -190,7 +190,7 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::makeNei
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline
 pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::SimpleOctree ()
 : tree_levels_ (0),
-  root_ (0)
+  root_ (nullptr)
 {
 }
 
@@ -210,7 +210,7 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::clear ()
   if ( root_ )
   {
     delete root_;
-    root_ = 0;
+    root_ = nullptr;
   }
 
   full_leaves_.clear();
@@ -258,7 +258,7 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::build (const 
   root_ = new Node ();
   root_->setCenter (center);
   root_->setBounds (bounds_);
-  root_->setParent (NULL);
+  root_->setParent (nullptr);
   root_->computeRadius ();
 }
 
@@ -273,7 +273,7 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::createLeaf (S
        y < bounds_[2] || y > bounds_[3] ||
        z < bounds_[4] || z > bounds_[5] )
   {
-    return (NULL);
+    return (nullptr);
   }
 
   Node* node = root_;
@@ -329,7 +329,7 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::getFullLeaf (
        y < bounds_[2] || y > bounds_[3] ||
        z < bounds_[4] || z > bounds_[5] )
   {
-    return (NULL);
+    return (nullptr);
   }
 
   Node* node = root_;
@@ -340,7 +340,7 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::getFullLeaf (
   for ( int l = 0 ; l < tree_levels_ ; ++l )
   {
     if ( !node->hasChildren () )
-      return (NULL);
+      return (nullptr);
 
     c = node->getCenter ();
     id = 0;
@@ -353,7 +353,7 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::getFullLeaf (
   }
 
   if ( !node->hasData () )
-    return (NULL);
+    return (nullptr);
 
   return (node);
 }

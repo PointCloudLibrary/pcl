@@ -29,9 +29,6 @@ if(QHULL_FOUND)
 endif()
 
 if(VTK_FOUND AND NOT ANDROID)
-  set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
-  include("${VTK_USE_FILE}")
-
   set(VTK_SMOOTHING_INCLUDES
     "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk.h"
     "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_utils.h"
@@ -48,8 +45,6 @@ if(VTK_FOUND AND NOT ANDROID)
     src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
     src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp
   )
-
-  set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommonCore vtkCommonDataModel vtkCommonExecutionModel vtkFiltersModeling)
 endif()
 
 set(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS")
@@ -83,6 +78,7 @@ set(POISSON_INCLUDES
   "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/ppolynomial.hpp"
   "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/sparse_matrix.hpp"
   "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/vector.hpp"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/poisson_exceptions.h"
 )
 
 set(POISSON_SOURCES
@@ -160,12 +156,12 @@ include_directories(SYSTEM
   ${VTK_INCLUDE_DIRS}
 )
 link_directories(${VTK_LIBRARY_DIRS})
-PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${impl_incs} ${VTK_SMOOTHING_INCLUDES} ${POISSON_INCLUDES} ${OPENNURBS_INCLUDES} ${ON_NURBS_INCLUDES})
+PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs} ${VTK_SMOOTHING_INCLUDES} ${POISSON_INCLUDES} ${OPENNURBS_INCLUDES} ${ON_NURBS_INCLUDES})
 target_link_libraries("${LIB_NAME}" pcl_common pcl_search pcl_kdtree pcl_octree ${VTK_LIBRARIES} ${ON_NURBS_LIBRARIES})
 if(QHULL_FOUND)
   target_link_libraries("${LIB_NAME}" ${QHULL_LIBRARIES})
 endif()
-PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
+PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})

@@ -44,6 +44,7 @@
 #include <boost/fusion/include/mpl.hpp>
 #include <boost/fusion/include/for_each.hpp>
 #include <boost/fusion/include/as_vector.hpp>
+#include <boost/fusion/include/filter_if.hpp>
 
 #include <pcl/point_types.h>
 
@@ -66,7 +67,7 @@ namespace pcl
     {
 
       // Requires that point type has x, y, and z fields
-      typedef pcl::traits::has_xyz<boost::mpl::_1> IsCompatible;
+      using IsCompatible = pcl::traits::has_xyz<boost::mpl::_1>;
 
       // Storage
       Eigen::Vector3f xyz;
@@ -87,7 +88,7 @@ namespace pcl
     {
 
       // Requires that point type has normal_x, normal_y, and normal_z fields
-      typedef pcl::traits::has_normal<boost::mpl::_1> IsCompatible;
+      using IsCompatible = pcl::traits::has_normal<boost::mpl::_1>;
 
       // Storage
       Eigen::Vector4f normal;
@@ -120,7 +121,7 @@ namespace pcl
     {
 
       // Requires that point type has curvature field
-      typedef pcl::traits::has_curvature<boost::mpl::_1> IsCompatible;
+      using IsCompatible = pcl::traits::has_curvature<boost::mpl::_1>;
 
       // Storage
       float curvature;
@@ -139,7 +140,7 @@ namespace pcl
     {
 
       // Requires that point type has rgb or rgba field
-      typedef pcl::traits::has_color<boost::mpl::_1> IsCompatible;
+      using IsCompatible = pcl::traits::has_color<boost::mpl::_1>;
 
       // Storage
       float r, g, b, a;
@@ -170,7 +171,7 @@ namespace pcl
     {
 
       // Requires that point type has intensity field
-      typedef pcl::traits::has_intensity<boost::mpl::_1> IsCompatible;
+      using IsCompatible = pcl::traits::has_intensity<boost::mpl::_1>;
 
       // Storage
       float intensity;
@@ -189,7 +190,7 @@ namespace pcl
     {
 
       // Requires that point type has label field
-      typedef pcl::traits::has_label<boost::mpl::_1> IsCompatible;
+      using IsCompatible = pcl::traits::has_label<boost::mpl::_1>;
 
       // Storage
       // A better performance may be achieved with a heap structure
@@ -200,7 +201,7 @@ namespace pcl
       template <typename PointT> void
       add (const PointT& t)
       {
-        std::map<uint32_t, size_t>::iterator itr = labels.find (t.label);
+        auto itr = labels.find (t.label);
         if (itr == labels.end ())
           labels.insert (std::make_pair (t.label, 1));
         else
@@ -211,31 +212,34 @@ namespace pcl
       get (PointT& t, size_t) const
       {
         size_t max = 0;
-        std::map<uint32_t, size_t>::const_iterator itr;
-        for (itr = labels.begin (); itr != labels.end (); ++itr)
-          if (itr->second > max)
+        for (const auto &label : labels)
+          if (label.second > max)
           {
-            max = itr->second;
-            t.label = itr->first;
+            max = label.second;
+            t.label = label.first;
           }
       }
 
     };
 
-    /* This is a meta-function that may be used to create a Fusion vector of
-     * those accumulator types that are compatible with given point type(s). */
-
+    /* Meta-function that checks if an accumulator is compatible with given
+     * point type(s). */
     template <typename Point1T, typename Point2T = Point1T>
+    struct IsAccumulatorCompatible {
+
+      template <typename AccumulatorT>
+      struct apply : boost::mpl::and_<
+                       boost::mpl::apply<typename AccumulatorT::IsCompatible, Point1T>,
+                       boost::mpl::apply<typename AccumulatorT::IsCompatible, Point2T>
+                     > {};
+    };
+
+    /* Meta-function that creates a Fusion vector of accumulator types that are
+     * compatible with a given point type. */
+    template <typename PointT>
     struct Accumulators
     {
-
-      // Check if a given accumulator type is compatible with a given point type
-      template <typename AccumulatorT, typename PointT>
-      struct IsCompatible : boost::mpl::apply<typename AccumulatorT::IsCompatible, PointT> { };
-
-      // A Fusion vector with accumulator types that are compatible with given
-      // point types
-      typedef
+      using type =
         typename boost::fusion::result_of::as_vector<
           typename boost::mpl::filter_view<
             boost::mpl::vector<
@@ -246,18 +250,13 @@ namespace pcl
             , AccumulatorIntensity
             , AccumulatorLabel
             >
-          , boost::mpl::and_<
-              IsCompatible<boost::mpl::_1, Point1T>
-            , IsCompatible<boost::mpl::_1, Point2T>
-            >
+          , IsAccumulatorCompatible<PointT>
           >
-        >::type
-      type;
+        >::type;
     };
 
     /* Fusion function object to invoke point addition on every accumulator in
      * a fusion sequence. */
-
     template <typename PointT>
     struct AddPoint
     {
@@ -276,7 +275,6 @@ namespace pcl
 
     /* Fusion function object to invoke get point on every accumulator in a
      * fusion sequence. */
-
     template <typename PointT>
     struct GetPoint
     {

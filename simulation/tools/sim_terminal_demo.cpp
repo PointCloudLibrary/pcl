@@ -57,7 +57,7 @@ void write_sim_output(const string &fname_root){
   simexample->rl_->getPointCloud (pc_out,false,simexample->camera_->getPose ());
   // TODO: what to do when there are more than one simulated view?
 
-  if (pc_out->points.size()>0){
+  if (!pc_out->points.empty ()){
     std::cout << pc_out->points.size() << " points written to file\n";
 
     pcl::PCDWriter writer;

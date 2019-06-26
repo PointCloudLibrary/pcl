@@ -58,22 +58,21 @@ namespace pcl
         using typename Comparator<PointT>::PointCloud;
         using typename Comparator<PointT>::PointCloudConstPtr;
 
-        typedef typename pcl::PointCloud<PointLT> PointCloudL;
-        typedef typename PointCloudL::Ptr PointCloudLPtr;
-        typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+        using PointCloudL = pcl::PointCloud<PointLT>;
+        using PointCloudLPtr = typename PointCloudL::Ptr;
+        using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
-        typedef boost::shared_ptr<EuclideanClusterComparator<PointT, PointLT> > Ptr;
-        typedef boost::shared_ptr<const EuclideanClusterComparator<PointT, PointLT> > ConstPtr;
+        using Ptr = boost::shared_ptr<EuclideanClusterComparator<PointT, PointLT> >;
+        using ConstPtr = boost::shared_ptr<const EuclideanClusterComparator<PointT, PointLT> >;
 
-        typedef std::set<uint32_t> ExcludeLabelSet;
-        typedef boost::shared_ptr<ExcludeLabelSet> ExcludeLabelSetPtr;
-        typedef boost::shared_ptr<const ExcludeLabelSet> ExcludeLabelSetConstPtr;
+        using ExcludeLabelSet = std::set<uint32_t>;
+        using ExcludeLabelSetPtr = boost::shared_ptr<ExcludeLabelSet>;
+        using ExcludeLabelSetConstPtr = boost::shared_ptr<const ExcludeLabelSet>;
 
         /** \brief Default constructor for EuclideanClusterComparator. */
         EuclideanClusterComparator ()
           : distance_threshold_ (0.005f)
           , depth_dependent_ ()
-          , z_axis_ ()
         {}
 
         void
@@ -201,12 +200,12 @@ namespace pcl
 
     public:
 
-      typedef typename pcl::PointCloud<PointNT> PointCloudN;
-      typedef typename PointCloudN::Ptr PointCloudNPtr;
-      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+      using PointCloudN = pcl::PointCloud<PointNT>;
+      using PointCloudNPtr = typename PointCloudN::Ptr;
+      using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
 
-      typedef boost::shared_ptr<EuclideanClusterComparator<PointT, PointNT, PointLT> > Ptr;
-      typedef boost::shared_ptr<const EuclideanClusterComparator<PointT, PointNT, PointLT> > ConstPtr;
+      using Ptr = boost::shared_ptr<EuclideanClusterComparator<PointT, PointNT, PointLT> >;
+      using ConstPtr = boost::shared_ptr<const EuclideanClusterComparator<PointT, PointNT, PointLT> >;
 
       using experimental::EuclideanClusterComparator<PointT, PointLT>::setExcludeLabels;
 
@@ -252,7 +251,7 @@ namespace pcl
       setExcludeLabels (const std::vector<bool>& exclude_labels)
       {
         exclude_labels_ = boost::make_shared<std::set<uint32_t> > ();
-        for (uint32_t i = 0; i < exclude_labels.size (); ++i)
+        for (size_t i = 0; i < exclude_labels.size (); ++i)
           if (exclude_labels[i])
             exclude_labels_->insert (i);
       }

@@ -45,8 +45,8 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::console;
 
-typedef PointCloud<PointXYZRGBA> Cloud;
-typedef Cloud::ConstPtr CloudConstPtr;
+using Cloud = PointCloud<PointXYZRGBA>;
+using CloudConstPtr = Cloud::ConstPtr;
 
 int i = 0;
 char buf[4096];
@@ -83,7 +83,7 @@ main (int argc, char **argv)
   }
 
   pcl::ONIGrabber* grabber = new pcl::ONIGrabber (argv[1], false, false);
-  boost::function<void (const CloudConstPtr&) > f = boost::bind (&cloud_cb, _1);
+  std::function<void (const CloudConstPtr&) > f = [] (const CloudConstPtr& cloud) { cloud_cb (cloud); };
   boost::signals2::connection c = grabber->registerCallback (f);
 
   while (grabber->hasDataLeft ())

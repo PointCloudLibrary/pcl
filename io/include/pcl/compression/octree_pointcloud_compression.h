@@ -73,19 +73,19 @@ namespace pcl
     {
       public:
         // public typedefs
-        typedef typename OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::PointCloud PointCloud;
-        typedef typename OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::PointCloudPtr PointCloudPtr;
-        typedef typename OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::PointCloudConstPtr PointCloudConstPtr;
+        using PointCloud = typename OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::PointCloud;
+        using PointCloudPtr = typename OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::PointCloudPtr;
+        using PointCloudConstPtr = typename OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::PointCloudConstPtr;
 
         // Boost shared pointers
-        typedef boost::shared_ptr<OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT> > Ptr;
-        typedef boost::shared_ptr<const OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT> > ConstPtr;
+        using Ptr = boost::shared_ptr<OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT> >;
+        using ConstPtr = boost::shared_ptr<const OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT> >;
 
-        typedef typename OctreeT::LeafNode LeafNode;
-        typedef typename OctreeT::BranchNode BranchNode;
+        using LeafNode = typename OctreeT::LeafNode;
+        using BranchNode = typename OctreeT::BranchNode;
 
-        typedef OctreePointCloudCompression<PointT, LeafT, BranchT, Octree2BufBase<LeafT, BranchT> > RealTimeStreamCompression;
-        typedef OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeBase<LeafT, BranchT> > SinglePointCloudCompressionLowMemory;
+        using RealTimeStreamCompression = OctreePointCloudCompression<PointT, LeafT, BranchT, Octree2BufBase<LeafT, BranchT> >;
+        using SinglePointCloudCompressionLowMemory = OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeBase<LeafT, BranchT> >;
 
 
         /** \brief Constructor
@@ -108,13 +108,8 @@ namespace pcl
                                const unsigned char colorBitResolution_arg = 6) :
           OctreePointCloud<PointT, LeafT, BranchT, OctreeT> (octreeResolution_arg),
           output_ (PointCloudPtr ()),
-          binary_tree_data_vector_ (),
-          binary_color_tree_vector_ (),
-          point_count_data_vector_ (),
-          point_count_data_vector_iterator_ (),
           color_coder_ (),
           point_coder_ (),
-          entropy_coder_ (),
           do_voxel_grid_enDecoding_ (doVoxelGridDownDownSampling_arg), i_frame_rate_ (iFrameRate_arg),
           i_frame_counter_ (0), frame_ID_ (0), point_count_ (0), i_frame_ (true),
           do_color_encoding_ (doColorEncoding_arg), cloud_with_color_ (false), data_with_color_ (false),

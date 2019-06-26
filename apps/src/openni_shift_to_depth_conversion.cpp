@@ -49,6 +49,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <thread>
 
 #include <boost/asio.hpp>
 
@@ -58,14 +59,14 @@ using namespace pcl;
 using namespace pcl::io;
 
 using namespace std;
-
+using namespace std::chrono_literals;
 
 class SimpleOpenNIViewer
 {
   public:
     SimpleOpenNIViewer () :
       viewer_ ("Input Point Cloud - Shift-to-depth conversion viewer"),
-      grabber_(0)
+      grabber_(nullptr)
     {
     }
 
@@ -76,8 +77,8 @@ class SimpleOpenNIViewer
     }
 
     void
-    image_callback (const boost::shared_ptr<openni_wrapper::Image> &image,
-                    const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, float)
+    image_callback (const openni_wrapper::Image::Ptr &image,
+                    const openni_wrapper::DepthImage::Ptr &depth_image, float)
     {
 
       vector<uint16_t> raw_shift_data;
@@ -132,16 +133,19 @@ class SimpleOpenNIViewer
       grabber_->getDevice ()->setDepthOutputFormat (static_cast<openni_wrapper::OpenNIDevice::DepthMode> (depthformat));
 
       // define image callback
-      boost::function<void
-      (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float)> image_cb =
-          boost::bind (&SimpleOpenNIViewer::image_callback, this, _1, _2, _3);
+      std::function<void
+      (const openni_wrapper::Image::Ptr&, const openni_wrapper::DepthImage::Ptr&, float)> image_cb =
+          [this] (const openni_wrapper::Image::Ptr& img, const openni_wrapper::DepthImage::Ptr& depth, float f)
+          {
+            image_callback (img, depth, f);
+          };
       boost::signals2::connection image_connection = grabber_->registerCallback (image_cb);
 
       // start grabber thread
       grabber_->start ();
       while (true)
       {
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+        std::this_thread::sleep_for(1s);
       }
       grabber_->stop ();
 
@@ -158,10 +162,7 @@ protected:
            float focalLength_arg,
            pcl::PointCloud<PointXYZRGB>& cloud_arg) const
   {
-    size_t i;
     size_t cloud_size = width_arg * height_arg;
-
-    int x, y, centerX, centerY;
 
     // Reset point cloud
     cloud_arg.points.clear ();
@@ -173,15 +174,15 @@ protected:
     cloud_arg.is_dense = false;
 
     // Calculate center of disparity image
-    centerX = static_cast<int> (width_arg / 2);
-    centerY = static_cast<int> (height_arg / 2);
+    int centerX = static_cast<int> (width_arg / 2);
+    int centerY = static_cast<int> (height_arg / 2);
 
     const float fl_const = 1.0f / focalLength_arg;
     static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-    i = 0;
-    for (y = -centerY; y < +centerY; ++y)
-      for (x = -centerX; x < +centerX; ++x)
+    size_t i = 0;
+    for (int y = -centerY; y < +centerY; ++y)
+      for (int x = -centerX; x < +centerX; ++x)
       {
         PointXYZRGB newPoint;
 
@@ -196,20 +197,16 @@ protected:
           newPoint.x = static_cast<float> (x) * depth * fl_const;
           newPoint.y = static_cast<float> (y) * depth * fl_const;
 
-          const uint8_t& pixel_r = rgbData_arg[i * 3 + 0];
-          const uint8_t& pixel_g = rgbData_arg[i * 3 + 1];
-          const uint8_t& pixel_b = rgbData_arg[i * 3 + 2];
-
           // Define point color
-          uint32_t rgb = (static_cast<uint32_t> (pixel_r) << 16 | static_cast<uint32_t> (pixel_g) << 8
-              | static_cast<uint32_t> (pixel_b));
-          newPoint.rgb = *reinterpret_cast<float*> (&rgb);
+          newPoint.r = rgbData_arg[i * 3 + 0];
+          newPoint.g = rgbData_arg[i * 3 + 1];
+          newPoint.b = rgbData_arg[i * 3 + 2];
         }
         else
         {
           // Define bad point
           newPoint.x = newPoint.y = newPoint.z = bad_point;
-          newPoint.rgb = 0.0f;
+          newPoint.rgba = 0;
         }
 
         // Add point to cloud

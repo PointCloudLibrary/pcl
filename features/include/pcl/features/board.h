@@ -58,8 +58,8 @@ namespace pcl
   class BOARDLocalReferenceFrameEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> >;
 
       /** \brief Constructor. */
       BOARDLocalReferenceFrameEstimation () :
@@ -68,12 +68,7 @@ namespace pcl
         margin_thresh_ (0.85f),
         check_margin_array_size_ (24),
         hole_size_prob_thresh_ (0.2f),
-        steep_thresh_ (0.1f),
-        check_margin_array_ (),
-        margin_array_min_angle_ (),
-        margin_array_max_angle_ (),
-        margin_array_min_angle_normal_ (),
-        margin_array_max_angle_normal_ ()
+        steep_thresh_ (0.1f)
       {
         feature_name_ = "BOARDLocalReferenceFrameEstimation";
         setCheckMarginArraySize (check_margin_array_size_);
@@ -235,8 +230,8 @@ namespace pcl
       using Feature<PointInT, PointOutT>::search_parameter_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
       void
       resetData ()

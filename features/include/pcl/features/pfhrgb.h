@@ -48,19 +48,19 @@ namespace pcl
   class PFHRGBEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<PFHRGBEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const PFHRGBEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<PFHRGBEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const PFHRGBEstimation<PointInT, PointNT, PointOutT> >;
       using PCLBase<PointInT>::indices_;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::surface_;
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_parameter_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
 
       PFHRGBEstimation ()
-        : nr_subdiv_ (5), pfhrgb_histogram_ (), pfhrgb_tuple_ (), d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI)))
+        : nr_subdiv_ (5), d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI)))
       {
         feature_name_ = "PFHRGBEstimation";
       }

@@ -89,7 +89,7 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
         bbox_max = Eigen::Vector3f (maxx, maxy, maxz);
         tree.boxSearch (bbox_min, bbox_max, pt_indices);
 
-        if (pt_indices.size () > 0)
+        if (!pt_indices.empty ())
         {
           Eigen::Vector4f min_pt, max_pt;
           pcl::getMinMax3D<PointT> (*cloud_in, pt_indices, min_pt, max_pt);
@@ -132,7 +132,7 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
         bbox_max = Eigen::Vector3f (maxx, maxy, maxz);
         tree.boxSearch (bbox_min, bbox_max, pt_indices);
 
-        if (pt_indices.size () > 0)
+        if (!pt_indices.empty ())
         {
           Eigen::Vector4f min_pt, max_pt;
           pcl::getMinMax3D<PointT> (cloud_temp, pt_indices, min_pt, max_pt);
@@ -169,7 +169,7 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
         bbox_max = Eigen::Vector3f (maxx, maxy, maxz);
         tree.boxSearch (bbox_min, bbox_max, pt_indices);
 
-        if (pt_indices.size () > 0)
+        if (!pt_indices.empty ())
         {
           Eigen::Vector4f min_pt, max_pt;
           pcl::getMinMax3D<PointT> (cloud_temp, pt_indices, min_pt, max_pt);

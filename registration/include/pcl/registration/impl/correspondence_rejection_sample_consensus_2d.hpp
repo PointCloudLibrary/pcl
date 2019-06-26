@@ -41,6 +41,8 @@
 #include <pcl/sample_consensus/sac_model_registration_2d.h>
 #include <pcl/sample_consensus/ransac.h>
 
+#include <unordered_map>
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
 pcl::registration::CorrespondenceRejectorSampleConsensus2D<PointT>::getRemainingCorrespondences (
@@ -114,7 +116,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus2D<PointT>::getRemaining
       return;
     }
 
-    boost::unordered_map<int, int> index_to_correspondence;
+    std::unordered_map<int, int> index_to_correspondence;
     for (int i = 0; i < nr_correspondences; ++i)
       index_to_correspondence[original_correspondences[i].index_query] = i;
 

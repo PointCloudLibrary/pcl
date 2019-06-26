@@ -348,7 +348,7 @@ namespace pcl
         Real* GetSolutionGrid( int& res , float isoValue=0.f , int depth=-1 );
 
         template<typename PointNT> int
-        setTree( boost::shared_ptr<const pcl::PointCloud<PointNT> > input_ , int maxDepth , int minDepth ,
+        setTree(typename pcl::PointCloud<PointNT>::ConstPtr input_ , int maxDepth , int minDepth ,
                  int kernelDepth , Real samplesPerNode , Real scaleFactor , Point3D<Real>& center , Real& scale ,
                  int useConfidence , Real constraintWeight , bool adaptiveWeights );
 

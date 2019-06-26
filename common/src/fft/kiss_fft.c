@@ -141,7 +141,6 @@ static void kf_bfly5(
         )
 {
     kiss_fft_cpx *Fout0,*Fout1,*Fout2,*Fout3,*Fout4;
-    int u;
     kiss_fft_cpx scratch[13];
     kiss_fft_cpx * twiddles = st->twiddles;
     kiss_fft_cpx *tw;
@@ -156,7 +155,7 @@ static void kf_bfly5(
     Fout4=Fout0+4*m;
 
     tw=st->twiddles;
-    for ( u=0; u<m; ++u ) {
+    for (int u=0; u<m; ++u ) {
         C_FIXDIV( *Fout0,5); C_FIXDIV( *Fout1,5); C_FIXDIV( *Fout2,5); C_FIXDIV( *Fout3,5); C_FIXDIV( *Fout4,5);
         scratch[0] = *Fout0;
 
@@ -203,26 +202,25 @@ static void kf_bfly_generic(
         int p
         )
 {
-    int u,k,q1,q;
     kiss_fft_cpx * twiddles = st->twiddles;
     kiss_fft_cpx t;
     int Norig = st->nfft;
 
     kiss_fft_cpx * scratch = (kiss_fft_cpx*)KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx)*p);
 
-    for ( u=0; u<m; ++u ) {
-        k=u;
-        for ( q1=0 ; q1<p ; ++q1 ) {
+    for (int u=0; u<m; ++u ) {
+        int k=u;
+        for (int q1=0; q1<p; ++q1 ) {
             scratch[q1] = Fout[ k  ];
             C_FIXDIV(scratch[q1],p);
             k += m;
         }
 
         k=u;
-        for ( q1=0 ; q1<p ; ++q1 ) {
+        for (int q1=0; q1<p; ++q1 ) {
             int twidx=0;
             Fout[ k ] = scratch[0];
-            for (q=1;q<p;++q ) {
+            for (int q=1; q<p; ++q ) {
                 twidx += fstride * k;
                 if (twidx>=Norig) twidx-=Norig;
                 C_MUL(t,scratch[q] , twiddles[twidx] );

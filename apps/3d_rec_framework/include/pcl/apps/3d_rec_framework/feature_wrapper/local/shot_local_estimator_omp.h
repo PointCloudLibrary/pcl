@@ -20,9 +20,9 @@ namespace pcl
       class SHOTLocalEstimationOMP : public LocalEstimator<PointInT, FeatureT>
       {
 
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
-        typedef typename pcl::PointCloud<FeatureT>::Ptr FeatureTPtr;
-        typedef pcl::PointCloud<pcl::PointXYZ> KeypointCloud;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
+        using FeatureTPtr = typename pcl::PointCloud<FeatureT>::Ptr;
+        using KeypointCloud = pcl::PointCloud<pcl::PointXYZ>;
 
         using LocalEstimator<PointInT, FeatureT>::support_radius_;
         using LocalEstimator<PointInT, FeatureT>::normal_estimator_;
@@ -41,7 +41,7 @@ namespace pcl
             return false;
           }
 
-          if (keypoint_extractor_.size() == 0)
+          if (keypoint_extractor_.empty ())
           {
             PCL_ERROR("SHOTLocalEstimationOMP :: This feature needs a keypoint extractor... please provide one\n");
             return false;
@@ -88,14 +88,14 @@ namespace pcl
           this->computeKeypoints(processed, keypoints, normals);
           std::cout << " " << normals->points.size() << " " << processed->points.size() << std::endl;
 
-          if (keypoints->points.size () == 0)
+          if (keypoints->points.empty ())
           {
             PCL_WARN("SHOTLocalEstimationOMP :: No keypoints were found\n");
             return false;
           }
 
           //compute signatures
-          typedef typename pcl::SHOTEstimationOMP<PointInT, pcl::Normal, pcl::SHOT352> SHOTEstimator;
+          using SHOTEstimator = pcl::SHOTEstimationOMP<PointInT, pcl::Normal, pcl::SHOT352>;
           typename pcl::search::KdTree<PointInT>::Ptr tree (new pcl::search::KdTree<PointInT>);
           tree->setInputCloud (processed);
 
@@ -120,13 +120,13 @@ namespace pcl
           int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
 
           int good = 0;
-          for (size_t k = 0; k < shots->points.size (); k++)
+          for (const auto &point : shots->points)
           {
 
             int NaNs = 0;
             for (int i = 0; i < size_feat; i++)
             {
-              if (!pcl_isfinite(shots->points[k].descriptor[i]))
+              if (!std::isfinite(point.descriptor[i]))
                 NaNs++;
             }
 
@@ -134,7 +134,7 @@ namespace pcl
             {
               for (int i = 0; i < size_feat; i++)
               {
-                signatures->points[good].histogram[i] = shots->points[k].descriptor[i];
+                signatures->points[good].histogram[i] = point.descriptor[i];
               }
 
               good++;

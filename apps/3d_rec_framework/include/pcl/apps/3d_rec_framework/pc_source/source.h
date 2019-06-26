@@ -29,8 +29,8 @@ namespace pcl
     template<typename PointT>
       class Model
       {
-        typedef typename pcl::PointCloud<PointT>::Ptr PointTPtr;
-        typedef typename pcl::PointCloud<PointT>::ConstPtr PointTPtrConst;
+        using PointTPtr = typename pcl::PointCloud<PointT>::Ptr;
+        using PointTPtrConst = typename pcl::PointCloud<PointT>::ConstPtr;
 
       public:
         boost::shared_ptr<std::vector<PointTPtr> > views_;
@@ -82,7 +82,7 @@ namespace pcl
     {
 
     protected:
-      typedef Model<PointInT> ModelT;
+      using ModelT = Model<PointInT>;
       std::string path_;
       boost::shared_ptr<std::vector<ModelT> > models_;
       float model_scale_;
@@ -90,7 +90,7 @@ namespace pcl
       bool load_views_;
 
       void
-      getIdAndClassFromFilename (std::string & filename, std::string & id, std::string & classname)
+      getIdAndClassFromFilename (const std::string & filename, std::string & id, std::string & classname)
       {
 
         std::vector < std::string > strs;
@@ -125,9 +125,9 @@ namespace pcl
 
         std::stringstream ss;
         ss << training_dir << "/";
-        for (size_t i = 0; i < strs.size (); i++)
+        for (const auto &str : strs)
         {
-          ss << strs[i] << "/";
+          ss << str << "/";
           bf::path trained_dir = ss.str ();
           if (!bf::exists (trained_dir))
           bf::create_directory (trained_dir);
@@ -174,11 +174,7 @@ namespace pcl
           //check if its a directory, then get models in it
           if (bf::is_directory (*itr))
           {
-#if BOOST_FILESYSTEM_VERSION == 3
             std::string so_far = rel_path_so_far + (itr->path ().filename ()).string() + "/";
-#else
-            std::string so_far = rel_path_so_far + (itr->path ()).filename () + "/";
-#endif
 
             bf::path curr_path = itr->path ();
             getModelsInDirectory (curr_path, so_far, relative_paths, ext);
@@ -187,22 +183,14 @@ namespace pcl
           {
             //check that it is a ply file and then add, otherwise ignore..
             std::vector < std::string > strs;
-#if BOOST_FILESYSTEM_VERSION == 3
             std::string file = (itr->path ().filename ()).string();
-#else
-            std::string file = (itr->path ()).filename ();
-#endif
 
             boost::split (strs, file, boost::is_any_of ("."));
             std::string extension = strs[strs.size () - 1];
 
-            if (extension.compare (ext) == 0)
+            if (extension == ext)
             {
-#if BOOST_FILESYSTEM_VERSION == 3
               std::string path = rel_path_so_far + (itr->path ().filename ()).string();
-#else
-              std::string path = rel_path_so_far + (itr->path ()).filename ();
-#endif
 
               relative_paths.push_back (path);
             }
@@ -241,7 +229,7 @@ namespace pcl
         typename std::vector<ModelT>::iterator it = models_->begin ();
         while (it != models_->end ())
         {
-          if (model_id.compare ((*it).id_) != 0)
+          if (model_id != (*it).id_)
           {
             it = models_->erase (it);
           }
@@ -261,12 +249,7 @@ namespace pcl
         dir << base_dir << "/" << m.class_ << "/" << m.id_ << "/" << descr_name;
         bf::path desc_dir = dir.str ();
         std::cout << dir.str () << std::endl;
-        if (bf::exists (desc_dir))
-        {
-          return true;
-        }
-
-        return false;
+        return bf::exists (desc_dir);
       }
 
       std::string

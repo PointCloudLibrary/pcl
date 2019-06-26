@@ -50,7 +50,6 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
-//#include <pcl/io/tar_io.h>
 #include <pcl/surface/convex_hull.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -62,10 +61,14 @@
 #include <pcl/segmentation/edge_aware_plane_comparator.h>
 #include <pcl/geometry/polygon_operations.h>
 
+#include <mutex>
+#include <thread>
+
 using namespace pcl;
 using namespace std;
+using namespace std::chrono_literals;
 
-typedef PointXYZRGBA PointT;
+using PointT = PointXYZRGBA;
 
 #define SHOW_FPS 1
 
@@ -73,9 +76,9 @@ typedef PointXYZRGBA PointT;
 class NILinemod
 {
   public:
-    typedef PointCloud<PointT> Cloud;
-    typedef Cloud::Ptr CloudPtr;
-    typedef Cloud::ConstPtr CloudConstPtr;
+    using Cloud = PointCloud<PointT>;
+    using CloudPtr = Cloud::Ptr;
+    using CloudConstPtr = Cloud::ConstPtr;
     bool added;
 
     NILinemod (Grabber& grabber)
@@ -107,7 +110,7 @@ class NILinemod
     cloud_callback (const CloudConstPtr& cloud)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
       search_.setInputCloud (cloud);
 
@@ -169,7 +172,7 @@ class NILinemod
     getLatestCloud ()
     {
       // Lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       CloudConstPtr temp_cloud;
       temp_cloud.swap (cloud_);
       return (temp_cloud);
@@ -256,12 +259,9 @@ class NILinemod
       Label l; l.label = 0;
       PointCloud<Label>::Ptr scene (new PointCloud<Label> (cloud->width, cloud->height, l));
       // Mask the objects that we want to split into clusters
-      for (int i = 0; i < static_cast<int> (points_above_plane->indices.size ()); ++i)
-        scene->points[points_above_plane->indices[i]].label = 1;
+      for (const int &index : points_above_plane->indices)
+        scene->points[index].label = 1;
       euclidean_cluster_comparator->setLabels (scene);
-
-      boost::shared_ptr<std::set<uint32_t> > exclude_labels = boost::make_shared<std::set<uint32_t> > ();
-      exclude_labels->insert (0);
 
       OrganizedConnectedComponentSegmentation<PointT, Label> euclidean_segmentation (euclidean_cluster_comparator);
       euclidean_segmentation.setInputCloud (cloud);
@@ -272,17 +272,17 @@ class NILinemod
 
       // For each cluster found
       bool cluster_found = false;
-      for (size_t i = 0; i < euclidean_label_indices.size (); i++)
+      for (const auto &euclidean_label_index : euclidean_label_indices)
       {
         if (cluster_found)
           break;
         // Check if the point that we picked belongs to it
-        for (size_t j = 0; j < euclidean_label_indices[i].indices.size (); ++j)
+        for (size_t j = 0; j < euclidean_label_index.indices.size (); ++j)
         {
-          if (picked_idx != euclidean_label_indices[i].indices[j])
+          if (picked_idx != euclidean_label_index.indices[j])
             continue;
           //pcl::PointCloud<PointT> cluster;
-          pcl::copyPointCloud (*cloud, euclidean_label_indices[i].indices, object);
+          pcl::copyPointCloud (*cloud, euclidean_label_index.indices, object);
           cluster_found = true;
           break;
           //object_indices = euclidean_label_indices[i].indices;
@@ -377,7 +377,7 @@ class NILinemod
       vector<float> distances (1);
 
       // Use mutices to make sure we get the right cloud
-      boost::mutex::scoped_lock lock1 (cloud_mutex_);
+      std::lock_guard<std::mutex> lock1 (cloud_mutex_);
 
       // Get the point that was picked
       PointT picked_pt;
@@ -473,7 +473,7 @@ class NILinemod
       cloud_viewer_.registerMouseCallback (&NILinemod::mouse_callback, *this);
       cloud_viewer_.registerKeyboardCallback(&NILinemod::keyboard_callback, *this);
       cloud_viewer_.registerPointPickingCallback (&NILinemod::pp_callback, *this);
-      boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&NILinemod::cloud_callback, this, _1);
+      std::function<void (const CloudConstPtr&) > cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
       cloud_connection = grabber_.registerCallback (cloud_cb);
       
       image_viewer_.registerMouseCallback (&NILinemod::mouse_callback, *this);
@@ -527,7 +527,7 @@ class NILinemod
         cloud_viewer_.spinOnce ();
 
         image_viewer_.spinOnce ();
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
       }
 
       grabber_.stop ();
@@ -537,7 +537,7 @@ class NILinemod
     
     visualization::PCLVisualizer cloud_viewer_;
     Grabber& grabber_;
-    boost::mutex cloud_mutex_;
+    std::mutex cloud_mutex_;
     CloudConstPtr cloud_;
     
     visualization::ImageViewer image_viewer_;

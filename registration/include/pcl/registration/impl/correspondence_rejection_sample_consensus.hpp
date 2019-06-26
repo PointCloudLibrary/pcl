@@ -40,7 +40,7 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
@@ -80,7 +80,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
    {
      // From the set of correspondences found, attempt to remove outliers
      // Create the registration model
-     typedef typename pcl::SampleConsensusModelRegistration<PointT>::Ptr SampleConsensusModelRegistrationPtr;
+     using SampleConsensusModelRegistrationPtr = typename pcl::SampleConsensusModelRegistration<PointT>::Ptr;
      SampleConsensusModelRegistrationPtr model;
      model.reset (new pcl::SampleConsensusModelRegistration<PointT> (input_, source_indices));
      // Pass the target_indices
@@ -113,7 +113,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
          best_transformation_.setIdentity ();
          return;
        }
-       boost::unordered_map<int, int> index_to_correspondence;
+       std::unordered_map<int, int> index_to_correspondence;
        for (int i = 0; i < nr_correspondences; ++i)
          index_to_correspondence[original_correspondences[i].index_query] = i;
 
@@ -124,8 +124,8 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
        if (save_inliers_)
        {
          inlier_indices_.reserve (inliers.size ());
-         for (size_t i = 0; i < inliers.size (); ++i)
-           inlier_indices_.push_back (index_to_correspondence[inliers[i]]);
+         for (const int &inlier : inliers)
+           inlier_indices_.push_back (index_to_correspondence[inlier]);
        }
 
        // get best transformation

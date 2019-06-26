@@ -65,13 +65,13 @@ namespace pcl
 
       public:
         // public typedefs for single/double buffering
-        typedef OctreePointCloudOccupancy<PointT, LeafContainerT, BranchContainerT> SingleBuffer;
-        typedef OctreePointCloudOccupancy<PointT, LeafContainerT, BranchContainerT> DoubleBuffer;
+        using SingleBuffer = OctreePointCloudOccupancy<PointT, LeafContainerT, BranchContainerT>;
+        using DoubleBuffer = OctreePointCloudOccupancy<PointT, LeafContainerT, BranchContainerT>;
 
         // public point cloud typedefs
-        typedef typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::PointCloud PointCloud;
-        typedef typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::PointCloudPtr PointCloudPtr;
-        typedef typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::PointCloudConstPtr PointCloudConstPtr;
+        using PointCloud = typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::PointCloud;
+        using PointCloudPtr = typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::PointCloudPtr;
+        using PointCloudConstPtr = typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::PointCloudConstPtr;
 
         /** \brief Constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
@@ -108,9 +108,7 @@ namespace pcl
          *  \param cloud_arg:  input point cloud
          * */
         void setOccupiedVoxelsAtPointsFromCloud( PointCloudPtr cloud_arg ) {
-            size_t i;
-
-            for (i = 0; i < cloud_arg->points.size (); i++)
+            for (size_t i = 0; i < cloud_arg->points.size (); i++)
             {
               // check for NaNs
               if (isFinite(cloud_arg->points[i])) {

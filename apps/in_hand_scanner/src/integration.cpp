@@ -101,7 +101,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
     const PointXYZRGBNormal& pt_d = cloud_data->operator [] (c);
     const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-    if (!boost::math::isnan (pt_d.x) && weight > min_weight_)
+    if (!std::isnan (pt_d.x) && weight > min_weight_)
     {
       cloud_model->operator [] (c) = PointIHS (pt_d, weight);
     }
@@ -113,7 +113,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
       const PointXYZRGBNormal& pt_d = cloud_data->operator [] (r*width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (!boost::math::isnan (pt_d.x) && weight > min_weight_)
+      if (!std::isnan (pt_d.x) && weight > min_weight_)
       {
         cloud_model->operator [] (r*width + c) = PointIHS (pt_d, weight);
       }
@@ -163,7 +163,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
 
       const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (!boost::math::isnan (pt_d_0.x) && weight > min_weight_)
+      if (!std::isnan (pt_d_0.x) && weight > min_weight_)
       {
         pt_m_0 = PointIHS (pt_d_0, weight);
       }
@@ -213,7 +213,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
   // Nearest neighbor search
   CloudXYZPtr xyz_model (new CloudXYZ ());
   xyz_model->reserve (mesh_model->sizeVertices ());
-  for (unsigned int i=0; i<mesh_model->sizeVertices (); ++i)
+  for (size_t i=0; i<mesh_model->sizeVertices (); ++i)
   {
     const PointIHS& pt = mesh_model->getVertexDataCloud () [i];
     xyz_model->push_back (PointXYZ (pt.x, pt.y, pt.z));
@@ -242,7 +242,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
     const PointXYZRGBNormal& pt_d = cloud_data->operator [] (c);
     const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-    if (!boost::math::isnan (pt_d.x) && weight > min_weight_)
+    if (!std::isnan (pt_d.x) && weight > min_weight_)
     {
       PointIHS& pt_d_t = cloud_data_transformed->operator [] (c);
       pt_d_t = PointIHS (pt_d, weight);
@@ -257,7 +257,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
       const PointXYZRGBNormal& pt_d = cloud_data->operator [] (r*width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (!boost::math::isnan (pt_d.x) && weight > min_weight_)
+      if (!std::isnan (pt_d.x) && weight > min_weight_)
       {
         PointIHS& pt_d_t = cloud_data_transformed->operator [] (r*width + c);
         pt_d_t = PointIHS (pt_d, weight);
@@ -312,7 +312,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
 
       const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (!boost::math::isnan (pt_d_0.x) && weight > min_weight_)
+      if (!std::isnan (pt_d_0.x) && weight > min_weight_)
       {
         pt_d_t_0 = PointIHS (pt_d_0, weight);
         pt_d_t_0.getVector4fMap ()       = T * pt_d_t_0.getVector4fMap ();
@@ -388,7 +388,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
 void
 pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
 {
-  for (unsigned int i=0; i<mesh->sizeVertices (); ++i)
+  for (size_t i=0; i<mesh->sizeVertices (); ++i)
   {
     PointIHS& pt = mesh->getVertexDataCloud () [i];
     if (pt.age < max_age_)
@@ -422,7 +422,7 @@ pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
 void
 pcl::ihs::Integration::removeUnfitVertices (const MeshPtr& mesh, const bool cleanup) const
 {
-  for (unsigned int i=0; i<mesh->sizeVertices (); ++i)
+  for (size_t i=0; i<mesh->sizeVertices (); ++i)
   {
     if (pcl::ihs::countDirections (mesh->getVertexDataCloud () [i].directions) < min_directions_)
     {
@@ -519,10 +519,10 @@ pcl::ihs::Integration::addToMesh (const PointIHS& pt_0,
   // |   |
   // 3 - 0
   const unsigned char is_finite = static_cast <unsigned char> (
-                                    (1 * !boost::math::isnan (pt_0.x)) |
-                                    (2 * !boost::math::isnan (pt_1.x)) |
-                                    (4 * !boost::math::isnan (pt_2.x)) |
-                                    (8 * !boost::math::isnan (pt_3.x)));
+                                    (1 * !std::isnan (pt_0.x)) |
+                                    (2 * !std::isnan (pt_1.x)) |
+                                    (4 * !std::isnan (pt_2.x)) |
+                                    (8 * !std::isnan (pt_3.x)));
 
   switch (is_finite)
   {

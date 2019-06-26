@@ -49,12 +49,10 @@ namespace pcl
     {
        QList<QTreeWidgetItem*> selected_items = selectedItems();
        QList<T*> selected_t_items;
-       for (QList<QTreeWidgetItem*>::iterator selected_items_it = selected_items.begin();
-         selected_items_it != selected_items.end();
-         ++ selected_items_it)
+       for (auto &selected_item : selected_items)
        {
-         T* t_item = dynamic_cast<T*>(*selected_items_it);
-         if(t_item != NULL)
+         T* t_item = dynamic_cast<T*>(selected_item);
+         if(t_item != nullptr)
            selected_t_items.push_back(t_item);
        }
 

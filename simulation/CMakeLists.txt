@@ -36,14 +36,13 @@ set(incs
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs})
+PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs})
 
 target_link_libraries("${LIB_NAME}" pcl_common pcl_io
             ${OPENGL_LIBRARIES} GLEW::GLEW)
 
 set(EXT_DEPS eigen3)
-PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}"
-          "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
+PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})

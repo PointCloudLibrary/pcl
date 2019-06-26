@@ -46,7 +46,7 @@
 using namespace pcl;
 using namespace std;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
+using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 PointCloud<PointXYZ> cloud;
 KdTreePtr tree;
 
@@ -382,9 +382,9 @@ TEST (PCL, IINormalEstimationCovariance)
   {
     for (size_t u = 0; u < cloud.width; ++u)
     {
-      if (!pcl_isfinite(output (u, v).normal_x) &&
-          !pcl_isfinite(output (u, v).normal_y) &&
-          !pcl_isfinite(output (u, v).normal_z))
+      if (!std::isfinite(output (u, v).normal_x) &&
+          !std::isfinite(output (u, v).normal_y) &&
+          !std::isfinite(output (u, v).normal_z))
         continue;
 
       EXPECT_NEAR (fabs (output (u, v).normal_x),   0, 1e-2);
@@ -410,9 +410,9 @@ TEST (PCL, IINormalEstimationAverage3DGradient)
   {
     for (size_t u = 0; u < cloud.width; ++u)
     {
-      if (!pcl_isfinite(output (u, v).normal_x) &&
-          !pcl_isfinite(output (u, v).normal_y) &&
-          !pcl_isfinite(output (u, v).normal_z))
+      if (!std::isfinite(output (u, v).normal_x) &&
+          !std::isfinite(output (u, v).normal_y) &&
+          !std::isfinite(output (u, v).normal_z))
         continue;
 
       if (fabs(fabs (output (u, v).normal_z) - 1) > 1e-2)
@@ -442,9 +442,9 @@ TEST (PCL, IINormalEstimationAverageDepthChange)
   {
     for (size_t u = 0; u < cloud.width; ++u)
     {
-      if (!pcl_isfinite(output (u, v).normal_x) &&
-          !pcl_isfinite(output (u, v).normal_y) &&
-          !pcl_isfinite(output (u, v).normal_z))
+      if (!std::isfinite(output (u, v).normal_x) &&
+          !std::isfinite(output (u, v).normal_y) &&
+          !std::isfinite(output (u, v).normal_z))
         continue;
 
       if (fabs(fabs (output (u, v).normal_z) - 1) > 1e-2)
@@ -474,9 +474,9 @@ TEST (PCL, IINormalEstimationSimple3DGradient)
   {
     for (size_t u = 0; u < cloud.width; ++u)
     {
-      if (!pcl_isfinite(output (u, v).normal_x) &&
-          !pcl_isfinite(output (u, v).normal_y) &&
-          !pcl_isfinite(output (u, v).normal_z))
+      if (!std::isfinite(output (u, v).normal_x) &&
+          !std::isfinite(output (u, v).normal_y) &&
+          !std::isfinite(output (u, v).normal_z))
         continue;
 
       if (fabs(fabs (output (u, v).normal_z) - 1) > 1e-2)

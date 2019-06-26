@@ -56,7 +56,7 @@
 class ply_to_ply_converter
 {
   public:
-    typedef int format_type;
+    using format_type = int;
     enum format
     {
       same_format,
@@ -95,13 +95,13 @@ class ply_to_ply_converter
     void
     element_end_callback();
 
-    boost::tuple<boost::function<void()>, boost::function<void()> > 
+    boost::tuple<std::function<void()>, std::function<void()> > 
     element_definition_callback(const std::string& element_name, std::size_t count);
 
     template <typename ScalarType> void
     scalar_property_callback(ScalarType scalar);
 
-    template <typename ScalarType> boost::function<void (ScalarType)> 
+    template <typename ScalarType> std::function<void (ScalarType)> 
     scalar_property_definition_callback(const std::string& element_name, const std::string& property_name);
 
     template <typename SizeType, typename ScalarType> void
@@ -113,9 +113,9 @@ class ply_to_ply_converter
     template <typename SizeType, typename ScalarType> void
     list_property_end_callback();
 
-    template <typename SizeType, typename ScalarType> boost::tuple<boost::function<void (SizeType)>, 
-                                                                      boost::function<void (ScalarType)>, 
-                                                                      boost::function<void ()> > 
+    template <typename SizeType, typename ScalarType> boost::tuple<std::function<void (SizeType)>, 
+                                                                      std::function<void (ScalarType)>, 
+                                                                      std::function<void ()> > 
     list_property_definition_callback(const std::string& element_name, const std::string& property_name);
     
     void
@@ -211,10 +211,10 @@ ply_to_ply_converter::element_end_callback()
   }
 }
 
-boost::tuple<boost::function<void()>, boost::function<void()> > ply_to_ply_converter::element_definition_callback(const std::string& element_name, std::size_t count)
+boost::tuple<std::function<void()>, std::function<void()> > ply_to_ply_converter::element_definition_callback(const std::string& element_name, std::size_t count)
 {
   (*ostream_) << "element " << element_name << " " << count << "\n";
-  return boost::tuple<boost::function<void()>, boost::function<void()> >(
+  return boost::tuple<std::function<void()>, std::function<void()> >(
     boost::bind(&ply_to_ply_converter::element_begin_callback, this),
     boost::bind(&ply_to_ply_converter::element_end_callback, this)
   );
@@ -244,7 +244,7 @@ ply_to_ply_converter::scalar_property_callback(ScalarType scalar)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename ScalarType> boost::function<void (ScalarType)> 
+template <typename ScalarType> std::function<void (ScalarType)> 
 ply_to_ply_converter::scalar_property_definition_callback (const std::string&, const std::string& property_name)
 {
   (*ostream_) << "property " << pcl::io::ply::type_traits<ScalarType>::old_name() << " " << property_name << "\n";
@@ -300,13 +300,13 @@ template <typename SizeType, typename ScalarType> void
 ply_to_ply_converter::list_property_end_callback() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename SizeType, typename ScalarType> boost::tuple<boost::function<void (SizeType)>, 
-                                                                  boost::function<void (ScalarType)>, 
-                                                                  boost::function<void ()> > 
+template <typename SizeType, typename ScalarType> boost::tuple<std::function<void (SizeType)>, 
+                                                                  std::function<void (ScalarType)>, 
+                                                                  std::function<void ()> > 
 ply_to_ply_converter::list_property_definition_callback (const std::string&, const std::string& property_name)
 {
   (*ostream_) << "property list " << pcl::io::ply::type_traits<SizeType>::old_name() << " " << pcl::io::ply::type_traits<ScalarType>::old_name() << " " << property_name << "\n";
-  return boost::tuple<boost::function<void (SizeType)>, boost::function<void (ScalarType)>, boost::function<void ()> >(
+  return boost::tuple<std::function<void (SizeType)>, std::function<void (ScalarType)>, std::function<void ()> >(
     boost::bind(&ply_to_ply_converter::list_property_begin_callback<SizeType, ScalarType>, this, _1),
     boost::bind(&ply_to_ply_converter::list_property_element_callback<SizeType, ScalarType>, this, _1),
     boost::bind(&ply_to_ply_converter::list_property_end_callback<SizeType, ScalarType>, this)
@@ -456,7 +456,7 @@ main(int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else if ((short_opt == 'v') || (std::strcmp(long_opt, "version") == 0)) {
+    if ((short_opt == 'v') || (std::strcmp(long_opt, "version") == 0)) {
       std::cout << "ply2ply\n";
       std::cout << " Point Cloud Library (PCL) - www.pointclouds.org\n";
       std::cout << " Copyright (c) 2007-2012, Ares Lagae\n";
@@ -489,7 +489,7 @@ main(int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else if ((short_opt == 'f') || (std::strcmp(long_opt, "format") == 0)) {
+    if ((short_opt == 'f') || (std::strcmp(long_opt, "format") == 0)) {
       if (strcmp(opt_arg, "ascii") == 0) {
         ply_to_ply_converter_format = ply_to_ply_converter::ascii_format;
       }
@@ -538,9 +538,8 @@ main(int argc, char* argv[])
   }
 
   std::ofstream ofstream;
-  const char* ofilename = "";
   if (parc > 1) {
-    ofilename = parv[1];
+    const char* ofilename = parv[1];
     if (std::strcmp(ofilename, "-") != 0) {
       ofstream.open(ofilename);
       if (!ofstream.is_open()) {

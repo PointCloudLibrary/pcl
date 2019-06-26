@@ -42,7 +42,9 @@
 
 #include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/sac_model.h>
+
 #include <ctime>
+#include <memory>
 #include <set>
 
 namespace pcl
@@ -54,15 +56,15 @@ namespace pcl
   template <typename T>
   class SampleConsensus
   {
-    typedef typename SampleConsensusModel<T>::Ptr SampleConsensusModelPtr;
+    using SampleConsensusModelPtr = typename SampleConsensusModel<T>::Ptr;
 
     private:
       /** \brief Constructor for base SAC. */
       SampleConsensus () {};
 
     public:
-      typedef boost::shared_ptr<SampleConsensus> Ptr;
-      typedef boost::shared_ptr<const SampleConsensus> ConstPtr;
+      using Ptr = boost::shared_ptr<SampleConsensus<T> >;
+      using ConstPtr = boost::shared_ptr<const SampleConsensus<T> >;
 
       /** \brief Constructor for base SAC.
         * \param[in] model a Sample Consensus model
@@ -70,19 +72,15 @@ namespace pcl
         */
       SampleConsensus (const SampleConsensusModelPtr &model, bool random = false) 
         : sac_model_ (model)
-        , model_ ()
-        , inliers_ ()
-        , model_coefficients_ ()
         , probability_ (0.99)
         , iterations_ (0)
         , threshold_ (std::numeric_limits<double>::max ())
         , max_iterations_ (1000)
-        , rng_alg_ ()
         , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
       {
          // Create a random number generator object
          if (random)
-           rng_->base ().seed (static_cast<unsigned> (std::time (0)));
+           rng_->base ().seed (static_cast<unsigned> (std::time (nullptr)));
          else
            rng_->base ().seed (12345u);
       };
@@ -96,19 +94,15 @@ namespace pcl
                        double threshold, 
                        bool random = false)
         : sac_model_ (model)
-        , model_ ()
-        , inliers_ ()
-        , model_coefficients_ ()
         , probability_ (0.99)
         , iterations_ (0)
         , threshold_ (threshold)
         , max_iterations_ (1000)
-        , rng_alg_ ()
         , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
       {
          // Create a random number generator object
          if (random)
-           rng_->base ().seed (static_cast<unsigned> (std::time (0)));
+           rng_->base ().seed (static_cast<unsigned> (std::time (nullptr)));
          else
            rng_->base ().seed (12345u);
       };
@@ -140,7 +134,7 @@ namespace pcl
 
       /** \brief Get the distance to model threshold, as set by the user. */
       inline double 
-      getDistanceThreshold () { return (threshold_); }
+      getDistanceThreshold () const { return (threshold_); }
 
       /** \brief Set the maximum number of iterations.
         * \param[in] max_iterations maximum number of iterations
@@ -150,7 +144,7 @@ namespace pcl
 
       /** \brief Get the maximum number of iterations, as set by the user. */
       inline int 
-      getMaxIterations () { return (max_iterations_); }
+      getMaxIterations () const { return (max_iterations_); }
 
       /** \brief Set the desired probability of choosing at least one sample free from outliers.
         * \param[in] probability the desired probability of choosing at least one sample free from outliers
@@ -161,7 +155,7 @@ namespace pcl
 
       /** \brief Obtain the probability of choosing at least one sample free from outliers, as set by the user. */
       inline double 
-      getProbability () { return (probability_); }
+      getProbability () const { return (probability_); }
 
       /** \brief Compute the actual model. Pure virtual. */
       virtual bool 
@@ -290,19 +284,19 @@ namespace pcl
         * \param[out] model the resultant model
         */
       inline void 
-      getModel (std::vector<int> &model) { model = model_; }
+      getModel (std::vector<int> &model) const { model = model_; }
 
       /** \brief Return the best set of inliers found so far for this model. 
         * \param[out] inliers the resultant set of inliers
         */
       inline void 
-      getInliers (std::vector<int> &inliers) { inliers = inliers_; }
+      getInliers (std::vector<int> &inliers) const { inliers = inliers_; }
 
       /** \brief Return the model coefficients of the best model found so far. 
         * \param[out] model_coefficients the resultant model coefficients, as documented in \ref sample_consensus
         */
       inline void 
-      getModelCoefficients (Eigen::VectorXf &model_coefficients) { model_coefficients = model_coefficients_; }
+      getModelCoefficients (Eigen::VectorXf &model_coefficients) const { model_coefficients = model_coefficients_; }
 
     protected:
       /** \brief The underlying data model used (i.e. what is it that we attempt to search for). */
@@ -333,7 +327,7 @@ namespace pcl
       boost::mt19937 rng_alg_;
 
       /** \brief Boost-based random number generator distribution. */
-      boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
+      std::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
 
       /** \brief Boost-based random number generator. */
       inline double

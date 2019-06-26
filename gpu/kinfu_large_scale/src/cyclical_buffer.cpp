@@ -111,7 +111,7 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
   std::vector<float , Eigen::aligned_allocator<float> > intensities_vector;
   intensities.download (intensities_vector);
   current_slice_intensities->points.resize (current_slice_xyz->points.size ());
-  for(int i = 0 ; i < current_slice_intensities->points.size () ; ++i)
+  for(size_t i = 0 ; i < current_slice_intensities->points.size () ; ++i)
     current_slice_intensities->points[i].intensity = intensities_vector[i];
 
   current_slice_intensities->width = (int) current_slice_intensities->points.size ();
@@ -151,7 +151,7 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
   pcl::device::kinfuLS::clearTSDFSlice (volume->data (), &buffer_, offset_x, offset_y, offset_z);
 
   // insert current slice in the world if it contains any points
-  if (current_slice->points.size () != 0) {
+  if (!current_slice->points.empty ()) {
     world_model_.addSlice(current_slice);
   }
 
@@ -159,7 +159,7 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
   shiftOrigin (volume, offset_x, offset_y, offset_z);
 
   // push existing data in the TSDF buffer
-  if (previously_existing_slice->points.size () != 0 ) {
+  if (!previously_existing_slice->points.empty () ) {
     volume->pushSlice(previously_existing_slice, getBuffer () );
   }
 }

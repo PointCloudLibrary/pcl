@@ -53,7 +53,7 @@ namespace pcl
       Q_OBJECT
 
       public:
-        SignalMultiplexer(QObject *parent = 0);
+        SignalMultiplexer(QObject *parent = nullptr);
 
         /**
                 Use this connect function instead of QObject::connect() to connect

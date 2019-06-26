@@ -47,16 +47,16 @@ namespace pcl
   {
     DIR *dp;
     struct dirent *dirp;
-    if((dp  = opendir(directory.c_str())) == NULL) {
+    if((dp  = opendir(directory.c_str())) == nullptr) {
       std::cerr << "Could not open directory.\n";
       return;
     }
-    while ((dirp = readdir(dp)) != NULL) {
+    while ((dirp = readdir(dp)) != nullptr) {
       if (dirp->d_type == DT_REG)  // Only regular files
       {
         std::string file_name = dirp->d_name;
         if (file_name.substr(file_name.size()-4, 4)==".pcd")
-          file_names.push_back(dirp->d_name);
+          file_names.emplace_back(dirp->d_name);
       }
     }
     closedir(dp);

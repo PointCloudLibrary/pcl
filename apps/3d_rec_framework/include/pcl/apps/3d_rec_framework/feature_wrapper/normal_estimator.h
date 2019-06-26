@@ -21,12 +21,12 @@ namespace pcl
       class PreProcessorAndNormalEstimator
       {
 
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
 
         float
         computeMeshResolution (PointInTPtr & input)
         {
-          typedef typename pcl::KdTree<PointInT>::Ptr KdTreeInPtr;
+          using KdTreeInPtr = typename pcl::KdTree<PointInT>::Ptr;
           KdTreeInPtr tree = boost::make_shared<pcl::KdTreeFLANN<PointInT> > (false);
           tree->setInputCloud (input);
 
@@ -137,7 +137,7 @@ namespace pcl
             out = in;
           }
 
-          if (out->points.size () == 0)
+          if (out->points.empty ())
           {
             PCL_WARN("NORMAL estimator: Cloud has no points after voxel grid, won't be able to compute normals!\n");
             return;
@@ -167,7 +167,7 @@ namespace pcl
 
           }
 
-          if (out->points.size () == 0)
+          if (out->points.empty ())
           {
             PCL_WARN("NORMAL estimator: Cloud has no points after removing outliers...!\n");
             return;
@@ -183,8 +183,7 @@ namespace pcl
 
           if (out->isOrganized ())
           {
-            typedef typename pcl::IntegralImageNormalEstimation<PointInT, pcl::Normal> NormalEstimator_;
-            NormalEstimator_ n3d;
+            pcl::IntegralImageNormalEstimation<PointInT, pcl::Normal> n3d;
             n3d.setNormalEstimationMethod (n3d.COVARIANCE_MATRIX);
             //n3d.setNormalEstimationMethod (n3d.AVERAGE_3D_GRADIENT);
             n3d.setInputCloud (out);
@@ -206,7 +205,7 @@ namespace pcl
               int j = 0;
               for (size_t i = 0; i < out->points.size (); ++i)
               {
-                if (!pcl_isfinite (out->points[i].x) || !pcl_isfinite (out->points[i].y) || !pcl_isfinite (out->points[i].z))
+                if (!std::isfinite (out->points[i].x) || !std::isfinite (out->points[i].y) || !std::isfinite (out->points[i].z))
                   continue;
 
                 out->points[j] = out->points[i];
@@ -223,8 +222,7 @@ namespace pcl
               out->height = 1;
             }
 
-            typedef typename pcl::NormalEstimation<PointInT, pcl::Normal> NormalEstimator_;
-            NormalEstimator_ n3d;
+            pcl::NormalEstimation<PointInT, pcl::Normal> n3d;
             typename pcl::search::KdTree<PointInT>::Ptr normals_tree (new pcl::search::KdTree<PointInT>);
             normals_tree->setInputCloud (out);
             n3d.setRadiusSearch (radius);
@@ -243,8 +241,8 @@ namespace pcl
             int j = 0;
             for (size_t i = 0; i < normals->points.size (); ++i)
             {
-              if (!pcl_isfinite (normals->points[i].normal_x) || !pcl_isfinite (normals->points[i].normal_y)
-                  || !pcl_isfinite (normals->points[i].normal_z))
+              if (!std::isfinite (normals->points[i].normal_x) || !std::isfinite (normals->points[i].normal_y)
+                  || !std::isfinite (normals->points[i].normal_z))
                 continue;
 
               normals->points[j] = normals->points[i];
@@ -267,8 +265,8 @@ namespace pcl
             bool NaNs = false;
             for (size_t i = 0; i < normals->points.size (); ++i)
             {
-              if (pcl_isfinite (normals->points[i].normal_x) && pcl_isfinite (normals->points[i].normal_y)
-                  && pcl_isfinite (normals->points[i].normal_z))
+              if (std::isfinite (normals->points[i].normal_x) && std::isfinite (normals->points[i].normal_y)
+                  && std::isfinite (normals->points[i].normal_z))
                 continue;
 
               NaNs = true;

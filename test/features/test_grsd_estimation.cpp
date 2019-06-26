@@ -42,9 +42,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/features/grsd.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/io/pcd_io.h>
-
 
 using namespace pcl;
 using namespace pcl::io;

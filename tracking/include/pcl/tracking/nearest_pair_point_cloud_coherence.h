@@ -21,14 +21,14 @@ namespace pcl
         using PointCloudCoherence<PointInT>::coherence_name_;
         using PointCloudCoherence<PointInT>::target_input_;
         
-        typedef typename PointCloudCoherence<PointInT>::PointCoherencePtr PointCoherencePtr;
-        typedef typename PointCloudCoherence<PointInT>::PointCloudInConstPtr PointCloudInConstPtr;
-        typedef PointCloudCoherence<PointInT> BaseClass;
+        using PointCoherencePtr = typename PointCloudCoherence<PointInT>::PointCoherencePtr;
+        using PointCloudInConstPtr = typename PointCloudCoherence<PointInT>::PointCloudInConstPtr;
+        using BaseClass = PointCloudCoherence<PointInT>;
         
-        typedef boost::shared_ptr<NearestPairPointCloudCoherence<PointInT> > Ptr;
-        typedef boost::shared_ptr<const NearestPairPointCloudCoherence<PointInT> > ConstPtr;
-        typedef boost::shared_ptr<pcl::search::Search<PointInT> > SearchPtr;
-        typedef boost::shared_ptr<const pcl::search::Search<PointInT> > SearchConstPtr;
+        using Ptr = boost::shared_ptr<NearestPairPointCloudCoherence<PointInT> >;
+        using ConstPtr = boost::shared_ptr<const NearestPairPointCloudCoherence<PointInT> >;
+        using SearchPtr = boost::shared_ptr<pcl::search::Search<PointInT> >;
+        using SearchConstPtr = boost::shared_ptr<const pcl::search::Search<PointInT> >;
         
         /** \brief empty constructor */
         NearestPairPointCloudCoherence ()

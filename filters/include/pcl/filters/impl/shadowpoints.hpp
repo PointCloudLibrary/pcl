@@ -51,13 +51,13 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (PointCloud &output)
   if (extract_removed_indices_)
     removed_indices_->resize (input_->points.size ());
 
-  unsigned int cp = 0;
-  unsigned int ri = 0;
-  for (unsigned int i = 0; i < input_->points.size (); i++)
+  size_t cp = 0;
+  size_t ri = 0;
+  for (size_t i = 0; i < input_->points.size (); i++)
   {
     const NormalT &normal = input_normals_->points[i];
     const PointT &pt = input_->points[i];
-    float val = fabsf (normal.normal_x * pt.x + normal.normal_y * pt.y + normal.normal_z * pt.z);
+    const float val = fabsf (normal.normal_x * pt.x + normal.normal_y * pt.y + normal.normal_z * pt.z);
 
     if ( (val >= threshold_) ^ negative_)
       output.points[cp++] = pt;

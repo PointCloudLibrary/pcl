@@ -67,10 +67,10 @@ pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
       return;
     }
     uint8_t* pt_data = reinterpret_cast<uint8_t*> (&cloud->points[pt_index]);
-    for (int fi = 0; fi < static_cast<int> (fields.size ()); ++fi)  // fi = field iterator
-      memcpy (pt_data + fields[fi].offset, &user_filter_value_, sizeof (float));
+    for (const auto &field : fields)
+      memcpy (pt_data + field.offset, &user_filter_value_, sizeof (float));
   }
-  if (!pcl_isfinite (user_filter_value_))
+  if (!std::isfinite (user_filter_value_))
     cloud->is_dense = false;
 }
 
@@ -100,10 +100,10 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
         return;
       }
       uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output.points[pt_index]);
-      for (int fi = 0; fi < static_cast<int> (fields.size ()); ++fi)  // fi = field iterator
-        memcpy (pt_data + fields[fi].offset, &user_filter_value_, sizeof (float));
+      for (const auto &field : fields)
+        memcpy (pt_data + field.offset, &user_filter_value_, sizeof (float));
     }
-    if (!pcl_isfinite (user_filter_value_))
+    if (!std::isfinite (user_filter_value_))
       output.is_dense = false;
   }
   else

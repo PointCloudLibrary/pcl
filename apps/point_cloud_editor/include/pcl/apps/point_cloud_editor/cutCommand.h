@@ -56,6 +56,13 @@ class CutCommand : public Command
                 SelectionPtr selection_ptr,
                 CloudPtr cloud_ptr);
 
+    /// @brief Copy constructor - commands are non-copyable
+    CutCommand (const CutCommand&) = delete;
+
+    /// @brief Equal operator - commands are non-copyable
+    CutCommand&
+    operator= (const CutCommand&) = delete;
+
     /// @brief Destructor
     ~CutCommand ();
 
@@ -73,25 +80,6 @@ class CutCommand : public Command
     undo () override;
 
   private:
-    /// @brief Default constructor - object is not default constructable
-    CutCommand () : cut_selection_(CloudPtr())
-    {
-      assert(false);
-    }
-    
-    /// @brief Copy constructor - commands are non-copyable
-    CutCommand (const CutCommand&) : cut_selection_(CloudPtr())
-    {
-      assert(false);
-    }
-
-    /// @brief Equal operator - commands are non-copyable
-    CutCommand&
-    operator= (const CutCommand&)
-    {
-      assert(false); return (*this);
-    }
-
     /// A shared pointer pointing to the selection object.
     SelectionPtr selection_ptr_;
 
@@ -107,5 +95,4 @@ class CutCommand : public Command
 
     /// The copy buffer which backs up the points removed from the cloud.
     CopyBuffer cut_cloud_buffer_;
-
 };

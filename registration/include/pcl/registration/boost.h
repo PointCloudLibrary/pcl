@@ -48,8 +48,5 @@
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/property_map/property_map.hpp>
 
-#include <boost/unordered_map.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/make_shared.hpp>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>

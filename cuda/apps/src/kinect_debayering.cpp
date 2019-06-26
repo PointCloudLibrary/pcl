@@ -37,12 +37,16 @@
 
 #include <pcl_cuda/io/cloud_to_pcl.h>
 #include <pcl_cuda/io/debayering.h>
-
-#include <pcl/io/kinect_grabber.h>
-#include <boost/shared_ptr.hpp>
-#include <iostream>
-#include <opencv2/opencv.hpp>
 #include <pcl_cuda/time_cpu.h>
+#include <pcl/io/kinect_grabber.h>
+
+#include <opencv2/opencv.hpp>
+
+#include <boost/shared_ptr.hpp>
+
+#include <functional>
+#include <iostream>
+#include <mutex>
 
 class SimpleKinectTool
 {
@@ -69,7 +73,7 @@ class SimpleKinectTool
 	    cv::namedWindow("test", CV_WINDOW_AUTOSIZE);
       pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
 
-      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image)> f = boost::bind (&SimpleKinectTool::cloud_cb_, this, _1);
+      std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image)> f = boost::bind (&SimpleKinectTool::cloud_cb_, this, _1);
 
       boost::signals2::connection c = interface->registerCallback (f);
 
@@ -85,7 +89,7 @@ class SimpleKinectTool
     }
 
     pcl_cuda::Debayering<pcl_cuda::Host> debayering;
-    boost::mutex mutex_;
+    std::mutex mutex_;
     bool init_;
 };
 

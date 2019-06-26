@@ -30,17 +30,17 @@ Camera::Camera (std::string name) :
 
   camera_actor_ = vtkSmartPointer<vtkCameraActor>::New ();
   camera_actor_->SetCamera (camera_);
-  camera_actor_->GetProperty ()->SetLighting (0);
+  camera_actor_->GetProperty ()->SetLighting (false);
   camera_actor_->GetProperty ()->SetLineStipplePattern (1010101010);
 
-  for (int i = 0; i < 24; i++)
-    frustum_[i] = 0;
+  for (double &f : frustum_)
+    f = 0;
 
   hull_actor_ = vtkSmartPointer<vtkActor>::New ();
   vtkSmartPointer<vtkPolyDataMapper> hull_mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
 
   hull_actor_->SetMapper (hull_mapper);
-  hull_actor_->GetProperty ()->SetLighting (0);
+  hull_actor_->GetProperty ()->SetLighting (false);
   hull_actor_->GetProperty ()->SetColor (1.0, 0.0, 0.0);
   hull_actor_->GetProperty ()->SetOpacity (0.25);
 }
@@ -53,16 +53,16 @@ Camera::Camera (std::string name, vtkSmartPointer<vtkCamera> camera) :
 
   camera_actor_ = vtkSmartPointer<vtkCameraActor>::New ();
   camera_actor_->SetCamera (camera_);
-  camera_actor_->GetProperty ()->SetLighting (0);
+  camera_actor_->GetProperty ()->SetLighting (false);
 
-  for (int i = 0; i < 24; i++)
-    frustum_[i] = 0;
+  for (double &f : frustum_)
+    f = 0;
 
   hull_actor_ = vtkSmartPointer<vtkActor>::New ();
   vtkSmartPointer<vtkPolyDataMapper> hull_mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
 
   hull_actor_->SetMapper (hull_mapper);
-  hull_actor_->GetProperty ()->SetLighting (0);
+  hull_actor_->GetProperty ()->SetLighting (false);
   hull_actor_->GetProperty ()->SetColor (1.0, 0.0, 0.0);
   hull_actor_->GetProperty ()->SetOpacity (0.25);
 

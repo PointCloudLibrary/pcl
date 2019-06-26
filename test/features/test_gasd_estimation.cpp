@@ -74,9 +74,9 @@ TEST(PCL, GASDTransformEstimation)
   -0.035592, -0.369596, -0.928511, 0.0622551,
   0, 0, 0, 1;
 
-  for (int i = 0; i < trans.rows(); ++i)
+  for (Eigen::Index i = 0; i < trans.rows(); ++i)
   {
-    for (int j = 0; j < trans.cols (); ++j)
+    for (Eigen::Index j = 0; j < trans.cols (); ++j)
     {
       EXPECT_NEAR (trans (i, j), ref_trans (i, j), 1e-5);
     }

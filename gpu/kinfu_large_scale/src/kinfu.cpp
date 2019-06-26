@@ -434,10 +434,10 @@ pcl::gpu::kinfuLS::KinfuTracker::performICP(const Intr& cam_intrinsics, Matrix3f
         // checking nullspace 
         double det = A.determinant ();
     
-        if ( fabs (det) < 100000 /*1e-15*/ || pcl_isnan (det) ) //TODO find a threshold that makes ICP track well, but prevents it from generating wrong transforms
+        if ( fabs (det) < 100000 /*1e-15*/ || std::isnan (det) ) //TODO find a threshold that makes ICP track well, but prevents it from generating wrong transforms
         {
-          if (pcl_isnan (det)) cout << "qnan" << endl;
-          if(lost_ == false)
+          if (std::isnan (det)) cout << "qnan" << endl;
+          if(!lost_)
             PCL_ERROR ("ICP LOST... PLEASE COME BACK TO THE LAST VALID POSE (green)\n");
           //reset (); //GUI will now show the user that ICP is lost. User needs to press "R" to reset the volume
           lost_ = true;
@@ -519,9 +519,9 @@ pcl::gpu::kinfuLS::KinfuTracker::performPairWiseICP(const Intr cam_intrinsics, M
         // checking nullspace 
         double det = A.determinant ();
         
-        if ( fabs (det) < 1e-15 || pcl_isnan (det) )
+        if ( fabs (det) < 1e-15 || std::isnan (det) )
         {
-          if (pcl_isnan (det)) cout << "qnan" << endl;
+          if (std::isnan (det)) cout << "qnan" << endl;
                     
           PCL_WARN ("ICP PairWise LOST...\n");
           //reset ();
@@ -881,12 +881,11 @@ namespace pcl
 
         if( s < 1e-5 )
         {
-          double t;
-
           if( c > 0 )
             rx = ry = rz = 0;
           else
           {
+            double t;
             t = (R(0, 0) + 1)*0.5;
             rx = sqrt( std::max(t, 0.0) );
             t = (R(1, 1) + 1)*0.5;

@@ -73,7 +73,7 @@ namespace pcl
       private:
         pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr_;
         double radius_;
-        boost::shared_ptr<pcl::visualization::PCLPlotter> plot_;
+        pcl::visualization::PCLPlotter::Ptr plot_;
         QVTKWidget *qvtk_;
         QWidget *hist_page_;
     };

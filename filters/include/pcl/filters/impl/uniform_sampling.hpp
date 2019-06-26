@@ -86,9 +86,9 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
     if (!input_->is_dense)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[(*indices_)[cp]].x) || 
-          !pcl_isfinite (input_->points[(*indices_)[cp]].y) || 
-          !pcl_isfinite (input_->points[(*indices_)[cp]].z))
+      if (!std::isfinite (input_->points[(*indices_)[cp]].x) || 
+          !std::isfinite (input_->points[(*indices_)[cp]].y) || 
+          !std::isfinite (input_->points[(*indices_)[cp]].z))
       {
         if (Filter<PointT>::extract_removed_indices_)
         {
@@ -133,8 +133,8 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   output.points.resize (leaves_.size ());
   int cp = 0;
 
-  for (typename boost::unordered_map<size_t, Leaf>::const_iterator it = leaves_.begin (); it != leaves_.end (); ++it)
-    output.points[cp++] = input_->points[it->second.idx];
+  for (const auto& leaf : leaves_)
+    output.points[cp++] = input_->points[leaf.second.idx];
   output.width = static_cast<uint32_t> (output.points.size ());
 }
 

@@ -56,14 +56,14 @@ namespace pcl
     class PointCoding
     {
         // public typedefs
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-        typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = boost::shared_ptr<PointCloud>;
+        using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
 
       public:
         /** \brief Constructor. */
         PointCoding () :
-          output_ (), pointDiffDataVector_ (), pointDiffDataVectorIterator_ (), 
+          output_ (),
           pointCompressionResolution_ (0.001f) // 1mm
         {
         }
@@ -131,12 +131,10 @@ namespace pcl
         encodePoints (const typename std::vector<int>& indexVector_arg, const double* referencePoint_arg,
                       PointCloudConstPtr inputCloud_arg)
         {
-          std::size_t i, len;
-
-          len = indexVector_arg.size ();
+          size_t len = indexVector_arg.size ();
 
           // iterate over points within current voxel
-          for (i = 0; i < len; i++)
+          for (size_t i = 0; i < len; i++)
           {
             unsigned char diffX, diffY, diffZ;
 
@@ -166,15 +164,12 @@ namespace pcl
         decodePoints (PointCloudPtr outputCloud_arg, const double* referencePoint_arg, std::size_t beginIdx_arg,
                       std::size_t endIdx_arg)
         {
-          std::size_t i;
-          unsigned int pointCount;
-
           assert (beginIdx_arg <= endIdx_arg);
 
-          pointCount = static_cast<unsigned int> (endIdx_arg - beginIdx_arg);
+          unsigned int pointCount = static_cast<unsigned int> (endIdx_arg - beginIdx_arg);
 
           // iterate over points within current voxel
-          for (i = 0; i < pointCount; i++)
+          for (size_t i = 0; i < pointCount; i++)
           {
             // retrieve differential point information
             const unsigned char& diffX = static_cast<unsigned char> (*(pointDiffDataVectorIterator_++));

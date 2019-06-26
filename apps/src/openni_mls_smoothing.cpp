@@ -41,7 +41,8 @@
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
 #include <pcl/surface/mls.h>
-#include <pcl/kdtree/kdtree_flann.h>
+
+#include <mutex>
 
 #define FPS_CALC(_WHAT_) \
 do \
@@ -84,9 +85,9 @@ template <typename PointType>
 class OpenNISmoothing
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudPtr = typename Cloud::Ptr;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     OpenNISmoothing (double search_radius, bool sqr_gauss_param_set, double sqr_gauss_param,
                      int polynomial_order, const std::string& device_id = "")
@@ -133,7 +134,7 @@ class OpenNISmoothing
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNISmoothing::cloud_cb_, this, _1);
+      std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
       boost::signals2::connection c = interface->registerCallback (f);
 
       viewer.registerKeyboardCallback (keyboardEventOccurred, reinterpret_cast<void*> (&stop_computing_));
@@ -162,7 +163,7 @@ class OpenNISmoothing
     pcl::MovingLeastSquares<PointType, PointType> smoother_;
     pcl::visualization::PCLVisualizer viewer;
     std::string device_id_;
-    boost::mutex mtx_;
+    std::mutex mtx_;
     CloudConstPtr cloud_;
     CloudPtr cloud_smoothed_;
     int viewport_input_, viewport_smoothed_;

@@ -56,7 +56,7 @@ namespace pcl
       Q_OBJECT
 
       public:
-        explicit HelpWindow (QWidget* parent = 0);
+        explicit HelpWindow (QWidget* parent = nullptr);
         ~HelpWindow ();
 
       private:

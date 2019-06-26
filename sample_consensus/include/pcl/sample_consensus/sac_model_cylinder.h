@@ -73,11 +73,11 @@ namespace pcl
       using SampleConsensusModelFromNormals<PointT, PointNT>::normal_distance_weight_;
       using SampleConsensusModel<PointT>::error_sqr_dists_;
 
-      typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
-      typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
-      typedef typename SampleConsensusModel<PointT>::PointCloudConstPtr PointCloudConstPtr;
+      using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
+      using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
+      using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
 
-      typedef boost::shared_ptr<SampleConsensusModelCylinder> Ptr;
+      using Ptr = boost::shared_ptr<SampleConsensusModelCylinder<PointT, PointNT> >;
 
       /** \brief Constructor for base SampleConsensusModelCylinder.
         * \param[in] cloud the input point cloud dataset
@@ -149,7 +149,7 @@ namespace pcl
 
       /** \brief Get the angle epsilon (delta) threshold. */
       inline double 
-      getEpsAngle () { return (eps_angle_); }
+      getEpsAngle () const { return (eps_angle_); }
 
       /** \brief Set the axis along which we need to search for a cylinder direction.
         * \param[in] ax the axis along which we need to search for a cylinder direction
@@ -159,7 +159,7 @@ namespace pcl
 
       /** \brief Get the axis along which we need to search for a cylinder direction. */
       inline Eigen::Vector3f 
-      getAxis ()  { return (axis_); }
+      getAxis () const { return (axis_); }
 
       /** \brief Check whether the given index samples can form a valid cylinder model, compute the model coefficients
         * from these samples and store them in model_coefficients. The cylinder coefficients are: point_on_axis,

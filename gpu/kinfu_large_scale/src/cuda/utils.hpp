@@ -200,8 +200,8 @@ namespace pcl
           __device__ __host__ __forceinline__ float3& operator[](int i) { return data[i]; }
           __device__ __host__ __forceinline__ const float3& operator[](int i) const { return data[i]; }
         };
-        typedef MiniMat<3> Mat33;
-        typedef MiniMat<4> Mat43;
+        using Mat33 = MiniMat<3>;
+        using Mat43 = MiniMat<4>;
         
         
         static __forceinline__ __device__ float3 
@@ -566,13 +566,9 @@ namespace pcl
         static __device__ __forceinline__ 
         int laneMaskLt()
         {
-  #if (__CUDA_ARCH__ >= 200)
           unsigned int ret;
               asm("mov.u32 %0, %lanemask_lt;" : "=r"(ret) );
               return ret;
-  #else
-          return 0xFFFFFFFF >> (32 - laneId());
-  #endif
         }
 
         static __device__ __forceinline__ int binaryExclScan(int ballot_mask)
@@ -608,13 +604,9 @@ namespace pcl
   #if CUDA_VERSION >= 9000
               (void)cta_buffer;
                   return __ballot_sync (__activemask (), predicate);
-  #elif __CUDA_ARCH__ >= 200
+  #else
               (void)cta_buffer;
                   return __ballot (predicate);
-  #else
-          int tid = Block::flattenedThreadId();				
-                  cta_buffer[tid] = predicate ? (1 << (tid & 31)) : 0;
-                  return warp_reduce(cta_buffer, tid);
   #endif
         }
 
@@ -624,13 +616,9 @@ namespace pcl
   #if CUDA_VERSION >= 9000
               (void)cta_buffer;
                   return __all_sync (__activemask (), predicate);
-  #elif __CUDA_ARCH__ >= 200
+  #else
               (void)cta_buffer;
                   return __all (predicate);
-  #else
-          int tid = Block::flattenedThreadId();				
-                  cta_buffer[tid] = predicate ? 1 : 0;
-          return warp_reduce(cta_buffer, tid) == 32;
   #endif
         }
       };

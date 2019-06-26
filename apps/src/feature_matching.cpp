@@ -17,8 +17,6 @@
 #include <pcl/features/pfhrgb.h>
 #include <pcl/features/3dsc.h>
 #include <pcl/features/shot_omp.h>
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
@@ -31,11 +29,11 @@ template<typename FeatureType>
 class ICCVTutorial
 {
   public:
-    ICCVTutorial (boost::shared_ptr<pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI> > keypoint_detector,
+    ICCVTutorial (pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI>::Ptr keypoint_detector,
                   typename pcl::Feature<pcl::PointXYZRGB, FeatureType>::Ptr feature_extractor,
-                  boost::shared_ptr<pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal> > surface_reconstructor,
-                  typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr source,
-                  typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr target);
+                  pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal>::Ptr surface_reconstructor,
+                  pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr source,
+                  pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr target);
 
     /**
      * @brief starts the event loop for the visualizer
@@ -103,9 +101,9 @@ class ICCVTutorial
     pcl::visualization::PCLVisualizer visualizer_;
     pcl::PointCloud<pcl::PointXYZI>::Ptr source_keypoints_;
     pcl::PointCloud<pcl::PointXYZI>::Ptr target_keypoints_;
-    boost::shared_ptr<pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI> > keypoint_detector_;
+    pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI>::Ptr keypoint_detector_;
     typename pcl::Feature<pcl::PointXYZRGB, FeatureType>::Ptr feature_extractor_;
-    boost::shared_ptr<pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal> > surface_reconstructor_;
+    pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal>::Ptr surface_reconstructor_;
     typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr source_;
     typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr target_;
     typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr source_segmented_;
@@ -126,11 +124,11 @@ class ICCVTutorial
 };
 
 template<typename FeatureType>
-ICCVTutorial<FeatureType>::ICCVTutorial(boost::shared_ptr<pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI> >keypoint_detector,
+ICCVTutorial<FeatureType>::ICCVTutorial(pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI>::Ptr keypoint_detector,
                                         typename pcl::Feature<pcl::PointXYZRGB, FeatureType>::Ptr feature_extractor,
-                                        boost::shared_ptr<pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal> > surface_reconstructor,
-                                        typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr source,
-                                        typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr target)
+                                        pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal>::Ptr surface_reconstructor,
+                                        pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr source,
+                                        pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr target)
 : source_keypoints_ (new pcl::PointCloud<pcl::PointXYZI> ())
 , target_keypoints_ (new pcl::PointCloud<pcl::PointXYZI> ())
 , keypoint_detector_ (keypoint_detector)
@@ -149,7 +147,7 @@ ICCVTutorial<FeatureType>::ICCVTutorial(boost::shared_ptr<pcl::Keypoint<pcl::Poi
 , show_target2source_ (false)
 , show_correspondences (false)
 {
-  visualizer_.registerKeyboardCallback(&ICCVTutorial::keyboard_callback, *this, 0);
+  visualizer_.registerKeyboardCallback(&ICCVTutorial::keyboard_callback, *this, nullptr);
 
   segmentation (source_, source_segmented_);
   segmentation (target_, target_segmented_);
@@ -214,7 +212,7 @@ void ICCVTutorial<FeatureType>::segmentation (typename pcl::PointCloud<pcl::Poin
   clustering.setInputCloud(segmented);
   clustering.extract (cluster_indices);
 
-  if (cluster_indices.size() > 0)//use largest cluster
+  if (!cluster_indices.empty ())//use largest cluster
   {
     cout << cluster_indices.size() << " clusters found";
     if (cluster_indices.size() > 1)
@@ -298,12 +296,12 @@ void ICCVTutorial<FeatureType>::filterCorrespondences ()
 {
   cout << "correspondence rejection..." << std::flush;
   std::vector<std::pair<unsigned, unsigned> > correspondences;
-  for (unsigned cIdx = 0; cIdx < source2target_.size (); ++cIdx)
+  for (size_t cIdx = 0; cIdx < source2target_.size (); ++cIdx)
     if (target2source_[source2target_[cIdx]] == static_cast<int> (cIdx))
       correspondences.push_back(std::make_pair(cIdx, source2target_[cIdx]));
 
   correspondences_->resize (correspondences.size());
-  for (unsigned cIdx = 0; cIdx < correspondences.size(); ++cIdx)
+  for (size_t cIdx = 0; cIdx < correspondences.size(); ++cIdx)
   {
     (*correspondences_)[cIdx].index_query = correspondences[cIdx].first;
     (*correspondences_)[cIdx].index_match = correspondences[cIdx].second;
@@ -532,7 +530,7 @@ main (int argc, char ** argv)
   int descriptor_type = atoi (argv[4]);
   int surface_type    = atoi (argv[5]);
 
-  boost::shared_ptr<pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI> > keypoint_detector;
+  pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI>::Ptr keypoint_detector;
 
   if (keypoint_type == 1)
   {
@@ -577,7 +575,7 @@ main (int argc, char ** argv)
 
   }
 
-  boost::shared_ptr<pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal> > surface_reconstruction;
+  pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal>::Ptr surface_reconstruction;
 
   if (surface_type == 1)
   {

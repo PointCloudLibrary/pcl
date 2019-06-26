@@ -205,9 +205,9 @@ namespace pcl
   {
     Eigen::Vector3f normal_mean = Eigen::Vector3f::Zero ();
 
-    for (size_t i = 0; i < normal_indices.size (); ++i)
+    for (const int &normal_index : normal_indices)
     {
-      const PointNT& cur_pt = normal_cloud[normal_indices[i]];
+      const PointNT& cur_pt = normal_cloud[normal_index];
 
       if (pcl::isFinite (cur_pt))
       {
@@ -241,8 +241,8 @@ namespace pcl
   class NormalEstimation: public Feature<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<NormalEstimation<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const NormalEstimation<PointInT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<NormalEstimation<PointInT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const NormalEstimation<PointInT, PointOutT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;
@@ -252,16 +252,14 @@ namespace pcl
       using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::search_parameter_;
       
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudConstPtr PointCloudConstPtr;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using PointCloudConstPtr = typename Feature<PointInT, PointOutT>::PointCloudConstPtr;
       
       /** \brief Empty constructor. */
       NormalEstimation () 
       : vpx_ (0)
       , vpy_ (0)
       , vpz_ (0)
-      , covariance_matrix_ ()
-      , xyz_centroid_ ()
       , use_sensor_origin_ (true)
       {
         feature_name_ = "NormalEstimation";

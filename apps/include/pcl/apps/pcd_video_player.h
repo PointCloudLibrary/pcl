@@ -45,7 +45,6 @@
 #include <QTimer>
 
 // Boost
-#include <boost/thread/thread.hpp>
 #include <boost/filesystem.hpp>
 
 // PCL
@@ -95,16 +94,16 @@ class PCDVideoPlayer : public QMainWindow
 {
   Q_OBJECT
   public:
-    typedef pcl::PointCloud<pcl::PointXYZRGBA> Cloud;
-    typedef Cloud::Ptr CloudPtr;
-    typedef Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<pcl::PointXYZRGBA>;
+    using CloudPtr = Cloud::Ptr;
+    using CloudConstPtr = Cloud::ConstPtr;
 
     PCDVideoPlayer ();
 
     ~PCDVideoPlayer () {}
 
   protected:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
+    pcl::visualization::PCLVisualizer::Ptr vis_;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_;
 
     QMutex mtx_;

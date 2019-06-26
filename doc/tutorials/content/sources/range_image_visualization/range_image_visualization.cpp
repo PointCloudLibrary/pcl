@@ -1,7 +1,5 @@
 #include <iostream>
 
-#include <boost/thread/thread.hpp>
-
 #include <pcl/common/common_headers.h>
 #include <pcl/range_image/range_image.h>
 #include <pcl/io/pcd_io.h>
@@ -120,7 +118,7 @@ main (int argc, char** argv)
   float noise_level = 0.0;
   float min_range = 0.0f;
   int border_size = 1;
-  boost::shared_ptr<pcl::RangeImage> range_image_ptr(new pcl::RangeImage);
+  pcl::RangeImage::Ptr range_image_ptr(new pcl::RangeImage);
   pcl::RangeImage& range_image = *range_image_ptr;   
   range_image.createFromPointCloud (point_cloud, angular_resolution_x, angular_resolution_y,
                                     pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),

@@ -160,7 +160,7 @@ PCDVideoPlayer::selectFolderButtonPressed ()
     for (boost::filesystem::directory_iterator itr (dir_.toStdString ()); itr != end_itr; ++itr)
     {
       std::string ext = itr->path ().extension ().string ();
-      if (ext.compare (".pcd") == 0)
+      if (ext == ".pcd")
       {
         pcd_files_.push_back (itr->path ().string ());
         pcd_paths_.push_back (itr->path ());

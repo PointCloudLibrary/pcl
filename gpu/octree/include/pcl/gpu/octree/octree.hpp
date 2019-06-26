@@ -64,25 +64,25 @@ namespace pcl
             virtual ~Octree();
 
             /** \brief Types */
-            typedef boost::shared_ptr<Octree> Ptr;
+            using Ptr = boost::shared_ptr<Octree>;
 
             /** \brief Point typwe supported */
-            typedef pcl::PointXYZ PointType;
+            using PointType = pcl::PointXYZ;
 
             /** \brief Point cloud supported */
-            typedef DeviceArray<PointType> PointCloud;
+            using PointCloud = DeviceArray<PointType>;
             
             /** \brief Point Batch query cloud type */
-            typedef DeviceArray<PointType> Queries;
+            using Queries = DeviceArray<PointType>;
 
             /** \brief Point Radiuses for batch query  */
-            typedef DeviceArray<float> Radiuses;            
+            using Radiuses = DeviceArray<float>;            
 
             /** \brief Point Indices for batch query  */
-            typedef DeviceArray<int> Indices;    
+            using Indices = DeviceArray<int>;    
             
             /** \brief Point Sqrt distances array type */
-            typedef DeviceArray<float> ResultSqrDists;
+            using ResultSqrDists = DeviceArray<float>;
             
             const PointCloud*   cloud_;
             

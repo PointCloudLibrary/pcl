@@ -67,19 +67,19 @@ namespace pcl
 
         public:
 
-          typedef typename boost::property_traits<VertexColorMap>::value_type Color;
-          typedef typename boost::property_traits<EdgeWeightMap>::value_type Weight;
-          typedef boost::graph_traits<Graph> GraphTraits;
-          typedef typename GraphTraits::edge_descriptor EdgeDescriptor;
-          typedef typename GraphTraits::vertex_descriptor VertexDescriptor;
-          typedef typename GraphTraits::edge_iterator EdgeIterator;
-          typedef typename GraphTraits::out_edge_iterator OutEdgeIterator;
-          typedef typename GraphTraits::vertex_iterator VertexIterator;
-          typedef typename boost::property_map<Graph, boost::vertex_index_t>::type VertexIndexMap;
-          typedef boost::iterator_property_map<typename std::vector<Weight>::iterator, VertexIndexMap> VertexDegreeMap;
-          typedef Eigen::SparseMatrix<Weight> SparseMatrix;
-          typedef Eigen::Matrix<Weight, Eigen::Dynamic, Eigen::Dynamic> Matrix;
-          typedef Eigen::Matrix<Weight, Eigen::Dynamic, 1> Vector;
+          using Color = typename boost::property_traits<VertexColorMap>::value_type;
+          using Weight = typename boost::property_traits<EdgeWeightMap>::value_type;
+          using GraphTraits = boost::graph_traits<Graph>;
+          using EdgeDescriptor = typename GraphTraits::edge_descriptor;
+          using VertexDescriptor = typename GraphTraits::vertex_descriptor;
+          using EdgeIterator = typename GraphTraits::edge_iterator;
+          using OutEdgeIterator = typename GraphTraits::out_edge_iterator;
+          using VertexIterator = typename GraphTraits::vertex_iterator;
+          using VertexIndexMap = typename boost::property_map<Graph, boost::vertex_index_t>::type;
+          using VertexDegreeMap = boost::iterator_property_map<typename std::vector<Weight>::iterator, VertexIndexMap>;
+          using SparseMatrix = Eigen::SparseMatrix<Weight>;
+          using Matrix = Eigen::Matrix<Weight, Eigen::Dynamic, Eigen::Dynamic>;
+          using Vector = Eigen::Matrix<Weight, Eigen::Dynamic, 1>;
 
           RandomWalker (Graph& g, EdgeWeightMap weights, VertexColorMap colors)
           : g_ (g)
@@ -117,8 +117,8 @@ namespace pcl
           {
             using namespace boost;
 
-            typedef Eigen::Triplet<float> T;
-            typedef std::vector<T> Triplets;
+            using T = Eigen::Triplet<float>;
+            using Triplets = std::vector<T>;
             Triplets L_triplets;
             Triplets B_triplets;
 
@@ -176,9 +176,9 @@ namespace pcl
             size_t num_colors = B_color_bimap.size ();
             L.resize (num_equations, num_equations);
             B.resize (num_equations, num_colors);
-            if (L_triplets.size ())
+            if (!L_triplets.empty ())
               L.setFromTriplets(L_triplets.begin(), L_triplets.end());
-            if (B_triplets.size ())
+            if (!B_triplets.empty ())
               B.setFromTriplets(B_triplets.begin(), B_triplets.end());
           }
 
@@ -193,7 +193,7 @@ namespace pcl
             Eigen::SimplicialCholesky<SparseMatrix, Eigen::Lower> cg;
             cg.compute (L);
             bool succeeded = true;
-            for (int i = 0; i < B.cols (); ++i)
+            for (Eigen::Index i = 0; i < B.cols (); ++i)
             {
               Vector b = B.col (i);
               X.col (i) = cg.solve (b);
@@ -210,7 +210,7 @@ namespace pcl
           {
             using namespace boost;
             if (X.cols ())
-              for (int i = 0; i < X.rows (); ++i)
+              for (Eigen::Index i = 0; i < X.rows (); ++i)
               {
                 size_t max_column;
                 X.row (i).maxCoeff (&max_column);
@@ -226,7 +226,7 @@ namespace pcl
             using namespace boost;
             potentials = Matrix::Zero (num_vertices (g_), colors_.size ());
             // Copy over rows from X
-            for (int i = 0; i < X.rows (); ++i)
+            for (Eigen::Index i = 0; i < X.rows (); ++i)
               potentials.row (L_vertex_bimap.left.at (i)).head (X.cols ()) = X.row (i);
             // In rows that correspond to seeds put ones in proper columns
             for (size_t i = 0; i < seeds_.size (); ++i)
@@ -237,7 +237,7 @@ namespace pcl
             }
             // Fill in a map that associates colors with columns in potentials matrix
             color_to_column_map.clear ();
-            for (int i = 0; i < potentials.cols (); ++i)
+            for (Eigen::Index i = 0; i < potentials.cols (); ++i)
               color_to_column_map[B_color_bimap.left.at (i)] = i;
           }
 
@@ -248,12 +248,9 @@ namespace pcl
             {
               return bimap.right.at (value);
             }
-            else
-            {
-              size_t s = bimap.size ();
-              bimap.insert (typename boost::bimap<size_t, T>::value_type (s, value));
-              return s;
-            }
+            size_t s = bimap.size ();
+            bimap.insert (typename boost::bimap<size_t, T>::value_type (s, value));
+            return s;
           }
 
           Graph& g_;
@@ -294,8 +291,8 @@ namespace pcl
     {
       using namespace boost;
 
-      typedef typename graph_traits<Graph>::edge_descriptor EdgeDescriptor;
-      typedef typename graph_traits<Graph>::vertex_descriptor VertexDescriptor;
+      using EdgeDescriptor = typename graph_traits<Graph>::edge_descriptor;
+      using VertexDescriptor = typename graph_traits<Graph>::vertex_descriptor;
 
       BOOST_CONCEPT_ASSERT ((VertexListGraphConcept<Graph>));                                 // to have vertices(), num_vertices()
       BOOST_CONCEPT_ASSERT ((EdgeListGraphConcept<Graph>));                                   // to have edges()
@@ -322,8 +319,8 @@ namespace pcl
     {
       using namespace boost;
 
-      typedef typename graph_traits<Graph>::edge_descriptor EdgeDescriptor;
-      typedef typename graph_traits<Graph>::vertex_descriptor VertexDescriptor;
+      using EdgeDescriptor = typename graph_traits<Graph>::edge_descriptor;
+      using VertexDescriptor = typename graph_traits<Graph>::vertex_descriptor;
 
       BOOST_CONCEPT_ASSERT ((VertexListGraphConcept<Graph>));                                 // to have vertices(), num_vertices()
       BOOST_CONCEPT_ASSERT ((EdgeListGraphConcept<Graph>));                                   // to have edges()

@@ -1,5 +1,9 @@
 include(${PROJECT_SOURCE_DIR}/cmake/pcl_utils.cmake)
 
+# Store location of current dir, because value of CMAKE_CURRENT_LIST_DIR is
+# set to the directory where a function is used, not where a function is defined
+set(_PCL_TARGET_CMAKE_DIR ${CMAKE_CURRENT_LIST_DIR})
+
 ###############################################################################
 # Add an option to build a subsystem or not.
 # _var The name of the variable to store the option in.
@@ -175,6 +179,25 @@ macro(PCL_SUBSUBSYS_DEPEND _var _parent _name)
 endmacro()
 
 ###############################################################################
+# Adds version information to executable/library in form of a version.rc. This works only with MSVC.
+#
+# _name The library name.
+##
+function(PCL_ADD_VERSION_INFO _name)
+  if(MSVC)
+    string(REPLACE "." "," VERSION_INFO_VERSION_WITH_COMMA ${PCL_VERSION})
+    if (SUBSUBSYS_DESC)
+      set(VERSION_INFO_DISPLAY_NAME ${SUBSUBSYS_DESC})
+    else()
+      set(VERSION_INFO_DISPLAY_NAME ${SUBSYS_DESC})
+    endif()
+    set(VERSION_INFO_ICON_PATH "${_PCL_TARGET_CMAKE_DIR}/images/pcl.ico")
+    configure_file(${_PCL_TARGET_CMAKE_DIR}/version.rc.in ${PROJECT_BINARY_DIR}/${_name}_version.rc @ONLY)
+    target_sources(${_name} PRIVATE ${PROJECT_BINARY_DIR}/${_name}_version.rc)
+  endif()
+endfunction()
+
+###############################################################################
 # Add a set of include files to install.
 # _component The part of PCL that the install files belong to.
 # _subdir The sub-directory for these include files.
@@ -188,13 +211,19 @@ endmacro()
 ###############################################################################
 # Add a library target.
 # _name The library name.
-# _component The part of PCL that this library belongs to.
-# ARGN The source files for the library.
-macro(PCL_ADD_LIBRARY _name _component)
-  add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
+# COMPONENT The part of PCL that this library belongs to.
+# SOURCES The source files for the library.
+function(PCL_ADD_LIBRARY _name)
+  set(options)
+  set(oneValueArgs COMPONENT)
+  set(multiValueArgs SOURCES)
+  cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES})
+  PCL_ADD_VERSION_INFO(${_name})
   target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
   # must link explicitly against boost.
-  target_link_libraries(${_name} ${Boost_LIBRARIES})
+  target_link_libraries(${_name} ${Boost_LIBRARIES} Threads::Threads)
   if((UNIX AND NOT ANDROID) OR MINGW)
     target_link_libraries(${_name} m)
   endif()
@@ -211,29 +240,33 @@ macro(PCL_ADD_LIBRARY _name _component)
     VERSION ${PCL_VERSION}
     SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
     DEFINE_SYMBOL "PCLAPI_EXPORTS")
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
-  endif()
+  set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
   install(TARGETS ${_name}
-          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
-          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component}
-          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component})
-endmacro()
+          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT}
+          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT}
+          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT})
+endfunction()
 
 ###############################################################################
 # Add a cuda library target.
 # _name The library name.
-# _component The part of PCL that this library belongs to.
-# ARGN The source files for the library.
-macro(PCL_CUDA_ADD_LIBRARY _name _component)
+# COMPONENT The part of PCL that this library belongs to.
+# SOURCES The source files for the library.
+function(PCL_CUDA_ADD_LIBRARY _name)
+  set(options)
+  set(oneValueArgs COMPONENT)
+  set(multiValueArgs SOURCES)
+  cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
   REMOVE_VTK_DEFINITIONS()
   if(PCL_SHARED_LIBS)
     # to overcome a limitation in cuda_add_library, we add manually PCLAPI_EXPORTS macro
-    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -DPCLAPI_EXPORTS)
+    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES} OPTIONS -DPCLAPI_EXPORTS)
   else()
-    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
+    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES})
   endif()
+  PCL_ADD_VERSION_INFO(${_name})
 
   # must link explicitly against boost.
   target_link_libraries(${_name} ${Boost_LIBRARIES})
@@ -242,95 +275,75 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
     VERSION ${PCL_VERSION}
     SOVERSION ${PCL_VERSION_MAJOR}
     DEFINE_SYMBOL "PCLAPI_EXPORTS")
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
-  endif()
+  set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
   install(TARGETS ${_name}
-          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
-          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component}
-          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component})
-endmacro()
+          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT}
+          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT}
+          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT})
+endfunction()
 
 ###############################################################################
 # Add an executable target.
 # _name The executable name.
-# _component The part of PCL that this library belongs to.
-# ARGN the source files for the library.
-macro(PCL_ADD_EXECUTABLE _name _component)
-  add_executable(${_name} ${ARGN})
-  # must link explicitly against boost.
-  if(UNIX AND NOT ANDROID)
-    target_link_libraries(${_name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
+# BUNDLE Target should be handled as bundle (APPLE and VTK_USE_COCOA only)
+# COMPONENT The part of PCL that this library belongs to.
+# SOURCES The source files for the library.
+function(PCL_ADD_EXECUTABLE _name)
+  set(options BUNDLE)
+  set(oneValueArgs COMPONENT)
+  set(multiValueArgs SOURCES)
+  cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  if(ADD_LIBRARY_OPTION_BUNDLE AND APPLE AND VTK_USE_COCOA)
+    add_executable(${_name} MACOSX_BUNDLE ${ADD_LIBRARY_OPTION_SOURCES})
   else()
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
+    add_executable(${_name} ${ADD_LIBRARY_OPTION_SOURCES})
   endif()
+  PCL_ADD_VERSION_INFO(${_name})
+  # must link explicitly against boost.
+  target_link_libraries(${_name} ${Boost_LIBRARIES} Threads::Threads)
 
   if(WIN32 AND MSVC)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                               RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
   endif()
 
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
+  # Some app targets report are defined with subsys other than apps
+  # It's simpler check for tools and assume everythin else as an app
+  if(${ADD_LIBRARY_OPTION_COMPONENT} STREQUAL "tools")
+    set_target_properties(${_name} PROPERTIES FOLDER "Tools")
+  else()
+    set_target_properties(${_name} PROPERTIES FOLDER "Apps")
   endif()
 
   set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
-  install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-          COMPONENT pcl_${_component})
 
-  string(TOUPPER ${_component} _component_upper)
-  list(APPEND PCL_${_component_upper}_ALL_TARGETS ${_name})
-endmacro()
-
-###############################################################################
-# Add an executable target as a bundle when available and required
-# _name The executable name.
-# _component The part of PCL that this library belongs to.
-# _bundle
-# ARGN the source files for the library.
-macro(PCL_ADD_EXECUTABLE_OPT_BUNDLE _name _component)
-  if(APPLE AND VTK_USE_COCOA)
-    add_executable(${_name} MACOSX_BUNDLE ${ARGN})
+  if(ADD_LIBRARY_OPTION_BUNDLE AND APPLE AND VTK_USE_COCOA)
+    install(TARGETS ${_name} BUNDLE DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT})
   else()
-    add_executable(${_name} ${ARGN})
+    install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT})
   endif()
 
-  # must link explicitly against boost.
-  if(UNIX AND NOT ANDROID)
-    target_link_libraries(${_name} ${Boost_LIBRARIES} pthread)
-  else()
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
-  endif()
-
-  if(WIN32 AND MSVC)
-    set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
-                                              RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-  endif()
-
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
-  endif()
-
-  set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
-  if(APPLE AND VTK_USE_COCOA)
-    install(TARGETS ${_name} BUNDLE DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component})
-  else()
-    install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component})
-  endif()
-
-  string(TOUPPER ${_component} _component_upper)
-  list(APPEND PCL_${_component_upper}_ALL_TARGETS ${_name})
-endmacro()
+  string(TOUPPER ${ADD_LIBRARY_OPTION_COMPONENT} _component_upper)
+  set(PCL_${_component_upper}_ALL_TARGETS ${PCL_${_component_upper}_ALL_TARGETS} ${_name} PARENT_SCOPE)
+endfunction()
 
 ###############################################################################
 # Add an executable target.
 # _name The executable name.
-# _component The part of PCL that this library belongs to.
-# ARGN the source files for the library.
-macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
+# COMPONENT The part of PCL that this library belongs to.
+# SOURCES The source files for the library.
+function(PCL_CUDA_ADD_EXECUTABLE _name)
+  set(options)
+  set(oneValueArgs COMPONENT)
+  set(multiValueArgs SOURCES)
+  cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
   REMOVE_VTK_DEFINITIONS()
-  cuda_add_executable(${_name} ${ARGN})
+  cuda_add_executable(${_name} ${ADD_LIBRARY_OPTION_SOURCES})
+  PCL_ADD_VERSION_INFO(${_name})
+
   # must link explicitly against boost.
   target_link_libraries(${_name} ${Boost_LIBRARIES})
 
@@ -339,14 +352,13 @@ macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
                                               RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
   endif()
 
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
-  endif()
+  # There's a single app.
+  set_target_properties(${_name} PROPERTIES FOLDER "Apps")
 
   set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
   install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-          COMPONENT pcl_${_component})
-endmacro()
+          COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT})
+endfunction()
 
 ###############################################################################
 # Add a test target.
@@ -368,20 +380,12 @@ macro(PCL_ADD_TEST _name _exename)
   #target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
   target_link_libraries(${_exename} ${PCL_ADD_TEST_LINK_WITH} ${CLANG_LIBRARIES})
 
-  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    target_link_libraries(${_exename} pthread)
-  elseif(UNIX AND NOT ANDROID)
-    # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
-    target_link_libraries(${_exename} pthread)
-  endif()
+  target_link_libraries(${_exename} Threads::Threads)
 
   # must link explicitly against boost only on Windows
   target_link_libraries(${_exename} ${Boost_LIBRARIES})
-  #
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_exename} PROPERTIES FOLDER "Tests")
-  endif()
 
+  set_target_properties(${_exename} PROPERTIES FOLDER "Tests")
   add_test(NAME ${_name} COMMAND ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
 
   add_dependencies(tests ${_exename})
@@ -404,9 +408,7 @@ macro(PCL_ADD_EXAMPLE _name)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                               RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
   endif()
-  if(USE_PROJECT_FOLDERS)
-    set_target_properties(${_name} PROPERTIES FOLDER "Examples")
-  endif()
+  set_target_properties(${_name} PROPERTIES FOLDER "Examples")
 
   # add target to list of example targets created at the parent scope
   list(APPEND PCL_EXAMPLES_ALL_TARGETS ${_name})
@@ -445,68 +447,43 @@ endmacro()
 # Make a pkg-config file for a library. Do not include general PCL stuff in the
 # arguments; they will be added automatically.
 # _name The library name. "pcl_" will be preprended to this.
-# _component The part of PCL that this pkg-config file belongs to.
-# _desc Description of the library.
-# _pcl_deps External dependencies to pcl libs, as a list. (will get mangled to external pkg-config name)
-# _ext_deps External dependencies, as a list.
-# _int_deps Internal dependencies, as a list.
-# _cflags Compiler flags necessary to build with the library.
-# _lib_flags Linker flags necessary to link to the library.
-macro(PCL_MAKE_PKGCONFIG _name _component _desc _pcl_deps _ext_deps _int_deps _cflags _lib_flags)
+# COMPONENT The part of PCL that this pkg-config file belongs to.
+# DESC Description of the library.
+# PCL_DEPS External dependencies to pcl libs, as a list. (will get mangled to external pkg-config name)
+# EXT_DEPS External dependencies, as a list.
+# INT_DEPS Internal dependencies, as a list.
+# CFLAGS Compiler flags necessary to build with the library.
+# LIB_FLAGS Linker flags necessary to link to the library.
+# HEADER_ONLY Ensures that no -L or l flags will be created.
+function(PCL_MAKE_PKGCONFIG _name)
+  set(options HEADER_ONLY)
+  set(oneValueArgs COMPONENT DESC CFLAGS LIB_FLAGS)
+  set(multiValueArgs PCL_DEPS INT_DEPS EXT_DEPS)
+  cmake_parse_arguments(PKGCONFIG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  
   set(PKG_NAME ${_name})
-  set(PKG_DESC ${_desc})
-  set(PKG_CFLAGS ${_cflags})
-  set(PKG_LIBFLAGS ${_lib_flags})
-  LIST_TO_STRING(_ext_deps_str "${_ext_deps}")
-  set(PKG_EXTERNAL_DEPS ${_ext_deps_str})
-  foreach(_dep ${_pcl_deps})
+  set(PKG_DESC ${PKGCONFIG_DESC})
+  set(PKG_CFLAGS ${PKGCONFIG_CFLAGS})
+  set(PKG_LIBFLAGS ${PKGCONFIG_LIB_FLAGS})
+  LIST_TO_STRING(PKG_EXTERNAL_DEPS "${PKGCONFIG_EXT_DEPS}")
+  foreach(_dep ${PKGCONFIG_PCL_DEPS})
     set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
   endforeach()
   set(PKG_INTERNAL_DEPS "")
-  foreach(_dep ${_int_deps})
+  foreach(_dep ${PKGCONFIG_INT_DEPS})
     set(PKG_INTERNAL_DEPS "${PKG_INTERNAL_DEPS} -l${_dep}")
   endforeach()
 
   set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.pc)
-  configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig.cmake.in ${_pc_file} @ONLY)
+  if(PKGCONFIG_HEADER_ONLY)
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig-headeronly.cmake.in ${_pc_file} @ONLY)
+  else()
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig.cmake.in ${_pc_file} @ONLY)
+  endif()
   install(FILES ${_pc_file}
           DESTINATION ${PKGCFG_INSTALL_DIR}
-          COMPONENT pcl_${_component})
-endmacro()
-
-###############################################################################
-# Make a pkg-config file for a header-only library.
-# Essentially a duplicate of PCL_MAKE_PKGCONFIG, but
-# ensures that no -L or l flags will be created
-# Do not include general PCL stuff in the
-# arguments; they will be added automatically.
-# _name The library name. "pcl_" will be preprended to this.
-# _component The part of PCL that this pkg-config file belongs to.
-# _desc Description of the library.
-# _pcl_deps External dependencies to pcl libs, as a list. (will get mangled to external pkg-config name)
-# _ext_deps External dependencies, as a list.
-# _int_deps Internal dependencies, as a list.
-# _cflags Compiler flags necessary to build with the library.
-macro(PCL_MAKE_PKGCONFIG_HEADER_ONLY _name _component _desc _pcl_deps _ext_deps _int_deps _cflags)
-  set(PKG_NAME ${_name})
-  set(PKG_DESC ${_desc})
-  set(PKG_CFLAGS ${_cflags})
-  #set(PKG_LIBFLAGS ${_lib_flags})
-  LIST_TO_STRING(_ext_deps_str "${_ext_deps}")
-  set(PKG_EXTERNAL_DEPS ${_ext_deps_str})
-  foreach(_dep ${_pcl_deps})
-    set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
-  endforeach()
-  set(PKG_INTERNAL_DEPS "")
-  foreach(_dep ${_int_deps})
-    set(PKG_INTERNAL_DEPS "${PKG_INTERNAL_DEPS} -l${_dep}")
-  endforeach()
-  set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.pc)
-  configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig-headeronly.cmake.in ${_pc_file} @ONLY)
-  install(FILES ${_pc_file}
-          DESTINATION ${PKGCFG_INSTALL_DIR}
-          COMPONENT pcl_${_component})
-endmacro()
+          COMPONENT pcl_${PKGCONFIG_COMPONENT})
+endfunction()
 
 ###############################################################################
 # PRIVATE
@@ -820,9 +797,7 @@ macro (PCL_ADD_DOC _subsys)
     set(doxyfile "${CMAKE_CURRENT_BINARY_DIR}/doxyfile")
     configure_file("${PCL_SOURCE_DIR}/doc/doxygen/doxyfile.in" ${doxyfile})
     add_custom_target(${doc_subsys} ${DOXYGEN_EXECUTABLE} ${doxyfile})
-    if(USE_PROJECT_FOLDERS)
-      set_target_properties(${doc_subsys} PROPERTIES FOLDER "Documentation")
-    endif()
+    set_target_properties(${doc_subsys} PROPERTIES FOLDER "Documentation")
   endif()
 endmacro()
 

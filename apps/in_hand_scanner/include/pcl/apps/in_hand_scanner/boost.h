@@ -44,13 +44,6 @@
 #  pragma GCC system_header
 #endif
 
-#include <boost/static_assert.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/bind/bind.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/signals2/connection.hpp>
-//#include <boost/signals2/signal.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/type_traits/is_same.hpp>

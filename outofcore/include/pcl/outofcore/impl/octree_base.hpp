@@ -88,7 +88,7 @@ namespace pcl
       }
       
       // Create root_node_node
-      root_node_ = new OutofcoreOctreeBaseNode<ContainerT, PointT> (root_name, NULL, load_all);
+      root_node_ = new OutofcoreOctreeBaseNode<ContainerT, PointT> (root_name, nullptr, load_all);
       // Set root_node_nodes tree to the newly created tree
       root_node_->m_tree_ = this;
 
@@ -207,7 +207,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> boost::uint64_t
     OutofcoreOctreeBase<ContainerT, PointT>::addDataToLeaf (const AlignedPointTVector& p)
     {
-      boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::unique_lock < std::shared_timed_mutex > lock (read_write_mutex_);
 
       const bool _FORCE_BB_CHECK = true;
       
@@ -243,7 +243,7 @@ namespace pcl
     OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud_and_genLOD (PointCloudConstPtr point_cloud)
     {
       // Lock the tree while writing
-      boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::unique_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       boost::uint64_t pt_added = root_node_->addDataToLeaf_and_genLOD (point_cloud->points, false);
       return (pt_added);
     }
@@ -254,7 +254,7 @@ namespace pcl
     OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud_and_genLOD (pcl::PCLPointCloud2::Ptr &input_cloud)
     {
       // Lock the tree while writing
-      boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::unique_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       boost::uint64_t pt_added = root_node_->addPointCloud_and_genLOD (input_cloud);
       
       PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBase::%s] Points added %lu, points in input cloud, %lu\n",__FUNCTION__, pt_added, input_cloud->width*input_cloud->height );
@@ -270,7 +270,7 @@ namespace pcl
     OutofcoreOctreeBase<ContainerT, PointT>::addDataToLeaf_and_genLOD (AlignedPointTVector& src)
     {
       // Lock the tree while writing
-      boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::unique_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       boost::uint64_t pt_added = root_node_->addDataToLeaf_and_genLOD (src, false);
       return (pt_added);
     }
@@ -280,7 +280,7 @@ namespace pcl
     template<typename Container, typename PointT> void
     OutofcoreOctreeBase<Container, PointT>::queryFrustum (const double planes[24], std::list<std::string>& file_names) const
     {
-      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::shared_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       root_node_->queryFrustum (planes, file_names, this->getTreeDepth());
     }
 
@@ -289,7 +289,7 @@ namespace pcl
     template<typename Container, typename PointT> void
     OutofcoreOctreeBase<Container, PointT>::queryFrustum(const double *planes, std::list<std::string>& file_names, const boost::uint32_t query_depth) const
     {
-      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::shared_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       root_node_->queryFrustum (planes, file_names, query_depth);
     }
 
@@ -303,7 +303,7 @@ namespace pcl
         std::list<std::string>& file_names, 
         const boost::uint32_t query_depth) const
     {
-      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::shared_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       root_node_->queryFrustum (planes, eye, view_projection_matrix, file_names, query_depth);
     }
 
@@ -312,7 +312,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint64_t query_depth, AlignedPointTVector& dst) const
     {
-      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::shared_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       dst.clear ();
       PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode] Querying Bounding Box %.2lf %.2lf %.2lf, %.2lf %.2lf %.2lf", min[0], min[1], min[2], max[0], max[1], max[2]);
       root_node_->queryBBIncludes (min, max, query_depth, dst);
@@ -323,7 +323,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint64_t query_depth, const pcl::PCLPointCloud2::Ptr& dst_blob) const
     {
-      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::shared_lock < std::shared_timed_mutex > lock (read_write_mutex_);
 
       dst_blob->data.clear ();
       dst_blob->width = 0;
@@ -337,7 +337,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint64_t query_depth, const double percent, AlignedPointTVector& dst) const
     {
-      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::shared_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       dst.clear ();
       root_node_->queryBBIncludes_subsample (min, max, query_depth, percent, dst);
     }
@@ -361,7 +361,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> bool
     OutofcoreOctreeBase<ContainerT, PointT>::getBoundingBox (Eigen::Vector3d &min, Eigen::Vector3d &max) const
     {
-      if (root_node_!= NULL)
+      if (root_node_!= nullptr)
       {
         root_node_->getBoundingBox (min, max);
         return true;
@@ -374,7 +374,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::printBoundingBox(const size_t query_depth) const
     {
-      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::shared_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       root_node_->printBoundingBox (query_depth);
     }
 
@@ -383,7 +383,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::getOccupiedVoxelCenters(AlignedPointTVector &voxel_centers, const size_t query_depth) const
     {
-      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::shared_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       if (query_depth > metadata_->getDepth ()) 
       {
         root_node_->getOccupiedVoxelCentersRecursive (voxel_centers, metadata_->getDepth ());
@@ -399,7 +399,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::getOccupiedVoxelCenters(std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const size_t query_depth) const
     {
-      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::shared_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       if (query_depth > metadata_->getDepth ())
       {
         root_node_->getOccupiedVoxelCentersRecursive (voxel_centers, metadata_->getDepth ());
@@ -415,7 +415,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::queryBBIntersects (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name) const
     {
-      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::shared_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       bin_name.clear ();
 #if defined _MSC_VER
   #pragma warning(push)
@@ -524,7 +524,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> bool
     OutofcoreOctreeBase<ContainerT, PointT>::getBinDimension (double& x, double& y) const
     {
-      if (root_node_== NULL)
+      if (root_node_== nullptr)
       {
         x = 0;
         y = 0;
@@ -559,17 +559,17 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::buildLOD ()
     {
-      if (root_node_== NULL)
+      if (root_node_== nullptr)
       {
         PCL_ERROR ("Root node is null; aborting buildLOD.\n");
         return;
       }
 
-      boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
+      std::unique_lock < std::shared_timed_mutex > lock (read_write_mutex_);
 
       const int number_of_nodes = 1;
 
-      std::vector<BranchNode*> current_branch (number_of_nodes, static_cast<BranchNode*>(0));
+      std::vector<BranchNode*> current_branch (number_of_nodes, static_cast<BranchNode*>(nullptr));
       current_branch[0] = root_node_;
       assert (current_branch.back () != 0);
       this->buildLODRecursive (current_branch);
@@ -671,7 +671,7 @@ namespace pcl
         {
           next_branch.push_back (current_branch.back ()->getChildPtr (i));
           //skip that child if it doesn't exist
-          if (next_branch.back () != 0)
+          if (next_branch.back () != nullptr)
             buildLODRecursive (next_branch);
           
           next_branch.pop_back ();
@@ -700,10 +700,10 @@ namespace pcl
       if (boost::filesystem::extension (path_name) != OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension)
       {
         PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBase] Wrong root node file extension: %s. The tree must have a root node ending in %s\n", boost::filesystem::extension (path_name).c_str (), OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension.c_str () );
-        return (0);
+        return (false);
       }
 
-      return (1);
+      return (true);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -734,7 +734,7 @@ namespace pcl
       if (side_length < leaf_resolution)
           return (0);
           
-      boost::uint64_t res = static_cast<boost::uint64_t> (std::ceil (log2f (static_cast<float> (side_length / leaf_resolution))));
+      boost::uint64_t res = static_cast<boost::uint64_t> (std::ceil (std::log2 (side_length / leaf_resolution)));
       
       PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBase::calculateDepth] Setting depth to %d\n",res);
       return (res);

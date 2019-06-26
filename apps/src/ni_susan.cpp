@@ -38,6 +38,7 @@
  */
 
 #define SHOW_FPS 1
+
 #include <pcl/apps/timer.h>
 #include <pcl/common/common.h>
 #include <pcl/common/angles.h>
@@ -50,19 +51,23 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 
+#include <mutex>
+#include <thread>
+
 using namespace pcl;
 using namespace std;
+using namespace std::chrono_literals;
 
-typedef PointXYZRGBA PointT;
-typedef PointXYZRGBL KeyPointT;
+using PointT = PointXYZRGBA;
+using KeyPointT = PointXYZRGBL;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class SUSANDemo
 {
   public:
-    typedef PointCloud<PointT> Cloud;
-    typedef Cloud::Ptr CloudPtr;
-    typedef Cloud::ConstPtr CloudConstPtr;
+    using Cloud = PointCloud<PointT>;
+    using CloudPtr = Cloud::Ptr;
+    using CloudConstPtr = Cloud::ConstPtr;
 
     SUSANDemo (Grabber& grabber)
       : cloud_viewer_ ("SUSAN 2D Keypoints -- PointCloud")
@@ -76,7 +81,7 @@ class SUSANDemo
     cloud_callback (const CloudConstPtr& cloud)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
 
       // Compute SUSAN keypoints 
@@ -92,7 +97,7 @@ class SUSANDemo
     void
     init ()
     {
-      boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&SUSANDemo::cloud_callback, this, _1);
+      std::function<void (const CloudConstPtr&) > cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
       cloud_connection = grabber_.registerCallback (cloud_cb);
     }
 
@@ -172,7 +177,7 @@ class SUSANDemo
 
         cloud_viewer_.spinOnce ();
         image_viewer_.spinOnce ();
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
       }
 
       grabber_.stop ();
@@ -181,7 +186,7 @@ class SUSANDemo
     
     visualization::PCLVisualizer cloud_viewer_;
     Grabber& grabber_;
-    boost::mutex cloud_mutex_;
+    std::mutex cloud_mutex_;
     CloudConstPtr cloud_;
     
     visualization::ImageViewer image_viewer_;

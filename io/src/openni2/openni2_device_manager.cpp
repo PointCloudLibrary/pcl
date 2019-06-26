@@ -36,6 +36,7 @@
 
 #include <boost/make_shared.hpp>
 
+#include <mutex>
 #include <set>
 #include <string>
 
@@ -57,7 +58,7 @@ namespace pcl
         }
       };
 
-      typedef std::set<OpenNI2DeviceInfo, OpenNI2DeviceInfoComparator> DeviceSet;
+      using DeviceSet = std::set<OpenNI2DeviceInfo, OpenNI2DeviceInfoComparator>;
 
 
 
@@ -67,9 +68,6 @@ namespace pcl
       {
         public:
           OpenNI2DeviceListener ()
-            : openni::OpenNI::DeviceConnectedListener ()
-            , openni::OpenNI::DeviceDisconnectedListener ()
-            , openni::OpenNI::DeviceStateChangedListener ()
           {
             openni::OpenNI::addDeviceConnectedListener (this);
             openni::OpenNI::addDeviceDisconnectedListener (this);
@@ -112,7 +110,7 @@ namespace pcl
           void
           onDeviceConnected (const openni::DeviceInfo* pInfo) override
           {
-            boost::mutex::scoped_lock l (device_mutex_);
+            std::lock_guard<std::mutex> l (device_mutex_);
 
             const OpenNI2DeviceInfo device_info_wrapped = openni2_convert (pInfo);
 
@@ -124,7 +122,7 @@ namespace pcl
           void
           onDeviceDisconnected (const openni::DeviceInfo* pInfo) override
           {
-            boost::mutex::scoped_lock l (device_mutex_);
+            std::lock_guard<std::mutex> l (device_mutex_);
 
             const OpenNI2DeviceInfo device_info_wrapped = openni2_convert (pInfo);
             device_set_.erase (device_info_wrapped);
@@ -133,7 +131,7 @@ namespace pcl
           boost::shared_ptr<std::vector<std::string> >
           getConnectedDeviceURIs ()
           {
-            boost::mutex::scoped_lock l (device_mutex_);
+            std::lock_guard<std::mutex> l (device_mutex_);
 
             boost::shared_ptr<std::vector<std::string> > result = boost::make_shared<std::vector<std::string> >();
 
@@ -151,17 +149,14 @@ namespace pcl
           boost::shared_ptr<std::vector<OpenNI2DeviceInfo> >
           getConnectedDeviceInfos ()
           {
-            boost::mutex::scoped_lock l (device_mutex_);
+            std::lock_guard<std::mutex> l (device_mutex_);
 
             boost::shared_ptr<std::vector<OpenNI2DeviceInfo> > result = boost::make_shared<std::vector<OpenNI2DeviceInfo> >();
 
             result->reserve (device_set_.size ());
 
-            DeviceSet::const_iterator it;
-            DeviceSet::const_iterator it_end = device_set_.end ();
-
-            for (it = device_set_.begin (); it != it_end; ++it)
-              result->push_back (*it);
+            for (const auto &device : device_set_)
+              result->push_back (device);
 
             return result;
           }
@@ -169,12 +164,12 @@ namespace pcl
           std::size_t
           getNumOfConnectedDevices ()
           {
-            boost::mutex::scoped_lock l (device_mutex_);
+            std::lock_guard<std::mutex> l (device_mutex_);
 
             return device_set_.size ();
           }
 
-          boost::mutex device_mutex_;
+          std::mutex device_mutex_;
           DeviceSet device_set_;
       };
 
@@ -247,18 +242,14 @@ pcl::io::openni2::OpenNI2DeviceManager::getFileDevice (const std::string& path)
 std::ostream&
 operator<< (std::ostream& stream, const OpenNI2DeviceManager& device_manager) 
 {
+  auto device_info = device_manager.getConnectedDeviceInfos ();
 
-  boost::shared_ptr<std::vector<OpenNI2DeviceInfo> > device_info = device_manager.getConnectedDeviceInfos ();
-
-  std::vector<OpenNI2DeviceInfo>::const_iterator it;
-  std::vector<OpenNI2DeviceInfo>::const_iterator it_end = device_info->end ();
-
-  for (it = device_info->begin (); it != it_end; ++it)
+  for (const auto &device : *device_info)
   {
-    stream << "Uri: " << it->uri_ << " (Vendor: " << it->vendor_ <<
-      ", Name: " << it->name_ <<
-      ", Vendor ID: " << it->vendor_id_ <<
-      ", Product ID: " << it->product_id_ <<
+    stream << "Uri: " << device.uri_ << " (Vendor: " << device.vendor_ <<
+      ", Name: " << device.name_ <<
+      ", Vendor ID: " << device.vendor_id_ <<
+      ", Product ID: " << device.product_id_ <<
       ")" << std::endl;
   }
 

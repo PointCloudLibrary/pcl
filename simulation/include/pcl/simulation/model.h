@@ -27,13 +27,13 @@ namespace pcl
 {
   namespace simulation
   {
-    typedef struct _SinglePoly
+    struct SinglePoly
     {
       float* vertices_;
       float* colors_;
       GLenum mode_;
       GLuint nvertices_;
-    } SinglePoly;
+    };
 
     struct Vertex
     {
@@ -56,23 +56,23 @@ namespace pcl
       Eigen::Vector3f norm;
     };
 
-    typedef std::vector<Vertex> Vertices;
-    typedef std::vector<GLuint> Indices;
+    using Vertices = std::vector<Vertex>;
+    using Indices = std::vector<GLuint>;
 
     class Model
     {
       public:
         virtual void draw () = 0;
 
-        typedef boost::shared_ptr<Model> Ptr;
-        typedef boost::shared_ptr<const Model> ConstPtr;
+        using Ptr = boost::shared_ptr<Model>;
+        using ConstPtr = boost::shared_ptr<const Model>;
     };
 
     class PCL_EXPORTS TriangleMeshModel : public Model
     {
       public:
-        typedef boost::shared_ptr<TriangleMeshModel> Ptr;
-        typedef boost::shared_ptr<const TriangleMeshModel> ConstPtr;
+        using Ptr = boost::shared_ptr<TriangleMeshModel>;
+        using ConstPtr = boost::shared_ptr<const TriangleMeshModel>;
 
         TriangleMeshModel (pcl::PolygonMesh::Ptr plg);
 
@@ -97,8 +97,8 @@ namespace pcl
         virtual ~PolygonMeshModel();
         void draw() override;
 
-        typedef boost::shared_ptr<PolygonMeshModel> Ptr;
-        typedef boost::shared_ptr<const PolygonMeshModel> ConstPtr;
+        using Ptr = boost::shared_ptr<PolygonMeshModel>;
+        using ConstPtr = boost::shared_ptr<const PolygonMeshModel>;
       private:
         std::vector<SinglePoly> polygons;
 
@@ -120,8 +120,8 @@ namespace pcl
     class PCL_EXPORTS PointCloudModel : public Model
     {
       public:
-        typedef boost::shared_ptr<PointCloudModel> Ptr;
-        typedef boost::shared_ptr<const PointCloudModel> ConstPtr;
+        using Ptr = boost::shared_ptr<PointCloudModel>;
+        using ConstPtr = boost::shared_ptr<const PointCloudModel>;
 
         PointCloudModel (GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc);
 
@@ -185,8 +185,8 @@ namespace pcl
     class PCL_EXPORTS TexturedQuad
     {
       public:
-        typedef boost::shared_ptr<TexturedQuad> Ptr;
-        typedef boost::shared_ptr<const TexturedQuad> ConstPtr;
+        using Ptr = boost::shared_ptr<TexturedQuad>;
+        using ConstPtr = boost::shared_ptr<const TexturedQuad>;
 
         TexturedQuad (int width, int height);
         ~TexturedQuad ();

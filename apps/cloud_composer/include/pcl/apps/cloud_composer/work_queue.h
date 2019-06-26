@@ -58,7 +58,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        WorkQueue (QObject* parent = 0);  
+        WorkQueue (QObject* parent = nullptr);  
         ~WorkQueue();  
       public Q_SLOTS:
         void

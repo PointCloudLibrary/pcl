@@ -154,7 +154,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (
   point_picker->Pick (mouse_x, mouse_y, 0.0, ren);
 
   int idx = static_cast<int> (point_picker->GetPointId ());
-  if (point_picker->GetDataSet () != NULL)
+  if (point_picker->GetDataSet ())
   {
     double p[3];
     point_picker->GetDataSet ()->GetPoint (idx, p);

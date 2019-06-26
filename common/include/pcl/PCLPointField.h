@@ -14,7 +14,7 @@ namespace pcl
 {
   struct PCLPointField
   {
-    PCLPointField () : name (), offset (0), datatype (0), count (0)
+    PCLPointField () : offset (0), datatype (0), count (0)
     {}
 
     std::string name;
@@ -33,12 +33,12 @@ namespace pcl
                            FLOAT64 = 8 };
 
   public:
-    typedef boost::shared_ptr< ::pcl::PCLPointField> Ptr;
-    typedef boost::shared_ptr< ::pcl::PCLPointField const> ConstPtr;
+    using Ptr = boost::shared_ptr< ::pcl::PCLPointField>;
+    using ConstPtr = boost::shared_ptr<const ::pcl::PCLPointField>;
   }; // struct PCLPointField
 
-  typedef boost::shared_ptr< ::pcl::PCLPointField> PCLPointFieldPtr;
-  typedef boost::shared_ptr< ::pcl::PCLPointField const> PCLPointFieldConstPtr;
+  using PCLPointFieldPtr = boost::shared_ptr< ::pcl::PCLPointField>;
+  using PCLPointFieldConstPtr = boost::shared_ptr<const ::pcl::PCLPointField>;
 
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLPointField & v)
   {

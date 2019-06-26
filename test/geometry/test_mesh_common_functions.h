@@ -55,9 +55,9 @@ const unsigned int max_number_boundary_vertices = 100;
 template <class MeshT> bool
 hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> &faces, const bool verbose = false)
 {
-  typedef typename MeshT::VertexAroundFaceCirculator VAFC;
-  typedef typename MeshT::VertexIndices              VertexIndices;
-  typedef typename MeshT::FaceIndex                  FaceIndex;
+  using VAFC = typename MeshT::VertexAroundFaceCirculator;
+  using VertexIndices = typename MeshT::VertexIndices;
+  using FaceIndex = typename MeshT::FaceIndex;
 
   if (mesh.sizeFaces () != faces.size ())
   {
@@ -69,7 +69,7 @@ hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> &
   }
 
   VertexIndices vi;
-  for (unsigned int i=0; i<mesh.sizeFaces (); ++i)
+  for (size_t i = 0; i < mesh.sizeFaces (); ++i)
   {
     if (verbose) std::cerr << "Face " << std::setw (2) << i << ": ";
     VAFC       circ     = mesh.getVertexAroundFaceCirculator (FaceIndex (i));
@@ -95,7 +95,7 @@ hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> &
       return (false);
     }
     if (verbose) std::cerr << "\texpected: ";
-    for (unsigned int j=0; j<vi.size (); ++j)
+    for (size_t j = 0; j < vi.size (); ++j)
     {
       if (verbose) std::cerr << std::setw (2) << faces [i][j] << " ";
       if (vi [j] != faces [i][j])
@@ -116,9 +116,9 @@ hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> &
 template <class MeshT> bool
 hasFaces (const MeshT& mesh, const std::vector <std::vector <int> > &faces, const bool verbose = false)
 {
-  typedef typename MeshT::VertexAroundFaceCirculator VAFC;
-  typedef typename MeshT::FaceIndex                  FaceIndex;
-  typedef typename MeshT::VertexDataCloud            VertexDataCloud;
+  using VAFC = typename MeshT::VertexAroundFaceCirculator;
+  using FaceIndex = typename MeshT::FaceIndex;
+  using VertexDataCloud = typename MeshT::VertexDataCloud;
 
   if (mesh.sizeFaces () != faces.size ())
   {
@@ -131,7 +131,7 @@ hasFaces (const MeshT& mesh, const std::vector <std::vector <int> > &faces, cons
 
   const VertexDataCloud& vdc = mesh.getVertexDataCloud ();
   std::vector <int> vv;
-  for (unsigned int i=0; i<mesh.sizeFaces (); ++i)
+  for (size_t i = 0; i < mesh.sizeFaces (); ++i)
   {
     if (verbose) std::cerr << "Face " << std::setw (2) << i << ": ";
     VAFC       circ     = mesh.getVertexAroundFaceCirculator (FaceIndex (i));
@@ -157,7 +157,7 @@ hasFaces (const MeshT& mesh, const std::vector <std::vector <int> > &faces, cons
       return (false);
     }
     if (verbose) std::cerr << "\texpected: ";
-    for (unsigned int j=0; j<vv.size (); ++j)
+    for (size_t j=0; j<vv.size (); ++j)
     {
       if (verbose) std::cerr << std::setw (2) << faces [i][j] << " ";
       if (vv [j] != faces [i][j])
@@ -177,9 +177,9 @@ hasFaces (const MeshT& mesh, const std::vector <std::vector <int> > &faces, cons
 template <class MeshT> typename MeshT::VertexIndices
 getBoundaryVertices (const MeshT& mesh, const typename MeshT::VertexIndex& first, const bool verbose = false)
 {
-  typedef typename MeshT::VertexAroundFaceCirculator VAFC;
-  typedef typename MeshT::HalfEdgeIndex              HalfEdgeIndex;
-  typedef typename MeshT::VertexIndices              VertexIndices;
+  using VAFC = typename MeshT::VertexAroundFaceCirculator;
+  using HalfEdgeIndex = typename MeshT::HalfEdgeIndex;
+  using VertexIndices = typename MeshT::VertexIndices;
 
   const HalfEdgeIndex boundary_he = mesh.getOutgoingHalfEdgeIndex (first);
   if (!mesh.isBoundary (boundary_he))
@@ -217,9 +217,9 @@ getBoundaryVertices (const MeshT& mesh, const typename MeshT::VertexIndex& first
 template <class MeshT> std::vector <int>
 getBoundaryVertices (const MeshT& mesh, const int first, const bool verbose = false)
 {
-  typedef typename MeshT::VertexAroundFaceCirculator VAFC;
-  typedef typename MeshT::VertexIndex                VertexIndex;
-  typedef typename MeshT::HalfEdgeIndex              HalfEdgeIndex;
+  using VAFC = typename MeshT::VertexAroundFaceCirculator;
+  using VertexIndex = typename MeshT::VertexIndex;
+  using HalfEdgeIndex = typename MeshT::HalfEdgeIndex;
 
   const HalfEdgeIndex boundary_he = mesh.getOutgoingHalfEdgeIndex (VertexIndex (first));
   if (!mesh.isBoundary (boundary_he))
@@ -333,8 +333,8 @@ findHalfEdge (const MeshT&                       mesh,
               const typename MeshT::VertexIndex& idx_v_0,
               const typename MeshT::VertexIndex& idx_v_1)
 {
-  typedef typename MeshT::HalfEdgeIndex                HalfEdgeIndex;
-  typedef typename MeshT::VertexAroundVertexCirculator VAVC;
+  using HalfEdgeIndex = typename MeshT::HalfEdgeIndex;
+  using VAVC = typename MeshT::VertexAroundVertexCirculator;
 
   if (mesh.isIsolated (idx_v_0) || mesh.isIsolated (idx_v_1))
   {

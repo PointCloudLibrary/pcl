@@ -68,8 +68,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        typedef boost::shared_ptr<CorrespondenceRejectorVarTrimmed> Ptr;
-        typedef boost::shared_ptr<const CorrespondenceRejectorVarTrimmed> ConstPtr;
+        using Ptr = boost::shared_ptr<CorrespondenceRejectorVarTrimmed>;
+        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorVarTrimmed>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorVarTrimmed () : 
@@ -77,8 +77,7 @@ namespace pcl
           factor_ (),
           min_ratio_ (0.05),
           max_ratio_ (0.95),
-          lambda_ (0.95),
-          data_container_ ()
+          lambda_ (0.95)
         {
           rejection_name_ = "CorrespondenceRejectorVarTrimmed";
         }
@@ -170,8 +169,8 @@ namespace pcl
           * confident that the tree will be set correctly.
           */
         template <typename PointT> inline void
-        setSearchMethodTarget (const boost::shared_ptr<pcl::search::KdTree<PointT> > &tree, 
-                               bool force_no_recompute = false) 
+        setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr &tree,
+                               bool force_no_recompute = false)
         { 
           boost::static_pointer_cast< DataContainer<PointT> > 
             (data_container_)->setSearchMethodTarget (tree, force_no_recompute );
@@ -236,7 +235,7 @@ namespace pcl
          */
         double lambda_;
 
-        typedef boost::shared_ptr<DataContainerInterface> DataContainerPtr;
+        using DataContainerPtr = boost::shared_ptr<DataContainerInterface>;
 
         /** \brief A pointer to the DataContainer object containing the input and target point clouds */
         DataContainerPtr data_container_;

@@ -76,18 +76,14 @@ TransformCommand::undo()
     return;
   float transform_matrix_inv[MATRIX_SIZE];
   invertMatrix(transform_matrix_, transform_matrix_inv);
-  float x,y,z;
-  unsigned int index = 0;
-  Selection::const_iterator it;
-  for(it = internal_selection_ptr_ -> begin();
-      it != internal_selection_ptr_-> end(); ++it)
+  for(const unsigned int &index : *internal_selection_ptr_)
   {
     Point3D pt;
-    index = *it;
     pt.x = (*cloud_ptr_)[index].x - cloud_center_[X];
     pt.y = (*cloud_ptr_)[index].y - cloud_center_[Y];
     pt.z = (*cloud_ptr_)[index].z - cloud_center_[Z];
 
+    float x,y,z;
     x = pt.x * cloud_matrix_[0] +
         pt.y * cloud_matrix_[4] +
         pt.z * cloud_matrix_[8] + cloud_matrix_[12];
@@ -131,14 +127,12 @@ TransformCommand::undo()
 void
 TransformCommand::applyTransform(ConstSelectionPtr sel_ptr)
 {
-  float x,y,z;
-  unsigned int index = 0;
   // now modify the selected points' coordinates
-  Selection::const_iterator it;
-  for(it = sel_ptr -> begin(); it != sel_ptr-> end(); ++it)
+  for(const unsigned int &index : *sel_ptr)
   {
-    index = *it;
     Point3D pt = cloud_ptr_->getObjectSpacePoint(index);
+
+    float x,y,z;
     x = pt.x * transform_matrix_[0] +
         pt.y * transform_matrix_[4] +
         pt.z * transform_matrix_[8] + transform_matrix_[12];

@@ -8,8 +8,6 @@ if(NOT VTK_FOUND)
 else()
   set(DEFAULT TRUE)
   set(REASON)
-  set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
-  include("${VTK_USE_FILE}")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 endif()
 
@@ -134,7 +132,7 @@ if(APPLE)
 endif()
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs} ${vtk_incs})
+PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs} ${vtk_incs})
 
 target_include_directories("${LIB_NAME}" SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
 
@@ -164,7 +162,7 @@ endif()
 if(WITH_RSSDK)
   list(APPEND EXT_DEPS rssdk)
 endif()
-PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
+PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
@@ -177,6 +175,3 @@ if(BUILD_TESTS)
   add_subdirectory(test)
 endif()
 
-if(BUILD_tools)
-  add_subdirectory(tools)
-endif()

@@ -40,7 +40,7 @@ pcl::cloud_composer::ProjectModel*
 pcl::cloud_composer::CloudViewer::getModel () const
 {
   if (this->count() == 0)
-    return 0;
+    return nullptr;
   else
     return dynamic_cast<CloudView*> (currentWidget ())->getModel (); 
 }

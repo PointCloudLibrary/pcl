@@ -50,10 +50,10 @@
 #include <fstream>
 #include <vector>
 
-typedef pcl::PointXYZ PointType;
-typedef pcl::PointCloud<PointType> Cloud;
-typedef Cloud::ConstPtr CloudConstPtr;
-typedef Cloud::Ptr CloudPtr;
+using PointType = pcl::PointXYZ;
+using Cloud = pcl::PointCloud<PointType>;
+using CloudConstPtr = Cloud::ConstPtr;
+using CloudPtr = Cloud::Ptr;
 
 int
 main (int argc, char **argv)
@@ -97,11 +97,11 @@ main (int argc, char **argv)
 
     pcl::IterativeClosestPointNonLinear<PointType, PointType> icp;
 
-    boost::shared_ptr<pcl::registration::WarpPointRigid3D<PointType, PointType> > warp_fcn 
+    pcl::registration::WarpPointRigid3D<PointType, PointType>::Ptr warp_fcn 
       (new pcl::registration::WarpPointRigid3D<PointType, PointType>);
 
     // Create a TransformationEstimationLM object, and set the warp to it
-    boost::shared_ptr<pcl::registration::TransformationEstimationLM<PointType, PointType> > te (new pcl::registration::TransformationEstimationLM<PointType, PointType>);
+    pcl::registration::TransformationEstimationLM<PointType, PointType>::Ptr te (new pcl::registration::TransformationEstimationLM<PointType, PointType>);
     te->setWarpFunction (warp_fcn);
 
     // Pass the TransformationEstimation objec to the ICP algorithm
@@ -118,7 +118,7 @@ main (int argc, char **argv)
     CloudPtr tmp (new Cloud);
     icp.align (*tmp);
 
-    t = t * icp.getFinalTransformation ();
+    t *= icp.getFinalTransformation ();
 
     pcl::transformPointCloud (*data, *tmp, t);
 

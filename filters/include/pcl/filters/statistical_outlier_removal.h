@@ -80,15 +80,15 @@ namespace pcl
   class StatisticalOutlierRemoval : public FilterIndices<PointT>
   {
     protected:
-      typedef typename FilterIndices<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::search::Search<PointT>::Ptr SearcherPtr;
+      using PointCloud = typename FilterIndices<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
+      using SearcherPtr = typename pcl::search::Search<PointT>::Ptr;
 
     public:
 
-      typedef boost::shared_ptr< StatisticalOutlierRemoval<PointT> > Ptr;
-      typedef boost::shared_ptr< const StatisticalOutlierRemoval<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<StatisticalOutlierRemoval<PointT> >;
+      using ConstPtr = boost::shared_ptr<const StatisticalOutlierRemoval<PointT> >;
 
 
       /** \brief Constructor.
@@ -205,18 +205,18 @@ namespace pcl
     using FilterIndices<pcl::PCLPointCloud2>::removed_indices_;
     using FilterIndices<pcl::PCLPointCloud2>::extract_removed_indices_;
 
-    typedef pcl::search::Search<pcl::PointXYZ> KdTree;
-    typedef pcl::search::Search<pcl::PointXYZ>::Ptr KdTreePtr;
+    using KdTree = pcl::search::Search<pcl::PointXYZ>;
+    using KdTreePtr = pcl::search::Search<pcl::PointXYZ>::Ptr;
 
-    typedef pcl::PCLPointCloud2 PCLPointCloud2;
-    typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
-    typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
+    using PCLPointCloud2 = pcl::PCLPointCloud2;
+    using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+    using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
     public:
       /** \brief Empty constructor. */
       StatisticalOutlierRemoval (bool extract_removed_indices = false) :
         FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices), mean_k_ (2),
-        std_mul_ (0.0), tree_ ()
+        std_mul_ (0.0)
       {
         filter_name_ = "StatisticalOutlierRemoval";
       }

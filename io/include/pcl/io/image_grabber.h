@@ -75,7 +75,7 @@ namespace pcl
     /** \brief Copy constructor.
      * \param[in] src the Image Grabber base object to copy into this
      */
-    ImageGrabberBase (const ImageGrabberBase &src) : Grabber (), impl_ ()
+    ImageGrabberBase (const ImageGrabberBase &src) : impl_ ()
     {
       *this = src;
     }

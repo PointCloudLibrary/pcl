@@ -310,9 +310,9 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud[i].x) ||
-          !pcl_isfinite (cloud[i].y) ||
-          !pcl_isfinite (cloud[i].z))
+      if (!std::isfinite (cloud[i].x) ||
+          !std::isfinite (cloud[i].y) ||
+          !std::isfinite (cloud[i].z))
         continue;
 
       memcpy (&data[j * 3], &cloud[i].x, 12);    // sizeof (float) * 3

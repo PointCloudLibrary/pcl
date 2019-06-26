@@ -44,7 +44,7 @@
  * Tracking people within groups with RGB-D data,
  * In Proceedings of the International Conference on Intelligent Robots and Systems (IROS) 2012, Vilamoura (Portugal), 2012.
  */
-  
+
 #include <pcl/console/parse.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>    
@@ -53,6 +53,12 @@
 #include <pcl/people/ground_based_people_detection_app.h>
 #include <pcl/common/time.h>
 
+
+#include <mutex>
+#include <thread>
+
+using namespace std::chrono_literals;
+
 typedef pcl::PointXYZRGBA PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
@@ -60,7 +66,7 @@ typedef pcl::PointCloud<PointT> PointCloudT;
 pcl::visualization::PCLVisualizer viewer("PCL Viewer");
 
 // Mutex: //
-boost::mutex cloud_mutex;
+std::mutex cloud_mutex;
 
 enum { COLS = 640, ROWS = 480 };
 
@@ -133,14 +139,14 @@ int main (int argc, char** argv)
   PointCloudT::Ptr cloud (new PointCloudT);
   bool new_cloud_available_flag = false;
   pcl::Grabber* interface = new pcl::OpenNIGrabber();
-  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
       boost::bind (&cloud_cb_, _1, cloud, &new_cloud_available_flag);
   interface->registerCallback (f);
   interface->start ();
 
   // Wait for the first frame:
   while(!new_cloud_available_flag) 
-    boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+    std::this_thread::sleep_for(1ms);
   new_cloud_available_flag = false;
 
   cloud_mutex.lock ();    // for not overwriting the point cloud
@@ -162,7 +168,7 @@ int main (int argc, char** argv)
   viewer.spin();
   std::cout << "done." << std::endl;
   
-  cloud_mutex.unlock ();    
+  cloud_mutex.unlock ();
 
   // Ground plane estimation:
   Eigen::VectorXf ground_coeffs;
@@ -241,4 +247,3 @@ int main (int argc, char** argv)
 
   return 0;
 }
-

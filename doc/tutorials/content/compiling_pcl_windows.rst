@@ -65,7 +65,7 @@ is needed only to build PCL tests. We do not provide GTest installers. **optiona
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
-   build system (http://www.cmake.org/), at least version **3.1.0**. A Git client
+   build system (http://www.cmake.org/), at least version **3.5.0**. A Git client
    for Windows is also required to download the PCL source code.
 
 Downloading PCL source code
@@ -249,18 +249,13 @@ Once CMake has found all the needed dependencies, let's see the PCL specific CMa
 
 - **CMAKE_INSTALL_PREFIX** is where PCL will be installed after building it (more information on this later).
 	
-If you have the Pro version of Microsoft Visual Studio, you can check **USE_PROJECT_FOLDERS** checkbox to organize PCL
-projects in folders within the PCL solution. If you have an express edition, it is recommended to keep it unchecked, as in
-express editions, project folders are disabled.
-
 Once PCL configuration is ok, hit the `Generate` button. CMake will then generate Visual Studio project files (vcproj files) 
 and the main solution file (PCL.sln) in C:\\PCL directory.
 
 Building PCL
 --------------
   
-Open that generated solution file (PCL.sln) to finally build the PCL libraries. This is how your solution will look like
-whether you enabled **USE_PROJECT_FOLDERS** (left) or not (right).
+Open that generated solution file (PCL.sln) to finally build the PCL libraries. This is how your solution will look like.
 
 .. image:: images/windows/pcl_solution_with_projects_folder.png
    :alt: PCL solution with project folders

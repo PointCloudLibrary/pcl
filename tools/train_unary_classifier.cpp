@@ -53,10 +53,10 @@ unsigned int default_cluster_size = 10;
 double default_normal_radius_search = 0.01;
 double default_fpfh_radius_search = 0.05;
 
-typedef PointXYZ PointT;
-typedef PointCloud<PointT> CloudT;
-typedef PointCloud<PointXYZRGBL> CloudLT;
-typedef PointCloud<FPFHSignature33> FeatureT;
+using PointT = PointXYZ;
+using CloudT = PointCloud<PointT>;
+using CloudLT = PointCloud<PointXYZRGBL>;
+using FeatureT = PointCloud<FPFHSignature33>;
 
 void
 printHelp (int, char **argv)
@@ -181,7 +181,7 @@ saveCloud (const std::string &filename, std::vector<FeatureT, Eigen::aligned_all
     {
       std::string fname (filename);
       std::string s = std::to_string(static_cast<int> (i) );
-      fname = fname + "_" + s + ".pcd";
+      fname += "_" + s + ".pcd";
 
       print_highlight ("Saving "); print_value ("%s ", fname.c_str ());
 

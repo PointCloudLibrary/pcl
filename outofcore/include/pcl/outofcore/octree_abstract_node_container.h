@@ -38,8 +38,9 @@
 
 #pragma once
 
-#include <vector>
+#include <mutex>
 #include <string>
+#include <vector>
 
 #include <pcl/outofcore/boost.h>
 
@@ -52,7 +53,7 @@ namespace pcl
     {
 
       public:
-        typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
+        using AlignedPointTVector = std::vector<PointT, Eigen::aligned_allocator<PointT> >;
 
         OutofcoreAbstractNodeContainer () 
           : container_ ()
@@ -95,8 +96,7 @@ namespace pcl
 
         AlignedPointTVector container_;
         
-        static boost::mutex rng_mutex_;
-        static boost::mt19937 rand_gen_;
+        static std::mutex rng_mutex_;
     };
   }//namespace outofcore
 }//namespace pcl

@@ -9,7 +9,6 @@
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/common/point_operators.h>
 #include <pcl/common/io.h>
 #include <pcl/search/organized.h>
@@ -32,28 +31,28 @@
 using namespace pcl;
 using namespace std;
 
-typedef pcl::PointXYZRGB PointT;
-typedef pcl::PointNormal PointNT;
-typedef pcl::PointNormal PointOutT;
-typedef pcl::search::Search<PointT>::Ptr SearchPtr;
+using PointT = pcl::PointXYZRGB;
+using PointNT = pcl::PointNormal;
+using PointOutT = pcl::PointNormal;
+using SearchPtr = pcl::search::Search<PointT>::Ptr;
 
 int main (int argc, char *argv[])
 {
   ///The smallest scale to use in the DoN filter.
-  double scale1 = 0.2;
+  constexpr double scale1 = 0.2;
 
   ///The largest scale to use in the DoN filter.
-  double scale2 = 2.0;
+  constexpr double scale2 = 2.0;
 
   ///The minimum DoN magnitude to threshold by
-  double threshold = 0.25;
+  constexpr double threshold = 0.25;
 
   ///segment scene into clusters with given distance tolerance using euclidean clustering
   double segradius = 0.2;
 
   //voxelization factor of pointcloud to use in approximation of normals
   bool approx = false;
-  double decimation = 100;
+  constexpr double decimation = 100;
 
   if(argc < 2){
     cerr << "Expected 2 arguments: inputfile outputfile" << endl;
@@ -221,8 +220,8 @@ int main (int argc, char *argv[])
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
   {
     pcl::PointCloud<PointOutT>::Ptr cloud_cluster_don (new pcl::PointCloud<PointOutT>);
-    for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit){
-      cloud_cluster_don->points.push_back (doncloud->points[*pit]);
+    for (const int &index : it->indices){
+      cloud_cluster_don->points.push_back (doncloud->points[index]);
     }
 
     cloud_cluster_don->width = int (cloud_cluster_don->points.size ());

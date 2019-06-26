@@ -126,7 +126,7 @@ pcl::ihs::InputDataProcessing::segment (const CloudXYZRGBAConstPtr& cloud_in,
 
       xyz_mask (r, c) = hsv_mask (r, c) = false;
 
-      if (!boost::math::isnan (xyzrgb.x) && !boost::math::isnan (normal.normal_x) &&
+      if (!std::isnan (xyzrgb.x) && !std::isnan (normal.normal_x) &&
           xyzrgb.x  >= x_min             && xyzrgb.x  <= x_max                    &&
           xyzrgb.y  >= y_min             && xyzrgb.y  <= y_max                    &&
           xyzrgb.z  >= z_min             && xyzrgb.z  <= z_max)
@@ -234,7 +234,6 @@ pcl::ihs::InputDataProcessing::calculateNormals (const CloudXYZRGBAConstPtr& clo
   cloud_out->height   = cloud_in->height;
   cloud_out->is_dense = false;
 
-  CloudXYZRGBA::const_iterator it_in  = cloud_in->begin ();
   CloudNormals::const_iterator it_n   = cloud_normals->begin ();
   CloudXYZRGBNormal::iterator  it_out = cloud_out->begin ();
 
@@ -244,9 +243,9 @@ pcl::ihs::InputDataProcessing::calculateNormals (const CloudXYZRGBAConstPtr& clo
   invalid_pt.data   [3] = 1.f;
   invalid_pt.data_n [3] = 0.f;
 
-  for (; it_in!=cloud_in->end (); ++it_in, ++it_n, ++it_out)
+  for (auto it_in = cloud_in->begin (); it_in!=cloud_in->end (); ++it_in, ++it_n, ++it_out)
   {
-    if (!boost::math::isnan (it_n->getNormalVector4fMap ()))
+    if (!it_n->getNormalVector4fMap (). hasNaN ())
     {
       // m -> cm
       it_out->getVector4fMap ()       = 100.f * it_in->getVector4fMap ();

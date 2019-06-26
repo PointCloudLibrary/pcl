@@ -39,18 +39,14 @@
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/common/angles.h>
 #include <pcl/io/openni2_grabber.h>
+#include <pcl/io/openni2/openni.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/console/time.h>
 
-#include <boost/chrono.hpp>
-
-#include "pcl/io/openni2/openni.h"
-
-typedef boost::chrono::high_resolution_clock HRClock;
+#include <mutex>
 
 #define SHOW_FPS 1
 #if SHOW_FPS
@@ -113,14 +109,13 @@ template <typename PointType>
 class OpenNI2Viewer
 {
 public:
-  typedef pcl::PointCloud<PointType> Cloud;
-  typedef typename Cloud::ConstPtr CloudConstPtr;
+  using Cloud = pcl::PointCloud<PointType>;
+  using CloudConstPtr = typename Cloud::ConstPtr;
 
   OpenNI2Viewer (pcl::io::OpenNI2Grabber& grabber)
     : cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL OpenNI2 cloud"))
-    , image_viewer_ ()
     , grabber_ (grabber)
-    , rgb_data_ (0), rgb_data_size_ (0)
+    , rgb_data_ (nullptr), rgb_data_size_ (0)
   {
   }
 
@@ -128,7 +123,7 @@ public:
   cloud_callback (const CloudConstPtr& cloud)
   {
     FPS_CALC ("cloud callback");
-    boost::mutex::scoped_lock lock (cloud_mutex_);
+    std::lock_guard<std::mutex> lock (cloud_mutex_);
     cloud_ = cloud;
   }
 
@@ -136,15 +131,14 @@ public:
   image_callback (const boost::shared_ptr<pcl::io::openni2::Image>& image)
   {
     FPS_CALC ("image callback");
-    boost::mutex::scoped_lock lock (image_mutex_);
+    std::lock_guard<std::mutex> lock (image_mutex_);
     image_ = image;
 
     if (image->getEncoding () != pcl::io::openni2::Image::RGB)
     {
       if (rgb_data_size_ < image->getWidth () * image->getHeight ())
       {
-        if (rgb_data_)
-          delete [] rgb_data_;
+        delete [] rgb_data_;
         rgb_data_size_ = image->getWidth () * image->getHeight ();
         rgb_data_ = new unsigned char [rgb_data_size_ * 3];
       }
@@ -183,7 +177,7 @@ public:
     cloud_viewer_->registerMouseCallback (&OpenNI2Viewer::mouse_callback, *this);
     cloud_viewer_->registerKeyboardCallback (&OpenNI2Viewer::keyboard_callback, *this);
     cloud_viewer_->setCameraFieldOfView (1.02259994f);
-    boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&OpenNI2Viewer::cloud_callback, this, _1);
+    std::function<void (const CloudConstPtr&) > cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
     boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
 
     boost::signals2::connection image_connection;
@@ -192,7 +186,7 @@ public:
       image_viewer_.reset (new pcl::visualization::ImageViewer ("PCL OpenNI image"));
       image_viewer_->registerMouseCallback (&OpenNI2Viewer::mouse_callback, *this);
       image_viewer_->registerKeyboardCallback (&OpenNI2Viewer::keyboard_callback, *this);
-      boost::function<void (const boost::shared_ptr<pcl::io::openni2::Image>&) > image_cb = boost::bind (&OpenNI2Viewer::image_callback, this, _1);
+      std::function<void (const pcl::io::openni2::Image::Ptr&)> image_cb = [this] (const pcl::io::openni2::Image::Ptr& img) { image_callback (img); };
       image_connection = grabber_.registerCallback (image_cb);
     }
 
@@ -266,16 +260,15 @@ public:
 
     cloud_connection.disconnect ();
     image_connection.disconnect ();
-    if (rgb_data_)
-      delete[] rgb_data_;
+    delete[] rgb_data_;
   }
 
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> cloud_viewer_;
-  boost::shared_ptr<pcl::visualization::ImageViewer> image_viewer_;
+  pcl::visualization::PCLVisualizer::Ptr cloud_viewer_;
+  pcl::visualization::ImageViewer::Ptr image_viewer_;
 
   pcl::io::OpenNI2Grabber& grabber_;
-  boost::mutex cloud_mutex_;
-  boost::mutex image_mutex_;
+  std::mutex cloud_mutex_;
+  std::mutex image_mutex_;
 
   CloudConstPtr cloud_;
   boost::shared_ptr<pcl::io::openni2::Image> image_;
@@ -284,8 +277,8 @@ public:
 };
 
 // Create the PCLVisualizer object
-boost::shared_ptr<pcl::visualization::PCLVisualizer> cld;
-boost::shared_ptr<pcl::visualization::ImageViewer> img;
+pcl::visualization::PCLVisualizer::Ptr cld;
+pcl::visualization::ImageViewer::Ptr img;
 
 /* ---[ */
 int
@@ -304,7 +297,7 @@ main (int argc, char** argv)
       printHelp (argc, argv);
       return 0;
     }
-    else if (device_id == "-l")
+    if (device_id == "-l")
     {
       if (argc >= 3)
       {
@@ -317,7 +310,7 @@ main (int argc, char** argv)
         boost::shared_ptr<pcl::io::openni2::OpenNI2DeviceManager> deviceManager = pcl::io::openni2::OpenNI2DeviceManager::getInstance ();
         if (deviceManager->getNumOfConnectedDevices () > 0)
         {
-          for (unsigned deviceIdx = 0; deviceIdx < deviceManager->getNumOfConnectedDevices (); ++deviceIdx)
+          for (size_t deviceIdx = 0; deviceIdx < deviceManager->getNumOfConnectedDevices (); ++deviceIdx)
           {
             boost::shared_ptr<pcl::io::openni2::OpenNI2Device> device = deviceManager->getDeviceByIndex (deviceIdx);
             cout << "Device " << device->getStringID () << "connected." << endl;

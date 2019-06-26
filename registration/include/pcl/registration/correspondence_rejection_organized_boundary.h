@@ -63,7 +63,6 @@ namespace pcl
         : boundary_nans_threshold_ (8)
         , window_size_ (5)
         , depth_step_threshold_ (0.025f)
-        , data_container_ ()
       { }
 
       void
@@ -136,7 +135,7 @@ namespace pcl
       int window_size_;
       float depth_step_threshold_;
 
-      typedef boost::shared_ptr<pcl::registration::DataContainerInterface> DataContainerPtr;
+      using DataContainerPtr = boost::shared_ptr<pcl::registration::DataContainerInterface>;
       DataContainerPtr data_container_;
     };
   }

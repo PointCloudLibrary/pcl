@@ -34,6 +34,8 @@
  * Author: Nico Blodow (blodow@cs.tum.edu), Julius Kammerl (julius@kammerl.de)
  */
 
+#include <thread>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -43,6 +45,8 @@
 #include <pcl/filters/extract_indices.h>
 
 #include <pcl/console/parse.h>
+
+using namespace std::chrono_literals;
 
 enum 
 {
@@ -74,12 +78,12 @@ class OpenNIChangeViewer
       octree->addPointsFromInputCloud ();
 
       std::cerr << octree->getLeafCount() << " -- ";
-      boost::shared_ptr<std::vector<int> > newPointIdxVector (new std::vector<int>);
+      std::vector<int> newPointIdxVector;
 
       // get a vector of new points, which did not exist in previous buffer
-      octree->getPointIndicesFromNewVoxels (*newPointIdxVector, noise_filter_);
+      octree->getPointIndicesFromNewVoxels (newPointIdxVector, noise_filter_);
 
-      std::cerr << newPointIdxVector->size() << std::endl;
+      std::cerr << newPointIdxVector.size() << std::endl;
 
       pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filtered_cloud;
 
@@ -87,10 +91,10 @@ class OpenNIChangeViewer
       {
         case REDDIFF_MODE:
           filtered_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA> (*cloud));
-          filtered_cloud->points.reserve(newPointIdxVector->size());
+          filtered_cloud->points.reserve(newPointIdxVector.size());
 
-          for (std::vector<int>::iterator it = newPointIdxVector->begin (); it != newPointIdxVector->end (); ++it)
-            filtered_cloud->points[*it].rgba = 255<<16;
+          for (const int &idx : newPointIdxVector)
+            filtered_cloud->points[idx].rgba = 255<<16;
 
           if (!viewer.wasStopped())
             viewer.showCloud (filtered_cloud);
@@ -99,10 +103,10 @@ class OpenNIChangeViewer
         case ONLYDIFF_MODE:
           filtered_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-          filtered_cloud->points.reserve(newPointIdxVector->size());
+          filtered_cloud->points.reserve(newPointIdxVector.size());
 
-          for (std::vector<int>::iterator it = newPointIdxVector->begin (); it != newPointIdxVector->end (); ++it)
-            filtered_cloud->points.push_back(cloud->points[*it]);
+          for (const int &idx : newPointIdxVector)
+            filtered_cloud->points.push_back(cloud->points[idx]);
 
 
           if (!viewer.wasStopped())
@@ -119,8 +123,8 @@ class OpenNIChangeViewer
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = 
-        boost::bind (&OpenNIChangeViewer::cloud_cb_, this, _1);
+      std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+        [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud) { cloud_cb_ (cloud); };
 
       boost::signals2::connection c = interface->registerCallback (f);
       
@@ -128,7 +132,7 @@ class OpenNIChangeViewer
       
       while (!viewer.wasStopped())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
       }
 
       interface->stop ();

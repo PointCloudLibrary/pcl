@@ -70,9 +70,9 @@ namespace pcl
     class PCL_EXPORTS ORROctree
     {
       public:
-        typedef pcl::PointCloud<pcl::PointXYZ> PointCloudIn;
-        typedef pcl::PointCloud<pcl::PointXYZ> PointCloudOut;
-        typedef pcl::PointCloud<pcl::Normal> PointCloudN;
+        using PointCloudIn = pcl::PointCloud<pcl::PointXYZ>;
+        using PointCloudOut = pcl::PointCloud<pcl::PointXYZ>;
+        using PointCloudN = pcl::PointCloud<pcl::Normal>;
 
         class Node
         {
@@ -80,7 +80,7 @@ namespace pcl
             class Data
             {
               public:
-                Data (int id_x, int id_y, int id_z, int lin_id, void* user_data = NULL)
+                Data (int id_x, int id_y, int id_z, int lin_id, void* user_data = nullptr)
                 : id_x_ (id_x),
                   id_y_ (id_y),
                   id_z_ (id_z),
@@ -165,9 +165,9 @@ namespace pcl
             };
 
             Node ()
-            : data_ (NULL),
-              parent_ (NULL),
-              children_(NULL)
+            : data_ (nullptr),
+              parent_ (nullptr),
+              children_(nullptr)
             {}
 
             virtual~ Node ()
@@ -245,7 +245,7 @@ namespace pcl
               if ( children_ )
               {
                 delete[] children_;
-                children_ = NULL;
+                children_ = nullptr;
               }
             }
 
@@ -255,7 +255,7 @@ namespace pcl
               if ( data_ )
               {
                 delete data_;
-                data_ = NULL;
+                data_ = nullptr;
               }
             }
 
@@ -288,7 +288,7 @@ namespace pcl
           * by enlarging the bounds by that factor. For example, enlarge_bounds = 1 means that the
           * bounds will be enlarged by 100%. The default value is fine. */
         void
-        build (const PointCloudIn& points, float voxel_size, const PointCloudN* normals = NULL, float enlarge_bounds = 0.00001f);
+        build (const PointCloudIn& points, float voxel_size, const PointCloudN* normals = nullptr, float enlarge_bounds = 0.00001f);
 
         /** \brief Creates an empty octree with bounds at least as large as the ones provided as input and with leaf
           * size equal to 'voxel_size'. */
@@ -307,7 +307,7 @@ namespace pcl
                y < bounds_[2] || y > bounds_[3] ||
                z < bounds_[4] || z > bounds_[5] )
           {
-            return (NULL);
+            return (nullptr);
           }
 
           ORROctree::Node* node = root_;
@@ -380,7 +380,7 @@ namespace pcl
                y < bounds_[2] || y > bounds_[3] ||
                z < bounds_[4] || z > bounds_[5] )
           {
-            return (NULL);
+            return (nullptr);
           }
 
           ORROctree::Node* node = root_;
@@ -391,7 +391,7 @@ namespace pcl
           for ( int l = 0 ; l < tree_levels_ ; ++l )
           {
             if ( !node->hasChildren () )
-              return (NULL);
+              return (nullptr);
 
             c = node->getCenter ();
             id = 0;

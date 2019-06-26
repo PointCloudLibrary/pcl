@@ -38,7 +38,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/bind.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -63,9 +63,9 @@ namespace pcl
   {
     namespace openni2
     {
-      typedef pcl::io::DepthImage DepthImage;
-      typedef pcl::io::IRImage IRImage;
-      typedef pcl::io::Image Image;
+      using DepthImage = pcl::io::DepthImage;
+      using IRImage = pcl::io::IRImage;
+      using Image = pcl::io::Image;
 
       class OpenNI2FrameListener;
 
@@ -73,12 +73,12 @@ namespace pcl
       {
         public:
 
-          typedef boost::function<void(boost::shared_ptr<Image>, void* cookie) > ImageCallbackFunction;
-          typedef boost::function<void(boost::shared_ptr<DepthImage>, void* cookie) > DepthImageCallbackFunction;
-          typedef boost::function<void(boost::shared_ptr<IRImage>, void* cookie) > IRImageCallbackFunction;
-          typedef unsigned CallbackHandle;
+          using ImageCallbackFunction = std::function<void(boost::shared_ptr<Image>, void* cookie) >;
+          using DepthImageCallbackFunction = std::function<void(boost::shared_ptr<DepthImage>, void* cookie) >;
+          using IRImageCallbackFunction = std::function<void(boost::shared_ptr<IRImage>, void* cookie) >;
+          using CallbackHandle = unsigned;
 
-          typedef boost::function<void(openni::VideoStream& stream)> StreamCallbackFunction;
+          using StreamCallbackFunction = std::function<void(openni::VideoStream& stream)>;
 
           OpenNI2Device (const std::string& device_URI);
           virtual ~OpenNI2Device ();

@@ -45,7 +45,7 @@
 template <typename PointSource, typename PointTarget, typename FeatureT> void 
 pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setSourceFeatures (const FeatureCloudConstPtr &features)
 {
-  if (features == NULL || features->empty ())
+  if (features == nullptr || features->empty ())
   {
     PCL_ERROR ("[pcl::%s::setSourceFeatures] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
     return;
@@ -57,7 +57,7 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setSourceF
 template <typename PointSource, typename PointTarget, typename FeatureT> void 
 pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setTargetFeatures (const FeatureCloudConstPtr &features)
 {
-  if (features == NULL || features->empty ())
+  if (features == nullptr || features->empty ())
   {
     PCL_ERROR ("[pcl::%s::setTargetFeatures] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
     return;
@@ -326,7 +326,7 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness
   }
 
   // Calculate MSE
-  if (inliers.size () > 0)
+  if (!inliers.empty ())
     fitness_score /= static_cast<float> (inliers.size ());
   else
     fitness_score = std::numeric_limits<float>::max ();

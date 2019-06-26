@@ -40,6 +40,8 @@
 
 #pragma once
 
+#include <boost/version.hpp>
+
 #include <pcl/features/normal_3d.h>
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
@@ -68,8 +70,8 @@ namespace pcl
         normals_ (new pcl::PointCloud<Normal> ())
         {  } 
 
-      typedef boost::shared_ptr<Supervoxel<PointT> > Ptr;
-      typedef boost::shared_ptr<const Supervoxel<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<Supervoxel<PointT> >;
+      using ConstPtr = boost::shared_ptr<const Supervoxel<PointT> >;
 
       /** \brief Gets the centroid of the supervoxel
        *  \param[out] centroid_arg centroid of the supervoxel
@@ -136,7 +138,7 @@ namespace pcl
             rgb_ (0.0f, 0.0f, 0.0f),
             normal_ (0.0f, 0.0f, 0.0f, 0.0f),
             curvature_ (0.0f),
-            owner_ (0)
+            owner_ (nullptr)
             {}
 
           /** \brief Gets the data of in the form of a point
@@ -163,23 +165,23 @@ namespace pcl
           EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
 
-      typedef pcl::octree::OctreePointCloudAdjacencyContainer<PointT, VoxelData> LeafContainerT;
-      typedef std::vector <LeafContainerT*> LeafVectorT;
+      using LeafContainerT = pcl::octree::OctreePointCloudAdjacencyContainer<PointT, VoxelData>;
+      using LeafVectorT = std::vector<LeafContainerT *>;
 
-      typedef typename pcl::PointCloud<PointT> PointCloudT;
-      typedef typename pcl::PointCloud<Normal> NormalCloudT;
-      typedef typename pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT> OctreeAdjacencyT;
-      typedef typename pcl::octree::OctreePointCloudSearch <PointT> OctreeSearchT;
-      typedef typename pcl::search::KdTree<PointT> KdTreeT;
-      typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
+      using PointCloudT = pcl::PointCloud<PointT>;
+      using NormalCloudT = pcl::PointCloud<Normal>;
+      using OctreeAdjacencyT = pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT>;
+      using OctreeSearchT = pcl::octree::OctreePointCloudSearch<PointT>;
+      using KdTreeT = pcl::search::KdTree<PointT>;
+      using IndicesPtr = boost::shared_ptr<std::vector<int> >;
 
       using PCLBase <PointT>::initCompute;
       using PCLBase <PointT>::deinitCompute;
       using PCLBase <PointT>::input_;
 
-      typedef boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, uint32_t, float> VoxelAdjacencyList;
-      typedef VoxelAdjacencyList::vertex_descriptor VoxelID;
-      typedef VoxelAdjacencyList::edge_descriptor EdgeID;
+      using VoxelAdjacencyList = boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, uint32_t, float>;
+      using VoxelID = VoxelAdjacencyList::vertex_descriptor;
+      using EdgeID = VoxelAdjacencyList::edge_descriptor;
 
     public:
 
@@ -190,7 +192,7 @@ namespace pcl
       SupervoxelClustering (float voxel_resolution, float seed_resolution);
 
       [[deprecated("constructor with flag for using the single camera transform is deprecated. Default behavior is now to use the transform for organized clouds, and not use it for unorganized. Use setUseSingleCameraTransform() to override the defaults.")]]
-      SupervoxelClustering (float voxel_resolution, float seed_resolution, bool);
+      SupervoxelClustering (float voxel_resolution, float seed_resolution, bool) : SupervoxelClustering (voxel_resolution, seed_resolution) { }
 
       /** \brief This destructor destroys the cloud, normals and search method used for
         * finding neighbors. In other words it frees memory.
@@ -277,7 +279,7 @@ namespace pcl
       typename pcl::PointCloud<PointXYZRGBA>::Ptr
       getColoredCloud () const
       { 
-        return boost::shared_ptr<pcl::PointCloud<PointXYZRGBA> > (new pcl::PointCloud<PointXYZRGBA>);
+        return pcl::PointCloud<PointXYZRGBA>::Ptr (new pcl::PointCloud<PointXYZRGBA>);
       }
 
       /** \brief Returns a deep copy of the voxel centroid cloud */
@@ -302,7 +304,7 @@ namespace pcl
       pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
       getColoredVoxelCloud () const
       {
-        return boost::shared_ptr<pcl::PointCloud<PointXYZRGBA> > (new pcl::PointCloud<PointXYZRGBA>);
+        return pcl::PointCloud<PointXYZRGBA>::Ptr (new pcl::PointCloud<PointXYZRGBA>);
       }
 
       /** \brief Returns labeled voxelized cloud
@@ -431,9 +433,9 @@ namespace pcl
               return leaf_data_left.idx_ < leaf_data_right.idx_;
             }
           };
-          typedef std::set<LeafContainerT*, typename SupervoxelHelper::compareLeaves> LeafSetT;
-          typedef typename LeafSetT::iterator iterator;
-          typedef typename LeafSetT::const_iterator const_iterator;
+          using LeafSetT = std::set<LeafContainerT*, typename SupervoxelHelper::compareLeaves>;
+          using iterator = typename LeafSetT::iterator;
+          using const_iterator = typename LeafSetT::const_iterator;
 
           SupervoxelHelper (uint32_t label, SupervoxelClustering* parent_arg):
             label_ (label),
@@ -464,7 +466,7 @@ namespace pcl
           void 
           getNormals (typename pcl::PointCloud<Normal>::Ptr &normals) const;
 
-          typedef float (SupervoxelClustering::*DistFuncPtr)(const VoxelData &v1, const VoxelData &v2);
+          using DistFuncPtr = float (SupervoxelClustering<PointT>::*)(const VoxelData &, const VoxelData &);
 
           uint32_t
           getLabel () const 
@@ -524,9 +526,13 @@ namespace pcl
       };
 
       //Make boost::ptr_list can access the private class SupervoxelHelper
+#if BOOST_VERSION >= 107000
+      friend void boost::checked_delete<> (const typename pcl::SupervoxelClustering<PointT>::SupervoxelHelper *) BOOST_NOEXCEPT;
+#else
       friend void boost::checked_delete<> (const typename pcl::SupervoxelClustering<PointT>::SupervoxelHelper *);
+#endif
 
-      typedef boost::ptr_list<SupervoxelHelper> HelperListT;
+      using HelperListT = boost::ptr_list<SupervoxelHelper>;
       HelperListT supervoxel_helpers_;
 
       //TODO DEBUG REMOVE

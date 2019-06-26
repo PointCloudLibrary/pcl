@@ -185,7 +185,7 @@ saveMesh (pcl::PolygonMesh& input,
     }
 
     PCL_INFO ("Saving file %s as %s.\n", output_file.c_str (), (output_type == ASCII) ? "ASCII" : "binary");
-    if (!pcl::io::savePolygonFile (output_file, input, (output_type == ASCII) ? false : true))
+    if (!pcl::io::savePolygonFile (output_file, input, output_type != ASCII))
       return (false);
   }
 
@@ -211,15 +211,15 @@ main (int argc,
 
   // Parse all files and options
   std::vector<std::string> supported_extensions;
-  supported_extensions.push_back("obj");
-  supported_extensions.push_back("pcd");
-  supported_extensions.push_back("ply");
-  supported_extensions.push_back("stl");
-  supported_extensions.push_back("vtk");
+  supported_extensions.emplace_back("obj");
+  supported_extensions.emplace_back("pcd");
+  supported_extensions.emplace_back("ply");
+  supported_extensions.emplace_back("stl");
+  supported_extensions.emplace_back("vtk");
   std::vector<int> file_args;
   for (int i = 1; i < argc; ++i)
-    for (size_t j = 0; j < supported_extensions.size(); ++j)
-      if (boost::algorithm::ends_with(argv[i], supported_extensions[j]))
+    for (const auto &supported_extension : supported_extensions)
+      if (boost::algorithm::ends_with(argv[i], supported_extension))
       {
         file_args.push_back(i);
         break;

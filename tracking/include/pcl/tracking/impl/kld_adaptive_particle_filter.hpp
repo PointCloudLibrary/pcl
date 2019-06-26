@@ -25,7 +25,7 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::initCompute (
   coherence_->setTargetCloud (input_);
 
   if (!change_detector_)
-    change_detector_ = boost::shared_ptr<pcl::octree::OctreePointCloudChangeDetector<PointInT> >(new pcl::octree::OctreePointCloudChangeDetector<PointInT> (change_detector_resolution_));
+    change_detector_.reset (new pcl::octree::OctreePointCloudChangeDetector<PointInT> (change_detector_resolution_));
   
   if (!particles_ || particles_->points.empty ())
     initParticles (true);
@@ -34,14 +34,14 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::initCompute (
 
 template <typename PointInT, typename StateT> bool
 pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::insertIntoBins
-(std::vector<int> bin, std::vector<std::vector<int> > &B)
+(std::vector<int> &&new_bin, std::vector<std::vector<int> > &bins)
 {
-  for (size_t i = 0; i < B.size (); i++)
+  for (auto &existing_bin : bins)
   {
-    if (equalBin (bin, B[i]))
+    if (equalBin (new_bin, existing_bin))
       return false;
   }
-  B.push_back (bin);
+  bins.push_back (std::move(new_bin));
   return true;
 }
 
@@ -51,7 +51,7 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample ()
   unsigned int k = 0;
   unsigned int n = 0;
   PointCloudStatePtr S (new PointCloudState);
-  std::vector<std::vector<int> > B; // bins
+  std::vector<std::vector<int> > bins;
   
   // initializing for sampling without replacement
   std::vector<int> a (particles_->points.size ());
@@ -73,12 +73,12 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample ()
     
     S->points.push_back (x_t);
     // calc bin
-    std::vector<int> bin (StateT::stateDimension ());
+    std::vector<int> new_bin (StateT::stateDimension ());
     for (int i = 0; i < StateT::stateDimension (); i++)
-      bin[i] = static_cast<int> (x_t[i] / bin_size_[i]);
+      new_bin[i] = static_cast<int> (x_t[i] / bin_size_[i]);
     
     // calc bin index... how?
-    if (insertIntoBins (bin, B))
+    if (insertIntoBins (std::move(new_bin), bins))
       ++k;
     ++n;
   }

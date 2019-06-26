@@ -96,7 +96,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input,
 
   // Filter the NaNs from the cloud
   for (size_t i = 0; i < xyz_cloud_pre->size (); ++i)
-    if (pcl_isfinite (xyz_cloud_pre->points[i].x))
+    if (std::isfinite (xyz_cloud_pre->points[i].x))
       xyz_cloud->push_back (xyz_cloud_pre->points[i]);
   xyz_cloud->header = xyz_cloud_pre->header;
   xyz_cloud->height = 1;

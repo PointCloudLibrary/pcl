@@ -155,7 +155,7 @@ namespace pcl
       const float value2 = static_cast<float> (data_set (example.data_set_id, p2_col, p2_row)[channel]);
 
       result = value1 - value2;
-      flag = (pcl_isfinite (value1) && pcl_isfinite (value2)) ? 0 : 1;
+      flag = (std::isfinite (value1) && std::isfinite (value2)) ? 0 : 1;
     }
 
     /** \brief Generates code for feature evaluation.
@@ -293,7 +293,7 @@ namespace pcl
       const float value2 = static_cast<float> (data_set (example.data_set_id, p2_col, p2_row)[channel]);
 
       result = value1 - value2;
-      flag = (pcl_isfinite (value1) && pcl_isfinite (value2)) ? 0 : 1;
+      flag = (std::isfinite (value1) && std::isfinite (value2)) ? 0 : 1;
     }
 
     /** \brief Generates code for feature evaluation.
@@ -381,15 +381,15 @@ namespace pcl
   }
 
 
-  typedef MultiChannel2DComparisonFeatureHandler<float, 1> Depth2DComparisonFeatureHandler;
-  typedef MultiChannel2DComparisonFeatureHandler<float, 2> IntensityDepth2DComparisonFeatureHandler;
-  typedef MultiChannel2DComparisonFeatureHandler<float, 3> RGB2DComparisonFeatureHandler;
-  typedef MultiChannel2DComparisonFeatureHandler<float, 4> RGBD2DComparisonFeatureHandler;
+  using Depth2DComparisonFeatureHandler = MultiChannel2DComparisonFeatureHandler<float, 1>;
+  using IntensityDepth2DComparisonFeatureHandler = MultiChannel2DComparisonFeatureHandler<float, 2>;
+  using RGB2DComparisonFeatureHandler = MultiChannel2DComparisonFeatureHandler<float, 3>;
+  using RGBD2DComparisonFeatureHandler = MultiChannel2DComparisonFeatureHandler<float, 4>;
 
-  typedef ScaledMultiChannel2DComparisonFeatureHandler<float, 1, 0, true> ScaledDepth2DComparisonFeatureHandler;
-  typedef ScaledMultiChannel2DComparisonFeatureHandler<float, 2, 1, true> ScaledIntensityDepth2DComparisonFeatureHandler;
-  typedef ScaledMultiChannel2DComparisonFeatureHandler<float, 4, 3, true> ScaledRGBD2DComparisonFeatureHandler;
+  using ScaledDepth2DComparisonFeatureHandler = ScaledMultiChannel2DComparisonFeatureHandler<float, 1, 0, true>;
+  using ScaledIntensityDepth2DComparisonFeatureHandler = ScaledMultiChannel2DComparisonFeatureHandler<float, 2, 1, true>;
+  using ScaledRGBD2DComparisonFeatureHandler = ScaledMultiChannel2DComparisonFeatureHandler<float, 4, 3, true>;
 
-  typedef ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator<float, 1, 0, true> ScaledDepth2DComparisonFeatureHandlerCCodeGenerator;
+  using ScaledDepth2DComparisonFeatureHandlerCCodeGenerator = ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator<float, 1, 0, true>;
 
 }

@@ -44,8 +44,8 @@
 #include <pcl/search/kdtree.h>
 
 //Typedefs to make things sane
-typedef pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2> GeometryHandler;
-typedef pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
+using GeometryHandler = pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>;
+using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>;
 
 namespace pcl
 {
@@ -105,11 +105,11 @@ namespace pcl
         
         /** \brief Paint View function - puts this cloud item into a PCLVisualizer object*/
         void
-        paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const override;
+        paintView (pcl::visualization::PCLVisualizer::Ptr vis) const override;
         
         /** \brief Remove from View function - removes this cloud from a PCLVisualizer object*/
         void
-        removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const override;
+        removeFromView (pcl::visualization::PCLVisualizer::Ptr vis) const override;
         
         /** \brief Initializes and stores a templated PointCloud object with point type matching the blob */
         void

@@ -1,6 +1,4 @@
 // PCL
-//#include <pcl/common/time.h>
-//#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
 #include <pcl/io/pcd_io.h>
@@ -33,22 +31,21 @@
 #include <vtkProperty.h>
 #include <vtkSmartPointer.h>
 
-// Boost
-//#include <boost/date_time.hpp>
-//#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
+#include <condition_variable>
+#include <mutex>
+
 
 // Forward Declarations
 
-boost::condition OutofcoreCloud::pcd_queue_ready;
-boost::mutex OutofcoreCloud::pcd_queue_mutex;
+std::condition_variable OutofcoreCloud::pcd_queue_ready;
+std::mutex OutofcoreCloud::pcd_queue_mutex;
 
-boost::shared_ptr<boost::thread> OutofcoreCloud::pcd_reader_thread;
+std::shared_ptr<std::thread> OutofcoreCloud::pcd_reader_thread;
 //MonitorQueue<std::string> OutofcoreCloud::pcd_queue;
 
 //std::map<std::string, vtkSmartPointer<vtkPolyData> > OutofcoreCloud::cloud_data_cache;
 OutofcoreCloud::CloudDataCache OutofcoreCloud::cloud_data_cache(524288);
-boost::mutex OutofcoreCloud::cloud_data_cache_mutex;
+std::mutex OutofcoreCloud::cloud_data_cache_mutex;
 
 OutofcoreCloud::PcdQueue OutofcoreCloud::pcd_queue;
 
@@ -61,12 +58,8 @@ OutofcoreCloud::pcdReaderThread ()
 
   while (true)
   {
-    //{
-      //boost::mutex::scoped_lock lock (pcd_queue_mutex);
-      //pcd_queue_mutex.wait (lock);
-      pcd_queue_ready.wait(pcd_queue_mutex);
-    //}
-    //pcd_queue_ready
+    std::unique_lock<std::mutex> lock (pcd_queue_mutex);
+    pcd_queue_ready.wait(lock);
 
     int queue_size = pcd_queue.size ();
     for (int i=0; i < queue_size; i++)
@@ -118,16 +111,12 @@ OutofcoreCloud::pcdReaderThread ()
 // Operators
 // -----------------------------------------------------------------------------
 OutofcoreCloud::OutofcoreCloud (std::string name, boost::filesystem::path& tree_root) :
-    Object (name), display_depth_ (1), points_loaded_ (0), data_loaded_(0), render_camera_(NULL), lod_pixel_threshold_(10000)
+    Object (name), display_depth_ (1), points_loaded_ (0), data_loaded_(0), render_camera_(nullptr), lod_pixel_threshold_(10000)
 {
 
   // Create the pcd reader thread once for all outofcore nodes
-  if (OutofcoreCloud::pcd_reader_thread.get() == NULL)
-  {
-//    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<boost::thread>(new boost::thread(&OutofcoreCloud::pcdReaderThread, this));
-    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<boost::thread>(new boost::thread(&OutofcoreCloud::pcdReaderThread));
-  }
-
+  if (!OutofcoreCloud::pcd_reader_thread)
+    OutofcoreCloud::pcd_reader_thread.reset (new std::thread (&OutofcoreCloud::pcdReaderThread));
 
   octree_.reset (new OctreeDisk (tree_root, true));
   octree_->getBoundingBox (bbox_min_, bbox_max_);
@@ -157,11 +146,11 @@ OutofcoreCloud::updateVoxelData ()
   double voxel_side_length = octree_->getVoxelSideLength (display_depth_);
 
   double s = voxel_side_length / 2;
-  for (size_t i = 0; i < voxel_centers.size (); i++)
+  for (const auto &voxel_center : voxel_centers)
   {
-    double x = voxel_centers[i].x;
-    double y = voxel_centers[i].y;
-    double z = voxel_centers[i].z;
+    double x = voxel_center.x;
+    double y = voxel_center.y;
+    double z = voxel_center.z;
 
     voxel_data->AddInputData (getVtkCube (x - s, x + s, y - s, y + s, z - s, z + s));
   }
@@ -182,7 +171,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
   Scene *scene = Scene::instance ();
   Camera *camera = scene->getCamera (active_camera);
 
-  if (render_camera_ != NULL && render_camera_->getName() == camera->getName ())
+  if (render_camera_ != nullptr && render_camera_->getName() == camera->getName ())
   {
     renderer->ComputeAspect ();
     //double *aspect = renderer->GetAspect ();
@@ -200,7 +189,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
 
     cloud_actors_->RemoveAllItems ();
 
-    while ( *breadth_first_it !=0 )
+    while ( *breadth_first_it !=nullptr )
     {
       OctreeDiskNode *node = *breadth_first_it;
 
@@ -261,7 +250,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
           cloud_actor->SetMapper (mapper);
           cloud_actor->GetProperty ()->SetColor (0.0, 0.0, 1.0);
           cloud_actor->GetProperty ()->SetPointSize (1);
-          cloud_actor->GetProperty ()->SetLighting (0);
+          cloud_actor->GetProperty ()->SetLighting (false);
 
           cloud_actors_map_[pcd_file] = cloud_actor;
         }

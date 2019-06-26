@@ -5,6 +5,8 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include <mutex>
+
 /* A simple class for capturing data from an OpenNI camera */
 class OpenNICapture
 {
@@ -27,5 +29,5 @@ protected:
   int frame_counter_;
   PointCloudPtr most_recent_frame_;
   bool use_trigger_, trigger_;
-  boost::mutex mutex_;
+  std::mutex mutex_;
 };

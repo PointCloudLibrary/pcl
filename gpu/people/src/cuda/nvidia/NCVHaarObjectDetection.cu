@@ -230,8 +230,6 @@ __device__ Ncv32u d_outMaskPosition;
 
 __device__ void compactBlockWriteOutAnchorParallel(Ncv32u threadPassFlag, Ncv32u threadElem, Ncv32u *vectorOut)
 {
-#if __CUDA_ARCH__ >= 110
-    
     __shared__ Ncv32u shmem[NUM_THREADS_ANCHORSPARALLEL * 2];
     __shared__ Ncv32u numPassed;
     __shared__ Ncv32u outMaskOffset;
@@ -257,7 +255,6 @@ __device__ void compactBlockWriteOutAnchorParallel(Ncv32u threadPassFlag, Ncv32u
     {
         vectorOut[outMaskOffset + threadIdx.x] = shmem[threadIdx.x];
     }
-#endif
 }
 
 
@@ -586,13 +583,11 @@ __global__ void applyHaarClassifierClassifierParallel(Ncv32u *d_IImg, Ncv32u IIm
     }
     else
     {
-#if __CUDA_ARCH__ >= 110
         if (bPass && !threadIdx.x)
         {
             Ncv32u outMaskOffset = atomicAdd(&d_outMaskPosition, 1);
             d_outMask[outMaskOffset] = outMaskVal;
         }
-#endif
     }
 }
 
@@ -911,15 +906,14 @@ void initializeMaskVectorDynTemplate(NcvBool tbMaskByInmask,
 Ncv32u getStageNumWithNotLessThanNclassifiers(Ncv32u N, HaarClassifierCascadeDescriptor &haar,
                                               NCVVector<HaarStage64> &h_HaarStages)
 {
-    Ncv32u i = 0;
-    for (; i<haar.NumStages; i++)
+    for (Ncv32u i = 0; i<haar.NumStages; i++)
     {
         if (h_HaarStages.ptr()[i].getNumClassifierRootNodes() >= N)
         {
-            break;
+            return i;
         }
     }
-    return i;
+    return haar.NumStages;
 }
 
 

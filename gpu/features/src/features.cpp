@@ -539,7 +539,7 @@ void pcl::gpu::SpinImageEstimation::compute(DeviceArray2D<SpinImage>& features, 
 	// suppose that points are uniformly distributed, so we lose ~40% // according to the volumes ratio
 	float bin_size = radius_ / image_width_;
 	if (!is_radial_)
-		bin_size /= sqrt(2.f);
+		bin_size /= std::sqrt(2.f);
 
 
 	const device::PointCloud& s = (const device::PointCloud&)surface_;

@@ -278,12 +278,10 @@ pcl::common::CloudGenerator<pcl::PointXY, GeneratorT>::fill (int width, int heig
   cloud.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
-  for (pcl::PointCloud<pcl::PointXY>::iterator points_it = cloud.begin ();
-       points_it != cloud.end ();
-       ++points_it)
+  for (auto &point : cloud)
   {
-    points_it->x = x_generator_.run ();
-    points_it->y = y_generator_.run ();
+    point.x = x_generator_.run ();
+    point.y = y_generator_.run ();
   }
   return (0);
 }

@@ -84,11 +84,11 @@ main (int, char **argv)
   PCL_INFO ("Regions of interest found: %d\n", rois.size ());
   pcl::ExtractIndices<PointXYZ> extract_indices_filter;
   unsigned int roi_count = 0;
-  for (std::list<IndicesPtr>::iterator l_it = rois.begin (); l_it != rois.end (); ++l_it)
+  for (const auto &roi : rois)
   {
     PointCloud<PointXYZ> roi_points;
     extract_indices_filter.setInputCloud (cloud_subsampled);
-    extract_indices_filter.setIndices (*l_it);
+    extract_indices_filter.setIndices (roi);
     extract_indices_filter.filter (roi_points);
 
     char filename[512];

@@ -47,17 +47,15 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::GridProjection<PointNT>::GridProjection () :
-  cell_hash_map_ (), min_p_ (), max_p_ (), leaf_size_ (0.001), gaussian_scale_ (),
-  data_size_ (0), max_binary_search_level_ (10), k_ (50), padding_size_ (3), data_ (),
-  vector_at_data_point_ (), surface_ (), occupied_cell_list_ ()
+  cell_hash_map_ (), leaf_size_ (0.001), gaussian_scale_ (),
+  data_size_ (0), max_binary_search_level_ (10), k_ (50), padding_size_ (3), data_ () 
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::GridProjection<PointNT>::GridProjection (double resolution) :
-  cell_hash_map_ (), min_p_ (), max_p_ (), leaf_size_ (resolution), gaussian_scale_ (),
-  data_size_ (0), max_binary_search_level_ (10), k_ (50), padding_size_ (3), data_ (),
-  vector_at_data_point_ (), surface_ (), occupied_cell_list_ ()
+  cell_hash_map_ (), leaf_size_ (resolution), gaussian_scale_ (),
+  data_size_ (0), max_binary_search_level_ (10), k_ (50), padding_size_ (3), data_ () 
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,8 +203,7 @@ pcl::GridProjection<PointNT>::createSurfaceForCell (const Eigen::Vector3i &index
     if (cell_hash_map_.find (index_1d) == cell_hash_map_.end () ||
         occupied_cell_list_[index_1d] == 0)
       return;
-    else
-      vector_at_pts[i] = cell_hash_map_.at (index_1d).vect_at_grid_pt;
+    vector_at_pts[i] = cell_hash_map_.at (index_1d).vect_at_grid_pt;
   }
 
   // Go through the 3 edges, test whether they are intersected by the surface
@@ -407,7 +404,7 @@ pcl::GridProjection<PointNT>::getVectorAtPointKNN (const Eigen::Vector4f &p,
   for (int i = 0; i < k_; i++)
   {
     //k_weight[i] = pow (M_E, -pow (k_squared_distances[i], 2.0) / gaussian_scale_);
-    k_weight[i] = std::pow (static_cast<float>(M_E), static_cast<float>(-pow (static_cast<float>(k_squared_distances[i]), 2.0f) / gaussian_scale_));
+    k_weight[i] = std::pow (static_cast<float>(M_E), static_cast<float>(-std::pow (static_cast<float>(k_squared_distances[i]), 2.0f) / gaussian_scale_));
     sum += k_weight[i];
   }
   pcl::VectorAverage3f vector_average;
@@ -422,7 +419,7 @@ pcl::GridProjection<PointNT>::getVectorAtPointKNN (const Eigen::Vector4f &p,
   vector_average.getEigenVector1 (out_vector);
   out_vector.normalize ();
   double d1 = getD1AtPoint (p, out_vector, k_indices);
-  out_vector = out_vector * sum;
+  out_vector *= sum;
   vo = ((d1 > 0) ? -1 : 1) * out_vector;
 
 }
@@ -527,32 +524,29 @@ pcl::GridProjection<PointNT>::findIntersection (int level,
     intersection = start_pt;
     return;
   }
-  else
+  vec.normalize ();
+  if (vec.dot (vect_at_end_pts[0]) < 0)
   {
-    vec.normalize ();
-    if (vec.dot (vect_at_end_pts[0]) < 0)
-    {
-      Eigen::Vector4f new_start_pt = end_pts[0] + (start_pt - end_pts[0]) * 0.5;
-      new_end_pts[0] = end_pts[0];
-      new_end_pts[1] = start_pt;
-      new_vect_at_end_pts[0] = vect_at_end_pts[0];
-      new_vect_at_end_pts[1] = vec;
-      findIntersection (level + 1, new_end_pts, new_vect_at_end_pts, new_start_pt, pt_union_indices, intersection);
-      return;
-    }
-    if (vec.dot (vect_at_end_pts[1]) < 0)
-    {
-      Eigen::Vector4f new_start_pt = start_pt + (end_pts[1] - start_pt) * 0.5;
-      new_end_pts[0] = start_pt;
-      new_end_pts[1] = end_pts[1];
-      new_vect_at_end_pts[0] = vec;
-      new_vect_at_end_pts[1] = vect_at_end_pts[1];
-      findIntersection (level + 1, new_end_pts, new_vect_at_end_pts, new_start_pt, pt_union_indices, intersection);
-      return;
-    }
-    intersection = start_pt;
+    Eigen::Vector4f new_start_pt = end_pts[0] + (start_pt - end_pts[0]) * 0.5;
+    new_end_pts[0] = end_pts[0];
+    new_end_pts[1] = start_pt;
+    new_vect_at_end_pts[0] = vect_at_end_pts[0];
+    new_vect_at_end_pts[1] = vec;
+    findIntersection (level + 1, new_end_pts, new_vect_at_end_pts, new_start_pt, pt_union_indices, intersection);
     return;
   }
+  if (vec.dot (vect_at_end_pts[1]) < 0)
+  {
+    Eigen::Vector4f new_start_pt = start_pt + (end_pts[1] - start_pt) * 0.5;
+    new_end_pts[0] = start_pt;
+    new_end_pts[1] = end_pts[1];
+    new_vect_at_end_pts[0] = vec;
+    new_vect_at_end_pts[1] = vect_at_end_pts[1];
+    findIntersection (level + 1, new_end_pts, new_vect_at_end_pts, new_start_pt, pt_union_indices, intersection);
+    return;
+  }
+  intersection = start_pt;
+  return;
 }
 
 
@@ -636,9 +630,9 @@ pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &p
   for (int cp = 0; cp < static_cast<int> (data_->points.size ()); ++cp)
   {
     // Check if the point is invalid
-    if (!pcl_isfinite (data_->points[cp].x) ||
-        !pcl_isfinite (data_->points[cp].y) ||
-        !pcl_isfinite (data_->points[cp].z))
+    if (!std::isfinite (data_->points[cp].x) ||
+        !std::isfinite (data_->points[cp].y) ||
+        !std::isfinite (data_->points[cp].z))
       continue;
 
     Eigen::Vector3i index_3d;

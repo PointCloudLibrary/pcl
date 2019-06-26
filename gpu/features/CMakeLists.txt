@@ -26,12 +26,12 @@ source_group("Source Files\\utils" FILES ${srcs_utils})
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src")
-PCL_CUDA_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${cuda} ${srcs_utils}  ${dev_incs})
+PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${cuda} ${srcs_utils}  ${dev_incs})
 target_link_libraries("${LIB_NAME}" pcl_gpu_utils pcl_gpu_containers pcl_gpu_octree)
 
 set(EXT_DEPS "")
 #set(EXT_DEPS CUDA)
-PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
+PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}" ${incs})

@@ -34,14 +34,6 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#if (defined(__GNUC__) && !defined(__CUDACC__) && (GTEST_GCC_VER_ >= 40000)) 
-    #define GTEST_USE_OWN_TR1_TUPLE 0
-#endif
-
-#if defined(_MSC_VER) && (_MSC_VER >= 1500)
-    #define GTEST_USE_OWN_TR1_TUPLE 0
-#endif
-
 #include "gtest/gtest.h"
 
 #include <pcl/point_types.h>
@@ -55,7 +47,7 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
-typedef pcl::Histogram<153> SpinImage;
+using SpinImage = pcl::Histogram<153>;
 
 //TEST(PCL_FeaturesGPU, DISABLED_spinImages_rectangular)
 TEST(PCL_FeaturesGPU, spinImages_rectangular)

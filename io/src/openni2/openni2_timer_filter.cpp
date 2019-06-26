@@ -56,21 +56,21 @@ namespace pcl
 
       double OpenNI2TimerFilter::getMedian ()
       {
-        if (buffer_.size ()>0)
+        if (!buffer_.empty ())
         {
           std::deque<double> sort_buffer = buffer_;
 
           std::sort (sort_buffer.begin (), sort_buffer.end ());
 
           return sort_buffer[sort_buffer.size ()/2];
-        } else
-          return (0.0);
+        }
+        return (0.0);
       }
 
       double
       OpenNI2TimerFilter::getMovingAvg ()
       {
-        if (buffer_.size () > 0)
+        if (!buffer_.empty ())
         {
           double sum = 0;
 
@@ -83,8 +83,8 @@ namespace pcl
           }
 
           return sum / static_cast<double>(buffer_.size ());
-        } else
-          return (0.0);
+        }
+        return (0.0);
       }
 
 

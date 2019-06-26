@@ -21,7 +21,7 @@ namespace pcl
       {
 
       protected:
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
         using GlobalEstimator<PointInT, FeatureT>::normal_estimator_;
         using GlobalEstimator<PointInT, FeatureT>::normals_;
         float eps_angle_threshold_;
@@ -130,7 +130,7 @@ namespace pcl
           /*normals_.reset(new pcl::PointCloud<pcl::Normal>);
            normal_estimator_->estimate (in, processed, normals_);*/
 
-          typedef typename pcl::OURCVFHEstimation<PointInT, pcl::Normal, pcl::VFHSignature308> OURCVFHEstimation;
+          using OURCVFHEstimation = pcl::OURCVFHEstimation<PointInT, pcl::Normal, pcl::VFHSignature308>;
           pcl::PointCloud<pcl::VFHSignature308> cvfh_signatures;
           typename pcl::search::KdTree<PointInT>::Ptr cvfh_tree (new pcl::search::KdTree<PointInT>);
 
@@ -165,13 +165,13 @@ namespace pcl
 
           //std::cout << "Res:" << normal_estimator_->mesh_resolution_ << " Radius normals:" << radius << " Cluster tolerance:" << cluster_tolerance_radius << " " << eps_angle_threshold_ << " " << curvature_threshold_ << std::endl;
 
-          for (size_t i = 0; i < cvfh_signatures.points.size (); i++)
+          for (const auto &point : cvfh_signatures.points)
           {
             pcl::PointCloud<FeatureT> vfh_signature;
             vfh_signature.points.resize (1);
             vfh_signature.width = vfh_signature.height = 1;
             for (int d = 0; d < 308; ++d)
-              vfh_signature.points[0].histogram[d] = cvfh_signatures.points[i].histogram[d];
+              vfh_signature.points[0].histogram[d] = point.histogram[d];
 
             signatures.push_back (vfh_signature);
           }

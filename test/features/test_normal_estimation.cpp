@@ -47,7 +47,7 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
+using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
 vector<int> indices;
@@ -142,7 +142,7 @@ TEST (PCL, NormalEstimation)
   PointCloud<PointXYZ>::Ptr cloudptr = cloud.makeShared ();
   n.setInputCloud (cloudptr);
   EXPECT_EQ (n.getInputCloud (), cloudptr);
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
   n.setIndices (indicesptr);
   EXPECT_EQ (n.getIndices (), indicesptr);
   n.setSearchMethod (tree);
@@ -153,12 +153,12 @@ TEST (PCL, NormalEstimation)
   n.compute (*normals);
   EXPECT_EQ (normals->points.size (), indices.size ());
 
-  for (size_t i = 0; i < normals->points.size (); ++i)
+  for (const auto &point : normals->points)
   {
-    EXPECT_NEAR (normals->points[i].normal[0], -0.035592, 1e-4);
-    EXPECT_NEAR (normals->points[i].normal[1], -0.369596, 1e-4);
-    EXPECT_NEAR (normals->points[i].normal[2], -0.928511, 1e-4);
-    EXPECT_NEAR (normals->points[i].curvature, 0.0693136, 1e-4);
+    EXPECT_NEAR (point.normal[0], -0.035592, 1e-4);
+    EXPECT_NEAR (point.normal[1], -0.369596, 1e-4);
+    EXPECT_NEAR (point.normal[2], -0.928511, 1e-4);
+    EXPECT_NEAR (point.curvature, 0.0693136, 1e-4);
   }
 
   PointCloud<PointXYZ>::Ptr surfaceptr = cloudptr;
@@ -193,7 +193,7 @@ TEST (PCL, NormalEstimationOpenMP)
   PointCloud<PointXYZ>::Ptr cloudptr = cloud.makeShared ();
   n.setInputCloud (cloudptr);
   EXPECT_EQ (n.getInputCloud (), cloudptr);
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
   n.setIndices (indicesptr);
   EXPECT_EQ (n.getIndices (), indicesptr);
   n.setSearchMethod (tree);
@@ -204,12 +204,12 @@ TEST (PCL, NormalEstimationOpenMP)
   n.compute (*normals);
   EXPECT_EQ (normals->points.size (), indices.size ());
 
-  for (size_t i = 0; i < normals->points.size (); ++i)
+  for (const auto &point : normals->points)
   {
-    EXPECT_NEAR (normals->points[i].normal[0], -0.035592, 1e-4);
-    EXPECT_NEAR (normals->points[i].normal[1], -0.369596, 1e-4);
-    EXPECT_NEAR (normals->points[i].normal[2], -0.928511, 1e-4);
-    EXPECT_NEAR (normals->points[i].curvature, 0.0693136, 1e-4);
+    EXPECT_NEAR (point.normal[0], -0.035592, 1e-4);
+    EXPECT_NEAR (point.normal[1], -0.369596, 1e-4);
+    EXPECT_NEAR (point.normal[2], -0.928511, 1e-4);
+    EXPECT_NEAR (point.curvature, 0.0693136, 1e-4);
   }
 }
 

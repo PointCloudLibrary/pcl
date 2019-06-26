@@ -74,7 +74,7 @@ float RangeImageBorderExtractor::getNeighborDistanceChangeScore(
   const PointWithRange& point = range_image_->getPoint(x, y);
   PointWithRange neighbor;
   range_image_->get1dPointAverage(x+offset_x, y+offset_y, offset_x, offset_y, pixel_radius, neighbor);
-  if (pcl_isinf(neighbor.range))
+  if (std::isinf(neighbor.range))
   {
     if (neighbor.range < 0.0f)
       return 0.0f;
@@ -99,7 +99,7 @@ float RangeImageBorderExtractor::getNeighborDistanceChangeScore(
 //{
   //PointWithRange neighbor;
   //range_image_->get1dPointAverage(x+offset_x, y+offset_y, offset_x, offset_y, parameters_.pixel_radius_borders, neighbor);
-  //if (pcl_isinf(neighbor.range))
+  //if (std::isinf(neighbor.range))
   //{
     //if (neighbor.range < 0.0f)
       //return 0.0f;
@@ -144,7 +144,7 @@ bool RangeImageBorderExtractor::get3dDirection(const BorderDescription& border_d
   range_image_->calculate3DPoint(static_cast<float> (x+delta_x), static_cast<float> (y+delta_y), point.range, neighbor_point);
   //cout << "Neighborhood point is "<<neighbor_point[0]<<", "<<neighbor_point[1]<<", "<<neighbor_point[2]<<".\n";
   
-  if (local_surface!=NULL)
+  if (local_surface!=nullptr)
   {
     // Get the point that lies on the local plane approximation
     Eigen::Vector3f sensor_pos = range_image_->getSensorPos(),
@@ -166,7 +166,7 @@ void RangeImageBorderExtractor::calculateBorderDirection(int x, int y)
 {
   int index = y*range_image_->width + x;
   Eigen::Vector3f*& border_direction = border_directions_[index];
-  border_direction = NULL;
+  border_direction = nullptr;
   const BorderDescription& border_description = border_descriptions_->points[index];
   const BorderTraits& border_traits = border_description.traits;
   if (!border_traits[BORDER_TRAIT__OBSTACLE_BORDER])
@@ -175,7 +175,7 @@ void RangeImageBorderExtractor::calculateBorderDirection(int x, int y)
   if (!get3dDirection(border_description, *border_direction, surface_structure_[index]))
   {
     delete border_direction;
-    border_direction = NULL;
+    border_direction = nullptr;
     return;
   }
 }
@@ -318,7 +318,7 @@ bool RangeImageBorderExtractor::calculateMainPrincipalCurvature(int x, int y, in
   magnitude = 0.0f;
   int index = y*range_image_->width+x;
   LocalSurface* local_surface = surface_structure_[index];
-  if (local_surface==NULL)
+  if (local_surface==nullptr)
     return false;
   //const PointWithRange& point = range_image_->getPointNoCheck(x,y);
   
@@ -361,7 +361,7 @@ bool RangeImageBorderExtractor::calculateMainPrincipalCurvature(int x, int y, in
         
         //const PointWithRange& point2 = range_image_->getPoint(index2);
         LocalSurface* local_surface2 = surface_structure_[index2];
-        if (local_surface2==NULL)
+        if (local_surface2==nullptr)
           continue;
         Eigen::Vector3f& normal2 = local_surface2->normal_no_jumps;
         //float distance_squared = squaredEuclideanDistance(point, point2);
@@ -395,10 +395,7 @@ bool RangeImageBorderExtractor::calculateMainPrincipalCurvature(int x, int y, in
         //angle1 = acosf(surface_structure_[y*range_image_->width+x-1]->normal.dot(local_surface->normal));
   //magnitude = angle2-angle1;
 
-  if (!pcl_isfinite(magnitude))
-    return false;
-  
-  return true;
+  return std::isfinite(magnitude);
 }
 
 }  // namespace end

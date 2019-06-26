@@ -72,9 +72,9 @@ class OpenNIPassthrough : public QMainWindow
 {
   Q_OBJECT
   public:
-    typedef pcl::PointCloud<pcl::PointXYZRGBA> Cloud;
-    typedef Cloud::Ptr CloudPtr;
-    typedef Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<pcl::PointXYZRGBA>;
+    using CloudPtr = Cloud::Ptr;
+    using CloudConstPtr = Cloud::ConstPtr;
 
     OpenNIPassthrough (pcl::OpenNIGrabber& grabber);
 
@@ -88,7 +88,7 @@ class OpenNIPassthrough : public QMainWindow
     cloud_cb (const CloudConstPtr& cloud);
 
   protected:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
+    pcl::visualization::PCLVisualizer::Ptr vis_;
     pcl::OpenNIGrabber& grabber_;
     std::string device_id_;
     CloudPtr cloud_pass_;

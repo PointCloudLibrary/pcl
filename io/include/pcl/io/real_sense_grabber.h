@@ -37,13 +37,12 @@
 
 #pragma once
 
-#include <boost/thread/thread.hpp>
-#include <boost/thread/mutex.hpp>
-
 #include <pcl/io/grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
+
+#include <thread>
 
 namespace pcl
 {
@@ -65,13 +64,9 @@ namespace pcl
 
     public:
 
-      typedef
-        void (sig_cb_real_sense_point_cloud)
-          (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+      using sig_cb_real_sense_point_cloud = void () (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
 
-      typedef
-        void (sig_cb_real_sense_point_cloud_rgba)
-          (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
+      using sig_cb_real_sense_point_cloud_rgba = void () (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
 
       /** A descriptor for capturing mode.
         *
@@ -264,9 +259,9 @@ namespace pcl
       bool need_xyzrgba_;
 
       EventFrequency frequency_;
-      mutable boost::mutex fps_mutex_;
+      mutable std::mutex fps_mutex_;
 
-      boost::thread thread_;
+      std::thread thread_;
 
       /// Depth buffer to perform temporal filtering of the depth images
       boost::shared_ptr<pcl::io::Buffer<unsigned short> > depth_buffer_;

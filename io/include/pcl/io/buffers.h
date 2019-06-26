@@ -37,12 +37,12 @@
 
 #pragma once
 
-#include <vector>
-#include <limits>
 #include <cassert>
+#include <limits>
+#include <mutex>
+#include <vector>
 
 #include <boost/cstdint.hpp>
-#include <boost/thread/mutex.hpp>
 
 namespace pcl
 {
@@ -68,7 +68,7 @@ namespace pcl
 
       public:
 
-        typedef T value_type;
+        using value_type = T;
 
         virtual
         ~Buffer ();
@@ -124,7 +124,7 @@ namespace pcl
       private:
 
         std::vector<T> data_;
-        mutable boost::mutex data_mutex_;
+        mutable std::mutex data_mutex_;
 
         using Buffer<T>::size_;
 
@@ -200,7 +200,7 @@ namespace pcl
         /// Number of invalid values in the buffer
         std::vector<unsigned char> data_invalid_count_;
 
-        mutable boost::mutex data_mutex_;
+        mutable std::mutex data_mutex_;
 
         using Buffer<T>::size_;
 
@@ -266,7 +266,7 @@ namespace pcl
         /// Number of invalid values in the buffer
         std::vector<unsigned char> data_invalid_count_;
 
-        mutable boost::mutex data_mutex_;
+        mutable std::mutex data_mutex_;
 
         using Buffer<T>::size_;
 

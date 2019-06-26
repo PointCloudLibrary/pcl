@@ -70,19 +70,15 @@ namespace pcl
       using PCLBase<PointInT>::deinitCompute;
       using CloudSurfaceProcessing<PointInT, PointOutT>::process;
 
-      typedef pcl::PointCloud<PointOutT> PointCloudOut;
+      using PointCloudOut = pcl::PointCloud<PointOutT>;
 
       Eigen::Matrix3f KinectVGAProjectionMatrix, KinectSXGAProjectionMatrix;
 
       /** \brief Constructor. */
       BilateralUpsampling () 
-        : KinectVGAProjectionMatrix ()
-        , KinectSXGAProjectionMatrix ()
-        , window_size_ (5)
+        : window_size_ (5)
         , sigma_color_ (15.0f)
         , sigma_depth_ (0.5f)
-        , projection_matrix_ ()
-        , unprojection_matrix_ ()
       {
         KinectVGAProjectionMatrix << 525.0f, 0.0f, 320.0f,
                                      0.0f, 525.0f, 240.0f,

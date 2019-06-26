@@ -65,12 +65,11 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        typedef boost::shared_ptr<CorrespondenceRejectorDistance> Ptr;
-        typedef boost::shared_ptr<const CorrespondenceRejectorDistance> ConstPtr;
+        using Ptr = boost::shared_ptr<CorrespondenceRejectorDistance>;
+        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorDistance>;
 
         /** \brief Empty constructor. */
-        CorrespondenceRejectorDistance () : max_distance_(std::numeric_limits<float>::max ()),
-                                            data_container_ ()
+        CorrespondenceRejectorDistance () : max_distance_(std::numeric_limits<float>::max ())
         {
           rejection_name_ = "CorrespondenceRejectorDistance";
         }
@@ -172,8 +171,8 @@ namespace pcl
           * confident that the tree will be set correctly.
           */
         template <typename PointT> inline void
-        setSearchMethodTarget (const boost::shared_ptr<pcl::search::KdTree<PointT> > &tree, 
-                               bool force_no_recompute = false) 
+        setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr &tree,
+                               bool force_no_recompute = false)
         { 
           boost::static_pointer_cast< DataContainer<PointT> > 
             (data_container_)->setSearchMethodTarget (tree, force_no_recompute );
@@ -196,7 +195,7 @@ namespace pcl
           */
         float max_distance_;
 
-        typedef boost::shared_ptr<DataContainerInterface> DataContainerPtr;
+        using DataContainerPtr = boost::shared_ptr<DataContainerInterface>;
 
         /** \brief A pointer to the DataContainer object containing the input and target point clouds */
         DataContainerPtr data_container_;

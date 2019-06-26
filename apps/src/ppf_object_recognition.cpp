@@ -1,3 +1,5 @@
+#include <thread>
+
 #include <pcl/features/ppf.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/voxel_grid.h>
@@ -13,6 +15,7 @@
 
 using namespace pcl;
 using namespace std;
+using namespace std::chrono_literals;
 
 const Eigen::Vector4f subsampling_leaf_size (0.02f, 0.02f, 0.02f, 0.0f);
 const float normal_estimation_search_radius = 0.05f;
@@ -100,9 +103,9 @@ main (int argc, char** argv)
 
   PCL_INFO ("Training models ...\n");
   vector<PPFHashMapSearch::Ptr> hashmap_search_vector;
-  for (size_t model_i = 0; model_i < cloud_models.size (); ++model_i)
+  for (const auto &cloud_model : cloud_models)
   {
-    PointCloud<PointNormal>::Ptr cloud_model_input = subsampleAndCalculateNormals (cloud_models[model_i]);
+    PointCloud<PointNormal>::Ptr cloud_model_input = subsampleAndCalculateNormals (cloud_model);
     cloud_models_with_normals.push_back (cloud_model_input);
 
     PointCloud<PPFSignature>::Ptr cloud_model_ppf (new PointCloud<PPFSignature> ());
@@ -139,8 +142,8 @@ main (int argc, char** argv)
     ppf_registration.align (cloud_output_subsampled);
 
     PointCloud<PointXYZ>::Ptr cloud_output_subsampled_xyz (new PointCloud<PointXYZ> ());
-    for (size_t i = 0; i < cloud_output_subsampled.points.size (); ++i)
-      cloud_output_subsampled_xyz->points.push_back ( PointXYZ (cloud_output_subsampled.points[i].x, cloud_output_subsampled.points[i].y, cloud_output_subsampled.points[i].z));
+    for (const auto &point : cloud_output_subsampled.points)
+      cloud_output_subsampled_xyz->points.emplace_back(point.x, point.y, point.z);
 
 
     Eigen::Matrix4f mat = ppf_registration.getFinalTransformation ();
@@ -166,7 +169,7 @@ main (int argc, char** argv)
   while (!viewer.wasStopped ())
   {
     viewer.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
 
   return 0;

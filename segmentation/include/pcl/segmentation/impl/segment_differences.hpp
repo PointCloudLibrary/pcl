@@ -46,7 +46,7 @@ template <typename PointT> void
 pcl::getPointCloudDifference (
     const pcl::PointCloud<PointT> &src,
     double threshold,
-    const boost::shared_ptr<pcl::search::Search<PointT> > &tree,
+    const typename pcl::search::Search<PointT>::Ptr &tree,
     pcl::PointCloud<PointT> &output)
 {
   // We're interested in a single nearest neighbor only
@@ -119,6 +119,6 @@ pcl::SegmentDifferences<PointT>::segment (PointCloud &output)
 }
 
 #define PCL_INSTANTIATE_SegmentDifferences(T) template class PCL_EXPORTS pcl::SegmentDifferences<T>;
-#define PCL_INSTANTIATE_getPointCloudDifference(T) template PCL_EXPORTS void pcl::getPointCloudDifference<T>(const pcl::PointCloud<T> &, double, const boost::shared_ptr<pcl::search::Search<T> > &, pcl::PointCloud<T> &);
+#define PCL_INSTANTIATE_getPointCloudDifference(T) template PCL_EXPORTS void pcl::getPointCloudDifference<T>(const pcl::PointCloud<T> &, double, const typename pcl::search::Search<T>::Ptr &, pcl::PointCloud<T> &);
 
 #endif        // PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_

@@ -114,8 +114,8 @@ TEST (FastBilateralFilterOMP, Filters_Bilateral)
     EXPECT_EQ (cloud_filtered_omp->points.size (), cloud_filtered->points.size ());
     for (size_t j = 0; j < cloud_filtered_omp->size (); ++j)
     {
-      if (pcl_isnan (cloud_filtered_omp->at (j).x))
-        EXPECT_TRUE (pcl_isnan (cloud_filtered->at (j).x));
+      if (std::isnan (cloud_filtered_omp->at (j).x))
+        EXPECT_TRUE (std::isnan (cloud_filtered->at (j).x));
       else
       {
         EXPECT_NEAR (cloud_filtered_omp->at (j).x, cloud_filtered->at (j).x, 1e-3);

@@ -52,9 +52,9 @@ using namespace pcl::io;
 using namespace pcl::common;
 using namespace pcl::console;
 
-typedef PointXYZ PointType;
-typedef PointCloud<PointXYZ> Cloud;
-typedef const Cloud::ConstPtr ConstCloudPtr;
+using PointType = PointXYZ;
+using Cloud = PointCloud<PointXYZ>;
+using ConstCloudPtr = const Cloud::ConstPtr;
 
 std::string default_distribution = "uniform";
 float default_xmin = 0.0f;
@@ -175,7 +175,7 @@ main (int argc, char** argv)
   if (distribution == "uniform")
   {
     CloudGenerator<pcl::PointXYZ, UniformGenerator<float> > generator;
-    uint32_t seed = static_cast<uint32_t> (time (NULL));
+    uint32_t seed = static_cast<uint32_t> (time (nullptr));
     UniformGenerator<float>::Parameters x_params (xmin, xmax, seed++);
     generator.setParametersForX (x_params);
     UniformGenerator<float>::Parameters y_params (ymin, ymax, seed++);
@@ -188,7 +188,7 @@ main (int argc, char** argv)
   else if (distribution == "normal")
   {
     CloudGenerator<pcl::PointXYZ, NormalGenerator<float> > generator;
-    uint32_t seed = static_cast<uint32_t> (time (NULL));
+    uint32_t seed = static_cast<uint32_t> (time (nullptr));
     NormalGenerator<float>::Parameters x_params (xmean, xstddev, seed++);
     generator.setParametersForX (x_params);
     NormalGenerator<float>::Parameters y_params (ymean, ystddev, seed++);

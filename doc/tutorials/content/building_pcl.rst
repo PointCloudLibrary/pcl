@@ -24,7 +24,7 @@ PCL basic settings
 Let's say PCL is placed under /PATH/TO/PCL, which we will refer to as PCL_ROOT::
 
   $ cd $PCL_ROOT
-  $ mkdir build
+  $ mkdir build && cd build
   $ cmake ..
 
 This will cause `cmake` to create a file called CMakeCache.txt in the build
@@ -222,12 +222,6 @@ then a sample value is given for reference.
 | Boost_SYSTEM_LIBRARY_DEBUG       | full path to boost_system.[so,lib,a] (debug version)          | /usr/local/lib/libboost_system-gd.so     |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
 | Boost_SYSTEM_LIBRARY_RELEASE     | full path to boost_system.[so,lib,a] (release version)        | /usr/local/lib/libboost_system.so        |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_THREAD_LIBRARY             | full path to boost_thread.[so,lib,a]                          | /usr/local/lib/libboost_thread.so        |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_THREAD_LIBRARY_DEBUG       | full path to boost_thread.[so,lib,a] (debug version)          | /usr/local/lib/libboost_thread-gd.so     |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_THREAD_LIBRARY_RELEASE     | full path to boost_thread.[so,lib,a] (release version)        | /usr/local/lib/libboost_thread.so        |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
 
 

@@ -42,6 +42,9 @@
 #include "openni_device.h"
 #include "openni_driver.h"
 
+#include <condition_variable>
+#include <mutex>
+
 namespace openni_wrapper
 {
 
@@ -97,9 +100,9 @@ namespace openni_wrapper
     static void __stdcall NewONIIRDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
 
     xn::Player player_;
-    boost::thread player_thread_;
-    mutable boost::mutex player_mutex_;
-    boost::condition_variable player_condition_;
+    std::thread player_thread_;
+    mutable std::mutex player_mutex_;
+    std::condition_variable player_condition_;
     bool streaming_;
     bool depth_stream_running_;
     bool image_stream_running_;

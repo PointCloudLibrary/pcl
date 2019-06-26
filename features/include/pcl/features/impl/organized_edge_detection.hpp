@@ -41,7 +41,6 @@
 #include <pcl/2d/edge.h>
 #include <pcl/features/organized_edge_detection.h>
 #include <pcl/console/print.h>
-#include <pcl/console/time.h>
 
 /**
  *  Directions: 1 2 3
@@ -70,7 +69,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::assignLabelIndices (pcl::PointCloud<Poi
 {
   const unsigned invalid_label = unsigned (0);
   label_indices.resize (num_of_edgetype_);
-  for (unsigned idx = 0; idx < input_->points.size (); idx++)
+  for (size_t idx = 0; idx < input_->points.size (); idx++)
   {
     if (labels[idx].label != invalid_label)
     {
@@ -105,7 +104,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
       for (int col = 1; col < int(input_->width) - 1; col++)
       {
         int curr_idx = row*int(input_->width) + col;
-        if (!pcl_isfinite (input_->points[curr_idx].z))
+        if (!std::isfinite (input_->points[curr_idx].z))
           continue;
 
         float curr_depth = fabsf (input_->points[curr_idx].z);
@@ -118,7 +117,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
         {
           int nghr_idx = curr_idx + directions[d_idx].d_index;
           assert (nghr_idx >= 0 && nghr_idx < input_->points.size ());
-          if (!pcl_isfinite (input_->points[nghr_idx].z))
+          if (!std::isfinite (input_->points[nghr_idx].z))
           {
             found_invalid_neighbor = true;
             break;
@@ -157,14 +156,14 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
           int dx = 0;
           int dy = 0;
           int num_of_invalid_pt = 0;
-          for (int d_idx = 0; d_idx < num_of_ngbr; d_idx++)
+          for (const auto &direction : directions)
           {
-            int nghr_idx = curr_idx + directions[d_idx].d_index;
+            int nghr_idx = curr_idx + direction.d_index;
             assert (nghr_idx >= 0 && nghr_idx < input_->points.size ());
-            if (!pcl_isfinite (input_->points[nghr_idx].z))
+            if (!std::isfinite (input_->points[nghr_idx].z))
             {
-              dx += directions[d_idx].d_x;
-              dy += directions[d_idx].d_y;
+              dx += direction.d_x;
+              dy += direction.d_y;
               num_of_invalid_pt++;
             }
           }
@@ -184,14 +183,14 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
             if (s_row < 0 || s_row >= int(input_->height) || s_col < 0 || s_col >= int(input_->width))
               break;
 
-            if (pcl_isfinite (input_->points[s_row*int(input_->width)+s_col].z))
+            if (std::isfinite (input_->points[s_row*int(input_->width)+s_col].z))
             {
               corr_depth = fabsf (input_->points[s_row*int(input_->width)+s_col].z);
               break;
             }
           }
 
-          if (!pcl_isnan (corr_depth))
+          if (!std::isnan (corr_depth))
           {
             // Found a corresponding point
             float dist = curr_depth - corr_depth;

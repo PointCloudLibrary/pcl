@@ -95,9 +95,9 @@ bool pcl::gpu::DeviceMemory2D::empty() const { throw_nogpu(); }
 
 ////////////////////////    DeviceArray    /////////////////////////////
     
-pcl::gpu::DeviceMemory::DeviceMemory() : data_(0), sizeBytes_(0), refcount_(0) {}
-pcl::gpu::DeviceMemory::DeviceMemory(void *ptr_arg, size_t sizeBytes_arg) : data_(ptr_arg), sizeBytes_(sizeBytes_arg), refcount_(0){}
-pcl::gpu::DeviceMemory::DeviceMemory(size_t sizeBtes_arg)  : data_(0), sizeBytes_(0), refcount_(0) { create(sizeBtes_arg); }
+pcl::gpu::DeviceMemory::DeviceMemory() : data_(nullptr), sizeBytes_(0), refcount_(nullptr) {}
+pcl::gpu::DeviceMemory::DeviceMemory(void *ptr_arg, size_t sizeBytes_arg) : data_(ptr_arg), sizeBytes_(sizeBytes_arg), refcount_(nullptr){}
+pcl::gpu::DeviceMemory::DeviceMemory(size_t sizeBtes_arg)  : data_(nullptr), sizeBytes_(0), refcount_(nullptr) { create(sizeBtes_arg); }
 pcl::gpu::DeviceMemory::~DeviceMemory() { release(); }
 
 pcl::gpu::DeviceMemory::DeviceMemory(const DeviceMemory& other_arg) 
@@ -162,9 +162,9 @@ void pcl::gpu::DeviceMemory::release()
         delete refcount_;
         cudaSafeCall( cudaFree(data_) );
     }
-    data_ = 0;
+    data_ = nullptr;
     sizeBytes_ = 0;
-    refcount_ = 0;
+    refcount_ = nullptr;
 }
 
 void pcl::gpu::DeviceMemory::upload(const void *host_ptr_arg, size_t sizeBytes_arg)
@@ -193,16 +193,16 @@ size_t pcl::gpu::DeviceMemory::sizeBytes() const { return sizeBytes_; }
 
 ////////////////////////    DeviceArray2D    /////////////////////////////
 
-pcl::gpu::DeviceMemory2D::DeviceMemory2D() : data_(0), step_(0), colsBytes_(0), rows_(0), refcount_(0) {}
+pcl::gpu::DeviceMemory2D::DeviceMemory2D() : data_(nullptr), step_(0), colsBytes_(0), rows_(0), refcount_(nullptr) {}
 
 pcl::gpu::DeviceMemory2D::DeviceMemory2D(int rows_arg, int colsBytes_arg) 
-    : data_(0), step_(0), colsBytes_(0), rows_(0), refcount_(0)
+    : data_(nullptr), step_(0), colsBytes_(0), rows_(0), refcount_(nullptr)
 { 
     create(rows_arg, colsBytes_arg); 
 }
 
 pcl::gpu::DeviceMemory2D::DeviceMemory2D(int rows_arg, int colsBytes_arg, void *data_arg, size_t step_arg) 
-    :  data_(data_arg), step_(step_arg), colsBytes_(colsBytes_arg), rows_(rows_arg), refcount_(0) {}
+    :  data_(data_arg), step_(step_arg), colsBytes_(colsBytes_arg), rows_(rows_arg), refcount_(nullptr) {}
 
 pcl::gpu::DeviceMemory2D::~DeviceMemory2D() { release(); }
 
@@ -264,9 +264,9 @@ void pcl::gpu::DeviceMemory2D::release()
 
     colsBytes_ = 0;
     rows_ = 0;    
-    data_ = 0;    
+    data_ = nullptr;    
     step_ = 0;
-    refcount_ = 0;
+    refcount_ = nullptr;
 }
 
 void pcl::gpu::DeviceMemory2D::copyTo(DeviceMemory2D& other) const

@@ -47,10 +47,10 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
+using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
-vector<int> indices;
+pcl::Indices indices;
 KdTreePtr tree;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ TEST (PCL, PPFEstimation)
   NormalEstimation<PointXYZ, Normal> normal_estimation;
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   normal_estimation.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
   normal_estimation.setIndices (indicesptr);
   normal_estimation.setSearchMethod (tree);
   normal_estimation.setKSearch (10); // Use 10 nearest neighbors to estimate the normals
@@ -76,11 +76,11 @@ TEST (PCL, PPFEstimation)
   EXPECT_EQ (feature_cloud->points.size (), indices.size () * cloud.points.size ());
 
   // Now check for a few values in the feature cloud
-  EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].f1));
-  EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].f2));
-  EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].f3));
-  EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].f4));
-  EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].alpha_m));
+  EXPECT_TRUE (std::isnan (feature_cloud->points[0].f1));
+  EXPECT_TRUE (std::isnan (feature_cloud->points[0].f2));
+  EXPECT_TRUE (std::isnan (feature_cloud->points[0].f3));
+  EXPECT_TRUE (std::isnan (feature_cloud->points[0].f4));
+  EXPECT_TRUE (std::isnan (feature_cloud->points[0].alpha_m));
 
   EXPECT_NEAR (feature_cloud->points[15127].f1, -2.51637, 1e-4);
   EXPECT_NEAR (feature_cloud->points[15127].f2, -0.00365916, 1e-4);

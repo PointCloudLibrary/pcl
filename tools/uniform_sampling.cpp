@@ -122,15 +122,15 @@ saveCloud (const string &filename, const pcl::PCLPointCloud2 &output)
   std::string output_ext = boost::filesystem::extension (filename);
   std::transform (output_ext.begin (), output_ext.end (), output_ext.begin (), ::tolower);
 
-  if (output_ext.compare (".pcd") == 0)
+  if (output_ext == ".pcd")
   {
     w_pcd.writeBinaryCompressed (filename, output);
   }
-  else if (output_ext.compare (".ply") == 0)
+  else if (output_ext == ".ply")
   {
     w_ply.writeBinary (filename, output);
   }
-  else if (output_ext.compare (".vtk") == 0)
+  else if (output_ext == ".vtk")
   {
     w_ply.writeBinary (filename, output);
   }
@@ -153,9 +153,9 @@ main (int argc, char** argv)
   // Parse the command line arguments for .pcd files
   vector<int> p_file_indices;
   vector<std::string> extension;
-  extension.push_back (".pcd");
-  extension.push_back (".ply");
-  extension.push_back (".vtk");
+  extension.emplace_back(".pcd");
+  extension.emplace_back(".ply");
+  extension.emplace_back(".vtk");
   p_file_indices = parse_file_extension_argument (argc, argv, extension);
 
   if (p_file_indices.size () != 2)

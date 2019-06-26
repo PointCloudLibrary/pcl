@@ -43,7 +43,7 @@ namespace pcl
       pcl::PointCloud<pcl::PointXYZ>::Ptr input_;
       pcl::PointCloud<pcl::PointXYZI>::Ptr face_heat_map_;
 
-      typedef face_detection::RFTreeNode<face_detection::FeatureType> NodeType;
+      using NodeType = face_detection::RFTreeNode<face_detection::FeatureType>;
       pcl::DecisionForest<NodeType> forest_;
 
       std::string model_path_;

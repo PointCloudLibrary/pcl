@@ -77,7 +77,7 @@ namespace pcl
       struct Detection
       {
         /** \brief Constructor. */
-        Detection () : template_id (0), object_id (0), detection_id (0), response (0.0f), bounding_box () {}
+        Detection () : template_id (0), object_id (0), detection_id (0), response (0.0f) {}
 
         /** \brief The ID of the template. */
         size_t template_id;
@@ -96,14 +96,10 @@ namespace pcl
       /** \brief Constructor */
       LineRGBD ()
         : intersection_volume_threshold_ (1.0f)
-        , linemod_ ()
         , color_gradient_mod_ ()
         , surface_normal_mod_ ()
         , cloud_xyz_ ()
         , cloud_rgb_ ()
-        , template_point_clouds_ ()
-        , bounding_boxes_ ()
-        , object_ids_ ()
         , detections_ ()
       {
       }

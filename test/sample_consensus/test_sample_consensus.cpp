@@ -38,8 +38,6 @@
 
 #include <gtest/gtest.h>
 
-#include <boost/thread.hpp>
-
 #include <pcl/sample_consensus/msac.h>
 #include <pcl/sample_consensus/lmeds.h>
 #include <pcl/sample_consensus/rmsac.h>
@@ -48,9 +46,15 @@
 #include <pcl/sample_consensus/rransac.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
 
+#include <chrono>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <thread>
+
 using namespace pcl;
 
-typedef SampleConsensusModelSphere<PointXYZ>::Ptr SampleConsensusModelSpherePtr;
+using SampleConsensusModelSpherePtr = SampleConsensusModelSphere<PointXYZ>::Ptr;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SampleConsensus, Base)
@@ -77,8 +81,23 @@ TEST (SampleConsensus, Base)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Test if RANSAC finishes within a second.
-TEST (SampleConsensus, InfiniteLoop)
+template <typename SacT>
+class SacTest : public ::testing::Test {};
+
+using sacTypes = ::testing::Types<
+  RandomSampleConsensus<PointXYZ>,
+  LeastMedianSquares<PointXYZ>,
+  MEstimatorSampleConsensus<PointXYZ>,
+  RandomizedRandomSampleConsensus<PointXYZ>,
+  RandomizedMEstimatorSampleConsensus<PointXYZ>,
+  MaximumLikelihoodSampleConsensus<PointXYZ>
+>;
+TYPED_TEST_CASE(SacTest, sacTypes);
+
+TYPED_TEST(SacTest, InfiniteLoop)
 {
+  using namespace std::chrono_literals;
+
   const unsigned point_count = 100;
   PointCloud<PointXYZ> cloud;
   cloud.points.resize (point_count);
@@ -89,50 +108,32 @@ TEST (SampleConsensus, InfiniteLoop)
     cloud.points[idx].z = 0.0;
   }
 
-#if defined(DEBUG) || defined(_DEBUG)
-  boost::posix_time::time_duration delay (0, 0, 15, 0);
-#else
-  boost::posix_time::time_duration delay (0, 0, 1, 0);
-#endif
-
-  boost::function<bool ()> sac_function;
   SampleConsensusModelSpherePtr model (new SampleConsensusModelSphere<PointXYZ> (cloud.makeShared ()));
+  TypeParam sac (model, 0.03);
+
+  // Set up timed conditions
+  std::condition_variable cv;
+  std::mutex mtx;
 
   // Create the RANSAC object
-  RandomSampleConsensus<PointXYZ> ransac (model, 0.03);
-  sac_function = boost::bind (&RandomSampleConsensus<PointXYZ>::computeModel, &ransac, 0);
-  boost::thread thread1 (sac_function);
-  ASSERT_TRUE (thread1.timed_join (delay));
+  std::thread thread ([&] ()
+  {
+    sac.computeModel (0);
 
-  // Create the LMSAC object
-  LeastMedianSquares<PointXYZ> lmsac (model, 0.03);
-  sac_function = boost::bind (&LeastMedianSquares<PointXYZ>::computeModel, &lmsac, 0);
-  boost::thread thread2 (sac_function);
-  ASSERT_TRUE (thread2.timed_join (delay));
+    // Notify things are done
+    std::lock_guard<std::mutex> lock (mtx);
+    cv.notify_one ();
+  });
 
-  // Create the MSAC object
-  MEstimatorSampleConsensus<PointXYZ> mesac (model, 0.03);
-  sac_function = boost::bind (&MEstimatorSampleConsensus<PointXYZ>::computeModel, &mesac, 0);
-  boost::thread thread3 (sac_function);
-  ASSERT_TRUE (thread3.timed_join (delay));
 
-  // Create the RRSAC object
-  RandomizedRandomSampleConsensus<PointXYZ> rrsac (model, 0.03);
-  sac_function = boost::bind (&RandomizedRandomSampleConsensus<PointXYZ>::computeModel, &rrsac, 0);
-  boost::thread thread4 (sac_function);
-  ASSERT_TRUE (thread4.timed_join (delay));
-
-  // Create the RMSAC object
-  RandomizedMEstimatorSampleConsensus<PointXYZ> rmsac (model, 0.03);
-  sac_function = boost::bind (&RandomizedMEstimatorSampleConsensus<PointXYZ>::computeModel, &rmsac, 0);
-  boost::thread thread5 (sac_function);
-  ASSERT_TRUE (thread5.timed_join (delay));
-
-  // Create the MLESAC object
-  MaximumLikelihoodSampleConsensus<PointXYZ> mlesac (model, 0.03);
-  sac_function = boost::bind (&MaximumLikelihoodSampleConsensus<PointXYZ>::computeModel, &mlesac, 0);
-  boost::thread thread6 (sac_function);
-  ASSERT_TRUE (thread6.timed_join (delay));
+  // Waits for the delay
+  std::unique_lock<std::mutex> lock (mtx);
+  #if defined(DEBUG) || defined(_DEBUG)
+    EXPECT_EQ (std::cv_status::no_timeout, cv.wait_for (lock, 15s));
+  #else
+    EXPECT_EQ (std::cv_status::no_timeout, cv.wait_for (lock, 1s));
+  #endif
+  thread.join ();
 }
 
 int
@@ -141,4 +142,3 @@ main (int argc, char** argv)
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }
-

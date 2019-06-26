@@ -63,7 +63,7 @@ pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
 {
   // Avoid getting hung on Eigen's optimizers
 //  for (int i = 0; i < 9; ++i)
-//    if (!pcl_isfinite (covariance_matrix.coeff (i)))
+//    if (!std::isfinite (covariance_matrix.coeff (i)))
 //    {
 //      //PCL_WARN ("[pcl::solvePlaneParameteres] Covariance matrix has NaN/Inf values!\n");
 //      nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
@@ -143,10 +143,11 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
     {
       search_parameter_ = search_radius_;
       // Declare the search locator definition
-      int (KdTree::*radiusSearchSurface)(const PointCloudIn &cloud, int index, double radius,
-                                         std::vector<int> &k_indices, std::vector<float> &k_distances,
-                                         unsigned int max_nn) const = &pcl::search::Search<PointInT>::radiusSearch;
-      search_method_surface_ = boost::bind (radiusSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5, 0);
+      search_method_surface_ = [this] (const PointCloudIn &cloud, int index, double radius,
+                                       std::vector<int> &k_indices, std::vector<float> &k_distances)
+      {
+        return tree_->radiusSearch (cloud, index, radius, k_indices, k_distances, 0);
+      };
     }
   }
   else
@@ -155,9 +156,11 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
     {
       search_parameter_ = k_;
       // Declare the search locator definition
-      int (KdTree::*nearestKSearchSurface)(const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices,
-                                           std::vector<float> &k_distances) const = &KdTree::nearestKSearch;
-      search_method_surface_ = boost::bind (nearestKSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5);
+      search_method_surface_ = [this] (const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices,
+                                       std::vector<float> &k_distances)
+      {
+        return tree_->nearestKSearch (cloud, index, k, k_indices, k_distances);
+      };
     }
     else
     {

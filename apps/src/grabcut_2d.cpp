@@ -32,8 +32,8 @@ class GrabCutHelper : public pcl::GrabCut<pcl::PointXYZRGB>
   using pcl::GrabCut<pcl::PointXYZRGB>::input_;
 
   public:
-  typedef boost::shared_ptr<GrabCutHelper > Ptr;
-  typedef boost::shared_ptr<const GrabCutHelper > ConstPtr;
+  using Ptr = boost::shared_ptr<GrabCutHelper>;
+  using ConstPtr = boost::shared_ptr<const GrabCutHelper>;
 
   GrabCutHelper (uint32_t K = 5, float lambda = 50.f)
     : pcl::GrabCut<pcl::PointXYZRGB> (K, lambda)
@@ -138,7 +138,6 @@ GrabCutHelper::setTrimap(int x1, int y1, int x2, int y2, const pcl::segmentation
 void
 GrabCutHelper::refine ()
 {
-//  boost::lock_guard<boost::mutex> lock (refine_mutex);
   pcl::GrabCut<pcl::PointXYZRGB>::refine ();
   buildImages ();
 }
@@ -147,7 +146,6 @@ GrabCutHelper::refine ()
 int
 GrabCutHelper::refineOnce ()
 {
-  //  boost::lock_guard<boost::mutex> lock (refine_once_mutex);
   int result = pcl::GrabCut<pcl::PointXYZRGB>::refineOnce ();
   buildImages ();
   return (result);
@@ -157,7 +155,6 @@ GrabCutHelper::refineOnce ()
 void
 GrabCutHelper::fitGMMs ()
 {
-//  boost::lock_guard<boost::mutex> lock (fit_gmms_mutex);
   pcl::GrabCut<pcl::PointXYZRGB>::fitGMMs ();
   buildImages ();
 }
@@ -317,7 +314,7 @@ idle_callback ()
   if (!changed)
   {
     refining_ = false;
-    glutIdleFunc (NULL);
+    glutIdleFunc (nullptr);
   }
 }
 
@@ -327,7 +324,7 @@ motion_callback (int x, int y)
 {
   y = height - y;
 
-  if (box == true)
+  if (box)
   {
     xend = x; yend = y;
     glutPostRedisplay ();
@@ -452,7 +449,7 @@ keyboard_callback (unsigned char key, int, int)
       break;
     case 27:
       refining_ = false;
-      glutIdleFunc(NULL);
+      glutIdleFunc(nullptr);
     default:
       break;
   }

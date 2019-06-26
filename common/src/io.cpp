@@ -106,17 +106,17 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
   //by offset so that we can compute sizes correctly. There is no
   //guarantee that the fields are in the correct order when they come in
   std::vector<const pcl::PCLPointField*> cloud1_fields_sorted;
-  for (size_t i = 0; i < cloud1.fields.size (); ++i)
-    cloud1_fields_sorted.push_back (&(cloud1.fields[i]));
+  for (const auto &field : cloud1.fields)
+    cloud1_fields_sorted.push_back (&field);
 
   std::sort (cloud1_fields_sorted.begin (), cloud1_fields_sorted.end (), fieldComp);
 
   for (size_t i = 0; i < cloud1_fields_sorted.size (); ++i)
   {
     bool match = false;
-    for (size_t j = 0; j < cloud2.fields.size (); ++j)
+    for (const auto &field : cloud2.fields)
     {
-      if (cloud1_fields_sorted[i]->name == cloud2.fields[j].name)
+      if (cloud1_fields_sorted[i]->name == field.name)
         match = true;
     }
 
@@ -233,12 +233,12 @@ pcl::concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
   }
 
   bool strip = false;
-  for (size_t i = 0; i < cloud1.fields.size (); ++i)
-    if (cloud1.fields[i].name == "_")
+  for (const auto &field : cloud1.fields)
+    if (field.name == "_")
       strip = true;
 
-  for (size_t i = 0; i < cloud2.fields.size (); ++i)
-    if (cloud2.fields[i].name == "_")
+  for (const auto &field : cloud2.fields)
+    if (field.name == "_")
       strip = true;
 
   if (!strip && cloud1.fields.size () != cloud2.fields.size ())
@@ -264,14 +264,14 @@ pcl::concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
     // Get the field sizes for the second cloud
     std::vector<pcl::PCLPointField> fields2;
     std::vector<int> fields2_sizes;
-    for (size_t j = 0; j < cloud2.fields.size (); ++j)
+    for (const auto &field : cloud2.fields)
     {
-      if (cloud2.fields[j].name == "_")
+      if (field.name == "_")
         continue;
 
-      fields2_sizes.push_back (cloud2.fields[j].count * 
-                               pcl::getFieldSize (cloud2.fields[j].datatype));
-      fields2.push_back (cloud2.fields[j]);
+      fields2_sizes.push_back (field.count * 
+                               pcl::getFieldSize (field.datatype));
+      fields2.push_back (field);
     }
 
     cloud_out.data.resize (nrpts + (cloud2.width * cloud2.height) * cloud_out.point_step);

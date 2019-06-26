@@ -39,7 +39,6 @@
 #define PCL_SURFACE_IMPL_GP3_H_
 
 #include <pcl/surface/gp3.h>
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
@@ -118,9 +117,9 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   {
     // Skip invalid points from the indices list
     for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
-      if (!pcl_isfinite (input_->points[*it].x) ||
-          !pcl_isfinite (input_->points[*it].y) ||
-          !pcl_isfinite (input_->points[*it].z))
+      if (!std::isfinite (input_->points[*it].x) ||
+          !std::isfinite (input_->points[*it].y) ||
+          !std::isfinite (input_->points[*it].z))
         state_[*it] = NONE;
   }
 
@@ -240,43 +239,40 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         while ((left < nnn_) && ((!angles_[left].visible) || (state_[nnIdx[left]] > FREE))) left++;
         if (left >= nnn_)
           break;
-        else
+        int right = left+1;
+        do
         {
-          int right = left+1;
-          do
+          while ((right < nnn_) && ((!angles_[right].visible) || (state_[nnIdx[right]] > FREE))) right++;
+          if (right >= nnn_)
+            break;
+          if ((coords_[nnIdx[left]] - coords_[nnIdx[right]]).squaredNorm () > sqr_max_edge)
+            right++;
+          else
           {
-            while ((right < nnn_) && ((!angles_[right].visible) || (state_[nnIdx[right]] > FREE))) right++;
-            if (right >= nnn_)
-              break;
-            else if ((coords_[nnIdx[left]] - coords_[nnIdx[right]]).squaredNorm () > sqr_max_edge)
-              right++;
-            else
-            {
-              addFringePoint (nnIdx[right], R_);
-              addFringePoint (nnIdx[left], nnIdx[right]);
-              addFringePoint (R_, nnIdx[left]);
-              state_[R_] = state_[nnIdx[left]] = state_[nnIdx[right]] = FRINGE;
-              ffn_[R_] = nnIdx[left];
-              sfn_[R_] = nnIdx[right];
-              ffn_[nnIdx[left]] = nnIdx[right];
-              sfn_[nnIdx[left]] = R_;
-              ffn_[nnIdx[right]] = R_;
-              sfn_[nnIdx[right]] = nnIdx[left];
-              addTriangle (R_, nnIdx[left], nnIdx[right], polygons);
-              nr_parts++;
-              not_found = false;
-              break;
-            }
+            addFringePoint (nnIdx[right], R_);
+            addFringePoint (nnIdx[left], nnIdx[right]);
+            addFringePoint (R_, nnIdx[left]);
+            state_[R_] = state_[nnIdx[left]] = state_[nnIdx[right]] = FRINGE;
+            ffn_[R_] = nnIdx[left];
+            sfn_[R_] = nnIdx[right];
+            ffn_[nnIdx[left]] = nnIdx[right];
+            sfn_[nnIdx[left]] = R_;
+            ffn_[nnIdx[right]] = R_;
+            sfn_[nnIdx[right]] = nnIdx[left];
+            addTriangle (R_, nnIdx[left], nnIdx[right], polygons);
+            nr_parts++;
+            not_found = false;
+            break;
           }
-          while (true);
-          left++;
         }
+        while (true);
+        left++;
       }
       while (not_found);
     }
 
     is_free = NONE;
-    for (unsigned temp = 0; temp < indices_->size (); temp++)
+    for (size_t temp = 0; temp < indices_->size (); temp++)
     {
       if (state_[temp] == FREE)
       {
@@ -406,8 +402,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           // Pruning by visibility criterion 
           if ((state_[nnIdx[i]] == FRINGE) && (ffn_[R_] != nnIdx[i]) && (sfn_[R_] != nnIdx[i]))
           {
-            double angle1 = atan2(e.first[1] - uvn_nn[i][1], e.first[0] - uvn_nn[i][0]);
-            double angle2 = atan2(e.second[1] - uvn_nn[i][1], e.second[0] - uvn_nn[i][0]);
+            double angle1 = std::atan2(e.first[1] - uvn_nn[i][1], e.first[0] - uvn_nn[i][0]);
+            double angle2 = std::atan2(e.second[1] - uvn_nn[i][1], e.second[0] - uvn_nn[i][0]);
             double angleMin, angleMax;
             if (angle1 < angle2)
             {
@@ -440,7 +436,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
               tmp_ = coords_[source_[nnIdx[i]]] - proj_qp_;
               uvn_s[0] = tmp_.dot(u_);
               uvn_s[1] = tmp_.dot(v_);
-              double angleS = atan2(uvn_s[1] - uvn_nn[i][1], uvn_s[0] - uvn_nn[i][0]);
+              double angleS = std::atan2(uvn_s[1] - uvn_nn[i][1], uvn_s[0] - uvn_nn[i][0]);
               if ((angleMin < angleS) && (angleS < angleMax))
               {
                 if ((angleMin < angleR) && (angleR < angleMax))
@@ -469,13 +465,13 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
               int f = ffn_[nnIdx[doubleEdges[j].index]];
               if ((f != nnIdx[i]) && (f != R_))
                 visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].first, Eigen::Vector2f::Zero());
-              if (visibility == false)
+              if (!visibility)
                 break;
 
               int s = sfn_[nnIdx[doubleEdges[j].index]];
               if ((s != nnIdx[i]) && (s != R_))
                 visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].second, Eigen::Vector2f::Zero());
-              if (visibility == false)
+              if (!visibility)
                 break;
             }
           }
@@ -592,7 +588,6 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
 
       // Finding visibility region of R
       bool need_invert = false;
-      int sourceIdx = nnn_;
       if ((source_[R_] == ffn_[R_]) || (source_[R_] == sfn_[R_]))
       {
         if ((angles_[end].angle - angles_[start].angle) < M_PI)
@@ -600,6 +595,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       }
       else
       {
+        int sourceIdx;
         for (sourceIdx=0; sourceIdx<nnn_; sourceIdx++)
           if (angles_[sourceIdx].index == source_[R_])
             break;
@@ -883,10 +879,10 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           else
             angle_so_far = 0;
         }
-        for (std::vector<int>::iterator it = to_erase.begin(); it != to_erase.end(); it++)
+        for (const int &it : to_erase)
         {
           for (std::vector<int>::iterator iter = angleIdx.begin(); iter != angleIdx.end(); iter++)
-            if (*it == *iter)
+            if (it == *iter)
             {
               angleIdx.erase(iter);
               break;

@@ -25,7 +25,7 @@ pcl::cloud_composer::VoxelGridDownsampleTool::performAction (ConstItemList input
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;
   // Check input data length
-  if ( input_data.size () == 0)
+  if ( input_data.empty ())
   {
     qCritical () << "Empty input in VoxelGridDownsampleTool!";
     return output;

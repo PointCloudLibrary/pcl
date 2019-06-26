@@ -93,7 +93,7 @@ namespace pcl
 
         void createRandomFeatures(const size_t num_of_features, std::vector<FT> & features) override
         {
-          srand (static_cast<unsigned int>(time (NULL)));
+          srand (static_cast<unsigned int>(time (nullptr)));
           int min_s = 20;
           float range_d = 0.05f;
           float incr_d = 0.01f;
@@ -355,7 +355,7 @@ namespace pcl
             float pf = sums[branch_index] / static_cast<float> (branch_element_count[branch_index]);
             float pnf = (static_cast<LabelDataType>(branch_element_count[branch_index]) - sums[branch_index] + 1.f)
                         / static_cast<LabelDataType> (branch_element_count[branch_index]);
-            hp[branch_index] -= static_cast<float>(pf * log (pf) + pnf * log (pnf));
+            hp[branch_index] -= static_cast<float>(pf * std::log (pf) + pnf * std::log (pnf));
           }
 
           //use mean of the examples as purity

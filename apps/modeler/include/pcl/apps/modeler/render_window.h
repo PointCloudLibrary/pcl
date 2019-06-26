@@ -51,11 +51,11 @@ namespace pcl
     class RenderWindow : public QVTKWidget
     {
       public:
-        RenderWindow(RenderWindowItem* render_window_item, QWidget *parent = 0, Qt::WindowFlags flags = 0);
+        RenderWindow(RenderWindowItem* render_window_item, QWidget *parent = nullptr, Qt::WindowFlags flags = nullptr);
         ~RenderWindow();
 
         QSize
-        sizeHint() const override {return QSize(512, 512);}
+        sizeHint() const override {return {512, 512};}
 
         void
         setActive(bool flag);

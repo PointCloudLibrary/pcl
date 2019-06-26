@@ -441,3 +441,23 @@ function(find_python_module module)
   find_package_handle_standard_args(PY_${module} DEFAULT_MSG PY_${module_upper})
 endfunction(find_python_module)
 
+
+###############################################################################
+# Checks if the current generator is an IDE
+# _out The boolean result
+macro(check_if_ide _out)
+  # Current known pool of generators
+  set(_ides
+    "Xcode"
+    "Visual Studio"
+  )
+
+  set(${_out} FALSE)
+  foreach(_ide ${_ides})
+    # Visual Studio has multiple year releases and Win64 variants
+    if(CMAKE_GENERATOR MATCHES "${_ide}*")
+      set(${_out} TRUE)
+      break()
+    endif()
+  endforeach()
+endmacro()

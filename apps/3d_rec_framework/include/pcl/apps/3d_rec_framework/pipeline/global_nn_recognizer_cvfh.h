@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include <flann/flann.h>
+#include <flann/util/matrix.h>
+
 #include <pcl/common/common.h>
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/global/global_estimator.h>
@@ -47,11 +48,11 @@ namespace pcl
           }
         } sortIndexScoresOp;
 
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
-        typedef typename pcl::PointCloud<PointInT>::ConstPtr ConstPointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
+        using ConstPointInTPtr = typename pcl::PointCloud<PointInT>::ConstPtr;
 
-        typedef Distance<float> DistT;
-        typedef Model<PointInT> ModelT;
+        using DistT = Distance<float>;
+        using ModelT = Model<PointInT>;
 
         /** \brief Directory where the trained structure will be saved */
         std::string training_dir_;
@@ -94,7 +95,7 @@ namespace pcl
             else
             {
 
-              if (this->model.id_.compare (other.model.id_) == 0)
+              if (this->model.id_ == other.model.id_)
               {
                 //check view id
                 if ((this->view_id < other.view_id))
@@ -168,7 +169,7 @@ namespace pcl
         }
 
         inline void
-        convertToFLANN (const std::vector<flann_model> &models, boost::shared_ptr<std::vector<int> > & indices, flann::Matrix<float> &data)
+        convertToFLANN (const std::vector<flann_model> &models, const boost::shared_ptr<std::vector<int> > & indices, flann::Matrix<float> &data)
         {
           data.rows = indices->size ();
           data.cols = models[0].descr.size (); // number of histogram bins

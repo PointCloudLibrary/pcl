@@ -114,7 +114,7 @@ pcl::gpu::CaptureOpenNI::open (int device)
   }
 
   xn::NodeInfoList devicesList;
-  rc = impl_->context.EnumerateProductionTrees ( XN_NODE_TYPE_DEVICE, NULL, devicesList, 0 );
+  rc = impl_->context.EnumerateProductionTrees ( XN_NODE_TYPE_DEVICE, nullptr, devicesList, nullptr );
   if (rc != XN_STATUS_OK)
   {
     sprintf (impl_->strError, "Init failed: %s\n", xnGetStatusString (rc));
@@ -276,7 +276,7 @@ pcl::gpu::CaptureOpenNI::grab (PtrStepSz<const unsigned short>& depth, PtrStepSz
   else
   {
     printf ("no image\n");
-    rgb24.data = 0;
+    rgb24.data = nullptr;
     rgb24.cols = rgb24.rows = rgb24.step = 0;
   }
 

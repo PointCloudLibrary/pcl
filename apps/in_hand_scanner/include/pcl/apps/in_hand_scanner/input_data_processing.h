@@ -71,15 +71,15 @@ namespace pcl
     {
       public:
 
-        typedef pcl::PointXYZRGBA              PointXYZRGBA;
-        typedef pcl::PointCloud <PointXYZRGBA> CloudXYZRGBA;
-        typedef CloudXYZRGBA::Ptr              CloudXYZRGBAPtr;
-        typedef CloudXYZRGBA::ConstPtr         CloudXYZRGBAConstPtr;
+        using PointXYZRGBA = pcl::PointXYZRGBA;
+        using CloudXYZRGBA = pcl::PointCloud<PointXYZRGBA>;
+        using CloudXYZRGBAPtr = CloudXYZRGBA::Ptr;
+        using CloudXYZRGBAConstPtr = CloudXYZRGBA::ConstPtr;
 
-        typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
-        typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
-        typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
-        typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
+        using PointXYZRGBNormal = pcl::PointXYZRGBNormal;
+        using CloudXYZRGBNormal = pcl::PointCloud<PointXYZRGBNormal>;
+        using CloudXYZRGBNormalPtr = CloudXYZRGBNormal::Ptr;
+        using CloudXYZRGBNormalConstPtr = CloudXYZRGBNormal::ConstPtr;
 
         /** \brief Constructor */
         InputDataProcessing ();
@@ -168,17 +168,17 @@ namespace pcl
 
       private:
 
-        typedef pcl::Normal                            Normal;
-        typedef pcl::PointCloud <Normal>               CloudNormals;
-        typedef boost::shared_ptr <CloudNormals>       CloudNormalsPtr;
-        typedef boost::shared_ptr <const CloudNormals> CloudNormalsConstPtr;
+        using Normal = pcl::Normal;
+        using CloudNormals = pcl::PointCloud<Normal>;
+        using CloudNormalsPtr = boost::shared_ptr<CloudNormals>;
+        using CloudNormalsConstPtr = boost::shared_ptr<const CloudNormals>;
 
-        typedef pcl::IntegralImageNormalEstimation <PointXYZRGBA, Normal> NormalEstimation;
-        typedef boost::shared_ptr <NormalEstimation>                      NormalEstimationPtr;
-        typedef boost::shared_ptr <const NormalEstimation>                NormalEstimationConstPtr;
+        using NormalEstimation = pcl::IntegralImageNormalEstimation <PointXYZRGBA, Normal>;
+        using NormalEstimationPtr = boost::shared_ptr<NormalEstimation>;
+        using NormalEstimationConstPtr = boost::shared_ptr<const NormalEstimation>;
 
-        typedef Eigen::Matrix <bool, Eigen::Dynamic, Eigen::Dynamic> MatrixXb;
-        typedef Eigen::MatrixXi                                      MatrixXi;
+        using MatrixXb = Eigen::Matrix <bool, Eigen::Dynamic, Eigen::Dynamic>;
+        using MatrixXi = Eigen::MatrixXi;
 
         /** \brief Erodes the input mask k times with a diamond shaped structuring element.
           * \see http://ostermiller.org/dilate_and_erode.html

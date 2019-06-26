@@ -60,8 +60,8 @@ namespace pcl
       class PCL_EXPORTS BoykovKolmogorov
       {
         public:
-          typedef int vertex_descriptor;
-          typedef double edge_capacity_type;
+          using vertex_descriptor = int;
+          using edge_capacity_type = double;
 
           /// construct a maxflow/mincut problem with estimated max_nodes
           BoykovKolmogorov (std::size_t max_nodes = 0);
@@ -113,11 +113,11 @@ namespace pcl
 
         protected:
           /// tree states
-          typedef enum { FREE = 0x00, SOURCE = 0x01, TARGET = 0x02 } nodestate;
+          enum nodestate { FREE = 0x00, SOURCE = 0x01, TARGET = 0x02 };
           /// capacitated edge
-          typedef std::map<int, double> capacitated_edge;
+          using capacitated_edge = std::map<int, double>;
           /// edge pair
-          typedef std::pair<capacitated_edge::iterator, capacitated_edge::iterator> edge_pair;
+          using edge_pair = std::pair<capacitated_edge::iterator, capacitated_edge::iterator>;
           /// pre-augment s-u-t and s-u-v-t paths
           void
           preAugmentPaths ();
@@ -184,7 +184,7 @@ namespace pcl
         float r, g, b;
       };
       /// An Image is a point cloud of Color
-      typedef pcl::PointCloud<Color> Image;
+      using Image = pcl::PointCloud<Color>;
       /** \brief Compute squared distance between two colors
        * \param[in] c1 first color
        * \param[in] c2 second color
@@ -317,10 +317,10 @@ namespace pcl
   class GrabCut : public pcl::PCLBase<PointT>
   {
     public:
-      typedef typename pcl::search::Search<PointT> KdTree;
-      typedef typename pcl::search::Search<PointT>::Ptr KdTreePtr;
-      typedef typename PCLBase<PointT>::PointCloudConstPtr PointCloudConstPtr;
-      typedef typename PCLBase<PointT>::PointCloudPtr PointCloudPtr;
+      using KdTree = pcl::search::Search<PointT>;
+      using KdTreePtr = typename KdTree::Ptr;
+      using PointCloudConstPtr = typename PCLBase<PointT>::PointCloudConstPtr;
+      using PointCloudPtr = typename PCLBase<PointT>::PointCloudPtr;
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
       using PCLBase<PointT>::fake_indices_;
@@ -405,7 +405,7 @@ namespace pcl
       };
       bool
       initCompute ();
-      typedef pcl::segmentation::grabcut::BoykovKolmogorov::vertex_descriptor vertex_descriptor;
+      using vertex_descriptor = pcl::segmentation::grabcut::BoykovKolmogorov::vertex_descriptor;
       /// Compute beta from image
       void
       computeBetaOrganized ();

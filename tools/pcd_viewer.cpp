@@ -37,6 +37,9 @@
  * $Id$
  *
  */
+
+#include <thread>
+
 // PCL
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
@@ -55,15 +58,16 @@
 #include <pcl/search/kdtree.h>
 #include <vtkPolyDataReader.h>
 
+using namespace std::chrono_literals;
 using namespace pcl::console;
 
-typedef pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
-typedef ColorHandler::Ptr ColorHandlerPtr;
-typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
+using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>;
+using ColorHandlerPtr = ColorHandler::Ptr;
+using ColorHandlerConstPtr = ColorHandler::ConstPtr;
 
-typedef pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2> GeometryHandler;
-typedef GeometryHandler::Ptr GeometryHandlerPtr;
-typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
+using GeometryHandler = pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>;
+using GeometryHandlerPtr = GeometryHandler::Ptr;
+using GeometryHandlerConstPtr = GeometryHandler::ConstPtr;
 
 #define NORMALS_SCALE 0.01f
 #define PC_SCALE 0.001f
@@ -145,8 +149,8 @@ printHelp (int, char **argv)
 
 // Global visualizer object
 pcl::visualization::PCLPlotter ph_global;
-boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
-std::vector<boost::shared_ptr<pcl::visualization::ImageViewer> > imgs;
+pcl::visualization::PCLVisualizer::Ptr p;
+std::vector<pcl::visualization::ImageViewer::Ptr > imgs;
 pcl::search::KdTree<pcl::PointXYZ> search;
 pcl::PCLPointCloud2::Ptr cloud;
 pcl::PointCloud<pcl::PointXYZ>::Ptr xyzcloud;
@@ -212,7 +216,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
 int
 main (int argc, char** argv)
 {
-  srand (static_cast<unsigned int> (time (0)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   print_info ("The viewer window provides interactive commands; for help, press 'h' or 'H' from within the window.\n");
 
@@ -231,7 +235,7 @@ main (int argc, char** argv)
   std::vector<int> p_file_indices   = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
   std::vector<int> vtk_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".vtk");
 
-  if (p_file_indices.size () == 0 && vtk_file_indices.size () == 0)
+  if (p_file_indices.empty () && vtk_file_indices.empty ())
   {
     print_error ("No .PCD or .VTK file given. Nothing to visualize.\n");
     return (-1);
@@ -293,21 +297,21 @@ main (int argc, char** argv)
   }
 
   // Multiview enabled?
-  int y_s = 0, x_s = 0;
+  int x_s = 0;
   double x_step = 0, y_step = 0;
   if (mview)
   {
     print_highlight ("Multi-viewport rendering enabled.\n");
 
-    y_s = static_cast<int>(floor (sqrt (static_cast<float>(p_file_indices.size () + vtk_file_indices.size ()))));
+    int y_s = static_cast<int>(floor (sqrt (static_cast<float>(p_file_indices.size () + vtk_file_indices.size ()))));
     x_s = y_s + static_cast<int>(ceil (double (p_file_indices.size () + vtk_file_indices.size ()) / double (y_s) - y_s));
 
-    if (p_file_indices.size () != 0)
+    if (!p_file_indices.empty ())
     {
       print_highlight ("Preparing to load "); print_value ("%d", p_file_indices.size ()); print_info (" pcd files.\n");
     }
 
-    if (vtk_file_indices.size () != 0)
+    if (!vtk_file_indices.empty ())
     {
       print_highlight ("Preparing to load "); print_value ("%d", vtk_file_indices.size ()); print_info (" vtk files.\n");
     }
@@ -320,19 +324,19 @@ main (int argc, char** argv)
   }
 
   // Fix invalid multiple arguments
-  if (psize.size () != p_file_indices.size () && psize.size () > 0)
+  if (psize.size () != p_file_indices.size () && !psize.empty ())
     for (size_t i = psize.size (); i < p_file_indices.size (); ++i)
       psize.push_back (1);
-  if (opaque.size () != p_file_indices.size () && opaque.size () > 0)
+  if (opaque.size () != p_file_indices.size () && !opaque.empty ())
     for (size_t i = opaque.size (); i < p_file_indices.size (); ++i)
       opaque.push_back (1.0);
 
-  if (shadings.size () != p_file_indices.size () && shadings.size () > 0)
+  if (shadings.size () != p_file_indices.size () && !shadings.empty ())
     for (size_t i = shadings.size (); i < p_file_indices.size (); ++i)
-      shadings.push_back ("flat");
+      shadings.emplace_back("flat");
 
-  // Create the PCLVisualizer object
-  boost::shared_ptr<pcl::visualization::PCLPlotter> ph;
+  // Create the PCLPlotter object
+  pcl::visualization::PCLPlotter::Ptr ph;
   // Using min_p, max_p to set the global Y min/max range for the histogram
   float min_p = FLT_MAX; float max_p = -FLT_MAX;
 
@@ -383,15 +387,15 @@ main (int argc, char** argv)
       p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, fcolor_r[i], fcolor_g[i], fcolor_b[i], cloud_name.str ());
 
     // Change the shape rendered point size
-    if (psize.size () > 0)
+    if (!psize.empty ())
       p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize.at (i), cloud_name.str ());
 
     // Change the shape rendered opacity
-    if (opaque.size () > 0)
+    if (!opaque.empty ())
       p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
 
     // Change the shape rendered shading
-    if (shadings.size () > 0)
+    if (!shadings.empty ())
     {
       if (shadings[i] == "flat")
       {
@@ -646,11 +650,11 @@ main (int argc, char** argv)
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_IMMEDIATE_RENDERING, 1.0, cloud_name.str ());
 
     // Change the cloud rendered point size
-    if (psize.size () > 0)
+    if (!psize.empty ())
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize.at (i), cloud_name.str ());
 
     // Change the cloud rendered opacity
-    if (opaque.size () > 0)
+    if (!opaque.empty ())
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
 
     // Reset camera viewpoint to center of cloud if camera parameters were not passed manually and this is the first loaded cloud
@@ -712,14 +716,14 @@ main (int argc, char** argv)
     {
       if (ph) ph->spinOnce ();
 
-      for (int i = 0; i < int (imgs.size ()); ++i)
+      for (auto &img : imgs)
       {
-        if (imgs[i]->wasStopped ())
+        if (img->wasStopped ())
         {
           stopped = true;
           break;
         }
-        imgs[i]->spinOnce ();
+        img->spinOnce ();
       }
         
       if (p)
@@ -731,7 +735,7 @@ main (int argc, char** argv)
         }
         p->spinOnce ();
       }
-      boost::this_thread::sleep (boost::posix_time::microseconds (100));
+      std::this_thread::sleep_for(100us);
     }
     while (!stopped);
   }

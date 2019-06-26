@@ -73,7 +73,7 @@ pcl::MedianFilter<PointT>::applyFilter (PointCloud &output)
               vals.push_back ((*input_)(x+x_dev, y+y_dev).z);
           }
 
-        if (vals.size () == 0)
+        if (vals.empty ())
           continue;
 
         // The output depth will be the median of all the depths in the window

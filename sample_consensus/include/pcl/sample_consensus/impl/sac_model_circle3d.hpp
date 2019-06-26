@@ -57,10 +57,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::isSampleGood (
   p1 -= p0;
   p2 -= p0;
 
-  if (p1.dot (p2) < 0.000001)
-    return (true);
-  else
-    return (false);
+  return (p1.dot (p2) < 0.000001);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -278,7 +275,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::optimizeModelCoefficients (
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm (num_diff);
   Eigen::VectorXd coeff;
   int info = lm.minimize (coeff);
-  for (int i = 0; i < coeff.size (); ++i)
+  for (Eigen::Index i = 0; i < coeff.size (); ++i)
     optimized_coefficients[i] = static_cast<float> (coeff[i]);
 
   // Compute the L2 norm of the residuals
@@ -310,7 +307,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
     projected_points.width    = input_->width;
     projected_points.height   = input_->height;
 
-    typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
     for (size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
@@ -352,7 +349,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
     projected_points.width    = uint32_t (inliers.size ());
     projected_points.height   = 1;
 
-    typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
     for (size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
@@ -402,14 +399,14 @@ pcl::SampleConsensusModelCircle3D<PointT>::doSamplesVerifyModel (
     return (false);
   }
 
-  for (std::set<int>::const_iterator it = indices.begin (); it != indices.end (); ++it)
+  for (const int &index : indices)
   {
     // Calculate the distance from the point to the sphere as the difference between
     //dist(point,sphere_origin) and sphere_radius
 
     // what i have:
     // P : Sample Point
-    Eigen::Vector3d P (input_->points[*it].x, input_->points[*it].y, input_->points[*it].z);
+    Eigen::Vector3d P (input_->points[index].x, input_->points[index].y, input_->points[index].z);
     // C : Circle Center
     Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
     // N : Circle (Plane) Normal

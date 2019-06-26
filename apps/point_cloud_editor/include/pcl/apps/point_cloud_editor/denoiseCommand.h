@@ -62,10 +62,12 @@ public:
   {
   }
 
-  /// @brief Destructor
-  ~DenoiseCommand ()
-  {
-  }
+  /// @brief Copy constructor - commands are non-copyable
+  DenoiseCommand (const DenoiseCommand&) = delete;
+
+  /// @brief Equal operator - commands are non-copyable
+  DenoiseCommand&
+  operator= (const DenoiseCommand&) = delete;
 
 protected:
   /// @brief Runs the denois algorithm to remove all the outliers.
@@ -77,25 +79,6 @@ protected:
   undo () override;
 
 private:
-  /// @brief Default Constructor
-  DenoiseCommand () : removed_indices_(CloudPtr())
-  {
-  }
-
-  /// @brief Copy constructor - commands are non-copyable
-  DenoiseCommand (const DenoiseCommand&)
-    : removed_indices_(CloudPtr())
-  {
-    assert(false);
-  }
-
-  /// @brief Equal operator - commands are non-copyable
-  DenoiseCommand&
-  operator= (const DenoiseCommand&)
-  {
-    assert(false); return (*this);
-  }
-
   /// A shared pointer pointing to the selection object of the widget
   SelectionPtr selection_ptr_;
 

@@ -43,6 +43,7 @@
 #include <cfloat>
 #include <ctime>
 #include <climits>
+#include <memory>
 #include <set>
 
 #include <pcl/console/print.h>
@@ -65,13 +66,13 @@ namespace pcl
   class SampleConsensusModel
   {
     public:
-      typedef typename pcl::PointCloud<PointT> PointCloud;
-      typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::PointCloud<PointT>::Ptr PointCloudPtr;
-      typedef typename pcl::search::Search<PointT>::Ptr SearchPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using SearchPtr = typename pcl::search::Search<PointT>::Ptr;
 
-      typedef boost::shared_ptr<SampleConsensusModel> Ptr;
-      typedef boost::shared_ptr<const SampleConsensusModel> ConstPtr;
+      using Ptr = boost::shared_ptr<SampleConsensusModel<PointT> >;
+      using ConstPtr = boost::shared_ptr<const SampleConsensusModel<PointT> >;
 
     protected:
       /** \brief Empty constructor for base SampleConsensusModel.
@@ -79,20 +80,15 @@ namespace pcl
         */
       SampleConsensusModel (bool random = false) 
         : input_ ()
-        , indices_ ()
         , radius_min_ (-std::numeric_limits<double>::max ())
         , radius_max_ (std::numeric_limits<double>::max ())
         , samples_radius_ (0.)
         , samples_radius_search_ ()
-        , shuffled_indices_ ()
-        , rng_alg_ ()
         , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
-        , rng_gen_ ()
-        , error_sqr_dists_ ()
       {
         // Create a random number generator object
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time(0)));
+          rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
         else
           rng_alg_.seed (12345u);
 
@@ -106,19 +102,14 @@ namespace pcl
         */
       SampleConsensusModel (const PointCloudConstPtr &cloud, bool random = false) 
         : input_ ()
-        , indices_ ()
         , radius_min_ (-std::numeric_limits<double>::max ())
         , radius_max_ (std::numeric_limits<double>::max ())
         , samples_radius_ (0.)
         , samples_radius_search_ ()
-        , shuffled_indices_ ()
-        , rng_alg_ ()
         , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
-        , rng_gen_ ()
-        , error_sqr_dists_ ()
       {
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time (0)));
+          rng_alg_.seed (static_cast<unsigned> (std::time (nullptr)));
         else
           rng_alg_.seed (12345u);
 
@@ -143,14 +134,10 @@ namespace pcl
         , radius_max_ (std::numeric_limits<double>::max ())
         , samples_radius_ (0.)
         , samples_radius_search_ ()
-        , shuffled_indices_ ()
-        , rng_alg_ ()
         , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
-        , rng_gen_ ()
-        , error_sqr_dists_ ()
       {
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time(0)));
+          rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
         else
           rng_alg_.seed (12345u);
 
@@ -455,7 +442,7 @@ namespace pcl
       {
         size_t sample_size = sample.size ();
         size_t index_size = shuffled_indices_.size ();
-        for (unsigned int i = 0; i < sample_size; ++i)
+        for (size_t i = 0; i < sample_size; ++i)
           // The 1/(RAND_MAX+1.0) trick is when the random numbers are not uniformly distributed and for small modulo
           // elements, that does not matter (and nowadays, random number generators are good)
           //std::swap (shuffled_indices_[i], shuffled_indices_[i + (rand () % (index_size - i))]);
@@ -490,14 +477,14 @@ namespace pcl
         if (indices.size () < sample_size - 1)
         {
           // radius search failed, make an invalid model
-          for(unsigned int i = 1; i < sample_size; ++i)
+          for(size_t i = 1; i < sample_size; ++i)
             shuffled_indices_[i] = shuffled_indices_[0];
         }
         else
         {
-          for (unsigned int i = 0; i < sample_size-1; ++i)
+          for (size_t i = 0; i < sample_size-1; ++i)
             std::swap (indices[i], indices[i + (rnd () % (indices.size () - i))]);
-          for (unsigned int i = 1; i < sample_size; ++i)
+          for (size_t i = 1; i < sample_size; ++i)
             shuffled_indices_[i] = indices[i-1];
         }
 
@@ -559,10 +546,10 @@ namespace pcl
       boost::mt19937 rng_alg_;
 
       /** \brief Boost-based random number generator distribution. */
-      boost::shared_ptr<boost::uniform_int<> > rng_dist_;
+      std::shared_ptr<boost::uniform_int<> > rng_dist_;
 
       /** \brief Boost-based random number generator. */
-      boost::shared_ptr<boost::variate_generator< boost::mt19937&, boost::uniform_int<> > > rng_gen_;
+      std::shared_ptr<boost::variate_generator< boost::mt19937&, boost::uniform_int<> > > rng_gen_;
 
       /** \brief A vector holding the distances to the computed model. Used internally. */
       std::vector<double> error_sqr_dists_;
@@ -590,11 +577,11 @@ namespace pcl
   class SampleConsensusModelFromNormals //: public SampleConsensusModel<PointT>
   {
     public:
-      typedef typename pcl::PointCloud<PointNT>::ConstPtr PointCloudNConstPtr;
-      typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudNPtr;
+      using PointCloudNConstPtr = typename pcl::PointCloud<PointNT>::ConstPtr;
+      using PointCloudNPtr = typename pcl::PointCloud<PointNT>::Ptr;
 
-      typedef boost::shared_ptr<SampleConsensusModelFromNormals> Ptr;
-      typedef boost::shared_ptr<const SampleConsensusModelFromNormals> ConstPtr;
+      using Ptr = boost::shared_ptr<SampleConsensusModelFromNormals<PointT, PointNT> >;
+      using ConstPtr = boost::shared_ptr<const SampleConsensusModelFromNormals<PointT, PointNT> >;
 
       /** \brief Empty constructor for base SampleConsensusModelFromNormals. */
       SampleConsensusModelFromNormals () : normal_distance_weight_ (0.0), normals_ () {};
@@ -615,7 +602,7 @@ namespace pcl
 
       /** \brief Get the normal angular distance weight. */
       inline double 
-      getNormalDistanceWeight () { return (normal_distance_weight_); }
+      getNormalDistanceWeight () const { return (normal_distance_weight_); }
 
       /** \brief Provide a pointer to the input dataset that contains the point
         * normals of the XYZ dataset.
@@ -630,7 +617,7 @@ namespace pcl
 
       /** \brief Get a pointer to the normals of the input XYZ point cloud dataset. */
       inline PointCloudNConstPtr 
-      getInputNormals () { return (normals_); }
+      getInputNormals () const { return (normals_); }
 
     protected:
       /** \brief The relative weight (between 0 and 1) to give to the angular
@@ -651,16 +638,16 @@ namespace pcl
   template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
   struct Functor
   {
-    typedef _Scalar Scalar;
+    using Scalar = _Scalar;
     enum 
     {
       InputsAtCompileTime = NX,
       ValuesAtCompileTime = NY
     };
 
-    typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,1> ValueType;
-    typedef Eigen::Matrix<Scalar,InputsAtCompileTime,1> InputType;
-    typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
+    using ValueType = Eigen::Matrix<Scalar,ValuesAtCompileTime,1>;
+    using InputType = Eigen::Matrix<Scalar,InputsAtCompileTime,1>;
+    using JacobianType = Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime>;
 
     /** \brief Empty Constructor. */
     Functor () : m_data_points_ (ValuesAtCompileTime) {}

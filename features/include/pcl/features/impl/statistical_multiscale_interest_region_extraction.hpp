@@ -57,8 +57,8 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::generateCloudGraph (
   kdtree.setInputCloud (input_);
 
   using namespace boost;
-  typedef property<edge_weight_t, float> Weight;
-  typedef adjacency_list<vecS, vecS, undirectedS, no_property, Weight> Graph;
+  using Weight = property<edge_weight_t, float>;
+  using Graph = adjacency_list<vecS, vecS, undirectedS, no_property, Weight>;
   Graph cloud_graph;
 
   for (size_t point_i = 0; point_i < input_->points.size (); ++point_i)
@@ -212,8 +212,8 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema (std:
       std::vector<int> nn_indices;
       geodesicFixedRadiusSearch (point_i, scale_values_[scale_i], nn_indices);
       bool is_max_point = true, is_min_point = true;
-      for (std::vector<int>::iterator nn_it = nn_indices.begin (); nn_it != nn_indices.end (); ++nn_it)
-        if (F_scales_[scale_i][point_i] < F_scales_[scale_i][*nn_it])
+      for (const int &nn_index : nn_indices)
+        if (F_scales_[scale_i][point_i] < F_scales_[scale_i][nn_index])
           is_max_point = false;
         else
           is_min_point = false;

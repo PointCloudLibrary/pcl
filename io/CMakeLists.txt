@@ -121,16 +121,6 @@ endif()
 source_group("Image Headers" FILES ${IMAGE_INCLUDES})
 source_group("Image Sources" FILES ${IMAGE_SOURCES})
 
-if(WITH_FZAPI)
-  set(FZAPI_GRABBER_INCLUDES
-    include/pcl/io/fotonic_grabber.h
-  )
-
-  set(FZAPI_GRABBER_SOURCES
-    src/fotonic_grabber.cpp
-  )
-endif()
-
 if(WITH_ENSENSO)
   set(ENSENSO_GRABBER_INCLUDES
     include/pcl/io/ensenso_grabber.h
@@ -180,8 +170,6 @@ if(LIBUSB_1_FOUND)
 endif()
 
 if(VTK_FOUND AND NOT ANDROID)
-  set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
-  include("${VTK_USE_FILE}")
   set(VTK_IO_INCLUDES
     "include/pcl/${SUBSYS_NAME}/vtk_lib_io.h"
     "include/pcl/${SUBSYS_NAME}/png_io.h"
@@ -206,7 +194,7 @@ set(PLY_INCLUDES
   "include/pcl/${SUBSYS_NAME}/ply/ply_parser.h"
 )
 
-PCL_ADD_LIBRARY(pcl_io_ply "${SUBSYS_NAME}" ${PLY_SOURCES} ${PLY_INCLUDES})
+PCL_ADD_LIBRARY(pcl_io_ply COMPONENT ${SUBSYS_NAME} SOURCES ${PLY_SOURCES} ${PLY_INCLUDES})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
 target_include_directories(pcl_io_ply PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
@@ -234,7 +222,6 @@ set(srcs
   ${OPENNI2_GRABBER_SOURCES}
   ${IMAGE_SOURCES}
   ${DINAST_GRABBER_SOURCES}
-  ${FZAPI_GRABBER_SOURCES}
   ${ENSENSO_GRABBER_SOURCES}
   ${DAVIDSDK_GRABBER_SOURCES}
   ${DSSDK_GRABBER_SOURCES}
@@ -257,6 +244,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/boost.h"
   "include/pcl/${SUBSYS_NAME}/eigen.h"
   "include/pcl/${SUBSYS_NAME}/debayer.h"
+  "include/pcl/${SUBSYS_NAME}/fotonic_grabber.h"
   "include/pcl/${SUBSYS_NAME}/file_io.h"
   "include/pcl/${SUBSYS_NAME}/auto_io.h"
   "include/pcl/${SUBSYS_NAME}/low_level_io.h"
@@ -284,7 +272,6 @@ set(incs
   ${OPENNI2_GRABBER_INCLUDES}
   ${IMAGE_INCLUDES}
   ${DINAST_GRABBER_INCLUDES}
-  ${FZAPI_GRABBER_INCLUDES}
   ${ENSENSO_GRABBER_INCLUDES}
   ${DAVIDSDK_GRABBER_INCLUDES}
   ${DSSDK_GRABBER_INCLUDES}
@@ -333,7 +320,7 @@ endif()
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
 add_definitions(${VTK_DEFINES})
-PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
+PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
 target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 link_directories(${VTK_LINK_DIRECTORIES})
 target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_LIBRARIES})
@@ -392,7 +379,7 @@ if(WITH_ENSENSO)
   list(APPEND EXT_DEPS ensenso)
 endif()
 
-PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
+PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})

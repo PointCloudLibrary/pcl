@@ -67,7 +67,7 @@ namespace pcl
       Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
       public:
         ModifyItemTool*
-        createTool (PropertiesModel* parameter_model, QObject* parent = 0) override 
+        createTool (PropertiesModel* parameter_model, QObject* parent = nullptr) override 
         {
             return new StatisticalOutlierRemovalTool(parameter_model, parent);
         }

@@ -43,7 +43,7 @@ namespace pcl
     {
         template<class T> struct numeric_limits
         {
-            typedef T type;
+            using type = T;
             __device__ __forceinline__ static type min()  { return type(); };
             __device__ __forceinline__ static type max() { return type(); };
             __device__ __forceinline__ static type epsilon() { return type(); }
@@ -57,7 +57,7 @@ namespace pcl
 
         template<> struct numeric_limits<bool>
         {
-            typedef bool type;
+            using type = bool;
             __device__ __forceinline__ static type min() { return false; };
             __device__ __forceinline__ static type max() { return true;  };
             __device__ __forceinline__ static type epsilon();
@@ -71,7 +71,7 @@ namespace pcl
 
         template<> struct numeric_limits<char>
         {
-            typedef char type;
+            using type = char;
             __device__ __forceinline__ static type min() { return CHAR_MIN; };
             __device__ __forceinline__ static type max() { return CHAR_MAX; };
             __device__ __forceinline__ static type epsilon();
@@ -85,7 +85,7 @@ namespace pcl
 
         template<> struct numeric_limits<signed char>
         {
-            typedef char type;
+            using type = char;
             __device__ __forceinline__ static type min() { return CHAR_MIN; };
             __device__ __forceinline__ static type max() { return CHAR_MAX; };
             __device__ __forceinline__ static type epsilon();
@@ -99,7 +99,7 @@ namespace pcl
 
         template<> struct numeric_limits<unsigned char>
         {
-            typedef unsigned char type;
+            using type = unsigned char;
             __device__ __forceinline__ static type min() { return 0; };
             __device__ __forceinline__ static type max() { return UCHAR_MAX; };
             __device__ __forceinline__ static type epsilon();
@@ -113,7 +113,7 @@ namespace pcl
 
         template<> struct numeric_limits<short>
         {
-            typedef short type;
+            using type = short;
             __device__ __forceinline__ static type min() { return SHRT_MIN; };
             __device__ __forceinline__ static type max() { return SHRT_MAX; };
             __device__ __forceinline__ static type epsilon();
@@ -127,7 +127,7 @@ namespace pcl
 
         template<> struct numeric_limits<unsigned short>
         {
-            typedef unsigned short type;
+            using type = unsigned short;
             __device__ __forceinline__ static type min() { return 0; };
             __device__ __forceinline__ static type max() { return USHRT_MAX; };
             __device__ __forceinline__ static type epsilon();
@@ -141,7 +141,7 @@ namespace pcl
 
         template<> struct numeric_limits<int>
         {
-            typedef int type;
+            using type = int;
             __device__ __forceinline__ static type min() { return INT_MIN; };
             __device__ __forceinline__ static type max() { return INT_MAX; };
             __device__ __forceinline__ static type epsilon();
@@ -156,7 +156,7 @@ namespace pcl
 
         template<> struct numeric_limits<unsigned int>
         {
-            typedef unsigned int type;
+            using type = unsigned int;
             __device__ __forceinline__ static type min() { return 0; };
             __device__ __forceinline__ static type max() { return UINT_MAX; };
             __device__ __forceinline__ static type epsilon();
@@ -170,7 +170,7 @@ namespace pcl
 
         template<> struct numeric_limits<long>
         {
-            typedef long type;
+            using type = long;
             __device__ __forceinline__ static type min() { return LONG_MIN; };
             __device__ __forceinline__ static type max() { return LONG_MAX; };
             __device__ __forceinline__ static type epsilon();
@@ -184,7 +184,7 @@ namespace pcl
 
         template<> struct numeric_limits<unsigned long>
         {
-            typedef unsigned long type;
+            using type = unsigned long;
             __device__ __forceinline__ static type min() { return 0; };
             __device__ __forceinline__ static type max() { return ULONG_MAX; };
             __device__ __forceinline__ static type epsilon();
@@ -198,7 +198,7 @@ namespace pcl
 
         template<> struct numeric_limits<float>
         {
-            typedef float type;
+            using type = float;
             __device__ __forceinline__ static type min() { return 1.175494351e-38f/*FLT_MIN*/; };
             __device__ __forceinline__ static type max() { return 3.402823466e+38f/*FLT_MAX*/; };
             __device__ __forceinline__ static type epsilon() { return 1.192092896e-07f/*FLT_EPSILON*/; };
@@ -212,7 +212,7 @@ namespace pcl
 
         template<> struct numeric_limits<double>
         {
-            typedef double type;
+            using type = double;
             __device__ __forceinline__ static type min() { return 2.2250738585072014e-308/*DBL_MIN*/; };
             __device__ __forceinline__ static type max() { return 1.7976931348623158e+308/*DBL_MAX*/; };
 			__device__ __forceinline__ static type epsilon() { return 2.2204460492503131e-016 /*DBL_EPSILON*/; };

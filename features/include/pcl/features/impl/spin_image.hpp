@@ -45,7 +45,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/exceptions.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/spin_image.h>
 #include <cmath>
 
@@ -328,9 +327,9 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClo
     Eigen::ArrayXXd res = computeSiForPoint (indices_->at (i_input));
 
     // Copy into the resultant cloud
-    for (int iRow = 0; iRow < res.rows () ; iRow++)
+    for (Eigen::Index iRow = 0; iRow < res.rows () ; iRow++)
     {
-      for (int iCol = 0; iCol < res.cols () ; iCol++)
+      for (Eigen::Index iCol = 0; iCol < res.cols () ; iCol++)
       {
         output.points[i_input].histogram[ iRow*res.cols () + iCol ] = static_cast<float> (res (iRow, iCol));
       }

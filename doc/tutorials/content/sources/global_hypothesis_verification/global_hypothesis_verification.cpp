@@ -298,7 +298,7 @@ main (int argc,
   {
     std::vector<int> neigh_indices (1);
     std::vector<float> neigh_sqr_dists (1);
-    if (!pcl_isfinite (scene_descriptors->at (i).descriptor[0]))  //skipping NaNs
+    if (!std::isfinite (scene_descriptors->at (i).descriptor[0]))  //skipping NaNs
     {
       continue;
     }

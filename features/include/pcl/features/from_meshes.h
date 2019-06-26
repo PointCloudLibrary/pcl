@@ -82,7 +82,7 @@ namespace pcl
         Eigen::Vector3d y;
         y << 0, 1, 0;
         rot.row(2) = normal;
-        y = y - normal(1) * normal;
+        y -= normal(1) * normal;
         y.normalize();
         rot.row(1) = y;
         rot.row(0) = normal.cross(rot.row(1));

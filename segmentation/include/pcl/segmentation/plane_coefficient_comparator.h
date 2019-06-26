@@ -54,22 +54,21 @@ namespace pcl
   class PlaneCoefficientComparator: public Comparator<PointT>
   {
     public:
-      typedef typename Comparator<PointT>::PointCloud PointCloud;
-      typedef typename Comparator<PointT>::PointCloudConstPtr PointCloudConstPtr;
+      using PointCloud = typename Comparator<PointT>::PointCloud;
+      using PointCloudConstPtr = typename Comparator<PointT>::PointCloudConstPtr;
       
-      typedef typename pcl::PointCloud<PointNT> PointCloudN;
-      typedef typename PointCloudN::Ptr PointCloudNPtr;
-      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+      using PointCloudN = pcl::PointCloud<PointNT>;
+      using PointCloudNPtr = typename PointCloudN::Ptr;
+      using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
       
-      typedef boost::shared_ptr<PlaneCoefficientComparator<PointT, PointNT> > Ptr;
-      typedef boost::shared_ptr<const PlaneCoefficientComparator<PointT, PointNT> > ConstPtr;
+      using Ptr = boost::shared_ptr<PlaneCoefficientComparator<PointT, PointNT> >;
+      using ConstPtr = boost::shared_ptr<const PlaneCoefficientComparator<PointT, PointNT> >;
 
       using pcl::Comparator<PointT>::input_;
       
       /** \brief Empty constructor for PlaneCoefficientComparator. */
       PlaneCoefficientComparator ()
         : normals_ ()
-        , plane_coeff_d_ ()
         , angular_threshold_ (pcl::deg2rad (2.0f))
         , distance_threshold_ (0.02f)
         , depth_dependent_ (true)
@@ -194,7 +193,7 @@ namespace pcl
           float z = vec.dot (z_axis_);
           threshold *= z * z;
         }
-        return ( (fabs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < threshold)
+        return ( (std::fabs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < threshold)
                  && (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ) );
       }
       

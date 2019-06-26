@@ -109,12 +109,11 @@ pcl::cloud_composer::SignalMultiplexer::setCurrentObject (QObject* newObject)
   if (newObject == object)
     return;
 
-  QList<Connection>::ConstIterator it;
-  for (it = connections.begin (); it != connections.end (); ++it)
-    disconnect (*it);
+  for (const auto &connection : connections)
+    disconnect (connection);
   object = newObject;
-  for (it = connections.begin (); it != connections.end (); ++it)
-    connect (*it);
+  for (const auto &connection : connections)
+    connect (connection);
 
   ProjectModel* model = dynamic_cast<ProjectModel*> (newObject);
   if (model)

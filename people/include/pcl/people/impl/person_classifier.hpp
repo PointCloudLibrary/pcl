@@ -80,7 +80,7 @@ pcl::people::PersonClassifier<PointT>::loadSVMFromFile (std::string svm_filename
   }
   SVM_file.close();
   
-  if (SVM_weights_.size() == 0)
+  if (SVM_weights_.empty ())
   {
     PCL_ERROR ("[pcl::people::PersonClassifier::loadSVMFromFile] Invalid SVM file!\n");
     return (false);
@@ -218,7 +218,7 @@ pcl::people::PersonClassifier<PointT>::evaluate (float height_person,
               float yc,
               PointCloudPtr& image)
 {
-  if (SVM_weights_.size() == 0)
+  if (SVM_weights_.empty ())
   {
   PCL_ERROR ("[pcl::people::PersonClassifier::evaluate] SVM has not been set!\n");
   return (-1000);
@@ -260,7 +260,7 @@ pcl::people::PersonClassifier<PointT>::evaluate (float height_person,
  
     // Calculate confidence value by dot product:
     confidence = 0.0;
-    for(unsigned int i = 0; i < SVM_weights_.size(); i++)
+    for(size_t i = 0; i < SVM_weights_.size(); i++)
     { 
       confidence += SVM_weights_[i] * descriptor[i];
     }

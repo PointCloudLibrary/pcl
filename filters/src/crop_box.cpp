@@ -83,9 +83,9 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     memcpy (&local_pt, &input_->data[offset], sizeof (float)*3);
 
     // Check if the point is invalid
-    if (!pcl_isfinite (local_pt.x ()) ||
-        !pcl_isfinite (local_pt.y ()) ||
-        !pcl_isfinite (local_pt.z ()))
+    if (!std::isfinite (local_pt.x ()) ||
+        !std::isfinite (local_pt.y ()) ||
+        !std::isfinite (local_pt.z ()))
       continue;
 
     // Transform point to world space

@@ -51,10 +51,10 @@ namespace pcl
     {
       ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Types
-      typedef unsigned short ushort;
-      typedef DeviceArray2D<float> MapArr;
-      typedef DeviceArray2D<ushort> DepthMap;
-      typedef float4 PointType;
+      using ushort = unsigned short;
+      using MapArr = DeviceArray2D<float>;
+      using DepthMap = DeviceArray2D<ushort>;
+      using PointType = float4;
 
       //TSDF fixed point divisor (if old format is enabled)
       const int DIVISOR = 32767;     // SHRT_MAX;

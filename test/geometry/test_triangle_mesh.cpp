@@ -49,35 +49,35 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef pcl::geometry::VertexIndex   VertexIndex;
-typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
-typedef pcl::geometry::EdgeIndex     EdgeIndex;
-typedef pcl::geometry::FaceIndex     FaceIndex;
+using VertexIndex = pcl::geometry::VertexIndex;
+using HalfEdgeIndex = pcl::geometry::HalfEdgeIndex;
+using EdgeIndex = pcl::geometry::EdgeIndex;
+using FaceIndex = pcl::geometry::FaceIndex;
 
-typedef std::vector <VertexIndex>   VertexIndices;
-typedef std::vector <HalfEdgeIndex> HalfEdgeIndices;
-typedef std::vector <FaceIndex>     FaceIndices;
+using VertexIndices = std::vector<VertexIndex>;
+using HalfEdgeIndices = std::vector<HalfEdgeIndex>;
+using FaceIndices = std::vector<FaceIndex>;
 
 template <bool IsManifoldT>
 struct MeshTraits
 {
-    typedef int                                          VertexData;
-    typedef pcl::geometry::NoData                        HalfEdgeData;
-    typedef pcl::geometry::NoData                        EdgeData;
-    typedef pcl::geometry::NoData                        FaceData;
-    typedef boost::integral_constant <bool, IsManifoldT> IsManifold;
+    using VertexData = int;
+    using HalfEdgeData = pcl::geometry::NoData;
+    using EdgeData = pcl::geometry::NoData;
+    using FaceData = pcl::geometry::NoData;
+    using IsManifold = std::integral_constant <bool, IsManifoldT>;
 };
 
-typedef pcl::geometry::TriangleMesh <MeshTraits <true > > ManifoldTriangleMesh;
-typedef pcl::geometry::TriangleMesh <MeshTraits <false> > NonManifoldTriangleMesh;
+using ManifoldTriangleMesh = pcl::geometry::TriangleMesh<MeshTraits<true> >;
+using NonManifoldTriangleMesh = pcl::geometry::TriangleMesh<MeshTraits<false> >;
 
-typedef testing::Types <ManifoldTriangleMesh, NonManifoldTriangleMesh> TriangleMeshTypes;
+using TriangleMeshTypes = testing::Types <ManifoldTriangleMesh, NonManifoldTriangleMesh>;
 
 template <class MeshT>
 class TestTriangleMesh : public testing::Test
 {
   protected:
-    typedef MeshT Mesh;
+    using Mesh = MeshT;
 };
 
 TYPED_TEST_CASE (TestTriangleMesh, TriangleMeshTypes);
@@ -86,8 +86,8 @@ TYPED_TEST_CASE (TestTriangleMesh, TriangleMeshTypes);
 
 TYPED_TEST (TestTriangleMesh, CorrectMeshTag)
 {
-  typedef typename TestFixture::Mesh Mesh;
-  typedef typename Mesh::MeshTag     MeshTag;
+  using Mesh = typename TestFixture::Mesh;
+  using MeshTag = typename Mesh::MeshTag;
 
   ASSERT_EQ (typeid (pcl::geometry::TriangleMeshTag), typeid (MeshTag));
 }
@@ -97,7 +97,7 @@ TYPED_TEST (TestTriangleMesh, CorrectMeshTag)
 TYPED_TEST (TestTriangleMesh, CorrectNumberOfVertices)
 {
   // Make sure that only quads can be added
-  typedef typename TestFixture::Mesh Mesh;
+  using Mesh = typename TestFixture::Mesh;
 
   for (unsigned int n=1; n<=5; ++n)
   {
@@ -119,7 +119,7 @@ TYPED_TEST (TestTriangleMesh, CorrectNumberOfVertices)
 
 TYPED_TEST (TestTriangleMesh, OneTriangle)
 {
-  typedef typename TestFixture::Mesh Mesh;
+  using Mesh = typename TestFixture::Mesh;
 
   //   2   //
   //  / \  //
@@ -205,7 +205,7 @@ TYPED_TEST (TestTriangleMesh, OneTriangle)
 
 TYPED_TEST (TestTriangleMesh, TwoTriangles)
 {
-  typedef typename TestFixture::Mesh Mesh;
+  using Mesh = typename TestFixture::Mesh;
 
   // 3 - 2   //
   //  \ / \  //
@@ -341,7 +341,7 @@ TYPED_TEST (TestTriangleMesh, TwoTriangles)
 
 TYPED_TEST (TestTriangleMesh, ThreeTriangles)
 {
-  typedef typename TestFixture::Mesh Mesh;
+  using Mesh = typename TestFixture::Mesh;
 
   //  1 ----- 3  //
   //  \ \   / /  //
@@ -541,15 +541,15 @@ TEST (TestManifoldTriangleMesh, addTrianglePair)
   tmp.push_back (vi [ 6]); tmp.push_back (vi [10]); tmp.push_back (vi [11]); tmp.push_back (vi [ 7]); faces.push_back (tmp); tmp.clear ();
   tmp.push_back (vi [ 5]); tmp.push_back (vi [ 9]); tmp.push_back (vi [10]); tmp.push_back (vi [ 6]); faces.push_back (tmp); tmp.clear ();
 
-  for (unsigned int i=0; i<faces.size (); ++i)
+  for (const auto &face : faces)
   {
     std::pair <FaceIndex, FaceIndex> fip;
-    fip = mesh.addTrianglePair (faces [i]);
+    fip = mesh.addTrianglePair (face);
     ASSERT_TRUE (fip.first.isValid ());
     ASSERT_TRUE (fip.second.isValid ());
   }
 
-  for (unsigned int i=0; i<faces.size (); ++i)
+  for (size_t i=0; i < faces.size (); ++i)
   {
     VertexIndices actual_1, actual_2;
 

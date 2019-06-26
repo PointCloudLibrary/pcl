@@ -64,11 +64,11 @@ line-by-line.
 .. code-block:: cpp
 
     ...
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+    pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     ...
 
 This creates the viewer object, giving it a nice name to display in the
-title bar. We are storing it in a boost::shared_ptr only so it can be
+title bar. We are storing it in a smart pointer only so it can be
 passed around the demo program. Usually, you do not need to do this.
 
 .. code-block:: cpp
@@ -183,7 +183,7 @@ Not much of the code in this sample has changed from the earlier sample.
 .. code-block:: cpp
 
     ...
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> rgbVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
+    pcl::visualization::PCLVisualizer::Ptr rgbVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
     ...
 
 First, notice that the point type has changed from the simple example.
@@ -242,7 +242,7 @@ sample.
 .. code-block:: cpp
 
     ...
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> customColourVis (pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud)
+    pcl::visualization::PCLVisualizer::Ptr customColourVis (pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud)
     ...
 
 The point type in use this time is back to PointXYZ again. When setting
@@ -415,7 +415,7 @@ Explanation
 .. code-block:: cpp
 
     ...
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+    pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     viewer->initCameraParameters ();
     ...
 
@@ -508,7 +508,7 @@ Explanation
 .. code-block:: cpp
 
     ...
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+    pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     viewer->initCameraParameters ();
     ...
     
@@ -527,7 +527,7 @@ The second arguments for the two method calls are the so-called cookies. These
 are any parameters you might want to pass to the callback function. In our case,
 we want to pass the viewer itself, in order to do modifications on it in case
 of user interaction. Note that these arguments must be in the form of a single 
-``void*`` instance, so we need to cast the pointer to our ``boost::shared_ptr`` to ``void*``.
+``void*`` instance, so we need to cast the pointer to our smart pointer to ``void*``.
 
 .. code-block:: cpp   
 
@@ -535,7 +535,7 @@ of user interaction. Note that these arguments must be in the form of a single
 	void mouseEventOccurred (const pcl::visualization::MouseEvent &event,
     	                     void* viewer_void)
 	{
-	  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
+	  pcl::visualization::PCLVisualizer::Ptr viewer = *static_cast<pcl::visualization::PCLVisualizer::Ptr *> (viewer_void);
 	  if (event.getButton () == pcl::visualization::MouseEvent::LeftButton && event.getType () == pcl::visualization::MouseEvent::MouseButtonRelease)
 	  {
 	    std::cout << "Left mouse button released at position (" << event.getX () << ", " << event.getY () << ")" << std::endl;
@@ -559,7 +559,7 @@ happens, we shall write a small text at the position of the mouse click.
 	void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event,
     	                        void* viewer_void)
 	{
-	  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
+	  pcl::visualization::PCLVisualizer::Ptr viewer = *static_cast<pcl::visualization::PCLVisualizer::Ptr *> (viewer_void);
 	  if (event.getKeySym () == "r" && event.keyDown ())
 	  {
 	    std::cout << "r was pressed => removing all text" << std::endl;

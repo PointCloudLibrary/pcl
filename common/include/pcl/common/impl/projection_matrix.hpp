@@ -81,7 +81,7 @@ pcl::estimateProjectionMatrix (
     const std::vector<int>& indices)
 {
   // internally we calculate with double but store the result into float matrices.
-  typedef double Scalar;
+  using Scalar = double;
   projection_matrix.setZero ();
   if (cloud->height == 1 || cloud->width == 1)
   {
@@ -102,7 +102,7 @@ pcl::estimateProjectionMatrix (
     unsigned xIdx = pointIt.getCurrentPointIndex () % cloud->width;
     
     const PointT& point = *pointIt;
-    if (pcl_isfinite (point.x))
+    if (std::isfinite (point.x))
     {
       Scalar xx = point.x * point.x;
       Scalar xy = point.x * point.y;

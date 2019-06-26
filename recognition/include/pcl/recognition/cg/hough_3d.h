@@ -43,6 +43,8 @@
 #include <pcl/recognition/boost.h>
 #include <pcl/point_types.h>
 
+#include <unordered_map>
+
 namespace pcl
 {
   namespace recognition
@@ -57,6 +59,8 @@ namespace pcl
       public:
       
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+        using Ptr = boost::shared_ptr<HoughSpace3D>;
       
         /** \brief Constructor
           *
@@ -120,10 +124,9 @@ namespace pcl
 
         /** \brief The Hough Space. */
         std::vector<double> hough_space_;
-        //boost::unordered_map<int, double> hough_space_;
 
         /** \brief List of voters for each bin. */
-        boost::unordered_map<int, std::vector<int> > voter_ids_;
+        std::unordered_map<int, std::vector<int> > voter_ids_;
     };
   }
 
@@ -144,34 +147,31 @@ namespace pcl
   class Hough3DGrouping : public CorrespondenceGrouping<PointModelT, PointSceneT>
   {
     public:
-      typedef pcl::PointCloud<PointModelRfT> ModelRfCloud;
-      typedef typename ModelRfCloud::Ptr ModelRfCloudPtr;
-      typedef typename ModelRfCloud::ConstPtr ModelRfCloudConstPtr;
+      using ModelRfCloud = pcl::PointCloud<PointModelRfT>;
+      using ModelRfCloudPtr = typename ModelRfCloud::Ptr;
+      using ModelRfCloudConstPtr = typename ModelRfCloud::ConstPtr;
 
-      typedef pcl::PointCloud<PointSceneRfT> SceneRfCloud;
-      typedef typename SceneRfCloud::Ptr SceneRfCloudPtr;
-      typedef typename SceneRfCloud::ConstPtr SceneRfCloudConstPtr;
+      using SceneRfCloud = pcl::PointCloud<PointSceneRfT>;
+      using SceneRfCloudPtr = typename SceneRfCloud::Ptr;
+      using SceneRfCloudConstPtr = typename SceneRfCloud::ConstPtr;
 
-      typedef pcl::PointCloud<PointModelT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointModelT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      typedef typename pcl::CorrespondenceGrouping<PointModelT, PointSceneT>::SceneCloudConstPtr SceneCloudConstPtr;
+      using SceneCloudConstPtr = typename pcl::CorrespondenceGrouping<PointModelT, PointSceneT>::SceneCloudConstPtr;
 
       /** \brief Constructor */
       Hough3DGrouping () 
         : input_rf_ ()
         , scene_rf_ ()
         , needs_training_ (true)
-        , model_votes_ ()
-        , hough_threshold_ (-1)
+        ,hough_threshold_ (-1)
         , hough_bin_size_ (1.0)
         , use_interpolation_ (true)
         , use_distance_weight_ (false)
         , local_rf_normals_search_radius_ (0.0f)
         , local_rf_search_radius_ (0.0f)
-        , hough_space_ ()
-        , found_transformations_ ()
         , hough_space_initialized_ (false)
       {}
 
@@ -468,7 +468,7 @@ namespace pcl
       float local_rf_search_radius_;
 
       /** \brief The Hough space. */
-      boost::shared_ptr<pcl::recognition::HoughSpace3D> hough_space_;
+      pcl::recognition::HoughSpace3D::Ptr hough_space_;
 
       /** \brief Transformations found by clusterCorrespondences method. */
       std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > found_transformations_;
@@ -506,7 +506,7 @@ namespace pcl
         * \param[out] rf the resulting reference frame.
         */
       template<typename PointType, typename PointRfType> void
-      computeRf (const boost::shared_ptr<const pcl::PointCloud<PointType> > &input, pcl::PointCloud<PointRfType> &rf);
+      computeRf (const typename pcl::PointCloud<PointType>::ConstPtr &input, pcl::PointCloud<PointRfType> &rf);
   };
 }
 

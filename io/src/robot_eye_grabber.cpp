@@ -85,7 +85,7 @@ pcl::RobotEyeGrabber::getFramesPerSecond () const
 bool
 pcl::RobotEyeGrabber::isRunning () const
 {
-  return (socket_thread_ != NULL);
+  return (socket_thread_ != nullptr);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -131,7 +131,7 @@ pcl::RobotEyeGrabber::setSignalPointCloudSize (std::size_t numberOfPoints)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> >
+pcl::PointCloud<pcl::PointXYZI>::Ptr
 pcl::RobotEyeGrabber::getPointCloud () const
 {
   return point_cloud_xyzi_;
@@ -326,8 +326,8 @@ pcl::RobotEyeGrabber::start ()
 
   terminate_thread_ = false;
   resetPointCloud ();
-  consumer_thread_.reset(new boost::thread (boost::bind (&RobotEyeGrabber::consumerThreadLoop, this)));
-  socket_thread_.reset(new boost::thread (boost::bind (&RobotEyeGrabber::socketThreadLoop, this)));
+  consumer_thread_.reset(new std::thread (&RobotEyeGrabber::consumerThreadLoop, this));
+  socket_thread_.reset(new std::thread (&RobotEyeGrabber::socketThreadLoop, this));
 }
 
 /////////////////////////////////////////////////////////////////////////////

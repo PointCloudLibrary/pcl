@@ -45,6 +45,8 @@
 #include <pcl/point_representation.h>
 #include <pcl/registration/boost.h>
 
+#include <unordered_map>
+
 namespace pcl
 {
   namespace registration
@@ -64,11 +66,11 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        typedef boost::shared_ptr<CorrespondenceRejectorFeatures> Ptr;
-        typedef boost::shared_ptr<const CorrespondenceRejectorFeatures> ConstPtr;
+        using Ptr = boost::shared_ptr<CorrespondenceRejectorFeatures>;
+        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorFeatures>;
 
         /** \brief Empty constructor. */
-        CorrespondenceRejectorFeatures () : max_distance_ (std::numeric_limits<float>::max ()), features_map_ ()
+        CorrespondenceRejectorFeatures () : max_distance_ (std::numeric_limits<float>::max ())
         {
           rejection_name_ = "CorrespondenceRejectorFeatures";
         }
@@ -159,9 +161,11 @@ namespace pcl
             virtual bool isValid () = 0;
             virtual double getCorrespondenceScore (int index) = 0;
             virtual bool isCorrespondenceValid (int index) = 0;
+
+            using Ptr = boost::shared_ptr<FeatureContainerInterface>;
         };
 
-        typedef boost::unordered_map<std::string, boost::shared_ptr<FeatureContainerInterface> > FeaturesMap;
+        using FeaturesMap = std::unordered_map<std::string, FeatureContainerInterface::Ptr>;
 
         /** \brief An STL map containing features to use when performing the correspondence search.*/
         FeaturesMap features_map_;
@@ -176,11 +180,10 @@ namespace pcl
         class FeatureContainer : public pcl::registration::CorrespondenceRejectorFeatures::FeatureContainerInterface
         {
           public:
-            typedef typename pcl::PointCloud<FeatureT>::ConstPtr FeatureCloudConstPtr;
-            typedef boost::function<int (const pcl::PointCloud<FeatureT> &, int, std::vector<int> &, 
-                                          std::vector<float> &)> SearchMethod;
+            using FeatureCloudConstPtr = typename pcl::PointCloud<FeatureT>::ConstPtr;
+            using SearchMethod = std::function<int (const pcl::PointCloud<FeatureT> &, int, std::vector<int> &,  std::vector<float> &)>;
             
-            typedef typename pcl::PointRepresentation<FeatureT>::ConstPtr PointRepresentationConstPtr;
+            using PointRepresentationConstPtr = typename pcl::PointRepresentation<FeatureT>::ConstPtr;
 
             FeatureContainer () : thresh_(std::numeric_limits<double>::max ()), feature_representation_()
             {

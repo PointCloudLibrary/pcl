@@ -55,18 +55,17 @@ namespace pcl
     using Filter<PointT>::indices_;
     using Filter<PointT>::input_;
     
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = typename Filter<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      typedef boost::shared_ptr< CropHull<PointT> > Ptr;
-      typedef boost::shared_ptr< const CropHull<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<CropHull<PointT> >;
+      using ConstPtr = boost::shared_ptr<const CropHull<PointT> >;
 
       /** \brief Empty Constructor. */
       CropHull () :
-        hull_polygons_(),
         hull_cloud_(),
         dim_(3),
         crop_outside_(true)

@@ -58,16 +58,16 @@ namespace pcl
       class OrganizedPlaneDetector
       {
         public:
-          typedef boost::shared_ptr<OrganizedPlaneDetector> Ptr;
+          using Ptr = boost::shared_ptr<OrganizedPlaneDetector>;
 
-          typedef pcl::PointXYZRGBA                         PointTC;
-          typedef pcl::PointXYZ                             PointT;
+          using PointTC = pcl::PointXYZRGBA;
+          using PointT = pcl::PointXYZ;
 
-          typedef pcl::PointCloud<pcl::device::prob_histogram>  HostLabelProbability;
+          using HostLabelProbability = pcl::PointCloud<pcl::device::prob_histogram>;
 
-          //typedef DeviceArray2D<unsigned char> Labels;
-          //typedef DeviceArray2D<unsigned short> Depth;
-          //typedef DeviceArray2D<pcl::RGB> Image;
+          //using Labels = DeviceArray2D<unsigned char>;
+          //using Depth = DeviceArray2D<unsigned short>;
+          //using Image = DeviceArray2D<pcl::RGB>;
 
           HostLabelProbability                 P_l_host_;         // This is a HOST histogram!
           HostLabelProbability                 P_l_host_prev_;

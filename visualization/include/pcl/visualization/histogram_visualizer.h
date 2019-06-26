@@ -56,6 +56,9 @@ namespace pcl
     class PCL_EXPORTS PCLHistogramVisualizer
     {
       public:
+        using Ptr = boost::shared_ptr<PCLHistogramVisualizer>;
+        using ConstPtr = boost::shared_ptr<const PCLHistogramVisualizer>;
+
         /** \brief PCL histogram visualizer constructor. */
         PCLHistogramVisualizer ();
 

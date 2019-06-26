@@ -61,10 +61,9 @@ namespace pcl
       Q_OBJECT
       
     public:
-      CloudView (QWidget* parent = 0);
+      CloudView (QWidget* parent = nullptr);
       CloudView (const CloudView& to_copy);
-      CloudView (ProjectModel* model, QWidget* parent = 0);
-      ~CloudView ();
+      CloudView (ProjectModel* model, QWidget* parent = nullptr);
       
       void 
       setModel (ProjectModel* new_model);
@@ -74,7 +73,7 @@ namespace pcl
       QVTKWidget* 
       getQVTK() const {return qvtk_; }
       
-      boost::shared_ptr<pcl::visualization::PCLVisualizer>
+      pcl::visualization::PCLVisualizer::Ptr
       getPCLVisualizer () const { return vis_; }
       
       void 
@@ -140,7 +139,7 @@ namespace pcl
       void
       removeOrientationMarkerWidgetAxes ();
       
-      boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
+      pcl::visualization::PCLVisualizer::Ptr vis_;
       ProjectModel* model_;
       QVTKWidget* qvtk_;
       vtkSmartPointer<InteractorStyleSwitch> style_switch_;

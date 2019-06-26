@@ -74,6 +74,6 @@ namespace pcl
         /** \brief The render window interactor style. */
         vtkSmartPointer<vtkInteractorStyleTrackballCamera> style_;
     };
-    typedef std::map<std::string, RenWinInteract> RenWinInteractMap;
+    using RenWinInteractMap = std::map<std::string, RenWinInteract>;
   }
 }

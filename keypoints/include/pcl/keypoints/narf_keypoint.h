@@ -59,13 +59,13 @@ class RangeImageBorderExtractor;
 class PCL_EXPORTS NarfKeypoint : public Keypoint<PointWithRange, int>
 {
   public:
-    typedef boost::shared_ptr<NarfKeypoint> Ptr;
-    typedef boost::shared_ptr<const NarfKeypoint> ConstPtr;
+    using Ptr = boost::shared_ptr<NarfKeypoint>;
+    using ConstPtr = boost::shared_ptr<const NarfKeypoint>;
 
     // =====TYPEDEFS=====
-    typedef Keypoint<PointWithRange, int> BaseClass;
+    using BaseClass = Keypoint<PointWithRange, int>;
     
-    typedef Keypoint<PointWithRange, int>::PointCloudOut PointCloudOut;
+    using PointCloudOut = Keypoint<PointWithRange, int>::PointCloudOut;
 
     // =====PUBLIC STRUCTS=====
     //! Parameters used in this class
@@ -75,7 +75,7 @@ class PCL_EXPORTS NarfKeypoint : public Keypoint<PointWithRange, int>
                      optimal_distance_to_high_surface_change(0.25), min_interest_value(0.45f),
                      min_surface_change_score(0.2f), optimal_range_image_patch_size(10),
                      distance_for_additional_points(0.0f), add_points_on_straight_edges(false),
-                     do_non_maximum_suppression(true), no_of_polynomial_approximations_per_point(0),
+                     do_non_maximum_suppression(true), no_of_polynomial_approximations_per_point(false),
                      max_no_of_threads(1), use_recursive_scale_reduction(false),
                      calculate_sparse_interest_image(true) {}
       
@@ -115,7 +115,7 @@ class PCL_EXPORTS NarfKeypoint : public Keypoint<PointWithRange, int>
     };
     
     // =====CONSTRUCTOR & DESTRUCTOR=====
-    NarfKeypoint (RangeImageBorderExtractor* range_image_border_extractor=NULL, float support_size=-1.0f);
+    NarfKeypoint (RangeImageBorderExtractor* range_image_border_extractor=nullptr, float support_size=-1.0f);
     ~NarfKeypoint ();
     
     // =====PUBLIC METHODS=====

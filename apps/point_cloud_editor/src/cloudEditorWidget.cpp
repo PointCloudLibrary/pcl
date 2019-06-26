@@ -132,7 +132,7 @@ CloudEditorWidget::save ()
   QString file_path = QFileDialog::getSaveFileName(this,tr("Save point cloud"));
   
   std::string file_path_std = file_path.toStdString();
-  if ( (file_path_std == "") || (!cloud_ptr_) )
+  if ( (file_path_std.empty()) || (!cloud_ptr_) )
     return;
 
   if (is_colored_)
@@ -572,12 +572,12 @@ CloudEditorWidget::isColored (const std::string &fileName) const
   pcl::PCLPointCloud2 cloud2;
   pcl::PCDReader reader;
   reader.readHeader(fileName, cloud2);
-  std::vector< pcl::PCLPointField > fs = cloud2.fields;
-  for(unsigned int i = 0; i < fs.size(); ++i)
+  std::vector< pcl::PCLPointField > cloud_fields = cloud2.fields;
+  for(const auto &field : cloud_fields)
   {
-    std::string name(fs[i].name);
+    std::string name(field.name);
     stringToLower(name);
-    if ((name.compare("rgb") == 0) || (name.compare("rgba") == 0))
+    if ((name == "rgb") || (name == "rgba"))
       return true;
   }
   return false;

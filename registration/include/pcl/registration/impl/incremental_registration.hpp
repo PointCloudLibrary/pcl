@@ -68,7 +68,7 @@ pcl::registration::IncrementalRegistration<PointT, Scalar>::registerCloud (const
 
   if ( converged ){
     delta_transform_ = registration_->getFinalTransformation ();
-    abs_transform_ = abs_transform_ * delta_transform_;
+    abs_transform_ *= delta_transform_;
     last_cloud_ = cloud;
   }
 

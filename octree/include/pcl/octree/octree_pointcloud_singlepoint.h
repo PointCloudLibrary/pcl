@@ -64,8 +64,8 @@ namespace pcl
 
       public:
         // public typedefs for single/double buffering
-        typedef OctreePointCloudSinglePoint<PointT, LeafContainerT, BranchContainerT,
-            OctreeBase<LeafContainerT, BranchContainerT> > SingleBuffer;
+        using SingleBuffer = OctreePointCloudSinglePoint<PointT, LeafContainerT, BranchContainerT,
+            OctreeBase<LeafContainerT, BranchContainerT> >;
   //      typedef OctreePointCloudSinglePoint<PointT, LeafContainerT, BranchContainerT,
    //         Octree2BufBase<int, LeafContainerT, BranchContainerT> > DoubleBuffer;
 

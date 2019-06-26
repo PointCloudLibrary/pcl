@@ -41,14 +41,16 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-typedef pcl::PointXYZRGBA PointT;
+#include <mutex>
+
+using PointT = pcl::PointXYZRGBA;
 
 class OpenNIOrganizedEdgeDetection
 {
   private:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+    pcl::visualization::PCLVisualizer::Ptr viewer;
     pcl::PointCloud<PointT> cloud_;
-    boost::mutex cloud_mutex;
+    std::mutex cloud_mutex;
 
   public:
     OpenNIOrganizedEdgeDetection ()
@@ -60,7 +62,7 @@ class OpenNIOrganizedEdgeDetection
     {
     }
 
-    boost::shared_ptr<pcl::visualization::PCLVisualizer>
+    pcl::visualization::PCLVisualizer::Ptr
     initCloudViewer (pcl::PointCloud<PointT>::ConstPtr cloud)
     {
       viewer->setSize (640, 480);
@@ -98,9 +100,9 @@ class OpenNIOrganizedEdgeDetection
     void
     keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
     {
-      double opacity;
       if (event.keyUp())
       {
+        double opacity;
         switch (event.getKeyCode())
         {
         case '1':
@@ -143,7 +145,7 @@ class OpenNIOrganizedEdgeDetection
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber ();
 
-      boost::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f = boost::bind (&OpenNIOrganizedEdgeDetection::cloud_cb_, this, _1);
+      std::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f = [this] (const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
       // Make and initialize a cloud viewer
       pcl::PointCloud<PointT>::Ptr init_cloud_ptr (new pcl::PointCloud<PointT>);
@@ -201,10 +203,10 @@ class OpenNIOrganizedEdgeDetection
           std::cout << "Frame took " << double (oed_end - normal_start) << std::endl;
 
           // Make gray point cloud
-          for (size_t idx = 0; idx < cloud_.points.size (); idx++)
+          for (auto &point : cloud_.points)
           {
-            pcl::uint8_t gray = pcl::uint8_t((cloud_.points[idx].r + cloud_.points[idx].g + cloud_.points[idx].b)/3);
-            cloud_.points[idx].r = cloud_.points[idx].g = cloud_.points[idx].b = gray;
+            pcl::uint8_t gray = pcl::uint8_t((point.r + point.g + point.b)/3);
+            point.r = point.g = point.b = gray;
           }
 
           // Show the gray point cloud

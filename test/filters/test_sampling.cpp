@@ -174,9 +174,9 @@ TEST (RandomSample, Filters)
   EXPECT_EQ (int (removed->size ()), cloud_walls->size () - 10);
   for (size_t i = 0; i < removed->size (); ++i)
   {
-    EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).x));
-    EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).y));
-    EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).z));
+    EXPECT_TRUE (std::isnan (cloud_out.at ((*removed)[i]).x));
+    EXPECT_TRUE (std::isnan (cloud_out.at ((*removed)[i]).y));
+    EXPECT_TRUE (std::isnan (cloud_out.at ((*removed)[i]).z));
   }
 
   EXPECT_EQ (cloud_out.width, cloud_walls->width);

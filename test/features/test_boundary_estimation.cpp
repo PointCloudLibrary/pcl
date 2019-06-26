@@ -47,7 +47,7 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
+using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
 vector<int> indices;
@@ -64,7 +64,7 @@ TEST (PCL, BoundaryEstimation)
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   // set parameters
   n.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
   n.setIndices (indicesptr);
   n.setSearchMethod (tree);
   n.setKSearch (static_cast<int> (indices.size ()));
@@ -76,10 +76,10 @@ TEST (PCL, BoundaryEstimation)
   EXPECT_EQ (b.getInputNormals (), normals);
 
   // getCoordinateSystemOnPlane
-  for (size_t i = 0; i < normals->points.size (); ++i)
+  for (const auto &point : normals->points)
   {
-    b.getCoordinateSystemOnPlane (normals->points[i], u, v);
-    Vector4fMap n4uv = normals->points[i].getNormalVector4fMap ();
+    b.getCoordinateSystemOnPlane (point, u, v);
+    Vector4fMapConst n4uv = point.getNormalVector4fMap ();
     EXPECT_NEAR (n4uv.dot(u), 0, 1e-4);
     EXPECT_NEAR (n4uv.dot(v), 0, 1e-4);
     EXPECT_NEAR (u.dot(v), 0, 1e-4);

@@ -37,23 +37,25 @@
  */
 
 #include <iostream>
-#include <pcl/io/ensenso_grabber.h>
+#include <pcl/io/davidsdk_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 
+using namespace std::chrono_literals;
+
 /** @brief Convenience typedef */
-typedef pcl::visualization::CloudViewer CloudViewer;
+using CloudViewer = pcl::visualization::CloudViewer;
 
 /** @brief Convenience typedef for XYZ point clouds */
-typedef pcl::PointCloud<pcl::PointXYZ> PointCloudXYZ;
+using PointCloudXYZ = pcl::PointCloud<pcl::PointXYZ>;
 
 /** @brief CloudViewer pointer */
 boost::shared_ptr<CloudViewer> viewer_ptr;
 
-/** @brief PCL Ensenso object pointer */
-pcl::EnsensoGrabber::Ptr ensenso_ptr;
+/** @brief PCL DavidSDK object pointer */
+pcl::DavidSDKGrabber::Ptr davidsdk_ptr;
 
-/** @brief Process and/or display Ensenso grabber clouds
- * @param[in] cloud Ensenso cloud */
+/** @brief Process and/or display DavidSDK grabber clouds
+ * @param[in] cloud DavidSDK cloud */
 void
 grabberCallback (const PointCloudXYZ::Ptr& cloud)
 {
@@ -62,27 +64,46 @@ grabberCallback (const PointCloudXYZ::Ptr& cloud)
 }
 
 /** @brief Main function
+ * @param[in] argc
+ * @param[in] argv
  * @return Exit status */
 int
-main (void)
+main (int argc,
+      char *argv[])
 {
-  viewer_ptr.reset (new CloudViewer ("Ensenso 3D cloud viewer"));
-  ensenso_ptr.reset (new pcl::EnsensoGrabber);
-  ensenso_ptr->openTcpPort ();
-  ensenso_ptr->openDevice ();
+  if (argc != 2)
+  {
+    PCL_ERROR ("Usage:\n%s 192.168.100.65\n", argv[0]);
+    return (-1);
+  }
 
-  boost::function<void
-  (const PointCloudXYZ::Ptr&)> f = boost::bind (&grabberCallback, _1);
-  ensenso_ptr->registerCallback (f);
-  ensenso_ptr->start ();
+  viewer_ptr.reset (new CloudViewer ("davidSDK 3D cloud viewer"));
+  davidsdk_ptr.reset (new pcl::DavidSDKGrabber);
+  davidsdk_ptr->connect (argv[1]);
+
+  if (!davidsdk_ptr->isConnected ())
+    return (-1);
+  PCL_WARN ("davidSDK connected\n");
+
+#ifndef _WIN32// || _WIN64
+  PCL_WARN ("Linux / Mac OSX detected, setting local_path_ to /var/tmp/davidsdk/ and remote_path_ to \\\\m6700\\davidsdk\\\n");
+  davidsdk_ptr->setLocalAndRemotePaths ("/var/tmp/davidsdk/", "\\\\m6700\\davidsdk\\");
+#endif
+
+  //davidsdk_ptr->setFileFormatToPLY();
+  std::cout << "Using " << davidsdk_ptr->getFileFormat () << " file format" << std::endl;
+
+  std::function<void (const PointCloudXYZ::Ptr&)> f = [] (const PointCloudXYZ::Ptr& cloud) { grabberCallback (cloud); };
+  davidsdk_ptr->registerCallback (f);
+  davidsdk_ptr->start ();
 
   while (!viewer_ptr->wasStopped ())
   {
-    boost::this_thread::sleep (boost::posix_time::milliseconds (1000));
-    std::cout << "FPS: " << ensenso_ptr->getFramesPerSecond () << std::endl;
+    std::this_thread::sleep_for(20s);
+    std::cout << "FPS: " << davidsdk_ptr->getFramesPerSecond () << std::endl;
   }
 
-  ensenso_ptr->closeDevice ();
+  davidsdk_ptr->stop ();
   return (0);
 }
 

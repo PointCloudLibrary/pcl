@@ -51,16 +51,16 @@ TEST(PCL, GaussianKernel)
   // Test kernel only version
   gk.compute(5, computed_kernel);
   EXPECT_EQ(kernel.size (), computed_kernel.size ());
-  for(int i = 0; i < kernel.size (); i++)
+  for(Eigen::Index i = 0; i < kernel.size (); i++)
     EXPECT_NEAR(kernel[i], computed_kernel[i], 1e-4);
 
   // Test kernel and derivative version
   gk.compute(5, computed_kernel, computed_derivative);
   EXPECT_EQ(kernel.size (), computed_kernel.size ());
-  for(int i = 0; i < kernel.size (); i++)
+  for(Eigen::Index i = 0; i < kernel.size (); i++)
     EXPECT_NEAR(kernel[i], computed_kernel[i], 1e-4);
   EXPECT_EQ(derivative.size (), computed_derivative.size ());
-  for(int i = 0; i < derivative.size (); i++)
+  for(Eigen::Index i = 0; i < derivative.size (); i++)
     EXPECT_NEAR(derivative[i], computed_derivative[i], 1e-4);
 }
 

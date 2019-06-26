@@ -56,7 +56,7 @@ namespace pcl
 
             int *parent;
 
-            OctreeGlobal() : nodes(0), codes(0), begs(0), ends(0), nodes_num(0), parent(0) {}
+            OctreeGlobal() : nodes(nullptr), codes(nullptr), begs(nullptr), ends(nullptr), nodes_num(nullptr), parent(nullptr) {}
         };
 
         struct OctreeGlobalWithBox : public OctreeGlobal
@@ -68,19 +68,19 @@ namespace pcl
         class OctreeImpl
         {
         public:
-            typedef float4 PointType;
-            typedef DeviceArray<PointType> PointArray;
+            using PointType = float4;
+            using PointArray = DeviceArray<PointType>;
 
-            typedef PointArray PointCloud;
-            typedef PointArray Queries;
+            using PointCloud = PointArray;
+            using Queries = PointArray;
                        
-            typedef DeviceArray<float> Radiuses;
-            typedef DeviceArray<int> BatchResult;            
-            typedef DeviceArray<int> BatchResultSizes;
-            typedef DeviceArray<float> BatchResultSqrDists;
-            typedef DeviceArray<int> Indices;
+            using Radiuses = DeviceArray<float>;
+            using BatchResult = DeviceArray<int>;            
+            using BatchResultSizes = DeviceArray<int>;
+            using BatchResultSqrDists = DeviceArray<float>;
+            using Indices = DeviceArray<int>;
 
-            typedef pcl::gpu::NeighborIndices NeighborIndices;
+            using NeighborIndices = pcl::gpu::NeighborIndices;
 
             static void get_gpu_arch_compiled_for(int& bin, int& ptr);
 

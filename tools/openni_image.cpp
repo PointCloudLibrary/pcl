@@ -39,25 +39,28 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
-#include <boost/thread/condition.hpp>
-#include <boost/circular_buffer.hpp>
-#include <csignal>
-#include <limits>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/common/float_image_utils.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
-#include <pcl/console/time.h>
 #include <pcl/visualization/mouse_event.h>
 
+#include <boost/circular_buffer.hpp>
+
+#include <csignal>
+#include <limits>
+#include <mutex>
+#include <thread>
+
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
 
 bool global_visualize = true, is_done = false, save_data = false, toggle_one_frame_capture = false, visualize = true;
-boost::mutex io_mutex;
+std::mutex io_mutex;
 int nr_frames_total = 0;
 
 #if defined(__linux__) 
@@ -74,10 +77,7 @@ getTotalSystemMemory ()
   {
     return std::numeric_limits<size_t>::max ();
   }
-  else
-  {
-    return size_t (pages * page_size);
-  }
+  return size_t (pages * page_size);
 }
 
 const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480) / 2);
@@ -139,8 +139,8 @@ do \
 //////////////////////////////////////////////////////////////////////////////////////////
 struct Frame
 {
-  typedef boost::shared_ptr<Frame> Ptr;
-  typedef boost::shared_ptr<const Frame> ConstPtr;
+  using Ptr = boost::shared_ptr<Frame>;
+  using ConstPtr = boost::shared_ptr<const Frame>;
 
   Frame (const boost::shared_ptr<openni_wrapper::Image> &_image,
          const boost::shared_ptr<openni_wrapper::DepthImage> &_depth_image,
@@ -173,7 +173,7 @@ class Buffer
     {
       bool retVal = false;
       {
-        boost::mutex::scoped_lock buff_lock (bmutex_);
+        std::lock_guard<std::mutex> buff_lock (bmutex_);
         if (!buffer_.full ())
           retVal = true;
         buffer_.push_back (frame);
@@ -187,13 +187,13 @@ class Buffer
     {
       Frame::ConstPtr cloud;
       {
-        boost::mutex::scoped_lock buff_lock (bmutex_);
+        std::unique_lock<std::mutex> buff_lock (bmutex_);
         while (buffer_.empty ())
         {
           if (is_done)
             break;
           {
-            boost::mutex::scoped_lock io_lock (io_mutex);
+            std::lock_guard<std::mutex> io_lock (io_mutex);
             //cerr << "No data in buffer_ yet or buffer is empty." << endl;
           }
           buff_empty_.wait (buff_lock);
@@ -207,21 +207,21 @@ class Buffer
     inline bool 
     isFull ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       return (buffer_.full ());
     }
 		
     inline bool
     isEmpty ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
     	return (buffer_.empty ());
     }
 		
     inline int 
     getSize ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       return (int (buffer_.size ()));
     }
 		
@@ -234,14 +234,14 @@ class Buffer
     inline void 
     setCapacity (int buff_size)
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       buffer_.set_capacity (buff_size);
     }
 
     inline void 
     clear ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       buffer_.clear ();
     }
 
@@ -249,8 +249,8 @@ class Buffer
 		Buffer (const Buffer&) = delete;            // Disabled copy constructor
 		Buffer& operator =(const Buffer&) = delete; // Disabled assignment operator
 		
-    boost::mutex bmutex_;
-		boost::condition_variable buff_empty_;
+    std::mutex bmutex_;
+		std::condition_variable buff_empty_;
 		boost::circular_buffer<Frame::ConstPtr> buffer_;
 };
 
@@ -323,19 +323,19 @@ class Writer
         if (save_data || toggle_one_frame_capture)
           writeToDisk (buf_.popFront ());
         else
-          boost::this_thread::sleep (boost::posix_time::microseconds (100));
+          std::this_thread::sleep_for(100us);
       }
 
       if (save_data && buf_.getSize () > 0)
       {
         {
-          boost::mutex::scoped_lock io_lock (io_mutex);
+          std::lock_guard<std::mutex> io_lock (io_mutex);
           print_info ("Writing remaining %ld clouds in the buffer to disk...\n", buf_.getSize ());
         }
         while (!buf_.isEmpty ())
         {
           {
-            boost::mutex::scoped_lock io_lock (io_mutex);
+            std::lock_guard<std::mutex> io_lock (io_mutex);
             print_info ("Clearing buffer... %ld remaining...\n", buf_.getSize ());
           }
           writeToDisk (buf_.popFront ());
@@ -347,7 +347,7 @@ class Writer
     Writer (Buffer &buf)
       : buf_ (buf)
     {
-      thread_.reset (new boost::thread (boost::bind (&Writer::receiveAndProcess, this)));
+      thread_.reset (new std::thread (&Writer::receiveAndProcess, this));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -355,13 +355,13 @@ class Writer
     stop ()
     {
       thread_->join ();
-      boost::mutex::scoped_lock io_lock (io_mutex);
+      std::lock_guard<std::mutex> io_lock (io_mutex);
       print_highlight ("Writer done.\n");
     }
 
   private:
     Buffer &buf_;
-    boost::shared_ptr<boost::thread> thread_;
+    boost::shared_ptr<std::thread> thread_;
 };
 
 
@@ -396,13 +396,13 @@ class Driver
 
       if ((save_data || toggle_one_frame_capture) && !buf_write_.pushBack (frame))
       {
-        boost::mutex::scoped_lock io_lock (io_mutex);
+        std::lock_guard<std::mutex> io_lock (io_mutex);
         print_warn ("Warning! Write buffer was full, overwriting data!\n");
       }
 
       if (global_visualize && visualize && !buf_vis_.pushBack (frame))
       {
-        boost::mutex::scoped_lock io_lock (io_mutex);
+        std::lock_guard<std::mutex> io_lock (io_mutex);
         print_warn ("Warning! Visualization buffer was full, overwriting data!\n");
       }
     }
@@ -411,14 +411,19 @@ class Driver
     void 
     grabAndSend ()
     {
-      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float) > image_cb = boost::bind (&Driver::image_callback, this, _1, _2, _3);
+      std::function<
+        void (const openni_wrapper::Image::Ptr&, const openni_wrapper::DepthImage::Ptr&, float)
+      > image_cb = [this] (const openni_wrapper::Image::Ptr& img, const openni_wrapper::DepthImage::Ptr& depth, float f)
+      {
+        image_callback (img, depth, f);
+      };
       boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);
 
       grabber_.start ();
       
       while (!is_done)
       {
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+        std::this_thread::sleep_for(1s);
       }
       grabber_.stop ();
       image_connection.disconnect ();
@@ -430,7 +435,7 @@ class Driver
       , buf_write_ (buf_write)
       , buf_vis_ (buf_vis)
     {
-      thread_.reset (new boost::thread (boost::bind (&Driver::grabAndSend, this)));
+      thread_.reset (new std::thread (&Driver::grabAndSend, this));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -438,7 +443,7 @@ class Driver
     stop ()
     {
       thread_->join ();
-      boost::mutex::scoped_lock io_lock (io_mutex);
+      std::lock_guard<std::mutex> io_lock (io_mutex);
       print_highlight ("Grabber done.\n");
     }
 
@@ -446,7 +451,7 @@ class Driver
     
     OpenNIGrabber& grabber_;
     Buffer &buf_write_, &buf_vis_;
-    boost::shared_ptr<boost::thread> thread_;
+    boost::shared_ptr<std::thread> thread_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -477,7 +482,7 @@ class Viewer
              !depth_image_viewer_->wasStopped () && 
              !is_done)
       {
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
 
         if (!visualize)
         {
@@ -556,7 +561,7 @@ class Viewer
     void
     stop ()
     {
-      boost::mutex::scoped_lock io_lock (io_mutex);
+      std::lock_guard<std::mutex> io_lock (io_mutex);
       print_highlight ("Viewer done.\n");
     }
 
@@ -655,7 +660,7 @@ usage (char ** argv)
 void 
 ctrlC (int)
 {
-	boost::mutex::scoped_lock io_lock (io_mutex);
+	std::lock_guard<std::mutex> io_lock (io_mutex);
 	print_info ("\nCtrl-C detected, exit condition set to true.\n");
 	is_done = true;
 }
@@ -687,7 +692,7 @@ main (int argc, char ** argv)
       usage (argv);
       return (0);
     }
-    else if (device_id == "-l")
+    if (device_id == "-l")
     {
       if (argc >= 3)
       {

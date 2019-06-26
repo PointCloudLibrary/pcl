@@ -63,14 +63,14 @@ namespace pcl
 
       public:
         // public typedefs
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef boost::shared_ptr<PointCloud> PointCloudPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = boost::shared_ptr<PointCloud>;
 
-        typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
-        typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
+        using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
+        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
 
-        typedef boost::shared_ptr<pcl::search::OrganizedNeighbor<PointT> > Ptr;
-        typedef boost::shared_ptr<const pcl::search::OrganizedNeighbor<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<pcl::search::OrganizedNeighbor<PointT> >;
+        using ConstPtr = boost::shared_ptr<const pcl::search::OrganizedNeighbor<PointT> >;
 
         using pcl::search::Search<PointT>::indices_;
         using pcl::search::Search<PointT>::sorted_results_;
@@ -91,7 +91,6 @@ namespace pcl
           , KR_KRT_ (Eigen::Matrix<float, 3, 3, Eigen::RowMajor>::Zero ())
           , eps_ (eps)
           , pyramid_level_ (pyramid_level)
-          , mask_ ()
         {
         }
 
@@ -133,7 +132,7 @@ namespace pcl
           input_ = cloud;
           indices_ = indices;
 
-          if (indices_.get () != NULL && indices_->size () != 0)
+          if (indices_ && !indices_->empty())
           {
             mask_.assign (input_->size (), 0);
             for (std::vector<int>::const_iterator iIt = indices_->begin (); iIt != indices_->end (); ++iIt)
@@ -215,7 +214,7 @@ namespace pcl
         testPoint (const PointT& query, unsigned k, std::priority_queue<Entry>& queue, unsigned index) const
         {
           const PointT& point = input_->points [index];
-          if (mask_ [index] && pcl_isfinite (point.x))
+          if (mask_ [index] && std::isfinite (point.x))
           {
             //float squared_distance = (point.getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
             float dist_x = point.x - query.x;
@@ -227,7 +226,7 @@ namespace pcl
               queue.push (Entry (index, squared_distance));
               return queue.size () == k;
             }
-            else if (queue.top ().distance > squared_distance)
+            if (queue.top ().distance > squared_distance)
             {
               queue.pop ();
               queue.push (Entry (index, squared_distance));
