@@ -111,7 +111,13 @@ ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)
     image_depth_image_signal_ = createSignal <sig_cb_openni_image_depth_image> ();
     point_cloud_rgb_signal_   = createSignal <sig_cb_openni_point_cloud_rgb> ();
     point_cloud_rgba_signal_   = createSignal <sig_cb_openni_point_cloud_rgba> ();
-    rgb_sync_.addCallback (boost::bind(&ONIGrabber::imageDepthImageCallback, this, _1, _2));
+    rgb_sync_.addCallback ([this] (const openni_wrapper::Image::Ptr& image,
+                                   const openni_wrapper::DepthImage::Ptr& depth_image,
+                                   unsigned long,
+                                   unsigned long)
+    {
+      imageDepthImageCallback (image, depth_image);
+    });
   }
 
   image_callback_handle = device_->registerImageCallback (&ONIGrabber::imageCallback, *this);

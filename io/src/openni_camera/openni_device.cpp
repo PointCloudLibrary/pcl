@@ -46,6 +46,7 @@
 #include <pcl/io/openni_camera/openni_device.h>
 #include <pcl/io/openni_camera/openni_depth_image.h>
 #include <pcl/io/openni_camera/openni_ir_image.h>
+#include <pcl/io/openni_camera/openni_image.h>
 #include <iostream>
 #include <limits>
 #include <sstream>
@@ -934,7 +935,7 @@ openni_wrapper::OpenNIDevice::NewIRDataAvailable (xn::ProductionNode&, void* coo
 openni_wrapper::OpenNIDevice::CallbackHandle 
 openni_wrapper::OpenNIDevice::registerImageCallback (const ImageCallbackFunction& callback, void* custom_data) throw ()
 {
-  image_callback_[image_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
+  image_callback_[image_callback_handle_counter_] = [=] (const Image::Ptr& img) { callback (img, custom_data); };
   return (image_callback_handle_counter_++);
 }
 
@@ -949,7 +950,7 @@ openni_wrapper::OpenNIDevice::unregisterImageCallback (const OpenNIDevice::Callb
 openni_wrapper::OpenNIDevice::CallbackHandle 
 openni_wrapper::OpenNIDevice::registerDepthCallback (const DepthImageCallbackFunction& callback, void* custom_data) throw ()
 {
-  depth_callback_[depth_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
+  depth_callback_[depth_callback_handle_counter_] = [=] (const DepthImage::Ptr& img) { callback (img, custom_data); };
   return (depth_callback_handle_counter_++);
 }
 
@@ -964,7 +965,7 @@ openni_wrapper::OpenNIDevice::unregisterDepthCallback (const OpenNIDevice::Callb
 openni_wrapper::OpenNIDevice::CallbackHandle 
 openni_wrapper::OpenNIDevice::registerIRCallback (const IRImageCallbackFunction& callback, void* custom_data) throw ()
 {
-  ir_callback_[ir_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
+  ir_callback_[ir_callback_handle_counter_] = [=] (const IRImage::Ptr& img) { callback (img, custom_data); };
   return (ir_callback_handle_counter_++);
 }
 
