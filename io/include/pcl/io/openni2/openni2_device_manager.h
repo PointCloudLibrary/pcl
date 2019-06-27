@@ -35,9 +35,10 @@
 #include <pcl/io/openni2/openni2_device.h>
 #include <pcl/io/openni2/openni2_device_info.h>
 
-#include <vector>
-#include <string>
+#include <memory>
 #include <ostream>
+#include <string>
+#include <vector>
 
 namespace pcl
 {
@@ -56,16 +57,16 @@ namespace pcl
 
         // This may not actually be a singleton yet. Need to work out cross-dll incerface.
         // Based on http://stackoverflow.com/a/13431981/1789618
-        static boost::shared_ptr<OpenNI2DeviceManager> getInstance ()
+        static std::shared_ptr<OpenNI2DeviceManager> getInstance ()
         {
-          static boost::shared_ptr<OpenNI2DeviceManager> instance = boost::make_shared<OpenNI2DeviceManager>();
+          static auto instance = std::make_shared<OpenNI2DeviceManager>();
           return (instance);
         }
 
-        boost::shared_ptr<std::vector<OpenNI2DeviceInfo> >
+        std::shared_ptr<std::vector<OpenNI2DeviceInfo>>
         getConnectedDeviceInfos () const;
 
-        boost::shared_ptr<std::vector<std::string> >
+        std::shared_ptr<std::vector<std::string>>
         getConnectedDeviceURIs () const;
 
         std::size_t
@@ -84,7 +85,7 @@ namespace pcl
         getFileDevice (const std::string& path);
 
       protected:
-        boost::shared_ptr<OpenNI2DeviceListener> device_listener_;
+        std::shared_ptr<OpenNI2DeviceListener> device_listener_;
       };
 
       std::ostream&

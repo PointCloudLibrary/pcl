@@ -42,6 +42,7 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
 
+#include <memory>
 #include <thread>
 
 namespace pcl
@@ -232,7 +233,7 @@ namespace pcl
       boost::signals2::signal<sig_cb_real_sense_point_cloud>* point_cloud_signal_;
       boost::signals2::signal<sig_cb_real_sense_point_cloud_rgba>* point_cloud_rgba_signal_;
 
-      boost::shared_ptr<pcl::io::real_sense::RealSenseDevice> device_;
+      std::shared_ptr<pcl::io::real_sense::RealSenseDevice> device_;
 
       bool is_running_;
       unsigned int confidence_threshold_;
@@ -265,7 +266,7 @@ namespace pcl
       std::thread thread_;
 
       /// Depth buffer to perform temporal filtering of the depth images
-      boost::shared_ptr<pcl::io::Buffer<unsigned short> > depth_buffer_;
+      std::shared_ptr<pcl::io::Buffer<unsigned short> > depth_buffer_;
 
   };
 

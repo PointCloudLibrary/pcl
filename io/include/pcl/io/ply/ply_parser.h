@@ -43,6 +43,7 @@
 #include <fstream>
 #include <iostream>
 #include <istream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -379,7 +380,7 @@ namespace pcl
             std::size_t count;
             begin_element_callback_type begin_element_callback;
             end_element_callback_type end_element_callback;
-            std::vector<boost::shared_ptr<property> > properties;
+            std::vector<std::shared_ptr<property>> properties;
           };
           
           info_callback_type info_callback_;

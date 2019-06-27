@@ -54,7 +54,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   std::size_t number_of_comment_statements = 0;
 
   format_type format = pcl::io::ply::unknown;
-  std::vector< boost::shared_ptr<element> > elements;
+  std::vector<std::shared_ptr<element>> elements;
 
   char line_delim = '\n';
   int char_ignore_count = 0;

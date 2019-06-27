@@ -38,12 +38,12 @@
 #pragma once
 
 #include <boost/utility.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <pcl/pcl_exports.h>
 
 #include <DepthSense.hxx>
 
+#include <memory>
 #include <thread>
 
 namespace pcl
@@ -64,7 +64,7 @@ namespace pcl
 
         public:
 
-          using Ptr = boost::shared_ptr<DepthSenseDeviceManager>;
+          using Ptr = std::shared_ptr<DepthSenseDeviceManager>;
 
           static Ptr&
           getInstance ()

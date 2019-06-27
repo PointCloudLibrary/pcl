@@ -53,6 +53,7 @@
 #include <limits>
 #include <mutex>
 #include <thread>
+#include <memory>
 
 using namespace std;
 using namespace std::chrono_literals;
@@ -139,8 +140,8 @@ do \
 //////////////////////////////////////////////////////////////////////////////////////////
 struct Frame
 {
-  using Ptr = boost::shared_ptr<Frame>;
-  using ConstPtr = boost::shared_ptr<const Frame>;
+  using Ptr = std::shared_ptr<Frame>;
+  using ConstPtr = std::shared_ptr<const Frame>;
 
   Frame (const openni_wrapper::Image::Ptr &_image,
          const openni_wrapper::DepthImage::Ptr &_depth_image,
@@ -361,7 +362,7 @@ class Writer
 
   private:
     Buffer &buf_;
-    boost::shared_ptr<std::thread> thread_;
+    std::shared_ptr<std::thread> thread_;
 };
 
 
@@ -451,7 +452,7 @@ class Driver
     
     OpenNIGrabber& grabber_;
     Buffer &buf_write_, &buf_vis_;
-    boost::shared_ptr<std::thread> thread_;
+    std::shared_ptr<std::thread> thread_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -771,7 +772,7 @@ main (int argc, char ** argv)
 
   Driver driver (ni_grabber, buf_write, buf_vis);
   Writer writer (buf_write);
-  boost::shared_ptr<Viewer> viewer;
+  std::shared_ptr<Viewer> viewer;
   if (global_visualize)
     viewer.reset (new Viewer (buf_vis));
   else

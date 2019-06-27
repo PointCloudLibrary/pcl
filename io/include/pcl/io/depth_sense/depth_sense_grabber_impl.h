@@ -37,14 +37,14 @@
 
 #pragma once
 
-#include <DepthSense.hxx>
-
 #include <pcl/common/time.h>
 #include <pcl/io/buffers.h>
 #include <pcl/io/depth_sense_grabber.h>
 
-#include <mutex>
+#include <DepthSense.hxx>
 
+#include <memory>
+#include <mutex>
 
 namespace pcl
 {
@@ -69,7 +69,7 @@ namespace pcl
         int confidence_threshold_;
         DepthSenseGrabber::TemporalFilteringType temporal_filtering_type_;
 
-        boost::shared_ptr<DepthSense::ProjectionHelper> projection_;
+        std::shared_ptr<DepthSense::ProjectionHelper> projection_;
 
         using sig_cb_depth_sense_point_cloud = DepthSenseGrabber::sig_cb_depth_sense_point_cloud;
         using sig_cb_depth_sense_point_cloud_rgba = DepthSenseGrabber::sig_cb_depth_sense_point_cloud_rgba;
@@ -93,7 +93,7 @@ namespace pcl
         /// Temporary buffer to store color data
         std::vector<uint8_t> color_data_;
 
-        boost::shared_ptr<pcl::io::Buffer<float> > depth_buffer_;
+        std::shared_ptr<pcl::io::Buffer<float> > depth_buffer_;
 
         static const int FRAMERATE = 30;
         static const int WIDTH = 320;
