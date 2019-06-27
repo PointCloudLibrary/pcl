@@ -40,13 +40,16 @@
 
 #pragma once
 
-#include "pcl/pcl_config.h"
+#include <pcl/pcl_config.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/file_grabber.h>
 #include <pcl/common/time_trigger.h>
+#include <pcl/conversions.h>
+
+#include <boost/shared_ptr.hpp>
+
 #include <string>
 #include <vector>
-#include <pcl/conversions.h>
 
 namespace pcl
 {
@@ -214,6 +217,8 @@ namespace pcl
   template <typename PointT> class ImageGrabber : public ImageGrabberBase, public FileGrabber<PointT>
   {
     public:
+    using Ptr = boost::shared_ptr<ImageGrabber>;
+
     ImageGrabber (const std::string& dir, 
                   float frames_per_second = 0, 
                   bool repeat = false, 

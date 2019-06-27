@@ -71,6 +71,7 @@ namespace pcl
       class PCL_EXPORTS OpenNI2Device
       {
         public:
+          using Ptr = boost::shared_ptr<OpenNI2Device>;
 
           using ImageCallbackFunction = std::function<void(boost::shared_ptr<Image>, void* cookie) >;
           using DepthImageCallbackFunction = std::function<void(boost::shared_ptr<DepthImage>, void* cookie) >;

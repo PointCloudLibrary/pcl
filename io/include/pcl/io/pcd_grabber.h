@@ -43,8 +43,6 @@
 #include <pcl/io/grabber.h>
 #include <pcl/io/file_grabber.h>
 #include <pcl/common/time_trigger.h>
-#include <string>
-#include <vector>
 #include <pcl/conversions.h>
 
 #ifdef HAVE_OPENNI
@@ -52,6 +50,11 @@
 #include <pcl/io/openni_camera/openni_image_rgb24.h>
 #include <pcl/io/openni_camera/openni_depth_image.h>
 #endif
+
+#include <boost/shared_ptr.hpp>
+
+#include <string>
+#include <vector>
 
 namespace pcl
 {
@@ -155,6 +158,8 @@ namespace pcl
   template <typename PointT> class PCDGrabber : public PCDGrabberBase, public FileGrabber<PointT>
   {
     public:
+      using Ptr = boost::shared_ptr<PCDGrabber>;
+
       PCDGrabber (const std::string& pcd_path, float frames_per_second = 0, bool repeat = false);
       PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second = 0, bool repeat = false);
       
