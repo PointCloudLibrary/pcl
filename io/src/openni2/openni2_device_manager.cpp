@@ -214,26 +214,26 @@ pcl::io::openni2::OpenNI2DeviceManager::getNumOfConnectedDevices () const
   return device_listener_->getNumOfConnectedDevices ();
 }
 
-boost::shared_ptr<OpenNI2Device>
+OpenNI2Device::Ptr
 pcl::io::openni2::OpenNI2DeviceManager::getAnyDevice ()
 {
   return boost::make_shared<OpenNI2Device>("");
 }
 
-boost::shared_ptr<OpenNI2Device>
+OpenNI2Device::Ptr
 pcl::io::openni2::OpenNI2DeviceManager::getDevice (const std::string& device_URI)
 {
   return boost::make_shared<OpenNI2Device>(device_URI);
 }
 
-boost::shared_ptr<OpenNI2Device>
+OpenNI2Device::Ptr
 pcl::io::openni2::OpenNI2DeviceManager::getDeviceByIndex (int index)
 {
   boost::shared_ptr<std::vector<std::string> > URIs = getConnectedDeviceURIs ();
   return boost::make_shared<OpenNI2Device>( URIs->at (index) );
 }
 
-boost::shared_ptr<OpenNI2Device>
+OpenNI2Device::Ptr
 pcl::io::openni2::OpenNI2DeviceManager::getFileDevice (const std::string& path)
 {
   return boost::make_shared<OpenNI2Device>(path);

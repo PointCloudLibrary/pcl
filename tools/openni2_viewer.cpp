@@ -128,7 +128,7 @@ public:
   }
 
   void
-  image_callback (const boost::shared_ptr<pcl::io::openni2::Image>& image)
+  image_callback (const pcl::io::openni2::Image::Ptr& image)
   {
     FPS_CALC ("image callback");
     std::lock_guard<std::mutex> lock (image_mutex_);
@@ -181,7 +181,7 @@ public:
     boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
 
     boost::signals2::connection image_connection;
-    if (grabber_.providesCallback<void (const boost::shared_ptr<pcl::io::openni2::Image>&)>())
+    if (grabber_.providesCallback<void (const pcl::io::openni2::Image::Ptr&)>())
     {
       image_viewer_.reset (new pcl::visualization::ImageViewer ("PCL OpenNI image"));
       image_viewer_->registerMouseCallback (&OpenNI2Viewer::mouse_callback, *this);
@@ -196,7 +196,7 @@ public:
 
     while (!(cloud_viewer_->wasStopped () || (image_viewer_ && image_viewer_->wasStopped ())))
     {
-      boost::shared_ptr<pcl::io::openni2::Image> image;
+      pcl::io::openni2::Image::Ptr image;
       CloudConstPtr cloud;
 
       cloud_viewer_->spinOnce ();
@@ -271,7 +271,7 @@ public:
   std::mutex image_mutex_;
 
   CloudConstPtr cloud_;
-  boost::shared_ptr<pcl::io::openni2::Image> image_;
+  pcl::io::openni2::Image::Ptr image_;
   unsigned char* rgb_data_;
   unsigned rgb_data_size_;
 };

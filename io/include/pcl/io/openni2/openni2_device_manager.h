@@ -32,10 +32,8 @@
 #pragma once
 
 #include <pcl/pcl_exports.h>
-#include "pcl/io/openni2/openni2_device_info.h"
-
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
+#include <pcl/io/openni2/openni2_device.h>
+#include <pcl/io/openni2/openni2_device_info.h>
 
 #include <vector>
 #include <string>
@@ -49,7 +47,6 @@ namespace pcl
     {
 
       class OpenNI2DeviceListener;
-      class OpenNI2Device;
 
       class PCL_EXPORTS OpenNI2DeviceManager
       {
@@ -74,16 +71,16 @@ namespace pcl
         std::size_t
         getNumOfConnectedDevices () const;
 
-        boost::shared_ptr<OpenNI2Device>
+        OpenNI2Device::Ptr
         getAnyDevice ();
 
-        boost::shared_ptr<OpenNI2Device>
+        OpenNI2Device::Ptr
         getDevice (const std::string& device_URI);
 
-        boost::shared_ptr<OpenNI2Device>
+        OpenNI2Device::Ptr
         getDeviceByIndex (int index);
 
-        boost::shared_ptr<OpenNI2Device>
+        OpenNI2Device::Ptr
         getFileDevice (const std::string& path);
 
       protected:

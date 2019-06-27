@@ -61,7 +61,7 @@ namespace pcl
        * This signal is sent when the accumulated number of points reaches
        * the limit specified by setSignalPointCloudSize().
        */
-      using sig_cb_robot_eye_point_cloud_xyzi = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> > &);
+      using sig_cb_robot_eye_point_cloud_xyzi = void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr &);
 
       /** \brief RobotEyeGrabber default constructor. */
       RobotEyeGrabber ();
@@ -115,7 +115,7 @@ namespace pcl
        * It is not safe to access this point cloud except if the grabber is
        * stopped or during the grabber callback.
        */
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > getPointCloud() const;
+      pcl::PointCloud<pcl::PointXYZI>::Ptr getPointCloud() const;
 
     private:
 
@@ -134,7 +134,7 @@ namespace pcl
       boost::shared_ptr<std::thread> consumer_thread_;
 
       pcl::SynchronizedQueue<boost::shared_array<unsigned char> > packet_queue_;
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > point_cloud_xyzi_;
+      pcl::PointCloud<pcl::PointXYZI>::Ptr point_cloud_xyzi_;
       boost::signals2::signal<sig_cb_robot_eye_point_cloud_xyzi>* point_cloud_signal_;
 
       void consumerThreadLoop ();

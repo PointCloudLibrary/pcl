@@ -142,8 +142,8 @@ struct Frame
   using Ptr = boost::shared_ptr<Frame>;
   using ConstPtr = boost::shared_ptr<const Frame>;
 
-  Frame (const boost::shared_ptr<openni_wrapper::Image> &_image,
-         const boost::shared_ptr<openni_wrapper::DepthImage> &_depth_image,
+  Frame (const openni_wrapper::Image::Ptr &_image,
+         const openni_wrapper::DepthImage::Ptr &_depth_image,
          const io::CameraParameters &_parameters_rgb,
          const io::CameraParameters &_parameters_depth,
          const boost::posix_time::ptime &_time)
@@ -154,8 +154,8 @@ struct Frame
     , time (_time) 
   {}
 
-  const boost::shared_ptr<openni_wrapper::Image> image;
-  const boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
+  const openni_wrapper::Image::Ptr image;
+  const openni_wrapper::DepthImage::Ptr depth_image;
         
   io::CameraParameters parameters_rgb, parameters_depth;
 
@@ -371,8 +371,8 @@ class Driver
   private:
     //////////////////////////////////////////////////////////////////////////
     void
-    image_callback (const boost::shared_ptr<openni_wrapper::Image> &image, 
-                    const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, 
+    image_callback (const openni_wrapper::Image::Ptr &image, 
+                    const openni_wrapper::DepthImage::Ptr &depth_image, 
                     float)
     {
       boost::posix_time::ptime time = boost::posix_time::microsec_clock::local_time ();
@@ -618,8 +618,8 @@ class Viewer
     }
 
     Buffer &buf_;
-    boost::shared_ptr<visualization::ImageViewer> image_viewer_;
-    boost::shared_ptr<visualization::ImageViewer> depth_image_viewer_;
+    visualization::ImageViewer::Ptr image_viewer_;
+    visualization::ImageViewer::Ptr depth_image_viewer_;
     bool image_cld_init_, depth_image_cld_init_;
 };
 

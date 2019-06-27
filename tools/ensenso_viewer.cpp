@@ -52,7 +52,7 @@ using CloudViewer = pcl::visualization::CloudViewer;
 using PointCloudXYZ = pcl::PointCloud<pcl::PointXYZ>;
 
 /** @brief CloudViewer pointer */
-boost::shared_ptr<CloudViewer> viewer_ptr;
+CloudViewer::Ptr viewer_ptr;
 
 /** @brief PCL Ensenso object pointer */
 pcl::EnsensoGrabber::Ptr ensenso_ptr;

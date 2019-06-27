@@ -114,10 +114,10 @@ openni_wrapper::DeviceXtionPro::enumAvailableModes () throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-boost::shared_ptr<openni_wrapper::Image> 
+openni_wrapper::Image::Ptr 
 openni_wrapper::DeviceXtionPro::getCurrentImage (boost::shared_ptr<xn::ImageMetaData>) const throw ()
 {
-  return (boost::shared_ptr<Image> (reinterpret_cast<Image*> (0)));
+  return (Image::Ptr (reinterpret_cast<Image*> (0)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
