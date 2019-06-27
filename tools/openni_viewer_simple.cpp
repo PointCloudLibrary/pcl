@@ -200,7 +200,7 @@ class SimpleOpenNIViewer
         }
         if (image_)
         {
-          boost::shared_ptr<openni_wrapper::Image> image = getLatestImage ();
+          auto image = getLatestImage ();
           
           if (image->getEncoding() == openni_wrapper::Image::RGB)
           {
@@ -293,7 +293,7 @@ main(int argc, char ** argv)
       if (argc >= 3)
       {
         pcl::OpenNIGrabber grabber(argv[2]);
-        boost::shared_ptr<openni_wrapper::OpenNIDevice> device = grabber.getDevice();
+        auto device = grabber.getDevice();
         cout << "Supported depth modes for device: " << device->getVendorName() << " , " << device->getProductName() << endl;
         std::vector<std::pair<int, XnMapOutputMode > > modes = grabber.getAvailableDepthModes();
         for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)

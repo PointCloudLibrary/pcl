@@ -839,7 +839,7 @@ openni_wrapper::OpenNIDevice::ImageDataThreadFunction ()
     image_data->CopyFrom (image_md);
     image_lock.unlock ();
     
-    boost::shared_ptr<Image> image = getCurrentImage (image_data);
+    auto image = getCurrentImage (image_data);
     for (const auto &callback : image_callback_)
     {
       callback.second.operator()(image);

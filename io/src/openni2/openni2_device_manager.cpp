@@ -229,7 +229,7 @@ pcl::io::openni2::OpenNI2DeviceManager::getDevice (const std::string& device_URI
 OpenNI2Device::Ptr
 pcl::io::openni2::OpenNI2DeviceManager::getDeviceByIndex (int index)
 {
-  boost::shared_ptr<std::vector<std::string> > URIs = getConnectedDeviceURIs ();
+  auto URIs = getConnectedDeviceURIs ();
   return boost::make_shared<OpenNI2Device>( URIs->at (index) );
 }
 

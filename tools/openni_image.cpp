@@ -697,7 +697,7 @@ main (int argc, char ** argv)
       if (argc >= 3)
       {
         OpenNIGrabber grabber (argv[2]);
-        boost::shared_ptr<openni_wrapper::OpenNIDevice> device = grabber.getDevice ();
+        auto device = grabber.getDevice ();
         vector<pair<int, XnMapOutputMode> > modes;
 
         if (device->hasImageStream ())

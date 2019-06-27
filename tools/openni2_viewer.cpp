@@ -302,17 +302,17 @@ main (int argc, char** argv)
       if (argc >= 3)
       {
         pcl::io::OpenNI2Grabber grabber (argv[2]);
-        boost::shared_ptr<pcl::io::openni2::OpenNI2Device> device = grabber.getDevice ();
+        auto device = grabber.getDevice ();
         cout << *device;		// Prints out all sensor data, including supported video modes
       }
       else
       {
-        boost::shared_ptr<pcl::io::openni2::OpenNI2DeviceManager> deviceManager = pcl::io::openni2::OpenNI2DeviceManager::getInstance ();
+        auto deviceManager = pcl::io::openni2::OpenNI2DeviceManager::getInstance ();
         if (deviceManager->getNumOfConnectedDevices () > 0)
         {
           for (size_t deviceIdx = 0; deviceIdx < deviceManager->getNumOfConnectedDevices (); ++deviceIdx)
           {
-            boost::shared_ptr<pcl::io::openni2::OpenNI2Device> device = deviceManager->getDeviceByIndex (deviceIdx);
+            auto device = deviceManager->getDeviceByIndex (deviceIdx);
             cout << "Device " << device->getStringID () << "connected." << endl;
           }
 
@@ -327,10 +327,10 @@ main (int argc, char** argv)
   }
   else
   {
-    boost::shared_ptr<pcl::io::openni2::OpenNI2DeviceManager> deviceManager = pcl::io::openni2::OpenNI2DeviceManager::getInstance ();
+    auto deviceManager = pcl::io::openni2::OpenNI2DeviceManager::getInstance ();
     if (deviceManager->getNumOfConnectedDevices () > 0)
     {
-      boost::shared_ptr<pcl::io::openni2::OpenNI2Device> device = deviceManager->getAnyDevice ();
+      auto device = deviceManager->getAnyDevice ();
       cout << "Device ID not set, using default device: " << device->getStringID () << endl;
     }
   }
