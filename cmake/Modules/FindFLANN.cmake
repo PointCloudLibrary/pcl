@@ -2,7 +2,8 @@
 # FindFLANN
 # --------
 #
-# Try to find FLANN library and include files.
+# Try to find FLANN library and headers. This module supports both old released versions
+# of FLANN ≤ 1.9.1 and newer development versions that ship with a modern config file.
 #
 # IMPORTED Targets
 # ^^^^^^^^^^^^^^^^
@@ -38,6 +39,22 @@
 #     target_link_libraries(foo FLANN::FLANN)
 #
 
+# First try to locate FLANN using modern config
+find_package(flann NO_MODULE ${FLANN_FIND_VERSION} QUIET)
+if(flann_FOUND)
+  unset(flann_FOUND)
+  set(FLANN_FOUND ON)
+  # Create interface library that effectively becomes an alias for the appropriate (static/dynamic) imported FLANN target
+  add_library(FLANN::FLANN INTERFACE IMPORTED)
+  if(FLANN_USE_STATIC)
+    set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp_s)
+  else()
+    set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp)
+  endif()
+  return()
+endif()
+
+# Second try to locate FLANN using pkgconfig
 find_package(PkgConfig QUIET)
 if(FLANN_FIND_VERSION)
   pkg_check_modules(PC_FLANN flann>=${FLANN_FIND_VERSION})
