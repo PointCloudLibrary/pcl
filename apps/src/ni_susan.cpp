@@ -54,6 +54,8 @@
 #include <mutex>
 #include <thread>
 
+#include <pcl/make_shared.h>
+
 using namespace pcl;
 using namespace std;
 using namespace std::chrono_literals;
@@ -89,7 +91,7 @@ class SUSANDemo
       susan.setInputCloud (cloud);
       susan.setNumberOfThreads (6);
       susan.setNonMaxSupression (true);
-      keypoints_.reset (new PointCloud<KeyPointT>);
+      keypoints_ = pcl::make_shared<PointCloud<KeyPointT>> ();
       susan.compute (*keypoints_);
     }
 

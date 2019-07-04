@@ -43,6 +43,8 @@
 
 #include <QFileInfo>
 #include <QSettings>
+
+#include <pcl/make_shared.h>
 #include <vtkActor.h>
 #include <vtkRenderer.h>
 
@@ -204,7 +206,7 @@ pcl::modeler::MainWindow::createRecentPointCloudActions()
 {
   for (size_t i = 0; i < MAX_RECENT_NUMBER; ++ i)
   {
-    recent_pointcloud_actions_.push_back(boost::shared_ptr<QAction>(new QAction(this)));
+    recent_pointcloud_actions_.push_back(pcl::make_shared<QAction>(this));
     ui_->menuRecentPointClouds->addAction(recent_pointcloud_actions_[i].get());
     recent_pointcloud_actions_[i]->setVisible(false);
     connect(recent_pointcloud_actions_[i].get(), SIGNAL(triggered()), this, SLOT(slotOpenRecentPointCloud()));
@@ -228,7 +230,7 @@ pcl::modeler::MainWindow::createRecentProjectActions()
 {
   for (size_t i = 0; i < MAX_RECENT_NUMBER; ++ i)
   {
-    recent_project_actions_.push_back(boost::shared_ptr<QAction>(new QAction(this)));
+    recent_project_actions_.push_back(pcl::make_shared<QAction>(this));
     ui_->menuRecentPointClouds->addAction(recent_project_actions_[i].get());
     recent_project_actions_[i]->setVisible(false);
     connect(recent_project_actions_[i].get(), SIGNAL(triggered()), this, SLOT(slotOpenRecentProject()));

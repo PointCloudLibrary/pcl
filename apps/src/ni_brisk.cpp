@@ -55,6 +55,8 @@
 #include <mutex>
 #include <thread>
 
+#include <pcl/make_shared.h>
+
 using namespace pcl;
 using namespace std;
 using namespace std::chrono_literals;
@@ -91,7 +93,7 @@ class BRISKDemo
       brisk.setOctaves (4);
       brisk.setInputCloud (cloud);
 
-      keypoints_.reset (new PointCloud<KeyPointT>);
+      keypoints_ = pcl::make_shared<PointCloud<KeyPointT>> ();
       brisk.compute (*keypoints_);
     }
 

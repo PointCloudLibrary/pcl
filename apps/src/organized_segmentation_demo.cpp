@@ -6,6 +6,8 @@
 #include <QEvent>
 #include <QObject>
 
+#include <pcl/make_shared.h>
+
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/surface/convex_hull.h>
 
@@ -205,7 +207,7 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo (pcl::Grabber& grabber) : g
   ui_->setupUi (this);
 
   this->setWindowTitle ("PCL Organized Connected Component Segmentation Demo");
-  vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
+  vis_ = pcl::make_shared<pcl::visualization::PCLVisualizer> ("", false);
   ui_->qvtk_widget->SetRenderWindow (vis_->getRenderWindow ());
   vis_->setupInteractor (ui_->qvtk_widget->GetInteractor (), ui_->qvtk_widget->GetRenderWindow ());
   vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
@@ -250,10 +252,10 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo (pcl::Grabber& grabber) : g
   ne.setMaxDepthChangeFactor (0.02f); // set as default, well performing for tabletop objects as imaged by a primesense sensor
   ne.setNormalSmoothingSize (20.0f);
 
-  plane_comparator_.reset (new pcl::PlaneCoefficientComparator<PointT, pcl::Normal> ());
-  euclidean_comparator_.reset (new pcl::EuclideanPlaneCoefficientComparator<PointT, pcl::Normal> ());
-  rgb_comparator_.reset (new pcl::RGBPlaneCoefficientComparator<PointT, pcl::Normal> ());
-  edge_aware_comparator_.reset (new pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal> ());
+  plane_comparator_ = pcl::make_shared<pcl::PlaneCoefficientComparator<PointT, pcl::Normal>> ();
+  euclidean_comparator_ = pcl::make_shared<pcl::EuclideanPlaneCoefficientComparator<PointT, pcl::Normal>> ();
+  rgb_comparator_ = pcl::make_shared<pcl::RGBPlaneCoefficientComparator<PointT, pcl::Normal>> ();
+  edge_aware_comparator_ = pcl::make_shared<pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal>> ();
   euclidean_cluster_comparator_ = pcl::EuclideanClusterComparator<PointT, pcl::Label>::Ptr (new pcl::EuclideanClusterComparator<PointT, pcl::Label> ());
 
   // Set up Organized Multi Plane Segmentation

@@ -23,6 +23,8 @@
 #include <pcl/recognition/hv/hv_go.h>
 #include <pcl/recognition/hv/greedy_verification.h>
 
+#include <pcl/make_shared.h>
+
 void
 getScenesInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector<std::string> & relative_paths)
 {
@@ -364,7 +366,7 @@ main (int argc, char ** argv)
 
   //configure normal estimator
   boost::shared_ptr<pcl::rec_3d_framework::PreProcessorAndNormalEstimator<pcl::PointXYZ, pcl::Normal> > normal_estimator;
-  normal_estimator.reset (new pcl::rec_3d_framework::PreProcessorAndNormalEstimator<pcl::PointXYZ, pcl::Normal>);
+  normal_estimator = pcl::make_shared<pcl::rec_3d_framework::PreProcessorAndNormalEstimator<pcl::PointXYZ, pcl::Normal>> ();
   normal_estimator->setCMR (false);
   normal_estimator->setDoVoxelGrid (true);
   normal_estimator->setRemoveOutliers (true);
@@ -434,7 +436,7 @@ main (int argc, char ** argv)
   if (desc_name == "shot")
   {
     boost::shared_ptr<pcl::rec_3d_framework::SHOTLocalEstimation<pcl::PointXYZ, pcl::Histogram<352> > > estimator;
-    estimator.reset (new pcl::rec_3d_framework::SHOTLocalEstimation<pcl::PointXYZ, pcl::Histogram<352> >);
+    estimator = pcl::make_shared<pcl::rec_3d_framework::SHOTLocalEstimation<pcl::PointXYZ, pcl::Histogram<352> >> ();
     estimator->setNormalEstimator (normal_estimator);
     estimator->addKeypointExtractor (keypoint_extractor);
     estimator->setSupportRadius (0.04f);
@@ -465,7 +467,7 @@ main (int argc, char ** argv)
   {
     desc_name = std::string ("shot");
     boost::shared_ptr<pcl::rec_3d_framework::SHOTLocalEstimationOMP<pcl::PointXYZ, pcl::Histogram<352> > > estimator;
-    estimator.reset (new pcl::rec_3d_framework::SHOTLocalEstimationOMP<pcl::PointXYZ, pcl::Histogram<352> >);
+    estimator = pcl::make_shared<pcl::rec_3d_framework::SHOTLocalEstimationOMP<pcl::PointXYZ, pcl::Histogram<352> >> ();
     estimator->setNormalEstimator (normal_estimator);
     estimator->addKeypointExtractor (keypoint_extractor);
     //estimator->setSupportRadius (0.04f);
@@ -498,7 +500,7 @@ main (int argc, char ** argv)
   if (desc_name == "fpfh")
   {
     boost::shared_ptr<pcl::rec_3d_framework::FPFHLocalEstimation<pcl::PointXYZ, pcl::FPFHSignature33> > estimator;
-    estimator.reset (new pcl::rec_3d_framework::FPFHLocalEstimation<pcl::PointXYZ, pcl::FPFHSignature33>);
+    estimator = pcl::make_shared<pcl::rec_3d_framework::FPFHLocalEstimation<pcl::PointXYZ, pcl::FPFHSignature33>> ();
     estimator->setNormalEstimator (normal_estimator);
     estimator->addKeypointExtractor (keypoint_extractor);
     estimator->setSupportRadius (0.04f);

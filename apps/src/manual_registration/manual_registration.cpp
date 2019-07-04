@@ -46,6 +46,8 @@
 #include <QEvent>
 #include <QObject>
 
+#include <pcl/make_shared.h>
+
 // VTK
 #include <vtkRenderWindow.h>
 #include <vtkRendererCollection.h>
@@ -69,7 +71,7 @@ ManualRegistration::ManualRegistration ()
   this->setWindowTitle ("PCL Manual Registration");
 
   // Set up the source window
-  vis_src_.reset (new pcl::visualization::PCLVisualizer ("", false));
+  vis_src_ = pcl::make_shared<pcl::visualization::PCLVisualizer> ("", false);
   ui_->qvtk_widget_src->SetRenderWindow (vis_src_->getRenderWindow ());
   vis_src_->setupInteractor (ui_->qvtk_widget_src->GetInteractor (), ui_->qvtk_widget_src->GetRenderWindow ());
   vis_src_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
@@ -78,7 +80,7 @@ ManualRegistration::ManualRegistration ()
   vis_src_->registerPointPickingCallback (&ManualRegistration::SourcePointPickCallback, *this);
 
   // Set up the destination window
-  vis_dst_.reset (new pcl::visualization::PCLVisualizer ("", false));
+  vis_dst_ = pcl::make_shared<pcl::visualization::PCLVisualizer> ("", false);
   ui_->qvtk_widget_dst->SetRenderWindow (vis_dst_->getRenderWindow ());
   vis_dst_->setupInteractor (ui_->qvtk_widget_dst->GetInteractor (), ui_->qvtk_widget_dst->GetRenderWindow ());
   vis_dst_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);

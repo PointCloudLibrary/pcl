@@ -36,6 +36,8 @@
 
 #include <thread>
 
+#include <pcl/make_shared.h>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -90,7 +92,7 @@ class OpenNIChangeViewer
       switch (mode_) 
       {
         case REDDIFF_MODE:
-          filtered_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA> (*cloud));
+          filtered_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZRGBA>> (*cloud);
           filtered_cloud->points.reserve(newPointIdxVector.size());
 
           for (const int &idx : newPointIdxVector)
@@ -101,7 +103,7 @@ class OpenNIChangeViewer
 
           break;
         case ONLYDIFF_MODE:
-          filtered_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA>);
+          filtered_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZRGBA>> ();
 
           filtered_cloud->points.reserve(newPointIdxVector.size());
 

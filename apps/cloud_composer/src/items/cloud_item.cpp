@@ -7,6 +7,8 @@
 
 #include <QMessageBox>
 
+#include <pcl/make_shared.h>
+
 pcl::cloud_composer::CloudItem::CloudItem (QString name,
                                            pcl::PCLPointCloud2::Ptr cloud_ptr,
                                            const Eigen::Vector4f& origin, 
@@ -31,9 +33,9 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
   this->setData (QVariant::fromValue (orientation_), ItemDataRole::ORIENTATION);
    
   //Create a color and geometry handler for this cloud
-  color_handler_.reset (new pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2> (cloud_ptr));
+  color_handler_ = pcl::make_shared<pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2>> (cloud_ptr);
   this->setData (QVariant::fromValue (color_handler_), ItemDataRole::COLOR_HANDLER);
-  geometry_handler_.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PCLPointCloud2> (cloud_ptr));
+  geometry_handler_ = pcl::make_shared<pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PCLPointCloud2>> (cloud_ptr);
   this->setData (QVariant::fromValue (geometry_handler_), ItemDataRole::GEOMETRY_HANDLER);
      
   properties_->addCategory ("Core Properties");

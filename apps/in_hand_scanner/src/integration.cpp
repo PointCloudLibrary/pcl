@@ -44,6 +44,8 @@
 #include <vector>
 #include <limits>
 
+#include <pcl/make_shared.h>
+
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/visibility_confidence.h>
@@ -80,7 +82,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
   const int width  = static_cast <int> (cloud_data->width);
   const int height = static_cast <int> (cloud_data->height);
 
-  if (!mesh_model) mesh_model = MeshPtr (new Mesh ());
+  if (!mesh_model) mesh_model = pcl::make_shared<Mesh>();
 
   mesh_model->clear ();
   mesh_model->reserveVertices (cloud_data->size ());

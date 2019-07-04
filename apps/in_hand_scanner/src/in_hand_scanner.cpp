@@ -46,6 +46,8 @@
 #include <QPainter>
 #include <QtConcurrent>
 
+#include <pcl/make_shared.h>
+
 #include <pcl/exceptions.h>
 #include <pcl/common/time.h>
 #include <pcl/common/transforms.h>
@@ -292,7 +294,7 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
   CloudXYZRGBNormalPtr cloud_discarded;
   if (running_mode_ == RM_SHOW_MODEL)
   {
-    cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
+    cloud_data = pcl::make_shared<CloudXYZRGBNormal>();
   }
   else if (running_mode_ == RM_UNPROCESSED)
   {
@@ -325,7 +327,7 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
                 << "  - time reconstruct mesh          : "
                 << std::setw (8) << std::right << sw.getTime () << " ms\n";
 
-      cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
+      cloud_data = pcl::make_shared<CloudXYZRGBNormal>();
       ++iteration_;
     }
     else
@@ -357,7 +359,7 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
         std::cerr << "  - time mesh processing           : "
                   << std::setw (8) << std::right << sw.getTime () << " ms\n";
 
-        cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
+        cloud_data = pcl::make_shared<CloudXYZRGBNormal>();
         ++iteration_;
       }
     }
@@ -470,7 +472,7 @@ pcl::ihs::InHandScanner::startGrabberImpl ()
 
   try
   {
-    grabber_ = GrabberPtr (new Grabber ());
+    grabber_ = pcl::make_shared<Grabber>();
   }
   catch (const pcl::PCLException& e)
   {

@@ -7,6 +7,8 @@
 using namespace pcl;
 
 #include <iostream>
+
+#include <pcl/make_shared.h>
 using namespace std;
 
 const Eigen::Vector4f subsampling_leaf_size (0.02f, 0.02f, 0.02f, 0.0f);
@@ -20,16 +22,16 @@ subsampleAndCalculateNormals (PointCloud<PointXYZ>::Ptr &cloud,
                               PointCloud<PointXYZ>::Ptr &cloud_subsampled,
                               PointCloud<Normal>::Ptr &cloud_subsampled_normals)
 {
-  cloud_subsampled = PointCloud<PointXYZ>::Ptr (new PointCloud<PointXYZ> ());
+  cloud_subsampled = pcl::make_shared<PointCloud<PointXYZ>> ();
   VoxelGrid<PointXYZ> subsampling_filter;
   subsampling_filter.setInputCloud (cloud);
   subsampling_filter.setLeafSize (subsampling_leaf_size);
   subsampling_filter.filter (*cloud_subsampled);
 
-  cloud_subsampled_normals = PointCloud<Normal>::Ptr (new PointCloud<Normal> ());
+  cloud_subsampled_normals = pcl::make_shared<PointCloud<Normal>> ();
   NormalEstimation<PointXYZ, Normal> normal_estimation_filter;
   normal_estimation_filter.setInputCloud (cloud_subsampled);
-  search::KdTree<PointXYZ>::Ptr search_tree (new search::KdTree<PointXYZ>);
+  search::KdTree<PointXYZ>::Ptr search_tree = pcl::make_shared<search::KdTree<PointXYZ>> ();
   normal_estimation_filter.setSearchMethod (search_tree);
   normal_estimation_filter.setRadiusSearch (normal_estimation_search_radius);
   normal_estimation_filter.compute (*cloud_subsampled_normals);
@@ -50,8 +52,8 @@ main (int argc, char **argv)
 
   /// read point clouds from HDD
   PCL_INFO ("Reading scene ...\n");
-  PointCloud<PointXYZ>::Ptr cloud_a (new PointCloud<PointXYZ> ()),
-      cloud_b (new PointCloud<PointXYZ> ());
+  PointCloud<PointXYZ>::Ptr cloud_a = pcl::make_shared<PointCloud<PointXYZ>> (),
+      cloud_b = pcl::make_shared<PointCloud<PointXYZ>> ();
   PCDReader reader;
   reader.read (argv[1], *cloud_a);
   reader.read (argv[2], *cloud_b);
@@ -64,10 +66,10 @@ main (int argc, char **argv)
   PCL_INFO ("Finished subsampling the clouds ...\n");
 
 
-  PointCloud<PPFSignature>::Ptr ppf_signature_a (new PointCloud<PPFSignature> ()),
-      ppf_signature_b (new PointCloud<PPFSignature> ());
-  PointCloud<PointNormal>::Ptr cloud_subsampled_with_normals_a (new PointCloud<PointNormal> ()),
-      cloud_subsampled_with_normals_b (new PointCloud<PointNormal> ());
+  PointCloud<PPFSignature>::Ptr ppf_signature_a = pcl::make_shared<PointCloud<PPFSignature>> (),
+      ppf_signature_b = pcl::make_shared<PointCloud<PPFSignature>> ();
+  PointCloud<PointNormal>::Ptr cloud_subsampled_with_normals_a = pcl::make_shared<PointCloud<PointNormal>> (),
+      cloud_subsampled_with_normals_b = pcl::make_shared<PointCloud<PointNormal>> ();
   concatenateFields (*cloud_a_subsampled, *cloud_a_subsampled_normals, *cloud_subsampled_with_normals_a);
   concatenateFields (*cloud_b_subsampled, *cloud_b_subsampled_normals, *cloud_subsampled_with_normals_b);
 
@@ -89,14 +91,14 @@ main (int argc, char **argv)
   dim_range_target.emplace_back(0.0f, 50.0f);
 
 
-  PyramidFeatureHistogram<PPFSignature>::Ptr pyramid_a (new PyramidFeatureHistogram<PPFSignature> ());
+  PyramidFeatureHistogram<PPFSignature>::Ptr pyramid_a = pcl::make_shared<PyramidFeatureHistogram<PPFSignature>> ();
   pyramid_a->setInputCloud (ppf_signature_a);
   pyramid_a->setInputDimensionRange (dim_range_input);
   pyramid_a->setTargetDimensionRange (dim_range_target);
   pyramid_a->compute ();
   PCL_INFO ("Done with the first pyramid\n");
 
-  PyramidFeatureHistogram<PPFSignature>::Ptr pyramid_b (new PyramidFeatureHistogram<PPFSignature> ());
+  PyramidFeatureHistogram<PPFSignature>::Ptr pyramid_b = pcl::make_shared<PyramidFeatureHistogram<PPFSignature>> ();
   pyramid_b->setInputCloud (ppf_signature_b);
   pyramid_b->setInputDimensionRange (dim_range_input);
   pyramid_b->setTargetDimensionRange (dim_range_target);

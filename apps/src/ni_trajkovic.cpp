@@ -52,6 +52,8 @@
 #include <mutex>
 #include <thread>
 
+#include <pcl/make_shared.h>
+
 using namespace std::chrono_literals;
 using namespace pcl;
 using PointT = PointXYZRGBA;
@@ -85,7 +87,7 @@ class TrajkovicDemo
       TrajkovicKeypoint3D<PointT, KeyPointT> trajkovic;
       trajkovic.setInputCloud (cloud);
       trajkovic.setNumberOfThreads (6);
-      keypoints_.reset (new PointCloud<KeyPointT>);
+      keypoints_ = pcl::make_shared<PointCloud<KeyPointT>> ();
       trajkovic.compute (*keypoints_);
       keypoints_indices_ = trajkovic.getKeypointsIndices ();
     }
@@ -102,7 +104,7 @@ class TrajkovicDemo
       TrajkovicKeypoint2D<PointT, KeyPointT> trajkovic;
       trajkovic.setInputCloud (cloud);
       trajkovic.setNumberOfThreads (6);
-      keypoints_.reset (new PointCloud<KeyPointT>);
+      keypoints_ = pcl::make_shared<PointCloud<KeyPointT>> ();
       trajkovic.compute (*keypoints_);
       keypoints_indices_ = trajkovic.getKeypointsIndices ();
     }

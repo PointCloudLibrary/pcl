@@ -7,6 +7,8 @@
 
 #include <random>
 
+#include <pcl/make_shared.h>
+
 #include <pcl/apps/3d_rec_framework/pipeline/global_nn_recognizer_crh.h>
 #include <pcl/recognition/crh_alignment.h>
 #include <pcl/registration/icp.h>
@@ -47,7 +49,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
                                                                                       CRHPointCloud::Ptr & hist)
   {
 
-    hist.reset (new CRHPointCloud);
+    hist = pcl::make_shared<CRHPointCloud> ();
     std::stringstream dir;
     std::string path = source_->getModelDescriptorDir (model, training_dir_, descr_name_);
     dir << path << "/crh_" << view_id << "_" << d_id << ".pcd";
@@ -377,7 +379,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms_temp;
 
         models_temp.reset (new std::vector<ModelT>);
-        transforms_temp.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >);
+        transforms_temp = pcl::make_shared<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >> ();
 
         for (size_t i = 0; i < models_->size (); i++)
         {

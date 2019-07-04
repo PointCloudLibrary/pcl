@@ -43,6 +43,8 @@
 #include <QMutexLocker>
 #include <QEvent>
 #include <QObject>
+
+#include <pcl/make_shared.h>
 // PCL
 #include <pcl/console/parse.h>
 
@@ -64,7 +66,7 @@ OpenNIPassthrough::OpenNIPassthrough (pcl::OpenNIGrabber& grabber)
   ui_->setupUi (this);
 
   this->setWindowTitle ("PCL OpenNI PassThrough Viewer");
-  vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
+  vis_ = pcl::make_shared<pcl::visualization::PCLVisualizer> ("", false);
   ui_->qvtk_widget->SetRenderWindow (vis_->getRenderWindow ());
   vis_->setupInteractor (ui_->qvtk_widget->GetInteractor (), ui_->qvtk_widget->GetRenderWindow ());
   vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
@@ -93,7 +95,7 @@ OpenNIPassthrough::cloud_cb (const CloudConstPtr& cloud)
   FPS_CALC ("computation");
 
   // Computation goes here
-  cloud_pass_.reset (new Cloud);
+  cloud_pass_ = pcl::make_shared<Cloud> ();
   pass_.setInputCloud (cloud);
   pass_.filter (*cloud_pass_);
 }

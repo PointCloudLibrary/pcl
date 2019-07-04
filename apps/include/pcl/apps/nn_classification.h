@@ -45,6 +45,10 @@
 #include <boost/foreach.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include <pcl/kdtree/kdtree.h>
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/point_representation.h>
+
 namespace pcl
 {
   /**
@@ -78,12 +82,12 @@ namespace pcl
       /** \brief Setting the training features.
         * \param[in] features the training features
         */
-      void 
+      void
       setTrainingFeatures (const typename pcl::PointCloud<PointT>::ConstPtr &features)
       {
         // Do not limit the number of dimensions used in the tree
-        typename pcl::CustomPointRepresentation<PointT>::Ptr cpr (new pcl::CustomPointRepresentation<PointT> (INT_MAX, 0));
-        tree_.reset (new pcl::KdTreeFLANN<PointT>);
+        typename pcl::CustomPointRepresentation<PointT>::Ptr cpr = pcl::make_shared<pcl::CustomPointRepresentation<PointT>> (INT_MAX, 0);
+        tree_ = pcl::make_shared<pcl::KdTreeFLANN<PointT>> ();
         tree_->setPointRepresentation (cpr);
         tree_->setInputCloud (features);
       }
@@ -135,7 +139,7 @@ namespace pcl
       bool 
       loadTrainingFeatures(std::string file_name, std::string labels_file_name)
       {
-        typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
+        typename pcl::PointCloud<PointT>::Ptr cloud = pcl::make_shared<pcl::PointCloud<PointT>> ();
         if (pcl::io::loadPCDFile (file_name.c_str (), *cloud) != 0)
           return (false);
         std::vector<std::string> labels;
@@ -228,7 +232,7 @@ namespace pcl
       getSmallestSquaredDistances (std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
       {
         // Reserve space for distances
-        boost::shared_ptr<std::vector<float> > sqr_distances (new std::vector<float> (classes_.size (), FLT_MAX));
+        boost::shared_ptr<std::vector<float> > sqr_distances = pcl::make_shared<std::vector<float>> (classes_.size (), FLT_MAX);
 
         // Select square distance to each class
         for (std::vector<int>::const_iterator i = k_indices.begin (); i != k_indices.end (); ++i)
@@ -251,7 +255,7 @@ namespace pcl
 
         // Transform distances to scores
         double sum_dist = 0;
-        boost::shared_ptr<std::pair<std::vector<std::string>, std::vector<float> > > result (new std::pair<std::vector<std::string>, std::vector<float> > ());
+        boost::shared_ptr<std::pair<std::vector<std::string>, std::vector<float> > > result = pcl::make_shared<std::pair<std::vector<std::string>, std::vector<float>>> ();
         result->first.reserve (classes_.size ());
         result->second.reserve (classes_.size ());
         for (std::vector<float>::const_iterator it = sqr_distances->begin (); it != sqr_distances->end (); ++it)
@@ -281,7 +285,7 @@ namespace pcl
         boost::shared_ptr<std::vector<float> > sqr_distances = getSmallestSquaredDistances (k_indices, k_sqr_distances);
 
         // Transform distances to scores
-        boost::shared_ptr<std::pair<std::vector<std::string>, std::vector<float> > > result (new std::pair<std::vector<std::string>, std::vector<float> > ());
+        boost::shared_ptr<std::pair<std::vector<std::string>, std::vector<float> > > result = pcl::make_shared<std::pair<std::vector<std::string>, std::vector<float>>> ();
         result->first.reserve (classes_.size ());
         result->second.reserve (classes_.size ());
         for (std::vector<float>::const_iterator it = sqr_distances->begin (); it != sqr_distances->end (); ++it)

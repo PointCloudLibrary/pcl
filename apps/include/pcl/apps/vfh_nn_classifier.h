@@ -38,12 +38,14 @@
 #pragma once
 
 #include <fstream>
-#include <pcl/point_types.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/features/vfh.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/apps/nn_classification.h>
+
+#include <pcl/make_shared.h>
 #include <pcl/PCLPointCloud2.h>
+#include <pcl/apps/nn_classification.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/features/vfh.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
 
 namespace pcl
 {
@@ -59,7 +61,7 @@ namespace pcl
 
     // Create an empty kdtree representation, and pass it to the objects.
     // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-    typename pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT> ());
+    typename pcl::search::KdTree<PointT>::Ptr tree = pcl::make_shared<pcl::search::KdTree<PointT>> ();
 
     // Create the normal estimation class, and pass the input dataset to it
     NormalEstimation<PointT, Normal> ne;
@@ -67,7 +69,7 @@ namespace pcl
     ne.setSearchMethod (tree);
 
     // Use all neighbors in a sphere of given radius to compute the normals
-    PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+    PointCloud<Normal>::Ptr normals = pcl::make_shared<PointCloud<Normal>> ();
     ne.setRadiusSearch (radius);
     ne.compute (*normals);
 
@@ -78,7 +80,7 @@ namespace pcl
     vfh.setSearchMethod (tree);
 
     // Output datasets
-    PointCloud<VFHSignature308>::Ptr vfhs (new PointCloud<VFHSignature308>);
+    PointCloud<VFHSignature308>::Ptr vfhs = pcl::make_shared<PointCloud<VFHSignature308>> ();
 
     // Compute the features and return
     vfh.compute (*vfhs);
@@ -117,7 +119,7 @@ namespace pcl
 
       void reset ()
       {
-        training_features_.reset (new FeatureCloud);
+        training_features_ = pcl::make_shared<FeatureCloud> ();
         labels_.clear ();
         classifier_ = NNClassification<pcl::VFHSignature308> ();
       }
@@ -191,7 +193,7 @@ namespace pcl
         */
       bool loadTrainingFeatures(std::string file_name, std::string labels_file_name)
       {
-        FeatureCloudPtr cloud (new FeatureCloud);
+        FeatureCloudPtr cloud = pcl::make_shared<FeatureCloud> ();
         if (pcl::io::loadPCDFile (file_name.c_str (), *cloud) != 0)
           return false;
         std::vector<std::string> labels;
@@ -258,7 +260,7 @@ namespace pcl
         */
       FeatureCloudPtr computeFeature (const pcl::PCLPointCloud2 &points, double radius = 0.03)
       {
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
         pcl::fromPCLPointCloud2 (points, *cloud);
         return pcl::computeVFH<pcl::PointXYZ> (cloud, radius);
       }

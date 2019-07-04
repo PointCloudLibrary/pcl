@@ -57,6 +57,8 @@
 
 #include <pcl/common/centroid.h>
 #include <pcl/common/impl/centroid.hpp> // TODO: PointIHS is not registered
+
+#include <pcl/make_shared.h>
 #include <pcl/apps/in_hand_scanner/visibility_confidence.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -456,9 +458,9 @@ pcl::ihs::OpenGLViewer::addMesh (const MeshConstPtr& mesh, const std::string& id
   std::lock_guard<std::mutex> lock (mutex_vis_);
 
   if (this->getMeshIsAdded (id))
-    drawn_meshes_ [id] = FaceVertexMeshPtr (new FaceVertexMesh (*mesh, T));
+    drawn_meshes_ [id] = pcl::make_shared<FaceVertexMesh>(*mesh, T);
   else
-    drawn_meshes_.insert (std::make_pair (id, FaceVertexMeshPtr (new FaceVertexMesh (*mesh, T))));
+    drawn_meshes_.insert (std::make_pair (id, pcl::make_shared<FaceVertexMesh>(*mesh, T)));
 
   return (true);
 }
