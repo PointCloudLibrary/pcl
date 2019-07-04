@@ -42,6 +42,8 @@
 
 #include <pcl/segmentation/supervoxel_clustering.h>
 
+#include <pcl/make_shared.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 pcl::SupervoxelClustering<PointT>::SupervoxelClustering (float voxel_resolution, float seed_resolution) :
@@ -907,7 +909,7 @@ pcl::SupervoxelClustering<PointT>::SupervoxelHelper::getVoxels (typename pcl::Po
 template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::SupervoxelHelper::getNormals (typename pcl::PointCloud<Normal>::Ptr &normals) const
 {
-  normals.reset (new pcl::PointCloud<Normal>);
+  normals = pcl::make_shared<pcl::PointCloud<Normal>> ();
   normals->clear ();
   normals->resize (leaves_.size ());
   typename pcl::PointCloud<Normal>::iterator normal_itr = normals->begin ();

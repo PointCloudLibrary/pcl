@@ -41,6 +41,8 @@
 
 #include <pcl/segmentation/seeded_hue_segmentation.h>
 
+#include <pcl/make_shared.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>          &cloud,
@@ -208,9 +210,9 @@ pcl::SeededHueSegmentation::segment (PointIndices &indices_in, PointIndices &ind
   if (!tree_)
   {
     if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointXYZRGB> ());
+      tree_ = pcl::make_shared<pcl::search::OrganizedNeighbor<PointXYZRGB>> ();
     else
-      tree_.reset (new pcl::search::KdTree<PointXYZRGB> (false));
+      tree_ = pcl::make_shared<pcl::search::KdTree<PointXYZRGB>> (false);
   }
 
   // Send the input dataset to the spatial locator

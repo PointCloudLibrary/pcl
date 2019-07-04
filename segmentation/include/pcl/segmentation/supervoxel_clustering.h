@@ -42,6 +42,7 @@
 
 #include <boost/version.hpp>
 
+#include <pcl/make_shared.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
@@ -60,16 +61,16 @@
 
 namespace pcl
 {
-  /** \brief Supervoxel container class - stores a cluster extracted using supervoxel clustering
+  /** \brief Supervoxel container class - stores a cluster extracted using supervoxel clustering 
    */
   template <typename PointT>
   class Supervoxel
   {
     public:
       Supervoxel () :
-        voxels_ (new pcl::PointCloud<PointT> ()),
-        normals_ (new pcl::PointCloud<Normal> ())
-        {  } 
+        voxels_ (pcl::make_shared<pcl::PointCloud<PointT>> ()),
+        normals_ (pcl::make_shared<pcl::PointCloud<Normal>> ())
+        {  }
 
       using Ptr = boost::shared_ptr<Supervoxel<PointT> >;
       using ConstPtr = boost::shared_ptr<const Supervoxel<PointT> >;
@@ -279,8 +280,8 @@ namespace pcl
       [[deprecated("use getLabeledCloud() instead. An example of how to display and save with colorized labels can be found in examples/segmentation/example_supervoxels.cpp")]]
       typename pcl::PointCloud<PointXYZRGBA>::Ptr
       getColoredCloud () const
-      { 
-        return pcl::PointCloud<PointXYZRGBA>::Ptr (new pcl::PointCloud<PointXYZRGBA>);
+      {
+        return pcl::make_shared<pcl::PointCloud<pcl::PointXYZRGBA>> ();
       }
 
       /** \brief Returns a deep copy of the voxel centroid cloud */
@@ -305,7 +306,7 @@ namespace pcl
       pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
       getColoredVoxelCloud () const
       {
-        return pcl::PointCloud<PointXYZRGBA>::Ptr (new pcl::PointCloud<PointXYZRGBA>);
+        return pcl::make_shared<pcl::PointCloud<pcl::PointXYZRGBA>> ();
       }
 
       /** \brief Returns labeled voxelized cloud
