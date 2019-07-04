@@ -483,6 +483,18 @@ namespace pcl
         height = 1;
       }
 
+      /** \brief Emplace a new point in the cloud, at the end of the container.
+        * \note This breaks the organized structure of the cloud by setting the height to 1!
+        * \param[in] args the parameters to forward to the point to construct
+        */
+      template <class... Args> inline void
+      emplace_back (Args&& ...args)
+      {
+        points.emplace_back (std::forward<Args> (args)...);
+        width = static_cast<uint32_t> (points.size ());
+        height = 1;
+      }
+
       /** \brief Insert a new point in the cloud, given an iterator.
         * \note This breaks the organized structure of the cloud by setting the height to 1!
         * \param[in] position where to insert the point
@@ -524,6 +536,21 @@ namespace pcl
         points.insert (position, first, last);
         width = static_cast<uint32_t> (points.size ());
         height = 1;
+      }
+
+      /** \brief Emplace a new point in the cloud, given an iterator.
+        * \note This breaks the organized structure of the cloud by setting the height to 1!
+        * \param[in] position iterator before which the point will be emplaced
+        * \param[in] args the parameters to forward to the point to construct
+        * \return returns the new position iterator
+        */
+      template <class... Args> inline iterator
+      emplace (iterator position, Args&& ...args)
+      {
+        iterator it = points.emplace (position, std::forward<Args> (args)...);
+        width = static_cast<uint32_t> (points.size ());
+        height = 1;
+        return (it);
       }
 
       /** \brief Erase a point in the cloud.
