@@ -90,8 +90,7 @@ pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget, S
 
   if (nr > 0)
     return (fitness_score / nr);
-  else
-    return (std::numeric_limits<double>::max ());
+  return (std::numeric_limits<double>::max ());
 }
 
 #endif    // PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_IMPL_H_

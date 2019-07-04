@@ -102,8 +102,7 @@ namespace pcl
           { 
             if (e <= threshold_)
               return (0.5 * e*e); 
-            else
-              return (0.5 * threshold_ * (2.0 * std::fabs (e) - threshold_));
+            return (0.5 * threshold_ * (2.0 * std::fabs (e) - threshold_));
           }
         protected:
           float threshold_;
@@ -121,8 +120,7 @@ namespace pcl
           { 
             if (e <= threshold_)
               return (e / threshold_);
-            else
-              return (1.0);
+            return (1.0);
           }
         protected:
           float threshold_;

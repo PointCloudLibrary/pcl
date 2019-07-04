@@ -224,16 +224,17 @@ namespace pcl
                                          corr[ idx[0] ].index_match, corr[ idx[1] ].index_match,
                                          cardinality_));
           }
-          else
-          { // Otherwise check all edges
-            for (int i = 0; i < cardinality_; ++i)
-              if (!thresholdEdgeLength (corr[ idx[i] ].index_query, corr[ idx[(i+1)%cardinality_] ].index_query,
-                                        corr[ idx[i] ].index_match, corr[ idx[(i+1)%cardinality_] ].index_match,
-                                        similarity_threshold_squared_))
-                return (false);
-            
-            return (true);
+          // Otherwise check all edges
+          for (int i = 0; i < cardinality_; ++i)
+          {
+            if (!thresholdEdgeLength (corr[ idx[i] ].index_query, corr[ idx[(i+1)%cardinality_] ].index_query,
+                                      corr[ idx[i] ].index_match, corr[ idx[(i+1)%cardinality_] ].index_match,
+                                      similarity_threshold_squared_))
+            {
+              return (false);
+            }
           }
+          return (true);
         }
         
         /** \brief Polygonal rejection of a single polygon, indexed by two point index vectors

@@ -57,7 +57,7 @@ pcl::registration::CorrespondenceRejectorOneToOne::getRemainingCorrespondences (
   {
     if (i.index_match < 0)
       continue;
-    else if (i.index_match != index_last)
+    if (i.index_match != index_last)
     {
       remaining_correspondences[number_valid_correspondences] = i;
       index_last = i.index_match;

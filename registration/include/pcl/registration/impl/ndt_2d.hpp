@@ -264,8 +264,7 @@ namespace pcl
           // the correct part of the grid:
           if (n)
             return n->test (transformed_pt, cos_theta, sin_theta);
-          else
-            return ValueAndDerivatives<3,double>::Zero ();
+          return ValueAndDerivatives<3,double>::Zero ();
         }
 
       protected:

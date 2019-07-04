@@ -56,8 +56,7 @@ pcl::registration::CorrespondenceRejectorFeatures::getSourceFeature (const std::
 {
   if (features_map_.count (key) == 0)
     return (nullptr);
-  else
-    return (boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->getSourceFeature ());
+  return (boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->getSourceFeature ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,8 +75,7 @@ pcl::registration::CorrespondenceRejectorFeatures::getTargetFeature (const std::
 {
   if (features_map_.count (key) == 0)
     return (nullptr);
-  else
-    return (boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->getTargetFeature ());
+  return (boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->getTargetFeature ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
