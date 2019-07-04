@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
- *  
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,8 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 
+#include <pcl/make_shared.h>
+
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -82,14 +84,14 @@ compute (const PointCloud<PointNormal>::Ptr &input, PointCloud<VFHSignature308> 
   // Estimate
   TicToc tt;
   tt.tic ();
-  
+
   print_highlight (stderr, "Computing ");
 
   VFHEstimation<PointNormal, PointNormal, VFHSignature308> ne;
-  ne.setSearchMethod (search::KdTree<PointNormal>::Ptr (new search::KdTree<PointNormal>));
+  ne.setSearchMethod (pcl::make_shared<pcl::search::KdTree<pcl::PointNormal>> ());
   ne.setInputCloud (input);
   ne.setInputNormals (input);
-  
+
   ne.compute (output);
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
@@ -102,9 +104,9 @@ saveCloud (const std::string &filename, const PointCloud<VFHSignature308> &outpu
   tt.tic ();
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
-  
+
   io::savePCDFile (filename, output, false);
-  
+
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
 
@@ -131,8 +133,8 @@ main (int argc, char** argv)
   }
 
   // Load the first file
-  PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal>);
-  if (!loadCloud (argv[p_file_indices[0]], *cloud)) 
+  PointCloud<PointNormal>::Ptr cloud = pcl::make_shared<PointCloud<PointNormal>> ();
+  if (!loadCloud (argv[p_file_indices[0]], *cloud))
     return (-1);
 
   // Perform the feature estimation

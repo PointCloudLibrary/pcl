@@ -4,7 +4,7 @@
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
- *  
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,8 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 
+#include <pcl/make_shared.h>
+
 using namespace std;
 using namespace pcl;
 using namespace pcl::io;
@@ -84,12 +86,12 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
          int k, double radius)
 {
   // Convert data to PointCloud<T>
-  PointCloud<PointXYZ>::Ptr xyz (new PointCloud<PointXYZ>);
+  PointCloud<PointXYZ>::Ptr xyz = pcl::make_shared<PointCloud<PointXYZ>> ();
   fromPCLPointCloud2 (*input, *xyz);
 
   TicToc tt;
   tt.tic ();
- 
+
   PointCloud<Normal> normals;
 
   // Try our luck with organized integral image based normal estimation
@@ -106,7 +108,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   {
     NormalEstimation<PointXYZ, Normal> ne;
     ne.setInputCloud (xyz);
-    ne.setSearchMethod (search::KdTree<PointXYZ>::Ptr (new search::KdTree<PointXYZ>));
+    ne.setSearchMethod (pcl::make_shared<pcl::search::KdTree<pcl::PointXYZ>> ());
     ne.setKSearch (k);
     ne.setRadiusSearch (radius);
     ne.compute (normals);
@@ -139,8 +141,8 @@ batchProcess (const vector<string> &pcd_files, string &output_dir, int k, double
     // Load the first file
     Eigen::Vector4f translation;
     Eigen::Quaternionf rotation;
-    pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
-    if (!loadCloud (pcd_files[i], *cloud, translation, rotation)) 
+    pcl::PCLPointCloud2::Ptr cloud = pcl::make_shared<pcl::PCLPointCloud2> ();
+    if (!loadCloud (pcd_files[i], *cloud, translation, rotation))
       continue;
 
     // Perform the feature estimation
@@ -152,7 +154,7 @@ batchProcess (const vector<string> &pcd_files, string &output_dir, int k, double
     boost::trim (filename);
     vector<string> st;
     boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
-    
+
     // Save into the second file
     stringstream ss;
     ss << output_dir << "/" << st.at (st.size () - 1);
@@ -205,14 +207,14 @@ main (int argc, char** argv)
       return (-1);
     }
 
-    print_info ("Estimating normals with a k/radius/smoothing size of: "); 
-    print_value ("%d / %f / %f\n", k, radius, radius); 
+    print_info ("Estimating normals with a k/radius/smoothing size of: ");
+    print_value ("%d / %f / %f\n", k, radius, radius);
 
     // Load the first file
     Eigen::Vector4f translation;
     Eigen::Quaternionf rotation;
-    pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
-    if (!loadCloud (argv[p_file_indices[0]], *cloud, translation, rotation)) 
+    pcl::PCLPointCloud2::Ptr cloud = pcl::make_shared<pcl::PCLPointCloud2> ();
+    if (!loadCloud (argv[p_file_indices[0]], *cloud, translation, rotation))
       return (-1);
 
     // Perform the feature estimation

@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+#include <pcl/make_shared.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -103,7 +104,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   FPFHEstimation<PointNormal, PointNormal, FPFHSignature33> ne;
   ne.setInputCloud (xyznormals);
   ne.setInputNormals (xyznormals);
-  ne.setSearchMethod (search::KdTree<PointNormal>::Ptr (new search::KdTree<PointNormal>));
+  ne.setSearchMethod (pcl::make_shared<pcl::search::KdTree<pcl::PointNormal>> ());
   ne.setKSearch (k);
   ne.setRadiusSearch (radius);
   
