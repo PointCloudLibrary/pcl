@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/make_shared.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -121,7 +122,7 @@ namespace pcl
       // =====METHODS=====
       /** \brief Get a boost shared pointer of a copy of this */
       inline Ptr 
-      makeShared () { return Ptr (new RangeImage (*this)); } 
+      makeShared () { return pcl::make_shared<RangeImage>(*this); } 
       
       /** \brief Reset all values to an empty range image */
       PCL_EXPORTS void 
