@@ -47,6 +47,8 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/array.hpp>
 #include <boost/math/special_functions.hpp>
+
+#include <pcl/make_shared.h>
 #ifdef HAVE_PCAP
 #include <pcap.h>
 #endif // #ifdef HAVE_PCAP
@@ -159,10 +161,10 @@ pcl::HDLGrabber::initialize (const std::string& correctionsFile)
   scan_xyzrgba_signal_ = createSignal<sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba> ();
   scan_xyzi_signal_ = createSignal<sig_cb_velodyne_hdl_scan_point_cloud_xyzi> ();
 
-  current_scan_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ>);
-  current_scan_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI>);
-  current_sweep_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ>);
-  current_sweep_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI>);
+  current_scan_xyz_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
+  current_scan_xyzi_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZI>> ();
+  current_sweep_xyz_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
+  current_sweep_xyzi_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZI>> ();
 
   for (auto &rgb : laser_rgb_mapping_)
     rgb.r = rgb.g = rgb.b = 0;
@@ -316,9 +318,9 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
   if (sizeof(HDLLaserReturn) != 3)
     return;
 
-  current_scan_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
-  current_scan_xyzrgba_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
-  current_scan_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI> ());
+  current_scan_xyz_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
+  current_scan_xyzrgba_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZRGBA>> ();
+  current_scan_xyzi_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZI>> ();
 
   time_t system_time;
   time (&system_time);
@@ -354,9 +356,9 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
 
           fireCurrentSweep ();
         }
-        current_sweep_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
-        current_sweep_xyzrgba_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
-        current_sweep_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI> ());
+        current_sweep_xyz_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
+        current_sweep_xyzrgba_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZRGBA>> ();
+        current_sweep_xyzi_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZI>> ();
       }
 
       PointXYZ xyz;
