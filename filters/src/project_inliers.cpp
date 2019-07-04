@@ -39,6 +39,7 @@
  */
 
 #include <pcl/filters/impl/project_inliers.hpp>
+#include <pcl/make_shared.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -169,73 +170,73 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::initSACModel (int model_type)
     case SACMODEL_PLANE:
     {
       //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PLANE\n", getClassName ().c_str ());
-      sacmodel_.reset (new SampleConsensusModelPlane<pcl::PointXYZ> (cloud_ptr));
+      sacmodel_ = pcl::make_shared<SampleConsensusModelPlane<pcl::PointXYZ>> (cloud_ptr);
       break;
     }
     case SACMODEL_LINE:
     {
       //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_LINE\n", getClassName ().c_str ());
-      sacmodel_.reset (new SampleConsensusModelLine<pcl::PointXYZ> (cloud_ptr));
+      sacmodel_ = pcl::make_shared<SampleConsensusModelLine<pcl::PointXYZ>> (cloud_ptr);
       break;
     }
     case SACMODEL_CIRCLE2D:
     {
       //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_CIRCLE2D\n", getClassName ().c_str ());
-      sacmodel_.reset (new SampleConsensusModelCircle2D<pcl::PointXYZ> (cloud_ptr));
+      sacmodel_ = pcl::make_shared<SampleConsensusModelCircle2D<pcl::PointXYZ>> (cloud_ptr);
       break;
     }
     case SACMODEL_SPHERE:
     {
       //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_SPHERE\n", getClassName ().c_str ());
-      sacmodel_.reset (new SampleConsensusModelSphere<pcl::PointXYZ> (cloud_ptr));
+      sacmodel_ = pcl::make_shared<SampleConsensusModelSphere<pcl::PointXYZ>> (cloud_ptr);
       break;
     }
     case SACMODEL_PARALLEL_LINE:
     {
       //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PARALLEL_LINE\n", getClassName ().c_str ());
-      sacmodel_.reset (new SampleConsensusModelParallelLine<pcl::PointXYZ> (cloud_ptr));
+      sacmodel_ = pcl::make_shared<SampleConsensusModelParallelLine<pcl::PointXYZ>> (cloud_ptr);
       break;
     }
     case SACMODEL_PERPENDICULAR_PLANE:
     {
       //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PERPENDICULAR_PLANE\n", getClassName ().c_str ());
-      sacmodel_.reset (new SampleConsensusModelPerpendicularPlane<pcl::PointXYZ> (cloud_ptr));
+      sacmodel_ = pcl::make_shared<SampleConsensusModelPerpendicularPlane<pcl::PointXYZ>> (cloud_ptr);
       break;
     }
     case SACMODEL_CYLINDER:
     {
       //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_CYLINDER\n", getClassName ().c_str ());
-      sacmodel_.reset (new SampleConsensusModelCylinder<pcl::PointXYZ, Normal> (cloud_ptr));
+      sacmodel_ = pcl::make_shared<SampleConsensusModelCylinder<pcl::PointXYZ, Normal>> (cloud_ptr);
       break;
     }
     case SACMODEL_NORMAL_PLANE:
     {
       //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PLANE\n", getClassName ().c_str ());
-      sacmodel_.reset (new SampleConsensusModelNormalPlane<pcl::PointXYZ, Normal> (cloud_ptr));
+      sacmodel_ = pcl::make_shared<SampleConsensusModelNormalPlane<pcl::PointXYZ, Normal>> (cloud_ptr);
       break;
     }
     case SACMODEL_CONE:
     {
       //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_CONE\n", getClassName ().c_str ());
-      sacmodel_.reset (new SampleConsensusModelCone<pcl::PointXYZ, Normal> (cloud_ptr));
+      sacmodel_ = pcl::make_shared<SampleConsensusModelCone<pcl::PointXYZ, Normal>> (cloud_ptr);
       break;
     }
     case SACMODEL_NORMAL_SPHERE:
     {
       //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_SPHERE\n", getClassName ().c_str ());
-      sacmodel_.reset (new SampleConsensusModelNormalSphere<pcl::PointXYZ, Normal> (cloud_ptr));
+      sacmodel_ = pcl::make_shared<SampleConsensusModelNormalSphere<pcl::PointXYZ, Normal>> (cloud_ptr);
       break;
     }
     case SACMODEL_NORMAL_PARALLEL_PLANE:
     {
       //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PARALLEL_PLANE\n", getClassName ().c_str ());
-      sacmodel_.reset (new SampleConsensusModelNormalParallelPlane<pcl::PointXYZ, Normal> (cloud_ptr));
+      sacmodel_ = pcl::make_shared<SampleConsensusModelNormalParallelPlane<pcl::PointXYZ, Normal>> (cloud_ptr);
       break;
     }
     case SACMODEL_PARALLEL_PLANE:
     {
       //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_PARALLEL_PLANE\n", getClassName ().c_str ());
-      sacmodel_.reset (new SampleConsensusModelParallelPlane<pcl::PointXYZ> (cloud_ptr));
+      sacmodel_ = pcl::make_shared<SampleConsensusModelParallelPlane<pcl::PointXYZ>> (cloud_ptr);
       break;
     }
     default:
@@ -249,6 +250,7 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::initSACModel (int model_type)
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
+
 #include <pcl/point_types.h>
 
 // Instantiations of specific point types
