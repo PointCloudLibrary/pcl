@@ -234,7 +234,10 @@ class Producer
       grabber->getDevice ()->setDepthOutputFormat (depth_mode_);
 
       Grabber* interface = grabber;
-      std::function<void (const typename PointCloud<PointT>::ConstPtr&)> f = boost::bind (&Producer::grabberCallBack, this, _1);
+      std::function<void (const typename PointCloud<PointT>::ConstPtr&)> f = [this] (const typename PointCloud<PointT>::ConstPtr& cloud)
+      {
+        grabberCallBack (cloud);
+      };
       interface->registerCallback (f);
       interface->start ();
 

@@ -43,6 +43,7 @@
 #include <pcl/io/openni2_grabber.h>
 #include <pcl/io/openni2/openni2_device_manager.h>
 #include <pcl/io/openni2/openni2_metadata_wrapper.h>
+#include <pcl/io/openni2/openni2_device.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
@@ -107,7 +108,13 @@ pcl::io::OpenNI2Grabber::OpenNI2Grabber (const std::string& device_id, const Mod
   point_cloud_signal_    = createSignal<sig_cb_openni_point_cloud> ();
   point_cloud_i_signal_  = createSignal<sig_cb_openni_point_cloud_i> ();
   ir_depth_image_signal_ = createSignal<sig_cb_openni_ir_depth_image> ();
-  ir_sync_.addCallback (boost::bind (&OpenNI2Grabber::irDepthImageCallback, this, _1, _2));
+  ir_sync_.addCallback ([this] (const IRImage::Ptr& ir_image,
+                                const DepthImage::Ptr& depth_image,
+                                unsigned long,
+                                unsigned long)
+  {
+    irDepthImageCallback (ir_image, depth_image);
+  });
 
   if (device_->hasColorSensor ())
   {
@@ -116,13 +123,19 @@ pcl::io::OpenNI2Grabber::OpenNI2Grabber (const std::string& device_id, const Mod
     image_depth_image_signal_ = createSignal<sig_cb_openni_image_depth_image> ();
     point_cloud_rgb_signal_   = createSignal<sig_cb_openni_point_cloud_rgb> ();
     point_cloud_rgba_signal_  = createSignal<sig_cb_openni_point_cloud_rgba> ();
-    rgb_sync_.addCallback (boost::bind (&OpenNI2Grabber::imageDepthImageCallback, this, _1, _2));
+    rgb_sync_.addCallback ([this] (const Image::Ptr& image,
+                                   const DepthImage::Ptr& depth_image,
+                                   unsigned long,
+                                   unsigned long)
+    {
+      imageDepthImageCallback (image, depth_image);
+    });
   }
 
   // callbacks from the sensor to the grabber
-  device_->setColorCallback (boost::bind (&OpenNI2Grabber::processColorFrame, this, _1));
-  device_->setDepthCallback (boost::bind (&OpenNI2Grabber::processDepthFrame, this, _1));
-  device_->setIRCallback (boost::bind (&OpenNI2Grabber::processIRFrame, this, _1));
+  device_->setColorCallback ([this] (openni::VideoStream& stream) { processColorFrame (stream); });
+  device_->setDepthCallback ([this] (openni::VideoStream& stream) { processDepthFrame (stream); });
+  device_->setIRCallback ([this] (openni::VideoStream& stream) { processIRFrame (stream); });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

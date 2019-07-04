@@ -37,7 +37,6 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
-#include <boost/bind.hpp>
 #include <functional>
 #include <string>
 #include <vector>
