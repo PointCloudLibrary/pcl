@@ -43,6 +43,8 @@
 #include <pcl/correspondence.h>
 #include <pcl/console/print.h>
 
+#include <pcl/make_shared.h>
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> void
@@ -156,7 +158,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
   std::vector<CorrespondencesPtr> partial_correspondences_ (sources_.size ());
   for (size_t i = 0; i < sources_.size (); i++)
   {
-    partial_correspondences_[i].reset (new pcl::Correspondences);
+    partial_correspondences_[i] = pcl::make_shared<pcl::Correspondences> ();
   }
 
   do
@@ -203,7 +205,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
     PCLPointCloud2::Ptr inputs_transformed_combined_blob;
     if (need_source_blob_)
     {
-      inputs_transformed_combined_blob.reset (new PCLPointCloud2);
+      inputs_transformed_combined_blob = pcl::make_shared<PCLPointCloud2> ();
       toPCLPointCloud2 (*inputs_transformed_combined, *inputs_transformed_combined_blob);
     }
     CorrespondencesPtr temp_correspondences (new Correspondences (*correspondences_));

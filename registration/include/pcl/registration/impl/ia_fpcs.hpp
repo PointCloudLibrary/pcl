@@ -44,6 +44,8 @@
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/registration/transformation_estimation_3point.h>
 
+#include <pcl/make_shared.h>
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline float
 pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, float max_dist, int nr_threads)
@@ -259,7 +261,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
     const int ss = static_cast <int> (indices_->size ());
     const int sample_fraction_src = std::max (1, static_cast <int> (ss / nr_samples_));
 
-    source_indices_ = pcl::IndicesPtr (new std::vector <int>);
+    source_indices_ = pcl::make_shared<std::vector <int>>();
     for (int i = 0; i < ss; i++)
     if (rand () % sample_fraction_src == 0)
       source_indices_->push_back ((*indices_) [i]);
