@@ -42,6 +42,8 @@
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
+
+#include <pcl/make_shared.h>
 #if defined(__SSSE3__) && !defined(__i386__)
 #include <tmmintrin.h>
 #include <emmintrin.h>
@@ -1304,8 +1306,8 @@ pcl::keypoints::brisk::Layer::Layer (
   offset_ = offset;
 
   // create an agast detector
-  oast_detector_.reset (new pcl::keypoints::agast::OastDetector9_16 (img_width_, img_height_, 0));
-  agast_detector_5_8_.reset (new pcl::keypoints::agast::AgastDetector5_8 (img_width_, img_height_, 0));
+  oast_detector_ = pcl::make_shared<pcl::keypoints::agast::OastDetector9_16> (img_width_, img_height_, 0);
+  agast_detector_5_8_ = pcl::make_shared<pcl::keypoints::agast::AgastDetector5_8> (img_width_, img_height_, 0);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1336,8 +1338,8 @@ pcl::keypoints::brisk::Layer::Layer (const pcl::keypoints::brisk::Layer& layer, 
   scores_ = std::vector<unsigned char> (img_width_ * img_height_, 0);
 
   // create an agast detector
-  oast_detector_.reset (new pcl::keypoints::agast::OastDetector9_16 (img_width_, img_height_, 0));
-  agast_detector_5_8_.reset (new pcl::keypoints::agast::AgastDetector5_8 (img_width_, img_height_, 0));
+  oast_detector_ = pcl::make_shared<pcl::keypoints::agast::OastDetector9_16> (img_width_, img_height_, 0);
+  agast_detector_5_8_ = pcl::make_shared<pcl::keypoints::agast::AgastDetector5_8> (img_width_, img_height_, 0);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

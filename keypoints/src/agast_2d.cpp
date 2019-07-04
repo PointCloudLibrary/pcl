@@ -40,6 +40,8 @@
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 
+#include <pcl/make_shared.h>
+
 /////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::AgastKeypoint2D<pcl::PointXYZ, pcl::PointUV>::detectKeypoints (pcl::PointCloud<pcl::PointUV> &output)
@@ -55,7 +57,7 @@ pcl::AgastKeypoint2D<pcl::PointXYZ, pcl::PointUV>::detectKeypoints (pcl::PointCl
     image_data[i] = static_cast<float> (intensity_ ((*input_)[i]));
 
   if (!detector_)
-    detector_.reset (new pcl::keypoints::agast::AgastDetector7_12s (width, height, threshold_, bmax_));
+    detector_ = pcl::make_shared<pcl::keypoints::agast::AgastDetector7_12s> (width, height, threshold_, bmax_);
 
   detector_->setMaxKeypoints (nr_max_keypoints_);
 
