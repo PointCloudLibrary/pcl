@@ -39,11 +39,13 @@
 #include <pcl/conversions.h>
 #include <pcl/pcl_config.h>
 
+#include <pcl/make_shared.h>
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::EarClipping::initCompute ()
 {
-  points_.reset (new pcl::PointCloud<pcl::PointXYZ>);
+  points_ = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
 
   if (!MeshProcessing::initCompute ())
     return (false);
