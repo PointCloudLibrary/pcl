@@ -43,6 +43,8 @@
 #include <pcl/features/brisk_2d.h>
 #include <set>
 
+#include <pcl/make_shared.h>
+
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
@@ -67,7 +69,7 @@ TEST (PCL, BRISK_2D)
   brisk_keypoint_estimation.setOctaves (4);
   brisk_keypoint_estimation.setInputCloud (cloud_image);
 
-  cloud_keypoints.reset (new PointCloud<KeyPointT>);
+  cloud_keypoints = pcl::make_shared<PointCloud<KeyPointT>> ();
   brisk_keypoint_estimation.compute (*cloud_keypoints);
 
   //io::savePCDFileBinary ("brisk_keypoints.pcd", *cloud_keypoints);
@@ -95,7 +97,7 @@ TEST (PCL, BRISK_2D)
   brisk_descriptor_estimation.setKeypoints (cloud_keypoints);
 
 
-  cloud_descriptors.reset (new PointCloud<BRISKSignature512>);
+  cloud_descriptors = pcl::make_shared<PointCloud<BRISKSignature512>> ();
   brisk_descriptor_estimation.compute (*cloud_descriptors);
 
   const int num_of_descriptors = int (cloud_descriptors->size ());

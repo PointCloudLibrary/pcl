@@ -52,6 +52,8 @@
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/people/ground_based_people_detection_app.h>
 
+#include <pcl/make_shared.h>
+
 using PointT = pcl::PointXYZRGB;
 using PointCloudT = pcl::PointCloud<PointT>;
 
@@ -112,7 +114,7 @@ int main (int argc, char** argv)
     return (-1);
   }
 
-  cloud = PointCloudT::Ptr (new PointCloudT);
+  cloud = pcl::make_shared<PointCloudT>();
   if (pcl::io::loadPCDFile (argv[2], *cloud) < 0)
   {
     cerr << "Failed to read test file. Please download `five_people.pcd` and pass its path to the test." << endl;

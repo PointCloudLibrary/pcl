@@ -43,6 +43,8 @@
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/io/pcd_io.h>
 
+#include <pcl/make_shared.h>
+
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
@@ -166,7 +168,7 @@ TEST (PCL, NormalEstimation)
   EXPECT_EQ (n.getSearchSurface (), surfaceptr);
 
   // Additional test for searchForNeigbhors
-  surfaceptr.reset (new PointCloud<PointXYZ>);
+  surfaceptr = pcl::make_shared<PointCloud<PointXYZ>> ();
   *surfaceptr = *cloudptr;
   surfaceptr->points.resize (640 * 480);
   surfaceptr->width = 640;
@@ -233,7 +235,7 @@ main (int argc, char** argv)
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
     indices[i] = i;
 
-  tree.reset (new search::KdTree<PointXYZ> (false));
+  tree = pcl::make_shared<search::KdTree<PointXYZ>> (false);
   tree->setInputCloud (cloud.makeShared ());
 
   testing::InitGoogleTest (&argc, argv);

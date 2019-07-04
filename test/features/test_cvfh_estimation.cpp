@@ -44,6 +44,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/voxel_grid.h>
 
+#include <pcl/make_shared.h>
+
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
@@ -148,17 +150,17 @@ main (int argc, char** argv)
     indices[i] = static_cast<int>(i);
   }
 
-  tree.reset (new search::KdTree<PointXYZ> (false));
+  tree = pcl::make_shared<search::KdTree<PointXYZ>> (false);
   tree->setInputCloud (cloud.makeShared ());
 
-  cloud_milk.reset(new PointCloud<PointXYZ>());
+  cloud_milk = pcl::make_shared<PointCloud<PointXYZ>>();
   CloudPtr grid;
   pcl::VoxelGrid < pcl::PointXYZ > grid_;
   grid_.setInputCloud (milk_loaded);
   grid_.setLeafSize (leaf_size_, leaf_size_, leaf_size_);
   grid_.filter (*cloud_milk);
 
-  tree_milk.reset (new search::KdTree<PointXYZ> (false));
+  tree_milk = pcl::make_shared<search::KdTree<PointXYZ>> (false);
   tree_milk->setInputCloud (cloud_milk);
 
   testing::InitGoogleTest (&argc, argv);

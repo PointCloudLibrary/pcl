@@ -42,6 +42,8 @@
 #include <pcl/features/rops_estimation.h>
 #include <pcl/io/pcd_io.h>
 
+#include <pcl/make_shared.h>
+
 pcl::PointCloud <pcl::PointXYZ>::Ptr cloud;
 pcl::PointIndicesPtr indices;
 std::vector <pcl::Vertices> triangles;
@@ -135,7 +137,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.reset (new pcl::PointIndices);
+  indices = pcl::make_shared<pcl::PointIndices> ();
   std::ifstream indices_file;
   indices_file.open (argv[2], std::ifstream::in);
   for (std::string line; std::getline (indices_file, line);)

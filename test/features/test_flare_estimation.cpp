@@ -44,6 +44,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/flare.h>
 
+#include <pcl/make_shared.h>
+
 using KdTreePtr = pcl::search::KdTree<pcl::PointXYZ>::Ptr;
 using PointCloudPtr = pcl::PointCloud<pcl::PointXYZ>::Ptr;
 
@@ -147,7 +149,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  cloud.reset (new pcl::PointCloud<pcl::PointXYZ> ());
+  cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
 
   if (pcl::io::loadPCDFile<pcl::PointXYZ> (argv[1], *cloud) < 0)
   {
@@ -155,21 +157,21 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  tree.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
+  tree = pcl::make_shared<pcl::search::KdTree<pcl::PointXYZ>> (false);
   tree->setInputCloud (cloud);
 
   //create and set sampled point cloud for computation of X axis
   const float sampling_perc = 0.2f;
   const float sampling_incr = 1.0f / sampling_perc;
 
-  sampled_cloud.reset (new pcl::PointCloud<pcl::PointXYZ> ());
+  sampled_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
 
   std::vector<int> sampled_indices;
   for (float sa = 0.0f; sa < (float)cloud->points.size (); sa += sampling_incr)
     sampled_indices.push_back (static_cast<int> (sa));
   copyPointCloud (*cloud, sampled_indices, *sampled_cloud);
 
-  sampled_tree.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
+  sampled_tree = pcl::make_shared<pcl::search::KdTree<pcl::PointXYZ>> (false);
   sampled_tree->setInputCloud (sampled_cloud);
 
   //start tests

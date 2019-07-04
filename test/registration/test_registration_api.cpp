@@ -60,6 +60,7 @@
 #include <pcl/registration/transformation_estimation_point_to_plane.h>
 #include <pcl/features/normal_3d.h>
 
+#include <pcl/make_shared.h>
 #include "test_registration_api_data.h"
 
 using PointXYZ = pcl::PointXYZ;
@@ -77,10 +78,10 @@ CloudXYZ cloud_source, cloud_target, cloud_reg;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, CorrespondenceEstimation)
 {
-  CloudXYZConstPtr source (new CloudXYZ (cloud_source));
-  CloudXYZConstPtr target (new CloudXYZ (cloud_target));
+  CloudXYZConstPtr source = pcl::make_shared<CloudXYZ> (cloud_source);
+  CloudXYZConstPtr target = pcl::make_shared<CloudXYZ> (cloud_target);
 
-  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
@@ -101,10 +102,10 @@ TEST (PCL, CorrespondenceEstimation)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, CorrespondenceEstimationReciprocal)
 {
-  CloudXYZConstPtr source (new CloudXYZ (cloud_source));
-  CloudXYZConstPtr target (new CloudXYZ (cloud_target));
+  CloudXYZConstPtr source = pcl::make_shared<CloudXYZ> (cloud_source);
+  CloudXYZConstPtr target = pcl::make_shared<CloudXYZ> (cloud_target);
 
-  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
@@ -125,17 +126,17 @@ TEST (PCL, CorrespondenceEstimationReciprocal)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, CorrespondenceRejectorDistance)
 {
-  CloudXYZConstPtr source (new CloudXYZ (cloud_source));
-  CloudXYZConstPtr target (new CloudXYZ (cloud_target));
+  CloudXYZConstPtr source = pcl::make_shared<CloudXYZ> (cloud_source);
+  CloudXYZConstPtr target = pcl::make_shared<CloudXYZ> (cloud_target);
 
   // re-do correspondence estimation
-  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
-  pcl::CorrespondencesPtr  correspondences_result_rej_dist (new pcl::Correspondences);
+pcl::CorrespondencesPtr  correspondences_result_rej_dist = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceRejectorDistance corr_rej_dist;
   corr_rej_dist.setInputCorrespondences (correspondences);
   corr_rej_dist.setMaximumDistance (rej_dist_max_dist);
@@ -156,17 +157,17 @@ TEST (PCL, CorrespondenceRejectorDistance)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, CorrespondenceRejectorMedianDistance)
 {
-  CloudXYZConstPtr source (new CloudXYZ (cloud_source));
-  CloudXYZConstPtr target (new CloudXYZ (cloud_target));
+  CloudXYZConstPtr source = pcl::make_shared<CloudXYZ> (cloud_source);
+  CloudXYZConstPtr target = pcl::make_shared<CloudXYZ> (cloud_target);
 
   // re-do correspondence estimation
-  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
-  pcl::CorrespondencesPtr correspondences_result_rej_median_dist (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences_result_rej_median_dist = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceRejectorMedianDistance corr_rej_median_dist;
   corr_rej_median_dist.setInputCorrespondences(correspondences);
   corr_rej_median_dist.setMedianFactor (rej_median_factor);
@@ -189,17 +190,17 @@ TEST (PCL, CorrespondenceRejectorMedianDistance)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, CorrespondenceRejectorOneToOne)
 {
-  CloudXYZConstPtr source (new CloudXYZ (cloud_source));
-  CloudXYZConstPtr target (new CloudXYZ (cloud_target));
+  CloudXYZConstPtr source = pcl::make_shared<CloudXYZ> (cloud_source);
+  CloudXYZConstPtr target = pcl::make_shared<CloudXYZ> (cloud_target);
 
   // re-do correspondence estimation
-  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
-  pcl::CorrespondencesPtr correspondences_result_rej_one_to_one (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences_result_rej_one_to_one = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceRejectorOneToOne corr_rej_one_to_one;
   corr_rej_one_to_one.setInputCorrespondences(correspondences);
   corr_rej_one_to_one.getCorrespondences(*correspondences_result_rej_one_to_one);
@@ -219,18 +220,18 @@ TEST (PCL, CorrespondenceRejectorOneToOne)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, CorrespondenceRejectorSampleConsensus)
 {
-  CloudXYZConstPtr source (new CloudXYZ (cloud_source));
-  CloudXYZConstPtr target (new CloudXYZ (cloud_target));
+  CloudXYZConstPtr source = pcl::make_shared<CloudXYZ> (cloud_source);
+  CloudXYZConstPtr target = pcl::make_shared<CloudXYZ> (cloud_target);
 
   // re-do correspondence estimation
-  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
   EXPECT_EQ (int (correspondences->size ()), nr_original_correspondences);
 
-  pcl::CorrespondencesPtr correspondences_result_rej_sac (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences_result_rej_sac = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ> corr_rej_sac;
   corr_rej_sac.setInputSource (source);
   corr_rej_sac.setInputTarget (target);
@@ -260,30 +261,30 @@ TEST (PCL, CorrespondenceRejectorSampleConsensus)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, CorrespondenceRejectorSurfaceNormal)
 {
-  CloudXYZConstPtr source (new CloudXYZ (cloud_source));
-  CloudXYZConstPtr target (new CloudXYZ (cloud_target));
+  CloudXYZConstPtr source = pcl::make_shared<CloudXYZ> (cloud_source);
+  CloudXYZConstPtr target = pcl::make_shared<CloudXYZ> (cloud_target);
 
   // re-do correspondence estimation
-  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
 
-  CloudNormalPtr source_normals (new CloudNormal ());
+  CloudNormalPtr source_normals = pcl::make_shared<CloudNormal> ();
   pcl::copyPointCloud (*source, *source_normals);
-  CloudNormalPtr target_normals (new CloudNormal ());
+  CloudNormalPtr target_normals = pcl::make_shared<CloudNormal> ();
   pcl::copyPointCloud (*target, *target_normals);
 
   pcl::NormalEstimation<PointNormal, PointNormal> norm_est_src;
-  norm_est_src.setSearchMethod (pcl::search::KdTree<PointNormal>::Ptr (new pcl::search::KdTree<PointNormal>));
+  norm_est_src.setSearchMethod (pcl::make_shared<pcl::search::KdTree<PointNormal>> ());
   norm_est_src.setKSearch (10);
   norm_est_src.setInputCloud (source_normals);
   norm_est_src.compute (*source_normals);
 
   pcl::NormalEstimation<PointNormal, PointNormal> norm_est_tgt;
-  norm_est_tgt.setSearchMethod (pcl::search::KdTree<PointNormal>::Ptr (new pcl::search::KdTree<PointNormal>));
+  norm_est_tgt.setSearchMethod (pcl::make_shared<pcl::search::KdTree<PointNormal>> ());
   norm_est_tgt.setKSearch (10);
   norm_est_tgt.setInputCloud (target_normals);
   norm_est_tgt.compute (*target_normals);
@@ -295,7 +296,7 @@ TEST (PCL, CorrespondenceRejectorSurfaceNormal)
   corr_rej_surf_norm.setInputNormals <PointXYZ, PointNormal> (source_normals);
   corr_rej_surf_norm.setTargetNormals <PointXYZ, PointNormal> (target_normals);
 
-  pcl::CorrespondencesPtr correspondences_result_rej_surf_norm (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences_result_rej_surf_norm = pcl::make_shared<pcl::Correspondences> ();
   corr_rej_surf_norm.setInputCorrespondences (correspondences);
   corr_rej_surf_norm.setThreshold (0.5);
 
@@ -314,17 +315,17 @@ TEST (PCL, CorrespondenceRejectorSurfaceNormal)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, CorrespondenceRejectorTrimmed)
 {
-  CloudXYZConstPtr source (new CloudXYZ (cloud_source));
-  CloudXYZConstPtr target (new CloudXYZ (cloud_target));
+  CloudXYZConstPtr source = pcl::make_shared<CloudXYZ> (cloud_source);
+  CloudXYZConstPtr target = pcl::make_shared<CloudXYZ> (cloud_target);
 
   // re-do correspondence estimation
-  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
-  pcl::CorrespondencesPtr correspondences_result_rej_trimmed (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences_result_rej_trimmed = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceRejectorTrimmed corr_rej_trimmed;
   corr_rej_trimmed.setOverlapRatio(rej_trimmed_overlap);
   corr_rej_trimmed.setInputCorrespondences(correspondences);
@@ -345,17 +346,17 @@ TEST (PCL, CorrespondenceRejectorTrimmed)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, CorrespondenceRejectorVarTrimmed)
 {
-  CloudXYZConstPtr source (new CloudXYZ (cloud_source));
-  CloudXYZConstPtr target (new CloudXYZ (cloud_target));
+  CloudXYZConstPtr source = pcl::make_shared<CloudXYZ> (cloud_source);
+  CloudXYZConstPtr target = pcl::make_shared<CloudXYZ> (cloud_target);
 
   // re-do correspondence estimation
-  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
-  pcl::CorrespondencesPtr correspondences_result_rej_var_trimmed_dist (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences_result_rej_var_trimmed_dist = pcl::make_shared<pcl::Correspondences> ();
   pcl::registration::CorrespondenceRejectorVarTrimmed corr_rej_var_trimmed_dist;
   corr_rej_var_trimmed_dist.setInputSource<PointXYZ> (source);
   corr_rej_var_trimmed_dist.setInputTarget<PointXYZ> (target);
@@ -378,8 +379,8 @@ TEST (PCL, CorrespondenceRejectorVarTrimmed)
 TEST (PCL, TransformationEstimationSVD)
 {
   // Ideal conditions for the estimation (no noise, exact correspondences)
-  CloudXYZConstPtr source (new CloudXYZ (cloud_target));
-  CloudXYZPtr      target (new CloudXYZ ());
+  CloudXYZConstPtr source = pcl::make_shared<CloudXYZ> (cloud_target);
+  CloudXYZPtr      target = pcl::make_shared<CloudXYZ> ();
   pcl::transformPointCloud (*source, *target, T_ref);
 
   Eigen::Matrix4f T_SVD_1;
@@ -421,8 +422,8 @@ TEST (PCL, TransformationEstimationSVD)
 TEST (PCL, TransformationEstimationDualQuaternion)
 {
   // Ideal conditions for the estimation (no noise, exact correspondences)
-  CloudXYZConstPtr source (new CloudXYZ (cloud_target));
-  CloudXYZPtr      target (new CloudXYZ ());
+  CloudXYZConstPtr source = pcl::make_shared<CloudXYZ> (cloud_target);
+  CloudXYZPtr      target = pcl::make_shared<CloudXYZ> ();
   pcl::transformPointCloud (*source, *target, T_ref);
 
   Eigen::Matrix4f T_DQ_1;
@@ -466,7 +467,7 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
   pcl::registration::TransformationEstimationPointToPlaneLLS<pcl::PointNormal, pcl::PointNormal> transform_estimator;
 
   // Create a test cloud
-  pcl::PointCloud<pcl::PointNormal>::Ptr src (new pcl::PointCloud<pcl::PointNormal>);
+  pcl::PointCloud<pcl::PointNormal>::Ptr src = pcl::make_shared<pcl::PointCloud<pcl::PointNormal>> ();
   src->height = 1;
   src->is_dense = true;
   for (float x = -5.0f; x <= 5.0f; x += 0.5f)
@@ -499,7 +500,7 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
   ground_truth_tform.row (2) << -0.0500f, -0.0200f,  0.9986f,  0.3000f;
   ground_truth_tform.row (3) <<  0.0000f,  0.0000f,  0.0000f,  1.0000f;
 
-  pcl::PointCloud<pcl::PointNormal>::Ptr tgt (new pcl::PointCloud<pcl::PointNormal>);
+  pcl::PointCloud<pcl::PointNormal>::Ptr tgt = pcl::make_shared<pcl::PointCloud<pcl::PointNormal>> ();
 
   pcl::transformPointCloudWithNormals (*src, *tgt, ground_truth_tform);
 
@@ -514,8 +515,8 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, TransformationEstimationLM)
 {
-  CloudXYZConstPtr source (new CloudXYZ (cloud_target));
-  CloudXYZPtr      target (new CloudXYZ ());
+  CloudXYZConstPtr source = pcl::make_shared<CloudXYZ> (cloud_target);
+  CloudXYZPtr      target = pcl::make_shared<CloudXYZ> ();
   pcl::transformPointCloud (*source, *target, T_ref);
 
   // Test the float precision first
@@ -600,7 +601,7 @@ TEST (PCL, TransformationEstimationPointToPlane)
   pcl::registration::TransformationEstimationPointToPlane<pcl::PointNormal, pcl::PointNormal, float> transform_estimator_float;
 
   // Create a test cloud
-  pcl::PointCloud<pcl::PointNormal>::Ptr src (new pcl::PointCloud<pcl::PointNormal>);
+  pcl::PointCloud<pcl::PointNormal>::Ptr src = pcl::make_shared<pcl::PointCloud<pcl::PointNormal>> ();
   src->height = 1;
   src->is_dense = true;
   for (float x = -5.0f; x <= 5.0f; x += 0.5f)
@@ -633,7 +634,7 @@ TEST (PCL, TransformationEstimationPointToPlane)
   ground_truth_tform.row (2) << -0.0500f, -0.0200f,  0.9986f,  0.3000f;
   ground_truth_tform.row (3) <<  0.0000f,  0.0000f,  0.0000f,  1.0000f;
 
-  pcl::PointCloud<pcl::PointNormal>::Ptr tgt (new pcl::PointCloud<pcl::PointNormal>);
+  pcl::PointCloud<pcl::PointNormal>::Ptr tgt = pcl::make_shared<pcl::PointCloud<pcl::PointNormal>> ();
 
   pcl::transformPointCloudWithNormals (*src, *tgt, ground_truth_tform);
 

@@ -39,6 +39,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <pcl/make_shared.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
@@ -68,11 +69,11 @@ using namespace std;
 using namespace Eigen;
 
 
-PCLPointCloud2::Ptr cloud_blob (new PCLPointCloud2);
-PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+PCLPointCloud2::Ptr cloud_blob = pcl::make_shared<PCLPointCloud2> ();
+PointCloud<PointXYZ>::Ptr cloud = pcl::make_shared<PointCloud<PointXYZ>> ();
 vector<int> indices_;
 
-PointCloud<PointXYZRGB>::Ptr cloud_organized (new PointCloud<PointXYZRGB>);
+PointCloud<PointXYZRGB>::Ptr cloud_organized = pcl::make_shared<PointCloud<PointXYZRGB>> ();
 
 
 //pcl::IndicesConstPtr indices;
@@ -82,11 +83,11 @@ TEST (ExtractIndicesSelf, Filters)
 {
   // Test the PointCloud<PointT> method
   ExtractIndices<PointXYZ> ei;
-  pcl::IndicesPtr indices (new pcl::Indices (2));
+  pcl::IndicesPtr indices = pcl::make_shared<pcl::Indices> (2);
   (*indices)[0] = 0;
   (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
 
-  PointCloud<PointXYZ>::Ptr output (new PointCloud<PointXYZ>);
+  PointCloud<PointXYZ>::Ptr output = pcl::make_shared<PointCloud<PointXYZ>> ();
   ei.setInputCloud (cloud);
   ei.setIndices (indices);
   ei.filter (*output);
@@ -109,7 +110,7 @@ TEST (ExtractIndices, Filters)
 {
   // Test the PointCloud<PointT> method
   ExtractIndices<PointXYZ> ei;
-  pcl::IndicesPtr indices (new pcl::Indices (2));
+  pcl::IndicesPtr indices = pcl::make_shared<pcl::Indices> (2);
   (*indices)[0] = 0;
   (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
 
@@ -230,7 +231,7 @@ TEST (ExtractIndices, Filters)
   eie.filter (result);
   EXPECT_EQ (int (result.points.size ()), 0);
 
-  pcl::IndicesPtr idx (new pcl::Indices (10));
+  pcl::IndicesPtr idx = pcl::make_shared<pcl::Indices> (10);
   eie.setIndices (idx);
   eie.setNegative (false);
   eie.filter (result);
@@ -902,8 +903,8 @@ TEST (VoxelGrid_RGB, Filters)
   }
 
   toPCLPointCloud2 (cloud_rgb_, cloud_rgb_blob_);
-  cloud_rgb_blob_ptr_.reset (new PCLPointCloud2 (cloud_rgb_blob_));
-  cloud_rgb_ptr_.reset (new PointCloud<PointXYZRGB> (cloud_rgb_));
+  cloud_rgb_blob_ptr_ = pcl::make_shared<PCLPointCloud2> (cloud_rgb_blob_);
+  cloud_rgb_ptr_ = pcl::make_shared<PointCloud<PointXYZRGB>> (cloud_rgb_);
 
   PointCloud<PointXYZRGB> output_rgb;
   VoxelGrid<PointXYZRGB> grid_rgb;
@@ -996,8 +997,8 @@ TEST (VoxelGrid_RGBA, Filters)
   }
 
   toPCLPointCloud2 (cloud_rgba_, cloud_rgba_blob_);
-  cloud_rgba_blob_ptr_.reset (new PCLPointCloud2 (cloud_rgba_blob_));
-  cloud_rgba_ptr_.reset (new PointCloud<PointXYZRGBA> (cloud_rgba_));
+  cloud_rgba_blob_ptr_ = pcl::make_shared<PCLPointCloud2> (cloud_rgba_blob_);
+  cloud_rgba_ptr_ = pcl::make_shared<PointCloud<PointXYZRGBA>> (cloud_rgba_);
 
   PointCloud<PointXYZRGBA> output_rgba;
   VoxelGrid<PointXYZRGBA> grid_rgba;
@@ -1065,7 +1066,7 @@ TEST (VoxelGrid_XYZNormal, Filters)
   PCLPointCloud2 cloud_blob_;
   PCLPointCloud2::Ptr cloud_blob_ptr_;
 
-  PointCloud<PointNormal>::Ptr input (new PointCloud<PointNormal>);
+  PointCloud<PointNormal>::Ptr input = pcl::make_shared<PointCloud<PointNormal>> ();
   PointCloud<PointNormal> output;
   input->reserve (16);
   input->is_dense = false;
@@ -1206,7 +1207,7 @@ TEST (VoxelGrid_XYZNormal, Filters)
   }
 
   toPCLPointCloud2 (*input, cloud_blob_);
-  cloud_blob_ptr_.reset (new PCLPointCloud2 (cloud_blob_));
+  cloud_blob_ptr_ = pcl::make_shared<PCLPointCloud2>(cloud_blob_);
 
   VoxelGrid<PCLPointCloud2> grid2;
   PCLPointCloud2 output_blob;
@@ -1334,7 +1335,7 @@ TEST (ProjectInliers, Filters)
   ProjectInliers<PointXYZ> proj;
   PointCloud<PointXYZ> output;
 
-  ModelCoefficients::Ptr coefficients (new ModelCoefficients ());
+  ModelCoefficients::Ptr coefficients = pcl::make_shared<ModelCoefficients> ();
   coefficients->values.resize (4);
   coefficients->values[0] = coefficients->values[1] = 0;
   coefficients->values[2] = 1.0;
@@ -1555,19 +1556,11 @@ TEST (ConditionalRemoval, Filters)
   PointCloud<PointXYZ> output;
 
   // build the condition
-  ConditionAnd<PointXYZ>::Ptr range_cond (new ConditionAnd<PointXYZ> ());
-  range_cond->addComparison (FieldComparison<PointXYZ>::ConstPtr (new FieldComparison<PointXYZ> ("z",
-                                                                                                 ComparisonOps::GT,
-                                                                                                 0.02)));
-  range_cond->addComparison (FieldComparison<PointXYZ>::ConstPtr (new FieldComparison<PointXYZ> ("z",
-                                                                                                 ComparisonOps::LT,
-                                                                                                 0.04)));
-  range_cond->addComparison (FieldComparison<PointXYZ>::ConstPtr (new FieldComparison<PointXYZ> ("y",
-                                                                                                 ComparisonOps::GT,
-                                                                                                 0.10)));
-  range_cond->addComparison (FieldComparison<PointXYZ>::ConstPtr (new FieldComparison<PointXYZ> ("y",
-                                                                                                 ComparisonOps::LT,
-                                                                                                 0.12)));
+  ConditionAnd<PointXYZ>::Ptr range_cond = pcl::make_shared<ConditionAnd<PointXYZ>> ();
+  range_cond->addComparison (pcl::make_shared<FieldComparison<PointXYZ>> ("z", ComparisonOps::GT, 0.02));
+  range_cond->addComparison (pcl::make_shared<FieldComparison<PointXYZ>> ("z", ComparisonOps::LT, 0.04));
+  range_cond->addComparison (pcl::make_shared<FieldComparison<PointXYZ>> ("y", ComparisonOps::GT, 0.10));
+  range_cond->addComparison (pcl::make_shared<FieldComparison<PointXYZ>> ("y", ComparisonOps::LT, 0.12));
 
   // build the filter
   ConditionalRemoval<PointXYZ> condrem;
@@ -1651,14 +1644,14 @@ TEST (ConditionalRemovalSetIndices, Filters)
   PointCloud<PointXYZ> output;
 
   // build some indices
-  pcl::IndicesPtr indices (new pcl::Indices (2));
+  pcl::IndicesPtr indices = pcl::make_shared<pcl::Indices> (2);
   (*indices)[0] = 0;
   (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
 
   // build a condition which is always true
-  ConditionAnd<PointXYZ>::Ptr true_cond (new ConditionAnd<PointXYZ> ());
-  true_cond->addComparison (TfQuadraticXYZComparison<PointXYZ>::ConstPtr (new TfQuadraticXYZComparison<PointXYZ> (ComparisonOps::EQ, Eigen::Matrix3f::Zero (),
-                                                                                                                  Eigen::Vector3f::Zero (), 0)));
+  ConditionAnd<PointXYZ>::Ptr true_cond = pcl::make_shared<ConditionAnd<PointXYZ>> ();
+  true_cond->addComparison (pcl::make_shared<TfQuadraticXYZComparison<PointXYZ>> (ComparisonOps::EQ, Eigen::Matrix3f::Zero (),
+                                                                                                     Eigen::Vector3f::Zero (), 0));
 
   // build the filter
   ConditionalRemoval<PointXYZ> condrem2;
@@ -1764,7 +1757,7 @@ TEST (ConditionalRemovalSetIndices, Filters)
 //////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SamplingSurfaceNormal, Filters)
 {
-  PointCloud <PointNormal>::Ptr incloud (new PointCloud <PointNormal> ());
+  PointCloud <PointNormal>::Ptr incloud = pcl::make_shared<PointCloud<PointNormal>> ();
   PointCloud <PointNormal> outcloud;
 
   //Creating a point cloud on the XY plane
@@ -1800,7 +1793,7 @@ TEST (SamplingSurfaceNormal, Filters)
 TEST (ShadowPoints, Filters)
 {
   //Creating a point cloud on the XY plane
-  PointCloud<PointXYZ>::Ptr input (new PointCloud<PointXYZ> ());
+  PointCloud<PointXYZ>::Ptr input = pcl::make_shared<PointCloud<PointXYZ>> ();
   for (float i = 0.0f; i < 10.0f; i+=0.1f)
   {
     for (float j = 0.0f; j < 10.0f; j+=0.1f)
@@ -1819,10 +1812,10 @@ TEST (ShadowPoints, Filters)
 	NormalEstimation<PointXYZ, PointNormal> ne;
 	ne.setInputCloud (input);
 
-	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
+	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree = pcl::make_shared<pcl::search::KdTree<pcl::PointXYZ>> ();
 	ne.setSearchMethod (tree);
 
-	pcl::PointCloud<PointNormal>::Ptr input_normals (new PointCloud<PointNormal>);
+	pcl::PointCloud<PointNormal>::Ptr input_normals = pcl::make_shared<PointCloud<PointNormal>> ();
 	ne.setKSearch (15);
 	ne.compute (*input_normals);
 
@@ -1864,7 +1857,7 @@ TEST (ShadowPoints, Filters)
 TEST (FrustumCulling, Filters)
 {
   //Creating a point cloud on the XY plane
-  PointCloud<PointXYZ>::Ptr input (new PointCloud<PointXYZ> ());
+  PointCloud<PointXYZ>::Ptr input = pcl::make_shared<PointCloud<PointXYZ>> ();
 
   for (int i = 0; i < 5; i++)
   {
@@ -1907,7 +1900,7 @@ TEST (FrustumCulling, Filters)
 
   fc.setCameraPose (camera_pose);
 
-  pcl::PointCloud <pcl::PointXYZ>::Ptr output (new pcl::PointCloud <pcl::PointXYZ>);
+  pcl::PointCloud <pcl::PointXYZ>::Ptr output = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
   fc.filter (*output);
 
   // Should filter all points in the input cloud
@@ -1944,7 +1937,7 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
   PointCloud<PointXYZ> output;
 
   // Create cloud: a line along the x-axis
-  PointCloud<PointXYZ>::Ptr input (new PointCloud<PointXYZ> ());
+  PointCloud<PointXYZ>::Ptr input = pcl::make_shared<PointCloud<PointXYZ>> ();
 
   input->push_back (PointXYZ (-1.0, 0.0, 0.0));
   input->push_back (PointXYZ (0.0, 0.0, 0.0));
@@ -1958,12 +1951,12 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
   input->push_back (PointXYZ (8.0, 0.0, 0.0));
 
   // build a condition representing the inner of a cylinder including the edge located at the origin and pointing along the x-axis.
-  ConditionAnd<PointXYZ>::Ptr cyl_cond (new ConditionAnd<PointXYZ> ());
+  ConditionAnd<PointXYZ>::Ptr cyl_cond = pcl::make_shared<ConditionAnd<PointXYZ>> ();
   Eigen::Matrix3f cylinderMatrix;
   cylinderMatrix << 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0;
   float cylinderScalar = -4; //radius² of cylinder
-  TfQuadraticXYZComparison<PointXYZ>::Ptr cyl_comp (new TfQuadraticXYZComparison<PointXYZ> (ComparisonOps::LE, cylinderMatrix,
-                                                                                            Eigen::Vector3f::Zero (), cylinderScalar));
+  TfQuadraticXYZComparison<PointXYZ>::Ptr cyl_comp = pcl::make_shared<TfQuadraticXYZComparison<PointXYZ>> (ComparisonOps::LE,
+                                                                         cylinderMatrix, Eigen::Vector3f::Zero (), cylinderScalar);
   cyl_cond->addComparison (cyl_comp);
 
   // build the filter
@@ -2145,6 +2138,7 @@ TEST (MedianFilter, Filters)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 #include <pcl/common/time.h>
+
 TEST (NormalRefinement, Filters)
 {
   /*
@@ -2216,8 +2210,8 @@ TEST (NormalRefinement, Filters)
    */
 
   // Calculate SAC model
-  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
-  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+  pcl::ModelCoefficients::Ptr coefficients = pcl::make_shared<pcl::ModelCoefficients> ();
+  pcl::PointIndices::Ptr inliers = pcl::make_shared<pcl::PointIndices> ();
   pcl::SACSegmentation<pcl::PointXYZRGBNormal> seg;
   seg.setOptimizeCoefficients (true);
   seg.setModelType (pcl::SACMODEL_PLANE);

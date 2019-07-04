@@ -37,15 +37,16 @@
  *
  */
 
+#include "pcl/features/shot_lrf.h"
+#include <pcl/make_shared.h>
 #include <gtest/gtest.h>
-#include <pcl/point_cloud.h>
+#include <pcl/features/3dsc.h>
 #include <pcl/features/normal_3d_omp.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/features/shot.h>
 #include <pcl/features/shot_omp.h>
-#include "pcl/features/shot_lrf.h"
-#include <pcl/features/3dsc.h>
 #include <pcl/features/usc.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_cloud.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -579,7 +580,7 @@ TYPED_TEST (SHOTShapeAndColorTest, Estimation)
   n.compute (*normals);
 
   search::KdTree<PointXYZRGBA>::Ptr rgbaTree;
-  rgbaTree.reset (new search::KdTree<PointXYZRGBA> (false));
+  rgbaTree = pcl::make_shared<search::KdTree<PointXYZRGBA>> (false);
 
   // Create fake point cloud with colors
   PointCloud<PointXYZRGBA> cloudWithColors;
@@ -843,7 +844,7 @@ main (int argc, char** argv)
   for (size_t i = 0; i < indices.size (); ++i)
     indices[i] = static_cast<int> (i);
 
-  tree.reset (new search::KdTree<PointXYZ> (false));
+  tree = pcl::make_shared<search::KdTree<PointXYZ>> (false);
   tree->setInputCloud (cloud.makeShared ());
 
   testing::InitGoogleTest (&argc, argv);

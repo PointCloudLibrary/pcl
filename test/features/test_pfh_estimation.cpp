@@ -51,6 +51,8 @@
 #include <pcl/features/gfpfh.h>
 #include <pcl/io/pcd_io.h>
 
+#include <pcl/make_shared.h>
+
 using PointT = pcl::PointNormal;
 using KdTreePtr = pcl::search::KdTree<PointT>::Ptr;
 using pcl::PointCloud;
@@ -120,7 +122,7 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
   //
   PointCloud<OutputT> output3, output4;
 
-  pcl::IndicesPtr indices2 (new pcl::Indices (0));
+  pcl::IndicesPtr indices2 = pcl::make_shared<pcl::Indices> (0);
   for (size_t i = 0; i < (indices->size ()/2); ++i)
     indices2->push_back (static_cast<int> (i));
 
@@ -204,7 +206,7 @@ TEST (PCL, PFHEstimation)
 
   // Object
   PointCloud<PFHSignature125>::Ptr pfhs (new PointCloud<PFHSignature125> ());
-  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
+  pcl::IndicesPtr indicesptr = pcl::make_shared<pcl::Indices> (indices);
 
   // set parameters
   pfh.setInputCloud (cloud);
@@ -251,7 +253,7 @@ TEST (PCL, PFHEstimation)
 
   // Test results when setIndices and/or setSearchSurface are used
 
-  pcl::IndicesPtr test_indices (new pcl::Indices (0));
+  pcl::IndicesPtr test_indices = pcl::make_shared<pcl::Indices> (0);
   for (size_t i = 0; i < cloud->size (); i+=3)
     test_indices->push_back (static_cast<int> (i));
 
@@ -391,7 +393,7 @@ TYPED_TEST (FPFHTest, Estimation)
 
   // Object
   PointCloud<FPFHSignature33>::Ptr fpfhs (new PointCloud<FPFHSignature33> ());
-  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
+  pcl::IndicesPtr indicesptr = pcl::make_shared<pcl::Indices> (indices);
 
   // set parameters
   fpfh.setInputCloud (cloud);
@@ -440,7 +442,7 @@ TYPED_TEST (FPFHTest, Estimation)
 
   // Test results when setIndices and/or setSearchSurface are used
 
-  pcl::IndicesPtr test_indices (new pcl::Indices (0));
+  pcl::IndicesPtr test_indices = pcl::make_shared<pcl::Indices> (0);
   for (size_t i = 0; i < cloud->size (); i+=3)
     test_indices->push_back (static_cast<int> (i));
 
@@ -457,7 +459,7 @@ TEST (PCL, VFHEstimation)
   // Object
   pcl::VFHEstimation<PointT, PointT, VFHSignature308> vfh;
   PointCloud<VFHSignature308>::Ptr vfhs (new PointCloud<VFHSignature308> ());
-  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
+  pcl::IndicesPtr indicesptr = pcl::make_shared<pcl::Indices> (indices);
 
   // set parameters
   vfh.setInputCloud (cloud);
@@ -539,7 +541,7 @@ main (int argc, char** argv)
   for (size_t i = 0; i < cloud->size (); ++i)
     indices.push_back (static_cast<int> (i));
 
-  tree.reset (new pcl::search::KdTree<PointT> (false));
+  tree = pcl::make_shared<pcl::search::KdTree<PointT>> (false);
   tree->setInputCloud (cloud);
 
   testing::InitGoogleTest (&argc, argv);
