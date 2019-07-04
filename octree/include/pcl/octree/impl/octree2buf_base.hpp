@@ -383,47 +383,45 @@ namespace pcl
         // recursively proceed with indexed child branch
         return createLeafRecursive (key_arg, depth_mask_arg / 2, child_branch, return_leaf_arg, parent_of_leaf_arg, doNodeReset);
       }
-      else
-      {
-        // branch childs are leaf nodes
-        LeafNode* child_leaf;
-        if (!branch_arg->hasChild(buffer_selector_, child_idx))
-        {
-          // leaf node at child_idx does not exist
-          
-          // check if we can take copy a reference from previous buffer
-          if (branch_arg->hasChild(!buffer_selector_, child_idx))
-          {
 
-            OctreeNode * child_node = branch_arg->getChildPtr(!buffer_selector_,child_idx);
-            if (child_node->getNodeType () == LEAF_NODE)
-            {
-              child_leaf = static_cast<LeafNode*> (child_node);
-              branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
-            } else {
-              // depth has changed.. child in preceding buffer is a leaf node.
-              deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
-              child_leaf = createLeafChild (*branch_arg, child_idx);
-            }
-            leaf_count_++;  
-          }
-          else
+      // branch childs are leaf nodes
+      LeafNode* child_leaf;
+      if (!branch_arg->hasChild(buffer_selector_, child_idx))
+      {
+        // leaf node at child_idx does not exist
+
+        // check if we can take copy a reference from previous buffer
+        if (branch_arg->hasChild(!buffer_selector_, child_idx))
+        {
+
+          OctreeNode * child_node = branch_arg->getChildPtr(!buffer_selector_,child_idx);
+          if (child_node->getNodeType () == LEAF_NODE)
           {
-            // if required leaf does not exist -> create it
+            child_leaf = static_cast<LeafNode*> (child_node);
+            branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
+          } else {
+            // depth has changed.. child in preceding buffer is a leaf node.
+            deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
             child_leaf = createLeafChild (*branch_arg, child_idx);
-            leaf_count_++;
           }
-          
-          // return leaf node
-          return_leaf_arg = child_leaf;
-          parent_of_leaf_arg = branch_arg;
+          leaf_count_++;  
         }
         else
         {
-          // leaf node already exist
-          return_leaf_arg = static_cast<LeafNode*> (branch_arg->getChildPtr(buffer_selector_,child_idx));;
-          parent_of_leaf_arg = branch_arg;
+          // if required leaf does not exist -> create it
+          child_leaf = createLeafChild (*branch_arg, child_idx);
+          leaf_count_++;
         }
+        
+        // return leaf node
+        return_leaf_arg = child_leaf;
+        parent_of_leaf_arg = branch_arg;
+      }
+      else
+      {
+        // leaf node already exist
+        return_leaf_arg = static_cast<LeafNode*> (branch_arg->getChildPtr(buffer_selector_,child_idx));;
+        parent_of_leaf_arg = branch_arg;
       }
 
       return depth_mask_arg;

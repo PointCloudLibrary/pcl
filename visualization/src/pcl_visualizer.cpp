@@ -464,21 +464,21 @@ pcl::visualization::PCLVisualizer::getCameraParameters (pcl::visualization::Came
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizer::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
+pcl::visualization::PCLVisualizer::registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
   return (style_->registerKeyboardCallback (callback));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizer::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
+pcl::visualization::PCLVisualizer::registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
   return (style_->registerMouseCallback (callback));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizer::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
+pcl::visualization::PCLVisualizer::registerPointPickingCallback (std::function<void (const pcl::visualization::PointPickingEvent&)> callback)
 {
   return (style_->registerPointPickingCallback (callback));
 }
@@ -487,12 +487,12 @@ pcl::visualization::PCLVisualizer::registerPointPickingCallback (boost::function
 boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie)
 {
-  return (registerPointPickingCallback (boost::bind (callback, _1, cookie)));
+  return (registerPointPickingCallback ([=] (const pcl::visualization::PointPickingEvent& e) { (*callback) (e, cookie); }));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizer::registerAreaPickingCallback (boost::function<void (const pcl::visualization::AreaPickingEvent&)> callback)
+pcl::visualization::PCLVisualizer::registerAreaPickingCallback (std::function<void (const pcl::visualization::AreaPickingEvent&)> callback)
 {
   return (style_->registerAreaPickingCallback (callback));
 }
@@ -501,7 +501,7 @@ pcl::visualization::PCLVisualizer::registerAreaPickingCallback (boost::function<
 boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie)
 {
-  return (registerAreaPickingCallback (boost::bind (callback, _1, cookie)));
+  return (registerAreaPickingCallback ([=] (const pcl::visualization::AreaPickingEvent& e) { (*callback) (e, cookie); }));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1945,8 +1945,7 @@ pcl::visualization::PCLVisualizer::updateShapePose (const std::string &id, const
 
   if (am_it == shape_actor_map_->end ())
     return (false);
-  else
-    actor = vtkLODActor::SafeDownCast (am_it->second);
+  actor = vtkLODActor::SafeDownCast (am_it->second);
 
   if (!actor)
     return (false);
@@ -1971,8 +1970,7 @@ pcl::visualization::PCLVisualizer::updateCoordinateSystemPose (const std::string
 
   if (am_it == coordinate_actor_map_->end ())
     return (false);
-  else
-    actor = vtkLODActor::SafeDownCast (am_it->second);
+  actor = vtkLODActor::SafeDownCast (am_it->second);
 
   if (!actor)
     return (false);
@@ -2227,11 +2225,8 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
         boost::split (camera, argv[i], boost::is_any_of ("/"), boost::token_compress_on);
         return (style_->getCameraParameters (camera));
       }
-      else
-      {
-        // Assume that if we don't have clip/focal/pos/view, a filename.cam was given as a parameter
-        return (style_->loadCameraParameters (camfile));
-      }
+      // Assume that if we don't have clip/focal/pos/view, a filename.cam was given as a parameter
+      return (style_->loadCameraParameters (camfile));
     }
   }
   return (false);
@@ -2709,7 +2704,7 @@ pcl::visualization::PCLVisualizer::createViewPortCamera (const int viewport)
   {
     if (viewport == 0)
       continue;
-    else if (viewport == i)
+    if (viewport == i)
     {
       renderer->SetActiveCamera (cam);
       renderer->ResetCamera ();
@@ -2933,8 +2928,7 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
   // Get the handler
   PointCloudColorHandler<pcl::PCLPointCloud2>::ConstPtr color_handler = am_it->second.color_handlers[index];
 
-  vtkSmartPointer<vtkDataArray> scalars;
-  color_handler->getColor (scalars);
+  auto scalars = color_handler->getColor ();
   double minmax[2];
   scalars->GetRange (minmax);
   // Update the data
@@ -4052,8 +4046,7 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   // Get the colors from the handler
   bool has_colors = false;
   double minmax[2];
-  vtkSmartPointer<vtkDataArray> scalars;
-  if (color_handler->getColor (scalars))
+  if (auto scalars = color_handler->getColor ())
   {
     polydata->GetPointData ()->SetScalars (scalars);
     scalars->GetRange (minmax);
@@ -4478,7 +4471,7 @@ pcl::visualization::PCLVisualizer::textureFromTexMaterial (const pcl::TexMateria
         return (-1);
       }
 
-      typedef std::vector<boost::filesystem::path> paths_vector;
+      using paths_vector = std::vector<boost::filesystem::path>;
       paths_vector paths;
       std::copy (boost::filesystem::directory_iterator (parent_dir),
                  boost::filesystem::directory_iterator (),

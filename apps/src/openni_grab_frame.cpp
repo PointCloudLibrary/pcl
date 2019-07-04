@@ -42,8 +42,11 @@
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <boost/filesystem.hpp>
 #include <pcl/visualization/pcl_visualizer.h>
+
+#include <boost/filesystem.hpp>
+
+#include <mutex>
 
 using namespace std::chrono_literals;
 
@@ -76,8 +79,8 @@ using namespace boost::filesystem;
 template<typename PointType>
 class OpenNIGrabFrame
 {
-  typedef pcl::PointCloud<PointType> Cloud;
-  typedef typename Cloud::ConstPtr CloudConstPtr;  
+  using Cloud = pcl::PointCloud<PointType>;
+  using CloudConstPtr = typename Cloud::ConstPtr;  
   public:
     OpenNIGrabFrame (pcl::OpenNIGrabber &grabber)
     : visualizer_ (new pcl::visualization::PCLVisualizer ("OpenNI Viewer"))
@@ -99,7 +102,7 @@ class OpenNIGrabFrame
       if (quit_)
         return;
       
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
         cloud_ = cloud;
         
       if (continuous_ || trigger_)
@@ -141,7 +144,7 @@ class OpenNIGrabFrame
     getLatestCloud ()
     {
       //lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock(cloud_mutex_);
+      std::lock_guard<std::mutex> lock(cloud_mutex_);
       CloudConstPtr temp_cloud;
       temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
       //it is safe to set it again from our
@@ -183,7 +186,7 @@ class OpenNIGrabFrame
       
 
       // make callback function from member function
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIGrabFrame::cloud_cb_, this, _1);
+      std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
 
       // connect callback function for desired signal. In this case its a point cloud with color values
       boost::signals2::connection c = grabber_.registerCallback (f);
@@ -261,7 +264,7 @@ class OpenNIGrabFrame
     std::string dir_name_;
     unsigned format_;
     CloudConstPtr cloud_;
-    mutable boost::mutex cloud_mutex_;
+    mutable std::mutex cloud_mutex_;
     pcl::OpenNIGrabber &grabber_;
     bool visualizer_enable_;
 };

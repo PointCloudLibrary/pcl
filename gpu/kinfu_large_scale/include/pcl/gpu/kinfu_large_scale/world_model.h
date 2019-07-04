@@ -64,18 +64,18 @@ namespace pcl
     {
       public:
 
-        typedef boost::shared_ptr<WorldModel<PointT> > Ptr;
-        typedef boost::shared_ptr<const WorldModel<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<WorldModel<PointT> >;
+        using ConstPtr = boost::shared_ptr<const WorldModel<PointT> >;
 
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef typename PointCloud::Ptr PointCloudPtr;
-        typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = typename PointCloud::Ptr;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        typedef typename pcl::ConditionAnd<PointT>::Ptr ConditionAndPtr;
-        typedef typename pcl::ConditionOr<PointT>::Ptr ConditionOrPtr;
-        typedef typename pcl::FieldComparison<PointT>::ConstPtr FieldComparisonConstPtr;
+        using ConditionAndPtr = typename pcl::ConditionAnd<PointT>::Ptr;
+        using ConditionOrPtr = typename pcl::ConditionOr<PointT>::Ptr;
+        using FieldComparisonConstPtr = typename pcl::FieldComparison<PointT>::ConstPtr;
         
-        typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+        using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
         /** \brief Default constructor for the WorldModel.
           */

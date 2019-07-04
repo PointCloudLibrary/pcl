@@ -401,10 +401,7 @@ pcl::TextureMapping<PointInT>::isPointOccluded (const PointInT &pt, OctreePtr oc
    }
   }
 
-  if (nbocc == 0)
-   return (false);
-  else
-   return (true);
+  return (nbocc != 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

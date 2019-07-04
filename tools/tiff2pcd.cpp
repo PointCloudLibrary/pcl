@@ -351,7 +351,7 @@ int main(int argc, char ** argv)
       //std::cout << "RGB Time: " << rgb_time << std::endl;
 
       // Try to read the depth file
-      int found = 0; // indicates if a corresponding depth file was found
+      bool found = false; // indicates if a corresponding depth file was found
       // Find the correct file name
       for(size_t j = 0; j < tiff_depth_paths.size(); j++)
       {
@@ -361,7 +361,7 @@ int main(int argc, char ** argv)
         if(depth_time == rgb_time) // found the correct depth
         {
           //std::cout << "Depth Time: " << depth_time << std::endl;
-          found = 1;
+          found = true;
 
           // Process here!
 
@@ -389,13 +389,10 @@ int main(int argc, char ** argv)
           // TODO: remove this depth entry from vector before break > speed up search time
           break;
         }
-        else
-        {
-          // Continue with the next depth entry
-          continue;
-        }
+        // Continue with the next depth entry
+        continue;
       } //for depth_paths
-      if(found == 0)
+      if(!found)
       {
         std::cout << "We couldn't find a Depth file for this RGB image" << std::endl;
       }

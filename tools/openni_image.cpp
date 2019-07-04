@@ -77,10 +77,7 @@ getTotalSystemMemory ()
   {
     return std::numeric_limits<size_t>::max ();
   }
-  else
-  {
-    return size_t (pages * page_size);
-  }
+  return size_t (pages * page_size);
 }
 
 const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480) / 2);
@@ -142,8 +139,8 @@ do \
 //////////////////////////////////////////////////////////////////////////////////////////
 struct Frame
 {
-  typedef boost::shared_ptr<Frame> Ptr;
-  typedef boost::shared_ptr<const Frame> ConstPtr;
+  using Ptr = boost::shared_ptr<Frame>;
+  using ConstPtr = boost::shared_ptr<const Frame>;
 
   Frame (const boost::shared_ptr<openni_wrapper::Image> &_image,
          const boost::shared_ptr<openni_wrapper::DepthImage> &_depth_image,
@@ -414,7 +411,12 @@ class Driver
     void 
     grabAndSend ()
     {
-      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float) > image_cb = boost::bind (&Driver::image_callback, this, _1, _2, _3);
+      std::function<
+        void (const openni_wrapper::Image::Ptr&, const openni_wrapper::DepthImage::Ptr&, float)
+      > image_cb = [this] (const openni_wrapper::Image::Ptr& img, const openni_wrapper::DepthImage::Ptr& depth, float f)
+      {
+        image_callback (img, depth, f);
+      };
       boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);
 
       grabber_.start ();
@@ -690,7 +692,7 @@ main (int argc, char ** argv)
       usage (argv);
       return (0);
     }
-    else if (device_id == "-l")
+    if (device_id == "-l")
     {
       if (argc >= 3)
       {

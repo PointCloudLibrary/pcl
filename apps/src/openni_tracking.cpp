@@ -39,52 +39,41 @@
 #include <pcl/tracking/particle_filter.h>
 #include <pcl/tracking/kld_adaptive_particle_filter_omp.h>
 #include <pcl/tracking/particle_filter_omp.h>
-
 #include <pcl/tracking/coherence.h>
 #include <pcl/tracking/distance_coherence.h>
 #include <pcl/tracking/hsv_color_coherence.h>
 #include <pcl/tracking/normal_coherence.h>
-
 #include <pcl/tracking/approx_nearest_pair_point_cloud_coherence.h>
 #include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
-
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
 #include <pcl/common/centroid.h>
-
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
-
 #include <pcl/io/pcd_io.h>
-
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/project_inliers.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/filters/extract_indices.h>
-
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/features/integral_image_normal.h>
-
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
-
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/segmentation/extract_clusters.h>
-
 #include <pcl/surface/convex_hull.h>
-
 #include <pcl/search/pcl_search.h>
 #include <pcl/common/transforms.h>
 
 #include <boost/format.hpp>
-#include <boost/thread/mutex.hpp>
 
+#include <mutex>
 #include <thread>
 
 #define FPS_CALC_BEGIN                          \
@@ -114,24 +103,24 @@ template <typename PointType>
 class OpenNISegmentTracking
 {
 public:
-  //typedef pcl::PointXYZRGBANormal RefPointType;
-  typedef pcl::PointXYZRGBA RefPointType;
-  //typedef pcl::PointXYZ RefPointType;
-  typedef ParticleXYZRPY ParticleT;
+  //using RefPointType = pcl::PointXYZRGBANormal;
+  using RefPointType = pcl::PointXYZRGBA;
+  //using RefPointType = pcl::PointXYZ;
+  using ParticleT = ParticleXYZRPY;
   
-  typedef pcl::PointCloud<PointType> Cloud;
-  typedef pcl::PointCloud<RefPointType> RefCloud;
-  typedef RefCloud::Ptr RefCloudPtr;
-  typedef RefCloud::ConstPtr RefCloudConstPtr;
-  typedef typename Cloud::Ptr CloudPtr;
-  typedef typename Cloud::ConstPtr CloudConstPtr;
-  //typedef KLDAdaptiveParticleFilterTracker<RefPointType, ParticleT> ParticleFilter;
-  //typedef KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT> ParticleFilter;
-  //typedef ParticleFilterOMPTracker<RefPointType, ParticleT> ParticleFilter;
-  typedef ParticleFilterTracker<RefPointType, ParticleT> ParticleFilter;
-  typedef ParticleFilter::CoherencePtr CoherencePtr;
-  typedef pcl::search::KdTree<PointType> KdTree;
-  typedef typename KdTree::Ptr KdTreePtr;
+  using Cloud = pcl::PointCloud<PointType>;
+  using RefCloud = pcl::PointCloud<RefPointType>;
+  using RefCloudPtr = RefCloud::Ptr;
+  using RefCloudConstPtr = RefCloud::ConstPtr;
+  using CloudPtr = typename Cloud::Ptr;
+  using CloudConstPtr = typename Cloud::ConstPtr;
+  //using ParticleFilter = KLDAdaptiveParticleFilterTracker<RefPointType, ParticleT>;
+  //using ParticleFilter = KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT>;
+  //using ParticleFilter = ParticleFilterOMPTracker<RefPointType, ParticleT>;
+  using ParticleFilter = ParticleFilterTracker<RefPointType, ParticleT>;
+  using CoherencePtr = ParticleFilter::CoherencePtr;
+  using KdTree = pcl::search::KdTree<PointType>;
+  using KdTreePtr = typename KdTree::Ptr;
   OpenNISegmentTracking (const std::string& device_id, int thread_nr, double downsampling_grid_size,
                          bool use_convex_hull,
                          bool visualize_non_downsample, bool visualize_particles,
@@ -263,7 +252,7 @@ public:
   void
   viz_cb (pcl::visualization::PCLVisualizer& viz)
   {
-    boost::mutex::scoped_lock lock (mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     
     if (!cloud_pass_)
     {
@@ -523,7 +512,7 @@ public:
   void
   cloud_cb (const CloudConstPtr &cloud)
   {
-    boost::mutex::scoped_lock lock (mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     double start = pcl::getTime ();
     FPS_CALC_BEGIN;
     cloud_pass_.reset (new Cloud);
@@ -649,11 +638,11 @@ public:
   run ()
   {
     pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
-    boost::function<void (const CloudConstPtr&)> f =
-      boost::bind (&OpenNISegmentTracking::cloud_cb, this, _1);
+    std::function<void (const CloudConstPtr&)> f =
+      [this] (const CloudConstPtr& cloud) { cloud_cb (cloud); };
     interface->registerCallback (f);
-    
-    viewer_.runOnVisualizationThread (boost::bind(&OpenNISegmentTracking::viz_cb, this, _1), "viz_cb");
+
+    viewer_.runOnVisualizationThread ([this] (pcl::visualization::PCLVisualizer& viz) { viz_cb (viz); }, "viz_cb");
     
     interface->start ();
       
@@ -674,7 +663,7 @@ public:
   std::vector<pcl::Vertices> hull_vertices_;
   
   std::string device_id_;
-  boost::mutex mtx_;
+  std::mutex mtx_;
   bool new_cloud_;
   pcl::NormalEstimationOMP<PointType, pcl::Normal> ne_; // to store threadpool
   ParticleFilter::Ptr tracker_;

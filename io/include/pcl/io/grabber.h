@@ -68,8 +68,20 @@ namespace pcl
         * \param[in] callback: the callback function/method
         * \return Connection object, that can be used to disconnect the callback method from the signal again.
         */
-      template<typename T> boost::signals2::connection 
-      registerCallback (const boost::function<T>& callback);
+      template<typename T> boost::signals2::connection
+      registerCallback (const std::function<T>& callback);
+
+      /** \brief registers a callback function/method to a signal with the corresponding signature
+        * \param[in] callback: the callback function/method
+        * \return Connection object, that can be used to disconnect the callback method from the signal again.
+        */
+      template<typename T, template<typename> class FunctionT>
+      [[deprecated ("please assign the callback to a std::function.")]]
+      boost::signals2::connection
+      registerCallback (const FunctionT<T>& callback)
+      {
+        return registerCallback (std::function<T> (callback));
+      }
 
       /** \brief indicates whether a signal with given parameter-type exists or not
         * \return true if signal exists, false otherwise
@@ -148,7 +160,7 @@ namespace pcl
   template<typename T> boost::signals2::signal<T>*
   Grabber::find_signal () const
   {
-    typedef boost::signals2::signal<T> Signal;
+    using Signal = boost::signals2::signal<T>;
 
     std::map<std::string, boost::signals2::signal_base*>::const_iterator signal_it = signals_.find (typeid (T).name ());
     if (signal_it != signals_.end ())
@@ -160,7 +172,7 @@ namespace pcl
   template<typename T> void
   Grabber::disconnect_all_slots ()
   {
-    typedef boost::signals2::signal<T> Signal;
+    using Signal = boost::signals2::signal<T>;
 
     if (signals_.find (typeid (T).name ()) != signals_.end ())
     {
@@ -204,7 +216,7 @@ namespace pcl
   template<typename T> int
   Grabber::num_slots () const
   {
-    typedef boost::signals2::signal<T> Signal;
+    using Signal = boost::signals2::signal<T>;
 
     // see if we have a signal for this type
     std::map<std::string, boost::signals2::signal_base*>::const_iterator signal_it = signals_.find (typeid (T).name ());
@@ -219,7 +231,7 @@ namespace pcl
   template<typename T> boost::signals2::signal<T>*
   Grabber::createSignal ()
   {
-    typedef boost::signals2::signal<T> Signal;
+    using Signal = boost::signals2::signal<T>;
 
     if (signals_.find (typeid (T).name ()) == signals_.end ())
     {
@@ -231,9 +243,9 @@ namespace pcl
   }
 
   template<typename T> boost::signals2::connection
-  Grabber::registerCallback (const boost::function<T> & callback)
+  Grabber::registerCallback (const std::function<T> & callback)
   {
-    typedef boost::signals2::signal<T> Signal;
+    using Signal = boost::signals2::signal<T>;
     if (signals_.find (typeid (T).name ()) == signals_.end ())
     {
       std::stringstream sstream;

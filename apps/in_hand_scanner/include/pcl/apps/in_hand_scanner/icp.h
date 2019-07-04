@@ -71,14 +71,14 @@ namespace pcl
     {
       public:
 
-        typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
-        typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
-        typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
-        typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
+        using PointXYZRGBNormal = pcl::PointXYZRGBNormal;
+        using CloudXYZRGBNormal = pcl::PointCloud<PointXYZRGBNormal>;
+        using CloudXYZRGBNormalPtr = CloudXYZRGBNormal::Ptr;
+        using CloudXYZRGBNormalConstPtr = CloudXYZRGBNormal::ConstPtr;
 
-        typedef pcl::ihs::Mesh         Mesh;
-        typedef pcl::ihs::MeshPtr      MeshPtr;
-        typedef pcl::ihs::MeshConstPtr MeshConstPtr;
+        using Mesh = pcl::ihs::Mesh;
+        using MeshPtr = pcl::ihs::MeshPtr;
+        using MeshConstPtr = pcl::ihs::MeshConstPtr;
 
         /** \brief Constructor */
         ICP ();
@@ -164,14 +164,14 @@ namespace pcl
 
       private:
 
-        typedef pcl::PointNormal              PointNormal;
-        typedef pcl::PointCloud <PointNormal> CloudNormal;
-        typedef CloudNormal::Ptr              CloudNormalPtr;
-        typedef CloudNormal::ConstPtr         CloudNormalConstPtr;
+        using PointNormal = pcl::PointNormal;
+        using CloudNormal = pcl::PointCloud<PointNormal>;
+        using CloudNormalPtr = CloudNormal::Ptr;
+        using CloudNormalConstPtr = CloudNormal::ConstPtr;
 
-        typedef pcl::KdTree <PointNormal>        KdTree;
-        typedef boost::shared_ptr <KdTree>       KdTreePtr;
-        typedef boost::shared_ptr <const KdTree> KdTreeConstPtr;
+        using KdTree = pcl::KdTree<PointNormal>;
+        using KdTreePtr = boost::shared_ptr<KdTree>;
+        using KdTreeConstPtr = boost::shared_ptr<const KdTree>;
 
         /** \brief Selects the model points that are pointing towards to the camera (data coordinate system = camera coordinate system).
           * \param[in] mesh_model Input mesh.

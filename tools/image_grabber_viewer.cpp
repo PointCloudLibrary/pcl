@@ -222,7 +222,10 @@ main (int argc, char** argv)
   
 
   EventHelper h;
-  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
+  std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > f = [&] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud)
+  {
+    h.cloud_cb (cloud);
+  };
   boost::signals2::connection c1 = grabber->registerCallback (f);
 
   std::string mouse_msg_3D ("Mouse coordinates in PCL Visualizer");
@@ -258,7 +261,7 @@ main (int argc, char** argv)
       std::this_thread::sleep_for(10ms);
       continue;
     }
-    else if (mutex_.try_lock ())
+    if (mutex_.try_lock ())
     {
       pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr temp_cloud;
       temp_cloud.swap (cloud_);

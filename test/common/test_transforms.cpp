@@ -48,16 +48,17 @@
 
 using namespace pcl;
 
-typedef ::testing::Types<Eigen::Transform<float, 3, Eigen::Affine>,
-                         Eigen::Transform<double, 3, Eigen::Affine>,
-                         Eigen::Matrix<float, 4, 4>,
-                         Eigen::Matrix<double, 4,4> > TransformTypes;
+using TransformTypes = ::testing::Types
+        <Eigen::Transform<float, 3, Eigen::Affine>,
+         Eigen::Transform<double, 3, Eigen::Affine>,
+         Eigen::Matrix<float, 4, 4>,
+         Eigen::Matrix<double, 4,4> >;
 
 template <typename Transform>
 class Transforms : public ::testing::Test
 {
  public:
-  typedef typename Transform::Scalar Scalar;
+  using Scalar = typename Transform::Scalar;
 
   Transforms ()
   : ABS_ERROR (std::numeric_limits<Scalar>::epsilon () * 10)

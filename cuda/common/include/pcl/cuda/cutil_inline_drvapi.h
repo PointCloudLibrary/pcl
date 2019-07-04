@@ -55,10 +55,10 @@ inline void __cuCtxSync(const char *file, const int line )
 inline int _ConvertSMVer2CoresDrvApi(int major, int minor)
 {
 	// Defines for GPU Architecture types (using the SM version to determine the # of cores per SM
-	typedef struct {
+	struct sSMtoCores{
 		int SM; // 0xMm (hexadecimal notation), M = SM Major version, and m = SM minor version
 		int Cores;
-	} sSMtoCores;
+	};
 
         sSMtoCores nGpuArchCoresPerSM[] =
         { { 0x10,  8 },
@@ -95,7 +95,8 @@ inline int cutilDrvGetMaxGflopsDeviceId()
 
 	// Find the best major SM Architecture GPU device
 	while ( current_device < device_count ) {
-		cutilDrvSafeCallNoSync( cuDeviceComputeCapability(&major, &minor, current_device ) );
+		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
+		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
 		if (major > 0 && major < 9999) {
 			best_SM_arch = MAX(best_SM_arch, major);
 		}
@@ -111,7 +112,8 @@ inline int cutilDrvGetMaxGflopsDeviceId()
         cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &clockRate, 
                                                             CU_DEVICE_ATTRIBUTE_CLOCK_RATE, 
                                                             current_device ) );
-		cutilDrvSafeCallNoSync( cuDeviceComputeCapability(&major, &minor, current_device ) );
+        cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
+        cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
 
 		if (major == 9999 && minor == 9999) {
 		    sm_per_multiproc = 1;
@@ -154,14 +156,10 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
 	// Find the best major SM Architecture GPU device that are graphics devices
 	while ( current_device < device_count ) {
 		cutilDrvSafeCallNoSync( cuDeviceGetName(deviceName, 256, current_device) );
-		cutilDrvSafeCallNoSync( cuDeviceComputeCapability(&major, &minor, current_device ) );
+		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
+		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
+		cutilDrvSafeCallNoSync( cuDeviceGetAttribute(&bTCC, CU_DEVICE_ATTRIBUTE_TCC_DRIVER, current_device) );
 
-#if CUDA_VERSION >= 3020
-		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &bTCC,  CU_DEVICE_ATTRIBUTE_TCC_DRIVER, current_device ) );
-#else
-		// Assume a Tesla GPU is running in TCC if we are running CUDA 3.1
-		if (deviceName[0] == 'T') bTCC = 1;
-#endif
 		if (!bTCC) {
 			if (major > 0 && major < 9999) {
 				best_SM_arch = MAX(best_SM_arch, major);
@@ -179,14 +177,10 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
         cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &clockRate, 
                                                             CU_DEVICE_ATTRIBUTE_CLOCK_RATE, 
                                                             current_device ) );
-		cutilDrvSafeCallNoSync( cuDeviceComputeCapability(&major, &minor, current_device ) );
+        cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
+        cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
 
-#if CUDA_VERSION >= 3020
 		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &bTCC,  CU_DEVICE_ATTRIBUTE_TCC_DRIVER, current_device ) );
-#else
-		// Assume a Tesla GPU is running in TCC if we are running CUDA 3.1
-		if (deviceName[0] == 'T') bTCC = 1;
-#endif
 
 		if (major == 9999 && minor == 9999) {
 		    sm_per_multiproc = 1;
@@ -356,7 +350,8 @@ inline bool cutilDrvCudaDevCapabilities(int major_version, int minor_version, in
 #endif
 
     cutilDrvSafeCallNoSync( cuDeviceGet(&dev, deviceNum) );
-    cutilDrvSafeCallNoSync( cuDeviceComputeCapability(&major, &minor, dev));
+    cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, dev));
+    cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, dev));
     cutilDrvSafeCallNoSync( cuDeviceGetName(device_name, 256, dev) ); 
 
     if((major > major_version) ||

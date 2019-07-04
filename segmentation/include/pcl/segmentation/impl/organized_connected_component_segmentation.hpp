@@ -139,7 +139,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   {
     if (!std::isfinite (input_->points[colIdx].x))
       continue;
-    else if (compare_->compare (colIdx, colIdx - 1 ))
+    if (compare_->compare (colIdx, colIdx - 1 ))
     {
       labels[colIdx].label = labels[colIdx - 1].label;
     }

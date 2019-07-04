@@ -75,17 +75,17 @@ namespace pcl
       using KdTree<PointT>::nearestKSearch;
       using KdTree<PointT>::radiusSearch;
 
-      typedef typename KdTree<PointT>::PointCloud PointCloud;
-      typedef typename KdTree<PointT>::PointCloudConstPtr PointCloudConstPtr;
+      using PointCloud = typename KdTree<PointT>::PointCloud;
+      using PointCloudConstPtr = typename KdTree<PointT>::PointCloudConstPtr;
 
-      typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
-      typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
+      using IndicesPtr = boost::shared_ptr<std::vector<int> >;
+      using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
 
-      typedef ::flann::Index<Dist> FLANNIndex;
+      using FLANNIndex = ::flann::Index<Dist>;
 
       // Boost shared pointers
-      typedef boost::shared_ptr<KdTreeFLANN<PointT, Dist> > Ptr;
-      typedef boost::shared_ptr<const KdTreeFLANN<PointT, Dist> > ConstPtr;
+      using Ptr = boost::shared_ptr<KdTreeFLANN<PointT, Dist> >;
+      using ConstPtr = boost::shared_ptr<const KdTreeFLANN<PointT, Dist> >;
 
       /** \brief Default Constructor for KdTreeFLANN.
         * \param[in] sorted set to true if the application that the tree will be used for requires sorted nearest neighbor indices (default). False otherwise. 

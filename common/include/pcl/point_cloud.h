@@ -62,13 +62,13 @@ namespace pcl
 
   // Forward declarations
   template <typename PointT> class PointCloud;
-  typedef std::vector<detail::FieldMapping> MsgFieldMap;
+  using MsgFieldMap = std::vector<detail::FieldMapping>;
 
   /** \brief Helper functor structure for copying data between an Eigen type and a PointT. */
   template <typename PointOutT>
   struct NdCopyEigenPointFunctor
   {
-    typedef typename traits::POD<PointOutT>::type Pod;
+    using Pod = typename traits::POD<PointOutT>::type;
 
     /** \brief Constructor
       * \param[in] p1 the input Eigen type
@@ -84,7 +84,7 @@ namespace pcl
     operator() ()
     {
       //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
-      typedef typename pcl::traits::datatype<PointOutT, Key>::type T;
+      using T = typename pcl::traits::datatype<PointOutT, Key>::type;
       uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value;
       *reinterpret_cast<T*>(data_ptr) = static_cast<T> (p1_[f_idx_++]);
     }
@@ -101,7 +101,7 @@ namespace pcl
   template <typename PointInT>
   struct NdCopyPointEigenFunctor
   {
-    typedef typename traits::POD<PointInT>::type Pod;
+    using Pod = typename traits::POD<PointInT>::type;
 
     /** \brief Constructor
       * \param[in] p1 the input Point type
@@ -115,7 +115,7 @@ namespace pcl
     operator() ()
     {
       //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
-      typedef typename pcl::traits::datatype<PointInT, Key>::type T;
+      using T = typename pcl::traits::datatype<PointInT, Key>::type;
       const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value;
       p2_[f_idx_++] = static_cast<float> (*reinterpret_cast<const T*>(data_ptr));
     }
@@ -421,23 +421,23 @@ namespace pcl
       /** \brief Sensor acquisition pose (rotation). */
       Eigen::Quaternionf sensor_orientation_;
 
-      typedef PointT PointType;  // Make the template class available from the outside
-      typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > VectorType;
-      typedef std::vector<PointCloud<PointT>, Eigen::aligned_allocator<PointCloud<PointT> > > CloudVectorType;
-      typedef boost::shared_ptr<PointCloud<PointT> > Ptr;
-      typedef boost::shared_ptr<const PointCloud<PointT> > ConstPtr;
+      using PointType = PointT;  // Make the template class available from the outside
+      using VectorType = std::vector<PointT, Eigen::aligned_allocator<PointT> >;
+      using CloudVectorType = std::vector<PointCloud<PointT>, Eigen::aligned_allocator<PointCloud<PointT> > >;
+      using Ptr = boost::shared_ptr<PointCloud<PointT> >;
+      using ConstPtr = boost::shared_ptr<const PointCloud<PointT> >;
 
       // std container compatibility typedefs according to
       // http://en.cppreference.com/w/cpp/concept/Container
-      typedef PointT        value_type;
-      typedef PointT&       reference;
-      typedef const PointT& const_reference;
-      typedef typename VectorType::difference_type difference_type;
-      typedef typename VectorType::size_type size_type;
+      using value_type = PointT;
+      using reference = PointT&;
+      using const_reference = const PointT&;
+      using difference_type = typename VectorType::difference_type;
+      using size_type = typename VectorType::size_type;
 
       // iterators
-      typedef typename VectorType::iterator iterator;
-      typedef typename VectorType::const_iterator const_iterator;
+      using iterator = typename VectorType::iterator;
+      using const_iterator = typename VectorType::const_iterator;
       inline iterator begin () { return (points.begin ()); }
       inline iterator end ()   { return (points.end ()); }
       inline const_iterator begin () const { return (points.begin ()); }

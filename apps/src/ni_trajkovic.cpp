@@ -49,22 +49,21 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 
-#include <boost/thread/mutex.hpp>
-
+#include <mutex>
 #include <thread>
 
 using namespace std::chrono_literals;
 using namespace pcl;
-typedef PointXYZRGBA PointT;
-typedef PointXYZI KeyPointT;
+using PointT = PointXYZRGBA;
+using KeyPointT = PointXYZI;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class TrajkovicDemo
 {
   public:
-    typedef PointCloud<PointT> Cloud;
-    typedef Cloud::Ptr CloudPtr;
-    typedef Cloud::ConstPtr CloudConstPtr;
+    using Cloud = PointCloud<PointT>;
+    using CloudPtr = Cloud::Ptr;
+    using CloudConstPtr = Cloud::ConstPtr;
 
   TrajkovicDemo (Grabber& grabber, bool enable_3d)
       : cloud_viewer_ ("TRAJKOVIC 3D Keypoints -- PointCloud")
@@ -79,7 +78,7 @@ class TrajkovicDemo
     cloud_callback_3d (const CloudConstPtr& cloud)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
 
       // Compute TRAJKOVIC keypoints 3D
@@ -96,7 +95,7 @@ class TrajkovicDemo
     cloud_callback_2d (const CloudConstPtr& cloud)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
 
       // Compute TRAJKOVIC keypoints 2D
@@ -112,11 +111,11 @@ class TrajkovicDemo
     void
     init ()
     {
-      boost::function<void (const CloudConstPtr&) > cloud_cb;
+      std::function<void (const CloudConstPtr&) > cloud_cb;
       if (enable_3d_)
-        cloud_cb = boost::bind (&TrajkovicDemo::cloud_callback_3d, this, _1);
+        cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback_3d (cloud); };
       else
-        cloud_cb = boost::bind (&TrajkovicDemo::cloud_callback_2d, this, _1);
+        cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback_2d (cloud); };
 
       cloud_connection = grabber_.registerCallback (cloud_cb);
     }
@@ -207,7 +206,7 @@ class TrajkovicDemo
 
     visualization::PCLVisualizer cloud_viewer_;
     Grabber& grabber_;
-    boost::mutex cloud_mutex_;
+    std::mutex cloud_mutex_;
     CloudConstPtr cloud_;
 
     visualization::ImageViewer image_viewer_;

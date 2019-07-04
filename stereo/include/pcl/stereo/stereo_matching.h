@@ -268,8 +268,7 @@ namespace pcl
         int den = (s1+s3-2*s2);
         if (den != 0)
           return (static_cast<short int> (16*dbest + (((s1 - s3)*8) / den)));
-        else
-          return (static_cast<short int> (dbest*16));
+        return (static_cast<short int> (dbest*16));
       }
 
       inline short int 
@@ -278,8 +277,7 @@ namespace pcl
         float den = (s1+s3-2*s2);
         if (den != 0)
           return (static_cast<short int> (16*dbest + floor(.5 + (((s1 - s3)*8) / den))));
-        else
-          return (static_cast<short int> (dbest*16));
+        return (static_cast<short int> (dbest*16));
       }
 
       inline short int 
@@ -297,8 +295,7 @@ namespace pcl
 
         if (sad_min * precision > (precision - ratio_filter) * sad_second_min)
           return (-2);
-        else	
-          return (dbest);
+        return (dbest);
       }
 
       inline short int 
@@ -316,8 +313,7 @@ namespace pcl
 
         if (sad_min * static_cast<float> (precision) > static_cast<float> (precision - ratio_filter) * sad_second_min)
           return (-2);
-        else
-          return (dbest);
+        return (dbest);
       }
 
       inline short int 
@@ -328,8 +324,7 @@ namespace pcl
 
         if (da + db < peak_filter)
           return (-4);
-        else
-          return (dbest);
+        return (dbest);
       }
 
       inline short int 
@@ -340,8 +335,7 @@ namespace pcl
 
         if (da + db < peak_filter)
           return (-4);
-        else
-          return (dbest);
+        return (dbest);
       }
 
   };

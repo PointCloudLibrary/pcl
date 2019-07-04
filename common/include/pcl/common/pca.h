@@ -61,12 +61,12 @@ namespace pcl
   class PCA : public pcl::PCLBase <PointT>
   {
     public:
-      typedef pcl::PCLBase <PointT> Base;
-      typedef typename Base::PointCloud PointCloud;
-      typedef typename Base::PointCloudPtr PointCloudPtr;
-      typedef typename Base::PointCloudConstPtr PointCloudConstPtr;
-      typedef typename Base::PointIndicesPtr PointIndicesPtr;
-      typedef typename Base::PointIndicesConstPtr PointIndicesConstPtr;
+      using Base = pcl::PCLBase<PointT>;
+      using PointCloud = typename Base::PointCloud;
+      using PointCloudPtr = typename Base::PointCloudPtr;
+      using PointCloudConstPtr = typename Base::PointCloudConstPtr;
+      using PointIndicesPtr = typename Base::PointIndicesPtr;
+      using PointIndicesConstPtr = typename Base::PointIndicesConstPtr;
 
       using Base::input_;
       using Base::indices_;

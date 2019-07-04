@@ -131,7 +131,7 @@ pcl::RobotEyeGrabber::setSignalPointCloudSize (std::size_t numberOfPoints)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> >
+pcl::PointCloud<pcl::PointXYZI>::Ptr
 pcl::RobotEyeGrabber::getPointCloud () const
 {
   return point_cloud_xyzi_;

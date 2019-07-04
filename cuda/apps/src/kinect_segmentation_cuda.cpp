@@ -58,6 +58,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <functional>
 #include <iostream>
 #include <mutex>
 
@@ -66,13 +67,13 @@ using namespace pcl::cuda;
 template <template <typename> class Storage>
 struct ImageType
 {
-  typedef void type;
+  using type = void;
 };
 
 template <>
 struct ImageType<Device>
 {
-  typedef cv::gpu::GpuMat type;
+  using type = cv::gpu::GpuMat;
   static void createContinuous (int h, int w, int typ, type &mat)
   {
     cv::gpu::createContinuous (h, w, typ, mat);
@@ -82,7 +83,7 @@ struct ImageType<Device>
 template <>
 struct ImageType<Host>
 {
-  typedef cv::Mat type;
+  using type = cv::Mat;
   static void createContinuous (int h, int w, int typ, type &mat)
   {
     mat = cv::Mat (h, w, typ); // assume no padding at the end of line
@@ -125,13 +126,13 @@ class Segmentation
 
         if (enable_color == 1)
         {
-          typedef pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal> ColorHandler;
+          using ColorHandler = pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal>;
           ColorHandler Color_handler (normal_cloud);
           viz.addPointCloud<pcl::PointXYZRGBNormal> (normal_cloud, Color_handler, std::string(cloud_name));
         }
         else
         {
-          typedef pcl::visualization::PointCloudColorHandlerGenericField <pcl::PointXYZRGBNormal> ColorHandler;
+          using ColorHandler = pcl::visualization::PointCloudColorHandlerGenericField <pcl::PointXYZRGBNormal>;
           ColorHandler Color_handler (normal_cloud,"curvature");
           viz.addPointCloud<pcl::PointXYZRGBNormal> (normal_cloud, Color_handler, cloud_name, 0);
         }
@@ -367,13 +368,13 @@ class Segmentation
         if (use_device)
         {
           std::cerr << "[Segmentation] Using GPU..." << std::endl;
-          boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&Segmentation::file_cloud_cb<Device>, this, _1);
+          std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&Segmentation::file_cloud_cb<Device>, this, _1);
           filegrabber->registerCallback (f);
         }
         else
         {
 //          std::cerr << "[Segmentation] Using CPU..." << std::endl;
-//          boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&Segmentation::file_cloud_cb<Host>, this, _1);
+//          std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&Segmentation::file_cloud_cb<Host>, this, _1);
 //          filegrabber->registerCallback (f);
         }
 
@@ -392,13 +393,13 @@ class Segmentation
         if (use_device)
         {
           std::cerr << "[Segmentation] Using GPU..." << std::endl;
-          boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&Segmentation::cloud_cb<Device>, this, _1, _2, _3);
+          std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&Segmentation::cloud_cb<Device>, this, _1, _2, _3);
           c = grabber->registerCallback (f);
         }
         else
         {
 //          std::cerr << "[Segmentation] Using CPU..." << std::endl;
-//          boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&Segmentation::cloud_cb<Host>, this, _1, _2, _3);
+//          std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&Segmentation::cloud_cb<Host>, this, _1, _2, _3);
 //          c = grabber->registerCallback (f);
         }
 

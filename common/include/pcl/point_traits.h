@@ -45,8 +45,6 @@
 #include "pcl/pcl_macros.h"
 
 #include <pcl/PCLPointField.h>
-#include <boost/type_traits/remove_all_extents.hpp>
-#include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/assert.hpp>
 
 // This is required for the workaround at line 109
@@ -54,6 +52,8 @@
 #include <Eigen/Core>
 #include <Eigen/src/StlSupport/details.h>
 #endif
+
+#include <type_traits>
 
 namespace pcl
 {
@@ -85,20 +85,20 @@ namespace pcl
 
     // Metafunction to return type of enum value
     template<int> struct asType {};
-    template<> struct asType<pcl::PCLPointField::INT8>    { typedef int8_t   type; };
-    template<> struct asType<pcl::PCLPointField::UINT8>   { typedef uint8_t  type; };
-    template<> struct asType<pcl::PCLPointField::INT16>   { typedef int16_t  type; };
-    template<> struct asType<pcl::PCLPointField::UINT16>  { typedef uint16_t type; };
-    template<> struct asType<pcl::PCLPointField::INT32>   { typedef int32_t  type; };
-    template<> struct asType<pcl::PCLPointField::UINT32>  { typedef uint32_t type; };
-    template<> struct asType<pcl::PCLPointField::FLOAT32> { typedef float    type; };
-    template<> struct asType<pcl::PCLPointField::FLOAT64> { typedef double   type; };
+    template<> struct asType<pcl::PCLPointField::INT8>    { using type = int8_t; };
+    template<> struct asType<pcl::PCLPointField::UINT8>   { using type = uint8_t; };
+    template<> struct asType<pcl::PCLPointField::INT16>   { using type = int16_t; };
+    template<> struct asType<pcl::PCLPointField::UINT16>  { using type = uint16_t; };
+    template<> struct asType<pcl::PCLPointField::INT32>   { using type = int32_t; };
+    template<> struct asType<pcl::PCLPointField::UINT32>  { using type = uint32_t; };
+    template<> struct asType<pcl::PCLPointField::FLOAT32> { using type = float; };
+    template<> struct asType<pcl::PCLPointField::FLOAT64> { using type = double; };
 
     // Metafunction to decompose a type (possibly of array of any number of dimensions) into
     // its scalar type and total number of elements.
     template<typename T> struct decomposeArray
     {
-      typedef typename boost::remove_all_extents<T>::type type;
+      using type = std::remove_all_extents_t<T>;
       static const uint32_t value = sizeof (T) / sizeof (type);
     };
 
@@ -106,7 +106,7 @@ namespace pcl
     template<typename PointT>
     struct POD
     {
-      typedef PointT type;
+      using type = PointT;
     };
 
 #ifdef _MSC_VER
@@ -122,7 +122,7 @@ namespace pcl
     template<typename PointT>
     struct POD<Eigen::internal::workaround_msvc_stl_support<PointT> >
     {
-      typedef PointT type;
+      using type = PointT;
     };
 
 #endif
@@ -144,7 +144,7 @@ namespace pcl
       // static const char value[];
 
       // Avoid infinite compile-time recursion
-      BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
+      BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
 
@@ -156,7 +156,7 @@ namespace pcl
       // static const size_t value;
 
       // Avoid infinite compile-time recursion
-      BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
+      BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
 
@@ -165,12 +165,12 @@ namespace pcl
     struct datatype : datatype<typename POD<PointT>::type, Tag>
     {
       // Contents of specialization:
-      // typedef ... type;
+      // using type = ...;
       // static const uint8_t value;
       // static const uint32_t size;
 
       // Avoid infinite compile-time recursion
-      BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
+      BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
 
@@ -179,23 +179,12 @@ namespace pcl
     struct fieldList : fieldList<typename POD<PointT>::type>
     {
       // Contents of specialization:
-      // typedef boost::mpl::vector<...> type;
+      // using type = boost::mpl::vector<...>;
 
       // Avoid infinite compile-time recursion
-      BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
+      BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
-#if PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) == PCL_LINEAR_VERSION(4,4,3)
-    /*
-      At least on GCC 4.4.3, but not later versions, some valid usages of the above traits for
-      non-POD (but registered) point types fail with:
-      error: ‘!(bool)mpl_::bool_<false>::value’ is not a valid template argument for type ‘bool’ because it is a non-constant expression
-
-      "Priming the pump" with the trivial assertion below somehow fixes the problem...
-     */
-    //BOOST_MPL_ASSERT_MSG((!bool (mpl_::bool_<false>::value)), WTF_GCC443, (bool));
-    BOOST_MPL_ASSERT_MSG((!bool (boost::mpl::bool_<false>::value)), WTF_GCC443, (bool));
-#endif
   } //namespace traits
 
   // Return true if the PCLPointField matches the expected name and data type.
@@ -221,14 +210,14 @@ namespace pcl
     * PointInT p;
     * bool exists;
     * float value;
-    * typedef typename pcl::traits::fieldList<PointInT>::type FieldList;
+    * using FieldList = typename pcl::traits::fieldList<PointInT>::type;
     * pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<PointT, float> (p, "intensity", exists, value));
     * \endcode
     */
   template <typename PointInT, typename OutT>
   struct CopyIfFieldExists
   {
-    typedef typename traits::POD<PointInT>::type Pod;
+    using Pod = typename traits::POD<PointInT>::type;
 
     /** \brief Constructor.
       * \param[in] pt the input point
@@ -264,7 +253,7 @@ namespace pcl
       if (name_ == pcl::traits::name<PointInT, Key>::value)
       {
         exists_ = true;
-        typedef typename pcl::traits::datatype<PointInT, Key>::type T;
+        using T = typename pcl::traits::datatype<PointInT, Key>::type;
         const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&pt_) + pcl::traits::offset<PointInT, Key>::value;
         value_ = static_cast<OutT> (*reinterpret_cast<const T*>(data_ptr));
       }
@@ -286,14 +275,14 @@ namespace pcl
     *
     * \code
     * PointT p;
-    * typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+    * using FieldList = typename pcl::traits::fieldList<PointT>::type;
     * pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<PointT, float> (p, "intensity", 42.0f));
     * \endcode
     */
   template <typename PointOutT, typename InT>
   struct SetIfFieldExists
   {
-    typedef typename traits::POD<PointOutT>::type Pod;
+    using Pod = typename traits::POD<PointOutT>::type;
 
     /** \brief Constructor.
       * \param[in] pt the input point
@@ -313,7 +302,7 @@ namespace pcl
     {
       if (name_ == pcl::traits::name<PointOutT, Key>::value)
       {
-        typedef typename pcl::traits::datatype<PointOutT, Key>::type T;
+        using T = typename pcl::traits::datatype<PointOutT, Key>::type;
         uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&pt_) + pcl::traits::offset<PointOutT, Key>::value;
         *reinterpret_cast<T*>(data_ptr) = static_cast<T> (value_);
       }

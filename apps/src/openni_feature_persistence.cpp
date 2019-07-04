@@ -49,8 +49,7 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d_omp.h>
 
-#include <boost/thread/mutex.hpp>
-
+#include <mutex>
 #include <thread>
 
 using namespace std::chrono_literals;
@@ -80,9 +79,9 @@ template <typename PointType>
 class OpenNIFeaturePersistence
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudPtr = typename Cloud::Ptr;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     OpenNIFeaturePersistence (float &subsampling_leaf_size,
                               double &normal_search_radius,
@@ -120,7 +119,7 @@ class OpenNIFeaturePersistence
     void
     cloud_cb (const CloudConstPtr& cloud)
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       //lock while we set our cloud;
       FPS_CALC ("computation");
 
@@ -159,7 +158,7 @@ class OpenNIFeaturePersistence
     void
     viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       if (!cloud_)
       {
         std::this_thread::sleep_for(1s);
@@ -191,10 +190,10 @@ class OpenNIFeaturePersistence
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIFeaturePersistence::cloud_cb, this, _1);
+      std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb (cloud); };
       boost::signals2::connection c = interface->registerCallback (f);
 
-      viewer.runOnVisualizationThread (boost::bind(&OpenNIFeaturePersistence::viz_cb, this, _1), "viz_cb");
+      viewer.runOnVisualizationThread ([this] (pcl::visualization::PCLVisualizer& viz) { viz_cb (viz); }, "viz_cb");
 
       interface->start ();
 
@@ -215,7 +214,7 @@ class OpenNIFeaturePersistence
 
     pcl::visualization::CloudViewer viewer;
     std::string device_id_;
-    boost::mutex mtx_;
+    std::mutex mtx_;
     // Data
     CloudPtr feature_locations_, cloud_subsampled_;
     pcl::PointCloud<pcl::Normal>::Ptr normals_;

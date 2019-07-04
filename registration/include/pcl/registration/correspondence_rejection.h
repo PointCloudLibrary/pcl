@@ -58,8 +58,8 @@ namespace pcl
     class CorrespondenceRejector
     {
       public:
-        typedef boost::shared_ptr<CorrespondenceRejector> Ptr;
-        typedef boost::shared_ptr<const CorrespondenceRejector> ConstPtr;
+        using Ptr = boost::shared_ptr<CorrespondenceRejector>;
+        using ConstPtr = boost::shared_ptr<const CorrespondenceRejector>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejector () 
@@ -212,15 +212,15 @@ namespace pcl
     template <typename PointT, typename NormalT = pcl::PointNormal>
     class DataContainer : public DataContainerInterface
     {
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      typedef typename pcl::search::KdTree<PointT>::Ptr KdTreePtr;
+      using KdTreePtr = typename pcl::search::KdTree<PointT>::Ptr;
       
-      typedef pcl::PointCloud<NormalT> Normals;
-      typedef typename Normals::Ptr NormalsPtr;
-      typedef typename Normals::ConstPtr NormalsConstPtr;
+      using Normals = pcl::PointCloud<NormalT>;
+      using NormalsPtr = typename Normals::Ptr;
+      using NormalsConstPtr = typename Normals::ConstPtr;
 
       public:
 
@@ -325,8 +325,7 @@ namespace pcl
           std::vector<float> distances (1);
           if (tree_->nearestKSearch (input_->points[index], 1, indices, distances))
             return (distances[0]);
-          else
-            return (std::numeric_limits<double>::max ());
+          return (std::numeric_limits<double>::max ());
         }
 
         /** \brief Get the correspondence score for a given pair of correspondent points

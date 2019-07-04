@@ -240,7 +240,7 @@ macro(find_VTK)
     set(VTK_DIR "@VTK_DIR@" CACHE PATH "The directory containing VTKConfig.cmake")
   endif()
   if(NOT ANDROID)
-    find_package(VTK ${QUIET_})
+    find_package(VTK ${QUIET_} COMPONENTS ${PCL_VTK_COMPONENTS})
   endif()
 endmacro()
 
@@ -434,6 +434,9 @@ list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
 @PCLCONFIG_EXTERNAL_DEPENDENCIES@
 
 @PCLCONFIG_OPTIONAL_DEPENDENCIES@
+
+# VTK components required by PCL
+set(PCL_VTK_COMPONENTS "@PCL_VTK_COMPONENTS@")
 
 set(pcl_header_only_components 2d cuda_common geometry gpu_tracking modeler in_hand_scanner point_cloud_editor cloud_composer)
 

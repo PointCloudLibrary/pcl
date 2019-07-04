@@ -388,17 +388,12 @@ FittingCurve::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector3d 
       return current;
 
     }
-    else
-    {
-      current += delta;
+    current += delta;
 
-      if (current < minU)
-        current = maxU - (minU - current);
-      else if (current > maxU)
-        current = minU + (current - maxU);
-
-    }
-
+    if (current < minU)
+      current = maxU - (minU - current);
+    else if (current > maxU)
+      current = minU + (current - maxU);
   }
 
   error = r.norm ();

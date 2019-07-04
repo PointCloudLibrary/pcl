@@ -98,7 +98,7 @@ printHelp (int, char **argv)
 void
 printDeviceList ()
 {
-  typedef boost::shared_ptr<pcl::RealSenseGrabber> RealSenseGrabberPtr;
+  using RealSenseGrabberPtr = boost::shared_ptr<pcl::RealSenseGrabber>;
   std::vector<RealSenseGrabberPtr> grabbers;
   std::cout << "Connected devices: ";
   boost::format fmt ("\n  #%i  %s");
@@ -147,7 +147,7 @@ class RealSenseViewer
 
   public:
 
-    typedef pcl::PointCloud<PointT> PointCloudT;
+    using PointCloudT = pcl::PointCloud<PointT>;
 
     RealSenseViewer (pcl::RealSenseGrabber& grabber)
     : grabber_ (grabber)
@@ -170,7 +170,7 @@ class RealSenseViewer
     void
     run ()
     {
-      boost::function<void (const typename PointCloudT::ConstPtr&)> f = boost::bind (&RealSenseViewer::cloudCallback, this, _1);
+      std::function<void (const typename PointCloudT::ConstPtr&)> f = [this] (const typename PointCloudT::ConstPtr& cloud) { cloudCallback (cloud); };
       connection_ = grabber_.registerCallback (f);
       grabber_.start ();
       printMode (grabber_.getMode ());

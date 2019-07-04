@@ -55,8 +55,8 @@ namespace pcl
       template<typename T, typename U, typename V>
       friend class OctreePointCloudAdjacency;
     public:
-      typedef std::list<OctreePointCloudAdjacencyContainer*> NeighborListT;
-      typedef typename NeighborListT::const_iterator const_iterator;
+      using NeighborListT = std::list<OctreePointCloudAdjacencyContainer<PointInT, DataT> *>;
+      using const_iterator = typename NeighborListT::const_iterator;
       //const iterators to neighbors
       inline const_iterator cbegin () const { return (neighbors_.begin ()); }
       inline const_iterator cend () const  { return (neighbors_.end ()); }
@@ -108,7 +108,7 @@ namespace pcl
       }
     protected:
       //iterators to neighbors
-      typedef typename NeighborListT::iterator iterator;
+      using iterator = typename NeighborListT::iterator;
       inline iterator begin () { return (neighbors_.begin ()); }
       inline iterator end ()   { return (neighbors_.end ()); }
 

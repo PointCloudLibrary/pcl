@@ -54,11 +54,11 @@ namespace pcl
   template<typename PointT>
   class ProgressiveSampleConsensus : public SampleConsensus<PointT>
   {
-    typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
+    using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
 
     public:
-      typedef boost::shared_ptr<ProgressiveSampleConsensus> Ptr;
-      typedef boost::shared_ptr<const ProgressiveSampleConsensus> ConstPtr;
+      using Ptr = boost::shared_ptr<ProgressiveSampleConsensus>;
+      using ConstPtr = boost::shared_ptr<const ProgressiveSampleConsensus>;
 
       using SampleConsensus<PointT>::max_iterations_;
       using SampleConsensus<PointT>::threshold_;

@@ -63,8 +63,8 @@ namespace pcl
           std::sort (sort_buffer.begin (), sort_buffer.end ());
 
           return sort_buffer[sort_buffer.size ()/2];
-        } else
-          return (0.0);
+        }
+        return (0.0);
       }
 
       double
@@ -83,8 +83,8 @@ namespace pcl
           }
 
           return sum / static_cast<double>(buffer_.size ());
-        } else
-          return (0.0);
+        }
+        return (0.0);
       }
 
 

@@ -61,15 +61,15 @@ namespace pcl
     using FilterIndices<PointT>::user_filter_value_;
     using FilterIndices<PointT>::keep_organized_;
 
-    typedef typename FilterIndices<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-    typedef typename pcl::PointCloud<NormalT>::Ptr NormalsPtr;
+    using PointCloud = typename FilterIndices<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
+    using NormalsPtr = typename pcl::PointCloud<NormalT>::Ptr;
 
     public:
 
-      typedef boost::shared_ptr< ShadowPoints<PointT, NormalT> > Ptr;
-      typedef boost::shared_ptr< const ShadowPoints<PointT, NormalT> > ConstPtr;
+      using Ptr = boost::shared_ptr< ShadowPoints<PointT, NormalT> >;
+      using ConstPtr = boost::shared_ptr< const ShadowPoints<PointT, NormalT> >;
 
       /** \brief Empty constructor. */
       ShadowPoints (bool extract_removed_indices = false) : 

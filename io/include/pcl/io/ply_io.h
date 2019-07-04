@@ -283,7 +283,7 @@ namespace pcl
         * \param[in] element_name element name
         * \param[in] count number of instances
         */
-      boost::tuple<boost::function<void ()>, boost::function<void ()> > 
+      boost::tuple<std::function<void ()>, std::function<void ()> > 
       elementDefinitionCallback (const std::string& element_name, std::size_t count);
       
       bool
@@ -293,7 +293,7 @@ namespace pcl
         * \param[in] element_name element name to which the property belongs
         * \param[in] property_name property name
         */
-      template <typename ScalarType> boost::function<void (ScalarType)> 
+      template <typename ScalarType> std::function<void (ScalarType)> 
       scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name);
 
       /** \brief function called when a list property is parsed
@@ -301,7 +301,7 @@ namespace pcl
         * \param[in] property_name list property name
         */
       template <typename SizeType, typename ScalarType>
-      boost::tuple<boost::function<void (SizeType)>, boost::function<void (ScalarType)>, boost::function<void ()> >
+      boost::tuple<std::function<void (SizeType)>, std::function<void (ScalarType)>, std::function<void ()> >
       listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name);
       
       /** \brief function called at the beginning of a list property parsing.
@@ -633,8 +633,7 @@ namespace pcl
       {
         if (binary)
           return (this->writeBinary (file_name, cloud, origin, orientation, true));
-        else
-          return (this->writeASCII (file_name, cloud, origin, orientation, 8, true));
+        return (this->writeASCII (file_name, cloud, origin, orientation, 8, true));
       }
 
       /** \brief Save point cloud data to a PLY file containing n-D points
@@ -656,8 +655,7 @@ namespace pcl
       {
         if (binary)
           return (this->writeBinary (file_name, cloud, origin, orientation, use_camera));
-        else
-          return (this->writeASCII (file_name, cloud, origin, orientation, 8, use_camera));
+        return (this->writeASCII (file_name, cloud, origin, orientation, 8, use_camera));
       }
 
       /** \brief Save point cloud data to a PLY file containing n-D points

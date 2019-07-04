@@ -1003,22 +1003,17 @@ FittingSurface::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt
       return current;
 
     }
-    else
-    {
-      current += delta;
+    current += delta;
 
-      if (current (0) < minU)
-        current (0) = minU;
-      else if (current (0) > maxU)
-        current (0) = maxU;
+    if (current (0) < minU)
+      current (0) = minU;
+    else if (current (0) > maxU)
+      current (0) = maxU;
 
-      if (current (1) < minV)
-        current (1) = minV;
-      else if (current (1) > maxV)
-        current (1) = maxV;
-
-    }
-
+    if (current (1) < minV)
+      current (1) = minV;
+    else if (current (1) > maxV)
+      current (1) = maxV;
   }
 
   error = r.norm ();
@@ -1083,22 +1078,17 @@ FittingSurface::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt
     {
       return current;
     }
-    else
-    {
-      current += delta;
+    current += delta;
 
-      if (current (0) < minU)
-        current (0) = minU;
-      else if (current (0) > maxU)
-        current (0) = maxU;
+    if (current (0) < minU)
+      current (0) = minU;
+    else if (current (0) > maxU)
+      current (0) = maxU;
 
-      if (current (1) < minV)
-        current (1) = minV;
-      else if (current (1) > maxV)
-        current (1) = maxV;
-
-    }
-
+    if (current (1) < minV)
+      current (1) = minV;
+    else if (current (1) > maxV)
+      current (1) = maxV;
   }
 
   if (!quiet)
@@ -1314,55 +1304,47 @@ FittingSurface::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vect
       return params;
 
     }
-    else
+
+    current += delta;
+
+    bool stop = false;
+
+    switch (side)
     {
+      case WEST:
+       case EAST:
+        if (current < minV)
+        {
+          params (1) = minV;
+          stop = true;
+        }
+        else if (current > maxV)
+        {
+          params (1) = maxV;
+          stop = true;
+        }
+        break;
 
-      current += delta;
-
-      bool stop = false;
-
-      switch (side)
-      {
-
-        case WEST:
-        case EAST:
-          if (current < minV)
-          {
-            params (1) = minV;
-            stop = true;
-          }
-          else if (current > maxV)
-          {
-            params (1) = maxV;
-            stop = true;
-          }
-
-          break;
-
-        case NORTH:
-        case SOUTH:
-          if (current < minU)
-          {
-            params (0) = minU;
-            stop = true;
-          }
-          else if (current > maxU)
-          {
-            params (0) = maxU;
-            stop = true;
-          }
-
-          break;
-      }
-
-      if (stop)
-      {
-        error = r.norm ();
-        return params;
-      }
-
+      case NORTH:
+      case SOUTH:
+        if (current < minU)
+        {
+          params (0) = minU;
+          stop = true;
+        }
+        else if (current > maxU)
+        {
+          params (0) = maxU;
+          stop = true;
+        }
+        break;
     }
 
+    if (stop)
+    {
+      error = r.norm ();
+      return params;
+    }
   }
 
   error = r.norm ();

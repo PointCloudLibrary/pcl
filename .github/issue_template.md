@@ -1,4 +1,4 @@
-<!--- WARNING: This is an issue tracker, please use our mailing list for questions: www.pcl-users.org. -->
+<!--- WARNING: This is an issue tracker. Before opening a new issue make sure you read https://github.com/PointCloudLibrary/pcl/blob/master/CONTRIBUTING.md#using-the-issue-tracker. -->
 
 <!--- Provide a general summary of the issue in the Title above -->
 

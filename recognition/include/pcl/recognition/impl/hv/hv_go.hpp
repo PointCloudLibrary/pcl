@@ -38,9 +38,11 @@
 #define PCL_RECOGNITION_IMPL_HV_GO_HPP_
 
 #include <pcl/recognition/hv/hv_go.h>
-#include <numeric>
 #include <pcl/common/time.h>
 #include <pcl/point_types.h>
+
+#include <memory>
+#include <numeric>
 
 template<typename PointT, typename NormalT>
 inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT> &cloud, const typename pcl::PointCloud<NormalT> &normals, float tolerance,
@@ -567,7 +569,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
 
-  std::map<int, boost::shared_ptr<std::vector<std::pair<int, float> > > > model_explains_scene_points; //which point i from the scene is explained by a points j_k with dist d_k from the model
+  std::map<int, std::shared_ptr<std::vector<std::pair<int, float>>>> model_explains_scene_points; //which point i from the scene is explained by a points j_k with dist d_k from the model
 
   outliers_weight.resize (recog_model->cloud_->points.size ());
   recog_model->outlier_indices_.resize (recog_model->cloud_->points.size ());
@@ -589,7 +591,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
         auto it = model_explains_scene_points.find (nn_indices[k]);
         if (it == model_explains_scene_points.end ())
         {
-          boost::shared_ptr < std::vector<std::pair<int, float> > > vec (new std::vector<std::pair<int, float> > ());
+          std::shared_ptr<std::vector<std::pair<int, float>>> vec (new std::vector<std::pair<int, float>> ());
           vec->push_back (pair);
           model_explains_scene_points[nn_indices[k]] = vec;
         } else
@@ -675,12 +677,12 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(Recogn
 
     //sort neighborhood indices by id
     std::sort (neighborhood_indices.begin (), neighborhood_indices.end (),
-        boost::bind (&std::pair<int, int>::first, _1) < boost::bind (&std::pair<int, int>::first, _2));
+        [] (const auto& p1, const auto& p2) { return p1.first < p2.first; });
 
     //erase duplicated unexplained points
     neighborhood_indices.erase (
         std::unique (neighborhood_indices.begin (), neighborhood_indices.end (),
-            boost::bind (&std::pair<int, int>::first, _1) == boost::bind (&std::pair<int, int>::first, _2)), neighborhood_indices.end ());
+            [] (const auto& p1, const auto& p2) { return p1.first == p2.first; }), neighborhood_indices.end ());
 
     //sort explained points
     std::vector<int> exp_idces (recog_model->explained_);

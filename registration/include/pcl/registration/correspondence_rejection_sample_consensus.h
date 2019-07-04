@@ -58,17 +58,17 @@ namespace pcl
     template <typename PointT>
     class CorrespondenceRejectorSampleConsensus: public CorrespondenceRejector
     {
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       public:
         using CorrespondenceRejector::input_correspondences_;
         using CorrespondenceRejector::rejection_name_;
         using CorrespondenceRejector::getClassName;
 
-        typedef boost::shared_ptr<CorrespondenceRejectorSampleConsensus> Ptr;
-        typedef boost::shared_ptr<const CorrespondenceRejectorSampleConsensus> ConstPtr;
+        using Ptr = boost::shared_ptr<CorrespondenceRejectorSampleConsensus<PointT> >;
+        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorSampleConsensus<PointT> >;
 
         /** \brief Empty constructor. Sets the inlier threshold to 5cm (0.05m), 
           * and the maximum number of iterations to 1000. 

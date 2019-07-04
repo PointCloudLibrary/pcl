@@ -65,8 +65,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        typedef boost::shared_ptr<CorrespondenceRejectorDistance> Ptr;
-        typedef boost::shared_ptr<const CorrespondenceRejectorDistance> ConstPtr;
+        using Ptr = boost::shared_ptr<CorrespondenceRejectorDistance>;
+        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorDistance>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorDistance () : max_distance_(std::numeric_limits<float>::max ())
@@ -195,7 +195,7 @@ namespace pcl
           */
         float max_distance_;
 
-        typedef boost::shared_ptr<DataContainerInterface> DataContainerPtr;
+        using DataContainerPtr = boost::shared_ptr<DataContainerInterface>;
 
         /** \brief A pointer to the DataContainer object containing the input and target point clouds */
         DataContainerPtr data_container_;

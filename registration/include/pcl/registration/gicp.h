@@ -78,29 +78,29 @@ namespace pcl
       using IterativeClosestPoint<PointSource, PointTarget>::min_number_correspondences_;
       using IterativeClosestPoint<PointSource, PointTarget>::update_visualizer_;
 
-      typedef pcl::PointCloud<PointSource> PointCloudSource;
-      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+      using PointCloudSource = pcl::PointCloud<PointSource>;
+      using PointCloudSourcePtr = typename PointCloudSource::Ptr;
+      using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
-      typedef pcl::PointCloud<PointTarget> PointCloudTarget;
-      typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
-      typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
+      using PointCloudTarget = pcl::PointCloud<PointTarget>;
+      using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
+      using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
-      typedef PointIndices::Ptr PointIndicesPtr;
-      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+      using PointIndicesPtr = PointIndices::Ptr;
+      using PointIndicesConstPtr = PointIndices::ConstPtr;
 
-      typedef std::vector< Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> > MatricesVector;
-      typedef boost::shared_ptr< MatricesVector > MatricesVectorPtr;
-      typedef boost::shared_ptr< const MatricesVector > MatricesVectorConstPtr;
+      using MatricesVector = std::vector< Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> >;
+      using MatricesVectorPtr = boost::shared_ptr<MatricesVector>;
+      using MatricesVectorConstPtr = boost::shared_ptr<const MatricesVector>;
       
-      typedef typename Registration<PointSource, PointTarget>::KdTree InputKdTree;
-      typedef typename Registration<PointSource, PointTarget>::KdTreePtr InputKdTreePtr;
+      using InputKdTree = typename Registration<PointSource, PointTarget>::KdTree;
+      using InputKdTreePtr = typename Registration<PointSource, PointTarget>::KdTreePtr;
 
-      typedef boost::shared_ptr< GeneralizedIterativeClosestPoint<PointSource, PointTarget> > Ptr;
-      typedef boost::shared_ptr< const GeneralizedIterativeClosestPoint<PointSource, PointTarget> > ConstPtr;
+      using Ptr = boost::shared_ptr< GeneralizedIterativeClosestPoint<PointSource, PointTarget> >;
+      using ConstPtr = boost::shared_ptr< const GeneralizedIterativeClosestPoint<PointSource, PointTarget> >;
 
 
-      typedef Eigen::Matrix<double, 6, 1> Vector6d;
+      using Vector6d = Eigen::Matrix<double, 6, 1>;
 
       /** \brief Empty constructor. */
       GeneralizedIterativeClosestPoint () 
@@ -115,9 +115,14 @@ namespace pcl
         max_iterations_ = 200;
         transformation_epsilon_ = 5e-4;
         corr_dist_threshold_ = 5.;
-        rigid_transformation_estimation_ = 
-          boost::bind (&GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationBFGS, 
-                       this, _1, _2, _3, _4, _5); 
+        rigid_transformation_estimation_ = [this] (const PointCloudSource& cloud_src,
+                                                   const std::vector<int>& indices_src,
+                                                   const PointCloudTarget& cloud_tgt,
+                                                   const std::vector<int>& indices_tgt,
+                                                   Eigen::Matrix4f& transformation_matrix)
+        {
+          estimateRigidTransformationBFGS (cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
+        };
       }
 
       /** \brief Provide a pointer to the input dataset
@@ -354,7 +359,7 @@ namespace pcl
         const GeneralizedIterativeClosestPoint *gicp_;
       };
       
-      boost::function<void(const pcl::PointCloud<PointSource> &cloud_src,
+      std::function<void(const pcl::PointCloud<PointSource> &cloud_src,
                            const std::vector<int> &src_indices,
                            const pcl::PointCloud<PointTarget> &cloud_tgt,
                            const std::vector<int> &tgt_indices,

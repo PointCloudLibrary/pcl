@@ -21,8 +21,10 @@ void run(pcl::RFFaceDetectorTrainer & fdrf, bool heat_map = false, bool show_vot
   vis.addCoordinateSystem (0.1, "global");
 
   //keyboard callback to stop getting frames and finalize application
-  boost::function<void(const pcl::visualization::KeyboardEvent&)> keyboard_cb = boost::bind (&OpenNIFrameSource::OpenNIFrameSource::onKeyboardEvent, &camera,
-      _1);
+  std::function<void(const pcl::visualization::KeyboardEvent&)> keyboard_cb = [&] (const pcl::visualization::KeyboardEvent& event)
+  {
+    camera.onKeyboardEvent (event);
+  };
   vis.registerKeyboardCallback (keyboard_cb);
 
   while (camera.isActive ())
@@ -128,7 +130,7 @@ int main(int argc, char ** argv)
   fb.open (forest_fn.c_str (), std::ios::in);
   std::istream os (&fb);
 
-  typedef pcl::face_detection::RFTreeNode<pcl::face_detection::FeatureType> NodeType;
+  using NodeType = pcl::face_detection::RFTreeNode<pcl::face_detection::FeatureType>;
   pcl::DecisionForest<NodeType> forest;
   forest.deserialize (os);
   fb.close ();

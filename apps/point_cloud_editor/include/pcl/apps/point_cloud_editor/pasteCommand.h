@@ -54,6 +54,13 @@ class PasteCommand : public Command
                   SelectionPtr selection_ptr, CloudPtr cloud_ptr);
     // comment that the selection is updated (also resets the matrix in cloud)
 
+    /// @brief Copy constructor - commands are non-copyable
+    PasteCommand (const PasteCommand&) = delete;
+
+    /// @brief Equal operator - commands are non-copyable
+    PasteCommand&
+    operator= (const PasteCommand&) = delete;
+  
   protected:
     /// @brief Appends the points in the copy buffer into the cloud.
     /// @details After appending the points to the cloud, this function also
@@ -67,16 +74,6 @@ class PasteCommand : public Command
     undo () override;
 
   private:
-    /// @brief Default constructor - object is not default constructable
-    PasteCommand () = delete;
-
-    /// @brief Copy constructor - commands are non-copyable
-    PasteCommand (const PasteCommand&) = delete;
-
-    /// @brief Equal operator - commands are non-copyable
-    PasteCommand&
-    operator= (const PasteCommand&) = delete;
-
     /// a pointer pointing to the copy buffer.
     ConstCopyBufferPtr copy_buffer_ptr_;
 

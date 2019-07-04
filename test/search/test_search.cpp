@@ -208,7 +208,7 @@ testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, con
       validness = false;
       break;
     }
-    else if (!nan_mask [index])
+    if (!nan_mask [index])
     {
 #if DEBUG_OUT
       cerr << name << ": result contains an invalid point: " << index << " = NaN (" << point_cloud->points [index].x << " , " 
@@ -306,9 +306,9 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
       nan_mask [pIdx] = false;
   }
   
-  boost::shared_ptr<vector<int> > input_indices_;
+  pcl::IndicesPtr input_indices_;
   if (!input_indices.empty ())
-    input_indices_.reset (new vector<int> (input_indices));
+    input_indices_.reset (new pcl::Indices (input_indices));
   
   #pragma omp parallel for
   for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
@@ -376,9 +376,9 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
       nan_mask [pIdx] = false;
   }
   
-  boost::shared_ptr<vector<int> > input_indices_;
+  pcl::IndicesPtr input_indices_;
   if (!input_indices.empty ())
-    input_indices_.reset (new vector<int> (input_indices));
+    input_indices_.reset (new pcl::Indices (input_indices));
   
   #pragma omp parallel for
   for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)

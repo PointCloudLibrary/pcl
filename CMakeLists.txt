@@ -112,10 +112,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "-Wabi -Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS_STR}")
   endif()
 
-  if(NOT ANDROID)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-  endif()
-
   if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed")
   endif()
@@ -179,7 +175,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_PATHSCALE)
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    set(CMAKE_CXX_FLAGS "-Wno-uninitialized -zerouv -pthread -mp")
+    set(CMAKE_CXX_FLAGS "-Wno-uninitialized -zerouv -mp")
   endif()
   if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "")
     set(CMAKE_SHARED_LINKER_FLAGS "-mp")
@@ -280,6 +276,9 @@ else()
   message(STATUS "Not found OpenMP")
 endif()
 
+# Threads (required)
+find_package(Threads REQUIRED)
+
 # Eigen (required)
 find_package(Eigen 3.1 REQUIRED)
 include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
@@ -356,7 +355,28 @@ endif()
 # Find VTK
 option(WITH_VTK "Build VTK-Visualizations" TRUE)
 if(WITH_VTK AND NOT ANDROID)
-  find_package(VTK)
+  set(PCL_VTK_COMPONENTS
+    vtkChartsCore
+    vtkCommonCore
+    vtkCommonDataModel
+    vtkCommonExecutionModel
+    vtkFiltersCore
+    vtkFiltersExtraction
+    vtkFiltersModeling
+    vtkImagingCore
+    vtkImagingSources
+    vtkInteractionStyle
+    vtkInteractionWidgets
+    vtkIOCore
+    vtkIOGeometry
+    vtkIOImage
+    vtkIOLegacy
+    vtkIOPLY
+    vtkRenderingAnnotation
+    vtkRenderingLOD
+    vtkViewsContext2D
+  )
+  find_package(VTK COMPONENTS ${PCL_VTK_COMPONENTS})
   if(VTK_FOUND AND ("${VTK_VERSION}" VERSION_LESS 6.2))
     message(WARNING "The minimum required version of VTK is 6.2, but found ${VTK_VERSION}")
     set(VTK_FOUND FALSE)
@@ -368,17 +388,28 @@ if(WITH_VTK AND NOT ANDROID)
       # safe to assume OpenGL backend
       set(VTK_RENDERING_BACKEND "OpenGL")
     endif()
+    list(APPEND PCL_VTK_COMPONENTS vtkRenderingContext${VTK_RENDERING_BACKEND})
+
+    if(WITH_QT)
+      if(";${VTK_MODULES_ENABLED};" MATCHES ";vtkGUISupportQt;" AND ";${VTK_MODULES_ENABLED};" MATCHES ";vtkRenderingQt;")
+        set(QVTK_FOUND ON)
+        list(APPEND PCL_VTK_COMPONENTS vtkRenderingQt vtkGUISupportQt)
+      else()
+        unset(QVTK_FOUND)
+      endif()
+    endif()
+
+    find_package(VTK COMPONENTS ${PCL_VTK_COMPONENTS})
+
     message(STATUS "VTK_MAJOR_VERSION ${VTK_MAJOR_VERSION}, rendering backend: ${VTK_RENDERING_BACKEND}")
     if(PCL_SHARED_LIBS OR (NOT (PCL_SHARED_LIBS) AND NOT (VTK_BUILD_SHARED_LIBS)))
-      set(VTK_FOUND TRUE)
-      find_package(QVTK)
       if(VTK_USE_FILE)
         include(${VTK_USE_FILE})
       endif()
-      message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARIES}")
+      message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, libs: ${VTK_LIBRARIES}")
       if(APPLE)
-          option(VTK_USE_COCOA "Use Cocoa for VTK render windows" ON)
-          mark_as_advanced(VTK_USE_COCOA)
+        option(VTK_USE_COCOA "Use Cocoa for VTK render windows" ON)
+        mark_as_advanced(VTK_USE_COCOA)
       endif()
       if(${VTK_RENDERING_BACKEND} STREQUAL "OpenGL")
         set(VTK_RENDERING_BACKEND_OPENGL_VERSION "1")
@@ -420,12 +451,6 @@ set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
 configure_file("${pcl_config_h_in}" "${pcl_config_h}")
 PCL_ADD_INCLUDES(common "" "${pcl_config_h}")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
-
-### ---[ Set up for tests
-enable_testing()
-
-### ---[ Set up for examples
-#include("${PCL_SOURCE_DIR}/cmake/pcl_examples.cmake")
 
 ### ---[ Add the libraries subdirectories
 include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")

@@ -93,11 +93,11 @@ namespace pcl
   {
     public:
 
-      typedef pcl::PointCloud<pcl::VFHSignature308> FeatureCloud;
-      typedef pcl::PointCloud<pcl::VFHSignature308>::Ptr FeatureCloudPtr;
-      typedef pcl::PointCloud<pcl::VFHSignature308>::ConstPtr FeatureCloudConstPtr;
-      typedef NNClassification<pcl::VFHSignature308>::Result Result;
-      typedef NNClassification<pcl::VFHSignature308>::ResultPtr ResultPtr;
+      using FeatureCloud = pcl::PointCloud<pcl::VFHSignature308>;
+      using FeatureCloudPtr = pcl::PointCloud<pcl::VFHSignature308>::Ptr;
+      using FeatureCloudConstPtr = pcl::PointCloud<pcl::VFHSignature308>::ConstPtr;
+      using Result = NNClassification<pcl::VFHSignature308>::Result;
+      using ResultPtr = NNClassification<pcl::VFHSignature308>::ResultPtr;
 
     private:
 

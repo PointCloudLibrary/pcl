@@ -53,8 +53,8 @@
 #include <pcl/people/ground_based_people_detection_app.h>
 #include <pcl/common/time.h>
 
-#include <boost/thread/mutex.hpp>
 
+#include <mutex>
 #include <thread>
 
 using namespace std::chrono_literals;
@@ -66,7 +66,7 @@ typedef pcl::PointCloud<PointT> PointCloudT;
 pcl::visualization::PCLVisualizer viewer("PCL Viewer");
 
 // Mutex: //
-boost::mutex cloud_mutex;
+std::mutex cloud_mutex;
 
 enum { COLS = 640, ROWS = 480 };
 
@@ -139,7 +139,7 @@ int main (int argc, char** argv)
   PointCloudT::Ptr cloud (new PointCloudT);
   bool new_cloud_available_flag = false;
   pcl::Grabber* interface = new pcl::OpenNIGrabber();
-  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
       boost::bind (&cloud_cb_, _1, cloud, &new_cloud_available_flag);
   interface->registerCallback (f);
   interface->start ();

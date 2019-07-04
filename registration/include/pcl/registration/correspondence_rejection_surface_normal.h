@@ -64,8 +64,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        typedef boost::shared_ptr<CorrespondenceRejectorSurfaceNormal> Ptr;
-        typedef boost::shared_ptr<const CorrespondenceRejectorSurfaceNormal> ConstPtr;
+        using Ptr = boost::shared_ptr<CorrespondenceRejectorSurfaceNormal>;
+        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorSurfaceNormal>;
 
         /** \brief Empty constructor. Sets the threshold to 1.0. */
         CorrespondenceRejectorSurfaceNormal () 
@@ -312,7 +312,7 @@ namespace pcl
         /** \brief The median distance threshold between two correspondent points in source <-> target. */
         double threshold_;
 
-        typedef boost::shared_ptr<DataContainerInterface> DataContainerPtr;
+        using DataContainerPtr = boost::shared_ptr<DataContainerInterface>;
         /** \brief A pointer to the DataContainer object containing the input and target point clouds */
         DataContainerPtr data_container_;
     };

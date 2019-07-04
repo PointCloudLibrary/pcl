@@ -371,7 +371,7 @@ pcl::DavidSDKGrabber::processGrabbing ()
       {
         pcl::PolygonMesh::Ptr mesh;
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
-        boost::shared_ptr<pcl::PCLImage> image;
+        pcl::PCLImage::Ptr image;
 
         fps_mutex_.lock ();
         frequency_.event ();

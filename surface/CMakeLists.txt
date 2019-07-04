@@ -29,9 +29,6 @@ if(QHULL_FOUND)
 endif()
 
 if(VTK_FOUND AND NOT ANDROID)
-  set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
-  include("${VTK_USE_FILE}")
-
   set(VTK_SMOOTHING_INCLUDES
     "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk.h"
     "include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_utils.h"
@@ -48,8 +45,6 @@ if(VTK_FOUND AND NOT ANDROID)
     src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
     src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp
   )
-
-  set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommonCore vtkCommonDataModel vtkCommonExecutionModel vtkFiltersModeling)
 endif()
 
 set(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS")

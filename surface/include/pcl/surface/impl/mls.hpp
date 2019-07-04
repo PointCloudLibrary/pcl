@@ -47,7 +47,6 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/geometry.h>
-#include <boost/bind.hpp>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -150,7 +149,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
 
     for (size_t i = 0; i < output.size (); ++i)
     {
-      typedef typename pcl::traits::fieldList<PointOutT>::type FieldList;
+      using FieldList = typename pcl::traits::fieldList<PointOutT>::type;
       pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_x", normals_->points[i].normal_x));
       pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_y", normals_->points[i].normal_y));
       pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_z", normals_->points[i].normal_z));
@@ -719,7 +718,7 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
                                    const std::vector<int> &nn_indices,
                                    double search_radius,
                                    int polynomial_order,
-                                   boost::function<double(const double)> weight_func)
+                                   std::function<double(const double)> weight_func)
 {
   // Compute the plane coefficients
   EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix;
@@ -777,11 +776,8 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
     {
       // Note: The max_sq_radius parameter is only used if weight_func was not defined
       double max_sq_radius = 1;
-      if (weight_func.empty())
-      {
-        max_sq_radius = search_radius * search_radius;
-        weight_func = boost::bind (&pcl::MLSResult::computeMLSWeight, this, _1, max_sq_radius);
-      }
+      if (!weight_func)
+        weight_func = [=] (const double sq_dist) { return this->computeMLSWeight (sq_dist, search_radius * search_radius); };
 
       // Allocate matrices and vectors to hold the data used for the polynomial fit
       Eigen::VectorXd weight_vec (num_neighbors);

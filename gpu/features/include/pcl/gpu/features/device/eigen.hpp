@@ -169,8 +169,8 @@ namespace pcl
                 __device__ __host__ __forceinline__ float3& operator[](int i) { return data[i]; }
                 __device__ __host__ __forceinline__ const float3& operator[](int i) const { return data[i]; }
             };
-            typedef MiniMat<3> Mat33;
-            typedef MiniMat<4> Mat43;
+            using Mat33 = MiniMat<3>;
+            using Mat43 = MiniMat<4>;
             
             
             static __forceinline__ __device__ float3 unitOrthogonal (const float3& src)

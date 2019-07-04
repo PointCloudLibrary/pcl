@@ -175,8 +175,7 @@ namespace pcl
       {
       public:
         /** \brief Empty constructor. */
-        OctreeContainerPointIndex () :
-            data_ ()
+        OctreeContainerPointIndex ()
         {
           reset ();
         }

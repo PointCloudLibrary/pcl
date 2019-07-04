@@ -62,7 +62,7 @@ namespace pcl
 {
   namespace visualization
   {
-    typedef Eigen::Array<unsigned char, 3, 1> Vector3ub;
+    using Vector3ub = Eigen::Array<unsigned char, 3, 1>;
     static const Vector3ub green_color (0, 255, 0);
     static const Vector3ub red_color (255, 0, 0);
     static const Vector3ub blue_color (0, 0, 255);
@@ -117,7 +117,7 @@ namespace pcl
     class PCL_EXPORTS ImageViewer
     {
       public:
-        typedef boost::shared_ptr<ImageViewer> Ptr;
+        using Ptr = boost::shared_ptr<ImageViewer>;
 
         /** \brief Constructor.
           * \param[in] window_title the title of the window
@@ -479,7 +479,7 @@ namespace pcl
         registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), 
                                   void* cookie = nullptr)
         {
-          return (registerKeyboardCallback (boost::bind (callback, _1, cookie)));
+          return (registerKeyboardCallback ([=] (const pcl::visualization::KeyboardEvent& e) { (*callback) (e, cookie); }));
         }
         
         /** \brief Register a callback function for keyboard events
@@ -492,17 +492,17 @@ namespace pcl
         registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), 
                                   T& instance, void* cookie = nullptr)
         {
-          return (registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie)));
+          return (registerKeyboardCallback ([=, &instance] (const pcl::visualization::KeyboardEvent& e) { (instance.*callback) (e, cookie); }));
         }
         
-        /** \brief Register a callback boost::function for keyboard events
+        /** \brief Register a callback std::function for keyboard events
           * \param[in] cb the boost function that will be registered as a callback for a keyboard event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
-        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> cb);
+        registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> cb);
 
-        /** \brief Register a callback boost::function for mouse events
+        /** \brief Register a callback std::function for mouse events
           * \param[in] callback  the function that will be registered as a callback for a mouse event
           * \param[in] cookie    user data that is passed to the callback
           * \return a connection object that allows to disconnect the callback function.
@@ -511,7 +511,7 @@ namespace pcl
         registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), 
                                void* cookie = nullptr)
         {
-          return (registerMouseCallback (boost::bind (callback, _1, cookie)));
+          return (registerMouseCallback ([=] (const pcl::visualization::MouseEvent& e) { (*callback) (e, cookie); }));
         }
         
         /** \brief Register a callback function for mouse events
@@ -524,7 +524,7 @@ namespace pcl
         registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), 
                                T& instance, void* cookie = nullptr)
         {
-          return (registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
+          return (registerMouseCallback ([=, &instance] (const pcl::visualization::MouseEvent& e) { (instance.*callback) (e, cookie); }));
         }
 
         /** \brief Register a callback function for mouse events
@@ -532,7 +532,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */        
         boost::signals2::connection 
-        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> cb);
+        registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> cb);
         
         /** \brief Set the position in screen coordinates.
           * \param[in] x where to move the window to (X)
@@ -963,7 +963,7 @@ namespace pcl
           std::string layer_name;
         };
 
-        typedef std::vector<Layer> LayerMap;
+        using LayerMap = std::vector<Layer>;
 
         /** \brief Add a new 2D rendering layer to the viewer. 
           * \param[in] layer_id the name of the layer

@@ -80,7 +80,7 @@ namespace pcl
 
   };
 
-  typedef ColorLUT<pcl::LUT_GLASBEY> GlasbeyLUT;
-  typedef ColorLUT<pcl::LUT_VIRIDIS> ViridisLUT;
+  using GlasbeyLUT = ColorLUT<pcl::LUT_GLASBEY>;
+  using ViridisLUT = ColorLUT<pcl::LUT_VIRIDIS>;
 
 }

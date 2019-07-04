@@ -170,8 +170,6 @@ if(LIBUSB_1_FOUND)
 endif()
 
 if(VTK_FOUND AND NOT ANDROID)
-  set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
-  include("${VTK_USE_FILE}")
   set(VTK_IO_INCLUDES
     "include/pcl/${SUBSYS_NAME}/vtk_lib_io.h"
     "include/pcl/${SUBSYS_NAME}/png_io.h"

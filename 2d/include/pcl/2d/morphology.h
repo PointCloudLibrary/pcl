@@ -45,8 +45,8 @@ namespace pcl
   class Morphology : public PCLBase<PointT>
   {
     private:
-      typedef pcl::PointCloud<PointT> PointCloudIn;
-      typedef typename PointCloudIn::Ptr PointCloudInPtr;
+      using PointCloudIn = pcl::PointCloud<PointT>;
+      using PointCloudInPtr = typename PointCloudIn::Ptr;
 
       PointCloudInPtr structuring_element_;
 

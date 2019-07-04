@@ -77,35 +77,35 @@ namespace pcl
       {
         public:
 
-          typedef boost::function<void (std::size_t, const std::string&)> info_callback_type;
-          typedef boost::function<void (std::size_t, const std::string&)> warning_callback_type;
-          typedef boost::function<void (std::size_t, const std::string&)> error_callback_type;
+          using info_callback_type = std::function<void (std::size_t, const std::string&)>;
+          using warning_callback_type = std::function<void (std::size_t, const std::string&)>;
+          using error_callback_type = std::function<void (std::size_t, const std::string&)>;
          
-          typedef boost::function<void ()> magic_callback_type;
-          typedef boost::function<void (format_type, const std::string&)> format_callback_type;
-          typedef boost::function<void (const std::string&)> comment_callback_type;
-          typedef boost::function<void (const std::string&)> obj_info_callback_type;
-          typedef boost::function<bool ()> end_header_callback_type;
+          using magic_callback_type = std::function<void ()>;
+          using format_callback_type = std::function<void (format_type, const std::string&)>;
+          using comment_callback_type = std::function<void (const std::string&)>;
+          using obj_info_callback_type = std::function<void (const std::string&)>;
+          using end_header_callback_type = std::function<bool ()>;
          
-          typedef boost::function<void ()> begin_element_callback_type;
-          typedef boost::function<void ()> end_element_callback_type;
-          typedef boost::tuple<begin_element_callback_type, end_element_callback_type> element_callbacks_type;
-          typedef boost::function<element_callbacks_type (const std::string&, std::size_t)> element_definition_callback_type;
+          using begin_element_callback_type = std::function<void ()>;
+          using end_element_callback_type = std::function<void ()>;
+          using element_callbacks_type = boost::tuple<begin_element_callback_type, end_element_callback_type>;
+          using element_definition_callback_type = std::function<element_callbacks_type (const std::string&, std::size_t)>;
          
           template <typename ScalarType>
           struct scalar_property_callback_type
           {
-            typedef boost::function<void (ScalarType)> type;
+            using type = std::function<void (ScalarType)>;
           };
 
           template <typename ScalarType>
           struct scalar_property_definition_callback_type
           {
-            typedef typename scalar_property_callback_type<ScalarType>::type scalar_property_callback_type;
-            typedef boost::function<scalar_property_callback_type (const std::string&, const std::string&)> type;
+            using scalar_property_callback_type = typename scalar_property_callback_type<ScalarType>::type;
+            using type = std::function<scalar_property_callback_type (const std::string&, const std::string&)>;
           };
        
-          typedef boost::mpl::vector<int8, int16, int32, uint8, uint16, uint32, float32, float64> scalar_types;
+          using scalar_types = boost::mpl::vector<int8, int16, int32, uint8, uint16, uint32, float32, float64>;
 
           class scalar_property_definition_callbacks_type
           {
@@ -114,17 +114,17 @@ namespace pcl
               struct callbacks_element
               {
 //                callbacks_element () : callback ();
-                typedef T scalar_type;
+                using scalar_type = T;
                 typename scalar_property_definition_callback_type<scalar_type>::type callback;
               };
              
-              typedef boost::mpl::inherit_linearly<
+              using callbacks = boost::mpl::inherit_linearly<
                 scalar_types,
                 boost::mpl::inherit<
                 boost::mpl::_1,
                 callbacks_element<boost::mpl::_2>
                 >
-                >::type callbacks;
+                >::type;
               callbacks callbacks_;
              
             public:
@@ -169,36 +169,35 @@ namespace pcl
           template <typename SizeType, typename ScalarType>
           struct list_property_begin_callback_type
           {
-            typedef boost::function<void (SizeType)> type;
+            using type = std::function<void (SizeType)>;
           };
          
           template <typename SizeType, typename ScalarType>
           struct list_property_element_callback_type
           {
-            typedef boost::function<void (ScalarType)> type;
+            using type = std::function<void (ScalarType)>;
           };
        
           template <typename SizeType, typename ScalarType>
           struct list_property_end_callback_type
           {
-            typedef boost::function<void ()> type;
+            using type = std::function<void ()>;
           };
 
           template <typename SizeType, typename ScalarType>
           struct list_property_definition_callback_type
           {
-            typedef typename list_property_begin_callback_type<SizeType, ScalarType>::type list_property_begin_callback_type;
-            typedef typename list_property_element_callback_type<SizeType, ScalarType>::type list_property_element_callback_type;
-            typedef typename list_property_end_callback_type<SizeType, ScalarType>::type list_property_end_callback_type;
-            typedef boost::function<
-            boost::tuple<
-            list_property_begin_callback_type,
+            using list_property_begin_callback_type = typename list_property_begin_callback_type<SizeType, ScalarType>::type;
+            using list_property_element_callback_type = typename list_property_element_callback_type<SizeType, ScalarType>::type;
+            using list_property_end_callback_type = typename list_property_end_callback_type<SizeType, ScalarType>::type;
+            using type = std::function<boost::tuple<
+              list_property_begin_callback_type,
               list_property_element_callback_type,
               list_property_end_callback_type
-              > (const std::string&, const std::string&)> type;
+              > (const std::string&, const std::string&)>;
           };
 
-          typedef boost::mpl::vector<uint8, uint16, uint32> size_types;
+          using size_types = boost::mpl::vector<uint8, uint16, uint32>;
      
           class list_property_definition_callbacks_type
           {
@@ -215,12 +214,12 @@ namespace pcl
               template <typename T>
               struct callbacks_element
               {
-                typedef typename T::first size_type;
-                typedef typename T::second scalar_type;
+                using size_type = typename T::first;
+                using scalar_type = typename T::second;
                 typename list_property_definition_callback_type<size_type, scalar_type>::type callback;
               };
            
-              typedef boost::mpl::inherit_linearly<sequence_product<size_types, scalar_types>::type, boost::mpl::inherit<boost::mpl::_1, callbacks_element<boost::mpl::_2> > >::type callbacks;
+              using callbacks = boost::mpl::inherit_linearly<sequence_product<size_types, scalar_types>::type, boost::mpl::inherit<boost::mpl::_1, callbacks_element<boost::mpl::_2> > >::type;
               callbacks callbacks_;
      
             public:
@@ -295,7 +294,7 @@ namespace pcl
           inline void
           end_header_callback (const end_header_callback_type& end_header_callback);
 
-          typedef int flags_type;
+          using flags_type = int;
           enum flags { };
 
           ply_parser () :
@@ -318,8 +317,8 @@ namespace pcl
           template <typename ScalarType>
           struct scalar_property : public property
           {
-            typedef ScalarType scalar_type;
-            typedef typename scalar_property_callback_type<scalar_type>::type callback_type;
+            using scalar_type = ScalarType;
+            using callback_type = typename scalar_property_callback_type<scalar_type>::type;
             scalar_property (const std::string& name, callback_type callback)
               : property (name)
               , callback (callback)
@@ -336,11 +335,11 @@ namespace pcl
           template <typename SizeType, typename ScalarType>
           struct list_property : public property
           {
-            typedef SizeType size_type;
-            typedef ScalarType scalar_type;
-            typedef typename list_property_begin_callback_type<size_type, scalar_type>::type begin_callback_type;
-            typedef typename list_property_element_callback_type<size_type, scalar_type>::type element_callback_type;
-            typedef typename list_property_end_callback_type<size_type, scalar_type>::type end_callback_type;
+            using size_type = SizeType;
+            using scalar_type = ScalarType;
+            using begin_callback_type = typename list_property_begin_callback_type<size_type, scalar_type>::type;
+            using element_callback_type = typename list_property_element_callback_type<size_type, scalar_type>::type;
+            using end_callback_type = typename list_property_end_callback_type<size_type, scalar_type>::type;
             list_property (const std::string& name, 
                            begin_callback_type begin_callback, 
                            element_callback_type element_callback, 
@@ -485,7 +484,7 @@ inline void pcl::io::ply::ply_parser::end_header_callback (const end_header_call
 template <typename ScalarType>
 inline void pcl::io::ply::ply_parser::parse_scalar_property_definition (const std::string& property_name)
 {
-  typedef ScalarType scalar_type;
+  using scalar_type = ScalarType;
   typename scalar_property_definition_callback_type<scalar_type>::type& scalar_property_definition_callback = 
     scalar_property_definition_callbacks_.get<scalar_type> ();
   typename scalar_property_callback_type<scalar_type>::type scalar_property_callback;
@@ -508,13 +507,13 @@ inline void pcl::io::ply::ply_parser::parse_scalar_property_definition (const st
 template <typename SizeType, typename ScalarType>
 inline void pcl::io::ply::ply_parser::parse_list_property_definition (const std::string& property_name)
 {
-  typedef SizeType size_type;
-  typedef ScalarType scalar_type;
-  typedef typename  list_property_definition_callback_type<size_type, scalar_type>::type list_property_definition_callback_type;
+  using size_type = SizeType;
+  using scalar_type = ScalarType;
+  using list_property_definition_callback_type = typename  list_property_definition_callback_type<size_type, scalar_type>::type;
   list_property_definition_callback_type& list_property_definition_callback = list_property_definition_callbacks_.get<size_type, scalar_type> ();
-  typedef typename list_property_begin_callback_type<size_type, scalar_type>::type list_property_begin_callback_type;
-  typedef typename list_property_element_callback_type<size_type, scalar_type>::type list_property_element_callback_type;
-  typedef typename list_property_end_callback_type<size_type, scalar_type>::type list_property_end_callback_type;
+  using list_property_begin_callback_type = typename list_property_begin_callback_type<size_type, scalar_type>::type;
+  using list_property_element_callback_type = typename list_property_element_callback_type<size_type, scalar_type>::type;
+  using list_property_end_callback_type = typename list_property_end_callback_type<size_type, scalar_type>::type;
   boost::tuple<list_property_begin_callback_type, list_property_element_callback_type, list_property_end_callback_type> list_property_callbacks;
   if (list_property_definition_callback)
   {
@@ -545,7 +544,7 @@ inline bool pcl::io::ply::ply_parser::parse_scalar_property (format_type format,
                                                              const typename scalar_property_callback_type<ScalarType>::type& scalar_property_callback)
 {
   using namespace io_operators;
-  typedef ScalarType scalar_type;
+  using scalar_type = ScalarType;
   if (format == ascii_format)
   {
     std::string value_s;
@@ -573,23 +572,20 @@ inline bool pcl::io::ply::ply_parser::parse_scalar_property (format_type format,
       scalar_property_callback (value);
     return (true);
   }
-  else
+  scalar_type value = std::numeric_limits<scalar_type>::quiet_NaN ();
+  istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
+  if (!istream)
   {
-    scalar_type value = std::numeric_limits<scalar_type>::quiet_NaN ();
-    istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
-    if (!istream)
-    {
-      if (error_callback_)
-        error_callback_ (line_number_, "parse error");
-      return (false);
-    }
-    if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) ||
-        ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
-      swap_byte_order (value);
-    if (scalar_property_callback)
-      scalar_property_callback (value);
-    return (true);
+    if (error_callback_)
+      error_callback_ (line_number_, "parse error");
+    return (false);
   }
+  if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) ||
+      ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
+    swap_byte_order (value);
+  if (scalar_property_callback)
+    scalar_property_callback (value);
+  return (true);
 }
 
 template <typename SizeType, typename ScalarType>
@@ -599,8 +595,8 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
                                                            const typename list_property_end_callback_type<SizeType, ScalarType>::type& list_property_end_callback)
 {
   using namespace io_operators;
-  typedef SizeType size_type;
-  typedef ScalarType scalar_type;
+  using size_type = SizeType;
+  using scalar_type = ScalarType;
   if (format == ascii_format)
   {
     size_type size = std::numeric_limits<size_type>::infinity ();
@@ -660,52 +656,49 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
     }
     return (true);
   }
-  else
+  size_type size = std::numeric_limits<size_type>::infinity ();
+  istream.read (reinterpret_cast<char*> (&size), sizeof (size_type));
+  if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) || 
+      ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
   {
-    size_type size = std::numeric_limits<size_type>::infinity ();
-    istream.read (reinterpret_cast<char*> (&size), sizeof (size_type));
-    if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) || 
-        ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
+    swap_byte_order (size);
+  }
+  if (!istream)
+  {
+    if (error_callback_)
     {
-      swap_byte_order (size);
+      error_callback_ (line_number_, "parse error");
     }
-    if (!istream)
-    {
-      if (error_callback_)
-      {
+    return (false);
+  }
+  if (list_property_begin_callback)
+  {
+    list_property_begin_callback (size);
+  }
+  for (std::size_t index = 0; index < size; ++index) {
+    scalar_type value  = std::numeric_limits<scalar_type>::quiet_NaN ();
+    istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
+    if (!istream) {
+      if (error_callback_) {
         error_callback_ (line_number_, "parse error");
       }
       return (false);
     }
-    if (list_property_begin_callback)
+    if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) ||
+        ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
     {
-      list_property_begin_callback (size);
+      swap_byte_order (value);
     }
-    for (std::size_t index = 0; index < size; ++index) {
-      scalar_type value  = std::numeric_limits<scalar_type>::quiet_NaN ();
-      istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
-      if (!istream) {
-        if (error_callback_) {
-          error_callback_ (line_number_, "parse error");
-        }
-        return (false);
-      }
-      if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) ||
-          ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
-      {
-        swap_byte_order (value);
-      }
-      if (list_property_element_callback)
-      {
-        list_property_element_callback (value);
-      }
-    }
-    if (list_property_end_callback)
+    if (list_property_element_callback)
     {
-      list_property_end_callback ();
+      list_property_element_callback (value);
     }
-    return (true);
   }
+  if (list_property_end_callback)
+  {
+    list_property_end_callback ();
+  }
+  return (true);
 }
 
 #ifdef BUILD_Maintainer

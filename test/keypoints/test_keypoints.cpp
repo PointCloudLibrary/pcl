@@ -128,7 +128,7 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
   const float scale = 0.02f;
 
   KdTreeFLANN<PointXYZI>::Ptr tree_ (new KdTreeFLANN<PointXYZI>);
-  boost::shared_ptr<pcl::PointCloud<PointXYZI> > cloud = cloud_xyzi->makeShared ();
+  auto cloud = cloud_xyzi->makeShared ();
 
   ApproximateVoxelGrid<PointXYZI> voxel_grid;
   const float s = 1.0 * scale;

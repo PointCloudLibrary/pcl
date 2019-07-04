@@ -59,7 +59,7 @@ So let's look at the code. From *visualization/tools/openni_viewer_simple.cpp*
         {   
           pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-          boost::function<void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f = 
+          std::function<void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f = 
             boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
 
           interface->registerCallback (f);
@@ -91,7 +91,7 @@ first, but it's not that bad. We create a *boost::bind* object with the address
 of the callback *cloud_cb_*, we pass a reference to our *SimpleOpenNIViewer*
 and the argument place holder *_1*.
 
-The *bind* then gets casted to a *boost::function* object which is templated on
+The *bind* then gets casted to a *std::function* object which is templated on
 the callback function type, in this case *void (const
 pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)*. The resulting function object can
 the be registered with the *OpenNIGrabber* and subsequently started.  Note that

@@ -63,12 +63,12 @@ namespace pcl
       class PCL_EXPORTS RDFBodyPartsDetector
       {
         public:
-          typedef boost::shared_ptr<RDFBodyPartsDetector> Ptr;          
-          typedef std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > > BlobMatrix;
+          using Ptr = boost::shared_ptr<RDFBodyPartsDetector>;          
+          using BlobMatrix = std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >;
           
-          typedef DeviceArray2D<unsigned char> Labels;
-          typedef DeviceArray2D<unsigned short> Depth;
-          typedef DeviceArray2D<pcl::RGB> Image;
+          using Labels = DeviceArray2D<unsigned char>;
+          using Depth = DeviceArray2D<unsigned short>;
+          using Image = DeviceArray2D<pcl::RGB>;
 
           /** \brief This is the constructor **/
           RDFBodyPartsDetector(const std::vector<std::string>& tree_files,

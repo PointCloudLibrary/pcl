@@ -93,7 +93,7 @@ int main (int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else if ((short_opt == 'v') || (strcmp (long_opt, "version") == 0)) {
+    if ((short_opt == 'v') || (strcmp (long_opt, "version") == 0)) {
       std::cout << "plyheader \n";
       std::cout << " Point Cloud Library (PCL) - www.pointclouds.org\n";
       std::cout << " Copyright (c) 2007-2012, Ares Lagae\n";
@@ -126,11 +126,9 @@ int main (int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else {
-      std::cerr << "plyheader: " << "invalid option `" << argv[argi] << "'" << "\n";
-      std::cerr << "Try `" << argv[0] << " --help' for more information.\n";
-      return EXIT_FAILURE;
-    }
+    std::cerr << "plyheader: " << "invalid option `" << argv[argi] << "'" << "\n";
+    std::cerr << "Try `" << argv[0] << " --help' for more information.\n";
+    return EXIT_FAILURE;
   }
 
   int parc = argc - argi;

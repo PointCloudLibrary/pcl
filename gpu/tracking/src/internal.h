@@ -12,11 +12,11 @@ namespace pcl
 	{
 		
 		struct float8 {	float	x, y, z, w, roll, pitch, yaw, weight;	};	
-		typedef float8 StateType;		
+		using StateType = float8;		
 
-		typedef float4 PointType;
-		typedef uchar4 PixelRGB;
-		typedef float4 NormalType;
+		using PointType = float4;
+		using PixelRGB = uchar4;
+		using NormalType = float4;
 		
 		
 		void 

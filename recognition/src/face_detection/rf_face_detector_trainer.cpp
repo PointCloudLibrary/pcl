@@ -192,7 +192,7 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
         uncertainty.emplace_back (index, uncertainties_[index]);
       }
 
-      std::sort (uncertainty.begin (), uncertainty.end (), boost::bind (&std::pair<int, float>::second, _1) < boost::bind (&std::pair<int, float>::second, _2));
+      std::sort (uncertainty.begin (), uncertainty.end (), [] (const auto& p1, const auto& p2) { return p1.second < p2.second; });
 
       Eigen::Vector3f rot;
       rot.setZero ();
@@ -282,7 +282,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
   if (use_normals_)
   {
-    typedef pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> NormalEstimator_;
+    using NormalEstimator_ = pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal>;
     NormalEstimator_ n3d;
     n3d.setNormalEstimationMethod (n3d.COVARIANCE_MATRIX);
     n3d.setInputCloud (cloud);
@@ -436,7 +436,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
     pcl::PointCloud<pcl::Normal>::Ptr scene_normals (new pcl::PointCloud<pcl::Normal> ());
 
     {
-      typedef pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> NormalEstimator_;
+      using NormalEstimator_ = pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal>;
       NormalEstimator_ n3d;
       n3d.setNormalEstimationMethod (n3d.COVARIANCE_MATRIX);
       n3d.setInputCloud (input_);

@@ -52,9 +52,9 @@ using namespace pcl::io;
 using namespace pcl::common;
 using namespace pcl::console;
 
-typedef PointXYZ PointType;
-typedef PointCloud<PointXYZ> Cloud;
-typedef const Cloud::ConstPtr ConstCloudPtr;
+using PointType = PointXYZ;
+using Cloud = PointCloud<PointXYZ>;
+using ConstCloudPtr = const Cloud::ConstPtr;
 
 std::string default_distribution = "uniform";
 float default_xmin = 0.0f;

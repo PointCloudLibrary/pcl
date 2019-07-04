@@ -49,8 +49,8 @@ namespace pcl
 	{
 	public:
 
-	  typedef pcl::PointXYZ PointType;
-	  typedef pcl::gpu::DeviceArray<PointType> Cloud;
+	  using PointType = pcl::PointXYZ;
+	  using Cloud = pcl::gpu::DeviceArray<PointType>;
       
 
 	  PseudoConvexHull3D(size_t buffer_size);

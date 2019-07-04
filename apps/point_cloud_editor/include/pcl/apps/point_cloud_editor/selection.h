@@ -112,8 +112,8 @@ class Selection : public Statistics
       selected_indices_.clear();
     }
 
-    typedef std::set<unsigned int>::iterator iterator;
-    typedef std::set<unsigned int>::const_iterator const_iterator;
+    using iterator = std::set<unsigned int>::iterator;
+    using const_iterator = std::set<unsigned int>::const_iterator;
 
     /// @brief Get the begin iterator of the selection.
     const_iterator
@@ -129,8 +129,7 @@ class Selection : public Statistics
       return (selected_indices_.end());
     }
 
-    typedef std::set<unsigned int>::const_reverse_iterator
-      const_reverse_iterator;
+    using const_reverse_iterator = std::set<unsigned int>::const_reverse_iterator;
 
     /// @brief Get the begin iterator of the selection.
     const_reverse_iterator
@@ -177,11 +176,6 @@ class Selection : public Statistics
     getStat () const override;
 
   private:
-    /// @brief Default constructor - object is not default constructable
-    Selection ()
-    {
-    }
-
     /// a pointer to the cloud
     ConstCloudPtr cloud_ptr_;
 

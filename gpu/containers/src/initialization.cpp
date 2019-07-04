@@ -110,10 +110,10 @@ namespace
     inline int convertSMVer2Cores(int major, int minor)
     {
         // Defines for GPU Architecture types (using the SM version to determine the # of cores per SM
-        typedef struct {
+        struct SMtoCores {
             int SM; // 0xMm (hexadecimal notation), M = SM Major version, and m = SM minor version
             int Cores;
-        } SMtoCores;
+        };
 
         SMtoCores gpuArchCoresPerSM[] = {
             {0x10,   8}, {0x11,   8}, {0x12,   8}, {0x13,  8}, {0x20,  32}, {0x21, 48}, {0x30, 192},

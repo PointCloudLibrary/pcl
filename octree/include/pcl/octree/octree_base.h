@@ -62,13 +62,13 @@ namespace pcl
     {
       public:
 
-        typedef OctreeBase<LeafContainerT, BranchContainerT> OctreeT;
+        using OctreeT = OctreeBase<LeafContainerT, BranchContainerT>;
 
-        typedef OctreeBranchNode<BranchContainerT> BranchNode;
-        typedef OctreeLeafNode<LeafContainerT> LeafNode;
+        using BranchNode = OctreeBranchNode<BranchContainerT>;
+        using LeafNode = OctreeLeafNode<LeafContainerT>;
 
-        typedef BranchContainerT BranchContainer;
-        typedef LeafContainerT LeafContainer;
+        using BranchContainer = BranchContainerT;
+        using LeafContainer = LeafContainerT;
 
       protected:
 
@@ -108,8 +108,8 @@ namespace pcl
         friend class OctreeLeafNodeBreadthFirstIterator<OctreeT> ;
 
         // Octree default iterators
-        typedef OctreeDepthFirstIterator<OctreeT> Iterator;
-        typedef const OctreeDepthFirstIterator<OctreeT> ConstIterator;
+        using Iterator = OctreeDepthFirstIterator<OctreeT>;
+        using ConstIterator = const OctreeDepthFirstIterator<OctreeT>;
 
         Iterator begin (unsigned int max_depth_arg = 0u)
         {
@@ -125,8 +125,8 @@ namespace pcl
         // The previous deprecated names
         // LeafNodeIterator and ConstLeafNodeIterator are deprecated.
         // Please use LeafNodeDepthFirstIterator and ConstLeafNodeDepthFirstIterator instead.
-        typedef OctreeLeafNodeDepthFirstIterator<OctreeT> LeafNodeIterator;
-        typedef const OctreeLeafNodeDepthFirstIterator<OctreeT> ConstLeafNodeIterator;
+        using LeafNodeIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
+        using ConstLeafNodeIterator = const OctreeLeafNodeDepthFirstIterator<OctreeT>;
 
         [[deprecated("use leaf_depth_begin() instead")]]
         LeafNodeIterator leaf_begin (unsigned int max_depth_arg = 0u)
@@ -141,8 +141,8 @@ namespace pcl
         };
 
         // The currently valide names
-        typedef OctreeLeafNodeDepthFirstIterator<OctreeT> LeafNodeDepthFirstIterator;
-        typedef const OctreeLeafNodeDepthFirstIterator<OctreeT> ConstLeafNodeDepthFirstIterator;
+        using LeafNodeDepthFirstIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
+        using ConstLeafNodeDepthFirstIterator = const OctreeLeafNodeDepthFirstIterator<OctreeT>;
 
         LeafNodeDepthFirstIterator leaf_depth_begin (unsigned int max_depth_arg = 0u)
         {
@@ -155,8 +155,8 @@ namespace pcl
         };
 
         // Octree depth-first iterators
-        typedef OctreeDepthFirstIterator<OctreeT> DepthFirstIterator;
-        typedef const OctreeDepthFirstIterator<OctreeT> ConstDepthFirstIterator;
+        using DepthFirstIterator = OctreeDepthFirstIterator<OctreeT>;
+        using ConstDepthFirstIterator = const OctreeDepthFirstIterator<OctreeT>;
 
         DepthFirstIterator depth_begin (unsigned int max_depth_arg = 0u)
         {
@@ -169,8 +169,8 @@ namespace pcl
         };
 
         // Octree breadth-first iterators
-        typedef OctreeBreadthFirstIterator<OctreeT> BreadthFirstIterator;
-        typedef const OctreeBreadthFirstIterator<OctreeT> ConstBreadthFirstIterator;
+        using BreadthFirstIterator = OctreeBreadthFirstIterator<OctreeT>;
+        using ConstBreadthFirstIterator = const OctreeBreadthFirstIterator<OctreeT>;
 
         BreadthFirstIterator breadth_begin (unsigned int max_depth_arg = 0u)
         {
@@ -183,8 +183,8 @@ namespace pcl
         };
 
         // Octree breadth iterators at a given depth
-        typedef OctreeFixedDepthIterator<OctreeT> FixedDepthIterator;
-        typedef const OctreeFixedDepthIterator<OctreeT> ConstFixedDepthIterator;
+        using FixedDepthIterator = OctreeFixedDepthIterator<OctreeT>;
+        using ConstFixedDepthIterator = const OctreeFixedDepthIterator<OctreeT>;
 
         FixedDepthIterator fixed_depth_begin (unsigned int fixed_depth_arg = 0u)
         {
@@ -197,8 +197,8 @@ namespace pcl
         };
 
         // Octree leaf node iterators
-        typedef OctreeLeafNodeBreadthFirstIterator<OctreeT> LeafNodeBreadthFirstIterator;
-        typedef const OctreeLeafNodeBreadthFirstIterator<OctreeT> ConstLeafNodeBreadthFirstIterator;
+        using LeafNodeBreadthFirstIterator = OctreeLeafNodeBreadthFirstIterator<OctreeT>;
+        using ConstLeafNodeBreadthFirstIterator = const OctreeLeafNodeBreadthFirstIterator<OctreeT>;
 
         LeafNodeBreadthFirstIterator leaf_breadth_begin (unsigned int max_depth_arg = 0u)
         {

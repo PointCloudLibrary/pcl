@@ -44,13 +44,13 @@ namespace pcl
 {
   namespace device
   {
-	  typedef unsigned long long uint64_type;
+	  using uint64_type = unsigned long long;
 
-	  typedef float4 PointType;
-	  typedef pcl::gpu::DeviceArray<PointType> Cloud;
+	  using PointType = float4;
+	  using Cloud = pcl::gpu::DeviceArray<PointType>;
 
-	  typedef DeviceArray<uint64_type> FacetsDists;
-	  typedef DeviceArray<int> Perm;
+	  using FacetsDists = DeviceArray<uint64_type>;
+	  using Perm = DeviceArray<int>;
 
 	  struct InitalSimplex
 	  {

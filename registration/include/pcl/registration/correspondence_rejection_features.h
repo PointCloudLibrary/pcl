@@ -45,6 +45,8 @@
 #include <pcl/point_representation.h>
 #include <pcl/registration/boost.h>
 
+#include <unordered_map>
+
 namespace pcl
 {
   namespace registration
@@ -64,8 +66,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        typedef boost::shared_ptr<CorrespondenceRejectorFeatures> Ptr;
-        typedef boost::shared_ptr<const CorrespondenceRejectorFeatures> ConstPtr;
+        using Ptr = boost::shared_ptr<CorrespondenceRejectorFeatures>;
+        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorFeatures>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorFeatures () : max_distance_ (std::numeric_limits<float>::max ())
@@ -160,10 +162,10 @@ namespace pcl
             virtual double getCorrespondenceScore (int index) = 0;
             virtual bool isCorrespondenceValid (int index) = 0;
 
-            typedef boost::shared_ptr<FeatureContainerInterface> Ptr;
+            using Ptr = boost::shared_ptr<FeatureContainerInterface>;
         };
 
-        typedef boost::unordered_map<std::string, FeatureContainerInterface::Ptr> FeaturesMap;
+        using FeaturesMap = std::unordered_map<std::string, FeatureContainerInterface::Ptr>;
 
         /** \brief An STL map containing features to use when performing the correspondence search.*/
         FeaturesMap features_map_;
@@ -178,11 +180,10 @@ namespace pcl
         class FeatureContainer : public pcl::registration::CorrespondenceRejectorFeatures::FeatureContainerInterface
         {
           public:
-            typedef typename pcl::PointCloud<FeatureT>::ConstPtr FeatureCloudConstPtr;
-            typedef boost::function<int (const pcl::PointCloud<FeatureT> &, int, std::vector<int> &, 
-                                          std::vector<float> &)> SearchMethod;
+            using FeatureCloudConstPtr = typename pcl::PointCloud<FeatureT>::ConstPtr;
+            using SearchMethod = std::function<int (const pcl::PointCloud<FeatureT> &, int, std::vector<int> &,  std::vector<float> &)>;
             
-            typedef typename pcl::PointRepresentation<FeatureT>::ConstPtr PointRepresentationConstPtr;
+            using PointRepresentationConstPtr = typename pcl::PointRepresentation<FeatureT>::ConstPtr;
 
             FeatureContainer () : thresh_(std::numeric_limits<double>::max ()), feature_representation_()
             {
@@ -226,9 +227,8 @@ namespace pcl
             {
               if (!source_features_ || !target_features_)
                 return (false);
-              else
-                return (source_features_->points.size () > 0 && 
-                        target_features_->points.size () > 0);
+              return (source_features_->points.size () > 0 && 
+                      target_features_->points.size () > 0);
             }
 
             /** \brief Provide a boost shared pointer to a PointRepresentation to be used when comparing features
@@ -280,10 +280,7 @@ namespace pcl
             inline bool
             isCorrespondenceValid (int index) override
             {
-              if (getCorrespondenceScore (index) < thresh_ * thresh_)
-                return (true);
-              else
-                return (false);
+              return (getCorrespondenceScore (index) < thresh_ * thresh_);
             }
              
           private:

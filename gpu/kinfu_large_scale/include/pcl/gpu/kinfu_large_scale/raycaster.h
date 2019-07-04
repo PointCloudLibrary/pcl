@@ -61,10 +61,10 @@ namespace pcl
       struct PCL_EXPORTS RayCaster
       {
       public:
-        typedef boost::shared_ptr<RayCaster> Ptr;
-        typedef pcl::gpu::DeviceArray2D<float> MapArr;
-        typedef pcl::gpu::DeviceArray2D<PixelRGB> View;
-        typedef pcl::gpu::DeviceArray2D<unsigned short> Depth;     
+        using Ptr = boost::shared_ptr<RayCaster>;
+        using MapArr = pcl::gpu::DeviceArray2D<float>;
+        using View = pcl::gpu::DeviceArray2D<PixelRGB>;
+        using Depth = pcl::gpu::DeviceArray2D<unsigned short>;     
 
         /** \brief Image with height */ 
         const int cols, rows;      

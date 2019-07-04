@@ -71,15 +71,15 @@ namespace pcl
   class RadiusOutlierRemoval : public FilterIndices<PointT>
   {
     protected:
-      typedef typename FilterIndices<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::search::Search<PointT>::Ptr SearcherPtr;
+      using PointCloud = typename FilterIndices<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
+      using SearcherPtr = typename pcl::search::Search<PointT>::Ptr;
 
     public:
 
-      typedef boost::shared_ptr< RadiusOutlierRemoval<PointT> > Ptr;
-      typedef boost::shared_ptr< const RadiusOutlierRemoval<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<RadiusOutlierRemoval<PointT> >;
+      using ConstPtr = boost::shared_ptr<const RadiusOutlierRemoval<PointT> >;
   
 
       /** \brief Constructor.
@@ -197,12 +197,12 @@ namespace pcl
     using Filter<pcl::PCLPointCloud2>::removed_indices_;
     using Filter<pcl::PCLPointCloud2>::extract_removed_indices_;
 
-    typedef pcl::search::Search<pcl::PointXYZ> KdTree;
-    typedef pcl::search::Search<pcl::PointXYZ>::Ptr KdTreePtr;
+    using KdTree = pcl::search::Search<pcl::PointXYZ>;
+    using KdTreePtr = pcl::search::Search<pcl::PointXYZ>::Ptr;
 
-    typedef pcl::PCLPointCloud2 PCLPointCloud2;
-    typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
-    typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
+    using PCLPointCloud2 = pcl::PCLPointCloud2;
+    using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+    using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
     public:
       /** \brief Empty constructor. */

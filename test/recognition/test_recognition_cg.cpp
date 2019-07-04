@@ -53,10 +53,10 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 
-typedef PointXYZ PointType;
-typedef Normal NormalType;
-typedef ReferenceFrame RFType;
-typedef SHOT352 DescriptorType;
+using PointType = PointXYZ;
+using NormalType = Normal;
+using RFType = ReferenceFrame;
+using DescriptorType = SHOT352;
 
 PointCloud<PointType>::Ptr model_ (new PointCloud<PointType> ());
 PointCloud<PointType>::Ptr model_downsampled_ (new PointCloud<PointType> ());

@@ -55,20 +55,20 @@ namespace pcl
   class KdTree
   {
     public:
-      typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
-      typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
+      using IndicesPtr = boost::shared_ptr<std::vector<int> >;
+      using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
 
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-      typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = boost::shared_ptr<PointCloud>;
+      using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
 
-      typedef pcl::PointRepresentation<PointT> PointRepresentation;
-      //typedef boost::shared_ptr<PointRepresentation> PointRepresentationPtr;
-      typedef boost::shared_ptr<const PointRepresentation> PointRepresentationConstPtr;
+      using PointRepresentation = pcl::PointRepresentation<PointT>;
+      //using PointRepresentationPtr = boost::shared_ptr<PointRepresentation>;
+      using PointRepresentationConstPtr = boost::shared_ptr<const PointRepresentation>;
 
       // Boost shared pointers
-      typedef boost::shared_ptr<KdTree<PointT> > Ptr;
-      typedef boost::shared_ptr<const KdTree<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<KdTree<PointT> >;
+      using ConstPtr = boost::shared_ptr<const KdTree<PointT> >;
 
       /** \brief Empty constructor for KdTree. Sets some internal values to their defaults. 
         * \param[in] sorted set to true if the application that the tree will be used for requires sorted nearest neighbor indices (default). False otherwise. 
@@ -205,11 +205,8 @@ namespace pcl
           assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in nearestKSearch!");
           return (nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
         }
-        else
-        {
-          assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in nearestKSearch!");
-          return (nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_sqr_distances));
-        }
+        assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in nearestKSearch!");
+        return (nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_sqr_distances));
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
@@ -299,11 +296,8 @@ namespace pcl
           assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in radiusSearch!");
           return (radiusSearch (input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
         }
-        else
-        {
-          assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in radiusSearch!");
-          return (radiusSearch (input_->points[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
-        }
+        assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in radiusSearch!");
+        return (radiusSearch (input_->points[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
       }
 
       /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.

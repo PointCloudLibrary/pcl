@@ -45,7 +45,7 @@
 
 namespace pcl { namespace device { namespace appnearest_search
 {   
-    typedef OctreeImpl::PointType PointType;
+    using PointType = OctreeImpl::PointType;
 	
 	struct Batch
 	{   
@@ -287,7 +287,7 @@ namespace pcl { namespace device { namespace appnearest_search
 
 void pcl::device::OctreeImpl::approxNearestSearch(const Queries& queries, NeighborIndices& results) const
 {
-    typedef pcl::device::appnearest_search::Batch BatchType;
+    using BatchType = pcl::device::appnearest_search::Batch;
 
     BatchType batch;
     batch.indices = indices;

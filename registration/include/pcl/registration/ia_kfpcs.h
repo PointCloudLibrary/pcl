@@ -55,19 +55,19 @@ namespace pcl
     {
     public:
       /** \cond */
-      typedef boost::shared_ptr <KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar> > Ptr;
-      typedef boost::shared_ptr <const KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar> > ConstPtr;
+      using Ptr = boost::shared_ptr <KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar> >;
+      using ConstPtr = boost::shared_ptr <const KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar> >;
 
-      typedef pcl::PointCloud <PointSource> PointCloudSource;
-      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-      typedef typename PointCloudSource::iterator PointCloudSourceIterator;
+      using PointCloudSource = pcl::PointCloud<PointSource>;
+      using PointCloudSourcePtr = typename PointCloudSource::Ptr;
+      using PointCloudSourceIterator = typename PointCloudSource::iterator;
 
-      typedef pcl::PointCloud <PointTarget> PointCloudTarget;
-      typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
-      typedef typename PointCloudTarget::iterator PointCloudTargetIterator;
+      using PointCloudTarget = pcl::PointCloud<PointTarget>;
+      using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
+      using PointCloudTargetIterator = typename PointCloudTarget::iterator;
 
-      typedef pcl::registration::MatchingCandidate MatchingCandidate;
-      typedef pcl::registration::MatchingCandidates MatchingCandidates;
+      using MatchingCandidate = pcl::registration::MatchingCandidate;
+      using MatchingCandidates = pcl::registration::MatchingCandidates;
       /** \endcond */
 
 

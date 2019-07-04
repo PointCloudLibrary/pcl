@@ -51,9 +51,9 @@
 // See https://github.com/PointCloudLibrary/pcl/issues/864
 #include <boost/version.hpp>
 #if (BOOST_VERSION >= 105600)
-  typedef boost::property_tree::xml_writer_settings<std::string> xml_writer_settings;
+  using xml_writer_settings = boost::property_tree::xml_writer_settings<std::string>;
 #else
-  typedef boost::property_tree::xml_writer_settings<char> xml_writer_settings;
+  using xml_writer_settings = boost::property_tree::xml_writer_settings<char>;
 #endif
 
 

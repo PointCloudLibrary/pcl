@@ -40,8 +40,6 @@
 
 #pragma once
 
-#include <vector>
-
 #include <pcl/geometry/boost.h>
 #include <pcl/geometry/eigen.h>
 #include <pcl/geometry/mesh_circulators.h>
@@ -49,6 +47,9 @@
 #include <pcl/geometry/mesh_elements.h>
 #include <pcl/geometry/mesh_traits.h>
 #include <pcl/point_cloud.h>
+
+#include <vector>
+#include <type_traits>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Global variables used during testing
@@ -98,55 +99,55 @@ namespace pcl
     {
       public:
 
-        typedef MeshBase <DerivedT, MeshTraitsT, MeshTagT> Self;
-        typedef boost::shared_ptr <Self>                   Ptr;
-        typedef boost::shared_ptr <const Self>             ConstPtr;
+        using Self = MeshBase <DerivedT, MeshTraitsT, MeshTagT>;
+        using Ptr = boost::shared_ptr<Self>;
+        using ConstPtr = boost::shared_ptr<const Self>;
 
-        typedef DerivedT Derived;
+        using Derived = DerivedT;
 
         // These have to be defined in the traits class.
-        typedef typename MeshTraitsT::VertexData   VertexData;
-        typedef typename MeshTraitsT::HalfEdgeData HalfEdgeData;
-        typedef typename MeshTraitsT::EdgeData     EdgeData;
-        typedef typename MeshTraitsT::FaceData     FaceData;
-        typedef typename MeshTraitsT::IsManifold   IsManifold;
+        using VertexData = typename MeshTraitsT::VertexData;
+        using HalfEdgeData = typename MeshTraitsT::HalfEdgeData;
+        using EdgeData = typename MeshTraitsT::EdgeData;
+        using FaceData = typename MeshTraitsT::FaceData;
+        using IsManifold = typename MeshTraitsT::IsManifold;
 
         // Check if the mesh traits are defined correctly.
-        BOOST_CONCEPT_ASSERT ((boost::Convertible <IsManifold, bool>));
+        static_assert (std::is_convertible<IsManifold, bool>::value, "MeshTraitsT::IsManifold is not convertible to bool");
 
-        typedef MeshTagT MeshTag;
+        using MeshTag = MeshTagT;
 
         // Data
-        typedef boost::integral_constant <bool, !boost::is_same <VertexData  , pcl::geometry::NoData>::value> HasVertexData;
-        typedef boost::integral_constant <bool, !boost::is_same <HalfEdgeData, pcl::geometry::NoData>::value> HasHalfEdgeData;
-        typedef boost::integral_constant <bool, !boost::is_same <EdgeData    , pcl::geometry::NoData>::value> HasEdgeData;
-        typedef boost::integral_constant <bool, !boost::is_same <FaceData    , pcl::geometry::NoData>::value> HasFaceData;
+        using HasVertexData = std::integral_constant <bool, !std::is_same <VertexData  , pcl::geometry::NoData>::value>;
+        using HasHalfEdgeData = std::integral_constant <bool, !std::is_same <HalfEdgeData, pcl::geometry::NoData>::value>;
+        using HasEdgeData = std::integral_constant <bool, !std::is_same <EdgeData    , pcl::geometry::NoData>::value>;
+        using HasFaceData = std::integral_constant <bool, !std::is_same <FaceData    , pcl::geometry::NoData>::value>;
 
-        typedef pcl::PointCloud <VertexData>   VertexDataCloud;
-        typedef pcl::PointCloud <HalfEdgeData> HalfEdgeDataCloud;
-        typedef pcl::PointCloud <EdgeData>     EdgeDataCloud;
-        typedef pcl::PointCloud <FaceData>     FaceDataCloud;
+        using VertexDataCloud = pcl::PointCloud<VertexData>;
+        using HalfEdgeDataCloud = pcl::PointCloud<HalfEdgeData>;
+        using EdgeDataCloud = pcl::PointCloud<EdgeData>;
+        using FaceDataCloud = pcl::PointCloud<FaceData>;
 
         // Indices
-        typedef pcl::geometry::VertexIndex   VertexIndex;
-        typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
-        typedef pcl::geometry::EdgeIndex     EdgeIndex;
-        typedef pcl::geometry::FaceIndex     FaceIndex;
+        using VertexIndex = pcl::geometry::VertexIndex;
+        using HalfEdgeIndex = pcl::geometry::HalfEdgeIndex;
+        using EdgeIndex = pcl::geometry::EdgeIndex;
+        using FaceIndex = pcl::geometry::FaceIndex;
 
-        typedef std::vector <VertexIndex>   VertexIndices;
-        typedef std::vector <HalfEdgeIndex> HalfEdgeIndices;
-        typedef std::vector <EdgeIndex>     EdgeIndices;
-        typedef std::vector <FaceIndex>     FaceIndices;
+        using VertexIndices = std::vector<VertexIndex>;
+        using HalfEdgeIndices = std::vector<HalfEdgeIndex>;
+        using EdgeIndices = std::vector<EdgeIndex>;
+        using FaceIndices = std::vector<FaceIndex>;
 
         // Circulators
-        typedef pcl::geometry::VertexAroundVertexCirculator           <const Self> VertexAroundVertexCirculator;
-        typedef pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator <const Self> OutgoingHalfEdgeAroundVertexCirculator;
-        typedef pcl::geometry::IncomingHalfEdgeAroundVertexCirculator <const Self> IncomingHalfEdgeAroundVertexCirculator;
-        typedef pcl::geometry::FaceAroundVertexCirculator             <const Self> FaceAroundVertexCirculator;
-        typedef pcl::geometry::VertexAroundFaceCirculator             <const Self> VertexAroundFaceCirculator;
-        typedef pcl::geometry::InnerHalfEdgeAroundFaceCirculator      <const Self> InnerHalfEdgeAroundFaceCirculator;
-        typedef pcl::geometry::OuterHalfEdgeAroundFaceCirculator      <const Self> OuterHalfEdgeAroundFaceCirculator;
-        typedef pcl::geometry::FaceAroundFaceCirculator               <const Self> FaceAroundFaceCirculator;
+        using VertexAroundVertexCirculator = pcl::geometry::VertexAroundVertexCirculator<const Self>;
+        using OutgoingHalfEdgeAroundVertexCirculator = pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator<const Self>;
+        using IncomingHalfEdgeAroundVertexCirculator = pcl::geometry::IncomingHalfEdgeAroundVertexCirculator<const Self>;
+        using FaceAroundVertexCirculator = pcl::geometry::FaceAroundVertexCirculator<const Self>;
+        using VertexAroundFaceCirculator = pcl::geometry::VertexAroundFaceCirculator<const Self>;
+        using InnerHalfEdgeAroundFaceCirculator = pcl::geometry::InnerHalfEdgeAroundFaceCirculator<const Self>;
+        using OuterHalfEdgeAroundFaceCirculator = pcl::geometry::OuterHalfEdgeAroundFaceCirculator<const Self>;
+        using FaceAroundFaceCirculator = pcl::geometry::FaceAroundFaceCirculator<const Self>;
 
         /** \brief Constructor. */
         MeshBase ()
@@ -709,7 +710,7 @@ namespace pcl
         isBoundary (const FaceIndex& idx_face) const
         {
           assert (this->isValid (idx_face));
-          return (this->isBoundary (idx_face, boost::integral_constant <bool, CheckVerticesT> ()));
+          return (this->isBoundary (idx_face, std::integral_constant <bool, CheckVerticesT> ()));
         }
 
         /** \brief Check if the given face lies on the boundary. This method uses isBoundary \c true which checks if any vertex lies on the boundary. */
@@ -717,7 +718,7 @@ namespace pcl
         isBoundary (const FaceIndex& idx_face) const
         {
           assert (this->isValid (idx_face));
-          return (this->isBoundary (idx_face, boost::true_type ()));
+          return (this->isBoundary (idx_face, std::true_type ()));
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -1109,21 +1110,21 @@ namespace pcl
         ////////////////////////////////////////////////////////////////////////
 
         // Elements
-        typedef pcl::geometry::Vertex   Vertex;
-        typedef pcl::geometry::HalfEdge HalfEdge;
-        typedef pcl::geometry::Face     Face;
+        using Vertex = pcl::geometry::Vertex;
+        using HalfEdge = pcl::geometry::HalfEdge;
+        using Face = pcl::geometry::Face;
 
-        typedef std::vector <Vertex>   Vertices;
-        typedef std::vector <HalfEdge> HalfEdges;
-        typedef std::vector <Face>     Faces;
+        using Vertices = std::vector<Vertex>;
+        using HalfEdges = std::vector<HalfEdge>;
+        using Faces = std::vector<Face>;
 
-        typedef typename Vertices::iterator  VertexIterator;
-        typedef typename HalfEdges::iterator HalfEdgeIterator;
-        typedef typename Faces::iterator     FaceIterator;
+        using VertexIterator = typename Vertices::iterator;
+        using HalfEdgeIterator = typename HalfEdges::iterator;
+        using FaceIterator = typename Faces::iterator;
 
-        typedef typename Vertices::const_iterator  VertexConstIterator;
-        typedef typename HalfEdges::const_iterator HalfEdgeConstIterator;
-        typedef typename Faces::const_iterator     FaceConstIterator;
+        using VertexConstIterator = typename Vertices::const_iterator;
+        using HalfEdgeConstIterator = typename HalfEdges::const_iterator;
+        using FaceConstIterator = typename Faces::const_iterator;
 
         /** \brief General implementation of addFace. */
         FaceIndex
@@ -1232,7 +1233,7 @@ namespace pcl
                         const VertexIndex&            idx_v_b,
                         HalfEdgeIndex&                idx_he_ab,
                         std::vector <bool>::reference is_new_ab,
-                        boost::true_type              /*is_manifold*/) const
+                        std::true_type              /*is_manifold*/) const
         {
           is_new_ab = true;
           if (this->isIsolated (idx_v_a)) return (true);
@@ -1250,7 +1251,7 @@ namespace pcl
                         const VertexIndex&            idx_v_b,
                         HalfEdgeIndex&                idx_he_ab,
                         std::vector <bool>::reference is_new_ab,
-                        boost::false_type              /*is_manifold*/) const
+                        std::false_type              /*is_manifold*/) const
         {
           is_new_ab = true;
           if (this->isIsolated (idx_v_a))                                   return (true);
@@ -1283,7 +1284,7 @@ namespace pcl
                         const bool                    is_isolated_b,
                         std::vector <bool>::reference /*make_adjacent_ab_bc*/,
                         HalfEdgeIndex&                /*idx_free_half_edge*/,
-                        boost::true_type              /*is_manifold*/) const
+                        std::true_type              /*is_manifold*/) const
         {
           if (is_new_ab && is_new_bc && !is_isolated_b) return (false);
           else                                          return (true);
@@ -1306,7 +1307,7 @@ namespace pcl
                         const bool                    /*is_isolated_b*/,
                         std::vector <bool>::reference make_adjacent_ab_bc,
                         HalfEdgeIndex&                idx_free_half_edge,
-                        boost::false_type             /*is_manifold*/) const
+                        std::false_type             /*is_manifold*/) const
         {
           if (is_new_ab || is_new_bc)
           {
@@ -1393,7 +1394,7 @@ namespace pcl
         connectNewNew (const HalfEdgeIndex& idx_he_ab,
                        const HalfEdgeIndex& idx_he_bc,
                        const VertexIndex&   idx_v_b,
-                       boost::true_type     /*is_manifold*/)
+                       std::true_type     /*is_manifold*/)
         {
           const HalfEdgeIndex idx_he_ba = this->getOppositeHalfEdgeIndex (idx_he_ab);
           const HalfEdgeIndex idx_he_cb = this->getOppositeHalfEdgeIndex (idx_he_bc);
@@ -1409,11 +1410,11 @@ namespace pcl
         connectNewNew (const HalfEdgeIndex& idx_he_ab,
                        const HalfEdgeIndex& idx_he_bc,
                        const VertexIndex&   idx_v_b,
-                       boost::false_type    /*is_manifold*/)
+                       std::false_type    /*is_manifold*/)
         {
           if (this->isIsolated (idx_v_b))
           {
-            this->connectNewNew (idx_he_ab, idx_he_bc, idx_v_b, boost::true_type ());
+            this->connectNewNew (idx_he_ab, idx_he_bc, idx_v_b, std::true_type ());
           }
           else
           {
@@ -1465,7 +1466,7 @@ namespace pcl
         connectOldOld (const HalfEdgeIndex& /*idx_he_ab*/,
                        const HalfEdgeIndex& /*idx_he_bc*/,
                        const VertexIndex&   /*idx_v_b*/,
-                       boost::true_type     /*is_manifold*/)
+                       std::true_type     /*is_manifold*/)
         {
         }
 
@@ -1474,7 +1475,7 @@ namespace pcl
         connectOldOld (const HalfEdgeIndex& /*idx_he_ab*/,
                        const HalfEdgeIndex& idx_he_bc,
                        const VertexIndex&   idx_v_b,
-                       boost::false_type    /*is_manifold*/)
+                       std::false_type    /*is_manifold*/)
         {
           const HalfEdgeIndex& idx_he_b_out = this->getOutgoingHalfEdgeIndex (idx_v_b);
 
@@ -1502,7 +1503,7 @@ namespace pcl
         /** \brief Add mesh data. */
         template <class DataT>
         inline void
-        addData (pcl::PointCloud <DataT>& cloud, const DataT& data, boost::true_type /*has_data*/)
+        addData (pcl::PointCloud <DataT>& cloud, const DataT& data, std::true_type /*has_data*/)
         {
           cloud.push_back (data);
         }
@@ -1510,7 +1511,7 @@ namespace pcl
         /** \brief Does nothing. */
         template <class DataT>
         inline void
-        addData (pcl::PointCloud <DataT>& /*cloud*/, const DataT& /*data*/, boost::false_type /*has_data*/)
+        addData (pcl::PointCloud <DataT>& /*cloud*/, const DataT& /*data*/, std::false_type /*has_data*/)
         {
         }
 
@@ -1521,7 +1522,7 @@ namespace pcl
         /** \brief Manifold version of deleteFace. If the mesh becomes non-manifold due to the delete operation the faces around the non-manifold vertex are deleted until the mesh becomes manifold again. */
         void
         deleteFace (const FaceIndex& idx_face,
-                    boost::true_type /*is_manifold*/)
+                    std::true_type /*is_manifold*/)
         {
           assert (this->isValid (idx_face));
           delete_faces_face_.clear ();
@@ -1533,14 +1534,14 @@ namespace pcl
             delete_faces_face_.pop_back ();
 
             // This calls the non-manifold version of deleteFace, which will call the manifold version of reconnect.
-            this->deleteFace (idx_face_cur, boost::false_type ());
+            this->deleteFace (idx_face_cur, std::false_type ());
           }
         }
 
         /** \brief Non-manifold version of deleteFace. */
         void
         deleteFace (const FaceIndex&  idx_face,
-                    boost::false_type /*is_manifold*/)
+                    std::false_type /*is_manifold*/)
         {
           assert (this->isValid (idx_face));
           if (this->isDeleted (idx_face)) return;
@@ -1642,7 +1643,7 @@ namespace pcl
         reconnectNBNB (const HalfEdgeIndex& idx_he_bc,
                        const HalfEdgeIndex& idx_he_cb,
                        const VertexIndex&   idx_v_b,
-                       boost::true_type     /*is_manifold*/)
+                       std::true_type     /*is_manifold*/)
         {
           if (this->isBoundary (idx_v_b))
           {
@@ -1660,7 +1661,7 @@ namespace pcl
                 // In a manifold mesh we can't invalidate the face while reconnecting!
                 // See the implementation of
                 // deleteFace (const FaceIndex&  idx_face,
-                //             boost::false_type /*is_manifold*/)
+                //             std::false_type /*is_manifold*/)
                 pcl::geometry::g_pcl_geometry_mesh_base_test_delete_face_manifold_2_success = false;
                 return;
               }
@@ -1678,7 +1679,7 @@ namespace pcl
         reconnectNBNB (const HalfEdgeIndex& idx_he_bc,
                        const HalfEdgeIndex& /*idx_he_cb*/,
                        const VertexIndex&   idx_v_b,
-                       boost::false_type    /*is_manifold*/)
+                       std::false_type    /*is_manifold*/)
         {
           if (!this->isBoundary (idx_v_b))
           {
@@ -1740,8 +1741,8 @@ namespace pcl
         template <class ElementContainerT, class DataContainerT, class IndexContainerT, class HasDataT> IndexContainerT
         remove (ElementContainerT& elements, DataContainerT& data_cloud)
         {
-          typedef typename IndexContainerT::value_type   Index;
-          typedef typename ElementContainerT::value_type Element;
+          using Index = typename IndexContainerT::value_type;
+          using Element = typename ElementContainerT::value_type;
 
           if (HasDataT::value) assert (elements.size () == data_cloud.size ());
           else                 assert (data_cloud.empty ()); // Bug in this class!
@@ -1792,27 +1793,27 @@ namespace pcl
 
         /** \brief Increment the iterator. */
         template <class IteratorT> inline void
-        incrementIf (IteratorT& it, boost::true_type /*has_data*/) const
+        incrementIf (IteratorT& it, std::true_type /*has_data*/) const
         {
           ++it;
         }
 
         /** \brief Does nothing. */
         template <class IteratorT> inline void
-        incrementIf (IteratorT& /*it*/, boost::false_type /*has_data*/) const
+        incrementIf (IteratorT& /*it*/, std::false_type /*has_data*/) const
         {
         }
 
         /** \brief Assign the source iterator to the target iterator. */
         template <class ConstIteratorT, class IteratorT> inline void
-        assignIf (const ConstIteratorT source, IteratorT target, boost::true_type /*has_data*/) const
+        assignIf (const ConstIteratorT source, IteratorT target, std::true_type /*has_data*/) const
         {
           *target = *source;
         }
 
         /** \brief Does nothing. */
         template <class ConstIteratorT, class IteratorT> inline void
-        assignIf (const ConstIteratorT /*source*/, IteratorT /*target*/, boost::false_type /*has_data*/) const
+        assignIf (const ConstIteratorT /*source*/, IteratorT /*target*/, std::false_type /*has_data*/) const
         {
         }
 
@@ -1875,7 +1876,7 @@ namespace pcl
 
         /** \brief Check if any vertex of the face lies on the boundary. */
         bool
-        isBoundary (const FaceIndex& idx_face, boost::true_type /*check_vertices*/) const
+        isBoundary (const FaceIndex& idx_face, std::true_type /*check_vertices*/) const
         {
           VertexAroundFaceCirculator       circ     = this->getVertexAroundFaceCirculator (idx_face);
           const VertexAroundFaceCirculator circ_end = circ;
@@ -1893,7 +1894,7 @@ namespace pcl
 
         /** \brief Check if any edge of the face lies on the boundary. */
         bool
-        isBoundary (const FaceIndex& idx_face, boost::false_type /*check_vertices*/) const
+        isBoundary (const FaceIndex& idx_face, std::false_type /*check_vertices*/) const
         {
           OuterHalfEdgeAroundFaceCirculator       circ     = this->getOuterHalfEdgeAroundFaceCirculator (idx_face);
           const OuterHalfEdgeAroundFaceCirculator circ_end = circ;
@@ -1911,14 +1912,14 @@ namespace pcl
 
         /** \brief Always manifold. */
         inline bool
-        isManifold (const VertexIndex&, boost::true_type /*is_manifold*/) const
+        isManifold (const VertexIndex&, std::true_type /*is_manifold*/) const
         {
           return (true);
         }
 
         /** \brief Check if the given vertex is manifold. */
         bool
-        isManifold (const VertexIndex& idx_vertex, boost::false_type /*is_manifold*/) const
+        isManifold (const VertexIndex& idx_vertex, std::false_type /*is_manifold*/) const
         {
           OutgoingHalfEdgeAroundVertexCirculator       circ     = this->getOutgoingHalfEdgeAroundVertexCirculator (idx_vertex);
           const OutgoingHalfEdgeAroundVertexCirculator circ_end = circ;
@@ -1934,14 +1935,14 @@ namespace pcl
 
         /** \brief Always manifold. */
         inline bool
-        isManifold (boost::true_type /*is_manifold*/) const
+        isManifold (std::true_type /*is_manifold*/) const
         {
           return (true);
         }
 
         /** \brief Check if all vertices in the mesh are manifold. */
         bool
-        isManifold (boost::false_type /*is_manifold*/) const
+        isManifold (std::false_type /*is_manifold*/) const
         {
           for (size_t i=0; i<this->sizeVertices (); ++i)
           {
@@ -1956,40 +1957,40 @@ namespace pcl
 
         /** \brief Reserve storage space for the mesh data. */
         template <class DataCloudT> inline void
-        reserveData (DataCloudT& cloud, const size_t n, boost::true_type /*has_data*/) const
+        reserveData (DataCloudT& cloud, const size_t n, std::true_type /*has_data*/) const
         {
           cloud.reserve (n);
         }
 
         /** \brief Does nothing */
         template <class DataCloudT> inline void
-        reserveData (DataCloudT& /*cloud*/, const size_t /*n*/, boost::false_type /*has_data*/) const
+        reserveData (DataCloudT& /*cloud*/, const size_t /*n*/, std::false_type /*has_data*/) const
         {
         }
 
         /** \brief Resize the mesh data. */
         template <class DataCloudT> inline void
-        resizeData (DataCloudT& /*data_cloud*/, const size_t n, const typename DataCloudT::value_type& data, boost::true_type /*has_data*/) const
+        resizeData (DataCloudT& /*data_cloud*/, const size_t n, const typename DataCloudT::value_type& data, std::true_type /*has_data*/) const
         {
           data.resize (n, data);
         }
 
         /** \brief Does nothing. */
         template <class DataCloudT> inline void
-        resizeData (DataCloudT& /*data_cloud*/, const size_t /*n*/, const typename DataCloudT::value_type& /*data*/, boost::false_type /*has_data*/) const
+        resizeData (DataCloudT& /*data_cloud*/, const size_t /*n*/, const typename DataCloudT::value_type& /*data*/, std::false_type /*has_data*/) const
         {
         }
 
         /** \brief Clear the mesh data. */
         template <class DataCloudT> inline void
-        clearData (DataCloudT& cloud, boost::true_type /*has_data*/) const
+        clearData (DataCloudT& cloud, std::true_type /*has_data*/) const
         {
           cloud.clear ();
         }
 
         /** \brief Does nothing. */
         template <class DataCloudT> inline void
-        clearData (DataCloudT& /*cloud*/, boost::false_type /*has_data*/) const
+        clearData (DataCloudT& /*cloud*/, std::false_type /*has_data*/) const
         {
         }
 

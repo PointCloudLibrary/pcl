@@ -360,28 +360,6 @@ namespace pcl
 {
   namespace device
   {   
-
-//// Register modifier for pointer-types (for inlining PTX assembly)
-//#if defined(_WIN64) || defined(__LP64__)	
-//	// 64-bit register modifier for inlined asm
-//	#define _ASM_PTR_ "l"
-//#else	
-//	// 32-bit register modifier for inlined asm
-//	#define _ASM_PTR_ "r"
-//#endif
-//    struct GlobalLoad
-//    {        
-//        static __device__ __forceinline__ void CG(int &val, int* ptr)
-//        {
-//          #if (__CUDA_ARCH__ >= 200)
-//            asm("ld.global.cg.s32 %0, [%1];" : "=r"(reinterpret_cast<int&>(val)) : _ASM_PTR_(ptr));
-//          #else
-//            val = *ptr;
-//          #endif
-//        }
-//    };
-//#undef _ASM_PTR_
-
     __device__ __forceinline__ int findRoot(const PtrStepSz<int>& comps, int label)
     {                       
         for(;;)

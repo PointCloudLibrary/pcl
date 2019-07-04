@@ -63,12 +63,12 @@ namespace pcl
   class MultiscaleFeaturePersistence : public PCLBase<PointSource>
   {
     public:
-      typedef boost::shared_ptr<MultiscaleFeaturePersistence<PointSource, PointFeature> > Ptr;
-      typedef boost::shared_ptr<const MultiscaleFeaturePersistence<PointSource, PointFeature> > ConstPtr;
-      typedef pcl::PointCloud<PointFeature> FeatureCloud;
-      typedef typename pcl::PointCloud<PointFeature>::Ptr FeatureCloudPtr;
-      typedef typename pcl::Feature<PointSource, PointFeature>::Ptr FeatureEstimatorPtr;
-      typedef boost::shared_ptr<const pcl::PointRepresentation <PointFeature> > FeatureRepresentationConstPtr;
+      using Ptr = boost::shared_ptr<MultiscaleFeaturePersistence<PointSource, PointFeature> >;
+      using ConstPtr = boost::shared_ptr<const MultiscaleFeaturePersistence<PointSource, PointFeature> >;
+      using FeatureCloud = pcl::PointCloud<PointFeature>;
+      using FeatureCloudPtr = typename pcl::PointCloud<PointFeature>::Ptr;
+      using FeatureEstimatorPtr = typename pcl::Feature<PointSource, PointFeature>::Ptr;
+      using FeatureRepresentationConstPtr = boost::shared_ptr<const pcl::PointRepresentation<PointFeature> >;
 
       using pcl::PCLBase<PointSource>::input_;
 

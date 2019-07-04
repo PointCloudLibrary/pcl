@@ -72,7 +72,7 @@ namespace pcl
         float regularizer_;
       };
 
-      typedef boost::shared_ptr<RecognitionModel> RecognitionModelPtr;
+      using RecognitionModelPtr = boost::shared_ptr<RecognitionModel>;
 
       /*
        * \brief Sorts recognition models based on the number of explained scene points and visible outliers

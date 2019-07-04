@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <memory>
 #include <mutex>
 #include <random>
 
@@ -106,12 +107,12 @@ namespace pcl
       queryBBIntersects_noload<ContainerT, PointT> (OutofcoreOctreeBaseNode<ContainerT, PointT>* current, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const boost::uint32_t query_depth, std::list<std::string> &bin_name);
   
       public:
-        typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer < PointT > , PointT > octree_disk;
-        typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer < PointT > , PointT > octree_disk_node;
+        using octree_disk = OutofcoreOctreeBase<OutofcoreOctreeDiskContainer < PointT > , PointT >;
+        using octree_disk_node = OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer < PointT > , PointT >;
 
-        typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
+        using AlignedPointTVector = std::vector<PointT, Eigen::aligned_allocator<PointT> >;
 
-        typedef pcl::octree::node_type_t node_type_t;
+        using node_type_t = pcl::octree::node_type_t;
 
         const static std::string node_index_basename;
         const static std::string node_container_basename;
@@ -255,10 +256,7 @@ namespace pcl
           {
             return (pcl::octree::BRANCH_NODE);
           }
-          else
-          {
-            return (pcl::octree::LEAF_NODE);
-          }
+          return (pcl::octree::LEAF_NODE);
         }
         
         
@@ -557,7 +555,7 @@ namespace pcl
         /** \brief what holds the points. currently a custom class, but in theory
          * you could use an stl container if you rewrote some of this class. I used
          * to use deques for this... */
-        boost::shared_ptr<ContainerT> payload_;
+        std::shared_ptr<ContainerT> payload_;
 
         /** \brief Random number generator mutex */
         static std::mutex rng_mutex_;

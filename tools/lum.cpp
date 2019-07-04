@@ -49,12 +49,12 @@
 
 #include <vector>
 
-typedef pcl::PointXYZ PointType;
-typedef pcl::PointCloud<PointType> Cloud;
-typedef Cloud::ConstPtr CloudConstPtr;
-typedef Cloud::Ptr CloudPtr;
-typedef std::pair<std::string, CloudPtr> CloudPair;
-typedef std::vector<CloudPair> CloudVector;
+using PointType = pcl::PointXYZ;
+using Cloud = pcl::PointCloud<PointType>;
+using CloudConstPtr = Cloud::ConstPtr;
+using CloudPtr = Cloud::Ptr;
+using CloudPair = std::pair<std::string, CloudPtr>;
+using CloudVector = std::vector<CloudPair>;
 
 int
 main (int argc, char **argv)

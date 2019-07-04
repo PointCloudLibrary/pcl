@@ -221,8 +221,7 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
   }
   // Non maximas suppression
   std::vector<int> indices = *indices_;
-  std::sort (indices.begin (), indices.end (),
-             boost::bind (&TrajkovicKeypoint3D::greaterCornernessAtIndices, this, _1, _2));
+  std::sort (indices.begin (), indices.end (), [this] (int p1, int p2) { return greaterCornernessAtIndices (p1, p2); });
 
   output.clear ();
   output.reserve (input_->size ());

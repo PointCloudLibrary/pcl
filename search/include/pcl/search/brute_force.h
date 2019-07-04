@@ -50,11 +50,11 @@ namespace pcl
     template<typename PointT>
     class BruteForce: public Search<PointT>
     {
-      typedef typename Search<PointT>::PointCloud PointCloud;
-      typedef typename Search<PointT>::PointCloudConstPtr PointCloudConstPtr;
+      using PointCloud = typename Search<PointT>::PointCloud;
+      using PointCloudConstPtr = typename Search<PointT>::PointCloudConstPtr;
 
-      typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
-      typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
+      using IndicesPtr = boost::shared_ptr<std::vector<int> >;
+      using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
 
       using pcl::search::Search<PointT>::input_;
       using pcl::search::Search<PointT>::indices_;

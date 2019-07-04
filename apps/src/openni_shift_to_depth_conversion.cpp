@@ -133,9 +133,12 @@ class SimpleOpenNIViewer
       grabber_->getDevice ()->setDepthOutputFormat (static_cast<openni_wrapper::OpenNIDevice::DepthMode> (depthformat));
 
       // define image callback
-      boost::function<void
+      std::function<void
       (const openni_wrapper::Image::Ptr&, const openni_wrapper::DepthImage::Ptr&, float)> image_cb =
-          boost::bind (&SimpleOpenNIViewer::image_callback, this, _1, _2, _3);
+          [this] (const openni_wrapper::Image::Ptr& img, const openni_wrapper::DepthImage::Ptr& depth, float f)
+          {
+            image_callback (img, depth, f);
+          };
       boost::signals2::connection image_connection = grabber_->registerCallback (image_cb);
 
       // start grabber thread

@@ -155,8 +155,8 @@ class SimpleOpenNIViewer
         pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
         // make callback function from member function
-        boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-          boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
+        std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+          [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
         // connect callback function for desired signal. In this case its a point cloud with color values
         boost::signals2::connection c = interface->registerCallback (f);
@@ -246,8 +246,11 @@ struct EventHelper
       pcl::Grabber* interface = new pcl::OpenNIGrabber ();
 
       // make callback function from member function
-      boost::function<void
-      (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = boost::bind (&EventHelper::cloud_cb_, this, _1);
+      std::function<void
+      (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+      {
+        cloud_cb_ (cloud);
+      };
 
       // connect callback function for desired signal. In this case its a point cloud with color values
       boost::signals2::connection c = interface->registerCallback (f);
@@ -271,8 +274,14 @@ struct EventHelper
       // Set the depth output format
       grabber.getDevice ()->setDepthOutputFormat (static_cast<openni_wrapper::OpenNIDevice::DepthMode> (depthformat));
 
-      boost::function<void (const openni_wrapper::Image::Ptr&, const openni_wrapper::DepthImage::Ptr&, float) > image_cb
-        = boost::bind (&EventHelper::image_callback, this, _1, _2, _3);
+      std::function<void (const openni_wrapper::Image::Ptr&,
+                          const openni_wrapper::DepthImage::Ptr&,
+                          float) > image_cb = [this] (const openni_wrapper::Image::Ptr& img,
+                                                      const openni_wrapper::DepthImage::Ptr& depth,
+                                                      float f)
+      {
+        image_callback (img, depth, f);
+      };
       boost::signals2::connection image_connection = grabber.registerCallback (image_cb);
 
       grabber.start ();

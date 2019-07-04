@@ -107,23 +107,23 @@ namespace NcvCTprep
 //
 //==============================================================================
 
-typedef               bool NcvBool;
-typedef          long long Ncv64s;
+using NcvBool = bool;
+using Ncv64s = long long;
 
 #if defined(__APPLE__) && !defined(__CUDACC__)
-    typedef uint64_t Ncv64u;
+    using Ncv64u = uint64_t;
 #else
-    typedef unsigned long long Ncv64u;
+    using Ncv64u = unsigned long long;
 #endif
 
-typedef                int Ncv32s;
-typedef       unsigned int Ncv32u;
-typedef              short Ncv16s;
-typedef     unsigned short Ncv16u;
-typedef               char Ncv8s;
-typedef      unsigned char Ncv8u;
-typedef              float Ncv32f;
-typedef             double Ncv64f;
+using Ncv32s = int;
+using Ncv32u = unsigned int;
+using Ncv16s = short;
+using Ncv16u = unsigned short;
+using Ncv8s = char;
+using Ncv8u = unsigned char;
+using Ncv32f = float;
+using Ncv64f = double;
 
 struct NcvRect8u
 {
@@ -223,7 +223,7 @@ const Ncv32u K_LOG2_WARP_SIZE = 5;
 
 NCV_EXPORTS void ncvDebugOutput(const std::string &msg);
 
-typedef void NCVDebugOutputHandler(const std::string &msg);
+using NCVDebugOutputHandler = void (const std::string &);
 
 NCV_EXPORTS void ncvSetDebugOutputHandler(NCVDebugOutputHandler* func);
 
@@ -334,7 +334,7 @@ enum
     NCV_LAST_STATUS                           ///< Marker to continue error numeration in other files
 };
 
-typedef Ncv32u NCVStatus;
+using NCVStatus = Ncv32u;
 
 #define NCV_SET_SKIP_COND(x) \
     bool __ncv_skip_cond = x
@@ -347,22 +347,6 @@ typedef Ncv32u NCVStatus;
 
 #define NCV_SKIP_COND_END \
     }
-
-
-//==============================================================================
-//
-// Timer
-//
-//==============================================================================
-
-
-typedef struct _NcvTimer *NcvTimer;
-
-NCV_EXPORTS NcvTimer ncvStartTimer();
-
-NCV_EXPORTS double ncvEndQueryTimerUs(NcvTimer t);
-
-NCV_EXPORTS double ncvEndQueryTimerMs(NcvTimer t);
 
 
 //==============================================================================

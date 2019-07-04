@@ -57,10 +57,10 @@ namespace pcl
       class FaceDetector
       {
         public:
-          typedef boost::shared_ptr<FaceDetector> Ptr;
-          //typedef DeviceArray2D<unsigned char> Labels;
-          //typedef DeviceArray2D<unsigned short> Depth;
-          //typedef DeviceArray2D<pcl::RGB> Image;
+          using Ptr = boost::shared_ptr<FaceDetector>;
+          //using Labels = DeviceArray2D<unsigned char>;
+          //using Depth = DeviceArray2D<unsigned short>;
+          //using Image = DeviceArray2D<pcl::RGB>;
 
           /** \brief This is the constructor **/
           FaceDetector ( int cols, int rows);

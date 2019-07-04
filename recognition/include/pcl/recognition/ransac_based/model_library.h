@@ -58,8 +58,8 @@ namespace pcl
     class PCL_EXPORTS ModelLibrary
     {
       public:
-        typedef pcl::PointCloud<pcl::PointXYZ> PointCloudIn;
-        typedef pcl::PointCloud<pcl::Normal> PointCloudN;
+        using PointCloudIn = pcl::PointCloud<pcl::PointXYZ>;
+        using PointCloudN = pcl::PointCloud<pcl::Normal>;
 
         /** \brief Stores some information about the model. */
         class Model
@@ -170,9 +170,9 @@ namespace pcl
             void* user_data_;
         };
 
-        typedef std::list<std::pair<const ORROctree::Node::Data*, const ORROctree::Node::Data*> > node_data_pair_list;
-        typedef std::map<const Model*, node_data_pair_list> HashTableCell;
-        typedef VoxelStructure<HashTableCell, float> HashTable;
+        using node_data_pair_list = std::list<std::pair<const ORROctree::Node::Data*, const ORROctree::Node::Data*> >;
+        using HashTableCell = std::map<const Model*, node_data_pair_list>;
+        using HashTable = VoxelStructure<HashTableCell, float>;
 
       public:
         /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use

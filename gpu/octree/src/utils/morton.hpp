@@ -48,7 +48,7 @@ namespace pcl
             const static int bits_per_level = 3;
             const static int nbits = levels * bits_per_level;    
 
-            typedef int code_t;
+            using code_t = int;
 
             __device__ __host__ __forceinline__ 
                 static int spreadBits(int x, int offset)

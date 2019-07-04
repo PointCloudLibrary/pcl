@@ -50,7 +50,7 @@
 
 struct DataGenerator
 {
-    typedef pcl::gpu::Octree::PointType PointType;
+    using PointType = pcl::gpu::Octree::PointType;
 
     size_t data_size;            
     size_t tests_num;

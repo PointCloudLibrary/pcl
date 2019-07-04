@@ -31,8 +31,8 @@ namespace pcl
       class PCL_EXPORTS Program
       {
         public:
-          typedef boost::shared_ptr<Program> Ptr;
-          typedef boost::shared_ptr<const Program> ConstPtr;
+          using Ptr = boost::shared_ptr<Program>;
+          using ConstPtr = boost::shared_ptr<const Program>;
 
           /**
            * Construct an empty shader program.

@@ -12,8 +12,10 @@
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/apps/3d_rec_framework/utils/vtk_model_sampling.h>
-#include <boost/function.hpp>
+
 #include <vtkTransformPolyDataFilter.h>
+
+#include <functional>
 
 namespace pcl
 {
@@ -28,8 +30,8 @@ namespace pcl
     template<typename PointInT>
       class MeshSource : public Source<PointInT>
       {
-        typedef Source<PointInT> SourceT;
-        typedef Model<PointInT> ModelT;
+        using SourceT = Source<PointInT>;
+        using ModelT = Model<PointInT>;
 
         using SourceT::path_;
         using SourceT::models_;
@@ -42,7 +44,7 @@ namespace pcl
         float radius_sphere_;
         float view_angle_;
         bool gen_organized_;
-        boost::function<bool
+        std::function<bool
         (const Eigen::Vector3f &)> campos_constraints_func_;
 
       public:
@@ -62,7 +64,7 @@ namespace pcl
         }
 
         void
-        setCamPosConstraints (boost::function<bool
+        setCamPosConstraints (std::function<bool
         (const Eigen::Vector3f &)> & bb)
         {
           campos_constraints_func_ = bb;

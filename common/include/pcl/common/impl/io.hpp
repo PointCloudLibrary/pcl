@@ -347,8 +347,8 @@ pcl::concatenateFields (const pcl::PointCloud<PointIn1T> &cloud1_in,
                         const pcl::PointCloud<PointIn2T> &cloud2_in,
                         pcl::PointCloud<PointOutT> &cloud_out)
 {
-  typedef typename pcl::traits::fieldList<PointIn1T>::type FieldList1;
-  typedef typename pcl::traits::fieldList<PointIn2T>::type FieldList2;
+  using FieldList1 = typename pcl::traits::fieldList<PointIn1T>::type;
+  using FieldList2 = typename pcl::traits::fieldList<PointIn2T>::type;
 
   if (cloud1_in.points.size () != cloud2_in.points.size ())
   {

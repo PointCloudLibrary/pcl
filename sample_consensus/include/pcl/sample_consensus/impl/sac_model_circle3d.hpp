@@ -57,10 +57,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::isSampleGood (
   p1 -= p0;
   p2 -= p0;
 
-  if (p1.dot (p2) < 0.000001)
-    return (true);
-  else
-    return (false);
+  return (p1.dot (p2) < 0.000001);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -310,7 +307,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
     projected_points.width    = input_->width;
     projected_points.height   = input_->height;
 
-    typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
     for (size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
@@ -352,7 +349,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
     projected_points.width    = uint32_t (inliers.size ());
     projected_points.height   = 1;
 
-    typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
     for (size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension

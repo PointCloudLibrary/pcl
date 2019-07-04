@@ -844,22 +844,15 @@ FittingCurve2dAPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vec
 
     if (std::abs (delta) < accuracy)
     {
-
       error = r.norm ();
       return current;
-
     }
-    else
-    {
-      current += delta;
+    current += delta;
 
-      if (current < minU)
-        current = maxU - (minU - current);
-      else if (current > maxU)
-        current = minU + (current - maxU);
-
-    }
-
+    if (current < minU)
+      current = maxU - (minU - current);
+    else if (current > maxU)
+      current = minU + (current - maxU);
   }
 
   error = r.norm ();
@@ -1075,7 +1068,7 @@ FittingCurve2dAPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, cons
 
   if (d_shortest_hint < d_shortest_elem)
     return hint;
-  else
+  
     return param;
 }
 

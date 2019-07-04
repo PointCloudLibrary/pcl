@@ -50,8 +50,8 @@
 #include <pcl/ml/svm.h>
 #include <iostream>
 int libsvm_version = LIBSVM_VERSION;
-typedef float Qfloat;
-typedef signed char schar;
+using Qfloat = float;
+using schar = signed char;
 #ifndef min
 template <class T> static inline T min (T x, T y)
 {
@@ -732,8 +732,7 @@ void Solver::Solve (int l, const QMatrix& Q, const double *p_, const schar *y_,
 
       if (select_working_set (i, j) != 0)
         break;
-      else
-        counter = 1; // do shrinking next iteration
+      counter = 1; // do shrinking next iteration
     }
 
     ++iter;
@@ -1071,19 +1070,15 @@ bool Solver::be_shrunk (int i, double Gmax1, double Gmax2)
   {
     if (y[i] == + 1)
       return (-G[i] > Gmax1);
-    else
-      return (-G[i] > Gmax2);
+    return (-G[i] > Gmax2);
   }
-  else
-    if (is_lower_bound (i))
-    {
-      if (y[i] == + 1)
-        return (G[i] > Gmax2);
-      else
-        return (G[i] > Gmax1);
-    }
-    else
-      return (false);
+  if (is_lower_bound (i))
+  {
+    if (y[i] == + 1)
+      return (G[i] > Gmax2);
+    return (G[i] > Gmax1);
+  }
+  return (false);
 }
 
 void Solver::do_shrinking()
@@ -1348,19 +1343,16 @@ bool Solver_NU::be_shrunk (int i, double Gmax1, double Gmax2, double Gmax3, doub
   {
     if (y[i] == + 1)
       return (-G[i] > Gmax1);
-    else
-      return (-G[i] > Gmax4);
+    return (-G[i] > Gmax4);
   }
-  else
-    if (is_lower_bound (i))
-    {
-      if (y[i] == + 1)
-        return (G[i] > Gmax2);
-      else
-        return (G[i] > Gmax3);
-    }
-    else
-      return (false);
+  if (is_lower_bound (i))
+  {
+    if (y[i] == + 1)
+      return (G[i] > Gmax2);
+
+      return (G[i] > Gmax3);
+  }
+  return (false);
 }
 
 void Solver_NU::do_shrinking()
@@ -2094,8 +2086,7 @@ static void sigmoid_train (
         fval = newf;
         break;
       }
-      else
-        stepsize /= 2.0;
+      stepsize /= 2.0;
     }
 
     if (stepsize < min_step)
@@ -2118,8 +2109,7 @@ static double sigmoid_predict (double decision_value, double A, double B)
 
   if (fApB >= 0)
     return exp (-fApB) / (1.0 + exp (-fApB));
-  else
-    return 1.0 / (1 + exp (fApB)) ;
+  return 1.0 / (1 + exp (fApB)) ;
 }
 
 // Method 2 from the multiclass_prob paper by Wu, Lin, and Weng
@@ -2876,11 +2866,8 @@ double svm_get_svr_probability (const svm_model *model)
   if ( (model->param.svm_type == EPSILON_SVR || model->param.svm_type == NU_SVR) &&
        model->probA != nullptr)
     return model->probA[0];
-  else
-  {
-    fprintf (stderr, "Model doesn't contain information for SVR probability inference\n");
-    return 0;
-  }
+  fprintf (stderr, "Model doesn't contain information for SVR probability inference\n");
+  return 0;
 }
 
 double svm_predict_values (const svm_model *model, const svm_node *x, double* dec_values)
@@ -2901,77 +2888,72 @@ double svm_predict_values (const svm_model *model, const svm_node *x, double* de
 
     if (model->param.svm_type == ONE_CLASS)
       return (sum > 0) ? 1 : -1;
-    else
-      return sum;
+    return sum;
   }
-  else
-  {
-    int nr_class = model->nr_class;
-    int l = model->l;
 
-    double *kvalue = Malloc (double, l);
+  int nr_class = model->nr_class;
+  int l = model->l;
 
-    for (int i = 0; i < l; i++)
-      kvalue[i] = Kernel::k_function (x, model->SV[i], model->param);
+  double *kvalue = Malloc (double, l);
 
-    int *start = Malloc (int, nr_class);
+  for (int i = 0; i < l; i++)
+    kvalue[i] = Kernel::k_function (x, model->SV[i], model->param);
 
-    start[0] = 0;
+  int *start = Malloc (int, nr_class);
 
-    for (int i = 1; i < nr_class; i++)
-      start[i] = start[i-1] + model->nSV[i-1];
+  start[0] = 0;
 
-    int *vote = Malloc (int, nr_class);
+  for (int i = 1; i < nr_class; i++)
+    start[i] = start[i-1] + model->nSV[i-1];
 
-    for (int i = 0; i < nr_class; i++)
-      vote[i] = 0;
+  int *vote = Malloc (int, nr_class);
 
-    int p = 0;
+  for (int i = 0; i < nr_class; i++)
+    vote[i] = 0;
 
-    for (int i = 0; i < nr_class; i++)
-      for (int j = i + 1;j < nr_class;j++)
-      {
-        double sum = 0;
-        int si = start[i];
-        int sj = start[j];
-        int ci = model->nSV[i];
-        int cj = model->nSV[j];
+  int p = 0;
 
-        double *coef1 = model->sv_coef[j-1];
-        double *coef2 = model->sv_coef[i];
+  for (int i = 0; i < nr_class; i++)
+    for (int j = i + 1;j < nr_class;j++)
+    {
+      double sum = 0;
+      int si = start[i];
+      int sj = start[j];
+      int ci = model->nSV[i];
+      int cj = model->nSV[j];
 
-        for (int k = 0; k < ci; k++)
-          sum += coef1[si+k] * kvalue[si+k];
+      double *coef1 = model->sv_coef[j-1];
+      double *coef2 = model->sv_coef[i];
 
-        for (int k = 0 ;k < cj; k++)
-          sum += coef2[sj+k] * kvalue[sj+k];
+      for (int k = 0; k < ci; k++)
+        sum += coef1[si+k] * kvalue[si+k];
 
-        sum -= model->rho[p];
+      for (int k = 0 ;k < cj; k++)
+        sum += coef2[sj+k] * kvalue[sj+k];
 
-        dec_values[p] = sum;
+      sum -= model->rho[p];
 
-        if (dec_values[p] > 0)
-          ++vote[i];
-        else
-          ++vote[j];
+      dec_values[p] = sum;
 
-        p++;
-      }
+      if (dec_values[p] > 0)
+        ++vote[i];
+      else
+        ++vote[j];
 
-    int vote_max_idx = 0;
+      p++;
+    }
 
-    for (int i = 1; i < nr_class; i++)
-      if (vote[i] > vote[vote_max_idx])
-        vote_max_idx = i;
+  int vote_max_idx = 0;
 
-    free (kvalue);
+  for (int i = 1; i < nr_class; i++)
+    if (vote[i] > vote[vote_max_idx])
+      vote_max_idx = i;
 
-    free (start);
+  free (kvalue);
+  free (start);
+  free (vote);
 
-    free (vote);
-
-    return model->label[vote_max_idx];
-  }
+  return model->label[vote_max_idx];
 }
 
 double svm_predict (const svm_model *model, const svm_node *x)
@@ -3036,8 +3018,7 @@ double svm_predict_probability (
 
     return model->label[prob_max_idx];
   }
-  else
-    return svm_predict (model, x);
+  return svm_predict (model, x);
 }
 
 static const char *svm_type_table[] =
@@ -3169,8 +3150,7 @@ int svm_save_model (const char *model_file_name, const svm_model *model)
 
   if (ferror (fp) != 0 || fclose (fp) != 0)
     return -1;
-  else
-    return 0;
+  return 0;
 }
 
 static char *line = nullptr;

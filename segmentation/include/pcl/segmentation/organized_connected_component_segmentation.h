@@ -63,17 +63,17 @@ namespace pcl
     using PCLBase<PointT>::deinitCompute;
 
     public:
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
       
-      typedef pcl::PointCloud<PointLT> PointCloudL;
-      typedef typename PointCloudL::Ptr PointCloudLPtr;
-      typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+      using PointCloudL = pcl::PointCloud<PointLT>;
+      using PointCloudLPtr = typename PointCloudL::Ptr;
+      using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
-      typedef pcl::Comparator<PointT> Comparator;
-      typedef typename Comparator::Ptr ComparatorPtr;
-      typedef typename Comparator::ConstPtr ComparatorConstPtr;
+      using Comparator = pcl::Comparator<PointT>;
+      using ComparatorPtr = typename Comparator::Ptr;
+      using ComparatorConstPtr = typename Comparator::ConstPtr;
       
       /** \brief Constructor for OrganizedConnectedComponentSegmentation
         * \param[in] compare A pointer to the comparator to be used for segmentation.  Must be an instance of pcl::Comparator.

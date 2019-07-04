@@ -57,23 +57,23 @@ namespace pcl
     {
       public:
         // public typedefs
-        typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
-        typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
+        using IndicesPtr = boost::shared_ptr<std::vector<int> >;
+        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
 
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-        typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = boost::shared_ptr<PointCloud>;
+        using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
 
         // Boost shared pointers
-        typedef boost::shared_ptr<OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT> > Ptr;
-        typedef boost::shared_ptr<const OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT> > ConstPtr;
+        using Ptr = boost::shared_ptr<OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT> >;
+        using ConstPtr = boost::shared_ptr<const OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT> >;
 
         // Eigen aligned allocator
-        typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
+        using AlignedPointTVector = std::vector<PointT, Eigen::aligned_allocator<PointT> >;
 
-        typedef OctreePointCloud<PointT, LeafContainerT, BranchContainerT> OctreeT;
-        typedef typename OctreeT::LeafNode LeafNode;
-        typedef typename OctreeT::BranchNode BranchNode;
+        using OctreeT = OctreePointCloud<PointT, LeafContainerT, BranchContainerT>;
+        using LeafNode = typename OctreeT::LeafNode;
+        using BranchNode = typename OctreeT::BranchNode;
 
         /** \brief Constructor.
           * \param[in] resolution octree resolution at lowest octree level
@@ -581,18 +581,11 @@ namespace pcl
           {
             if (x < z)
               return a;
-            else
-              return c;
+            return c;
           }
-          else
-          {
-            if (y < z)
-              return b;
-            else
-              return c;
-          }
-
-          return 0;
+          if (y < z)
+            return b;
+          return c;
         }
 
       };

@@ -44,6 +44,8 @@
 #include <pcl/registration/registration.h>
 #include <pcl/features/ppf.h>
 
+#include <unordered_map>
+
 namespace pcl
 {
   class PCL_EXPORTS PPFHashMapSearch
@@ -56,6 +58,8 @@ namespace pcl
         */
       struct HashKeyStruct : public std::pair <int, std::pair <int, std::pair <int, int> > >
       {
+        HashKeyStruct () = default;
+
         HashKeyStruct(int a, int b, int c, int d)
         {
           this->first = a;
@@ -63,10 +67,19 @@ namespace pcl
           this->second.second.first = c;
           this->second.second.second = d;
         }
+
+        std::size_t operator()(const HashKeyStruct& s) const noexcept
+        {
+            const std::size_t h1 = std::hash<int>{} (s.first);
+            const std::size_t h2 = std::hash<int>{} (s.second.first);
+            const std::size_t h3 = std::hash<int>{} (s.second.second.first);
+            const std::size_t h4 = std::hash<int>{} (s.second.second.second);
+            return h1 ^ (h2 << 1) ^ (h3 << 2) ^ (h4 << 3);
+        }
       };
-      typedef boost::unordered_multimap<HashKeyStruct, std::pair<size_t, size_t> > FeatureHashMapType;
-      typedef boost::shared_ptr<FeatureHashMapType> FeatureHashMapTypePtr;
-      typedef boost::shared_ptr<PPFHashMapSearch> Ptr;
+      using FeatureHashMapType = std::unordered_multimap<HashKeyStruct, std::pair<size_t, size_t>, HashKeyStruct>;
+      using FeatureHashMapTypePtr = boost::shared_ptr<FeatureHashMapType>;
+      using Ptr = boost::shared_ptr<PPFHashMapSearch>;
 
 
       /** \brief Constructor for the PPFHashMapSearch class which sets the two step parameters for the enclosed data structure
@@ -155,7 +168,7 @@ namespace pcl
         Eigen::Affine3f pose;
         unsigned int votes;
       };
-      typedef std::vector<PoseWithVotes, Eigen::aligned_allocator<PoseWithVotes> > PoseWithVotesList;
+      using PoseWithVotesList = std::vector<PoseWithVotes, Eigen::aligned_allocator<PoseWithVotes> >;
 
       /// input_ is the model cloud
       using Registration<PointSource, PointTarget>::input_;
@@ -165,13 +178,13 @@ namespace pcl
       using Registration<PointSource, PointTarget>::final_transformation_;
       using Registration<PointSource, PointTarget>::transformation_;
 
-      typedef pcl::PointCloud<PointSource> PointCloudSource;
-      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+      using PointCloudSource = pcl::PointCloud<PointSource>;
+      using PointCloudSourcePtr = typename PointCloudSource::Ptr;
+      using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
-      typedef pcl::PointCloud<PointTarget> PointCloudTarget;
-      typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
-      typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
+      using PointCloudTarget = pcl::PointCloud<PointTarget>;
+      using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
+      using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
 
       /** \brief Empty constructor that initializes all the parameters of the algorithm with default values */

@@ -62,8 +62,8 @@ namespace pcl
     class CorrespondenceEstimationBase: public PCLBase<PointSource>
     {
       public:
-        typedef boost::shared_ptr<CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > Ptr;
-        typedef boost::shared_ptr<const CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > ConstPtr;
+        using Ptr = boost::shared_ptr<CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = boost::shared_ptr<const CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> >;
 
         // using PCLBase<PointSource>::initCompute;
         using PCLBase<PointSource>::deinitCompute;
@@ -71,21 +71,21 @@ namespace pcl
         using PCLBase<PointSource>::indices_;
         using PCLBase<PointSource>::setIndices;
 
-        typedef pcl::search::KdTree<PointTarget> KdTree;
-        typedef typename KdTree::Ptr KdTreePtr;
+        using KdTree = pcl::search::KdTree<PointTarget>;
+        using KdTreePtr = typename KdTree::Ptr;
 
-        typedef pcl::search::KdTree<PointSource> KdTreeReciprocal;
-        typedef typename KdTree::Ptr KdTreeReciprocalPtr;
+        using KdTreeReciprocal = pcl::search::KdTree<PointSource>;
+        using KdTreeReciprocalPtr = typename KdTree::Ptr;
 
-        typedef pcl::PointCloud<PointSource> PointCloudSource;
-        typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-        typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+        using PointCloudSource = pcl::PointCloud<PointSource>;
+        using PointCloudSourcePtr = typename PointCloudSource::Ptr;
+        using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
-        typedef pcl::PointCloud<PointTarget> PointCloudTarget;
-        typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
-        typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
+        using PointCloudTarget = pcl::PointCloud<PointTarget>;
+        using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
+        using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
-        typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
+        using PointRepresentationConstPtr = typename KdTree::PointRepresentationConstPtr;
 
         /** \brief Empty constructor. */
         CorrespondenceEstimationBase () 
@@ -361,8 +361,8 @@ namespace pcl
     class CorrespondenceEstimation : public CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>
     {
       public:
-        typedef boost::shared_ptr<CorrespondenceEstimation<PointSource, PointTarget, Scalar> > Ptr;
-        typedef boost::shared_ptr<const CorrespondenceEstimation<PointSource, PointTarget, Scalar> > ConstPtr;
+        using Ptr = boost::shared_ptr<CorrespondenceEstimation<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = boost::shared_ptr<const CorrespondenceEstimation<PointSource, PointTarget, Scalar> >;
 
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::point_representation_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_transformed_;
@@ -379,18 +379,18 @@ namespace pcl
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_fields_;
         using PCLBase<PointSource>::deinitCompute;
 
-        typedef pcl::search::KdTree<PointTarget> KdTree;
-        typedef typename KdTree::Ptr KdTreePtr;
+        using KdTree = pcl::search::KdTree<PointTarget>;
+        using KdTreePtr = typename KdTree::Ptr;
 
-        typedef pcl::PointCloud<PointSource> PointCloudSource;
-        typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-        typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+        using PointCloudSource = pcl::PointCloud<PointSource>;
+        using PointCloudSourcePtr = typename PointCloudSource::Ptr;
+        using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
-        typedef pcl::PointCloud<PointTarget> PointCloudTarget;
-        typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
-        typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
+        using PointCloudTarget = pcl::PointCloud<PointTarget>;
+        using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
+        using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
-        typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
+        using PointRepresentationConstPtr = typename KdTree::PointRepresentationConstPtr;
 
         /** \brief Empty constructor. */
         CorrespondenceEstimation () 

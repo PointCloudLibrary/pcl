@@ -88,8 +88,8 @@ template<typename PointType>
 class SimpleHDLViewer
 {
   public:
-    typedef PointCloud<PointType> Cloud;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = PointCloud<PointType>;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     SimpleHDLViewer (Grabber& grabber,
                      PointCloudColorHandler<PointType> &handler) 
@@ -147,12 +147,8 @@ class SimpleHDLViewer
       cloud_viewer_->initCameraParameters ();
       cloud_viewer_->setCameraPosition (0.0, 0.0, 30.0, 0.0, 1.0, 0.0, 0);
       cloud_viewer_->setCameraClipDistances (0.0, 50.0);
-      //cloud_viewer_->registerMouseCallback(&SimpleHDLViewer::mouse_callback, *this);
-      //cloud_viewer_->registerKeyboardCallback (&SimpleHDLViewer::keyboard_callback, *this);
 
-      //boost::function<void(const CloudConstPtr&, float, float)> cloud_cb = boost::bind(&SimpleHDLViewer::cloud_callback, this, _1, _2, _3);
-      boost::function<void (const CloudConstPtr&)> cloud_cb = boost::bind (
-          &SimpleHDLViewer::cloud_callback, this, _1);
+      std::function<void (const CloudConstPtr&)> cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
       boost::signals2::connection cloud_connection = grabber_.registerCallback (
           cloud_cb);
 
