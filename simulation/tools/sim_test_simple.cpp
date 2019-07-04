@@ -56,10 +56,11 @@
 #define VTK_EXCLUDE_STRSTREAM_HEADERS
 #include <pcl/io/vtk_lib_io.h>
 
+#include <pcl/make_shared.h>
 #include "pcl/simulation/camera.h"
 #include "pcl/simulation/model.h"
-#include "pcl/simulation/scene.h"
 #include "pcl/simulation/range_likelihood.h"
+#include "pcl/simulation/scene.h"
 
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
@@ -542,7 +543,7 @@ void load_PolygonMesh_model (char* polygon_file)
   
   // Not sure if PolygonMesh assumes triangles if to
   // TODO: Ask a developer
-  PolygonMeshModel::Ptr model = PolygonMeshModel::Ptr (new PolygonMeshModel (GL_POLYGON, cloud));
+  PolygonMeshModel::Ptr model = pcl::make_shared<PolygonMeshModel>(GL_POLYGON, cloud);
   scene_->add (model);
   
   std::cout << "Just read " << polygon_file << std::endl;
@@ -623,12 +624,12 @@ main (int argc, char** argv)
   }
   std::cout << "GL_MAX_VIEWPORTS: " << GL_MAX_VIEWPORTS << std::endl;
 
-  camera_ = Camera::Ptr (new Camera ());
-  scene_ = Scene::Ptr (new Scene ());
+  camera_ = pcl::make_shared<Camera>();
+  scene_ = pcl::make_shared<Scene>();
 
   //range_likelihood_ = RangeLikelihoodGLSL::Ptr(new RangeLikelihoodGLSL(1, 1, height, width, scene_, 0));
 
-  range_likelihood_ = RangeLikelihood::Ptr (new RangeLikelihood (2, 2, height/2, width/2, scene_));
+  range_likelihood_ = pcl::make_shared<RangeLikelihood>(2, 2, height/2, width/2, scene_);
   // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
   // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_));
 

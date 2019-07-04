@@ -70,10 +70,11 @@
 #define VTK_EXCLUDE_STRSTREAM_HEADERS
 #include <pcl/io/vtk_lib_io.h>
 
+#include <pcl/make_shared.h>
 #include "pcl/simulation/camera.h"
 #include "pcl/simulation/model.h"
-#include "pcl/simulation/scene.h"
 #include "pcl/simulation/range_likelihood.h"
+#include "pcl/simulation/scene.h"
 
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
@@ -411,7 +412,7 @@ loadPolygonMeshModel (char* polygon_file)
   // Not sure if PolygonMesh assumes triangles if to
   // TODO: Ask a developer
   //PolygonMeshModel::Ptr model = PolygonMeshModel::Ptr (new PolygonMeshModel (GL_POLYGON, cloud));
-  TriangleMeshModel::Ptr model = TriangleMeshModel::Ptr (new TriangleMeshModel (cloud));
+  TriangleMeshModel::Ptr model = pcl::make_shared<TriangleMeshModel>(cloud);
   scene_->add (model);
   
   std::cout << "Just read " << polygon_file << std::endl;
@@ -545,7 +546,7 @@ main (int argc, char** argv)
 
     // Create the PCLVisualizer object here on the first encountered XYZ file
     if (!p)
-      p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
+      p = pcl::make_shared<pcl::visualization::PCLVisualizer> (argc, argv, "PCD viewer");
 
     // Multiview enabled?
     if (mview)
@@ -581,7 +582,7 @@ main (int argc, char** argv)
   // Go through PCD files
   for (size_t i = 0; i < p_file_indices.size (); ++i)
   {
-    cloud.reset (new pcl::PCLPointCloud2);
+    cloud = pcl::make_shared<pcl::PCLPointCloud2> ();
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
     int version;
@@ -600,7 +601,7 @@ main (int argc, char** argv)
       cloud_name << argv[p_file_indices.at (i)];
 
       if (!ph)
-        ph.reset (new pcl::visualization::PCLHistogramVisualizer);
+        ph = pcl::make_shared<pcl::visualization::PCLHistogramVisualizer> ();
       print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud->fields[0].count); print_info (" points]\n");
 
       pcl::getMinMax (*cloud, 0, cloud->fields[0].name, min_p, max_p);
@@ -613,7 +614,7 @@ main (int argc, char** argv)
     // Create the PCLVisualizer object here on the first encountered XYZ file
     if (!p)
     {
-      p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
+      p = pcl::make_shared<pcl::visualization::PCLVisualizer> (argc, argv, "PCD viewer");
       p->registerPointPickingCallback (&pp_callback, (void*)&cloud);
       Eigen::Matrix3f rotation;
       rotation = orientation;
@@ -646,15 +647,15 @@ main (int argc, char** argv)
     if (fcolorparam)
     {
       if (fcolor_r.size () > i && fcolor_g.size () > i && fcolor_b.size () > i)
-        color_handler.reset (new pcl::visualization::PointCloudColorHandlerCustom<pcl::PCLPointCloud2> (cloud, fcolor_r[i], fcolor_g[i], fcolor_b[i]));
+        color_handler = pcl::make_shared<pcl::visualization::PointCloudColorHandlerCustom<pcl::PCLPointCloud2>> (cloud, fcolor_r[i], fcolor_g[i], fcolor_b[i]);
       else
-        color_handler.reset (new pcl::visualization::PointCloudColorHandlerRandom<pcl::PCLPointCloud2> (cloud));
+        color_handler = pcl::make_shared<pcl::visualization::PointCloudColorHandlerRandom<pcl::PCLPointCloud2>> (cloud);
     }
     else
-      color_handler.reset (new pcl::visualization::PointCloudColorHandlerRandom<pcl::PCLPointCloud2> (cloud));
+      color_handler = pcl::make_shared<pcl::visualization::PointCloudColorHandlerRandom<pcl::PCLPointCloud2>> (cloud);
 
     // Add the dataset with a XYZ and a random handler
-    geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PCLPointCloud2> (cloud));
+    geometry_handler = pcl::make_shared<pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PCLPointCloud2>> (cloud);
     // Add the cloud to the renderer
     //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, color_handler, cloud_name.str (), viewport);
     p->addPointCloud (cloud, geometry_handler, color_handler, origin, orientation, cloud_name.str (), viewport);
@@ -730,12 +731,12 @@ main (int argc, char** argv)
       for (size_t f = 0; f < cloud->fields.size (); ++f)
       {
         if (cloud->fields[f].name == "rgb" || cloud->fields[f].name == "rgba")
-          color_handler.reset (new pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2> (cloud));
+          color_handler = pcl::make_shared<pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2>> (cloud);
         else
         {
           if (!isValidFieldName (cloud->fields[f].name))
             continue;
-          color_handler.reset (new pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2> (cloud, cloud->fields[f].name));
+          color_handler = pcl::make_shared<pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2>> (cloud, cloud->fields[f].name);
         }
         // Add the cloud to the renderer
         //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, color_handler, cloud_name.str (), viewport);
@@ -743,7 +744,7 @@ main (int argc, char** argv)
       }
     }
     // Additionally, add normals as a handler
-    geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<pcl::PCLPointCloud2> (cloud));
+    geometry_handler = pcl::make_shared<pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<pcl::PCLPointCloud2>> (cloud);
     if (geometry_handler->isCapable ())
       //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, cloud_name.str (), viewport);
       p->addPointCloud (cloud, geometry_handler, origin, orientation, cloud_name.str (), viewport);
@@ -805,10 +806,10 @@ main (int argc, char** argv)
   }
 
 
-  camera_ = Camera::Ptr (new Camera ());
-  scene_ = Scene::Ptr (new Scene ());
+  camera_ = pcl::make_shared<Camera>();
+  scene_ = pcl::make_shared<Scene>();
 
-  range_likelihood_ = RangeLikelihood::Ptr (new RangeLikelihood(1, 1, height, width, scene_));
+  range_likelihood_ = pcl::make_shared<RangeLikelihood>(1, 1, height, width, scene_);
 
   // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
   // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_));

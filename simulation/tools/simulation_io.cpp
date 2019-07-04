@@ -1,6 +1,8 @@
 #include "simulation_io.hpp"
 #include <pcl/io/png_io.h>
 
+#include <pcl/make_shared.h>
+
 
 
 pcl::simulation::SimExample::SimExample(int argc, char** argv,
@@ -10,11 +12,11 @@ pcl::simulation::SimExample::SimExample(int argc, char** argv,
   initializeGL (argc, argv);
   
   // 1. construct member elements:
-  camera_ = Camera::Ptr (new Camera ());
-  scene_ = Scene::Ptr (new Scene ());
+  camera_ = pcl::make_shared<Camera>();
+  scene_ = pcl::make_shared<Scene>();
 
   //rl_ = RangeLikelihoodGLSL::Ptr(new RangeLikelihoodGLSL(1, 1, height, width, scene_, 0));
-  rl_ = RangeLikelihood::Ptr (new RangeLikelihood (1, 1, height, width, scene_));
+  rl_ = pcl::make_shared<RangeLikelihood>(1, 1, height, width, scene_);
   // rl_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
   // rl_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, height_, width_, scene_));
 
@@ -32,7 +34,7 @@ pcl::simulation::SimExample::SimExample(int argc, char** argv,
   pcl::PolygonMesh::Ptr cloud (new pcl::PolygonMesh (mesh));
   
   // Not sure if PolygonMesh assumes triangles if to, TODO: Ask a developer
-  PolygonMeshModel::Ptr model = PolygonMeshModel::Ptr (new PolygonMeshModel (GL_POLYGON, cloud));
+  PolygonMeshModel::Ptr model = pcl::make_shared<PolygonMeshModel>(GL_POLYGON, cloud);
   scene_->add (model);
   
   std::cout << "Just read " << argv[2] << std::endl;
