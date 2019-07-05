@@ -279,7 +279,8 @@ PREDEFINED =           = "HAVE_QHULL=1" \
                          "HAVE_ENSENSO=1" \
                          "HAVE_DAVIDSDK=1" \
                          "HAVE_DSSDK=1" \
-                         "HAVE_RSSDK=1"
+                         "HAVE_RSSDK=1" \
+                         "DOXYGEN_ONLY=1"
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
 
