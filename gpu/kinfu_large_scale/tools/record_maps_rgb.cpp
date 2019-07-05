@@ -258,9 +258,15 @@ void
 grabAndSend ()
 {
   pcl::Grabber* interface = new pcl::OpenNIGrabber ();
-  //std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& )> f = boost::bind(&grabberCallBack, _1);
 
-  std::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)> f = boost::bind (&grabberMapsCallBack, _1, _2, _3);
+  std::function<void (const openni_wrapper::Image::Ptr&,
+                      const openni_wrapper::DepthImage::Ptr&,
+                      float)> f = [] (const openni_wrapper::Image::Ptr& img,
+                                      const openni_wrapper::DepthImage::Ptr& depth,
+                                      float constant)
+  {
+    grabberMapsCallBack (img, depth, constant);
+  };
 
 
   interface->registerCallback (f);
