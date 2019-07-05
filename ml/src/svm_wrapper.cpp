@@ -301,14 +301,14 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
   {
     // "\t" cuts the tab or space.
     // strtok splits the string into tokens
-    char *p = strtok (line_, " \t"); // label
+    strtok (line_, " \t"); // label
     ++elements;
     // features
 
     while (true)
     {
       // split the next element
-      p = strtok (nullptr, " \t");
+      char *p = strtok (nullptr, " \t");
 
       if (p == nullptr || *p == '\n') // check '\n' as ' ' may be after the last feature
         break;

@@ -153,7 +153,7 @@ pcl::gpu::kinfuLS::CaptureOpenNI::open (int device)
     REPORT_ERROR (impl_->strError);
   }
   //rc = impl_->depth.SetIntProperty("HoleFilter", 1);
-  rc = impl_->depth.SetMapOutputMode (mode);
+  impl_->depth.SetMapOutputMode (mode);
   impl_->has_depth = true;
 
   rc = impl_->image.Create (impl_->context);
@@ -165,7 +165,7 @@ pcl::gpu::kinfuLS::CaptureOpenNI::open (int device)
   else
   {
     impl_->has_image = true;
-    rc = impl_->image.SetMapOutputMode (mode);
+    impl_->image.SetMapOutputMode (mode);
   }
 
   getParams ();

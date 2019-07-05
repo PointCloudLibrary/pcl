@@ -453,7 +453,6 @@ pcl::keypoints::brisk::ScaleSpace::isMax2D (
   {
     // in this case, we have to analyze the situation more carefully:
     // the values are gaussian blurred and then we really decide
-    data = &scores[0] + y_layer * scorescols + x_layer;
     int smoothedcenter = 4 * center + 2 * (s_10 + s10 + s0_1 + s01) + s_1_1 + s1_1 + s_11 + s11;
     
     for (unsigned int i = 0; i < deltasize; i+= 2)
@@ -533,10 +532,10 @@ pcl::keypoints::brisk::ScaleSpace::refine3D (
       int s_2_2 = l.getAgastScore_5_8 (x_layer + 1, y_layer +1 , 1);
       if (s_2_2 > max_below_uchar) max_below_uchar = static_cast<unsigned char> (s_2_2);
 
-      max_below_float = subpixel2D (s_0_0, s_0_1, s_0_2,
-                                    s_1_0, s_1_1, s_1_2,
-                                    s_2_0, s_2_1, s_2_2,
-                                    delta_x_below, delta_y_below);
+      subpixel2D (s_0_0, s_0_1, s_0_2,
+                  s_1_0, s_1_1, s_1_2,
+                  s_2_0, s_2_1, s_2_2,
+                  delta_x_below, delta_y_below);
       max_below_float = max_below_uchar;
     }
     else
@@ -1571,8 +1570,6 @@ pcl::keypoints::brisk::Layer::halfsample (
 
   // mask needed later:
   __m128i mask = _mm_set_epi32 (0x00FF00FF, 0x00FF00FF, 0x00FF00FF, 0x00FF00FF);
-  // to be added in order to make successive averaging correct:
-  __m128i ones = _mm_set_epi32 (0x11111111, 0x11111111, 0x11111111, 0x11111111);
 
   // data pointers:
   const __m128i* p1 = reinterpret_cast<const __m128i*> (&srcimg[0]);
@@ -1606,8 +1603,7 @@ pcl::keypoints::brisk::Layer::halfsample (
         lower = _mm_loadu_si128 (p2);
       }
 
-      __m128i result1 = _mm_adds_epu8 (upper, ones);
-      result1 = _mm_avg_epu8 (upper, lower);
+      __m128i result1 = _mm_avg_epu8 (upper, lower);
 
       // increment the pointers:
       p1++;
@@ -1616,8 +1612,7 @@ pcl::keypoints::brisk::Layer::halfsample (
       // load the two blocks of memory:
       upper = _mm_loadu_si128 (p1);
       lower = _mm_loadu_si128 (p2);
-      __m128i result2 = _mm_adds_epu8 (upper, ones);
-      result2 = _mm_avg_epu8 (upper, lower);
+      __m128i result2 = _mm_avg_epu8 (upper, lower);
       // calculate the shifted versions:
       __m128i result1_shifted = _mm_srli_si128 (result1, 1);
       __m128i result2_shifted = _mm_srli_si128 (result2, 1);
@@ -1653,8 +1648,7 @@ pcl::keypoints::brisk::Layer::halfsample (
         lower = _mm_loadu_si128 (p2);
       }
 
-      __m128i result1 = _mm_adds_epu8 (upper, ones);
-      result1 = _mm_avg_epu8 (upper, lower);
+	  __m128i result1 = _mm_avg_epu8 (upper, lower);
 
       // increment the pointers:
       p1++;

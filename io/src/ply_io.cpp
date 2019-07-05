@@ -1539,9 +1539,6 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
     int xyz = 0;
     for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
     {
-      int count = mesh.cloud.fields[d].count;
-      if (count == 0)
-        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       int c = 0;
 
       // adding vertex
@@ -1699,9 +1696,6 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
     int xyz = 0;
     for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
     {
-      int count = mesh.cloud.fields[d].count;
-      if (count == 0)
-        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       int c = 0;
 
       // adding vertex

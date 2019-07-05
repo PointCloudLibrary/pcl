@@ -210,11 +210,11 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                     PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 5 node_threshold %f, left_val %f, right_val %f, tilted %d\n", node_threshold, left_val, right_val, tilted);
 
                     HaarClassifierNodeDescriptor32 node_left;
-                    ncv_return_status = node_left.create(left_val);                              // TODO check ncv_return_status return value line below and return
+                    node_left.create(left_val);                              // TODO check ncv_return_status return value line below and return
                     current_node.setLeftNodeDesc(node_left);
 
                     HaarClassifierNodeDescriptor32 node_right;
-                    ncv_return_status = node_right.create(right_val);
+                    node_right.create(right_val);                            // TODO check ncv_return_status return value line below and return
                     current_node.setRightNodeDesc(node_right);
 
                     haar.bNeedsTiltedII = (tilted != 0);
@@ -431,7 +431,7 @@ pcl::gpu::people::FaceDetector::loadFromNVBIN(const std::string &filename,
     memcpy(&haarClassifierNodes[0], &fdata[0]+dataOffset, szClassifiers);
     dataOffset += szClassifiers;
     memcpy(&haar_features[0], &fdata[0]+dataOffset, szFeatures);
-    dataOffset += szFeatures;
+    /*dataOffset += szFeatures;*/
 
     return NCV_SUCCESS;
 }

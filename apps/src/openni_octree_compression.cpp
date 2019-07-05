@@ -424,20 +424,6 @@ main (int argc, char **argv)
     }
   } else
   {
-    // switch to ONLINE profiles
-    if (compressionProfile == pcl::io::LOW_RES_OFFLINE_COMPRESSION_WITH_COLOR)
-      compressionProfile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITH_COLOR;
-    else if (compressionProfile == pcl::io::LOW_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR)
-      compressionProfile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
-    else if (compressionProfile == pcl::io::MED_RES_OFFLINE_COMPRESSION_WITH_COLOR)
-      compressionProfile = pcl::io::MED_RES_ONLINE_COMPRESSION_WITH_COLOR;
-    else if (compressionProfile == pcl::io::MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR)
-      compressionProfile = pcl::io::MED_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
-    else if (compressionProfile == pcl::io::HIGH_RES_OFFLINE_COMPRESSION_WITH_COLOR)
-      compressionProfile = pcl::io::HIGH_RES_ONLINE_COMPRESSION_WITH_COLOR;
-    else if (compressionProfile == pcl::io::HIGH_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR)
-      compressionProfile = pcl::io::HIGH_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
-
     if (bEnDecode)
     {
       // ENCODING
