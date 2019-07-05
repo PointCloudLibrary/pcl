@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/registration/eigen.h>
 #include <pcl/correspondence.h>
 #include <pcl/registration/convergence_criteria.h>
@@ -270,7 +271,7 @@ namespace pcl
         ConvergenceState convergence_state_;
 
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
      };
   }
 }

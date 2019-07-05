@@ -40,6 +40,7 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/search/search.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -332,7 +333,7 @@ namespace pcl
       int number_of_segments_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief This function is used as a comparator for sorting. */

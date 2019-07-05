@@ -46,6 +46,7 @@
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -82,10 +83,10 @@ namespace pcl
 
     /** \brief Empty destructor. */
     virtual ~Correspondence () {}
-    
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
-  
+
   /** \brief overloaded << operator */
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Correspondence& c);
 
@@ -128,7 +129,7 @@ namespace pcl
     /** \brief Empty destructor. */
     virtual ~PointCorrespondence3D () {}
     
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
   using PointCorrespondences3DVector = std::vector<PointCorrespondence3D, Eigen::aligned_allocator<PointCorrespondence3D> >;
 
@@ -144,7 +145,7 @@ namespace pcl
     /** \brief Empty destructor. */
     virtual ~PointCorrespondence6D () {}
 
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
   using PointCorrespondences6DVector = std::vector<PointCorrespondence6D, Eigen::aligned_allocator<PointCorrespondence6D> >;
 

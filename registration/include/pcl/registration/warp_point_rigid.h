@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/registration/eigen.h>
 
 namespace pcl
@@ -120,7 +121,7 @@ namespace pcl
         getTransform () const { return (transform_matrix_); }
         
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
 
       protected:
         int nr_dim_;

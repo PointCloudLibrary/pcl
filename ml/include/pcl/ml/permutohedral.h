@@ -53,6 +53,8 @@
 #include <cstdio>
 #include <cmath>
 
+#include <pcl/pcl_macros.h>
+
 namespace pcl
 {
   /** \brief Implementation of a high-dimensional gaussian filtering using the permutohedral lattice
@@ -139,9 +141,9 @@ namespace pcl
       int * offsetOLD_;
       float * barycentricOLD_;
       std::vector<float> baryOLD_;
-      
+
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW      
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
 
   };
 

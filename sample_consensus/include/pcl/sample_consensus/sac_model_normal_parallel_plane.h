@@ -42,6 +42,7 @@
 
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
 #include <pcl/sample_consensus/model_types.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -185,7 +186,7 @@ namespace pcl
       inline pcl::SacModel
       getModelType () const override { return (SACMODEL_NORMAL_PARALLEL_PLANE); }
 
-    	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    	PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     protected:
       using SampleConsensusModel<PointT>::sample_size_;

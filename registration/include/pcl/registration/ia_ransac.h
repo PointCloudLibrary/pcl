@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_svd.h>
 
@@ -271,7 +272,7 @@ namespace pcl
 
       ErrorFunctorPtr error_functor_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

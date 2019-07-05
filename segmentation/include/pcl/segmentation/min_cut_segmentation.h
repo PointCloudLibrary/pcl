@@ -40,6 +40,7 @@
 
 #include <pcl/segmentation/boost.h>
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/search/search.h>
@@ -318,7 +319,7 @@ namespace pcl
       double max_flow_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

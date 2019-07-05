@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/features/feature.h>
 
 namespace pcl
@@ -246,7 +247,7 @@ namespace pcl
       bool save_histograms_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

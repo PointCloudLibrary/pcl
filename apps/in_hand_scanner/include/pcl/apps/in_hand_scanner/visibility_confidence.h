@@ -43,6 +43,7 @@
 #include <cstdint>
 
 #include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
 
 namespace pcl
@@ -71,8 +72,7 @@ namespace pcl
         Vertices vertices_;
 
       public:
-
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     PCL_EXPORTS void

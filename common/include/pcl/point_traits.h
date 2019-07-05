@@ -337,4 +337,23 @@ namespace pcl
     const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&pt) + field_offset;
     value = *reinterpret_cast<const ValT*>(data_ptr);
   }
+
+  template <typename ...> using void_t = void; // part of std in c++17
+
+#ifdef DOXYGEN_ONLY
+
+  /**
+   * \brief Tests at compile time if type T has a custom allocator
+   *
+   * \see pcl::make_shared, PCL_MAKE_ALIGNED_OPERATOR_NEW
+   * \tparam T Type of the object to test
+   */
+  template <typename T> struct has_custom_allocator;
+
+#else
+
+  template <typename, typename = void_t<>> struct has_custom_allocator : std::false_type {};
+  template <typename T> struct has_custom_allocator<T, void_t<typename T::_custom_allocator_type_trait>> : std::true_type {};
+
+#endif
 }

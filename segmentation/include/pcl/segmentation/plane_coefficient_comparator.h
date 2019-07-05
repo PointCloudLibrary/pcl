@@ -40,6 +40,7 @@
 #pragma once
 
 #include <pcl/common/angles.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/comparator.h>
 
@@ -206,6 +207,6 @@ namespace pcl
       Eigen::Vector3f z_axis_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }

@@ -39,6 +39,7 @@
 
 #include <gtest/gtest.h>
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/transforms.h>
@@ -103,7 +104,7 @@ class Transforms : public ::testing::Test
   // Indices, every second point
   std::vector<int> indices;
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW;
 };
 
 TYPED_TEST_CASE (Transforms, TransformTypes);

@@ -1,6 +1,7 @@
 #ifndef PCL_TRACKING_IMPL_TRACKING_H_
 #define PCL_TRACKING_IMPL_TRACKING_H_
 
+#include <pcl/pcl_macros.h>
 #include <pcl/common/eigen.h>
 #include <ctime>
 #include <pcl/tracking/tracking.h>
@@ -137,7 +138,7 @@ namespace pcl
         }
       }
       
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
     
     inline std::ostream& operator << (std::ostream& os, const ParticleXYZRPY& p)
@@ -292,7 +293,7 @@ namespace pcl
         }
       }
       
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
     
     inline std::ostream& operator << (std::ostream& os, const ParticleXYZR& p)
@@ -447,7 +448,7 @@ namespace pcl
         }
       }
       
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
     
     inline std::ostream& operator << (std::ostream& os, const ParticleXYRPY& p)
@@ -600,7 +601,7 @@ namespace pcl
         }
       }
       
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
     
     inline std::ostream& operator << (std::ostream& os, const ParticleXYRP& p)
@@ -753,7 +754,7 @@ namespace pcl
         }
       }
       
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
     
     inline std::ostream& operator << (std::ostream& os, const ParticleXYR& p)

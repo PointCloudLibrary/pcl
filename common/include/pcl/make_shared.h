@@ -2,6 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2019-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -36,40 +37,50 @@
 
 #pragma once
 
-#include <pcl/pcl_macros.h>
-#include <pcl/point_cloud.h>
+
+#include <type_traits>
+#include <utility>
+
+#include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
+
+#include <pcl/point_traits.h>
+
 
 namespace pcl
 {
-  /**
-   * \brief
-   * \author Christian Potthast
-   */
-  template <typename PointT>
-  class PCL_EXPORTS CrfNormalSegmentation
-  {
-    public:
-      /** \brief Constructor that sets default values for member variables. */
-      CrfNormalSegmentation ();
 
-      /** \brief Destructor that frees memory. */
-      ~CrfNormalSegmentation ();
+#ifdef DOXYGEN_ONLY
 
-      /**
-       * \brief This method sets the input cloud.
-       * \param[in] input_cloud input point cloud
-       */
-      void
-      setCloud (typename pcl::PointCloud<PointT>::Ptr input_cloud);
+/**
+ * \brief Returns a boost::shared_ptr compliant with type T's allocation policy.
+ *
+ * boost::allocate_shared or boost::make_shared will be invoked in case T has or
+ * doesn't have a custom allocator, respectively.
+ *
+ * \see pcl::has_custom_allocator, PCL_MAKE_ALIGNED_OPERATOR_NEW
+ * \tparam T Type of the object to create a boost::shared_ptr of
+ * \tparam Args Types for the arguments to pcl::make_shared
+ * \param args List of arguments with which an instance of T will be constructed
+ * \return boost::shared_ptr of an instance of type T
+ */
+template<typename T, typename ... Args>
+boost::shared_ptr<T> make_shared(Args&&... args);
 
-      /** \brief This method simply launches the segmentation algorithm */
-      void
-      segmentPoints ();
+#else
 
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
-  };
+template<typename T, typename ... Args>
+std::enable_if_t<has_custom_allocator<T>::value, boost::shared_ptr<T>> make_shared(Args&&... args)
+{
+  return boost::allocate_shared<T>(Eigen::aligned_allocator<T>(), std::forward<Args> (args)...);
 }
 
-#ifdef PCL_NO_PRECOMPILE
-#include <pcl/segmentation/impl/crf_normal_segmentation.hpp>
+template<typename T, typename ... Args>
+std::enable_if_t<!has_custom_allocator<T>::value, boost::shared_ptr<T>> make_shared(Args&&... args)
+{
+  return boost::make_shared<T>(std::forward<Args> (args)...);
+}
+
 #endif
+
+} // namespace pcl

@@ -38,6 +38,8 @@
 #pragma once
 
 #include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
+
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/eigen.h>
@@ -199,7 +201,7 @@ namespace pcl
       boost::signals2::signal<sig_cb_openni_point_cloud_rgba >*  point_cloud_rgba_signal_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 } // namespace

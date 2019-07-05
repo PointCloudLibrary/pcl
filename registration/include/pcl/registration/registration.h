@@ -609,7 +609,7 @@ namespace pcl
       /** \brief The point representation used (internal). */
       PointRepresentationConstPtr point_representation_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
    };
 }
 

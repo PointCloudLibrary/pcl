@@ -75,6 +75,7 @@ set(incs
   include/pcl/PointIndices.h
   include/pcl/register_point_struct.h
   include/pcl/conversions.h
+  include/pcl/make_shared.h
 )
 
 set(common_incs

@@ -45,6 +45,7 @@
 
 #include <Eigen/Core>
 #include <ostream>
+#include <pcl/pcl_macros.h>
 
 // Define all PCL point types
 #define PCL_POINT_TYPES         \
@@ -277,7 +278,7 @@ namespace pcl
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
 
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXYZ& p);
@@ -304,7 +305,7 @@ namespace pcl
     }
 
     friend std::ostream& operator << (std::ostream& os, const PointXYZ& p);
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
@@ -457,7 +458,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXYZI& p);
@@ -489,7 +490,7 @@ namespace pcl
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     uint32_t label;
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXYZL& p);
@@ -525,7 +526,7 @@ namespace pcl
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_RGB;
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p);
@@ -573,7 +574,7 @@ namespace pcl
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_RGB;
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   struct EIGEN_ALIGN16 _PointXYZRGBL
@@ -581,7 +582,7 @@ namespace pcl
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_RGB;
     uint32_t label;
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXYZRGB& p);
@@ -642,7 +643,7 @@ namespace pcl
     }
 
     friend std::ostream& operator << (std::ostream& os, const PointXYZRGB& p);
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
@@ -676,7 +677,7 @@ namespace pcl
     }
   
     friend std::ostream& operator << (std::ostream& os, const PointXYZRGBL& p);
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
@@ -693,7 +694,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   } EIGEN_ALIGN16;
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXYZHSV& p);
@@ -720,7 +721,7 @@ namespace pcl
     }
   
     friend std::ostream& operator << (std::ostream& os, const PointXYZHSV& p);
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
@@ -765,7 +766,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   
     friend std::ostream& operator << (std::ostream& os, const InterestPoint& p);
   };
@@ -781,7 +782,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Normal& p);
@@ -811,14 +812,14 @@ namespace pcl
     }
 
     friend std::ostream& operator << (std::ostream& os, const Normal& p);
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
   struct EIGEN_ALIGN16 _Axis
   {
     PCL_ADD_NORMAL4D;
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW 
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Axis& p);
@@ -845,7 +846,7 @@ namespace pcl
     }
 
     friend std::ostream& operator << (std::ostream& os, const Axis& p);
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
@@ -861,7 +862,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointNormal& p);
@@ -903,7 +904,7 @@ namespace pcl
       float data_c[4];
     };
     PCL_ADD_EIGEN_MAPS_RGB;
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXYZRGBNormal& p);
@@ -972,7 +973,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
   
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXYZINormal& p);
@@ -1015,7 +1016,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXYZLNormal& p);
@@ -1058,7 +1059,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointWithRange& p);
@@ -1097,7 +1098,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
@@ -1337,7 +1338,7 @@ namespace pcl
     inline Eigen::Map<Eigen::Matrix3f> getMatrix3fMap () { return (Eigen::Matrix3f::Map (rf)); }
     inline const Eigen::Map<const Eigen::Matrix3f> getMatrix3fMap () const { return (Eigen::Matrix3f::Map (rf)); }
 
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const ReferenceFrame& p);
@@ -1356,7 +1357,7 @@ namespace pcl
     }
 
     friend std::ostream& operator << (std::ostream& os, const ReferenceFrame& p);
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
@@ -1545,7 +1546,7 @@ namespace pcl
     /** \brief octave (pyramid layer) from which the keypoint has been extracted. */
     int   octave;
 
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointWithScale& p);
@@ -1617,7 +1618,7 @@ namespace pcl
       float data_c[4];
     };
     PCL_ADD_EIGEN_MAPS_RGB;
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointSurfel& p);
@@ -1654,7 +1655,7 @@ namespace pcl
     float intensity;
     float intensity_variance;
     float height_variance;
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointDEM& p);

@@ -36,7 +36,12 @@
 
 #pragma once
 
-
+/**
+ * \file pcl/pcl_macros.h
+ *
+ * \brief Defines all the PCL and non-PCL macros used
+ * \ingroup common
+ */
 
 #if defined __INTEL_COMPILER
   #pragma warning disable 2196 2536 279
@@ -60,6 +65,12 @@
 #include <iostream>
 
 #include <boost/cstdint.hpp>
+
+//Eigen has an enum that clashes with X11 Success define, which is ultimately included by pcl
+#ifdef Success
+  #undef Success
+#endif
+#include <Eigen/Core>
 
 #include <pcl/pcl_config.h>
 
@@ -320,3 +331,16 @@ aligned_free (void* ptr)
   #error aligned_free not supported on your platform
 #endif
 }
+
+/**
+ * \brief Macro to signal a class requires a custom allocator
+ *
+ *  It's an implementation detail to have pcl::has_custom_allocator work, a
+ *  thin wrapper over Eigen's own macro
+ *
+ * \see pcl::has_custom_allocator, pcl::make_shared
+ * \ingroup common
+ */
+#define PCL_MAKE_ALIGNED_OPERATOR_NEW \
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
+  using _custom_allocator_type_trait = void;

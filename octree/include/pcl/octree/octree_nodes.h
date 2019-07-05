@@ -191,7 +191,7 @@ namespace pcl
         
       public:
         //Type ContainerT may have fixed-size Eigen objects inside
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

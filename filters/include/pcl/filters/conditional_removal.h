@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/common/eigen.h>
 #include <pcl/filters/filter.h>
 
@@ -309,7 +310,7 @@ namespace pcl
   class TfQuadraticXYZComparison : public pcl::ComparisonBase<PointT>
   {
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW     //needed whenever there is a fixed size Eigen:: vector or matrix in a class
+      PCL_MAKE_ALIGNED_OPERATOR_NEW  // needed whenever there is a fixed size Eigen:: vector or matrix in a class
 
       using Ptr = boost::shared_ptr<TfQuadraticXYZComparison<PointT> >;
       using ConstPtr = boost::shared_ptr<const TfQuadraticXYZComparison<PointT> >;

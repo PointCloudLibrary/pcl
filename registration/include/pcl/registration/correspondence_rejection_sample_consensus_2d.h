@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
 
 namespace pcl
@@ -153,7 +154,7 @@ namespace pcl
         Eigen::Matrix3f projection_matrix_;
 
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

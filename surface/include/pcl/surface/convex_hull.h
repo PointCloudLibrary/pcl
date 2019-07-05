@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/pcl_config.h>
 #ifdef HAVE_QHULL 
 
@@ -266,7 +267,7 @@ namespace pcl
       pcl::PointIndices hull_indices_;
 
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
