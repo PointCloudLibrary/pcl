@@ -41,6 +41,7 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/segmentation/boost.h>
 #include <pcl/search/search.h>
@@ -285,7 +286,7 @@ namespace pcl
         uint32_t count_;
         /// small value to add to covariance matrix diagonal to avoid singular values
         float epsilon_;
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
 
       /** Build the initial GMMs using the Orchard and Bouman color clustering algorithm */

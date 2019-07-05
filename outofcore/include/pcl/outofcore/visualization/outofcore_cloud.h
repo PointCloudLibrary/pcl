@@ -7,6 +7,7 @@
 #include <thread>
 
 // PCL
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 
 // PCL - outofcore
@@ -279,5 +280,5 @@ class OutofcoreCloud : public Object
     vtkSmartPointer<vtkActorCollection> cloud_actors_;
 
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
 };

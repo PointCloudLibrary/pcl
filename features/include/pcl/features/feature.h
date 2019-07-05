@@ -46,6 +46,7 @@
 
 // PCL includes
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/search/search.h>
 
 #include <functional>
@@ -298,7 +299,7 @@ namespace pcl
       computeFeature (PointCloudOut &output) = 0;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
@@ -357,7 +358,7 @@ namespace pcl
       initCompute ();
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -425,7 +426,7 @@ namespace pcl
       initCompute ();
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////

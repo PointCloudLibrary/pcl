@@ -42,6 +42,7 @@
 #include <vector>
 #include <cmath>
 #include <pcl/features/feature.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/PointIndices.h>
 
 namespace pcl
@@ -348,7 +349,7 @@ namespace pcl
       Eigen::Matrix3f obb_rotational_matrix_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

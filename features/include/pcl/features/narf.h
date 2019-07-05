@@ -38,11 +38,12 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/features/eigen.h>
 #include <pcl/common/common_headers.h>
 #include <pcl/point_representation.h>
 
-namespace pcl 
+namespace pcl
 {
   // Forward declarations
   class RangeImage;
@@ -281,7 +282,7 @@ namespace pcl
       // =====STATIC PROTECTED=====
       
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 #undef NARF_DEFAULT_SURFACE_PATCH_PIXEL_SIZE
 

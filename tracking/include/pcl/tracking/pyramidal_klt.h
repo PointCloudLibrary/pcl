@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/tracking/tracker.h>
 #include <pcl/common/intensity.h>
@@ -369,7 +370,7 @@ namespace pcl
         /// \brief index of last element in kernel
         int kernel_last_;
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

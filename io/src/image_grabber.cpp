@@ -35,13 +35,14 @@
  *
  */
 // Looking for PCL_BUILT_WITH_VTK
-#include <pcl/pcl_config.h>
+#include <pcl/for_each_type.h>
 #include <pcl/io/image_grabber.h>
+#include <pcl/io/lzf_image_io.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/for_each_type.h>
-#include <pcl/io/lzf_image_io.h>
 
 #ifdef PCL_BUILT_WITH_VTK
   #include <vtkImageReader2.h>
@@ -152,7 +153,7 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   pcl::PointCloud<pcl::PointXYZRGBA> next_cloud_color_;
   Eigen::Vector4f origin_;
   Eigen::Quaternionf orientation_;
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
   bool valid_;
   //! Flag to say if a user set the focal length by hand
   //  (so we don't attempt to adjust for QVGA, QQVGA, etc).

@@ -451,7 +451,7 @@ namespace pcl
           bool has_shifted_;
           
         public:
-          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+          PCL_MAKE_ALIGNED_OPERATOR_NEW
 
       };
     }

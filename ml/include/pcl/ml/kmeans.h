@@ -48,6 +48,7 @@
 #include <pcl/common/io.h>
 
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -195,10 +196,7 @@ namespace pcl
       PointsToClusters points_to_clusters_;
       Centroids centroids_;
 
-      
-      
-
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
  };
 }

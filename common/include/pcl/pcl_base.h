@@ -42,7 +42,7 @@
 #  pragma GCC system_header
 #endif
 
-// Include PCL macros such as PCL_ERROR, etc
+// Include PCL macros such as PCL_ERROR, PCL_MAKE_ALIGNED_OPERATOR_NEW, etc
 #include <pcl/pcl_macros.h>
 
 #include <boost/shared_ptr.hpp>
@@ -177,7 +177,7 @@ namespace pcl
       deinitCompute ();
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /////////////////////////////////////////////////////////////////////////////////////////
@@ -253,7 +253,7 @@ namespace pcl
       bool initCompute ();
       bool deinitCompute ();
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

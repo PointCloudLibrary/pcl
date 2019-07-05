@@ -40,6 +40,7 @@
 #undef Success
 #include <Eigen/Dense>
 
+#include <pcl/pcl_macros.h>
 #include <pcl/surface/on_nurbs/sparse_mat.h>
 
 namespace pcl
@@ -129,7 +130,7 @@ namespace pcl
       Eigen::MatrixXd m_feig;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
 
   }

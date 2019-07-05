@@ -38,6 +38,7 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/search/pcl_search.h>
 
 #include <functional>
@@ -258,7 +259,7 @@ namespace pcl
       pcl::IndicesClustersPtr large_clusters_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

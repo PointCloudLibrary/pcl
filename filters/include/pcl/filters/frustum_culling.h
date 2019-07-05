@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/filter_indices.h>
 #include <pcl/common/transforms.h>
@@ -229,7 +230,7 @@ namespace pcl
       float fp_dist_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

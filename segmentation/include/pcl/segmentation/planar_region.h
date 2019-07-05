@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/segmentation/region_3d.h>
 #include <pcl/geometry/planar_polygon.h>
 
@@ -101,6 +102,6 @@ namespace pcl
       std::vector<bool> contour_labels_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }

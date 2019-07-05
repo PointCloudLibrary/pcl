@@ -40,6 +40,8 @@
 
 #pragma once
 
+
+#include <pcl/pcl_macros.h>
 #include <pcl/registration/correspondence_rejection.h>
 
 #include <pcl/sample_consensus/ransac.h>
@@ -238,7 +240,7 @@ namespace pcl
         bool save_inliers_;
 
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

@@ -86,7 +86,7 @@ namespace pcl
       /// matrix to convert CIE to RGB
       Eigen::Matrix3f xyz_to_rgb_matrix_;
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   class PCL_EXPORTS OBJReader : public FileReader
