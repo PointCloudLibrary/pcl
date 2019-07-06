@@ -136,8 +136,8 @@ pcl::gpu::CaptureOpenNI::open (int device)
   XnLicense license;
   const char* vendor = "PrimeSense";
   const char* key = "0KOIk2JeIBYClPWVnMoRKn5cdY4=";
-  sprintf (license.strKey, key);
-  sprintf (license.strVendor, vendor);
+  strncpy (license.strKey, key, sizeof (license.strKey));
+  strncpy (license.strVendor, vendor, sizeof (license.strVendor));
 
   rc = impl_->context.AddLicense (license);
   if (rc != XN_STATUS_OK)
