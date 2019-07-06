@@ -486,13 +486,15 @@ namespace pcl
       /** \brief Emplace a new point in the cloud, at the end of the container.
         * \note This breaks the organized structure of the cloud by setting the height to 1!
         * \param[in] args the parameters to forward to the point to construct
+        * \return reference to the emplaced point
         */
-      template <class... Args> inline void
+      template <class... Args> inline reference
       emplace_back (Args&& ...args)
       {
         points.emplace_back (std::forward<Args> (args)...);
         width = static_cast<uint32_t> (points.size ());
         height = 1;
+        return points.back();
       }
 
       /** \brief Insert a new point in the cloud, given an iterator.
