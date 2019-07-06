@@ -282,7 +282,6 @@ TEST (PCL, PointCloud)
   auto& new_point = cloud.emplace_back (1, 1, 1);
   EXPECT_EQ (cloud.isOrganized (), false);
   EXPECT_EQ (cloud.width, 2);
-  EXPECT_EQ (new_point, cloud.back ());
   EXPECT_EQ (&new_point, &cloud.back ());
 }
 

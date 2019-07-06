@@ -47,6 +47,7 @@
 #include <pcl/PCLHeader.h>
 #include <pcl/exceptions.h>
 #include <pcl/point_traits.h>
+#include <utility>
 
 namespace pcl
 {
