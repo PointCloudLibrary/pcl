@@ -60,7 +60,7 @@ class PeopleTrackingApp
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
       std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
-        boost::bind (&PeopleTrackingApp::cloud_cb_, this, _1);
+        [this] (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
       interface->registerCallback (f);
       interface->start ();
