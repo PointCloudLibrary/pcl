@@ -774,8 +774,6 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
 
     if (num_neighbors >= nr_coeff)
     {
-      // Note: The max_sq_radius parameter is only used if weight_func was not defined
-      double max_sq_radius = 1;
       if (!weight_func)
         weight_func = [=] (const double sq_dist) { return this->computeMLSWeight (sq_dist, search_radius * search_radius); };
 
