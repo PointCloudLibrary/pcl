@@ -892,7 +892,7 @@ void pcl::io::OpenNI2Grabber::processColorFrame (openni::VideoStream& stream)
 
   openni::VideoFrameRef frame;
   stream.readFrame (&frame);
-  FrameWrapper::Ptr frameWrapper = boost::make_shared<Openni2FrameWrapper>(frame);
+  FrameWrapper::Ptr frameWrapper(new Openni2FrameWrapper(frame));
 
   openni::PixelFormat format = frame.getVideoMode ().getPixelFormat ();
   Image::Ptr image;
@@ -911,7 +911,7 @@ void pcl::io::OpenNI2Grabber::processDepthFrame (openni::VideoStream& stream)
 {
   openni::VideoFrameRef frame;
   stream.readFrame (&frame);
-  FrameWrapper::Ptr frameWrapper = boost::make_shared<Openni2FrameWrapper>(frame);
+  FrameWrapper::Ptr frameWrapper(new Openni2FrameWrapper(frame));
 
   float focalLength = device_->getDepthFocalLength ();
 
@@ -930,7 +930,7 @@ void pcl::io::OpenNI2Grabber::processIRFrame (openni::VideoStream& stream)
   openni::VideoFrameRef frame;
   stream.readFrame (&frame);
 
-  FrameWrapper::Ptr frameWrapper = boost::make_shared<Openni2FrameWrapper>(frame);
+  FrameWrapper::Ptr frameWrapper(new Openni2FrameWrapper(frame));
 
   IRImage::Ptr image (new IRImage (frameWrapper));
 

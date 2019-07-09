@@ -33,8 +33,7 @@
 #include "pcl/io/openni2/openni2_convert.h"
 #include "pcl/io/openni2/openni2_device.h"
 #include "pcl/io/io_exception.h"
-
-#include <boost/make_shared.hpp>
+#include <pcl/make_shared.h>
 
 #include <mutex>
 #include <set>
@@ -217,26 +216,26 @@ pcl::io::openni2::OpenNI2DeviceManager::getNumOfConnectedDevices () const
 OpenNI2Device::Ptr
 pcl::io::openni2::OpenNI2DeviceManager::getAnyDevice ()
 {
-  return boost::make_shared<OpenNI2Device>("");
+  return pcl::make_shared<OpenNI2Device>("");
 }
 
 OpenNI2Device::Ptr
 pcl::io::openni2::OpenNI2DeviceManager::getDevice (const std::string& device_URI)
 {
-  return boost::make_shared<OpenNI2Device>(device_URI);
+  return pcl::make_shared<OpenNI2Device>(device_URI);
 }
 
 OpenNI2Device::Ptr
 pcl::io::openni2::OpenNI2DeviceManager::getDeviceByIndex (int index)
 {
   auto URIs = getConnectedDeviceURIs ();
-  return boost::make_shared<OpenNI2Device>( URIs->at (index) );
+  return pcl::make_shared<OpenNI2Device>( URIs->at (index) );
 }
 
 OpenNI2Device::Ptr
 pcl::io::openni2::OpenNI2DeviceManager::getFileDevice (const std::string& path)
 {
-  return boost::make_shared<OpenNI2Device>(path);
+  return pcl::make_shared<OpenNI2Device>(path);
 }
 
 std::ostream&
