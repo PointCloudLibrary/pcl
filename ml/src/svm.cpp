@@ -3377,6 +3377,7 @@ svm_model *svm_load_model (const char *model_file_name)
                                 free (model);
                                 return nullptr;
                               }
+    (void)res;  // to inform clang-tidy to ignore the dead-stores
   }
 
   // read sv_coef and SV
