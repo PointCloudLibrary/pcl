@@ -3258,27 +3258,27 @@ svm_model *svm_load_model (const char *model_file_name)
       }
       else
         if (res > 0 && strcmp (cmd, "degree") == 0)
-          fscanf (fp, "%d", &param.degree);
+          res = fscanf (fp, "%d", &param.degree);
         else
           if (res > 0 && strcmp (cmd, "gamma") == 0)
-            fscanf (fp, "%lf", &param.gamma);
+            res = fscanf (fp, "%lf", &param.gamma);
           else
             if (res > 0 && strcmp (cmd, "coef0") == 0)
-              fscanf (fp, "%lf", &param.coef0);
+              res = fscanf (fp, "%lf", &param.coef0);
             else
               if (res > 0 && strcmp (cmd, "nr_class") == 0)
-                fscanf (fp, "%d", &model->nr_class);
+                res = fscanf (fp, "%d", &model->nr_class);
               else
                 if (res > 0 && strcmp (cmd, "total_sv") == 0)
-                  fscanf (fp, "%d", &model->l);
+                  res = fscanf (fp, "%d", &model->l);
                 else
                   if (res > 0 && strcmp (cmd, "rho") == 0)
                   {
                     int n = model->nr_class * (model->nr_class - 1) / 2;
                     model->rho = Malloc (double, n);
 
-                    for (int i = 0;i < n;i++)
-                      fscanf (fp, "%lf", &model->rho[i]);
+                    for (int i = 0;(i < n) && (res > 0);i++)
+                      res = fscanf (fp, "%lf", &model->rho[i]);
                   }
                   else
                     if (res > 0 && strcmp (cmd, "label") == 0)
@@ -3286,8 +3286,8 @@ svm_model *svm_load_model (const char *model_file_name)
                       int n = model->nr_class;
                       model->label = Malloc (int, n);
 
-                      for (int i = 0;i < n;i++)
-                        fscanf (fp, "%d", &model->label[i]);
+                      for (int i = 0;(i < n) && (res > 0);i++)
+                        res = fscanf (fp, "%d", &model->label[i]);
                     }
                     else
                       if (res > 0 && strcmp (cmd, "probA") == 0)
@@ -3295,8 +3295,8 @@ svm_model *svm_load_model (const char *model_file_name)
                         int n = model->nr_class * (model->nr_class - 1) / 2;
                         model->probA = Malloc (double, n);
 
-                        for (int i = 0;i < n;i++)
-                          fscanf (fp, "%lf", &model->probA[i]);
+                        for (int i = 0;(i < n) && (res > 0);i++)
+                          res = fscanf (fp, "%lf", &model->probA[i]);
                       }
                       else
                         if (res > 0 && strcmp (cmd, "probB") == 0)
@@ -3304,8 +3304,8 @@ svm_model *svm_load_model (const char *model_file_name)
                           int n = model->nr_class * (model->nr_class - 1) / 2;
                           model->probB = Malloc (double, n);
 
-                          for (int i = 0;i < n;i++)
-                            fscanf (fp, "%lf", &model->probB[i]);
+                          for (int i = 0;(i < n) && (res > 0);i++)
+                            res = fscanf (fp, "%lf", &model->probB[i]);
                         }
                         else
                           if (res > 0 && strcmp (cmd, "nr_sv") == 0)
@@ -3313,8 +3313,8 @@ svm_model *svm_load_model (const char *model_file_name)
                             int n = model->nr_class;
                             model->nSV = Malloc (int, n);
 
-                            for (int i = 0;i < n;i++)
-                              fscanf (fp, "%d", &model->nSV[i]);
+                            for (int i = 0;(i < n) && (res > 0);i++)
+                              res = fscanf (fp, "%d", &model->nSV[i]);
                           }
                           else
                             if (res > 0 && strcmp (cmd, "scaling") == 0)
@@ -3323,7 +3323,9 @@ svm_model *svm_load_model (const char *model_file_name)
                               int ii = 0;
                               //char delims[]="\t: ";
                               model->scaling = Malloc (struct svm_node, 1);
-                              fscanf (fp, "%10000[^\n]", buff);
+                              res = fscanf (fp, "%10000[^\n]", buff);
+                              if (res <= 0)
+                                continue;
                               idx = strtok (buff, ":");
 
                               while (idx != nullptr)
@@ -3375,6 +3377,7 @@ svm_model *svm_load_model (const char *model_file_name)
                                 free (model);
                                 return nullptr;
                               }
+    (void)res;  // to inform clang-tidy to ignore the dead-stores
   }
 
   // read sv_coef and SV
