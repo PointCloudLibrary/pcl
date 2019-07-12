@@ -74,7 +74,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset containing the estimated feature
         */
       void
-      compute (PointCloud<SCurVSignature210> &output);
+      compute (pcl::PointCloud<SCurVSignature210> &output);
 
     protected:
       using Feature<PointInT, SCurVSignature210>::feature_name_;
