@@ -62,7 +62,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <utility>
-#include <cmath>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT> double
@@ -709,7 +708,7 @@ pcl::SCurVEstimation<PointInT, PointNT>::computeFeature (pcl::PointCloud<pcl::SC
       {
         for (size_t b = 0; b < bins.size() - 1; b++)
         {
-          if (!isnan(desc_aux2(u,v)) && desc_aux2(u,v) > bins[b] && (desc_aux2(u,v) < bins[b+1] || std::fabs(desc_aux2(u,v) - bins[b+1]) < std::numeric_limits<double>::epsilon()))
+          if (!std::isnan(desc_aux2(u,v)) && desc_aux2(u,v) > bins[b] && (desc_aux2(u,v) < bins[b+1] || std::fabs(desc_aux2(u,v) - bins[b+1]) < std::numeric_limits<double>::epsilon()))
             aux2(b,v)++;
         }
       }
