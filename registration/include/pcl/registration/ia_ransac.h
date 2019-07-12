@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_svd.h>
 
@@ -102,8 +103,7 @@ namespace pcl
           { 
             if (e <= threshold_)
               return (0.5 * e*e); 
-            else
-              return (0.5 * threshold_ * (2.0 * std::fabs (e) - threshold_));
+            return (0.5 * threshold_ * (2.0 * std::fabs (e) - threshold_));
           }
         protected:
           float threshold_;
@@ -121,8 +121,7 @@ namespace pcl
           { 
             if (e <= threshold_)
               return (e / threshold_);
-            else
-              return (1.0);
+            return (1.0);
           }
         protected:
           float threshold_;
@@ -273,7 +272,7 @@ namespace pcl
 
       ErrorFunctorPtr error_functor_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

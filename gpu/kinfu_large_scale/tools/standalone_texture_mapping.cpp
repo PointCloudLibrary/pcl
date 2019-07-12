@@ -103,9 +103,6 @@ saveOBJFile (const std::string &file_name,
     bool v_written = false;
     for (size_t d = 0; d < tex_mesh.cloud.fields.size (); ++d)
     {
-      int count = tex_mesh.cloud.fields[d].count;
-      if (count == 0)
-        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
                 tex_mesh.cloud.fields[d].name == "x" ||
@@ -143,9 +140,6 @@ saveOBJFile (const std::string &file_name,
     bool v_written = false;
     for (size_t d = 0; d < tex_mesh.cloud.fields.size (); ++d)
     {
-      int count = tex_mesh.cloud.fields[d].count;
-      if (count == 0)
-      count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
       tex_mesh.cloud.fields[d].name == "normal_x" ||

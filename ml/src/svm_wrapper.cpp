@@ -44,16 +44,6 @@
 #include <cassert>
 #include <fstream>
 
-
-template <typename T>
-inline T module (T a)
-{
-  if (a > 0)
-    return a;
-  else
-    return -a;
-}
-
 char*
 pcl::SVM::readline (FILE *input)
 {
@@ -154,10 +144,10 @@ pcl::SVMTrain::scaleFactors (std::vector<SVMData> training_set, svm_scaling &sca
   for (const auto &svm_data : training_set)
     for (const auto &sample : svm_data.SV)
       // save scaling factor finding the maximum value
-      if (module (sample.value) > scaling.obj[sample.idx].value)
+      if (std::abs (sample.value) > scaling.obj[sample.idx].value)
       {
         scaling.obj[sample.idx].index = 1;
-        scaling.obj[sample.idx].value = module (sample.value);
+        scaling.obj[sample.idx].value = std::abs (sample.value);
       }
 };
 
@@ -311,14 +301,14 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
   {
     // "\t" cuts the tab or space.
     // strtok splits the string into tokens
-    char *p = strtok (line_, " \t"); // label
+    strtok (line_, " \t"); // label
     ++elements;
     // features
 
     while (true)
     {
       // split the next element
-      p = strtok (nullptr, " \t");
+      char *p = strtok (nullptr, " \t");
 
       if (p == nullptr || *p == '\n') // check '\n' as ' ' may be after the last feature
         break;

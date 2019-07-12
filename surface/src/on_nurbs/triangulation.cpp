@@ -100,14 +100,14 @@ Triangulation::isInside(const ON_NurbsCurve &curve, const pcl::PointXYZ &v)
   double rScale = 1.0 / pcl::on_nurbs::NurbsTools::computeRScale (a0, a1);
 
   Eigen::Vector2d pc, tc;
-  double err, param;
+  double err;
 
   if (curve.Order () == 2)
-    param = pcl::on_nurbs::FittingCurve2dAPDM::inverseMappingO2 (curve, vp, err, pc, tc);
+    pcl::on_nurbs::FittingCurve2dAPDM::inverseMappingO2 (curve, vp, err, pc, tc);
   else
   {
-    param = pcl::on_nurbs::FittingCurve2dAPDM::findClosestElementMidPoint (curve, vp);
-    param = pcl::on_nurbs::FittingCurve2dAPDM::inverseMapping (curve, vp, param, err, pc, tc, rScale);
+    double param = pcl::on_nurbs::FittingCurve2dAPDM::findClosestElementMidPoint (curve, vp);
+    pcl::on_nurbs::FittingCurve2dAPDM::inverseMapping (curve, vp, param, err, pc, tc, rScale);
   }
 
   Eigen::Vector3d a (vp (0) - pc (0), vp (1) - pc (1), 0.0);

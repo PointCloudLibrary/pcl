@@ -51,6 +51,7 @@
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 
 //#include "v4r/NurbsConvertion/DataLoading.h"
@@ -218,7 +219,7 @@ namespace pcl
         PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, const std::vector<int> &indices, vector_vec3d &cloud);
 
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
 
   }

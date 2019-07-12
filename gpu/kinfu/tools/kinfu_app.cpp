@@ -961,18 +961,27 @@ struct KinFuApp
     using namespace openni_wrapper;
     using DepthImagePtr = boost::shared_ptr<DepthImage>;
     using ImagePtr = boost::shared_ptr<Image>;
-        
-    std::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1_dev = boost::bind (&KinFuApp::source_cb2_device, this, _1, _2, _3);
-    std::function<void (const DepthImagePtr&)> func2_dev = boost::bind (&KinFuApp::source_cb1_device, this, _1);
 
-    std::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1_oni = boost::bind (&KinFuApp::source_cb2_oni, this, _1, _2, _3);
-    std::function<void (const DepthImagePtr&)> func2_oni = boost::bind (&KinFuApp::source_cb1_oni, this, _1);
-    
+    std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func1_dev = [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
+    {
+      source_cb2_device (img, depth, constant);
+    };
+    std::function<void (const DepthImagePtr&)> func2_dev = [this] (const DepthImagePtr& depth) { source_cb1_device (depth); };
+
+    std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func1_oni = [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
+    {
+      source_cb2_oni (img, depth, constant);
+    };
+    std::function<void (const DepthImagePtr&)> func2_oni = [this] (const DepthImagePtr& depth) { source_cb1_oni (depth); };
+
     bool is_oni = dynamic_cast<pcl::ONIGrabber*>(&capture_) != nullptr;
     std::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = is_oni ? func1_oni : func1_dev;
     std::function<void (const DepthImagePtr&)> func2 = is_oni ? func2_oni : func2_dev;
 
-    std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = boost::bind (&KinFuApp::source_cb3, this, _1);
+    std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+    {
+      source_cb3 (cloud);
+    };
 
     bool need_colors = integrate_colors_ || registration_;
     if ( pcd_source_ && !capture_.providesCallback<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>() )

@@ -42,6 +42,7 @@
 
 #include <utility>
 
+#include <pcl/pcl_macros.h>
 #include <pcl/geometry/mesh_base.h>
 
 namespace pcl
@@ -351,8 +352,7 @@ namespace pcl
         std::vector <bool> is_new_atp_;
 
       public:
-
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   } // End namespace geom
 } // End namespace pcl

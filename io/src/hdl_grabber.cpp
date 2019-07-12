@@ -46,7 +46,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/array.hpp>
-#include <boost/bind.hpp>
 #include <boost/math/special_functions.hpp>
 #ifdef HAVE_PCAP
 #include <pcap.h>

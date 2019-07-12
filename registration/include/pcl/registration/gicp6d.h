@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
@@ -59,7 +60,7 @@ namespace pcl
       };
       float data_lab[4];
     };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief A custom point type for position and CIELAB color value */

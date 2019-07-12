@@ -34,17 +34,19 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 #pragma once
 
 #include <iostream>
+
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 
 struct EIGEN_ALIGN16 PointIntensity
 {
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW;
   union
   {
     struct

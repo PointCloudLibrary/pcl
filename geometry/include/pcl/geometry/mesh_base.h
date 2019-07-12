@@ -46,6 +46,7 @@
 #include <pcl/geometry/mesh_indices.h>
 #include <pcl/geometry/mesh_elements.h>
 #include <pcl/geometry/mesh_traits.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 
 #include <vector>
@@ -2133,7 +2134,7 @@ namespace pcl
         template <class MeshT>
         friend class pcl::geometry::MeshIO;
 
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   } // End namespace geometry
 } // End namespace pcl

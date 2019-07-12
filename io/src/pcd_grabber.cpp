@@ -35,13 +35,14 @@
  *
  */
 
-#include <pcl/pcl_config.h>
 #include <pcl/io/low_level_io.h>
 #include <pcl/io/pcd_grabber.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/tar.h>
+#include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberImplementation //////////////////////
@@ -101,7 +102,7 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   // simultaneous asynchronous read-aheads
   std::mutex read_ahead_mutex_;
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW 
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +111,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
   , running_ (false)
-  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), boost::bind (&PCDGrabberImpl::trigger, this))
+  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this] { trigger (); })
   , valid_ (false)
   , tar_fd_ (-1)
   , tar_offset_ (0)
@@ -129,7 +130,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
   , running_ (false)
-  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), boost::bind (&PCDGrabberImpl::trigger, this))
+  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this] { trigger (); })
   , valid_ (false)
   , tar_fd_ (-1)
   , tar_offset_ (0)

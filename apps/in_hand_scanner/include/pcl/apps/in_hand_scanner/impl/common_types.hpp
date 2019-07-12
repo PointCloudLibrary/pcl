@@ -43,6 +43,8 @@
 
 #include <limits>
 
+#include <pcl/pcl_macros.h>
+
 namespace pcl
 {
   namespace ihs
@@ -56,7 +58,7 @@ namespace pcl
       unsigned int age;
       uint32_t     directions;
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     struct PointIHS : public pcl::ihs::_PointIHS

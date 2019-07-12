@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/PolygonMesh.h>
 #include <pcl/features/feature.h>
 #include <set>
@@ -221,8 +222,7 @@ namespace pcl
       std::vector <std::vector <unsigned int> > triangles_of_the_point_;
 
     public:
-
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

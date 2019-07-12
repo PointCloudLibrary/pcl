@@ -361,7 +361,7 @@ pcl::IFSWriter::write (const std::string &file_name, const pcl::PCLPointCloud2 &
   addr+= vertices_size * sizeof (char);
   const uint32_t nb_vertices = cloud.data.size () / cloud.point_step;
   memcpy (addr, &nb_vertices, sizeof (uint32_t));
-  addr+= sizeof (uint32_t);
+  /*addr+= sizeof (uint32_t);*/
 
   std::size_t data_idx = header.size ();
 

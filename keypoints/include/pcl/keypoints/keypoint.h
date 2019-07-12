@@ -156,8 +156,7 @@ namespace pcl
       {
         if (surface_ == input_)       // if the two surfaces are the same
           return (search_method_ (index, parameter, indices, distances));
-        else
-          return (search_method_surface_ (*input_, index, parameter, indices, distances));
+        return (search_method_surface_ (*input_, index, parameter, indices, distances));
       }
 
     protected:

@@ -46,7 +46,9 @@
 #include <Eigen/Geometry>
 #include <pcl/PCLHeader.h>
 #include <pcl/exceptions.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_traits.h>
+#include <utility>
 
 namespace pcl
 {
@@ -94,7 +96,7 @@ namespace pcl
       Pod &p2_;
       int f_idx_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
    };
 
   /** \brief Helper functor structure for copying data between an Eigen type and a PointT. */
@@ -125,7 +127,7 @@ namespace pcl
       Eigen::VectorXf &p2_;
       int f_idx_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   namespace detail
@@ -483,6 +485,20 @@ namespace pcl
         height = 1;
       }
 
+      /** \brief Emplace a new point in the cloud, at the end of the container.
+        * \note This breaks the organized structure of the cloud by setting the height to 1!
+        * \param[in] args the parameters to forward to the point to construct
+        * \return reference to the emplaced point
+        */
+      template <class... Args> inline reference
+      emplace_back (Args&& ...args)
+      {
+        points.emplace_back (std::forward<Args> (args)...);
+        width = static_cast<uint32_t> (points.size ());
+        height = 1;
+        return points.back();
+      }
+
       /** \brief Insert a new point in the cloud, given an iterator.
         * \note This breaks the organized structure of the cloud by setting the height to 1!
         * \param[in] position where to insert the point
@@ -524,6 +540,21 @@ namespace pcl
         points.insert (position, first, last);
         width = static_cast<uint32_t> (points.size ());
         height = 1;
+      }
+
+      /** \brief Emplace a new point in the cloud, given an iterator.
+        * \note This breaks the organized structure of the cloud by setting the height to 1!
+        * \param[in] position iterator before which the point will be emplaced
+        * \param[in] args the parameters to forward to the point to construct
+        * \return returns the new position iterator
+        */
+      template <class... Args> inline iterator
+      emplace (iterator position, Args&& ...args)
+      {
+        iterator it = points.emplace (position, std::forward<Args> (args)...);
+        width = static_cast<uint32_t> (points.size ());
+        height = 1;
+        return (it);
       }
 
       /** \brief Erase a point in the cloud.
@@ -594,7 +625,7 @@ namespace pcl
       friend boost::shared_ptr<MsgFieldMap>& detail::getMapping<PointT>(pcl::PointCloud<PointT> &p);
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   namespace detail

@@ -35,6 +35,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/surface/boost.h>
 #include <pcl/surface/marching_cubes.h>
 
@@ -112,7 +113,7 @@ namespace pcl
       float off_surface_epsilon_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

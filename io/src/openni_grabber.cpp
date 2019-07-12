@@ -89,7 +89,13 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
   point_cloud_i_signal_  = createSignal<sig_cb_openni_point_cloud_i> ();
   ir_depth_image_signal_ = createSignal<sig_cb_openni_ir_depth_image> ();
 
-  ir_sync_.addCallback (boost::bind (&OpenNIGrabber::irDepthImageCallback, this, _1, _2));
+  ir_sync_.addCallback ([this] (const openni_wrapper::IRImage::Ptr& image,
+                                const openni_wrapper::DepthImage::Ptr& depth_image,
+                                unsigned long,
+                                unsigned long)
+  {
+    irDepthImageCallback (image, depth_image);
+  });
   if (device_->hasImageStream ())
   {
     // create callback signals
@@ -97,7 +103,13 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
     image_depth_image_signal_ = createSignal<sig_cb_openni_image_depth_image> ();
     point_cloud_rgb_signal_   = createSignal<sig_cb_openni_point_cloud_rgb> ();
     point_cloud_rgba_signal_  = createSignal<sig_cb_openni_point_cloud_rgba> ();
-    rgb_sync_.addCallback (boost::bind (&OpenNIGrabber::imageDepthImageCallback, this, _1, _2));
+    rgb_sync_.addCallback ([this] (const openni_wrapper::Image::Ptr& image,
+                                   const openni_wrapper::DepthImage::Ptr& depth_image,
+                                   unsigned long,
+                                   unsigned long)
+    {
+      imageDepthImageCallback (image, depth_image);
+    });
     openni_wrapper::DeviceKinect* kinect = dynamic_cast<openni_wrapper::DeviceKinect*> (device_.get ());
     if (kinect)
       kinect->setDebayeringMethod (openni_wrapper::ImageBayerGRBG::EdgeAware);

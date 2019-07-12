@@ -387,8 +387,7 @@ namespace pcl
           update_visualizer_ = visualizerCallback;
           return (true);
         }
-        else
-          return (false);
+        return (false);
       }
 
       /** \brief Obtain the Euclidean fitness score (e.g., mean of squared distances from the source to the target)
@@ -610,7 +609,7 @@ namespace pcl
       /** \brief The point representation used (internal). */
       PointRepresentationConstPtr point_representation_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
    };
 }
 

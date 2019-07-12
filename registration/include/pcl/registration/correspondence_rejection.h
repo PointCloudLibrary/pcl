@@ -325,8 +325,7 @@ namespace pcl
           std::vector<float> distances (1);
           if (tree_->nearestKSearch (input_->points[index], 1, indices, distances))
             return (distances[0]);
-          else
-            return (std::numeric_limits<double>::max ());
+          return (std::numeric_limits<double>::max ());
         }
 
         /** \brief Get the correspondence score for a given pair of correspondent points

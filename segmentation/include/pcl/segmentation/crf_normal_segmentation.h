@@ -36,28 +36,29 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 
 namespace pcl
 {
-  /** \brief
-    * \author Christian Potthast
-    * 
-    */
+  /**
+   * \brief
+   * \author Christian Potthast
+   */
   template <typename PointT>
   class PCL_EXPORTS CrfNormalSegmentation
   {
     public:
-
       /** \brief Constructor that sets default values for member variables. */
       CrfNormalSegmentation ();
 
       /** \brief Destructor that frees memory. */
       ~CrfNormalSegmentation ();
 
-      /** \brief This method sets the input cloud.
-        * \param[in] input_cloud input point cloud
-        */
+      /**
+       * \brief This method sets the input cloud.
+       * \param[in] input_cloud input point cloud
+       */
       void
       setCloud (typename pcl::PointCloud<PointT>::Ptr input_cloud);
 
@@ -65,13 +66,7 @@ namespace pcl
       void
       segmentPoints ();
 
-    protected:
-
-    protected:
-
-
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

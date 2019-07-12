@@ -40,6 +40,7 @@
 #pragma once
 
 #include <pcl/common/eigen.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/ModelCoefficients.h>
 
@@ -135,6 +136,6 @@ namespace pcl
       Eigen::Vector4f coefficients_;
     
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }

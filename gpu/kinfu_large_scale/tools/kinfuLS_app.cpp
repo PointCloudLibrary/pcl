@@ -51,6 +51,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <iostream>
 #include <thread>
 
+#include <pcl/pcl_macros.h>
 #include <pcl/console/parse.h>
 
 #include <boost/filesystem.hpp>
@@ -681,7 +682,7 @@ struct SceneCloudView
   boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_;
 
 public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
 };
 
@@ -982,9 +983,15 @@ struct KinFuLSApp
     using DepthImagePtr = boost::shared_ptr<DepthImage>;
     using ImagePtr = boost::shared_ptr<Image>;
 
-    std::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = boost::bind (&KinFuLSApp::source_cb2, this, _1, _2, _3);
-    std::function<void (const DepthImagePtr&)> func2 = boost::bind (&KinFuLSApp::source_cb1, this, _1);
-    std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = boost::bind (&KinFuLSApp::source_cb3, this, _1);
+    std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func1 = [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
+    {
+      source_cb2 (img, depth, constant);
+    };
+    std::function<void (const DepthImagePtr&)> func2 = [this] (const DepthImagePtr& depth) { source_cb1 (depth); };
+    std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+    {
+      source_cb3 (cloud);
+    };
 
     bool need_colors = integrate_colors_ || registration_ || enable_texture_extraction_;
 

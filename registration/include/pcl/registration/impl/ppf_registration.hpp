@@ -263,9 +263,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::posesWithinErrorBounds (Eigen::A
 
   float rotation_diff_angle = fabsf (rotation_diff_mat.angle ());
 
-  if (position_diff < clustering_position_diff_threshold_ && rotation_diff_angle < clustering_rotation_diff_threshold_)
-    return true;
-  else return false;
+  return (position_diff < clustering_position_diff_threshold_ && rotation_diff_angle < clustering_rotation_diff_threshold_);
 }
 
 

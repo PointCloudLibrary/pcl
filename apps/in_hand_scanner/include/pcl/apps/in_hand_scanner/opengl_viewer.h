@@ -41,6 +41,7 @@
 #pragma once
 
 #include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/common/time.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
@@ -98,8 +99,7 @@ namespace pcl
           Eigen::Isometry3d      transformation;
 
         public:
-
-          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+          PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
     } // End namespace detail
 
@@ -167,8 +167,7 @@ namespace pcl
             Eigen::Isometry3d transformation;
 
           public:
-
-            EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+            PCL_MAKE_ALIGNED_OPERATOR_NEW
         };
 
         /** \brief Constructor. */
@@ -445,8 +444,7 @@ namespace pcl
         int y_prev_;
 
       public:
-
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   } // End namespace ihs
 } // End namespace pcl

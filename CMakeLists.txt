@@ -93,6 +93,7 @@ endif()
 include("${PCL_SOURCE_DIR}/cmake/pcl_verbosity.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_options.cmake")
+include("${PCL_SOURCE_DIR}/cmake/clang-format.cmake")
 
 # Enable verbose timing display?
 if(CMAKE_TIMING_VERBOSE AND UNIX)

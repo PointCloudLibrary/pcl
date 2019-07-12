@@ -296,7 +296,7 @@ namespace pcl
         reset ();
 
 public:
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     };
   }
