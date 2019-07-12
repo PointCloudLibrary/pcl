@@ -383,7 +383,7 @@ pcl::SCurVEstimation<PointInT, PointNT>::computeFeature (pcl::PointCloud<pcl::SC
   for (size_t i = 0; i < input_cloud->points.size(); i++)
   {
     // make sure that the current point is not a NaN
-    if ( pcl::isFinite(input_cloud->points[i]) && pcl_isfinite(normals_->points[i].normal_x) && pcl_isfinite(normals_->points[i].normal_y) && pcl_isfinite(normals_->points[i].normal_z) )
+    if ( pcl::isFinite(input_cloud->points[i]) && std::isfinite(normals_->points[i].normal_x) && std::isfinite(normals_->points[i].normal_y) && std::isfinite(normals_->points[i].normal_z) )
     {
       pcl::PointNormal currentPoint;
       currentPoint.getVector3fMap () = input_cloud->points[i].getVector3fMap ();
