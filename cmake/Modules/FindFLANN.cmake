@@ -21,6 +21,7 @@
 # ::
 #
 #   FLANN_FOUND               True in case FLANN is found, otherwise false
+#   FLANN_ROOT                Path to the root of found FLANN installation
 #
 # Example usage
 # ^^^^^^^^^^^^^
@@ -45,6 +46,10 @@ if(flann_FOUND)
   else()
     set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp)
   endif()
+  # Determine FLANN installation root based on the path to the processed Config file
+  get_filename_component(_config_dir "${flann_CONFIG}" DIRECTORY)
+  get_filename_component(FLANN_ROOT "${_config_dir}/../../.." ABSOLUTE)
+  unset(_config_dir)
   return()
 endif()
 
@@ -136,4 +141,5 @@ if(FLANN_FOUND)
       endif()
     endif()
   endif()
+  get_filename_component(FLANN_ROOT "${FLANN_INCLUDE_DIR}" PATH)
 endif()
