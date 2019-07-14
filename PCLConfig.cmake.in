@@ -222,7 +222,7 @@ macro(find_flann)
   if(PCL_ALL_IN_ONE_INSTALLER)
     set(FLANN_ROOT "${PCL_ROOT}/3rdParty/Flann")
   elseif(NOT FLANN_ROOT)
-    get_filename_component(FLANN_ROOT "@FLANN_INCLUDE_DIRS@" PATH)
+    set(FLANN_ROOT "@FLANN_ROOT@")
   endif()
 
   set(FLANN_USE_STATIC @FLANN_USE_STATIC@)
