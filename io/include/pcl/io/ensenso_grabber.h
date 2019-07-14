@@ -75,12 +75,12 @@ namespace pcl
       using ConstPtr = boost::shared_ptr<const EnsensoGrabber>;
 
       // Define callback signature typedefs
-      using sig_cb_ensenso_point_cloud = void() (const pcl::PointCloud<pcl::PointXYZ>::Ptr &);
+      using sig_cb_ensenso_point_cloud = void(const pcl::PointCloud<pcl::PointXYZ>::Ptr&);
 
-      using sig_cb_ensenso_images void() (const boost::shared_ptr<PairOfImages> &);
+      using sig_cb_ensenso_images = void(const boost::shared_ptr<PairOfImages>&);
 
-      using sig_cb_ensenso_point_cloud_images = void()
-	    (const pcl::PointCloud<pcl::PointXYZ>::Ptr &, const boost::shared_ptr<PairOfImages> &);
+      using sig_cb_ensenso_point_cloud_images = void(const pcl::PointCloud<pcl::PointXYZ>::Ptr&,const boost::shared_ptr<PairOfImages>&);
+
      /** @endcond */
 
       /** @brief Constructor */
