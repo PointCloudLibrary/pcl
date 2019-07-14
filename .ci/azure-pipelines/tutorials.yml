@@ -14,7 +14,7 @@ jobs:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
       INSTALL_DIR: '$(Agent.BuildDirectory)/install'
       CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi -O2'
-      EXCLUDE_TUTORIALS: 'davidsdk,ensenso_cameras,gpu'
+      EXCLUDE_TUTORIALS: 'davidsdk,gpu'
     steps:
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
