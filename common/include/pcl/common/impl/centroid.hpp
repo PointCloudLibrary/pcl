@@ -100,25 +100,22 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
     return (static_cast<unsigned int> (cloud.size ()));
   }
   // NaN or Inf values could exist => check for them
-  else
+  unsigned cp = 0;
+  for (size_t i = 0; i < cloud.size (); ++i)
   {
-    unsigned cp = 0;
-    for (size_t i = 0; i < cloud.size (); ++i)
-    {
-      // Check if the point is invalid
-      if (!isFinite (cloud [i]))
-        continue;
+    // Check if the point is invalid
+    if (!isFinite (cloud [i]))
+      continue;
 
-      centroid[0] += cloud[i].x;
-      centroid[1] += cloud[i].y;
-      centroid[2] += cloud[i].z;
-      ++cp;
-    }
-    centroid /= static_cast<Scalar> (cp);
-    centroid[3] = 1;
-
-    return (cp);
+    centroid[0] += cloud[i].x;
+    centroid[1] += cloud[i].y;
+    centroid[2] += cloud[i].z;
+    ++cp;
   }
+  centroid /= static_cast<Scalar> (cp);
+  centroid[3] = 1;
+
+  return (cp);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -146,24 +143,21 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
     return (static_cast<unsigned int> (indices.size ()));
   }
   // NaN or Inf values could exist => check for them
-  else
-  {
     unsigned cp = 0;
-    for (const int &index : indices)
-    {
-      // Check if the point is invalid
-      if (!isFinite (cloud [index]))
-        continue;
+  for (const int &index : indices)
+  {
+    // Check if the point is invalid
+    if (!isFinite (cloud [index]))
+      continue;
 
-      centroid[0] += cloud[index].x;
-      centroid[1] += cloud[index].y;
-      centroid[2] += cloud[index].z;
-      ++cp;
-    }
-    centroid /= static_cast<Scalar> (cp);
-    centroid[3] = 1;
-    return (cp);
+    centroid[0] += cloud[index].x;
+    centroid[1] += cloud[index].y;
+    centroid[2] += cloud[index].z;
+    ++cp;
   }
+  centroid /= static_cast<Scalar> (cp);
+  centroid[3] = 1;
+  return (cp);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

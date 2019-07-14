@@ -186,8 +186,7 @@ namespace pcl
         float offset = std::fabs(LUT_ideal_length[(int)parent.label][child_nr] - root);
         if(offset > LUT_max_length_offset[(int)parent.label][child_nr])
           return -1.0;
-        else
-          return offset;
+        return offset;
       }
 
       /**
@@ -211,8 +210,7 @@ namespace pcl
         float offset = std::fabs(person_attribs->part_ideal_length_[(int)parent.label][child_nr] - root);
         if(offset > person_attribs->max_length_offset_[(int)parent.label][child_nr])
           return -1.0;
-        else
-          return offset;
+        return offset;
       }
 
       /**

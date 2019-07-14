@@ -339,15 +339,12 @@ main (int argc, char ** argv)
     PCL_ERROR("Models dir path %s does not exist, use -models_dir [dir] option\n", path.c_str());
     return -1;
   }
-  else
-  {
-    std::vector < std::string > files;
-    std::string start;
-    std::string ext = std::string ("ply");
-    bf::path dir = models_dir_path;
-    getModelsInDirectory (dir, start, files, ext);
-    assert (files.size () == 4);
-  }
+  std::vector < std::string > files;
+  std::string start;
+  std::string ext = std::string ("ply");
+  bf::path dir = models_dir_path;
+  getModelsInDirectory (dir, start, files, ext);
+  assert (files.size () == 4);
 
   //configure mesh source
   boost::shared_ptr<pcl::rec_3d_framework::MeshSource<pcl::PointXYZ> > mesh_source (new pcl::rec_3d_framework::MeshSource<pcl::PointXYZ>);

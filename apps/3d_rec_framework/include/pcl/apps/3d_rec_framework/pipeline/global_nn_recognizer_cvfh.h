@@ -92,25 +92,19 @@ namespace pcl
             {
               return true;
             }
-            else
-            {
 
-              if (this->model.id_ == other.model.id_)
+            if (this->model.id_ == other.model.id_)
+            {
+              //check view id
+              if ((this->view_id < other.view_id))
               {
-                //check view id
-                if ((this->view_id < other.view_id))
+                return true;
+              }
+              if (this->view_id == other.view_id)
+              {
+                if (this->descriptor_id < other.descriptor_id)
                 {
                   return true;
-                }
-                else
-                {
-                  if (this->view_id == other.view_id)
-                  {
-                    if (this->descriptor_id < other.descriptor_id)
-                    {
-                      return true;
-                    }
-                  }
                 }
               }
             }

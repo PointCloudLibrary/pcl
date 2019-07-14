@@ -57,10 +57,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       PersistenceUtils::readMatrixFromFile (dir.str (), pose_matrix);
       return true;
     }
-    else
-    {
-      return false;
-    }
+    return false;
   }
 
 template<template<class > class Distance, typename PointInT, typename FeatureT>

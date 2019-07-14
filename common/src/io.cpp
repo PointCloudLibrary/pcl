@@ -226,7 +226,7 @@ pcl::concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
     cloud_out = cloud2;
     return (true);
   }
-  else if (cloud1.width*cloud1.height > 0 && cloud2.width*cloud2.height == 0)
+  if (cloud1.width*cloud1.height > 0 && cloud2.width*cloud2.height == 0)
   {
     cloud_out = cloud1;
     return (true);

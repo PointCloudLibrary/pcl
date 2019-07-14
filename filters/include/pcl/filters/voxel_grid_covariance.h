@@ -305,8 +305,7 @@ namespace pcl
           LeafConstPtr ret (&(leaf_iter->second));
           return ret;
         }
-        else
-          return nullptr;
+        return nullptr;
       }
 
       /** \brief Get the voxel containing point p.
@@ -332,8 +331,7 @@ namespace pcl
           LeafConstPtr ret (&(leaf_iter->second));
           return ret;
         }
-        else
-          return nullptr;
+        return nullptr;
       }
 
       /** \brief Get the voxel containing point p.
@@ -359,8 +357,7 @@ namespace pcl
           LeafConstPtr ret (&(leaf_iter->second));
           return ret;
         }
-        else
-          return nullptr;
+        return nullptr;
 
       }
 

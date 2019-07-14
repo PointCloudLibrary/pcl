@@ -163,9 +163,9 @@ namespace pcl
         {
           if (dim == 0)
             return (cloud.points[p0].x < cloud.points[p1].x);
-          else if (dim == 1)
+          if (dim == 1)
             return (cloud.points[p0].y < cloud.points[p1].y);
-          else if (dim == 2)
+          if (dim == 2)
             return (cloud.points[p0].z < cloud.points[p1].z);
           return (false);
         }

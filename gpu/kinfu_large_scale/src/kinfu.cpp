@@ -197,13 +197,8 @@ pcl::gpu::kinfuLS::KinfuTracker::extractAndSaveWorld ()
     PCL_WARN ("World model currently has no points. Skipping save procedure.\n");
     return;
   }
-  else
-  {
-    PCL_INFO ("Saving current world to world.pcd with %d points.\n", cloud_size);
-    pcl::io::savePCDFile<pcl::PointXYZI> ("world.pcd", *(cyclical_.getWorldModel ()->getWorld ()), true);
-    return;
-  }
-  
+  PCL_INFO ("Saving current world to world.pcd with %d points.\n", cloud_size);
+  pcl::io::savePCDFile<pcl::PointXYZI> ("world.pcd", *(cyclical_.getWorldModel ()->getWorld ()), true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -641,16 +636,14 @@ pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth_raw)
     saveCurrentMaps ();
     return (true);
   }
-  else
-  {
-    // ICP based on synthetic maps succeeded
-    // Save newly-computed pose
-    rmats_.push_back (current_global_rotation); 
-    tvecs_.push_back (current_global_translation);
-    // Update last estimated pose to current pairwise ICP result
-    last_estimated_translation_ = current_global_translation;
-    last_estimated_rotation_ = current_global_rotation;
-  }  
+
+  // ICP based on synthetic maps succeeded
+  // Save newly-computed pose
+  rmats_.push_back (current_global_rotation); 
+  tvecs_.push_back (current_global_translation);
+  // Update last estimated pose to current pairwise ICP result
+  last_estimated_translation_ = current_global_translation;
+  last_estimated_rotation_ = current_global_rotation;
 
   ///////////////////////////////////////////////////////////////////////////////////////////  
   // check if we need to shift

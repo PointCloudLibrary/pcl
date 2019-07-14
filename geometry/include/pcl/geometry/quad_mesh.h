@@ -156,8 +156,7 @@ namespace pcl
         {
           if (vertices.size () == 4)
             return (this->addFaceImplBase (vertices, face_data, edge_data, half_edge_data));
-          else
-            return (FaceIndex ());
+          return (FaceIndex ());
         }
 
         ////////////////////////////////////////////////////////////////////////

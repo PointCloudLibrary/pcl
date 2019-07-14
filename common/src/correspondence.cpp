@@ -54,7 +54,7 @@ pcl::getRejectedQueryIndices (const pcl::Correspondences &correspondences_before
 
   if (nr_correspondences_before == 0)
     return;
-  else if (nr_correspondences_after == 0)
+  if (nr_correspondences_after == 0)
   {
     indices.resize(nr_correspondences_before);
     for (int i = 0; i < nr_correspondences_before; ++i)

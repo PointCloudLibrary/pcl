@@ -158,8 +158,7 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
               PCL_WARN("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 2 : size node format error\n");   //  format error: line doesn't start with an int.
               return (NCV_HAAR_XML_LOADING_EXCEPTION);
             }
-            else
-              PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level2 : size int1 %d, int2 %d\n", haar.ClassifierSize.width, haar.ClassifierSize.height);
+            PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level2 : size int1 %d, int2 %d\n", haar.ClassifierSize.width, haar.ClassifierSize.height);
 
             int level3 = 0;
             /// LEVEL3 (Stages)

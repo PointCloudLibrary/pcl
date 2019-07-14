@@ -32,7 +32,7 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
     qCritical () << "Empty input in FPFH Estimation Tool!";
     return output;
   }
-  else if ( input_data.size () > 1)
+  if ( input_data.size () > 1)
   {
     qWarning () << "Input vector has more than one item in FPFH Estimation!";
   }

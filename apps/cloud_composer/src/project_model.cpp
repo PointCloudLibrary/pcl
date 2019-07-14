@@ -168,12 +168,9 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
     qWarning () << "No file selected, no cloud loaded";
     return;
   }
-  else
-  {
-    QFileInfo file_info (filename);
-    last_directory_ = file_info.absoluteDir ();
-  }
-    
+  QFileInfo file_info (filename);
+  last_directory_ = file_info.absoluteDir ();
+
   pcl::PCLPointCloud2::Ptr cloud_blob (new pcl::PCLPointCloud2);
   Eigen::Vector4f origin;
   Eigen::Quaternionf orientation;
@@ -191,7 +188,6 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
     return;
   }
   
-  QFileInfo file_info (filename);
   QString short_filename = file_info.baseName ();
   //Check if this name already exists in the project - if so, append digit
   QList <QStandardItem*> items = findItems (short_filename);
@@ -223,27 +219,24 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
     qWarning () << "No file selected, no cloud loaded";
     return;
   }
-  else
+  QFileInfo file_info (rgb_filename);
+  last_directory_ = file_info.absoluteDir ();
+  QString base_name = file_info.baseName ();
+  QStringList depth_filter;
+  depth_filter << base_name.split("_").at(0) + "_depth.*";
+  last_directory_.setNameFilters (depth_filter);
+  QFileInfoList depth_info_list = last_directory_.entryInfoList ();
+  if (depth_info_list.empty ())
   {
-    QFileInfo file_info (rgb_filename);
-    last_directory_ = file_info.absoluteDir ();
-    QString base_name = file_info.baseName ();
-    QStringList depth_filter;
-    depth_filter << base_name.split("_").at(0) + "_depth.*";
-    last_directory_.setNameFilters (depth_filter);
-    QFileInfoList depth_info_list = last_directory_.entryInfoList ();
-    if (depth_info_list.empty ())
-    {
-      qCritical () << "Could not find depth file in format (rgb file base name)_depth.*";
-      return;
-    }
-    else if (depth_info_list.size () > 1)
-    {
-      qWarning () << "Found more than one file which matches depth naming format, using first one!";
-    }
-    depth_filename = depth_info_list.at (0).absoluteFilePath ();
+    qCritical () << "Could not find depth file in format (rgb file base name)_depth.*";
+    return;
   }
-  
+  if (depth_info_list.size () > 1)
+  {
+    qWarning () << "Found more than one file which matches depth naming format, using first one!";
+  }
+  depth_filename = depth_info_list.at (0).absoluteFilePath ();
+
   //Read the images
   vtkSmartPointer<vtkImageReader2Factory> reader_factory = vtkSmartPointer<vtkImageReader2Factory>::New ();
   vtkImageReader2* rgb_reader = reader_factory->CreateImageReader2 (rgb_filename.toStdString ().c_str ());
@@ -325,7 +318,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
     }
   }
   qDebug () << "Done making cloud!";
-  QFileInfo file_info (rgb_filename);
+
   QString short_filename = file_info.baseName ();
   //Check if this name already exists in the project - if so, append digit
   QList <QStandardItem*> items = findItems (short_filename);
@@ -356,7 +349,7 @@ pcl::cloud_composer::ProjectModel::saveSelectedCloudToFile ()
     QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "No Cloud Selected", "Cannot save, no cloud is selected in the browser or cloud view");
     return;
   }
-  else if (selected_indexes.size () > 1)
+  if (selected_indexes.size () > 1)
   {
     QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "Too many clouds Selected", "Cannot save, currently only support saving one cloud at a time");
     return;
@@ -376,12 +369,9 @@ pcl::cloud_composer::ProjectModel::saveSelectedCloudToFile ()
     qWarning () << "No file selected, not saving";
     return;
   }
-  else
-  {
-    QFileInfo file_info (filename);
-    last_directory_ = file_info.absoluteDir ();
-  }
-  
+  QFileInfo file_info (filename);
+  last_directory_ = file_info.absoluteDir ();
+
   pcl::PCLPointCloud2::ConstPtr cloud = cloud_to_save->data (ItemDataRole::CLOUD_BLOB).value <pcl::PCLPointCloud2::ConstPtr> ();
   Eigen::Vector4f origin = cloud_to_save->data (ItemDataRole::ORIGIN).value <Eigen::Vector4f> ();
   Eigen::Quaternionf orientation = cloud_to_save->data (ItemDataRole::ORIENTATION).value <Eigen::Quaternionf> ();

@@ -244,10 +244,7 @@ pcl::cloud_composer::ModifyItemCommand::runCommand (AbstractTool* tool)
     qDebug () << "Modify Item command generated "<<num_items_returned<<" which does not match input of "<<original_data_.size () <<" items";
     return true;
   }
-  else
-  {
-    return true;
-  }
+  return true;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -319,12 +316,8 @@ pcl::cloud_composer::NewItemCloudCommand::runCommand (AbstractTool* tool)
     qDebug () << "New Item command generated "<<num_new_items<<" new items";
     return true;
   }
-  else
-  {
-    qWarning () << "New Item command generated no new items!";
-    return false;
-  }
-   
+  qWarning () << "New Item command generated no new items!";
+  return false;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -427,12 +420,8 @@ pcl::cloud_composer::SplitCloudCommand::runCommand (AbstractTool* tool)
     qDebug () << "Split Item command generated "<<num_new_items<<" new items";
     return true;
   }
-  else
-  {
-    qWarning () << "Split Item command generated no new items!";
-    return false;
-  }
-
+  qWarning () << "Split Item command generated no new items!";
+  return false;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

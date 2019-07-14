@@ -184,11 +184,8 @@ comparePointToRegion (PointT& pt, pcl::ModelCoefficients& model, pcl::PointCloud
     PCL_INFO ("inside!\n");
     return true;
   }
-  else
-  {
-    PCL_INFO ("not inside!\n");
-    return false;
-  }
+  PCL_INFO ("not inside!\n");
+  return false;
 
 }
 
