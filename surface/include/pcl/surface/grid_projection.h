@@ -95,7 +95,7 @@ namespace pcl
         Eigen::Vector3f vect_at_grid_pt;
       };
 
-      typedef std::unordered_map<int, Leaf, std::hash<int>, std::equal_to<int>, Eigen::aligned_allocator<std::pair<const int, Leaf>>> HashMap;
+      typedef std::unordered_map<int, Leaf, std::hash<int>, std::equal_to<>, Eigen::aligned_allocator<std::pair<const int, Leaf>>> HashMap;
 
       /** \brief Constructor. */ 
       GridProjection ();
