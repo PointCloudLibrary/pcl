@@ -52,7 +52,7 @@ namespace pcl
       public:
 
         NormalsItem (QString name, 
-                     pcl::PointCloud<pcl::Normal>::Ptr normals_ptr,
+                     const pcl::PointCloud<pcl::Normal>::Ptr& normals_ptr,
                      double radius);
         NormalsItem (const NormalsItem& to_copy);
         ~NormalsItem ();

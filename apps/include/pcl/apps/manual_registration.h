@@ -101,13 +101,13 @@ class ManualRegistration : public QMainWindow
     void
     setSrcCloud (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_src)
     {
-      cloud_src_ = cloud_src;
+      cloud_src_ = std::move(cloud_src);
       cloud_src_present_ = true;
     }
     void
     setDstCloud (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_dst)
     {
-      cloud_dst_ = cloud_dst;
+      cloud_dst_ = std::move(cloud_dst);
       cloud_dst_present_ = true;
     }
 

@@ -63,7 +63,7 @@ class OpenNIOrganizedEdgeDetection
     }
 
     pcl::visualization::PCLVisualizer::Ptr
-    initCloudViewer (pcl::PointCloud<PointT>::ConstPtr cloud)
+    initCloudViewer (const pcl::PointCloud<PointT>::ConstPtr& cloud)
     {
       viewer->setSize (640, 480);
       viewer->addPointCloud<PointT> (cloud, "cloud");

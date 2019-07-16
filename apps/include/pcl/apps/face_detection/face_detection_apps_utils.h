@@ -9,7 +9,7 @@
 
 namespace face_detection_apps_utils
 {
-  inline bool readMatrixFromFile(std::string file, Eigen::Matrix4f & matrix)
+  inline bool readMatrixFromFile(const std::string& file, Eigen::Matrix4f & matrix)
   {
 
     std::ifstream in;

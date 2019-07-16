@@ -146,7 +146,7 @@ namespace pcl
         * \param labels_file_name file name for writing the class label for each training example
         * \return true on success, false on failure (write error or number of entries don't match)
         */
-      bool saveTrainingFeatures(std::string file_name, std::string labels_file_name)
+      bool saveTrainingFeatures(const std::string& file_name, const std::string& labels_file_name)
       {
         if (labels_.size () == training_features_->points.size ())
         {
@@ -166,7 +166,7 @@ namespace pcl
         * \param labels the class label for each training example
         * \return true on success, false on failure (number of entries don't match)
         */
-      bool addTrainingFeatures (const FeatureCloudPtr training_features, const std::vector<std::string> &labels)
+      bool addTrainingFeatures (const FeatureCloudPtr& training_features, const std::vector<std::string> &labels)
       {
         if (labels.size () == training_features->points.size ())
         {
@@ -189,7 +189,7 @@ namespace pcl
         * \param labels_file_name the class label for each training example
         * \return true on success, false on failure (read error or number of entries don't match)
         */
-      bool loadTrainingFeatures(std::string file_name, std::string labels_file_name)
+      bool loadTrainingFeatures(const std::string& file_name, const std::string& labels_file_name)
       {
         FeatureCloudPtr cloud (new FeatureCloud);
         if (pcl::io::loadPCDFile (file_name.c_str (), *cloud) != 0)
@@ -210,7 +210,7 @@ namespace pcl
         * \param label the class label for the training example
         * \return true on success, false on failure (read error or number of entries don't match)
         */
-      bool loadTrainingData (std::string file_name, std::string label)
+      bool loadTrainingData (const std::string& file_name, std::string label)
       {
         pcl::PCLPointCloud2 cloud_blob;
         if (pcl::io::loadPCDFile (file_name.c_str (), cloud_blob) != 0)

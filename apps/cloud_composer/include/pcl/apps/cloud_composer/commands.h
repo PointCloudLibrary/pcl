@@ -81,7 +81,7 @@ namespace pcl
         inline void
         setInputData (ConstItemList input_data)
         {
-          original_data_ = input_data;
+          original_data_ = std::move(input_data);
         }
       protected:
         /** \brief Removes the original item(s) from the model and replaces with the replacement(s)
@@ -89,11 +89,11 @@ namespace pcl
          *  This stores the removed items in removed_items_
          */
         bool 
-        replaceOriginalWithNew (QList <const CloudComposerItem*> originals, QList <CloudComposerItem*> new_items);
+        replaceOriginalWithNew (const QList <const CloudComposerItem*>& originals, const QList <CloudComposerItem*>& new_items);
         
         /** \brief This removes new_items from the model and restores originals */
         bool
-        restoreOriginalRemoveNew (QList <const CloudComposerItem*> originals, QList <CloudComposerItem*> new_items);
+        restoreOriginalRemoveNew (const QList <const CloudComposerItem*>& originals, const QList <CloudComposerItem*>& new_items);
         
         ConstItemList original_data_;
         
@@ -206,7 +206,7 @@ namespace pcl
         redo () override;
         
         inline void
-        setSelectedIndicesMap( const QMap <CloudItem*, pcl::PointIndices::Ptr > selected_item_index_map)
+        setSelectedIndicesMap( const QMap <CloudItem*, pcl::PointIndices::Ptr >& selected_item_index_map)
         {
           selected_item_index_map_ = selected_item_index_map;
         }

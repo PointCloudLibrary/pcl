@@ -22,7 +22,7 @@ const float normal_estimation_search_radius = 0.05f;
 
 
 PointCloud<PointNormal>::Ptr
-subsampleAndCalculateNormals (PointCloud<PointXYZ>::Ptr cloud)
+subsampleAndCalculateNormals (const PointCloud<PointXYZ>::Ptr& cloud)
 {
   PointCloud<PointXYZ>::Ptr cloud_subsampled (new PointCloud<PointXYZ> ());
   VoxelGrid<PointXYZ> subsampling_filter;

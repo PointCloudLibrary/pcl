@@ -68,7 +68,7 @@ pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, const std::
 pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, CloudMesh::PointCloudPtr cloud)
   :QTreeWidgetItem(parent),
   filename_("unnamed point cloud"),
-  cloud_mesh_(new CloudMesh (cloud)),
+  cloud_mesh_(new CloudMesh (std::move(cloud))),
   translation_x_(new DoubleParameter("Translation X", "Translation X", 0.0, -1.0, 1.0)),
   translation_y_(new DoubleParameter("Translation Y", "Translation Y", 0.0, -1.0, 1.0)),
   translation_z_(new DoubleParameter("Translation Z", "Translation Z", 0.0, -1.0, 1.0)),

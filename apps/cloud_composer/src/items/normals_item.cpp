@@ -3,8 +3,8 @@
 
 #include <QDebug>
 
-pcl::cloud_composer::NormalsItem::NormalsItem (QString name, pcl::PointCloud<pcl::Normal>::Ptr normals_ptr, double radius)
-  : CloudComposerItem (name)
+pcl::cloud_composer::NormalsItem::NormalsItem (QString name, const pcl::PointCloud<pcl::Normal>::Ptr& normals_ptr, double radius)
+  : CloudComposerItem (std::move(name))
   , normals_ptr_ (normals_ptr)
 
 {

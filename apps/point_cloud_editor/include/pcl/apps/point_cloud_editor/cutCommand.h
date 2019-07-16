@@ -54,7 +54,7 @@ class CutCommand : public Command
     /// @param cloud_ptr a shared pointer pointing to the cloud object.
     CutCommand (CopyBufferPtr copy_buffer_ptr,
                 SelectionPtr selection_ptr,
-                CloudPtr cloud_ptr);
+                const CloudPtr& cloud_ptr);
 
     /// @brief Copy constructor - commands are non-copyable
     CutCommand (const CutCommand&) = delete;

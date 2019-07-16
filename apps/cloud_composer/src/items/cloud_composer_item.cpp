@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-pcl::cloud_composer::CloudComposerItem::CloudComposerItem (QString name)
+pcl::cloud_composer::CloudComposerItem::CloudComposerItem (const QString& name)
   : QStandardItem(name)
 {
   //Set up the properties, store pointer locally for convenience

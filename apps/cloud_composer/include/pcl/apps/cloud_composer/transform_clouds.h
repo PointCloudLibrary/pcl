@@ -57,7 +57,7 @@ namespace pcl
         getToolName () const override { return "Transform Clouds Tool";}
        
         template <typename PointT> QList <CloudComposerItem*>
-        performTemplatedAction (QList <const CloudComposerItem*> input_data);
+        performTemplatedAction (const QList <const CloudComposerItem*>& input_data);
         
       private:
         QMap <QString, vtkSmartPointer<vtkMatrix4x4> > transform_map_;

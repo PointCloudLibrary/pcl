@@ -68,11 +68,11 @@ pcl::cloud_composer::ProjectModel::ProjectModel (QString project_name, QObject* 
 : QStandardItemModel (parent)
 {
   selection_model_ = new QItemSelectionModel(this);
-  setName (project_name);
+  setName (std::move(project_name));
 }
 
 void 
-pcl::cloud_composer::ProjectModel::setName (QString new_name)
+pcl::cloud_composer::ProjectModel::setName (const QString& new_name)
 { 
   //If it hasn't been set yet
   if (!horizontalHeaderItem (0))
@@ -94,7 +94,7 @@ pcl::cloud_composer::ProjectModel::setCloudView (CloudView* view)
 }
 
 void
-pcl::cloud_composer::ProjectModel::setPointSelection (boost::shared_ptr<SelectionEvent> selected_event)
+pcl::cloud_composer::ProjectModel::setPointSelection (const boost::shared_ptr<SelectionEvent>& selected_event)
 {
   selection_event_ = selected_event;
   //Get all the items in this project that are clouds
@@ -124,7 +124,7 @@ pcl::cloud_composer::ProjectModel::setPointSelection (boost::shared_ptr<Selectio
 }
 
 void
-pcl::cloud_composer::ProjectModel::manipulateClouds (boost::shared_ptr<ManipulationEvent> manip_event)
+pcl::cloud_composer::ProjectModel::manipulateClouds (const boost::shared_ptr<ManipulationEvent>& manip_event)
 {
   
   //Get all the items in this project that are clouds

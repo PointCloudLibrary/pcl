@@ -68,7 +68,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
     }
 
     pcl::visualization::PCLVisualizer::Ptr
-    cloudViewer (pcl::PointCloud<PointT>::ConstPtr cloud)
+    cloudViewer (const pcl::PointCloud<PointT>::ConstPtr& cloud)
     {
       pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("Viewer"));
       viewer->setBackgroundColor (0, 0, 0);

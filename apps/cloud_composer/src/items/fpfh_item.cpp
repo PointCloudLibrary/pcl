@@ -5,8 +5,8 @@
 
 #include <QVTKWidget.h>
 
-pcl::cloud_composer::FPFHItem::FPFHItem (QString name, pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr, double radius)
-  : CloudComposerItem (name)
+pcl::cloud_composer::FPFHItem::FPFHItem (QString name, const pcl::PointCloud<pcl::FPFHSignature33>::Ptr& fpfh_ptr, double radius)
+  : CloudComposerItem (std::move(name))
   , fpfh_ptr_ (fpfh_ptr)
   , radius_ (radius)
 

@@ -76,7 +76,7 @@ namespace pcl
 
     template<typename PointT>
       inline void
-      uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, typename pcl::PointCloud<PointT> & cloud_out)
+      uniform_sampling (const vtkSmartPointer<vtkPolyData>& polydata, size_t n_samples, typename pcl::PointCloud<PointT> & cloud_out)
       {
         polydata->BuildCells ();
         vtkSmartPointer < vtkCellArray > cells = polydata->GetPolys ();
@@ -142,7 +142,7 @@ namespace pcl
       }
 
     inline void
-    getVerticesAsPointCloud (vtkSmartPointer<vtkPolyData> polydata, pcl::PointCloud<pcl::PointXYZ> & cloud_out)
+    getVerticesAsPointCloud (const vtkSmartPointer<vtkPolyData>& polydata, pcl::PointCloud<pcl::PointXYZ> & cloud_out)
     {
       vtkPoints *points = polydata->GetPoints ();
       cloud_out.points.resize (points->GetNumberOfPoints ());

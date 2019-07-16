@@ -43,8 +43,8 @@
 #include <pcl/apps/point_cloud_editor/selection.h>
 
 DeleteCommand::DeleteCommand (SelectionPtr selection_ptr,
-                              CloudPtr cloud_ptr)
-  : cloud_ptr_(cloud_ptr), selection_ptr_(selection_ptr), deleted_selection_(cloud_ptr) {}
+                              const CloudPtr& cloud_ptr)
+  : cloud_ptr_(cloud_ptr), selection_ptr_(std::move(selection_ptr)), deleted_selection_(cloud_ptr) {}
 
 void
 DeleteCommand::execute ()

@@ -133,7 +133,7 @@ namespace pcl
         * \return true on success, false on failure (read error or number of entries don't match)
         */
       bool 
-      loadTrainingFeatures(std::string file_name, std::string labels_file_name)
+      loadTrainingFeatures(const std::string& file_name, const std::string& labels_file_name)
       {
         typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
         if (pcl::io::loadPCDFile (file_name.c_str (), *cloud) != 0)
@@ -157,7 +157,7 @@ namespace pcl
         * \return true on success, false on failure (write error or number of entries don't match)
         */
       bool 
-      saveTrainingFeatures (std::string file_name, std::string labels_file_name)
+      saveTrainingFeatures (const std::string& file_name, const std::string& labels_file_name)
       {
         typename pcl::PointCloud<PointT>::ConstPtr training_features = tree_->getInputCloud ();
         if (labels_idx_.size () == training_features->points.size ())
