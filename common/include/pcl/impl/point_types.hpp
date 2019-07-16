@@ -680,7 +680,7 @@ namespace pcl
   };
 
 
-  struct _PointXYZHSV
+  struct EIGEN_ALIGN16 _PointXYZHSV
   {
     PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     union
@@ -694,7 +694,7 @@ namespace pcl
       float data_c[4];
     };
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  } EIGEN_ALIGN16;
+  };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXYZHSV& p);
   struct EIGEN_ALIGN16 PointXYZHSV : public _PointXYZHSV
