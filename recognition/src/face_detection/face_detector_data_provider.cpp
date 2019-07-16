@@ -4,6 +4,8 @@
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/io/pcd_io.h>
 
+#include <random>
+
 //Uncomment the following lines and set PCL_FACE_DETECTION_VIS_TRAINING_FDDP to 1
 //to visualize the training process and change the CMakeLists.txt accordingly.
 //#include <pcl/visualization/pcl_visualizer.h>
@@ -136,13 +138,14 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
   if (min_images_per_bin_ != -1)
   {
     std::cout << "Reducing unbalance of the dataset." << std::endl;
+    std::mt19937 rng((std::random_device()()));
     for (int i = 0; i < num_yaw; i++)
     {
       for (int j = 0; j < num_pitch; j++)
       {
         if (yaw_pitch_bins[i][j] >= min_images_per_bin_)
         {
-          std::random_shuffle (image_files_per_bin[i][j].begin (), image_files_per_bin[i][j].end ());
+          std::shuffle (image_files_per_bin[i][j].begin (), image_files_per_bin[i][j].end (), rng);
           image_files_per_bin[i][j].resize (min_images_per_bin_);
           yaw_pitch_bins[i][j] = min_images_per_bin_;
         }
@@ -167,8 +170,8 @@ template<class FeatureType, class DataSet, class LabelType, class ExampleIndex, 
 void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::getDatasetAndLabels(DataSet & data_set,
     std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples)
 {
-  srand (static_cast<unsigned int>(time (nullptr)));
-  std::random_shuffle (image_files_.begin (), image_files_.end ());
+  std::mt19937 rng((std::random_device()()));
+  std::shuffle (image_files_.begin (), image_files_.end (), rng);
   std::vector < std::string > files;
   files = image_files_;
   files.resize (std::min (num_images_, static_cast<int> (files.size ())));
@@ -393,8 +396,8 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
       }
 
       //shuffle and resize
-      std::random_shuffle (positive_p.begin (), positive_p.end ());
-      std::random_shuffle (negative_p.begin (), negative_p.end ());
+      std::shuffle (positive_p.begin (), positive_p.end (), rng);
+      std::shuffle (negative_p.begin (), negative_p.end (), rng);
       positive_p.resize (N_patches);
       negative_p.resize (N_patches);
 
