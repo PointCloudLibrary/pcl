@@ -113,7 +113,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
         tree_->radiusSearch (zeta_point_pcl, search_radius_, k_indices, k_sqr_distances);
 
         // Do k nearest search if there are no neighbors nearby
-        if (k_indices.size () == 0)
+        if (k_indices.empty ())
         {
           k_indices.resize (5);
           k_sqr_distances.resize (5);

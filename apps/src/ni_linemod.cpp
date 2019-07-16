@@ -50,7 +50,6 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
-//#include <pcl/io/tar_io.h>
 #include <pcl/surface/convex_hull.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -62,10 +61,14 @@
 #include <pcl/segmentation/edge_aware_plane_comparator.h>
 #include <pcl/geometry/polygon_operations.h>
 
+#include <mutex>
+#include <thread>
+
 using namespace pcl;
 using namespace std;
+using namespace std::chrono_literals;
 
-typedef PointXYZRGBA PointT;
+using PointT = PointXYZRGBA;
 
 #define SHOW_FPS 1
 
@@ -73,9 +76,9 @@ typedef PointXYZRGBA PointT;
 class NILinemod
 {
   public:
-    typedef PointCloud<PointT> Cloud;
-    typedef Cloud::Ptr CloudPtr;
-    typedef Cloud::ConstPtr CloudConstPtr;
+    using Cloud = PointCloud<PointT>;
+    using CloudPtr = Cloud::Ptr;
+    using CloudConstPtr = Cloud::ConstPtr;
     bool added;
 
     NILinemod (Grabber& grabber)
@@ -107,7 +110,7 @@ class NILinemod
     cloud_callback (const CloudConstPtr& cloud)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
       search_.setInputCloud (cloud);
 
@@ -151,16 +154,13 @@ class NILinemod
           first_frame_ = true;
           return;
         }
-        else
-        {
-          plane_.reset (new Cloud);
+        plane_.reset (new Cloud);
 
-          // Compute the convex hull of the plane
-          ConvexHull<PointT> chull;
-          chull.setDimension (2);
-          chull.setInputCloud (plane_inliers);
-          chull.reconstruct (*plane_);
-        }
+        // Compute the convex hull of the plane
+        ConvexHull<PointT> chull;
+        chull.setDimension (2);
+        chull.setInputCloud (plane_inliers);
+        chull.reconstruct (*plane_);
       }
     }
 
@@ -169,7 +169,7 @@ class NILinemod
     getLatestCloud ()
     {
       // Lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       CloudConstPtr temp_cloud;
       temp_cloud.swap (cloud_);
       return (temp_cloud);
@@ -259,9 +259,6 @@ class NILinemod
       for (const int &index : points_above_plane->indices)
         scene->points[index].label = 1;
       euclidean_cluster_comparator->setLabels (scene);
-
-      boost::shared_ptr<std::set<uint32_t> > exclude_labels = boost::make_shared<std::set<uint32_t> > ();
-      exclude_labels->insert (0);
 
       OrganizedConnectedComponentSegmentation<PointT, Label> euclidean_segmentation (euclidean_cluster_comparator);
       euclidean_segmentation.setInputCloud (cloud);
@@ -377,7 +374,7 @@ class NILinemod
       vector<float> distances (1);
 
       // Use mutices to make sure we get the right cloud
-      boost::mutex::scoped_lock lock1 (cloud_mutex_);
+      std::lock_guard<std::mutex> lock1 (cloud_mutex_);
 
       // Get the point that was picked
       PointT picked_pt;
@@ -421,20 +418,17 @@ class NILinemod
         return;
       }
       // Else, draw it on screen
-      else
-      {
-        //cloud_viewer_.addPolygon (region, 1.0, 0.0, 0.0, "region");
-        //cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
+      //cloud_viewer_.addPolygon (region, 1.0, 0.0, 0.0, "region");
+      //cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
 
-        PlanarRegion<PointT> refined_region;
-        pcl::approximatePolygon (region, refined_region, 0.01, false, true);
-        PCL_INFO ("Planar region: %lu points initial, %lu points after refinement.\n", region.getContour ().size (), refined_region.getContour ().size ());
-        cloud_viewer_.addPolygon (refined_region, 0.0, 0.0, 1.0, "refined_region");
-        cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "refined_region");
+      PlanarRegion<PointT> refined_region;
+      pcl::approximatePolygon (region, refined_region, 0.01, false, true);
+      PCL_INFO ("Planar region: %lu points initial, %lu points after refinement.\n", region.getContour ().size (), refined_region.getContour ().size ());
+      cloud_viewer_.addPolygon (refined_region, 0.0, 0.0, 1.0, "refined_region");
+      cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "refined_region");
 
-        // Draw in image space
-        image_viewer_.addPlanarPolygon (search_.getInputCloud (), refined_region, 0.0, 0.0, 1.0, "refined_region", 1.0);
-      }
+      // Draw in image space
+      image_viewer_.addPlanarPolygon (search_.getInputCloud (), refined_region, 0.0, 0.0, 1.0, "refined_region", 1.0);
 
       // If no object could be determined, exit
       if (!object)
@@ -442,28 +436,25 @@ class NILinemod
         PCL_ERROR ("No object detected. Please select another point or relax the thresholds and continue.\n");
         return;
       }
-      else
-      {
-        // Visualize the object in 3D...
-        visualization::PointCloudColorHandlerCustom<PointT> red (object, 255, 0, 0);
-        if (!cloud_viewer_.updatePointCloud (object, red, "object"))
-          cloud_viewer_.addPointCloud (object, red, "object");
-        // ...and 2D
-        image_viewer_.removeLayer ("object");
-        image_viewer_.addMask (search_.getInputCloud (), *object, "object");
+      // Visualize the object in 3D...
+      visualization::PointCloudColorHandlerCustom<PointT> red (object, 255, 0, 0);
+      if (!cloud_viewer_.updatePointCloud (object, red, "object"))
+        cloud_viewer_.addPointCloud (object, red, "object");
+      // ...and 2D
+      image_viewer_.removeLayer ("object");
+      image_viewer_.addMask (search_.getInputCloud (), *object, "object");
 
-        // Compute the min/max of the object
-        PointT min_pt, max_pt;
-        getMinMax3D (*object, min_pt, max_pt);
-        stringstream ss;
-        ss << "cube_" << idx;
-        // Visualize the bounding box in 3D...
-        cloud_viewer_.addCube (min_pt.x, max_pt.x, min_pt.y, max_pt.y, min_pt.z, max_pt.z, 0.0, 1.0, 0.0, ss.str ());
-        cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, ss.str ());
+      // Compute the min/max of the object
+      PointT min_pt, max_pt;
+      getMinMax3D (*object, min_pt, max_pt);
+      stringstream ss2;
+      ss2 << "cube_" << idx;
+      // Visualize the bounding box in 3D...
+      cloud_viewer_.addCube (min_pt.x, max_pt.x, min_pt.y, max_pt.y, min_pt.z, max_pt.z, 0.0, 1.0, 0.0, ss2.str ());
+      cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, ss2.str ());
 
-        // ...and 2D
-        image_viewer_.addRectangle (search_.getInputCloud (), *object);
-      }
+      // ...and 2D
+      image_viewer_.addRectangle (search_.getInputCloud (), *object);
     }
     
     /////////////////////////////////////////////////////////////////////////
@@ -473,7 +464,7 @@ class NILinemod
       cloud_viewer_.registerMouseCallback (&NILinemod::mouse_callback, *this);
       cloud_viewer_.registerKeyboardCallback(&NILinemod::keyboard_callback, *this);
       cloud_viewer_.registerPointPickingCallback (&NILinemod::pp_callback, *this);
-      boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&NILinemod::cloud_callback, this, _1);
+      std::function<void (const CloudConstPtr&) > cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
       cloud_connection = grabber_.registerCallback (cloud_cb);
       
       image_viewer_.registerMouseCallback (&NILinemod::mouse_callback, *this);
@@ -527,7 +518,7 @@ class NILinemod
         cloud_viewer_.spinOnce ();
 
         image_viewer_.spinOnce ();
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
       }
 
       grabber_.stop ();
@@ -537,7 +528,7 @@ class NILinemod
     
     visualization::PCLVisualizer cloud_viewer_;
     Grabber& grabber_;
-    boost::mutex cloud_mutex_;
+    std::mutex cloud_mutex_;
     CloudConstPtr cloud_;
     
     visualization::ImageViewer image_viewer_;

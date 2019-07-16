@@ -49,8 +49,8 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-typedef PointXYZ PointT;
-typedef PointCloud<PointT> CloudT;
+using PointT = PointXYZ;
+using CloudT = PointCloud<PointT>;
 
 const static double default_alpha = 1e3f;
 
@@ -183,7 +183,7 @@ main (int argc, char** argv)
   cropToHull (output_cloud, input_cloud, hull_points, hull_polygons, dim);
   
 
-  if (output_cloud->size ())
+  if (!output_cloud->empty ())
     saveCloud (argv[p_file_indices[2]], *output_cloud);
   else
     print_error ("No points passed crop.\n");

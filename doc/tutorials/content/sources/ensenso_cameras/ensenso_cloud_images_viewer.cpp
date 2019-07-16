@@ -5,18 +5,20 @@
  * @date November 2014
  */
 
-#include <iostream>
-#include <vector>
 #include <algorithm>
+#include <iostream>
+#include <thread>
+#include <vector>
 
 #include <pcl/common/common.h>
 #include <pcl/console/print.h>
 #include <pcl/io/ensenso_grabber.h>
-#include <pcl/console/time.h>
 #include <pcl/visualization/cloud_viewer.h>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+
+using namespace std::chrono_literals;
 
 /** @brief Convenience typedef */
 typedef pcl::PointXYZ PointT;
@@ -127,7 +129,7 @@ main (void)
   //ensenso_ptr->initExtrinsicCalibration (5); // Disable projector if you want good looking images.
   // You won't be able to detect a calibration pattern with the projector enabled!
 
-  boost::function<void (const PointCloudT::Ptr&, const PairOfImagesPtr&)> f = boost::bind (&grabberCallback, _1, _2);
+  std::function<void (const PointCloudT::Ptr&, const PairOfImagesPtr&)> f = boost::bind (&grabberCallback, _1, _2);
   ensenso_ptr->registerCallback (f);
 
   cv::namedWindow ("Ensenso images", cv::WINDOW_AUTOSIZE);
@@ -136,7 +138,7 @@ main (void)
   while (!viewer_ptr->wasStopped ())
   {
     PCL_INFO("FPS: %f\n", ensenso_ptr->getFramesPerSecond ());
-    boost::this_thread::sleep (boost::posix_time::milliseconds (500));
+    std::this_thread::sleep_for(500ms);
   }
 
   ensenso_ptr->stop ();

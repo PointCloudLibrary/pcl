@@ -53,13 +53,13 @@ namespace boost
   template <class ValueType>
     struct container_gen<eigen_vecS, ValueType>
     {
-      typedef std::vector<ValueType, Eigen::aligned_allocator<ValueType> > type;
+      using type = std::vector<ValueType, Eigen::aligned_allocator<ValueType> >;
     };
 
   template <>
     struct parallel_edge_traits<eigen_vecS>
     {
-      typedef allow_parallel_edge_tag type;
+      using type = allow_parallel_edge_tag;
     };
 
   namespace detail
@@ -68,7 +68,7 @@ namespace boost
       struct is_random_access<eigen_vecS>
       {
         enum { value = true };
-        typedef mpl::true_ type;
+        using type = mpl::true_;
       };
   }
 
@@ -79,13 +79,13 @@ namespace boost
   template <class ValueType>
     struct container_gen<eigen_listS, ValueType>
     {
-      typedef std::list<ValueType, Eigen::aligned_allocator<ValueType> > type;
+      using type = std::list<ValueType, Eigen::aligned_allocator<ValueType> >;
     };
 
   template <>
     struct parallel_edge_traits<eigen_listS>
     {
-      typedef allow_parallel_edge_tag type;
+      using type = allow_parallel_edge_tag;
     };
 
   namespace detail
@@ -94,7 +94,7 @@ namespace boost
       struct is_random_access<eigen_listS>
       {
         enum { value = false };
-        typedef mpl::false_ type;
+        using type = mpl::false_;
       };
   }
 }

@@ -39,10 +39,10 @@
 
 // PCL includes
 #include <pcl/pcl_base.h>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
 #include <pcl/search/pcl_search.h>
 #include <pcl/pcl_config.h>
+
+#include <functional>
 
 namespace pcl
 {
@@ -54,28 +54,26 @@ namespace pcl
   class Keypoint : public PCLBase<PointInT>
   {
     public:
-      typedef boost::shared_ptr<Keypoint<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const Keypoint<PointInT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<Keypoint<PointInT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const Keypoint<PointInT, PointOutT> >;
 
       using PCLBase<PointInT>::indices_;
       using PCLBase<PointInT>::input_;
 
-      typedef PCLBase<PointInT> BaseClass;
-      typedef pcl::search::Search<PointInT> KdTree;
-      typedef typename KdTree::Ptr KdTreePtr;
-      typedef pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename PointCloudIn::Ptr PointCloudInPtr;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-      typedef pcl::PointCloud<PointOutT> PointCloudOut;
-      typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
-      typedef boost::function<int (const PointCloudIn &cloud, int index, double, std::vector<int> &, std::vector<float> &)> SearchMethodSurface;
+      using BaseClass = PCLBase<PointInT>;
+      using KdTree = pcl::search::Search<PointInT>;
+      using KdTreePtr = typename KdTree::Ptr;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
+      using PointCloudInPtr = typename PointCloudIn::Ptr;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+      using PointCloudOut = pcl::PointCloud<PointOutT>;
+      using SearchMethod = std::function<int (int, double, std::vector<int> &, std::vector<float> &)>;
+      using SearchMethodSurface = std::function<int (const PointCloudIn &cloud, int index, double, std::vector<int> &, std::vector<float> &)>;
 
     public:
       /** \brief Empty constructor. */
       Keypoint () : 
         BaseClass (), 
-        name_ (),
-        search_method_ (),
         search_method_surface_ (),
         surface_ (), 
         tree_ (), 
@@ -158,8 +156,7 @@ namespace pcl
       {
         if (surface_ == input_)       // if the two surfaces are the same
           return (search_method_ (index, parameter, indices, distances));
-        else
-          return (search_method_surface_ (*input_, index, parameter, indices, distances));
+        return (search_method_surface_ (*input_, index, parameter, indices, distances));
       }
 
     protected:

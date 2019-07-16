@@ -45,7 +45,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/exceptions.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/spin_image.h>
 #include <cmath>
 

@@ -67,17 +67,17 @@ namespace pcl
     {
       public:
 
-        typedef boost::equality_comparable <pcl::geometry::VertexAroundVertexCirculator <MeshT>
-              , boost::unit_steppable      <pcl::geometry::VertexAroundVertexCirculator <MeshT> > > Base;
-        typedef pcl::geometry::VertexAroundVertexCirculator <MeshT> Self;
+        using Base = boost::equality_comparable <pcl::geometry::VertexAroundVertexCirculator <MeshT>,
+                     boost::unit_steppable      <pcl::geometry::VertexAroundVertexCirculator <MeshT> > >;
+        using Self = pcl::geometry::VertexAroundVertexCirculator<MeshT>;
 
-        typedef MeshT Mesh;
-        typedef typename Mesh::VertexIndex VertexIndex;
-        typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+        using Mesh = MeshT;
+        using VertexIndex = typename Mesh::VertexIndex;
+        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
         /** \brief Constructor resulting in an invalid circulator. */
         VertexAroundVertexCirculator ()
-          : mesh_                   (NULL),
+          : mesh_                   (nullptr),
             idx_outgoing_half_edge_ ()
         {
         }
@@ -175,17 +175,17 @@ namespace pcl
     {
       public:
 
-        typedef boost::equality_comparable <pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator <MeshT>
-              , boost::unit_steppable      <pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator <MeshT> > > Base;
-        typedef pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator <MeshT> Self;
+        using Base = boost::equality_comparable <pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator <MeshT>,
+                     boost::unit_steppable      <pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator <MeshT> > >;
+        using Self = pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator<MeshT>;
 
-        typedef MeshT Mesh;
-        typedef typename Mesh::VertexIndex VertexIndex;
-        typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+        using Mesh = MeshT;
+        using VertexIndex = typename Mesh::VertexIndex;
+        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
         /** \brief Constructor resulting in an invalid circulator. */
         OutgoingHalfEdgeAroundVertexCirculator ()
-          : mesh_                   (NULL),
+          : mesh_                   (nullptr),
             idx_outgoing_half_edge_ ()
         {
         }
@@ -283,17 +283,17 @@ namespace pcl
     {
       public:
 
-        typedef boost::equality_comparable <pcl::geometry::IncomingHalfEdgeAroundVertexCirculator <MeshT>
-              , boost::unit_steppable      <pcl::geometry::IncomingHalfEdgeAroundVertexCirculator <MeshT> > > Base;
-        typedef pcl::geometry::IncomingHalfEdgeAroundVertexCirculator <MeshT> Self;
+        using Base = boost::equality_comparable <pcl::geometry::IncomingHalfEdgeAroundVertexCirculator <MeshT>,
+                     boost::unit_steppable      <pcl::geometry::IncomingHalfEdgeAroundVertexCirculator <MeshT> > >;
+        using Self = pcl::geometry::IncomingHalfEdgeAroundVertexCirculator<MeshT>;
 
-        typedef MeshT Mesh;
-        typedef typename Mesh::VertexIndex VertexIndex;
-        typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+        using Mesh = MeshT;
+        using VertexIndex = typename Mesh::VertexIndex;
+        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
         /** \brief Constructor resulting in an invalid circulator. */
         IncomingHalfEdgeAroundVertexCirculator ()
-          : mesh_                   (NULL),
+          : mesh_                   (nullptr),
             idx_incoming_half_edge_ ()
         {
         }
@@ -391,18 +391,18 @@ namespace pcl
     {
       public:
 
-        typedef boost::equality_comparable <pcl::geometry::FaceAroundVertexCirculator <MeshT>
-              , boost::unit_steppable      <pcl::geometry::FaceAroundVertexCirculator <MeshT> > > Base;
-        typedef pcl::geometry::FaceAroundVertexCirculator <MeshT> Self;
+        using Base = boost::equality_comparable <pcl::geometry::FaceAroundVertexCirculator <MeshT>,
+                     boost::unit_steppable      <pcl::geometry::FaceAroundVertexCirculator <MeshT> > >;
+        using Self = pcl::geometry::FaceAroundVertexCirculator<MeshT>;
 
-        typedef MeshT Mesh;
-        typedef typename Mesh::FaceIndex FaceIndex;
-        typedef typename Mesh::VertexIndex VertexIndex;
-        typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+        using Mesh = MeshT;
+        using FaceIndex = typename Mesh::FaceIndex;
+        using VertexIndex = typename Mesh::VertexIndex;
+        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
         /** \brief Constructor resulting in an invalid circulator. */
         FaceAroundVertexCirculator ()
-          : mesh_                   (NULL),
+          : mesh_                   (nullptr),
             idx_outgoing_half_edge_ ()
         {
         }
@@ -500,18 +500,18 @@ namespace pcl
     {
       public:
 
-        typedef boost::equality_comparable <pcl::geometry::VertexAroundFaceCirculator <MeshT>
-              , boost::unit_steppable      <pcl::geometry::VertexAroundFaceCirculator <MeshT> > > Base;
-        typedef pcl::geometry::VertexAroundFaceCirculator <MeshT> Self;
+        using Base = boost::equality_comparable <pcl::geometry::VertexAroundFaceCirculator <MeshT>,
+                     boost::unit_steppable      <pcl::geometry::VertexAroundFaceCirculator <MeshT> > >;
+        using Self = pcl::geometry::VertexAroundFaceCirculator<MeshT>;
 
-        typedef MeshT Mesh;
-        typedef typename Mesh::VertexIndex VertexIndex;
-        typedef typename Mesh::FaceIndex FaceIndex;
-        typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+        using Mesh = MeshT;
+        using VertexIndex = typename Mesh::VertexIndex;
+        using FaceIndex = typename Mesh::FaceIndex;
+        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
         /** \brief Constructor resulting in an invalid circulator. */
         VertexAroundFaceCirculator ()
-          : mesh_                (NULL),
+          : mesh_                (nullptr),
             idx_inner_half_edge_ ()
         {
         }
@@ -609,17 +609,17 @@ namespace pcl
     {
       public:
 
-        typedef boost::equality_comparable <pcl::geometry::InnerHalfEdgeAroundFaceCirculator <MeshT>
-              , boost::unit_steppable      <pcl::geometry::InnerHalfEdgeAroundFaceCirculator <MeshT> > > Base;
-        typedef pcl::geometry::InnerHalfEdgeAroundFaceCirculator <MeshT> Self;
+        using Base = boost::equality_comparable <pcl::geometry::InnerHalfEdgeAroundFaceCirculator <MeshT>,
+                     boost::unit_steppable      <pcl::geometry::InnerHalfEdgeAroundFaceCirculator <MeshT> > >;
+        using Self = pcl::geometry::InnerHalfEdgeAroundFaceCirculator<MeshT>;
 
-        typedef MeshT Mesh;
-        typedef typename Mesh::FaceIndex FaceIndex;
-        typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+        using Mesh = MeshT;
+        using FaceIndex = typename Mesh::FaceIndex;
+        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
         /** \brief Constructor resulting in an invalid circulator. */
         InnerHalfEdgeAroundFaceCirculator ()
-          : mesh_                (NULL),
+          : mesh_                (nullptr),
             idx_inner_half_edge_ ()
         {
         }
@@ -717,17 +717,17 @@ namespace pcl
     {
       public:
 
-        typedef boost::equality_comparable <pcl::geometry::OuterHalfEdgeAroundFaceCirculator <MeshT>
-              , boost::unit_steppable      <pcl::geometry::OuterHalfEdgeAroundFaceCirculator <MeshT> > > Base;
-        typedef pcl::geometry::OuterHalfEdgeAroundFaceCirculator <MeshT> Self;
+        using Base = boost::equality_comparable <pcl::geometry::OuterHalfEdgeAroundFaceCirculator <MeshT>,
+                     boost::unit_steppable      <pcl::geometry::OuterHalfEdgeAroundFaceCirculator <MeshT> > >;
+        using Self = pcl::geometry::OuterHalfEdgeAroundFaceCirculator<MeshT>;
 
-        typedef MeshT Mesh;
-        typedef typename Mesh::FaceIndex FaceIndex;
-        typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+        using Mesh = MeshT;
+        using FaceIndex = typename Mesh::FaceIndex;
+        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
         /** \brief Constructor resulting in an invalid circulator. */
         OuterHalfEdgeAroundFaceCirculator ()
-          : mesh_                (NULL),
+          : mesh_                (nullptr),
             idx_inner_half_edge_ ()
         {
         }
@@ -825,17 +825,17 @@ namespace pcl
     {
       public:
 
-        typedef boost::equality_comparable <pcl::geometry::FaceAroundFaceCirculator <MeshT>
-              , boost::unit_steppable      <pcl::geometry::FaceAroundFaceCirculator <MeshT> > > Base;
-        typedef pcl::geometry::FaceAroundFaceCirculator <MeshT> Self;
+        using Base = boost::equality_comparable <pcl::geometry::FaceAroundFaceCirculator <MeshT>,
+                     boost::unit_steppable      <pcl::geometry::FaceAroundFaceCirculator <MeshT> > >;
+        using Self = pcl::geometry::FaceAroundFaceCirculator<MeshT>;
 
-        typedef MeshT Mesh;
-        typedef typename Mesh::FaceIndex FaceIndex;
-        typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+        using Mesh = MeshT;
+        using FaceIndex = typename Mesh::FaceIndex;
+        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
         /** \brief Constructor resulting in an invalid circulator. */
         FaceAroundFaceCirculator ()
-          : mesh_                (NULL),
+          : mesh_                (nullptr),
             idx_inner_half_edge_ ()
         {
         }

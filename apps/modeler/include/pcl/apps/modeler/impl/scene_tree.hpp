@@ -52,7 +52,7 @@ namespace pcl
        for (auto &selected_item : selected_items)
        {
          T* t_item = dynamic_cast<T*>(selected_item);
-         if(t_item != NULL)
+         if(t_item != nullptr)
            selected_t_items.push_back(t_item);
        }
 

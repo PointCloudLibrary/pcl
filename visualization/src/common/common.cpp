@@ -35,6 +35,9 @@
  *
  */
 
+#include <vtkCamera.h>
+#include <vtkRenderWindow.h>
+
 #include <pcl/point_types.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/console/print.h>
@@ -49,7 +52,6 @@ pcl::visualization::getRandomColors (double &r, double &g, double &b, double min
   static unsigned stepRGBA = 100;
   do
   {
-    sum = 0;
     r = (rand () % stepRGBA) / static_cast<double> (stepRGBA);
     while ((g = (rand () % stepRGBA) / static_cast<double> (stepRGBA)) == r) {}
     while (((b = (rand () % stepRGBA) / static_cast<double> (stepRGBA)) == r) && (b == g)) {}
@@ -67,7 +69,6 @@ pcl::visualization::getRandomColors (pcl::RGB &rgb, double min, double max)
   double r, g, b;
   do
   {
-    sum = 0;
     r = (rand () % stepRGBA) / static_cast<double> (stepRGBA);
     while ((g = (rand () % stepRGBA) / static_cast<double> (stepRGBA)) == r) {}
     while (((b = (rand () % stepRGBA) / static_cast<double> (stepRGBA)) == r) && (b == g)) {}
@@ -458,6 +459,56 @@ pcl::visualization::getColormapLUT (LookUpTableRepresentationProperties colormap
   }
   table->Build ();
   return true;
+}
+
+pcl::visualization::Camera::Camera ()
+{
+  // Set default camera clipping range to something meaningful
+  clip[0] = 0.01;
+  clip[1] = 1000.01;
+
+  // Look straight along the z-axis
+  focal[0] = 0.0;
+  focal[1] = 0.0;
+  focal[2] = 1.0;
+
+  // Position the camera at the origin
+  pos[0] = 0.0;
+  pos[1] = 0.0;
+  pos[2] = 0.0;
+
+  // Set the up-vector of the camera to be the y-axis
+  view[0] = 0.0;
+  view[1] = 1.0;
+  view[2] = 0.0;
+
+  // Set the camera field of view to about
+  fovy = 0.8575;
+
+  window_pos[0] = 0;
+  window_pos[1] = 0;
+  window_size[0] = 1;
+  window_size[1] = 1;
+}
+
+pcl::visualization::Camera::Camera (vtkCamera& camera)
+{
+  camera.GetFocalPoint (focal);
+  camera.GetPosition (pos);
+  camera.GetViewUp (view);
+  camera.GetClippingRange (clip);
+  fovy = camera.GetViewAngle () / 180.0 * M_PI;
+}
+
+pcl::visualization::Camera::Camera (vtkCamera& camera, vtkRenderWindow& window)
+: Camera (camera)
+{
+  int *win_pos = window.GetPosition ();
+  int *win_size = window.GetSize ();
+  window_pos[0] = win_pos[0];
+  window_pos[1] = win_pos[1];
+  window_size[0] = win_size[0];
+  window_size[1] = win_size[1];
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

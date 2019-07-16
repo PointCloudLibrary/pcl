@@ -58,7 +58,7 @@ namespace pcl
     class CloudGenerator
     {
       public:
-      typedef typename GeneratorT::Parameters GeneratorParameters;
+      using GeneratorParameters = typename GeneratorT::Parameters;
 
       /// Default constructor
       CloudGenerator ();
@@ -143,7 +143,7 @@ namespace pcl
     class CloudGenerator<pcl::PointXY, GeneratorT>
     {
       public:
-      typedef typename GeneratorT::Parameters GeneratorParameters;
+      using GeneratorParameters = typename GeneratorT::Parameters;
       
       CloudGenerator ();
       

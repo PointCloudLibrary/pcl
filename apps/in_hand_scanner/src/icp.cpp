@@ -356,16 +356,13 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
   {
     return (false);
   }
-  else if (delta_fitness <= epsilon_)
+  if (delta_fitness <= epsilon_)
   {
     T_final = T_cur;
     return (true);
   }
-  else
-  {
-    std::cerr << "ERROR in icp.cpp: Congratulations! you found a bug.\n";
-    exit (EXIT_FAILURE);
-  }
+  std::cerr << "ERROR in icp.cpp: Congratulations! you found a bug.\n";
+  exit (EXIT_FAILURE);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -448,7 +445,7 @@ pcl::ihs::ICP::minimizePointPlane (const CloudNormal& cloud_source,
   pcl::compute3DCentroid (cloud_target, c_t); c_t.w () = 1.f;
 
   // The normals are only needed for the target
-  typedef std::vector <Eigen::Vector4f, Eigen::aligned_allocator <Eigen::Vector4f> > Vec4Xf;
+  using Vec4Xf = std::vector <Eigen::Vector4f, Eigen::aligned_allocator <Eigen::Vector4f> >;
   Vec4Xf xyz_s, xyz_t, nor_t;
   xyz_s.reserve (n);
   xyz_t.reserve (n);

@@ -47,8 +47,11 @@ Work in progress: patch by Marco (AUG,19th 2012)
 
 #define _CRT_SECURE_NO_DEPRECATE
 
+#include <functional>
 #include <iostream>
+#include <thread>
 
+#include <pcl/pcl_macros.h>
 #include <pcl/console/parse.h>
 
 #include <boost/filesystem.hpp>
@@ -80,11 +83,12 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #endif
-typedef pcl::ScopeTime ScopeTimeT;
+using ScopeTimeT = pcl::ScopeTime;
 
 #include <pcl/gpu/kinfu_large_scale/screenshot_manager.h>
 
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace Eigen;
 
@@ -127,11 +131,7 @@ vector<string> getPcdFilesInDir(const string& directory)
     if (fs::is_regular_file(pos->status()) )
       if (fs::extension(*pos) == ".pcd")
       {
-#if BOOST_FILESYSTEM_VERSION == 3
         result.push_back (pos->path ().string ());
-#else
-        result.push_back (pos->path ());
-#endif
         cout << "added: " << result.back() << endl;
       }
 
@@ -189,7 +189,7 @@ getViewerPose (visualization::PCLVisualizer& viewer)
           -1,  0,  0,
           0, -1,  0;
 
-  rotation = rotation * axis_reorder;
+  rotation *= axis_reorder;
   pose.linear() = rotation;
   return pose;
 }
@@ -303,7 +303,7 @@ struct ImageView
   }
 
   void
-  showScene (KinfuTracker& kinfu, const PtrStepSz<const pcl::gpu::kinfuLS::PixelRGB>& rgb24, bool registration, Eigen::Affine3f* pose_ptr = 0)
+  showScene (KinfuTracker& kinfu, const PtrStepSz<const pcl::gpu::kinfuLS::PixelRGB>& rgb24, bool registration, Eigen::Affine3f* pose_ptr = nullptr)
   {
     if (pose_ptr)
     {
@@ -682,7 +682,7 @@ struct SceneCloudView
   boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_;
 
 public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
 };
 
@@ -862,7 +862,7 @@ struct KinFuLSApp
     if (has_image)
     {
       Eigen::Affine3f viewer_pose = getViewerPose(scene_cloud_view_.cloud_viewer_);
-      image_view_.showScene (*kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : 0);
+      image_view_.showScene (*kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : nullptr);
     }    
 
     if (current_frame_cloud_view_)
@@ -892,7 +892,7 @@ struct KinFuLSApp
   void source_cb1(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper)  
   {        
     {
-      boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+      std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
       if (exit_ || !lock)
         return;
 
@@ -910,7 +910,7 @@ struct KinFuLSApp
   void source_cb2(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
   {
     {
-      boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+      std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
 
       if (exit_ || !lock)
       {
@@ -941,7 +941,7 @@ struct KinFuLSApp
   {
     {                             
       //std::cout << "Giving colors1\n";
-      boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+      std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
       //std::cout << lock << std::endl; //causes compile errors 
       if (exit_ || !lock)
         return;
@@ -980,12 +980,18 @@ struct KinFuLSApp
   startMainLoop (bool triggered_capture)
   {   
     using namespace openni_wrapper;
-    typedef boost::shared_ptr<DepthImage> DepthImagePtr;
-    typedef boost::shared_ptr<Image>      ImagePtr;
+    using DepthImagePtr = boost::shared_ptr<DepthImage>;
+    using ImagePtr = boost::shared_ptr<Image>;
 
-    boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = boost::bind (&KinFuLSApp::source_cb2, this, _1, _2, _3);
-    boost::function<void (const DepthImagePtr&)> func2 = boost::bind (&KinFuLSApp::source_cb1, this, _1);
-    boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = boost::bind (&KinFuLSApp::source_cb3, this, _1);
+    std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func1 = [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
+    {
+      source_cb2 (img, depth, constant);
+    };
+    std::function<void (const DepthImagePtr&)> func2 = [this] (const DepthImagePtr& depth) { source_cb1 (depth); };
+    std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+    {
+      source_cb3 (cloud);
+    };
 
     bool need_colors = integrate_colors_ || registration_ || enable_texture_extraction_;
 
@@ -996,7 +1002,7 @@ struct KinFuLSApp
     boost::signals2::connection c = pcd_source_? capture_.registerCallback (func3) : need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
 
     {
-      boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
+      std::unique_lock<std::mutex> lock(data_ready_mutex_);
 
       if (!triggered_capture) 
         capture_.start ();
@@ -1006,7 +1012,7 @@ struct KinFuLSApp
         if (triggered_capture)
           capture_.start(); // Triggers new frame
 
-        bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));
+        bool has_data = (data_ready_cond_.wait_for(lock, 100ms) == std::cv_status::no_timeout);
 
         try { this->execute (depth_, rgb24_, has_data); }
         catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
@@ -1016,7 +1022,7 @@ struct KinFuLSApp
         //~ cout << "In main loop" << endl;                  
       } 
       exit_ = true;
-      boost::this_thread::sleep (boost::posix_time::millisec (100));
+      std::this_thread::sleep_for(100ms);
 
       if (!triggered_capture)     
         capture_.stop (); // Stop stream
@@ -1111,8 +1117,8 @@ struct KinFuLSApp
 
   Evaluation::Ptr evaluation_ptr_;
 
-  boost::mutex data_ready_mutex_;
-  boost::condition_variable data_ready_cond_;
+  std::mutex data_ready_mutex_;
+  std::condition_variable data_ready_cond_;
 
   std::vector<pcl::gpu::kinfuLS::PixelRGB> source_image_data_;
   std::vector<unsigned short> source_depth_data_;

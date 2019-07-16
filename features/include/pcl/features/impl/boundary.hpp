@@ -106,10 +106,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
     max_dif = dif;
 
   // Check results
-  if (max_dif > angle_threshold)
-    return (true);
-  else
-    return (false);
+  return (max_dif > angle_threshold);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

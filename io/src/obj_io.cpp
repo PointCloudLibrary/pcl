@@ -143,14 +143,14 @@ int
 pcl::MTLReader::read (const std::string& obj_file_name,
                       const std::string& mtl_file_name)
 {
-  if (obj_file_name == "" || !boost::filesystem::exists (obj_file_name))
+  if (obj_file_name.empty() || !boost::filesystem::exists (obj_file_name))
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'!\n",
                obj_file_name.c_str ());
     return (-1);
   }
 
-  if (mtl_file_name == "")
+  if (mtl_file_name.empty())
   {
     PCL_ERROR ("[pcl::MTLReader::read] MTL file name is empty!\n");
     return (-1);
@@ -165,7 +165,7 @@ pcl::MTLReader::read (const std::string& obj_file_name,
 int
 pcl::MTLReader::read (const std::string& mtl_file_path)
 {
-  if (mtl_file_path == "" || !boost::filesystem::exists (mtl_file_path))
+  if (mtl_file_path.empty() || !boost::filesystem::exists (mtl_file_path))
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'.\n", mtl_file_path.c_str ());
     return (-1);
@@ -192,7 +192,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
     {
       getline (mtl_file, line);
       // Ignore empty lines
-      if (line == "")
+      if (line.empty())
         continue;
 
       // Tokenize the line
@@ -221,35 +221,32 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
           materials_.clear ();
           return (-1);
         }
+        pcl::TexMaterial::RGB *rgb = &materials_.back ().tex_Ka;
+        if (st[0] == "Kd")
+          rgb = &materials_.back ().tex_Kd;
+        else if (st[0] == "Ks")
+          rgb = &materials_.back ().tex_Ks;
+
+        if (st[1] == "xyz")
+        {
+          if (fillRGBfromXYZ (st, *rgb))
+          {
+            PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values",
+                       line.c_str ());
+            mtl_file.close ();
+            materials_.clear ();
+            return (-1);
+          }
+        }
         else
         {
-          pcl::TexMaterial::RGB *rgb = &materials_.back ().tex_Ka;
-          if (st[0] == "Kd")
-            rgb = &materials_.back ().tex_Kd;
-          else if (st[0] == "Ks")
-            rgb = &materials_.back ().tex_Ks;
-
-          if (st[1] == "xyz")
+          if (fillRGBfromRGB (st, *rgb))
           {
-            if (fillRGBfromXYZ (st, *rgb))
-            {
-              PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values",
-                         line.c_str ());
-              mtl_file.close ();
-              materials_.clear ();
-              return (-1);
-            }
-          }
-          else
-          {
-            if (fillRGBfromRGB (st, *rgb))
-            {
-              PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values",
-                         line.c_str ());
-              mtl_file.close ();
-              materials_.clear ();
-              return (-1);
-            }
+            PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values",
+                       line.c_str ());
+            mtl_file.close ();
+            materials_.clear ();
+            return (-1);
           }
         }
         continue;
@@ -347,7 +344,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   std::ifstream fs;
   std::string line;
 
-  if (file_name == "" || !boost::filesystem::exists (file_name))
+  if (file_name.empty() || !boost::filesystem::exists (file_name))
   {
     PCL_ERROR ("[pcl::OBJReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
@@ -380,7 +377,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
     {
       getline (fs, line);
       // Ignore empty lines
-      if (line == "")
+      if (line.empty())
         continue;
 
       // Trim the line
@@ -400,14 +397,14 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
         }
 
         // Vertex texture (vt)
-        else if ((line[1] == 't') && !vertex_texture_found)
+        if ((line[1] == 't') && !vertex_texture_found)
         {
           vertex_texture_found = true;
           continue;
         }
 
         // Vertex normal (vn)
-        else if ((line[1] == 'n') && !vertex_normal_found)
+        if ((line[1] == 'n') && !vertex_normal_found)
         {
           vertex_normal_found = true;
           continue;
@@ -465,7 +462,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
     }
   }
 
-  if (material_files.size () > 0)
+  if (!material_files.empty ())
   {
     for (const auto &material_file : material_files)
     {
@@ -548,7 +545,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       std::string line;
       getline (fs, line);
       // Ignore empty lines
-      if (line == "")
+      if (line.empty())
         continue;
 
       // Tokenize the line
@@ -691,7 +688,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
     {
       getline (fs, line);
       // Ignore empty lines
-      if (line == "")
+      if (line.empty())
         continue;
 
       // Tokenize the line
@@ -782,7 +779,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
           }
         }
         // We didn't find the appropriate material so we create it here with name only.
-        if (mesh.tex_materials.back ().tex_name == "")
+        if (mesh.tex_materials.back ().tex_name.empty())
           mesh.tex_materials.back ().tex_name = st[1];
         mesh.tex_coordinates.push_back (coordinates);
         coordinates.clear ();
@@ -880,7 +877,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
       std::string line;
       getline (fs, line);
       // Ignore empty lines
-      if (line == "")
+      if (line.empty())
         continue;
 
       // Tokenize the line
@@ -1019,9 +1016,6 @@ pcl::io::saveOBJFile (const std::string &file_name,
     bool v_written = false;
     for (size_t d = 0; d < tex_mesh.cloud.fields.size (); ++d)
     {
-      int count = tex_mesh.cloud.fields[d].count;
-      if (count == 0)
-        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
           tex_mesh.cloud.fields[d].name == "x" ||
@@ -1059,9 +1053,6 @@ pcl::io::saveOBJFile (const std::string &file_name,
     bool v_written = false;
     for (size_t d = 0; d < tex_mesh.cloud.fields.size (); ++d)
     {
-      int count = tex_mesh.cloud.fields[d].count;
-      if (count == 0)
-        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
           tex_mesh.cloud.fields[d].name == "normal_x" ||

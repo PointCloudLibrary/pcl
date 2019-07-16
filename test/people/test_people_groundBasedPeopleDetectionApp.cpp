@@ -52,8 +52,8 @@
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/people/ground_based_people_detection_app.h>
 
-typedef pcl::PointXYZRGB PointT;
-typedef pcl::PointCloud<PointT> PointCloudT;
+using PointT = pcl::PointXYZRGB;
+using PointCloudT = pcl::PointCloud<PointT>;
 
 enum { COLS = 640, ROWS = 480 };
 PointCloudT::Ptr cloud;
@@ -90,9 +90,9 @@ TEST (PCL, GroundBasedPeopleDetectionApp)
   EXPECT_TRUE (people_detector.compute(clusters));             // perform people detection
 
   unsigned int k = 0;
-  for(std::vector<pcl::people::PersonCluster<PointT> >::iterator it = clusters.begin(); it != clusters.end(); ++it)
+  for(const auto &cluster : clusters)
   {
-    if(it->getPersonConfidence() > min_confidence)             // draw only people with confidence above a threshold
+    if(cluster.getPersonConfidence() > min_confidence)             // draw only people with confidence above a threshold
       k++;
   }
   EXPECT_EQ (k, 5);		// verify number of people found (should be five)

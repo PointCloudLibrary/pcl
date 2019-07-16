@@ -37,8 +37,8 @@ namespace pcl
     class PCL_EXPORTS SimExample
     {
       public:
-        typedef boost::shared_ptr<SimExample> Ptr;
-        typedef boost::shared_ptr<const SimExample> ConstPtr;
+        using Ptr = boost::shared_ptr<SimExample>;
+        using ConstPtr = boost::shared_ptr<const SimExample>;
     	
         SimExample (int argc, char** argv,
     		int height,int width);

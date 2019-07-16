@@ -92,22 +92,22 @@ namespace pcl
     */
   class SeededHueSegmentation: public PCLBase<PointXYZRGB>
   {
-    typedef PCLBase<PointXYZRGB> BasePCLBase;
+    using BasePCLBase = PCLBase<PointXYZRGB>;
 
     public:
-      typedef pcl::PointCloud<PointXYZRGB> PointCloud;
-      typedef PointCloud::Ptr PointCloudPtr;
-      typedef PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointXYZRGB>;
+      using PointCloudPtr = PointCloud::Ptr;
+      using PointCloudConstPtr = PointCloud::ConstPtr;
 
-      typedef pcl::search::Search<PointXYZRGB> KdTree;
-      typedef pcl::search::Search<PointXYZRGB>::Ptr KdTreePtr;
+      using KdTree = pcl::search::Search<PointXYZRGB>;
+      using KdTreePtr = pcl::search::Search<PointXYZRGB>::Ptr;
 
-      typedef PointIndices::Ptr PointIndicesPtr;
-      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+      using PointIndicesPtr = PointIndices::Ptr;
+      using PointIndicesConstPtr = PointIndices::ConstPtr;
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
-      SeededHueSegmentation () : tree_ (), cluster_tolerance_ (0), delta_hue_ (0.0)
+      SeededHueSegmentation () : cluster_tolerance_ (0), delta_hue_ (0.0)
       {};
 
       /** \brief Provide a pointer to the search object.

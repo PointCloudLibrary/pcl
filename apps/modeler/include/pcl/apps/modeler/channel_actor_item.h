@@ -39,9 +39,10 @@
 #include <QTreeWidgetItem>
 
 #include <vtkSmartPointer.h>
-#include <boost/shared_ptr.hpp>
+
 #include <pcl/common/eigen.h>
 #include <pcl/apps/modeler/abstract_item.h>
+#include <pcl/apps/modeler/cloud_mesh.h>
 
 class vtkActor;
 class vtkPolyData;
@@ -53,13 +54,11 @@ namespace pcl
 {
   namespace modeler
   {
-    class CloudMesh;
-
     class ChannelActorItem : public QTreeWidgetItem, public AbstractItem
     {
       public:
         ChannelActorItem(QTreeWidgetItem* parent,
-                         const boost::shared_ptr<CloudMesh>& cloud_mesh,
+                         const CloudMesh::Ptr& cloud_mesh,
                          const vtkSmartPointer<vtkRenderWindow>& render_window,
                          const vtkSmartPointer<vtkActor>& actor,
                          const std::string& channel_name);
@@ -90,7 +89,7 @@ namespace pcl
         void
         prepareContextMenu(QMenu* menu) const override;
 
-        boost::shared_ptr<CloudMesh>      cloud_mesh_;
+        CloudMesh::Ptr                    cloud_mesh_;
         vtkSmartPointer<vtkPolyData>      poly_data_;
         vtkSmartPointer<vtkRenderWindow>  render_window_;
         std::string                       color_scheme_;

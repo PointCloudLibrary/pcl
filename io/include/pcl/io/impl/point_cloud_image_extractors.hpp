@@ -170,7 +170,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       img.step = img.width * sizeof (unsigned char) * 3;
       img.data.resize (img.step * img.height);
 
-      std::srand(std::time(0));
+      std::srand(std::time(nullptr));
       std::map<uint32_t, size_t> colormap;
 
       for (size_t i = 0; i < cloud.points.size (); ++i)
@@ -199,7 +199,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       img.step = img.width * sizeof (unsigned char) * 3;
       img.data.resize (img.step * img.height);
 
-      std::srand(std::time(0));
+      std::srand(std::time(nullptr));
       std::set<uint32_t> labels;
       std::map<uint32_t, size_t> colormap;
 

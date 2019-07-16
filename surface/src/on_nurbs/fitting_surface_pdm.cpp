@@ -89,8 +89,8 @@ FittingSurface::refine (int dim)
   for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (size_t i = 0; i < xi.size (); i++)
-    m_nurbs.InsertKnot (dim, xi[i], 1);
+  for (const double &i : xi)
+    m_nurbs.InsertKnot (dim, i, 1);
 
   m_elementsU = getElementVector (m_nurbs, 0);
   m_elementsV = getElementVector (m_nurbs, 1);
@@ -109,8 +109,8 @@ FittingSurface::refine (ON_NurbsSurface &nurbs, int dim)
   for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (size_t i = 0; i < xi.size (); i++)
-    nurbs.InsertKnot (dim, xi[i], 1);
+  for (const double &i : xi)
+    nurbs.InsertKnot (dim, i, 1);
 }
 
 void
@@ -412,7 +412,7 @@ FittingSurface::initNurbsPCA (int order, NurbsDataSurface *m_data, Eigen::Vector
   if (eigenvectors.col (2).dot (z) < 0.0)
     flip = true;
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
 
   Eigen::Vector3d sigma (sqrt (eigenvalues (0)), sqrt (eigenvalues (1)), sqrt (eigenvalues (2)));
 
@@ -461,7 +461,7 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
   if (eigenvectors.col (2).dot (z) < 0.0)
     flip = true;
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
   Eigen::Matrix3d eigenvectors_inv = eigenvectors.inverse ();
 
   Eigen::Vector3d v_max (-DBL_MAX, -DBL_MAX, -DBL_MAX);
@@ -1003,22 +1003,17 @@ FittingSurface::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt
       return current;
 
     }
-    else
-    {
-      current = current + delta;
+    current += delta;
 
-      if (current (0) < minU)
-        current (0) = minU;
-      else if (current (0) > maxU)
-        current (0) = maxU;
+    if (current (0) < minU)
+      current (0) = minU;
+    else if (current (0) > maxU)
+      current (0) = maxU;
 
-      if (current (1) < minV)
-        current (1) = minV;
-      else if (current (1) > maxV)
-        current (1) = maxV;
-
-    }
-
+    if (current (1) < minV)
+      current (1) = minV;
+    else if (current (1) > maxV)
+      current (1) = maxV;
   }
 
   error = r.norm ();
@@ -1083,22 +1078,17 @@ FittingSurface::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt
     {
       return current;
     }
-    else
-    {
-      current = current + delta;
+    current += delta;
 
-      if (current (0) < minU)
-        current (0) = minU;
-      else if (current (0) > maxU)
-        current (0) = maxU;
+    if (current (0) < minU)
+      current (0) = minU;
+    else if (current (0) > maxU)
+      current (0) = maxU;
 
-      if (current (1) < minV)
-        current (1) = minV;
-      else if (current (1) > maxV)
-        current (1) = maxV;
-
-    }
-
+    if (current (1) < minV)
+      current (1) = minV;
+    else if (current (1) > maxV)
+      current (1) = maxV;
   }
 
   if (!quiet)
@@ -1314,55 +1304,47 @@ FittingSurface::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vect
       return params;
 
     }
-    else
+
+    current += delta;
+
+    bool stop = false;
+
+    switch (side)
     {
+      case WEST:
+       case EAST:
+        if (current < minV)
+        {
+          params (1) = minV;
+          stop = true;
+        }
+        else if (current > maxV)
+        {
+          params (1) = maxV;
+          stop = true;
+        }
+        break;
 
-      current = current + delta;
-
-      bool stop = false;
-
-      switch (side)
-      {
-
-        case WEST:
-        case EAST:
-          if (current < minV)
-          {
-            params (1) = minV;
-            stop = true;
-          }
-          else if (current > maxV)
-          {
-            params (1) = maxV;
-            stop = true;
-          }
-
-          break;
-
-        case NORTH:
-        case SOUTH:
-          if (current < minU)
-          {
-            params (0) = minU;
-            stop = true;
-          }
-          else if (current > maxU)
-          {
-            params (0) = maxU;
-            stop = true;
-          }
-
-          break;
-      }
-
-      if (stop)
-      {
-        error = r.norm ();
-        return params;
-      }
-
+      case NORTH:
+      case SOUTH:
+        if (current < minU)
+        {
+          params (0) = minU;
+          stop = true;
+        }
+        else if (current > maxU)
+        {
+          params (0) = maxU;
+          stop = true;
+        }
+        break;
     }
 
+    if (stop)
+    {
+      error = r.norm ();
+      return params;
+    }
   }
 
   error = r.norm ();

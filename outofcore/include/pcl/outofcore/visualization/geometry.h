@@ -34,7 +34,7 @@ public:
   getActor () const
   {
     std::cout << "Get Geometry Actor" << std::endl;
-    return NULL;
+    return nullptr;
   }
 
 };

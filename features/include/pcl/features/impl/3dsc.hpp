@@ -166,9 +166,9 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   normal = normals[minIndex].getNormalVector3fMap ();
 
   // Compute and store the RF direction
-  x_axis[0] = static_cast<float> (rnd ());
-  x_axis[1] = static_cast<float> (rnd ());
-  x_axis[2] = static_cast<float> (rnd ());
+  x_axis[0] = rnd ();
+  x_axis[1] = rnd ();
+  x_axis[2] = rnd ();
   if (!pcl::utils::equal (normal[2], 0.0f))
     x_axis[2] = - (normal[0]*x_axis[0] + normal[1]*x_axis[1]) / normal[2];
   else if (!pcl::utils::equal (normal[1], 0.0f))
@@ -261,7 +261,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
     assert (w >= 0.0);
     if (w == std::numeric_limits<float>::infinity ())
       PCL_ERROR ("Shape Context Error INF!\n");
-    if (w != w)
+    if (std::isnan(w))
       PCL_ERROR ("Shape Context Error IND!\n");
     /// Accumulate w into correspondent Bin(j,k,l)
     desc[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j] += w;

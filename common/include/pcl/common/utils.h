@@ -53,7 +53,7 @@ namespace pcl
     template<typename T> bool 
     equal (T val1, T val2, T eps = std::numeric_limits<T>::min ())
     {
-      return (fabs (val1 - val2) < eps);
+      return (std::fabs (val1 - val2) < eps);
     }
   }
 }

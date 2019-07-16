@@ -61,7 +61,7 @@ using namespace pcl::console;
 using namespace pcl::gpu;
 using namespace std;
 
-typedef pcl::PointXYZRGBA PointT;
+using PointT = pcl::PointXYZRGBA;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -115,7 +115,7 @@ savePNGFile (const std::string& filename, const pcl::PointCloud<T>& cloud)
 class PeoplePCDApp
 {
   public:
-    typedef pcl::gpu::people::PeopleDetector PeopleDetector;
+    using PeopleDetector = pcl::gpu::people::PeopleDetector;
 
     enum { COLS = 640, ROWS = 480 };
 

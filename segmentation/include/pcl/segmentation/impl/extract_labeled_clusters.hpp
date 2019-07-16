@@ -123,8 +123,8 @@ template <typename PointT> void
 pcl::LabeledEuclideanClusterExtraction<PointT>::extract (std::vector<std::vector<PointIndices> > &labeled_clusters)
 {
   if (!initCompute () || 
-      (input_ != 0   && input_->points.empty ()) ||
-      (indices_ != 0 && indices_->empty ()))
+      (input_   && input_->points.empty ()) ||
+      (indices_ && indices_->empty ()))
   {
     labeled_clusters.clear ();
     return;
@@ -144,8 +144,8 @@ pcl::LabeledEuclideanClusterExtraction<PointT>::extract (std::vector<std::vector
   extractLabeledEuclideanClusters (*input_, tree_, static_cast<float> (cluster_tolerance_), labeled_clusters, min_pts_per_cluster_, max_pts_per_cluster_, max_label_);
 
   // Sort the clusters based on their size (largest one first)
-  for (int i = 0; i < static_cast<int> (labeled_clusters.size ()); i++)
-    std::sort (labeled_clusters[i].rbegin (), labeled_clusters[i].rend (), comparePointClusters);
+  for (auto &labeled_cluster : labeled_clusters)
+    std::sort (labeled_cluster.rbegin (), labeled_cluster.rend (), comparePointClusters);
 
   deinitCompute ();
 }

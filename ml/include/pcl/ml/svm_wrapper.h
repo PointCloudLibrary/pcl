@@ -48,8 +48,6 @@
 #include <pcl/common/eigen.h>
 #include <vector>
 
-#include <pcl/console/time.h>
-
 #include <pcl/ml/svm.h>
 #define Malloc(type,n) static_cast<type *> (malloc((n)*sizeof(type)))
 
@@ -81,8 +79,8 @@ namespace pcl
       probability = 0; // do probability estimates
 
       nr_weight = 0; // for C_SVC
-      weight_label = NULL; // for C_SVC
-      weight = NULL; // for C_SVC
+      weight_label = nullptr; // for C_SVC
+      weight = nullptr; // for C_SVC
     }
   };
 
@@ -93,8 +91,8 @@ namespace pcl
     SVMModel ()
     {
       l = 0;
-      probA = NULL;
-      probB = NULL;
+      probA = nullptr;
+      probB = nullptr;
     }
   };
 
@@ -178,8 +176,7 @@ namespace pcl
     public:
       /** \brief  Constructor. */
       SVM () : 
-        training_set_ (), prob_ (), model_ (), scaling_ (), param_ (), 
-        class_name_ (), line_ (NULL), max_line_len_ (10000), labelled_training_set_ (true)
+        prob_ (), line_ (nullptr), max_line_len_ (10000), labelled_training_set_ (true)
       {
       }
 
@@ -335,7 +332,7 @@ namespace pcl
         debug_ = in;
 
         if (in)
-          svm_set_print_string_function (NULL);
+          svm_set_print_string_function (nullptr);
         else
           svm_set_print_string_function (&printNull);
       };

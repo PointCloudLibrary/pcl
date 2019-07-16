@@ -45,14 +45,16 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/extract_indices.h>
 
+#include <mutex>
+
 
 template <typename PointType>
 class OpenNIPlanarSegmentation
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudPtr = typename Cloud::Ptr;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     OpenNIPlanarSegmentation (const std::string& device_id = "", double threshold = 0.01)
       : viewer ("PCL OpenNI Planar Segmentation Viewer"),
@@ -81,7 +83,7 @@ class OpenNIPlanarSegmentation
     set (const CloudConstPtr& cloud)
     {
       //lock while we set our cloud;
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       cloud_  = cloud;
     }
 
@@ -89,7 +91,7 @@ class OpenNIPlanarSegmentation
     get ()
     {
       //lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       CloudPtr temp_cloud (new Cloud);
       CloudPtr temp_cloud2 (new Cloud);
 
@@ -114,7 +116,7 @@ class OpenNIPlanarSegmentation
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIPlanarSegmentation::cloud_cb_, this, _1);
+      std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
       boost::signals2::connection c = interface->registerCallback (f);
       
       interface->start ();
@@ -137,7 +139,7 @@ class OpenNIPlanarSegmentation
     pcl::ExtractIndices<PointType> extract_;
 
     std::string device_id_;
-    boost::mutex mtx_;
+    std::mutex mtx_;
     CloudConstPtr cloud_;
 };
 

@@ -37,15 +37,16 @@
 
 #pragma once
 
-#include <boost/function.hpp>
-
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/search/pcl_search.h>
+
+#include <functional>
 
 namespace pcl
 {
-  typedef std::vector<pcl::PointIndices> IndicesClusters;
-  typedef boost::shared_ptr<std::vector<pcl::PointIndices> > IndicesClustersPtr;
+  using IndicesClusters = std::vector<pcl::PointIndices>;
+  using IndicesClustersPtr = boost::shared_ptr<std::vector<pcl::PointIndices> >;
 
   /** \brief @b ConditionalEuclideanClustering performs segmentation based on Euclidean distance and a user-defined clustering condition.
     * \details The condition that need to hold is currently passed using a function pointer.
@@ -82,7 +83,7 @@ namespace pcl
   class ConditionalEuclideanClustering : public PCLBase<PointT>
   {
     protected:
-      typedef typename pcl::search::Search<PointT>::Ptr SearcherPtr;
+      using SearcherPtr = typename pcl::search::Search<PointT>::Ptr;
 
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
@@ -148,7 +149,7 @@ namespace pcl
       /** \brief Set the condition that needs to hold for neighboring points to be considered part of the same cluster.
         * This is an overloaded function provided for convenience. See the documentation for setConditionFunction(). */
       inline void
-      setConditionFunction (boost::function<bool (const PointT&, const PointT&, float)> condition_function)
+      setConditionFunction (std::function<bool (const PointT&, const PointT&, float)> condition_function)
       {
         condition_function_ = condition_function;
       }
@@ -237,7 +238,7 @@ namespace pcl
       SearcherPtr searcher_;
 
       /** \brief The condition function that needs to hold for clustering */
-      boost::function<bool (const PointT&, const PointT&, float)> condition_function_;
+      std::function<bool (const PointT&, const PointT&, float)> condition_function_;
 
       /** \brief The distance to scan for cluster candidates (default = 0.0) */
       float cluster_tolerance_;
@@ -258,7 +259,7 @@ namespace pcl
       pcl::IndicesClustersPtr large_clusters_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

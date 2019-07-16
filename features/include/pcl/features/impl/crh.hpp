@@ -113,7 +113,7 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     spatial_data[i] /= sum_w;
 
   kiss_fft_cpx * freq_data = new kiss_fft_cpx[nbins / 2 + 1];
-  kiss_fftr_cfg mycfg = kiss_fftr_alloc (nbins, 0, NULL, NULL);
+  kiss_fftr_cfg mycfg = kiss_fftr_alloc (nbins, 0, nullptr, nullptr);
   kiss_fftr (mycfg, spatial_data, freq_data);
 
   output.points.resize (1);

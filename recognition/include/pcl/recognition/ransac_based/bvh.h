@@ -145,7 +145,7 @@ namespace pcl
               {
                 // We reached a leaf
                 object_ = sorted_objects[first_id];
-                children_[0] = children_[1] = 0;
+                children_[0] = children_[1] = nullptr;
               }
             }
 
@@ -213,8 +213,8 @@ namespace pcl
 
       public:
         BVH()
-        : root_ (0),
-          sorted_objects_ (0)
+        : root_ (nullptr),
+          sorted_objects_ (nullptr)
         {
         }
 
@@ -234,7 +234,7 @@ namespace pcl
         {
           this->clear();
 
-          if ( objects.size () == 0 )
+          if ( objects.empty () )
             return;
 
           sorted_objects_ = &objects;
@@ -253,7 +253,7 @@ namespace pcl
           if ( root_ )
           {
             delete root_;
-            root_ = 0;
+            root_ = nullptr;
           }
         }
 

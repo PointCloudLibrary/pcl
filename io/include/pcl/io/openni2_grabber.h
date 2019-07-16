@@ -38,9 +38,11 @@
  */
 
 #pragma once
- 
-#ifdef HAVE_OPENNI2
+
 #include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
+
+#ifdef HAVE_OPENNI2
 
 #include <pcl/io/eigen.h>
 #include <pcl/io/boost.h>
@@ -74,13 +76,13 @@ namespace pcl
     class PCL_EXPORTS OpenNI2Grabber : public Grabber
     {
       public:
-        typedef boost::shared_ptr<OpenNI2Grabber> Ptr;
-        typedef boost::shared_ptr<const OpenNI2Grabber> ConstPtr;
+        using Ptr = boost::shared_ptr<OpenNI2Grabber>;
+        using ConstPtr = boost::shared_ptr<const OpenNI2Grabber>;
 
         // Templated images
-        typedef pcl::io::DepthImage DepthImage;
-        typedef pcl::io::IRImage IRImage;
-        typedef pcl::io::Image Image;
+        using DepthImage = pcl::io::DepthImage;
+        using IRImage = pcl::io::IRImage;
+        using Image = pcl::io::Image;
 
         /** \brief Basic camera parameters placeholder. */
         struct CameraParameters
@@ -104,7 +106,7 @@ namespace pcl
           { }
         };
 
-        typedef enum
+        enum Mode
         {
           OpenNI_Default_Mode = 0, // This can depend on the device. For now all devices (PSDK, Xtion, Kinect) its VGA@30Hz
           OpenNI_SXGA_15Hz = 1,    // Only supported by the Kinect
@@ -116,18 +118,18 @@ namespace pcl
           OpenNI_QQVGA_25Hz = 7,   // Not supported -> using software downsampling (only for integer scale factor and only NN)
           OpenNI_QQVGA_30Hz = 8,   // Not supported -> using software downsampling (only for integer scale factor and only NN)
           OpenNI_QQVGA_60Hz = 9    // Not supported -> using software downsampling (only for integer scale factor and only NN)
-        } Mode;
+        };
 
         //define callback signature typedefs
-        typedef void (sig_cb_openni_image) (const boost::shared_ptr<Image>&);
-        typedef void (sig_cb_openni_depth_image) (const boost::shared_ptr<DepthImage>&);
-        typedef void (sig_cb_openni_ir_image) (const boost::shared_ptr<IRImage>&);
-        typedef void (sig_cb_openni_image_depth_image) (const boost::shared_ptr<Image>&, const boost::shared_ptr<DepthImage>&, float reciprocalFocalLength) ;
-        typedef void (sig_cb_openni_ir_depth_image) (const boost::shared_ptr<IRImage>&, const boost::shared_ptr<DepthImage>&, float reciprocalFocalLength) ;
-        typedef void (sig_cb_openni_point_cloud) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&);
-        typedef void (sig_cb_openni_point_cloud_rgb) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&);
-        typedef void (sig_cb_openni_point_cloud_rgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
-        typedef void (sig_cb_openni_point_cloud_i) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
+        using sig_cb_openni_image = void (const boost::shared_ptr<Image> &);
+        using sig_cb_openni_depth_image = void (const boost::shared_ptr<DepthImage> &);
+        using sig_cb_openni_ir_image = void (const boost::shared_ptr<IRImage> &);
+        using sig_cb_openni_image_depth_image = void (const boost::shared_ptr<Image> &, const boost::shared_ptr<DepthImage> &, float) ;
+        using sig_cb_openni_ir_depth_image = void (const boost::shared_ptr<IRImage> &, const boost::shared_ptr<DepthImage> &, float) ;
+        using sig_cb_openni_point_cloud = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> > &);
+        using sig_cb_openni_point_cloud_rgb = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> > &);
+        using sig_cb_openni_point_cloud_rgba = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> > &);
+        using sig_cb_openni_point_cloud_i = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> > &);
 
       public:
         /** \brief Constructor
@@ -465,16 +467,13 @@ namespace pcl
           {
             if (mode1.getResolutionX () < mode2.getResolutionX ())
               return true;
-            else if (mode1.getResolutionX () > mode2.getResolutionX ())
+            if (mode1.getResolutionX () > mode2.getResolutionX ())
               return false;
-            else if (mode1.getResolutionY () < mode2.getResolutionY ())
+            if (mode1.getResolutionY () < mode2.getResolutionY ())
               return true;
-            else if (mode1.getResolutionY () > mode2.getResolutionY ())
+            if (mode1.getResolutionY () > mode2.getResolutionY ())
               return false;
-            else if (mode1.getFps () < mode2.getFps () )
-              return true;
-            else
-              return false;
+            return (mode1.getFps () < mode2.getFps ());
           }
         };
 
@@ -491,7 +490,7 @@ namespace pcl
         CameraParameters depth_parameters_;
 
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     boost::shared_ptr<pcl::io::openni2::OpenNI2Device>

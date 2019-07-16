@@ -45,12 +45,17 @@
 #include <pcl/console/parse.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/mouse_event.h>
-#include <vector>
-#include <string>
+
 #include <boost/algorithm/string.hpp>
+
+#include <mutex>
+#include <string>
+#include <thread>
 #include <typeinfo>
+#include <vector>
 
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
 using namespace pcl::visualization;
@@ -83,8 +88,8 @@ template<typename PointType>
 class SimpleHDLViewer
 {
   public:
-    typedef PointCloud<PointType> Cloud;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = PointCloud<PointType>;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     SimpleHDLViewer (Grabber& grabber,
                      PointCloudColorHandler<PointType> &handler) 
@@ -98,7 +103,7 @@ class SimpleHDLViewer
     cloud_callback (const CloudConstPtr& cloud)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
       //std::cout << cloud->points[0] << " " << cloud->size () << std::endl;
     }
@@ -109,7 +114,7 @@ class SimpleHDLViewer
                     float /*endAngle*/)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
     }
 
@@ -142,12 +147,8 @@ class SimpleHDLViewer
       cloud_viewer_->initCameraParameters ();
       cloud_viewer_->setCameraPosition (0.0, 0.0, 30.0, 0.0, 1.0, 0.0, 0);
       cloud_viewer_->setCameraClipDistances (0.0, 50.0);
-      //cloud_viewer_->registerMouseCallback(&SimpleHDLViewer::mouse_callback, *this);
-      //cloud_viewer_->registerKeyboardCallback (&SimpleHDLViewer::keyboard_callback, *this);
 
-      //boost::function<void(const CloudConstPtr&, float, float)> cloud_cb = boost::bind(&SimpleHDLViewer::cloud_callback, this, _1, _2, _3);
-      boost::function<void (const CloudConstPtr&)> cloud_cb = boost::bind (
-          &SimpleHDLViewer::cloud_callback, this, _1);
+      std::function<void (const CloudConstPtr&)> cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
       boost::signals2::connection cloud_connection = grabber_.registerCallback (
           cloud_cb);
 
@@ -177,7 +178,7 @@ class SimpleHDLViewer
         if (!grabber_.isRunning ())
           cloud_viewer_->spin ();
 
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
       }
 
       grabber_.stop ();
@@ -189,8 +190,8 @@ class SimpleHDLViewer
     boost::shared_ptr<ImageViewer> image_viewer_;
 
     Grabber& grabber_;
-    boost::mutex cloud_mutex_;
-    boost::mutex image_mutex_;
+    std::mutex cloud_mutex_;
+    std::mutex image_mutex_;
 
     CloudConstPtr cloud_;
     PointCloudColorHandler<PointType> &handler_;

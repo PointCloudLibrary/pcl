@@ -75,7 +75,7 @@ We start by defining a structure to store the alignment results.  It contains a 
 
 .. note::
 
-   Because we are including an Eigen::Matrix4f in this struct, we need to include the EIGEN_MAKE_ALIGNED_OPERATOR_NEW macro, which will overload the struct's "operator new" so that it will generate 16-bytes-aligned pointers.  If you're curious, you can find more information about this issue `here <http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html>`_.
+   Because we are including an Eigen::Matrix4f in this struct, we need to include the EIGEN_MAKE_ALIGNED_OPERATOR_NEW macro, which will overload the struct's "operator new" so that it will generate 16-bytes-aligned pointers.  If you're curious, you can find more information about this issue `here <http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html>`_. For convenience, there is a redefinition of the macro in pcl_macros.h, aptly named PCL_MAKE_ALIGNED_OPERATOR_NEW which will let us for example call `pcl::make_shared` to create a `shared_ptr` of over-aligned classes.
 
 .. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
@@ -132,6 +132,10 @@ Next we load the target cloud (from the filename supplied on the command line).
    :lines: 249-251
 
 We then perform a little pre-processing on the data to get it ready for alignment.  The first step is to filter out any background points.  In this example we assume the person we're trying to align to will be less than 1 meter away, so we apply a pass-through filter, filtering on the "z" field (i.e., depth) with limits of 0 to 1.
+
+.. note:: This is application and data dependent. You may need to tune the
+          threshold (or drop this filter entirely) to make it work with your
+          data.
 
 .. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp

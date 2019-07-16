@@ -16,7 +16,7 @@ namespace pcl
       class PCL_EXPORTS PersonAttribs
       {
         public:
-          typedef boost::shared_ptr<PersonAttribs> Ptr;
+          using Ptr = boost::shared_ptr<PersonAttribs>;
 
           /** \brief Constructor creates generic values from **/
           PersonAttribs();

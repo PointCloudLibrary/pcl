@@ -32,8 +32,6 @@
 #include <OpenNI.h>
 #include <PS1080.h> // For XN_STREAM_PROPERTY_EMITTER_DCMOS_DISTANCE property
 
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/chrono.hpp>
 
@@ -51,10 +49,9 @@ using namespace pcl::io::openni2;
 using openni::VideoMode;
 using std::vector;
 
-typedef boost::chrono::high_resolution_clock hr_clock;
+using hr_clock = boost::chrono::high_resolution_clock;
 
 pcl::io::openni2::OpenNI2Device::OpenNI2Device (const std::string& device_URI) :
-  openni_device_(),
   ir_video_started_(false),
   color_video_started_(false),
   depth_video_started_(false)
@@ -63,7 +60,7 @@ pcl::io::openni2::OpenNI2Device::OpenNI2Device (const std::string& device_URI) :
   if (status != openni::STATUS_OK)
     THROW_IO_EXCEPTION ("Initialize failed\n%s\n", OpenNI::getExtendedError ());
 
-  openni_device_ = boost::make_shared<openni::Device>();
+  openni_device_.reset (new openni::Device);
 
   if (device_URI.length () > 0)
     status = openni_device_->open (device_URI.c_str ());
@@ -107,12 +104,12 @@ pcl::io::openni2::OpenNI2Device::OpenNI2Device (const std::string& device_URI) :
     openni_device_->getPlaybackControl ()->setSpeed (1.0f);
   }
 
-  device_info_ = boost::make_shared<openni::DeviceInfo>();
+  device_info_.reset (new openni::DeviceInfo);
   *device_info_ = openni_device_->getDeviceInfo ();
 
-  color_frame_listener = boost::make_shared<OpenNI2FrameListener>();
-  depth_frame_listener = boost::make_shared<OpenNI2FrameListener>();
-  ir_frame_listener    = boost::make_shared<OpenNI2FrameListener>();
+  color_frame_listener.reset (new OpenNI2FrameListener);
+  depth_frame_listener.reset (new OpenNI2FrameListener);
+  ir_frame_listener.reset (new OpenNI2FrameListener);
 }
 
 pcl::io::openni2::OpenNI2Device::~OpenNI2Device ()
@@ -169,13 +166,13 @@ pcl::io::openni2::OpenNI2Device::getStringID () const
 bool
 pcl::io::openni2::OpenNI2Device::isValid () const
 {
-  return (openni_device_.get () != 0) && openni_device_->isValid ();
+  return (openni_device_.get () != nullptr) && openni_device_->isValid ();
 }
 
 float
 pcl::io::openni2::OpenNI2Device::getIRFocalLength () const
 {
-  boost::shared_ptr<openni::VideoStream> stream = getIRVideoStream ();
+  auto stream = getIRVideoStream ();
 
   int frameWidth = stream->getVideoMode ().getResolutionX ();
   float hFov = stream->getHorizontalFieldOfView ();
@@ -186,7 +183,7 @@ pcl::io::openni2::OpenNI2Device::getIRFocalLength () const
 float
 pcl::io::openni2::OpenNI2Device::getColorFocalLength () const
 {
-  boost::shared_ptr<openni::VideoStream> stream = getColorVideoStream ();
+  auto stream = getColorVideoStream ();
 
   int frameWidth = stream->getVideoMode ().getResolutionX ();
   float hFov = stream->getHorizontalFieldOfView ();
@@ -197,7 +194,7 @@ pcl::io::openni2::OpenNI2Device::getColorFocalLength () const
 float
 pcl::io::openni2::OpenNI2Device::getDepthFocalLength () const
 {
-  boost::shared_ptr<openni::VideoStream> stream = getDepthVideoStream ();
+  auto stream = getDepthVideoStream ();
 
   int frameWidth = stream->getVideoMode ().getResolutionX ();
   float hFov = stream->getHorizontalFieldOfView ();
@@ -295,9 +292,7 @@ pcl::io::openni2::OpenNI2Device::hasDepthSensor () const
 void
 pcl::io::openni2::OpenNI2Device::startIRStream ()
 {
-  boost::shared_ptr<openni::VideoStream> stream = getIRVideoStream ();
-
-  if (stream)
+  if (auto stream = getIRVideoStream ())
   {
     stream->setMirroringEnabled (false);
     stream->addNewFrameListener (ir_frame_listener.get ());
@@ -309,9 +304,7 @@ pcl::io::openni2::OpenNI2Device::startIRStream ()
 void
 pcl::io::openni2::OpenNI2Device::startColorStream ()
 {
-  boost::shared_ptr<openni::VideoStream> stream = getColorVideoStream ();
-
-  if (stream)
+  if (auto stream = getColorVideoStream ())
   {
     stream->setMirroringEnabled (false);
     stream->addNewFrameListener (color_frame_listener.get ());
@@ -322,9 +315,7 @@ pcl::io::openni2::OpenNI2Device::startColorStream ()
 void
 pcl::io::openni2::OpenNI2Device::startDepthStream ()
 {
-  boost::shared_ptr<openni::VideoStream> stream = getDepthVideoStream ();
-
-  if (stream)
+  if (auto stream = getDepthVideoStream ())
   {
     stream->setMirroringEnabled (false);
     stream->addNewFrameListener (depth_frame_listener.get ());
@@ -344,7 +335,7 @@ pcl::io::openni2::OpenNI2Device::stopAllStreams ()
 void
 pcl::io::openni2::OpenNI2Device::stopIRStream ()
 {
-  if (ir_video_stream_.get () != 0)
+  if (ir_video_stream_.get () != nullptr)
   {
     ir_video_stream_->stop ();
     ir_video_started_ = false;
@@ -353,7 +344,7 @@ pcl::io::openni2::OpenNI2Device::stopIRStream ()
 void
 pcl::io::openni2::OpenNI2Device::stopColorStream ()
 {
-  if (color_video_stream_.get () != 0)
+  if (color_video_stream_.get () != nullptr)
   {
     color_video_stream_->stop ();
     color_video_started_ = false;
@@ -362,7 +353,7 @@ pcl::io::openni2::OpenNI2Device::stopColorStream ()
 void
 pcl::io::openni2::OpenNI2Device::stopDepthStream ()
 {
-  if (depth_video_stream_.get () != 0)
+  if (depth_video_stream_.get () != nullptr)
   {
     depth_video_stream_->stop ();
     depth_video_started_ = false;
@@ -372,13 +363,13 @@ pcl::io::openni2::OpenNI2Device::stopDepthStream ()
 void
 pcl::io::openni2::OpenNI2Device::shutdown ()
 {
-  if (ir_video_stream_.get () != 0)
+  if (ir_video_stream_.get () != nullptr)
     ir_video_stream_->destroy ();
 
-  if (color_video_stream_.get () != 0)
+  if (color_video_stream_.get () != nullptr)
     color_video_stream_->destroy ();
 
-  if (depth_video_stream_.get () != 0)
+  if (depth_video_stream_.get () != nullptr)
     depth_video_stream_->destroy ();
 
 }
@@ -443,66 +434,34 @@ pcl::io::openni2::OpenNI2Device::setSynchronization (bool enabled)
 const OpenNI2VideoMode
 pcl::io::openni2::OpenNI2Device::getIRVideoMode ()
 {
-  OpenNI2VideoMode ret;
-
-  boost::shared_ptr<openni::VideoStream> stream = getIRVideoStream ();
-
-  if (stream)
-  {
-    openni::VideoMode video_mode = stream->getVideoMode ();
-
-    ret = openniModeToGrabberMode (video_mode);
-  }
-  else
-    THROW_IO_EXCEPTION ("Could not create video stream.");
-
-  return (ret);
+  if (auto stream = getIRVideoStream ())
+    return openniModeToGrabberMode (stream->getVideoMode ());
+  THROW_IO_EXCEPTION ("Could not create video stream.");
+  return {};
 }
 
 const OpenNI2VideoMode
 pcl::io::openni2::OpenNI2Device::getColorVideoMode ()
 {
-  OpenNI2VideoMode ret;
-
-  boost::shared_ptr<openni::VideoStream> stream = getColorVideoStream ();
-
-  if (stream)
-  {
-    openni::VideoMode video_mode = stream->getVideoMode ();
-
-    ret = openniModeToGrabberMode (video_mode);
-  }
-  else
-    THROW_IO_EXCEPTION ("Could not create video stream.");
-
-  return (ret);
+  if (auto stream = getColorVideoStream ())
+    return openniModeToGrabberMode (stream->getVideoMode ());
+  THROW_IO_EXCEPTION ("Could not create video stream.");
+  return {};
 }
 
 const OpenNI2VideoMode
 pcl::io::openni2::OpenNI2Device::getDepthVideoMode ()
 {
-  OpenNI2VideoMode ret;
-
-  boost::shared_ptr<openni::VideoStream> stream = getDepthVideoStream ();
-
-  if (stream)
-  {
-    openni::VideoMode video_mode = stream->getVideoMode ();
-
-    ret = openniModeToGrabberMode (video_mode);
-  }
-  else
-    THROW_IO_EXCEPTION ("Could not create video stream.");
-
-  return (ret);
+  if (auto stream = getDepthVideoStream ())
+    return openniModeToGrabberMode (stream->getVideoMode ());
+  THROW_IO_EXCEPTION ("Could not create video stream.");
+  return {};
 }
 
 void
 pcl::io::openni2::OpenNI2Device::setIRVideoMode (const OpenNI2VideoMode& video_mode)
 {
-  boost::shared_ptr<openni::VideoStream> stream = getIRVideoStream ();
-
-  if (stream)
+  if (auto stream = getIRVideoStream ())
   {
     const openni::VideoMode videoMode = grabberModeToOpenniMode (video_mode);
     const openni::Status rc = stream->setVideoMode (videoMode);
@@ -514,9 +473,7 @@ pcl::io::openni2::OpenNI2Device::setIRVideoMode (const OpenNI2VideoMode& video_m
 void
 pcl::io::openni2::OpenNI2Device::setColorVideoMode (const OpenNI2VideoMode& video_mode)
 {
-  boost::shared_ptr<openni::VideoStream> stream = getColorVideoStream ();
-
-  if (stream)
+  if (auto stream = getColorVideoStream ())
   {
     openni::VideoMode videoMode = grabberModeToOpenniMode (video_mode);
     const openni::Status rc = stream->setVideoMode (videoMode);
@@ -528,9 +485,7 @@ pcl::io::openni2::OpenNI2Device::setColorVideoMode (const OpenNI2VideoMode& vide
 void
 pcl::io::openni2::OpenNI2Device::setDepthVideoMode (const OpenNI2VideoMode& video_mode)
 {
-  boost::shared_ptr<openni::VideoStream> stream = getDepthVideoStream ();
-
-  if (stream)
+  if (auto stream = getDepthVideoStream ())
   {
     const openni::VideoMode videoMode = grabberModeToOpenniMode (video_mode);
     const openni::Status rc = stream->setVideoMode (videoMode);
@@ -581,13 +536,11 @@ pcl::io::openni2::OpenNI2Device::getDefaultDepthMode () const
 const std::vector<OpenNI2VideoMode>&
 pcl::io::openni2::OpenNI2Device::getSupportedIRVideoModes () const
 {
-  boost::shared_ptr<openni::VideoStream> stream = getIRVideoStream ();
   ir_video_modes_.clear ();
 
-  if (stream)
+  if (auto stream = getIRVideoStream ())
   {
     const openni::SensorInfo& sensor_info = stream->getSensorInfo ();
-
     ir_video_modes_ = openniModeToGrabberMode (sensor_info.getSupportedVideoModes ());
   }
 
@@ -597,14 +550,11 @@ pcl::io::openni2::OpenNI2Device::getSupportedIRVideoModes () const
 const std::vector<OpenNI2VideoMode>&
 pcl::io::openni2::OpenNI2Device::getSupportedColorVideoModes () const
 {
-  boost::shared_ptr<openni::VideoStream> stream = getColorVideoStream ();
-
   color_video_modes_.clear ();
 
-  if (stream)
+  if (auto stream = getColorVideoStream ())
   {
     const openni::SensorInfo& sensor_info = stream->getSensorInfo ();
-
     color_video_modes_ = openniModeToGrabberMode (sensor_info.getSupportedVideoModes ());
   }
 
@@ -614,14 +564,11 @@ pcl::io::openni2::OpenNI2Device::getSupportedColorVideoModes () const
 const std::vector<OpenNI2VideoMode>&
 pcl::io::openni2::OpenNI2Device::getSupportedDepthVideoModes () const
 {
-  boost::shared_ptr<openni::VideoStream> stream = getDepthVideoStream ();
-
   depth_video_modes_.clear ();
 
-  if (stream)
+  if (auto stream = getDepthVideoStream ())
   {
     const openni::SensorInfo& sensor_info = stream->getSensorInfo ();
-
     depth_video_modes_ = openniModeToGrabberMode (sensor_info.getSupportedVideoModes ());
   }
 
@@ -636,13 +583,10 @@ pcl::io::openni2::OpenNI2Device::findCompatibleIRMode (const OpenNI2VideoMode& r
     actual_mode = requested_mode;
     return (true);
   }
-  else
-  {
-    // Find a resize-compatable mode
-    std::vector<OpenNI2VideoMode> supportedModes = getSupportedIRVideoModes ();
-    bool found = findCompatibleVideoMode (supportedModes, requested_mode, actual_mode);
-    return (found);
-  }
+  // Find a resize-compatable mode
+  std::vector<OpenNI2VideoMode> supportedModes = getSupportedIRVideoModes ();
+  bool found = findCompatibleVideoMode (supportedModes, requested_mode, actual_mode);
+  return (found);
 }
 
 bool
@@ -653,13 +597,10 @@ pcl::io::openni2::OpenNI2Device::findCompatibleColorMode (const OpenNI2VideoMode
     actual_mode = requested_mode;
     return (true);
   }
-  else
-  {
-    // Find a resize-compatable mode
-    std::vector<OpenNI2VideoMode> supportedModes = getSupportedColorVideoModes ();
-    bool found = findCompatibleVideoMode (supportedModes, requested_mode, actual_mode);
-    return (found);
-  }
+  // Find a resize-compatable mode
+  std::vector<OpenNI2VideoMode> supportedModes = getSupportedColorVideoModes ();
+  bool found = findCompatibleVideoMode (supportedModes, requested_mode, actual_mode);
+  return (found);
 }
 
 bool
@@ -670,13 +611,10 @@ pcl::io::openni2::OpenNI2Device::findCompatibleDepthMode (const OpenNI2VideoMode
     actual_mode = requested_mode;
     return (true);
   }
-  else
-  {
-    // Find a resize-compatable mode
-    std::vector<OpenNI2VideoMode> supportedModes = getSupportedDepthVideoModes ();
-    bool found = findCompatibleVideoMode (supportedModes, requested_mode, actual_mode);
-    return (found);
-  }
+  // Find a resize-compatable mode
+  std::vector<OpenNI2VideoMode> supportedModes = getSupportedDepthVideoModes ();
+  bool found = findCompatibleVideoMode (supportedModes, requested_mode, actual_mode);
+  return (found);
 }
 
 // Generic support method for the above findCompatable...Mode calls above
@@ -713,9 +651,7 @@ pcl::io::openni2::OpenNI2Device::resizingSupported (size_t input_width, size_t i
 void
 pcl::io::openni2::OpenNI2Device::setAutoExposure (bool enable)
 {
-  boost::shared_ptr<openni::VideoStream> stream = getColorVideoStream ();
-
-  if (stream)
+  if (auto stream = getColorVideoStream ())
   {
     openni::CameraSettings* camera_seeting = stream->getCameraSettings ();
     if (camera_seeting)
@@ -731,9 +667,7 @@ pcl::io::openni2::OpenNI2Device::setAutoExposure (bool enable)
 void
 pcl::io::openni2::OpenNI2Device::setAutoWhiteBalance (bool enable)
 {
-  boost::shared_ptr<openni::VideoStream> stream = getColorVideoStream ();
-
-  if (stream)
+  if (auto stream = getColorVideoStream ())
   {
     openni::CameraSettings* camera_seeting = stream->getCameraSettings ();
     if (camera_seeting)
@@ -742,7 +676,6 @@ pcl::io::openni2::OpenNI2Device::setAutoWhiteBalance (bool enable)
       if (rc != openni::STATUS_OK)
         THROW_IO_EXCEPTION ("Couldn't set auto white balance: \n%s\n", openni::OpenNI::getExtendedError ());
     }
-
   }
 }
 
@@ -751,9 +684,7 @@ pcl::io::openni2::OpenNI2Device::getAutoExposure () const
 {
   bool ret = false;
 
-  boost::shared_ptr<openni::VideoStream> stream = getColorVideoStream ();
-
-  if (stream)
+  if (auto stream = getColorVideoStream ())
   {
     openni::CameraSettings* camera_seeting = stream->getCameraSettings ();
     if (camera_seeting)
@@ -768,9 +699,7 @@ pcl::io::openni2::OpenNI2Device::getAutoWhiteBalance () const
 {
   bool ret = false;
 
-  boost::shared_ptr<openni::VideoStream> stream = getColorVideoStream ();
-
-  if (stream)
+  if (auto stream = getColorVideoStream ())
   {
     openni::CameraSettings* camera_setting = stream->getCameraSettings ();
     if (camera_setting)
@@ -815,11 +744,11 @@ bool OpenNI2Device::setPlaybackSpeed (double speed)
 boost::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getIRVideoStream () const
 {
-  if (ir_video_stream_.get () == 0)
+  if (ir_video_stream_.get () == nullptr)
   {
     if (hasIRSensor ())
     {
-      ir_video_stream_ = boost::make_shared<openni::VideoStream>();
+      ir_video_stream_.reset (new openni::VideoStream);
 
       const openni::Status rc = ir_video_stream_->create (*openni_device_, openni::SENSOR_IR);
       if (rc != openni::STATUS_OK)
@@ -832,11 +761,11 @@ pcl::io::openni2::OpenNI2Device::getIRVideoStream () const
 boost::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getColorVideoStream () const
 {
-  if (color_video_stream_.get () == 0)
+  if (color_video_stream_.get () == nullptr)
   {
     if (hasColorSensor ())
     {
-      color_video_stream_ = boost::make_shared<openni::VideoStream>();
+      color_video_stream_.reset (new openni::VideoStream);
 
       const openni::Status rc = color_video_stream_->create (*openni_device_, openni::SENSOR_COLOR);
       if (rc != openni::STATUS_OK)
@@ -849,11 +778,11 @@ pcl::io::openni2::OpenNI2Device::getColorVideoStream () const
 boost::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getDepthVideoStream () const
 {
-  if (depth_video_stream_.get () == 0)
+  if (depth_video_stream_.get () == nullptr)
   {
     if (hasDepthSensor ())
     {
-      depth_video_stream_ = boost::make_shared<openni::VideoStream>();
+      depth_video_stream_.reset (new openni::VideoStream);
 
       const openni::Status rc = depth_video_stream_->create (*openni_device_, openni::SENSOR_DEPTH);
       if (rc != openni::STATUS_OK)

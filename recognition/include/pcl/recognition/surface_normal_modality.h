@@ -55,7 +55,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      inline LINEMOD_OrientationMap () : width_ (0), height_ (0), map_ () {}
+      inline LINEMOD_OrientationMap () : width_ (0), height_ (0) {}
       /** \brief Destructor. */
       inline ~LINEMOD_OrientationMap () {}
 
@@ -151,14 +151,13 @@ namespace pcl
     QuantizedNormalLookUpTable () : 
       range_x (-1), range_y (-1), range_z (-1), 
       offset_x (-1), offset_y (-1), offset_z (-1), 
-      size_x (-1), size_y (-1), size_z (-1), lut (NULL) 
+      size_x (-1), size_y (-1), size_z (-1), lut (nullptr) 
     {}
 
     /** \brief Destructor. */
     ~QuantizedNormalLookUpTable () 
     { 
-      if (lut != NULL) 
-        delete[] lut; 
+      delete[] lut; 
     }
 
     /** \brief Initializes the LUT.
@@ -182,8 +181,7 @@ namespace pcl
       //if (lut != NULL) free16(lut);
       //lut = malloc16(size_x*size_y*size_z);
 
-      if (lut != NULL) 
-        delete[] lut;
+      delete[] lut;
       lut = new unsigned char[size_x*size_y*size_z];
 
       const int nr_normals = 8;
@@ -299,7 +297,7 @@ namespace pcl
       struct Candidate
       {
         /** \brief Constructor. */
-        Candidate () : normal (), distance (0.0f), bin_index (0), x (0), y (0) {}
+        Candidate () : distance (0.0f), bin_index (0), x (0), y (0) {}
 
         /** \brief Normal. */
         Normal normal;
@@ -325,7 +323,7 @@ namespace pcl
       };
 
     public:
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
 
       /** \brief Constructor. */
       SurfaceNormalModality ();
@@ -492,13 +490,7 @@ SurfaceNormalModality ()
   : variable_feature_nr_ (false)
   , feature_distance_threshold_ (2.0f)
   , min_distance_to_border_ (2.0f)
-  , normal_lookup_ ()
   , spreading_size_ (8)
-  , surface_normals_ ()
-  , quantized_surface_normals_ ()
-  , filtered_quantized_surface_normals_ ()
-  , spreaded_quantized_surface_normals_ ()
-  , surface_normal_orientations_ ()
 {
 }
 
@@ -980,8 +972,8 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
   //}
 
   MaskMap mask_maps[8];
-  for (size_t map_index = 0; map_index < 8; ++map_index)
-    mask_maps[map_index].resize (width, height);
+  for (auto &mask_map : mask_maps)
+    mask_map.resize (width, height);
 
   unsigned char map[255];
   memset(map, 0, 255);
@@ -1251,8 +1243,8 @@ pcl::SurfaceNormalModality<PointInT>::extractAllFeatures (
   //}
 
   MaskMap mask_maps[8];
-  for (size_t map_index = 0; map_index < 8; ++map_index)
-    mask_maps[map_index].resize (width, height);
+  for (auto &mask_map : mask_maps)
+    mask_map.resize (width, height);
 
   unsigned char map[255];
   memset(map, 0, 255);

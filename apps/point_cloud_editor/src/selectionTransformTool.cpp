@@ -97,7 +97,7 @@ SelectionTransformTool::update (int x, int y, BitMask, BitMask buttons)
                                          0.0f);
     return;
   }
-  else if (modifiers_ & ALT)
+  if (modifiers_ & ALT)
   {
     // selection motion is not applied directly (waits for end)
     // as such we can not update x and y immediately

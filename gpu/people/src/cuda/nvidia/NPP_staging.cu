@@ -2069,28 +2069,6 @@ NCVStatus nppiStInterpolateFrames(const NppStInterpolationState *pState)
 //
 //==============================================================================
 
-
-#if ((defined __CUDA_ARCH__) && (__CUDA_ARCH__ < 200))
-
-// FP32 atomic add
-static __forceinline__ __device__ float _atomicAdd(float *addr, float val)
-{
-    float old = *addr, assumed;
-
-    do {
-        assumed = old;
-        old = int_as_float(__iAtomicCAS((int*)addr,
-              float_as_int(assumed),
-              float_as_int(val+assumed)));
-    } while( assumed!=old );
-
-    return old;
-}
-#else
-#define _atomicAdd atomicAdd
-#endif
-
-
 __global__ void ForwardWarpKernel_PSF2x2(const float *u,
                                          const float *v,
                                          const float *src,
@@ -2129,8 +2107,8 @@ __global__ void ForwardWarpKernel_PSF2x2(const float *u,
     if (!((tx >= w) || (tx < 0) || (ty >= h) || (ty < 0)))
     {
         weight = dx * dy;
-        _atomicAdd (dst + ty * image_stride + tx, value * weight);
-        _atomicAdd (normalization_factor + ty * image_stride + tx, weight);
+        atomicAdd (dst + ty * image_stride + tx, value * weight);
+        atomicAdd (normalization_factor + ty * image_stride + tx, weight);
     }
 
     // fill pixel containing bottom left corner
@@ -2138,8 +2116,8 @@ __global__ void ForwardWarpKernel_PSF2x2(const float *u,
     if (!((tx >= w) || (tx < 0) || (ty >= h) || (ty < 0)))
     {
         weight = (1.0f - dx) * dy;
-        _atomicAdd (dst + ty * image_stride + tx, value * weight);
-        _atomicAdd (normalization_factor + ty * image_stride + tx, weight);
+        atomicAdd (dst + ty * image_stride + tx, value * weight);
+        atomicAdd (normalization_factor + ty * image_stride + tx, weight);
     }
 
     // fill pixel containing upper left corner
@@ -2147,8 +2125,8 @@ __global__ void ForwardWarpKernel_PSF2x2(const float *u,
     if (!((tx >= w) || (tx < 0) || (ty >= h) || (ty < 0)))
     {
         weight = (1.0f - dx) * (1.0f - dy);
-        _atomicAdd (dst + ty * image_stride + tx, value * weight);
-        _atomicAdd (normalization_factor + ty * image_stride + tx, weight);
+        atomicAdd (dst + ty * image_stride + tx, value * weight);
+        atomicAdd (normalization_factor + ty * image_stride + tx, weight);
     }
 
     // fill pixel containing upper right corner
@@ -2156,8 +2134,8 @@ __global__ void ForwardWarpKernel_PSF2x2(const float *u,
     if (!((tx >= w) || (tx < 0) || (ty >= h) || (ty < 0)))
     {
         weight = dx * (1.0f - dy);
-        _atomicAdd (dst + ty * image_stride + tx, value * weight);
-        _atomicAdd (normalization_factor + ty * image_stride + tx, weight);
+        atomicAdd (dst + ty * image_stride + tx, value * weight);
+        atomicAdd (normalization_factor + ty * image_stride + tx, weight);
     }
 }
 
@@ -2194,7 +2172,7 @@ __global__ void ForwardWarpKernel_PSF1x1(const float *u,
     // fill pixel
     if (!((tx >= w) || (tx < 0) || (ty >= h) || (ty < 0)))
     {
-        _atomicAdd (dst + ty * image_stride + tx, value);
+        atomicAdd (dst + ty * image_stride + tx, value);
     }
 }
 

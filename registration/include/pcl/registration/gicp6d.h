@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
@@ -59,7 +60,7 @@ namespace pcl
       };
       float data_lab[4];
     };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief A custom point type for position and CIELAB color value */
@@ -103,8 +104,8 @@ namespace pcl
    */
   class PCL_EXPORTS GeneralizedIterativeClosestPoint6D : public GeneralizedIterativeClosestPoint<PointXYZRGBA, PointXYZRGBA>
   {
-    typedef PointXYZRGBA PointSource;
-    typedef PointXYZRGBA PointTarget;
+    using PointSource = PointXYZRGBA;
+    using PointTarget = PointXYZRGBA;
 
     public:
 
@@ -168,8 +169,8 @@ namespace pcl
           using PointRepresentation<PointXYZLAB>::trivial_;
 
         public:
-          typedef boost::shared_ptr<MyPointRepresentation> Ptr;
-          typedef boost::shared_ptr<const MyPointRepresentation> ConstPtr;
+          using Ptr = boost::shared_ptr<MyPointRepresentation>;
+          using ConstPtr = boost::shared_ptr<const MyPointRepresentation>;
 
           MyPointRepresentation ()
           {

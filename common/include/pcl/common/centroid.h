@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_traits.h>
 #include <pcl/PointIndices.h>
@@ -839,7 +840,7 @@ namespace pcl
   template<typename PointT, typename Scalar>
   struct NdCentroidFunctor
   {
-    typedef typename traits::POD<PointT>::type Pod;
+    using Pod = typename traits::POD<PointT>::type;
 
     NdCentroidFunctor (const PointT &p, Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid)
       : f_idx_ (0),
@@ -848,7 +849,7 @@ namespace pcl
 
     template<typename Key> inline void operator() ()
     {
-      typedef typename pcl::traits::datatype<PointT, Key>::type T;
+      using T = typename pcl::traits::datatype<PointT, Key>::type;
       const uint8_t* raw_ptr = reinterpret_cast<const uint8_t*>(&p_) + pcl::traits::offset<PointT, Key>::value;
       const T* data_ptr = reinterpret_cast<const T*>(raw_ptr);
 
@@ -1050,7 +1051,7 @@ namespace pcl
         return (num_points_);
       }
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     private:
 

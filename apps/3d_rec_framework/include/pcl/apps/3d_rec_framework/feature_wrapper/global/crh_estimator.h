@@ -19,12 +19,12 @@ namespace pcl
     class CRHEstimation : public GlobalEstimator<PointInT, FeatureT>
     {
 
-      typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
+      using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
       using GlobalEstimator<PointInT, FeatureT>::normal_estimator_;
       using GlobalEstimator<PointInT, FeatureT>::normals_;
 
       typename boost::shared_ptr<GlobalEstimator<PointInT, FeatureT> > feature_estimator_;
-      typedef pcl::PointCloud<pcl::Histogram<90> > CRHPointCloud;
+      using CRHPointCloud = pcl::PointCloud<pcl::Histogram<90> >;
       std::vector< CRHPointCloud::Ptr > crh_histograms_;
 
     public:
@@ -62,7 +62,7 @@ namespace pcl
 
         crh_histograms_.resize(signatures.size());
 
-        typedef pcl::CRHEstimation<PointInT, pcl::Normal, pcl::Histogram<90> > CRHEstimation;
+        using CRHEstimation = pcl::CRHEstimation<PointInT, pcl::Normal, pcl::Histogram<90> >;
         CRHEstimation crh;
         crh.setInputCloud(processed);
         crh.setInputNormals(normals_);

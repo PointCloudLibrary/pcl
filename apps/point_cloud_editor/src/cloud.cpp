@@ -98,7 +98,7 @@ Cloud::Cloud (const Cloud3D &cloud, bool register_stats)
 }
 
 Cloud::Cloud (const Cloud &copy)
-  : cloud_(copy.cloud_), selection_wk_ptr_(copy.selection_wk_ptr_),
+  : Statistics (copy), cloud_(copy.cloud_), selection_wk_ptr_(copy.selection_wk_ptr_),
   use_color_ramp_(copy.use_color_ramp_),
   color_ramp_axis_(copy.color_ramp_axis_),
   display_scale_(copy.display_scale_),
@@ -116,8 +116,6 @@ Cloud::Cloud (const Cloud &copy)
   std::copy(copy.color_, copy.color_+RGB, color_);
   std::copy(copy.highlight_color_, copy.highlight_color_+RGB, highlight_color_);
 }
-
-Cloud::~Cloud () {}
 
 Cloud&
 Cloud::operator= (const Cloud &cloud)

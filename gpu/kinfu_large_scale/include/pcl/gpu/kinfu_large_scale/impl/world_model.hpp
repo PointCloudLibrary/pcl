@@ -112,7 +112,7 @@ pcl::kinfuLS::WorldModel<PointT>::getExistingData(const double previous_origin_x
   // apply filter
   condrem.filter (existing_slice);  
  
-  if(existing_slice.points.size () != 0)
+  if(!existing_slice.points.empty ())
   {
 	//transform the slice in new cube coordinates
 	Eigen::Affine3f transformation; 
@@ -133,7 +133,7 @@ void
 pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vector<typename WorldModel<PointT>::PointCloudPtr> &cubes, std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > &transforms, double overlap)
 {
   
-  if(world_->points.size () == 0)
+  if(world_->points.empty ())
   {
 	PCL_INFO("The world is empty, returning nothing\n");
 	return;
@@ -219,7 +219,7 @@ pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vecto
 		condrem.filter (*box);
 
 		// also push transform along with points.
-		if(box->points.size() > 0)
+		if(!box->points.empty ())
 		{
 		  Eigen::Vector3f transform;
 		  transform[0] = origin.x, transform[1] = origin.y, transform[2] = origin.z;

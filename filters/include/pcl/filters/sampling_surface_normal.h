@@ -58,20 +58,20 @@ namespace pcl
     using Filter<PointT>::indices_;
     using Filter<PointT>::input_;
 
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = typename Filter<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-    typedef Eigen::Matrix<float, Eigen::Dynamic, 1> Vector;
+    using Vector = Eigen::Matrix<float, Eigen::Dynamic, 1>;
 
     public:
 
-      typedef boost::shared_ptr< SamplingSurfaceNormal<PointT> > Ptr;
-      typedef boost::shared_ptr< const SamplingSurfaceNormal<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<SamplingSurfaceNormal<PointT> >;
+      using ConstPtr = boost::shared_ptr<const SamplingSurfaceNormal<PointT> >;
 
       /** \brief Empty constructor. */
       SamplingSurfaceNormal () : 
-        sample_ (10), seed_ (static_cast<unsigned int> (time (NULL))), ratio_ ()
+        sample_ (10), seed_ (static_cast<unsigned int> (time (nullptr))), ratio_ ()
       {
         filter_name_ = "SamplingSurfaceNormal";
         srand (seed_);
@@ -163,9 +163,9 @@ namespace pcl
         {
           if (dim == 0)
             return (cloud.points[p0].x < cloud.points[p1].x);
-          else if (dim == 1)
+          if (dim == 1)
             return (cloud.points[p0].y < cloud.points[p1].y);
-          else if (dim == 2)
+          if (dim == 2)
             return (cloud.points[p0].z < cloud.points[p1].z);
           return (false);
         }

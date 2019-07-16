@@ -19,6 +19,7 @@
 #include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
+#include <thread>
 #include <boost/shared_ptr.hpp>
 #ifdef _WIN32
 # define WIN32_LEAN_AND_MEAN
@@ -48,7 +49,6 @@
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/gp3.h>
 
@@ -63,14 +63,12 @@
 
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/console/time.h>
 
 // RangeImage:
 #include <pcl/range_image/range_image_planar.h>
 
 // Pop-up viewer
 #include <pcl/visualization/cloud_viewer.h>
-#include <boost/thread/thread.hpp>
 
 using namespace Eigen;
 using namespace pcl;
@@ -79,6 +77,7 @@ using namespace pcl::io;
 using namespace pcl::simulation;
 
 using namespace std;
+using namespace std::chrono_literals;
 
 uint16_t t_gamma[2048];
 
@@ -325,9 +324,9 @@ void display ()
   
   range_likelihood_->computeLikelihoods (reference, poses, scores);
   std::cout << "score: ";
-  for (size_t i = 0; i<scores.size (); ++i)
+  for (const float &score : scores)
   {
-    std::cout << " " << scores[i];
+    std::cout << " " << score;
   }
   std::cout << std::endl;
 
@@ -413,7 +412,7 @@ void display ()
   while (!viewer->wasStopped ())
   {
     viewer->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }    
   
   // doesn't work:

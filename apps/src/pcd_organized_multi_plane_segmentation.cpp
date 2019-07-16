@@ -70,7 +70,7 @@ class PCDOrganizedMultiPlaneSegmentation
       //viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.15, "cloud");
       viewer.addCoordinateSystem (1.0, "global");
       viewer.initCameraParameters ();
-      viewer.registerKeyboardCallback(&PCDOrganizedMultiPlaneSegmentation::keyboard_callback, *this, 0);
+      viewer.registerKeyboardCallback(&PCDOrganizedMultiPlaneSegmentation::keyboard_callback, *this, nullptr);
     }
 
     void keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)

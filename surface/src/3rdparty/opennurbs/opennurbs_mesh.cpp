@@ -5898,7 +5898,7 @@ static int compare3dPoint( const ON_3dPoint* a, const ON_3dPoint* b )
   return 0;
 }
 
-typedef int (*ON_COMPAR_LPVOID_LPVOID)(const void*,const void*);
+using ON_COMPAR_LPVOID_LPVOID = int (*)(const void *, const void *);
 
 static 
 int GetPointMap( int pt_count, const ON_3fPoint* fV, const ON_3dPoint* dV, ON_SimpleArray<int>& pt_map )

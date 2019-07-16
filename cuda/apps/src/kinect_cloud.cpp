@@ -62,7 +62,7 @@ struct EventHelper
             const pcl::PCLImage::ConstPtr &rgb,
             const pcl::CameraInfo::ConstPtr &info)
   {
-    //typedef pcl_cuda::SampleConsensusModel<pcl_cuda::Host>::Indices Indices;
+    //using Indices = pcl_cuda::SampleConsensusModel<pcl_cuda::Host>::Indices;
 
     //pcl_cuda::PointCloudAOS<pcl_cuda::Host>::Ptr data (new pcl_cuda::PointCloudAOS<pcl_cuda::Host>);
     PointCloudAOS<Device>::Ptr data;

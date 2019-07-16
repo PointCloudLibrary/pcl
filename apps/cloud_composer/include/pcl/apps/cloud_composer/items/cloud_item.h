@@ -40,12 +40,13 @@
 #include <QDebug>
 
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/search/kdtree.h>
 
 //Typedefs to make things sane
-typedef pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2> GeometryHandler;
-typedef pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
+using GeometryHandler = pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>;
+using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>;
 
 namespace pcl
 {
@@ -69,7 +70,7 @@ namespace pcl
       public:
         
         //This is needed because we have members which are Vector4f and Quaternionf
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
         
         CloudItem (const QString name,
                    const pcl::PCLPointCloud2::Ptr cloud_ptr,

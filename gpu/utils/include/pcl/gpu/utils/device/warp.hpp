@@ -60,24 +60,16 @@ namespace pcl
 
             static __device__ __forceinline__ int laneMaskLe()
             {
-#if (__CUDA_ARCH__ >= 200)
                 unsigned int ret;
 	            asm("mov.u32 %0, %lanemask_le;" : "=r"(ret) );
 	            return ret;
-#else
-                return 0xFFFFFFFF >> (31 - laneId());
-#endif
             }
 
             static __device__ __forceinline__ int laneMaskLt()
             {
-#if (__CUDA_ARCH__ >= 200)
                 unsigned int ret;
 	            asm("mov.u32 %0, %lanemask_lt;" : "=r"(ret) );
 	            return ret;
-#else
-                return 0xFFFFFFFF >> (32 - laneId());
-#endif
             }
             static __device__ __forceinline__ unsigned int id()
             {

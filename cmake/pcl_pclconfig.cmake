@@ -77,7 +77,7 @@ foreach(_ss ${PCL_SUBSYSTEMS_MODULES})
 endforeach()
 
 #Boost modules
-set(PCLCONFIG_AVAILABLE_BOOST_MODULES "system filesystem thread date_time iostreams")
+set(PCLCONFIG_AVAILABLE_BOOST_MODULES "system filesystem date_time iostreams")
 if(Boost_SERIALIZATION_FOUND)
   set(PCLCONFIG_AVAILABLE_BOOST_MODULES "${PCLCONFIG_AVAILABLE_BOOST_MODULES} serialization")
 endif()

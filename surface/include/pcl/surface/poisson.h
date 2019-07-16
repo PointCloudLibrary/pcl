@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/surface/reconstruction.h>
 
 namespace pcl
@@ -59,16 +60,16 @@ namespace pcl
   class Poisson : public SurfaceReconstruction<PointNT>
   {
     public:
-      typedef boost::shared_ptr<Poisson<PointNT> > Ptr;
-      typedef boost::shared_ptr<const Poisson<PointNT> > ConstPtr;
+      using Ptr = boost::shared_ptr<Poisson<PointNT> >;
+      using ConstPtr = boost::shared_ptr<const Poisson<PointNT> >;
 
       using SurfaceReconstruction<PointNT>::input_;
       using SurfaceReconstruction<PointNT>::tree_;
 
-      typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudPtr;
+      using PointCloudPtr = typename pcl::PointCloud<PointNT>::Ptr;
 
-      typedef typename pcl::KdTree<PointNT> KdTree;
-      typedef typename pcl::KdTree<PointNT>::Ptr KdTreePtr;
+      using KdTree = pcl::KdTree<PointNT>;
+      using KdTreePtr = typename KdTree::Ptr;
 
       /** \brief Constructor that sets all the parameters to working default values. */
       Poisson ();
@@ -248,7 +249,7 @@ namespace pcl
                float &scale);
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

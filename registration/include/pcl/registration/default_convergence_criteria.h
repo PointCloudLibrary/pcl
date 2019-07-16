@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/registration/eigen.h>
 #include <pcl/correspondence.h>
 #include <pcl/registration/convergence_criteria.h>
@@ -64,10 +65,10 @@ namespace pcl
     class DefaultConvergenceCriteria : public ConvergenceCriteria
     {
       public:
-        typedef boost::shared_ptr<DefaultConvergenceCriteria<Scalar> > Ptr;
-        typedef boost::shared_ptr<const DefaultConvergenceCriteria<Scalar> > ConstPtr;
+        using Ptr = boost::shared_ptr<DefaultConvergenceCriteria<Scalar> >;
+        using ConstPtr = boost::shared_ptr<const DefaultConvergenceCriteria<Scalar> >;
 
-        typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
+        using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
 
         enum ConvergenceState
         {
@@ -76,7 +77,8 @@ namespace pcl
           CONVERGENCE_CRITERIA_TRANSFORM,
           CONVERGENCE_CRITERIA_ABS_MSE,
           CONVERGENCE_CRITERIA_REL_MSE,
-          CONVERGENCE_CRITERIA_NO_CORRESPONDENCES
+          CONVERGENCE_CRITERIA_NO_CORRESPONDENCES,
+          CONVERGENCE_CRITERIA_FAILURE_AFTER_MAX_ITERATIONS
         };
 
         /** \brief Empty constructor.
@@ -111,14 +113,14 @@ namespace pcl
         /** \brief Empty destructor */
         ~DefaultConvergenceCriteria () {}
 
-        /** \brief Set the maximum number of iterations that the internal rotation, 
+        /** \brief Set the maximum number of consecutive iterations that the internal rotation, 
           * translation, and MSE differences are allowed to be similar. 
           * \param[in] nr_iterations the maximum number of iterations 
           */
         inline void
         setMaximumIterationsSimilarTransforms (const int nr_iterations) { max_iterations_similar_transforms_ = nr_iterations; }
 
-        /** \brief Get the maximum number of iterations that the internal rotation, 
+        /** \brief Get the maximum number of consecutive iterations that the internal rotation, 
           * translation, and MSE differences are allowed to be similar, as set by the user.
           */
         inline int
@@ -218,8 +220,8 @@ namespace pcl
         calculateMSE (const pcl::Correspondences &correspondences) const
         {
           double mse = 0;
-          for (size_t i = 0; i < correspondences.size (); ++i)
-            mse += correspondences[i].distance;
+          for (const auto &correspondence : correspondences)
+            mse += correspondence.distance;
           mse /= double (correspondences.size ());
           return (mse);
         }
@@ -269,7 +271,7 @@ namespace pcl
         ConvergenceState convergence_state_;
 
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
      };
   }
 }

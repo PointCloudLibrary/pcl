@@ -90,9 +90,6 @@ class Cloud : public Statistics
     /// variables of this object are initialized but not set.
     Cloud (const Cloud3D& cloud, bool register_stats=false);
 
-    /// @brief Destructor
-    ~Cloud ();
-
     /// @brief Equal Operator
     /// @details Deep copies all the state of the passed cloud to this cloud.
     /// @param cloud The cloud object whose status to be copied to this object

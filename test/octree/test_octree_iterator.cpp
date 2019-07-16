@@ -53,8 +53,8 @@ using pcl::octree::OctreeKey;
 struct OctreeIteratorBaseTest : public testing::Test
 {
   // types
-  typedef OctreeBase<int> OctreeBaseT;
-  typedef OctreeIteratorBase<OctreeBaseT> OctreeIteratorBaseT;
+  using OctreeBaseT = OctreeBase<int>;
+  using OctreeIteratorBaseT = OctreeIteratorBase<OctreeBaseT>;
 
 
   // methods
@@ -103,7 +103,7 @@ template<typename T>
 struct OctreeIteratorTest : public OctreeIteratorBaseTest
 {
   // types
-  typedef OctreeKey OctreeKeyT;
+  using OctreeKeyT = OctreeKey;
 
   // methods
   OctreeIteratorTest () : it_ (&octree_, tree_depth_) {}
@@ -124,8 +124,8 @@ struct OctreeIteratorTest : public OctreeIteratorBaseTest
     keys_[7] = OctreeKeyT (0b1u, 0b1u, 0b1u);
 
     // Create the leaves
-    for (uint8_t i = 0; i < 8; ++i)
-      octree_.createLeaf (keys_[i].x, keys_[i].y, keys_[i].z);
+    for (const auto &key : keys_)
+      octree_.createLeaf (key.x, key.y, key.z);
 
     // reset the iterator state
     it_.reset ();
@@ -148,11 +148,12 @@ using pcl::octree::OctreeLeafNodeDepthFirstIterator;
 using pcl::octree::OctreeFixedDepthIterator;
 using pcl::octree::OctreeLeafNodeBreadthFirstIterator;
 
-typedef testing::Types<OctreeDepthFirstIterator<OctreeBase<int> >,
-                       OctreeBreadthFirstIterator<OctreeBase<int> >,
-                       OctreeLeafNodeDepthFirstIterator<OctreeBase<int> >,
-                       OctreeFixedDepthIterator<OctreeBase<int> >,
-                       OctreeLeafNodeBreadthFirstIterator<OctreeBase<int> > > OctreeIteratorTypes;
+using OctreeIteratorTypes = testing::Types
+        <OctreeDepthFirstIterator<OctreeBase<int> >,
+         OctreeBreadthFirstIterator<OctreeBase<int> >,
+         OctreeLeafNodeDepthFirstIterator<OctreeBase<int> >,
+         OctreeFixedDepthIterator<OctreeBase<int> >,
+         OctreeLeafNodeBreadthFirstIterator<OctreeBase<int> > >;
 TYPED_TEST_CASE (OctreeIteratorTest, OctreeIteratorTypes);
 
 TYPED_TEST (OctreeIteratorTest, CopyConstructor)
@@ -207,7 +208,7 @@ TYPED_TEST (OctreeIteratorTest, CopyAssignment)
 struct OctreeBaseBeginEndIteratorsTest : public testing::Test
 {
   // Types
-  typedef OctreeBase<int> OctreeT;
+  using OctreeT = OctreeBase<int>;
 
   // Methods
   void SetUp () override
@@ -761,7 +762,7 @@ TEST_F (OctreeBaseIteratorsForLoopTest, LeafNodeBreadthFirstIterator)
 struct OctreeBaseWalkThroughIteratorsTest : public testing::Test
 {
   // Types
-  typedef OctreeBase<int> OctreeT;
+  using OctreeT = OctreeBase<int>;
 
   // Methods
   void SetUp () override
@@ -986,7 +987,7 @@ struct OctreeBaseIteratorsPrePostTest : public OctreeBaseBeginEndIteratorsTest
 TEST_F (OctreeBaseIteratorsPrePostTest, DefaultIterator)
 {
   // Useful types
-  typedef typename OctreeT::Iterator IteratorT;
+  using IteratorT = OctreeT::Iterator;
 
   // Default initialization
   IteratorT it_a_pre;
@@ -1008,7 +1009,7 @@ TEST_F (OctreeBaseIteratorsPrePostTest, DefaultIterator)
 TEST_F (OctreeBaseIteratorsPrePostTest, LeafNodeDepthFirstIterator)
 {
   // Useful types
-  typedef typename OctreeT::LeafNodeDepthFirstIterator IteratorT;
+  using IteratorT = OctreeT::LeafNodeDepthFirstIterator;
 
   // Default initialization
   IteratorT it_a_pre;
@@ -1030,7 +1031,7 @@ TEST_F (OctreeBaseIteratorsPrePostTest, LeafNodeDepthFirstIterator)
 TEST_F (OctreeBaseIteratorsPrePostTest, DepthFirstIterator)
 {
   // Useful types
-  typedef typename OctreeT::DepthFirstIterator IteratorT;
+  using IteratorT = OctreeT::DepthFirstIterator;
 
   // Default initialization
   IteratorT it_a_pre;
@@ -1052,7 +1053,7 @@ TEST_F (OctreeBaseIteratorsPrePostTest, DepthFirstIterator)
 TEST_F (OctreeBaseIteratorsPrePostTest, BreadthFirstIterator)
 {
   // Useful types
-  typedef typename OctreeT::BreadthFirstIterator IteratorT;
+  using IteratorT = OctreeT::BreadthFirstIterator;
 
   // Default initialization
   IteratorT it_a_pre;
@@ -1074,7 +1075,7 @@ TEST_F (OctreeBaseIteratorsPrePostTest, BreadthFirstIterator)
 TEST_F (OctreeBaseIteratorsPrePostTest, FixedDepthIterator)
 {
   // Useful types
-  typedef typename OctreeT::FixedDepthIterator IteratorT;
+  using IteratorT = OctreeT::FixedDepthIterator;
 
   // Default initialization
   IteratorT it_a_pre;
@@ -1103,7 +1104,7 @@ TEST_F (OctreeBaseIteratorsPrePostTest, FixedDepthIterator)
 TEST_F (OctreeBaseIteratorsPrePostTest, LeafNodeBreadthFirstIterator)
 {
   // Useful types
-  typedef typename OctreeT::LeafNodeBreadthFirstIterator IteratorT;
+  using IteratorT = OctreeT::LeafNodeBreadthFirstIterator;
 
   // Default initialization
   IteratorT it_a_pre;
@@ -1130,9 +1131,9 @@ struct OctreePointCloudAdjacencyBeginEndIteratorsTest
   : public testing::Test
 {
   // Types
-  typedef pcl::PointXYZ PointT;
-  typedef pcl::PointCloud<PointT> PointCloudT;
-  typedef pcl::octree::OctreePointCloudAdjacency<PointT> OctreeT;
+  using PointT = pcl::PointXYZ;
+  using PointCloudT = pcl::PointCloud<PointT>;
+  using OctreeT = pcl::octree::OctreePointCloudAdjacency<PointT>;
 
   // Methods
   OctreePointCloudAdjacencyBeginEndIteratorsTest ()
@@ -1348,9 +1349,9 @@ struct OctreePointCloudSierpinskiTest
   : public testing::Test
 {
   // Types
-  typedef pcl::PointXYZ PointT;
-  typedef pcl::PointCloud<PointT> PointCloudT;
-  typedef pcl::octree::OctreePointCloud<PointT> OctreeT;
+  using PointT = pcl::PointXYZ;
+  using PointCloudT = pcl::PointCloud<PointT>;
+  using OctreeT = pcl::octree::OctreePointCloud<PointT>;
 
   // Methods
   OctreePointCloudSierpinskiTest ()
@@ -1439,12 +1440,10 @@ struct OctreePointCloudSierpinskiTest
   {
     std::vector<std::pair<Eigen::Vector3f, Eigen::Vector3f> > voxels_out;
 
-    for (std::vector<std::pair<Eigen::Vector3f, Eigen::Vector3f> >::const_iterator it = voxels_in.begin ();
-        it != voxels_in.end ();
-        ++it)
+    for (const auto &voxel : voxels_in)
       {
-        Eigen::Vector3f v_min = it->first;
-        Eigen::Vector3f v_max = it->second;
+        Eigen::Vector3f v_min = voxel.first;
+        Eigen::Vector3f v_max = voxel.second;
         Eigen::Vector3f v_mid = 0.5 * (v_min + v_max);
 
         std::pair<Eigen::Vector3f, Eigen::Vector3f> voxel_0;

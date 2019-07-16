@@ -75,11 +75,11 @@ namespace pcl
 
       public:
 
-        typedef pcl::ihs::InHandScanner    InHandScanner;
-        typedef pcl::ihs::HelpWindow       HelpWindow;
-        typedef InHandScanner::RunningMode RunningMode;
+        using InHandScanner = pcl::ihs::InHandScanner;
+        using HelpWindow = pcl::ihs::HelpWindow;
+        using RunningMode = InHandScanner::RunningMode;
 
-        explicit MainWindow (QWidget* parent = 0);
+        explicit MainWindow (QWidget* parent = nullptr);
         ~MainWindow ();
 
       public Q_SLOTS:

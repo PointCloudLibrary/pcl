@@ -50,6 +50,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include <boost/asio.hpp>
@@ -60,6 +61,7 @@ using namespace pcl;
 using namespace pcl::io;
 
 using namespace std;
+using namespace std::chrono_literals;
 
 char usage[] = "\n"
   "  PCL octree point cloud compression\n"
@@ -153,8 +155,8 @@ class SimpleOpenNIViewer
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
       // make callback function from member function
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-        boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
+      std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+        [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
       // connect callback function for desired signal. In this case its a point cloud with color values
       boost::signals2::connection c = interface->registerCallback (f);
@@ -165,7 +167,7 @@ class SimpleOpenNIViewer
 
       while (!outputFile_.fail())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
       }
 
       interface->stop ();
@@ -208,8 +210,11 @@ struct EventHelper
     pcl::Grabber* interface = new pcl::OpenNIGrabber ();
 
     // make callback function from member function
-    boost::function<void
-    (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = boost::bind (&EventHelper::cloud_cb_, this, _1);
+    std::function<void
+    (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+    {
+      cloud_cb_ (cloud);
+    };
 
     // connect callback function for desired signal. In this case its a point cloud with color values
     boost::signals2::connection c = interface->registerCallback (f);
@@ -219,7 +224,7 @@ struct EventHelper
 
     while (!outputFile_.fail ())
     {
-      boost::this_thread::sleep(boost::posix_time::seconds(1));
+      std::this_thread::sleep_for(1s);
     }
 
     interface->stop ();
@@ -419,20 +424,6 @@ main (int argc, char **argv)
     }
   } else
   {
-    // switch to ONLINE profiles
-    if (compressionProfile == pcl::io::LOW_RES_OFFLINE_COMPRESSION_WITH_COLOR)
-      compressionProfile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITH_COLOR;
-    else if (compressionProfile == pcl::io::LOW_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR)
-      compressionProfile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
-    else if (compressionProfile == pcl::io::MED_RES_OFFLINE_COMPRESSION_WITH_COLOR)
-      compressionProfile = pcl::io::MED_RES_ONLINE_COMPRESSION_WITH_COLOR;
-    else if (compressionProfile == pcl::io::MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR)
-      compressionProfile = pcl::io::MED_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
-    else if (compressionProfile == pcl::io::HIGH_RES_OFFLINE_COMPRESSION_WITH_COLOR)
-      compressionProfile = pcl::io::HIGH_RES_ONLINE_COMPRESSION_WITH_COLOR;
-    else if (compressionProfile == pcl::io::HIGH_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR)
-      compressionProfile = pcl::io::HIGH_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
-
     if (bEnDecode)
     {
       // ENCODING
@@ -463,7 +454,7 @@ main (int argc, char **argv)
 
         std::cout << "Disconnected!" << std::endl;
 
-        boost::this_thread::sleep(boost::posix_time::seconds(3));
+        std::this_thread::sleep_for(3s);
 
       }
       catch (std::exception& e)

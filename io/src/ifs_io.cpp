@@ -62,7 +62,7 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   std::ifstream fs;
   std::string line;
 
-  if (file_name == "" || !boost::filesystem::exists (file_name))
+  if (file_name.empty() || !boost::filesystem::exists (file_name))
   {
     PCL_ERROR ("[pcl::IFSReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
@@ -361,7 +361,7 @@ pcl::IFSWriter::write (const std::string &file_name, const pcl::PCLPointCloud2 &
   addr+= vertices_size * sizeof (char);
   const uint32_t nb_vertices = cloud.data.size () / cloud.point_step;
   memcpy (addr, &nb_vertices, sizeof (uint32_t));
-  addr+= sizeof (uint32_t);
+  /*addr+= sizeof (uint32_t);*/
 
   std::size_t data_idx = header.size ();
 

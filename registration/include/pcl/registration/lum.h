@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/pcl_base.h>
 #include <pcl/registration/eigen.h>
 #include <pcl/registration/boost.h>
@@ -49,8 +50,8 @@
 
 namespace Eigen
 {
-  typedef Eigen::Matrix<float, 6, 1> Vector6f;
-  typedef Eigen::Matrix<float, 6, 6> Matrix6f;
+  using Vector6f = Eigen::Matrix<float, 6, 1>;
+  using Matrix6f = Eigen::Matrix<float, 6, 6>;
 }
 
 namespace pcl
@@ -109,31 +110,31 @@ namespace pcl
     class LUM
     {
       public:
-        typedef boost::shared_ptr<LUM<PointT> > Ptr;
-        typedef boost::shared_ptr<const LUM<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<LUM<PointT> >;
+        using ConstPtr = boost::shared_ptr<const LUM<PointT> >;
 
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef typename PointCloud::Ptr PointCloudPtr;
-        typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = typename PointCloud::Ptr;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
         struct VertexProperties
         {
           PointCloudPtr cloud_;
           Eigen::Vector6f pose_;
-          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+          PCL_MAKE_ALIGNED_OPERATOR_NEW
         };
         struct EdgeProperties
         {
           pcl::CorrespondencesPtr corrs_;
           Eigen::Matrix6f cinv_;
           Eigen::Vector6f cinvd_;
-          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+          PCL_MAKE_ALIGNED_OPERATOR_NEW
         };
 
-        typedef boost::adjacency_list<boost::eigen_vecS, boost::eigen_vecS, boost::bidirectionalS, VertexProperties, EdgeProperties, boost::no_property, boost::eigen_listS> SLAMGraph;
-        typedef boost::shared_ptr<SLAMGraph> SLAMGraphPtr;
-        typedef typename SLAMGraph::vertex_descriptor Vertex;
-        typedef typename SLAMGraph::edge_descriptor Edge;
+        using SLAMGraph = boost::adjacency_list<boost::eigen_vecS, boost::eigen_vecS, boost::bidirectionalS, VertexProperties, EdgeProperties, boost::no_property, boost::eigen_listS>;
+        using SLAMGraphPtr = boost::shared_ptr<SLAMGraph>;
+        using Vertex = typename SLAMGraph::vertex_descriptor;
+        using Edge = typename SLAMGraph::edge_descriptor;
 
         /** \brief Empty constructor.
           */

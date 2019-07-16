@@ -36,21 +36,24 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
-#include <boost/thread/condition.hpp>
 #include <boost/circular_buffer.hpp>
-#include <csignal>
-#include <limits>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h> //fps calculations
 
+#include <csignal>
+#include <limits>
+#include <memory>
+#include <thread>
+
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
 
 bool is_done = false;
-boost::mutex io_mutex;
+std::mutex io_mutex;
 
 #if defined(__linux__) || defined (TARGET_OS_MAC)
 #include <unistd.h>
@@ -110,21 +113,21 @@ class PCDBuffer
     inline bool 
     isFull ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       return (buffer_.full ());
     }
 
     inline bool
     isEmpty ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       return (buffer_.empty ());
     }
 
     inline int 
     getSize ()
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       return (int (buffer_.size ()));
     }
 
@@ -137,7 +140,7 @@ class PCDBuffer
     inline void 
     setCapacity (int buff_size)
     {
-      boost::mutex::scoped_lock buff_lock (bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       buffer_.set_capacity (buff_size);
     }
 
@@ -145,8 +148,8 @@ class PCDBuffer
     PCDBuffer (const PCDBuffer&) = delete; // Disabled copy constructor
     PCDBuffer& operator = (const PCDBuffer&) = delete; // Disabled assignment operator
 
-    boost::mutex bmutex_;
-    boost::condition_variable buff_empty_;
+    std::mutex bmutex_;
+    std::condition_variable buff_empty_;
     boost::circular_buffer<typename PointCloud<PointT>::ConstPtr> buffer_;
 };
 
@@ -156,7 +159,7 @@ PCDBuffer<PointT>::pushBack (typename PointCloud<PointT>::ConstPtr cloud)
 {
   bool retVal = false;
   {
-    boost::mutex::scoped_lock buff_lock (bmutex_);
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
     if (!buffer_.full ())
       retVal = true;
     buffer_.push_back (cloud);
@@ -171,13 +174,13 @@ PCDBuffer<PointT>::getFront ()
 {
   typename PointCloud<PointT>::ConstPtr cloud;
   {
-    boost::mutex::scoped_lock buff_lock (bmutex_);
+    std::unique_lock<std::mutex> buff_lock (bmutex_);
     while (buffer_.empty ())
     {
       if (is_done)
         break;
       {
-        boost::mutex::scoped_lock io_lock (io_mutex);
+        std::lock_guard<std::mutex> io_lock (io_mutex);
         //cerr << "No data in buffer_ yet or buffer is empty." << endl;
       }
       buff_empty_.wait (buff_lock);
@@ -216,7 +219,7 @@ class Producer
       if (!buf_.pushBack (cloud))
       {
         {
-          boost::mutex::scoped_lock io_lock (io_mutex);
+          std::lock_guard<std::mutex> io_lock (io_mutex);
           print_warn ("Warning! Buffer was full, overwriting data!\n");
         }
       }
@@ -231,7 +234,10 @@ class Producer
       grabber->getDevice ()->setDepthOutputFormat (depth_mode_);
 
       Grabber* interface = grabber;
-      boost::function<void (const typename PointCloud<PointT>::ConstPtr&)> f = boost::bind (&Producer::grabberCallBack, this, _1);
+      std::function<void (const typename PointCloud<PointT>::ConstPtr&)> f = [this] (const typename PointCloud<PointT>::ConstPtr& cloud)
+      {
+        grabberCallBack (cloud);
+      };
       interface->registerCallback (f);
       interface->start ();
 
@@ -239,7 +245,7 @@ class Producer
       {
         if (is_done)
           break;
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+        std::this_thread::sleep_for(1s);
       }
       interface->stop ();
     }
@@ -249,7 +255,7 @@ class Producer
       : buf_ (buf),
         depth_mode_ (depth_mode)
     {
-      thread_.reset (new boost::thread (boost::bind (&Producer::grabAndSend, this)));
+      thread_.reset (new std::thread (&Producer::grabAndSend, this));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -257,14 +263,14 @@ class Producer
     stop ()
     {
       thread_->join ();
-      boost::mutex::scoped_lock io_lock (io_mutex);
+      std::lock_guard<std::mutex> io_lock (io_mutex);
       print_highlight ("Producer done.\n");
     }
 
   private:
     PCDBuffer<PointT> &buf_;
     openni_wrapper::OpenNIDevice::DepthMode depth_mode_;
-    boost::shared_ptr<boost::thread> thread_;
+    std::shared_ptr<std::thread> thread_;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -297,7 +303,7 @@ class Consumer
       }
 
       {
-        boost::mutex::scoped_lock io_lock (io_mutex);
+        std::lock_guard<std::mutex> io_lock (io_mutex);
         print_info ("Writing remaining %ld clouds in the buffer to disk...\n", buf_.getSize ());
       }
       while (!buf_.isEmpty ())
@@ -308,7 +314,7 @@ class Consumer
     Consumer (PCDBuffer<PointT> &buf)
       : buf_ (buf)
     {
-      thread_.reset (new boost::thread (boost::bind (&Consumer::receiveAndProcess, this)));
+      thread_.reset (new std::thread (&Consumer::receiveAndProcess, this));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -316,13 +322,13 @@ class Consumer
     stop ()
     {
       thread_->join ();
-      boost::mutex::scoped_lock io_lock (io_mutex);
+      std::lock_guard<std::mutex> io_lock (io_mutex);
       print_highlight ("Consumer done.\n");
     }
 
   private:
     PCDBuffer<PointT> &buf_;
-    boost::shared_ptr<boost::thread> thread_;
+    std::shared_ptr<std::thread> thread_;
     PCDWriter writer_;
 };
 
@@ -330,7 +336,7 @@ class Consumer
 void 
 ctrlC (int)
 {
-  boost::mutex::scoped_lock io_lock (io_mutex);
+  std::lock_guard<std::mutex> io_lock (io_mutex);
   print_info ("\nCtrl-C detected, exit condition set to true.\n");
   is_done = true;
 }
@@ -389,12 +395,12 @@ main (int argc, char** argv)
       printHelp (buff_size, argc, argv);
       return 0;
     }
-    else if (device_id == "-l")
+    if (device_id == "-l")
     {
       if (argc >= 3)
       {
         pcl::OpenNIGrabber grabber (argv[2]);
-        boost::shared_ptr<openni_wrapper::OpenNIDevice> device = grabber.getDevice ();
+        openni_wrapper::OpenNIDevice::Ptr device = grabber.getDevice ();
         cout << "Supported depth modes for device: " << device->getVendorName () << " , " << device->getProductName () << endl;
         std::vector<std::pair<int, XnMapOutputMode > > modes = grabber.getAvailableDepthModes ();
         for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin (); it != modes.end (); ++it)
@@ -459,7 +465,7 @@ main (int argc, char** argv)
     PCDBuffer<PointXYZRGBA> buf;
     buf.setCapacity (buff_size);
     Producer<PointXYZRGBA> producer (buf, depth_mode);
-    boost::this_thread::sleep (boost::posix_time::seconds (2));
+    std::this_thread::sleep_for(2s);
     Consumer<PointXYZRGBA> consumer (buf);
 
     signal (SIGINT, ctrlC);
@@ -472,7 +478,7 @@ main (int argc, char** argv)
     PCDBuffer<PointXYZ> buf;
     buf.setCapacity (buff_size);
     Producer<PointXYZ> producer (buf, depth_mode);
-    boost::this_thread::sleep (boost::posix_time::seconds (2));
+    std::this_thread::sleep_for(2s);
     Consumer<PointXYZ> consumer (buf);
 
     signal (SIGINT, ctrlC);

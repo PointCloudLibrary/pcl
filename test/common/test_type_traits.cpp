@@ -2,8 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
- *  Copyright (c) 2012-, Open Perception, Inc.
+ *  Copyright (c) 2019-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -34,16 +33,35 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: io.h 5850 2012-06-06 14:04:59Z stfox88 $
- *
  */
 
-#pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header 
-#endif
+#include <pcl/pcl_macros.h>
+#include <pcl/point_traits.h>
 
-// Marking all Boost headers as system headers to remove warnings
-#include <boost/random.hpp>
-#include <boost/random/variate_generator.hpp>
+#include <gtest/gtest.h>
+
+
+struct Foo
+{
+public:
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+};
+
+struct Bar
+{
+};
+
+TEST (TypeTraits, HasCustomAllocatorTrait)
+{
+  EXPECT_TRUE(pcl::has_custom_allocator<Foo>::value);
+  EXPECT_FALSE(pcl::has_custom_allocator<Bar>::value);
+}
+
+
+int
+main (int argc, char** argv)
+{
+  testing::InitGoogleTest (&argc, argv);
+  return (RUN_ALL_TESTS ());
+}

@@ -35,6 +35,8 @@
  *  \author Raphael Favier
  * */
 
+#include <thread>
+
 #include <pcl/io/auto_io.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -51,6 +53,8 @@
 #include <vtkRenderWindow.h>
 #include <vtkCubeSource.h>
 #include <vtkCleanPolyData.h>
+
+using namespace std::chrono_literals;
 
 class OctreeViewer
 {
@@ -73,7 +77,7 @@ public:
       return;
 
     //register keyboard callbacks
-    viz.registerKeyboardCallback(&OctreeViewer::keyboardEventOccurred, *this, 0);
+    viz.registerKeyboardCallback(&OctreeViewer::keyboardEventOccurred, *this, nullptr);
 
     //key legends
     viz.addText ("Keys:", 0, 170, 0.0, 1.0, 0.0, "keys_t");
@@ -191,7 +195,7 @@ private:
     {
       //main loop of the visualizer
       viz.spinOnce(100);
-      boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+      std::this_thread::sleep_for(100ms);
     }
   }
 
@@ -308,11 +312,11 @@ private:
 
     // Create every cubes to be displayed
     double s = voxelSideLen / 2.0;
-    for (size_t i = 0; i < cloudVoxel->points.size (); i++)
+    for (const auto &point : cloudVoxel->points)
     {
-      double x = cloudVoxel->points[i].x;
-      double y = cloudVoxel->points[i].y;
-      double z = cloudVoxel->points[i].z;
+      double x = point.x;
+      double y = point.y;
+      double z = point.z;
 
       vtkSmartPointer<vtkCubeSource> wk_cubeSource = vtkSmartPointer<vtkCubeSource>::New ();
 
@@ -402,9 +406,9 @@ private:
 
         // Iterate over the leafs to compute the centroid of all of them
         pcl::CentroidPoint<pcl::PointXYZ> centroid;
-        for (size_t j = 0; j < voxelCentroids.size (); ++j)
+        for (const auto &voxelCentroid : voxelCentroids)
         {
-          centroid.add (voxelCentroids[j]);
+          centroid.add (voxelCentroid);
         }
         centroid.get (pt_centroid);
       }
@@ -430,8 +434,7 @@ private:
       extractPointsAtLevel(displayedDepth);
       return true;
     }
-    else
-      return false;
+    return false;
   }
 
   /* \brief Helper function to decrease the octree display level by one

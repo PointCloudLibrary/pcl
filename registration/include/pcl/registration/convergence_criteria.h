@@ -63,8 +63,8 @@ namespace pcl
     class PCL_EXPORTS ConvergenceCriteria
     {
       public:
-        typedef boost::shared_ptr<ConvergenceCriteria> Ptr;
-        typedef boost::shared_ptr<const ConvergenceCriteria> ConstPtr;
+        using Ptr = boost::shared_ptr<ConvergenceCriteria>;
+        using ConstPtr = boost::shared_ptr<const ConvergenceCriteria>;
 
         /** \brief Empty constructor. */
         ConvergenceCriteria () {}

@@ -36,34 +36,50 @@
  *
  *
  */
-#include <pcl/io/pcd_grabber.h>
+
+#include <pcl/io/image_grabber.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
+#include <pcl/io/pcd_io.h>
 
+#include <mutex>
+#include <thread>
+
+using namespace std::chrono_literals;
 using pcl::console::print_error;
 using pcl::console::print_info;
 using pcl::console::print_value;
 
-boost::mutex mutex_;
-boost::shared_ptr<pcl::PCDGrabber<pcl::PointXYZRGBA> > grabber;
+std::mutex mutex_;
+boost::shared_ptr<pcl::ImageGrabber<pcl::PointXYZRGBA> > grabber;
 pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud_;
 
 void
 printHelp (int, char **argv)
 {
-  //print_error ("Syntax is: %s <file_name 1..N>.pcd <options>\n", argv[0]);
+  //print_error ("Syntax is: %s <file_name 1..N>.tiff <options>\n", argv[0]);
   print_error ("Syntax is: %s <options>\n", argv[0]);
   print_info ("  where options are:\n");
-  print_info ("                     -file file_name          = PCD file to be read from\n");
-  print_info ("                     -dir directory_path      = directory path to PCD file(s) to be read from\n");
-  print_info ("                     -fps frequency           = frames per second\n");
-  print_info ("                     -repeat                  = optional parameter that tells whether the PCD file(s) should be \"grabbed\" in a endless loop.\n");
+  print_info ("\t-dir directory_path      = directory path to image or pclzf file(s) to be read from\n");
+  print_info ("\t-fps frequency           = frames per second\n");
+  print_info ("\t-pclzf                   = Load pclzf files instead\n");
+  print_info ("\t-repeat                  = optional parameter that tells whether the TIFF file(s) should be \"grabbed\" in a endless loop.\n");
   print_info ("\n");
-  print_info ("                     -cam (*)                 = use given camera settings as initial view\n");
+  print_info ("\t-cam (*)                 = use given camera settings as initial view\n");
   print_info (stderr, " (*) [Clipping Range / Focal Point / Position / ViewUp / Distance / Window Size / Window Pos] or use a <filename.cam> that contains the same information.\n");
+
+  print_info ("Additional options:\n");
+  print_info ("\t-bc col1 col2 col3       = background color\n");
+  print_info ("\t-ax                      = use custom coordinate system\n");
+  print_info ("\t-ax_pos pos1 pos2 pos3   = the axes coordinates\n");
+  print_info ("\t-focal focal_length      = ImageGrabber focal length\n");
+  // Following ones are not implemented
+//  print_info ("\t-fc col1 col2 col3       = foreground color\n");
+//  print_info ("\t-pc                      = point size\n");
+//  print_info ("\t-opaque                  = point opacity\n");
 }
 
 // Create the PCLVisualizer object
@@ -80,6 +96,10 @@ struct EventHelper
   void 
   cloud_cb (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud)
   {
+    pcl::uint64_t timestamp;
+    timestamp = cloud->header.stamp;
+    if (timestamp > 0)
+      PCL_INFO ("Acquired cloud with timestamp of %lu\n", timestamp);
     if (mutex_.try_lock ())
     {
       cloud_ = cloud;
@@ -110,7 +130,7 @@ mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
 int
 main (int argc, char** argv)
 {
-  srand (unsigned (time (0)));
+  srand (unsigned (time (nullptr)));
 
   if (argc > 1)
   {
@@ -169,54 +189,43 @@ main (int argc, char** argv)
     frames_per_second = 0.0;
 
 
+
   bool repeat = (pcl::console::find_argument (argc, argv, "-repeat") != -1);
+
+  bool use_pclzf = (pcl::console::find_argument (argc, argv, "-pclzf") != -1);
 
   std::cout << "fps: " << frames_per_second << " , repeat: " << repeat << std::endl;
   std::string path;
-  pcl::console::parse_argument (argc, argv, "-file", path);
+  pcl::console::parse_argument (argc, argv, "-dir", path);
   std::cout << "path: " << path << std::endl;
-  if (path != "" && boost::filesystem::exists (path))
+  if (!path.empty() && boost::filesystem::exists (path))
   {
-    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (path, frames_per_second, repeat));
+    grabber.reset (new pcl::ImageGrabber<pcl::PointXYZRGBA> (path, frames_per_second, repeat, use_pclzf));
   }
   else
   {
-    std::vector<std::string> pcd_files;
-    pcl::console::parse_argument (argc, argv, "-dir", path);
-    std::cout << "path: " << path << std::endl;
-    if (path != "" && boost::filesystem::exists (path))
-    {
-      boost::filesystem::directory_iterator end_itr;
-      for (boost::filesystem::directory_iterator itr (path); itr != end_itr; ++itr)
-      {
-#if BOOST_FILESYSTEM_VERSION == 3
-        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ())) == ".PCD" )
-#else
-        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ())) == ".PCD" )
-#endif
-        {
-#if BOOST_FILESYSTEM_VERSION == 3
-          pcd_files.push_back (itr->path ().string ());
-          std::cout << "added: " << itr->path ().string () << std::endl;
-#else
-          pcd_files.push_back (itr->path ().string ());
-          std::cout << "added: " << itr->path () << std::endl;
-#endif
-        }
-      }
-    }
-    else
-    {
-      std::cout << R"(Neither a pcd file given using the "-file" option, nor given a directory containing pcd files using the "-dir" option.)" << std::endl;
-    }
-
-    // Sort the read files by name
-    sort (pcd_files.begin (), pcd_files.end ());
-    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (pcd_files, frames_per_second, repeat));
+    std::cout << "No directory was given with the -dir flag." << std::endl;
+    printHelp (argc, argv);
+    return (-1);
   }
+  grabber->setDepthImageUnits (float (1E-3));
+
+  // Before manually setting
+  double fx, fy, cx, cy;
+  grabber->getCameraIntrinsics (fx, fy, cx, cy);
+  PCL_INFO ("Factory default intrinsics: %f, %f, %f, %f\n", 
+      fx, fy, cx, cy);
+  float focal_length;
+  if (pcl::console::parse (argc, argv, "-focal", focal_length) != -1)
+    grabber->setCameraIntrinsics (focal_length, focal_length, 320, 240);
+  
+  
 
   EventHelper h;
-  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
+  std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > f = [&] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud)
+  {
+    h.cloud_cb (cloud);
+  };
   boost::signals2::connection c1 = grabber->registerCallback (f);
 
   std::string mouse_msg_3D ("Mouse coordinates in PCL Visualizer");
@@ -234,6 +243,11 @@ main (int argc, char** argv)
 #endif
 
   grabber->start ();
+
+  grabber->getCameraIntrinsics (fx, fy, cx, cy);
+  PCL_INFO ("Grabber is using intrinsics: %f, %f, %f, %f\n", 
+      fx, fy, cx, cy);
+
   while (!cloud_viewer->wasStopped ())
   {
     cloud_viewer->spinOnce ();
@@ -244,10 +258,10 @@ main (int argc, char** argv)
 
     if (!cloud_)
     {
-      boost::this_thread::sleep(boost::posix_time::microseconds(10000));
+      std::this_thread::sleep_for(10ms);
       continue;
     }
-    else if (mutex_.try_lock ())
+    if (mutex_.try_lock ())
     {
       pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr temp_cloud;
       temp_cloud.swap (cloud_);
@@ -260,7 +274,7 @@ main (int argc, char** argv)
       if (!cloud_viewer->updatePointCloud (temp_cloud, "PCDCloud"))
       {
         cloud_viewer->addPointCloud (temp_cloud, "PCDCloud");
-        cloud_viewer->resetCameraViewpoint ("PCDCloud");
+        cloud_viewer->setCameraPosition (0, 0, 0, 0, 0, 1, 0, -1, 0);
       }
     }
   }

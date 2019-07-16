@@ -38,9 +38,9 @@
 
 #pragma once
 
-#if defined __GNUC__
-#  pragma GCC system_header 
-#endif
+#include <pcl/pcl_macros.h>
+
+PCL_PRAGMA_WARNING("This header is deprecated and will be removed in an upcoming release.")
 
 #if defined _MSC_VER
 #  pragma warning(disable: 4267 4244)

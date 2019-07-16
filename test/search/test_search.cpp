@@ -36,16 +36,15 @@
  */
 
 #include <gtest/gtest.h>
+
+#include <random>
+
 #include <pcl/search/brute_force.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/search/organized.h>
 #include <pcl/search/octree.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h>
-#include <boost/random/variate_generator.hpp>
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/random/uniform_real.hpp>
 
 using namespace pcl;
 using namespace std;
@@ -94,10 +93,14 @@ PointCloud<PointXYZ>::Ptr unorganized_sparse_cloud (new PointCloud<PointXYZ>);
 /** \brief unorganized point cloud*/
 PointCloud<PointXYZ>::Ptr unorganized_grid_cloud (new PointCloud<PointXYZ>);
 
+
+/** \brief random number generator*/
+std::mt19937 rng;
+
 /** \brief uniform distributed random number generator for unsigned it in range [0;10]*/
-boost::variate_generator< boost::mt19937, boost::uniform_int<unsigned> > rand_uint(boost::mt19937 (), boost::uniform_int<unsigned> (0, 10));
+std::uniform_int_distribution<unsigned> rand_uint(0, 10);
 /** \brief uniform distributed random number generator for floats in the range [0;1] */
-boost::variate_generator< boost::mt19937, boost::uniform_real<float> > rand_float(boost::mt19937 (), boost::uniform_real<float> (0, 1));
+std::uniform_real_distribution<float> rand_float (0.0f, 1.0f);
 
 /** \brief used by the *_VIEW_* tests to use only a subset of points from the point cloud*/
 std::vector<int> unorganized_input_indices;
@@ -191,12 +194,12 @@ template<typename PointT> bool
 testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, const vector<bool>& indices_mask, const vector<bool>& nan_mask, const vector<int>& indices, const vector<int>& /*input_indices*/, const string& name)
 {
   bool validness = true;
-  for (vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
+  for (const int &index : indices)
   {
-    if (!indices_mask [*iIt])
+    if (!indices_mask [index])
     {
 #if DEBUG_OUT
-      cerr << name << ": result contains an invalid point: " << *iIt << " not in indices list.\n";
+      cerr << name << ": result contains an invalid point: " << index << " not in indices list.\n";
       
 //      for (vector<int>::const_iterator iIt2 = input_indices.begin (); iIt2 != input_indices.end (); ++iIt2)
 //        cout << *iIt2 << "  ";
@@ -205,12 +208,12 @@ testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, con
       validness = false;
       break;
     }
-    else if (!nan_mask [*iIt])
+    if (!nan_mask [index])
     {
 #if DEBUG_OUT
-      cerr << name << ": result contains an invalid point: " << *iIt << " = NaN (" << point_cloud->points [*iIt].x << " , " 
-                                                                                   << point_cloud->points [*iIt].y << " , " 
-                                                                                   << point_cloud->points [*iIt].z << ")\n";
+      cerr << name << ": result contains an invalid point: " << index << " = NaN (" << point_cloud->points [index].x << " , " 
+                                                                                    << point_cloud->points [index].y << " , " 
+                                                                                    << point_cloud->points [index].z << ")\n";
 #endif
       validness = false;
       break;
@@ -288,11 +291,11 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
   vector<bool> indices_mask (point_cloud->size (), true);
   vector<bool> nan_mask (point_cloud->size (), true);
   
-  if (input_indices.size () != 0)
+  if (!input_indices.empty ())
   {
     indices_mask.assign (point_cloud->size (), false);
-    for (vector<int>::const_iterator iIt = input_indices.begin (); iIt != input_indices.end (); ++iIt)
-      indices_mask [*iIt] = true;
+    for (const int &input_index : input_indices)
+      indices_mask [input_index] = true;
   }
   
   // remove also Nans
@@ -303,9 +306,9 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
       nan_mask [pIdx] = false;
   }
   
-  boost::shared_ptr<vector<int> > input_indices_;
-  if (input_indices.size ())
-    input_indices_.reset (new vector<int> (input_indices));
+  pcl::IndicesPtr input_indices_;
+  if (!input_indices.empty ())
+    input_indices_.reset (new pcl::Indices (input_indices));
   
   #pragma omp parallel for
   for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
@@ -315,12 +318,12 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
   for (unsigned knn = 1; knn <= 512; knn <<= 3)
   {
     // find nn for each point in the cloud
-    for (vector<int>::const_iterator qIt = query_indices.begin (); qIt != query_indices.end (); ++qIt)
+    for (const int &query_index : query_indices)
     {
       #pragma omp parallel for
       for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
       {
-        search_methods [sIdx]->nearestKSearch (point_cloud->points[*qIt], knn, indices [sIdx], distances [sIdx]);
+        search_methods [sIdx]->nearestKSearch (point_cloud->points[query_index], knn, indices [sIdx], distances [sIdx]);
         passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testOrder (distances [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testResultValidity<PointT>(point_cloud, indices_mask, nan_mask, indices [sIdx], input_indices, search_methods [sIdx]->getName ());
@@ -358,11 +361,11 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
   vector<bool> indices_mask (point_cloud->size (), true);
   vector<bool> nan_mask (point_cloud->size (), true);
   
-  if (input_indices.size () != 0)
+  if (!input_indices.empty ())
   {
     indices_mask.assign (point_cloud->size (), false);
-    for (vector<int>::const_iterator iIt = input_indices.begin (); iIt != input_indices.end (); ++iIt)
-      indices_mask [*iIt] = true;
+    for (const int &input_index : input_indices)
+      indices_mask [input_index] = true;
   }
   
   // remove also Nans
@@ -373,9 +376,9 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
       nan_mask [pIdx] = false;
   }
   
-  boost::shared_ptr<vector<int> > input_indices_;
-  if (input_indices.size ())
-    input_indices_.reset (new vector<int> (input_indices));
+  pcl::IndicesPtr input_indices_;
+  if (!input_indices.empty ())
+    input_indices_.reset (new pcl::Indices (input_indices));
   
   #pragma omp parallel for
   for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
@@ -386,12 +389,12 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
   {
     //cout << radius << endl;
     // find nn for each point in the cloud
-    for (vector<int>::const_iterator qIt = query_indices.begin (); qIt != query_indices.end (); ++qIt)
+    for (const int &query_index : query_indices)
     {
       #pragma omp parallel for
       for (int sIdx = 0; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
       {
-        search_methods [sIdx]->radiusSearch (point_cloud->points[*qIt], radius, indices [sIdx], distances [sIdx], 0);
+        search_methods [sIdx]->radiusSearch (point_cloud->points[query_index], radius, indices [sIdx], distances [sIdx], 0);
         passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testOrder (distances [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testResultValidity<PointT>(point_cloud, indices_mask, nan_mask, indices [sIdx], input_indices, search_methods [sIdx]->getName ());
@@ -543,15 +546,15 @@ void createIndices (std::vector<int>& indices, unsigned max_index)
 {
   // ~10% of the input cloud
   for (unsigned idx = 0; idx <= max_index; ++idx)
-    if (rand_uint () == 0)
+    if (rand_uint (rng) == 0)
       indices.push_back (idx);
    
-  boost::variate_generator< boost::mt19937, boost::uniform_int<> > rand_indices(boost::mt19937 (), boost::uniform_int<> (0, static_cast<int> (indices.size ()) - 1));
+  std::uniform_int_distribution<> rand_indices(0, indices.size () - 1);
   // shuffle indices -> not ascending index list
   for (unsigned idx = 0; idx < max_index; ++idx)
   {
-    unsigned idx1 = rand_indices ();
-    unsigned idx2 = rand_indices ();
+    const unsigned idx1 = rand_indices (rng);
+    const unsigned idx2 = rand_indices (rng);
 
     std::swap (indices[idx1], indices[idx2]);
   }
@@ -583,13 +586,13 @@ main (int argc, char** argv)
   PointXYZ point;
   for (unsigned pIdx = 0; pIdx < unorganized_point_count; ++pIdx)
   {
-    point.x = rand_float ();
-    point.y = rand_float ();
-    point.z = rand_float ();
+    point.x = rand_float (rng);
+    point.y = rand_float (rng);
+    point.z = rand_float (rng);
 
     unorganized_dense_cloud->points [pIdx] = point;
     
-    if (rand_uint () == 0)
+    if (rand_uint (rng) == 0)
       unorganized_sparse_cloud->points [pIdx].x = unorganized_sparse_cloud->points [pIdx].y = unorganized_sparse_cloud->points [pIdx].z = std::numeric_limits<float>::quiet_NaN ();
     else
       unorganized_sparse_cloud->points [pIdx] = point;

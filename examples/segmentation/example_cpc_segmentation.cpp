@@ -39,6 +39,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <climits>
+#include <thread>
 
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
@@ -63,10 +64,12 @@
 #include <vtkImageFlip.h>
 #include <vtkPolyLine.h>
 
+using namespace std::chrono_literals;
+
 /// *****  Type Definitions ***** ///
 
-typedef pcl::PointXYZRGBA PointT;  // The point type used for input
-typedef pcl::LCCPSegmentation<PointT>::SupervoxelAdjacencyList SuperVoxelAdjacencyList;
+using PointT = pcl::PointXYZRGBA;  // The point type used for input
+using SuperVoxelAdjacencyList = pcl::LCCPSegmentation<PointT>::SupervoxelAdjacencyList;
 
 /// Callback and variables
 
@@ -445,9 +448,9 @@ CPCSegmentation Parameters: \n\
     // Currently this is a work-around creating a polygon mesh consisting of two triangles for each edge
     using namespace pcl;
 
-    typedef LCCPSegmentation<PointT>::VertexIterator VertexIterator;
-    typedef LCCPSegmentation<PointT>::AdjacencyIterator AdjacencyIterator;
-    typedef LCCPSegmentation<PointT>::EdgeID EdgeID;
+    using VertexIterator = LCCPSegmentation<PointT>::VertexIterator;
+    using AdjacencyIterator = LCCPSegmentation<PointT>::AdjacencyIterator;
+    using EdgeID = LCCPSegmentation<PointT>::EdgeID;
 
     std::set<EdgeID> edge_drawn;
 
@@ -456,7 +459,7 @@ CPCSegmentation Parameters: \n\
     const unsigned char concave_color [3] = {255,  0,  0};
     const unsigned char cut_color     [3] = {  0,255,  0};
     const unsigned char* convex_color     = bg_white ? black_color : white_color;
-    const unsigned char* color = NULL;
+    const unsigned char* color = nullptr;
 
     //The vertices in the supervoxel adjacency list are the supervoxel centroids
     //This iterates through them, finding the edges
@@ -526,7 +529,7 @@ CPCSegmentation Parameters: \n\
     pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     float bg_color = bg_white?1:0;
     viewer->setBackgroundColor (bg_color, bg_color, bg_color);
-    viewer->registerKeyboardCallback (keyboardEventOccurred, 0);
+    viewer->registerKeyboardCallback (keyboardEventOccurred, nullptr);
     viewer->addPointCloud (cpc_labeled_cloud, "cpc_cloud");
     /// Visualization Loop
     PCL_INFO ("Loading viewer\n");
@@ -594,7 +597,7 @@ CPCSegmentation Parameters: \n\
           viewer->addText ("Press d to show help", 5, 10, 12, textcolor, textcolor, textcolor, "help_text");
       }
 
-      boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+      std::this_thread::sleep_for(100ms);
     }
   }  /// END if (show_visualization)
 

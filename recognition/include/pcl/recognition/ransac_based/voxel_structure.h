@@ -49,7 +49,7 @@ namespace pcl
     class VoxelStructure
     {
     public:
-      inline VoxelStructure (): voxels_(NULL){}
+      inline VoxelStructure (): voxels_(nullptr){}
       inline virtual ~VoxelStructure (){ this->clear();}
 
       /** \brief Call this method before using an instance of this class. Parameter meaning is obvious. */
@@ -58,7 +58,7 @@ namespace pcl
 
       /** \brief Release the memory allocated for the voxels. */
       inline void
-      clear (){ if ( voxels_ ){ delete[] voxels_; voxels_ = NULL;}}
+      clear (){ if ( voxels_ ){ delete[] voxels_; voxels_ = nullptr;}}
 
       /** \brief Returns a pointer to the voxel which contains p or NULL if p is not inside the structure. */
       inline T*

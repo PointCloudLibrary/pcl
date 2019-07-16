@@ -37,11 +37,9 @@
 
 #pragma once
 
-#include <boost/thread.hpp>
 #include <boost/utility.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/thread/mutex.hpp>
 
 #include <pcl/pcl_exports.h>
 
@@ -67,7 +65,7 @@ namespace pcl
 
         public:
 
-          typedef boost::shared_ptr<RealSenseDeviceManager> Ptr;
+          using Ptr = boost::shared_ptr<RealSenseDeviceManager>;
 
           static Ptr&
           getInstance ()
@@ -75,7 +73,7 @@ namespace pcl
             static Ptr instance;
             if (!instance)
             {
-              boost::mutex::scoped_lock lock (mutex_);
+              std::lock_guard<std::mutex> lock (mutex_);
               if (!instance)
                 instance.reset (new RealSenseDeviceManager);
             }
@@ -126,7 +124,7 @@ namespace pcl
 
           std::vector<DeviceInfo> device_list_;
 
-          static boost::mutex mutex_;
+          static std::mutex mutex_;
 
       };
 
@@ -135,7 +133,7 @@ namespace pcl
 
         public:
 
-          typedef boost::shared_ptr<RealSenseDevice> Ptr;
+          using Ptr = boost::shared_ptr<RealSenseDevice>;
 
           inline const std::string&
           getSerialNumber () { return (device_id_); }

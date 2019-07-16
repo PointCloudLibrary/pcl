@@ -89,8 +89,8 @@ TEST (PCL, PointXYZRGBNormal)
   PointXYZRGBNormal p;
 
   uint8_t r = 127, g = 64, b = 254;
-  uint32_t rgb = (static_cast<uint32_t> (r) << 16 | 
-                  static_cast<uint32_t> (g) << 8 | 
+  uint32_t rgb = (static_cast<uint32_t> (r) << 16 |
+                  static_cast<uint32_t> (g) << 8 |
                   static_cast<uint32_t> (b));
   p.rgba = rgb;
 
@@ -217,7 +217,7 @@ TEST (PCL, PointCloud)
     EXPECT_EQ (mat_xyz (0, 0), 0);
     EXPECT_EQ (mat_xyz (2, cloud.width - 1), 3 * cloud.width - 1);    // = 29
   }
-  
+
 #ifdef NDEBUG
   if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
   {
@@ -274,6 +274,15 @@ TEST (PCL, PointCloud)
   cloud.erase (cloud.begin (), cloud.end ());
   EXPECT_EQ (cloud.isOrganized (), false);
   EXPECT_EQ (cloud.width, 0);
+
+  cloud.emplace (cloud.end (), 1, 1, 1);
+  EXPECT_EQ (cloud.isOrganized (), false);
+  EXPECT_EQ (cloud.width, 1);
+
+  auto& new_point = cloud.emplace_back (1, 1, 1);
+  EXPECT_EQ (cloud.isOrganized (), false);
+  EXPECT_EQ (cloud.width, 2);
+  EXPECT_EQ (&new_point, &cloud.back ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -298,7 +307,7 @@ TEST (PCL, PointTypes)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T> class XYZPointTypesTest : public ::testing::Test { };
-typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_XYZ_POINT_TYPES)> XYZPointTypes;
+using XYZPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_XYZ_POINT_TYPES)>;
 TYPED_TEST_CASE(XYZPointTypesTest, XYZPointTypes);
 TYPED_TEST(XYZPointTypesTest, GetVectorXfMap)
 {
@@ -319,7 +328,7 @@ TYPED_TEST(XYZPointTypesTest, GetArrayXfMap)
 }
 
 template <typename T> class NormalPointTypesTest : public ::testing::Test { };
-typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_NORMAL_POINT_TYPES)> NormalPointTypes;
+using NormalPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_NORMAL_POINT_TYPES)>;
 TYPED_TEST_CASE(NormalPointTypesTest, NormalPointTypes);
 TYPED_TEST(NormalPointTypesTest, GetNormalVectorXfMap)
 {
@@ -331,7 +340,7 @@ TYPED_TEST(NormalPointTypesTest, GetNormalVectorXfMap)
 }
 
 template <typename T> class RGBPointTypesTest : public ::testing::Test { };
-typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_RGB_POINT_TYPES)> RGBPointTypes;
+using RGBPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_RGB_POINT_TYPES)>;
 TYPED_TEST_CASE(RGBPointTypesTest, RGBPointTypes);
 TYPED_TEST(RGBPointTypesTest, GetRGBVectorXi)
 {
@@ -390,8 +399,8 @@ TEST (PCL, CopyIfFieldExists)
   p.r = 127; p.g = 64; p.b = 254;
   p.normal_x = 1.0; p.normal_y = 0.0; p.normal_z = 0.0;
 
-  typedef pcl::traits::fieldList<PointXYZRGBNormal>::type FieldList;
-  bool is_x = false, is_y = false, is_z = false, is_rgb = false, 
+  using FieldList = pcl::traits::fieldList<PointXYZRGBNormal>::type;
+  bool is_x = false, is_y = false, is_z = false, is_rgb = false,
        is_normal_x = false, is_normal_y = false, is_normal_z = false;
 
   float x_val, y_val, z_val, normal_x_val, normal_y_val, normal_z_val, rgb_val;
@@ -422,7 +431,7 @@ TEST (PCL, CopyIfFieldExists)
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_z", is_normal_z, normal_z_val));
   EXPECT_EQ (is_normal_z, true);
   EXPECT_EQ (normal_z_val, 0.0);
-  
+
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "x", x_val));
   EXPECT_EQ (x_val, 1.0);
 
@@ -443,7 +452,7 @@ TEST (PCL, SetIfFieldExists)
   p.r = p.g = p.b = 0;
   p.normal_x = p.normal_y = p.normal_z = 0.0;
 
-  typedef pcl::traits::fieldList<PointXYZRGBNormal>::type FieldList;
+  using FieldList = pcl::traits::fieldList<PointXYZRGBNormal>::type;
   pcl::for_each_type<FieldList> (SetIfFieldExists<PointXYZRGBNormal, float> (p, "x", 1.0));
   EXPECT_EQ (p.x, 1.0);
   pcl::for_each_type<FieldList> (SetIfFieldExists<PointXYZRGBNormal, float> (p, "y", 2.0));
@@ -479,7 +488,7 @@ TEST (PCL, IsSamePointType)
   EXPECT_FALSE (status);
   status = isSamePointType<PointXYZRGB, PointXYZRGB> ();
   EXPECT_TRUE (status);
-  
+
   // Even though it's the "same" type, rgb != rgba
   status = isSamePointType<PointXYZRGB, PointXYZRGBA> ();
   EXPECT_FALSE (status);

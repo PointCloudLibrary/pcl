@@ -53,17 +53,16 @@
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
-//#include <pcl/stereo/stereo_grabber.h>
 #include <pcl/stereo/stereo_matching.h>
 #include <pcl/segmentation/ground_plane_comparator.h>
 #include <pcl/segmentation/euclidean_cluster_comparator.h>
 
+#include <mutex>
 
-
-typedef pcl::PointXYZRGB PointT;
-typedef pcl::PointCloud<PointT> Cloud;
-typedef Cloud::Ptr CloudPtr;
-typedef Cloud::ConstPtr CloudConstPtr;
+using PointT = pcl::PointXYZRGB;
+using Cloud = pcl::PointCloud<PointT>;
+using CloudPtr = Cloud::Ptr;
+using CloudConstPtr = Cloud::ConstPtr;
 
   /** \brief StereoGroundSegmentation is a demonstration application for using PCL's stereo tools and segmentation tools to detect smooth surfaces suitable for driving.
     *
@@ -81,7 +80,7 @@ class HRCSSegmentation
     pcl::PointCloud<PointT>::ConstPtr prev_label_image;
     Eigen::Vector4f prev_ground_normal;
     Eigen::Vector4f prev_ground_centroid;
-    boost::mutex cloud_mutex;
+    std::mutex cloud_mutex;
 
     pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
     pcl::GroundPlaneComparator<PointT, pcl::Normal>::Ptr road_comparator;
@@ -125,7 +124,7 @@ class HRCSSegmentation
       viewer->setBackgroundColor (0, 0, 0);
       viewer->addCoordinateSystem (1.0, "global");
       viewer->initCameraParameters ();
-      viewer->registerKeyboardCallback (&HRCSSegmentation::keyboardCallback, *this, 0);
+      viewer->registerKeyboardCallback (&HRCSSegmentation::keyboardCallback, *this, nullptr);
       
       // Set up the stereo matching
       stereo.setMaxDisparity(60);
@@ -329,7 +328,7 @@ class HRCSSegmentation
         grow_labels[model_label] = true;
       }
       
-      boost::shared_ptr<pcl::PointCloud<pcl::Label> > labels_ptr (new pcl::PointCloud<pcl::Label>());
+      pcl::PointCloud<pcl::Label>::Ptr labels_ptr (new pcl::PointCloud<pcl::Label>);
       *labels_ptr = labels;
       pcl::OrganizedMultiPlaneSegmentation<PointT, pcl::Normal, pcl::Label> mps;
       pcl::PlaneRefinementComparator<PointT, pcl::Normal, pcl::Label>::Ptr refinement_compare (new pcl::PlaneRefinementComparator<PointT, pcl::Normal, pcl::Label>());
@@ -382,7 +381,7 @@ class HRCSSegmentation
       Eigen::Vector4f ground_plane_params (1.0, 0.0, 0.0, 1.0);
       Eigen::Vector4f ground_centroid (0.0, 0.0, 0.0, 0.0);
       
-      if (ground_cloud->points.size () > 0)
+      if (!ground_cloud->points.empty ())
       {
         ground_centroid = centroids[0];
         ground_plane_params = Eigen::Vector4f (model_coefficients[0].values[0], model_coefficients[0].values[1], model_coefficients[0].values[2], model_coefficients[0].values[3]);
@@ -391,9 +390,9 @@ class HRCSSegmentation
       if (detect_obstacles)
       {
         pcl::PointCloud<PointT>::CloudVectorType clusters;
-        if (ground_cloud->points.size () > 0)
+        if (!ground_cloud->points.empty ())
         {
-          boost::shared_ptr<std::set<uint32_t> > plane_labels = boost::make_shared<std::set<uint32_t> > ();
+          pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSetPtr plane_labels (new pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSet);
           for (size_t i = 0; i < region_indices.size (); ++i)
             if ((region_indices[i].indices.size () > mps.getMinInliers ()))
               plane_labels->insert (i);

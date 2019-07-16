@@ -46,6 +46,7 @@
 #include <boost/fusion/include/as_vector.hpp>
 #include <boost/fusion/include/filter_if.hpp>
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 
 namespace pcl
@@ -67,7 +68,7 @@ namespace pcl
     {
 
       // Requires that point type has x, y, and z fields
-      typedef pcl::traits::has_xyz<boost::mpl::_1> IsCompatible;
+      using IsCompatible = pcl::traits::has_xyz<boost::mpl::_1>;
 
       // Storage
       Eigen::Vector3f xyz;
@@ -80,7 +81,7 @@ namespace pcl
       template <typename PointT> void
       get (PointT& t, size_t n) const { t.getVector3fMap () = xyz / n; }
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     };
 
@@ -88,7 +89,7 @@ namespace pcl
     {
 
       // Requires that point type has normal_x, normal_y, and normal_z fields
-      typedef pcl::traits::has_normal<boost::mpl::_1> IsCompatible;
+      using IsCompatible = pcl::traits::has_normal<boost::mpl::_1>;
 
       // Storage
       Eigen::Vector4f normal;
@@ -113,7 +114,7 @@ namespace pcl
 #endif
       }
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     };
 
@@ -121,7 +122,7 @@ namespace pcl
     {
 
       // Requires that point type has curvature field
-      typedef pcl::traits::has_curvature<boost::mpl::_1> IsCompatible;
+      using IsCompatible = pcl::traits::has_curvature<boost::mpl::_1>;
 
       // Storage
       float curvature;
@@ -140,7 +141,7 @@ namespace pcl
     {
 
       // Requires that point type has rgb or rgba field
-      typedef pcl::traits::has_color<boost::mpl::_1> IsCompatible;
+      using IsCompatible = pcl::traits::has_color<boost::mpl::_1>;
 
       // Storage
       float r, g, b, a;
@@ -171,7 +172,7 @@ namespace pcl
     {
 
       // Requires that point type has intensity field
-      typedef pcl::traits::has_intensity<boost::mpl::_1> IsCompatible;
+      using IsCompatible = pcl::traits::has_intensity<boost::mpl::_1>;
 
       // Storage
       float intensity;
@@ -190,7 +191,7 @@ namespace pcl
     {
 
       // Requires that point type has label field
-      typedef pcl::traits::has_label<boost::mpl::_1> IsCompatible;
+      using IsCompatible = pcl::traits::has_label<boost::mpl::_1>;
 
       // Storage
       // A better performance may be achieved with a heap structure
@@ -239,7 +240,7 @@ namespace pcl
     template <typename PointT>
     struct Accumulators
     {
-      typedef
+      using type =
         typename boost::fusion::result_of::as_vector<
           typename boost::mpl::filter_view<
             boost::mpl::vector<
@@ -252,8 +253,7 @@ namespace pcl
             >
           , IsAccumulatorCompatible<PointT>
           >
-        >::type
-      type;
+        >::type;
     };
 
     /* Fusion function object to invoke point addition on every accumulator in

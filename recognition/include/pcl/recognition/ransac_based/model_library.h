@@ -58,15 +58,15 @@ namespace pcl
     class PCL_EXPORTS ModelLibrary
     {
       public:
-        typedef pcl::PointCloud<pcl::PointXYZ> PointCloudIn;
-        typedef pcl::PointCloud<pcl::Normal> PointCloudN;
+        using PointCloudIn = pcl::PointCloud<pcl::PointXYZ>;
+        using PointCloudN = pcl::PointCloud<pcl::Normal>;
 
         /** \brief Stores some information about the model. */
         class Model
         {
           public:
             Model (const PointCloudIn& points, const PointCloudN& normals, float voxel_size, const std::string& object_name,
-                   float frac_of_points_for_registration, void* user_data = NULL)
+                   float frac_of_points_for_registration, void* user_data = nullptr)
             : obj_name_(object_name),
               user_data_ (user_data)
             {
@@ -104,7 +104,7 @@ namespace pcl
                 ids[i] = i;
 
               // The random generator
-              pcl::common::UniformGenerator<int> randgen (0, num_octree_points - 1, static_cast<uint32_t> (time (NULL)));
+              pcl::common::UniformGenerator<int> randgen (0, num_octree_points - 1, static_cast<uint32_t> (time (nullptr)));
 
               // Randomly sample some points from the octree
               for ( int i = 0 ; i < num_points_for_registration ; ++i )
@@ -170,9 +170,9 @@ namespace pcl
             void* user_data_;
         };
 
-        typedef std::list<std::pair<const ORROctree::Node::Data*, const ORROctree::Node::Data*> > node_data_pair_list;
-        typedef std::map<const Model*, node_data_pair_list> HashTableCell;
-        typedef VoxelStructure<HashTableCell, float> HashTable;
+        using node_data_pair_list = std::list<std::pair<const ORROctree::Node::Data*, const ORROctree::Node::Data*> >;
+        using HashTableCell = std::map<const Model*, node_data_pair_list>;
+        using HashTable = VoxelStructure<HashTableCell, float>;
 
       public:
         /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use
@@ -223,7 +223,7 @@ namespace pcl
           * Returns true if model successfully added and false otherwise (e.g., if object_name is not unique). */
         bool
         addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name,
-                  float frac_of_points_for_registration, void* user_data = NULL);
+                  float frac_of_points_for_registration, void* user_data = nullptr);
 
         /** \brief Returns the hash table built by this instance. */
         inline const HashTable&
@@ -239,7 +239,7 @@ namespace pcl
           if ( it != models_.end () )
             return (it->second);
 
-          return (NULL);
+          return (nullptr);
         }
 
         inline const std::map<std::string,Model*>&

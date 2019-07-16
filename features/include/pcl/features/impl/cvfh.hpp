@@ -270,7 +270,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   output.height = 1;
 
   // ---[ Step 1b : check if any dominant cluster was found
-  if (clusters.size () > 0)
+  if (!clusters.empty ())
   { // ---[ Step 1b.1 : If yes, compute CVFH using the cluster information
 
     for (const auto &cluster : clusters) //for each cluster

@@ -55,8 +55,8 @@ namespace pcl
     class PCL_EXPORTS ColorVolume
     {
     public:
-      typedef PointXYZ PointType;
-      typedef boost::shared_ptr<ColorVolume> Ptr;
+      using PointType = PointXYZ;
+      using Ptr = boost::shared_ptr<ColorVolume>;
 
       /** \brief Constructor
         * \param[in] tsdf tsdf volume to get parameters from
@@ -100,7 +100,7 @@ namespace pcl
       DeviceArray2D<int> color_volume_;
 
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     };
   }

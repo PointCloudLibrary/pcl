@@ -59,7 +59,7 @@ namespace pcl
     *
     * \note (This is highly optimized code taken from http://www.visibone.com/inpoly/)
     *       Copyright (c) 1995-1996 Galacticomm, Inc.  Freeware source code.
-    * \param point a 3D point projected onto the same plane as the polygon
+    * \param point a 2D point projected onto the same plane as the polygon
     * \param polygon a polygon
     * \ingroup segmentation
     */
@@ -106,12 +106,12 @@ namespace pcl
     using PCLBase<PointT>::deinitCompute;
 
     public:
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      typedef PointIndices::Ptr PointIndicesPtr;
-      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+      using PointIndicesPtr = PointIndices::Ptr;
+      using PointIndicesConstPtr = PointIndices::ConstPtr;
 
       /** \brief Empty constructor. */
       ExtractPolygonalPrismData () : planar_hull_ (), min_pts_hull_ (3), 

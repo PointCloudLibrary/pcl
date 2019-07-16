@@ -56,14 +56,14 @@ namespace pcl
     class PointCoding
     {
         // public typedefs
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-        typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = boost::shared_ptr<PointCloud>;
+        using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
 
       public:
         /** \brief Constructor. */
         PointCoding () :
-          output_ (), pointDiffDataVector_ (), pointDiffDataVectorIterator_ (), 
+          output_ (),
           pointCompressionResolution_ (0.001f) // 1mm
         {
         }

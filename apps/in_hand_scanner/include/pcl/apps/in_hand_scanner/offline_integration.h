@@ -40,15 +40,17 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
-
 #include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/common/time.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
 #include <pcl/apps/in_hand_scanner/opengl_viewer.h>
+
+#include <mutex>
+#include <vector>
+#include <string>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
@@ -82,11 +84,11 @@ namespace pcl
 
       public:
 
-        typedef pcl::ihs::OpenGLViewer       Base;
-        typedef pcl::ihs::OfflineIntegration Self;
+        using Base = pcl::ihs::OpenGLViewer;
+        using Self = pcl::ihs::OfflineIntegration;
 
         /** \brief Constructor. */
-        explicit OfflineIntegration (Base* parent=0);
+        explicit OfflineIntegration (Base* parent=nullptr);
 
         /** \brief Destructor. */
         ~OfflineIntegration ();
@@ -105,33 +107,33 @@ namespace pcl
 
       private:
 
-        typedef pcl::PointXYZRGBA              PointXYZRGBA;
-        typedef pcl::PointCloud <PointXYZRGBA> CloudXYZRGBA;
-        typedef CloudXYZRGBA::Ptr              CloudXYZRGBAPtr;
-        typedef CloudXYZRGBA::ConstPtr         CloudXYZRGBAConstPtr;
+        using PointXYZRGBA = pcl::PointXYZRGBA;
+        using CloudXYZRGBA = pcl::PointCloud<PointXYZRGBA>;
+        using CloudXYZRGBAPtr = CloudXYZRGBA::Ptr;
+        using CloudXYZRGBAConstPtr = CloudXYZRGBA::ConstPtr;
 
-        typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
-        typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
-        typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
-        typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
+        using PointXYZRGBNormal = pcl::PointXYZRGBNormal;
+        using CloudXYZRGBNormal = pcl::PointCloud<PointXYZRGBNormal>;
+        using CloudXYZRGBNormalPtr = CloudXYZRGBNormal::Ptr;
+        using CloudXYZRGBNormalConstPtr = CloudXYZRGBNormal::ConstPtr;
 
-        typedef pcl::ihs::Mesh         Mesh;
-        typedef pcl::ihs::MeshPtr      MeshPtr;
-        typedef pcl::ihs::MeshConstPtr MeshConstPtr;
+        using Mesh = pcl::ihs::Mesh;
+        using MeshPtr = pcl::ihs::MeshPtr;
+        using MeshConstPtr = pcl::ihs::MeshConstPtr;
 
-        typedef pcl::ihs::Integration                 Integration;
-        typedef boost::shared_ptr <Integration>       IntegrationPtr;
-        typedef boost::shared_ptr <const Integration> IntegrationConstPtr;
+        using Integration = pcl::ihs::Integration;
+        using IntegrationPtr = boost::shared_ptr<Integration>;
+        using IntegrationConstPtr = boost::shared_ptr<const Integration>;
 
-        typedef pcl::IntegralImageNormalEstimation <PointXYZRGBA, PointXYZRGBNormal> NormalEstimation;
-        typedef boost::shared_ptr <NormalEstimation>                                 NormalEstimationPtr;
-        typedef boost::shared_ptr <const NormalEstimation>                           NormalEstimationConstPtr;
+        using NormalEstimation = pcl::IntegralImageNormalEstimation <PointXYZRGBA, PointXYZRGBNormal>;
+        using NormalEstimationPtr = boost::shared_ptr<NormalEstimation>;
+        using NormalEstimationConstPtr = boost::shared_ptr<const NormalEstimation>;
 
         /** \brief Helper object for the computation thread. Please have a look at the documentation of calcFPS. */
         class ComputationFPS : public Base::FPS
         {
           public:
-            ComputationFPS () : Base::FPS () {}
+            ComputationFPS () {}
             ~ComputationFPS () {}
         };
 
@@ -140,7 +142,7 @@ namespace pcl
         class VisualizationFPS : public Base::FPS
         {
           public:
-            VisualizationFPS () : Base::FPS () {}
+            VisualizationFPS () {}
             ~VisualizationFPS () {}
         };
 
@@ -190,10 +192,10 @@ namespace pcl
         //////////////////////////////////////////////////////////////////////////
 
         /** \brief Synchronization. */
-        boost::mutex mutex_;
+        std::mutex mutex_;
 
         /** \brief Wait until the data finished processing. */
-        boost::mutex mutex_quit_;
+        std::mutex mutex_quit_;
 
         /** \brief Please have a look at the documentation of ComputationFPS. */
         ComputationFPS computation_fps_;
@@ -217,8 +219,7 @@ namespace pcl
         bool destructor_called_;
 
       public:
-
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   } // End namespace ihs
 } // End namespace pcl

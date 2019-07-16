@@ -37,8 +37,8 @@ pcl::simulation::SumReduce::SumReduce (int width, int height, int levels) : leve
 
   for (int i = 0; i < levels_; ++i)
   {
-    level_width = level_width / 2;
-    level_height = level_height / 2;
+    level_width /= 2;
+    level_height /= 2;
 
     glBindTexture (GL_TEXTURE_2D, arrays_[i]);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -47,7 +47,7 @@ pcl::simulation::SumReduce::SumReduce (int width, int height, int levels) : leve
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-    glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, level_width, level_height, 0, GL_RED, GL_FLOAT, NULL);
+    glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, level_width, level_height, 0, GL_RED, GL_FLOAT, nullptr);
     glBindTexture (GL_TEXTURE_2D, 0);
   }
 }
@@ -105,8 +105,8 @@ pcl::simulation::SumReduce::sum (GLuint input_array, float* output_array)
       std::cout << "SumReduce::sum  render" << std::endl;
     }
 
-    width = width / 2;
-    height = height / 2;
+    width /= 2;
+    height /= 2;
 
     glActiveTexture (GL_TEXTURE0);
     glBindTexture (GL_TEXTURE_2D, arrays_[i]);

@@ -35,18 +35,22 @@
  *
  */
 
+#include <thread>
+
 #include <pcl/common/time.h>
 #include <pcl/point_types.h>
 #include <pcl/io/dinast_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
+
+using namespace std::chrono_literals;
 
 template <typename PointType>
 class DinastProcessor
 {
   public:
     
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudConstPtr = typename Cloud::ConstPtr;
     
     DinastProcessor(pcl::Grabber& grabber) : interface(grabber), viewer("Dinast Cloud Viewer") {}
 
@@ -69,17 +73,16 @@ class DinastProcessor
     int 
     run ()
     {
-            
-      boost::function<void (const CloudConstPtr&)> f =
-        boost::bind (&DinastProcessor::cloud_cb_, this, _1);
-      
+
+      std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
+
       boost::signals2::connection c = interface.registerCallback (f);
 
       interface.start ();
       
       while (!viewer.wasStopped())
       {
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+        std::this_thread::sleep_for(1s);
       }
       
       interface.stop ();

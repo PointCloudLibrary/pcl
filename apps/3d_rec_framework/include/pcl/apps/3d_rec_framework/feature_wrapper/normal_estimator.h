@@ -21,12 +21,12 @@ namespace pcl
       class PreProcessorAndNormalEstimator
       {
 
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
 
         float
         computeMeshResolution (PointInTPtr & input)
         {
-          typedef typename pcl::KdTree<PointInT>::Ptr KdTreeInPtr;
+          using KdTreeInPtr = typename pcl::KdTree<PointInT>::Ptr;
           KdTreeInPtr tree = boost::make_shared<pcl::KdTreeFLANN<PointInT> > (false);
           tree->setInputCloud (input);
 
@@ -137,7 +137,7 @@ namespace pcl
             out = in;
           }
 
-          if (out->points.size () == 0)
+          if (out->points.empty ())
           {
             PCL_WARN("NORMAL estimator: Cloud has no points after voxel grid, won't be able to compute normals!\n");
             return;
@@ -167,7 +167,7 @@ namespace pcl
 
           }
 
-          if (out->points.size () == 0)
+          if (out->points.empty ())
           {
             PCL_WARN("NORMAL estimator: Cloud has no points after removing outliers...!\n");
             return;

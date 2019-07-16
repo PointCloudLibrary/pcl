@@ -91,9 +91,9 @@ namespace pcl
           */
         boost::signals2::connection
         registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*),
-                                  void* cookie = NULL)
+                                  void* cookie = nullptr)
         {
-          return registerKeyboardCallback (boost::bind (callback, _1, cookie));
+          return registerKeyboardCallback ([=] (const pcl::visualization::KeyboardEvent& e) { (*callback) (e, cookie); });
         }
 
         /**
@@ -105,9 +105,9 @@ namespace pcl
           */
         template<typename T> boost::signals2::connection
         registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*),
-                                  T& instance, void* cookie = NULL)
+                                  T& instance, void* cookie = nullptr)
         {
-          return registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie));
+          return registerKeyboardCallback ([=, &instance] (const pcl::visualization::KeyboardEvent& e) { (instance.*callback) (e, cookie); });
         }
 
         /**
@@ -118,9 +118,9 @@ namespace pcl
           */
         boost::signals2::connection
         registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*),
-                               void* cookie = NULL)
+                               void* cookie = nullptr)
         {
-          return registerMouseCallback (boost::bind (callback, _1, cookie));
+          return registerMouseCallback ([=] (const pcl::visualization::MouseEvent& e) { (*callback) (e, cookie); });
         }
 
         /**
@@ -132,9 +132,9 @@ namespace pcl
           */
         template<typename T> boost::signals2::connection
         registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*),
-                               T& instance, void* cookie = NULL)
+                               T& instance, void* cookie = nullptr)
         {
-          return registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie));
+          return registerMouseCallback ([=, &instance] (const pcl::visualization::MouseEvent& e) { (instance.*callback) (e, cookie); });
         }
 
       protected: // methods
@@ -147,17 +147,17 @@ namespace pcl
           * @brief   registering a callback function for mouse events
           * @return  connection object that allows to disconnect the callback function.
           */
-         // param   the boost function that will be registered as a callback for a mouse event
+         // param   the std function that will be registered as a callback for a mouse event
         boost::signals2::connection
-        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> );
+        registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> );
 
         /**
-         * @brief   registering a callback boost::function for keyboard events
+         * @brief   registering a callback std::function for keyboard events
          * @return  connection object that allows to disconnect the callback function.
          */
-         // param   the boost function that will be registered as a callback for a keyboard event
+         // param   the std function that will be registered as a callback for a keyboard event
         boost::signals2::connection
-        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> );
+        registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> );
 
         void
         emitMouseEvent (unsigned long event_id);
@@ -180,8 +180,6 @@ namespace pcl
           }
 
           ExitMainLoopTimerCallback ();
-          ExitMainLoopTimerCallback (const ExitMainLoopTimerCallback& src);
-          ExitMainLoopTimerCallback& operator = (const ExitMainLoopTimerCallback& src);
 
           void 
           Execute (vtkObject*, unsigned long event_id, void* call_data) override;
@@ -198,8 +196,6 @@ namespace pcl
           }
 
           ExitCallback ();
-          ExitCallback (const ExitCallback &src);
-          ExitCallback& operator = (const ExitCallback &src);
  
           void 
           Execute (vtkObject*, unsigned long event_id, void*) override;

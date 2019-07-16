@@ -12,6 +12,8 @@ using namespace std;
 #include <pcl/keypoints/narf_keypoint.h>
 #include <pcl/console/parse.h>
 
+#include <mutex>
+
 std::string device_id = "#1";
 
 float angular_resolution = 0.5;
@@ -20,7 +22,7 @@ bool set_unseen_to_max_range = true;
 int max_no_of_threads = 1;
 float min_interest_value = 0.5;
 
-boost::mutex depth_image_mutex,
+std::mutex depth_image_mutex,
              ir_image_mutex,
              image_mutex;
 pcl::PointCloud<pcl::PointXYZ>::ConstPtr point_cloud_ptr;
@@ -115,7 +117,7 @@ int main (int argc, char** argv)
   pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
   EventHelper event_helper;
   
-  boost::function<void (const openni_wrapper::DepthImage::Ptr&) > f_depth_image =
+  std::function<void (const openni_wrapper::DepthImage::Ptr&) > f_depth_image =
     boost::bind (&EventHelper::depth_image_cb, &event_helper, _1);
   boost::signals2::connection c_depth_image = interface->registerCallback (f_depth_image);
   

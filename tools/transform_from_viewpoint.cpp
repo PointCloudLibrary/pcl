@@ -78,8 +78,8 @@ transform (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &outp
 {
   // Check for 'normals'
   bool has_normals = false;
-  for (size_t i = 0; i < input->fields.size (); ++i)
-    if (input->fields[i].name == "normals")
+  for (const auto &field : input->fields)
+    if (field.name == "normals")
       has_normals = true;
 
   // Estimate

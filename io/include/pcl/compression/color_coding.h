@@ -62,9 +62,9 @@ namespace pcl
       {
 
       // public typedefs
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-        typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = boost::shared_ptr<PointCloud>;
+        using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
 
       public:
 
@@ -72,8 +72,7 @@ namespace pcl
          *
          * */
         ColorCoding () :
-          output_ (), pointAvgColorDataVector_ (), pointAvgColorDataVector_Iterator_ (),
-          pointDiffColorDataVector_ (), pointDiffColorDataVector_Iterator_ (), colorBitReduction_ (0)
+          output_ (), colorBitReduction_ (0)
         {
         }
 

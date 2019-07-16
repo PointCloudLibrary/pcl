@@ -46,10 +46,10 @@
 #include <fstream>
 #include <vector>
 
-typedef pcl::PointXYZ PointType;
-typedef pcl::PointCloud<PointType> Cloud;
-typedef Cloud::ConstPtr CloudConstPtr;
-typedef Cloud::Ptr CloudPtr;
+using PointType = pcl::PointXYZ;
+using Cloud = pcl::PointCloud<PointType>;
+using CloudConstPtr = Cloud::ConstPtr;
+using CloudPtr = Cloud::Ptr;
 
 
 void
@@ -155,7 +155,7 @@ main (int argc, char **argv)
     CloudPtr tmp (new Cloud);
     ndt.align (*tmp);
 
-    t = t* ndt.getFinalTransformation ();
+    t *= ndt.getFinalTransformation ();
 
     pcl::transformPointCloud (*data, *tmp, t);
 

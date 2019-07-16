@@ -43,6 +43,8 @@
   * it noisifies the PCD models, and downsamples them. 
   * The viewpoint can be set to 1 or multiple views on a sphere.
   */
+
+#include <random>
 #include <string>
 #include <pcl/register_point_struct.h>
 #include <pcl/io/pcd_io.h>
@@ -82,18 +84,15 @@ loadDataSet (const char* file_name)
     reader->Update ();
     return (reader->GetOutput ());
   }
-  else if (extension == ".vtk")
+  if (extension == ".vtk")
   {
     vtkPolyDataReader* reader = vtkPolyDataReader::New ();
     reader->SetFileName (file_name);
     reader->Update ();
     return (reader->GetOutput ());
   }
-  else
-  {
-    PCL_ERROR ("Needs a VTK/PLY file to continue.\n");
-    return (NULL);
-  }
+  PCL_ERROR ("Needs a VTK/PLY file to continue.\n");
+  return (nullptr);
 }
 
 int
@@ -192,9 +191,9 @@ main (int argc, char** argv)
   grid.setLeafSize (2.5, 2.5, 2.5);    // @note: this value should be given in mm!
 
   // Reset and set a random seed for the Global Random Number Generator
-  boost::mt19937 rng (static_cast<unsigned int> (std::time (0)));
-  boost::normal_distribution<float> normal_distrib (0.0f, noise_std * noise_std);
-  boost::variate_generator<boost::mt19937&, boost::normal_distribution<float> > gaussian_rng (rng, normal_distrib);
+  std::random_device rd;
+  std::mt19937 rng(rd());
+  std::normal_distribution<float> nd (0.0f, noise_std * noise_std);
 
   std::vector<std::string> st;
   // Virtual camera parameters
@@ -382,13 +381,13 @@ main (int argc, char** argv)
 
     // Noisify each point in the dataset
     // \note: we might decide to noisify along the ray later
-    for (size_t cp = 0; cp < cloud.points.size (); ++cp)
+    for (auto &point : cloud.points)
     {
       // Add noise ?
       switch (noise_model)
       {
         // Gaussian
-        case 1: { cloud.points[cp].x += gaussian_rng (); cloud.points[cp].y += gaussian_rng (); cloud.points[cp].z += gaussian_rng (); break; }
+        case 1: { point.x += nd (rng); point.y += nd (rng); point.z += nd (rng); break; }
       }
     }
 

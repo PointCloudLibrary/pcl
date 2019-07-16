@@ -54,7 +54,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
 {
   const int binsize = 64;
   unsigned int sample_size = 20000;
-  srand (static_cast<unsigned int> (time (0)));
+  srand (static_cast<unsigned int> (time (nullptr)));
   int maxindex = static_cast<int> (pc.points.size ());
 
   int index1, index2, index3;
@@ -427,9 +427,9 @@ pcl::ESFEstimation<PointInT, PointOutT>::voxelize9 (PointCloudIn &cluster)
   int xi,yi,zi,xx,yy,zz;
   for (size_t i = 0; i < cluster.points.size (); ++i)
   {
-    xx = cluster.points[i].x<0.0? static_cast<int>(floor(cluster.points[i].x)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].x)+GRIDSIZE_H-1);
-    yy = cluster.points[i].y<0.0? static_cast<int>(floor(cluster.points[i].y)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].y)+GRIDSIZE_H-1);
-    zz = cluster.points[i].z<0.0? static_cast<int>(floor(cluster.points[i].z)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].z)+GRIDSIZE_H-1);
+    xx = cluster.points[i].x<0.0? static_cast<int>(std::floor(cluster.points[i].x)+GRIDSIZE_H) : static_cast<int>(std::ceil(cluster.points[i].x)+GRIDSIZE_H-1);
+    yy = cluster.points[i].y<0.0? static_cast<int>(std::floor(cluster.points[i].y)+GRIDSIZE_H) : static_cast<int>(std::ceil(cluster.points[i].y)+GRIDSIZE_H-1);
+    zz = cluster.points[i].z<0.0? static_cast<int>(std::floor(cluster.points[i].z)+GRIDSIZE_H) : static_cast<int>(std::ceil(cluster.points[i].z)+GRIDSIZE_H-1);
 
     for (int x = -1; x < 2; x++)
       for (int y = -1; y < 2; y++)
@@ -456,9 +456,9 @@ pcl::ESFEstimation<PointInT, PointOutT>::cleanup9 (PointCloudIn &cluster)
   int xi,yi,zi,xx,yy,zz;
   for (size_t i = 0; i < cluster.points.size (); ++i)
   {
-    xx = cluster.points[i].x<0.0? static_cast<int>(floor(cluster.points[i].x)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].x)+GRIDSIZE_H-1);
-    yy = cluster.points[i].y<0.0? static_cast<int>(floor(cluster.points[i].y)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].y)+GRIDSIZE_H-1);
-    zz = cluster.points[i].z<0.0? static_cast<int>(floor(cluster.points[i].z)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].z)+GRIDSIZE_H-1);
+    xx = cluster.points[i].x<0.0? static_cast<int>(std::floor(cluster.points[i].x)+GRIDSIZE_H) : static_cast<int>(std::ceil(cluster.points[i].x)+GRIDSIZE_H-1);
+    yy = cluster.points[i].y<0.0? static_cast<int>(std::floor(cluster.points[i].y)+GRIDSIZE_H) : static_cast<int>(std::ceil(cluster.points[i].y)+GRIDSIZE_H-1);
+    zz = cluster.points[i].z<0.0? static_cast<int>(std::floor(cluster.points[i].z)+GRIDSIZE_H) : static_cast<int>(std::ceil(cluster.points[i].z)+GRIDSIZE_H-1);
 
     for (int x = -1; x < 2; x++)
       for (int y = -1; y < 2; y++)

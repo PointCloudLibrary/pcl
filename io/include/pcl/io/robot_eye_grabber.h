@@ -44,7 +44,8 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <boost/asio.hpp>
-#include <boost/thread/thread.hpp>
+
+#include <thread>
 
 namespace pcl
 {
@@ -60,8 +61,7 @@ namespace pcl
        * This signal is sent when the accumulated number of points reaches
        * the limit specified by setSignalPointCloudSize().
        */
-      typedef void (sig_cb_robot_eye_point_cloud_xyzi) (
-          const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
+      using sig_cb_robot_eye_point_cloud_xyzi = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> > &);
 
       /** \brief RobotEyeGrabber default constructor. */
       RobotEyeGrabber ();
@@ -130,8 +130,8 @@ namespace pcl
       boost::asio::ip::udp::endpoint sender_endpoint_;
       boost::asio::io_service io_service_;
       boost::shared_ptr<boost::asio::ip::udp::socket> socket_;
-      boost::shared_ptr<boost::thread> socket_thread_;
-      boost::shared_ptr<boost::thread> consumer_thread_;
+      boost::shared_ptr<std::thread> socket_thread_;
+      boost::shared_ptr<std::thread> consumer_thread_;
 
       pcl::SynchronizedQueue<boost::shared_array<unsigned char> > packet_queue_;
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > point_cloud_xyzi_;

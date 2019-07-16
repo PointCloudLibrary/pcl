@@ -56,11 +56,11 @@ namespace pcl
   template <typename PointT>
   class RandomizedMEstimatorSampleConsensus : public SampleConsensus<PointT>
   {
-    typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
+    using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
 
     public:
-      typedef boost::shared_ptr<RandomizedMEstimatorSampleConsensus> Ptr;
-      typedef boost::shared_ptr<const RandomizedMEstimatorSampleConsensus> ConstPtr;
+      using Ptr = boost::shared_ptr<RandomizedMEstimatorSampleConsensus<PointT> >;
+      using ConstPtr = boost::shared_ptr<const RandomizedMEstimatorSampleConsensus<PointT> >;
 
       using SampleConsensus<PointT>::max_iterations_;
       using SampleConsensus<PointT>::threshold_;
@@ -108,7 +108,7 @@ namespace pcl
 
       /** \brief Get the percentage of points to pre-test. */
       inline double 
-      getFractionNrPretest () { return (fraction_nr_pretest_); }
+      getFractionNrPretest () const { return (fraction_nr_pretest_); }
 
     private:
       /** \brief Number of samples to randomly pre-test, in percents. */

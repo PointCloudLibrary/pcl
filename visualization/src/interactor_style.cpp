@@ -37,6 +37,7 @@
  */
 
 #include <list>
+#include <pcl/common/angles.h>
 #include <pcl/visualization/common/io.h>
 #include <pcl/visualization/interactor_style.h>
 #include <vtkVersion.h>
@@ -161,22 +162,21 @@ pcl::visualization::PCLVisualizerInteractorStyle::saveCameraParameters (const st
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters (pcl::visualization::Camera &camera)
+pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters (pcl::visualization::Camera &camera, int viewport) const
 {
-  FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
-
-  vtkSmartPointer<vtkCamera> cam = Interactor->GetRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
-  cam->GetClippingRange (camera.clip);
-  cam->GetFocalPoint (camera.focal);
-  cam->GetPosition (camera.pos);
-  cam->GetViewUp (camera.view);
-  camera.fovy = cam->GetViewAngle () / 180.0 * M_PI;
-  int *win_pos = Interactor->GetRenderWindow ()->GetPosition ();
-  int *win_size = Interactor->GetRenderWindow ()->GetSize ();
-  camera.window_pos[0] = win_pos[0];
-  camera.window_pos[1] = win_pos[1];
-  camera.window_size[0] = win_size[0];
-  camera.window_size[1] = win_size[1];
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = nullptr;
+  int i = 0;
+  while ((renderer = rens_->GetNextItem ()))
+  {
+    if (viewport++ == i)
+    {
+      auto window = Interactor->GetRenderWindow ();
+      auto cam = renderer->GetActiveCamera ();
+      camera = Camera (*cam, *window);
+      break;
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,7 +196,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::loadCameraParameters (const st
   while (!fs.eof ())
   {
     getline (fs, line);
-    if (line == "")
+    if (line.empty())
       continue;
 
     boost::split (camera, line, boost::is_any_of ("/"), boost::token_compress_on);
@@ -241,9 +241,9 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const Eig
 
 
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while ((renderer = rens_->GetNextItem ()))
   {
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i)
@@ -267,9 +267,9 @@ void
 pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const pcl::visualization::Camera &camera, int viewport)
 {
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
+  vtkRenderer* renderer = nullptr;
   int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  while ((renderer = rens_->GetNextItem ()))
   {
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i)
@@ -483,28 +483,28 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizerInteractorStyle::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
+pcl::visualization::PCLVisualizerInteractorStyle::registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
   return (mouse_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizerInteractorStyle::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
+pcl::visualization::PCLVisualizerInteractorStyle::registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
   return (keyboard_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizerInteractorStyle::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
+pcl::visualization::PCLVisualizerInteractorStyle::registerPointPickingCallback (std::function<void (const pcl::visualization::PointPickingEvent&)> callback)
 {
   return (point_picking_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizerInteractorStyle::registerAreaPickingCallback (boost::function<void (const pcl::visualization::AreaPickingEvent&)> callback)
+pcl::visualization::PCLVisualizerInteractorStyle::registerAreaPickingCallback (std::function<void (const pcl::visualization::AreaPickingEvent&)> callback)
 {
   return (area_picking_signal_.connect (callback));
 }
@@ -527,7 +527,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
   FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
 
-  if (wif_->GetInput () == NULL)
+  if (!wif_->GetInput ())
   {
     wif_->SetInput (Interactor->GetRenderWindow ());
     wif_->Modified ();
@@ -699,8 +699,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         // Get the new color
         PointCloudColorHandler<pcl::PCLPointCloud2>::ConstPtr color_handler = act.color_handlers[index];
 
-        vtkSmartPointer<vtkDataArray> scalars;
-        color_handler->getColor (scalars);
+        auto scalars = color_handler->getColor ();
         double minmax[2];
         scalars->GetRange (minmax);
         // Update the data
@@ -854,7 +853,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     case 'j': case 'J':
     {
       char cam_fn[80], snapshot_fn[80];
-      unsigned t = static_cast<unsigned> (time (0));
+      unsigned t = static_cast<unsigned> (time (nullptr));
       sprintf (snapshot_fn, "screenshot-%d.png" , t);
       saveScreenshot (snapshot_fn);
 
@@ -867,21 +866,14 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     // display current camera settings/parameters
     case 'c': case 'C':
     {
-      vtkSmartPointer<vtkCamera> cam = Interactor->GetRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
-      double clip[2], focal[3], pos[3], view[3];
-      cam->GetClippingRange (clip);
-      cam->GetFocalPoint (focal);
-      cam->GetPosition (pos);
-      cam->GetViewUp (view);
-      int *win_pos = Interactor->GetRenderWindow ()->GetPosition ();
-      int *win_size = Interactor->GetRenderWindow ()->GetSize ();
-      std::cerr <<  "Clipping plane [near,far] "  << clip[0] << ", " << clip[1] << endl <<
-                    "Focal point [x,y,z] " << focal[0] << ", " << focal[1] << ", " << focal[2] << endl <<
-                    "Position [x,y,z] " << pos[0] << ", " << pos[1] << ", " << pos[2] << endl <<
-                    "View up [x,y,z] " << view[0]  << ", " << view[1]  << ", " << view[2] << endl <<
-                    "Camera view angle [degrees] " << cam->GetViewAngle () << endl <<
-                    "Window size [x,y] " << win_size[0] << ", " << win_size[1] << endl <<
-                    "Window position [x,y] " << win_pos[0] << ", " << win_pos[1] << endl;
+      Camera cam (*CurrentRenderer->GetActiveCamera (), *Interactor->GetRenderWindow ());
+      std::cerr <<  "Clipping plane [near,far] "  << cam.clip[0] << ", " << cam.clip[1] << endl <<
+                    "Focal point [x,y,z] " << cam.focal[0] << ", " << cam.focal[1] << ", " << cam.focal[2] << endl <<
+                    "Position [x,y,z] " << cam.pos[0] << ", " << cam.pos[1] << ", " << cam.pos[2] << endl <<
+                    "View up [x,y,z] " << cam.view[0]  << ", " << cam.view[1]  << ", " << cam.view[2] << endl <<
+                    "Camera view angle [degrees] " << rad2deg (cam.fovy) << endl <<
+                    "Window size [x,y] " << cam.window_size[0] << ", " << cam.window_size[1] << endl <<
+                    "Window position [x,y] " << cam.window_pos[0] << ", " << cam.window_pos[1] << endl;
       break;
     }
     case '=':
@@ -976,12 +968,12 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       else
       {
         AnimState = VTKIS_ANIM_ON;
-        vtkAssemblyPath *path = NULL;
+        vtkAssemblyPath *path = nullptr;
         Interactor->GetPicker ()->Pick (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1], 0.0, CurrentRenderer);
         vtkAbstractPropPicker *picker;
         if ((picker = vtkAbstractPropPicker::SafeDownCast (Interactor->GetPicker ())))
           path = picker->GetPath ();
-        if (path != NULL)
+        if (path)
           Interactor->FlyTo (CurrentRenderer, picker->GetPickPosition ());
         AnimState = VTKIS_ANIM_OFF;
       }
@@ -1068,7 +1060,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       if (!keymod)
       {
         FindPokedRenderer(Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
-        if(CurrentRenderer != 0)
+        if(CurrentRenderer)
           CurrentRenderer->ResetCamera ();
         else
           PCL_WARN ("no current renderer on the interactor style.");
@@ -1178,7 +1170,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool
   if (!lut_enabled_ && !add_lut)
     return;
 
-  if (lut_actor_id_ != "")  // Search if provided actor id is in CloudActorMap or ShapeActorMap
+  if (!lut_actor_id_.empty())  // Search if provided actor id is in CloudActorMap or ShapeActorMap
   {
     auto am_it = cloud_actors_->find (lut_actor_id_);
     if (am_it == cloud_actors_->end ())
@@ -1234,7 +1226,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool
       actor_found = true;
     }
   }
-  else  // lut_actor_id_ == "", the user did not specify which cloud/shape LUT should be displayed
+  else  // lut_actor_id_.empty(), the user did not specify which cloud/shape LUT should be displayed
   // Circling through all clouds/shapes and displaying first LUT found
   {
     for (const auto &actor : *cloud_actors_)

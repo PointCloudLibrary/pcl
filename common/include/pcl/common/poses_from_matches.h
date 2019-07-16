@@ -82,11 +82,11 @@ namespace pcl
           bool operator()(const PoseEstimate& pe1, const PoseEstimate& pe2) const { return pe1.score>pe2.score;}
         };
         public:
-          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+          PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
       
       // =====TYPEDEFS=====
-      typedef std::vector<PoseEstimate, Eigen::aligned_allocator<PoseEstimate> > PoseEstimatesVector;
+      using PoseEstimatesVector = std::vector<PoseEstimate, Eigen::aligned_allocator<PoseEstimate> >;
 
       
       // =====STATIC METHODS=====

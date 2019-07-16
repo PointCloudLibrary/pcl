@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/search/search.h>
@@ -63,14 +64,14 @@ namespace pcl
 
       public:
         // public typedefs
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef boost::shared_ptr<PointCloud> PointCloudPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = boost::shared_ptr<PointCloud>;
 
-        typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
-        typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
+        using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
+        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
 
-        typedef boost::shared_ptr<pcl::search::OrganizedNeighbor<PointT> > Ptr;
-        typedef boost::shared_ptr<const pcl::search::OrganizedNeighbor<PointT> > ConstPtr;
+        using Ptr = boost::shared_ptr<pcl::search::OrganizedNeighbor<PointT> >;
+        using ConstPtr = boost::shared_ptr<const pcl::search::OrganizedNeighbor<PointT> >;
 
         using pcl::search::Search<PointT>::indices_;
         using pcl::search::Search<PointT>::sorted_results_;
@@ -91,7 +92,6 @@ namespace pcl
           , KR_KRT_ (Eigen::Matrix<float, 3, 3, Eigen::RowMajor>::Zero ())
           , eps_ (eps)
           , pyramid_level_ (pyramid_level)
-          , mask_ ()
         {
         }
 
@@ -133,7 +133,7 @@ namespace pcl
           input_ = cloud;
           indices_ = indices;
 
-          if (indices_.get () != NULL && indices_->size () != 0)
+          if (indices_ && !indices_->empty())
           {
             mask_.assign (input_->size (), 0);
             for (std::vector<int>::const_iterator iIt = indices_->begin (); iIt != indices_->end (); ++iIt)
@@ -227,7 +227,7 @@ namespace pcl
               queue.push (Entry (index, squared_distance));
               return queue.size () == k;
             }
-            else if (queue.top ().distance > squared_distance)
+            if (queue.top ().distance > squared_distance)
             {
               queue.pop ();
               queue.push (Entry (index, squared_distance));
@@ -275,7 +275,7 @@ namespace pcl
         /** \brief mask, indicating whether the point was in the indices list or not.*/
         std::vector<unsigned char> mask_;
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

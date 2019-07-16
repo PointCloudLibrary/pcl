@@ -314,7 +314,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
       this->searchForNeighbors (static_cast<int> (index), border_radius_, nn_indices, nn_distances);
 
-      for (const int nn_index : nn_indices)
+      for (const int &nn_index : nn_indices)
       {
         if (edge_points_[nn_index])
         {

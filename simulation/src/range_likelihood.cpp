@@ -1,5 +1,9 @@
-#include <GL/glew.h>
 #include <ctime>
+#include <random>
+
+#include <boost/math/distributions/normal.hpp>
+
+#include <GL/glew.h>
 
 #include <pcl/pcl_config.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
@@ -14,7 +18,7 @@
 #include <pcl/simulation/range_likelihood.h>
 
 // For adding noise:
-static boost::minstd_rand generator (static_cast<unsigned int> (std::time (0))); // seed
+static std::minstd_rand rng ([] {std::random_device rd; return rd(); } ()); // seed
 
 //#define SIMULATION_DEBUG 1
 #define DO_TIMING_PROFILE 0
@@ -105,8 +109,8 @@ max_level (int a, int b)
   while (true)
   {
     if (a%2 || b%2) return level;
-    a = a / 2;
-    b = b / 2;
+    a /= 2;
+    b /= 2;
     level++;
   }
 }
@@ -211,7 +215,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
   glBindTexture (GL_TEXTURE_2D, 0);
 
   glGenTextures (1, &color_texture_);
@@ -222,7 +226,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
   glBindTexture (GL_TEXTURE_2D, 0);
 
   // Setup texture for incoming image
@@ -234,7 +238,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, col_width, row_height, 0, GL_RED, GL_FLOAT, NULL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, col_width, row_height, 0, GL_RED, GL_FLOAT, nullptr);
   glBindTexture (GL_TEXTURE_2D, 0);
 
   // Texture for to score on each pixel
@@ -246,7 +250,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, width_, height_, 0, GL_RED, GL_FLOAT, NULL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, width_, height_, 0, GL_RED, GL_FLOAT, nullptr);
   glBindTexture (GL_TEXTURE_2D, 0);
 
   // Setup texture for likelihood function
@@ -343,10 +347,8 @@ pcl::simulation::RangeLikelihood::~RangeLikelihood ()
 double
 pcl::simulation::RangeLikelihood::sampleNormal (double sigma)
 {
-  typedef boost::normal_distribution<double> Normal;
-  Normal dist (0.0, sigma);
-  boost::variate_generator<boost::minstd_rand&, Normal> norm (generator, dist);
-  return (norm ());
+  std::normal_distribution<> dist (0.0, sigma);
+  return (dist (rng));
 }
 
 void
@@ -734,7 +736,7 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
           0, 1,  0, 0,
           0, 0,  0, 1;
     Eigen::Matrix4f m = pose.matrix ().cast<float> ();
-    m = m * T;
+    m *= T;
     pcl::transformPointCloud (*pc, *pc, m);
   }
   else
@@ -754,7 +756,7 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
                     0, -1, 0, 0,
                     0,  0, 0, 1;
     Eigen::Matrix4f camera = pose.matrix ().cast<float> ();
-    camera = camera * cam_to_body;
+    camera *= cam_to_body;
     pc->sensor_origin_ = camera.rightCols (1);
     Eigen::Quaternion<float> quat (camera.block<3,3> (0,0));
     pc->sensor_orientation_ = quat;
@@ -784,7 +786,7 @@ pcl::simulation::RangeLikelihood::addNoise ()
   {
     if (depth_buffer_[i] < 1)
     {
-      depth_buffer_[i] = depth_buffer_[i] + variance * static_cast<float> (sampleNormal ());
+      depth_buffer_[i] += variance * static_cast<float> (sampleNormal ());
       if (depth_buffer_[i] > 1)
       {
         depth_buffer_[i] = 1.0;

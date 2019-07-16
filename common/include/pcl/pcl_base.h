@@ -42,7 +42,7 @@
 #  pragma GCC system_header
 #endif
 
-// Include PCL macros such as PCL_ERROR, etc
+// Include PCL macros such as PCL_ERROR, PCL_MAKE_ALIGNED_OPERATOR_NEW, etc
 #include <pcl/pcl_macros.h>
 
 #include <boost/shared_ptr.hpp>
@@ -57,8 +57,9 @@
 namespace pcl
 {
   // definitions used everywhere
-  typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
-  typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
+  using Indices = std::vector<int>;
+  using IndicesPtr = boost::shared_ptr<Indices>;
+  using IndicesConstPtr = boost::shared_ptr<const Indices>;
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /** \brief PCL base class. Implements methods that are used by most PCL algorithms.
@@ -68,12 +69,12 @@ namespace pcl
   class PCLBase
   {
     public:
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      typedef boost::shared_ptr<PointIndices> PointIndicesPtr;
-      typedef boost::shared_ptr<PointIndices const> PointIndicesConstPtr;
+      using PointIndicesPtr = boost::shared_ptr<PointIndices>;
+      using PointIndicesConstPtr = boost::shared_ptr<PointIndices const>;
 
       /** \brief Empty constructor. */
       PCLBase ();
@@ -176,7 +177,7 @@ namespace pcl
       deinitCompute ();
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /////////////////////////////////////////////////////////////////////////////////////////
@@ -184,12 +185,12 @@ namespace pcl
   class PCL_EXPORTS PCLBase<pcl::PCLPointCloud2>
   {
     public:
-      typedef pcl::PCLPointCloud2 PCLPointCloud2;
-      typedef boost::shared_ptr<PCLPointCloud2> PCLPointCloud2Ptr;
-      typedef boost::shared_ptr<PCLPointCloud2 const> PCLPointCloud2ConstPtr;
+      using PCLPointCloud2 = pcl::PCLPointCloud2;
+      using PCLPointCloud2Ptr = boost::shared_ptr<PCLPointCloud2>;
+      using PCLPointCloud2ConstPtr = boost::shared_ptr<PCLPointCloud2 const>;
 
-      typedef boost::shared_ptr<PointIndices> PointIndicesPtr;
-      typedef boost::shared_ptr<PointIndices const> PointIndicesConstPtr;
+      using PointIndicesPtr = boost::shared_ptr<PointIndices>;
+      using PointIndicesConstPtr = boost::shared_ptr<PointIndices const>;
 
       /** \brief Empty constructor. */
       PCLBase ();
@@ -252,7 +253,7 @@ namespace pcl
       bool initCompute ();
       bool deinitCompute ();
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

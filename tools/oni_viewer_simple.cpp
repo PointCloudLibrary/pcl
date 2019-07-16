@@ -44,8 +44,10 @@
 #include <pcl/io/oni_grabber.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <vector>
 #include <pcl/common/time_trigger.h>
+
+#include <mutex>
+#include <vector>
 
 #define SHOW_FPS 1
 #if SHOW_FPS
@@ -74,13 +76,12 @@ template <typename PointType>
 class SimpleONIViewer
 {
 public:
-  typedef pcl::PointCloud<PointType> Cloud;
-  typedef typename Cloud::ConstPtr CloudConstPtr;
+  using Cloud = pcl::PointCloud<PointType>;
+  using CloudConstPtr = typename Cloud::ConstPtr;
 
   SimpleONIViewer(pcl::ONIGrabber& grabber)
     : viewer("PCL OpenNI Viewer")
     , grabber_(grabber)
-    , mtx_ ()
     , cloud_ ()
   {
   }
@@ -93,7 +94,7 @@ public:
   cloud_cb_ (const CloudConstPtr& cloud)
   {
     FPS_CALC ("callback");
-    boost::mutex::scoped_lock lock (mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     cloud_ = cloud;
   }
 
@@ -105,7 +106,7 @@ public:
   getLatestCloud ()
   {
     //lock while we swap our cloud and reset it.
-    boost::mutex::scoped_lock lock(mtx_);
+    std::lock_guard<std::mutex> lock(mtx_);
     CloudConstPtr temp_cloud;
     temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
     //it is safe to set it again from our
@@ -121,7 +122,7 @@ public:
   {
     //pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id_, pcl::OpenNIGrabber::OpenNI_QQVGA_30Hz, pcl::OpenNIGrabber::OpenNI_VGA_30Hz);
 
-    boost::function<void (const CloudConstPtr&) > f = boost::bind (&SimpleONIViewer::cloud_cb_, this, _1);
+    std::function<void (const CloudConstPtr&) > f = [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
 
     boost::signals2::connection c = grabber_.registerCallback (f);
 
@@ -142,7 +143,7 @@ public:
 
   pcl::visualization::CloudViewer viewer;
   pcl::ONIGrabber& grabber_;
-  boost::mutex mtx_;
+  std::mutex mtx_;
   CloudConstPtr cloud_;
 };
 
@@ -184,14 +185,14 @@ main(int argc, char ** argv)
 
   pcl::TimeTrigger trigger;
   
-  pcl::ONIGrabber* grabber = 0;
+  pcl::ONIGrabber* grabber = nullptr;
   if (frame_rate == 0)
     grabber = new  pcl::ONIGrabber(arg, true, true);
   else
   {
     grabber = new  pcl::ONIGrabber(arg, true, false);
     trigger.setInterval (1.0 / static_cast<double> (frame_rate));
-    trigger.registerCallback (boost::bind(&pcl::ONIGrabber::start, grabber));
+    trigger.registerCallback ([=] { grabber->start (); });
     trigger.start();
   }
   if (grabber->providesCallback<pcl::ONIGrabber::sig_cb_openni_point_cloud_rgb > () && !pcl::console::find_switch (argc, argv, "-xyz"))

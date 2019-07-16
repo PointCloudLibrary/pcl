@@ -820,6 +820,7 @@ data (SSE padded), together with a test float.
    :linenos:
 
    #define PCL_NO_PRECOMPILE
+   #include <pcl/pcl_macros.h>
    #include <pcl/point_types.h>
    #include <pcl/point_cloud.h>
    #include <pcl/io/pcd_io.h>
@@ -828,7 +829,7 @@ data (SSE padded), together with a test float.
    {
      PCL_ADD_POINT4D;                  // preferred way of adding a XYZ+padding
      float test;
-     EIGEN_MAKE_ALIGNED_OPERATOR_NEW   // make sure our new allocators are aligned
+     PCL_MAKE_ALIGNED_OPERATOR_NEW     // make sure our new allocators are aligned
    } EIGEN_ALIGN16;                    // enforce SSE padding for correct memory alignment
 
    POINT_CLOUD_REGISTER_POINT_STRUCT (MyPointType,           // here we assume a XYZ + "test" (as fields)

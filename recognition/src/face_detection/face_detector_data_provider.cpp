@@ -4,6 +4,8 @@
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/io/pcd_io.h>
 
+#include <random>
+
 //Uncomment the following lines and set PCL_FACE_DETECTION_VIS_TRAINING_FDDP to 1
 //to visualize the training process and change the CMakeLists.txt accordingly.
 //#include <pcl/visualization/pcl_visualizer.h>
@@ -76,24 +78,19 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     }
   }
 
-  for (size_t i = 0; i < files.size (); i++)
+  for (const auto &filename : files)
   {
-    std::stringstream filestream;
-    filestream << data_dir << "/" << files[i];
-    std::string file = filestream.str ();
+    std::string file = data_dir + '/' + filename;
 
-    std::string pose_file (files[i]);
+    std::string pose_file (filename);
     boost::replace_all (pose_file, ".pcd", "_pose.txt");
 
     Eigen::Matrix4f pose_mat;
     pose_mat.setIdentity (4, 4);
 
-    std::stringstream filestream_pose;
-    filestream_pose << data_dir << "/" << pose_file;
-    pose_file = filestream_pose.str ();
+    pose_file = data_dir + '/' + pose_file;
 
-    bool result = readMatrixFromFile (pose_file, pose_mat);
-    if (result)
+    if (readMatrixFromFile (pose_file, pose_mat))
     {
       Eigen::Vector3f ea = pose_mat.block<3, 3> (0, 0).eulerAngles (0, 1, 2);
       ea *= 57.2957795f; //transform it to degrees to do the binning
@@ -141,20 +138,21 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
   if (min_images_per_bin_ != -1)
   {
     std::cout << "Reducing unbalance of the dataset." << std::endl;
+    std::mt19937 rng((std::random_device()()));
     for (int i = 0; i < num_yaw; i++)
     {
       for (int j = 0; j < num_pitch; j++)
       {
         if (yaw_pitch_bins[i][j] >= min_images_per_bin_)
         {
-          std::random_shuffle (image_files_per_bin[i][j].begin (), image_files_per_bin[i][j].end ());
+          std::shuffle (image_files_per_bin[i][j].begin (), image_files_per_bin[i][j].end (), rng);
           image_files_per_bin[i][j].resize (min_images_per_bin_);
           yaw_pitch_bins[i][j] = min_images_per_bin_;
         }
 
-        for (size_t ii = 0; ii < image_files_per_bin[i][j].size (); ii++)
+        for (const auto &ii : image_files_per_bin[i][j])
         {
-          image_files_.push_back (image_files_per_bin[i][j][ii]);
+          image_files_.push_back (ii);
         }
       }
     }
@@ -172,8 +170,8 @@ template<class FeatureType, class DataSet, class LabelType, class ExampleIndex, 
 void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::getDatasetAndLabels(DataSet & data_set,
     std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples)
 {
-  srand (static_cast<unsigned int>(time (NULL)));
-  std::random_shuffle (image_files_.begin (), image_files_.end ());
+  std::mt19937 rng((std::random_device()()));
+  std::shuffle (image_files_.begin (), image_files_.end (), rng);
   std::vector < std::string > files;
   files = image_files_;
   files.resize (std::min (num_images_, static_cast<int> (files.size ())));
@@ -250,7 +248,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     }
 
     //Compute integral image over depth
-    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_depth;
+    pcl::IntegralImage2D<float, 1>::Ptr integral_image_depth;
     integral_image_depth.reset (new pcl::IntegralImage2D<float, 1> (false));
 
     int element_stride = sizeof(pcl::PointXYZ) / sizeof(float);
@@ -263,8 +261,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     if (USE_NORMALS_)
     {
-      typedef typename pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> NormalEstimator_;
-      NormalEstimator_ n3d;
+      pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> n3d;
       n3d.setNormalEstimationMethod (n3d.COVARIANCE_MATRIX);
       n3d.setInputCloud (cloud);
       n3d.setRadiusSearch (0.02);
@@ -277,9 +274,9 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     int element_stride_normal = sizeof(pcl::Normal) / sizeof(float);
     int row_stride_normal = element_stride_normal * normals->width;
-    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_normal_x;
-    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_normal_y;
-    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_normal_z;
+    pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_x;
+    pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_y;
+    pcl::IntegralImage2D<float, 1>::Ptr integral_image_normal_z;
 
     if (USE_NORMALS_)
     {
@@ -375,7 +372,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
       int neg_extracted = 0;
       int w_size_2 = static_cast<int> (w_size_ / 2);
 
-      typedef std::pair<int, int> pixelpair;
+      using pixelpair = std::pair<int, int>;
       std::vector < pixelpair > negative_p, positive_p;
       //get negative and positive indices to sample from
       for (int col = 0; col < (static_cast<int> (cloud_labels->width) - w_size_); col++)
@@ -399,17 +396,16 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
       }
 
       //shuffle and resize
-      std::random_shuffle (positive_p.begin (), positive_p.end ());
-      std::random_shuffle (negative_p.begin (), negative_p.end ());
+      std::shuffle (positive_p.begin (), positive_p.end (), rng);
+      std::shuffle (negative_p.begin (), negative_p.end (), rng);
       positive_p.resize (N_patches);
       negative_p.resize (N_patches);
 
       //extract positive patch
-      for (size_t p = 0; p < positive_p.size (); p++)
+      for (const auto &p : positive_p)
       {
-        int col, row;
-        col = positive_p[p].first;
-        row = positive_p[p].second;
+        int col = p.first;
+        int row = p.second;
 
         pcl::PointXYZ patch_center_point;
         patch_center_point.x = cloud->at (col + w_size_2, row + w_size_2).x;
@@ -465,11 +461,10 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
       sleep(2);
 #endif
 
-      for (size_t p = 0; p < negative_p.size (); p++)
+      for (const auto &p : negative_p)
       {
-        int col, row;
-        col = negative_p[p].first;
-        row = negative_p[p].second;
+        int col = p.first;
+        int row = p.second;
 
         TrainingExample te;
         te.iimages_.push_back (integral_image_depth);

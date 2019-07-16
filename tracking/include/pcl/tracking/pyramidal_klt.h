@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/tracking/tracker.h>
 #include <pcl/common/intensity.h>
@@ -62,13 +63,15 @@ namespace pcl
     class PyramidalKLTTracker : public Tracker<PointInT, Eigen::Affine3f>
     {
       public:
-        typedef pcl::tracking::Tracker<PointInT, Eigen::Affine3f> TrackerBase;
-        typedef typename TrackerBase::PointCloudIn PointCloudIn;
-        typedef typename PointCloudIn::Ptr PointCloudInPtr;
-        typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-        typedef pcl::PointCloud<float> FloatImage;
-        typedef FloatImage::Ptr FloatImagePtr;
-        typedef FloatImage::ConstPtr FloatImageConstPtr;
+        using TrackerBase = pcl::tracking::Tracker<PointInT, Eigen::Affine3f>;
+        using PointCloudIn = typename TrackerBase::PointCloudIn;
+        using PointCloudInPtr = typename PointCloudIn::Ptr;
+        using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+        using FloatImage = pcl::PointCloud<float>;
+        using FloatImagePtr = FloatImage::Ptr;
+        using FloatImageConstPtr = FloatImage::ConstPtr;
+        using Ptr = boost::shared_ptr<PyramidalKLTTracker<PointInT, IntensityT> >;
+        using ConstPtr = boost::shared_ptr<const PyramidalKLTTracker<PointInT, IntensityT> >;
 
         using TrackerBase::tracker_name_;
         using TrackerBase::input_;
@@ -367,7 +370,7 @@ namespace pcl
         /// \brief index of last element in kernel
         int kernel_last_;
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

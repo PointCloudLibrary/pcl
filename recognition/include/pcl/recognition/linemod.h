@@ -55,7 +55,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      EnergyMaps () : width_ (0), height_ (0), nr_bins_ (0), maps_ () 
+      EnergyMaps () : width_ (0), height_ (0), nr_bins_ (0)
       {
       }
 
@@ -93,18 +93,18 @@ namespace pcl
       void 
       initialize (const size_t width, const size_t height, const size_t nr_bins)
       {
-        maps_.resize(nr_bins, NULL);
+        maps_.resize(nr_bins, nullptr);
         width_ = width;
         height_ = height;
         nr_bins_ = nr_bins;
 
         const size_t mapsSize = width*height;
 
-        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
+        for (auto &map : maps_)
         {
           //maps_[map_index] = new unsigned char[mapsSize];
-          maps_[map_index] = reinterpret_cast<unsigned char*> (aligned_malloc (mapsSize));
-          memset (maps_[map_index], 0, mapsSize);
+          map = reinterpret_cast<unsigned char*> (aligned_malloc (mapsSize));
+          memset (map, 0, mapsSize);
         }
       }
 
@@ -112,9 +112,9 @@ namespace pcl
       void 
       releaseAll ()
       {
-        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
+        for (auto &map : maps_)
           //if (maps_[map_index] != NULL) delete[] maps_[map_index];
-          if (maps_[map_index] != NULL) aligned_free (maps_[map_index]);
+          if (map != nullptr) aligned_free (map);
 
         maps_.clear ();
         width_ = 0;
@@ -200,7 +200,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      LinearizedMaps () : width_ (0), height_ (0), mem_width_ (0), mem_height_ (0), step_size_ (0), maps_ ()
+      LinearizedMaps () : width_ (0), height_ (0), mem_width_ (0), mem_height_ (0), step_size_ (0)
       {
       }
       
@@ -233,7 +233,7 @@ namespace pcl
       void 
       initialize (const size_t width, const size_t height, const size_t step_size)
       {
-        maps_.resize(step_size*step_size, NULL);
+        maps_.resize(step_size*step_size, nullptr);
         width_ = width;
         height_ = height;
         mem_width_ = width / step_size;
@@ -242,11 +242,11 @@ namespace pcl
 
         const size_t mapsSize = mem_width_ * mem_height_;
 
-        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
+        for (auto &map : maps_)
         {
           //maps_[map_index] = new unsigned char[2*mapsSize];
-          maps_[map_index] = reinterpret_cast<unsigned char*> (aligned_malloc (2*mapsSize));
-          memset (maps_[map_index], 0, 2*mapsSize);
+          map = reinterpret_cast<unsigned char*> (aligned_malloc (2*mapsSize));
+          memset (map, 0, 2*mapsSize);
         }
       }
 
@@ -254,9 +254,9 @@ namespace pcl
       void 
       releaseAll ()
       {
-        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
+        for (auto &map : maps_)
           //if (maps_[map_index] != NULL) delete[] maps_[map_index];
-          if (maps_[map_index] != NULL) aligned_free (maps_[map_index]);
+          if (map != nullptr) aligned_free (map);
 
         maps_.clear ();
         width_ = 0;

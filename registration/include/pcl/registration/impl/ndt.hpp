@@ -51,11 +51,6 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributions
   , gauss_d1_ ()
   , gauss_d2_ ()
   , trans_probability_ ()
-  , j_ang_a_ (), j_ang_b_ (), j_ang_c_ (), j_ang_d_ (), j_ang_e_ (), j_ang_f_ (), j_ang_g_ (), j_ang_h_ ()
-  , h_ang_a2_ (), h_ang_a3_ (), h_ang_b2_ (), h_ang_b3_ (), h_ang_c2_ (), h_ang_c3_ (), h_ang_d1_ (), h_ang_d2_ ()
-  , h_ang_d3_ (), h_ang_e1_ (), h_ang_e2_ (), h_ang_e3_ (), h_ang_f1_ (), h_ang_f2_ (), h_ang_f3_ ()
-  , point_gradient_ ()
-  , point_hessian_ ()
 {
   reg_name_ = "NormalDistributionsTransform";
 
@@ -132,7 +127,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
     //Calculate step length with guarnteed sufficient decrease [More, Thuente 1994]
     delta_p_norm = delta_p.norm ();
 
-    if (delta_p_norm == 0 || delta_p_norm != delta_p_norm)
+    if (delta_p_norm == 0 || std::isnan(delta_p_norm))
     {
       trans_probability_ = score / static_cast<double> (input_->points.size ());
       converged_ = delta_p_norm == delta_p_norm;
@@ -150,10 +145,10 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
                        Eigen::AngleAxis<float> (static_cast<float> (delta_p (5)), Eigen::Vector3f::UnitZ ())).matrix ();
 
 
-    p = p + delta_p;
+    p += delta_p;
 
     // Update Visualizer (untested)
-    if (update_visualizer_ != 0)
+    if (update_visualizer_)
       update_visualizer_ (output, std::vector<int>(), *target_, std::vector<int>() );
 
     double cos_angle = 0.5 * (transformation_.coeff (0, 0) + transformation_.coeff (1, 1) + transformation_.coeff (2, 2) - 1);
@@ -368,7 +363,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives (
   e_x_cov_x = gauss_d2_ * e_x_cov_x;
 
   // Error checking for invalid values.
-  if (e_x_cov_x > 1 || e_x_cov_x < 0 || e_x_cov_x != e_x_cov_x)
+  if (e_x_cov_x > 1 || e_x_cov_x < 0 || std::isnan(e_x_cov_x))
     return (0);
 
   // Reusable portion of Equation 6.12 and 6.13 [Magnusson 2009]
@@ -459,7 +454,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateHessian (Eige
   double e_x_cov_x = gauss_d2_ * exp (-gauss_d2_ * x_trans.dot (c_inv * x_trans) / 2);
 
   // Error checking for invalid values.
-  if (e_x_cov_x > 1 || e_x_cov_x < 0 || e_x_cov_x != e_x_cov_x)
+  if (e_x_cov_x > 1 || e_x_cov_x < 0 || std::isnan(e_x_cov_x))
     return;
 
   // Reusable portion of Equation 6.12 and 6.13 [Magnusson 2009]
@@ -496,7 +491,6 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateIntervalMT (d
     return (false);
   }
   // Case U2 in Update Algorithm and Case b in Modified Update Algorithm [More, Thuente 1994]
-  else
   if (g_t * (a_l - a_t) > 0)
   {
     a_l = a_t;
@@ -505,7 +499,6 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateIntervalMT (d
     return (false);
   }
   // Case U3 in Update Algorithm and Case c in Modified Update Algorithm [More, Thuente 1994]
-  else
   if (g_t * (a_l - a_t) < 0)
   {
     a_u = a_l;
@@ -518,8 +511,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateIntervalMT (d
     return (false);
   }
   // Interval Converged
-  else
-    return (true);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -544,11 +536,9 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelection
 
     if (std::fabs (a_c - a_l) < std::fabs (a_q - a_l))
       return (a_c);
-    else
-      return (0.5 * (a_q + a_c));
+    return (0.5 * (a_q + a_c));
   }
   // Case 2 in Trial Value Selection [More, Thuente 1994]
-  else
   if (g_t * g_l < 0)
   {
     // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
@@ -564,11 +554,9 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelection
 
     if (std::fabs (a_c - a_t) >= std::fabs (a_s - a_t))
       return (a_c);
-    else
-      return (a_s);
+    return (a_s);
   }
   // Case 3 in Trial Value Selection [More, Thuente 1994]
-  else
   if (std::fabs (g_t) <= std::fabs (g_l))
   {
     // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
@@ -590,19 +578,15 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelection
 
     if (a_t > a_l)
       return (std::min (a_t + 0.66 * (a_u - a_t), a_t_next));
-    else
-      return (std::max (a_t + 0.66 * (a_u - a_t), a_t_next));
+    return (std::max (a_t + 0.66 * (a_u - a_t), a_t_next));
   }
   // Case 4 in Trial Value Selection [More, Thuente 1994]
-  else
-  {
-    // Calculate the minimizer of the cubic that interpolates f_u, f_t, g_u and g_t
-    // Equation 2.4.52 [Sun, Yuan 2006]
-    double z = 3 * (f_t - f_u) / (a_t - a_u) - g_t - g_u;
-    double w = std::sqrt (z * z - g_t * g_u);
-    // Equation 2.4.56 [Sun, Yuan 2006]
-    return (a_u + (a_t - a_u) * (w - g_u - z) / (g_t - g_u + 2 * w));
-  }
+  // Calculate the minimizer of the cubic that interpolates f_u, f_t, g_u and g_t
+  // Equation 2.4.52 [Sun, Yuan 2006]
+  double z = 3 * (f_t - f_u) / (a_t - a_u) - g_t - g_u;
+  double w = std::sqrt (z * z - g_t * g_u);
+  // Equation 2.4.56 [Sun, Yuan 2006]
+  return (a_u + (a_t - a_u) * (w - g_u - z) / (g_t - g_u + 2 * w));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -623,13 +607,10 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT
     // Not a decent direction
     if (d_phi_0 == 0)
       return 0;
-    else
-    {
-      // Reverse step direction and calculate optimal step.
-      d_phi_0 *= -1;
-      step_dir *= -1;
+    // Reverse step direction and calculate optimal step.
+    d_phi_0 *= -1;
+    step_dir *= -1;
 
-    }
   }
 
   // The Search Algorithm for T(mu) [More, Thuente 1994]
@@ -733,12 +714,12 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT
       open_interval = false;
 
       // Converts f_l and g_l from psi to phi
-      f_l = f_l + phi_0 - mu * d_phi_0 * a_l;
-      g_l = g_l + mu * d_phi_0;
+      f_l += phi_0 - mu * d_phi_0 * a_l;
+      g_l += mu * d_phi_0;
 
       // Converts f_u and g_u from psi to phi
-      f_u = f_u + phi_0 - mu * d_phi_0 * a_u;
-      g_u = g_u + mu * d_phi_0;
+      f_u += phi_0 - mu * d_phi_0 * a_u;
+      g_u += mu * d_phi_0;
     }
 
     if (open_interval)

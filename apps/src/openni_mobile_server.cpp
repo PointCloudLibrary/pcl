@@ -32,8 +32,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -44,14 +42,17 @@
 #include <pcl/common/time.h>
 
 #include <boost/asio.hpp>
-#include <boost/thread/thread.hpp>
+
+#include <mutex>
+#include <thread>
+
 
 using boost::asio::ip::tcp;
-
+using namespace std::chrono_literals;
 
 struct PointCloudBuffers
 {
-  typedef boost::shared_ptr<PointCloudBuffers> Ptr;
+  using Ptr = boost::shared_ptr<PointCloudBuffers>;
   std::vector<short> points;
   std::vector<unsigned char> rgb;
 };
@@ -109,9 +110,9 @@ class PCLMobileServer
 {
   public:
 
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudPtr = typename Cloud::Ptr;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     PCLMobileServer (const std::string& device_id = "", int port = 11111,
                      float leaf_size_x = 0.01, float leaf_size_y = 0.01, float leaf_size_z = 0.01)
@@ -132,7 +133,7 @@ class PCLMobileServer
       PointCloudBuffers::Ptr new_buffers = PointCloudBuffers::Ptr (new PointCloudBuffers);
       CopyPointCloudToBuffers (temp_cloud, *new_buffers);
 
-      boost::mutex::scoped_lock lock (mutex_);
+      std::lock_guard<std::mutex> lock (mutex_);
       filtered_cloud_ = temp_cloud;
       buffers_ = new_buffers;
     }
@@ -140,14 +141,14 @@ class PCLMobileServer
     PointCloudBuffers::Ptr
     getLatestBuffers ()
     {
-      boost::mutex::scoped_lock lock (mutex_);
+      std::lock_guard<std::mutex> lock (mutex_);
       return (buffers_);
     }
 
     CloudPtr
     getLatestPointCloud ()
     {
-      boost::mutex::scoped_lock lock (mutex_);
+      std::lock_guard<std::mutex> lock (mutex_);
       return (filtered_cloud_);
     }
 
@@ -155,13 +156,13 @@ class PCLMobileServer
     run ()
     {
       pcl::OpenNIGrabber grabber (device_id_);
-      boost::function<void (const CloudConstPtr&)> handler_function = boost::bind (&PCLMobileServer::handleIncomingCloud, this, _1);
+      std::function<void (const CloudConstPtr&)> handler_function = [this] (const CloudConstPtr& cloud) { handleIncomingCloud (cloud); };
       grabber.registerCallback (handler_function);
       grabber.start ();
 
       // wait for first cloud
       while (!getLatestPointCloud ())
-        boost::this_thread::sleep (boost::posix_time::milliseconds (10));
+        std::this_thread::sleep_for(10ms);
 
       viewer_.showCloud (getLatestPointCloud ());
 
@@ -217,7 +218,7 @@ class PCLMobileServer
 
     int port_;
     std::string device_id_;
-    boost::mutex mutex_;
+    std::mutex mutex_;
 
     pcl::VoxelGrid<PointType> voxel_grid_filter_;
     pcl::visualization::CloudViewer viewer_;

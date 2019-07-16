@@ -171,7 +171,7 @@ namespace pcl
         * \param[in] dtdp The data provider that should implement getDatasetAndLabels(...) function
         */
       void
-      setDecisionTreeDataProvider(boost::shared_ptr<pcl::DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType> > & dtdp)
+      setDecisionTreeDataProvider(typename pcl::DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::Ptr& dtdp)
       {
         decision_tree_trainer_.setDecisionTreeDataProvider(dtdp);
       }

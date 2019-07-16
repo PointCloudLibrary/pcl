@@ -78,7 +78,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   // instantiate point cloud
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   std::priority_queue<prioPointQueueEntry, pcl::PointCloud<prioPointQueueEntry>::VectorType> pointCandidates;
 
@@ -137,7 +137,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     unsigned idx = static_cast<unsigned> (pointCandidates.size ());
     k_indices_bruteforce.resize (idx);
     k_sqr_distances_bruteforce.resize (idx);
-    while (pointCandidates.size ())
+    while (!pointCandidates.empty ())
     {
       --idx;
       k_indices_bruteforce [idx] = pointCandidates.top ().pointIdx_;
@@ -152,7 +152,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     ASSERT_EQ ( k_indices.size() , k_indices_bruteforce.size() );
 
     // compare nearest neighbor results of octree with bruteforce search
-    while (k_indices_bruteforce.size ())
+    while (!k_indices_bruteforce.empty ())
     {
       ASSERT_EQ ( k_indices.back() , k_indices_bruteforce.back() );
       EXPECT_NEAR (k_sqr_distances.back(), k_sqr_distances_bruteforce.back(), 1e-4);
@@ -277,7 +277,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
   PointCloud<PointXYZ>::Ptr cloudOut (new PointCloud<PointXYZ> ());
 
-  srand (static_cast<unsigned int> (time (NULL)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {

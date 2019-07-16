@@ -16,6 +16,8 @@ namespace pcl
     class HSVColorCoherence: public PointCoherence<PointInT>
     {
       public:
+        using Ptr = boost::shared_ptr<HSVColorCoherence<PointInT> >;
+        using ConstPtr = boost::shared_ptr<const HSVColorCoherence<PointInT> >;
 
         /** \brief initialize the weights of the computation.
             weight_, h_weight_, s_weight_ default to 1.0 and

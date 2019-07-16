@@ -54,7 +54,7 @@
 
 // todo: Read clouds as PCLPointCloud2 so we don't need to define PointT explicitly.
 //       This also requires our octree to take PCLPointCloud2 as an input.
-typedef pcl::PointXYZ PointT;
+using PointT = pcl::PointXYZ;
 
 using namespace pcl;
 using namespace pcl::outofcore;
@@ -68,7 +68,7 @@ using pcl::console::print_info;
 
 #include <boost/foreach.hpp>
 
-typedef OutofcoreOctreeBase<> octree_disk;
+using octree_disk = OutofcoreOctreeBase<>;
 
 const int OCTREE_DEPTH (0);
 const int OCTREE_RESOLUTION (1);
@@ -316,7 +316,7 @@ main (int argc, char* argv[])
   }
 
   // Check if we should process any files
-  if (pcd_paths.size () < 1)
+  if (pcd_paths.empty ())
   {
     PCL_ERROR ("No .pcd files specified\n");
     return -1;

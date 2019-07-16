@@ -40,6 +40,7 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/search/search.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -61,11 +62,11 @@ namespace pcl
   {
     public:
 
-      typedef pcl::search::Search <PointT> KdTree;
-      typedef typename KdTree::Ptr KdTreePtr;
-      typedef pcl::PointCloud <NormalT> Normal;
-      typedef typename Normal::Ptr NormalPtr;
-      typedef pcl::PointCloud <PointT> PointCloud;
+      using KdTree = pcl::search::Search<PointT>;
+      using KdTreePtr = typename KdTree::Ptr;
+      using Normal = pcl::PointCloud<NormalT>;
+      using NormalPtr = typename Normal::Ptr;
+      using PointCloud = pcl::PointCloud<PointT>;
 
       using PCLBase <PointT>::input_;
       using PCLBase <PointT>::indices_;
@@ -332,7 +333,7 @@ namespace pcl
       int number_of_segments_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief This function is used as a comparator for sorting. */

@@ -63,7 +63,7 @@ pcl::modeler::ParameterDialog::addParameter(pcl::modeler::Parameter* parameter)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ParameterDialog::ParameterDialog(const std::string& title, QWidget* parent) : QDialog(parent), parameter_model_(NULL)
+pcl::modeler::ParameterDialog::ParameterDialog(const std::string& title, QWidget* parent) : QDialog(parent), parameter_model_(nullptr)
 {
   setModal(false);
   setWindowTitle(QString(title.c_str())+" Parameters");

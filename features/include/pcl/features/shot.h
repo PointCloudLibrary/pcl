@@ -68,8 +68,8 @@ namespace pcl
                              public FeatureWithLocalReferenceFrames<PointInT, PointRFT>
   {
     public:
-      typedef boost::shared_ptr<SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> > Ptr;
-      typedef boost::shared_ptr<const SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> > ConstPtr;
+      using Ptr = boost::shared_ptr<SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> >;
+      using ConstPtr = boost::shared_ptr<const SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::input_;
@@ -82,7 +82,7 @@ namespace pcl
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
       using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
     protected:
       /** \brief Empty constructor.
@@ -90,7 +90,7 @@ namespace pcl
         */
       SHOTEstimationBase (int nr_shape_bins = 10) :
         nr_shape_bins_ (nr_shape_bins),
-        shot_ (), lrf_radius_ (0),
+        lrf_radius_ (0),
         sqradius_ (0), radius3_4_ (0), radius1_4_ (0), radius1_2_ (0),
         nr_grid_sector_ (32),
         maxAngularSectors_ (32),
@@ -219,8 +219,8 @@ namespace pcl
   class SHOTEstimation : public SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>
   {
     public:
-      typedef boost::shared_ptr<SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> > Ptr;
-      typedef boost::shared_ptr<const SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> > ConstPtr;
+      using Ptr = boost::shared_ptr<SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> >;
+      using ConstPtr = boost::shared_ptr<const SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> >;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::feature_name_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::getClassName;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::indices_;
@@ -242,7 +242,7 @@ namespace pcl
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::shot_;
       using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
       /** \brief Empty constructor. */
       SHOTEstimation () : SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> (10)
@@ -297,8 +297,8 @@ namespace pcl
   class SHOTColorEstimation : public SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>
   {
     public:
-      typedef boost::shared_ptr<SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> > Ptr;
-      typedef boost::shared_ptr<const SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> > ConstPtr;
+      using Ptr = boost::shared_ptr<SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> >;
+      using ConstPtr = boost::shared_ptr<const SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> >;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::feature_name_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::getClassName;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::indices_;
@@ -320,7 +320,7 @@ namespace pcl
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::shot_;
       using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
       /** \brief Empty constructor.
         * \param[in] describe_shape

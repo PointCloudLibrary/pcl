@@ -27,12 +27,12 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;
   // Check input data length
-  if ( input_data.size () == 0)
+  if ( input_data.empty ())
   {
     qCritical () << "Empty input in FPFH Estimation Tool!";
     return output;
   }
-  else if ( input_data.size () > 1)
+  if ( input_data.size () > 1)
   {
     qWarning () << "Input vector has more than one item in FPFH Estimation!";
   }
@@ -43,7 +43,7 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
   {
     //Check if this cloud has normals computed!
     QList <CloudComposerItem*> normals_list = input_item->getChildren (CloudComposerItem::NORMALS_ITEM);
-    if ( normals_list.size () == 0 )
+    if ( normals_list.empty () )
     {
       qCritical () << "No normals item child found in this cloud item";
       return output;

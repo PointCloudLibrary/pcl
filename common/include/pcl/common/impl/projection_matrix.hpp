@@ -81,7 +81,7 @@ pcl::estimateProjectionMatrix (
     const std::vector<int>& indices)
 {
   // internally we calculate with double but store the result into float matrices.
-  typedef double Scalar;
+  using Scalar = double;
   projection_matrix.setZero ();
   if (cloud->height == 1 || cloud->width == 1)
   {

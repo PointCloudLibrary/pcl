@@ -124,8 +124,8 @@ namespace pcl
       Parameters parameters_;
   };
 
-  typedef PolynomialCalculationsT<double> PolynomialCalculationsd;
-  typedef PolynomialCalculationsT<float>  PolynomialCalculations;
+  using PolynomialCalculationsd = PolynomialCalculationsT<double>;
+  using PolynomialCalculations = PolynomialCalculationsT<float>;
 
 }  // end namespace
 

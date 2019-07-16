@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include "clipper3D.h"
 
 namespace pcl
@@ -52,8 +53,8 @@ namespace pcl
   {
     public:
 
-      typedef boost::shared_ptr< BoxClipper3D<PointT> > Ptr;
-      typedef boost::shared_ptr< const BoxClipper3D<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<BoxClipper3D<PointT> >;
+      using ConstPtr = boost::shared_ptr<const BoxClipper3D<PointT> >;
 
 
       /**
@@ -118,7 +119,7 @@ namespace pcl
       Eigen::Affine3f transformation_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

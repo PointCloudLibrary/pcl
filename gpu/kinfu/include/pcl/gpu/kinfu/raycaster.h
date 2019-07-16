@@ -56,10 +56,10 @@ namespace pcl
     struct PCL_EXPORTS RayCaster
     {
     public:
-      typedef boost::shared_ptr<RayCaster> Ptr;
-      typedef DeviceArray2D<float> MapArr;
-      typedef DeviceArray2D<PixelRGB> View;
-      typedef DeviceArray2D<unsigned short> Depth;     
+      using Ptr = boost::shared_ptr<RayCaster>;
+      using MapArr = DeviceArray2D<float>;
+      using View = DeviceArray2D<PixelRGB>;
+      using Depth = DeviceArray2D<unsigned short>;     
 
       /** \brief Image with height */ 
       const int cols, rows;      
@@ -139,9 +139,9 @@ namespace pcl
       Eigen::Vector3f volume_size_;
 
 public:
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
-    
+
     /** \brief Converts from map representation to organized not-dence point cloud. */
     template<typename PointType>
     void convertMapToOranizedCloud(const RayCaster::MapArr& map, DeviceArray2D<PointType>& cloud);

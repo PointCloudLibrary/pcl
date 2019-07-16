@@ -56,17 +56,17 @@ namespace pcl
   class SUSANKeypoint : public Keypoint<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT> > Ptr;
-      typedef boost::shared_ptr<const SUSANKeypoint<PointInT, PointOutT, NormalT, Intensity> > ConstPtr;
+      using Ptr = boost::shared_ptr<SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT> >;
+      using ConstPtr = boost::shared_ptr<const SUSANKeypoint<PointInT, PointOutT, NormalT, Intensity> >;
 
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+      using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+      using KdTree = typename Keypoint<PointInT, PointOutT>::KdTree;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
-      typedef pcl::PointCloud<NormalT> PointCloudN;
-      typedef typename PointCloudN::Ptr PointCloudNPtr;
-      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+      using PointCloudN = pcl::PointCloud<NormalT>;
+      using PointCloudNPtr = typename PointCloudN::Ptr;
+      using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
 
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;
@@ -95,7 +95,6 @@ namespace pcl
         , normals_ (new pcl::PointCloud<NormalT>)
         , threads_ (0)
         , label_idx_ (-1)
-        , out_fields_ ()
       {
         name_ = "SUSANKeypoint";
         search_radius_ = radius;

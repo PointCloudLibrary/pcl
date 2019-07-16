@@ -98,8 +98,8 @@ FittingCurve2dAPDM::refine ()
   for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (size_t i = 0; i < xi.size (); i++)
-    m_nurbs.InsertKnot (xi[i], 1);
+  for (const double &i : xi)
+    m_nurbs.InsertKnot (i, 1);
 }
 
 void
@@ -566,7 +566,7 @@ FittingCurve2dAPDM::initNurbsCurve2D (int order, const vector_vec2d &data, int n
   {
     cv (0) = r * sin (dcv * j);
     cv (1) = r * cos (dcv * j);
-    cv = cv + mean;
+    cv += mean;
     nurbs.SetCV (j, ON_3dPoint (cv (0), cv (1), 0.0));
   }
 
@@ -844,22 +844,15 @@ FittingCurve2dAPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vec
 
     if (std::abs (delta) < accuracy)
     {
-
       error = r.norm ();
       return current;
-
     }
-    else
-    {
-      current = current + delta;
+    current += delta;
 
-      if (current < minU)
-        current = maxU - (minU - current);
-      else if (current > maxU)
-        current = minU + (current - maxU);
-
-    }
-
+    if (current < minU)
+      current = maxU - (minU - current);
+    else if (current > maxU)
+      current = minU + (current - maxU);
   }
 
   error = r.norm ();
@@ -1075,7 +1068,7 @@ FittingCurve2dAPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, cons
 
   if (d_shortest_hint < d_shortest_elem)
     return hint;
-  else
+  
     return param;
 }
 

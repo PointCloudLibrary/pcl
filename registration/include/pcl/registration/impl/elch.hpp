@@ -227,8 +227,8 @@ pcl::registration::ELCH<PointT>::compute ()
   typename boost::graph_traits<LoopGraph>::edge_iterator edge_it, edge_it_end;
   for (boost::tuples::tie (edge_it, edge_it_end) = edges (*loop_graph_); edge_it != edge_it_end; edge_it++)
   {
-    for (int j = 0; j < 4; j++)
-      add_edge (source (*edge_it, *loop_graph_), target (*edge_it, *loop_graph_), 1, grb[j]);  //TODO add variance
+    for (auto &j : grb)
+      add_edge (source (*edge_it, *loop_graph_), target (*edge_it, *loop_graph_), 1, j);  //TODO add variance
   }
 
   double *weights[4];

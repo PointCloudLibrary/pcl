@@ -50,12 +50,12 @@ namespace pcl
       using PointCloudColorHandler<PointT>::capable_;
       using PointCloudColorHandler<PointT>::cloud_;
 
-      typedef typename PointCloudColorHandler<PointT>::PointCloud::ConstPtr PointCloudConstPtr;
-      typedef pcl::PointCloud<RGB>::ConstPtr RgbCloudConstPtr;
+      using PointCloudConstPtr = typename PointCloudColorHandler<PointT>::PointCloud::ConstPtr;
+      using RgbCloudConstPtr = pcl::PointCloud<RGB>::ConstPtr;
 
     public:
-      typedef boost::shared_ptr<PointCloudColorHandlerRGBHack<PointT> > Ptr;
-      typedef boost::shared_ptr<const PointCloudColorHandlerRGBHack<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<PointCloudColorHandlerRGBHack<PointT> >;
+      using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerRGBHack<PointT> >;
       
       PointCloudColorHandlerRGBHack (const PointCloudConstPtr& cloud, const RgbCloudConstPtr& colors) : 
           PointCloudColorHandler<PointT> (cloud), rgb_ (colors)

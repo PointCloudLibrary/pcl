@@ -2,8 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2011, Willow Garage, Inc.
- *  Copyright (c) 2012-, Open Perception, Inc.
+ *  Copyright (c) 2019-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -33,49 +32,55 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *
  */
 
-#ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#endif
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/common/time.h> //fps calculations
-#include <pcl/io/pcd_io.h>
-#include <pcl/visualization/cloud_viewer.h>
-#include <pcl/visualization/image_viewer.h>
-#include <pcl/io/openni_camera/openni_driver.h>
-#include <pcl/console/parse.h>
-#include <pcl/visualization/mouse_event.h>
-#include <vector>
-#include <string>
+#pragma once
 
-using namespace std;
 
-int
-main (int, char ** argv)
+#include <type_traits>
+#include <utility>
+
+#include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
+
+#include <pcl/point_traits.h>
+
+
+namespace pcl
 {
-  pcl::PCDReader reader;
-  pcl::PCLPointCloud2 cloud;
-  reader.read (argv[1], cloud);
-  
-  pcl::PointCloud<pcl::PointXYZ> xyz;
-  pcl::fromPCLPointCloud2 (cloud, xyz);
-  
-  pcl::visualization::ImageViewer depth_image_viewer_;
-  float* img = new float[cloud.width * cloud.height];
 
-  for (int i = 0; i < static_cast<int> (xyz.points.size ()); ++i)
-    img[i] = xyz.points[i].z;
-  
-  depth_image_viewer_.showFloatImage (img, 
-                                      cloud.width, cloud.height,
-                                      std::numeric_limits<float>::min (), 
-                                      // Scale so that the colors look brigher on screen
-                                      std::numeric_limits<float>::max () / 10, 
-                                      true);
-  depth_image_viewer_.spin ();
-  return (0);
+#ifdef DOXYGEN_ONLY
+
+/**
+ * \brief Returns a boost::shared_ptr compliant with type T's allocation policy.
+ *
+ * boost::allocate_shared or boost::make_shared will be invoked in case T has or
+ * doesn't have a custom allocator, respectively.
+ *
+ * \see pcl::has_custom_allocator, PCL_MAKE_ALIGNED_OPERATOR_NEW
+ * \tparam T Type of the object to create a boost::shared_ptr of
+ * \tparam Args Types for the arguments to pcl::make_shared
+ * \param args List of arguments with which an instance of T will be constructed
+ * \return boost::shared_ptr of an instance of type T
+ */
+template<typename T, typename ... Args>
+boost::shared_ptr<T> make_shared(Args&&... args);
+
+#else
+
+template<typename T, typename ... Args>
+std::enable_if_t<has_custom_allocator<T>::value, boost::shared_ptr<T>> make_shared(Args&&... args)
+{
+  return boost::allocate_shared<T>(Eigen::aligned_allocator<T>(), std::forward<Args> (args)...);
 }
+
+template<typename T, typename ... Args>
+std::enable_if_t<!has_custom_allocator<T>::value, boost::shared_ptr<T>> make_shared(Args&&... args)
+{
+  return boost::make_shared<T>(std::forward<Args> (args)...);
+}
+
+#endif
+
+} // namespace pcl

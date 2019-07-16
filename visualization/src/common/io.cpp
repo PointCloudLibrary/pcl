@@ -42,6 +42,7 @@
 #include <vtkSmartPointer.h>
 
 #include <pcl/visualization/common/io.h>
+#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/eigen.h>
 
@@ -126,8 +127,7 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
       pcl::console::print_error (stdout, "[failed]\n");
       return (false);
     }
-    else
-      pcl::console::print_debug ("[success]\n");
+    pcl::console::print_debug ("[success]\n");
  
     pcl::PointCloud<pcl::PointXYZ> cloud_xyz;
     pcl::fromPCLPointCloud2 (cloud, cloud_xyz);
@@ -147,8 +147,7 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
       pcl::console::print_error (stdout, "[failed]\n");
       return (false);
     }
-    else
-      pcl::console::print_debug ("[success]\n");
+    pcl::console::print_debug ("[success]\n");
   }
 
   return (true);

@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/common/eigen.h>
 
 namespace pcl 
@@ -96,7 +97,7 @@ namespace pcl
         inline void
         getEigenVector1 (Eigen::Matrix<real, dimension, 1>& eigen_vector1) const;
 
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
         
         //-----VARIABLES-----
 
@@ -110,9 +111,9 @@ namespace pcl
         Eigen::Matrix<real, dimension, dimension> covariance_;
   };
 
-  typedef VectorAverage<float, 2> VectorAverage2f;
-  typedef VectorAverage<float, 3> VectorAverage3f;
-  typedef VectorAverage<float, 4> VectorAverage4f;
+  using VectorAverage2f = VectorAverage<float, 2>;
+  using VectorAverage3f = VectorAverage<float, 3>;
+  using VectorAverage4f = VectorAverage<float, 4>;
 }  // END namespace
 
 #include <pcl/common/impl/vector_average.hpp>

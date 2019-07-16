@@ -69,8 +69,8 @@ namespace pcl
   class SHOTEstimationOMP : public SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>
   {
     public:
-      typedef boost::shared_ptr<SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> > Ptr;
-      typedef boost::shared_ptr<const SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> > ConstPtr;
+      using Ptr = boost::shared_ptr<SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> >;
+      using ConstPtr = boost::shared_ptr<const SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::input_;
@@ -91,8 +91,8 @@ namespace pcl
       using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_4_;
       using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_2_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
       /** \brief Empty constructor. */
       SHOTEstimationOMP (unsigned int nr_threads = 0) : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> ()
@@ -148,8 +148,8 @@ namespace pcl
   class SHOTColorEstimationOMP : public SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>
   {
     public:
-      typedef boost::shared_ptr<SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> > Ptr;
-      typedef boost::shared_ptr<const SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> > ConstPtr;
+      using Ptr = boost::shared_ptr<SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> >;
+      using ConstPtr = boost::shared_ptr<const SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::input_;
@@ -173,8 +173,8 @@ namespace pcl
       using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::b_describe_color_;
       using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_color_bins_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
       /** \brief Empty constructor. */
       SHOTColorEstimationOMP (bool describe_shape = true,

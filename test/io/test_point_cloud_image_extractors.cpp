@@ -49,17 +49,17 @@ using namespace pcl::io;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointCloudImageExtractorFromNormalField)
 {
-  typedef PointNormal PointT;
+  using PointT = PointNormal;
   PointCloud<PointT> cloud;
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (auto &point : cloud.points)
   {
-    cloud.points[i].normal_x = -1.0;
-    cloud.points[i].normal_y =  0.0;
-    cloud.points[i].normal_z =  1.0;
+    point.normal_x = -1.0;
+    point.normal_y =  0.0;
+    point.normal_z =  1.0;
   }
   pcl::PCLImage image;
   PointCloudImageExtractorFromNormalField<PointT> pcie;
@@ -87,17 +87,17 @@ TEST (PCL, PointCloudImageExtractorFromNormalField)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointCloudImageExtractorFromRGBField)
 {
-  typedef PointXYZRGB PointT;
+  using PointT = PointXYZRGB;
   PointCloud<PointT> cloud;
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (auto &point : cloud.points)
   {
-    cloud.points[i].r =   0;
-    cloud.points[i].g = 127;
-    cloud.points[i].b = 254;
+    point.r =   0;
+    point.g = 127;
+    point.b = 254;
   }
   pcl::PCLImage image;
   PointCloudImageExtractorFromRGBField<PointT> pcie;
@@ -125,18 +125,18 @@ TEST (PCL, PointCloudImageExtractorFromRGBField)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointCloudImageExtractorFromRGBAField)
 {
-  typedef PointXYZRGBA PointT;
+  using PointT = PointXYZRGBA;
   PointCloud<PointT> cloud;
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (auto &point : cloud.points)
   {
-    cloud.points[i].r =   0;
-    cloud.points[i].g = 127;
-    cloud.points[i].b = 254;
-    cloud.points[i].a = 100;
+    point.r =   0;
+    point.g = 127;
+    point.b = 254;
+    point.a = 100;
   }
   pcl::PCLImage image;
   PointCloudImageExtractorFromRGBField<PointT> pcie;
@@ -164,7 +164,7 @@ TEST (PCL, PointCloudImageExtractorFromRGBAField)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
 {
-  typedef PointXYZL PointT;
+  using PointT = PointXYZL;
   PointCloud<PointT> cloud;
   cloud.width = 2;
   cloud.height = 2;
@@ -191,7 +191,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
 {
-  typedef PointXYZL PointT;
+  using PointT = PointXYZL;
   PointCloud<PointT> cloud;
   cloud.width = 2;
   cloud.height = 2;
@@ -229,7 +229,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
 {
-  typedef PointXYZL PointT;
+  using PointT = PointXYZL;
   PointCloud<PointT> cloud;
   cloud.width = 2;
   cloud.height = 2;
@@ -266,7 +266,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointCloudImageExtractorFromZField)
 {
-  typedef PointXYZL PointT;
+  using PointT = PointXYZL;
   PointCloud<PointT> cloud;
   cloud.width = 2;
   cloud.height = 2;
@@ -293,7 +293,7 @@ TEST (PCL, PointCloudImageExtractorFromZField)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointCloudImageExtractorFromCurvatureField)
 {
-  typedef PointNormal PointT;
+  using PointT = PointNormal;
   PointCloud<PointT> cloud;
   cloud.width = 2;
   cloud.height = 2;
@@ -325,7 +325,7 @@ TEST (PCL, PointCloudImageExtractorFromCurvatureField)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointCloudImageExtractorFromIntensityField)
 {
-  typedef PointXYZI PointT;
+  using PointT = PointXYZI;
   PointCloud<PointT> cloud;
   cloud.width = 2;
   cloud.height = 2;
@@ -355,7 +355,7 @@ TEST (PCL, PointCloudImageExtractorFromIntensityField)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointCloudImageExtractorBadInput)
 {
-  typedef PointXY PointT; // none of point cloud image extractors support this
+  using PointT = PointXY; // none of point cloud image extractors support this
   PointCloud<PointT> cloud;
   cloud.width = 2;
   cloud.height = 2;
@@ -392,7 +392,7 @@ TEST (PCL, PointCloudImageExtractorBadInput)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointCloudImageExtractorBlackNaNs)
 {
-  typedef PointNormal PointT;
+  using PointT = PointNormal;
   PointCloud<PointT> cloud;
   cloud.width = 2;
   cloud.height = 2;

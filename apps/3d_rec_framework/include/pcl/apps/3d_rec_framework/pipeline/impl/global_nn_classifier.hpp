@@ -20,11 +20,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
       for (bf::directory_iterator itr_in (inside); itr_in != end_itr; ++itr_in)
       {
-#if BOOST_FILESYSTEM_VERSION == 3
         std::string file_name = (itr_in->path ().filename ()).string();
-#else
-        std::string file_name = (itr_in->path ()).filename ();
-#endif
 
         std::vector < std::string > strs;
         boost::split (strs, file_name, boost::is_any_of ("_"));
@@ -85,7 +81,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     typename pcl::PointCloud<FeatureT>::CloudVectorType signatures;
     std::vector < Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > centroids;
 
-    if (indices_.size ())
+    if (!indices_.empty ())
     {
       pcl::copyPointCloud (*input_, indices_, *in);
     }
@@ -97,7 +93,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     estimator_->estimate (in, processed, signatures, centroids);
     std::vector<index_score> indices_scores;
 
-    if (signatures.size () > 0)
+    if (!signatures.empty ())
     {
       for (size_t idx = 0; idx < signatures.size (); idx++)
       {

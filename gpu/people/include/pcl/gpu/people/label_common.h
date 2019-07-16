@@ -108,13 +108,13 @@ namespace pcl
         NOLABEL     = 31
       };
 
-      typedef DeviceArray2D<float4> Cloud;
-      typedef DeviceArray2D<uchar4> Image;
+      using Cloud = DeviceArray2D<float4>;
+      using Image = DeviceArray2D<uchar4>;
 
-      typedef DeviceArray2D<unsigned short> Depth;
-      typedef DeviceArray2D<unsigned char>  Labels;      
-      typedef DeviceArray2D<float>          HueImage;
-      typedef DeviceArray2D<unsigned char>  Mask;      
+      using Depth = DeviceArray2D<unsigned short>;
+      using Labels = DeviceArray2D<unsigned char>;      
+      using HueImage = DeviceArray2D<float>;
+      using Mask = DeviceArray2D<unsigned char>;      
       
       /**
        * @brief This LUT contains the max primary eigenvalue for each part
@@ -261,7 +261,7 @@ namespace pcl
         float probs[pcl::gpu::people::NUM_LABELS];       /** \brief A single float probability for each body part **/
     };
 
-    typedef DeviceArray2D<prob_histogram>                 LabelProbability;
+    using LabelProbability = DeviceArray2D<prob_histogram>;
 
   }
 }

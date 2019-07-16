@@ -146,14 +146,14 @@ template<typename Tin, typename Tout, Ncv32u CN> struct __lerp_CN {static __host
 template<typename Tin, typename Tout> struct __lerp_CN<Tin, Tout, 1> {
 static __host__ __device__ Tout _lerp_CN(const Tin &a, const Tin &b, Ncv32f d)
 {
-    typedef typename TConvVec2Base<Tout>::TBase TB;
+    using TB = typename TConvVec2Base<Tout>::TBase;
     return _pixMake(TB(b.x * d + a.x * (1 - d)));
 }};
 
 template<typename Tin, typename Tout> struct __lerp_CN<Tin, Tout, 3> {
 static __host__ __device__ Tout _lerp_CN(const Tin &a, const Tin &b, Ncv32f d)
 {
-    typedef typename TConvVec2Base<Tout>::TBase TB;
+    using TB = typename TConvVec2Base<Tout>::TBase;
     return _pixMake(TB(b.x * d + a.x * (1 - d)),
                     TB(b.y * d + a.y * (1 - d)),
                     TB(b.z * d + a.z * (1 - d)));
@@ -162,7 +162,7 @@ static __host__ __device__ Tout _lerp_CN(const Tin &a, const Tin &b, Ncv32f d)
 template<typename Tin, typename Tout> struct __lerp_CN<Tin, Tout, 4> {
 static __host__ __device__ Tout _lerp_CN(const Tin &a, const Tin &b, Ncv32f d)
 {
-    typedef typename TConvVec2Base<Tout>::TBase TB;
+    using TB = typename TConvVec2Base<Tout>::TBase;
     return _pixMake(TB(b.x * d + a.x * (1 - d)),
                     TB(b.y * d + a.y * (1 - d)),
                     TB(b.z * d + a.z * (1 - d)),
@@ -262,7 +262,7 @@ __global__ void kernelInterpolateFrom1(T *d_srcTop,
         p01 = xh < szTopRoi.width ? d_src_line1[xh] : p00;
         p10 = yh < szTopRoi.height ? d_src_line2[xl] : p00;
         p11 = (xh < szTopRoi.width && yh < szTopRoi.height) ? d_src_line2[xh] : p00;
-        typedef typename TConvBase2Vec<Ncv32f, NC(T)>::TVec TVFlt;
+        using TVFlt = typename TConvBase2Vec<Ncv32f, NC(T)>::TVec;
         TVFlt m_00_01 = _lerp<T, TVFlt>(p00, p01, dx);
         TVFlt m_10_11 = _lerp<T, TVFlt>(p10, p11, dx);
         TVFlt mixture = _lerp<TVFlt, TVFlt>(m_00_01, m_10_11, dy);
@@ -311,7 +311,7 @@ namespace cv { namespace gpu { namespace device
 template<typename T>
 static T _interpLinear(const T &a, const T &b, Ncv32f d)
 {
-    typedef typename TConvBase2Vec<Ncv32f, NC(T)>::TVec TVFlt;
+    using TVFlt = typename TConvBase2Vec<Ncv32f, NC(T)>::TVec;
     TVFlt tmp = _lerp<T, TVFlt>(a, b, d);
     return _pixDemoteClampZ<TVFlt, T>(tmp);
 }
@@ -330,7 +330,7 @@ static T _interpBilinear(const NCVMatrix<T> &refLayer, Ncv32f x, Ncv32f y)
     p01 = xh < refLayer.width() ? refLayer.at(xh, yl) : p00;
     p10 = yh < refLayer.height() ? refLayer.at(xl, yh) : p00;
     p11 = (xh < refLayer.width() && yh < refLayer.height()) ? refLayer.at(xh, yh) : p00;
-    typedef typename TConvBase2Vec<Ncv32f, NC(T)>::TVec TVFlt;
+    using TVFlt = typename TConvBase2Vec<Ncv32f, NC(T)>::TVec;
     TVFlt m_00_01 = _lerp<T, TVFlt>(p00, p01, dx);
     TVFlt m_10_11 = _lerp<T, TVFlt>(p10, p11, dx);
     TVFlt mixture = _lerp<TVFlt, TVFlt>(m_00_01, m_10_11, dy);

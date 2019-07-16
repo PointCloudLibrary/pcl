@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/features/feature.h>
 #include <pcl/common/centroid.h>
 
@@ -241,8 +242,8 @@ namespace pcl
   class NormalEstimation: public Feature<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<NormalEstimation<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const NormalEstimation<PointInT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<NormalEstimation<PointInT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const NormalEstimation<PointInT, PointOutT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;
@@ -252,16 +253,14 @@ namespace pcl
       using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::search_parameter_;
       
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudConstPtr PointCloudConstPtr;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using PointCloudConstPtr = typename Feature<PointInT, PointOutT>::PointCloudConstPtr;
       
       /** \brief Empty constructor. */
       NormalEstimation () 
       : vpx_ (0)
       , vpy_ (0)
       , vpz_ (0)
-      , covariance_matrix_ ()
-      , xyz_centroid_ ()
       , use_sensor_origin_ (true)
       {
         feature_name_ = "NormalEstimation";
@@ -415,7 +414,7 @@ namespace pcl
       bool use_sensor_origin_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

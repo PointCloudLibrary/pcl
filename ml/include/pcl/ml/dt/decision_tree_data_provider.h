@@ -37,6 +37,8 @@
 
 #pragma once
 
+#include <boost/shared_ptr.hpp>
+
 #include <pcl/common/common.h>
 
 namespace pcl
@@ -51,6 +53,8 @@ namespace pcl
       std::vector<LabelType> label_data_;
 
     public:
+
+      using Ptr = boost::shared_ptr<DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>>;
 
       /** \brief Constructor. */
       DecisionTreeTrainerDataProvider()

@@ -56,7 +56,7 @@ class StatisticsDialog : public QDialog
 
   public:
     /// @brief Default Constructor
-    StatisticsDialog(QWidget *parent = 0);
+    StatisticsDialog(QWidget *parent = nullptr);
     /// @brief Destructor
     ~StatisticsDialog ();
     

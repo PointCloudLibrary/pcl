@@ -1,3 +1,5 @@
+#include <thread>
+
 #include <pcl/features/ppf.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/voxel_grid.h>
@@ -13,6 +15,7 @@
 
 using namespace pcl;
 using namespace std;
+using namespace std::chrono_literals;
 
 const Eigen::Vector4f subsampling_leaf_size (0.02f, 0.02f, 0.02f, 0.0f);
 const float normal_estimation_search_radius = 0.05f;
@@ -166,7 +169,7 @@ main (int argc, char** argv)
   while (!viewer.wasStopped ())
   {
     viewer.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
 
   return 0;

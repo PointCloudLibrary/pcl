@@ -32,7 +32,7 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *
  */
 
 #include <pcl/point_cloud.h>
@@ -47,9 +47,14 @@
 #include <pcl/common/time.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-typedef pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
-typedef ColorHandler::Ptr ColorHandlerPtr;
-typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
+#include <mutex>
+#include <thread>
+
+using namespace std::chrono_literals;
+
+using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>;
+using ColorHandlerPtr = ColorHandler::Ptr;
+using ColorHandlerConstPtr = ColorHandler::ConstPtr;
 
 #define FPS_CALC(_WHAT_) \
 do \
@@ -69,9 +74,9 @@ do \
 class OpenNIIntegralImageNormalEstimation
 {
   public:
-    typedef pcl::PointCloud<pcl::PointXYZRGBNormal> Cloud;
-    typedef Cloud::Ptr CloudPtr;
-    typedef Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<pcl::PointXYZRGBNormal>;
+    using CloudPtr = Cloud::Ptr;
+    using CloudConstPtr = Cloud::ConstPtr;
 
     OpenNIIntegralImageNormalEstimation (const std::string& device_id = "")
       : viewer ("PCL OpenNI NormalEstimation Viewer") 
@@ -93,7 +98,7 @@ class OpenNIIntegralImageNormalEstimation
     void 
     cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       //lock while we set our cloud;
       FPS_CALC ("computation");
 
@@ -120,10 +125,10 @@ class OpenNIIntegralImageNormalEstimation
     void
     viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       if (!cloud_)
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
         return;
       }
 
@@ -154,16 +159,16 @@ class OpenNIIntegralImageNormalEstimation
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &)> f = boost::bind (&OpenNIIntegralImageNormalEstimation::cloud_cb, this, _1);
+      std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &)> f = [this] (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) { cloud_cb (cloud); };
       boost::signals2::connection c = interface->registerCallback (f);
-     
-      viewer.runOnVisualizationThread (boost::bind(&OpenNIIntegralImageNormalEstimation::viz_cb, this, _1), "viz_cb");
+
+      viewer.runOnVisualizationThread ([this] (pcl::visualization::PCLVisualizer& viz) { viz_cb (viz); }, "viz_cb");
 
       interface->start ();
       
       while (!viewer.wasStopped ())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        std::this_thread::sleep_for(1s);
       }
 
       interface->stop ();
@@ -174,7 +179,7 @@ class OpenNIIntegralImageNormalEstimation
     pcl::BoundaryEstimation<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal, pcl::Boundary> be_;
     pcl::visualization::CloudViewer viewer;
     std::string device_id_;
-    boost::mutex mtx_;
+    std::mutex mtx_;
     // Data
     pcl::PointCloud<pcl::Boundary>::Ptr boundaries_;
     CloudPtr cloud_, cloud_pass_;

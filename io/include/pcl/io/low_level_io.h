@@ -52,7 +52,7 @@
 # include <io.h>
 # include <windows.h>
 # include <BaseTsd.h>
-typedef SSIZE_T ssize_t;
+using ssize_t = SSIZE_T;
 #else
 # include <unistd.h>
 # include <sys/mman.h>

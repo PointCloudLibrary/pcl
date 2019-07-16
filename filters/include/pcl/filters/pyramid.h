@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/common/point_operators.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_config.h>
@@ -61,10 +62,10 @@ namespace pcl
     class Pyramid
     {
       public:
-        typedef typename PointCloud<PointT>::Ptr PointCloudPtr;
-        typedef typename PointCloud<PointT>::ConstPtr PointCloudConstPtr;
-        typedef boost::shared_ptr< Pyramid<PointT> > Ptr;
-        typedef boost::shared_ptr< const Pyramid<PointT> > ConstPtr;
+        using PointCloudPtr = typename PointCloud<PointT>::Ptr;
+        using PointCloudConstPtr = typename PointCloud<PointT>::ConstPtr;
+        using Ptr = boost::shared_ptr< Pyramid<PointT> >;
+        using ConstPtr = boost::shared_ptr< const Pyramid<PointT> >;
  
         Pyramid (int levels = 4)
           : levels_ (levels)
@@ -160,7 +161,7 @@ namespace pcl
         unsigned int threads_;
 
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

@@ -56,9 +56,9 @@ namespace pcl
       */
     struct sortCorrespondencesByQueryIndex
     {
-      typedef pcl::Correspondence first_argument_type;
-      typedef pcl::Correspondence second_argument_type;
-      typedef bool result_type;
+      using first_argument_type = pcl::Correspondence;
+      using second_argument_type = pcl::Correspondence;
+      using result_type = bool;
       bool
       operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
@@ -72,9 +72,9 @@ namespace pcl
       */
     struct sortCorrespondencesByMatchIndex
     {
-      typedef pcl::Correspondence first_argument_type;
-      typedef pcl::Correspondence second_argument_type;
-      typedef bool result_type;
+      using first_argument_type = pcl::Correspondence;
+      using second_argument_type = pcl::Correspondence;
+      using result_type = bool;
       bool 
       operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
@@ -88,9 +88,9 @@ namespace pcl
       */
     struct sortCorrespondencesByDistance
     {
-      typedef pcl::Correspondence first_argument_type;
-      typedef pcl::Correspondence second_argument_type;
-      typedef bool result_type;
+      using first_argument_type = pcl::Correspondence;
+      using second_argument_type = pcl::Correspondence;
+      using result_type = bool;
       bool 
       operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
@@ -104,9 +104,9 @@ namespace pcl
       */
     struct sortCorrespondencesByQueryIndexAndDistance
     {
-      typedef pcl::Correspondence first_argument_type;
-      typedef pcl::Correspondence second_argument_type;
-      typedef bool result_type;
+      using first_argument_type = pcl::Correspondence;
+      using second_argument_type = pcl::Correspondence;
+      using result_type = bool;
       inline bool 
       operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
@@ -124,9 +124,9 @@ namespace pcl
       */
     struct sortCorrespondencesByMatchIndexAndDistance
     {
-      typedef pcl::Correspondence first_argument_type;
-      typedef pcl::Correspondence second_argument_type;
-      typedef bool result_type;
+      using first_argument_type = pcl::Correspondence;
+      using second_argument_type = pcl::Correspondence;
+      using result_type = bool;
       inline bool 
       operator()( pcl::Correspondence a, pcl::Correspondence b)
       {

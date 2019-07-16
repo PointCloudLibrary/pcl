@@ -39,6 +39,8 @@
 #pragma once
 
 #include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
+
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/eigen.h>
@@ -68,10 +70,10 @@ namespace pcl
   class PCL_EXPORTS OpenNIGrabber : public Grabber
   {
     public:
-      typedef boost::shared_ptr<OpenNIGrabber> Ptr;
-      typedef boost::shared_ptr<const OpenNIGrabber> ConstPtr;
+      using Ptr = boost::shared_ptr<OpenNIGrabber>;
+      using ConstPtr = boost::shared_ptr<const OpenNIGrabber>;
 
-      typedef enum
+      enum Mode
       {
         OpenNI_Default_Mode = 0, // This can depend on the device. For now all devices (PSDK, Xtion, Kinect) its VGA@30Hz
         OpenNI_SXGA_15Hz = 1,    // Only supported by the Kinect
@@ -83,18 +85,18 @@ namespace pcl
         OpenNI_QQVGA_25Hz = 7,   // Not supported -> using software downsampling (only for integer scale factor and only NN)
         OpenNI_QQVGA_30Hz = 8,   // Not supported -> using software downsampling (only for integer scale factor and only NN)
         OpenNI_QQVGA_60Hz = 9    // Not supported -> using software downsampling (only for integer scale factor and only NN)
-      } Mode;
+      };
 
       //define callback signature typedefs
-      typedef void (sig_cb_openni_image) (const boost::shared_ptr<openni_wrapper::Image>&);
-      typedef void (sig_cb_openni_depth_image) (const boost::shared_ptr<openni_wrapper::DepthImage>&);
-      typedef void (sig_cb_openni_ir_image) (const boost::shared_ptr<openni_wrapper::IRImage>&);
-      typedef void (sig_cb_openni_image_depth_image) (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant) ;
-      typedef void (sig_cb_openni_ir_depth_image) (const boost::shared_ptr<openni_wrapper::IRImage>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant) ;
-      typedef void (sig_cb_openni_point_cloud) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&);
-      typedef void (sig_cb_openni_point_cloud_rgb) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&);
-      typedef void (sig_cb_openni_point_cloud_rgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
-      typedef void (sig_cb_openni_point_cloud_i) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
+      using sig_cb_openni_image = void (const boost::shared_ptr<openni_wrapper::Image> &);
+      using sig_cb_openni_depth_image = void (const boost::shared_ptr<openni_wrapper::DepthImage> &);
+      using sig_cb_openni_ir_image = void (const boost::shared_ptr<openni_wrapper::IRImage> &);
+      using sig_cb_openni_image_depth_image = void (const boost::shared_ptr<openni_wrapper::Image> &, const boost::shared_ptr<openni_wrapper::DepthImage> &, float) ;
+      using sig_cb_openni_ir_depth_image = void (const boost::shared_ptr<openni_wrapper::IRImage> &, const boost::shared_ptr<openni_wrapper::DepthImage> &, float) ;
+      using sig_cb_openni_point_cloud = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> > &);
+      using sig_cb_openni_point_cloud_rgb = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> > &);
+      using sig_cb_openni_point_cloud_rgba = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> > &);
+      using sig_cb_openni_point_cloud_i = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> > &);
 
     public:
       /** \brief Constructor
@@ -449,16 +451,13 @@ namespace pcl
         {
           if (mode1.nXRes < mode2.nXRes)
             return true;
-          else if (mode1.nXRes > mode2.nXRes)
+          if (mode1.nXRes > mode2.nXRes)
             return false;
-          else if (mode1.nYRes < mode2.nYRes)
+          if (mode1.nYRes < mode2.nYRes)
             return true;
-          else if (mode1.nYRes > mode2.nYRes)
+          if (mode1.nYRes > mode2.nYRes)
             return false;
-          else if (mode1.nFPS < mode2.nFPS)
-            return true;
-          else
-            return false;
+          return (mode1.nFPS < mode2.nFPS);
         }
       } ;
       std::map<int, XnMapOutputMode> config2xn_map_;
@@ -492,7 +491,7 @@ namespace pcl
       double depth_principal_point_y_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   boost::shared_ptr<openni_wrapper::OpenNIDevice>

@@ -1,3 +1,5 @@
+#include <flann/flann.hpp>
+
 #include <pcl/apps/3d_rec_framework/pipeline/local_recognizer.h>
 #include <pcl/apps/3d_rec_framework/utils/vtk_model_sampling.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
@@ -21,11 +23,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
       for (bf::directory_iterator itr_in (inside); itr_in != end_itr; ++itr_in)
       {
-#if BOOST_FILESYSTEM_VERSION == 3
         std::string file_name = (itr_in->path ().filename ()).string();
-#else
-        std::string file_name = (itr_in->path ()).filename ();
-#endif
 
         std::vector < std::string > strs;
         boost::split (strs, file_name, boost::is_any_of ("_"));
@@ -109,12 +107,12 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
   {
     boost::shared_ptr < std::vector<ModelT> > models;
 
-    if(search_model_.compare("") == 0) {
+    if(search_model_.empty()) {
       models = source_->getModels ();
     } else {
       models = source_->getModels (search_model_);
       //reset cache and flann structures
-      if(flann_index_ != 0)
+      if(flann_index_ != nullptr)
         delete flann_index_;
 
       flann_models_.clear();
@@ -208,7 +206,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     //pcl::PointCloud<int> keypoints_input;
     PointInTPtr keypoints_pointcloud;
 
-    if (signatures_ != 0 && processed_ != 0 && (signatures_->size () == keypoints_pointcloud->points.size ()))
+    if (signatures_ != nullptr && processed_ != nullptr && (signatures_->size () == keypoints_pointcloud->points.size ()))
     {
       keypoints_pointcloud = keypoints_input_;
       signatures = signatures_;
@@ -218,7 +216,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     else
     {
       processed.reset( (new pcl::PointCloud<PointInT>));
-      if (indices_.size () > 0)
+      if (!indices_.empty ())
       {
         PointInTPtr sub_input (new pcl::PointCloud<PointInT>);
         pcl::copyPointCloud (*input_, indices_, *sub_input);
@@ -456,11 +454,11 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
     if (use_cache_)
     {
-      typedef std::pair<std::string, int> mv_pair;
+      using mv_pair = std::pair<std::string, int>;
       mv_pair pair_model_view = std::make_pair (model.id_, view_id);
 
       std::map<mv_pair, Eigen::Matrix4f,
-               std::less<mv_pair>,
+               std::less<>,
                Eigen::aligned_allocator<std::pair<const mv_pair, Eigen::Matrix4f> > >::iterator it = poses_cache_.find (pair_model_view);
 
       if (it != poses_cache_.end ())

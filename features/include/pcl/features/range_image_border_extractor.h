@@ -55,18 +55,17 @@ namespace pcl
   class PCL_EXPORTS RangeImageBorderExtractor : public Feature<PointWithRange,BorderDescription>
   {
     public:
-      typedef boost::shared_ptr<RangeImageBorderExtractor> Ptr;
-      typedef boost::shared_ptr<const RangeImageBorderExtractor> ConstPtr;
+      using Ptr = boost::shared_ptr<RangeImageBorderExtractor>;
+      using ConstPtr = boost::shared_ptr<const RangeImageBorderExtractor>;
       // =====TYPEDEFS=====
-      typedef Feature<PointWithRange,BorderDescription> BaseClass;
+      using BaseClass = Feature<PointWithRange,BorderDescription>;
       
       // =====PUBLIC STRUCTS=====
       //! Stores some information extracted from the neighborhood of a point
       struct LocalSurface
       {
         LocalSurface () : 
-          normal (), neighborhood_mean (), eigen_values (), normal_no_jumps (), 
-          neighborhood_mean_no_jumps (), eigen_values_no_jumps (), max_neighbor_distance_squared () {}
+           max_neighbor_distance_squared () {}
 
         Eigen::Vector3f normal;
         Eigen::Vector3f neighborhood_mean;
@@ -106,7 +105,7 @@ namespace pcl
       
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */
-      RangeImageBorderExtractor (const RangeImage* range_image=NULL);
+      RangeImageBorderExtractor (const RangeImage* range_image=nullptr);
       /** Destructor */
       ~RangeImageBorderExtractor ();
       
@@ -142,7 +141,7 @@ namespace pcl
       getParameters () { return (parameters_); }
 
       bool
-      hasRangeImage () const { return range_image_ != NULL; }
+      hasRangeImage () const { return range_image_ != nullptr; }
 
       const RangeImage&
       getRangeImage () const { return *range_image_; }
@@ -322,7 +321,7 @@ namespace pcl
         */
       inline bool
       get3dDirection (const BorderDescription& border_description, Eigen::Vector3f& direction,
-                      const LocalSurface* local_surface=NULL);
+                      const LocalSurface* local_surface=nullptr);
       
       /** \brief Calculate the main principal curvature (the largest eigenvalue and corresponding eigenvector for the 
         * normals in the area) in the given point

@@ -38,7 +38,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
@@ -71,7 +70,7 @@ TEST (ISM, TrainRecognize)
   fpfh->setRadiusSearch (30.0);
   pcl::Feature< pcl::PointXYZ, pcl::Histogram<153> >::Ptr feature_estimator(fpfh);
 
-  pcl::ism::ImplicitShapeModelEstimation<153, pcl::PointXYZ, pcl::Normal>::ISMModelPtr model = boost::shared_ptr<pcl::features::ISMModel> (new pcl::features::ISMModel);
+  pcl::ism::ImplicitShapeModelEstimation<153, pcl::PointXYZ, pcl::Normal>::ISMModelPtr model (new pcl::features::ISMModel);
 
   pcl::ism::ImplicitShapeModelEstimation<153, pcl::PointXYZ, pcl::Normal> ism;
   ism.setFeatureEstimator(feature_estimator);
@@ -85,7 +84,7 @@ TEST (ISM, TrainRecognize)
   double radius = model->sigmas_[_class] * 10.0;
   double sigma = model->sigmas_[_class];
 
-  boost::shared_ptr<pcl::features::ISMVoteList<pcl::PointXYZ> > vote_list = ism.findObjects (model, testing_cloud, testing_normals, _class);
+  auto vote_list = ism.findObjects (model, testing_cloud, testing_normals, _class);
   EXPECT_NE (vote_list->getNumberOfVotes (), 0);
   std::vector<pcl::ISMPeak, Eigen::aligned_allocator<pcl::ISMPeak> > strongest_peaks;
   vote_list->findStrongestPeaks (strongest_peaks, _class, radius, sigma);

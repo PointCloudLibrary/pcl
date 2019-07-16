@@ -1,6 +1,8 @@
 #pragma once
 
 #include <pcl/features/integral_image2D.h>
+#include <pcl/pcl_macros.h>
+
 #include <Eigen/Core>
 
 namespace pcl
@@ -10,7 +12,7 @@ namespace pcl
     class TrainingExample
     {
       public:
-        std::vector<boost::shared_ptr<pcl::IntegralImage2D<float, 1> > > iimages_; //also pointer to the respective integral image
+        std::vector<pcl::IntegralImage2D<float, 1>::Ptr> iimages_; //also pointer to the respective integral image
         int row_, col_;
         int wsize_;
         int label_;
@@ -18,7 +20,7 @@ namespace pcl
         //save pose head information
         Eigen::Vector3f trans_;
         Eigen::Vector3f rot_;
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     class FeatureType
@@ -84,7 +86,7 @@ namespace pcl
         Eigen::Matrix3d covariance_trans_;
         Eigen::Matrix3d covariance_rot_;
 
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
 
         void serialize(::std::ostream & stream) const
         {
@@ -92,7 +94,7 @@ namespace pcl
           const int num_of_sub_nodes = static_cast<int> (sub_nodes.size ());
           stream.write (reinterpret_cast<const char*> (&num_of_sub_nodes), sizeof(num_of_sub_nodes));
 
-          if (sub_nodes.size () > 0)
+          if (!sub_nodes.empty ())
           {
             feature.serialize (stream);
             stream.write (reinterpret_cast<const char*> (&threshold), sizeof(threshold));

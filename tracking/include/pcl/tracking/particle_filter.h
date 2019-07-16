@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/shared_ptr.hpp>
+
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/tracker.h>
 #include <pcl/tracking/coherence.h>
@@ -30,23 +32,25 @@ namespace pcl
         using Tracker<PointInT, StateT>::indices_;
         using Tracker<PointInT, StateT>::getClassName;
         
-        typedef Tracker<PointInT, StateT> BaseClass;
+        using Ptr = boost::shared_ptr<ParticleFilterTracker<PointInT, StateT>>;
+
+        using BaseClass = Tracker<PointInT, StateT>;
         
-        typedef typename Tracker<PointInT, StateT>::PointCloudIn PointCloudIn;
-        typedef typename PointCloudIn::Ptr PointCloudInPtr;
-        typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+        using PointCloudIn = typename Tracker<PointInT, StateT>::PointCloudIn;
+        using PointCloudInPtr = typename PointCloudIn::Ptr;
+        using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
-        typedef typename Tracker<PointInT, StateT>::PointCloudState PointCloudState;
-        typedef typename PointCloudState::Ptr PointCloudStatePtr;
-        typedef typename PointCloudState::ConstPtr PointCloudStateConstPtr;
+        using PointCloudState = typename Tracker<PointInT, StateT>::PointCloudState;
+        using PointCloudStatePtr = typename PointCloudState::Ptr;
+        using PointCloudStateConstPtr = typename PointCloudState::ConstPtr;
 
-        typedef PointCoherence<PointInT> Coherence;
-        typedef boost::shared_ptr< Coherence > CoherencePtr;
-        typedef boost::shared_ptr< const Coherence > CoherenceConstPtr;
+        using Coherence = PointCoherence<PointInT>;
+        using CoherencePtr = boost::shared_ptr<Coherence>;
+        using CoherenceConstPtr = boost::shared_ptr<const Coherence>;
 
-        typedef PointCloudCoherence<PointInT> CloudCoherence;
-        typedef boost::shared_ptr< CloudCoherence > CloudCoherencePtr;
-        typedef boost::shared_ptr< const CloudCoherence > CloudCoherenceConstPtr;
+        using CloudCoherence = PointCloudCoherence<PointInT>;
+        using CloudCoherencePtr = boost::shared_ptr<CloudCoherence>;
+        using CloudCoherenceConstPtr = boost::shared_ptr<const CloudCoherence>;
         
         /** \brief Empty constructor. */
         ParticleFilterTracker ()
@@ -56,14 +60,10 @@ namespace pcl
         , ref_ ()
         , particles_ ()
         , coherence_ ()
-        , step_noise_covariance_ ()
-        , initial_noise_covariance_ ()
-        , initial_noise_mean_ ()
         , resample_likelihood_thr_ (0.0)
         , occlusion_angle_thr_ (M_PI / 2.0)
         , alpha_ (15.0)
         , representative_state_ ()
-        , trans_ ()
         , use_normal_ (false)
         , motion_ ()
         , motion_ratio_ (0.25)
@@ -479,7 +479,7 @@ namespace pcl
         std::vector<PointCloudInPtr> transed_reference_vector_;
 
         /** \brief Change detector used as a trigger to track. */
-        boost::shared_ptr<pcl::octree::OctreePointCloudChangeDetector<PointInT> > change_detector_;
+        typename pcl::octree::OctreePointCloudChangeDetector<PointInT>::Ptr change_detector_;
 
         /** \brief A flag to be true when change of pointclouds is detected. */
         bool changed_;

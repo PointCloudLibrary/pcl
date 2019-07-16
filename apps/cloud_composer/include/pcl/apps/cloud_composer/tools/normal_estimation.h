@@ -66,7 +66,7 @@ namespace pcl
       Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
       public:
         NewItemTool*
-        createTool (PropertiesModel* parameter_model, QObject* parent = 0) override 
+        createTool (PropertiesModel* parameter_model, QObject* parent = nullptr) override 
         {
             return new NormalEstimationTool(parameter_model, parent);
         }

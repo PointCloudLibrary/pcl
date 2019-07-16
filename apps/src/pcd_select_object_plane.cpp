@@ -37,6 +37,8 @@
  *
  */
 
+#include <thread>
+
 #include <pcl/common/common.h>
 #include <pcl/console/time.h>
 #include <pcl/common/angles.h>
@@ -70,6 +72,7 @@
 using namespace pcl;
 using namespace pcl::console;
 using namespace std;
+using namespace std::chrono_literals;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -205,7 +208,7 @@ class ObjectSelection
           scene->points[index].label = 1;
         euclidean_cluster_comparator->setLabels (scene);
 
-        boost::shared_ptr<std::set<uint32_t> > exclude_labels = boost::make_shared<std::set<uint32_t> > ();
+        typename EuclideanClusterComparator<PointT, Label>::ExcludeLabelSetPtr exclude_labels (new typename EuclideanClusterComparator<PointT, Label>::ExcludeLabelSet);
         exclude_labels->insert (0);
         euclidean_cluster_comparator->setExcludeLabels (exclude_labels);
 
@@ -458,16 +461,13 @@ class ObjectSelection
         return;
       }
       // Else, draw it on screen
-      else
-      {
-        cloud_viewer_->addPolygon (region, 0.0, 0.0, 1.0, "region");
-        cloud_viewer_->setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
+      cloud_viewer_->addPolygon (region, 0.0, 0.0, 1.0, "region");
+      cloud_viewer_->setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
 
-        // Draw in image space
-        if (image_viewer_)
-        {
-          image_viewer_->addPlanarPolygon (search_->getInputCloud (), region, 0.0, 0.0, 1.0, "refined_region", 1.0);
-        }
+      // Draw in image space
+      if (image_viewer_)
+      {
+        image_viewer_->addPlanarPolygon (search_->getInputCloud (), region, 0.0, 0.0, 1.0, "refined_region", 1.0);
       }
 
       // If no object could be determined, exit
@@ -476,23 +476,20 @@ class ObjectSelection
         PCL_ERROR ("No object detected. Please select another point or relax the thresholds and continue.\n");
         return;
       }
-      else
+      // Visualize the object in 3D...
+      visualization::PointCloudColorHandlerCustom<PointT> red (object_, 255, 0, 0);
+      if (!cloud_viewer_->updatePointCloud (object_, red, "object"))
+        cloud_viewer_->addPointCloud (object_, red, "object");
+      // ...and 2D
+      if (image_viewer_)
       {
-        // Visualize the object in 3D...
-        visualization::PointCloudColorHandlerCustom<PointT> red (object_, 255, 0, 0);
-        if (!cloud_viewer_->updatePointCloud (object_, red, "object"))
-          cloud_viewer_->addPointCloud (object_, red, "object");
-        // ...and 2D
-        if (image_viewer_)
-        {
-          image_viewer_->removeLayer ("object");
-          image_viewer_->addMask (search_->getInputCloud (), *object_, "object");
-        }
-
-        // ...and 2D
-        if (image_viewer_)
-          image_viewer_->addRectangle (search_->getInputCloud (), *object_);
+        image_viewer_->removeLayer ("object");
+        image_viewer_->addMask (search_->getInputCloud (), *object_, "object");
       }
+
+      // ...and 2D
+      if (image_viewer_)
+        image_viewer_->addRectangle (search_->getInputCloud (), *object_);
     }
     
     /////////////////////////////////////////////////////////////////////////
@@ -517,7 +514,7 @@ class ObjectSelection
           if (image_viewer_->wasStopped ())
             break;
         }
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
       }
     }
     
@@ -610,8 +607,8 @@ class ObjectSelection
       }
     }
 
-    boost::shared_ptr<visualization::PCLVisualizer> cloud_viewer_;
-    boost::shared_ptr<visualization::ImageViewer> image_viewer_;
+    visualization::PCLVisualizer::Ptr cloud_viewer_;
+    visualization::ImageViewer::Ptr image_viewer_;
     
     typename PointCloud<PointT>::Ptr cloud_;
     typename search::Search<PointT>::Ptr search_;

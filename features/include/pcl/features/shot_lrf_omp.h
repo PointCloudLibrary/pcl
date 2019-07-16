@@ -66,8 +66,8 @@ namespace pcl
   class SHOTLocalReferenceFrameEstimationOMP : public SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> >;
       /** \brief Constructor */
     SHOTLocalReferenceFrameEstimationOMP ()
       {
@@ -95,8 +95,8 @@ namespace pcl
       using Feature<PointInT, PointOutT>::tree_;
       using Feature<PointInT, PointOutT>::search_parameter_;
       using SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
       /** \brief Feature estimation method.
         * \param[out] output the resultant features

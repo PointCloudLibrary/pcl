@@ -39,7 +39,6 @@
 #define PCL_KEYPOINTS_IMPL_SMOOTHEDSURFACESKEYPOINT_H_
 
 #include <pcl/keypoints/smoothed_surfaces_keypoint.h>
-#include <pcl/kdtree/kdtree_flann.h>
 
 //#include <pcl/io/pcd_io.h>
 
@@ -103,7 +102,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
     input_tree->radiusSearch (point_i, input_scale_ * neighborhood_constant_, nn_indices, nn_distances);
 
     bool is_min = true, is_max = true;
-    for (const int nn_index : nn_indices)
+    for (const int &nn_index : nn_indices)
       if (nn_index != point_i)
       {
         if (diffs[input_index_][point_i] < diffs[input_index_][nn_index])
@@ -127,7 +126,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
         cloud_trees_[cloud_i]->radiusSearch (point_i, scales_[scale_i].first * neighborhood_constant_, nn_indices, nn_distances);
 
         bool is_min_other_scale = true, is_max_other_scale = true;
-        for (const int nn_index : nn_indices)
+        for (const int &nn_index : nn_indices)
           if (nn_index != point_i)
           {
             if (diffs[input_index_][point_i] < diffs[cloud_i][nn_index])
@@ -194,7 +193,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::initCompute ()
     PCL_ERROR ("[pcl::SmoothedSurfacesKeypoints::initCompute] Input normals were not set\n");
     return false;
   }
-  if (clouds_.size () == 0)
+  if (clouds_.empty ())
   {
     PCL_ERROR ("[pcl::SmoothedSurfacesKeypoints::initCompute] No other clouds were set apart from the input\n");
     return false;

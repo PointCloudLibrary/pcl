@@ -36,8 +36,8 @@ namespace pcl
       class KeypointExtractor
       {
       protected:
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointOutTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
+        using PointOutTPtr = typename pcl::PointCloud<PointInT>::Ptr;
         typename pcl::PointCloud<PointInT>::Ptr input_;
         float radius_;
 
@@ -78,7 +78,7 @@ namespace pcl
       class UniformSamplingExtractor : public KeypointExtractor<PointInT>
       {
       private:
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
         bool filter_planar_;
         using KeypointExtractor<PointInT>::input_;
         using KeypointExtractor<PointInT>::radius_;
@@ -178,7 +178,7 @@ namespace pcl
     template<typename PointInT>
       class SIFTKeypointExtractor : public KeypointExtractor<PointInT>
       {
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
         using KeypointExtractor<PointInT>::input_;
         using KeypointExtractor<PointInT>::radius_;
 
@@ -202,7 +202,7 @@ namespace pcl
     template<typename PointInT>
       class SIFTSurfaceKeypointExtractor : public KeypointExtractor<PointInT>
       {
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
         pcl::PointCloud<pcl::Normal>::Ptr normals_;
         using KeypointExtractor<PointInT>::input_;
         using KeypointExtractor<PointInT>::radius_;
@@ -254,7 +254,7 @@ namespace pcl
       {
 
         pcl::PointCloud<pcl::Normal>::Ptr normals_;
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
         using KeypointExtractor<PointInT>::input_;
         using KeypointExtractor<PointInT>::radius_;
         typename pcl::HarrisKeypoint3D<PointInT, pcl::PointXYZI>::ResponseMethod m_;
@@ -328,7 +328,7 @@ namespace pcl
       {
 
         pcl::PointCloud<pcl::Normal>::Ptr normals_;
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
         using KeypointExtractor<PointInT>::input_;
         using KeypointExtractor<PointInT>::radius_;
 
@@ -377,8 +377,8 @@ namespace pcl
       class LocalEstimator
       {
       protected:
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
-        typedef typename pcl::PointCloud<FeatureT>::Ptr FeatureTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
+        using FeatureTPtr = typename pcl::PointCloud<FeatureT>::Ptr;
 
         typename boost::shared_ptr<PreProcessorAndNormalEstimator<PointInT, pcl::Normal> > normal_estimator_;
         //typename boost::shared_ptr<UniformSampling<PointInT> > keypoint_extractor_;

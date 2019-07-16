@@ -90,8 +90,8 @@ GlobalOptimizationTDM::assemble (Parameter params)
 
   m_solver.assign (m_nrows, m_ncols, 1);
 
-  for (size_t i = 0; i < m_data.size (); i++)
-    m_data[i]->common_boundary_param.clear ();
+  for (const auto &i : m_data)
+    i->common_boundary_param.clear ();
 
   // assemble matrix
   unsigned row (0);
@@ -208,10 +208,8 @@ GlobalOptimizationTDM::updateSurf (double damp)
 {
   int ncps (0);
 
-  for (size_t i = 0; i < m_nurbs.size (); i++)
+  for (const auto &nurbs : m_nurbs)
   {
-    ON_NurbsSurface* nurbs = m_nurbs[i];
-
     int ncp = nurbs->CVCount ();
 
     for (int A = 0; A < ncp; A++)

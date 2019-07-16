@@ -52,7 +52,7 @@ PointCloud<PointXYZ> cloud_source, cloud_target;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, NormalDistributionsTransform)
 {
-  typedef PointNormal PointT;
+  using PointT = PointNormal;
   PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
   copyPointCloud (cloud_source, *src);
   PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);

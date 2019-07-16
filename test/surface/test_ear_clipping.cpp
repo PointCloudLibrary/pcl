@@ -91,8 +91,8 @@ TEST (PCL, EarClipping)
   clipper.process (triangulated_mesh);
 
   EXPECT_EQ (triangulated_mesh.polygons.size (), 4);
-  for (int i = 0; i < static_cast<int> (triangulated_mesh.polygons.size ()); ++i)
-    EXPECT_EQ (triangulated_mesh.polygons[i].vertices.size (), 3);
+  for (const auto &polygon : triangulated_mesh.polygons)
+    EXPECT_EQ (polygon.vertices.size (), 3);
 
   const int truth[][3] = { {5, 0, 1},
                            {2, 3, 4},
@@ -148,12 +148,12 @@ TEST (PCL, EarClippingCubeTest)
   PolygonMesh::Ptr mesh (new PolygonMesh);
   toPCLPointCloud2 (*cloud, mesh->cloud);
 
-  for (int i = 0; i < 6; ++i)
+  for (const auto &square : squares)
   {
-    vertices.vertices[0] = squares[i][0];
-    vertices.vertices[1] = squares[i][1];
-    vertices.vertices[2] = squares[i][2];
-    vertices.vertices[3] = squares[i][3];
+    vertices.vertices[0] = square[0];
+    vertices.vertices[1] = square[1];
+    vertices.vertices[2] = square[2];
+    vertices.vertices[3] = square[3];
     mesh->polygons.push_back (vertices);
   }
 
@@ -165,8 +165,8 @@ TEST (PCL, EarClippingCubeTest)
   clipper.process (triangulated_mesh);
 
   EXPECT_EQ (triangulated_mesh.polygons.size (), 12);
-  for (int i = 0; i < static_cast<int> (triangulated_mesh.polygons.size ()); ++i)
-    EXPECT_EQ (triangulated_mesh.polygons[i].vertices.size (), 3);
+  for (const auto &polygon : triangulated_mesh.polygons)
+    EXPECT_EQ (polygon.vertices.size (), 3);
 
   
 

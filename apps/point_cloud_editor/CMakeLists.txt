@@ -101,7 +101,7 @@ include_directories(
 )
 
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
-PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${SRCS} ${RESOURCES_SRCS} ${MOC_SRCS} ${INCS})
+PCL_ADD_EXECUTABLE(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${SRCS} ${RESOURCES_SRCS} ${MOC_SRCS} ${INCS})
 
 target_link_libraries("${EXE_NAME}" Qt5::Widgets Qt5::OpenGL ${OPENGL_LIBRARIES} ${BOOST_LIBRARIES} pcl_common pcl_io pcl_filters)
 

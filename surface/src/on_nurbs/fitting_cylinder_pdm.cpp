@@ -84,8 +84,8 @@ FittingCylinder::refine (int dim)
   for (size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (size_t i = 0; i < xi.size (); i++)
-    m_nurbs.InsertKnot (dim, xi[i], 1);
+  for (const double &i : xi)
+    m_nurbs.InsertKnot (dim, i, 1);
 }
 
 void
@@ -227,7 +227,7 @@ FittingCylinder::initNurbsPCACylinder (int order, NurbsDataSurface *data)
   data->mean = mean;
   data->eigenvectors = eigenvectors;
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
 
   Eigen::Vector3d v_max (0.0, 0.0, 0.0);
   Eigen::Vector3d v_min (DBL_MAX, DBL_MAX, DBL_MAX);
@@ -578,20 +578,16 @@ FittingCylinder::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &p
       return current;
 
     }
-    else
-    {
-      current = current + delta;
-      if (current (0) < minU)
-        current (0) = minU;
-      else if (current (0) > maxU)
-        current (0) = maxU;
+    current += delta;
+    if (current (0) < minU)
+      current (0) = minU;
+    else if (current (0) > maxU)
+      current (0) = maxU;
 
-      if (current (1) < minV)
-        current (1) = maxV - (minV - current (1));
-      else if (current (1) > maxV)
-        current (1) = minV + (current (1) - maxV);
-    }
-
+    if (current (1) < minV)
+      current (1) = maxV - (minV - current (1));
+    else if (current (1) > maxV)
+      current (1) = minV + (current (1) - maxV);
   }
 
   error = r.norm ();

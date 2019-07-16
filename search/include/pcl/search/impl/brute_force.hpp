@@ -63,8 +63,7 @@ pcl::search::BruteForce<PointT>::nearestKSearch (
 
   if (input_->is_dense)
     return denseKSearch (point, k, k_indices, k_distances);
-  else
-    return sparseKSearch (point, k, k_indices, k_distances);
+  return sparseKSearch (point, k, k_indices, k_distances);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +75,7 @@ pcl::search::BruteForce<PointT>::denseKSearch (
   std::vector<Entry> result;
   result.reserve (k);
   std::priority_queue<Entry> queue;
-  if (indices_ != NULL)
+  if (indices_)
   {
     std::vector<int>::const_iterator iIt =indices_->begin ();
     std::vector<int>::const_iterator iEnd = indices_->begin () + std::min (static_cast<unsigned> (k), static_cast<unsigned> (indices_->size ()));
@@ -145,7 +144,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
   result.reserve (k);
   
   std::priority_queue<Entry> queue;
-  if (indices_ != NULL)
+  if (indices_)
   {
     std::vector<int>::const_iterator iIt =indices_->begin ();
     for (; iIt != indices_->end () && result.size () < static_cast<unsigned> (k); ++iIt)
@@ -226,7 +225,7 @@ pcl::search::BruteForce<PointT>::denseRadiusSearch (
   size_t reserve = max_nn;
   if (reserve == 0)
   {
-    if (indices_ != NULL)
+    if (indices_)
       reserve = std::min (indices_->size (), input_->size ());
     else
       reserve = input_->size ();
@@ -234,7 +233,7 @@ pcl::search::BruteForce<PointT>::denseRadiusSearch (
   k_indices.reserve (reserve);
   k_sqr_distances.reserve (reserve);
   float distance;
-  if (indices_ != NULL)
+  if (indices_)
   {
     for (std::vector<int>::const_iterator iIt =indices_->begin (); iIt != indices_->end (); ++iIt)
     {
@@ -281,7 +280,7 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
   size_t reserve = max_nn;
   if (reserve == 0)
   {
-    if (indices_ != NULL)
+    if (indices_)
       reserve = std::min (indices_->size (), input_->size ());
     else
       reserve = input_->size ();
@@ -290,7 +289,7 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
   k_sqr_distances.reserve (reserve);
 
   float distance;
-  if (indices_ != NULL)
+  if (indices_)
   {
     for (std::vector<int>::const_iterator iIt =indices_->begin (); iIt != indices_->end (); ++iIt)
     {
@@ -345,8 +344,7 @@ pcl::search::BruteForce<PointT>::radiusSearch (
 
   if (input_->is_dense)
     return denseRadiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
-  else
-    return sparseRadiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
+  return sparseRadiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
 }
 
 #define PCL_INSTANTIATE_BruteForce(T) template class PCL_EXPORTS pcl::search::BruteForce<T>;

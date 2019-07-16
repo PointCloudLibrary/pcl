@@ -50,7 +50,6 @@ namespace pcl
       branch_count_ (1),
       root_node_ (new BranchNode ()),
       depth_mask_ (0), 
-      max_key_ (),
       buffer_selector_ (0),
       tree_dirty_flag_ (false),
       octree_depth_ (0),
@@ -77,7 +76,7 @@ namespace pcl
 
       // tree depth == amount of bits of maxVoxels
       treeDepth = std::max ((std::min (static_cast<unsigned int> (OctreeKey::maxDepth),
-                                       static_cast<unsigned int> (std::ceil (Log2 (max_voxel_index_arg))))),
+                                       static_cast<unsigned int> (std::ceil (std::log2 (max_voxel_index_arg))))),
                                        static_cast<unsigned int> (0));
 
       // define depthMask_ by setting a single bit to 1 at bit position == tree depth
@@ -182,7 +181,7 @@ namespace pcl
       // we can safely remove children references of root node
       for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
       {
-        root_node_->setChildPtr(buffer_selector_, child_idx, 0);
+        root_node_->setChildPtr(buffer_selector_, child_idx, nullptr);
       }
     }
 
@@ -197,7 +196,7 @@ namespace pcl
       binary_tree_out_arg.clear ();
       binary_tree_out_arg.reserve (this->branch_count_);
 
-      serializeTreeRecursive (root_node_, new_key, &binary_tree_out_arg, 0, do_XOR_encoding_arg, false);
+      serializeTreeRecursive (root_node_, new_key, &binary_tree_out_arg, nullptr, do_XOR_encoding_arg, false);
 
       // serializeTreeRecursive cleans-up unused octree nodes in previous octree
       tree_dirty_flag_ = false;
@@ -235,7 +234,7 @@ namespace pcl
 
       leaf_container_vector_arg.reserve (leaf_count_);
 
-      serializeTreeRecursive (root_node_, new_key, 0, &leaf_container_vector_arg, false, false);
+      serializeTreeRecursive (root_node_, new_key, nullptr, &leaf_container_vector_arg, false, false);
 
       // serializeLeafsRecursive cleans-up unused octree nodes in previous octree
       tree_dirty_flag_ = false;
@@ -256,7 +255,7 @@ namespace pcl
       std::vector<char>::const_iterator binary_tree_in_it_end = binary_tree_in_arg.end ();
 
       deserializeTreeRecursive (root_node_, depth_mask_, new_key,
-          binary_tree_in_it, binary_tree_in_it_end, 0, 0, false,
+          binary_tree_in_it, binary_tree_in_it_end, nullptr, nullptr, false,
           do_XOR_decoding_arg);
 
       // we modified the octree structure -> clean-up/tree-reset might be required
@@ -310,7 +309,7 @@ namespace pcl
       leaf_container_vector_arg.clear ();
       leaf_container_vector_arg.reserve (leaf_count_);
 
-      serializeTreeRecursive (root_node_, new_key, 0, &leaf_container_vector_arg, false, true);
+      serializeTreeRecursive (root_node_, new_key, nullptr, &leaf_container_vector_arg, false, true);
 
       // serializeLeafsRecursive cleans-up unused octree nodes in previous octree buffer
       tree_dirty_flag_ = false;
@@ -332,7 +331,7 @@ namespace pcl
         // we can safely remove children references
         for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
         {
-          branch_arg->setChildPtr(buffer_selector_, child_idx, 0);
+          branch_arg->setChildPtr(buffer_selector_, child_idx, nullptr);
         }
       }
 
@@ -384,47 +383,45 @@ namespace pcl
         // recursively proceed with indexed child branch
         return createLeafRecursive (key_arg, depth_mask_arg / 2, child_branch, return_leaf_arg, parent_of_leaf_arg, doNodeReset);
       }
-      else
-      {
-        // branch childs are leaf nodes
-        LeafNode* child_leaf;
-        if (!branch_arg->hasChild(buffer_selector_, child_idx))
-        {
-          // leaf node at child_idx does not exist
-          
-          // check if we can take copy a reference from previous buffer
-          if (branch_arg->hasChild(!buffer_selector_, child_idx))
-          {
 
-            OctreeNode * child_node = branch_arg->getChildPtr(!buffer_selector_,child_idx);
-            if (child_node->getNodeType () == LEAF_NODE)
-            {
-              child_leaf = static_cast<LeafNode*> (child_node);
-              branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
-            } else {
-              // depth has changed.. child in preceding buffer is a leaf node.
-              deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
-              child_leaf = createLeafChild (*branch_arg, child_idx);
-            }
-            leaf_count_++;  
-          }
-          else
+      // branch childs are leaf nodes
+      LeafNode* child_leaf;
+      if (!branch_arg->hasChild(buffer_selector_, child_idx))
+      {
+        // leaf node at child_idx does not exist
+
+        // check if we can take copy a reference from previous buffer
+        if (branch_arg->hasChild(!buffer_selector_, child_idx))
+        {
+
+          OctreeNode * child_node = branch_arg->getChildPtr(!buffer_selector_,child_idx);
+          if (child_node->getNodeType () == LEAF_NODE)
           {
-            // if required leaf does not exist -> create it
+            child_leaf = static_cast<LeafNode*> (child_node);
+            branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
+          } else {
+            // depth has changed.. child in preceding buffer is a leaf node.
+            deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
             child_leaf = createLeafChild (*branch_arg, child_idx);
-            leaf_count_++;
           }
-          
-          // return leaf node
-          return_leaf_arg = child_leaf;
-          parent_of_leaf_arg = branch_arg;
+          leaf_count_++;  
         }
         else
         {
-          // leaf node already exist
-          return_leaf_arg = static_cast<LeafNode*> (branch_arg->getChildPtr(buffer_selector_,child_idx));;
-          parent_of_leaf_arg = branch_arg;
+          // if required leaf does not exist -> create it
+          child_leaf = createLeafChild (*branch_arg, child_idx);
+          leaf_count_++;
         }
+        
+        // return leaf node
+        return_leaf_arg = child_leaf;
+        parent_of_leaf_arg = branch_arg;
+      }
+      else
+      {
+        // leaf node already exist
+        return_leaf_arg = static_cast<LeafNode*> (branch_arg->getChildPtr(buffer_selector_,child_idx));;
+        parent_of_leaf_arg = branch_arg;
       }
 
       return depth_mask_arg;
@@ -637,7 +634,7 @@ namespace pcl
         // we can safely remove children references
         for (unsigned char child_idx = 0; child_idx < 8; child_idx++)
         {
-          branch_arg->setChildPtr(buffer_selector_, child_idx, 0);
+          branch_arg->setChildPtr(buffer_selector_, child_idx, nullptr);
         }  
       }
 
@@ -765,7 +762,7 @@ namespace pcl
           else if (branch_arg->hasChild (!buffer_selector_, child_idx))
           {
             // remove old branch pointer information in current branch
-            branch_arg->setChildPtr(buffer_selector_, child_idx, 0);
+            branch_arg->setChildPtr(buffer_selector_, child_idx, nullptr);
             
             // remove unused branches in previous buffer
             deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);

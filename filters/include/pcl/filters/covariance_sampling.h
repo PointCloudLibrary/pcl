@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/filters/filter_indices.h>
 
 namespace pcl
@@ -65,14 +66,14 @@ namespace pcl
       using FilterIndices<PointT>::input_;
       using FilterIndices<PointT>::initCompute;
 
-      typedef typename FilterIndices<PointT>::PointCloud Cloud;
-      typedef typename Cloud::Ptr CloudPtr;
-      typedef typename Cloud::ConstPtr CloudConstPtr;
-      typedef typename pcl::PointCloud<PointNT>::ConstPtr NormalsConstPtr;
+      using Cloud = typename FilterIndices<PointT>::PointCloud;
+      using CloudPtr = typename Cloud::Ptr;
+      using CloudConstPtr = typename Cloud::ConstPtr;
+      using NormalsConstPtr = typename pcl::PointCloud<PointNT>::ConstPtr;
 
     public:
-      typedef boost::shared_ptr< CovarianceSampling<PointT, PointNT> > Ptr;
-      typedef boost::shared_ptr< const CovarianceSampling<PointT, PointNT> > ConstPtr;
+      using Ptr = boost::shared_ptr< CovarianceSampling<PointT, PointNT> >;
+      using ConstPtr = boost::shared_ptr< const CovarianceSampling<PointT, PointNT> >;
  
       /** \brief Empty constructor. */
       CovarianceSampling ()
@@ -158,7 +159,7 @@ namespace pcl
       { return (a.second > b.second); }
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

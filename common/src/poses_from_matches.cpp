@@ -42,7 +42,7 @@
 #include <pcl/common/transformation_from_correspondences.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::PosesFromMatches::PosesFromMatches () : parameters_ () 
+pcl::PosesFromMatches::PosesFromMatches ()
 {
 }
 

@@ -38,7 +38,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/console/time.h>
 
 using namespace std;
 using namespace pcl;
@@ -70,7 +69,7 @@ loadCloud (const string &filename, PointCloud<PointXYZ> &cloud)
   {
     getline (fs, line);
     // Ignore empty lines
-    if (line == "")
+    if (line.empty())
       continue;
 
     // Tokenize the line

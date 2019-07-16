@@ -138,8 +138,7 @@ pcl::Convolution<PointT>::filter (pcl::PointCloud<PointT> &output)
               int ikkh = i + k - kh / 2, jlkw = j + l - kw / 2;
               if (ikkh < 0 || ikkh >= ih || jlkw < 0 || jlkw >= iw)
                 continue;
-              else
-                intensity += kernel_ (l, k).intensity * ((*input_)(jlkw, ikkh).intensity);
+              intensity += kernel_ (l, k).intensity * ((*input_)(jlkw, ikkh).intensity);
             }
           }
           output (j, i).intensity = intensity;

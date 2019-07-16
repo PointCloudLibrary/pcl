@@ -141,19 +141,19 @@ pcl::modeler::CloudMesh::getColorScalarsFromField(vtkSmartPointer<vtkDataArray> 
   if (field == "rgb" || field == "rgba")
   {
     pcl::visualization::PointCloudColorHandlerRGBField<PointT> color_handler(cloud_);
-    color_handler.getColor(scalars);
+    scalars = color_handler.getColor();
     return;
   }
 
   if (field == "random")
   {
     pcl::visualization::PointCloudColorHandlerRandom<PointT> color_handler(cloud_);
-    color_handler.getColor(scalars);
+    scalars = color_handler.getColor();
     return;
   }
 
   pcl::visualization::PointCloudColorHandlerGenericField<PointT> color_handler(cloud_, field);
-  color_handler.getColor(scalars);
+  scalars = color_handler.getColor();
 
   return;
 }
@@ -162,7 +162,7 @@ pcl::modeler::CloudMesh::getColorScalarsFromField(vtkSmartPointer<vtkDataArray> 
 void
 pcl::modeler::CloudMesh::updateVtkPoints()
 {
-  if (vtk_points_->GetData() == NULL)
+  if (vtk_points_->GetData() == nullptr)
     vtk_points_->SetData(vtkSmartPointer<vtkFloatArray>::New ());
 
   vtkFloatArray* data = dynamic_cast<vtkFloatArray*>(vtk_points_->GetData());

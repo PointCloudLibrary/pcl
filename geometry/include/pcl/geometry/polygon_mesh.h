@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/geometry/mesh_base.h>
 
 namespace pcl
@@ -59,49 +60,49 @@ namespace pcl
     {
       public:
 
-        typedef pcl::geometry::MeshBase <PolygonMesh <MeshTraitsT>, MeshTraitsT, PolygonMeshTag> Base;
+        using Base = pcl::geometry::MeshBase <PolygonMesh <MeshTraitsT>, MeshTraitsT, PolygonMeshTag>;
 
-        typedef PolygonMesh <MeshTraitsT>      Self;
-        typedef boost::shared_ptr <Self>       Ptr;
-        typedef boost::shared_ptr <const Self> ConstPtr;
+        using Self = PolygonMesh<MeshTraitsT>;
+        using Ptr = boost::shared_ptr<Self>;
+        using ConstPtr = boost::shared_ptr<const Self>;
 
-        typedef typename Base::VertexData   VertexData;
-        typedef typename Base::HalfEdgeData HalfEdgeData;
-        typedef typename Base::EdgeData     EdgeData;
-        typedef typename Base::FaceData     FaceData;
-        typedef typename Base::IsManifold   IsManifold;
-        typedef typename Base::MeshTag      MeshTag;
+        using VertexData = typename Base::VertexData;
+        using HalfEdgeData = typename Base::HalfEdgeData;
+        using EdgeData = typename Base::EdgeData;
+        using FaceData = typename Base::FaceData;
+        using IsManifold = typename Base::IsManifold;
+        using MeshTag = typename Base::MeshTag;
 
-        typedef typename Base::HasVertexData   HasVertexData;
-        typedef typename Base::HasHalfEdgeData HasHalfEdgeData;
-        typedef typename Base::HasEdgeData     HasEdgeData;
-        typedef typename Base::HasFaceData     HasFaceData;
+        using HasVertexData = typename Base::HasVertexData;
+        using HasHalfEdgeData = typename Base::HasHalfEdgeData;
+        using HasEdgeData = typename Base::HasEdgeData;
+        using HasFaceData = typename Base::HasFaceData;
 
-        typedef typename Base::VertexDataCloud   VertexDataCloud;
-        typedef typename Base::HalfEdgeDataCloud HalfEdgeDataCloud;
-        typedef typename Base::EdgeDataCloud     EdgeDataCloud;
-        typedef typename Base::FaceDataCloud     FaceDataCloud;
+        using VertexDataCloud = typename Base::VertexDataCloud;
+        using HalfEdgeDataCloud = typename Base::HalfEdgeDataCloud;
+        using EdgeDataCloud = typename Base::EdgeDataCloud;
+        using FaceDataCloud = typename Base::FaceDataCloud;
 
         // Indices
-        typedef typename Base::VertexIndex   VertexIndex;
-        typedef typename Base::HalfEdgeIndex HalfEdgeIndex;
-        typedef typename Base::EdgeIndex     EdgeIndex;
-        typedef typename Base::FaceIndex     FaceIndex;
+        using VertexIndex = typename Base::VertexIndex;
+        using HalfEdgeIndex = typename Base::HalfEdgeIndex;
+        using EdgeIndex = typename Base::EdgeIndex;
+        using FaceIndex = typename Base::FaceIndex;
 
-        typedef typename Base::VertexIndices   VertexIndices;
-        typedef typename Base::HalfEdgeIndices HalfEdgeIndices;
-        typedef typename Base::EdgeIndices     EdgeIndices;
-        typedef typename Base::FaceIndices     FaceIndices;
+        using VertexIndices = typename Base::VertexIndices;
+        using HalfEdgeIndices = typename Base::HalfEdgeIndices;
+        using EdgeIndices = typename Base::EdgeIndices;
+        using FaceIndices = typename Base::FaceIndices;
 
         // Circulators
-        typedef typename Base::VertexAroundVertexCirculator           VertexAroundVertexCirculator;
-        typedef typename Base::OutgoingHalfEdgeAroundVertexCirculator OutgoingHalfEdgeAroundVertexCirculator;
-        typedef typename Base::IncomingHalfEdgeAroundVertexCirculator IncomingHalfEdgeAroundVertexCirculator;
-        typedef typename Base::FaceAroundVertexCirculator             FaceAroundVertexCirculator;
-        typedef typename Base::VertexAroundFaceCirculator             VertexAroundFaceCirculator;
-        typedef typename Base::InnerHalfEdgeAroundFaceCirculator      InnerHalfEdgeAroundFaceCirculator;
-        typedef typename Base::OuterHalfEdgeAroundFaceCirculator      OuterHalfEdgeAroundFaceCirculator;
-        typedef typename Base::FaceAroundFaceCirculator               FaceAroundFaceCirculator;
+        using VertexAroundVertexCirculator = typename Base::VertexAroundVertexCirculator;
+        using OutgoingHalfEdgeAroundVertexCirculator = typename Base::OutgoingHalfEdgeAroundVertexCirculator;
+        using IncomingHalfEdgeAroundVertexCirculator = typename Base::IncomingHalfEdgeAroundVertexCirculator;
+        using FaceAroundVertexCirculator = typename Base::FaceAroundVertexCirculator;
+        using VertexAroundFaceCirculator = typename Base::VertexAroundFaceCirculator;
+        using InnerHalfEdgeAroundFaceCirculator = typename Base::InnerHalfEdgeAroundFaceCirculator;
+        using OuterHalfEdgeAroundFaceCirculator = typename Base::OuterHalfEdgeAroundFaceCirculator;
+        using FaceAroundFaceCirculator = typename Base::FaceAroundFaceCirculator;
 
         /** \brief Constructor. */
         PolygonMesh ()
@@ -193,8 +194,7 @@ namespace pcl
         VertexIndices add_quad_;
 
       public:
-
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   } // End namespace geom
 } // End namespace pcl

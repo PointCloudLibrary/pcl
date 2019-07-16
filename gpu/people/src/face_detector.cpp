@@ -158,8 +158,7 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
               PCL_WARN("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 2 : size node format error\n");   //  format error: line doesn't start with an int.
               return (NCV_HAAR_XML_LOADING_EXCEPTION);
             }
-            else
-              PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level2 : size int1 %d, int2 %d\n", haar.ClassifierSize.width, haar.ClassifierSize.height);
+            PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level2 : size int1 %d, int2 %d\n", haar.ClassifierSize.width, haar.ClassifierSize.height);
 
             int level3 = 0;
             /// LEVEL3 (Stages)
@@ -210,11 +209,11 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                     PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 5 node_threshold %f, left_val %f, right_val %f, tilted %d\n", node_threshold, left_val, right_val, tilted);
 
                     HaarClassifierNodeDescriptor32 node_left;
-                    ncv_return_status = node_left.create(left_val);                              // TODO check ncv_return_status return value line below and return
+                    node_left.create(left_val);                              // TODO check ncv_return_status return value line below and return
                     current_node.setLeftNodeDesc(node_left);
 
                     HaarClassifierNodeDescriptor32 node_right;
-                    ncv_return_status = node_right.create(right_val);
+                    node_right.create(right_val);                            // TODO check ncv_return_status return value line below and return
                     current_node.setRightNodeDesc(node_right);
 
                     haar.bNeedsTiltedII = (tilted != 0);
@@ -380,8 +379,8 @@ pcl::gpu::people::FaceDetector::loadFromNVBIN(const std::string &filename,
                                std::vector<HaarFeature64> &haar_features)
 {
     size_t readCount;
-    FILE *fp = fopen(filename.c_str(), "rb");
-    ncvAssertReturn(fp != NULL, NCV_FILE_ERROR);
+    FILE *fp = fopen(filename.c_str(), "rbe");
+    ncvAssertReturn(fp != nullptr, NCV_FILE_ERROR);
     Ncv32u fileVersion;
     readCount = fread(&fileVersion, sizeof(Ncv32u), 1, fp);
     PCL_ASSERT_ERROR_PRINT_RETURN(1 == readCount, "return NCV_FILE_ERROR", NCV_FILE_ERROR);
@@ -431,7 +430,7 @@ pcl::gpu::people::FaceDetector::loadFromNVBIN(const std::string &filename,
     memcpy(&haarClassifierNodes[0], &fdata[0]+dataOffset, szClassifiers);
     dataOffset += szClassifiers;
     memcpy(&haar_features[0], &fdata[0]+dataOffset, szFeatures);
-    dataOffset += szFeatures;
+    /*dataOffset += szFeatures;*/
 
     return NCV_SUCCESS;
 }
@@ -501,8 +500,8 @@ pcl::gpu::people::FaceDetector::ncvHaarGetClassifierSize(const std::string &file
 
     if (fext == "nvbin")
     {
-        FILE *fp = fopen(filename.c_str(), "rb");
-        PCL_ASSERT_ERROR_PRINT_RETURN(fp != NULL, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
+        FILE *fp = fopen(filename.c_str(), "rbe");
+        PCL_ASSERT_ERROR_PRINT_RETURN(fp != nullptr, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
         Ncv32u fileVersion;
         size_t readCount = fread(&fileVersion, sizeof(Ncv32u), 1, fp);
         PCL_ASSERT_ERROR_PRINT_RETURN(1 == readCount, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
@@ -588,7 +587,7 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
     memcpy(h_src.ptr(), &point.intensity, sizeof(point.intensity));
   }
 
-  ncv_return_status = h_src.copySolid(d_src, 0);
+  ncv_return_status = h_src.copySolid(d_src, nullptr);
   PCL_ASSERT_NCVSTAT(ncv_return_status);
   PCL_ASSERT_CUDA_RETURN(cudaStreamSynchronize(0), NCV_CUDA_ERROR);
 

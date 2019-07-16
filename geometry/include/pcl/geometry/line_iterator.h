@@ -49,7 +49,7 @@ class LineIterator : public OrganizedIndexIterator
 {
   public:
     /** \brief Neighborhood connectivity  */
-    typedef enum {Neighbor4 = 4, Neighbor8 = 8} Neighborhood;
+    enum Neighborhood {Neighbor4 = 4, Neighbor8 = 8};
   public:
     /** \brief Constructor
       * \param x_start column of the start pixel of the line

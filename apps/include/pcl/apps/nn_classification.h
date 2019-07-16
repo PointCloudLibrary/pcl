@@ -44,7 +44,6 @@
 #include <algorithm>
 #include <boost/foreach.hpp>
 #include <boost/shared_ptr.hpp>
-#include <pcl/kdtree/kdtree_flann.h>
 
 namespace pcl
 {
@@ -68,11 +67,11 @@ namespace pcl
 
     public:
 
-      NNClassification () : tree_ (), classes_ (), labels_idx_ () {}
+      NNClassification () : tree_ () {}
 
       /** \brief Result is a list of class labels and scores */
-      typedef std::pair<std::vector<std::string>, std::vector<float> > Result;
-      typedef boost::shared_ptr<Result> ResultPtr;
+      using Result = std::pair<std::vector<std::string>, std::vector<float> >;
+      using ResultPtr = boost::shared_ptr<Result>;
 
       // TODO setIndices method, distance metrics and reset tree
 
@@ -143,7 +142,7 @@ namespace pcl
         std::ifstream f (labels_file_name.c_str ());
         std::string label;
         while (getline (f, label))
-          if (label.size () > 0)
+          if (!label.empty ())
             labels.push_back(label);
         if (labels.size () != cloud->points.size ())
           return (false);

@@ -84,7 +84,7 @@ pcl::modeler::SceneTree::~SceneTree()
 QSize
 pcl::modeler::SceneTree::sizeHint() const
 {
-  return QSize(256, 512);
+  return {256, 512};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +262,7 @@ pcl::modeler::SceneTree::closePointCloud(const QList<CloudMeshItem*>& items)
   for (const auto &item : items)
   {
     RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(item->parent());
-    if (render_window_item != NULL)
+    if (render_window_item != nullptr)
       render_window_items.push_back(render_window_item);
 
     item->parent()->removeChild(item);
@@ -394,7 +394,7 @@ pcl::modeler::SceneTree::slotUpdateOnSelectionChange(const QItemSelection & sele
   {
     QTreeWidgetItem* item = itemFromIndex(*selected_indices_it);
     RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(item);
-    if (render_window_item != NULL)
+    if (render_window_item != nullptr)
     {
       render_window_item->getRenderWindow()->setActive(true);
     }
@@ -407,7 +407,7 @@ pcl::modeler::SceneTree::slotUpdateOnSelectionChange(const QItemSelection & sele
   {
     QTreeWidgetItem* item = itemFromIndex(*deselected_indices_it);
     RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(item);
-    if (render_window_item != NULL)
+    if (render_window_item != nullptr)
     {
       render_window_item->getRenderWindow()->setActive(false);
     }
@@ -423,7 +423,7 @@ pcl::modeler::SceneTree::slotUpdateOnInsertOrRemove()
   for (int i = 0, i_end = topLevelItemCount(); i < i_end; ++ i)
   {
     RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(topLevelItem(i));
-    if (render_window_item == NULL)
+    if (render_window_item == nullptr)
       continue;
 
     QString title = (i == 0)?("Central Render Window"):(QString("Render Window #%1").arg(i));
@@ -472,7 +472,7 @@ pcl::modeler::SceneTree::dropEvent(QDropEvent * event)
   for (const auto &cloud_mesh_item : selected_cloud_meshes)
   {
     RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(cloud_mesh_item->parent());
-    if (render_window_item != NULL)
+    if (render_window_item != nullptr)
       previous_parents.insert(render_window_item);
   }
 
@@ -481,7 +481,7 @@ pcl::modeler::SceneTree::dropEvent(QDropEvent * event)
   std::vector<CloudMeshItem*> cloud_mesh_items;
   for (const auto &cloud_mesh_item : selected_cloud_meshes)
   {
-    if (dynamic_cast<RenderWindowItem*>(cloud_mesh_item->parent()) == NULL)
+    if (dynamic_cast<RenderWindowItem*>(cloud_mesh_item->parent()) == nullptr)
       cloud_mesh_items.push_back(cloud_mesh_item);
     else
       cloud_mesh_item->updateRenderWindow();
@@ -514,7 +514,7 @@ pcl::modeler::SceneTree::dropMimeData(QTreeWidgetItem * parent, int, const QMime
   QList<CloudMeshItem*> selected_cloud_meshes = selectedTypeItems<CloudMeshItem>();
 
   RenderWindowItem* render_window_item =
-    (parent == NULL)?(MainWindow::getInstance().createRenderWindow()):(dynamic_cast<RenderWindowItem*>(parent));
+    (parent == nullptr)?(MainWindow::getInstance().createRenderWindow()):(dynamic_cast<RenderWindowItem*>(parent));
 
   for (auto &selected_cloud_mesh : selected_cloud_meshes)
   {

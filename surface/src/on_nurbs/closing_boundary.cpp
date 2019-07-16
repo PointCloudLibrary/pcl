@@ -350,11 +350,10 @@ ClosingBoundary::optimizeBoundary (std::vector<ON_NurbsSurface> &nurbs_list, std
       ON_NurbsSurface *nurbs2 = &nurbs_list[n2];
 
       // for all points in the point list
-      for (size_t i = 0; i < boundary1.size (); i++)
+      for (const auto &p0 : boundary1)
       {
         double error;
         Eigen::Vector3d p, tu, tv;
-        Eigen::Vector3d p0 = boundary1[i];
         Eigen::Vector2d params1, params2;
 
         switch (param.type)

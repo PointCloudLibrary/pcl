@@ -54,18 +54,18 @@ namespace pcl
   class TrajkovicKeypoint2D : public Keypoint<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT> > Ptr;
-      typedef boost::shared_ptr<const TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT> > ConstPtr;
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+      using Ptr = boost::shared_ptr<TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT> >;
+      using ConstPtr = boost::shared_ptr<const TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT> >;
+      using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;
       using Keypoint<PointInT, PointOutT>::indices_;
       using Keypoint<PointInT, PointOutT>::keypoints_indices_;
 
-      typedef enum { FOUR_CORNERS, EIGHT_CORNERS } ComputationMethod;
+      enum ComputationMethod { FOUR_CORNERS, EIGHT_CORNERS };
 
       /** \brief Constructor
         * \param[in] method the method to be used to determine the corner responses

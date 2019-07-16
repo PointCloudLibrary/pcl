@@ -44,31 +44,21 @@
 #include <cassert>
 #include <fstream>
 
-
-template <typename T>
-inline T module (T a)
-{
-  if (a > 0)
-    return a;
-  else
-    return -a;
-}
-
 char*
 pcl::SVM::readline (FILE *input)
 {
-  if (fgets (line_, max_line_len_, input) == NULL)
-    return NULL;
+  if (fgets (line_, max_line_len_, input) == nullptr)
+    return nullptr;
 
   // Find the endline. If not found extend the max_line_len_
-  while (strrchr (line_ , '\n') == NULL)
+  while (strrchr (line_ , '\n') == nullptr)
   {
     max_line_len_ *= 2;
     line_ = static_cast<char *> (realloc (line_, max_line_len_));
     int len = int (strlen (line_));
 
     // if the new read part of the string is unavailable, break the while
-    if (fgets (line_ + len, max_line_len_ - len, input) == NULL)
+    if (fgets (line_ + len, max_line_len_ - len, input) == nullptr)
       break;
   }
 
@@ -154,10 +144,10 @@ pcl::SVMTrain::scaleFactors (std::vector<SVMData> training_set, svm_scaling &sca
   for (const auto &svm_data : training_set)
     for (const auto &sample : svm_data.SV)
       // save scaling factor finding the maximum value
-      if (module (sample.value) > scaling.obj[sample.idx].value)
+      if (std::abs (sample.value) > scaling.obj[sample.idx].value)
       {
         scaling.obj[sample.idx].index = 1;
-        scaling.obj[sample.idx].value = module (sample.value);
+        scaling.obj[sample.idx].value = std::abs (sample.value);
       }
 };
 
@@ -241,7 +231,7 @@ pcl::SVM::adaptInputToLibSVM (std::vector<SVMData> training_set, svm_problem &pr
 bool
 pcl::SVMTrain::trainClassifier ()
 {
-  if (training_set_.size() == 0)
+  if (training_set_.empty ())
   {
     // to be sure to have loaded the training set
     PCL_ERROR ("[pcl::%s::trainClassifier] Training data not set!\n", getClassName ().c_str ());
@@ -274,7 +264,7 @@ pcl::SVMTrain::trainClassifier ()
   {
     SVMModel* out;
     out = static_cast<SVMModel*> (svm_train (&prob_, &param_));
-    if (out == NULL)
+    if (out == nullptr)
     {
       PCL_ERROR ("[pcl::%s::trainClassifier] Error taining the classifier model.\n", getClassName ().c_str ());
       return false;
@@ -295,7 +285,7 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
   char *endptr;
   char *idx, *val, *label;
 
-  if (fp == NULL)
+  if (fp == nullptr)
   {
     PCL_ERROR ("[pcl::%s] Can't open input file %s.\n", getClassName ().c_str (), filename);
     return false;
@@ -307,20 +297,20 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
   line_ = Malloc (char, max_line_len_);
   
   // readline function writes one line in var. "line_"
-  while (readline (fp) != NULL)
+  while (readline (fp) != nullptr)
   {
     // "\t" cuts the tab or space.
     // strtok splits the string into tokens
-    char *p = strtok (line_, " \t"); // label
+    strtok (line_, " \t"); // label
     ++elements;
     // features
 
     while (true)
     {
       // split the next element
-      p = strtok (NULL, " \t");
+      char *p = strtok (nullptr, " \t");
 
-      if (p == NULL || *p == '\n') // check '\n' as ' ' may be after the last feature
+      if (p == nullptr || *p == '\n') // check '\n' as ' ' may be after the last feature
         break;
 
       ++elements;
@@ -355,9 +345,9 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
 
       // check if the first element is really a label
 
-      if (pch == NULL)
+      if (pch == nullptr)
       {
-        if (label == NULL) // empty line
+        if (label == nullptr) // empty line
           exitInputError (i + 1);
 
         labelled_training_set_ = true;
@@ -387,11 +377,11 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
       if (k++ == 0 && isUnlabelled)
         idx = strtok (line_, ": \t\n");
       else
-        idx = strtok (NULL, ":"); // indice
+        idx = strtok (nullptr, ":"); // indice
 
-      val = strtok (NULL, " \t"); // valore
+      val = strtok (nullptr, " \t"); // valore
 
-      if (val == NULL)
+      if (val == nullptr)
         break; // exit with the last element
 
       //std::cout << idx << ":" << val<< " ";
@@ -531,7 +521,7 @@ pcl::SVMClassify::loadClassifierModel (const char *filename)
 {
   SVMModel *out;
   out = static_cast<SVMModel*> (svm_load_model (filename));
-  if (out == NULL)
+  if (out == nullptr)
   {
     PCL_ERROR ("[pcl::%s::loadClassifierModel] Can't open classifier model %s.\n", getClassName ().c_str (), filename);
     return false;
@@ -601,7 +591,7 @@ pcl::SVMClassify::classificationTest ()
 
   int svm_type = svm_get_svm_type (&model_);
   int nr_class = svm_get_nr_class (&model_);
-  double *prob_estimates = NULL;
+  double *prob_estimates = nullptr;
 
   prediction_.clear ();
 
@@ -718,7 +708,7 @@ pcl::SVMClassify::classification ()
   int svm_type = svm_get_svm_type (&model_);
   int nr_class = svm_get_nr_class (&model_);
 
-  double *prob_estimates = NULL;
+  double *prob_estimates = nullptr;
 
   prediction_.clear();
 
@@ -796,7 +786,7 @@ pcl::SVMClassify::classification (pcl::SVMData in)
 
   int svm_type = svm_get_svm_type (&model_);
   int nr_class = svm_get_nr_class (&model_);
-  double *prob_estimates = NULL;
+  double *prob_estimates = nullptr;
 
   svm_node *buff;
   buff = Malloc (struct svm_node, in.SV.size() + 10);
@@ -869,7 +859,7 @@ pcl::SVMClassify::scaleProblem (svm_problem &input, svm_scaling scaling)
         break;
 
       if (input.x[i][j].index < scaling.max && scaling.obj[ input.x[i][j].index ].index == 1)
-        input.x[i][j].value = input.x[i][j].value / scaling.obj[ input.x[i][j].index ].value;
+        input.x[i][j].value /= scaling.obj[ input.x[i][j].index ].value;
 
       j++;
     }
@@ -901,7 +891,7 @@ pcl::SVMClassify::saveClassificationResult (const char *filename)
 
   for (const auto &prediction : prediction_)
   {
-    for (const double value : prediction)
+    for (const double &value : prediction)
       output << value << " ";
 
     output << "\n";

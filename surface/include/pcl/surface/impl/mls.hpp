@@ -47,7 +47,6 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/geometry.h>
-#include <boost/bind.hpp>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -111,10 +110,10 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
     // Initialize random number generator if necessary
     case (RANDOM_UNIFORM_DENSITY):
     {
-      rng_alg_.seed (static_cast<unsigned> (std::time (0)));
-      const float tmp = static_cast<float> (search_radius_ / 2.0f);
-      const boost::uniform_real<float> uniform_distrib (-tmp, tmp);
-      rng_uniform_distribution_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > (rng_alg_, uniform_distrib));
+      std::random_device rd;
+      rng_.seed (rd());
+      const double tmp = search_radius_ / 2.0;
+      rng_uniform_distribution_.reset (new std::uniform_real_distribution<> (-tmp, tmp));
 
       break;
     }
@@ -150,7 +149,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
 
     for (size_t i = 0; i < output.size (); ++i)
     {
-      typedef typename pcl::traits::fieldList<PointOutT>::type FieldList;
+      using FieldList = typename pcl::traits::fieldList<PointOutT>::type;
       pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_x", normals_->points[i].normal_x));
       pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_y", normals_->points[i].normal_y));
       pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_z", normals_->points[i].normal_z));
@@ -219,8 +218,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
         // Sample the local plane
         for (int num_added = 0; num_added < num_points_to_add;)
         {
-          const double u = (*rng_uniform_distribution_) ();
-          const double v = (*rng_uniform_distribution_) ();
+          const double u = (*rng_uniform_distribution_) (rng_);
+          const double v = (*rng_uniform_distribution_) (rng_);
 
           // Check if inside circle; if not, try another coin flip
           if (u * u + v * v > search_radius_ * search_radius_ / 4)
@@ -719,7 +718,7 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
                                    const std::vector<int> &nn_indices,
                                    double search_radius,
                                    int polynomial_order,
-                                   boost::function<double(const double)> weight_func)
+                                   std::function<double(const double)> weight_func)
 {
   // Compute the plane coefficients
   EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix;
@@ -775,13 +774,8 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
 
     if (num_neighbors >= nr_coeff)
     {
-      // Note: The max_sq_radius parameter is only used if weight_func was not defined
-      double max_sq_radius = 1;
-      if (weight_func == 0)
-      {
-        max_sq_radius = search_radius * search_radius;
-        weight_func = boost::bind (&pcl::MLSResult::computeMLSWeight, this, _1, max_sq_radius);
-      }
+      if (!weight_func)
+        weight_func = [=] (const double sq_dist) { return this->computeMLSWeight (sq_dist, search_radius * search_radius); };
 
       // Allocate matrices and vectors to hold the data used for the polynomial fit
       Eigen::VectorXd weight_vec (num_neighbors);
@@ -838,7 +832,7 @@ template <typename PointInT, typename PointOutT>
 pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::MLSVoxelGrid (PointCloudInConstPtr& cloud,
                                                                           IndicesPtr &indices,
                                                                           float voxel_size) :
-  voxel_grid_ (), bounding_min_ (), bounding_max_ (), data_size_ (), voxel_size_ (voxel_size)
+  voxel_grid_ (), data_size_ (), voxel_size_ (voxel_size)
 {
   pcl::getMinMax3D (*cloud, *indices, bounding_min_, bounding_max_);
 

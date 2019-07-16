@@ -76,15 +76,15 @@ namespace pcl
       using VoxelGrid<PointT>::divb_mul_;
 
 
-      typedef typename pcl::traits::fieldList<PointT>::type FieldList;
-      typedef typename Filter<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using FieldList = typename pcl::traits::fieldList<PointT>::type;
+      using PointCloud = typename Filter<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      typedef boost::shared_ptr< VoxelGrid<PointT> > Ptr;
-      typedef boost::shared_ptr< const VoxelGrid<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<VoxelGrid<PointT> >;
+      using ConstPtr = boost::shared_ptr<const VoxelGrid<PointT> >;
 
 
       /** \brief Simple structure to hold a centroid, covarince and the number of points in a leaf.
@@ -97,7 +97,6 @@ namespace pcl
         Leaf () :
           nr_points (0),
           mean_ (Eigen::Vector3d::Zero ()),
-          centroid (),
           cov_ (Eigen::Matrix3d::Identity ()),
           icov_ (Eigen::Matrix3d::Zero ()),
           evecs_ (Eigen::Matrix3d::Identity ()),
@@ -187,10 +186,10 @@ namespace pcl
       };
 
       /** \brief Pointer to VoxelGridCovariance leaf structure */
-      typedef Leaf* LeafPtr;
+      using LeafPtr = Leaf *;
 
       /** \brief Const pointer to VoxelGridCovariance leaf structure */
-      typedef const Leaf* LeafConstPtr;
+      using LeafConstPtr = const Leaf *;
 
     public:
 
@@ -203,7 +202,6 @@ namespace pcl
         min_covar_eigvalue_mult_ (0.01),
         leaves_ (),
         voxel_centroids_ (),
-        voxel_centroids_leaf_indices_ (),
         kdtree_ ()
       {
         downsample_all_data_ = false;
@@ -270,7 +268,7 @@ namespace pcl
 
         voxel_centroids_ = PointCloudPtr (new PointCloud (output));
 
-        if (searchable_ && voxel_centroids_->size() > 0)
+        if (searchable_ && !voxel_centroids_->empty ())
         {
           // Initiates kdtree of the centroids of voxels containing a sufficient number of points
           kdtree_.setInputCloud (voxel_centroids_);
@@ -287,7 +285,7 @@ namespace pcl
         voxel_centroids_ = PointCloudPtr (new PointCloud);
         applyFilter (*voxel_centroids_);
 
-        if (searchable_ && voxel_centroids_->size() > 0)
+        if (searchable_ && !voxel_centroids_->empty ())
         {
           // Initiates kdtree of the centroids of voxels containing a sufficient number of points
           kdtree_.setInputCloud (voxel_centroids_);
@@ -307,8 +305,7 @@ namespace pcl
           LeafConstPtr ret (&(leaf_iter->second));
           return ret;
         }
-        else
-          return NULL;
+        return nullptr;
       }
 
       /** \brief Get the voxel containing point p.
@@ -334,8 +331,7 @@ namespace pcl
           LeafConstPtr ret (&(leaf_iter->second));
           return ret;
         }
-        else
-          return NULL;
+        return nullptr;
       }
 
       /** \brief Get the voxel containing point p.
@@ -361,8 +357,7 @@ namespace pcl
           LeafConstPtr ret (&(leaf_iter->second));
           return ret;
         }
-        else
-          return NULL;
+        return nullptr;
 
       }
 

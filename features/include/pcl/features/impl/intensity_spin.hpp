@@ -86,10 +86,10 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage (
     else
     {
       // Compute the bin indices that need to be updated (+/- 3 standard deviations)
-      int d_idx_min = (std::max)(static_cast<int> (floor (d - 3*sigma)), 0);
-      int d_idx_max = (std::min)(static_cast<int> (ceil  (d + 3*sigma)), nr_distance_bins - 1);
-      int i_idx_min = (std::max)(static_cast<int> (floor (i - 3*sigma)), 0);
-      int i_idx_max = (std::min)(static_cast<int> (ceil  (i + 3*sigma)), nr_intensity_bins - 1);
+      int d_idx_min = (std::max)(static_cast<int> (std::floor (d - 3*sigma)), 0);
+      int d_idx_max = (std::min)(static_cast<int> (std::ceil  (d + 3*sigma)), nr_distance_bins - 1);
+      int i_idx_min = (std::max)(static_cast<int> (std::floor (i - 3*sigma)), 0);
+      int i_idx_max = (std::min)(static_cast<int> (std::ceil  (i + 3*sigma)), nr_intensity_bins - 1);
    
       // Update the appropriate bins of the histogram 
       for (int i_idx = i_idx_min; i_idx <= i_idx_max; ++i_idx)  

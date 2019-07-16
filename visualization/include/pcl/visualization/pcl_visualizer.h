@@ -86,16 +86,16 @@ namespace pcl
     class PCL_EXPORTS PCLVisualizer
     {
       public:
-        typedef boost::shared_ptr<PCLVisualizer> Ptr;
-        typedef boost::shared_ptr<const PCLVisualizer> ConstPtr;
+        using Ptr = boost::shared_ptr<PCLVisualizer>;
+        using ConstPtr = boost::shared_ptr<const PCLVisualizer>;
 
-        typedef PointCloudGeometryHandler<pcl::PCLPointCloud2> GeometryHandler;
-        typedef GeometryHandler::Ptr GeometryHandlerPtr;
-        typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
+        using GeometryHandler = PointCloudGeometryHandler<pcl::PCLPointCloud2>;
+        using GeometryHandlerPtr = GeometryHandler::Ptr;
+        using GeometryHandlerConstPtr = GeometryHandler::ConstPtr;
 
-        typedef PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
-        typedef ColorHandler::Ptr ColorHandlerPtr;
-        typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
+        using ColorHandler = PointCloudColorHandler<pcl::PCLPointCloud2>;
+        using ColorHandlerPtr = ColorHandler::Ptr;
+        using ColorHandlerConstPtr = ColorHandler::ConstPtr;
 
         /** \brief PCL Visualizer constructor.
           * \param[in] name the window name (empty by default)
@@ -159,12 +159,12 @@ namespace pcl
         void
         setWindowBorders (bool mode);
 
-        /** \brief Register a callback boost::function for keyboard events
-          * \param[in] cb a boost function that will be registered as a callback for a keyboard event
+        /** \brief Register a callback std::function for keyboard events
+          * \param[in] cb a std function that will be registered as a callback for a keyboard event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> cb);
+        registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> cb);
 
         /** \brief Register a callback function for keyboard events
           * \param[in] callback  the function that will be registered as a callback for a keyboard event
@@ -172,9 +172,9 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection
-        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = NULL)
+        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = nullptr)
         {
-          return (registerKeyboardCallback (boost::bind (callback, _1, cookie)));
+          return (registerKeyboardCallback ([=] (const pcl::visualization::KeyboardEvent& e) { (*callback) (e, cookie); }));
         }
 
         /** \brief Register a callback function for keyboard events
@@ -184,17 +184,17 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = NULL)
+        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = nullptr)
         {
-          return (registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie)));
+          return (registerKeyboardCallback ([=, &instance] (const pcl::visualization::KeyboardEvent& e) { (instance.*callback) (e, cookie); }));
         }
 
         /** \brief Register a callback function for mouse events
-          * \param[in] cb a boost function that will be registered as a callback for a mouse event
+          * \param[in] cb a std function that will be registered as a callback for a mouse event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> cb);
+        registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> cb);
 
         /** \brief Register a callback function for mouse events
           * \param[in] callback  the function that will be registered as a callback for a mouse event
@@ -202,9 +202,9 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection
-        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = NULL)
+        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = nullptr)
         {
-          return (registerMouseCallback (boost::bind (callback, _1, cookie)));
+          return (registerMouseCallback ([=] (const pcl::visualization::MouseEvent& e) { (*callback) (e, cookie); }));
         }
 
         /** \brief Register a callback function for mouse events
@@ -214,17 +214,17 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = NULL)
+        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = nullptr)
         {
-          return (registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
+          return (registerMouseCallback ([=, &instance] (const pcl::visualization::MouseEvent& e) { (instance.*callback) (e, cookie); }));
         }
 
         /** \brief Register a callback function for point picking events
-          * \param[in] cb a boost function that will be registered as a callback for a point picking event
+          * \param[in] cb a std function that will be registered as a callback for a point picking event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> cb);
+        registerPointPickingCallback (std::function<void (const pcl::visualization::PointPickingEvent&)> cb);
 
         /** \brief Register a callback function for point picking events
           * \param[in] callback  the function that will be registered as a callback for a point picking event
@@ -232,7 +232,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = NULL);
+        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = nullptr);
 
         /** \brief Register a callback function for point picking events
           * \param[in] callback  the member function that will be registered as a callback for a point picking event
@@ -241,17 +241,17 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = NULL)
+        registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = nullptr)
         {
-          return (registerPointPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
+          return (registerPointPickingCallback ([=, &instance] (const pcl::visualization::PointPickingEvent& e) { (instance.*callback) (e, cookie); }));
         }
 
         /** \brief Register a callback function for area picking events
-          * \param[in] cb a boost function that will be registered as a callback for an area picking event
+          * \param[in] cb a std function that will be registered as a callback for an area picking event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerAreaPickingCallback (boost::function<void (const pcl::visualization::AreaPickingEvent&)> cb);
+        registerAreaPickingCallback (std::function<void (const pcl::visualization::AreaPickingEvent&)> cb);
 
         /** \brief Register a callback function for area picking events
           * \param[in] callback  the function that will be registered as a callback for an area picking event
@@ -259,7 +259,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie = NULL);
+        registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie = nullptr);
 
         /** \brief Register a callback function for area picking events
           * \param[in] callback  the member function that will be registered as a callback for an area picking event
@@ -268,9 +268,9 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerAreaPickingCallback (void (T::*callback) (const pcl::visualization::AreaPickingEvent&, void*), T& instance, void* cookie = NULL)
+        registerAreaPickingCallback (void (T::*callback) (const pcl::visualization::AreaPickingEvent&, void*), T& instance, void* cookie = nullptr)
         {
-          return (registerAreaPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
+          return (registerAreaPickingCallback ([=, &instance] (const pcl::visualization::AreaPickingEvent& e) { (instance.*callback) (e, cookie); }));
         }
 
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
@@ -1882,11 +1882,9 @@ namespace pcl
         void
         saveCameraParameters (const std::string &file);
 
-        /** \brief Get camera parameters and save them to a pcl::visualization::Camera.
-          * \param[out] camera the name of the pcl::visualization::Camera
-          */
+        /** \brief Get camera parameters of a given viewport (0 means default viewport). */
         void
-        getCameraParameters (Camera &camera);
+        getCameraParameters (Camera &camera, int viewport = 0) const;
 
         /** \brief Return a pointer to the underlying VTK Render Window used. */
         vtkSmartPointer<vtkRenderWindow>
@@ -2001,11 +1999,13 @@ namespace pcl
          */
         void setDefaultWindowSizeAndPos ();
 
-        /** \brief Internal function for setting up camera parameters
-         * \param[in] argc
-         * \param[in] argv
+        /** \brief Set up camera parameters.
+         *
+         * Parses command line arguments to find camera parameters (either explicit numbers or a path to a .cam file).
+         * If not found, will generate a unique .cam file path (based on the rest of command line arguments) and try
+         * to load that. If it is also not found, just set the defaults.
          */
-        void setupCamera (int &argc, char **argv);
+        void setupCamera (int argc, char **argv);
 
         struct PCL_EXPORTS ExitMainLoopTimerCallback : public vtkCommand
         {
@@ -2038,7 +2038,7 @@ namespace pcl
           static FPSCallback *New () { return (new FPSCallback); }
 
           FPSCallback () : actor (), pcl_visualizer (), decimated (), last_fps(0.0f) {}
-          FPSCallback (const FPSCallback& src) : vtkCommand (), actor (src.actor), pcl_visualizer (src.pcl_visualizer), decimated (src.decimated), last_fps (src.last_fps) {}
+          FPSCallback (const FPSCallback& src) : vtkCommand (src), actor (src.actor), pcl_visualizer (src.pcl_visualizer), decimated (src.decimated), last_fps (src.last_fps) {}
           FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; last_fps = src.last_fps; return (*this); }
 
           void 

@@ -71,13 +71,13 @@ namespace pcl
   class BriskKeypoint2D: public Keypoint<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<BriskKeypoint2D<PointInT, PointOutT, IntensityT> > Ptr;
-      typedef boost::shared_ptr<const BriskKeypoint2D<PointInT, PointOutT, IntensityT> > ConstPtr;
+      using Ptr = boost::shared_ptr<BriskKeypoint2D<PointInT, PointOutT, IntensityT> >;
+      using ConstPtr = boost::shared_ptr<const BriskKeypoint2D<PointInT, PointOutT, IntensityT> >;
 
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+      using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+      using KdTree = typename Keypoint<PointInT, PointOutT>::KdTree;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;
@@ -383,8 +383,8 @@ namespace pcl
           float offset_;
 
           /** agast */
-          boost::shared_ptr<pcl::keypoints::agast::OastDetector9_16> oast_detector_;
-          boost::shared_ptr<pcl::keypoints::agast::AgastDetector5_8> agast_detector_5_8_;
+          pcl::keypoints::agast::OastDetector9_16::Ptr oast_detector_;
+          pcl::keypoints::agast::AgastDetector5_8::Ptr agast_detector_5_8_;
       };
 
       /** BRISK Scale Space helper. */ 

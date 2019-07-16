@@ -38,6 +38,7 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/filters/filter.h>
 #include <pcl/point_types.h>
 
@@ -53,16 +54,16 @@ namespace pcl
     float direction;
     float magnitude_x;
     float magnitude_y;
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW     // make sure our new allocators are aligned
+    PCL_MAKE_ALIGNED_OPERATOR_NEW     // make sure our new allocators are aligned
   } EIGEN_ALIGN16;                    // enforce SSE padding for correct memory alignment
 
-  /** \brief A 2D convolution class. */ 
+  /** \brief A 2D convolution class. */
   template <typename PointT>
   class Convolution : public Filter<PointT>
   {
     public:
       using Filter<PointT>::input_;
-      
+
       /**
        * Extra pixels are added to the input image so that convolution can be performed over the entire image.
        *

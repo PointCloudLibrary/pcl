@@ -45,7 +45,6 @@
 #include <pcl/common/transforms.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/search/kdtree.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/registration/boost.h>
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/correspondence_estimation.h>
@@ -61,45 +60,56 @@ namespace pcl
   class Registration : public PCLBase<PointSource>
   {
     public:
-      typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
+      using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
 
       // using PCLBase<PointSource>::initCompute;
       using PCLBase<PointSource>::deinitCompute;
       using PCLBase<PointSource>::input_;
       using PCLBase<PointSource>::indices_;
 
-      typedef boost::shared_ptr< Registration<PointSource, PointTarget, Scalar> > Ptr;
-      typedef boost::shared_ptr< const Registration<PointSource, PointTarget, Scalar> > ConstPtr;
+      using Ptr = boost::shared_ptr< Registration<PointSource, PointTarget, Scalar> >;
+      using ConstPtr = boost::shared_ptr< const Registration<PointSource, PointTarget, Scalar> >;
 
-      typedef typename pcl::registration::CorrespondenceRejector::Ptr CorrespondenceRejectorPtr;
-      typedef pcl::search::KdTree<PointTarget> KdTree;
-      typedef typename pcl::search::KdTree<PointTarget>::Ptr KdTreePtr;
+      using CorrespondenceRejectorPtr = pcl::registration::CorrespondenceRejector::Ptr;
+      using KdTree = pcl::search::KdTree<PointTarget>;
+      using KdTreePtr = typename KdTree::Ptr;
 
-      typedef pcl::search::KdTree<PointSource> KdTreeReciprocal;
-      typedef typename KdTreeReciprocal::Ptr KdTreeReciprocalPtr;
+      using KdTreeReciprocal = pcl::search::KdTree<PointSource>;
+      using KdTreeReciprocalPtr = typename KdTreeReciprocal::Ptr;
      
-      typedef pcl::PointCloud<PointSource> PointCloudSource;
-      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+      using PointCloudSource = pcl::PointCloud<PointSource>;
+      using PointCloudSourcePtr = typename PointCloudSource::Ptr;
+      using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
-      typedef pcl::PointCloud<PointTarget> PointCloudTarget;
-      typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
-      typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
+      using PointCloudTarget = pcl::PointCloud<PointTarget>;
+      using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
+      using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
-      typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
+      using PointRepresentationConstPtr = typename KdTree::PointRepresentationConstPtr;
       
-      typedef typename pcl::registration::TransformationEstimation<PointSource, PointTarget, Scalar> TransformationEstimation;
-      typedef typename TransformationEstimation::Ptr TransformationEstimationPtr;
-      typedef typename TransformationEstimation::ConstPtr TransformationEstimationConstPtr;
+      using TransformationEstimation = typename pcl::registration::TransformationEstimation<PointSource, PointTarget, Scalar>;
+      using TransformationEstimationPtr = typename TransformationEstimation::Ptr;
+      using TransformationEstimationConstPtr = typename TransformationEstimation::ConstPtr;
 
-      typedef typename pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> CorrespondenceEstimation;
-      typedef typename CorrespondenceEstimation::Ptr CorrespondenceEstimationPtr;
-      typedef typename CorrespondenceEstimation::ConstPtr CorrespondenceEstimationConstPtr;
+      using CorrespondenceEstimation = pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>;
+      using CorrespondenceEstimationPtr = typename CorrespondenceEstimation::Ptr;
+      using CorrespondenceEstimationConstPtr = typename CorrespondenceEstimation::ConstPtr;
+
+      /** \brief The callback signature to the function updating intermediate source point cloud position
+        * during it's registration to the target point cloud.
+        * \param[in] cloud_src - the point cloud which will be updated to match target
+        * \param[in] indices_src - a selector of points in cloud_src
+        * \param[in] cloud_tgt - the point cloud we want to register against
+        * \param[in] indices_tgt - a selector of points in cloud_tgt
+        */
+      using UpdateVisualizerCallbackSignature = void (const pcl::PointCloud<PointSource>&,
+                                                      const std::vector<int>&,
+                                                      const pcl::PointCloud<PointTarget>&,
+                                                      const std::vector<int>&);
 
       /** \brief Empty constructor. */
       Registration () 
-        : reg_name_ ()
-        , tree_ (new KdTree)
+        : tree_ (new KdTree)
         , tree_reciprocal_ (new KdTreeReciprocal)
         , nr_iterations_ (0)
         , max_iterations_ (10)
@@ -118,7 +128,6 @@ namespace pcl
         , correspondences_ (new Correspondences)
         , transformation_estimation_ ()
         , correspondence_estimation_ ()
-        , correspondence_rejectors_ ()
         , target_cloud_updated_ (true)
         , source_cloud_updated_ (true)
         , force_no_recompute_ (false)
@@ -370,26 +379,25 @@ namespace pcl
        * in order to update point cloud obtained after each iteration
        * \param[in] visualizerCallback reference of the user callback function
        */
-      template<typename FunctionSignature> inline bool
-      registerVisualizationCallback (boost::function<FunctionSignature> &visualizerCallback)
+      inline bool
+      registerVisualizationCallback (std::function<UpdateVisualizerCallbackSignature> &visualizerCallback)
       {
-        if (visualizerCallback != NULL)
+        if (visualizerCallback)
         {
           update_visualizer_ = visualizerCallback;
           return (true);
         }
-        else
-          return (false);
+        return (false);
       }
 
-      /** \brief Obtain the Euclidean fitness score (e.g., sum of squared distances from the source to the target)
+      /** \brief Obtain the Euclidean fitness score (e.g., mean of squared distances from the source to the target)
         * \param[in] max_range maximum allowable distance between a point and its correspondence in the target 
         * (default: double::max)
         */
       inline double 
       getFitnessScore (double max_range = std::numeric_limits<double>::max ());
 
-      /** \brief Obtain the Euclidean fitness score (e.g., sum of squared distances from the source to the target)
+      /** \brief Obtain the Euclidean fitness score (e.g., mean of squared distances from the source to the target)
         * from two sets of correspondence distances (distances between source and target points)
         * \param[in] distances_a the first set of distances between correspondences
         * \param[in] distances_b the second set of distances between correspondences
@@ -575,10 +583,7 @@ namespace pcl
       /** \brief Callback function to update intermediate source point cloud position during it's registration
         * to the target point cloud.
         */
-      boost::function<void(const pcl::PointCloud<PointSource> &cloud_src,
-                           const std::vector<int> &indices_src,
-                           const pcl::PointCloud<PointTarget> &cloud_tgt,
-                           const std::vector<int> &indices_tgt)> update_visualizer_;
+      std::function<UpdateVisualizerCallbackSignature> update_visualizer_;
 
       /** \brief Search for the closest nearest neighbor of a given point.
         * \param cloud the point cloud dataset to use for nearest neighbor search
@@ -604,7 +609,7 @@ namespace pcl
       /** \brief The point representation used (internal). */
       PointRepresentationConstPtr point_representation_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
    };
 }
 

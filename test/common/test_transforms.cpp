@@ -39,6 +39,7 @@
 
 #include <gtest/gtest.h>
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/transforms.h>
@@ -48,16 +49,17 @@
 
 using namespace pcl;
 
-typedef ::testing::Types<Eigen::Transform<float, 3, Eigen::Affine>,
-                         Eigen::Transform<double, 3, Eigen::Affine>,
-                         Eigen::Matrix<float, 4, 4>,
-                         Eigen::Matrix<double, 4,4> > TransformTypes;
+using TransformTypes = ::testing::Types
+        <Eigen::Transform<float, 3, Eigen::Affine>,
+         Eigen::Transform<double, 3, Eigen::Affine>,
+         Eigen::Matrix<float, 4, 4>,
+         Eigen::Matrix<double, 4,4> >;
 
 template <typename Transform>
 class Transforms : public ::testing::Test
 {
  public:
-  typedef typename Transform::Scalar Scalar;
+  using Scalar = typename Transform::Scalar;
 
   Transforms ()
   : ABS_ERROR (std::numeric_limits<Scalar>::epsilon () * 10)
@@ -102,7 +104,7 @@ class Transforms : public ::testing::Test
   // Indices, every second point
   std::vector<int> indices;
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW;
 };
 
 TYPED_TEST_CASE (Transforms, TransformTypes);

@@ -110,11 +110,11 @@ RangeImage::createFromPointCloud (const PointCloudType& point_cloud,
 {
   setAngularResolution (angular_resolution_x, angular_resolution_y);
   
-  width  = static_cast<uint32_t> (pcl_lrint (floor (max_angle_width*angular_resolution_x_reciprocal_)));
-  height = static_cast<uint32_t> (pcl_lrint (floor (max_angle_height*angular_resolution_y_reciprocal_)));
+  width  = static_cast<uint32_t> (pcl_lrint (std::floor (max_angle_width*angular_resolution_x_reciprocal_)));
+  height = static_cast<uint32_t> (pcl_lrint (std::floor (max_angle_height*angular_resolution_y_reciprocal_)));
   
-  int full_width  = static_cast<int> (pcl_lrint (floor (pcl::deg2rad (360.0f)*angular_resolution_x_reciprocal_))),
-      full_height = static_cast<int> (pcl_lrint (floor (pcl::deg2rad (180.0f)*angular_resolution_y_reciprocal_)));
+  int full_width  = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (360.0f)*angular_resolution_x_reciprocal_))),
+      full_height = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (180.0f)*angular_resolution_y_reciprocal_)));
   image_offset_x_ = (full_width -static_cast<int> (width) )/2;
   image_offset_y_ = (full_height-static_cast<int> (height))/2;
   is_dense = false;
@@ -175,8 +175,8 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
   to_range_image_system_ = to_world_system_.inverse (Eigen::Isometry);
   
   float max_angle_size = getMaxAngleSize (sensor_pose, point_cloud_center, point_cloud_radius);
-  int pixel_radius_x = pcl_lrint (ceil (0.5f*max_angle_size*angular_resolution_x_reciprocal_)),
-      pixel_radius_y = pcl_lrint (ceil (0.5f*max_angle_size*angular_resolution_y_reciprocal_));
+  int pixel_radius_x = pcl_lrint (std::ceil (0.5f*max_angle_size*angular_resolution_x_reciprocal_)),
+      pixel_radius_y = pcl_lrint (std::ceil (0.5f*max_angle_size*angular_resolution_y_reciprocal_));
   width  = 2*pixel_radius_x;
   height = 2*pixel_radius_y;
   is_dense = false;
@@ -229,7 +229,7 @@ RangeImage::createFromPointCloudWithViewpoints (const PointCloudTypeWithViewpoin
 template <typename PointCloudType> void 
 RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, float min_range, int& top, int& right, int& bottom, int& left)
 {
-  typedef typename PointCloudType::PointType PointType2;
+  using PointType2 = typename PointCloudType::PointType;
   const typename pcl::PointCloud<PointType2>::VectorType &points2 = point_cloud.points;
   
   unsigned int size = width*height;
@@ -254,8 +254,8 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
     //std::cout << " ("<<current_point[0]<<", "<<current_point[1]<<", "<<current_point[2]<<") falls into pixel "<<x<<","<<y<<".\n";
     
     // Do some minor interpolation by checking the three closest neighbors to the point, that are not filled yet.
-    int floor_x = pcl_lrint (floor (x_real)), floor_y = pcl_lrint (floor (y_real)),
-        ceil_x  = pcl_lrint (ceil (x_real)),  ceil_y  = pcl_lrint (ceil (y_real));
+    int floor_x = pcl_lrint (std::floor (x_real)), floor_y = pcl_lrint (std::floor (y_real)),
+        ceil_x  = pcl_lrint (std::ceil (x_real)),  ceil_y  = pcl_lrint (std::ceil (y_real));
     
     int neighbor_x[4], neighbor_y[4];
     neighbor_x[0]=floor_x; neighbor_y[0]=floor_y;
@@ -299,7 +299,7 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
       {
         replace_with_current_point = true;
       }
-      else if (fabs (range_of_current_point-range_at_image_point)<=noise_level)
+      else if (std::fabs (range_of_current_point-range_at_image_point)<=noise_level)
       {
         addCurrentPoint = true;
       }
@@ -414,8 +414,7 @@ RangeImage::getRangeDifference (const Eigen::Vector3f& point) const
   {
     if (image_point_range > 0.0f)
       return std::numeric_limits<float>::infinity ();
-    else
-      return -std::numeric_limits<float>::infinity ();
+    return -std::numeric_limits<float>::infinity ();
   }
   return image_point_range - range;
 }
@@ -652,7 +651,7 @@ RangeImage::getAcutenessValue (const PointWithRange& point1, const PointWithRang
   float impact_angle = getImpactAngle (point1, point2);
   if (std::isinf (impact_angle))
     return -std::numeric_limits<float>::infinity ();
-  float ret = 1.0f - float (fabs (impact_angle)/ (0.5f*M_PI));
+  float ret = 1.0f - float (std::fabs (impact_angle)/ (0.5f*M_PI));
   if (impact_angle < 0.0f)
     ret = -ret;
   //if (fabs (ret)>1)
@@ -866,8 +865,7 @@ RangeImage::getAverageEuclideanDistance (int x, int y, int offset_x, int offset_
       //std::cout << x<<","<<y<<"->"<<x2<<","<<y2<<": "<<pixel_distance<<"\n";
       if (i==0)
         return pixel_distance;
-      else
-        break;
+      break;
     }
     //std::cout << x<<","<<y<<"->"<<x2<<","<<y2<<": "<<std::sqrt (pixel_distance)<<"m\n";
     weight += 1.0f;
@@ -936,7 +934,7 @@ bool
 RangeImage::getNormalForClosestNeighbors (int x, int y, int radius, const PointWithRange& point,
                                               int no_of_nearest_neighbors, Eigen::Vector3f& normal, int step_size) const
 {
-  return getNormalForClosestNeighbors (x, y, radius, Eigen::Vector3f (point.x, point.y, point.z), no_of_nearest_neighbors, normal, NULL, step_size);
+  return getNormalForClosestNeighbors (x, y, radius, Eigen::Vector3f (point.x, point.y, point.z), no_of_nearest_neighbors, normal, nullptr, step_size);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -969,11 +967,11 @@ RangeImage::getSurfaceInformation (int x, int y, int radius, const Eigen::Vector
 {
   max_closest_neighbor_distance_squared=0.0f;
   normal.setZero (); mean.setZero (); eigen_values.setZero ();
-  if (normal_all_neighbors!=NULL)
+  if (normal_all_neighbors!=nullptr)
     normal_all_neighbors->setZero ();
-  if (mean_all_neighbors!=NULL)
+  if (mean_all_neighbors!=nullptr)
     mean_all_neighbors->setZero ();
-  if (eigen_values_all_neighbors!=NULL)
+  if (eigen_values_all_neighbors!=nullptr)
     eigen_values_all_neighbors->setZero ();
   
   int blocksize = static_cast<int> (pow (static_cast<double> ( (2.0 * radius + 1.0)), 2.0));
@@ -1027,7 +1025,7 @@ RangeImage::getSurfaceInformation (int x, int y, int radius, const Eigen::Vector
     normal *= -1.0f;
   mean = vector_average.getMean ();
   
-  if (normal_all_neighbors==NULL)
+  if (normal_all_neighbors==nullptr)
     return true;
   
   // Add remaining neighbors
@@ -1086,7 +1084,7 @@ RangeImage::getNormalForClosestNeighbors (int x, int y, int radius, const Eigen:
   
   if (ret)
   {
-    if (point_on_plane != NULL)
+    if (point_on_plane != nullptr)
       *point_on_plane = (normal.dot (mean) - normal.dot (point))*normal + point;
   }
   return ret;
@@ -1228,10 +1226,10 @@ RangeImage::integrateFarRanges (const PointCloudType& far_ranges)
     
     this->getImagePoint (current_point, x_real, y_real, range_of_current_point);
     
-    int floor_x = static_cast<int> (pcl_lrint (floor (x_real))), 
-        floor_y = static_cast<int> (pcl_lrint (floor (y_real))),
-        ceil_x  = static_cast<int> (pcl_lrint (ceil (x_real))),
-        ceil_y  = static_cast<int> (pcl_lrint (ceil (y_real)));
+    int floor_x = static_cast<int> (pcl_lrint (std::floor (x_real))), 
+        floor_y = static_cast<int> (pcl_lrint (std::floor (y_real))),
+        ceil_x  = static_cast<int> (pcl_lrint (std::ceil (x_real))),
+        ceil_y  = static_cast<int> (pcl_lrint (std::ceil (y_real)));
     
     int neighbor_x[4], neighbor_y[4];
     neighbor_x[0]=floor_x; neighbor_y[0]=floor_y;

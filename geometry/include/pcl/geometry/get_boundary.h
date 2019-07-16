@@ -58,10 +58,10 @@ namespace pcl
                                std::vector <typename MeshT::HalfEdgeIndices>& boundary_he_collection,
                                const size_t                                   expected_size = 3)
     {
-      typedef MeshT                                            Mesh;
-      typedef typename Mesh::HalfEdgeIndex                     HalfEdgeIndex;
-      typedef typename Mesh::HalfEdgeIndices                   HalfEdgeIndices;
-      typedef typename Mesh::InnerHalfEdgeAroundFaceCirculator IHEAFC;
+      using Mesh = MeshT;
+      using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+      using HalfEdgeIndices = typename Mesh::HalfEdgeIndices;
+      using IHEAFC = typename Mesh::InnerHalfEdgeAroundFaceCirculator;
 
       boundary_he_collection.clear ();
 

@@ -35,19 +35,6 @@
  *
  */
 
-#include "opencv2/opencv.hpp"
-#include "opencv2/gpu/gpu.hpp"
-
-// pcl::cuda includes
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_grabber.h>
-#include <pcl/visualization/cloud_viewer.h>
-#include <pcl/visualization/point_cloud_handlers.h>
-#include <pcl/visualization/pcl_visualizer.h>
-
 // pcl::cuda includes
 #include <pcl/cuda/time_cpu.h>
 #include <pcl/cuda/time_gpu.h>
@@ -59,12 +46,26 @@
 #include <pcl/cuda/segmentation/connected_components.h>
 #include <pcl/cuda/features/normal_3d.h>
 
-#include <iostream>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/io/openni_grabber.h>
+#include <pcl/io/pcd_grabber.h>
+#include <pcl/visualization/cloud_viewer.h>
+#include <pcl/visualization/point_cloud_handlers.h>
+#include <pcl/visualization/pcl_visualizer.h>
 
-#include <boost/filesystem.hpp>
+#include <opencv2/opencv.hpp>
+#include <opencv2/gpu/gpu.hpp>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+
+#include <boost/filesystem.hpp>
+
+#include <functional>
+#include <iostream>
+#include <mutex>
 
 using namespace pcl::cuda;
 
@@ -84,12 +85,12 @@ class MultiRansac
 
     void viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
-      boost::mutex::scoped_lock l(m_mutex);
+      std::lock_guard<std::mutex> l(m_mutex);
       if (new_cloud)
       {
         double psize = 1.0,opacity = 1.0,linesize =1.0;
         std::string cloud_name ("cloud");
-        typedef pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal> ColorHandler;
+        using ColorHandler = pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal>;
 
         ColorHandler Color_handler (normal_cloud);
         static bool first_time = true;
@@ -231,7 +232,7 @@ class MultiRansac
       {
         boost::shared_ptr<typename Storage<float4>::type> normals = sac_model->getNormals ();
 
-        boost::mutex::scoped_lock l(m_mutex);
+        std::lock_guard<std::mutex> l(m_mutex);
         normal_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
         toPCL (*data, *normals, *normal_cloud);
         new_cloud = true;
@@ -253,13 +254,13 @@ class MultiRansac
       if (use_device)
       {
         std::cerr << "[RANSAC] Using GPU..." << std::endl;
-        boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&MultiRansac::cloud_cb<Device>, this, _1, _2, _3);
+        std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&MultiRansac::cloud_cb<Device>, this, _1, _2, _3);
         c = interface->registerCallback (f);
       }
       else
       {
         std::cerr << "[RANSAC] Using CPU..." << std::endl;
-        boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&MultiRansac::cloud_cb<Host>, this, _1, _2, _3);
+        std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&MultiRansac::cloud_cb<Host>, this, _1, _2, _3);
         c = interface->registerCallback (f);
       }
 
@@ -275,14 +276,14 @@ class MultiRansac
       //bool repeat = false;
 
       //std::string path = "./pcl_logo.pcd";
-      //if (path != "" && boost::filesystem::exists (path))
+      //if (!path.empty() && boost::filesystem::exists (path))
       //{
       //  filegrabber = new pcl::PCDGrabber<pcl::PointXYZRGB > (path, frames_per_second, repeat);
       //}
       //else
       //  std::cerr << "did not find file" << std::endl;
       //
-      //boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&MultiRansac::logo_cb, this, _1);
+      //std::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&MultiRansac::logo_cb, this, _1);
       //boost::signals2::connection c1 = filegrabber->registerCallback (f);
 
       //filegrabber->start ();
@@ -301,7 +302,7 @@ class MultiRansac
     DisparityToCloud d2c;
     pcl::visualization::CloudViewer viewer;
    
-    boost::mutex m_mutex;
+    std::mutex m_mutex;
     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr normal_cloud;
     bool new_cloud;
     bool use_viewer;

@@ -49,8 +49,8 @@ namespace pcl
     class ParameterModel: public QStandardItemModel
     {
       public: 
-        ParameterModel(QObject * parent = 0) : QStandardItemModel(parent){}
-        ParameterModel(int rows, int columns, QObject * parent = 0) : QStandardItemModel(rows, columns, parent){}
+        ParameterModel(QObject * parent = nullptr) : QStandardItemModel(parent){}
+        ParameterModel(int rows, int columns, QObject * parent = nullptr) : QStandardItemModel(rows, columns, parent){}
         ~ParameterModel() {}
 
         Qt::ItemFlags
@@ -64,7 +64,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        ParameterDialog(const std::string& title, QWidget* parent=0);
+        ParameterDialog(const std::string& title, QWidget* parent=nullptr);
         ~ParameterDialog(){}
 
         void
@@ -86,7 +86,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        ParameterDelegate(std::map<std::string, Parameter*>& parameterMap, QObject *parent = 0);
+        ParameterDelegate(std::map<std::string, Parameter*>& parameterMap, QObject *parent = nullptr);
 
         QWidget *
         createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;

@@ -77,12 +77,12 @@ namespace pcl
       private:
 
         // Struct used for type conversion
-        typedef struct
+        struct RGB888Pixel
         {
           uint8_t r;
           uint8_t g;
           uint8_t b;
-        } RGB888Pixel;
+        };
     };
 
   } // namespace

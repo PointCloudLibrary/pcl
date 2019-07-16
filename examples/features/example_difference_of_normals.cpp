@@ -9,7 +9,6 @@
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/common/point_operators.h>
 #include <pcl/common/io.h>
 #include <pcl/search/organized.h>
@@ -32,10 +31,10 @@
 using namespace pcl;
 using namespace std;
 
-typedef pcl::PointXYZRGB PointT;
-typedef pcl::PointNormal PointNT;
-typedef pcl::PointNormal PointOutT;
-typedef pcl::search::Search<PointT>::Ptr SearchPtr;
+using PointT = pcl::PointXYZRGB;
+using PointNT = pcl::PointNormal;
+using PointOutT = pcl::PointNormal;
+using SearchPtr = pcl::search::Search<PointT>::Ptr;
 
 int main (int argc, char *argv[])
 {

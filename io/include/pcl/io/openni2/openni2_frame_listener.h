@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include <boost/function.hpp>
+#include <functional>
 
 #include "OpenNI.h"
 
@@ -48,7 +48,7 @@ namespace pcl
     namespace openni2
     {
 
-      typedef boost::function<void(openni::VideoStream& stream)> StreamCallbackFunction;
+      using StreamCallbackFunction = std::function<void(openni::VideoStream& stream)>;
 
       /* Each NewFrameListener may only listen to one VideoStream at a time.
       **/
@@ -57,7 +57,7 @@ namespace pcl
         public:
 
           OpenNI2FrameListener ()
-            : callback_(0) {}
+          {}
           OpenNI2FrameListener (StreamCallbackFunction cb)
             : callback_(cb) {}
 

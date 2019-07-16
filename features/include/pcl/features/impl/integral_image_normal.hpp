@@ -45,10 +45,10 @@
 template <typename PointInT, typename PointOutT>
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::~IntegralImageNormalEstimation ()
 {
-  if (diff_x_ != NULL) delete[] diff_x_;
-  if (diff_y_ != NULL) delete[] diff_y_;
-  if (depth_data_ != NULL) delete[] depth_data_;
-  if (distance_map_ != NULL) delete[] distance_map_;
+  delete[] diff_x_;
+  delete[] diff_y_;
+  delete[] depth_data_;
+  delete[] distance_map_;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -68,14 +68,14 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initData ()
                          "[pcl::IntegralImageNormalEstimation::initData] unknown normal estimation method.");
 
   // compute derivatives
-  if (diff_x_ != NULL) delete[] diff_x_;
-  if (diff_y_ != NULL) delete[] diff_y_;
-  if (depth_data_ != NULL) delete[] depth_data_;
-  if (distance_map_ != NULL) delete[] distance_map_;
-  diff_x_ = NULL;
-  diff_y_ = NULL;
-  depth_data_ = NULL;
-  distance_map_ = NULL;
+  delete[] diff_x_;
+  delete[] diff_y_;
+  delete[] depth_data_;
+  delete[] distance_map_;
+  diff_x_ = nullptr;
+  diff_y_ = nullptr;
+  depth_data_ = nullptr;
+  distance_map_ = nullptr;
 
   if (normal_estimation_method_ == COVARIANCE_MATRIX)
     initCovarianceMatrixMethod ();
@@ -250,7 +250,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 
     return;
   }
-  else if (normal_estimation_method_ == AVERAGE_3D_GRADIENT)
+  if (normal_estimation_method_ == AVERAGE_3D_GRADIENT)
   {
     if (!init_average_3d_gradient_)
       initAverage3DGradientMethod ();
@@ -288,7 +288,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     normal.curvature = bad_point;
     return;
   }
-  else if (normal_estimation_method_ == AVERAGE_DEPTH_CHANGE)
+  if (normal_estimation_method_ == AVERAGE_DEPTH_CHANGE)
   {
     if (!init_depth_change_)
       initAverageDepthChangeMethod ();
@@ -347,7 +347,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 
     return;
   }
-  else if (normal_estimation_method_ == SIMPLE_3D_GRADIENT)
+  if (normal_estimation_method_ == SIMPLE_3D_GRADIENT)
   {
     if (!init_simple_3d_gradient_)
       initSimple3DGradientMethod ();
@@ -391,7 +391,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 template <typename T>
 void
 sumArea (int start_x, int start_y, int end_x, int end_y, const int width, const int height,
-  const boost::function<T(unsigned, unsigned, unsigned, unsigned)> &f, 
+  const std::function<T(unsigned, unsigned, unsigned, unsigned)> &f, 
   T & result)
 {
   if (start_x < 0)
@@ -479,8 +479,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     const int end_y = start_y + rect_height_;
 
     unsigned count = 0;
-    sumArea<unsigned>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFiniteElementsCountSE, &integral_image_XYZ_, _1, _2, _3, _4), count);
-    
+    auto cb_xyz_fecse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_XYZ_.getFiniteElementsCountSE (p1, p2, p3, p4); };
+    sumArea<unsigned> (start_x, start_y, end_x, end_y, width, height, cb_xyz_fecse, count);
+
     // no valid points within the rectangular region?
     if (count == 0)
     {
@@ -507,8 +508,10 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     so_elements[4] = 0;
     so_elements[5] = 0;
 
-    sumArea<typename IntegralImage2D<float, 3>::ElementType>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFirstOrderSumSE, &integral_image_XYZ_, _1, _2, _3, _4), tmp_center);
-    sumArea<typename IntegralImage2D<float, 3>::SecondOrderType>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getSecondOrderSumSE, &integral_image_XYZ_, _1, _2, _3, _4), so_elements);
+    auto cb_xyz_fosse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_XYZ_.getFirstOrderSumSE (p1, p2, p3, p4); };
+    sumArea<typename IntegralImage2D<float, 3>::ElementType>(start_x, start_y, end_x, end_y, width, height, cb_xyz_fosse, tmp_center);
+    auto cb_xyz_sosse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_XYZ_.getSecondOrderSumSE (p1, p2, p3, p4); };
+    sumArea<typename IntegralImage2D<float, 3>::SecondOrderType>(start_x, start_y, end_x, end_y, width, height, cb_xyz_sosse, so_elements);
 
     center[0] = float (tmp_center[0]);
     center[1] = float (tmp_center[1]);
@@ -536,7 +539,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     return;
   }
   // =======================================================
-  else if (normal_estimation_method_ == AVERAGE_3D_GRADIENT) 
+  if (normal_estimation_method_ == AVERAGE_3D_GRADIENT) 
   {
     if (!init_average_3d_gradient_)
       initAverage3DGradientMethod ();
@@ -549,8 +552,10 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     unsigned count_x = 0;
     unsigned count_y = 0;
 
-    sumArea<unsigned>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFiniteElementsCountSE, &integral_image_DX_, _1, _2, _3, _4), count_x);
-    sumArea<unsigned>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFiniteElementsCountSE, &integral_image_DY_, _1, _2, _3, _4), count_y);
+    auto cb_dx_fecse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_DX_.getFiniteElementsCountSE (p1, p2, p3, p4); };
+    sumArea<unsigned>(start_x, start_y, end_x, end_y, width, height, cb_dx_fecse, count_x);
+    auto cb_dy_fecse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_DY_.getFiniteElementsCountSE (p1, p2, p3, p4); };
+    sumArea<unsigned>(start_x, start_y, end_x, end_y, width, height, cb_dy_fecse, count_y);
 
 
     if (count_x == 0 || count_y == 0)
@@ -561,8 +566,10 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     Eigen::Vector3d gradient_x (0, 0, 0);
     Eigen::Vector3d gradient_y (0, 0, 0);
 
-    sumArea<typename IntegralImage2D<float, 3>::ElementType>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFirstOrderSumSE, &integral_image_DX_, _1, _2, _3, _4), gradient_x);
-    sumArea<typename IntegralImage2D<float, 3>::ElementType>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFirstOrderSumSE, &integral_image_DY_, _1, _2, _3, _4), gradient_y);
+    auto cb_dx_fosse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_DX_.getFirstOrderSumSE (p1, p2, p3, p4); };
+    sumArea<typename IntegralImage2D<float, 3>::ElementType>(start_x, start_y, end_x, end_y, width, height, cb_dx_fosse, gradient_x);
+    auto cb_dy_fosse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_DY_.getFirstOrderSumSE (p1, p2, p3, p4); };
+    sumArea<typename IntegralImage2D<float, 3>::ElementType>(start_x, start_y, end_x, end_y, width, height, cb_dy_fosse, gradient_y);
 
 
     Eigen::Vector3d normal_vector = gradient_y.cross (gradient_x);
@@ -589,7 +596,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     return;
   }
   // ======================================================
-  else if (normal_estimation_method_ == AVERAGE_DEPTH_CHANGE) 
+  if (normal_estimation_method_ == AVERAGE_DEPTH_CHANGE) 
   {
     if (!init_depth_change_)
       initAverageDepthChangeMethod ();
@@ -642,10 +649,11 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     unsigned count_U_z = 0;
     unsigned count_D_z = 0;
 
-    sumArea<unsigned>(start_x_L, start_y_L, end_x_L, end_y_L, width, height, boost::bind(&IntegralImage2D<float, 1>::getFiniteElementsCountSE, &integral_image_depth_, _1, _2, _3, _4), count_L_z);
-    sumArea<unsigned>(start_x_R, start_y_R, end_x_R, end_y_R, width, height, boost::bind(&IntegralImage2D<float, 1>::getFiniteElementsCountSE, &integral_image_depth_, _1, _2, _3, _4), count_R_z);
-    sumArea<unsigned>(start_x_U, start_y_U, end_x_U, end_y_U, width, height, boost::bind(&IntegralImage2D<float, 1>::getFiniteElementsCountSE, &integral_image_depth_, _1, _2, _3, _4), count_U_z);
-    sumArea<unsigned>(start_x_D, start_y_D, end_x_D, end_y_D, width, height, boost::bind(&IntegralImage2D<float, 1>::getFiniteElementsCountSE, &integral_image_depth_, _1, _2, _3, _4), count_D_z);
+    auto cb_fecse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_depth_.getFiniteElementsCountSE (p1, p2, p3, p4); };
+    sumArea<unsigned>(start_x_L, start_y_L, end_x_L, end_y_L, width, height, cb_fecse, count_L_z);
+    sumArea<unsigned>(start_x_R, start_y_R, end_x_R, end_y_R, width, height, cb_fecse, count_R_z);
+    sumArea<unsigned>(start_x_U, start_y_U, end_x_U, end_y_U, width, height, cb_fecse, count_U_z);
+    sumArea<unsigned>(start_x_D, start_y_D, end_x_D, end_y_D, width, height, cb_fecse, count_D_z);
 
     if (count_L_z == 0 || count_R_z == 0 || count_U_z == 0 || count_D_z == 0)
     {
@@ -658,10 +666,11 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     float mean_U_z = 0;
     float mean_D_z = 0;
 
-    sumArea<float>(start_x_L, start_y_L, end_x_L, end_y_L, width, height, boost::bind(&IntegralImage2D<float, 1>::getFirstOrderSumSE, &integral_image_depth_, _1, _2, _3, _4), mean_L_z);
-    sumArea<float>(start_x_R, start_y_R, end_x_R, end_y_R, width, height, boost::bind(&IntegralImage2D<float, 1>::getFirstOrderSumSE, &integral_image_depth_, _1, _2, _3, _4), mean_R_z);
-    sumArea<float>(start_x_U, start_y_U, end_x_U, end_y_U, width, height, boost::bind(&IntegralImage2D<float, 1>::getFirstOrderSumSE, &integral_image_depth_, _1, _2, _3, _4), mean_U_z);
-    sumArea<float>(start_x_D, start_y_D, end_x_D, end_y_D, width, height, boost::bind(&IntegralImage2D<float, 1>::getFirstOrderSumSE, &integral_image_depth_, _1, _2, _3, _4), mean_D_z);
+    auto cb_fosse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_depth_.getFirstOrderSumSE (p1, p2, p3, p4); };
+    sumArea<float>(start_x_L, start_y_L, end_x_L, end_y_L, width, height, cb_fosse, mean_L_z);
+    sumArea<float>(start_x_R, start_y_R, end_x_R, end_y_R, width, height, cb_fosse, mean_R_z);
+    sumArea<float>(start_x_U, start_y_U, end_x_U, end_y_U, width, height, cb_fosse, mean_U_z);
+    sumArea<float>(start_x_D, start_y_D, end_x_D, end_y_D, width, height, cb_fosse, mean_D_z);
 
     mean_L_z /= float (count_L_z);
     mean_R_z /= float (count_R_z);
@@ -707,7 +716,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     return;
   }
   // ========================================================
-  else if (normal_estimation_method_ == SIMPLE_3D_GRADIENT) 
+  if (normal_estimation_method_ == SIMPLE_3D_GRADIENT) 
   {
     PCL_THROW_EXCEPTION (PCLException, "BORDER_POLICY_MIRROR not supported for normal estimation method SIMPLE_3D_GRADIENT");
   }
@@ -744,13 +753,13 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
       //const float depthDependendDepthChange = (max_depth_change_factor_ * (fabs(depth)+1.0f))/(500.0f*0.001f);
       const float depthDependendDepthChange = (max_depth_change_factor_ * (fabsf (depth) + 1.0f) * 2.0f);
 
-      if (fabs (depth - depthR) > depthDependendDepthChange
+      if (std::fabs (depth - depthR) > depthDependendDepthChange
         || !std::isfinite (depth) || !std::isfinite (depthR))
       {
         depthChangeMap[index] = 0;
         depthChangeMap[index+1] = 0;
       }
-      if (fabs (depth - depthD) > depthDependendDepthChange
+      if (std::fabs (depth - depthD) > depthDependendDepthChange
         || !std::isfinite (depth) || !std::isfinite (depthD))
       {
         depthChangeMap[index] = 0;
@@ -761,7 +770,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
   // compute distance map
   //float *distanceMap = new float[input_->points.size ()];
-  if (distance_map_ != NULL) delete[] distance_map_;
+  delete[] distance_map_;
   distance_map_ = new float[input_->points.size ()];
   float *distanceMap = distance_map_;
   for (size_t index = 0; index < input_->points.size (); ++index)

@@ -55,8 +55,7 @@ namespace pcl
           root_node_ (new BranchNode ()),
           depth_mask_ (0),
           octree_depth_ (0),
-          dynamic_depth_enabled_ (false),
-          max_key_ ()
+          dynamic_depth_enabled_ (false)
       {
       }
 
@@ -79,7 +78,7 @@ namespace pcl
         assert(max_voxel_index_arg>0);
 
         // tree depth == bitlength of maxVoxels
-        tree_depth = std::min (static_cast<unsigned int> (OctreeKey::maxDepth), static_cast<unsigned int> (std::ceil (Log2 (max_voxel_index_arg))));
+        tree_depth = std::min (static_cast<unsigned int> (OctreeKey::maxDepth), static_cast<unsigned int> (std::ceil (std::log2 (max_voxel_index_arg))));
 
         // define depthMask_ by setting a single bit to 1 at bit position == tree depth
         depth_mask_ = (1 << (tree_depth - 1));
@@ -186,7 +185,7 @@ namespace pcl
         binary_tree_out_arg.clear ();
         binary_tree_out_arg.reserve (this->branch_count_);
 
-        serializeTreeRecursive (root_node_, new_key, &binary_tree_out_arg, 0);
+        serializeTreeRecursive (root_node_, new_key, &binary_tree_out_arg, nullptr);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -220,7 +219,7 @@ namespace pcl
 
         leaf_container_vector_arg.reserve (this->leaf_count_);
 
-        serializeTreeRecursive (root_node_, new_key, 0, &leaf_container_vector_arg);
+        serializeTreeRecursive (root_node_, new_key, nullptr, &leaf_container_vector_arg);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,8 +241,8 @@ namespace pcl
                                   new_key,
                                   binary_tree_out_it,
                                   binary_tree_out_it_end,
-                                  0,
-                                  0);
+                                  nullptr,
+                                  nullptr);
 
       }
 
@@ -308,14 +307,11 @@ namespace pcl
             return createLeafRecursive (key_arg, depth_mask_arg / 2, childBranch, return_leaf_arg, parent_of_leaf_arg);
 
           }
-          else
-          {
-            // if leaf node at child_idx does not exist
-            LeafNode* leaf_node = createLeafChild (*branch_arg, child_idx);
-            return_leaf_arg = leaf_node;
-            parent_of_leaf_arg = branch_arg;
-            this->leaf_count_++;
-          }
+          // if leaf node at child_idx does not exist
+          LeafNode* leaf_node = createLeafChild (*branch_arg, child_idx);
+          return_leaf_arg = leaf_node;
+          parent_of_leaf_arg = branch_arg;
+          this->leaf_count_++;
         }
         else
         {

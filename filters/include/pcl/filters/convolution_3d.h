@@ -54,10 +54,10 @@ namespace pcl
     class ConvolvingKernel
     {
       public:
-        typedef boost::shared_ptr<ConvolvingKernel<PointInT, PointOutT> > Ptr;
-        typedef boost::shared_ptr<const ConvolvingKernel<PointInT, PointOutT> > ConstPtr;
+        using Ptr = boost::shared_ptr<ConvolvingKernel<PointInT, PointOutT> >;
+        using ConstPtr = boost::shared_ptr<const ConvolvingKernel<PointInT, PointOutT> >;
  
-        typedef typename PointCloud<PointInT>::ConstPtr PointCloudInConstPtr;
+        using PointCloudInConstPtr = typename PointCloud<PointInT>::ConstPtr;
 
         /// \brief empty constructor
         ConvolvingKernel () {}
@@ -118,8 +118,8 @@ namespace pcl
         using ConvolvingKernel<PointInT, PointOutT>::input_;
         using ConvolvingKernel<PointInT, PointOutT>::operator ();
         using ConvolvingKernel<PointInT, PointOutT>::makeInfinite;
-        typedef boost::shared_ptr<GaussianKernel<PointInT, PointOutT> > Ptr;
-        typedef boost::shared_ptr<GaussianKernel<PointInT, PointOutT> > ConstPtr;
+        using Ptr = boost::shared_ptr<GaussianKernel<PointInT, PointOutT> >;
+        using ConstPtr = boost::shared_ptr<GaussianKernel<PointInT, PointOutT> >;
 
         /** Default constructor */
         GaussianKernel ()
@@ -176,8 +176,8 @@ namespace pcl
         using GaussianKernel<PointInT, PointOutT>::makeInfinite;
         using GaussianKernel<PointInT, PointOutT>::sigma_sqr_;
         using GaussianKernel<PointInT, PointOutT>::threshold_;
-        typedef boost::shared_ptr<GaussianKernelRGB<PointInT, PointOutT> > Ptr;
-        typedef boost::shared_ptr<GaussianKernelRGB<PointInT, PointOutT> > ConstPtr;
+        using Ptr = boost::shared_ptr<GaussianKernelRGB<PointInT, PointOutT> >;
+        using ConstPtr = boost::shared_ptr<GaussianKernelRGB<PointInT, PointOutT> >;
 
         /** Default constructor */
         GaussianKernelRGB ()
@@ -199,13 +199,13 @@ namespace pcl
     class Convolution3D : public pcl::PCLBase <PointIn>
     {
       public:
-        typedef pcl::PointCloud<PointIn> PointCloudIn;
-        typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-        typedef pcl::search::Search<PointIn> KdTree;
-        typedef typename KdTree::Ptr KdTreePtr;
-        typedef pcl::PointCloud<PointOut> PointCloudOut;
-        typedef boost::shared_ptr<Convolution3D<PointIn, PointOut, KernelT> > Ptr;
-        typedef boost::shared_ptr<Convolution3D<PointIn, PointOut, KernelT> > ConstPtr;
+        using PointCloudIn = pcl::PointCloud<PointIn>;
+        using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+        using KdTree = pcl::search::Search<PointIn>;
+        using KdTreePtr = typename KdTree::Ptr;
+        using PointCloudOut = pcl::PointCloud<PointOut>;
+        using Ptr = boost::shared_ptr<Convolution3D<PointIn, PointOut, KernelT> >;
+        using ConstPtr = boost::shared_ptr<Convolution3D<PointIn, PointOut, KernelT> >;
 
         using pcl::PCLBase<PointIn>::indices_;
         using pcl::PCLBase<PointIn>::input_;

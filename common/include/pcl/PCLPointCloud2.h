@@ -18,9 +18,9 @@ namespace pcl
 
   struct PCLPointCloud2
   {
-    PCLPointCloud2 () : header (), height (0), width (0), fields (),
+    PCLPointCloud2 () : height (0), width (0), 
                      is_bigendian (false), point_step (0), row_step (0),
-                     data (), is_dense (false)
+                     is_dense (false)
     {
 #if BOOST_ENDIAN_BIG_BYTE
       is_bigendian = true;
@@ -47,12 +47,12 @@ namespace pcl
     pcl::uint8_t is_dense;
 
   public:
-    typedef boost::shared_ptr< ::pcl::PCLPointCloud2> Ptr;
-    typedef boost::shared_ptr< ::pcl::PCLPointCloud2  const> ConstPtr;
+    using Ptr = boost::shared_ptr< ::pcl::PCLPointCloud2>;
+    using ConstPtr = boost::shared_ptr<const ::pcl::PCLPointCloud2>;
   }; // struct PCLPointCloud2
 
-  typedef boost::shared_ptr< ::pcl::PCLPointCloud2> PCLPointCloud2Ptr;
-  typedef boost::shared_ptr< ::pcl::PCLPointCloud2 const> PCLPointCloud2ConstPtr;
+  using PCLPointCloud2Ptr = boost::shared_ptr< ::pcl::PCLPointCloud2>;
+  using PCLPointCloud2ConstPtr = boost::shared_ptr<const ::pcl::PCLPointCloud2>;
 
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLPointCloud2 &v)
   {

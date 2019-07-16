@@ -106,7 +106,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
         std::vector<int> indices;
         octree.voxelSearch (intersected_cells[k], indices);
         int label = emptyLabel ();
-        if (indices.size () != 0)
+        if (!indices.empty ())
         {
           label = getDominantLabel (indices);
         }
@@ -211,7 +211,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeDistanceHistogram (co
   for (const float &distance : distances)
   {
     const float raw_bin = static_cast<float> (descriptorSize ()) * (distance - min_value) / range;
-    int bin = std::min (max_bin, static_cast<int> (floor (raw_bin)));
+    int bin = std::min (max_bin, static_cast<int> (std::floor (raw_bin)));
     histogram[bin] += 1;
   }
 }

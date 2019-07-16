@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include <flann/flann.h>
+#include <flann/util/matrix.h>
+
 #include <pcl/common/common.h>
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/global/global_estimator.h>
@@ -47,11 +48,11 @@ namespace pcl
           }
         } sortIndexScoresOp;
 
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
-        typedef typename pcl::PointCloud<PointInT>::ConstPtr ConstPointInTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
+        using ConstPointInTPtr = typename pcl::PointCloud<PointInT>::ConstPtr;
 
-        typedef Distance<float> DistT;
-        typedef Model<PointInT> ModelT;
+        using DistT = Distance<float>;
+        using ModelT = Model<PointInT>;
 
         /** \brief Directory where the trained structure will be saved */
         std::string training_dir_;
@@ -91,25 +92,19 @@ namespace pcl
             {
               return true;
             }
-            else
-            {
 
-              if (this->model.id_.compare (other.model.id_) == 0)
+            if (this->model.id_ == other.model.id_)
+            {
+              //check view id
+              if ((this->view_id < other.view_id))
               {
-                //check view id
-                if ((this->view_id < other.view_id))
+                return true;
+              }
+              if (this->view_id == other.view_id)
+              {
+                if (this->descriptor_id < other.descriptor_id)
                 {
                   return true;
-                }
-                else
-                {
-                  if (this->view_id == other.view_id)
-                  {
-                    if (this->descriptor_id < other.descriptor_id)
-                    {
-                      return true;
-                    }
-                  }
                 }
               }
             }
@@ -138,7 +133,7 @@ namespace pcl
 
         bool use_cache_;
         std::map<std::pair<std::string, int>, Eigen::Matrix4f,
-                 std::less<std::pair<std::string, int> >,
+                 std::less<>,
                  Eigen::aligned_allocator<std::pair<const std::pair<std::string, int>, Eigen::Matrix4f> > > poses_cache_;
         std::map<std::pair<std::string, int>, Eigen::Vector3f> centroids_cache_;
 

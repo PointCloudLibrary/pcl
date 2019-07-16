@@ -48,8 +48,11 @@
 #include <pcl/console/parse.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/mouse_event.h>
+
 #include <vtkImageViewer.h>
 #include <vtkImageImport.h>
+
+#include <mutex>
 #include <vector>
 #include <string>
 
@@ -83,8 +86,8 @@ template <typename PointType>
 class SimpleOpenNIViewer
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    using Cloud = pcl::PointCloud<PointType>;
+    using CloudConstPtr = typename Cloud::ConstPtr;
 
     SimpleOpenNIViewer (pcl::OpenNIGrabber& grabber)
       : cloud_viewer_ ("PCL OpenNI Viewer")
@@ -97,7 +100,7 @@ class SimpleOpenNIViewer
     cloud_callback (const CloudConstPtr& cloud)
     {
       FPS_CALC ("cloud callback");
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
     }
 
@@ -105,14 +108,14 @@ class SimpleOpenNIViewer
     image_callback (const boost::shared_ptr<openni_wrapper::Image>& image)
     {
       FPS_CALC ("image callback");
-      boost::mutex::scoped_lock lock (image_mutex_);
+      std::lock_guard<std::mutex> lock (image_mutex_);
       image_ = image;
     }
     
     boost::shared_ptr<openni_wrapper::Image>
     getLatestImage ()
     {
-      boost::mutex::scoped_lock lock(image_mutex_);
+      std::lock_guard<std::mutex> lock(image_mutex_);
       boost::shared_ptr<openni_wrapper::Image> temp_image;
       temp_image.swap (image_);
       return (temp_image);
@@ -149,7 +152,7 @@ class SimpleOpenNIViewer
     getLatestCloud ()
     {
       //lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock(cloud_mutex_);
+      std::lock_guard<std::mutex> lock(cloud_mutex_);
       CloudConstPtr temp_cloud;
       temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
       //it is safe to set it again from our
@@ -169,7 +172,7 @@ class SimpleOpenNIViewer
       string keyMsg3D("Key event for PCL Visualizer");
       cloud_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg3D));    
       cloud_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg3D));
-      boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&SimpleOpenNIViewer::cloud_callback, this, _1);
+      std::function<void (const CloudConstPtr&)> cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
       boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
       
       boost::signals2::connection image_connection;
@@ -179,7 +182,7 @@ class SimpleOpenNIViewer
           string keyMsg2D("Key event for image viewer");
           image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
           image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
-          boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&SimpleOpenNIViewer::image_callback, this, _1);
+          std::function<void (const openni_wrapper::Image::Ptr&)> image_cb = [this] (const openni_wrapper::Image::Ptr& img) { image_callback (img); };
           image_connection = grabber_.registerCallback (image_cb);
       }
       unsigned char* rgb_data = 0;
@@ -227,10 +230,10 @@ class SimpleOpenNIViewer
 
     pcl::visualization::CloudViewer cloud_viewer_;
     pcl::OpenNIGrabber& grabber_;
-    boost::mutex cloud_mutex_;
+    std::mutex cloud_mutex_;
     CloudConstPtr cloud_;
     
-    boost::mutex image_mutex_;
+    std::mutex image_mutex_;
     boost::shared_ptr<openni_wrapper::Image> image_;
     pcl::visualization::ImageViewer image_viewer_;
 };

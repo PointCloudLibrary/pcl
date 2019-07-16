@@ -46,14 +46,8 @@
 
 #ifndef Q_MOC_RUN
 // Marking all Boost headers as system headers to remove warnings
-#include <boost/random.hpp>
-#include <boost/random/normal_distribution.hpp>
-#include <boost/thread/thread.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/date_time/gregorian/gregorian_types.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/thread/thread.hpp>
-//#include <boost/uuid/uuid.hpp>
-//#include <boost/uuid/uuid_generators.hpp>
 #endif

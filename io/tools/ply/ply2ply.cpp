@@ -56,7 +56,7 @@
 class ply_to_ply_converter
 {
   public:
-    typedef int format_type;
+    using format_type = int;
     enum format
     {
       same_format,
@@ -95,13 +95,13 @@ class ply_to_ply_converter
     void
     element_end_callback();
 
-    boost::tuple<boost::function<void()>, boost::function<void()> > 
+    boost::tuple<std::function<void()>, std::function<void()> > 
     element_definition_callback(const std::string& element_name, std::size_t count);
 
     template <typename ScalarType> void
     scalar_property_callback(ScalarType scalar);
 
-    template <typename ScalarType> boost::function<void (ScalarType)> 
+    template <typename ScalarType> std::function<void (ScalarType)> 
     scalar_property_definition_callback(const std::string& element_name, const std::string& property_name);
 
     template <typename SizeType, typename ScalarType> void
@@ -113,9 +113,9 @@ class ply_to_ply_converter
     template <typename SizeType, typename ScalarType> void
     list_property_end_callback();
 
-    template <typename SizeType, typename ScalarType> boost::tuple<boost::function<void (SizeType)>, 
-                                                                      boost::function<void (ScalarType)>, 
-                                                                      boost::function<void ()> > 
+    template <typename SizeType, typename ScalarType> boost::tuple<std::function<void (SizeType)>, 
+                                                                      std::function<void (ScalarType)>, 
+                                                                      std::function<void ()> > 
     list_property_definition_callback(const std::string& element_name, const std::string& property_name);
     
     void
@@ -211,12 +211,12 @@ ply_to_ply_converter::element_end_callback()
   }
 }
 
-boost::tuple<boost::function<void()>, boost::function<void()> > ply_to_ply_converter::element_definition_callback(const std::string& element_name, std::size_t count)
+boost::tuple<std::function<void()>, std::function<void()> > ply_to_ply_converter::element_definition_callback(const std::string& element_name, std::size_t count)
 {
   (*ostream_) << "element " << element_name << " " << count << "\n";
-  return boost::tuple<boost::function<void()>, boost::function<void()> >(
-    boost::bind(&ply_to_ply_converter::element_begin_callback, this),
-    boost::bind(&ply_to_ply_converter::element_end_callback, this)
+  return boost::tuple<std::function<void()>, std::function<void()> >(
+    [this] { element_begin_callback (); },
+    [this] { element_end_callback (); }
   );
 }
 
@@ -244,11 +244,11 @@ ply_to_ply_converter::scalar_property_callback(ScalarType scalar)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename ScalarType> boost::function<void (ScalarType)> 
+template <typename ScalarType> std::function<void (ScalarType)> 
 ply_to_ply_converter::scalar_property_definition_callback (const std::string&, const std::string& property_name)
 {
   (*ostream_) << "property " << pcl::io::ply::type_traits<ScalarType>::old_name() << " " << property_name << "\n";
-  return boost::bind(&ply_to_ply_converter::scalar_property_callback<ScalarType>, this, _1);
+  return [this] (ScalarType scalar) { scalar_property_callback<ScalarType> (scalar); };
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -300,16 +300,16 @@ template <typename SizeType, typename ScalarType> void
 ply_to_ply_converter::list_property_end_callback() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename SizeType, typename ScalarType> boost::tuple<boost::function<void (SizeType)>, 
-                                                                  boost::function<void (ScalarType)>, 
-                                                                  boost::function<void ()> > 
+template <typename SizeType, typename ScalarType> boost::tuple<std::function<void (SizeType)>, 
+                                                                  std::function<void (ScalarType)>, 
+                                                                  std::function<void ()> > 
 ply_to_ply_converter::list_property_definition_callback (const std::string&, const std::string& property_name)
 {
   (*ostream_) << "property list " << pcl::io::ply::type_traits<SizeType>::old_name() << " " << pcl::io::ply::type_traits<ScalarType>::old_name() << " " << property_name << "\n";
-  return boost::tuple<boost::function<void (SizeType)>, boost::function<void (ScalarType)>, boost::function<void ()> >(
-    boost::bind(&ply_to_ply_converter::list_property_begin_callback<SizeType, ScalarType>, this, _1),
-    boost::bind(&ply_to_ply_converter::list_property_element_callback<SizeType, ScalarType>, this, _1),
-    boost::bind(&ply_to_ply_converter::list_property_end_callback<SizeType, ScalarType>, this)
+  return boost::tuple<std::function<void (SizeType)>, std::function<void (ScalarType)>, std::function<void ()> >(
+    [this] (SizeType size) { list_property_begin_callback<SizeType, ScalarType> (size); },
+    [this] (ScalarType scalar) { list_property_element_callback<SizeType, ScalarType> (scalar); },
+    [this] { list_property_end_callback<SizeType, ScalarType> (); }
   );
 }
 
@@ -341,61 +341,61 @@ ply_to_ply_converter::convert (const std::string &ifilename, std::istream&, std:
 {
   pcl::io::ply::ply_parser ply_parser;
 
-  ply_parser.info_callback(boost::bind(&ply_to_ply_converter::info_callback, this, boost::ref(ifilename), _1, _2));
-  ply_parser.warning_callback(boost::bind(&ply_to_ply_converter::warning_callback, this, boost::ref(ifilename), _1, _2));
-  ply_parser.error_callback(boost::bind(&ply_to_ply_converter::error_callback, this, boost::ref(ifilename), _1, _2));
+  ply_parser.info_callback ([&, this] (std::size_t line_number, const std::string& message) { info_callback (ifilename, line_number, message); });
+  ply_parser.warning_callback ([&, this] (std::size_t line_number, const std::string& message) { warning_callback (ifilename, line_number, message); });
+  ply_parser.error_callback ([&, this] (std::size_t line_number, const std::string& message) { error_callback (ifilename, line_number, message); });
 
-  ply_parser.magic_callback(boost::bind(&ply_to_ply_converter::magic_callback, this));
-  ply_parser.format_callback(boost::bind(&ply_to_ply_converter::format_callback, this, _1, _2));
-  ply_parser.element_definition_callback(boost::bind(&ply_to_ply_converter::element_definition_callback, this, _1, _2));
+  ply_parser.magic_callback ([this] { magic_callback (); });
+  ply_parser.format_callback ([this] (pcl::io::ply::format_type format, const std::string& version) { format_callback (format, version); });
+  ply_parser.element_definition_callback ([this] (const std::string& element_name, std::size_t count) { return element_definition_callback (element_name, count); });
 
   pcl::io::ply::ply_parser::scalar_property_definition_callbacks_type scalar_property_definition_callbacks;
 
-  pcl::io::ply::ply_parser::at<pcl::io::ply::int8>(scalar_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::int8>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::int16>(scalar_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::int16>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::int32>(scalar_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::int32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8>(scalar_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::uint8>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16>(scalar_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::uint16>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32>(scalar_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::uint32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::float32>(scalar_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::float32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::float64>(scalar_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::float64>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::int8>(scalar_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return scalar_property_definition_callback<pcl::io::ply::int8> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::int16>(scalar_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return scalar_property_definition_callback<pcl::io::ply::int16> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::int32>(scalar_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return scalar_property_definition_callback<pcl::io::ply::int32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8>(scalar_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return scalar_property_definition_callback<pcl::io::ply::uint8> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16>(scalar_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return scalar_property_definition_callback<pcl::io::ply::uint16> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32>(scalar_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return scalar_property_definition_callback<pcl::io::ply::uint32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::float32>(scalar_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return scalar_property_definition_callback<pcl::io::ply::float32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::float64>(scalar_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return scalar_property_definition_callback<pcl::io::ply::float64> (element_name, property_name); };
 
   ply_parser.scalar_property_definition_callbacks(scalar_property_definition_callbacks);
 
   pcl::io::ply::ply_parser::list_property_definition_callbacks_type list_property_definition_callbacks;
 
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int8>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int8>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int16>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int16>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int32>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::uint8>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::uint8>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::uint16>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::uint16>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::uint32>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::uint32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::float32>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::float32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::float64>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::float64>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int8>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int8> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int16>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int16> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int32>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::uint8>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::uint8> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::uint16>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::uint16> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::uint32>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::uint32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::float32>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::float32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::float64>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::float64> (element_name, property_name); };
 
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::int8>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::int8>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::int16>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::int16>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::int32>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::int32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::uint8>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::uint8>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::uint16>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::uint16>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::uint32>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::uint32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::float32>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::float32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::float64>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::float64>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::int8>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::int8> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::int16>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::int16> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::int32>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::int32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::uint8>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::uint8> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::uint16>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::uint16> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::uint32>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::uint32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::float32>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::float32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16, pcl::io::ply::float64>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::float64> (element_name, property_name); };
 
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int8>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::int8>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int16>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::int16>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int32>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::int32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint8>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::uint8>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint16>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::uint16>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint32>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::uint32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::float32>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::float32>, this, _1, _2);
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::float64>(list_property_definition_callbacks) = boost::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::float64>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int8>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::int8> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int16>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::int16> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int32>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::int32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint8>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::uint8> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint16>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::uint16> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint32>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::uint32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::float32>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::float32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::float64>(list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::float64> (element_name, property_name); };
 
   ply_parser.list_property_definition_callbacks(list_property_definition_callbacks);
 
-  ply_parser.comment_callback(boost::bind(&ply_to_ply_converter::comment_callback, this, _1));
-  ply_parser.obj_info_callback(boost::bind(&ply_to_ply_converter::obj_info_callback, this, _1));
-  ply_parser.end_header_callback(boost::bind(&ply_to_ply_converter::end_header_callback, this));
+  ply_parser.comment_callback([this] (const std::string& comment) { comment_callback (comment); });
+  ply_parser.obj_info_callback([this] (const std::string& obj_info) { obj_info_callback (obj_info); });
+  ply_parser.end_header_callback( [this] { return end_header_callback (); });
 
   ostream_ = &ostream;
   return ply_parser.parse(ifilename);
@@ -456,7 +456,7 @@ main(int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else if ((short_opt == 'v') || (std::strcmp(long_opt, "version") == 0)) {
+    if ((short_opt == 'v') || (std::strcmp(long_opt, "version") == 0)) {
       std::cout << "ply2ply\n";
       std::cout << " Point Cloud Library (PCL) - www.pointclouds.org\n";
       std::cout << " Copyright (c) 2007-2012, Ares Lagae\n";
@@ -489,7 +489,7 @@ main(int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else if ((short_opt == 'f') || (std::strcmp(long_opt, "format") == 0)) {
+    if ((short_opt == 'f') || (std::strcmp(long_opt, "format") == 0)) {
       if (strcmp(opt_arg, "ascii") == 0) {
         ply_to_ply_converter_format = ply_to_ply_converter::ascii_format;
       }

@@ -25,12 +25,12 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;
   // Check input data length
-  if ( input_data.size () == 0)
+  if ( input_data.empty ())
   {
     qCritical () << "Empty input in Euclidean Clustering Tool!";
     return output;
   }
-  else if ( input_data.size () > 1)
+  if ( input_data.size () > 1)
   {
     qWarning () << "Input vector has more than one item in Euclidean Clustering!";
   }
@@ -95,7 +95,7 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
       } 
       //We copy input cloud over for special case that no clusters found, since ExtractIndices doesn't work for 0 length vectors
       pcl::PCLPointCloud2::Ptr remainder_cloud (new pcl::PCLPointCloud2(*input_cloud));
-      if (cluster_indices.size () > 0)
+      if (!cluster_indices.empty ())
       {
         //make a cloud containing all the remaining points
         filter.setIndices (extracted_indices);

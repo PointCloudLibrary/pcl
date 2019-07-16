@@ -48,16 +48,16 @@ namespace pcl
     class SurfaceActorItem : public ChannelActorItem
     {
       public:
-        typedef pcl::visualization::PointCloudGeometryHandler<pcl::PointSurfel> GeometryHandler;
-        typedef GeometryHandler::Ptr GeometryHandlerPtr;
-        typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
+        using GeometryHandler = pcl::visualization::PointCloudGeometryHandler<pcl::PointSurfel>;
+        using GeometryHandlerPtr = GeometryHandler::Ptr;
+        using GeometryHandlerConstPtr = GeometryHandler::ConstPtr;
 
-        typedef pcl::visualization::PointCloudColorHandler<pcl::PointSurfel> ColorHandler;
-        typedef ColorHandler::Ptr ColorHandlerPtr;
-        typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
+        using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PointSurfel>;
+        using ColorHandlerPtr = ColorHandler::Ptr;
+        using ColorHandlerConstPtr = ColorHandler::ConstPtr;
 
         SurfaceActorItem(QTreeWidgetItem* parent,
-                        const boost::shared_ptr<CloudMesh>& cloud_mesh,
+                        const CloudMesh::Ptr& cloud_mesh,
                         const vtkSmartPointer<vtkRenderWindow>& render_window);
         ~SurfaceActorItem ();
 

@@ -50,7 +50,6 @@ pcl::features::ISMVoteList<PointT>::ISMVoteList () :
   tree_is_valid_ (false),
   votes_origins_ (new pcl::PointCloud<PointT> ()),
   votes_class_ (0),
-  tree_ (),
   k_ind_ (0),
   k_sqr_dist_ (0)
 {
@@ -89,7 +88,7 @@ pcl::features::ISMVoteList<PointT>::getColoredCloud (typename pcl::PointCloud<Po
   colored_cloud->height = 0;
   colored_cloud->width = 1;
 
-  if (cloud != 0)
+  if (cloud != nullptr)
   {
     colored_cloud->height += static_cast<uint32_t> (cloud->points.size ());
     point.r = 255;
@@ -107,11 +106,11 @@ pcl::features::ISMVoteList<PointT>::getColoredCloud (typename pcl::PointCloud<Po
   point.r = 0;
   point.g = 0;
   point.b = 255;
-  for (size_t i_vote = 0; i_vote < votes_->points.size (); i_vote++)
+  for (const auto &i_vote : votes_->points)
   {
-    point.x = votes_->points[i_vote].x;
-    point.y = votes_->points[i_vote].y;
-    point.z = votes_->points[i_vote].z;
+    point.x = i_vote.x;
+    point.y = i_vote.y;
+    point.z = i_vote.z;
     colored_cloud->points.push_back (point);
   }
   colored_cloud->height += static_cast<uint32_t> (votes_->points.size ());
@@ -227,8 +226,8 @@ pcl::features::ISMVoteList<PointT>::validateTree ()
 {
   if (!tree_is_valid_)
   {
-    if (tree_ == 0)
-      tree_ = boost::shared_ptr<pcl::KdTreeFLANN<pcl::InterestPoint> > (new pcl::KdTreeFLANN<pcl::InterestPoint> ());
+    if (tree_ == nullptr)
+      tree_.reset (new pcl::KdTreeFLANN<pcl::InterestPoint>);
     tree_->setInputCloud (votes_);
     k_ind_.resize ( votes_->points.size (), -1 );
     k_sqr_dist_.resize ( votes_->points.size (), 0.0f );
@@ -301,8 +300,6 @@ pcl::features::ISMModel::ISMModel () :
   learned_weights_ (0),
   classes_ (0),
   sigmas_ (0),
-  directions_to_center_ (),
-  clusters_centers_ (),
   clusters_ (0),
   number_of_classes_ (0),
   number_of_visual_words_ (0),
@@ -404,8 +401,8 @@ pcl::features::ISMModel::saveModelToFile (std::string& file_name)
   for (unsigned int i_cluster = 0; i_cluster < number_of_clusters_; i_cluster++)
   {
     output_file << static_cast<unsigned int> (clusters_[i_cluster].size ()) << " ";
-    for (unsigned int i_visual_word = 0; i_visual_word < static_cast<unsigned int> (clusters_[i_cluster].size ()); i_visual_word++)
-      output_file << clusters_[i_cluster][i_visual_word] << " ";
+    for (const unsigned int &visual_word : clusters_[i_cluster])
+      output_file << visual_word << " ";
   }
 
   output_file.close ();
@@ -427,7 +424,7 @@ pcl::features::ISMModel::loadModelFromfile (std::string& file_name)
   char line[256];
 
   input_file.getline (line, 256, ' ');
-  number_of_classes_ = static_cast<unsigned int> (strtol (line, 0, 10));
+  number_of_classes_ = static_cast<unsigned int> (strtol (line, nullptr, 10));
   input_file.getline (line, 256, ' '); number_of_visual_words_ = atoi (line);
   input_file.getline (line, 256, ' '); number_of_clusters_ = atoi (line);
   input_file.getline (line, 256, ' '); descriptors_dimension_ = atoi (line);
@@ -700,7 +697,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::trainISM (
 {
   bool success = true;
 
-  if (trained_model == 0)
+  if (trained_model == nullptr)
     return (false);
   trained_model->reset ();
 
@@ -749,22 +746,22 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::trainISM (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <int FeatureSize, typename PointT, typename NormalT> boost::shared_ptr<pcl::features::ISMVoteList<PointT> >
+template <int FeatureSize, typename PointT, typename NormalT> typename pcl::features::ISMVoteList<PointT>::Ptr
 pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::findObjects (
   ISMModelPtr model,
   typename pcl::PointCloud<PointT>::Ptr in_cloud,
   typename pcl::PointCloud<Normal>::Ptr in_normals,
   int in_class_of_interest)
 {
-  boost::shared_ptr<pcl::features::ISMVoteList<PointT> > out_votes (new pcl::features::ISMVoteList<PointT> ());
+  typename pcl::features::ISMVoteList<PointT>::Ptr out_votes (new pcl::features::ISMVoteList<PointT> ());
 
-  if (in_cloud->points.size () == 0)
+  if (in_cloud->points.empty ())
     return (out_votes);
 
   typename pcl::PointCloud<PointT>::Ptr sampled_point_cloud (new pcl::PointCloud<PointT> ());
   typename pcl::PointCloud<NormalT>::Ptr sampled_normal_cloud (new pcl::PointCloud<NormalT> ());
   simplifyCloud (in_cloud, in_normals, sampled_point_cloud, sampled_normal_cloud);
-  if (sampled_point_cloud->points.size () == 0)
+  if (sampled_point_cloud->points.empty ())
     return (out_votes);
 
   typename pcl::PointCloud<pcl::Histogram<FeatureSize> >::Ptr feature_cloud (new pcl::PointCloud<pcl::Histogram<FeatureSize> > ());
@@ -854,7 +851,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
 
   int n_key_points = 0;
 
-  if (training_clouds_.size () == 0 || training_classes_.size () == 0 || feature_estimator_ == 0)
+  if (training_clouds_.empty () || training_classes_.empty () || feature_estimator_ == nullptr)
     return (false);
 
   for (size_t i_cloud = 0; i_cloud < training_clouds_.size (); i_cloud++)
@@ -870,7 +867,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
     typename pcl::PointCloud<PointT>::Ptr sampled_point_cloud (new pcl::PointCloud<PointT> ());
     typename pcl::PointCloud<NormalT>::Ptr sampled_normal_cloud (new pcl::PointCloud<NormalT> ());
     simplifyCloud (training_clouds_[i_cloud], training_normals_[i_cloud], sampled_point_cloud, sampled_normal_cloud);
-    if (sampled_point_cloud->points.size () == 0)
+    if (sampled_point_cloud->points.empty ())
       continue;
 
     shiftCloud (training_clouds_[i_cloud], models_center);
@@ -938,7 +935,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::clusterDes
 template <int FeatureSize, typename PointT, typename NormalT> void
 pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateSigmas (std::vector<float>& sigmas)
 {
-  if (training_sigmas_.size () != 0)
+  if (!training_sigmas_.empty ())
   {
     sigmas.resize (training_sigmas_.size (), 0.0f);
     for (size_t i_sigma = 0; i_sigma < training_sigmas_.size (); i_sigma++)
@@ -1238,7 +1235,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::estimateFe
   typename pcl::PointCloud<NormalT>::Ptr normal_cloud,
   typename pcl::PointCloud<pcl::Histogram<FeatureSize> >::Ptr feature_cloud)
 {
-  typename pcl::search::Search<PointT>::Ptr tree = boost::shared_ptr<pcl::search::Search<PointT> > (new pcl::search::KdTree<PointT>);
+  typename pcl::search::Search<PointT>::Ptr tree (new pcl::search::KdTree<PointT>);
 //  tree->setInputCloud (point_cloud);
 
   feature_estimator_->setInputCloud (sampled_point_cloud->makeShared ());
@@ -1272,7 +1269,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::computeKMe
   int feature_dimension = points_to_cluster.rows () > 1 ? FeatureSize : 1;
 
   attempts = std::max (attempts, 1);
-  srand (static_cast<unsigned int> (time (0)));
+  srand (static_cast<unsigned int> (time (nullptr)));
 
   Eigen::MatrixXi labels (number_of_points, 1);
 

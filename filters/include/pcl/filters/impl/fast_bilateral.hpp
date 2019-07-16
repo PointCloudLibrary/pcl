@@ -175,14 +175,11 @@ pcl::FastBilateralFilter<PointT>::Array3D::clamp (const size_t min_value,
   {
     return x;
   }
-  else if (x < min_value)
+  if (x < min_value)
   {
     return (min_value);
   }
-  else
-  {
-    return (max_value);
-  }
+  return (max_value);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -86,13 +86,13 @@ namespace pcl
       using PCLBase<PointT>::indices_;
       using PCLBase<PointT>::input_;
 
-      typedef boost::shared_ptr< Filter<PointT> > Ptr;
-      typedef boost::shared_ptr< const Filter<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<Filter<PointT> >;
+      using ConstPtr = boost::shared_ptr<const Filter<PointT> >;
 
 
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       /** \brief Empty constructor.
         * \param[in] extract_removed_indices set to true if the filtered data indices should be saved in a
@@ -100,7 +100,6 @@ namespace pcl
         */
       Filter (bool extract_removed_indices = false) :
         removed_indices_ (new std::vector<int>),
-        filter_name_ (),
         extract_removed_indices_ (extract_removed_indices)
       {
       }
@@ -193,12 +192,12 @@ namespace pcl
   class PCL_EXPORTS Filter<pcl::PCLPointCloud2> : public PCLBase<pcl::PCLPointCloud2>
   {
     public:
-      typedef boost::shared_ptr< Filter<pcl::PCLPointCloud2> > Ptr;
-      typedef boost::shared_ptr< const Filter<pcl::PCLPointCloud2> > ConstPtr;
+      using Ptr = boost::shared_ptr<Filter<pcl::PCLPointCloud2> >;
+      using ConstPtr = boost::shared_ptr<const Filter<pcl::PCLPointCloud2> >;
 
-      typedef pcl::PCLPointCloud2 PCLPointCloud2;
-      typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
-      typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
+      using PCLPointCloud2 = pcl::PCLPointCloud2;
+      using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+      using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
       /** \brief Empty constructor.
         * \param[in] extract_removed_indices set to true if the filtered data indices should be saved in a
@@ -206,8 +205,7 @@ namespace pcl
         */
       Filter (bool extract_removed_indices = false) :
         removed_indices_ (new std::vector<int>),
-        extract_removed_indices_ (extract_removed_indices),
-        filter_name_ ()
+        extract_removed_indices_ (extract_removed_indices)
       {
       }
 

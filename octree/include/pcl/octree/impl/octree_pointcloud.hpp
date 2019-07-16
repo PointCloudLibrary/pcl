@@ -635,7 +635,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
 
   // tree depth == amount of bits of max_voxels
-  this->octree_depth_ = std::max ((std::min (static_cast<unsigned int> (OctreeKey::maxDepth), static_cast<unsigned int> (ceil (this->Log2 (max_voxels)-minValue)))),
+  this->octree_depth_ = std::max ((std::min (static_cast<unsigned int> (OctreeKey::maxDepth), static_cast<unsigned int> (std::ceil (std::log2 (max_voxels) - minValue)))),
                                   static_cast<unsigned int> (0));
 
   octree_side_len = static_cast<double> (1 << this->octree_depth_) * resolution_;

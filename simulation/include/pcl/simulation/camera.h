@@ -13,8 +13,8 @@ namespace pcl
     class PCL_EXPORTS Camera
     {
     public:
-      typedef boost::shared_ptr<Camera> Ptr;
-      typedef boost::shared_ptr<const Camera> ConstPtr;
+      using Ptr = boost::shared_ptr<Camera>;
+      using ConstPtr = boost::shared_ptr<const Camera>;
 
       Camera () : x_ (0), y_ (0), z_ (0), roll_ (0), pitch_ (0), yaw_ (0)
       {
@@ -85,7 +85,6 @@ namespace pcl
         return Eigen::Vector3d (yaw_, pitch_, roll_);
       }
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     private:
       void
       updatePose ();
@@ -95,10 +94,10 @@ namespace pcl
 
       void
       updateProjectionMatrix ();
-    
+
       double x_,y_,z_;
       double roll_,pitch_,yaw_;
-    
+
       Eigen::Isometry3d pose_;
 
       // Camera Intrinsic Parameters
@@ -114,6 +113,9 @@ namespace pcl
       float z_far_;
 
       Eigen::Matrix4f projection_matrix_;
+
+    public:
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   } // namespace - simulation
 } // namespace - pcl

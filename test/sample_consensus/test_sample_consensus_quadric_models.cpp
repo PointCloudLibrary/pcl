@@ -48,12 +48,12 @@
 
 using namespace pcl;
 
-typedef SampleConsensusModelSphere<PointXYZ>::Ptr SampleConsensusModelSpherePtr;
-typedef SampleConsensusModelCone<PointXYZ, Normal>::Ptr SampleConsensusModelConePtr;
-typedef SampleConsensusModelCircle2D<PointXYZ>::Ptr SampleConsensusModelCircle2DPtr;
-typedef SampleConsensusModelCircle3D<PointXYZ>::Ptr SampleConsensusModelCircle3DPtr;
-typedef SampleConsensusModelCylinder<PointXYZ, Normal>::Ptr SampleConsensusModelCylinderPtr;
-typedef SampleConsensusModelNormalSphere<PointXYZ, Normal>::Ptr SampleConsensusModelNormalSpherePtr;
+using SampleConsensusModelSpherePtr = SampleConsensusModelSphere<PointXYZ>::Ptr;
+using SampleConsensusModelConePtr = SampleConsensusModelCone<PointXYZ, Normal>::Ptr;
+using SampleConsensusModelCircle2DPtr = SampleConsensusModelCircle2D<PointXYZ>::Ptr;
+using SampleConsensusModelCircle3DPtr = SampleConsensusModelCircle3D<PointXYZ>::Ptr;
+using SampleConsensusModelCylinderPtr = SampleConsensusModelCylinder<PointXYZ, Normal>::Ptr;
+using SampleConsensusModelNormalSpherePtr = SampleConsensusModelNormalSphere<PointXYZ, Normal>::Ptr;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SampleConsensusModelSphere, RANSAC)

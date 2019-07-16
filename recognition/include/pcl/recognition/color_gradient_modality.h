@@ -81,7 +81,7 @@ namespace pcl
       };
 
     public:
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
 
       /** \brief Different methods for feature selection/extraction. */
       enum FeatureSelectionMethod
@@ -279,11 +279,7 @@ ColorGradientModality ()
   , feature_selection_method_ (DISTANCE_MAGNITUDE_SCORE)
   , gradient_magnitude_threshold_ (10.0f)
   , gradient_magnitude_threshold_feature_extraction_ (55.0f)
-  , color_gradients_ ()
   , spreading_size_ (8)
-  , quantized_color_gradients_ ()
-  , filtered_quantized_color_gradients_ ()
-  , spreaded_filtered_quantized_color_gradients_ ()
 {
 }
 
@@ -311,7 +307,7 @@ computeGaussianKernel (const size_t kernel_size, const float sigma, std::vector 
   };
 
   const float* fixed_kernel = n % 2 == 1 && n <= SMALL_GAUSSIAN_SIZE && sigma <= 0 ?
-      small_gaussian_tab[n>>1] : 0;
+      small_gaussian_tab[n>>1] : nullptr;
 
   //CV_Assert( ktype == CV_32F || ktype == CV_64F );
   /*Mat kernel(n, 1, ktype);*/

@@ -45,6 +45,8 @@
 #include <pcl/io/openni_camera/openni_device_kinect.h>
 #include <pcl/io/openni_camera/openni_image_bayer_grbg.h>
 
+#include <mutex>
+
 namespace openni_wrapper
 {
 
@@ -69,7 +71,7 @@ openni_wrapper::DeviceKinect::DeviceKinect (xn::Context& context, const xn::Node
   // device specific initialization
   XnStatus status;
 
-  boost::unique_lock<boost::mutex> image_lock (image_mutex_);
+  std::unique_lock<std::mutex> image_lock (image_mutex_);
   // set kinect specific format. Thus input = uncompressed Bayer, output = grayscale = bypass = bayer
   status = image_generator_.SetIntProperty ("InputFormat", 6);
   if (status != XN_STATUS_OK)
@@ -81,7 +83,7 @@ openni_wrapper::DeviceKinect::DeviceKinect (xn::Context& context, const xn::Node
     THROW_OPENNI_EXCEPTION ("Failed to set image pixel format to 8bit-grayscale. Reason: %s", xnGetStatusString (status));
   image_lock.unlock ();
 
-  boost::lock_guard<boost::mutex> depth_lock (depth_mutex_);
+  std::lock_guard<std::mutex> depth_lock (depth_mutex_);
   // RegistrationType should be 2 (software) for Kinect, 1 (hardware) for PS
   status = depth_generator_.SetIntProperty ("RegistrationType", 2);
   if (status != XN_STATUS_OK)

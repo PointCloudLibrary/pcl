@@ -42,6 +42,7 @@
 
 #include <utility>
 
+#include <pcl/pcl_macros.h>
 #include <pcl/geometry/mesh_base.h>
 
 namespace pcl
@@ -61,50 +62,50 @@ namespace pcl
     {
       public:
 
-        typedef pcl::geometry::MeshBase <TriangleMesh <MeshTraitsT>, MeshTraitsT, TriangleMeshTag> Base;
+        using Base = pcl::geometry::MeshBase <TriangleMesh <MeshTraitsT>, MeshTraitsT, TriangleMeshTag>;
 
-        typedef TriangleMesh <MeshTraitsT>     Self;
-        typedef boost::shared_ptr <Self>       Ptr;
-        typedef boost::shared_ptr <const Self> ConstPtr;
+        using Self = TriangleMesh<MeshTraitsT>;
+        using Ptr = boost::shared_ptr<Self>;
+        using ConstPtr = boost::shared_ptr<const Self>;
 
-        typedef typename Base::VertexData   VertexData;
-        typedef typename Base::HalfEdgeData HalfEdgeData;
-        typedef typename Base::EdgeData     EdgeData;
-        typedef typename Base::FaceData     FaceData;
-        typedef typename Base::IsManifold   IsManifold;
-        typedef typename Base::MeshTag      MeshTag;
+        using VertexData = typename Base::VertexData;
+        using HalfEdgeData = typename Base::HalfEdgeData;
+        using EdgeData = typename Base::EdgeData;
+        using FaceData = typename Base::FaceData;
+        using IsManifold = typename Base::IsManifold;
+        using MeshTag = typename Base::MeshTag;
 
-        typedef typename Base::HasVertexData   HasVertexData;
-        typedef typename Base::HasHalfEdgeData HasHalfEdgeData;
-        typedef typename Base::HasEdgeData     HasEdgeData;
-        typedef typename Base::HasFaceData     HasFaceData;
+        using HasVertexData = typename Base::HasVertexData;
+        using HasHalfEdgeData = typename Base::HasHalfEdgeData;
+        using HasEdgeData = typename Base::HasEdgeData;
+        using HasFaceData = typename Base::HasFaceData;
 
-        typedef typename Base::VertexDataCloud   VertexDataCloud;
-        typedef typename Base::HalfEdgeDataCloud HalfEdgeDataCloud;
-        typedef typename Base::EdgeDataCloud     EdgeDataCloud;
-        typedef typename Base::FaceDataCloud     FaceDataCloud;
+        using VertexDataCloud = typename Base::VertexDataCloud;
+        using HalfEdgeDataCloud = typename Base::HalfEdgeDataCloud;
+        using EdgeDataCloud = typename Base::EdgeDataCloud;
+        using FaceDataCloud = typename Base::FaceDataCloud;
 
         // Indices
-        typedef typename Base::VertexIndex       VertexIndex;
-        typedef typename Base::HalfEdgeIndex     HalfEdgeIndex;
-        typedef typename Base::EdgeIndex         EdgeIndex;
-        typedef typename Base::FaceIndex         FaceIndex;
-        typedef std::pair <FaceIndex, FaceIndex> FaceIndexPair;
+        using VertexIndex = typename Base::VertexIndex;
+        using HalfEdgeIndex = typename Base::HalfEdgeIndex;
+        using EdgeIndex = typename Base::EdgeIndex;
+        using FaceIndex = typename Base::FaceIndex;
+        using FaceIndexPair = std::pair <FaceIndex, FaceIndex>;
 
-        typedef typename Base::VertexIndices   VertexIndices;
-        typedef typename Base::HalfEdgeIndices HalfEdgeIndices;
-        typedef typename Base::EdgeIndices     EdgeIndices;
-        typedef typename Base::FaceIndices     FaceIndices;
+        using VertexIndices = typename Base::VertexIndices;
+        using HalfEdgeIndices = typename Base::HalfEdgeIndices;
+        using EdgeIndices = typename Base::EdgeIndices;
+        using FaceIndices = typename Base::FaceIndices;
 
         // Circulators
-        typedef typename Base::VertexAroundVertexCirculator           VertexAroundVertexCirculator;
-        typedef typename Base::OutgoingHalfEdgeAroundVertexCirculator OutgoingHalfEdgeAroundVertexCirculator;
-        typedef typename Base::IncomingHalfEdgeAroundVertexCirculator IncomingHalfEdgeAroundVertexCirculator;
-        typedef typename Base::FaceAroundVertexCirculator             FaceAroundVertexCirculator;
-        typedef typename Base::VertexAroundFaceCirculator             VertexAroundFaceCirculator;
-        typedef typename Base::InnerHalfEdgeAroundFaceCirculator      InnerHalfEdgeAroundFaceCirculator;
-        typedef typename Base::OuterHalfEdgeAroundFaceCirculator      OuterHalfEdgeAroundFaceCirculator;
-        typedef typename Base::FaceAroundFaceCirculator               FaceAroundFaceCirculator;
+        using VertexAroundVertexCirculator = typename Base::VertexAroundVertexCirculator;
+        using OutgoingHalfEdgeAroundVertexCirculator = typename Base::OutgoingHalfEdgeAroundVertexCirculator;
+        using IncomingHalfEdgeAroundVertexCirculator = typename Base::IncomingHalfEdgeAroundVertexCirculator;
+        using FaceAroundVertexCirculator = typename Base::FaceAroundVertexCirculator;
+        using VertexAroundFaceCirculator = typename Base::VertexAroundFaceCirculator;
+        using InnerHalfEdgeAroundFaceCirculator = typename Base::InnerHalfEdgeAroundFaceCirculator;
+        using OuterHalfEdgeAroundFaceCirculator = typename Base::OuterHalfEdgeAroundFaceCirculator;
+        using FaceAroundFaceCirculator = typename Base::FaceAroundFaceCirculator;
 
         /** \brief Constructor. */
         TriangleMesh ()
@@ -161,10 +162,7 @@ namespace pcl
           {
             return (std::make_pair (FaceIndex (), FaceIndex ()));
           }
-          else
-          {
-            return (this->addTrianglePair (vertices [0], vertices [1], vertices [2], vertices [3], face_data, edge_data, half_edge_data));
-          }
+          return (this->addTrianglePair (vertices [0], vertices [1], vertices [2], vertices [3], face_data, edge_data, half_edge_data));
         }
 
         /** \brief Add two triangles for the four given input vertices. When using a manifold triangle mesh it is not possible to connect two bounded regions without going through a non-manifold intermediate step. This method first tries to add the triangles individually and if this fails connects the whole configuration at once (if possible).
@@ -198,7 +196,7 @@ namespace pcl
           {
             return (std::make_pair (idx_face_0, idx_face_1));
           }
-          else if (idx_face_1.isValid ())
+          if (idx_face_1.isValid ())
           {
             idx_face_0 = this->addFace (idx_v_0, idx_v_1, idx_v_2, face_data); // might be possible to add now
             return (std::make_pair (idx_face_1, idx_face_0));
@@ -215,7 +213,7 @@ namespace pcl
           {
             return (std::make_pair (idx_face_0, idx_face_1));
           }
-          else if (idx_face_1.isValid ())
+          if (idx_face_1.isValid ())
           {
             idx_face_0 = this->addFace (idx_v_1, idx_v_2, idx_v_3, face_data); // might be possible to add now
             return (std::make_pair (idx_face_1, idx_face_0));
@@ -240,14 +238,11 @@ namespace pcl
           {
             return (this->connectTrianglePair (inner_he_atp_ [0], inner_he_atp_ [2], idx_v_0, idx_v_1, idx_v_2, idx_v_3, face_data, edge_data, half_edge_data));
           }
-          else if (is_new_atp_ [0] && !is_new_atp_ [1] && is_new_atp_ [2] && !is_new_atp_ [3])
+          if (is_new_atp_ [0] && !is_new_atp_ [1] && is_new_atp_ [2] && !is_new_atp_ [3])
           {
             return (this->connectTrianglePair (inner_he_atp_ [1], inner_he_atp_ [3], idx_v_1, idx_v_2, idx_v_3, idx_v_0, face_data, edge_data, half_edge_data));
           }
-          else
-          {
-            return (std::make_pair (FaceIndex (), FaceIndex ()));
-          }
+          return (std::make_pair (FaceIndex (), FaceIndex ()));
         }
 
       private:
@@ -264,8 +259,7 @@ namespace pcl
         {
           if (vertices.size () == 3)
             return (this->addFaceImplBase (vertices, face_data, edge_data, half_edge_data));
-          else
-            return (FaceIndex ());
+          return (FaceIndex ());
         }
 
         /** \brief Connect the triangles a-b-c and a-c-d. The edges a-b and c-d must be old and the edges b-c and d-a must be new. */
@@ -351,8 +345,7 @@ namespace pcl
         std::vector <bool> is_new_atp_;
 
       public:
-
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   } // End namespace geom
 } // End namespace pcl

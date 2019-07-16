@@ -56,17 +56,17 @@ pcl::getCameraMatrixFromProjectionMatrix (
   {
     camera_matrix.coeffRef (2) = cam.coeff (2);
     camera_matrix.coeffRef (5) = cam.coeff (5);
-    camera_matrix.coeffRef (4) = static_cast<float> (sqrt (cam.coeff (4) - cam.coeff (5) * cam.coeff (5)));
+    camera_matrix.coeffRef (4) = static_cast<float> (std::sqrt (cam.coeff (4) - cam.coeff (5) * cam.coeff (5)));
     camera_matrix.coeffRef (1) = (cam.coeff (1) - cam.coeff (2) * cam.coeff (5)) / camera_matrix.coeff (4);
-    camera_matrix.coeffRef (0) = static_cast<float> (sqrt (cam.coeff (0) - camera_matrix.coeff (1) * camera_matrix.coeff (1) - cam.coeff (2) * cam.coeff (2)));
+    camera_matrix.coeffRef (0) = static_cast<float> (std::sqrt (cam.coeff (0) - camera_matrix.coeff (1) * camera_matrix.coeff (1) - cam.coeff (2) * cam.coeff (2)));
   }
   else
   {
     camera_matrix.coeffRef (6) = cam.coeff (2);
     camera_matrix.coeffRef (7) = cam.coeff (5);
-    camera_matrix.coeffRef (4) = static_cast<float> (sqrt (cam.coeff (4) - cam.coeff (5) * cam.coeff (5)));
+    camera_matrix.coeffRef (4) = static_cast<float> (std::sqrt (cam.coeff (4) - cam.coeff (5) * cam.coeff (5)));
     camera_matrix.coeffRef (3) = (cam.coeff (1) - cam.coeff (2) * cam.coeff (5)) / camera_matrix.coeff (4);
-    camera_matrix.coeffRef (0) = static_cast<float> (sqrt (cam.coeff (0) - camera_matrix.coeff (3) * camera_matrix.coeff (3) - cam.coeff (2) * cam.coeff (2)));
+    camera_matrix.coeffRef (0) = static_cast<float> (std::sqrt (cam.coeff (0) - camera_matrix.coeff (3) * camera_matrix.coeff (3) - cam.coeff (2) * cam.coeff (2)));
   }
 }
 

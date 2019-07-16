@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/io/boost.h>
 #include <pcl/io/file_io.h>
 #include <pcl/io/ply/ply_parser.h>
@@ -83,33 +84,29 @@ namespace pcl
       };
       
       PLYReader ()
-        : FileReader ()
-        , parser_ ()
-        , origin_ (Eigen::Vector4f::Zero ())
+        : origin_ (Eigen::Vector4f::Zero ())
         , orientation_ (Eigen::Matrix3f::Zero ())
         , cloud_ ()
         , vertex_count_ (0)
         , vertex_offset_before_ (0)
-        , range_grid_ (0)
+        , range_grid_ (nullptr)
         , rgb_offset_before_ (0)
         , do_resize_ (false)
-        , polygons_ (0)
+        , polygons_ (nullptr)
         , r_(0), g_(0), b_(0)
         , a_(0), rgba_(0)
       {}
 
       PLYReader (const PLYReader &p)
-        : FileReader ()
-        , parser_ ()
-        , origin_ (Eigen::Vector4f::Zero ())
+        : origin_ (Eigen::Vector4f::Zero ())
         , orientation_ (Eigen::Matrix3f::Zero ())
         , cloud_ ()
         , vertex_count_ (0)
         , vertex_offset_before_ (0)
-        , range_grid_ (0)
+        , range_grid_ (nullptr)
         , rgb_offset_before_ (0)
         , do_resize_ (false)
-        , polygons_ (0)
+        , polygons_ (nullptr)
         , r_(0), g_(0), b_(0)
         , a_(0), rgba_(0)
       {
@@ -287,7 +284,7 @@ namespace pcl
         * \param[in] element_name element name
         * \param[in] count number of instances
         */
-      boost::tuple<boost::function<void ()>, boost::function<void ()> > 
+      boost::tuple<std::function<void ()>, std::function<void ()> > 
       elementDefinitionCallback (const std::string& element_name, std::size_t count);
       
       bool
@@ -297,7 +294,7 @@ namespace pcl
         * \param[in] element_name element name to which the property belongs
         * \param[in] property_name property name
         */
-      template <typename ScalarType> boost::function<void (ScalarType)> 
+      template <typename ScalarType> std::function<void (ScalarType)> 
       scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name);
 
       /** \brief function called when a list property is parsed
@@ -305,7 +302,7 @@ namespace pcl
         * \param[in] property_name list property name
         */
       template <typename SizeType, typename ScalarType>
-      boost::tuple<boost::function<void (SizeType)>, boost::function<void (ScalarType)>, boost::function<void ()> >
+      boost::tuple<std::function<void (SizeType)>, std::function<void (ScalarType)>, std::function<void ()> >
       listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name);
       
       /** \brief function called at the beginning of a list property parsing.
@@ -531,7 +528,7 @@ namespace pcl
       //face element artifact
       std::vector<pcl::Vertices> *polygons_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
       
     private:
       // RGB values stored by vertexColorCallback()
@@ -548,7 +545,7 @@ namespace pcl
   {
     public:
       ///Constructor
-      PLYWriter () : FileWriter () {};
+      PLYWriter () {};
 
       ///Destructor
       ~PLYWriter () {};
@@ -637,8 +634,7 @@ namespace pcl
       {
         if (binary)
           return (this->writeBinary (file_name, cloud, origin, orientation, true));
-        else
-          return (this->writeASCII (file_name, cloud, origin, orientation, 8, true));
+        return (this->writeASCII (file_name, cloud, origin, orientation, 8, true));
       }
 
       /** \brief Save point cloud data to a PLY file containing n-D points
@@ -660,8 +656,7 @@ namespace pcl
       {
         if (binary)
           return (this->writeBinary (file_name, cloud, origin, orientation, use_camera));
-        else
-          return (this->writeASCII (file_name, cloud, origin, orientation, 8, use_camera));
+        return (this->writeASCII (file_name, cloud, origin, orientation, 8, use_camera));
       }
 
       /** \brief Save point cloud data to a PLY file containing n-D points

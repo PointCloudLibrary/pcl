@@ -37,6 +37,8 @@
  *
  */
 
+#include <thread>
+
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
@@ -51,13 +53,14 @@
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
+using namespace std::chrono_literals;
 
 float default_th_dd = 0.02f;
 int   default_max_search = 50;
 
-typedef pcl::PointCloud<pcl::PointXYZRGBA> Cloud;
-typedef Cloud::Ptr CloudPtr;
-typedef Cloud::ConstPtr CloudConstPtr;
+using Cloud = pcl::PointCloud<pcl::PointXYZRGBA>;
+using CloudPtr = Cloud::Ptr;
+using CloudConstPtr = Cloud::ConstPtr;
 
 pcl::visualization::PCLVisualizer viewer ("3D Edge Viewer");
 
@@ -213,7 +216,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   while (!viewer.wasStopped ())
   {
     viewer.spinOnce ();
-    boost::this_thread::sleep (boost::posix_time::microseconds (100));
+    std::this_thread::sleep_for(100us);
   }
 
   // Combine point clouds and edge labels

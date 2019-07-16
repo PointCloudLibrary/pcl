@@ -40,16 +40,18 @@
 #define PCL_KDTREE_KDTREE_IMPL_FLANN_H_
 
 #include <cstdio>
+
+#include <flann/flann.hpp>
+
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/flann.h>
 #include <pcl/console/print.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Dist>
 pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted)
   : pcl::KdTree<PointT> (sorted)
-  , flann_index_ (), cloud_ ()
-  , index_mapping_ (), identity_mapping_ (false)
+  , flann_index_ ()
+  , identity_mapping_ (false)
   , dim_ (0), total_nr_points_ (0)
   , param_k_ (::flann::SearchParams (-1 , epsilon_))
   , param_radius_ (::flann::SearchParams (-1, epsilon_, sorted))
@@ -60,8 +62,8 @@ pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted)
 template <typename PointT, typename Dist>
 pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (const KdTreeFLANN<PointT, Dist> &k) 
   : pcl::KdTree<PointT> (false)
-  , flann_index_ (), cloud_ ()
-  , index_mapping_ (), identity_mapping_ (false)
+  , flann_index_ ()
+  , identity_mapping_ (false)
   , dim_ (0), total_nr_points_ (0)
   , param_k_ (::flann::SearchParams (-1 , epsilon_))
   , param_radius_ (::flann::SearchParams (-1, epsilon_, false))
@@ -105,7 +107,7 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
     PCL_ERROR ("[pcl::KdTreeFLANN::setInputCloud] Invalid input!\n");
     return;
   }
-  if (indices != NULL)
+  if (indices != nullptr)
   {
     convertCloudToArray (*input_, *indices_);
   }

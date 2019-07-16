@@ -34,7 +34,7 @@ void run(pcl::RFFaceDetectorTrainer & fdrf, typename pcl::PointCloud<PointInT>::
 
   fdrf.detectFaces ();
 
-  typedef typename pcl::traits::fieldList<PointInT>::type FieldListM;
+  using FieldListM = typename pcl::traits::fieldList<PointInT>::type;
 
   float rgb_m;
   bool exists_m;
@@ -205,7 +205,7 @@ int main(int argc, char ** argv)
   fb.open (forest_fn.c_str (), std::ios::in);
   std::istream os (&fb);
 
-  typedef pcl::face_detection::RFTreeNode<pcl::face_detection::FeatureType> NodeType;
+  using NodeType = pcl::face_detection::RFTreeNode<pcl::face_detection::FeatureType>;
   pcl::DecisionForest<NodeType> forest;
   forest.deserialize (os);
   fb.close ();
@@ -214,7 +214,7 @@ int main(int argc, char ** argv)
 
   pcl::visualization::PCLVisualizer vis ("PCL Face detection");
 
-  if (test_directory.compare ("") != 0)
+  if (!test_directory.empty())
   {
     //recognize all files in directory...
     std::string start;

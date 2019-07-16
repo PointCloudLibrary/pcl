@@ -62,8 +62,10 @@
 #include <cstdio>
 #include <vector>
 #include <list>
+#include <thread>
 
 using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace io;
 using namespace console;
@@ -151,7 +153,7 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
   list<vtkSmartPointer<vtkPolyData> > vtk_models_list;
 
   // Load the models and add them to the recognizer
-  for ( list<string>::iterator it = model_names.begin () ; it != model_names.end () ; ++it )
+  for (const auto &model_name : model_names)
   {
     PointCloud<PointXYZ>::Ptr model_points (new PointCloud<PointXYZ> ());
     model_points_list.push_back (model_points);
@@ -163,14 +165,14 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
     vtk_models_list.push_back (vtk_model);
 
     // Compose the file
-    string file_name = string("../../test/") + *it + string (".vtk");
+    string file_name = string("../../test/") + model_name + string (".vtk");
 
     // Get the points and normals from the input model
     if ( !vtk2PointCloud (file_name.c_str (), *model_points, *model_normals, vtk_model) )
       continue;
 
     // Add the model
-    objrec.addModel (*model_points, *model_normals, *it, vtk_model);
+    objrec.addModel (*model_points, *model_normals, model_name, vtk_model);
   }
 
   // The scene in which the models are supposed to be recognized
@@ -221,7 +223,7 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
   {
     //main loop of the visualizer
     viz.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
 }
 
@@ -241,8 +243,8 @@ update (CallbackParameters* params)
 {
   // Clear the visualizer from old object instances
   vtkRenderer *renderer = params->viz_.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
-  for ( list<vtkActor*>::iterator it = params->actors_.begin () ; it != params->actors_.end () ; ++it )
-    renderer->RemoveActor (*it);
+  for (const auto &actor : params->actors_)
+    renderer->RemoveActor (actor);
   params->actors_.clear ();
 
   // This will be the output of the recognition
@@ -317,7 +319,7 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
   PointCloud<Normal>::Ptr all_normals (new PointCloud<Normal> ());
 
   // Get the points and normals from the input scene
-  if ( !vtk2PointCloud (file_name, *all_points, *all_normals, NULL) )
+  if ( !vtk2PointCloud (file_name, *all_points, *all_normals, nullptr) )
     return false;
 
   // Detect the largest plane and remove it from the sets
@@ -335,7 +337,7 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
   seg.setInputCloud (all_points);
   seg.segment (*inliers, *coefficients);
 
-  if (inliers->indices.size () == 0)
+  if (inliers->indices.empty ())
   {
     PCL_ERROR ("Could not estimate a planar model for the given dataset.");
     return false;

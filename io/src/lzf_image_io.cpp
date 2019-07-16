@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <pcl/console/time.h>
 #include <pcl/io/low_level_io.h>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/io/lzf.h>
@@ -52,9 +51,9 @@
 // See https://github.com/PointCloudLibrary/pcl/issues/864
 #include <boost/version.hpp>
 #if (BOOST_VERSION >= 105600)
-  typedef boost::property_tree::xml_writer_settings<std::string> xml_writer_settings;
+  using xml_writer_settings = boost::property_tree::xml_writer_settings<std::string>;
 #else
-  typedef boost::property_tree::xml_writer_settings<char> xml_writer_settings;
+  using xml_writer_settings = boost::property_tree::xml_writer_settings<char>;
 #endif
 
 
@@ -87,7 +86,7 @@ pcl::io::LZFImageWriter::saveImageBlob (const char* data,
     return (false);
   }
 
-  char *map = static_cast<char*> (::mmap (0, data_size, PROT_WRITE, MAP_SHARED, fd, 0));
+  char *map = static_cast<char*> (::mmap (nullptr, data_size, PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     raw_close (fd);
@@ -350,7 +349,6 @@ pcl::io::LZFBayer8ImageWriter::write (const char *data,
 pcl::io::LZFImageReader::LZFImageReader ()
   : width_ ()
   , height_ ()
-  , image_type_identifier_ ()
   , parameters_ ()
 {
 }
@@ -361,7 +359,7 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
                                         std::vector<char> &data,
                                         uint32_t &uncompressed_size)
 {
-  if (filename == "" || !boost::filesystem::exists (filename))
+  if (filename.empty() || !boost::filesystem::exists (filename))
   {
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] Could not find file '%s'.\n", filename.c_str ());
     return (false);
@@ -400,7 +398,7 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
     return (false);
   }
 #else
-  char *map = static_cast<char*> (::mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0));
+  char *map = static_cast<char*> (::mmap (nullptr, data_size, PROT_READ, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     raw_close (fd);
@@ -460,7 +458,6 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
 #endif
   raw_close (fd);
 
-  data_size = compressed_size;      // We only care about this from here on
   return (true);
 }
 
@@ -493,7 +490,7 @@ pcl::io::LZFImageReader::readParameters (const std::string &filename)
 {
   std::filebuf fb;
   std::filebuf *f = fb.open (filename.c_str (), std::ios::in);
-  if (f == NULL)
+  if (f == nullptr)
     return (false);
   std::istream is (&fb);
   bool res = readParameters (is);

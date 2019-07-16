@@ -185,7 +185,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     return (-1);
   }
 
-  char *map = static_cast<char*> (::mmap (0, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0));
+  char *map = static_cast<char*> (::mmap (nullptr, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1)) //MAP_FAILED)
   {
     io::raw_close (fd);
@@ -384,7 +384,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
     return (-1);
   }
 
-  char *map = static_cast<char*> (::mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0));
+  char *map = static_cast<char*> (::mmap (nullptr, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1)) //MAP_FAILED)
   {
     io::raw_close (fd);
@@ -546,15 +546,12 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
               stream << boost::numeric_cast<uint32_t>(value);
               break;
             }
+            float value;
+            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (float), sizeof (float));
+            if (std::isnan (value))
+              stream << "nan";
             else
-            {
-              float value;
-              memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (float), sizeof (float));
-              if (std::isnan (value))
-                stream << "nan";
-              else
-                stream << boost::numeric_cast<float>(value);
-            }
+              stream << boost::numeric_cast<float>(value);
             break;
           }
           case pcl::PCLPointField::FLOAT64:
@@ -663,7 +660,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     return (-1);
   }
 
-  char *map = static_cast<char*> (::mmap (0, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0));
+  char *map = static_cast<char*> (::mmap (nullptr, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1)) //MAP_FAILED)
   {
     io::raw_close (fd);

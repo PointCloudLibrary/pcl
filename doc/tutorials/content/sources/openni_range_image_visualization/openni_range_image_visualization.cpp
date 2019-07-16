@@ -10,11 +10,13 @@ using namespace std;
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/parse.h>
 
+#include <mutex>
+
 std::string device_id = "#1";
 
 float angular_resolution = -1.0f;
 
-boost::mutex depth_image_mutex;
+std::mutex depth_image_mutex;
 openni_wrapper::DepthImage::Ptr depth_image_ptr;
 bool received_new_depth_data = false;
 
@@ -92,7 +94,7 @@ int main (int argc, char** argv)
   pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
   EventHelper event_helper;
   
-  boost::function<void (const openni_wrapper::DepthImage::Ptr&) > f_depth_image =
+  std::function<void (const openni_wrapper::DepthImage::Ptr&) > f_depth_image =
     boost::bind (&EventHelper::depth_image_cb, &event_helper, _1);
   boost::signals2::connection c_depth_image = interface->registerCallback (f_depth_image);
   

@@ -20,8 +20,8 @@ namespace pcl
       class SHOTLocalEstimation : public LocalEstimator<PointInT, FeatureT>
       {
 
-        typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
-        typedef typename pcl::PointCloud<FeatureT>::Ptr FeatureTPtr;
+        using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
+        using FeatureTPtr = typename pcl::PointCloud<FeatureT>::Ptr;
 
         using LocalEstimator<PointInT, FeatureT>::support_radius_;
         using LocalEstimator<PointInT, FeatureT>::normal_estimator_;
@@ -39,7 +39,7 @@ namespace pcl
             return false;
           }
 
-          if (keypoint_extractor_.size() == 0)
+          if (keypoint_extractor_.empty ())
           {
             PCL_ERROR("SHOTLocalEstimation :: This feature needs a keypoint extractor... please provide one\n");
             return false;
@@ -99,7 +99,7 @@ namespace pcl
           keypoint_extractor_->setSupportRadius(support_radius_);
           keypoint_extractor_->compute (keypoints);*/
 
-          if (keypoints->points.size () == 0)
+          if (keypoints->points.empty ())
           {
             PCL_WARN("SHOTLocalEstimation :: No keypoints were found\n");
             return false;
@@ -107,7 +107,7 @@ namespace pcl
 
           std::cout << keypoints->points.size() << " " << normals->points.size() << " " << processed->points.size() << std::endl;
           //compute signatures
-          typedef pcl::SHOTEstimation<PointInT, pcl::Normal, pcl::SHOT352> SHOTEstimator;
+          using SHOTEstimator = pcl::SHOTEstimation<PointInT, pcl::Normal, pcl::SHOT352>;
           typename pcl::search::KdTree<PointInT>::Ptr tree (new pcl::search::KdTree<PointInT>);
 
           pcl::PointCloud<pcl::SHOT352>::Ptr shots (new pcl::PointCloud<pcl::SHOT352>);

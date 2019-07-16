@@ -60,40 +60,40 @@ Now, let's break down the code piece by piece.
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 224-239
+   :lines: 227-242
 
 
 First, in main function, these lines set the parameters for tracking. 
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 243-254
+   :lines: 246-257
 
 Here, we set likelihood function which tracker use when calculate weights.  You can add more likelihood function as you like. By default, there are normals likelihood and color likelihood functions. When you want to add other likelihood function, all you have to do is  initialize new Coherence Class and add the Coherence instance to coherence variable with addPointCoherence function.
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 256-269
+   :lines: 259-272
 
 In this part, we set the point cloud loaded from pcd file as reference model to tracker and also set model's transform values.
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 170-177
+   :lines: 173-180
 
 
 Until the counter variable become equal to 10, we ignore the input point cloud, because the point cloud at first few frames often have noise. After counter variable reach to 10 frame, at each loop, we set downsampled input point cloud to tracker and the tracker will compute particles movement.
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 79-79
+   :lines: 82-82
 
 
 In drawParticles function, you can get particles's positions by calling getParticles().
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 113-114
+   :lines: 116-117
 
 
 

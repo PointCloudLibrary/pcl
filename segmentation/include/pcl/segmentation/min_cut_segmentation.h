@@ -40,6 +40,7 @@
 
 #include <pcl/segmentation/boost.h>
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/search/search.h>
@@ -58,10 +59,10 @@ namespace pcl
   {
     public:
 
-      typedef pcl::search::Search <PointT> KdTree;
-      typedef typename KdTree::Ptr KdTreePtr;
-      typedef pcl::PointCloud< PointT > PointCloud;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using KdTree = pcl::search::Search<PointT>;
+      using KdTreePtr = typename KdTree::Ptr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       using PCLBase <PointT>::input_;
       using PCLBase <PointT>::indices_;
@@ -70,37 +71,37 @@ namespace pcl
 
     public:
 
-      typedef boost::adjacency_list_traits< boost::vecS, boost::vecS, boost::directedS > Traits;
+      using Traits = boost::adjacency_list_traits< boost::vecS, boost::vecS, boost::directedS >;
 
-      typedef boost::adjacency_list< boost::vecS, boost::vecS, boost::directedS,
-                                     boost::property< boost::vertex_name_t, std::string,
-                                       boost::property< boost::vertex_index_t, long,
-                                         boost::property< boost::vertex_color_t, boost::default_color_type,
-                                           boost::property< boost::vertex_distance_t, long,
-                                             boost::property< boost::vertex_predecessor_t, Traits::edge_descriptor > > > > >,
-                                     boost::property< boost::edge_capacity_t, double,
-                                       boost::property< boost::edge_residual_capacity_t, double,
-                                         boost::property< boost::edge_reverse_t, Traits::edge_descriptor > > > > mGraph;
+      using mGraph = boost::adjacency_list< boost::vecS, boost::vecS, boost::directedS,
+                                            boost::property< boost::vertex_name_t, std::string,
+                                              boost::property< boost::vertex_index_t, long,
+                                                boost::property< boost::vertex_color_t, boost::default_color_type,
+                                                  boost::property< boost::vertex_distance_t, long,
+                                                    boost::property< boost::vertex_predecessor_t, Traits::edge_descriptor > > > > >,
+                                            boost::property< boost::edge_capacity_t, double,
+                                              boost::property< boost::edge_residual_capacity_t, double,
+                                                boost::property< boost::edge_reverse_t, Traits::edge_descriptor > > > >;
 
-      typedef boost::property_map< mGraph, boost::edge_capacity_t >::type CapacityMap;
+      using CapacityMap = boost::property_map< mGraph, boost::edge_capacity_t >::type;
 
-      typedef boost::property_map< mGraph, boost::edge_reverse_t>::type ReverseEdgeMap;
+      using ReverseEdgeMap = boost::property_map< mGraph, boost::edge_reverse_t>::type;
 
-      typedef Traits::vertex_descriptor VertexDescriptor;
+      using VertexDescriptor = Traits::vertex_descriptor;
 
-      typedef boost::graph_traits< mGraph >::edge_descriptor EdgeDescriptor;
+      using EdgeDescriptor = boost::graph_traits<mGraph>::edge_descriptor;
 
-      typedef boost::graph_traits< mGraph >::out_edge_iterator OutEdgeIterator;
+      using OutEdgeIterator = boost::graph_traits<mGraph>::out_edge_iterator;
 
-      typedef boost::graph_traits< mGraph >::vertex_iterator VertexIterator;
+      using VertexIterator = boost::graph_traits<mGraph>::vertex_iterator;
 
-      typedef boost::property_map< mGraph, boost::edge_residual_capacity_t >::type ResidualCapacityMap;
+      using ResidualCapacityMap = boost::property_map< mGraph, boost::edge_residual_capacity_t >::type;
 
-      typedef boost::property_map< mGraph, boost::vertex_index_t >::type IndexMap;
+      using IndexMap = boost::property_map< mGraph, boost::vertex_index_t >::type;
 
-      typedef boost::graph_traits< mGraph >::in_edge_iterator InEdgeIterator;
+      using InEdgeIterator = boost::graph_traits<mGraph>::in_edge_iterator;
 
-      typedef boost::shared_ptr<mGraph> mGraphPtr;
+      using mGraphPtr = boost::shared_ptr<mGraph>;
 
     public:
 
@@ -297,10 +298,10 @@ namespace pcl
       mGraphPtr graph_;
 
       /** \brief Stores the capacity of every edge in the graph. */
-      boost::shared_ptr<CapacityMap> capacity_;
+      std::shared_ptr<CapacityMap> capacity_;
 
       /** \brief Stores reverse edges for every edge in the graph. */
-      boost::shared_ptr<ReverseEdgeMap> reverse_edges_;
+      std::shared_ptr<ReverseEdgeMap> reverse_edges_;
 
       /** \brief Stores the vertices of the graph. */
       std::vector< VertexDescriptor > vertices_;
@@ -318,7 +319,7 @@ namespace pcl
       double max_flow_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

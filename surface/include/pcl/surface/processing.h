@@ -93,13 +93,13 @@ namespace pcl
   class PCL_EXPORTS MeshProcessing
   {
     public:
-      typedef boost::shared_ptr<MeshProcessing> Ptr;
-      typedef boost::shared_ptr<const MeshProcessing> ConstPtr;
+      using Ptr = boost::shared_ptr<MeshProcessing>;
+      using ConstPtr = boost::shared_ptr<const MeshProcessing>;
 
-      typedef PolygonMesh::ConstPtr PolygonMeshConstPtr;
+      using PolygonMeshConstPtr = PolygonMesh::ConstPtr;
 
       /** \brief Constructor. */
-      MeshProcessing () : input_mesh_ () {}
+      MeshProcessing () {}
 
       /** \brief Destructor. */
       virtual ~MeshProcessing () {}

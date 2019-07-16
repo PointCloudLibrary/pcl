@@ -12,7 +12,6 @@ namespace pcl
 }
 
 pcl::cloud_composer::RectangularFrustumSelector::RectangularFrustumSelector ()
-  : vtkInteractorStyleRubberBandPick ()
 {
   selection_complete_event_ = interactor_events::SELECTION_COMPLETE_EVENT;
 }
@@ -78,7 +77,7 @@ pcl::cloud_composer::RectangularFrustumSelector::OnLeftButtonUp ()
 
   this->CurrentRenderer->AddActor (selected_actor);
   this->GetInteractor ()->GetRenderWindow ()->Render ();
-  this->HighlightProp (NULL);
+  this->HighlightProp (nullptr);
  
   if (all_points->GetNumberOfPoints () > 0)
   {

@@ -36,6 +36,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/console/print.h>
@@ -57,11 +58,11 @@ namespace pcl
   {
   public:
 
-    typedef boost::shared_ptr<TSDFVolume<VoxelT, WeightT> > Ptr;
-    typedef boost::shared_ptr<const TSDFVolume<VoxelT, WeightT> > ConstPtr;
+    using Ptr = boost::shared_ptr<TSDFVolume<VoxelT, WeightT> >;
+    using ConstPtr = boost::shared_ptr<const TSDFVolume<VoxelT, WeightT> >;
 
-    // typedef Eigen::Matrix<VoxelT, Eigen::Dynamic, 1> VoxelTVec;
-    typedef Eigen::VectorXf VoxelTVec;
+    // using VoxelTVec = Eigen::Matrix<VoxelT, Eigen::Dynamic, 1>;
+    using VoxelTVec = Eigen::VectorXf;
 
     /** \brief Structure storing voxel grid resolution, volume size (in mm) and element_size of stored data */
     struct Header
@@ -95,7 +96,7 @@ namespace pcl
       }
 
 public:
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     };
 
@@ -282,14 +283,14 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   //  void
   //  integrateVolume (const Eigen::MatrixXf &depth_scaled, float tranc_dist, const Eigen::Matrix3f &R_inv, const Eigen::Vector3f &t, const Intr &intr);
 
-    typedef boost::shared_ptr<std::vector<VoxelT> > VolumePtr;
-    typedef boost::shared_ptr<std::vector<WeightT> > WeightsPtr;
+    using VolumePtr = boost::shared_ptr<std::vector<VoxelT> >;
+    using WeightsPtr = boost::shared_ptr<std::vector<WeightT> >;
 
     Header header_;
     VolumePtr volume_;
     WeightsPtr weights_;
 public:
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
   };
 

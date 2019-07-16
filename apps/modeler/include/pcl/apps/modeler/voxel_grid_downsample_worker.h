@@ -47,7 +47,7 @@ namespace pcl
     class VoxelGridDownampleWorker : public AbstractWorker 
     {
       public:
-        VoxelGridDownampleWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
+        VoxelGridDownampleWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=nullptr);
         ~VoxelGridDownampleWorker();
 
       protected:

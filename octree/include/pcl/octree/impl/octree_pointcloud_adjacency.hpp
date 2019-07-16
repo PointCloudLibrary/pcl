@@ -201,7 +201,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   const PointT& point_arg) const
 {
   OctreeKey key;
-  LeafContainerT* leaf = 0;
+  LeafContainerT* leaf = nullptr;
   // generate key
   this->genOctreeKeyforPoint (point_arg, key);
   

@@ -161,10 +161,10 @@ pcl::GrabCut<PointT>::setBackgroundPointsIndices (const PointIndicesConstPtr &in
 
   std::fill (trimap_.begin (), trimap_.end (), TrimapBackground);
   std::fill (hard_segmentation_.begin (), hard_segmentation_.end (), SegmentationBackground);
-  for (std::vector<int>::const_iterator idx = indices->indices.begin (); idx != indices->indices.end (); ++idx)
+  for (const int &index : indices->indices)
   {
-    trimap_[*idx] = TrimapUnknown;
-    hard_segmentation_[*idx] = SegmentationForeground;
+    trimap_[index] = TrimapUnknown;
+    hard_segmentation_[index] = SegmentationForeground;
   }
 
   if (!initialized_)
@@ -245,17 +245,17 @@ template <typename PointT> void
 pcl::GrabCut<PointT>::setTrimap (const PointIndicesConstPtr &indices, segmentation::grabcut::TrimapValue t)
 {
   using namespace pcl::segmentation::grabcut;
-  for (auto idx = indices->indices.cbegin (); idx != indices->indices.cend (); ++idx)
-    trimap_[*idx] = t;
+  for (const int &index : indices->indices)
+    trimap_[index] = t;
 
   // Immediately set the hard segmentation as well so that the display will update.
   if (t == TrimapForeground)
-    for (auto idx = indices->indices.cbegin (); idx != indices->indices.cend (); ++idx)
-      hard_segmentation_[*idx] = SegmentationForeground;
+    for (const int &index : indices->indices)
+      hard_segmentation_[index] = SegmentationForeground;
   else
     if (t == TrimapBackground)
-      for (auto idx = indices->indices.cbegin (); idx != indices->indices.cend (); ++idx)
-        hard_segmentation_[*idx] = SegmentationBackground;
+      for (const int &index : indices->indices)
+        hard_segmentation_[index] = SegmentationBackground;
 }
 
 template <typename PointT> void
@@ -284,8 +284,8 @@ pcl::GrabCut<PointT>::initGraph ()
     {
       case TrimapUnknown :
       {
-        fore = static_cast<float> (-log (background_GMM_.probabilityDensity (image_->points[point_index])));
-        back = static_cast<float> (-log (foreground_GMM_.probabilityDensity (image_->points[point_index])));
+        fore = static_cast<float> (-std::log (background_GMM_.probabilityDensity (image_->points[point_index])));
+        back = static_cast<float> (-std::log (foreground_GMM_.probabilityDensity (image_->points[point_index])));
         break;
       }
       case TrimapBackground :
@@ -342,7 +342,7 @@ pcl::GrabCut<PointT>::computeNLinksNonOrganized ()
           // We saved the color distance previously at the computeBeta stage for optimization purpose
           float color_distance = *weights_it;
           // Set the real weight
-          *weights_it = static_cast<float> (lambda_ * exp (-beta_ * color_distance) / sqrt (*dists_it));
+          *weights_it = static_cast<float> (lambda_ * std::exp (-beta_ * color_distance) / sqrt (*dists_it));
         }
       }
     }
@@ -362,16 +362,16 @@ pcl::GrabCut<PointT>::computeNLinksOrganized ()
       NLinks &links = n_links_[point_index];
 
       if( x > 0 && y < image_->height-1 )
-        links.weights[0] = lambda_ * exp (-beta_ * links.weights[0]) / links.dists[0];
+        links.weights[0] = lambda_ * std::exp (-beta_ * links.weights[0]) / links.dists[0];
 
       if( y < image_->height-1 )
-        links.weights[1] = lambda_ * exp (-beta_ * links.weights[1]) / links.dists[1];
+        links.weights[1] = lambda_ * std::exp (-beta_ * links.weights[1]) / links.dists[1];
 
       if( x < image_->width-1 && y < image_->height-1 )
-        links.weights[2] = lambda_ * exp (-beta_ * links.weights[2]) / links.dists[2];
+        links.weights[2] = lambda_ * std::exp (-beta_ * links.weights[2]) / links.dists[2];
 
       if( x < image_->width-1 )
-        links.weights[3] = lambda_ * exp (-beta_ * links.weights[3]) / links.dists[3];
+        links.weights[3] = lambda_ * std::exp (-beta_ * links.weights[3]) / links.dists[3];
     }
 	}
 }
@@ -436,7 +436,7 @@ pcl::GrabCut<PointT>::computeBetaOrganized ()
       {
         std::size_t upleft = (y+1)  * input_->width + x - 1;
         links.indices[0] = upleft;
-        links.dists[0] = sqrt (2.f);
+        links.dists[0] = std::sqrt (2.f);
         float color_dist =  squaredEuclideanDistance (image_->points[point_index],
                                                       image_->points[upleft]);
         links.weights[0] = color_dist;
@@ -460,7 +460,7 @@ pcl::GrabCut<PointT>::computeBetaOrganized ()
       {
         std::size_t upright = (y+1) * input_->width + x + 1;
         links.indices[2] = upright;
-        links.dists[2] = sqrt (2.f);
+        links.dists[2] = std::sqrt (2.f);
         float color_dist =  squaredEuclideanDistance (image_->points[point_index],
                                                       image_->points [upright]);
         links.weights[2] = color_dist;

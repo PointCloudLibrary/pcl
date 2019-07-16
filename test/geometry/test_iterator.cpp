@@ -184,9 +184,9 @@ void checkGeneralLine (unsigned x_start, unsigned y_start, unsigned x_end, unsig
         // point need to be close to line
         float distance = dir_x * float(yIdx - int(y_start)) - dir_y * float(xIdx - int(x_start));
         if (neighorhood)        
-          EXPECT_LE (fabs(distance), 0.5f);
+          EXPECT_LE (std::fabs(distance), 0.5f);
         else
-          EXPECT_LE (fabs(distance), 0.70711f);
+          EXPECT_LE (std::fabs(distance), 0.70711f);
         
         // and within the endpoints
         float lambda = dir_y * float(yIdx - int(y_start)) + dir_x * float(xIdx - int(x_start));
@@ -250,8 +250,8 @@ TEST (PCL, LineIterator8NeighborsGeneral)
   float d_alpha = float(M_PI / angular_resolution);
   for (unsigned idx = 0; idx < angular_resolution; ++idx)
   {
-    unsigned x_end = unsigned (length * cos (float(idx) * d_alpha) + center_x + 0.5);
-    unsigned y_end = unsigned (length * sin (float(idx) * d_alpha) + center_y + 0.5);
+    unsigned x_end = unsigned (length * std::cos (float(idx) * d_alpha) + center_x + 0.5);
+    unsigned y_end = unsigned (length * std::sin (float(idx) * d_alpha) + center_y + 0.5);
     
     // right
     checkGeneralLine (center_x, center_y, x_end, y_end, cloud, true);
@@ -274,8 +274,8 @@ TEST (PCL, LineIterator4NeighborsGeneral)
   float d_alpha = float(2.0 * M_PI / angular_resolution);
   for (unsigned idx = 0; idx < angular_resolution; ++idx)
   {
-    unsigned x_end = unsigned (length * cos (float(idx) * d_alpha) + center_x + 0.5);
-    unsigned y_end = unsigned (length * sin (float(idx) * d_alpha) + center_y + 0.5);
+    unsigned x_end = unsigned (length * std::cos (float(idx) * d_alpha) + center_x + 0.5);
+    unsigned y_end = unsigned (length * std::sin (float(idx) * d_alpha) + center_y + 0.5);
     
     // right
     checkGeneralLine (center_x, center_y, x_end, y_end, cloud, false);

@@ -40,6 +40,8 @@
 #pragma once
 
 // C++
+#include <mutex>
+#include <random>
 #include <vector>
 
 #include <pcl/outofcore/boost.h>
@@ -62,7 +64,7 @@ namespace pcl
     class OutofcoreOctreeRamContainer : public OutofcoreAbstractNodeContainer<PointT>
     {
       public:
-        typedef typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector AlignedPointTVector;
+        using AlignedPointTVector = typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector;
 
         /** \brief empty constructor (with a path parameter?)
           */
@@ -164,8 +166,8 @@ namespace pcl
         /** \brief linear container to hold the points */
         AlignedPointTVector container_;
 
-        static boost::mutex rng_mutex_;
-        static boost::mt19937 rand_gen_;
+        static std::mutex rng_mutex_;
+        static std::mt19937 rng_;
     };
   }
 }

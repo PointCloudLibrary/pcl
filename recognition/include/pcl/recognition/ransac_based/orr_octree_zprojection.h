@@ -116,8 +116,8 @@ namespace pcl
 
       public:
         ORROctreeZProjection ()
-        : pixels_(NULL),
-          sets_(NULL)
+        : pixels_(nullptr),
+          sets_(nullptr)
         {}
         virtual ~ORROctreeZProjection (){ this->clear();}
 
@@ -139,8 +139,8 @@ namespace pcl
         {
           int x, y; this->getPixelCoordinates (p, x, y);
 
-          if ( x < 0 || x >= num_pixels_x_ ) return (NULL);
-          if ( y < 0 || y >= num_pixels_y_ ) return (NULL);
+          if ( x < 0 || x >= num_pixels_x_ ) return (nullptr);
+          if ( y < 0 || y >= num_pixels_y_ ) return (nullptr);
 
           return (pixels_[x][y]);
         }
@@ -150,8 +150,8 @@ namespace pcl
         {
           int x, y; this->getPixelCoordinates (p, x, y);
 
-          if ( x < 0 || x >= num_pixels_x_ ) return (NULL);
-          if ( y < 0 || y >= num_pixels_y_ ) return (NULL);
+          if ( x < 0 || x >= num_pixels_x_ ) return (nullptr);
+          if ( y < 0 || y >= num_pixels_y_ ) return (nullptr);
 
           return (pixels_[x][y]);
         }
@@ -161,11 +161,11 @@ namespace pcl
         {
           int x, y; this->getPixelCoordinates (p, x, y);
 
-          if ( x < 0 || x >= num_pixels_x_ ) return (NULL);
-          if ( y < 0 || y >= num_pixels_y_ ) return (NULL);
+          if ( x < 0 || x >= num_pixels_x_ ) return (nullptr);
+          if ( y < 0 || y >= num_pixels_y_ ) return (nullptr);
 
           if ( !sets_[x][y] )
-            return NULL;
+            return nullptr;
 
           return (&sets_[x][y]->get_nodes ());
         }

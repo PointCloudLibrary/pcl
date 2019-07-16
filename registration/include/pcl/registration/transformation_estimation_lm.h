@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/warp_point_rigid.h>
 #include <pcl/registration/distances.h>
@@ -58,22 +59,22 @@ namespace pcl
     template <typename PointSource, typename PointTarget, typename MatScalar = float>
     class TransformationEstimationLM : public TransformationEstimation<PointSource, PointTarget, MatScalar>
     {
-      typedef pcl::PointCloud<PointSource> PointCloudSource;
-      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+      using PointCloudSource = pcl::PointCloud<PointSource>;
+      using PointCloudSourcePtr = typename PointCloudSource::Ptr;
+      using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
-      typedef pcl::PointCloud<PointTarget> PointCloudTarget;
+      using PointCloudTarget = pcl::PointCloud<PointTarget>;
 
-      typedef PointIndices::Ptr PointIndicesPtr;
-      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+      using PointIndicesPtr = PointIndices::Ptr;
+      using PointIndicesConstPtr = PointIndices::ConstPtr;
 
       public:
-        typedef boost::shared_ptr<TransformationEstimationLM<PointSource, PointTarget, MatScalar> > Ptr;
-        typedef boost::shared_ptr<const TransformationEstimationLM<PointSource, PointTarget, MatScalar> > ConstPtr;
+        using Ptr = boost::shared_ptr<TransformationEstimationLM<PointSource, PointTarget, MatScalar> >;
+        using ConstPtr = boost::shared_ptr<const TransformationEstimationLM<PointSource, PointTarget, MatScalar> >;
 
-        typedef Eigen::Matrix<MatScalar, Eigen::Dynamic, 1> VectorX;
-        typedef Eigen::Matrix<MatScalar, 4, 1> Vector4;
-        typedef typename TransformationEstimation<PointSource, PointTarget, MatScalar>::Matrix4 Matrix4;
+        using VectorX = Eigen::Matrix<MatScalar, Eigen::Dynamic, 1>;
+        using Vector4 = Eigen::Matrix<MatScalar, 4, 1>;
+        using Matrix4 = typename TransformationEstimation<PointSource, PointTarget, MatScalar>::Matrix4;
         
         /** \brief Constructor. */
         TransformationEstimationLM ();
@@ -224,15 +225,15 @@ namespace pcl
         template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
         struct Functor
         {
-          typedef _Scalar Scalar;
+          using Scalar = _Scalar;
           enum 
           {
             InputsAtCompileTime = NX,
             ValuesAtCompileTime = NY
           };
-          typedef Eigen::Matrix<_Scalar,InputsAtCompileTime,1> InputType;
-          typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,1> ValueType;
-          typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
+          using InputType = Eigen::Matrix<_Scalar,InputsAtCompileTime,1>;
+          using ValueType = Eigen::Matrix<_Scalar,ValuesAtCompileTime,1>;
+          using JacobianType = Eigen::Matrix<_Scalar,ValuesAtCompileTime,InputsAtCompileTime>;
 
           /** \brief Empty Constructor. */
           Functor () : m_data_points_ (ValuesAtCompileTime) {}
@@ -345,7 +346,7 @@ namespace pcl
           const TransformationEstimationLM<PointSource, PointTarget, MatScalar> *estimator_;
         };
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

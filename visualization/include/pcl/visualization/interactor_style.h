@@ -108,17 +108,16 @@ namespace pcl
     class PCL_EXPORTS PCLVisualizerInteractorStyle : public vtkInteractorStyleRubberBandPick
     {
       public:
-        typedef boost::shared_ptr<CloudActorMap> CloudActorMapPtr;
+        using CloudActorMapPtr = boost::shared_ptr<CloudActorMap>;
 
         static PCLVisualizerInteractorStyle *New ();
 
         /** \brief Empty constructor. */
         PCLVisualizerInteractorStyle () : 
-          init_ (), rens_ (), cloud_actors_ (), shape_actors_ (), win_height_ (), win_width_ (), win_pos_x_ (), win_pos_y_ (),
-          max_win_height_ (), max_win_width_ (), use_vbos_ (false), grid_enabled_ (), grid_actor_ (), lut_enabled_ (),
-          lut_actor_ (), snapshot_writer_ (), wif_ (), mouse_signal_ (), keyboard_signal_ (),
-          point_picking_signal_ (), area_picking_signal_ (), stereo_anaglyph_mask_default_ (),
-          mouse_callback_ (), modifier_ (), camera_file_ (), camera_ (), camera_saved_ (), win_ (), lut_actor_id_ ("")
+          init_ (), win_height_ (), win_width_ (), win_pos_x_ (), win_pos_y_ (),
+          max_win_height_ (), max_win_width_ (), use_vbos_ (false), grid_enabled_ (), lut_enabled_ (),
+          stereo_anaglyph_mask_default_ (),
+          modifier_ (), camera_saved_ (), lut_actor_id_ ("")
         {}
       
         /** \brief Empty destructor */
@@ -166,32 +165,32 @@ namespace pcl
         setUseVbos (const bool use_vbos) { use_vbos_ = use_vbos; }
 
         /** \brief Register a callback function for mouse events
-          * \param[in] cb a boost function that will be registered as a callback for a mouse event
+          * \param[in] cb a std function that will be registered as a callback for a mouse event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
-        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> cb);
+        registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> cb);
 
-        /** \brief Register a callback boost::function for keyboard events
-          * \param[in] cb a boost function that will be registered as a callback for a keyboard event
+        /** \brief Register a callback std::function for keyboard events
+          * \param[in] cb a std function that will be registered as a callback for a keyboard event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
-        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> cb);
+        registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> cb);
 
         /** \brief Register a callback function for point picking events
-          * \param[in] cb a boost function that will be registered as a callback for a point picking event
+          * \param[in] cb a std function that will be registered as a callback for a point picking event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
-        registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> cb);
+        registerPointPickingCallback (std::function<void (const pcl::visualization::PointPickingEvent&)> cb);
 
         /** \brief Register a callback function for area picking events
-          * \param[in] cb a boost function that will be registered as a callback for a area picking event
+          * \param[in] cb a std function that will be registered as a callback for a area picking event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerAreaPickingCallback (boost::function<void (const pcl::visualization::AreaPickingEvent&)> cb);
+        registerAreaPickingCallback (std::function<void (const pcl::visualization::AreaPickingEvent&)> cb);
 
         /** \brief Save the current rendered image to disk, as a PNG screenshot.
           * \param[in] file the name of the PNG file
@@ -205,11 +204,9 @@ namespace pcl
         bool
         saveCameraParameters (const std::string &file);
 
-        /** \brief Get camera parameters and save them to a \ref pcl::visualization::Camera.
-          * \param[out] camera the name of the \ref pcl::visualization::Camera
-          */
+        /** \brief Get camera parameters of a given viewport (0 means default viewport). */
         void
-        getCameraParameters (Camera &camera);
+        getCameraParameters (Camera &camera, int viewport = 0) const;
 
         /** \brief Load camera parameters from a camera parameter file.
           * \param[in] file the name of the camera parameter file
@@ -412,7 +409,7 @@ namespace pcl
         static PCLHistogramVisualizerInteractorStyle *New ();
 
         /** \brief Empty constructor. */
-        PCLHistogramVisualizerInteractorStyle () : wins_ (), init_ (false) {}
+        PCLHistogramVisualizerInteractorStyle () : init_ (false) {}
 
         /** \brief Initialization routine. Must be called before anything else. */
         void 

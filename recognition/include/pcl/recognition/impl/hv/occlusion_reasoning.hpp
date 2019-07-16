@@ -42,14 +42,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT>
 pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::ZBuffering (int resx, int resy, float f) :
-  f_ (f), cx_ (resx), cy_ (resy), depth_ (NULL)
+  f_ (f), cx_ (resx), cy_ (resy), depth_ (nullptr)
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT>
 pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::ZBuffering () :
-  f_ (), cx_ (), cy_ (), depth_ (NULL)
+  f_ (), cx_ (), cy_ (), depth_ (nullptr)
 {
 }
 
@@ -57,8 +57,7 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::ZBuffering () :
 template<typename ModelT, typename SceneT>
 pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::~ZBuffering ()
 {
-  if (depth_ != NULL)
-    delete[] depth_;
+  delete[] depth_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

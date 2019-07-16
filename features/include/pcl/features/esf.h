@@ -59,8 +59,8 @@ namespace pcl
   class ESFEstimation: public Feature<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<ESFEstimation<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const ESFEstimation<PointInT, PointOutT> > ConstPtr;
+      using Ptr = boost::shared_ptr<ESFEstimation<PointInT, PointOutT> >;
+      using ConstPtr = boost::shared_ptr<const ESFEstimation<PointInT, PointOutT> >;
 
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
@@ -70,11 +70,11 @@ namespace pcl
       using Feature<PointInT, PointOutT>::input_;
       using Feature<PointInT, PointOutT>::surface_;
 
-      typedef pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
       /** \brief Empty constructor. */
-      ESFEstimation () : lut_ (), local_cloud_ ()
+      ESFEstimation () : local_cloud_ ()
       {
         feature_name_ = "ESFEstimation";
         lut_.resize (GRIDSIZE);

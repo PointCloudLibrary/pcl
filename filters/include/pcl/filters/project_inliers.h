@@ -72,19 +72,19 @@ namespace pcl
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::getClassName;
 
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = typename Filter<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-    typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
+    using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
     public:
 
-      typedef boost::shared_ptr< ProjectInliers<PointT> > Ptr;
-      typedef boost::shared_ptr< const ProjectInliers<PointT> > ConstPtr;
+      using Ptr = boost::shared_ptr<ProjectInliers<PointT> >;
+      using ConstPtr = boost::shared_ptr<const ProjectInliers<PointT> >;
 
 
       /** \brief Empty constructor. */
-      ProjectInliers () : model_ (), sacmodel_ (), model_type_ (), copy_all_data_ (false)
+      ProjectInliers () : sacmodel_ (), model_type_ (), copy_all_data_ (false)
       {
         filter_name_ = "ProjectInliers";
       }
@@ -180,15 +180,15 @@ namespace pcl
     using Filter<pcl::PCLPointCloud2>::filter_name_;
     using Filter<pcl::PCLPointCloud2>::getClassName;
 
-    typedef pcl::PCLPointCloud2 PCLPointCloud2;
-    typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
-    typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
+    using PCLPointCloud2 = pcl::PCLPointCloud2;
+    using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+    using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
-    typedef SampleConsensusModel<PointXYZ>::Ptr SampleConsensusModelPtr;
+    using SampleConsensusModelPtr = SampleConsensusModel<PointXYZ>::Ptr;
 
     public:
       /** \brief Empty constructor. */
-      ProjectInliers () : model_type_ (), copy_all_data_ (false), copy_all_fields_ (true), model_ (), sacmodel_ ()
+      ProjectInliers () : model_type_ (), copy_all_data_ (false), copy_all_fields_ (true)
       {
         filter_name_ = "ProjectInliers";
       }

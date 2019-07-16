@@ -42,10 +42,13 @@
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <boost/filesystem.hpp>
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include <boost/filesystem.hpp>
 
+#include <mutex>
+
+using namespace std::chrono_literals;
 
 #define SHOW_FPS 1
 #if SHOW_FPS
@@ -76,8 +79,8 @@ using namespace boost::filesystem;
 template<typename PointType>
 class OpenNIGrabFrame
 {
-  typedef pcl::PointCloud<PointType> Cloud;
-  typedef typename Cloud::ConstPtr CloudConstPtr;  
+  using Cloud = pcl::PointCloud<PointType>;
+  using CloudConstPtr = typename Cloud::ConstPtr;  
   public:
     OpenNIGrabFrame (pcl::OpenNIGrabber &grabber)
     : visualizer_ (new pcl::visualization::PCLVisualizer ("OpenNI Viewer"))
@@ -99,7 +102,7 @@ class OpenNIGrabFrame
       if (quit_)
         return;
       
-      boost::mutex::scoped_lock lock (cloud_mutex_);
+      std::lock_guard<std::mutex> lock (cloud_mutex_);
         cloud_ = cloud;
         
       if (continuous_ || trigger_)
@@ -141,7 +144,7 @@ class OpenNIGrabFrame
     getLatestCloud ()
     {
       //lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock(cloud_mutex_);
+      std::lock_guard<std::mutex> lock(cloud_mutex_);
       CloudConstPtr temp_cloud;
       temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
       //it is safe to set it again from our
@@ -183,7 +186,7 @@ class OpenNIGrabFrame
       
 
       // make callback function from member function
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIGrabFrame::cloud_cb_, this, _1);
+      std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
 
       // connect callback function for desired signal. In this case its a point cloud with color values
       boost::signals2::connection c = grabber_.registerCallback (f);
@@ -194,7 +197,7 @@ class OpenNIGrabFrame
       // wait until user quits program with Ctrl-C, but no busy-waiting -> sleep (1);
       while (!visualizer_->wasStopped())
       {
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        std::this_thread::sleep_for(100us);
 
         visualizer_->spinOnce ();
         
@@ -212,9 +215,6 @@ class OpenNIGrabFrame
         }
       }
       
-      //while (!quit_)
-        //boost::this_thread::sleep (boost::posix_time::seconds (1));
-   
       // stop the grabber
       grabber_.stop ();
     }
@@ -238,19 +238,11 @@ class OpenNIGrabFrame
           std::cerr << "directory \"" << path.parent_path () << "\" does not exist!\n";
           exit (1);
         }
-#if BOOST_FILESYSTEM_VERSION == 3
         file_name_ = path.stem ().string ();
-#else
-        file_name_ = path.stem ();
-#endif
       }
       
       std::cout << "dir: " << dir_name_ << " :: " << path.parent_path () << std::endl;
-#if BOOST_FILESYSTEM_VERSION == 3
       std::cout << "file: " << file_name_ << " :: " << path.stem (). string () << std::endl;
-#else
-      std::cout << "file: " << file_name_ << " :: " << path.stem () << std::endl;
-#endif
       
       if (pcd_format == "b" || pcd_format == "all")
         format_ |= 1;
@@ -272,7 +264,7 @@ class OpenNIGrabFrame
     std::string dir_name_;
     unsigned format_;
     CloudConstPtr cloud_;
-    mutable boost::mutex cloud_mutex_;
+    mutable std::mutex cloud_mutex_;
     pcl::OpenNIGrabber &grabber_;
     bool visualizer_enable_;
 };

@@ -65,19 +65,16 @@ pcl::io::loadPolygonFile (const std::string &file_name, pcl::PolygonMesh& mesh)
     mesh.polygons.resize (0);
     return (static_cast<int> (mesh.cloud.width * mesh.cloud.height));
   }
-  else if (extension == "vtk")
+  if (extension == "vtk")
    return (pcl::io::loadPolygonFileVTK (file_name, mesh));
-  else if (extension == "ply")
+  if (extension == "ply")
    return (pcl::io::loadPolygonFilePLY (file_name, mesh));
-  else if (extension == "obj")
+  if (extension == "obj")
     return (pcl::io::loadPolygonFileOBJ (file_name, mesh));
-  else if (extension == "stl" )
+  if (extension == "stl" )
     return (pcl::io::loadPolygonFileSTL (file_name, mesh));
-  else
-  {
-    PCL_ERROR ("[pcl::io::loadPolygonFile]: Unsupported file type (%s)\n", extension.c_str ());
-    return (0);
-  }
+  PCL_ERROR ("[pcl::io::loadPolygonFile]: Unsupported file type (%s)\n", extension.c_str ());
+  return (0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,17 +87,14 @@ pcl::io::savePolygonFile (const std::string &file_name,
   std::string extension = file_name.substr (file_name.find_last_of ('.') + 1);
   if (extension == "pcd")  // no Polygon, but only a point cloud
     return (pcl::io::savePCDFile (file_name, mesh.cloud, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), binary_format) == 0);
-  else if (extension == "vtk")
+  if (extension == "vtk")
     return (pcl::io::savePolygonFileVTK (file_name, mesh, binary_format));
-  else if (extension == "ply")
+  if (extension == "ply")
     return (pcl::io::savePolygonFilePLY (file_name, mesh, binary_format));
-  else if (extension == "stl")
+  if (extension == "stl")
     return (pcl::io::savePolygonFileSTL (file_name, mesh, binary_format));
-  else
-  {
-    PCL_ERROR ("[pcl::io::savePolygonFile]: Unsupported file type (%s)\n", extension.c_str ());
-    return (false);
-  }
+  PCL_ERROR ("[pcl::io::savePolygonFile]: Unsupported file type (%s)\n", extension.c_str ());
+  return (false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -274,8 +268,8 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
 
 
   // Then the color information, if any
-  vtkUnsignedCharArray* poly_colors = NULL;
-  if (poly_data->GetPointData() != NULL)
+  vtkUnsignedCharArray* poly_colors = nullptr;
+  if (poly_data->GetPointData() != nullptr)
   {
     poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("Colors"));
 
@@ -318,10 +312,10 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
 
 
   // Then handle the normals, if any
-  vtkFloatArray* normals = NULL;
-  if (poly_data->GetPointData () != NULL)
+  vtkFloatArray* normals = nullptr;
+  if (poly_data->GetPointData () != nullptr)
     normals = vtkFloatArray::SafeDownCast (poly_data->GetPointData ()->GetNormals ());
-  if (normals != NULL)
+  if (normals != nullptr)
   {
     pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (new pcl::PointCloud<pcl::Normal> ());
     normal_cloud->resize (nr_points);
@@ -387,11 +381,11 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::TextureMe
   vtkIdType nr_points = poly_data->GetNumberOfPoints ();
 
   // Handle the texture coordinates
-  vtkFloatArray* texture_coords = NULL;
-  if (poly_data->GetPointData () != NULL)
+  vtkFloatArray* texture_coords = nullptr;
+  if (poly_data->GetPointData () != nullptr)
     texture_coords = vtkFloatArray::SafeDownCast (poly_data->GetPointData ()->GetTCoords ());
 
-  if (texture_coords != NULL)
+  if (texture_coords != nullptr)
   {
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
@@ -497,7 +491,7 @@ pcl::io::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& p
     poly_data->GetPointData()->SetNormals (normals);
   }
 
-  if (poly_data->GetPoints () == NULL)
+  if (poly_data->GetPoints () == nullptr)
     return (0);
   return (static_cast<int> (poly_data->GetPoints ()->GetNumberOfPoints ()));
 }

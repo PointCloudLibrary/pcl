@@ -84,7 +84,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
   // instantiate point cloud
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-  srand (int (time (NULL)));
+  srand (int (time (nullptr)));
 
   // create organized search
   search::OrganizedNeighbor<PointXYZ> organizedNeighborSearch;
@@ -156,7 +156,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
       pointCandidates.pop ();
 
     // copy results into vectors
-    while (pointCandidates.size ())
+    while (!pointCandidates.empty ())
     {
       k_indices_bruteforce.push_back (pointCandidates.top ().pointIdx_);
       k_sqr_distances_bruteforce.push_back (float (pointCandidates.top ().pointDistance_));
@@ -185,7 +185,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
 {
   constexpr unsigned int test_runs = 10;
 
-  srand (int (time (NULL)));
+  srand (int (time (nullptr)));
 
   search::OrganizedNeighbor<PointXYZ> organizedNeighborSearch;
 

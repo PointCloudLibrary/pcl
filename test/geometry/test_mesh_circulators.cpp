@@ -41,6 +41,8 @@
 #include <gtest/gtest.h>
 
 #include <pcl/geometry/triangle_mesh.h>
+#include <pcl/pcl_macros.h>
+
 #include "test_mesh_common_functions.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,33 +51,33 @@ class TestMeshCirculators : public ::testing::Test
 {
   protected:
 
-    typedef pcl::geometry::VertexIndex   VertexIndex;
-    typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
-    typedef pcl::geometry::EdgeIndex     EdgeIndex;
-    typedef pcl::geometry::FaceIndex     FaceIndex;
+    using VertexIndex = pcl::geometry::VertexIndex;
+    using HalfEdgeIndex = pcl::geometry::HalfEdgeIndex;
+    using EdgeIndex = pcl::geometry::EdgeIndex;
+    using FaceIndex = pcl::geometry::FaceIndex;
 
-    typedef std::vector <VertexIndex>   VertexIndices;
-    typedef std::vector <HalfEdgeIndex> HalfEdgeIndices;
-    typedef std::vector <FaceIndex>     FaceIndices;
+    using VertexIndices = std::vector<VertexIndex>;
+    using HalfEdgeIndices = std::vector<HalfEdgeIndex>;
+    using FaceIndices = std::vector<FaceIndex>;
 
     struct MeshTraits
     {
-      typedef pcl::geometry::NoData VertexData;
-      typedef pcl::geometry::NoData HalfEdgeData;
-      typedef pcl::geometry::NoData EdgeData;
-      typedef pcl::geometry::NoData FaceData;
-      typedef boost::true_type      IsManifold;
+      using VertexData = pcl::geometry::NoData;
+      using HalfEdgeData = pcl::geometry::NoData;
+      using EdgeData = pcl::geometry::NoData;
+      using FaceData = pcl::geometry::NoData;
+      using IsManifold = std::true_type;
     };
 
-    typedef pcl::geometry::TriangleMesh <MeshTraits>     Mesh;
-    typedef Mesh::VertexAroundVertexCirculator           VAVC;
-    typedef Mesh::OutgoingHalfEdgeAroundVertexCirculator OHEAVC;
-    typedef Mesh::IncomingHalfEdgeAroundVertexCirculator IHEAVC;
-    typedef Mesh::FaceAroundVertexCirculator             FAVC;
-    typedef Mesh::VertexAroundFaceCirculator             VAFC;
-    typedef Mesh::InnerHalfEdgeAroundFaceCirculator      IHEAFC;
-    typedef Mesh::OuterHalfEdgeAroundFaceCirculator      OHEAFC;
-    typedef Mesh::FaceAroundFaceCirculator               FAFC;
+    using Mesh = pcl::geometry::TriangleMesh<MeshTraits>;
+    using VAVC = Mesh::VertexAroundVertexCirculator;
+    using OHEAVC = Mesh::OutgoingHalfEdgeAroundVertexCirculator;
+    using IHEAVC = Mesh::IncomingHalfEdgeAroundVertexCirculator;
+    using FAVC = Mesh::FaceAroundVertexCirculator;
+    using VAFC = Mesh::VertexAroundFaceCirculator;
+    using IHEAFC = Mesh::InnerHalfEdgeAroundFaceCirculator;
+    using OHEAFC = Mesh::OuterHalfEdgeAroundFaceCirculator;
+    using FAFC = Mesh::FaceAroundFaceCirculator;
 
     //   1 - 6   //
     //  / \ / \  //
@@ -88,7 +90,7 @@ class TestMeshCirculators : public ::testing::Test
       for (int i=0; i<7; ++i) mesh_.addVertex ();
 
       VertexIndices vi;
-      typedef VertexIndex VI;
+      using VI = VertexIndex;
       vi.push_back (VI (0)); vi.push_back (VI (1)); vi.push_back (VI (2)); faces_.push_back (vi); vi.clear ();
       vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (3)); faces_.push_back (vi); vi.clear ();
       vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (4)); faces_.push_back (vi); vi.clear ();
@@ -113,7 +115,7 @@ class TestMeshCirculators : public ::testing::Test
     VertexIndices expected_123456_;
     VertexIndices expected_654321_;
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 ////////////////////////////////////////////////////////////////////////////////
