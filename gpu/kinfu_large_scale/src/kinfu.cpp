@@ -870,7 +870,7 @@ namespace pcl
         double c = (R.trace() - 1) * 0.5;
         c = c > 1. ? 1. : c < -1. ? -1. : c;
 
-        double theta = acos(c);
+        double theta = std::acos(c);
 
         if( s < 1e-5 )
         {

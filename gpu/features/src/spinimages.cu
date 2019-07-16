@@ -227,7 +227,7 @@ namespace pcl
 
 					if (angular)
 					{
-						float anlge_betwwn_normals = acos(cos_between_normals);						
+						float anlge_betwwn_normals = std::acos(cos_between_normals);						
 						incAngle(alpha_bin,   beta_bin,   anlge_betwwn_normals * (1-a) * (1-b)); 
 						incAngle(alpha_bin+1, beta_bin,   anlge_betwwn_normals *    a  * (1-b));
 						incAngle(alpha_bin,   beta_bin+1, anlge_betwwn_normals * (1-a) *    b );

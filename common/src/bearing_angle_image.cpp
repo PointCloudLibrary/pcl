@@ -80,7 +80,7 @@ BearingAngleImage::getAngle (const PointXYZ &point1, const PointXYZ &point2)
 
   if (a != 0 && b != 0)
   {
-    theta = acos ((a + b - c) / (2 * sqrt (a) * sqrt (b))) * 180 / M_PI;
+    theta = std::acos ((a + b - c) / (2 * sqrt (a) * sqrt (b))) * 180 / M_PI;
   }
   else
   {

@@ -92,7 +92,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
     Eigen::Vector3f scene_reference_point = target_->points[scene_reference_index].getVector3fMap (),
         scene_reference_normal = target_->points[scene_reference_index].getNormalVector3fMap ();
 
-    float rotation_angle_sg = acosf (scene_reference_normal.dot (Eigen::Vector3f::UnitX ()));
+    float rotation_angle_sg = std::acos (scene_reference_normal.dot (Eigen::Vector3f::UnitX ()));
     bool parallel_to_x_sg = (scene_reference_normal.y() == 0.0f && scene_reference_normal.z() == 0.0f);
     Eigen::Vector3f rotation_axis_sg = (parallel_to_x_sg)?(Eigen::Vector3f::UnitY ()):(scene_reference_normal.cross (Eigen::Vector3f::UnitX ()). normalized());
     Eigen::AngleAxisf rotation_sg (rotation_angle_sg, rotation_axis_sg);
@@ -162,7 +162,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
 
     Eigen::Vector3f model_reference_point = input_->points[max_votes_i].getVector3fMap (),
         model_reference_normal = input_->points[max_votes_i].getNormalVector3fMap ();
-    float rotation_angle_mg = acosf (model_reference_normal.dot (Eigen::Vector3f::UnitX ()));
+    float rotation_angle_mg = std::acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ()));
     bool parallel_to_x_mg = (model_reference_normal.y() == 0.0f && model_reference_normal.z() == 0.0f);
     Eigen::Vector3f rotation_axis_mg = (parallel_to_x_mg)?(Eigen::Vector3f::UnitY ()):(model_reference_normal.cross (Eigen::Vector3f::UnitX ()). normalized());
     Eigen::AngleAxisf rotation_mg (rotation_angle_mg, rotation_axis_mg);

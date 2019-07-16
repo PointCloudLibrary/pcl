@@ -146,7 +146,7 @@ namespace
     Eigen::Vector3f rotated_direction = rotation*direction;
     Eigen::Vector2f direction_vector (rotated_direction[0], rotated_direction[1]);
     direction_vector.normalize ();
-    float angle = 0.5f*normAngle (2.0f*acosf (direction_vector[0]));
+    float angle = 0.5f*normAngle (2.0f*std::acos (direction_vector[0]));
     return (angle);
   }
   

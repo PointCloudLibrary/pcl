@@ -378,7 +378,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         double cosine = nc.dot (neighbor_normal);
         if (cosine > 1) cosine = 1;
         if (cosine < -1) cosine = -1;
-        double angle = acos (cosine);
+        double angle = std::acos (cosine);
         if ((!consistent_) && (angle > M_PI/2))
           angle = M_PI - angle;
         if (angle > eps_angle_)

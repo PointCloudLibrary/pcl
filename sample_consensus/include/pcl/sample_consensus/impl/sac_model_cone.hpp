@@ -110,7 +110,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::computeModelCoefficients (
   ap3.normalize ();
 
   //compute opening angle
-  float opening_angle = ( acosf (ap1.dot (axis_dir)) + acosf (ap2.dot (axis_dir)) + acosf (ap3.dot (axis_dir)) ) / 3.0f;
+  float opening_angle = ( std::acos (ap1.dot (axis_dir)) + std::acos (ap2.dot (axis_dir)) + std::acos (ap3.dot (axis_dir)) ) / 3.0f;
 
   model_coefficients.resize (7);
   // model_coefficients.template head<3> ()    = line_pt.template head<3> ();

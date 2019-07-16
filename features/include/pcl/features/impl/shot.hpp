@@ -359,7 +359,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSing
     if (inclinationCos > 1.0)
       inclinationCos = 1.0;
 
-    double inclination = acos (inclinationCos);
+    double inclination = std::acos (inclinationCos);
 
     assert (inclination >= 0.0 && inclination <= PST_RAD_180);
 
@@ -558,7 +558,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDou
     if (inclinationCos > 1.0)
       inclinationCos = 1.0;
 
-    double inclination = acos (inclinationCos);
+    double inclination = std::acos (inclinationCos);
 
     assert (inclination >= 0.0 && inclination <= PST_RAD_180);
 

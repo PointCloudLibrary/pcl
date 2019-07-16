@@ -682,7 +682,7 @@ double q[4];
   q[2] = qx.y();
   q[3] = qx.z();
 
-    double halftheta = acos (q[0]);
+    double halftheta = std::acos (q[0]);
     theta = halftheta * 2;
     double sinhalftheta = sin (halftheta);
     if (feq (halftheta, 0)) {

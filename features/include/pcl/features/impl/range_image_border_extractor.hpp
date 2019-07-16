@@ -388,8 +388,8 @@ bool RangeImageBorderExtractor::calculateMainPrincipalCurvature(int x, int y, in
     //magnitude = -std::numeric_limits<float>::infinity ();
     //return false;
   //}
-  //float angle2 = acosf(surface_structure_[y*range_image_->width+x+1]->normal.dot(local_surface->normal)),
-        //angle1 = acosf(surface_structure_[y*range_image_->width+x-1]->normal.dot(local_surface->normal));
+  //float angle2 = std::acos(surface_structure_[y*range_image_->width+x+1]->normal.dot(local_surface->normal)),
+        //angle1 = std::acos(surface_structure_[y*range_image_->width+x-1]->normal.dot(local_surface->normal));
   //magnitude = angle2-angle1;
 
   return std::isfinite(magnitude);
