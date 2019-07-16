@@ -87,7 +87,7 @@ namespace pcl
 
         bool use_cache_;
         std::map<std::pair<std::string, int>, Eigen::Matrix4f,
-                 std::less<std::pair<std::string, int> >,
+                 std::less<>,
                  Eigen::aligned_allocator<std::pair<const std::pair<std::string, int>, Eigen::Matrix4f> > > poses_cache_;
         std::map<std::pair<std::string, int>, typename pcl::PointCloud<PointInT>::Ptr> keypoints_cache_;
 
