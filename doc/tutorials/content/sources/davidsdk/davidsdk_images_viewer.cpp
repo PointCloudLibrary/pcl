@@ -106,7 +106,7 @@ main (int argc,
     return (-1);
   PCL_WARN ("davidSDK connected\n");
 
-  std::function<void (const pcl::PCLImage::Ptr &)> f = boost::bind (&grabberCallback, _1);
+  std::function<void (const pcl::PCLImage::Ptr&)> f = grabberCallback;
   davidsdk_ptr->registerCallback (f);
   davidsdk_ptr->start ();
   waitForUser ("Press enter to quit");

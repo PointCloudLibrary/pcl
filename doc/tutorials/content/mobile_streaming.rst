@@ -100,7 +100,7 @@ few lines of the *run()* method:
 .. code-block:: cpp
 
     pcl::OpenNIGrabber grabber (device_id_);
-    std::function<void (const CloudConstPtr&)> handler_function = boost::bind (&PCLMobileServer::handleIncomingCloud, this, _1);
+    std::function<void (const CloudConstPtr&)> handler_function = [this] (const CloudConstPtr& cloud) { handleIncomingCloud (cloud); };
     grabber.registerCallback (handler_function);
     grabber.start ();
 
