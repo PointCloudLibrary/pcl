@@ -236,9 +236,6 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
   // Create grid
   grid_ = std::vector<float> (res_x_*res_y_*res_z_, NAN);
 
-  // Populate tree
-  tree_->setInputCloud (input_);
-
   // Compute bounding box and voxel size
   getBoundingBox ();
   size_voxel_ = (upper_boundary_ - lower_boundary_) 
