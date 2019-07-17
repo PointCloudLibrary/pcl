@@ -76,7 +76,7 @@ The code from *apps/src/dinast_grabber_example.cpp* will be used for this tutori
       {
               
         std::function<void (const CloudConstPtr&)> f =
-          boost::bind (&DinastProcessor::cloud_cb_, this, _1);
+          [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
         
         boost::signals2::connection c = interface.registerCallback (f);
 
@@ -120,12 +120,12 @@ At the run function what we first have is actually the callback and its registra
 .. code-block:: cpp    
 
   std::function<void (const CloudConstPtr&)> f =
-    boost::bind (&DinastProcessor::cloud_cb_, this, _1);
+    [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
         
   boost::signals2::connection c = interface.registerCallback (f);
 
-We create a *boost::bind* object with the address of the callback *cloud_cb_*, we pass a reference to our DinastProcessor and the argument place holder *_1*.
-The bind then gets casted to a std::function object which is templated on the callback function type, in this case *void (const CloudConstPtr&)*. The resulting function object is then registered with the DinastGrabber interface. 
+We create a lambda object with the callback *cloud_cb_*, we pass an implicit copy of the DinastProcessor pointer (through *this*).
+The lambda then gets casted to a std::function object which is templated on the callback function type, in this case *void (const CloudConstPtr&)*. The resulting function object is then registered with the DinastGrabber interface.
 
 The *registerCallback* call returns a *boost::signals2::connection* object, which we do not use in the this example. However, if you want to interrupt or cancel one or more of the registered data streams, you can call disconnect the callback without stopping the whole grabber:
 

@@ -11,7 +11,7 @@ OpenNICapture::OpenNICapture (const std::string& device_id)
   , trigger_ (false)
 {
   // Register a callback function to our OpenNI grabber...
-  std::function<void (const PointCloudConstPtr&)> frame_cb = boost::bind (&OpenNICapture::onNewFrame, this, _1);
+  std::function<void (const PointCloudConstPtr&)> frame_cb = [this] (const PointCloudConstPtr& cloud) { onNewFrame (cloud); };
   // ... and start grabbing frames
   grabber_.registerCallback (frame_cb);
   grabber_.start ();
@@ -40,7 +40,7 @@ OpenNICapture::snap ()
       preview_ = pcl::visualization::PCLVisualizer::Ptr (new pcl::visualization::PCLVisualizer ());
 
       std::function<void (const pcl::visualization::KeyboardEvent&)> keyboard_cb =
-        boost::bind (&OpenNICapture::onKeyboardEvent, this, _1);
+        [this] (const pcl::visualization::KeyboardEvent& event) { onKeyboardEvent (event); };
 
       preview_->registerKeyboardCallback (keyboard_cb);
     }

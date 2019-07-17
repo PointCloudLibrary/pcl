@@ -275,11 +275,10 @@ main (int argc, char** argv)
   //Setup OpenNIGrabber and viewer
   pcl::visualization::CloudViewer* viewer_ = new pcl::visualization::CloudViewer("PCL OpenNI Tracking Viewer");
   pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
-  std::function<void (const CloudConstPtr&)> f =
-    boost::bind (&cloud_cb, _1);
+  std::function<void (const CloudConstPtr&)> f = cloud_cb;
   interface->registerCallback (f);
-    
-  viewer_->runOnVisualizationThread (boost::bind(&viz_cb, _1), "viz_cb");
+
+  viewer_->runOnVisualizationThread (viz_cb, "viz_cb");
 
   //Start viewer and object tracking
   interface->start();

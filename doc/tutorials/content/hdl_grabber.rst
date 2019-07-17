@@ -125,8 +125,8 @@ So let's look at the code. The following represents a simplified version of *vis
          cloud_viewer_->setCameraPosition (0.0, 0.0, 30.0, 0.0, 1.0, 0.0, 0);
          cloud_viewer_->setCameraClipDistances (0.0, 50.0);
 
-         std::function<void (const CloudConstPtr&)> cloud_cb = boost::bind (
-             &SimpleHDLViewer::cloud_callback, this, _1);
+         std::function<void (const CloudConstPtr&)> cloud_cb =
+             [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
          boost::signals2::connection cloud_connection = grabber_.registerCallback (
              cloud_cb);
 
@@ -194,7 +194,7 @@ Additional Details
 
 The *HDL Grabber* offers more than one datatype, which is the reason we made
 the *Grabber* interface so generic, leading to the relatively complicated
-*boost::bind* line. In fact, we can register the following callback types as of
+lambda line. In fact, we can register the following callback types as of
 this writing:
 
 * `void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)`

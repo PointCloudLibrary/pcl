@@ -118,7 +118,7 @@ int main (int argc, char** argv)
   EventHelper event_helper;
   
   std::function<void (const openni_wrapper::DepthImage::Ptr&) > f_depth_image =
-    boost::bind (&EventHelper::depth_image_cb, &event_helper, _1);
+    [&] (const openni_wrapper::DepthImage::Ptr& depth) { event_helper.depth_image_cb (depth); };
   boost::signals2::connection c_depth_image = interface->registerCallback (f_depth_image);
   
   cout << "Starting grabber\n";

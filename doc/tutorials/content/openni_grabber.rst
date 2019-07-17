@@ -59,8 +59,8 @@ So let's look at the code. From *visualization/tools/openni_viewer_simple.cpp*
         {   
           pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-          std::function<void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f = 
-            boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
+          std::function<void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f =
+            [this] (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
           interface->registerCallback (f);
               
@@ -87,11 +87,12 @@ So let's look at the code. From *visualization/tools/openni_viewer_simple.cpp*
 
 As you can see, the *run ()* function of *SimpleOpenNIViewer* first creates a
 new *OpenNIGrabber* interface. The next line might seem a bit intimidating at
-first, but it's not that bad. We create a *boost::bind* object with the address
-of the callback *cloud_cb_*, we pass a reference to our *SimpleOpenNIViewer*
-and the argument place holder *_1*.
+first, but it's not that bad. We create a lambda object which invokes *cloud_cb_*,
+we capture a copy of *this* to get an pointer to our *SimpleOpenNIViewer*, so
+that *cloud_cb_* can be invoked.
 
-The *bind* then gets casted to a *std::function* object which is templated on
+
+The lambda then gets casted to a *std::function* object which is templated on
 the callback function type, in this case *void (const
 pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)*. The resulting function object can
 the be registered with the *OpenNIGrabber* and subsequently started.  Note that
@@ -103,7 +104,7 @@ Additional Details
 
 The *OpenNIGrabber* offers more than one datatype, which is the reason we made
 the *Grabber* interface so generic, leading to the relatively complicated
-*boost::bind* line. In fact, we can register the following callback types as of
+lambda line. In fact, we can register the following callback types as of
 this writing:
 
 * `void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)`
