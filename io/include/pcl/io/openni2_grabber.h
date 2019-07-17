@@ -1,17 +1,17 @@
 /*
  * Software License Agreement (BSD License)
- * 
+ *
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2009-2012, Willow Garage, Inc.
  * Copyright (c) 2012-, Open Perception, Inc.
  * Copyright (c) 2014, respective authors.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *  * Redistributions in binary form must reproduce the above
@@ -21,7 +21,7 @@
  *  * Neither the name of the copyright holder(s) nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -133,9 +133,15 @@ namespace pcl
 
       public:
         /** \brief Constructor
-        * \param[in] device_id ID of the device, which might be a serial number, bus@address or the index of the device.
+        * \param[in] device_id ID of the device, which might be a serial number, bus@address, URI or the index of the device.
         * \param[in] depth_mode the mode of the depth stream
         * \param[in] image_mode the mode of the image stream
+        * Depending on the value of \a device_id, the device is opened as follows:
+        * * If it corresponds to a file path, the device is opened with OpenNI2DeviceManager::getFileDevice
+        * * If it is an index of the form "#1234", the device is opened with OpenNI2DeviceManager::getDeviceByIndex
+        * * If it corresponds to an URI, the device is opened with OpenNI2DeviceManager::getDevice
+        * * If it is an empty string, the device is opened with OpenNI2DeviceManager::getAnyDevice
+        * * Otherwise a pcl::IOException instance is thrown
         */
         OpenNI2Grabber (const std::string& device_id = "",
           const Mode& depth_mode = OpenNI_Default_Mode,
