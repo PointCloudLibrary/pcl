@@ -59,7 +59,7 @@ namespace pcl
   class PCL_EXPORTS DinastGrabber: public Grabber
   {
     // Define callback signature typedefs
-    using sig_cb_dinast_point_cloud = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> > &);
+    using sig_cb_dinast_point_cloud = void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr &);
     
     public:
       /** \brief Constructor that sets up the grabber constants.

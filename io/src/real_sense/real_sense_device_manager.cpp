@@ -55,13 +55,13 @@ releasePXCResource (T* resource)
   }
 }
 
-template <typename T> boost::shared_ptr<T>
+template <typename T> std::shared_ptr<T>
 makePXCSharedPtr (T* resource)
 {
-  return boost::shared_ptr<T> (resource, releasePXCResource<T>);
+  return std::shared_ptr<T> (resource, releasePXCResource<T>);
 }
 
-boost::shared_ptr<PXCSession>
+std::shared_ptr<PXCSession>
 createPXCSession ()
 {
   PXCSession* s = PXCSession::CreateInstance ();
@@ -70,7 +70,7 @@ createPXCSession ()
   return makePXCSharedPtr (s);
 }
 
-boost::shared_ptr<PXCCaptureManager>
+std::shared_ptr<PXCCaptureManager>
 createPXCCaptureManager (PXCSession& session)
 {
   PXCCaptureManager* cm = session.CreateCaptureManager ();
@@ -79,7 +79,7 @@ createPXCCaptureManager (PXCSession& session)
   return makePXCSharedPtr (cm);
 }
 
-boost::shared_ptr<PXCCapture>
+std::shared_ptr<PXCCapture>
 createPXCCapture (PXCSession& session, pxcUID iuid)
 {
   PXCCapture* c;
@@ -88,7 +88,7 @@ createPXCCapture (PXCSession& session, pxcUID iuid)
   return makePXCSharedPtr (c);
 }
 
-boost::shared_ptr<PXCCapture::Device>
+std::shared_ptr<PXCCapture::Device>
 createPXCCaptureDevice (PXCCapture& capture, pxcI32 didx)
 {
   PXCCapture::Device* d;

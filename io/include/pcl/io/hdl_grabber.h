@@ -63,12 +63,12 @@ namespace pcl
       /** \brief Signal used for a single sector
        *         Represents 1 corrected packet from the HDL Velodyne
        */
-      using sig_cb_velodyne_hdl_scan_point_cloud_xyz = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> > &, float, float);
+      using sig_cb_velodyne_hdl_scan_point_cloud_xyz = void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &, float, float);
 
       /** \brief Signal used for a single sector
        *         Represents 1 corrected packet from the HDL Velodyne.  Each laser has a different RGB
        */
-      using sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> > &, float, float);
+      using sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba = void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &, float, float);
 
       using sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb [[deprecated("use sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba instead")]]
               = sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba;
@@ -76,25 +76,25 @@ namespace pcl
       /** \brief Signal used for a single sector
        *         Represents 1 corrected packet from the HDL Velodyne with the returned intensity.
        */
-      using sig_cb_velodyne_hdl_scan_point_cloud_xyzi = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> > &, float, float);
+      using sig_cb_velodyne_hdl_scan_point_cloud_xyzi = void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr &, float, float);
 
       /** \brief Signal used for a 360 degree sweep
        *         Represents multiple corrected packets from the HDL Velodyne
        *         This signal is sent when the Velodyne passes angle "0"
        */
-      using sig_cb_velodyne_hdl_sweep_point_cloud_xyz = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> > &);
+      using sig_cb_velodyne_hdl_sweep_point_cloud_xyz = void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &);
 
       /** \brief Signal used for a 360 degree sweep
        *         Represents multiple corrected packets from the HDL Velodyne with the returned intensity
        *         This signal is sent when the Velodyne passes angle "0"
        */
-      using sig_cb_velodyne_hdl_sweep_point_cloud_xyzi = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> > &);
+      using sig_cb_velodyne_hdl_sweep_point_cloud_xyzi = void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr &);
 
       /** \brief Signal used for a 360 degree sweep
        *         Represents multiple corrected packets from the HDL Velodyne
        *         This signal is sent when the Velodyne passes angle "0".  Each laser has a different RGB
        */
-      using sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba = void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> > &);
+      using sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba = void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &);
 
       using sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb [[deprecated("use sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba instead")]]
               = sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba;
@@ -249,9 +249,9 @@ namespace pcl
 
       HDLLaserCorrection laser_corrections_[HDL_MAX_NUM_LASERS];
       uint16_t last_azimuth_;
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> > current_scan_xyz_, current_sweep_xyz_;
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > current_scan_xyzi_, current_sweep_xyzi_;
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> > current_scan_xyzrgba_, current_sweep_xyzrgba_;
+      pcl::PointCloud<pcl::PointXYZ>::Ptr current_scan_xyz_, current_sweep_xyz_;
+      pcl::PointCloud<pcl::PointXYZI>::Ptr current_scan_xyzi_, current_sweep_xyzi_;
+      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr current_scan_xyzrgba_, current_sweep_xyzrgba_;
       boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyz>* sweep_xyz_signal_;
       boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba>* sweep_xyzrgba_signal_;
       boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzi>* sweep_xyzi_signal_;

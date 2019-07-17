@@ -92,15 +92,14 @@ printHelp (int, char **argv)
 void
 printDeviceList ()
 {
-  using DepthSenseGrabberPtr = boost::shared_ptr<pcl::DepthSenseGrabber>;
-  std::vector<DepthSenseGrabberPtr> grabbers;
+  std::vector<DepthSenseGrabber::Ptr> grabbers;
   std::cout << "Connected devices: ";
   boost::format fmt ("\n  #%i  %s");
   while (true)
   {
     try
     {
-      grabbers.push_back (DepthSenseGrabberPtr (new pcl::DepthSenseGrabber));
+      grabbers.push_back (DepthSenseGrabber::Ptr (new pcl::DepthSenseGrabber));
       std::cout << boost::str (fmt % grabbers.size () % grabbers.back ()->getDeviceSerialNumber ());
     }
     catch (pcl::io::IOException& e)

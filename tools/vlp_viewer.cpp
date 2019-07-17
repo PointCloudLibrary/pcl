@@ -196,8 +196,8 @@ class SimpleVLPViewer
       cloud_connection.disconnect ();
     }
 
-    boost::shared_ptr<PCLVisualizer> cloud_viewer_;
-    boost::shared_ptr<ImageViewer> image_viewer_;
+    PCLVisualizer::Ptr cloud_viewer_;
+    ImageViewer::Ptr image_viewer_;
 
     Grabber& grabber_;
     std::mutex cloud_mutex_;

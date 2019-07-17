@@ -43,6 +43,7 @@
 #include <fstream>
 #include <iostream>
 #include <istream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -379,7 +380,7 @@ namespace pcl
             std::size_t count;
             begin_element_callback_type begin_element_callback;
             end_element_callback_type end_element_callback;
-            std::vector<boost::shared_ptr<property> > properties;
+            std::vector<std::shared_ptr<property>> properties;
           };
           
           info_callback_type info_callback_;
@@ -501,7 +502,7 @@ inline void pcl::io::ply::ply_parser::parse_scalar_property_definition (const st
                         property_name + "' of element '" + current_element_->name + "' is not handled");
     }
   }
-  current_element_->properties.push_back (boost::shared_ptr<property> (new scalar_property<scalar_type> (property_name, scalar_property_callback)));
+  current_element_->properties.emplace_back (new scalar_property<scalar_type> (property_name, scalar_property_callback));
 }
 
 template <typename SizeType, typename ScalarType>
@@ -530,12 +531,11 @@ inline void pcl::io::ply::ply_parser::parse_list_property_definition (const std:
                         current_element_->name + "' is not handled");
     }
   }
-  current_element_->properties.push_back (boost::shared_ptr<property> (
-                                           new list_property<size_type, scalar_type> (
+  current_element_->properties.emplace_back (new list_property<size_type, scalar_type> (
                                              property_name, 
                                              boost::get<0> (list_property_callbacks), 
                                              boost::get<1> (list_property_callbacks), 
-                                             boost::get<2> (list_property_callbacks))));
+                                             boost::get<2> (list_property_callbacks)));
 }
 
 template <typename ScalarType>

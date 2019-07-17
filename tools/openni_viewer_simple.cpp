@@ -105,18 +105,18 @@ class SimpleOpenNIViewer
     }
 
     void
-    image_callback (const boost::shared_ptr<openni_wrapper::Image>& image)
+    image_callback (const openni_wrapper::Image::Ptr& image)
     {
       FPS_CALC ("image callback");
       std::lock_guard<std::mutex> lock (image_mutex_);
       image_ = image;
     }
     
-    boost::shared_ptr<openni_wrapper::Image>
+    openni_wrapper::Image::Ptr
     getLatestImage ()
     {
       std::lock_guard<std::mutex> lock(image_mutex_);
-      boost::shared_ptr<openni_wrapper::Image> temp_image;
+      openni_wrapper::Image::Ptr temp_image;
       temp_image.swap (image_);
       return (temp_image);
     }    
@@ -176,7 +176,7 @@ class SimpleOpenNIViewer
       boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
       
       boost::signals2::connection image_connection;
-      if (grabber_.providesCallback<void (const boost::shared_ptr<openni_wrapper::Image>&)>())
+      if (grabber_.providesCallback<void (const openni_wrapper::Image::Ptr&)>())
       {
           string mouseMsg2D("Mouse coordinates in image viewer");
           string keyMsg2D("Key event for image viewer");
@@ -200,7 +200,7 @@ class SimpleOpenNIViewer
         }
         if (image_)
         {
-          boost::shared_ptr<openni_wrapper::Image> image = getLatestImage ();
+          auto image = getLatestImage ();
           
           if (image->getEncoding() == openni_wrapper::Image::RGB)
           {
@@ -234,7 +234,7 @@ class SimpleOpenNIViewer
     CloudConstPtr cloud_;
     
     std::mutex image_mutex_;
-    boost::shared_ptr<openni_wrapper::Image> image_;
+    openni_wrapper::Image::Ptr image_;
     pcl::visualization::ImageViewer image_viewer_;
 };
 
@@ -293,7 +293,7 @@ main(int argc, char ** argv)
       if (argc >= 3)
       {
         pcl::OpenNIGrabber grabber(argv[2]);
-        boost::shared_ptr<openni_wrapper::OpenNIDevice> device = grabber.getDevice();
+        auto device = grabber.getDevice();
         cout << "Supported depth modes for device: " << device->getVendorName() << " , " << device->getProductName() << endl;
         std::vector<std::pair<int, XnMapOutputMode > > modes = grabber.getAvailableDepthModes();
         for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)

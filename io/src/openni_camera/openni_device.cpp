@@ -839,7 +839,7 @@ openni_wrapper::OpenNIDevice::ImageDataThreadFunction ()
     image_data->CopyFrom (image_md);
     image_lock.unlock ();
     
-    boost::shared_ptr<Image> image = getCurrentImage (image_data);
+    auto image = getCurrentImage (image_data);
     for (const auto &callback : image_callback_)
     {
       callback.second.operator()(image);
@@ -868,7 +868,7 @@ openni_wrapper::OpenNIDevice::DepthDataThreadFunction ()
     depth_data->CopyFrom (depth_md);
     depth_lock.unlock ();
 
-    boost::shared_ptr<DepthImage> depth_image ( new DepthImage (depth_data, baseline_, getDepthFocalLength (), shadow_value_, no_sample_value_) );
+    DepthImage::Ptr depth_image ( new DepthImage (depth_data, baseline_, getDepthFocalLength (), shadow_value_, no_sample_value_) );
 
     for (const auto &callback : depth_callback_)
     {
@@ -898,7 +898,7 @@ openni_wrapper::OpenNIDevice::IRDataThreadFunction ()
     ir_data->CopyFrom (ir_md);
     ir_lock.unlock ();
 
-    boost::shared_ptr<IRImage> ir_image ( new IRImage (ir_data) );
+    IRImage::Ptr ir_image ( new IRImage (ir_data) );
 
     for (const auto &callback : ir_callback_)
     {

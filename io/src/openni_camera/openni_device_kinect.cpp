@@ -130,10 +130,10 @@ openni_wrapper::DeviceKinect::enumAvailableModes () throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-boost::shared_ptr<openni_wrapper::Image> 
+openni_wrapper::Image::Ptr 
 openni_wrapper::DeviceKinect::getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_data) const throw ()
 {
-  return (boost::shared_ptr<Image> (new ImageBayerGRBG (image_data, debayering_method_)));
+  return (Image::Ptr (new ImageBayerGRBG (image_data, debayering_method_)));
 }
 
 }//namespace

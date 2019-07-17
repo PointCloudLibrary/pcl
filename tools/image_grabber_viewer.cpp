@@ -54,7 +54,7 @@ using pcl::console::print_info;
 using pcl::console::print_value;
 
 std::mutex mutex_;
-boost::shared_ptr<pcl::ImageGrabber<pcl::PointXYZRGBA> > grabber;
+pcl::ImageGrabber<pcl::PointXYZRGBA>::Ptr grabber;
 pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud_;
 
 void

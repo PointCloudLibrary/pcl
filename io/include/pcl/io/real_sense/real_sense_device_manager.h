@@ -37,15 +37,15 @@
 
 #pragma once
 
-#include <boost/utility.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/shared_ptr.hpp>
-
 #include <pcl/pcl_exports.h>
 
 #include <pxcsession.h>
 #include <pxccapture.h>
 #include <pxccapturemanager.h>
+
+#include <boost/utility.hpp>
+
+#include <memory>
 
 namespace pcl
 {
@@ -65,7 +65,7 @@ namespace pcl
 
         public:
 
-          using Ptr = boost::shared_ptr<RealSenseDeviceManager>;
+          using Ptr = std::shared_ptr<RealSenseDeviceManager>;
 
           static Ptr&
           getInstance ()
@@ -86,13 +86,13 @@ namespace pcl
             return (device_list_.size ());
           }
 
-          boost::shared_ptr<RealSenseDevice>
+          std::shared_ptr<RealSenseDevice>
           captureDevice ();
 
-          boost::shared_ptr<RealSenseDevice>
+          std::shared_ptr<RealSenseDevice>
           captureDevice (size_t index);
 
-          boost::shared_ptr<RealSenseDevice>
+          std::shared_ptr<RealSenseDevice>
           captureDevice (const std::string& sn);
 
           ~RealSenseDeviceManager ();
@@ -104,12 +104,12 @@ namespace pcl
             pxcUID iuid;
             pxcI32 didx;
             std::string serial;
-            boost::weak_ptr<RealSenseDevice> device_ptr;
+            std::weak_ptr<RealSenseDevice> device_ptr;
             inline bool isCaptured () { return (!device_ptr.expired ()); }
           };
 
           /** If the device is already captured returns a pointer. */
-          boost::shared_ptr<RealSenseDevice>
+          std::shared_ptr<RealSenseDevice>
           capture (DeviceInfo& device_info);
 
           RealSenseDeviceManager ();
@@ -119,8 +119,8 @@ namespace pcl
           void
           populateDeviceList ();
 
-          boost::shared_ptr<PXCSession> session_;
-          boost::shared_ptr<PXCCaptureManager> capture_manager_;
+          std::shared_ptr<PXCSession> session_;
+          std::shared_ptr<PXCCaptureManager> capture_manager_;
 
           std::vector<DeviceInfo> device_list_;
 
@@ -133,7 +133,7 @@ namespace pcl
 
         public:
 
-          using Ptr = boost::shared_ptr<RealSenseDevice>;
+          using Ptr = std::shared_ptr<RealSenseDevice>;
 
           inline const std::string&
           getSerialNumber () { return (device_id_); }
@@ -155,8 +155,8 @@ namespace pcl
           friend class RealSenseDeviceManager;
 
           std::string device_id_;
-          boost::shared_ptr<PXCCapture> capture_;
-          boost::shared_ptr<PXCCapture::Device> device_;
+          std::shared_ptr<PXCCapture> capture_;
+          std::shared_ptr<PXCCapture::Device> device_;
 
           RealSenseDevice (const std::string& id) : device_id_ (id) { };
 

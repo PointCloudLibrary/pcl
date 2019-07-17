@@ -53,6 +53,7 @@
 #include <limits>
 #include <mutex>
 #include <thread>
+#include <memory>
 
 using namespace std;
 using namespace std::chrono_literals;
@@ -139,11 +140,11 @@ do \
 //////////////////////////////////////////////////////////////////////////////////////////
 struct Frame
 {
-  using Ptr = boost::shared_ptr<Frame>;
-  using ConstPtr = boost::shared_ptr<const Frame>;
+  using Ptr = std::shared_ptr<Frame>;
+  using ConstPtr = std::shared_ptr<const Frame>;
 
-  Frame (const boost::shared_ptr<openni_wrapper::Image> &_image,
-         const boost::shared_ptr<openni_wrapper::DepthImage> &_depth_image,
+  Frame (const openni_wrapper::Image::Ptr &_image,
+         const openni_wrapper::DepthImage::Ptr &_depth_image,
          const io::CameraParameters &_parameters_rgb,
          const io::CameraParameters &_parameters_depth,
          const boost::posix_time::ptime &_time)
@@ -154,8 +155,8 @@ struct Frame
     , time (_time) 
   {}
 
-  const boost::shared_ptr<openni_wrapper::Image> image;
-  const boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
+  const openni_wrapper::Image::Ptr image;
+  const openni_wrapper::DepthImage::Ptr depth_image;
         
   io::CameraParameters parameters_rgb, parameters_depth;
 
@@ -361,7 +362,7 @@ class Writer
 
   private:
     Buffer &buf_;
-    boost::shared_ptr<std::thread> thread_;
+    std::shared_ptr<std::thread> thread_;
 };
 
 
@@ -371,8 +372,8 @@ class Driver
   private:
     //////////////////////////////////////////////////////////////////////////
     void
-    image_callback (const boost::shared_ptr<openni_wrapper::Image> &image, 
-                    const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, 
+    image_callback (const openni_wrapper::Image::Ptr &image, 
+                    const openni_wrapper::DepthImage::Ptr &depth_image, 
                     float)
     {
       boost::posix_time::ptime time = boost::posix_time::microsec_clock::local_time ();
@@ -451,7 +452,7 @@ class Driver
     
     OpenNIGrabber& grabber_;
     Buffer &buf_write_, &buf_vis_;
-    boost::shared_ptr<std::thread> thread_;
+    std::shared_ptr<std::thread> thread_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -618,8 +619,8 @@ class Viewer
     }
 
     Buffer &buf_;
-    boost::shared_ptr<visualization::ImageViewer> image_viewer_;
-    boost::shared_ptr<visualization::ImageViewer> depth_image_viewer_;
+    visualization::ImageViewer::Ptr image_viewer_;
+    visualization::ImageViewer::Ptr depth_image_viewer_;
     bool image_cld_init_, depth_image_cld_init_;
 };
 
@@ -697,7 +698,7 @@ main (int argc, char ** argv)
       if (argc >= 3)
       {
         OpenNIGrabber grabber (argv[2]);
-        boost::shared_ptr<openni_wrapper::OpenNIDevice> device = grabber.getDevice ();
+        auto device = grabber.getDevice ();
         vector<pair<int, XnMapOutputMode> > modes;
 
         if (device->hasImageStream ())
@@ -771,7 +772,7 @@ main (int argc, char ** argv)
 
   Driver driver (ni_grabber, buf_write, buf_vis);
   Writer writer (buf_write);
-  boost::shared_ptr<Viewer> viewer;
+  std::shared_ptr<Viewer> viewer;
   if (global_visualize)
     viewer.reset (new Viewer (buf_vis));
   else

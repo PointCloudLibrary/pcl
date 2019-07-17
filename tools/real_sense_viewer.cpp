@@ -98,8 +98,7 @@ printHelp (int, char **argv)
 void
 printDeviceList ()
 {
-  using RealSenseGrabberPtr = boost::shared_ptr<pcl::RealSenseGrabber>;
-  std::vector<RealSenseGrabberPtr> grabbers;
+  std::vector<RealSenseGrabber::Ptr> grabbers;
   std::cout << "Connected devices: ";
   boost::format fmt ("\n  #%i  %s");
   boost::format fmt_dm ("\n        %2i) %d Hz  %dx%d Depth");
@@ -108,7 +107,7 @@ printDeviceList ()
   {
     try
     {
-      grabbers.push_back (RealSenseGrabberPtr (new pcl::RealSenseGrabber));
+      grabbers.push_back (RealSenseGrabber::Ptr (new pcl::RealSenseGrabber));
       std::cout << boost::str (fmt % grabbers.size () % grabbers.back ()->getDeviceSerialNumber ());
       std::vector<pcl::RealSenseGrabber::Mode> xyz_modes = grabbers.back ()->getAvailableModes (true);
       std::cout << "\n      Depth modes:";

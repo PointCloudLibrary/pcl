@@ -65,7 +65,7 @@ namespace openni_wrapper
     bool isSynchronizationSupported () const throw () override;
 
   protected:
-    boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
+    Image::Ptr getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
     void enumAvailableModes () throw ();
     bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw () override;
     ImageBayerGRBG::DebayeringMethod debayering_method_;
