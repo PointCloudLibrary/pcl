@@ -41,8 +41,9 @@
 #ifndef PCL_REGISTRATION_IMPL_ELCH_H_
 #define PCL_REGISTRATION_IMPL_ELCH_H_
 
-#include <list>
 #include <algorithm>
+#include <list>
+#include <tuple>
 
 #include <pcl/common/transforms.h>
 #include <pcl/registration/eigen.h>
@@ -143,7 +144,7 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, double *we
     s = branches.front ();
     branches.pop_front ();
 
-    for (boost::tuples::tie (adjacent_it, adjacent_it_end) = adjacent_vertices (s, g); adjacent_it != adjacent_it_end; ++adjacent_it)
+    for (std::tie (adjacent_it, adjacent_it_end) = adjacent_vertices (s, g); adjacent_it != adjacent_it_end; ++adjacent_it)
     {
       weights[*adjacent_it] = weights[s];
       if (degree (*adjacent_it, g) > 1)
@@ -179,10 +180,10 @@ pcl::registration::ELCH<PointT>::initCompute ()
     *meta_end = *(*loop_graph_)[loop_end_].cloud;
 
     typename boost::graph_traits<LoopGraph>::adjacency_iterator si, si_end;
-    for (boost::tuples::tie (si, si_end) = adjacent_vertices (loop_start_, *loop_graph_); si != si_end; si++)
+    for (std::tie (si, si_end) = adjacent_vertices (loop_start_, *loop_graph_); si != si_end; si++)
       *meta_start += *(*loop_graph_)[*si].cloud;
 
-    for (boost::tuples::tie (si, si_end) = adjacent_vertices (loop_end_, *loop_graph_); si != si_end; si++)
+    for (std::tie (si, si_end) = adjacent_vertices (loop_end_, *loop_graph_); si != si_end; si++)
       *meta_end += *(*loop_graph_)[*si].cloud;
 
     //TODO use real pose instead of centroid
@@ -225,7 +226,7 @@ pcl::registration::ELCH<PointT>::compute ()
   LOAGraph grb[4];
 
   typename boost::graph_traits<LoopGraph>::edge_iterator edge_it, edge_it_end;
-  for (boost::tuples::tie (edge_it, edge_it_end) = edges (*loop_graph_); edge_it != edge_it_end; edge_it++)
+  for (std::tie (edge_it, edge_it_end) = edges (*loop_graph_); edge_it != edge_it_end; edge_it++)
   {
     for (auto &j : grb)
       add_edge (source (*edge_it, *loop_graph_), target (*edge_it, *loop_graph_), 1, j);  //TODO add variance
@@ -247,7 +248,7 @@ pcl::registration::ELCH<PointT>::compute ()
 
   //TODO iterate ovr loop_graph_
   //typename boost::graph_traits<LoopGraph>::vertex_iterator vertex_it, vertex_it_end;
-  //for (boost::tuples::tie (vertex_it, vertex_it_end) = vertices (*loop_graph_); vertex_it != vertex_it_end; vertex_it++)
+  //for (std::tie (vertex_it, vertex_it_end) = vertices (*loop_graph_); vertex_it != vertex_it_end; vertex_it++)
   for (size_t i = 0; i < num_vertices (*loop_graph_); i++)
   {
     Eigen::Vector3f t2;

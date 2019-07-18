@@ -38,13 +38,14 @@
  *
  */
 
+#include <pcl/io/boost.h>
+#include <pcl/io/ply/ply_parser.h>
+
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iostream>
-
-#include <pcl/io/boost.h>
-#include <pcl/io/ply/ply_parser.h>
+#include <tuple>
 
 /** \class ply_to_obj_converter
   * Convert a PLY file, optionally meshed to an OBJ file.
@@ -81,13 +82,13 @@ class ply_to_obj_converter
     void
     error_callback (const std::string& filename, std::size_t line_number, const std::string& message);
 
-    boost::tuple<std::function<void ()>, std::function<void ()> > 
+    std::tuple<std::function<void ()>, std::function<void ()> > 
     element_definition_callback (const std::string& element_name, std::size_t count);
 
     template <typename ScalarType> std::function<void (ScalarType)> 
     scalar_property_definition_callback (const std::string& element_name, const std::string& property_name);
 
-    template <typename SizeType, typename ScalarType> boost::tuple<std::function<void (SizeType)>, 
+    template <typename SizeType, typename ScalarType> std::tuple<std::function<void (SizeType)>, 
                                                                       std::function<void (ScalarType)>, 
                                                                       std::function<void ()> > 
     list_property_definition_callback (const std::string& element_name, const std::string& property_name);
@@ -155,19 +156,19 @@ ply_to_obj_converter::error_callback (const std::string& filename, std::size_t l
   std::cerr << filename << ":" << line_number << ": " << "error: " << message << std::endl;
 }
 
-boost::tuple<std::function<void ()>, std::function<void ()> > 
+std::tuple<std::function<void ()>, std::function<void ()> > 
 ply_to_obj_converter::element_definition_callback (const std::string& element_name, std::size_t)
 {
   if (element_name == "vertex") 
   {
-    return boost::tuple<std::function<void ()>, std::function<void ()> > (
+    return std::tuple<std::function<void ()>, std::function<void ()> > (
       [this] { vertex_begin (); },
       [this] { vertex_end (); }
     );
   }
   if (element_name == "face") 
   {
-    return boost::tuple<std::function<void ()>, std::function<void ()> > (
+    return std::tuple<std::function<void ()>, std::function<void ()> > (
       [this] { face_begin (); },
       [this] { face_end (); }
     );
@@ -192,11 +193,11 @@ ply_to_obj_converter::scalar_property_definition_callback (const std::string& el
   return {};
 }
 
-template <> boost::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > 
+template <> std::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > 
 ply_to_obj_converter::list_property_definition_callback (const std::string& element_name, const std::string& property_name)
 {
   if ((element_name == "face") && (property_name == "vertex_indices")) {
-    return boost::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
+    return std::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
       [this] (pcl::io::ply::uint8 p){ face_vertex_indices_begin (p); },
       [this] (pcl::io::ply::int32 vertex_index) { face_vertex_indices_element (vertex_index); },
       [this] { face_vertex_indices_end (); }
