@@ -37,6 +37,16 @@ Community
 [so-question-count]: https://img.shields.io/stackexchange/stackoverflow/t/point-cloud-library.svg?logo=stackoverflow
 [stackoverflow]: https://stackoverflow.com/questions/tagged/point-cloud-library
 
+Distribution
+---------
+[![Packaging status](https://repology.org/badge/tiny-repos/pcl-pointclouds.svg)](https://repology.org/project/pcl-pointclouds/badges)
+<details>
+<summary>Click to see all</summary>
+<p>
+<a href="https://repology.org/project/pcl-pointclouds/versions"><img src="https://repology.org/badge/vertical-allrepos/pcl-pointclouds.svg?header=pcl-pointclouds"></a>
+</p>
+</details>
+
 Description
 -----------
 The Point Cloud Library (PCL) is a standalone, large scale, open project for 2D/3D image and point cloud processing.
