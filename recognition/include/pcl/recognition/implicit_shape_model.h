@@ -53,7 +53,7 @@
 namespace pcl
 {
   /** \brief This struct is used for storing peak. */
-  struct ISMPeak
+  struct EIGEN_ALIGN16 ISMPeak
   {
     /** \brief Point were this peak is located. */
     PCL_ADD_POINT4D;
@@ -65,7 +65,7 @@ namespace pcl
     int class_id;
 
     PCL_MAKE_ALIGNED_OPERATOR_NEW
-  } EIGEN_ALIGN16;
+  };
 
   namespace features
   {

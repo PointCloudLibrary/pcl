@@ -47,7 +47,7 @@ namespace pcl
   /**
    * This typedef is used to represent a point cloud containing edge information
    */
-  struct PointXYZIEdge
+  struct EIGEN_ALIGN16 PointXYZIEdge
   {
     PCL_ADD_POINT4D;                    // preferred way of adding a XYZ+padding
     float magnitude;
@@ -55,7 +55,7 @@ namespace pcl
     float magnitude_x;
     float magnitude_y;
     PCL_MAKE_ALIGNED_OPERATOR_NEW     // make sure our new allocators are aligned
-  } EIGEN_ALIGN16;                    // enforce SSE padding for correct memory alignment
+  };                    // enforce SSE padding for correct memory alignment
 
   /** \brief A 2D convolution class. */
   template <typename PointT>
