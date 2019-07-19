@@ -56,7 +56,7 @@ namespace pcl
         ~ManipulationEvent ();
         
         void
-        addManipulation (QString id, vtkSmartPointer<vtkMatrix4x4> start, vtkSmartPointer<vtkMatrix4x4> end);
+        addManipulation (const QString& id, const vtkSmartPointer<vtkMatrix4x4>& start, const vtkSmartPointer<vtkMatrix4x4>& end);
         
         inline QMap <QString, vtkSmartPointer<vtkMatrix4x4> >
         getStartMap () const { return id_start_map_;}

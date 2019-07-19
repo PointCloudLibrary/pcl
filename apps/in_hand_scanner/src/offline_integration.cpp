@@ -181,8 +181,8 @@ pcl::ihs::OfflineIntegration::computationThread ()
 ////////////////////////////////////////////////////////////////////////////////
 
 bool
-pcl::ihs::OfflineIntegration::getFilesFromDirectory (const std::string          path_dir,
-                                                     const std::string          extension,
+pcl::ihs::OfflineIntegration::getFilesFromDirectory (const std::string&          path_dir,
+                                                     const std::string&          extension,
                                                      std::vector <std::string>& files) const
 {
   if (path_dir.empty() || !boost::filesystem::exists (path_dir))

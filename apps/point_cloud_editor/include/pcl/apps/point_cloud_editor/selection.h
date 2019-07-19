@@ -54,7 +54,7 @@ class Selection : public Statistics
     /// @param cloud_ptr A pointer to the const cloud object for which this
     /// object is to maintain selections.
     Selection (ConstCloudPtr cloud_ptr, bool register_stats=false)
-      : cloud_ptr_(cloud_ptr)
+      : cloud_ptr_(std::move(cloud_ptr))
     {
       if (register_stats)
         registerStats();

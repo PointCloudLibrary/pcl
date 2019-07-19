@@ -50,9 +50,9 @@ const float SelectionTransformTool::DEFAULT_TRANSLATE_FACTOR_ = 0.001;
 SelectionTransformTool::SelectionTransformTool (ConstSelectionPtr selection_ptr,
                                                 CloudPtr cloud_ptr,
                                                 CommandQueuePtr command_queue_ptr)
-  : selection_ptr_(selection_ptr),
-    cloud_ptr_(cloud_ptr),
-    command_queue_ptr_(command_queue_ptr),
+  : selection_ptr_(std::move(selection_ptr)),
+    cloud_ptr_(std::move(cloud_ptr)),
+    command_queue_ptr_(std::move(command_queue_ptr)),
     translate_factor_(DEFAULT_TRANSLATE_FACTOR_)
 {
   std::fill_n(center_xyz_, XYZ_SIZE, 0);

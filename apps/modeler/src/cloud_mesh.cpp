@@ -56,7 +56,7 @@ pcl::modeler::CloudMesh::CloudMesh()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::CloudMesh::CloudMesh(PointCloudPtr cloud)
-  :cloud_(cloud),
+  :cloud_(std::move(cloud)),
   vtk_points_(vtkSmartPointer<vtkPoints>::New()),
   vtk_polygons_(vtkSmartPointer<vtkCellArray>::New())
 {

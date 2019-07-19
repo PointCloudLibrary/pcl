@@ -48,7 +48,7 @@ pcl::cloud_composer::ToolBoxModel::setSelectionModel (QItemSelectionModel* selec
 }
   
 QStandardItem*
-pcl::cloud_composer::ToolBoxModel::addToolGroup (QString tool_group_name)
+pcl::cloud_composer::ToolBoxModel::addToolGroup (const QString& tool_group_name)
 {
   QList <QStandardItem*> matches_name = findItems (tool_group_name);
   if (matches_name.empty ())

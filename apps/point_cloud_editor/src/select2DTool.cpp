@@ -49,7 +49,7 @@ const float Select2DTool::DEFAULT_TOOL_DISPLAY_COLOR_BLUE_ = 1.0f;
 
 
 Select2DTool::Select2DTool (SelectionPtr selection_ptr, CloudPtr cloud_ptr)
-  : selection_ptr_(selection_ptr), cloud_ptr_(cloud_ptr), display_box_(false)
+  : selection_ptr_(std::move(selection_ptr)), cloud_ptr_(std::move(cloud_ptr)), display_box_(false)
 {
 }
 

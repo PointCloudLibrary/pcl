@@ -11,7 +11,7 @@ namespace pcl
     {
 
       inline bool
-      writeCentroidToFile (std::string file, Eigen::Vector3f & centroid)
+      writeCentroidToFile (const std::string& file, Eigen::Vector3f & centroid)
       {
         std::ofstream out (file.c_str ());
         if (!out)
@@ -27,7 +27,7 @@ namespace pcl
       }
 
       inline bool
-      getCentroidFromFile (std::string file, Eigen::Vector3f & centroid)
+      getCentroidFromFile (const std::string& file, Eigen::Vector3f & centroid)
       {
         std::ifstream in;
         in.open (file.c_str (), std::ifstream::in);
@@ -45,7 +45,7 @@ namespace pcl
       }
 
       inline bool
-      writeMatrixToFile (std::string file, Eigen::Matrix4f & matrix)
+      writeMatrixToFile (const std::string& file, Eigen::Matrix4f & matrix)
       {
         std::ofstream out (file.c_str ());
         if (!out)
@@ -69,7 +69,7 @@ namespace pcl
       }
 
       inline bool
-      writeFloatToFile (std::string file, float value)
+      writeFloatToFile (const std::string& file, float value)
       {
         std::ofstream out (file.c_str ());
         if (!out)
@@ -100,7 +100,7 @@ namespace pcl
       }
 
       inline bool
-      readFloatFromFile (std::string dir, std::string file, float& value)
+      readFloatFromFile (const std::string& dir, std::string file, float& value)
       {
 
         std::vector < std::string > strs;
@@ -126,7 +126,7 @@ namespace pcl
       }
 
       inline bool
-      readFloatFromFile (std::string file, float& value)
+      readFloatFromFile (const std::string& file, float& value)
       {
 
         std::ifstream in;
@@ -191,7 +191,7 @@ namespace pcl
       }
 
       inline bool
-      readMatrixFromFile (std::string file, Eigen::Matrix4f & matrix)
+      readMatrixFromFile (const std::string& file, Eigen::Matrix4f & matrix)
       {
 
         std::ifstream in;
@@ -212,7 +212,7 @@ namespace pcl
       }
 
       inline bool
-      readMatrixFromFile2 (std::string file, Eigen::Matrix4f & matrix)
+      readMatrixFromFile2 (const std::string& file, Eigen::Matrix4f & matrix)
       {
 
         std::ifstream in;

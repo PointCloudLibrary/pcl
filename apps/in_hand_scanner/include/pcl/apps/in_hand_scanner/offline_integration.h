@@ -153,8 +153,8 @@ namespace pcl
           * \return True if success.
           */
         bool
-        getFilesFromDirectory (const std::string          path_dir,
-                               const std::string          extension,
+        getFilesFromDirectory (const std::string&          path_dir,
+                               const std::string&          extension,
                                std::vector <std::string>& files) const;
 
         /** \brief Load the transformation matrix from the given file.

@@ -45,7 +45,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::ICPRegistrationWorker::ICPRegistrationWorker(CloudMesh::PointCloudPtr cloud, const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent)
   : AbstractWorker(cloud_mesh_items, parent),
-  cloud_(cloud),
+  cloud_(std::move(cloud)),
   x_min_(std::numeric_limits<double>::max()), x_max_(std::numeric_limits<double>::min()),
   y_min_(std::numeric_limits<double>::max()), y_max_(std::numeric_limits<double>::min()),
   z_min_(std::numeric_limits<double>::max()), z_max_(std::numeric_limits<double>::min()),

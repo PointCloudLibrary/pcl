@@ -8,7 +8,7 @@
 
 pcl::cloud_composer::MergeSelection::MergeSelection (QMap <const CloudItem*, pcl::PointIndices::ConstPtr > selected_item_index_map, QObject* parent)
   : MergeCloudTool (nullptr, parent)
-  , selected_item_index_map_ (selected_item_index_map)
+  , selected_item_index_map_ (std::move(selected_item_index_map))
 {
   
 }

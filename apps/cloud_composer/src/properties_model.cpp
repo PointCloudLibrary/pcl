@@ -43,7 +43,7 @@ pcl::cloud_composer::PropertiesModel::~PropertiesModel ()
 }
 
 void
-pcl::cloud_composer::PropertiesModel::addProperty (const QString prop_name, QVariant value,  Qt::ItemFlags flags, QString category)
+pcl::cloud_composer::PropertiesModel::addProperty (const QString& prop_name, const QVariant& value,  Qt::ItemFlags flags, const QString& category)
 {
   QStandardItem* parent_item = invisibleRootItem ();
   if (category.size () > 0)
@@ -71,14 +71,14 @@ pcl::cloud_composer::PropertiesModel::addProperty (const QString prop_name, QVar
 }
 
 void
-pcl::cloud_composer::PropertiesModel::addCategory (const QString category_name)
+pcl::cloud_composer::PropertiesModel::addCategory (const QString& category_name)
 {
   QStandardItem* new_category = new QStandardItem (category_name);
   appendRow (new_category);
 }
 
 QVariant 
-pcl::cloud_composer::PropertiesModel::getProperty (const QString prop_name) const
+pcl::cloud_composer::PropertiesModel::getProperty (const QString& prop_name) const
 {
   //qDebug () << "Searching for property " << prop_name;
   QList<QStandardItem*> items = findItems (prop_name, Qt::MatchExactly | Qt::MatchRecursive, 0);

@@ -82,7 +82,7 @@ namespace pcl
         
         /** \brief Sets the name of the project using the horizontalHeaderItem         */
         void 
-        setName (QString new_name);     
+        setName (const QString& new_name);
         
         /** \brief Returns the selection model which is used for this project */
         inline QItemSelectionModel*
@@ -107,11 +107,11 @@ namespace pcl
         
         /** \brief This sets the selection for points which have been selected in the QVTKWindow */
         void 
-        setPointSelection (boost::shared_ptr<SelectionEvent> selected_event);
+        setPointSelection (const boost::shared_ptr<SelectionEvent>& selected_event);
         
         /** \brief This is invoked to perform the manipulations specified on the model */
         void
-        manipulateClouds (boost::shared_ptr<ManipulationEvent> manip_event);
+        manipulateClouds (const boost::shared_ptr<ManipulationEvent>& manip_event);
       public Q_SLOTS:
         void 
         commandCompleted (CloudCommand* command);

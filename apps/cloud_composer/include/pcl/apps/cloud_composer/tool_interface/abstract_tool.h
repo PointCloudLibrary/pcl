@@ -73,7 +73,7 @@ namespace pcl
         getActionText () const {return action_text_;}
         
         void
-        setActionText (const QString text) { action_text_ = text; }
+        setActionText (const QString& text) { action_text_ = text; }
               
         virtual QString
         getToolName () const = 0;

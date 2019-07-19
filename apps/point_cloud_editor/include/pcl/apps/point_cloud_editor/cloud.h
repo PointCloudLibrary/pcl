@@ -201,7 +201,7 @@ class Cloud : public Statistics
     /// a faster rendering mode; this also occurs if the selection object is
     /// empty.
     void
-    setSelection (SelectionPtr selection_ptr);
+    setSelection (const SelectionPtr& selection_ptr);
 
     /// @brief Sets the RGB values for coloring points in COLOR_BY_PURE mode.
     /// @param r the value for red color

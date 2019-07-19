@@ -45,14 +45,14 @@ class ICCVTutorial
      * @param input the input point cloud
      * @param segmented the resulting segmented point cloud containing only points of the largest cluster
      */
-    void segmentation (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr segmented) const;
+    void segmentation (const typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& input, const typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr& segmented) const;
 
     /**
      * @brief Detects key points in the input point cloud
      * @param input the input point cloud
      * @param keypoints the resulting key points. Note that they are not necessarily a subset of the input cloud
      */
-    void detectKeypoints (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, pcl::PointCloud<pcl::PointXYZI>::Ptr keypoints) const;
+    void detectKeypoints (const typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& input, const pcl::PointCloud<pcl::PointXYZI>::Ptr& keypoints) const;
 
     /**
      * @brief extract descriptors for given key points
@@ -60,7 +60,7 @@ class ICCVTutorial
      * @param keypoints locations where descriptors are to be extracted
      * @param features resulting descriptors
      */
-    void extractDescriptors (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, typename pcl::PointCloud<pcl::PointXYZI>::Ptr keypoints, typename pcl::PointCloud<FeatureType>::Ptr features);
+    void extractDescriptors (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, const typename pcl::PointCloud<pcl::PointXYZI>::Ptr& keypoints, typename pcl::PointCloud<FeatureType>::Ptr features);
 
     /**
      * @brief find corresponding features based on some metric
@@ -131,11 +131,11 @@ ICCVTutorial<FeatureType>::ICCVTutorial(pcl::Keypoint<pcl::PointXYZRGB, pcl::Poi
                                         pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr target)
 : source_keypoints_ (new pcl::PointCloud<pcl::PointXYZI> ())
 , target_keypoints_ (new pcl::PointCloud<pcl::PointXYZI> ())
-, keypoint_detector_ (keypoint_detector)
+, keypoint_detector_ (std::move(keypoint_detector))
 , feature_extractor_ (feature_extractor)
-, surface_reconstructor_ (surface_reconstructor)
-, source_ (source)
-, target_ (target)
+, surface_reconstructor_ (std::move(surface_reconstructor))
+, source_ (std::move(source))
+, target_ (std::move(target))
 , source_segmented_ (new pcl::PointCloud<pcl::PointXYZRGB>)
 , target_segmented_ (new pcl::PointCloud<pcl::PointXYZRGB>)
 , source_transformed_ (new pcl::PointCloud<pcl::PointXYZRGB>)
@@ -170,7 +170,7 @@ ICCVTutorial<FeatureType>::ICCVTutorial(pcl::Keypoint<pcl::PointXYZRGB, pcl::Poi
 }
 
 template<typename FeatureType>
-void ICCVTutorial<FeatureType>::segmentation (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr source, typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr segmented) const
+void ICCVTutorial<FeatureType>::segmentation (const typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& source, const typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr& segmented) const
 {
   cout << "segmentation..." << std::flush;
   // fit plane and keep points above that plane
@@ -229,7 +229,7 @@ void ICCVTutorial<FeatureType>::segmentation (typename pcl::PointCloud<pcl::Poin
 }
 
 template<typename FeatureType>
-void ICCVTutorial<FeatureType>::detectKeypoints (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, pcl::PointCloud<pcl::PointXYZI>::Ptr keypoints) const
+void ICCVTutorial<FeatureType>::detectKeypoints (const typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& input, const pcl::PointCloud<pcl::PointXYZI>::Ptr& keypoints) const
 {
   cout << "keypoint detection..." << std::flush;
   keypoint_detector_->setInputCloud(input);
@@ -238,7 +238,7 @@ void ICCVTutorial<FeatureType>::detectKeypoints (typename pcl::PointCloud<pcl::P
 }
 
 template<typename FeatureType>
-void ICCVTutorial<FeatureType>::extractDescriptors (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, typename pcl::PointCloud<pcl::PointXYZI>::Ptr keypoints, typename pcl::PointCloud<FeatureType>::Ptr features)
+void ICCVTutorial<FeatureType>::extractDescriptors (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, const typename pcl::PointCloud<pcl::PointXYZI>::Ptr& keypoints, typename pcl::PointCloud<FeatureType>::Ptr features)
 {
   typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr kpts(new pcl::PointCloud<pcl::PointXYZRGB>);
   kpts->points.resize(keypoints->points.size());

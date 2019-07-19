@@ -8,11 +8,11 @@
 #include <QMessageBox>
 
 pcl::cloud_composer::CloudItem::CloudItem (QString name,
-                                           pcl::PCLPointCloud2::Ptr cloud_ptr,
+                                           const pcl::PCLPointCloud2::Ptr& cloud_ptr,
                                            const Eigen::Vector4f& origin, 
                                            const Eigen::Quaternionf& orientation,
                                            bool make_templated_cloud)
-  : CloudComposerItem (name)
+  : CloudComposerItem (std::move(name))
   , origin_ (origin)
   , orientation_ (orientation)
   , template_cloud_set_ (false)

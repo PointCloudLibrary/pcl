@@ -13,7 +13,7 @@
 
 void
 displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allocator<pcl::PlanarRegion<PointT> > > &regions,
-                      pcl::visualization::PCLVisualizer::Ptr viewer)
+                      const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   char name[1024];
   unsigned char red [6] = {255,   0,   0, 255, 255,   0};
@@ -44,7 +44,7 @@ displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allo
 
 void
 displayEuclideanClusters (const pcl::PointCloud<PointT>::CloudVectorType &clusters,
-                          pcl::visualization::PCLVisualizer::Ptr viewer)
+                          const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   char name[1024];
   unsigned char red [6] = {255,   0,   0, 255, 255,   0};
@@ -64,7 +64,7 @@ displayEuclideanClusters (const pcl::PointCloud<PointT>::CloudVectorType &cluste
 }
 
 void
-displayCurvature (pcl::PointCloud<PointT>& cloud, pcl::PointCloud<pcl::Normal>& normals, pcl::visualization::PCLVisualizer::Ptr viewer)
+displayCurvature (pcl::PointCloud<PointT>& cloud, pcl::PointCloud<pcl::Normal>& normals, const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> curvature_cloud = cloud;
   for (size_t i  = 0; i < cloud.points.size (); i++)
@@ -88,7 +88,7 @@ displayCurvature (pcl::PointCloud<PointT>& cloud, pcl::PointCloud<pcl::Normal>& 
 }
 
 void
-displayDistanceMap (pcl::PointCloud<PointT>& cloud, float* distance_map, pcl::visualization::PCLVisualizer::Ptr viewer)
+displayDistanceMap (pcl::PointCloud<PointT>& cloud, float* distance_map, const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> distance_map_cloud = cloud;
   for (size_t i  = 0; i < cloud.points.size (); i++)
@@ -112,7 +112,7 @@ displayDistanceMap (pcl::PointCloud<PointT>& cloud, float* distance_map, pcl::vi
 }
 
 void
-removePreviousDataFromScreen (size_t prev_models_size, size_t prev_clusters_size, pcl::visualization::PCLVisualizer::Ptr viewer)
+removePreviousDataFromScreen (size_t prev_models_size, size_t prev_clusters_size, const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   char name[1024];
   for (size_t i = 0; i < prev_models_size; i++)

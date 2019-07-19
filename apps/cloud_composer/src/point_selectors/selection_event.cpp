@@ -9,7 +9,7 @@ pcl::cloud_composer::SelectionEvent::~SelectionEvent ()
 
 
 void
-pcl::cloud_composer::SelectionEvent::findIndicesInItem (CloudItem* cloud_item, pcl::PointIndices::Ptr indices)
+pcl::cloud_composer::SelectionEvent::findIndicesInItem (CloudItem* cloud_item, const pcl::PointIndices::Ptr& indices)
 {
   // WE DON'T NEED TO DO THIS SEARCH BECAUSE WE HAVE A 1-1 CORRESPONDENCE VTK TO PCL
   // THIS IS ONLY THE CASE FOR CLOUDS WITH NO NANs

@@ -56,7 +56,7 @@
        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override;
        
        template <typename PointT> QList <CloudComposerItem*>
-       performTemplatedAction (QList <const CloudComposerItem*> input_data);
+       performTemplatedAction (const QList <const CloudComposerItem*>& input_data);
        
        inline QString
        getToolName () const override { return "Voxel Superpixels Tool";}

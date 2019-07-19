@@ -81,7 +81,7 @@ pcl::modeler::RenderWindowItem::openPointCloud(const QString& filename)
 pcl::modeler::CloudMeshItem*
 pcl::modeler::RenderWindowItem::addPointCloud(CloudMesh::PointCloudPtr cloud)
 {
-  CloudMeshItem* cloud_mesh_item = new CloudMeshItem(this, cloud);
+  CloudMeshItem* cloud_mesh_item = new CloudMeshItem(this, std::move(cloud));
   addChild(cloud_mesh_item);
 
   treeWidget()->setCurrentItem(cloud_mesh_item);

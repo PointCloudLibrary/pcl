@@ -182,7 +182,7 @@ Cloud::setSelectionTranslation (float dx, float dy, float dz)
 }
 
 void
-Cloud::setSelection (SelectionPtr selection_ptr)
+Cloud::setSelection (const SelectionPtr& selection_ptr)
 {
   selection_wk_ptr_ = selection_ptr;
   if (!selection_ptr || selection_ptr->empty())

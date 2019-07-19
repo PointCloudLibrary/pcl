@@ -252,7 +252,7 @@ namespace pcl
     class ColorParameter : public Parameter
     {
       public:
-        ColorParameter(const std::string& name, const std::string& description, QColor value):
+        ColorParameter(const std::string& name, const std::string& description, const QColor& value):
           Parameter(name, description, value){}
         ~ColorParameter(){}
 

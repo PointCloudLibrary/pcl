@@ -53,7 +53,7 @@
  
  
  template <typename PointT> QList <pcl::cloud_composer::CloudComposerItem*>
- pcl::cloud_composer::OrganizedSegmentationTool::performTemplatedAction (QList <const CloudComposerItem*> input_data)
+ pcl::cloud_composer::OrganizedSegmentationTool::performTemplatedAction (const QList <const CloudComposerItem*>& input_data)
  {
    QList <CloudComposerItem*> output;  
    

@@ -81,7 +81,7 @@ namespace pcl
           FPFH_ITEM
         };
 
-        CloudComposerItem (const QString name = "default item");
+        CloudComposerItem (const QString& name = "default item");
         CloudComposerItem (const CloudComposerItem& to_copy);
         ~CloudComposerItem ();
         
@@ -145,7 +145,7 @@ namespace pcl
     template <class T> class VPtr
     {
       public:
-        static T* asPtr (QVariant v)
+        static T* asPtr (const QVariant& v)
         {
           return (static_cast<T *> (v.value<void *> ()));
         }

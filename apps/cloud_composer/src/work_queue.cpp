@@ -21,7 +21,7 @@ pcl::cloud_composer::WorkQueue::enqueueNewAction (AbstractTool* new_tool, ConstI
 {
   ActionPair new_action;
   //Create a command which will manage data for the tool
-  new_action.command = new_tool->createCommand (input_data);
+  new_action.command = new_tool->createCommand (std::move(input_data));
   new_action.tool = new_tool;
  
   work_queue_.enqueue (new_action);
