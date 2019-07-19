@@ -1493,39 +1493,35 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   fs << "\ncomment PCL generated";
   // Vertices
   fs << "\nelement vertex "<< mesh.cloud.width * mesh.cloud.height;
-  fs << "\nproperty float x"
-        "\nproperty float y"
-        "\nproperty float z";
-  // Check if we have color on vertices
-  int rgba_index = getFieldIndex (mesh.cloud, "rgba"),
-  rgb_index = getFieldIndex (mesh.cloud, "rgb");
-  if (rgba_index != -1)
+  for (size_t d = 0; d < mesh.cloud.fields.size(); ++d)
   {
-    fs << "\nproperty uchar red"
-          "\nproperty uchar green"
-          "\nproperty uchar blue"
-          "\nproperty uchar alpha";
-  }
-  else if (rgb_index != -1)
-  {
-    fs << "\nproperty uchar red"
-          "\nproperty uchar green"
-          "\nproperty uchar blue";
-  }
-  // Check if we have normal on vertices
-  int normal_x_index = getFieldIndex(mesh.cloud, "normal_x");
-  int normal_y_index = getFieldIndex(mesh.cloud, "normal_y");
-  int normal_z_index = getFieldIndex(mesh.cloud, "normal_z");
-  if (normal_x_index != -1 && normal_y_index != -1 && normal_z_index != -1)
-  {
-      fs << "\nproperty float nx"
-            "\nproperty float ny"
-            "\nproperty float nz";
-  }
-  // Check if we have curvature on vertices
-  int curvature_index = getFieldIndex(mesh.cloud, "curvature");
-  if ( curvature_index != -1)
-  {
+    const std::string& fieldName = mesh.cloud.fields[d].name;
+    if (fieldName == "x")
+      fs << "\nproperty float x";
+    else if (fieldName == "y")
+      fs << "\nproperty float y";
+    else if (fieldName == "z")
+      fs << "\nproperty float z";
+    else if (fieldName == "rgb")
+    {
+      fs << "\nproperty uchar red"
+            "\nproperty uchar green"
+            "\nproperty uchar blue";
+    }
+    else if (fieldName == "rgba")
+    {
+      fs << "\nproperty uchar red"
+            "\nproperty uchar green"
+            "\nproperty uchar blue"
+            "\nproperty uchar alpha";
+    }
+    else if (fieldName == "normal_x")
+      fs << "\nproperty float nx";
+    else if (fieldName == "normal_y")
+      fs << "\nproperty float ny";
+    else if (fieldName == "normal_z")
+      fs << "\nproperty float nz";
+    else if (fieldName == "curvature")
       fs << "\nproperty float curvature";
   }
   // Faces
@@ -1539,8 +1535,6 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
     int xyz = 0;
     for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
     {
-      int c = 0;
-
       // adding vertex
       if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
           mesh.cloud.fields[d].name == "x" ||
@@ -1548,8 +1542,8 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
           mesh.cloud.fields[d].name == "z"))
       {
         float value;
-        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
-        fs << value;
+        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (float));
+        fs << value << " ";
         // if (++xyz == 3)
         //   break;
         ++xyz;
@@ -1559,15 +1553,15 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
 
       {
         pcl::RGB color;
-        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
-        fs << int (color.r) << " " << int (color.g) << " " << int (color.b);
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (pcl::RGB));
+        fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " ";
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::UINT32) &&
                (mesh.cloud.fields[d].name == "rgba"))
       {
         pcl::RGB color;
-        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (uint32_t)], sizeof (RGB));
-        fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " " << int (color.a);
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (pcl::RGB));
+        fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " " << int (color.a) << " ";
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
                 mesh.cloud.fields[d].name == "normal_x" ||
@@ -1575,17 +1569,16 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
                 mesh.cloud.fields[d].name == "normal_z"))
       {
         float value;
-        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset + c * sizeof(float)], sizeof(float));
-        fs << value;
+        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof(float));
+        fs << value << " ";
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
                 mesh.cloud.fields[d].name == "curvature"))
       {
         float value;
-        memcpy(&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset + c * sizeof(float)], sizeof(float));
-        fs << value;
+        memcpy(&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof(float));
+        fs << value << " ";
       }
-      fs << " ";
     }
     if (xyz != 3)
     {
@@ -1640,40 +1633,36 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   fs << "\ncomment PCL generated";
   // Vertices
   fs << "\nelement vertex "<< mesh.cloud.width * mesh.cloud.height;
-  fs << "\nproperty float x"
-        "\nproperty float y"
-        "\nproperty float z";
-  // Check if we have color on vertices
-  int rgba_index = getFieldIndex (mesh.cloud, "rgba"),
-  rgb_index = getFieldIndex (mesh.cloud, "rgb");
-  if (rgba_index != -1)
+  for (size_t d = 0; d < mesh.cloud.fields.size(); ++d)
   {
-    fs << "\nproperty uchar red"
-          "\nproperty uchar green"
-          "\nproperty uchar blue"
-          "\nproperty uchar alpha";
-  }
-  else if (rgb_index != -1)
-  {
-    fs << "\nproperty uchar red"
-          "\nproperty uchar green"
-          "\nproperty uchar blue";
-  }
-  // Check if we have normal on vertices
-  int normal_x_index = getFieldIndex(mesh.cloud, "normal_x");
-  int normal_y_index = getFieldIndex(mesh.cloud, "normal_y");
-  int normal_z_index = getFieldIndex(mesh.cloud, "normal_z");
-  if (normal_x_index != -1 && normal_y_index != -1 && normal_z_index != -1)
-  {
-	  fs << "\nproperty float nx"
-		  "\nproperty float ny"
-		  "\nproperty float nz";
-  }
-  // Check if we have curvature on vertices
-  int curvature_index = getFieldIndex(mesh.cloud, "curvature");
-  if ( curvature_index != -1)
-  {
-	  fs << "\nproperty float curvature";
+    const std::string& fieldName = mesh.cloud.fields[d].name;
+    if (fieldName == "x")
+      fs << "\nproperty float x";
+    else if (fieldName == "y")
+      fs << "\nproperty float y";
+    else if (fieldName == "z")
+      fs << "\nproperty float z";
+    else if (fieldName == "rgb")
+    {
+      fs << "\nproperty uchar red"
+            "\nproperty uchar green"
+            "\nproperty uchar blue";
+    }
+    else if (fieldName == "rgba")
+    {
+      fs << "\nproperty uchar red"
+            "\nproperty uchar green"
+            "\nproperty uchar blue"
+            "\nproperty uchar alpha";
+    }
+    else if (fieldName == "normal_x")
+      fs << "\nproperty float nx";
+    else if (fieldName == "normal_y")
+      fs << "\nproperty float ny";
+    else if (fieldName == "normal_z")
+      fs << "\nproperty float nz";
+    else if (fieldName == "curvature")
+      fs << "\nproperty float curvature";
   }
   // Faces
   fs << "\nelement face "<< nr_faces;
@@ -1696,8 +1685,6 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
     int xyz = 0;
     for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
     {
-      int c = 0;
-
       // adding vertex
       if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
           mesh.cloud.fields[d].name == "x" ||
@@ -1705,10 +1692,8 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
           mesh.cloud.fields[d].name == "z"))
       {
         float value;
-        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (float));
         fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
-        // if (++xyz == 3)
-        //   break;
         ++xyz;
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) &&
@@ -1716,7 +1701,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
 
       {
         pcl::RGB color;
-        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (pcl::RGB));
         fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
@@ -1725,7 +1710,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
                (mesh.cloud.fields[d].name == "rgba"))
       {
         pcl::RGB color;
-        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (uint32_t)], sizeof (RGB));
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (pcl::RGB));
         fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
@@ -1737,14 +1722,14 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
                mesh.cloud.fields[d].name == "normal_z"))
       {
         float value;
-        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (float));
         fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && 
                (mesh.cloud.fields[d].name == "curvature"))
       {
         float value;
-        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (float));
         fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));        
       }
     }
