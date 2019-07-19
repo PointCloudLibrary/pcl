@@ -44,7 +44,9 @@
 #include <pcl/io/file_io.h>
 #include <pcl/io/ply/ply_parser.h>
 #include <pcl/PolygonMesh.h>
+
 #include <sstream>
+#include <tuple>
 
 namespace pcl
 {
@@ -284,7 +286,7 @@ namespace pcl
         * \param[in] element_name element name
         * \param[in] count number of instances
         */
-      boost::tuple<std::function<void ()>, std::function<void ()> > 
+      std::tuple<std::function<void ()>, std::function<void ()> > 
       elementDefinitionCallback (const std::string& element_name, std::size_t count);
       
       bool
@@ -302,7 +304,7 @@ namespace pcl
         * \param[in] property_name list property name
         */
       template <typename SizeType, typename ScalarType>
-      boost::tuple<std::function<void (SizeType)>, std::function<void (ScalarType)>, std::function<void ()> >
+      std::tuple<std::function<void (SizeType)>, std::function<void (ScalarType)>, std::function<void ()> >
       listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name);
       
       /** \brief function called at the beginning of a list property parsing.

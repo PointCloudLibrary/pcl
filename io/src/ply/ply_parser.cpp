@@ -203,7 +203,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         {
           element_callbacks = element_definition_callbacks_ (name, count);
         }
-        elements.emplace_back(new element (name, count, boost::get<0>(element_callbacks), boost::get<1>(element_callbacks)));
+        elements.emplace_back(new element (name, count, std::get<0>(element_callbacks), std::get<1>(element_callbacks)));
         current_element_ = elements.back ().get ();
       }
 

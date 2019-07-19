@@ -37,13 +37,14 @@
  *
  */
 
+#include <pcl/io/boost.h>
+#include <pcl/io/ply/ply_parser.h>
+
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iostream>
-
-#include <pcl/io/boost.h>
-#include <pcl/io/ply/ply_parser.h>
+#include <tuple>
 
 /** Class ply_to_raw_converter converts a PLY file to a povray (www.povray.org) RAW file
   * The following PLY elements and properties are supported.
@@ -103,13 +104,13 @@ class ply_to_raw_converter
     void
     error_callback (const std::string& filename, std::size_t line_number, const std::string& message);
 
-    boost::tuple<std::function<void ()>, std::function<void ()> > 
+    std::tuple<std::function<void ()>, std::function<void ()> > 
     element_definition_callback (const std::string& element_name, std::size_t count);
 
     template <typename ScalarType> std::function<void (ScalarType)> 
     scalar_property_definition_callback (const std::string& element_name, const std::string& property_name);
 
-    template <typename SizeType, typename ScalarType>  boost::tuple<std::function<void (SizeType)>, 
+    template <typename SizeType, typename ScalarType>  std::tuple<std::function<void (SizeType)>, 
                                                                        std::function<void (ScalarType)>, 
                                                                        std::function<void ()> > 
     list_property_definition_callback (const std::string& element_name, const std::string& property_name);
@@ -147,7 +148,7 @@ class ply_to_raw_converter
     std::ostream* ostream_;
     pcl::io::ply::float32 vertex_x_, vertex_y_, vertex_z_;
     pcl::io::ply::int32 face_vertex_indices_element_index_, face_vertex_indices_first_element_, face_vertex_indices_previous_element_;
-    std::vector<boost::tuple<pcl::io::ply::float32, pcl::io::ply::float32, pcl::io::ply::float32> > vertices_;
+    std::vector<std::tuple<pcl::io::ply::float32, pcl::io::ply::float32, pcl::io::ply::float32> > vertices_;
 };
 
 void
@@ -168,17 +169,17 @@ ply_to_raw_converter::error_callback (const std::string& filename, std::size_t l
   std::cerr << filename << ":" << line_number << ": " << "error: " << message << std::endl;
 }
 
-boost::tuple<std::function<void ()>, std::function<void ()> > 
+std::tuple<std::function<void ()>, std::function<void ()> > 
 ply_to_raw_converter::element_definition_callback (const std::string& element_name, std::size_t)
 {
   if (element_name == "vertex") {
-    return boost::tuple<std::function<void ()>, std::function<void ()> > (
+    return std::tuple<std::function<void ()>, std::function<void ()> > (
       [this] { vertex_begin (); },
       [this] { vertex_end (); }
     );
   }
   if (element_name == "face") {
-    return boost::tuple<std::function<void ()>, std::function<void ()> > (
+    return std::tuple<std::function<void ()>, std::function<void ()> > (
       [this] { face_begin (); },
       [this] { face_end (); }
     );
@@ -203,14 +204,14 @@ ply_to_raw_converter::scalar_property_definition_callback (const std::string& el
   return {};
 }
 
-template <> boost::tuple<std::function<void (pcl::io::ply::uint8)>, 
+template <> std::tuple<std::function<void (pcl::io::ply::uint8)>, 
                             std::function<void (pcl::io::ply::int32)>, 
                             std::function<void ()> > 
 ply_to_raw_converter::list_property_definition_callback (const std::string& element_name, const std::string& property_name)
 {
   if ((element_name == "face") && (property_name == "vertex_indices")) 
   {
-    return boost::tuple<std::function<void (pcl::io::ply::uint8)>, 
+    return std::tuple<std::function<void (pcl::io::ply::uint8)>, 
       std::function<void (pcl::io::ply::int32)>, 
       std::function<void ()> > (
         [this] (pcl::io::ply::uint8 p){ face_vertex_indices_begin (p); },
@@ -267,15 +268,15 @@ ply_to_raw_converter::face_vertex_indices_element (pcl::io::ply::int32 vertex_in
     face_vertex_indices_previous_element_ = vertex_index;
   }
   else {
-    (*ostream_) << boost::get<0> (vertices_[   face_vertex_indices_first_element_])
-         << " " << boost::get<1> (vertices_[   face_vertex_indices_first_element_])
-         << " " << boost::get<2> (vertices_[   face_vertex_indices_first_element_])
-         << " " << boost::get<0> (vertices_[face_vertex_indices_previous_element_])
-         << " " << boost::get<1> (vertices_[face_vertex_indices_previous_element_])
-         << " " << boost::get<2> (vertices_[face_vertex_indices_previous_element_])
-         << " " << boost::get<0> (vertices_[                         vertex_index])
-         << " " << boost::get<1> (vertices_[                         vertex_index])
-         << " " << boost::get<2> (vertices_[                         vertex_index]) << "\n";
+    (*ostream_) << std::get<0> (vertices_[   face_vertex_indices_first_element_])
+         << " " << std::get<1> (vertices_[   face_vertex_indices_first_element_])
+         << " " << std::get<2> (vertices_[   face_vertex_indices_first_element_])
+         << " " << std::get<0> (vertices_[face_vertex_indices_previous_element_])
+         << " " << std::get<1> (vertices_[face_vertex_indices_previous_element_])
+         << " " << std::get<2> (vertices_[face_vertex_indices_previous_element_])
+         << " " << std::get<0> (vertices_[                         vertex_index])
+         << " " << std::get<1> (vertices_[                         vertex_index])
+         << " " << std::get<2> (vertices_[                         vertex_index]) << "\n";
     face_vertex_indices_previous_element_ = vertex_index;
   }
   ++face_vertex_indices_element_index_;

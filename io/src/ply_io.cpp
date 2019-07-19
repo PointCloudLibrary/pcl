@@ -47,6 +47,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <tuple>
 
 // https://www.boost.org/doc/libs/1_70_0/libs/filesystem/doc/index.htm#Coding-guidelines
 #define BOOST_FILESYSTEM_NO_DEPRECATED
@@ -54,7 +55,7 @@
 
 namespace fs = boost::filesystem;
 
-boost::tuple<std::function<void ()>, std::function<void ()> >
+std::tuple<std::function<void ()>, std::function<void ()> >
 pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std::size_t count)
 {
   if (element_name == "vertex")
@@ -71,14 +72,14 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
     cloud_->point_step = 0;
     cloud_->row_step = 0;
     vertex_count_ = 0;
-    return (boost::tuple<std::function<void ()>, std::function<void ()> > (
+    return (std::tuple<std::function<void ()>, std::function<void ()> > (
               [this] { vertexBeginCallback (); },
               [this] { vertexEndCallback (); }));
   }
   if ((element_name == "face") && polygons_)
   {
     polygons_->reserve (count);
-    return (boost::tuple<std::function<void ()>, std::function<void ()> > (
+    return (std::tuple<std::function<void ()>, std::function<void ()> > (
             [this] { faceBeginCallback (); },
             [this] { faceEndCallback (); }));
   }
@@ -90,7 +91,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
   if (element_name == "range_grid")
   {
     range_grid_->reserve (count);
-    return (boost::tuple<std::function<void ()>, std::function<void ()> > (
+    return (std::tuple<std::function<void ()>, std::function<void ()> > (
               [this] { rangeGridBeginCallback (); },
               [this] { rangeGridEndCallback (); }));
   }
@@ -309,12 +310,12 @@ namespace pcl
   }
 
   template <>
-  boost::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> >
+  std::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> >
   pcl::PLYReader::listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
     if ((element_name == "range_grid") && (property_name == "vertex_indices" || property_name == "vertex_index"))
     {
-      return boost::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
+      return std::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
         [this] (pcl::io::ply::uint8 size) { rangeGridVertexIndicesBeginCallback (size); },
         [this] (pcl::io::ply::int32 vertex_index) { rangeGridVertexIndicesElementCallback (vertex_index); },
         [this] { rangeGridVertexIndicesEndCallback (); }
@@ -322,7 +323,7 @@ namespace pcl
     }
     if ((element_name == "face") && (property_name == "vertex_indices" || property_name == "vertex_index") && polygons_)
     {
-      return boost::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
+      return std::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
         [this] (pcl::io::ply::uint8 size) { faceVertexIndicesBeginCallback (size); },
         [this] (pcl::io::ply::int32 vertex_index) { faceVertexIndicesElementCallback (vertex_index); },
         [this] { faceVertexIndicesEndCallback (); }
@@ -341,7 +342,7 @@ namespace pcl
       else
         cloud_->point_step = static_cast<uint32_t> (std::numeric_limits<uint32_t>::max ());
       do_resize_ = true;
-      return boost::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
+      return std::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
         std::bind (&pcl::PLYReader::vertexListPropertyBeginCallback<pcl::io::ply::uint8>, this, property_name, std::placeholders::_1),
         [this] (pcl::io::ply::int32 value) { vertexListPropertyContentCallback<pcl::io::ply::int32> (value); },
         [this] { vertexListPropertyEndCallback (); }
@@ -351,7 +352,7 @@ namespace pcl
   }
 
   template <typename SizeType, typename ContentType>
-  boost::tuple<std::function<void (SizeType)>, std::function<void (ContentType)>, std::function<void ()> >
+  std::tuple<std::function<void (SizeType)>, std::function<void (ContentType)>, std::function<void ()> >
   pcl::PLYReader::listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
     if (element_name == "vertex")
@@ -367,7 +368,7 @@ namespace pcl
       else
         cloud_->point_step = static_cast<uint32_t> (std::numeric_limits<uint32_t>::max ());
       do_resize_ = true;
-      return boost::tuple<std::function<void (SizeType)>, std::function<void (ContentType)>, std::function<void ()> > (
+      return std::tuple<std::function<void (SizeType)>, std::function<void (ContentType)>, std::function<void ()> > (
         std::bind (&pcl::PLYReader::vertexListPropertyBeginCallback<SizeType>, this, property_name, std::placeholders::_1),
         [this] (ContentType value) { vertexListPropertyContentCallback (value); },
         [this] { vertexListPropertyEndCallback (); }
