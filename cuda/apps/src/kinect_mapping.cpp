@@ -243,18 +243,18 @@ class MultiRansac
       if (use_device)
       {
         std::cerr << "[RANSAC] Using GPU..." << std::endl;
-        std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&MultiRansac::cloud_cb<pcl_cuda::Device>, this, _1, _2, _3);
+        std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = std::bind (&MultiRansac::cloud_cb<pcl_cuda::Device>, this, _1, _2, _3);
         c = interface->registerCallback (f);
       }
       else
       {
         std::cerr << "[RANSAC] Using CPU..." << std::endl;
-        std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&MultiRansac::cloud_cb<pcl_cuda::Host>, this, _1, _2, _3);
+        std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = std::bind (&MultiRansac::cloud_cb<pcl_cuda::Host>, this, _1, _2, _3);
         c = interface->registerCallback (f);
       }
 
       if (use_viewer)
-        viewer.runOnVisualizationThread (boost::bind(&MultiRansac::viz_cb, this, _1), "viz_cb");
+        viewer.runOnVisualizationThread (std::bind(&MultiRansac::viz_cb, this, _1), "viz_cb");
 
       interface->start ();
 
