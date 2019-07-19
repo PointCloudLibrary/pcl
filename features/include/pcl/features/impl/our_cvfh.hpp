@@ -129,7 +129,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSm
             + normals.points[seed_queue[sq_idx]].normal[1] * normals.points[nn_indices[j]].normal[1] + normals.points[seed_queue[sq_idx]].normal[2]
             * normals.points[nn_indices[j]].normal[2];
 
-        if (fabs (acos (dot_p)) < eps_angle)
+        if (fabs (std::acos (dot_p)) < eps_angle)
         {
           processed[nn_indices[j]] = true;
           seed_queue.push_back (nn_indices[j]);
@@ -641,7 +641,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
       {
         //decide if normal should be added
         double dot_p = avg_normal.dot (normals_filtered_cloud->points[index].getNormalVector4fMap ());
-        if (fabs (acos (dot_p)) < (eps_angle_threshold_ * refine_clusters_))
+        if (fabs (std::acos (dot_p)) < (eps_angle_threshold_ * refine_clusters_))
         {
           clusters_[cluster_filtered_idx].indices.push_back (indices_from_nfc_to_indices[index]);
           clusters_filtered[cluster_filtered_idx].indices.push_back (index);

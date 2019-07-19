@@ -635,7 +635,7 @@ RangeImage::getImpactAngle (const PointWithRange& point1, const PointWithRange& 
           d     = std::sqrt (dSqr);
     float cos_impact_angle = (r2Sqr + dSqr - r1Sqr)/ (2.0f*r2*d);
     cos_impact_angle = (std::max) (0.0f, (std::min) (1.0f, cos_impact_angle));
-    impact_angle = acosf (cos_impact_angle);  // Using the cosine rule
+    impact_angle = std::acos (cos_impact_angle);  // Using the cosine rule
   }
   
   if (point1.range > point2.range)
@@ -715,7 +715,7 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
     }
     angle_change_x = transformed_left.dot (transformed_right);
     angle_change_x = (std::max) (0.0f, (std::min) (1.0f, angle_change_x));
-    angle_change_x = acosf (angle_change_x);
+    angle_change_x = std::acos (angle_change_x);
   }
   
   if (isObserved (x, y-radius) && isObserved (x, y+radius))
@@ -747,7 +747,7 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
     }
     angle_change_y = transformed_top.dot (transformed_bottom);
     angle_change_y = (std::max) (0.0f, (std::min) (1.0f, angle_change_y));
-    angle_change_y = acosf (angle_change_y);
+    angle_change_y = std::acos (angle_change_y);
   }
 }
 
@@ -761,10 +761,10 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
     //if (std::isinf (neighbor2.range))
       //return 0.0f;
     //else
-      //return acosf ( (Eigen::Vector3f (point.x, point.y, point.z)-getSensorPos ()).normalized ().dot ( (Eigen::Vector3f (neighbor2.x, neighbor2.y, neighbor2.z)-Eigen::Vector3f (point.x, point.y, point.z)).normalized ()));
+      //return std::acos ( (Eigen::Vector3f (point.x, point.y, point.z)-getSensorPos ()).normalized ().dot ( (Eigen::Vector3f (neighbor2.x, neighbor2.y, neighbor2.z)-Eigen::Vector3f (point.x, point.y, point.z)).normalized ()));
   //}
   //if (std::isinf (neighbor2.range))
-    //return acosf ( (Eigen::Vector3f (point.x, point.y, point.z)-getSensorPos ()).normalized ().dot ( (Eigen::Vector3f (neighbor1.x, neighbor1.y, neighbor1.z)-Eigen::Vector3f (point.x, point.y, point.z)).normalized ()));
+    //return std::acos ( (Eigen::Vector3f (point.x, point.y, point.z)-getSensorPos ()).normalized ().dot ( (Eigen::Vector3f (neighbor1.x, neighbor1.y, neighbor1.z)-Eigen::Vector3f (point.x, point.y, point.z)).normalized ()));
   
   //float d1_squared = squaredEuclideanDistance (point, neighbor1),
         //d1 = std::sqrt (d1_squared),
@@ -772,7 +772,7 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
         //d2 = std::sqrt (d2_squared),
         //d3_squared = squaredEuclideanDistance (neighbor1, neighbor2);
   //float cos_surface_change = (d1_squared + d2_squared - d3_squared)/ (2.0f*d1*d2),
-        //surface_change = acosf (cos_surface_change);
+        //surface_change = std::acos (cos_surface_change);
   //if (std::isnan (surface_change))
     //surface_change = static_cast<float> (M_PI);
   ////std::cout << PVARN (point)<<PVARN (neighbor1)<<PVARN (neighbor2)<<PVARN (cos_surface_change)<<PVARN (surface_change)<<PVARN (d1)<<PVARN (d2)<<PVARN (d1_squared)<<PVARN (d2_squared)<<PVARN (d3_squared);
@@ -887,7 +887,7 @@ RangeImage::getImpactAngleBasedOnLocalNormal (int x, int y, int radius) const
   Eigen::Vector3f normal;
   if (!getNormalForClosestNeighbors (x, y, radius, point, no_of_nearest_neighbors, normal, 1))
     return -std::numeric_limits<float>::infinity ();
-  return deg2rad (90.0f) - acosf (normal.dot ( (getSensorPos ()-getEigenVector3f (point)).normalized ()));
+  return deg2rad (90.0f) - std::acos (normal.dot ( (getSensorPos ()-getEigenVector3f (point)).normalized ()));
 }
 
 

@@ -485,9 +485,9 @@ namespace pcl
       if ((fabs (actual_disparity - orig_disparity) <= 1.0/2.0) & (idx != -1)
           &
             (
-              fabs (acos (normal.x*coefficients.x + normal.y*coefficients.y + normal.z*coefficients.z)) < angle_threshold
+              fabs (std::acos (normal.x*coefficients.x + normal.y*coefficients.y + normal.z*coefficients.z)) < angle_threshold
               |
-              fabs (acos (-(normal.x*coefficients.x + normal.y*coefficients.y + normal.z*coefficients.z))) < angle_threshold
+              fabs (std::acos (-(normal.x*coefficients.x + normal.y*coefficients.y + normal.z*coefficients.z))) < angle_threshold
             )
          )
         return (idx);
@@ -510,9 +510,9 @@ namespace pcl
                 pt.z * coefficients.z + coefficients.w) < threshold
           &
             (
-              fabs (acos (normal.x*coefficients.x + normal.y*coefficients.y + normal.z*coefficients.z)) < angle_threshold
+              fabs (std::acos (normal.x*coefficients.x + normal.y*coefficients.y + normal.z*coefficients.z)) < angle_threshold
               |
-              fabs (acos (-(normal.x*coefficients.x + normal.y*coefficients.y + normal.z*coefficients.z))) < angle_threshold
+              fabs (std::acos (-(normal.x*coefficients.x + normal.y*coefficients.y + normal.z*coefficients.z))) < angle_threshold
             )
           )
         // If inlier, return its position in the vector

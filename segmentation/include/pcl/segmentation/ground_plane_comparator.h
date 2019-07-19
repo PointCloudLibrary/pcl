@@ -181,7 +181,7 @@ namespace pcl
       inline float
       getAngularThreshold () const
       {
-        return (acosf (angular_threshold_) );
+        return (std::acos (angular_threshold_) );
       }
 
       /** \brief Set the tolerance in meters for difference in perpendicular distance (d component of plane equation) to the plane between neighboring points, to be considered part of the same plane.

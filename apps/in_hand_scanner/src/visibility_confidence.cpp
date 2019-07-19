@@ -114,7 +114,7 @@ pcl::ihs::addDirection (const Eigen::Vector4f& normal,
   // TODO: The threshold is hard coded for a frequency=3.
   //       It can be calculated with
   //       - max_z = maximum z value of the dome vertices (excluding [0; 0; 1])
-  //       - thresh = cos (acos (max_z) / 2)
+  //       - thresh = cos (std::acos (max_z) / 2)
   //       - always round up!
   //       - with max_z = 0.939 -> thresh = 0.9847 ~ 0.985
   if (dot <= .985f)
@@ -134,7 +134,7 @@ pcl::ihs::addDirection (const Eigen::Vector4f& normal,
 
   // Find the closest viewing direction
   // NOTE: cos (0deg) = 1 = max
-  //       acos (angle) = dot (a, b) / (norm (a) * norm (b)
+  //       std::acos (angle) = dot (a, b) / (norm (a) * norm (b)
   //       m_sphere_vertices are already normalized
   unsigned int index = 0;
   aligned_direction.transpose ().lazyProduct (pcl::ihs::dome.getVertices ()).maxCoeff (&index);

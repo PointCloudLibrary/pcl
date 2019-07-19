@@ -212,7 +212,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
     Eigen::Vector3f no = neighbour - origin;
     no.normalize ();
     float theta = normal.dot (no);
-    theta = pcl::rad2deg (acosf (std::min (1.0f, std::max (-1.0f, theta))));
+    theta = pcl::rad2deg (std::acos (std::min (1.0f, std::max (-1.0f, theta))));
 
     // Bin (j, k, l)
     size_t j = 0;

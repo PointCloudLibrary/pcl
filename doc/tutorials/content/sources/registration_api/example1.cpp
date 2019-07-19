@@ -77,7 +77,7 @@ rejectBadCorrespondences (const CorrespondencesPtr &all_correspondences,
 
   // Reject if the angle between the normals is really off
   CorrespondenceRejectorSurfaceNormal rej_normals;
-  rej_normals.setThreshold (acos (deg2rad (45.0)));
+  rej_normals.setThreshold (std::acos (deg2rad (45.0)));
   rej_normals.initializeDataContainer<PointT, PointT> ();
   rej_normals.setInputCloud<PointT> (src);
   rej_normals.setInputNormals<PointT, PointT> (src);

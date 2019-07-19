@@ -60,7 +60,7 @@ namespace pcl
             
 
             float angle2 = dot(n2_copy, dp2p1) / f4;
-            if (acos (fabs (angle1)) > acos (fabs (angle2)))
+            if (std::acos (fabs (angle1)) > std::acos (fabs (angle2)))
             {
               // switch p1 and p2
               n1_copy = n2;
@@ -179,7 +179,7 @@ namespace pcl
          __device__ __host__ __forceinline__ void computeAlfaM(const float3& model_reference_point, const float3& model_reference_normal, 
             const float3& model_point, float& alpha_m)
         {
-            float acos_value = acos (model_reference_normal.x);
+            float acos_value = std::acos (model_reference_normal.x);
 
             //float3 cross_vector = cross(model_reference_normal, Eigen::Vector3f::UnitX);
             float3 cross_vector = make_float3(0, model_reference_normal.z, - model_reference_normal.y);

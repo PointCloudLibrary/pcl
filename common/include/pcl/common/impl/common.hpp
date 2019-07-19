@@ -51,7 +51,7 @@ pcl::getAngle3D (const Eigen::Vector4f &v1, const Eigen::Vector4f &v2, const boo
     rad = -1.0;
   else if (rad >  1.0)
     rad = 1.0;
-  return (in_degree ? acos (rad) * 180.0 / M_PI : acos (rad));
+  return (in_degree ? std::acos (rad) * 180.0 / M_PI : std::acos (rad));
 }
 
 inline double
@@ -63,7 +63,7 @@ pcl::getAngle3D (const Eigen::Vector3f &v1, const Eigen::Vector3f &v2, const boo
     rad = -1.0;
   else if (rad >  1.0)
     rad = 1.0;
-  return (in_degree ? acos (rad) * 180.0 / M_PI : acos (rad));
+  return (in_degree ? std::acos (rad) * 180.0 / M_PI : std::acos (rad));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

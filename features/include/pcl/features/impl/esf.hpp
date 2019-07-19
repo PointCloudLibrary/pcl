@@ -118,9 +118,9 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
     v23.normalize ();
 
     //TODO: .dot gives nan's
-    th1 = static_cast<int> (pcl_round (acos (fabs (v21.dot (v31))) / pih * (binsize-1)));
-    th2 = static_cast<int> (pcl_round (acos (fabs (v23.dot (v31))) / pih * (binsize-1)));
-    th3 = static_cast<int> (pcl_round (acos (fabs (v23.dot (v21))) / pih * (binsize-1)));
+    th1 = static_cast<int> (pcl_round (std::acos (fabs (v21.dot (v31))) / pih * (binsize-1)));
+    th2 = static_cast<int> (pcl_round (std::acos (fabs (v23.dot (v31))) / pih * (binsize-1)));
+    th3 = static_cast<int> (pcl_round (std::acos (fabs (v23.dot (v21))) / pih * (binsize-1)));
     if (th1 < 0 || th1 >= binsize)
     {
       nn_idx--;

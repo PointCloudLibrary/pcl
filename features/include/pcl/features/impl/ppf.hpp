@@ -85,7 +85,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
           Eigen::Vector3f model_reference_point = input_->points[i].getVector3fMap (),
                           model_reference_normal = normals_->points[i].getNormalVector3fMap (),
                           model_point = input_->points[j].getVector3fMap ();
-          float rotation_angle = acosf (model_reference_normal.dot (Eigen::Vector3f::UnitX ()));
+          float rotation_angle = std::acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ()));
           bool parallel_to_x = (model_reference_normal.y() == 0.0f && model_reference_normal.z() == 0.0f);
           Eigen::Vector3f rotation_axis = (parallel_to_x)?(Eigen::Vector3f::UnitY ()):(model_reference_normal.cross (Eigen::Vector3f::UnitX ()). normalized());
           Eigen::AngleAxisf rotation_mg (rotation_angle, rotation_axis);

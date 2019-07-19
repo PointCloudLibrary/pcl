@@ -72,7 +72,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
     Eigen::Map<const Eigen::Vector3f> gradient_vector (& (gradient.points[indices[idx]].gradient[0]));
 
     float gradient_magnitude = gradient_vector.norm ();
-    float gradient_angle_from_center = acosf (gradient_vector.dot ((point - p0).normalized ()) / gradient_magnitude);
+    float gradient_angle_from_center = std::acos (gradient_vector.dot ((point - p0).normalized ()) / gradient_magnitude);
     if (!std::isfinite (gradient_angle_from_center))
       gradient_angle_from_center = 0.0;
 

@@ -84,7 +84,7 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
                     normals.points[*i].normal[2] * normals.points[*begin].normal[2];
     if (cosine > 1) cosine = 1;
     if (cosine < -1) cosine = -1;
-    double angle  = acos (cosine);
+    double angle  = std::acos (cosine);
     if (angle > M_PI/2) angle = M_PI - angle; /// \note: orientation is neglected!
 
     // Compute point to point distance
@@ -185,7 +185,7 @@ pcl::computeRSD (const pcl::PointCloud<PointNT> &normals,
                     normals.points[*i].normal[2] * normals.points[*begin].normal[2];
     if (cosine > 1) cosine = 1;
     if (cosine < -1) cosine = -1;
-    double angle  = acos (cosine);
+    double angle  = std::acos (cosine);
     if (angle > M_PI/2) angle = M_PI - angle; /// \note: orientation is neglected!
 
     // Compute point to point distance

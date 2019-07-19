@@ -211,10 +211,10 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
 
     if (is_angular_)
     {
-      m_averAngles (alpha_bin, beta_bin) += (1-a) * (1-b) * acos (cos_between_normals); 
-      m_averAngles (alpha_bin+1, beta_bin) += a * (1-b) * acos (cos_between_normals);
-      m_averAngles (alpha_bin, beta_bin+1) += (1-a) * b * acos (cos_between_normals);
-      m_averAngles (alpha_bin+1, beta_bin+1) += a * b * acos (cos_between_normals);
+      m_averAngles (alpha_bin, beta_bin) += (1-a) * (1-b) * std::acos (cos_between_normals); 
+      m_averAngles (alpha_bin+1, beta_bin) += a * (1-b) * std::acos (cos_between_normals);
+      m_averAngles (alpha_bin, beta_bin+1) += (1-a) * b * std::acos (cos_between_normals);
+      m_averAngles (alpha_bin+1, beta_bin+1) += a * b * std::acos (cos_between_normals);
     }
   }
 
