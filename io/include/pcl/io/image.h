@@ -71,12 +71,12 @@ namespace pcl
         };
 
         Image (FrameWrapper::Ptr image_metadata)
-          : wrapper_ (image_metadata)
+          : wrapper_ (std::move(image_metadata))
           , timestamp_ (Clock::now ())
         {}
 
         Image (FrameWrapper::Ptr image_metadata, Timestamp time)
-          : wrapper_ (image_metadata)
+          : wrapper_ (std::move(image_metadata))
           , timestamp_ (time)
         {}
 

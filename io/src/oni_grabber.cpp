@@ -255,7 +255,7 @@ ONIGrabber::getFramesPerSecond () const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-ONIGrabber::imageCallback(openni_wrapper::Image::Ptr image, void*)
+ONIGrabber::imageCallback(const openni_wrapper::Image::Ptr& image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb> () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba> () > 0 ||
@@ -270,7 +270,7 @@ ONIGrabber::imageCallback(openni_wrapper::Image::Ptr image, void*)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-ONIGrabber::depthCallback(openni_wrapper::DepthImage::Ptr depth_image, void*)
+ONIGrabber::depthCallback(const openni_wrapper::DepthImage::Ptr& depth_image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb> () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba> () > 0 ||
@@ -292,7 +292,7 @@ ONIGrabber::depthCallback(openni_wrapper::DepthImage::Ptr depth_image, void*)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-ONIGrabber::irCallback(openni_wrapper::IRImage::Ptr ir_image, void*)
+ONIGrabber::irCallback(const openni_wrapper::IRImage::Ptr& ir_image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_i > () > 0 ||
       num_slots<sig_cb_openni_ir_depth_image > () > 0)

@@ -456,7 +456,7 @@ pcl::OpenNIGrabber::stopSynchronization ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::imageCallback (openni_wrapper::Image::Ptr image, void*)
+pcl::OpenNIGrabber::imageCallback (const openni_wrapper::Image::Ptr& image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
@@ -469,7 +469,7 @@ pcl::OpenNIGrabber::imageCallback (openni_wrapper::Image::Ptr image, void*)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::depthCallback (openni_wrapper::DepthImage::Ptr depth_image, void*)
+pcl::OpenNIGrabber::depthCallback (const openni_wrapper::DepthImage::Ptr& depth_image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
@@ -489,7 +489,7 @@ pcl::OpenNIGrabber::depthCallback (openni_wrapper::DepthImage::Ptr depth_image, 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::irCallback (openni_wrapper::IRImage::Ptr ir_image, void*)
+pcl::OpenNIGrabber::irCallback (const openni_wrapper::IRImage::Ptr& ir_image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_i>  () > 0 ||
       num_slots<sig_cb_openni_ir_depth_image> () > 0)

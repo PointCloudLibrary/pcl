@@ -128,15 +128,15 @@ namespace pcl
      protected:
       /** \brief internal OpenNI (openni_wrapper) callback that handles image streams */
       void
-      imageCallback (openni_wrapper::Image::Ptr image, void* cookie);
+      imageCallback (const openni_wrapper::Image::Ptr& image, void* cookie);
 
       /** \brief internal OpenNI (openni_wrapper) callback that handles depth streams */
       void
-      depthCallback (openni_wrapper::DepthImage::Ptr depth_image, void* cookie);
+      depthCallback (const openni_wrapper::DepthImage::Ptr& depth_image, void* cookie);
 
       /** \brief internal OpenNI (openni_wrapper) callback that handles IR streams */
       void
-      irCallback (openni_wrapper::IRImage::Ptr ir_image, void* cookie);
+      irCallback (const openni_wrapper::IRImage::Ptr& ir_image, void* cookie);
 
       /** \brief internal callback that handles synchronized image + depth streams */
       void

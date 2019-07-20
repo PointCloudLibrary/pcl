@@ -48,7 +48,7 @@ namespace openni_wrapper
 {
 
 ImageYUV422::ImageYUV422 (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ()
-: Image (image_meta_data)
+: Image (std::move(image_meta_data))
 {
 }
 

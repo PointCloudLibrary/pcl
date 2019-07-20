@@ -349,15 +349,15 @@ namespace pcl
       // callback methods
       /** \brief RGB image callback. */
       virtual void
-      imageCallback (openni_wrapper::Image::Ptr image, void* cookie);
+      imageCallback (const openni_wrapper::Image::Ptr& image, void* cookie);
 
       /** \brief Depth image callback. */
       virtual void
-      depthCallback (openni_wrapper::DepthImage::Ptr depth_image, void* cookie);
+      depthCallback (const openni_wrapper::DepthImage::Ptr& depth_image, void* cookie);
 
       /** \brief IR image callback. */
       virtual void
-      irCallback (openni_wrapper::IRImage::Ptr ir_image, void* cookie);
+      irCallback (const openni_wrapper::IRImage::Ptr& ir_image, void* cookie);
 
       /** \brief RGB + Depth image callback. */
       virtual void

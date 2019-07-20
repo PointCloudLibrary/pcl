@@ -51,7 +51,7 @@ using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
 openni_wrapper::ImageBayerGRBG::ImageBayerGRBG (boost::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) throw ()
-: Image (image_meta_data)
+: Image (std::move(image_meta_data))
 , debayering_method_ (method)
 {
 }

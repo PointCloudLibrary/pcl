@@ -169,7 +169,7 @@ namespace openni_wrapper
   } ;
 
   Image::Image (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ()
-  : image_md_ (image_meta_data)
+  : image_md_ (std::move(image_meta_data))
   {
   }
 

@@ -70,7 +70,7 @@ protected:
 };
 
 IRImage::IRImage (boost::shared_ptr<xn::IRMetaData> ir_meta_data) throw ()
-: ir_md_ (ir_meta_data)
+: ir_md_ (std::move(ir_meta_data))
 {
 }
 

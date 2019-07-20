@@ -73,9 +73,9 @@ namespace pcl
         public:
           using Ptr = boost::shared_ptr<OpenNI2Device>;
 
-          using ImageCallbackFunction = std::function<void(Image::Ptr, void* cookie) >;
-          using DepthImageCallbackFunction = std::function<void(DepthImage::Ptr, void* cookie) >;
-          using IRImageCallbackFunction = std::function<void(IRImage::Ptr, void* cookie) >;
+          using ImageCallbackFunction = std::function<void(const Image::Ptr&, void* cookie) >;
+          using DepthImageCallbackFunction = std::function<void(const DepthImage::Ptr&, void* cookie) >;
+          using IRImageCallbackFunction = std::function<void(const IRImage::Ptr&, void* cookie) >;
           using CallbackHandle = unsigned;
 
           using StreamCallbackFunction = std::function<void(openni::VideoStream& stream)>;
@@ -289,7 +289,7 @@ namespace pcl
 
 
           bool
-          findCompatibleVideoMode (const std::vector<OpenNI2VideoMode> supportedModes,
+          findCompatibleVideoMode (const std::vector<OpenNI2VideoMode>& supportedModes,
             const OpenNI2VideoMode& output_mode, OpenNI2VideoMode& mode) const;
 
           bool
