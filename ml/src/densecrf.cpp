@@ -238,7 +238,7 @@ pcl::DenseCrf::mapInference (int n_iterations, std::vector<int> &result, float r
 /*
 	for( int i = 0; i < N_; i++ ){
 		const float * p = prob + i*M_;
-		// Find the max and subtract it so that the exp doesn't explode
+		// Find the max and subtract it so that the std::exp doesn't explode
 		float mx = p[0];
 		int imx = 0;
 		for( int j=1; j<M_; j++ )
@@ -262,14 +262,14 @@ pcl::DenseCrf::expAndNormalize (std::vector<float> &out, const std::vector<float
   std::vector<float> V (N_ + 10);
 	for( int i = 0; i < N_; i++ ){
     int b_idx = i*M_;
-		// Find the max and subtract it so that the exp doesn't explode
+		// Find the max and subtract it so that the std::exp doesn't explode
 		float mx = scale * in[b_idx];
 		for( int j = 1; j < M_; j++ )
 			if( mx < scale * in[b_idx + j] )
 				mx = scale * in[b_idx + j];
 		float tt = 0;
 		for( int  j = 0; j < M_; j++ ){
-			V[j] = expf( scale * in[b_idx + j] - mx );
+			V[j] = std::exp( scale * in[b_idx + j] - mx );
 			tt += V[j];
 		}
 		// Make it a probability

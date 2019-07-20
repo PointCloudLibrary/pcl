@@ -159,7 +159,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF ()
       for (size_t point_j = 0; point_j < input_->points.size (); ++point_j)
       {
         float d_g = geodesic_distances_[point_i][point_j];
-        float phi_i_j = 1.0f / std::sqrt (2.0f * static_cast<float> (M_PI) * scale_squared) * expf ( (-1) * d_g*d_g / (2.0f * scale_squared));
+        float phi_i_j = 1.0f / std::sqrt (2.0f * static_cast<float> (M_PI) * scale_squared) * std::exp ( (-1) * d_g*d_g / (2.0f * scale_squared));
 
         point_density_i += phi_i_j;
         phi_row[point_j] = phi_i_j;
@@ -187,7 +187,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF ()
 
       // compute the invariant F
       float aux = 2.0f / scale_values_[scale_i] * euclideanDistance<PointT, PointT> (A_hat, input_->points[point_i]);
-      F[point_i] = aux * expf (-aux);
+      F[point_i] = aux * std::exp (-aux);
     }
 
     F_scales_[scale_i] = F;

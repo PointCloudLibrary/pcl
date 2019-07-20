@@ -373,7 +373,7 @@ FittingCurve2dASDM::assembleInterior (double wInt, double sigma2, double rScale,
 
     double w (wInt);
     if (z (2) > 0.0 && wFunction)
-      w = wInt * exp (-(error * error) * ds);
+      w = wInt * std::exp (-(error * error) * ds);
 
     if (w > 1e-6) // avoids ill-conditioned matrix
       addPointConstraint (m_data->interior_param[p], m_data->interior[p], n_prev, t_prev, rho_prev, d, w, row);
@@ -479,7 +479,7 @@ FittingCurve2dASDM::assembleClosestPoints (const std::vector<double> &elements, 
     m_data->closest_points_error.push_back ((p3 - p1).squaredNorm ());
 
     double w (weight);
-    w = 0.5 * weight * exp (-(error2) * ds);
+    w = 0.5 * weight * std::exp (-(error2) * ds);
     //    w = weight * std::fabs(in.dot(p2-p1));
 
     double d;

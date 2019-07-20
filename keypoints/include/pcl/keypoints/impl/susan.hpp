@@ -131,7 +131,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads
 //       Eigen::Vector3f diff = normals_->points[*index].getNormal3fMap () - nucleus_normal.getNormal3fMap ();
 //       float c = diff.norm () / t;
 //       c = -1 * pow (c, 6.0);
-//       c = exp (c);
+//       c = std::exp (c);
 //       Eigen::Vector3f xyz = surface_->points[*index].getVector3fMap ();
 //       centroid += c * xyz;
 //       area += c;

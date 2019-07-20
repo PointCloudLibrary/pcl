@@ -134,7 +134,7 @@ pcl::kernel<PointT>::gaussianKernel (pcl::PointCloud<PointT> &kernel)
     {
       int iks = (i - kernel_size_ / 2);
       int jks = (j - kernel_size_ / 2);
-      kernel (j, i).intensity = expf (float (- double (iks * iks + jks * jks) / sigma_sqr));
+      kernel (j, i).intensity = std::exp (float (- double (iks * iks + jks * jks) / sigma_sqr));
       sum += float (kernel (j, i).intensity);
     }
   }
@@ -163,7 +163,7 @@ pcl::kernel<PointT>::loGKernel (pcl::PointCloud<PointT> &kernel)
       int iks = (i - kernel_size_ / 2); 
       int jks = (j - kernel_size_ / 2); 
       temp = float (double (iks * iks  + jks * jks) / sigma_sqr);
-      kernel (j, i).intensity = (1.0f - temp) * expf (-temp);
+      kernel (j, i).intensity = (1.0f - temp) * std::exp (-temp);
       sum += kernel (j, i).intensity;
     }
   }

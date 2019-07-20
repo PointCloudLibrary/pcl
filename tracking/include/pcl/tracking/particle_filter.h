@@ -209,7 +209,7 @@ namespace pcl
         /** \brief Get a pointer to a pointcloud of the particles. */
         inline PointCloudStatePtr getParticles () const { return particles_; }
 
-        /** \brief Normalize the weight of a particle using \f$ exp(1- alpha ( w - w_{min}) / (w_max - w_min)) \f$
+        /** \brief Normalize the weight of a particle using \f$ std::exp(1- alpha ( w - w_{min}) / (w_max - w_min)) \f$
           * \note This method is described in [P.Azad et. al, ICRA11].
           * \param[in] w the weight to be normalized
           * \param[in] w_min the minimum weight of the particles
@@ -217,7 +217,7 @@ namespace pcl
           */
         inline double normalizeParticleWeight (double w, double w_min, double w_max)
         {
-          return exp (1.0 - alpha_ * (w - w_min) / (w_max - w_min));
+          return std::exp (1.0 - alpha_ * (w - w_min) / (w_max - w_min));
         }
 
         /** \brief Set the value of alpha.

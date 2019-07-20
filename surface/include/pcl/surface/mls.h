@@ -231,7 +231,7 @@ namespace pcl
         * \return The weight for a point at squared distance from the origin of the mls frame
         */
       inline
-      double computeMLSWeight (const double sq_dist, const double sq_mls_radius) { return (exp (-sq_dist / sq_mls_radius)); }
+      double computeMLSWeight (const double sq_dist, const double sq_mls_radius) { return (std::exp (-sq_dist / sq_mls_radius)); }
 
   };
 

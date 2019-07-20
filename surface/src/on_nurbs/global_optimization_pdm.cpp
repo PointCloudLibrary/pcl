@@ -300,7 +300,7 @@ GlobalOptimization::assembleCommonBoundaries (unsigned id1, double weight, unsig
     m_data[id (1)]->common_boundary_param.push_back (params2);
 
     //    double error = (p1-p2).norm();
-    //    double w = weight * exp(-(error * error) * ds);
+    //    double w = weight * std::exp(-(error * error) * ds);
     addParamConstraint (id, params1, params2, weight * w, row);
 
   }
@@ -342,7 +342,7 @@ GlobalOptimization::assembleClosingBoundaries (unsigned id, unsigned samples, do
 
       //      double dist = (p - p0).norm();
       //      if (error < max_error && dist < max_dist) {
-      double w = weight * exp (-(error * error) * ds);
+      double w = weight * std::exp (-(error * error) * ds);
       addParamConstraint (Eigen::Vector2i (id, n2), params1[i], params, w, row);
       //      }
     }

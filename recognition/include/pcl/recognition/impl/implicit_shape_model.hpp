@@ -252,7 +252,7 @@ pcl::features::ISMVoteList<PointT>::shiftMean (const Eigen::Vector3f& snap_pt, c
 
   for (size_t j = 0; j < n_pts; j++)
   {
-    double kernel = votes_->points[k_ind_[j]].strength * exp (-k_sqr_dist_[j] / (in_sigma_dist * in_sigma_dist));
+    double kernel = votes_->points[k_ind_[j]].strength * std::exp (-k_sqr_dist_[j] / (in_sigma_dist * in_sigma_dist));
     Eigen::Vector3f vote_vec (votes_->points[k_ind_[j]].x, votes_->points[k_ind_[j]].y, votes_->points[k_ind_[j]].z);
     wgh_sum += vote_vec * static_cast<float> (kernel);
     denom += kernel;
@@ -282,7 +282,7 @@ pcl::features::ISMVoteList<PointT>::getDensityAtPoint (
   size_t num_of_pts = tree_->radiusSearch (pt, 3 * sigma_dist, k_ind_, k_sqr_dist_);
 
   for (size_t j = 0; j < num_of_pts; j++)
-    sum_vote += votes_->points[k_ind_[j]].strength * exp (-k_sqr_dist_[j] / (sigma_dist * sigma_dist));
+    sum_vote += votes_->points[k_ind_[j]].strength * std::exp (-k_sqr_dist_[j] / (sigma_dist * sigma_dist));
 
   return (sum_vote);
 }
@@ -1073,7 +1073,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateW
         Eigen::Vector3f predicted_center = locations[j_index].point_.getVector3fMap () + direction_2;
         float residual = (predicted_center - actual_center).norm ();
         float value = -residual * residual / square_sigma_dist;
-        gauss_dists.push_back (static_cast<float> (exp (value)));
+        gauss_dists.push_back (static_cast<float> (std::exp (value)));
       }//next word
       //find median gaussian weighted distance
       size_t mid_elem = (gauss_dists.size () - 1) / 2;
