@@ -332,7 +332,7 @@ pcl::DinastGrabber::getXYZIPointCloud ()
       double dy = y*0.1;
       double dist = (log (static_cast<double> (pixel / A)) / B - dy) * (7E-07*r3 - 0.0001*r2 + 0.004*r1 + 0.9985) * 1.5;
       double theta_colati = fov_ * r1 * dist_max_2d_;
-      double c_theta = cos (theta_colati);
+      double c_theta = std::cos (theta_colati);
       double s_theta = sin (theta_colati);
       double c_ksai = static_cast<double> (x - 160) / r1;
       double s_ksai = static_cast<double> (y - 120) / r1;

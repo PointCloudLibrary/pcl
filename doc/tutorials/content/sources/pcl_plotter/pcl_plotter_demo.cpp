@@ -17,7 +17,7 @@ generateData (double *ax, double *acos, double *asin, int numPoints)
   for (int i = 0; i < numPoints; ++i)
   {
     ax[i] = i*inc;
-    acos[i] = cos (i * inc);
+    acos[i] = std::cos (i * inc);
     asin[i] = sin (i * inc);
   }
 }

@@ -94,7 +94,7 @@ generate_halo(
   Eigen::Vector3d focus_center,double halo_r,double halo_dz,int n_poses){
   
   for (double t=0;t < (2*M_PI);t =t + (2*M_PI)/ ((double) n_poses) ){
-    double x = halo_r*cos(t);
+    double x = halo_r*std::cos(t);
     double y = halo_r*sin(t);
     double z = halo_dz;
     double pitch =atan2( halo_dz,halo_r); 

@@ -564,8 +564,8 @@ RangeImage::calculate3DPoint (float image_x, float image_y, float range, Eigen::
   //std::cout << image_x<<","<<image_y<<","<<range;
   getAnglesFromImagePoint (image_x, image_y, angle_x, angle_y);
   
-  float cosY = cosf (angle_y);
-  point = Eigen::Vector3f (range * sinf (angle_x) * cosY, range * sinf (angle_y), range * cosf (angle_x)*cosY);
+  float cosY = std::cos (angle_y);
+  point = Eigen::Vector3f (range * sinf (angle_x) * cosY, range * sinf (angle_y), range * std::cos (angle_x)*cosY);
   point = to_world_system_ * point;
 }
 
@@ -599,7 +599,7 @@ void
 RangeImage::getAnglesFromImagePoint (float image_x, float image_y, float& angle_x, float& angle_y) const 
 {
   angle_y = (image_y+static_cast<float> (image_offset_y_))*angular_resolution_y_ - 0.5f*static_cast<float> (M_PI);
-  float cos_angle_y = cosf (angle_y);
+  float cos_angle_y = std::cos (angle_y);
   angle_x = (cos_angle_y==0.0f ? 0.0f : ( (image_x+ static_cast<float> (image_offset_x_))*angular_resolution_x_ - static_cast<float> (M_PI))/cos_angle_y);
 }
 

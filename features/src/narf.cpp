@@ -161,7 +161,7 @@ Narf::extractDescriptor (int descriptor_size)
     descriptor_value = 0.0f;
     float angle = static_cast<float> (descriptor_value_idx) * angle_step_size + surface_patch_rotation_,
           beam_point_factor_x = sinf(angle) * beam_point_factor,
-          beam_point_factor_y = -cosf (angle) * beam_point_factor;
+          beam_point_factor_y = -std::cos (angle) * beam_point_factor;
      
     std::vector<float> beam_values (no_of_beam_points + 1);
     float current_cell = 0.0f;

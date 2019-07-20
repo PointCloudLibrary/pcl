@@ -269,7 +269,7 @@ FittingCylinder::initNurbsPCACylinder (int order, NurbsDataSurface *data)
     {
       cv (0) = v_min (0) + dcu * i;
       cv (1) = ry * sin (dcv * j);
-      cv (2) = rz * cos (dcv * j);
+      cv (2) = rz * std::cos (dcv * j);
       cv_t = eigenvectors * cv + mean;
       nurbs.SetCV (i, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
     }
@@ -328,7 +328,7 @@ FittingCylinder::initNurbsCylinderWithAxes (int order, NurbsDataSurface *data, E
     {
       cv (0) = v_min (0) + dcu * i;
       cv (1) = ry * sin (dcv * j);
-      cv (2) = rz * cos (dcv * j);
+      cv (2) = rz * std::cos (dcv * j);
       cv_t = axes * cv + mean;
       nurbs.SetCV (i, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
     }

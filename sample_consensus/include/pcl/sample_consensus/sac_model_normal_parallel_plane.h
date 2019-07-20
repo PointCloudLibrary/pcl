@@ -156,7 +156,7 @@ namespace pcl
         * \note You need to specify an angle > 0 in order to activate the axis-angle constraint!
         */
       inline void
-      setEpsAngle (const double ea) { eps_angle_ = ea; cos_angle_ = fabs (cos (ea));}
+      setEpsAngle (const double ea) { eps_angle_ = ea; cos_angle_ = fabs (std::cos (ea));}
 
       /** \brief Get the angle epsilon (delta) threshold. */
       inline double

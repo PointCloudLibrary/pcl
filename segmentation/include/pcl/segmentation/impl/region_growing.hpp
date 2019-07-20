@@ -484,7 +484,7 @@ pcl::RegionGrowing<PointT, NormalT>::validatePoint (int initial_seed, int point,
 {
   is_a_seed = true;
 
-  float cosine_threshold = cosf (theta_threshold_);
+  float cosine_threshold = std::cos (theta_threshold_);
   float data[4];
 
   data[0] = input_->points[point].data[0];

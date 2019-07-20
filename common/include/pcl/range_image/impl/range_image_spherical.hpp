@@ -46,8 +46,8 @@ RangeImageSpherical::calculate3DPoint (float image_x, float image_y, float range
   float angle_x, angle_y;
   getAnglesFromImagePoint (image_x, image_y, angle_x, angle_y);
 
-  float cosY = cosf (angle_y);
-  point = Eigen::Vector3f (range * sinf (angle_x) * cosY, range * sinf (angle_y), range * cosf (angle_x)*cosY);
+  float cosY = std::cos (angle_y);
+  point = Eigen::Vector3f (range * sinf (angle_x) * cosY, range * sinf (angle_y), range * std::cos (angle_x)*cosY);
   point = to_world_system_ * point;
 }
 

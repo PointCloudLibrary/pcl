@@ -688,8 +688,8 @@ pcl::getTransformation (Scalar x, Scalar y, Scalar z,
                         Scalar roll, Scalar pitch, Scalar yaw, 
                         Eigen::Transform<Scalar, 3, Eigen::Affine> &t)
 {
-  Scalar A = cos (yaw),  B = sin (yaw),  C  = cos (pitch), D  = sin (pitch),
-         E = cos (roll), F = sin (roll), DE = D*E,         DF = D*F;
+  Scalar A = std::cos (yaw),  B = sin (yaw),  C  = std::cos (pitch), D  = sin (pitch),
+         E = std::cos (roll), F = sin (roll), DE = D*E,         DF = D*F;
 
   t (0, 0) = A*C;  t (0, 1) = A*DF - B*E;  t (0, 2) = B*F + A*DE;  t (0, 3) = x;
   t (1, 0) = B*C;  t (1, 1) = A*E + B*DF;  t (1, 2) = B*DE - A*F;  t (1, 3) = y;

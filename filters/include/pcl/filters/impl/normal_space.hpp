@@ -118,11 +118,11 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (const float *normal, unsigne
   // dcos is the direction cosine.
   float dcos = 0.0;
   float bin_size = 0.0;
-  // max_cos and min_cos are the maximum and minimum values of cos(theta) respectively
+  // max_cos and min_cos are the maximum and minimum values of std::cos(theta) respectively
   float max_cos = 1.0;
   float min_cos = -1.0;
 
-//  dcos = cosf (normal[0]);
+//  dcos = std::cos (normal[0]);
   dcos = normal[0];
   bin_size = (max_cos - min_cos) / static_cast<float> (binsx_);
 
@@ -137,7 +137,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (const float *normal, unsigne
   }
   t[0] = k;
 
-//  dcos = cosf (normal[1]);
+//  dcos = std::cos (normal[1]);
   dcos = normal[1];
   bin_size = (max_cos - min_cos) / static_cast<float> (binsy_);
 
@@ -152,7 +152,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (const float *normal, unsigne
   }
   t[1] = k;
     
-//  dcos = cosf (normal[2]);
+//  dcos = std::cos (normal[2]);
   dcos = normal[2];
   bin_size = (max_cos - min_cos) / static_cast<float> (binsz_);
 

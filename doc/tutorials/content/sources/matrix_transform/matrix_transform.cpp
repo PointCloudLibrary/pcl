@@ -76,10 +76,10 @@ main (int argc, char** argv)
 
   // Define a rotation matrix (see https://en.wikipedia.org/wiki/Rotation_matrix)
   float theta = M_PI/4; // The angle of rotation in radians
-  transform_1 (0,0) = cos (theta);
+  transform_1 (0,0) = std::cos (theta);
   transform_1 (0,1) = -sin(theta);
   transform_1 (1,0) = sin (theta);
-  transform_1 (1,1) = cos (theta);
+  transform_1 (1,1) = std::cos (theta);
   //    (row, column)
 
   // Define a translation of 2.5 meters on the x axis.
