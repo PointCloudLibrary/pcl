@@ -300,11 +300,11 @@ double standardRad(double t) {
 }
 
 void wRo_to_euler(const Eigen::Matrix3f& wRo, double& yaw, double& pitch, double& roll) {
-  yaw = standardRad(atan2(wRo(1,0), wRo(0,0)));
+  yaw = standardRad(std::atan2(wRo(1,0), wRo(0,0)));
   double c = std::cos(yaw);
   double s = sin(yaw);
-  pitch = standardRad(atan2(static_cast<double> (-wRo(2,0)), wRo(0,0)*c + wRo(1,0)*s));
-  roll  = standardRad(atan2(wRo(0,2)*s - wRo(1,2)*c, -wRo(0,1)*s + wRo(1,1)*c));
+  pitch = standardRad(std::atan2(static_cast<double> (-wRo(2,0)), wRo(0,0)*c + wRo(1,0)*s));
+  roll  = standardRad(std::atan2(wRo(0,2)*s - wRo(1,2)*c, -wRo(0,1)*s + wRo(1,1)*c));
 }
 
 void print_Isometry3d(Eigen::Isometry3d pose, std::stringstream &ss){

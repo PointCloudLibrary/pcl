@@ -184,7 +184,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         uvn_nn[i][0] = tmp_.dot(u_);
         uvn_nn[i][1] = tmp_.dot(v_);
         // Computing the angle between each neighboring point and the query point itself
-        angles_[i].angle = atan2(uvn_nn[i][1], uvn_nn[i][0]);
+        angles_[i].angle = std::atan2(uvn_nn[i][1], uvn_nn[i][0]);
         // initializing angle descriptors
         angles_[i].index = nnIdx[i];
         if (
@@ -359,7 +359,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         uvn_nn[i][1] = tmp_.dot(v_);
   
         // Computing the angle between each neighboring point and the query point itself 
-        angles_[i].angle = atan2(uvn_nn[i][1], uvn_nn[i][0]);
+        angles_[i].angle = std::atan2(uvn_nn[i][1], uvn_nn[i][0]);
         // initializing angle descriptors
         angles_[i].index = nnIdx[i];
         angles_[i].nnIndex = i;
@@ -503,7 +503,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
               tmp_ = coords_[source_[R_]] - proj_qp_;
               uvn_s[0] = tmp_.dot(u_);
               uvn_s[1] = tmp_.dot(v_);
-              double angleS = atan2(uvn_s[1], uvn_s[0]);
+              double angleS = std::atan2(uvn_s[1], uvn_s[0]);
               double dif = angles_[1].angle - angles_[0].angle;
               if ((angles_[0].angle < angleS) && (angleS < angles_[1].angle))
               {

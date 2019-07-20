@@ -794,7 +794,7 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
       {
         GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_r);
-        gradient.angle = atan2 (r_dy, r_dx) * 180.0f / pi;
+        gradient.angle = std::atan2 (r_dy, r_dx) * 180.0f / pi;
         gradient.x = static_cast<float> (col_index);
         gradient.y = static_cast<float> (row_index);
 
@@ -804,7 +804,7 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
       {
         GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_g);
-        gradient.angle = atan2 (g_dy, g_dx) * 180.0f / pi;
+        gradient.angle = std::atan2 (g_dy, g_dx) * 180.0f / pi;
         gradient.x = static_cast<float> (col_index);
         gradient.y = static_cast<float> (row_index);
 
@@ -814,7 +814,7 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
       {
         GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_b);
-        gradient.angle = atan2 (b_dy, b_dx) * 180.0f / pi;
+        gradient.angle = std::atan2 (b_dy, b_dx) * 180.0f / pi;
         gradient.x = static_cast<float> (col_index);
         gradient.y = static_cast<float> (row_index);
 
@@ -910,7 +910,7 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       {
         GradientXY gradient;
         gradient.magnitude = std::sqrt (static_cast<float> (sqr_mag_r));
-        gradient.angle = atan2f (static_cast<float> (r_dy), static_cast<float> (r_dx)) * 180.0f / pi;
+        gradient.angle = std::atan2 (static_cast<float> (r_dy), static_cast<float> (r_dx)) * 180.0f / pi;
         if (gradient.angle < -180.0f) gradient.angle += 360.0f;
         if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
         gradient.x = static_cast<float> (col_index);
@@ -922,7 +922,7 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       {
         GradientXY gradient;
         gradient.magnitude = std::sqrt (static_cast<float> (sqr_mag_g));
-        gradient.angle = atan2f (static_cast<float> (g_dy), static_cast<float> (g_dx)) * 180.0f / pi;
+        gradient.angle = std::atan2 (static_cast<float> (g_dy), static_cast<float> (g_dx)) * 180.0f / pi;
         if (gradient.angle < -180.0f) gradient.angle += 360.0f;
         if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
         gradient.x = static_cast<float> (col_index);
@@ -934,7 +934,7 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       {
         GradientXY gradient;
         gradient.magnitude = std::sqrt (static_cast<float> (sqr_mag_b));
-        gradient.angle = atan2f (static_cast<float> (b_dy), static_cast<float> (b_dx)) * 180.0f / pi;
+        gradient.angle = std::atan2 (static_cast<float> (b_dy), static_cast<float> (b_dx)) * 180.0f / pi;
         if (gradient.angle < -180.0f) gradient.angle += 360.0f;
         if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
         gradient.x = static_cast<float> (col_index);

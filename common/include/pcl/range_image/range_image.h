@@ -795,7 +795,7 @@ namespace pcl
       static inline float
       asinLookUp (float value);
       
-      /** Query the atan2 lookup table */
+      /** Query the std::atan2 lookup table */
       static inline float
       atan2LookUp (float y, float x);
      

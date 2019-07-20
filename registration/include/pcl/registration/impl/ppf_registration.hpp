@@ -124,7 +124,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
           Eigen::Vector3f scene_point = target_->points[scene_point_index].getVector3fMap ();
 
           Eigen::Vector3f scene_point_transformed = transform_sg * scene_point;
-          float alpha_s = atan2f ( -scene_point_transformed(2), scene_point_transformed(1));
+          float alpha_s = std::atan2 ( -scene_point_transformed(2), scene_point_transformed(1));
           if (std::sin (alpha_s) * scene_point_transformed(2) < 0.0f)
             alpha_s *= (-1);
           alpha_s *= (-1);

@@ -85,7 +85,7 @@ pcl::PPFRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
           Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
 
           Eigen::Vector3f model_point_transformed = transform_mg * model_point;
-          float angle = atan2f ( -model_point_transformed(2), model_point_transformed(1));
+          float angle = std::atan2 ( -model_point_transformed(2), model_point_transformed(1));
           if (std::sin (angle) * model_point_transformed(2) < 0.0f)
             angle *= (-1);
           p.alpha_m = -angle;

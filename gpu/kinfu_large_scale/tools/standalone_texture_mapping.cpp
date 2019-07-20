@@ -277,9 +277,9 @@ void showCameras (pcl::texture_mapping::CameraVector cams, pcl::PointCloud<pcl::
     p1.x=0; p1.y=0; p1.z=0;
     double dist = 0.75;
     double minX, minY, maxX, maxY;
-    maxX = dist*tan (atan (width / (2.0*focal)));
+    maxX = dist*tan (std::atan (width / (2.0*focal)));
     minX = -maxX;
-    maxY = dist*tan (atan (height / (2.0*focal)));
+    maxY = dist*tan (std::atan (height / (2.0*focal)));
     minY = -maxY;
     p2.x=minX; p2.y=minY; p2.z=dist;
     p3.x=maxX; p3.y=minY; p3.z=dist;

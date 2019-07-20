@@ -302,7 +302,7 @@ RangeImageBorderExtractor::getAnglesImageForBorderDirections ()
       range_image_->getImagePoint(point.x+tmp_factor*border_direction[0], point.y+tmp_factor*border_direction[1], point.z+tmp_factor*border_direction[2],
                                 border_direction_in_image_x, border_direction_in_image_y);
       border_direction_in_image_x -= static_cast<float> (x);  border_direction_in_image_y -= static_cast<float> (y);
-      angle = atan2f (border_direction_in_image_y, border_direction_in_image_x);
+      angle = std::atan2 (border_direction_in_image_y, border_direction_in_image_x);
     }
   }
   return angles_image;
@@ -339,7 +339,7 @@ RangeImageBorderExtractor::getAnglesImageForSurfaceChangeDirections ()
       range_image_->getImagePoint(point.x+tmp_factor*direction[0], point.y+tmp_factor*direction[1], point.z+tmp_factor*direction[2],
                                 border_direction_in_image_x, border_direction_in_image_y);
       border_direction_in_image_x -= static_cast<float> (x);  border_direction_in_image_y -= static_cast<float> (y);
-      angle = atan2f (border_direction_in_image_y, border_direction_in_image_x);
+      angle = std::atan2 (border_direction_in_image_y, border_direction_in_image_x);
       if (angle <= deg2rad (-90.0f))
         angle += static_cast<float> (M_PI);
       else if (angle > deg2rad (90.0f))
