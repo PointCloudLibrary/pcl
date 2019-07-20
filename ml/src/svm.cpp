@@ -341,7 +341,7 @@ class Kernel: public QMatrix
 
     double kernel_sigmoid (int i, int j) const
     {
-      return tanh (gamma*dot (x[i], x[j]) + coef0);
+      return std::tanh (gamma*dot (x[i], x[j]) + coef0);
     }
 
     double kernel_precomputed (int i, int j) const
@@ -477,7 +477,7 @@ double Kernel::k_function (const svm_node *x, const svm_node *y,
     }
 
     case SIGMOID:
-      return tanh (param.gamma*dot (x, y) + param.coef0);
+      return std::tanh (param.gamma*dot (x, y) + param.coef0);
 
     case PRECOMPUTED:  //x: test (validation), y: SV
       return x[ int (y->value) ].value;
