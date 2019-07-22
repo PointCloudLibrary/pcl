@@ -619,7 +619,7 @@ pcl::io::openni2::OpenNI2Device::findCompatibleDepthMode (const OpenNI2VideoMode
 
 // Generic support method for the above findCompatable...Mode calls above
 bool
-pcl::io::openni2::OpenNI2Device::findCompatibleVideoMode (const std::vector<OpenNI2VideoMode> supportedModes, const OpenNI2VideoMode& requested_mode, OpenNI2VideoMode& actual_mode) const
+pcl::io::openni2::OpenNI2Device::findCompatibleVideoMode (const std::vector<OpenNI2VideoMode>& supportedModes, const OpenNI2VideoMode& requested_mode, OpenNI2VideoMode& actual_mode) const
 {
   bool found = false;
   for (const auto &supportedMode : supportedModes)
@@ -847,17 +847,17 @@ std::ostream& pcl::io::openni2::operator<< (std::ostream& stream, const OpenNI2D
 void
 pcl::io::openni2::OpenNI2Device::setColorCallback (StreamCallbackFunction color_callback)
 {
-  color_frame_listener->setCallback (color_callback);
+  color_frame_listener->setCallback (std::move(color_callback));
 }
 
 void
 pcl::io::openni2::OpenNI2Device::setDepthCallback (StreamCallbackFunction depth_callback)
 {
-  depth_frame_listener->setCallback (depth_callback);
+  depth_frame_listener->setCallback (std::move(depth_callback));
 }
 
 void
 pcl::io::openni2::OpenNI2Device::setIRCallback (StreamCallbackFunction ir_callback)
 {
-  ir_frame_listener->setCallback (ir_callback);
+  ir_frame_listener->setCallback (std::move(ir_callback));
 }

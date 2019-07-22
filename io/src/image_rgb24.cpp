@@ -46,12 +46,12 @@ using pcl::io::FrameWrapper;
 using pcl::io::IOException;
 
 pcl::io::ImageRGB24::ImageRGB24 (FrameWrapper::Ptr image_metadata)
-  : Image (image_metadata)
+  : Image (std::move(image_metadata))
 {}
 
 
 pcl::io::ImageRGB24::ImageRGB24 (FrameWrapper::Ptr image_metadata, Timestamp timestamp)
-  : Image (image_metadata, timestamp)
+  : Image (std::move(image_metadata), timestamp)
 {}
 
 

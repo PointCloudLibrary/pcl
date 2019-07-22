@@ -289,7 +289,7 @@ namespace pcl
 
 
           bool
-          findCompatibleVideoMode (const std::vector<OpenNI2VideoMode> supportedModes,
+          findCompatibleVideoMode (const std::vector<OpenNI2VideoMode>& supportedModes,
             const OpenNI2VideoMode& output_mode, OpenNI2VideoMode& mode) const;
 
           bool

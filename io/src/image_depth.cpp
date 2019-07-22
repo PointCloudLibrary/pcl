@@ -48,7 +48,7 @@ using pcl::io::FrameWrapper;
 using pcl::io::IOException;
 
 pcl::io::DepthImage::DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, pcl::uint64_t shadow_value, pcl::uint64_t no_sample_value)
-: wrapper_ (depth_metadata)
+: wrapper_ (std::move(depth_metadata))
 , baseline_ (baseline)
 , focal_length_ (focal_length)
 , shadow_value_ (shadow_value)
@@ -58,7 +58,7 @@ pcl::io::DepthImage::DepthImage (FrameWrapper::Ptr depth_metadata, float baselin
 
 
 pcl::io::DepthImage::DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, pcl::uint64_t shadow_value, pcl::uint64_t no_sample_value, Timestamp timestamp)
-: wrapper_(depth_metadata)
+: wrapper_(std::move(depth_metadata))
 , baseline_ (baseline)
 , focal_length_ (focal_length)
 , shadow_value_ (shadow_value)

@@ -59,7 +59,7 @@ namespace pcl
           OpenNI2FrameListener ()
           {}
           OpenNI2FrameListener (StreamCallbackFunction cb)
-            : callback_(cb) {}
+            : callback_(std::move(cb)) {}
 
           ~OpenNI2FrameListener ()
           { };
@@ -74,7 +74,7 @@ namespace pcl
           void
           setCallback (StreamCallbackFunction cb)
           {
-            callback_ = cb;
+            callback_ = std::move(cb);
           }
 
         private:

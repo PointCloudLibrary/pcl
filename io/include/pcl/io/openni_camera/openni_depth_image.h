@@ -163,7 +163,7 @@ namespace openni_wrapper
   } ;
 
   DepthImage::DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ()
-  : depth_md_ (depth_meta_data)
+  : depth_md_ (std::move(depth_meta_data))
   , baseline_ (baseline)
   , focal_length_ (focal_length)
   , shadow_value_ (shadow_value)

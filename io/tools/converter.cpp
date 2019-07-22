@@ -97,7 +97,7 @@ saveMesh (pcl::PolygonMesh& input,
  * @return True on success, false otherwise.
  */
 bool
-savePointCloud (pcl::PCLPointCloud2::Ptr input,
+savePointCloud (const pcl::PCLPointCloud2::Ptr& input,
                 std::string output_file,
                 int output_type)
 {

@@ -48,13 +48,13 @@ using pcl::io::FrameWrapper;
 using pcl::io::IOException;
 
 pcl::io::IRImage::IRImage (FrameWrapper::Ptr ir_metadata)
-  : wrapper_(ir_metadata)
+  : wrapper_(std::move(ir_metadata))
   , timestamp_(Clock::now ())
 {}
 
 
 pcl::io::IRImage::IRImage (FrameWrapper::Ptr ir_metadata, Timestamp time)
-  : wrapper_(ir_metadata)
+  : wrapper_(std::move(ir_metadata))
   , timestamp_(time)
 {}
 

@@ -55,7 +55,7 @@ namespace pcl
       class Openni2FrameWrapper : public pcl::io::FrameWrapper
       {
         public:
-          Openni2FrameWrapper (openni::VideoFrameRef metadata)
+          Openni2FrameWrapper (const openni::VideoFrameRef& metadata)
             : metadata_(metadata)
           {}
 
