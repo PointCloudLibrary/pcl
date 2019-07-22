@@ -628,7 +628,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::validatePoint (int initial_seed, int poi
   if (difference > color_p2p_threshold_)
     return (false);
 
-  float cosine_threshold = cosf (theta_threshold_);
+  float cosine_threshold = std::cos (theta_threshold_);
 
   // check the angle between normals if needed
   if (normal_flag_)

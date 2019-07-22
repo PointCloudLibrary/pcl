@@ -70,8 +70,8 @@ namespace pcl
       /** \brief Empty constructor for GroundPlaneComparator. */
       GroundPlaneComparator ()
         : normals_ ()
-        , angular_threshold_ (cosf (pcl::deg2rad (2.0f)))
-        , road_angular_threshold_ ( cosf(pcl::deg2rad (10.0f)))
+        , angular_threshold_ (std::cos (pcl::deg2rad (2.0f)))
+        , road_angular_threshold_ ( std::cos(pcl::deg2rad (10.0f)))
         , distance_threshold_ (0.1f)
         , depth_dependent_ (true)
         , z_axis_ (Eigen::Vector3f (0.0, 0.0, 1.0) )
@@ -85,11 +85,11 @@ namespace pcl
       GroundPlaneComparator (boost::shared_ptr<std::vector<float> >& plane_coeff_d) 
         : normals_ ()
         , plane_coeff_d_ (plane_coeff_d)
-        , angular_threshold_ (cosf (pcl::deg2rad (3.0f)))
+        , angular_threshold_ (std::cos (pcl::deg2rad (3.0f)))
         , distance_threshold_ (0.1f)
         , depth_dependent_ (true)
         , z_axis_ (Eigen::Vector3f (0.0f, 0.0f, 1.0f))
-        , road_angular_threshold_ ( cosf(pcl::deg2rad (40.0f)))
+        , road_angular_threshold_ ( std::cos(pcl::deg2rad (40.0f)))
         , desired_road_axis_ (Eigen::Vector3f(0.0, -1.0, 0.0))
       {
       }
@@ -155,7 +155,7 @@ namespace pcl
       virtual void
       setAngularThreshold (float angular_threshold)
       {
-        angular_threshold_ = cosf (angular_threshold);
+        angular_threshold_ = std::cos (angular_threshold);
       }
 
       /** \brief Set the tolerance in radians for difference in normal direction between a point and the expected ground normal.
@@ -164,7 +164,7 @@ namespace pcl
       virtual void
       setGroundAngularThreshold (float angular_threshold)
       {
-        road_angular_threshold_ = cosf (angular_threshold);
+        road_angular_threshold_ = std::cos (angular_threshold);
       }
 
       /** \brief Set the expected ground plane normal with respect to the sensor.  Pixels labeled as ground must be within ground_angular_threshold radians of this normal to be labeled as ground.

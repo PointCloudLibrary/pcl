@@ -403,7 +403,7 @@ template<typename PointT> inline Eigen::Matrix6f
 pcl::registration::LUM<PointT>::incidenceCorrection (const Eigen::Vector6f &pose)
 {
   Eigen::Matrix6f out = Eigen::Matrix6f::Identity ();
-  float cx = cosf (pose (3)), sx = sinf (pose (3)), cy = cosf (pose (4)), sy = sinf (pose (4));
+  float cx = std::cos (pose (3)), sx = sinf (pose (3)), cy = std::cos (pose (4)), sy = sinf (pose (4));
   out (0, 4) = pose (1) * sx - pose (2) * cx;
   out (0, 5) = pose (1) * cx * cy + pose (2) * sx * cy;
   out (1, 3) = pose (2);

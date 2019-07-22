@@ -490,7 +490,7 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
     throw std::runtime_error ("[SequentialFitter::grow] size of boundary indices and boundary parameters do not match.");
   }
 
-  float angle = cosf (max_angle);
+  float angle = std::cos (max_angle);
   unsigned bnd_moved (0);
 
   for (unsigned i = 0; i < num_bnd; i++)

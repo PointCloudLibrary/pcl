@@ -75,10 +75,10 @@ main (int argc,
 
   // A rotation matrix (see https://en.wikipedia.org/wiki/Rotation_matrix)
   double theta = M_PI / 8;  // The angle of rotation in radians
-  transformation_matrix (0, 0) = cos (theta);
+  transformation_matrix (0, 0) = std::cos (theta);
   transformation_matrix (0, 1) = -sin (theta);
   transformation_matrix (1, 0) = sin (theta);
-  transformation_matrix (1, 1) = cos (theta);
+  transformation_matrix (1, 1) = std::cos (theta);
 
   // A translation on Z axis (0.4 meters)
   transformation_matrix (2, 3) = 0.4;

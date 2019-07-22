@@ -482,7 +482,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
   Eigen::Vector3f** average_border_directions = new Eigen::Vector3f*[size];
   int radius = parameters_.pixel_radius_border_direction;
   int minimum_weight = radius+1;
-  float min_cos_angle=cosf(deg2rad(120.0f));
+  float min_cos_angle=std::cos(deg2rad(120.0f));
   for (int y=0; y<height; ++y)
   {
     for (int x=0; x<width; ++x)

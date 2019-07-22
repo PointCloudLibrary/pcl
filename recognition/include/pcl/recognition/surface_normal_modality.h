@@ -188,7 +188,7 @@ namespace pcl
 	    pcl::PointCloud<PointXYZ>::VectorType ref_normals (nr_normals);
       
       const float normal0_angle = 40.0f * 3.14f / 180.0f;
-      ref_normals[0].x = cosf (normal0_angle);
+      ref_normals[0].x = std::cos (normal0_angle);
       ref_normals[0].y = 0.0f;
       ref_normals[0].z = -sinf (normal0_angle);
 
@@ -197,8 +197,8 @@ namespace pcl
       {
         const float angle = 2.0f * static_cast<float> (M_PI * normal_index * inv_nr_normals);
 
-        ref_normals[normal_index].x = cosf (angle) * ref_normals[0].x - sinf (angle) * ref_normals[0].y;
-        ref_normals[normal_index].y = sinf (angle) * ref_normals[0].x + cosf (angle) * ref_normals[0].y;
+        ref_normals[normal_index].x = std::cos (angle) * ref_normals[0].x - sinf (angle) * ref_normals[0].y;
+        ref_normals[normal_index].y = sinf (angle) * ref_normals[0].x + std::cos (angle) * ref_normals[0].y;
         ref_normals[normal_index].z = ref_normals[0].z;
       }
 

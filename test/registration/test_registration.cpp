@@ -681,7 +681,7 @@ TEST (PCL, PPFRegistration)
   // Transform the source cloud by a large amount
   Eigen::Vector3f initial_offset (100, 0, 0);
   float angle = M_PI/6;
-  Eigen::Quaternionf initial_rotation (cos (angle / 2), 0, 0, sin (angle / 2));
+  Eigen::Quaternionf initial_rotation (std::cos (angle / 2), 0, 0, sin (angle / 2));
   PointCloud<PointXYZ> cloud_source_transformed;
   transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
 

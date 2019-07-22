@@ -243,7 +243,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeAngleDerivat
   }
   else
   {
-    cx = cos (p (3));
+    cx = std::cos (p (3));
     sx = sin (p (3));
   }
   if (fabs (p (4)) < 10e-5)
@@ -254,7 +254,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeAngleDerivat
   }
   else
   {
-    cy = cos (p (4));
+    cy = std::cos (p (4));
     sy = sin (p (4));
   }
 
@@ -266,7 +266,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeAngleDerivat
   }
   else
   {
-    cz = cos (p (5));
+    cz = std::cos (p (5));
     sz = sin (p (5));
   }
 

@@ -77,7 +77,7 @@ RangeImage::createLookupTables ()
   for (int i = 0; i < lookup_table_size; ++i) 
   {
     float value = static_cast<float> (i) * 2.0f * static_cast<float> (M_PI) / static_cast<float> (lookup_table_size-1);
-    cos_lookup_table[i] = cosf (value);
+    cos_lookup_table[i] = std::cos (value);
   }
 }
 

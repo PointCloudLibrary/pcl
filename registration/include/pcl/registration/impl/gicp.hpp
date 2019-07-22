@@ -131,9 +131,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeRDerivat
 
   double phi = x[3], theta = x[4], psi = x[5];
 
-  double cphi = cos(phi), sphi = sin(phi);
-  double ctheta = cos(theta), stheta = sin(theta);
-  double cpsi = cos(psi), spsi = sin(psi);
+  double cphi = std::cos(phi), sphi = sin(phi);
+  double ctheta = std::cos(theta), stheta = sin(theta);
+  double cpsi = std::cos(psi), spsi = sin(psi);
 
   dR_dPhi(0,0) = 0.;
   dR_dPhi(1,0) = 0.;

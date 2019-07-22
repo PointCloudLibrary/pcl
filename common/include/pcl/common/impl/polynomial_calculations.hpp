@@ -231,9 +231,9 @@ inline void
   {
     double tmp1 = sqrt (- (4.0/3.0)*alpha),
            tmp2 = std::acos (-sqrt (-27.0/alpha3)*0.5*beta)/3.0;
-    roots.push_back (tmp1*cos (tmp2) - resubValue);
-    roots.push_back (-tmp1*cos (tmp2 + M_PI/3.0) - resubValue);
-    roots.push_back (-tmp1*cos (tmp2 - M_PI/3.0) - resubValue);
+    roots.push_back (tmp1*std::cos (tmp2) - resubValue);
+    roots.push_back (-tmp1*std::cos (tmp2 + M_PI/3.0) - resubValue);
+    roots.push_back (-tmp1*std::cos (tmp2 - M_PI/3.0) - resubValue);
   }
 
 #if 0

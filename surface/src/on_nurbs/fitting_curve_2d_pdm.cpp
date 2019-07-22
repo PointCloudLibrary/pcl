@@ -426,7 +426,7 @@ FittingCurve2dPDM::initNurbsCurve2D (int order, const vector_vec2d &data, int nc
   for (int j = 0; j < ncps; j++)
   {
     cv (0) = r * sin (dcv * j);
-    cv (1) = r * cos (dcv * j);
+    cv (1) = r * std::cos (dcv * j);
     cv += mean;
     nurbs.SetCV (j, ON_3dPoint (cv (0), cv (1), 0.0));
   }
@@ -474,7 +474,7 @@ FittingCurve2dPDM::reverse (ON_NurbsCurve &curve)
 //  Eigen::Vector3d cv, cv_t;
 //  for (int j = 0; j < ncpsV; j++) {
 //    cv(0) = r * sin(dcv * j);
-//    cv(1) = r * cos(dcv * j);
+//    cv(1) = r * std::cos(dcv * j);
 //    cv(2) = 0.0;
 //    cv_t = eigenvectors * cv + mean;
 //    nurbs.SetCV(j, ON_3dPoint(cv_t(0), cv_t(1), cv_t(2)));

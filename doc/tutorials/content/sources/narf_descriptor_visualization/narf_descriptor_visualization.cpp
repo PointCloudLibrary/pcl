@@ -198,7 +198,7 @@ main (int argc, char** argv)
     {
       float angle = descriptor_value_idx*angle_step_size + surface_patch_rotation;
       //surface_patch_widget.markLine (patch_middle, patch_middle, patch_middle+line_length*sinf (angle),
-                                     //patch_middle+line_length*-cosf (angle), pcl::visualization::Vector3ub (0,255,0));
+                                     //patch_middle+line_length*-std::cos (angle), pcl::visualization::Vector3ub (0,255,0));
     }
     std::vector<float> rotations, strengths;
     narf.getRotations (rotations, strengths);
@@ -206,7 +206,7 @@ main (int argc, char** argv)
     for (unsigned int i=0; i<rotations.size (); ++i)
     {
       //surface_patch_widget.markLine (radius-0.5, radius-0.5, radius-0.5f + 2.0f*radius*sinf (rotations[i]),
-                                                //radius-0.5f - 2.0f*radius*cosf (rotations[i]), pcl::visualization::Vector3ub (255,0,0));
+                                                //radius-0.5f - 2.0f*radius*std::cos (rotations[i]), pcl::visualization::Vector3ub (255,0,0));
     }
     
     descriptor_widget.showFloatImage (narf.getDescriptor (), narf.getDescriptorSize (), 1, -0.1f, 0.3f, true);

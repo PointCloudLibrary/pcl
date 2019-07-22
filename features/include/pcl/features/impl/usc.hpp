@@ -122,7 +122,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::initCompute ()
     for (size_t k = 0; k < elevation_bins_; k++)
     {
       // "theta" term of the volume integral
-      float integr_theta = cosf (deg2rad (theta_divisions_[k])) - cosf (deg2rad (theta_divisions_[k+1]));
+      float integr_theta = std::cos (deg2rad (theta_divisions_[k])) - std::cos (deg2rad (theta_divisions_[k+1]));
       // Volume
       float V = integr_phi * integr_theta * integr_r;
       // Compute cube root of the computed volume commented for performance but left

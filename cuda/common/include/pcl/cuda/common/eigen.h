@@ -201,7 +201,7 @@ namespace pcl
   		  // Compute the eigenvalues by solving for the roots of the polynomial.
   		  float rho = sqrtf (-a_over_3);
   		  float theta = std::atan2 (sqrtf (-q), half_b) * s_inv3;
-  		  float cos_theta = cos (theta);
+  		  float cos_theta = std::cos (theta);
   		  float sin_theta = sin (theta);
   		  roots.x = c2_over_3 + 2.f * rho * cos_theta;
   		  roots.y = c2_over_3 - rho * (cos_theta + s_sqrt3 * sin_theta);
