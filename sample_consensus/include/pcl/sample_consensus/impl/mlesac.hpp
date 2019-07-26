@@ -118,7 +118,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
     {
       // Likelihood of a datum given that it is an inlier
       for (size_t i = 0; i < indices_size; ++i)
-        p_inlier_prob[i] = gamma * exp (- (distances[i] * distances[i] ) / 2 * (sigma_ * sigma_) ) /
+        p_inlier_prob[i] = gamma * std::exp (- (distances[i] * distances[i] ) / 2 * (sigma_ * sigma_) ) /
                            (sqrt (2 * M_PI) * sigma_);
 
       // Likelihood of a datum given that it is an outlier

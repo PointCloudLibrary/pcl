@@ -61,7 +61,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributions
   gauss_c2 = outlier_ratio_ / pow (resolution_, 3);
   gauss_d3 = -log (gauss_c2);
   gauss_d1_ = -log ( gauss_c1 + gauss_c2 ) - gauss_d3;
-  gauss_d2_ = -2 * log ((-log ( gauss_c1 * exp ( -0.5 ) + gauss_c2 ) - gauss_d3) / gauss_d1_);
+  gauss_d2_ = -2 * log ((-log ( gauss_c1 * std::exp ( -0.5 ) + gauss_c2 ) - gauss_d3) / gauss_d1_);
 
   transformation_epsilon_ = 0.1;
   max_iterations_ = 35;
@@ -81,7 +81,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
   gauss_c2 = outlier_ratio_ / pow (resolution_, 3);
   gauss_d3 = -log (gauss_c2);
   gauss_d1_ = -log ( gauss_c1 + gauss_c2 ) - gauss_d3;
-  gauss_d2_ = -2 * log ((-log ( gauss_c1 * exp ( -0.5 ) + gauss_c2 ) - gauss_d3) / gauss_d1_);
+  gauss_d2_ = -2 * log ((-log ( gauss_c1 * std::exp ( -0.5 ) + gauss_c2 ) - gauss_d3) / gauss_d1_);
 
   if (guess != Eigen::Matrix4f::Identity ())
   {
@@ -356,7 +356,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives (
 {
   Eigen::Vector3d cov_dxd_pi;
   // e^(-d_2/2 * (x_k - mu_k)^T Sigma_k^-1 (x_k - mu_k)) Equation 6.9 [Magnusson 2009]
-  double e_x_cov_x = exp (-gauss_d2_ * x_trans.dot (c_inv * x_trans) / 2);
+  double e_x_cov_x = std::exp (-gauss_d2_ * x_trans.dot (c_inv * x_trans) / 2);
   // Calculate probability of transformed points existence, Equation 6.9 [Magnusson 2009]
   double score_inc = -gauss_d1_ * e_x_cov_x;
 
@@ -451,7 +451,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateHessian (Eige
 {
   Eigen::Vector3d cov_dxd_pi;
   // e^(-d_2/2 * (x_k - mu_k)^T Sigma_k^-1 (x_k - mu_k)) Equation 6.9 [Magnusson 2009]
-  double e_x_cov_x = gauss_d2_ * exp (-gauss_d2_ * x_trans.dot (c_inv * x_trans) / 2);
+  double e_x_cov_x = gauss_d2_ * std::exp (-gauss_d2_ * x_trans.dot (c_inv * x_trans) / 2);
 
   // Error checking for invalid values.
   if (e_x_cov_x > 1 || e_x_cov_x < 0 || std::isnan(e_x_cov_x))

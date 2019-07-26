@@ -463,7 +463,7 @@ pcl::MinCutSegmentation<PointT>::calculateBinaryPotential (int source, int targe
   distance += (input_->points[source].y - input_->points[target].y) * (input_->points[source].y - input_->points[target].y);
   distance += (input_->points[source].z - input_->points[target].z) * (input_->points[source].z - input_->points[target].z);
   distance *= inverse_sigma_;
-  weight = exp (-distance);
+  weight = std::exp (-distance);
 
   return (weight);
 }

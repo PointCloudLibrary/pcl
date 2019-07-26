@@ -97,7 +97,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage (
         for (int d_idx = d_idx_min; d_idx <= d_idx_max; ++d_idx)
         {
           // Compute a "soft" update weight based on the distance between the point and the bin
-          float w = expf (-powf (d - static_cast<float> (d_idx), 2.0f) * constant - powf (i - static_cast<float> (i_idx), 2.0f) * constant);
+          float w = std::exp (-powf (d - static_cast<float> (d_idx), 2.0f) * constant - powf (i - static_cast<float> (i_idx), 2.0f) * constant);
           intensity_spin_image (i_idx, d_idx) += w;
         }
       }

@@ -112,7 +112,7 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const std::vector
   {
     if (*dist_it <= threshold_ && isFinite ((*input_) [*idx_it]))
     {
-      float weight = expf (-0.5f * (*dist_it) / sigma_sqr_);
+      float weight = std::exp (-0.5f * (*dist_it) / sigma_sqr_);
       result += weight * (*input_) [*idx_it];
       total_weight += weight;
     }
@@ -141,7 +141,7 @@ pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (const std::vec
   {
     if (*dist_it <= threshold_ && isFinite ((*input_) [*idx_it]))
     {
-      float weight = expf (-0.5f * (*dist_it) / sigma_sqr_);
+      float weight = std::exp (-0.5f * (*dist_it) / sigma_sqr_);
       result.x += weight * (*input_) [*idx_it].x;
       result.y += weight * (*input_) [*idx_it].y;
       result.z += weight * (*input_) [*idx_it].z;

@@ -503,7 +503,7 @@ pcl::LCCPSegmentation<PointT>::connIsConvex (const uint32_t source_label_arg,
   float intersection_angle =  getAngle3D (ncross, vec_t_to_s, true);
   float min_intersect_angle = (intersection_angle < 90.) ? intersection_angle : 180. - intersection_angle;
 
-  float intersect_thresh = 60. * 1. / (1. + exp (-0.25 * (normal_angle - 25.)));
+  float intersect_thresh = 60. * 1. / (1. + std::exp (-0.25 * (normal_angle - 25.)));
   if (min_intersect_angle < intersect_thresh && use_sanity_check_)
   {
     // std::cout << "Concave/Convex not defined for given case!" << std::endl;

@@ -248,7 +248,7 @@ TEST (PCL, IntensitySpinEstimation)
       p.x = x;
       p.y = y;
       p.z = std::sqrt (400.0f - x * x - y * y);
-      p.intensity = expf (-(powf (x - 3.0f, 2.0f) + powf (y + 2.0f, 2.0f)) / (2.0f * 25.0f)) + expf (-(powf (x + 5.0f, 2.0f) + powf (y - 5.0f, 2.0f))
+      p.intensity = std::exp (-(powf (x - 3.0f, 2.0f) + powf (y + 2.0f, 2.0f)) / (2.0f * 25.0f)) + std::exp (-(powf (x + 5.0f, 2.0f) + powf (y - 5.0f, 2.0f))
                                                                                  / (2.0f * 4.0f));
 
       cloud_xyzi.points.push_back (p);

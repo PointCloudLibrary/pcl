@@ -59,7 +59,7 @@ TEST (PCL, RIFTEstimation)
       p.x = x;
       p.y = y;
       p.z = std::sqrt (400 - x * x - y * y);
-      p.intensity = expf ((-powf (x - 3.0f, 2.0f) + powf (y + 2.0f, 2.0f)) / (2.0f * 25.0f)) + expf ((-powf (x + 5.0f, 2.0f) + powf (y - 5.0f, 2.0f))
+      p.intensity = std::exp ((-powf (x - 3.0f, 2.0f) + powf (y + 2.0f, 2.0f)) / (2.0f * 25.0f)) + std::exp ((-powf (x + 5.0f, 2.0f) + powf (y - 5.0f, 2.0f))
                                                                                  / (2.0f * 4.0f));
 
       cloud_xyzi.points.push_back (p);
@@ -87,10 +87,10 @@ TEST (PCL, RIFTEstimation)
     nz /= magnitude;
 
     // Compute the intensity gradient analytically...
-    float tmpx = -(p.x + 5.0f) / 4.0f / expf ((powf (p.x + 5.0f, 2.0f) + powf (p.y - 5.0f, 2.0f)) / 8.0f) - (p.x - 3.0f) / 25.0f
-        / expf ((powf (p.x - 3.0f, 2.0f) + powf (p.y + 2.0f, 2.0f)) / 50.0f);
-    float tmpy = -(p.y - 5.0f) / 4.0f / expf ((powf (p.x + 5.0f, 2.0f) + powf (p.y - 5.0f, 2.0f)) / 8.0f) - (p.y + 2.0f) / 25.0f
-        / expf ((powf (p.x - 3.0f, 2.0f) + powf (p.y + 2.0f, 2.0f)) / 50.0f);
+    float tmpx = -(p.x + 5.0f) / 4.0f / std::exp ((powf (p.x + 5.0f, 2.0f) + powf (p.y - 5.0f, 2.0f)) / 8.0f) - (p.x - 3.0f) / 25.0f
+        / std::exp ((powf (p.x - 3.0f, 2.0f) + powf (p.y + 2.0f, 2.0f)) / 50.0f);
+    float tmpy = -(p.y - 5.0f) / 4.0f / std::exp ((powf (p.x + 5.0f, 2.0f) + powf (p.y - 5.0f, 2.0f)) / 8.0f) - (p.y + 2.0f) / 25.0f
+        / std::exp ((powf (p.x - 3.0f, 2.0f) + powf (p.y + 2.0f, 2.0f)) / 50.0f);
     float tmpz = 0.0f;
     // ...and project the 3-D gradient vector onto the surface's tangent plane.
     float gx = (1 - nx * nx) * tmpx + (-nx * ny) * tmpy + (-nx * nz) * tmpz;

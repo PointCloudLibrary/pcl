@@ -336,7 +336,7 @@ class Kernel: public QMatrix
 
     double kernel_rbf (int i, int j) const
     {
-      return exp (-gamma* (x_square[i] + x_square[j] - 2*dot (x[i], x[j])));
+      return std::exp (-gamma* (x_square[i] + x_square[j] - 2*dot (x[i], x[j])));
     }
 
     double kernel_sigmoid (int i, int j) const
@@ -473,7 +473,7 @@ double Kernel::k_function (const svm_node *x, const svm_node *y,
         ++y;
       }
 
-      return exp (-param.gamma*sum);
+      return std::exp (-param.gamma*sum);
     }
 
     case SIGMOID:
@@ -2003,9 +2003,9 @@ static void sigmoid_train (
     double fApB = dec_values[i] * A + B;
 
     if (fApB >= 0)
-      fval += t[i] * fApB + log (1 + exp (-fApB));
+      fval += t[i] * fApB + log (1 + std::exp (-fApB));
     else
-      fval += (t[i] - 1) * fApB + log (1 + exp (fApB));
+      fval += (t[i] - 1) * fApB + log (1 + std::exp (fApB));
   }
 
   int iter = 0;
@@ -2025,13 +2025,13 @@ static void sigmoid_train (
 
       if (fApB >= 0)
       {
-        p = exp (-fApB) / (1.0 + exp (-fApB));
-        q = 1.0 / (1.0 + exp (-fApB));
+        p = std::exp (-fApB) / (1.0 + std::exp (-fApB));
+        q = 1.0 / (1.0 + std::exp (-fApB));
       }
       else
       {
-        p = 1.0 / (1.0 + exp (fApB));
-        q = exp (fApB) / (1.0 + exp (fApB));
+        p = 1.0 / (1.0 + std::exp (fApB));
+        q = std::exp (fApB) / (1.0 + std::exp (fApB));
       }
 
       double d2 = p * q;
@@ -2073,9 +2073,9 @@ static void sigmoid_train (
         double fApB = dec_values[i] * newA + newB;
 
         if (fApB >= 0)
-          newf += t[i] * fApB + log (1 + exp (-fApB));
+          newf += t[i] * fApB + log (1 + std::exp (-fApB));
         else
-          newf += (t[i] - 1) * fApB + log (1 + exp (fApB));
+          newf += (t[i] - 1) * fApB + log (1 + std::exp (fApB));
       }
 
       // Check sufficient decrease
@@ -2108,8 +2108,8 @@ static double sigmoid_predict (double decision_value, double A, double B)
   // 1-p used later; avoid catastrophic cancellation
 
   if (fApB >= 0)
-    return exp (-fApB) / (1.0 + exp (-fApB));
-  return 1.0 / (1 + exp (fApB)) ;
+    return std::exp (-fApB) / (1.0 + std::exp (-fApB));
+  return 1.0 / (1 + std::exp (fApB)) ;
 }
 
 // Method 2 from the multiclass_prob paper by Wu, Lin, and Weng

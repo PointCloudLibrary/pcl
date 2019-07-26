@@ -239,7 +239,7 @@ void pcl::SIFTKeypoint<PointInT, PointOutT>::computeScaleSpace (
         const float &dist_sqr = nn_dist[i_neighbor];
         if (dist_sqr <= 9*sigma_sqr)
         {
-          float w = expf (-0.5f * dist_sqr / sigma_sqr);
+          float w = std::exp (-0.5f * dist_sqr / sigma_sqr);
           numerator += value * w;
           denominator += w;
         }

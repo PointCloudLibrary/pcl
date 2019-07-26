@@ -85,12 +85,12 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl (unsigned char* ref_img, unsigne
   //spatial distance init
   float *ds = new float[ 2*radius_+1 ];
   for (int j = -radius_; j <= radius_; j++)
-    ds[j+radius_] = static_cast<float> (exp (- abs (j) / gamma_s_));
+    ds[j+radius_] = static_cast<float> (std::exp (- abs (j) / gamma_s_));
   
   //LUT for color distance weight computation
   float lut[256];
   for (int j = 0; j < 256; j++)
-    lut[j] = float (exp (-j / gamma_c_));
+    lut[j] = float (std::exp (-j / gamma_c_));
  
   //left weight array alloc
   float *wl = new float [ 2*radius_+1 ];
