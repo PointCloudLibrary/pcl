@@ -77,7 +77,7 @@ class KinectViewerCuda
       pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
 
       std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)>
-        f = std::bind (&KinectViewerCuda::cloud_cb_, this, _1, _2, _3);
+        f = [this](const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float constant) { cloud_cb_(image, depth_image, constant); };
 
       boost::signals2::connection c = interface->registerCallback (f);
 
