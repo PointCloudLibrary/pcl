@@ -108,7 +108,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   sac.setMaxIterations (max_iterations);
   bool res = sac.computeModel ();
   
-  vector<int> inliers;
+  std::vector<int> inliers;
   sac.getInliers (inliers);
   Eigen::VectorXf coefficients;
   sac.getModelCoefficients (coefficients);
@@ -142,7 +142,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
                     inserter (everything_but_the_plane->indices, everything_but_the_plane->indices.begin ()));
 
     // Extract largest cluster minus the plane
-    vector<PointIndices> cluster_indices;
+    std::vector<PointIndices> cluster_indices;
     EuclideanClusterExtraction<PointXYZ> ec;
     ec.setClusterTolerance (0.02); // 2cm
     ec.setMinClusterSize (100);
@@ -176,9 +176,9 @@ saveCloud (const string &filename, const pcl::PCLPointCloud2 &output)
 }
 
 int
-batchProcess (const vector<string> &pcd_files, string &output_dir, int max_it, double thresh, bool negative)
+batchProcess (const std::vector<string> &pcd_files, string &output_dir, int max_it, double thresh, bool negative)
 {
-  vector<string> st;
+  std::vector<string> st;
   for (const auto &pcd_file : pcd_files)
   {
     // Load the first file
@@ -251,7 +251,7 @@ main (int argc, char** argv)
   if (!batch_mode)
   {
     // Parse the command line arguments for .pcd files
-    vector<int> p_file_indices;
+    std::vector<int> p_file_indices;
     p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
     if (p_file_indices.size () != 2)
     {
@@ -281,7 +281,7 @@ main (int argc, char** argv)
   {
     if (!input_dir.empty() && boost::filesystem::exists (input_dir))
     {
-      vector<string> pcd_files;
+      std::vector<string> pcd_files;
       boost::filesystem::directory_iterator end_itr;
       for (boost::filesystem::directory_iterator itr (input_dir); itr != end_itr; ++itr)
       {

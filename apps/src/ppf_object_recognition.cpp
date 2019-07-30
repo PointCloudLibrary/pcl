@@ -63,7 +63,7 @@ main (int argc, char** argv)
   PCL_INFO ("Scene read: %s\n", argv[2]);
 
   PCL_INFO ("Reading models ...\n");
-  vector<PointCloud<PointXYZ>::Ptr > cloud_models;
+  std::vector<PointCloud<PointXYZ>::Ptr > cloud_models;
   ifstream pcd_file_list (argv[1]);
   while (!pcd_file_list.eof())
   {
@@ -99,10 +99,10 @@ main (int argc, char** argv)
   }
 
   PointCloud<PointNormal>::Ptr cloud_scene_input = subsampleAndCalculateNormals (cloud_scene);
-  vector<PointCloud<PointNormal>::Ptr > cloud_models_with_normals;
+  std::vector<PointCloud<PointNormal>::Ptr > cloud_models_with_normals;
 
   PCL_INFO ("Training models ...\n");
-  vector<PPFHashMapSearch::Ptr> hashmap_search_vector;
+  std::vector<PPFHashMapSearch::Ptr> hashmap_search_vector;
   for (const auto &cloud_model : cloud_models)
   {
     PointCloud<PointNormal>::Ptr cloud_model_input = subsampleAndCalculateNormals (cloud_model);

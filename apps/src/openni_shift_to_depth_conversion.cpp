@@ -81,10 +81,10 @@ class SimpleOpenNIViewer
                     const openni_wrapper::DepthImage::Ptr &depth_image, float)
     {
 
-      vector<uint16_t> raw_shift_data;
-      vector<uint16_t> raw_depth_data;
+      std::vector<uint16_t> raw_shift_data;
+      std::vector<uint16_t> raw_depth_data;
 
-      vector<uint8_t> rgb_data;
+      std::vector<uint8_t> rgb_data;
 
       uint32_t width=depth_image->getWidth ();
       uint32_t height=depth_image->getHeight ();

@@ -81,8 +81,8 @@ TEST (PCL_GPU, bruteForceRadiusSeachGPU)
     
     pcl::gpu::DeviceArray<int> results_device, buffer(cloud_device.size());
     
-    vector<int> results_host;
-    vector<size_t> sizes;
+    std::vector<int> results_host;
+    std::vector<size_t> sizes;
     for(size_t i = 0; i < data.tests_num; ++i)
     {
         pcl::gpu::bruteForceRadiusSearchGPU(cloud_device, data.queries[i], data.radiuses[i], results_device, buffer);

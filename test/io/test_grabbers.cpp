@@ -18,8 +18,8 @@ using CloudT = pcl::PointCloud<PointT>;
 string tiff_dir_;
 string pclzf_dir_;
 string pcd_dir_;
-vector<CloudT::ConstPtr> pcds_;
-vector<std::string> pcd_files_;
+std::vector<CloudT::ConstPtr> pcds_;
+std::vector<std::string> pcd_files_;
 
 
 // Helper function for grabbing a cloud
@@ -36,7 +36,7 @@ TEST (PCL, PCDGrabber)
 {
   pcl::PCDGrabber<PointT> grabber (pcd_files_, 10, false); // TODO add directory functionality
   EXPECT_EQ (grabber.size (), pcds_.size ());
-  vector<CloudT::ConstPtr> grabbed_clouds;
+  std::vector<CloudT::ConstPtr> grabbed_clouds;
   std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>
     fxn = [&] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& input_cloud) { grabbed_clouds.push_back (input_cloud); };
   grabber.registerCallback (fxn);
@@ -105,7 +105,7 @@ TEST (PCL, ImageGrabberTIFF)
 {
   // Get all clouds from the grabber
   pcl::ImageGrabber<PointT> grabber (tiff_dir_, 0, false, false);
-  vector<CloudT::ConstPtr> tiff_clouds;
+  std::vector<CloudT::ConstPtr> tiff_clouds;
   CloudT::ConstPtr cloud_buffer;
   bool signal_received = false;
   std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>
@@ -188,7 +188,7 @@ TEST (PCL, ImageGrabberPCLZF)
 {
   // Get all clouds from the grabber
   pcl::ImageGrabber<PointT> grabber (pclzf_dir_, 0, false, true);
-  vector <CloudT::ConstPtr> pclzf_clouds;
+  std::vector <CloudT::ConstPtr> pclzf_clouds;
   CloudT::ConstPtr cloud_buffer;
   bool signal_received = false;
   std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>
@@ -267,7 +267,7 @@ TEST (PCL, ImageGrabberOMP)
 {
   // Get all clouds from the grabber
   pcl::ImageGrabber<PointT> grabber (pclzf_dir_, 0, false, true);
-  vector <CloudT::ConstPtr> pclzf_clouds;
+  std::vector <CloudT::ConstPtr> pclzf_clouds;
   CloudT::ConstPtr cloud_buffer;
   bool signal_received = false;
   std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>
@@ -360,7 +360,7 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
   pcl::ImageGrabber<PointT> grabber (tiff_dir_, 0, false, false);
 
   // Get all clouds from the grabber
-  vector <CloudT::ConstPtr> tiff_clouds;
+  std::vector <CloudT::ConstPtr> tiff_clouds;
   CloudT::ConstPtr cloud_buffer;
   bool signal_received = false;
   std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>
@@ -438,7 +438,7 @@ TEST (PCL, ImageGrabberSetIntrinsicsPCLZF)
   pcl::ImageGrabber<PointT> grabber (pclzf_dir_, 0, false, true);
 
   // Get all clouds from the grabber
-  vector <CloudT::ConstPtr> pclzf_clouds;
+  std::vector <CloudT::ConstPtr> pclzf_clouds;
   CloudT::ConstPtr cloud_buffer;
   bool signal_received = false;
   std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>

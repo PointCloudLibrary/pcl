@@ -297,7 +297,7 @@ update (CallbackParameters* params)
 #endif
 
   // Now show some of the accepted hypotheses
-  vector<Hypothesis> accepted_hypotheses;
+  std::vector<Hypothesis> accepted_hypotheses;
   params->objrec_.getAcceptedHypotheses (accepted_hypotheses);
   int i = 0;
 
@@ -305,7 +305,7 @@ update (CallbackParameters* params)
   std::sort(accepted_hypotheses.begin (), accepted_hypotheses.end (), compareHypotheses);
 
   // Show the hypotheses
-  for ( vector<Hypothesis>::iterator acc_hypo = accepted_hypotheses.begin () ; i < params->num_hypotheses_to_show_ && acc_hypo != accepted_hypotheses.end () ; ++i, ++acc_hypo )
+  for ( std::vector<Hypothesis>::iterator acc_hypo = accepted_hypotheses.begin () ; i < params->num_hypotheses_to_show_ && acc_hypo != accepted_hypotheses.end () ; ++i, ++acc_hypo )
   {
     // Visualize the orientation as a tripod
     char frame_name[128];

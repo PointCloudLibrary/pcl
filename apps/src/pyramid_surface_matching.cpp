@@ -82,7 +82,7 @@ main (int argc, char **argv)
   PCL_INFO ("Feature cloud sizes: %u , %u\n", ppf_signature_a->points.size (), ppf_signature_b->points.size ());
 
   PCL_INFO ("Finished calculating the features ...\n");
-  vector<pair<float, float> > dim_range_input, dim_range_target;
+  std::vector<pair<float, float> > dim_range_input, dim_range_target;
   for (size_t i = 0; i < 3; ++i) dim_range_input.emplace_back(float (-M_PI), float (M_PI));
   dim_range_input.emplace_back(0.0f, 1.0f);
   for (size_t i = 0; i < 3; ++i) dim_range_target.emplace_back(float (-M_PI) * 10.0f, float (M_PI) * 10.0f);

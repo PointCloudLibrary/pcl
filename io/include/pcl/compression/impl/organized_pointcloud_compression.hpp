@@ -224,7 +224,7 @@ namespace pcl
        {
          if (convertToMono)
          {
-           vector<uint8_t> monoImage;
+           std::vector<uint8_t> monoImage;
            size_t size = width_arg*height_arg;
 
            monoImage.reserve(size);

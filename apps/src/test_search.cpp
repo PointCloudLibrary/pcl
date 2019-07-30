@@ -58,10 +58,10 @@ main (int argc, char ** argv)
   query.y = 0.5;
   query.z = 0.5;
 
-  vector<int> kd_indices;
-  vector<float> kd_distances;
-  vector<int> bf_indices;
-  vector<float> bf_distances;
+  std::vector<int> kd_indices;
+  std::vector<float> kd_distances;
+  std::vector<int> bf_indices;
+  std::vector<float> bf_distances;
 
   double start, stop;
   double kd_setup;

@@ -63,7 +63,7 @@ loadCloud (const string &filename, PointCloud<PointXYZ> &cloud)
   }
   
   string line;
-  vector<string> st;
+  std::vector<string> st;
 
   while (!fs.eof ())
   {
@@ -100,8 +100,8 @@ main (int argc, char** argv)
   }
 
   // Parse the command line arguments for .pcd and .ply files
-  vector<int> pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
-  vector<int> xyz_file_indices = parse_file_extension_argument (argc, argv, ".xyz");
+  std::vector<int> pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
+  std::vector<int> xyz_file_indices = parse_file_extension_argument (argc, argv, ".xyz");
   if (pcd_file_indices.size () != 1 || xyz_file_indices.size () != 1)
   {
     print_error ("Need one input XYZ file and one output PCD file.\n");

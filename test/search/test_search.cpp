@@ -121,22 +121,22 @@ pcl::search::Octree<pcl::PointXYZ> octree_search (0.1);
 pcl::search::OrganizedNeighbor<pcl::PointXYZ> organized;
 
 /** \brief list of search methods for unorganized search test*/
-vector<search::Search<PointXYZ>* > unorganized_search_methods;
+std::vector<search::Search<PointXYZ>* > unorganized_search_methods;
 
 /** \brief list of search methods for organized search test*/
-vector<search::Search<PointXYZ>* > organized_search_methods;
+std::vector<search::Search<PointXYZ>* > organized_search_methods;
 
 /** \brief lists of indices to be used as query points for various search methods and different cloud types*/
-vector<int> unorganized_dense_cloud_query_indices;
-vector<int> unorganized_sparse_cloud_query_indices;
-vector<int> organized_sparse_query_indices;
+std::vector<int> unorganized_dense_cloud_query_indices;
+std::vector<int> unorganized_sparse_cloud_query_indices;
+std::vector<int> organized_sparse_query_indices;
 
 /** \briet test whether the result of a search contains unique point ids or not
   * @param indices resulting indices from a search
   * @param name name of the search method that returned these distances
   * @return true if indices are unique, false otherwise
   */
-bool testUniqueness (const vector<int>& indices, const string& name)
+bool testUniqueness (const std::vector<int>& indices, const string& name)
 {
   bool uniqueness = true;
   for (unsigned idx1 = 1; idx1 < indices.size () && uniqueness; ++idx1)
@@ -164,7 +164,7 @@ bool testUniqueness (const vector<int>& indices, const string& name)
   * \param name name of the search method that returned these distances
   * \return true if distances in weak ascending order, false otherwise
   */
-bool testOrder (const vector<float>& distances, const string& name)
+bool testOrder (const std::vector<float>& distances, const string& name)
 {
   bool ordered = true;
   for (size_t idx1 = 1; idx1 < distances.size (); ++idx1)
@@ -191,7 +191,7 @@ bool testOrder (const vector<float>& distances, const string& name)
  * @return true if result is valid, false otherwise
  */
 template<typename PointT> bool
-testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, const vector<bool>& indices_mask, const vector<bool>& nan_mask, const vector<int>& indices, const vector<int>& /*input_indices*/, const string& name)
+testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, const std::vector<bool>& indices_mask, const std::vector<bool>& nan_mask, const std::vector<int>& indices, const std::vector<int>& /*input_indices*/, const string& name)
 {
   bool validness = true;
   for (const int &index : indices)
@@ -281,15 +281,15 @@ bool compareResults (const std::vector<int>& indices1, const::vector<float>& dis
   * \param input_indices indices defining a subset of the point cloud.
   */
 template<typename PointT> void
-testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search::Search<PointT>*> search_methods,
-                const vector<int>& query_indices, const vector<int>& input_indices = vector<int> () )
+testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<search::Search<PointT>*> search_methods,
+                const std::vector<int>& query_indices, const std::vector<int>& input_indices = std::vector<int> () )
 {
-  vector< vector<int> >indices (search_methods.size ());
-  vector< vector<float> >distances (search_methods.size ());
-  vector<bool> passed (search_methods.size (), true);
+  std::vector< std::vector<int> >indices (search_methods.size ());
+  std::vector< std::vector<float> >distances (search_methods.size ());
+  std::vector<bool> passed (search_methods.size (), true);
   
-  vector<bool> indices_mask (point_cloud->size (), true);
-  vector<bool> nan_mask (point_cloud->size (), true);
+  std::vector<bool> indices_mask (point_cloud->size (), true);
+  std::vector<bool> nan_mask (point_cloud->size (), true);
   
   if (!input_indices.empty ())
   {
@@ -352,14 +352,14 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
   * \param input_indices indices defining a subset of the point cloud.
   */
 template<typename PointT> void
-testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search::Search<PointT>*> search_methods, 
-                   const vector<int>& query_indices, const vector<int>& input_indices = vector<int> ())
+testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<search::Search<PointT>*> search_methods, 
+                   const std::vector<int>& query_indices, const std::vector<int>& input_indices = std::vector<int> ())
 {
-  vector< vector<int> >indices (search_methods.size ());
-  vector< vector<float> >distances (search_methods.size ());
-  vector <bool> passed (search_methods.size (), true);
-  vector<bool> indices_mask (point_cloud->size (), true);
-  vector<bool> nan_mask (point_cloud->size (), true);
+  std::vector< std::vector<int> >indices (search_methods.size ());
+  std::vector< std::vector<float> >distances (search_methods.size ());
+  std::vector<bool> passed (search_methods.size (), true);
+  std::vector<bool> indices_mask (point_cloud->size (), true);
+  std::vector<bool> nan_mask (point_cloud->size (), true);
   
   if (!input_indices.empty ())
   {
@@ -459,7 +459,7 @@ TEST (PCL, unorganized_dense_cloud_Complete_Radius)
 // Test search on unorganized point clouds in a grid
 TEST (PCL, unorganized_grid_cloud_Complete_Radius)
 {
-  vector<int> query_indices;
+  std::vector<int> query_indices;
   query_indices.reserve (query_count);
   
   unsigned skip = static_cast<unsigned> (unorganized_grid_cloud->size ()) / query_count;

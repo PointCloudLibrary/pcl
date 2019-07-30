@@ -98,7 +98,7 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
   this->clear();
 
   // Compute the bounding box of the full leaves
-  const vector<ORROctree::Node*>& full_leaves = input.getFullLeaves ();
+  const std::vector<ORROctree::Node*>& full_leaves = input.getFullLeaves ();
   std::array<float, 4> full_leaves_bounds;
 
   if ( full_leaves.empty() )

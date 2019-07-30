@@ -68,9 +68,9 @@ main (int argc, char * argv [])
   plotter->setYRange (-10, 10);
 
   //defining polynomials
-  vector<double> func1 (1, 0);
+  std::vector<double> func1 (1, 0);
   func1[0] = 1; //y = 1
-  vector<double> func2 (3, 0);
+  std::vector<double> func2 (3, 0);
   func2[2] = 1; //y = x^2
 
   plotter->addPlotData (std::make_pair (func1, func2), -10, 10, "y = 1/x^2", 100, vtkChart::POINTS);
@@ -92,7 +92,7 @@ main (int argc, char * argv [])
   plotter->clearPlots ();
 
   //........................A simple animation..............................
-  vector<double> fsq (3, 0);
+  std::vector<double> fsq (3, 0);
   fsq[2] = -100; //y = x^2
   while (!plotter->wasStopped ())
   {

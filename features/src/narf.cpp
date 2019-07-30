@@ -256,7 +256,7 @@ Narf::extractFromRangeImageWithBestRotation (const RangeImage& range_image, cons
                                              int descriptor_size, float support_size)
 {
   extractFromRangeImage(range_image, interest_point, descriptor_size, support_size);
-  vector<float> rotations, strengths;
+  std::vector<float> rotations, strengths;
   getRotations(rotations, strengths);
   if (rotations.empty())
     return false;
@@ -353,7 +353,7 @@ Narf::extractFromRangeImageAndAddToList (const RangeImage& range_image, const Ei
     feature_list.push_back(feature);
     return;
   }
-  vector<float> rotations, strengths;
+  std::vector<float> rotations, strengths;
   feature->getRotations(rotations, strengths);
   feature->getRotatedVersions(range_image, rotations, feature_list);
   delete feature;
@@ -397,7 +397,7 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
         }
       }
       else {
-        vector<float> rotations, strengths;
+        std::vector<float> rotations, strengths;
         feature->getRotations(rotations, strengths);
         {
           //feature->getRotatedVersions(range_image, rotations, feature_list);

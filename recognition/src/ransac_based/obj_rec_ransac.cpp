@@ -92,7 +92,7 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
     success_probability = 0.99;
 
   // Compute the number of iterations
-  vector<ORROctree::Node*>& full_leaves = scene_octree_.getFullLeaves();
+  std::vector<ORROctree::Node*>& full_leaves = scene_octree_.getFullLeaves();
   int num_iterations = this->computeNumberOfIterations(success_probability), num_full_leaves = static_cast<int> (full_leaves.size ());
 
   // Make sure that there are not more iterations than full leaves
@@ -130,11 +130,11 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
     return;
 
   // Create and initialize a vector of bounded objects needed for the bounding volume hierarchy (BVH)
-  vector<BVHH::BoundedObject*> bounded_objects (accepted_hypotheses_.size ());
+  std::vector<BVHH::BoundedObject*> bounded_objects (accepted_hypotheses_.size ());
   int i = 0;
 
   // Initialize the vector with bounded objects
-  for ( vector<Hypothesis>::iterator hypo = accepted_hypotheses_.begin () ; hypo != accepted_hypotheses_.end () ; ++hypo, ++i )
+  for ( std::vector<Hypothesis>::iterator hypo = accepted_hypotheses_.begin () ; hypo != accepted_hypotheses_.end () ; ++hypo, ++i )
   {
     // Create, initialize and save a bounded object based on the hypothesis
     BVHH::BoundedObject *bounded_object = new BVHH::BoundedObject (&(*hypo));
@@ -162,7 +162,7 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
 //===============================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, const vector<ORROctree::Node*>& full_scene_leaves,
+pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, const std::vector<ORROctree::Node*>& full_scene_leaves,
     list<OrientedPointPair>& output) const
 {
 #ifdef OBJ_REC_RANSAC_VERBOSE
@@ -184,7 +184,7 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, co
   UniformGenerator<int> randgen (0, num_full_leaves - 1, static_cast<uint32_t> (time (nullptr)));
 
   // Init the vector with the ids
-  vector<int> ids (num_full_leaves);
+  std::vector<int> ids (num_full_leaves);
   for ( int i = 0 ; i < num_full_leaves ; ++i )
     ids[i] = i;
 
@@ -419,18 +419,18 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfCloseHypotheses (HypothesisOctree& h
   printf ("ObjRecRANSAC::%s(): building the graph ... ", __func__); fflush (stdout);
 #endif
 
-  vector<HypothesisOctree::Node*> hypo_leaves = hypotheses.getFullLeaves ();
+  std::vector<HypothesisOctree::Node*> hypo_leaves = hypotheses.getFullLeaves ();
   int i = 0;
 
   graph.resize (static_cast<int> (hypo_leaves.size ()));
 
-  for ( vector<HypothesisOctree::Node*>::iterator hypo = hypo_leaves.begin () ; hypo != hypo_leaves.end () ; ++hypo, ++i )
+  for ( std::vector<HypothesisOctree::Node*>::iterator hypo = hypo_leaves.begin () ; hypo != hypo_leaves.end () ; ++hypo, ++i )
     (*hypo)->getData ().setLinearId (i);
 
   i = 0;
 
   // Now create the graph connectivity such that each two neighboring rotation spaces are neighbors in the graph
-  for ( vector<HypothesisOctree::Node*>::const_iterator hypo = hypo_leaves.begin () ; hypo != hypo_leaves.end () ; ++hypo, ++i )
+  for ( std::vector<HypothesisOctree::Node*>::const_iterator hypo = hypo_leaves.begin () ; hypo != hypo_leaves.end () ; ++hypo, ++i )
   {
     // Compute the fitness of the graph node
     graph.getNodes ()[i]->setFitness (static_cast<int> ((*hypo)->getData ().explained_pixels_.size ()));
@@ -478,7 +478,7 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (const BVHH& b
   printf ("ObjRecRANSAC::%s(): building the conflict graph ... ", __func__); fflush (stdout);
 #endif
 
-  const vector<BVHH::BoundedObject*>* bounded_objects = bvh.getInputObjects ();
+  const std::vector<BVHH::BoundedObject*>* bounded_objects = bvh.getInputObjects ();
 
   if ( !bounded_objects )
   {
@@ -494,7 +494,7 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (const BVHH& b
   graph.resize (static_cast<int> (bounded_objects->size ()));
 
   // Setup the hypotheses' ids
-  for ( vector<BVHH::BoundedObject*>::const_iterator obj = bounded_objects->begin () ; obj != bounded_objects->end () ; ++obj, ++lin_id )
+  for ( std::vector<BVHH::BoundedObject*>::const_iterator obj = bounded_objects->begin () ; obj != bounded_objects->end () ; ++obj, ++lin_id )
   {
     (*obj)->getData ()->setLinearId (lin_id);
     graph.getNodes ()[lin_id]->setData ((*obj)->getData ());
@@ -576,7 +576,7 @@ pcl::recognition::ObjRecRANSAC::filterGraphOfConflictingHypotheses (ORRGraph<Hyp
   printf ("ObjRecRANSAC::%s(): filtering the conflict graph ... ", __func__); fflush (stdout);
 #endif
 
-  vector<ORRGraph<Hypothesis*>::Node*> &nodes = graph.getNodes ();
+  std::vector<ORRGraph<Hypothesis*>::Node*> &nodes = graph.getNodes ();
 
   // Compute the penalty for each graph node
   for (auto &node : nodes)

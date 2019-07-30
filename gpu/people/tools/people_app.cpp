@@ -67,7 +67,7 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-vector<string> getPcdFilesInDir(const string& directory)
+std::vector<string> getPcdFilesInDir(const string& directory)
 {
   namespace fs = boost::filesystem;
   fs::path dir(directory);
@@ -75,7 +75,7 @@ vector<string> getPcdFilesInDir(const string& directory)
   if (!fs::exists(dir) || !fs::is_directory(dir))
     PCL_THROW_EXCEPTION(pcl::IOException, "Wrong PCD directory");
     
-  vector<string> result;
+  std::vector<string> result;
   fs::directory_iterator pos(dir);
   fs::directory_iterator end;           
 
@@ -409,7 +409,7 @@ int main(int argc, char** argv)
     else
     if (pc::parse_argument (argc, argv, "-pcd_folder", pcd_folder) > 0)
     {         
-      vector<string> pcd_files = getPcdFilesInDir(pcd_folder);       
+      std::vector<string> pcd_files = getPcdFilesInDir(pcd_folder);       
       capture.reset( new pcl::PCDGrabber<PointXYZRGBA>(pcd_files, 30, true) );
     }    
     else
@@ -426,7 +426,7 @@ int main(int argc, char** argv)
   catch (const pcl::PCLException& /*e*/) { return cout << "Can't open depth source" << endl, -1; }
     
   //selecting tree files
-  vector<string> tree_files;
+  std::vector<string> tree_files;
   tree_files.emplace_back("Data/forest1/tree_20.txt");
   tree_files.emplace_back("Data/forest2/tree_20.txt");
   tree_files.emplace_back("Data/forest3/tree_20.txt");

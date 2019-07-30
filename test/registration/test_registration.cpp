@@ -622,7 +622,7 @@ TEST (PCL, PyramidFeatureHistogram)
   ppf_estimator.compute (*ppf_signature_target);
 
 
-  vector<pair<float, float> > dim_range_input, dim_range_target;
+  std::vector<pair<float, float> > dim_range_input, dim_range_target;
   for (size_t i = 0; i < 3; ++i) dim_range_input.emplace_back(static_cast<float> (-M_PI), static_cast<float> (M_PI));
   dim_range_input.emplace_back(0.0f, 1.0f);
   for (size_t i = 0; i < 3; ++i) dim_range_target.emplace_back(static_cast<float> (-M_PI) * 10.0f, static_cast<float> (M_PI) * 10.0f);
@@ -644,7 +644,7 @@ TEST (PCL, PyramidFeatureHistogram)
   float similarity_value = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
   EXPECT_NEAR (similarity_value, 0.74101555347442627, 1e-4);
 
-  vector<pair<float, float> > dim_range_target2;
+  std::vector<pair<float, float> > dim_range_target2;
   for (size_t i = 0; i < 3; ++i) dim_range_target2.emplace_back(static_cast<float> (-M_PI) * 5.0f, static_cast<float> (M_PI) * 5.0f);
     dim_range_target2.emplace_back(0.0f, 20.0f);
 
@@ -658,7 +658,7 @@ TEST (PCL, PyramidFeatureHistogram)
   EXPECT_NEAR (similarity_value2, 0.80097091197967529, 1e-4);
 
 
-  vector<pair<float, float> > dim_range_target3;
+  std::vector<pair<float, float> > dim_range_target3;
   for (size_t i = 0; i < 3; ++i) dim_range_target3.emplace_back(static_cast<float> (-M_PI) * 2.0f, static_cast<float> (M_PI) * 2.0f);
   dim_range_target3.emplace_back(0.0f, 10.0f);
 

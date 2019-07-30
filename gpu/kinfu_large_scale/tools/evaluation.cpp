@@ -107,10 +107,10 @@ void Evaluation::setMatchFile(const std::string& file)
   }  
 }
 
-void Evaluation::readFile(const string& file, vector< pair<double,string> >& output)
+void Evaluation::readFile(const string& file, std::vector< pair<double,string> >& output)
 {
   char buffer[4096];
-  vector< pair<double,string> > tmp;
+  std::vector< pair<double,string> > tmp;
   
   ifstream iff(file.c_str());
   if(!iff)

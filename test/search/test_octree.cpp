@@ -257,7 +257,7 @@ TEST (PCL, Octree_RadiusSearch_GPU)
   point.push_back(searchPoint);
   double searchRadius = 5.0 * ((double)rand () / (double)RAND_MAX);
   double radius =5;
-  vector < double > radiuses;
+  std::vector < double > radiuses;
   radiuses.push_back(radius);
   radiuses.push_back(radius);
   radiuses.push_back(radius);
@@ -305,7 +305,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     double searchRadius = 5.0 * rand () / static_cast<double> (RAND_MAX);
     
     // bruteforce radius search
-    vector<int> cloudSearchBruteforce;
+    std::vector<int> cloudSearchBruteforce;
     for (size_t i = 0; i < cloudIn->points.size (); i++)
     {
       pointDist = sqrt (
@@ -320,8 +320,8 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
       }
     }
 
-    vector<int> cloudNWRSearch;
-    vector<float> cloudNWRRadius;
+    std::vector<int> cloudNWRSearch;
+    std::vector<float> cloudNWRRadius;
 
     // execute octree radius search
     octree->setInputCloud (cloudIn);

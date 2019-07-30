@@ -50,7 +50,7 @@ using namespace std;
 
 search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ> ());
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
-vector<int> indices;
+std::vector<int> indices;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GRSDEstimation)

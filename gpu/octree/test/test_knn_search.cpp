@@ -118,8 +118,8 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
     pcl::gpu::NeighborIndices result_device(data.tests_num, k);    
 
     //prepare output buffers on host
-    vector<vector<  int> > result_host(data.tests_num);   
-    vector<vector<float> >  dists_host(data.tests_num);    
+    std::vector<vector<  int> > result_host(data.tests_num);   
+    std::vector<vector<float> >  dists_host(data.tests_num);    
     for(size_t i = 0; i < data.tests_num; ++i)
     {
         result_host[i].reserve(k);
@@ -132,7 +132,7 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
         octree_device.nearestKSearchBatch(queries_device, k, result_device);
     }
 
-    vector<int> downloaded, downloaded_cur;
+    std::vector<int> downloaded, downloaded_cur;
     result_device.data.download(downloaded);
                  
     {
@@ -145,16 +145,16 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
     for(size_t i = 0; i < data.tests_num; ++i)    
     {           
         //cout << i << endl;
-        vector<int>&   results_host_cur = result_host[i];
-        vector<float>&   dists_host_cur = dists_host[i];
+        std::vector<int>&   results_host_cur = result_host[i];
+        std::vector<float>&   dists_host_cur = dists_host[i];
                 
         int beg = i * k;
         int end = beg + k;
 
         downloaded_cur.assign(downloaded.begin() + beg, downloaded.begin() + end);
         
-        vector<PriorityPair> pairs_host;
-        vector<PriorityPair> pairs_gpu;
+        std::vector<PriorityPair> pairs_host;
+        std::vector<PriorityPair> pairs_gpu;
         for(int n = 0; n < k; ++n)
         {
             PriorityPair host;

@@ -330,7 +330,7 @@ pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (const float* p, f
 ORROctree::Node*
 pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float radius) const
 {
-  vector<int> tmp_ids;
+  std::vector<int> tmp_ids;
   tmp_ids.reserve (8);
 
   pcl::common::UniformGenerator<int> randgen (0, 1, static_cast<uint32_t> (time (nullptr)));
@@ -418,7 +418,7 @@ pcl::recognition::ORROctree::getFullLeavesPoints (PointCloudOut& out) const
   size_t i = 0;
 
   // Now iterate over all full leaves and compute the normals and average points
-  for ( vector<ORROctree::Node*>::const_iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it, ++i )
+  for ( std::vector<ORROctree::Node*>::const_iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it, ++i )
   {
     out[i].x = (*it)->getData ()->getPoint ()[0];
     out[i].y = (*it)->getData ()->getPoint ()[1];
@@ -435,7 +435,7 @@ pcl::recognition::ORROctree::getNormalsOfFullLeaves (PointCloudN& out) const
   size_t i = 0;
 
   // Now iterate over all full leaves and compute the normals and average points
-  for ( vector<ORROctree::Node*>::const_iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it, ++i )
+  for ( std::vector<ORROctree::Node*>::const_iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it, ++i )
   {
     out[i].normal_x = (*it)->getData ()->getNormal ()[0];
     out[i].normal_y = (*it)->getData ()->getNormal ()[1];

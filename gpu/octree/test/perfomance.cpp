@@ -133,7 +133,7 @@ TEST(PCL_OctreeGPU, performance)
 #ifdef HAVE_OPENCV
     cv::Octree octree_opencv;
     const static int opencv_octree_points_per_leaf = 32;    
-    vector<cv::Point3f> opencv_points(data.points.size());
+    std::vector<cv::Point3f> opencv_points(data.points.size());
     std::transform(data.points.begin(), data.points.end(), opencv_points.begin(), DataGenerator::ConvPoint<cv::Point3f>());
         
     {        
@@ -149,10 +149,10 @@ TEST(PCL_OctreeGPU, performance)
     int inds;
 
     //host buffers
-    vector<int> indeces;
-    vector<float> pointRadiusSquaredDistance;
+    std::vector<int> indeces;
+    std::vector<float> pointRadiusSquaredDistance;
 #ifdef HAVE_OPENCV  
-    vector<cv::Point3f> opencv_results;
+    std::vector<cv::Point3f> opencv_results;
 #endif
 
     //reserve

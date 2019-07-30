@@ -174,8 +174,8 @@ DeviceVolume::getVolume (pcl::TSDFVolume<VoxelT, WeightT>::Ptr &volume)
     return false;
   }
 
-  vector<VoxelT>&  volume_vec  = volume->volumeWriteable();
-  vector<WeightT>& weights_vec = volume->weightsWriteable();
+  std::vector<VoxelT>&  volume_vec  = volume->volumeWriteable();
+  std::vector<WeightT>& weights_vec = volume->weightsWriteable();
 
   device_volume_.download (&volume_vec[0], device_volume_.cols() * sizeof(int));
 

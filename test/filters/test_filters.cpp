@@ -70,7 +70,7 @@ using namespace Eigen;
 
 PCLPointCloud2::Ptr cloud_blob (new PCLPointCloud2);
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
-vector<int> indices_;
+std::vector<int> indices_;
 
 PointCloud<PointXYZRGB>::Ptr cloud_organized (new PointCloud<PointXYZRGB>);
 
@@ -632,7 +632,7 @@ TEST (VoxelGrid, Filters)
 
   // neighboring centroid should be in the right position
   Eigen::MatrixXi directions = Eigen::Vector3i (0, 0, 1);
-  vector<int> neighbors = grid.getNeighborCentroidIndices (cloud->points[195], directions);
+  std::vector<int> neighbors = grid.getNeighborCentroidIndices (cloud->points[195], directions);
   EXPECT_EQ (neighbors.size (), size_t (directions.cols ()));
   EXPECT_NE (neighbors.at (0), -1);
   EXPECT_LE (fabs (output.points[neighbors.at (0)].x - output.points[centroidIdx].x), 0.02);
@@ -714,7 +714,7 @@ TEST (VoxelGrid, Filters)
 
   // neighboring centroid should be in the right position
   Eigen::MatrixXi directions2 = Eigen::Vector3i (0, 0, 1);
-  vector<int> neighbors2 = grid2.getNeighborCentroidIndices (0.048722f, 0.073760f, 0.017434f, directions2);
+  std::vector<int> neighbors2 = grid2.getNeighborCentroidIndices (0.048722f, 0.073760f, 0.017434f, directions2);
   EXPECT_EQ (neighbors2.size (), size_t (directions2.cols ()));
   EXPECT_NE (neighbors2.at (0), -1);
   EXPECT_LE (fabs (output.points[neighbors2.at (0)].x - output.points[centroidIdx2].x), 0.02);
@@ -785,7 +785,7 @@ TEST (VoxelGrid_No_DownsampleAllData, Filters)
 
   // neighboring centroid should be in the right position
   Eigen::MatrixXi directions = Eigen::Vector3i (0, 0, 1);
-  vector<int> neighbors = grid.getNeighborCentroidIndices (cloud->points[195], directions);
+  std::vector<int> neighbors = grid.getNeighborCentroidIndices (cloud->points[195], directions);
   EXPECT_EQ (neighbors.size (), size_t (directions.cols ()));
   EXPECT_NE (neighbors.at (0), -1);
   EXPECT_LE (fabs (output.points[neighbors.at (0)].x - output.points[centroidIdx].x), 0.02);
@@ -860,7 +860,7 @@ TEST (VoxelGrid_No_DownsampleAllData, Filters)
 
   // neighboring centroid should be in the right position
   Eigen::MatrixXi directions2 = Eigen::Vector3i (0, 0, 1);
-  vector<int> neighbors2 = grid2.getNeighborCentroidIndices (0.048722f, 0.073760f, 0.017434f, directions2);
+  std::vector<int> neighbors2 = grid2.getNeighborCentroidIndices (0.048722f, 0.073760f, 0.017434f, directions2);
   EXPECT_EQ (neighbors2.size (), size_t (directions2.cols ()));
   EXPECT_NE (neighbors2.at (0), -1);
   EXPECT_LE (fabs (output.points[neighbors2.at (0)].x - output.points[centroidIdx2].x), 0.02);
@@ -1287,7 +1287,7 @@ TEST (VoxelGridCovariance, Filters)
 
   // neighboring centroid should be in the right position
   Eigen::MatrixXi directions = Eigen::Vector3i (0, 1, 0);
-  vector<int> neighbors = grid.getNeighborCentroidIndices (cloud->points[38], directions);
+  std::vector<int> neighbors = grid.getNeighborCentroidIndices (cloud->points[38], directions);
   EXPECT_EQ (neighbors.size (), size_t (directions.cols ()));
   EXPECT_NE (neighbors.at (0), -1);
   EXPECT_LE (fabs (output.points[neighbors.at (0)].x - output.points[centroidIdx].x), 0.02);
@@ -1299,8 +1299,8 @@ TEST (VoxelGridCovariance, Filters)
   grid.filter (output, true);
 
   // testing k nearest neighbors search
-  vector<VoxelGridCovariance<pcl::PointXYZ>::LeafConstPtr> leaves;
-  vector<float> distances;
+  std::vector<VoxelGridCovariance<pcl::PointXYZ>::LeafConstPtr> leaves;
+  std::vector<float> distances;
   grid.nearestKSearch (PointXYZ(0,1,0), 1, leaves, distances);
 
   EXPECT_EQ (int (leaves.size ()), 1);

@@ -104,19 +104,19 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
     //perform bruteForceSearch    
     data.bruteForceSearch(true);    
     
-    vector<int> sizes;
+    std::vector<int> sizes;
     sizes.reserve(data.tests_num);
     octree_device.internalDownload();
              
     for(size_t i = 0; i < data.tests_num; ++i)
     {
         //search host on octree that was built on device
-        vector<int> results_host_gpu; //host search
+        std::vector<int> results_host_gpu; //host search
         octree_device.radiusSearchHost(data.queries[i], data.radiuses[i], results_host_gpu);                        
         
         //search host
-        vector<float> dists;
-        vector<int> results_host;                
+        std::vector<float> dists;
+        std::vector<int> results_host;                
         octree_host.radiusSearch(pcl::PointXYZ(data.queries[i].x, data.queries[i].y, data.queries[i].z), data.radiuses[i], results_host, dists);                        
         
         std::sort(results_host_gpu.begin(), results_host_gpu.end());

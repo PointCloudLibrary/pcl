@@ -501,7 +501,7 @@ class Viewer
           if (frame->image)
           {
             // Copy RGB data for visualization
-            static vector<unsigned char> rgb_data (frame->image->getWidth () * frame->image->getHeight () * 3);
+            static std::vector<unsigned char> rgb_data (frame->image->getWidth () * frame->image->getHeight () * 3);
             if (frame->image->getEncoding () != openni_wrapper::Image::RGB)
             {
               frame->image->fillRGB (frame->image->getWidth (), 
@@ -699,7 +699,7 @@ main (int argc, char ** argv)
       {
         OpenNIGrabber grabber (argv[2]);
         auto device = grabber.getDevice ();
-        vector<pair<int, XnMapOutputMode> > modes;
+        std::vector<pair<int, XnMapOutputMode> > modes;
 
         if (device->hasImageStream ())
         {

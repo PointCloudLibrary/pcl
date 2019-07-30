@@ -103,7 +103,7 @@ namespace pcl
         using CoefficientsConstPtr = boost::shared_ptr <const Coefficients>;
 
         using Hypotheses = typename Storage<float4>::type;
-        //TODO: should be vector<int> instead of int. but currently, only 1point plane model supports this
+        //TODO: should be std::vector<int> instead of int. but currently, only 1point plane model supports this
         using Samples = typename Storage<int>::type;
 
       private:

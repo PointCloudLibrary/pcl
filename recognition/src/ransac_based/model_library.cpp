@@ -123,7 +123,7 @@ ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, 
   result.first->second = new_model;
 
   const ORROctree& octree = new_model->getOctree ();
-  const vector<ORROctree::Node*> &full_leaves = octree.getFullLeaves ();
+  const std::vector<ORROctree::Node*> &full_leaves = octree.getFullLeaves ();
   list<ORROctree::Node*> inter_leaves;
   int num_of_pairs = 0;
 
