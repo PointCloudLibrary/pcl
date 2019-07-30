@@ -84,3 +84,34 @@ pcl::getMeanStdDev (const std::vector<float> &values, double &mean, double &stdd
   stddev = sqrt (variance);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+Eigen::Vector4f
+pcl::getPlaneBetweenPoints (const Eigen::Vector3f &point0,
+                            const Eigen::Vector3f &point1)
+{
+  const Eigen::Vector3f normal = (point1 - point0).normalized ();
+  Eigen::Vector4f plane;
+  // (point1+point0)/2 is on plane, compute the offset of the plane
+  plane << normal, -(point1 + point0).dot (normal) * 0.5f;
+  return plane;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+Eigen::Vector3f
+pcl::getCircumscribedCircleCentre (const Eigen::Vector3f &point0,
+                                   const Eigen::Vector3f &point1,
+                                   const Eigen::Vector3f &point2)
+{
+  // https://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates_from_cross-_and_dot-products
+  const Eigen::Vector3f vec2 = point0 - point1;
+  const Eigen::Vector3f vec0 = point1 - point2;
+  const Eigen::Vector3f vec1 = point2 - point0;
+  const float area = vec0.cross (vec1).norm ();
+  const float determinator = 2.0f * area * area;
+
+  const float alpha = vec0.dot (vec0) * vec2.dot (-vec1) / determinator;
+  const float beta = vec1.dot (vec1) * -vec2.dot (vec0) / determinator;
+  const float gamma = vec2.dot (vec2) * vec1.dot (-vec0) / determinator;
+
+  return alpha * point0 + beta * point1 + gamma * point2;
+}

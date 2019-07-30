@@ -95,6 +95,7 @@ set(srcs
   src/marching_cubes.cpp
   src/marching_cubes_hoppe.cpp
   src/marching_cubes_rbf.cpp
+  src/ball_pivoting.cpp
   src/bilateral_upsampling.cpp
   src/mls.cpp
   src/organized_fast_mesh.cpp
@@ -118,6 +119,8 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/marching_cubes.h"
   "include/pcl/${SUBSYS_NAME}/marching_cubes_hoppe.h"
   "include/pcl/${SUBSYS_NAME}/marching_cubes_rbf.h"
+  "include/pcl/${SUBSYS_NAME}/ball_pivoting.h"
+  "include/pcl/${SUBSYS_NAME}/ball_pivoting_front.h"
   "include/pcl/${SUBSYS_NAME}/bilateral_upsampling.h"
   "include/pcl/${SUBSYS_NAME}/mls.h"
   "include/pcl/${SUBSYS_NAME}/organized_fast_mesh.h"
@@ -136,6 +139,7 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/marching_cubes.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/marching_cubes_hoppe.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/marching_cubes_rbf.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/ball_pivoting.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/bilateral_upsampling.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/mls.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/organized_fast_mesh.hpp"
@@ -180,3 +184,4 @@ endif()
 if(WIN32)
   target_link_libraries("${LIB_NAME}" Rpcrt4.lib)
 endif()
+

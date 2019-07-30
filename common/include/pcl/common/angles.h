@@ -44,6 +44,8 @@
   * \ingroup common
   */
 
+#include <Eigen/Dense>
+
 /*@{*/
 namespace pcl
 {
@@ -81,6 +83,23 @@ namespace pcl
     */
   inline float
   normAngle (float alpha);
+
+  /**
+   * \brief Get the signed rotation angle from (point0-center) to (point1-center) on plane
+   * \param point0
+   * \param point1
+   * \param center
+   * \param plane the rotation is along the normal vector of plane
+   * \return the angle of rotation in radian.
+   * \ingroup common
+   */
+  inline float
+  getRotationAngle (const Eigen::Vector3f &point0,
+                    const Eigen::Vector3f &point1,
+                    const Eigen::Vector3f &center,
+                    const Eigen::Vector4f &plane);
+
+
 }
 /*@}*/
 #include <pcl/common/impl/angles.hpp>
