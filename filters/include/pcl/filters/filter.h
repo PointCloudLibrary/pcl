@@ -45,6 +45,7 @@
 #include <pcl/filters/boost.h>
 #include <cfloat>
 #include <pcl/PointIndices.h>
+#include <pcl/pcl_execution.h>
 
 namespace pcl
 {
@@ -60,6 +61,46 @@ namespace pcl
   removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                            pcl::PointCloud<PointT> &cloud_out,
                            std::vector<int> &index);
+#ifdef _PCL_EXECUTION_POLICY
+  /** \brief Removes points with x, y, or z equal to NaN
+    * \param[in] policy execution policy for the function
+    * \param[in] cloud_in the input point cloud
+    * \param[out] cloud_out the output point cloud
+    * \param[out] index the mapping (ordered): cloud_out.points[i] =
+    * cloud_in.points[index[i]] \note The density of the point cloud is lost. \note Can be
+    * called with cloud_in == cloud_out \ingroup filters
+    */
+  template <typename PointT,
+            typename ExecutionPolicy,
+            typename = std::enable_if_t<
+                pcl::is_execution_policy_v<std::decay_t<ExecutionPolicy>>>>
+  void
+  removeNaNFromPointCloud(ExecutionPolicy&& policy,
+                          const pcl::PointCloud<PointT>& cloud_in,
+                          pcl::PointCloud<PointT>& cloud_out,
+                          std::vector<int>& index)
+  {
+    static_assert(
+      // a simple false isn't sufficient
+      // C++ standard requires an indirection through ExecutionPolicy type
+#if __cpp_lib_bool_constant
+      std::bool_constant<std::is_same_v<ExecutionPolicy, void>>::value,
+#else
+      std::integral_constant<bool, std::is_same<ExecutionPolicy, void>::value>::value,
+#endif
+      "Specialization does not exist");
+  }
+
+  template <typename PointT>
+  void
+  removeNaNFromPointCloud(pcl::execution::sequenced_policy&& policy,
+                          const pcl::PointCloud<PointT>& cloud_in,
+                          pcl::PointCloud<PointT>& cloud_out,
+                          std::vector<int>& index)
+  {
+    removeNaNFromPointCloud(cloud_in, cloud_out, index);
+  }
+#endif
 
   /** \brief Removes points that have their normals invalid (i.e., equal to NaN)
     * \param[in] cloud_in the input point cloud
