@@ -194,7 +194,7 @@ Narf::extractDescriptor (int descriptor_size)
       current_cell += current_weight * diff;
     }
     // Scaling for easy descriptor distances:
-    current_cell = atan2f (current_cell, max_dist) / deg2rad(180.0f);  // Scales the result to [-0.5, 0.5]
+    current_cell = std::atan2 (current_cell, max_dist) / deg2rad(180.0f);  // Scales the result to [-0.5, 0.5]
     descriptor_value = current_cell;
   }
   return true;

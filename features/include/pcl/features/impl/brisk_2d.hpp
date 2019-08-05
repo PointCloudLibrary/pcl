@@ -593,7 +593,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
           direction0 += tmp0;
           direction1 += tmp1;
         }
-        kp.angle = atan2f (float (direction1), float (direction0)) / float (M_PI) * 180.0f;
+        kp.angle = std::atan2 (float (direction1), float (direction0)) / float (M_PI) * 180.0f;
         theta = static_cast<int> ((float (n_rot_) * kp.angle) / (360.0f) + 0.5f);
         if (theta < 0)
           theta += n_rot_;
@@ -604,7 +604,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     else
     {
       // figure out the direction:
-      //int theta=rotationInvariance*round((_n_rot*atan2(direction.at<int>(0,0),direction.at<int>(1,0)))/(2*M_PI));
+      //int theta=rotationInvariance*round((_n_rot*std::atan2(direction.at<int>(0,0),direction.at<int>(1,0)))/(2*M_PI));
       if (!rotation_invariance_enabled_)
         theta = 0;
       else

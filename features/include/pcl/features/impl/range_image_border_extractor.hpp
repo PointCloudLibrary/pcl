@@ -54,7 +54,7 @@ float RangeImageBorderExtractor::getObstacleBorderAngle(const BorderTraits& bord
   if (border_traits[BORDER_TRAIT__OBSTACLE_BORDER_BOTTOM])
     ++y;
   
-  return atan2f(y, x);
+  return std::atan2(y, x);
 }
 
 inline std::ostream& operator << (std::ostream& os, const RangeImageBorderExtractor::Parameters& p)

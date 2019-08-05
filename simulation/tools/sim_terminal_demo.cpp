@@ -97,8 +97,8 @@ generate_halo(
     double x = halo_r*std::cos(t);
     double y = halo_r*sin(t);
     double z = halo_dz;
-    double pitch =atan2( halo_dz,halo_r); 
-    double yaw = atan2(-y,-x);
+    double pitch =std::atan2( halo_dz,halo_r); 
+    double yaw = std::atan2(-y,-x);
    
     Eigen::Isometry3d pose;
     pose.setIdentity();

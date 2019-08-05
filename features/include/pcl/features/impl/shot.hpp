@@ -391,7 +391,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSing
     if (yInFeatRef != 0.0 || xInFeatRef != 0.0)
     {
       //Interpolation on the azimuth (adjacent horizontal volumes)
-      double azimuth = atan2 (yInFeatRef, xInFeatRef);
+      double azimuth = std::atan2 (yInFeatRef, xInFeatRef);
 
       int sel = desc_index >> 2;
       double angularSectorSpan = PST_RAD_45;
@@ -602,7 +602,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDou
     if (yInFeatRef != 0.0 || xInFeatRef != 0.0)
     {
       //Interpolation on the azimuth (adjacent horizontal volumes)
-      double azimuth = atan2 (yInFeatRef, xInFeatRef);
+      double azimuth = std::atan2 (yInFeatRef, xInFeatRef);
 
       int sel = desc_index >> 2;
       double angularSectorSpan = PST_RAD_45;

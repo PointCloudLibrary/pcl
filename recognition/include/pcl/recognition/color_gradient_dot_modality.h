@@ -219,13 +219,13 @@ computeMaxColorGradients ()
       if (sqr_mag_r > sqr_mag_g && sqr_mag_r > sqr_mag_b)
       {
         gradient.magnitude = sqrt (sqr_mag_r);
-        gradient.angle = atan2 (r_dy, r_dx) * 180.0f / pi;
+        gradient.angle = std::atan2 (r_dy, r_dx) * 180.0f / pi;
       }
       else if (sqr_mag_g > sqr_mag_b)
       {
         //GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_g);
-        gradient.angle = atan2 (g_dy, g_dx) * 180.0f / pi;
+        gradient.angle = std::atan2 (g_dy, g_dx) * 180.0f / pi;
         //gradient.x = col_index;
         //gradient.y = row_index;
 
@@ -235,7 +235,7 @@ computeMaxColorGradients ()
       {
         //GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_b);
-        gradient.angle = atan2 (b_dy, b_dx) * 180.0f / pi;
+        gradient.angle = std::atan2 (b_dy, b_dx) * 180.0f / pi;
         //gradient.x = col_index;
         //gradient.y = row_index;
 

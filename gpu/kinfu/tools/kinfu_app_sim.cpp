@@ -494,8 +494,8 @@ generate_halo(
     double x = halo_r*std::cos(t);
     double y = halo_r*sin(t);
     double z = halo_dz;
-    double pitch =atan2( halo_dz,halo_r);
-    double yaw = atan2(-y,-x);
+    double pitch =std::atan2( halo_dz,halo_r);
+    double yaw = std::atan2(-y,-x);
 
     Eigen::Isometry3d pose;
     pose.setIdentity();
@@ -918,7 +918,7 @@ struct KinFuApp
     image_view_.viewerDepth_.registerKeyboardCallback (keyboard_callback, (void*)this);
 
     float diag = sqrt ((float)kinfu_.cols () * kinfu_.cols () + kinfu_.rows () * kinfu_.rows ());
-    scene_cloud_view_.cloud_viewer_.setCameraFieldOfView (2 * atan (diag / (2 * f)) * 1.5);
+    scene_cloud_view_.cloud_viewer_.setCameraFieldOfView (2 * std::atan (diag / (2 * f)) * 1.5);
 
     scene_cloud_view_.toggleCube(volume_size);
   }

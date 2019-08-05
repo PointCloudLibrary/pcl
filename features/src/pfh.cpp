@@ -97,7 +97,7 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
   f2 = v.dot (n2_copy);
   w[3] = 0.0f;
   // Compute f1 = arctan (w * n2, u * n2) i.e. angle of n2 in the x=u, y=w coordinate system
-  f1 = atan2f (w.dot (n2_copy), n1_copy.dot (n2_copy)); // @todo optimize this
+  f1 = std::atan2 (w.dot (n2_copy), n1_copy.dot (n2_copy)); // @todo optimize this
 
   return (true);
 }
@@ -147,7 +147,7 @@ pcl::computeRGBPairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n
   f2 = v.dot (n2_copy);
   w[3] = 0.0f;
   // Compute f1 = arctan (w * n2, u * n2) i.e. angle of n2 in the x=u, y=w coordinate system
-  f1 = atan2f (w.dot (n2_copy), n1_copy.dot (n2_copy)); // @todo optimize this
+  f1 = std::atan2 (w.dot (n2_copy), n1_copy.dot (n2_copy)); // @todo optimize this
 
   // everything before was standard 4D-Darboux frame feature pair
   // now, for the experimental color stuff

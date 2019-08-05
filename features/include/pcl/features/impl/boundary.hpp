@@ -85,7 +85,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
     if (delta == Eigen::Vector4f::Zero())
       continue;
 
-    angles[cp++] = atan2f (v.dot (delta), u.dot (delta)); // the angles are fine between -PI and PI too
+    angles[cp++] = std::atan2 (v.dot (delta), u.dot (delta)); // the angles are fine between -PI and PI too
   }
   if (cp == 0)
     return (false);

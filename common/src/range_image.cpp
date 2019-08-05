@@ -69,7 +69,7 @@ RangeImage::createLookupTables ()
   for (int i=0; i<lookup_table_size; ++i) 
   {
     float value = static_cast<float> (i-(lookup_table_size-1)/2)/static_cast<float> ((lookup_table_size-1)/2);
-    atan_lookup_table[i] = atanf (value);
+    atan_lookup_table[i] = std::atan (value);
   }
   
   cos_lookup_table.resize (lookup_table_size);

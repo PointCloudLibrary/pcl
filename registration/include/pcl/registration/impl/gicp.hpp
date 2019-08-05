@@ -195,9 +195,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTr
   x[0] = transformation_matrix (0,3);
   x[1] = transformation_matrix (1,3);
   x[2] = transformation_matrix (2,3);
-  x[3] = atan2 (transformation_matrix (2,1), transformation_matrix (2,2));
+  x[3] = std::atan2 (transformation_matrix (2,1), transformation_matrix (2,2));
   x[4] = asin (-transformation_matrix (2,0));
-  x[5] = atan2 (transformation_matrix (1,0), transformation_matrix (0,0));
+  x[5] = std::atan2 (transformation_matrix (1,0), transformation_matrix (0,0));
 
   // Set temporary pointers
   tmp_src_ = &cloud_src;
