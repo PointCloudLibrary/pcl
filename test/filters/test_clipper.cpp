@@ -70,7 +70,7 @@ TEST (BoxClipper3D, Filters)
   input->push_back (PointXYZ (-0.9f, -0.9f, -0.9f));
 
   ExtractIndices<PointXYZ> extract_indices;
-  vector<int> indices;
+  std::vector<int> indices;
 
   BoxClipper3D<PointXYZ> boxClipper3D (Affine3f::Identity ());
   boxClipper3D.clipPointCloud3D (*input, indices);
@@ -143,7 +143,7 @@ TEST (CropBox, Filters)
   cropBoxFilter.setMax (max_pt);
 
   // Indices
-  vector<int> indices;
+  std::vector<int> indices;
   cropBoxFilter.filter (indices);
 
   // Cloud
@@ -303,7 +303,7 @@ TEST (CropBox, Filters)
   cropBoxFilter2.setMax (max_pt);
 
   // Indices
-  vector<int> indices2;
+  std::vector<int> indices2;
   cropBoxFilter2.filter (indices2);
 
   // Cloud

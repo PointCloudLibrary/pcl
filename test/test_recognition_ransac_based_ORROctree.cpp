@@ -97,11 +97,11 @@ TEST (ORROctreeTest, OctreeSphereIntersection)
   ModelLibrary::Model* new_model = new ModelLibrary::Model (*model_cloud, *model_cloud_normals, voxel_size, object_name, frac_of_points_for_registration);
 
   const ORROctree& octree = new_model->getOctree ();
-  const vector<ORROctree::Node*> &full_leaves = octree.getFullLeaves ();
+  const std::vector<ORROctree::Node*> &full_leaves = octree.getFullLeaves ();
   list<ORROctree::Node*> inter_leaves;
 
   // Run through all full leaves
-  for ( vector<ORROctree::Node*>::const_iterator leaf1 = full_leaves.begin () ; leaf1 != full_leaves.end () ; ++leaf1 )
+  for ( std::vector<ORROctree::Node*>::const_iterator leaf1 = full_leaves.begin () ; leaf1 != full_leaves.end () ; ++leaf1 )
   {
     const ORROctree::Node::Data* node_data1 = (*leaf1)->getData ();
     // Get all full leaves at the right distance to the current leaf

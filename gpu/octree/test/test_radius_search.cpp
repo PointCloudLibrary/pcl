@@ -97,8 +97,8 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     pcl::gpu::NeighborIndices result_device3(data.indices.size(), max_answers);
             
     //prepare output buffers on host
-    vector< vector<int> > host_search1(data.tests_num);
-    vector< vector<int> > host_search2(data.tests_num);
+    std::vector< std::vector<int> > host_search1(data.tests_num);
+    std::vector< std::vector<int> > host_search2(data.tests_num);
     for(size_t i = 0; i < data.tests_num; ++i)
     {
         host_search1[i].reserve(max_answers);
@@ -125,14 +125,14 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     }
     
     //download results
-    vector<int> sizes1;
-    vector<int> sizes2;
-    vector<int> sizes3;
+    std::vector<int> sizes1;
+    std::vector<int> sizes2;
+    std::vector<int> sizes3;
     result_device1.sizes.download(sizes1);
     result_device2.sizes.download(sizes2);
     result_device3.sizes.download(sizes3);
 
-    vector<int> downloaded_buffer1, downloaded_buffer2, downloaded_buffer3, results_batch;    
+    std::vector<int> downloaded_buffer1, downloaded_buffer2, downloaded_buffer3, results_batch;    
     result_device1.data.download(downloaded_buffer1);
     result_device2.data.download(downloaded_buffer2);
     result_device3.data.download(downloaded_buffer3);
@@ -142,7 +142,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     //verify results    
     for(size_t i = 0; i < data.tests_num; ++i)
     {        
-        vector<int>& results_host = host_search1[i];        
+        std::vector<int>& results_host = host_search1[i];        
         
         int beg = i * max_answers;
         int end = beg + sizes1[i];
@@ -171,7 +171,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     //verify results    
     for(size_t i = 0; i < data.tests_num; ++i)
     {        
-        vector<int>& results_host = host_search2[i];        
+        std::vector<int>& results_host = host_search2[i];        
         
         int beg = i * max_answers;
         int end = beg + sizes2[i];
@@ -200,7 +200,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     //verify results    
     for(size_t i = 0; i < data.tests_num; i+=2)
     {                
-        vector<int>& results_host = host_search1[i];        
+        std::vector<int>& results_host = host_search1[i];        
         
         int beg = i/2 * max_answers;
         int end = beg + sizes3[i/2];

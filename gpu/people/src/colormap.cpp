@@ -81,7 +81,7 @@ void pcl::gpu::people::colorLMap (const pcl::PointCloud<pcl::Label>& cloud_in, p
 void pcl::gpu::people::uploadColorMap(DeviceArray<pcl::RGB>& color_map)
 {
   // Copy the list of label colors into the devices
-  vector<pcl::RGB> rgba(LUT_COLOR_LABEL_LENGTH);
+  std::vector<pcl::RGB> rgba(LUT_COLOR_LABEL_LENGTH);
   for(int i = 0; i < LUT_COLOR_LABEL_LENGTH; ++i)
   {
     // !!!! generate in RGB format, not BGR

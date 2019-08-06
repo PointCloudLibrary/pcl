@@ -107,15 +107,15 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
         
     //prepare output buffers on device
     pcl::gpu::NeighborIndices result_device(data.tests_num, 1);
-    vector<int> result_host_pcl(data.tests_num);
-    vector<int> result_host_gpu(data.tests_num);
-    vector<float> dists_pcl(data.tests_num);
-    vector<float> dists_gpu(data.tests_num);
+    std::vector<int> result_host_pcl(data.tests_num);
+    std::vector<int> result_host_gpu(data.tests_num);
+    std::vector<float> dists_pcl(data.tests_num);
+    std::vector<float> dists_gpu(data.tests_num);
     
     //search GPU shared
     octree_device.approxNearestSearch(queries_device, result_device);
 
-    vector<int> downloaded;
+    std::vector<int> downloaded;
     result_device.data.download(downloaded);
                 
     for(size_t i = 0; i < data.tests_num; ++i)

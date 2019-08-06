@@ -171,7 +171,7 @@ namespace pcl
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vector<string> getPcdFilesInDir(const string& directory)
+std::vector<string> getPcdFilesInDir(const string& directory)
 {
   namespace fs = boost::filesystem;
   fs::path dir(directory);
@@ -180,7 +180,7 @@ vector<string> getPcdFilesInDir(const string& directory)
   if (directory.empty() || !fs::exists(dir) || !fs::is_directory(dir))
     PCL_THROW_EXCEPTION (pcl::IOException, "No valid PCD directory given!\n");
     
-  vector<string> result;
+  std::vector<string> result;
   fs::directory_iterator pos(dir);
   fs::directory_iterator end;           
 
@@ -413,7 +413,7 @@ struct ImageView
     raycaster_ptr_->generateDepthImage(generated_depth_);    
 
     int c;
-    vector<unsigned short> data;
+    std::vector<unsigned short> data;
     generated_depth_.download(data, c);
 
     if (viz_)
@@ -437,14 +437,14 @@ struct ImageView
 
   KinfuTracker::View view_device_;
   KinfuTracker::View colors_device_;
-  vector<KinfuTracker::PixelRGB> view_host_;
+  std::vector<KinfuTracker::PixelRGB> view_host_;
 
   RayCaster::Ptr raycaster_ptr_;
 
   KinfuTracker::DepthMap generated_depth_;
   
 #ifdef HAVE_OPENCV
-  vector<cv::Mat> views_;
+  std::vector<cv::Mat> views_;
 #endif
 };
 
@@ -1268,7 +1268,7 @@ main (int argc, char* argv[])
       float fps_pcd = 15.0f;
       pc::parse_argument (argc, argv, "-pcd_fps", fps_pcd);
 
-      vector<string> pcd_files = getPcdFilesInDir(pcd_dir);    
+      std::vector<string> pcd_files = getPcdFilesInDir(pcd_dir);    
 
       // Sort the read files by name
       sort (pcd_files.begin (), pcd_files.end ());

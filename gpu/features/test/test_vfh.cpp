@@ -55,7 +55,7 @@ TEST(PCL_FeaturesGPU, vfh1)
     source.estimateNormals();
     source.generateIndices(3);
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
     
     //uploading data to GPU
@@ -84,7 +84,7 @@ TEST(PCL_FeaturesGPU, vfh1)
         pc_gpu.compute(vfh_features);
     }
 
-    vector<VFHSignature308> downloaded;
+    std::vector<VFHSignature308> downloaded;
     vfh_features.download(downloaded);
 
     pcl::VFHEstimation<PointXYZ, Normal, VFHSignature308> fe;
@@ -127,7 +127,7 @@ TEST(PCL_FeaturesGPU, vfh_norm_bins_false)
     source.estimateNormals();
     source.generateIndices(3);
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
     
     //uploading data to GPU
@@ -153,7 +153,7 @@ TEST(PCL_FeaturesGPU, vfh_norm_bins_false)
     DeviceArray<VFHSignature308> vfh_features;
     pc_gpu.compute(vfh_features);
 
-    vector<VFHSignature308> downloaded;
+    std::vector<VFHSignature308> downloaded;
     vfh_features.download(downloaded);
 
     pcl::VFHEstimation<PointXYZ, Normal, VFHSignature308> fe;
@@ -194,7 +194,7 @@ TEST(PCL_FeaturesGPU, vfh_norm_distance_true)
     source.estimateNormals();
     source.generateIndices(3);
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
     
     //uploading data to GPU
@@ -220,7 +220,7 @@ TEST(PCL_FeaturesGPU, vfh_norm_distance_true)
     DeviceArray<VFHSignature308> vfh_features;
     pc_gpu.compute(vfh_features);
 
-    vector<VFHSignature308> downloaded;
+    std::vector<VFHSignature308> downloaded;
     vfh_features.download(downloaded);
 
     pcl::VFHEstimation<PointXYZ, Normal, VFHSignature308> fe;
@@ -262,7 +262,7 @@ TEST(PCL_FeaturesGPU, vfh_fill_size_component_true)
     source.estimateNormals();
     source.generateIndices(3);
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
     
     //uploading data to GPU
@@ -288,7 +288,7 @@ TEST(PCL_FeaturesGPU, vfh_fill_size_component_true)
     DeviceArray<VFHSignature308> vfh_features;
     pc_gpu.compute(vfh_features);
 
-    vector<VFHSignature308> downloaded;
+    std::vector<VFHSignature308> downloaded;
     vfh_features.download(downloaded);
 
     pcl::VFHEstimation<PointXYZ, Normal, VFHSignature308> fe;

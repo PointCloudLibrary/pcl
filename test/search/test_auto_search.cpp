@@ -278,9 +278,9 @@ TEST (PCL, KdTreeWrapper_nearestKSearch)
     ++counter;
   }
 
-  vector<int> k_indices;
+  std::vector<int> k_indices;
   k_indices.resize (no_of_neighbors);
-  vector<float> k_distances;
+  std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
 
   kdtree->nearestKSearch (test_point, no_of_neighbors, k_indices, k_distances);

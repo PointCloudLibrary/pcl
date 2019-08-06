@@ -355,7 +355,7 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pcl::device::CUDATree::CUDATree (int treeHeight_arg, const vector<Node>& nodes, const vector<Label>& leaves)
+pcl::device::CUDATree::CUDATree (int treeHeight_arg, const std::vector<Node>& nodes, const std::vector<Label>& leaves)
 {
   treeHeight = treeHeight_arg;
   numNodes = (1 << treeHeight) - 1;

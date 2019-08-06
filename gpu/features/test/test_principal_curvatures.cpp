@@ -53,7 +53,7 @@ TEST(PCL_FeaturesGPU, PrincipalCurvatures)
     
     source.estimateNormals();
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
@@ -74,7 +74,7 @@ TEST(PCL_FeaturesGPU, PrincipalCurvatures)
     pc_gpu.setRadiusSearch(source.radius, source.max_elements);
     pc_gpu.compute(pc_features);
 
-    vector<PrincipalCurvatures> downloaded;
+    std::vector<PrincipalCurvatures> downloaded;
     pc_features.download(downloaded);
 
     pcl::PrincipalCurvaturesEstimation<PointXYZ, Normal, PrincipalCurvatures> fe;

@@ -90,9 +90,9 @@ init ()
     ++counter;
   }
 
-  vector<int> k_indices;
+  std::vector<int> k_indices;
   k_indices.resize (no_of_neighbors);
-  vector<float> k_distances;
+  std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
 
   kdtree->nearestKSearch (test_point, no_of_neighbors, k_indices, k_distances);
@@ -140,14 +140,14 @@ TEST (PCL, KdTree_differentPointT)
   std::vector< std::vector< int > > indices;
   kdtree->nearestKSearchT (cloud_rgb, std::vector<int> (),no_of_neighbors,indices,dists);
 
-  vector<int> k_indices;
+  std::vector<int> k_indices;
   k_indices.resize (no_of_neighbors);
-  vector<float> k_distances;
+  std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
 
-  vector<int> k_indices_t;
+  std::vector<int> k_indices_t;
   k_indices_t.resize (no_of_neighbors);
-  vector<float> k_distances_t;
+  std::vector<float> k_distances_t;
   k_distances_t.resize (no_of_neighbors);
 
   for (size_t i = 0; i < cloud_rgb.points.size (); ++i)
@@ -178,9 +178,9 @@ TEST (PCL, KdTree_multipointKnnSearch)
   std::vector< std::vector< int > > indices;
   kdtree->nearestKSearch (cloud_big, std::vector<int> (),no_of_neighbors,indices,dists);
 
-  vector<int> k_indices;
+  std::vector<int> k_indices;
   k_indices.resize (no_of_neighbors);
-  vector<float> k_distances;
+  std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
 
   for (size_t i = 0; i < cloud_big.points.size (); ++i)

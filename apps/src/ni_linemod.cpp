@@ -264,7 +264,7 @@ class NILinemod
       euclidean_segmentation.setInputCloud (cloud);
 
       PointCloud<Label> euclidean_labels;
-      vector<PointIndices> euclidean_label_indices;
+      std::vector<PointIndices> euclidean_label_indices;
       euclidean_segmentation.segment (euclidean_labels, euclidean_label_indices);
 
       // For each cluster found
@@ -313,12 +313,12 @@ class NILinemod
       mps_.setInputCloud (search_.getInputCloud ());
 
       // Use one of the overloaded segmentAndRefine calls to get all the information that we want out
-      vector<PlanarRegion<PointT>, Eigen::aligned_allocator<PlanarRegion<PointT> > > regions;
-      vector<ModelCoefficients> model_coefficients;
-      vector<PointIndices> inlier_indices;  
+      std::vector<PlanarRegion<PointT>, Eigen::aligned_allocator<PlanarRegion<PointT> > > regions;
+      std::vector<ModelCoefficients> model_coefficients;
+      std::vector<PointIndices> inlier_indices;  
       PointCloud<Label>::Ptr labels (new PointCloud<Label>);
-      vector<PointIndices> label_indices;
-      vector<PointIndices> boundary_indices;
+      std::vector<PointIndices> label_indices;
+      std::vector<PointIndices> boundary_indices;
       mps_.segmentAndRefine (regions, model_coefficients, inlier_indices, labels, label_indices, boundary_indices);
       PCL_DEBUG ("Number of planar regions detected: %lu for a cloud of %lu points and %lu normals.\n", regions.size (), search_.getInputCloud ()->points.size (), normal_cloud->points.size ());
 
@@ -370,8 +370,8 @@ class NILinemod
       if (idx == -1)
         return;
 
-      vector<int> indices (1);
-      vector<float> distances (1);
+      std::vector<int> indices (1);
+      std::vector<float> distances (1);
 
       // Use mutices to make sure we get the right cloud
       std::lock_guard<std::mutex> lock1 (cloud_mutex_);

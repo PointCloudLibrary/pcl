@@ -67,7 +67,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
   double mean;
   double variance;
   double stddev;
-  vector<float> distances;
+  std::vector<float> distances;
   generateStatistics (mean, variance, stddev, distances);
   double const distance_threshold = mean + std_mul_ * stddev; // a distance that is bigger than this signals an outlier
 
@@ -157,7 +157,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (vector<int>& i
   double mean;
   double variance;
   double stddev;
-  vector<float> distances;
+  std::vector<float> distances;
   generateStatistics(mean, variance, stddev, distances);
   double const distance_threshold = mean + std_mul_ * stddev; // a distance that is bigger than this signals an outlier
 

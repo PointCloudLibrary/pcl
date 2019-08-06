@@ -54,7 +54,7 @@ using namespace std;
 const int MAX_CLUST_SIZE = 25000;
 const float CLUST_TOL = 0.05f;
 
-pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<string>& tree_files, int rows, int cols)    
+pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const std::vector<string>& tree_files, int rows, int cols)    
 : max_cluster_size_(MAX_CLUST_SIZE), cluster_tolerance_(CLUST_TOL)
 {
   PCL_DEBUG("[pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector] : (D) : Constructor called\n");
@@ -66,8 +66,8 @@ pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<strin
   for(const auto &tree_file : tree_files)
   {
     // load the tree file
-    vector<trees::Node>  nodes;
-    vector<trees::Label> leaves;
+    std::vector<trees::Node>  nodes;
+    std::vector<trees::Label> leaves;
 
     // this might throw but we haven't done any malloc yet
     int height = loadTree (tree_file, nodes, leaves );

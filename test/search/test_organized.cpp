@@ -230,7 +230,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
     double searchRadius = 1.0 * (double (rand ()) / double (RAND_MAX));
 
     // bruteforce radius search
-    vector<int> cloudSearchBruteforce;
+    std::vector<int> cloudSearchBruteforce;
     cloudSearchBruteforce.clear();
 
     for (size_t i = 0; i < cloudIn->points.size (); i++)

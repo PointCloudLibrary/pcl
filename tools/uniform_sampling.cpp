@@ -151,8 +151,8 @@ main (int argc, char** argv)
   }
 
   // Parse the command line arguments for .pcd files
-  vector<int> p_file_indices;
-  vector<std::string> extension;
+  std::vector<int> p_file_indices;
+  std::vector<std::string> extension;
   extension.emplace_back(".pcd");
   extension.emplace_back(".ply");
   extension.emplace_back(".vtk");

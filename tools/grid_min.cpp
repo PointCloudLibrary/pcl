@@ -113,10 +113,10 @@ saveCloud (const std::string &filename, const Cloud &output)
 }
 
 int
-batchProcess (const vector<string> &pcd_files, string &output_dir,
+batchProcess (const std::vector<string> &pcd_files, string &output_dir,
               float resolution)
 {
-  vector<string> st;
+  std::vector<string> st;
   for (const auto &pcd_file : pcd_files)
   {
     // Load the first file
@@ -200,7 +200,7 @@ main (int argc, char** argv)
   {
     if (!input_dir.empty() && boost::filesystem::exists (input_dir))
     {
-      vector<string> pcd_files;
+      std::vector<string> pcd_files;
       boost::filesystem::directory_iterator end_itr;
       for (boost::filesystem::directory_iterator itr (input_dir); itr != end_itr; ++itr)
       {

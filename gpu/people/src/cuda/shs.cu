@@ -174,7 +174,7 @@ void optimized_shs5(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
     SearchD search;    
     search.setInputCloud(cloud.makeShared());
 
-    vector< vector<int> > storage(100);
+    std::vector< std::vector<int> > storage(100);
 
     //  omp_set_num_threads(1);
     // Process all points in the indices vector

@@ -308,7 +308,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
 //   double searchRadius = 1/10;
 
     // bruteforce radius search
-    vector<int> cloudSearchBruteforce;
+    std::vector<int> cloudSearchBruteforce;
     cloudSearchBruteforce.clear();
 
     for (size_t i = 0; i < cloudIn->points.size (); i++)
@@ -324,8 +324,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
       }
     }
 
-    vector<int> cloudNWRSearch;
-    vector<float> cloudNWRRadius;
+    std::vector<int> cloudNWRSearch;
+    std::vector<float> cloudNWRRadius;
 
     organizedNeighborSearch->setInputCloud (cloudIn);
 
@@ -425,7 +425,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     const double searchRadius = 1.0 * ((double)rand () / (double)RAND_MAX);
 
     // bruteforce radius search
-    vector<int> cloudSearchBruteforce;
+    std::vector<int> cloudSearchBruteforce;
     cloudSearchBruteforce.clear();
 
     for (size_t i = 0; i < cloudIn->points.size (); i++)
@@ -442,8 +442,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     }
 
 
-    vector<int> cloudNWRSearch;
-    vector<float> cloudNWRRadius;
+    std::vector<int> cloudNWRSearch;
+    std::vector<float> cloudNWRRadius;
     
     double check_time = getTime();
     organizedNeighborSearch->setInputCloud (cloudIn);
@@ -505,11 +505,11 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     double searchRadius = 1.0 * (test_id*1.0/10*1.0);
     double sum_time = 0, sum_time2 = 0;
 
-    vector<int> cloudNWRSearch;
-    vector<float> cloudNWRRadius;
+    std::vector<int> cloudNWRSearch;
+    std::vector<float> cloudNWRRadius;
 
-    vector<int> cloudNWRSearch2;
-    vector<float> cloudNWRRadius2;
+    std::vector<int> cloudNWRSearch2;
+    std::vector<float> cloudNWRRadius2;
 
     for (int iter = 0; iter < 100; iter++)
     {
@@ -548,7 +548,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     const PointXYZ& searchPoint = cloudIn->points[randomIdx];
 
     // bruteforce radius search
-    vector<int> cloudSearchBruteforce;
+    std::vector<int> cloudSearchBruteforce;
     cloudSearchBruteforce.clear();
 
     for (size_t i = 0; i < cloudIn->points.size (); i++)

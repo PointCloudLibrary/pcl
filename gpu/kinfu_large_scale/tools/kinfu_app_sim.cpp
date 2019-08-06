@@ -669,7 +669,7 @@ struct ImageView
     raycaster_ptr_->generateDepthImage(generated_depth_);    
 
     int c;
-    vector<unsigned short> data;
+    std::vector<unsigned short> data;
     generated_depth_.download(data, c);
 
     viewerDepth_.showShortImage (&data[0], generated_depth_.cols(), generated_depth_.rows(), 0, 5000, true);
@@ -691,14 +691,14 @@ struct ImageView
 
   KinfuTracker::View view_device_;
   KinfuTracker::View colors_device_;
-  vector<KinfuTracker::PixelRGB> view_host_;
+  std::vector<KinfuTracker::PixelRGB> view_host_;
 
   RayCaster::Ptr raycaster_ptr_;
 
   KinfuTracker::DepthMap generated_depth_;
   
 #ifdef HAVE_OPENCV
-  vector<cv::Mat> views_;
+  std::vector<cv::Mat> views_;
 #endif
 };
 
@@ -1052,7 +1052,7 @@ struct KinFuApp
     // loop though and create the mesh:
     for (int i = 0; !exit_; ++i)
     { 
-      vector<double> tic_toc;
+      std::vector<double> tic_toc;
       tic_toc.push_back(getTime());
       double tic_main = getTime();
 

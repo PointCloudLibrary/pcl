@@ -144,7 +144,7 @@ namespace
 
 }
 
-void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float radius, vector<int>& out, int max_nn) const
+void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float radius, std::vector<int>& out, int max_nn) const
 {            
     out.clear();  
 

@@ -132,7 +132,7 @@ namespace pcl
         virtual bool 
         generateModelHypotheses (Hypotheses &h, Samples &s, int max_iterations)
         {
-          // TODO: hack.. Samples should be vector<int>, not int..
+          // TODO: hack.. Samples should be std::vector<int>, not int..
           return generateModelHypotheses (h, max_iterations);
         };
 

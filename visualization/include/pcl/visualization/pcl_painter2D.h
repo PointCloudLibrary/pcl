@@ -413,7 +413,7 @@ namespace pcl
       void spin ();
 
     private:
-      //std::map< int, std::vector< std::vector<float> > > figures_; //FIG_TYPE -> vector<array>
+      //std::map< int, std::vector< std::vector<float> > > figures_; //FIG_TYPE -> std::vector<array>
 
       //All the figures drawn till now gets stored here
       std::vector<Figure2D *> figures_;

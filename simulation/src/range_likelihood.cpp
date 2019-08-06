@@ -819,7 +819,7 @@ RangeLikelihood::computeLikelihoods (float* reference,
                                      std::vector<float> & scores)
 {
   #if DO_TIMING_PROFILE
-    vector<double> tic_toc;
+    std::vector<double> tic_toc;
     tic_toc.push_back(getTime());
   #endif  
   

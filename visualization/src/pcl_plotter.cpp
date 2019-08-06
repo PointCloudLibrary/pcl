@@ -251,7 +251,7 @@ pcl::visualization::PCLPlotter::addPlotData (
   getline (fin, line);
   stringstream ss(line);
   
-  vector<string> pnames;       //plot names
+  std::vector<string> pnames;       //plot names
   string xname, temp;         //plot name of X axis
   
   //checking X axis name
@@ -262,8 +262,8 @@ pcl::visualization::PCLPlotter::addPlotData (
     
   int nop = int (pnames.size ());// number of plots (y coordinate vectors)  
   
-  vector<double> xarray;      //array of X coordinates
-  vector< vector<double> > yarrays (nop); //a set of array of Y coordinates
+  std::vector<double> xarray;      //array of X coordinates
+  std::vector< std::vector<double> > yarrays (nop); //a set of array of Y coordinates
   
   //reading the entire table
   double x, y;

@@ -74,9 +74,9 @@ public:
 
     void init (int n);
 
-    vector<int> parent;
-    vector<int> rank;
-    vector<int> size;
+    std::vector<int> parent;
+    std::vector<int> rank;
+    std::vector<int> size;
 private:
     DjSets(const DjSets&);
     void operator =(const DjSets&);
@@ -104,8 +104,8 @@ public:
 
     void addEdge(int from, int to, const T& val=T());
 
-    vector<int> start;
-    vector<Edge> edges;
+    std::vector<int> start;
+    std::vector<Edge> edges;
 
     int numv;
     int nume_max;

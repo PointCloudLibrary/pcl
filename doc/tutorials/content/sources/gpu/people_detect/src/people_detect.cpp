@@ -329,7 +329,7 @@ int main(int argc, char** argv)
   pcl::Grabber::Ptr capture (new pcl::OpenNIGrabber());
 
   //selecting tree files
-  vector<string> tree_files;
+  std::vector<string> tree_files;
   tree_files.push_back("Data/forest1/tree_20.txt");
   tree_files.push_back("Data/forest2/tree_20.txt");
   tree_files.push_back("Data/forest3/tree_20.txt");

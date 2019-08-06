@@ -498,7 +498,7 @@ OpenNI2VideoMode
 pcl::io::openni2::OpenNI2Device::getDefaultIRMode () const
 {
   // Search for and return VGA@30 Hz mode
-  vector<OpenNI2VideoMode> modeList = getSupportedIRVideoModes ();
+  std::vector<OpenNI2VideoMode> modeList = getSupportedIRVideoModes ();
   for (const auto &mode : modeList)
   {
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
@@ -511,7 +511,7 @@ OpenNI2VideoMode
 pcl::io::openni2::OpenNI2Device::getDefaultColorMode () const
 {
   // Search for and return VGA@30 Hz mode
-  vector<OpenNI2VideoMode> modeList = getSupportedColorVideoModes ();
+  std::vector<OpenNI2VideoMode> modeList = getSupportedColorVideoModes ();
   for (const auto &mode : modeList)
   {
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
@@ -524,7 +524,7 @@ OpenNI2VideoMode
 pcl::io::openni2::OpenNI2Device::getDefaultDepthMode () const
 {
   // Search for and return VGA@30 Hz mode
-  vector<OpenNI2VideoMode> modeList = getSupportedDepthVideoModes ();
+  std::vector<OpenNI2VideoMode> modeList = getSupportedDepthVideoModes ();
   for (const auto &mode : modeList)
   {
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )

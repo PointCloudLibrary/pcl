@@ -341,7 +341,7 @@ int main(int argc, char** argv)
   // loading trees
   using pcl::gpu::people::RDFBodyPartsDetector;
 
-  vector<string> names_vector(treeFilenames, treeFilenames + numTrees);
+  std::vector<string> names_vector(treeFilenames, treeFilenames + numTrees);
   PCL_DEBUG("[Main] : (D) : Trees collected\n");
   RDFBodyPartsDetector::Ptr rdf(new RDFBodyPartsDetector(names_vector));
   PCL_DEBUG("[Main] : (D) : Loaded files into rdf\n");

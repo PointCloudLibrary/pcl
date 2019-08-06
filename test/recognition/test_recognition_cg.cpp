@@ -80,8 +80,8 @@ computeRmsE (const PointCloud<PointType>::ConstPtr &model, const PointCloud<Poin
   double sqr_norm_sum = 0;
   int found_points = 0;
 
-  vector<int> neigh_indices (1);
-  vector<float> neigh_sqr_dists (1);
+  std::vector<int> neigh_indices (1);
+  std::vector<float> neigh_sqr_dists (1);
   for (const auto &model : transformed_model)
   {
 
@@ -118,7 +118,7 @@ TEST (PCL, Hough3DGrouping)
   rf_est.setSearchSurface (scene_);
   rf_est.compute (*scene_rf);
 
-  vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > rototranslations;
+  std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > rototranslations;
 
   //Actual CG
   Hough3DGrouping<PointType, PointType, RFType, RFType> clusterer;
@@ -144,7 +144,7 @@ TEST (PCL, Hough3DGrouping)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GeometricConsistencyGrouping)
 {
-  vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > rototranslations;
+  std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > rototranslations;
 
   GeometricConsistencyGrouping<PointType, PointType> clusterer;
   clusterer.setInputCloud (model_downsampled_);
@@ -222,8 +222,8 @@ main (int argc, char** argv)
   {
     if ( std::isfinite( scene_descriptors_->at (i).descriptor[0] ) )
     {
-      vector<int> neigh_indices (1);
-      vector<float> neigh_sqr_dists (1);
+      std::vector<int> neigh_indices (1);
+      std::vector<float> neigh_sqr_dists (1);
       int found_neighs = match_search.nearestKSearch (scene_descriptors_->at (i), 1, neigh_indices, neigh_sqr_dists);
       if(found_neighs == 1 && neigh_sqr_dists[0] < 0.25f)
       {

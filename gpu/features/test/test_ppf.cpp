@@ -57,7 +57,7 @@ TEST(PCL_FeaturesGPU, ppf)
     source.generateIndices();
     source.estimateNormals();
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
@@ -82,7 +82,7 @@ TEST(PCL_FeaturesGPU, ppf)
     pph_gpu.compute(ppf_features);
 
 
-    vector<PPFSignature> downloaded;
+    std::vector<PPFSignature> downloaded;
     ppf_features.download(downloaded);
 
     pcl::PPFEstimation<PointXYZ, Normal, PPFSignature> fe;
@@ -116,7 +116,7 @@ TEST(PCL_FeaturesGPU, ppfrgb)
     source.generateIndices();
     source.estimateNormals();
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
@@ -140,7 +140,7 @@ TEST(PCL_FeaturesGPU, ppfrgb)
     pph_gpu.setIndices(indices_gpu);
     pph_gpu.compute(ppf_features);
 
-    vector<PPFRGBSignature> downloaded;
+    std::vector<PPFRGBSignature> downloaded;
     ppf_features.download(downloaded);
 
     pcl::PPFRGBEstimation<PointXYZRGB, Normal, PPFRGBSignature> fe;
@@ -204,7 +204,7 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
 
     source.estimateNormals();
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
@@ -230,7 +230,7 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
 
     pph_gpu.compute(ppf_features);
 
-    vector<PPFRGBSignature> downloaded;
+    std::vector<PPFRGBSignature> downloaded;
     ppf_features.download(downloaded);
 
     pcl::PPFRGBRegionEstimation<PointXYZRGB, Normal, PPFRGBSignature> fe;
