@@ -59,9 +59,9 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributions
   // Initializes the gaussian fitting parameters (eq. 6.8) [Magnusson 2009]
   gauss_c1 = 10.0 * (1 - outlier_ratio_);
   gauss_c2 = outlier_ratio_ / pow (resolution_, 3);
-  gauss_d3 = -log (gauss_c2);
-  gauss_d1_ = -log ( gauss_c1 + gauss_c2 ) - gauss_d3;
-  gauss_d2_ = -2 * log ((-log ( gauss_c1 * std::exp ( -0.5 ) + gauss_c2 ) - gauss_d3) / gauss_d1_);
+  gauss_d3 = -std::log (gauss_c2);
+  gauss_d1_ = -std::log ( gauss_c1 + gauss_c2 ) - gauss_d3;
+  gauss_d2_ = -2 * std::log ((-std::log ( gauss_c1 * std::exp ( -0.5 ) + gauss_c2 ) - gauss_d3) / gauss_d1_);
 
   transformation_epsilon_ = 0.1;
   max_iterations_ = 35;
@@ -79,9 +79,9 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
   // Initializes the gaussian fitting parameters (eq. 6.8) [Magnusson 2009]
   gauss_c1 = 10 * (1 - outlier_ratio_);
   gauss_c2 = outlier_ratio_ / pow (resolution_, 3);
-  gauss_d3 = -log (gauss_c2);
-  gauss_d1_ = -log ( gauss_c1 + gauss_c2 ) - gauss_d3;
-  gauss_d2_ = -2 * log ((-log ( gauss_c1 * std::exp ( -0.5 ) + gauss_c2 ) - gauss_d3) / gauss_d1_);
+  gauss_d3 = -std::log (gauss_c2);
+  gauss_d1_ = -std::log ( gauss_c1 + gauss_c2 ) - gauss_d3;
+  gauss_d2_ = -2 * std::log ((-std::log ( gauss_c1 * std::exp ( -0.5 ) + gauss_c2 ) - gauss_d3) / gauss_d1_);
 
   if (guess != Eigen::Matrix4f::Identity ())
   {

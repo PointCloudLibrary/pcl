@@ -1989,7 +1989,7 @@ static void sigmoid_train (
   // Initial Point and Initial Fun Value
   A = 0.0;
 
-  B = log ( (prior0 + 1.0) / (prior1 + 1.0));
+  B = std::log ( (prior0 + 1.0) / (prior1 + 1.0));
 
   double fval = 0.0;
 
@@ -2003,9 +2003,9 @@ static void sigmoid_train (
     double fApB = dec_values[i] * A + B;
 
     if (fApB >= 0)
-      fval += t[i] * fApB + log (1 + std::exp (-fApB));
+      fval += t[i] * fApB + std::log (1 + std::exp (-fApB));
     else
-      fval += (t[i] - 1) * fApB + log (1 + std::exp (fApB));
+      fval += (t[i] - 1) * fApB + std::log (1 + std::exp (fApB));
   }
 
   int iter = 0;
@@ -2073,9 +2073,9 @@ static void sigmoid_train (
         double fApB = dec_values[i] * newA + newB;
 
         if (fApB >= 0)
-          newf += t[i] * fApB + log (1 + std::exp (-fApB));
+          newf += t[i] * fApB + std::log (1 + std::exp (-fApB));
         else
-          newf += (t[i] - 1) * fApB + log (1 + std::exp (fApB));
+          newf += (t[i] - 1) * fApB + std::log (1 + std::exp (fApB));
       }
 
       // Check sufficient decrease

@@ -96,7 +96,7 @@ namespace pcl
           for(int li=0;li<NUMLABELS;++li) {
             if( h[li] != 0 ) {
               double p = double(h[li]) / Ntotal;
-              entropy -= p*log(p);
+              entropy -= p*std::log(p);
             }
           }
           return entropy;
@@ -115,7 +115,7 @@ namespace pcl
             uint64_t Ni = uint64_t(htrue[li]) + uint64_t(hfalse[li]);
             if( Ni != 0) {
               double p = double(Ni) / Ntotal;
-              entropy -= p*log(p);
+              entropy -= p*std::log(p);
             }
           }
           return entropy;

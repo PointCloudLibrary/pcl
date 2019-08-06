@@ -205,7 +205,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
         else if (bottom_log == 1)
           k_n_star = T_N;
         else
-          k_n_star = static_cast<int> (ceil (log (0.05) / log (bottom_log)));
+          k_n_star = static_cast<int> (ceil (std::log (0.05) / std::log (bottom_log)));
         // It seems weird to have very few iterations, so do have a few (totally empirical)
         k_n_star = (std::max)(k_n_star, 2 * m);
       }
