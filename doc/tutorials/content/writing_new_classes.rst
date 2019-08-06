@@ -88,7 +88,7 @@ and save the results to disk.
     float
     G (float x, float sigma)
     {
-      return exp (- (x*x)/(2*sigma*sigma));
+      return std::exp (- (x*x)/(2*sigma*sigma));
     }
 
     int
@@ -575,7 +575,7 @@ header file becomes:
           inline double
           kernel (double x, double sigma)
           {
-            return (exp (- (x*x)/(2*sigma*sigma)));
+            return (std::exp (- (x*x)/(2*sigma*sigma)));
           }
 
           double sigma_s_;
@@ -1118,7 +1118,7 @@ class look like:
           inline double
           kernel (double x, double sigma)
           {
-            return (exp (- (x*x)/(2*sigma*sigma)));
+            return (std::exp (- (x*x)/(2*sigma*sigma)));
           }
 
           /** \brief The half size of the Gaussian bilateral filter window (e.g., spatial extents in Euclidean). */
