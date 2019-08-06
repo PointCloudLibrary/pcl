@@ -282,7 +282,7 @@ namespace pcl
             else
               ratio = 1. / transformation_epsilon_;
             double c_delta = ratio
-                * fabs (
+                * std::abs (
                     previous_transformation_ (k, l) - transformation_ (k, l));
             if (c_delta > delta)
               delta = c_delta;

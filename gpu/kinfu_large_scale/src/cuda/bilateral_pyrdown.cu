@@ -114,7 +114,7 @@ namespace pcl
           for (int cx = max (0, 2 * x - D / 2); cx < tx; ++cx)
           {
             int val = src.ptr (cy)[cx];
-            if (abs (val - center) < 3 * sigma_color)
+            if (std::abs (val - center) < 3 * sigma_color)
             {
               sum += val;
               ++count;

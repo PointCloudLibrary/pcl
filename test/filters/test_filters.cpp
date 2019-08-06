@@ -622,9 +622,9 @@ TEST (VoxelGrid, Filters)
   int centroidIdx = grid.getCentroidIndex (cloud->points[195]);
 
   // for arbitrary points, the centroid should be close
-  EXPECT_LE (fabs (output.points[centroidIdx].x - cloud->points[195].x), 0.02);
-  EXPECT_LE (fabs (output.points[centroidIdx].y - cloud->points[195].y), 0.02);
-  EXPECT_LE (fabs (output.points[centroidIdx].z - cloud->points[195].z), 0.02);
+  EXPECT_LE (std::abs (output.points[centroidIdx].x - cloud->points[195].x), 0.02);
+  EXPECT_LE (std::abs (output.points[centroidIdx].y - cloud->points[195].y), 0.02);
+  EXPECT_LE (std::abs (output.points[centroidIdx].z - cloud->points[195].z), 0.02);
 
   // if getNeighborCentroidIndices works then the other helper functions work as well
   EXPECT_EQ (grid.getNeighborCentroidIndices (output.points[0], Eigen::MatrixXi::Zero(3,1))[0], 0);
@@ -635,8 +635,8 @@ TEST (VoxelGrid, Filters)
   std::vector<int> neighbors = grid.getNeighborCentroidIndices (cloud->points[195], directions);
   EXPECT_EQ (neighbors.size (), size_t (directions.cols ()));
   EXPECT_NE (neighbors.at (0), -1);
-  EXPECT_LE (fabs (output.points[neighbors.at (0)].x - output.points[centroidIdx].x), 0.02);
-  EXPECT_LE (fabs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
+  EXPECT_LE (std::abs (output.points[neighbors.at (0)].x - output.points[centroidIdx].x), 0.02);
+  EXPECT_LE (std::abs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
   EXPECT_LE ( output.points[neighbors.at (0)].z - output.points[centroidIdx].z, 0.02 * 2);
 
   // Test the pcl::PCLPointCloud2 method
@@ -704,9 +704,9 @@ TEST (VoxelGrid, Filters)
   EXPECT_NE (centroidIdx2, -1);
 
   // for arbitrary points, the centroid should be close
-  EXPECT_LE (fabs (output.points[centroidIdx2].x - 0.048722), 0.02);
-  EXPECT_LE (fabs (output.points[centroidIdx2].y - 0.073760), 0.02);
-  EXPECT_LE (fabs (output.points[centroidIdx2].z - 0.017434), 0.02);
+  EXPECT_LE (std::abs (output.points[centroidIdx2].x - 0.048722), 0.02);
+  EXPECT_LE (std::abs (output.points[centroidIdx2].y - 0.073760), 0.02);
+  EXPECT_LE (std::abs (output.points[centroidIdx2].z - 0.017434), 0.02);
 
   // if getNeighborCentroidIndices works then the other helper functions work as well
   EXPECT_EQ (grid2.getNeighborCentroidIndices (output.points[0].x, output.points[0].y, output.points[0].z, Eigen::MatrixXi::Zero(3,1))[0], 0);
@@ -717,8 +717,8 @@ TEST (VoxelGrid, Filters)
   std::vector<int> neighbors2 = grid2.getNeighborCentroidIndices (0.048722f, 0.073760f, 0.017434f, directions2);
   EXPECT_EQ (neighbors2.size (), size_t (directions2.cols ()));
   EXPECT_NE (neighbors2.at (0), -1);
-  EXPECT_LE (fabs (output.points[neighbors2.at (0)].x - output.points[centroidIdx2].x), 0.02);
-  EXPECT_LE (fabs (output.points[neighbors2.at (0)].y - output.points[centroidIdx2].y), 0.02);
+  EXPECT_LE (std::abs (output.points[neighbors2.at (0)].x - output.points[centroidIdx2].x), 0.02);
+  EXPECT_LE (std::abs (output.points[neighbors2.at (0)].y - output.points[centroidIdx2].y), 0.02);
   EXPECT_LE (output.points[neighbors2.at (0)].z - output.points[centroidIdx2].z, 0.02 * 2);
 }
 
@@ -775,9 +775,9 @@ TEST (VoxelGrid_No_DownsampleAllData, Filters)
   int centroidIdx = grid.getCentroidIndex (cloud->points[195]);
 
   // for arbitrary points, the centroid should be close
-  EXPECT_LE (fabs (output.points[centroidIdx].x - cloud->points[195].x), 0.02);
-  EXPECT_LE (fabs (output.points[centroidIdx].y - cloud->points[195].y), 0.02);
-  EXPECT_LE (fabs (output.points[centroidIdx].z - cloud->points[195].z), 0.02);
+  EXPECT_LE (std::abs (output.points[centroidIdx].x - cloud->points[195].x), 0.02);
+  EXPECT_LE (std::abs (output.points[centroidIdx].y - cloud->points[195].y), 0.02);
+  EXPECT_LE (std::abs (output.points[centroidIdx].z - cloud->points[195].z), 0.02);
 
   // if getNeighborCentroidIndices works then the other helper functions work as well
   EXPECT_EQ (grid.getNeighborCentroidIndices (output.points[0], Eigen::MatrixXi::Zero(3,1))[0], 0);
@@ -788,8 +788,8 @@ TEST (VoxelGrid_No_DownsampleAllData, Filters)
   std::vector<int> neighbors = grid.getNeighborCentroidIndices (cloud->points[195], directions);
   EXPECT_EQ (neighbors.size (), size_t (directions.cols ()));
   EXPECT_NE (neighbors.at (0), -1);
-  EXPECT_LE (fabs (output.points[neighbors.at (0)].x - output.points[centroidIdx].x), 0.02);
-  EXPECT_LE (fabs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
+  EXPECT_LE (std::abs (output.points[neighbors.at (0)].x - output.points[centroidIdx].x), 0.02);
+  EXPECT_LE (std::abs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
   EXPECT_LE ( output.points[neighbors.at (0)].z - output.points[centroidIdx].z, 0.02 * 2);
 
   // Test the pcl::PCLPointCloud2 method
@@ -850,9 +850,9 @@ TEST (VoxelGrid_No_DownsampleAllData, Filters)
   EXPECT_NE (centroidIdx2, -1);
 
   // for arbitrary points, the centroid should be close
-  EXPECT_LE (fabs (output.points[centroidIdx2].x - 0.048722), 0.02);
-  EXPECT_LE (fabs (output.points[centroidIdx2].y - 0.073760), 0.02);
-  EXPECT_LE (fabs (output.points[centroidIdx2].z - 0.017434), 0.02);
+  EXPECT_LE (std::abs (output.points[centroidIdx2].x - 0.048722), 0.02);
+  EXPECT_LE (std::abs (output.points[centroidIdx2].y - 0.073760), 0.02);
+  EXPECT_LE (std::abs (output.points[centroidIdx2].z - 0.017434), 0.02);
 
   // if getNeighborCentroidIndices works then the other helper functions work as well
   EXPECT_EQ (grid2.getNeighborCentroidIndices (output.points[0].x, output.points[0].y, output.points[0].z, Eigen::MatrixXi::Zero(3,1))[0], 0);
@@ -863,8 +863,8 @@ TEST (VoxelGrid_No_DownsampleAllData, Filters)
   std::vector<int> neighbors2 = grid2.getNeighborCentroidIndices (0.048722f, 0.073760f, 0.017434f, directions2);
   EXPECT_EQ (neighbors2.size (), size_t (directions2.cols ()));
   EXPECT_NE (neighbors2.at (0), -1);
-  EXPECT_LE (fabs (output.points[neighbors2.at (0)].x - output.points[centroidIdx2].x), 0.02);
-  EXPECT_LE (fabs (output.points[neighbors2.at (0)].y - output.points[centroidIdx2].y), 0.02);
+  EXPECT_LE (std::abs (output.points[neighbors2.at (0)].x - output.points[centroidIdx2].x), 0.02);
+  EXPECT_LE (std::abs (output.points[neighbors2.at (0)].y - output.points[centroidIdx2].y), 0.02);
   EXPECT_LE (output.points[neighbors2.at (0)].z - output.points[centroidIdx2].z, 0.02 * 2);
 }
 
@@ -1290,8 +1290,8 @@ TEST (VoxelGridCovariance, Filters)
   std::vector<int> neighbors = grid.getNeighborCentroidIndices (cloud->points[38], directions);
   EXPECT_EQ (neighbors.size (), size_t (directions.cols ()));
   EXPECT_NE (neighbors.at (0), -1);
-  EXPECT_LE (fabs (output.points[neighbors.at (0)].x - output.points[centroidIdx].x), 0.02);
-  EXPECT_LE (fabs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
+  EXPECT_LE (std::abs (output.points[neighbors.at (0)].x - output.points[centroidIdx].x), 0.02);
+  EXPECT_LE (std::abs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
   EXPECT_LE (output.points[neighbors.at (0)].z - output.points[centroidIdx].z, 0.02 * 2);
 
   // testing search functions
@@ -2263,7 +2263,7 @@ TEST (NormalRefinement, Filters)
 
     // Estimated (need to avoid zeros and NaNs)
     const pcl::PointXYZRGBNormal& calci = cloud_organized_normal[idx];
-    if ((fabsf (calci.normal_x) + fabsf (calci.normal_y) + fabsf (calci.normal_z)) > 0.0f)
+    if ((std::abs (calci.normal_x) + std::abs (calci.normal_y) + std::abs (calci.normal_z)) > 0.0f)
     {
       tmp = 1.0f - (calci.normal_x * a + calci.normal_y * b + calci.normal_z * c);
       if (std::isfinite (tmp))
@@ -2275,7 +2275,7 @@ TEST (NormalRefinement, Filters)
 
     // Refined
     const pcl::PointXYZRGBNormal& refinedi = cloud_organized_normal_refined[idx];
-    if ((fabsf (refinedi.normal_x) + fabsf (refinedi.normal_y) + fabsf (refinedi.normal_z)) > 0.0f)
+    if ((std::abs (refinedi.normal_x) + std::abs (refinedi.normal_y) + std::abs (refinedi.normal_z)) > 0.0f)
     {
       tmp = 1.0f - (refinedi.normal_x * a + refinedi.normal_y * b + refinedi.normal_z * c);
       if (std::isfinite(tmp))

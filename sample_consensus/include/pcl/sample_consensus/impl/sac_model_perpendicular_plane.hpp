@@ -100,7 +100,7 @@ pcl::SampleConsensusModelPerpendicularPlane<PointT>::isModelValid (const Eigen::
     coeff[3] = 0;
 
     Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0);
-    double angle_diff = fabs (getAngle3D (axis, coeff));
+    double angle_diff = std::abs (getAngle3D (axis, coeff));
     angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
     // Check whether the current plane model satisfies our angle threshold criterion with respect to the given axis
     if (angle_diff > eps_angle_)

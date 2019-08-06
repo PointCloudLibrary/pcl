@@ -261,7 +261,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::posesWithinErrorBounds (Eigen::A
   float position_diff = (pose1.translation () - pose2.translation ()).norm ();
   Eigen::AngleAxisf rotation_diff_mat ((pose1.rotation ().inverse ().lazyProduct (pose2.rotation ()).eval()));
 
-  float rotation_diff_angle = fabsf (rotation_diff_mat.angle ());
+  float rotation_diff_angle = std::abs (rotation_diff_mat.angle ());
 
   return (position_diff < clustering_position_diff_threshold_ && rotation_diff_angle < clustering_rotation_diff_threshold_);
 }

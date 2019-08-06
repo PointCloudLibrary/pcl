@@ -88,7 +88,7 @@ L1_Norm (FloatVectorT a, FloatVectorT b, int dim)
 {
   float norm = 0.0f;
   for (int i = 0; i < dim; ++i)
-    norm += fabsf(a[i] - b[i]);
+    norm += std::abs(a[i] - b[i]);
   return norm;
 }
 
@@ -118,7 +118,7 @@ Linf_Norm (FloatVectorT a, FloatVectorT b, int dim)
 {
   float norm = 0.0;
   for (int i = 0; i < dim; ++i)
-    norm = (std::max)(fabsf(a[i] - b[i]), norm);
+    norm = (std::max)(std::abs(a[i] - b[i]), norm);
   return norm;
 }
 
@@ -158,7 +158,7 @@ Sublinear_Norm (FloatVectorT a, FloatVectorT b, int dim)
   float norm = 0.0;
 
   for (int i = 0; i < dim; ++i)
-    norm += std::sqrt (fabsf (a[i] - b[i]));
+    norm += std::sqrt (std::abs (a[i] - b[i]));
 
   return norm;
 }
@@ -209,7 +209,7 @@ K_Norm (FloatVectorT a, FloatVectorT b, int dim, float P1, float P2)
   float norm = 0.0;
 
   for (int i = 0; i < dim; ++i)
-    norm += fabsf (P1 * a[i] - P2 * b[i]);
+    norm += std::abs (P1 * a[i] - P2 * b[i]);
   return norm;
 }
 

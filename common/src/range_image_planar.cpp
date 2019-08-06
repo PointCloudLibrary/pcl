@@ -105,7 +105,7 @@ namespace pcl
         
         //float image_x, image_y;
         //getImagePoint (point.getVector3fMap (), image_x, image_y);
-        //if (fabsf (image_x-x)+fabsf (image_y-y)>1e-4)
+        //if (std::abs (image_x-x)+std::abs (image_y-y)>1e-4)
           //cerr << PVARC (x)<<PVARC (y)<<PVARC (image_x)<<PVARN (image_y);
       }
     }

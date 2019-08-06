@@ -218,11 +218,11 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
           const float i = qx - px;
           const float j = qy - py;
 
-          const float depthDependendDepthChange = (max_depth_change_factor_ * (fabsf (pz) + 1.0f) * 2.0f);
+          const float depthDependendDepthChange = (max_depth_change_factor_ * (std::abs (pz) + 1.0f) * 2.0f);
           const float f = std::fabs(delta) > depthDependendDepthChange ? 0 : 1;
 
-          //float f = fabs(delta) > (pz * 0.05f - 0.3f) ? 0 : 1;
-          //const float f = fabs(delta) > (pz*pz * 0.05f * max_depth_change_factor_) ? 0 : 1;
+          //float f = std::abs(delta) > (pz * 0.05f - 0.3f) ? 0 : 1;
+          //const float f = std::abs(delta) > (pz*pz * 0.05f * max_depth_change_factor_) ? 0 : 1;
           //float f = Math.Abs(delta) > (depth * Math.Log(depth + 1.0) * 0.02f - 0.2f) ? 0 : 1;
 
           matA0 += f * i * i;

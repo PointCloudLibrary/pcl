@@ -96,7 +96,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
       for (int d_idx = d_idx_min; d_idx <= d_idx_max; ++d_idx)
       {
         // To avoid boundary effects, use linear interpolation when updating each bin 
-        float w = (1.0f - fabsf (d - static_cast<float> (d_idx))) * (1.0f - fabsf (g - static_cast<float> (g_idx)));
+        float w = (1.0f - std::abs (d - static_cast<float> (d_idx))) * (1.0f - std::abs (g - static_cast<float> (g_idx)));
 
         rift_descriptor (d_idx, g_idx_wrapped) += w * gradient_magnitude;
       }

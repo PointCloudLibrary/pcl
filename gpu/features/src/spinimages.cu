@@ -160,10 +160,10 @@ namespace pcl
 						cos_between_normals = dot(origin_normal, normal);						
 						cos_between_normals = fmax (-1.f, fmin (1.f, cos_between_normals));
 
-						if (fabs(cos_between_normals) < support_angle_cos)    // allow counter-directed normals
+						if (std::abs(cos_between_normals) < support_angle_cos)    // allow counter-directed normals
 							continue;
 
-						cos_between_normals = fabs(cos_between_normals); // the normal is not used explicitly from now						
+						cos_between_normals = std::abs(cos_between_normals); // the normal is not used explicitly from now						
 					}
 
 					// now compute the coordinate in cylindric coordinate system associated with the origin point
@@ -192,7 +192,7 @@ namespace pcl
 						beta  = direction_norm * cos_dir_axis;
 						alpha = direction_norm * sqrt (1.0 - cos_dir_axis*cos_dir_axis);
 
-						if (fabs (beta) >= bin_size * image_width || alpha >= bin_size * image_width)
+						if (std::abs (beta) >= bin_size * image_width || alpha >= bin_size * image_width)
 							continue;  // outside the cylinder
 					}
 

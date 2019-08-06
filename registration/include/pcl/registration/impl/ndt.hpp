@@ -235,7 +235,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeAngleDerivat
 {
   // Simplified math for near 0 angles
   double cx, cy, cz, sx, sy, sz;
-  if (fabs (p (3)) < 10e-5)
+  if (std::abs (p (3)) < 10e-5)
   {
     //p(3) = 0;
     cx = 1.0;
@@ -246,7 +246,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeAngleDerivat
     cx = std::cos (p (3));
     sx = sin (p (3));
   }
-  if (fabs (p (4)) < 10e-5)
+  if (std::abs (p (4)) < 10e-5)
   {
     //p(4) = 0;
     cy = 1.0;
@@ -258,7 +258,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeAngleDerivat
     sy = sin (p (4));
   }
 
-  if (fabs (p (5)) < 10e-5)
+  if (std::abs (p (5)) < 10e-5)
   {
     //p(5) = 0;
     cz = 1.0;

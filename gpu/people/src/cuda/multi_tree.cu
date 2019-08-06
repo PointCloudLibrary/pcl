@@ -268,7 +268,7 @@ namespace pcl
             char4 labels_neighbor = tex2D(multilabelTex, u+i,v+j); 
             char* bob = (char*)&labels_neighbor; //horrible but char4's have xyzw members
             //TODO: redo this part
-            int weight = abs(depth-depth_neighbor) < 50 ? 1:0; // 5cms
+            int weight = std::abs(depth-depth_neighbor) < 50 ? 1:0; // 5cms
             for(int ti = 0; ti < numTrees; ++ti)
               bins[ bob[ti] ] += weight;
           }

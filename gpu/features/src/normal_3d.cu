@@ -156,7 +156,7 @@ namespace pcl
 
                     // Compute the curvature surface change
                     float eig_sum = evals.x + evals.y + evals.z;
-                    float curvature = (eig_sum == 0) ? 0 : fabsf( evals.x / eig_sum );
+                    float curvature = (eig_sum == 0) ? 0 : std::abs( evals.x / eig_sum );
 
                     NormalType output;
                     output.w = curvature;

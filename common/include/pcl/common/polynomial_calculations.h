@@ -106,18 +106,18 @@ namespace pcl
       
     protected:  
       // =====PROTECTED METHODS=====
-      //! check if fabs(d)<zeroValue
+      //! check if std::abs(d)<zeroValue
       inline bool
       isNearlyZero (real d) const 
       { 
-        return (fabs (d) < parameters_.zero_value);
+        return (std::abs (d) < parameters_.zero_value);
       }
       
-      //! check if sqrt(fabs(d))<zeroValue
+      //! check if sqrt(std::abs(d))<zeroValue
       inline bool
       sqrtIsNearlyZero (real d) const 
       { 
-        return (fabs (d) < parameters_.sqr_zero_value);
+        return (std::abs (d) < parameters_.sqr_zero_value);
       }
       
       // =====PROTECTED MEMBERS=====

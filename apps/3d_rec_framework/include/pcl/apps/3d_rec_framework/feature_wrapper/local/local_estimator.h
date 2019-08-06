@@ -127,7 +127,7 @@ namespace pcl
                 PCL_ERROR("Eigen sum is not finite\n");
               }
 
-              if ((fabs (eigenValues[0] - eigenValues[1]) < 1.5e-4) || (eigsum != 0 && fabs (eigenValues[0] / eigsum) > 1.e-2))
+              if ((std::abs (eigenValues[0] - eigenValues[1]) < 1.5e-4) || (eigsum != 0 && std::abs (eigenValues[0] / eigsum) > 1.e-2))
               {
                 //region is not planar, add to filtered keypoint
                 keypoints_cloud->points[good] = keypoints_cloud->points[i];

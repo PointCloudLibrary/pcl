@@ -128,7 +128,7 @@ and save the results to disk.
         {
           float id = k_indices.at (n_id);
           float dist = sqrt (k_distances.at (n_id));
-          float intensity_dist = abs (cloud->points[point_id].intensity - cloud->points[id].intensity);
+          float intensity_dist = std::abs (cloud->points[point_id].intensity - cloud->points[id].intensity);
 
           float w_a = G (dist, sigma_s);
           float w_b = G (intensity_dist, sigma_r);
@@ -607,7 +607,7 @@ There're two methods that we need to implement here, namely `applyFilter` and
       {
         double id = indices[n_id];
         double dist = std::sqrt (distances[n_id]);
-        double intensity_dist = abs (input_->points[pid].intensity - input_->points[id].intensity);
+        double intensity_dist = std::abs (input_->points[pid].intensity - input_->points[id].intensity);
 
         double weight = kernel (dist, sigma_s_) * kernel (intensity_dist, sigma_r_);
 
@@ -728,7 +728,7 @@ The implementation file header thus becomes:
       {
         double id = indices[n_id];
         double dist = std::sqrt (distances[n_id]);
-        double intensity_dist = abs (input_->points[pid].intensity - input_->points[id].intensity);
+        double intensity_dist = std::abs (input_->points[pid].intensity - input_->points[id].intensity);
 
         double weight = kernel (dist, sigma_s_) * kernel (intensity_dist, sigma_r_);
 
@@ -843,7 +843,7 @@ The implementation file header thus becomes:
       {
         double id = indices[n_id];
         double dist = std::sqrt (distances[n_id]);
-        double intensity_dist = abs (input_->points[pid].intensity - input_->points[id].intensity);
+        double intensity_dist = std::abs (input_->points[pid].intensity - input_->points[id].intensity);
 
         double weight = kernel (dist, sigma_s_) * kernel (intensity_dist, sigma_r_);
 
@@ -1195,7 +1195,7 @@ And the *bilateral.hpp* likes:
       {
         double id = indices[n_id];
         // Compute the difference in intensity
-        double intensity_dist = abs (input_->points[pid].intensity - input_->points[id].intensity);
+        double intensity_dist = std::abs (input_->points[pid].intensity - input_->points[id].intensity);
 
         // Compute the Gaussian intensity weights both in Euclidean and in intensity space
         double dist = std::sqrt (distances[n_id]);

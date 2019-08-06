@@ -429,7 +429,7 @@ pcl::gpu::kinfuLS::KinfuTracker::performICP(const Intr& cam_intrinsics, Matrix3f
         // checking nullspace 
         double det = A.determinant ();
     
-        if ( fabs (det) < 100000 /*1e-15*/ || std::isnan (det) ) //TODO find a threshold that makes ICP track well, but prevents it from generating wrong transforms
+        if ( std::abs (det) < 100000 /*1e-15*/ || std::isnan (det) ) //TODO find a threshold that makes ICP track well, but prevents it from generating wrong transforms
         {
           if (std::isnan (det)) cout << "qnan" << endl;
           if(!lost_)
@@ -514,7 +514,7 @@ pcl::gpu::kinfuLS::KinfuTracker::performPairWiseICP(const Intr cam_intrinsics, M
         // checking nullspace 
         double det = A.determinant ();
         
-        if ( fabs (det) < 1e-15 || std::isnan (det) )
+        if ( std::abs (det) < 1e-15 || std::isnan (det) )
         {
           if (std::isnan (det)) cout << "qnan" << endl;
                     
@@ -886,7 +886,7 @@ namespace pcl
             t = (R(2, 2) + 1)*0.5;
             rz = sqrt( std::max(t, 0.0) ) * (R(0, 2) < 0 ? -1.0 : 1.0);
 
-            if( fabs(rx) < fabs(ry) && fabs(rx) < fabs(rz) && (R(1, 2) > 0) != (ry*rz > 0) )
+            if( std::abs(rx) < std::abs(ry) && std::abs(rx) < std::abs(rz) && (R(1, 2) > 0) != (ry*rz > 0) )
               rz = -rz;
             theta /= sqrt(rx*rx + ry*ry + rz*rz);
             rx *= theta;

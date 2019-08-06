@@ -161,8 +161,8 @@ openni_wrapper::ImageBayerGRBG::fillGrayscale (
         bayer_pixel += 2;
         for (unsigned xIdx = 2; xIdx < width; xIdx += 2, gray_buffer += 2, bayer_pixel += 2)
         {
-          dv = abs (bayer_pixel[-line_skip] - bayer_pixel[line_skip]);
-          dh = abs (bayer_pixel[-1] - bayer_pixel[1]);
+          dv = std::abs (bayer_pixel[-line_skip] - bayer_pixel[line_skip]);
+          dh = std::abs (bayer_pixel[-1] - bayer_pixel[1]);
           if (dh > dv)
             gray_buffer[0] = AVG (bayer_pixel[-line_skip], bayer_pixel[line_skip]);
           else if (dv > dh)
@@ -179,8 +179,8 @@ openni_wrapper::ImageBayerGRBG::fillGrayscale (
         {
           gray_buffer[0] = bayer_pixel[0];
 
-          dv = abs (bayer_pixel[1 - line_skip] - bayer_pixel[1 + line_skip]);
-          dh = abs (bayer_pixel[0] - bayer_pixel[2]);
+          dv = std::abs (bayer_pixel[1 - line_skip] - bayer_pixel[1 + line_skip]);
+          dh = std::abs (bayer_pixel[0] - bayer_pixel[2]);
           if (dh > dv)
             gray_buffer[1] = AVG (bayer_pixel[1 - line_skip], bayer_pixel[1 + line_skip]);
           else if (dv > dh)
@@ -228,8 +228,8 @@ openni_wrapper::ImageBayerGRBG::fillGrayscale (
         bayer_pixel += 2;
         for (unsigned xIdx = 2; xIdx < width; xIdx += 2, gray_buffer += 2, bayer_pixel += 2)
         {
-          dv = abs (bayer_pixel[-line_skip] - bayer_pixel[line_skip]);
-          dh = abs (bayer_pixel[-1] - bayer_pixel[1]);
+          dv = std::abs (bayer_pixel[-line_skip] - bayer_pixel[line_skip]);
+          dh = std::abs (bayer_pixel[-1] - bayer_pixel[1]);
 
           if (dv == 0 && dh == 0)
             gray_buffer[0] = AVG4 (bayer_pixel[-line_skip], bayer_pixel[line_skip], bayer_pixel[-1], bayer_pixel[1]);
@@ -246,8 +246,8 @@ openni_wrapper::ImageBayerGRBG::fillGrayscale (
         {
           gray_buffer[0] = bayer_pixel[0];
 
-          dv = abs (bayer_pixel[1 - line_skip] - bayer_pixel[1 + line_skip]);
-          dh = abs (bayer_pixel[0] - bayer_pixel[2]);
+          dv = std::abs (bayer_pixel[1 - line_skip] - bayer_pixel[1 + line_skip]);
+          dh = std::abs (bayer_pixel[0] - bayer_pixel[2]);
 
           if (dv == 0 && dh == 0)
             gray_buffer[1] = AVG4 (bayer_pixel[1 - line_skip], bayer_pixel[1 + line_skip], bayer_pixel[0], bayer_pixel[2]);

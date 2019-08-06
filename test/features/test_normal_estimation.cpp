@@ -100,18 +100,18 @@ TEST (PCL, NormalEstimation)
 
   // computePointNormal (indices, Vector)
   computePointNormal (cloud, indices, plane_parameters, curvature);
-  EXPECT_NEAR (fabs (plane_parameters[0]), 0.035592, 1e-4);
-  EXPECT_NEAR (fabs (plane_parameters[1]), 0.369596, 1e-4);
-  EXPECT_NEAR (fabs (plane_parameters[2]), 0.928511, 1e-4);
-  EXPECT_NEAR (fabs (plane_parameters[3]), 0.0622552, 1e-4);
+  EXPECT_NEAR (std::abs (plane_parameters[0]), 0.035592, 1e-4);
+  EXPECT_NEAR (std::abs (plane_parameters[1]), 0.369596, 1e-4);
+  EXPECT_NEAR (std::abs (plane_parameters[2]), 0.928511, 1e-4);
+  EXPECT_NEAR (std::abs (plane_parameters[3]), 0.0622552, 1e-4);
   EXPECT_NEAR (curvature, 0.0693136, 1e-4);
 
   float nx, ny, nz;
   // computePointNormal (indices)
   n.computePointNormal (cloud, indices, nx, ny, nz, curvature);
-  EXPECT_NEAR (fabs (nx), 0.035592, 1e-4);
-  EXPECT_NEAR (fabs (ny), 0.369596, 1e-4);
-  EXPECT_NEAR (fabs (nz), 0.928511, 1e-4);
+  EXPECT_NEAR (std::abs (nx), 0.035592, 1e-4);
+  EXPECT_NEAR (std::abs (ny), 0.369596, 1e-4);
+  EXPECT_NEAR (std::abs (nz), 0.928511, 1e-4);
   EXPECT_NEAR (curvature, 0.0693136, 1e-4);
 
   // computePointNormal (Vector)

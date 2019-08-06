@@ -163,7 +163,7 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
   for (size_t i = 0; i < 6; ++i)
   {
     for (size_t p_i = 0; p_i < candidate_indices.size (); ++p_i)
-      L[i].push_back (std::make_pair (p_i, fabs (v[p_i].dot (x.block<6, 1> (0, i)))));
+      L[i].push_back (std::make_pair (p_i, std::abs (v[p_i].dot (x.block<6, 1> (0, i)))));
 
     // Sort in decreasing order
     L[i].sort (sort_dot_list_function);

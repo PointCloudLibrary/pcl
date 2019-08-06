@@ -81,7 +81,7 @@ pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
   // Compute the curvature surface change
   float eig_sum = covariance_matrix.coeff (0) + covariance_matrix.coeff (4) + covariance_matrix.coeff (8);
   if (eig_sum != 0)
-    curvature = fabsf (eigen_value / eig_sum);
+    curvature = std::abs (eigen_value / eig_sum);
   else
     curvature = 0;
 }

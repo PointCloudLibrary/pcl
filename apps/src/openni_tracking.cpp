@@ -476,9 +476,9 @@ public:
     for (size_t i = 0; i < cloud->points.size (); i++)
     {
       PointType point = cloud->points[i];
-      if (!(fabs(point.x) < 0.01 &&
-            fabs(point.y) < 0.01 &&
-            fabs(point.z) < 0.01) &&
+      if (!(std::abs(point.x) < 0.01 &&
+            std::abs(point.y) < 0.01 &&
+            std::abs(point.z) < 0.01) &&
           !std::isnan(point.x) &&
           !std::isnan(point.y) &&
           !std::isnan(point.z))

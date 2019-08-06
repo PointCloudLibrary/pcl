@@ -60,7 +60,7 @@ namespace pcl
             
 
             float angle2 = dot(n2_copy, dp2p1) / f4;
-            if (std::acos (fabs (angle1)) > std::acos (fabs (angle2)))
+            if (std::acos (std::abs (angle1)) > std::acos (std::abs (angle2)))
             {
               // switch p1 and p2
               n1_copy = n2;

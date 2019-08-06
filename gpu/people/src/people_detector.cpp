@@ -536,7 +536,7 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, con
           {
             float h_l = hue[idx];
 
-            if (fabs(h_l - h) < DELTA_HUE_SHS)
+            if (std::abs(h_l - h) < DELTA_HUE_SHS)
             {                   
               seed_queue.push_back (idx);
               mask[idx] = 255;

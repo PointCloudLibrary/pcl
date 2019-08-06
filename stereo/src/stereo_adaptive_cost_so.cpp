@@ -85,7 +85,7 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl (unsigned char* ref_img, unsigne
   //spatial distance init
   float *ds = new float[ 2*radius_+1 ];
   for (int j = -radius_; j <= radius_; j++)
-    ds[j+radius_] = static_cast<float> (std::exp (- abs (j) / gamma_s_));
+    ds[j+radius_] = static_cast<float> (std::exp (- std::abs (j) / gamma_s_));
   
   //LUT for color distance weight computation
   float lut[256];
@@ -100,7 +100,7 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl (unsigned char* ref_img, unsigne
     for (int x = x_off_ + max_disp_ + 1; x < width_; x++)
     {
       for (int j = -radius_; j <= radius_; j++)
-        wl[j+radius_] = lut[ abs(ref_img[(y+j)*width_+x] - ref_img[y*width_+x]) ] * ds[j+radius_];
+        wl[j+radius_] = lut[ std::abs(ref_img[(y+j)*width_+x] - ref_img[y*width_+x]) ] * ds[j+radius_];
  
       for (int d = 0; d < max_disp_; d++)
       {
@@ -109,8 +109,8 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl (unsigned char* ref_img, unsigne
  
         for (int j = -radius_; j <= radius_; j++)
         {
-          float weight_r = lut[ abs(trg_img[(y+j)*width_+x-d-x_off_] - trg_img[y*width_+x-d-x_off_]) ] * ds[j+radius_];
-          int sad = abs (ref_img[(y+j)*width_+x] - trg_img[(y+j)*width_+x-d-x_off_]);
+          float weight_r = lut[ std::abs(trg_img[(y+j)*width_+x-d-x_off_] - trg_img[y*width_+x-d-x_off_]) ] * ds[j+radius_];
+          int sad = std::abs (ref_img[(y+j)*width_+x] - trg_img[(y+j)*width_+x-d-x_off_]);
           num += wl[j+radius_] * weight_r * static_cast<float> (sad);
           sumw += wl[j+radius_] * weight_r;
         }

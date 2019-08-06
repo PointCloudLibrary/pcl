@@ -106,7 +106,7 @@ namespace pcl
   template <typename Point> inline double
   pointToPlaneDistance (const Point &p, double a, double b, double c, double d)
   {
-    return (fabs (pointToPlaneDistanceSigned (p, a, b, c, d)) );
+    return (std::abs (pointToPlaneDistanceSigned (p, a, b, c, d)) );
   }
 
   /** \brief Get the distance from a point to a plane (unsigned) defined by ax+by+cz+d=0
@@ -117,7 +117,7 @@ namespace pcl
   template <typename Point> inline double
   pointToPlaneDistance (const Point &p, const Eigen::Vector4f &plane_coefficients)
   {
-    return ( fabs (pointToPlaneDistanceSigned (p, plane_coefficients)) );
+    return ( std::abs (pointToPlaneDistanceSigned (p, plane_coefficients)) );
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -179,7 +179,7 @@ namespace pcl
       float  c2 = m.data[0].x + m.data[1].y + m.data[2].z;
   
   
-  		if (fabs(c0) < FLT_EPSILON) // one root is 0 -> quadratic equation
+  		if (std::abs(c0) < FLT_EPSILON) // one root is 0 -> quadratic equation
   			computeRoots2 (c2, c1, roots);
   		else
   		{

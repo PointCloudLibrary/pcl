@@ -495,12 +495,12 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
         continue;
       getPoint (x, y, point1);
       point1 = pose*point1;
-      if (fabs (point1[2]) > max_dist)
+      if (std::abs (point1[2]) > max_dist)
         continue;
       
       getPoint (x+1, y+1, point2);
       point2 = pose*point2;
-      if (fabs (point2[2]) > max_dist)
+      if (std::abs (point2[2]) > max_dist)
         continue;
       
       for (int triangle_idx=0; triangle_idx<=1; ++triangle_idx)
@@ -518,7 +518,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
           getPoint (x+1, y, point3);
         }
         point3 = pose*point3;
-        if (fabs (point3[2]) > max_dist)
+        if (std::abs (point3[2]) > max_dist)
           continue;
         
         // Are all the points either left, right, on top or below the bottom of the surface patch?

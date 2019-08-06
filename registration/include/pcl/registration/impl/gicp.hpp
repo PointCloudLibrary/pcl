@@ -434,7 +434,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
             ratio = 1./rotation_epsilon_;
           else
             ratio = 1./transformation_epsilon_;
-          double c_delta = ratio*fabs(previous_transformation_(k,l) - transformation_(k,l));
+          double c_delta = ratio*std::abs(previous_transformation_(k,l) - transformation_(k,l));
           if(c_delta > delta)
             delta = c_delta;
         }

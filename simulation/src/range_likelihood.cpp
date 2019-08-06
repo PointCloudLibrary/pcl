@@ -457,7 +457,7 @@ costFunction1 (float ref_val, float depth_val)
 float
 costFunction2 (float ref_val, float depth_val)
 {
-  float min_dist = abs(ref_val - 1/(1.4285f - (depth_val)*1.3788f));
+  float min_dist = std::abs(ref_val - 1/(1.4285f - (depth_val)*1.3788f));
   int lup = static_cast<int> (ceil (min_dist*100)); // has resolution of 0.01m
 
   if (lup > 300)
@@ -505,7 +505,7 @@ costFunction3 (float ref_val,float depth_val)
   }
   else
   { // working range
-    float min_dist = abs (ref_val - 0.7253f/(1.0360f - (depth_val)));
+    float min_dist = std::abs (ref_val - 0.7253f/(1.0360f - (depth_val)));
 
     int lup = static_cast<int> (ceil (min_dist*100)); // has resolution of 0.01m
     if (lup > 300)
@@ -520,14 +520,14 @@ costFunction3 (float ref_val,float depth_val)
 float
 costFunction4(float ref_val,float depth_val)
 {
-  float disparity_diff = abs( ( -0.7253f/ref_val +1.0360f ) -  depth_val );
+  float disparity_diff = std::abs( ( -0.7253f/ref_val +1.0360f ) -  depth_val );
 
   int top_lup = static_cast<int> (ceil (disparity_diff*300)); // has resolution of 0.001m
   if (top_lup > 300)
   {
     top_lup =300;
   }
-  float top = static_cast<float> (top_lookup[top_lup]);// round( abs(x-mu) *1000+1) );
+  float top = static_cast<float> (top_lookup[top_lup]);// round( std::abs(x-mu) *1000+1) );
 
   // bottom:
   //bottom = bottom_lookup(   round(mu*1000+1));
@@ -536,7 +536,7 @@ costFunction4(float ref_val,float depth_val)
   {
     bottom_lup =300;
   }
-  float bottom = bottom_lookup[bottom_lup];// round( abs(x-mu) *1000+1) );
+  float bottom = bottom_lookup[bottom_lup];// round( std::abs(x-mu) *1000+1) );
 
   float proportion = 0.999f;
   float lhood = proportion + (1-proportion)*(top/bottom);

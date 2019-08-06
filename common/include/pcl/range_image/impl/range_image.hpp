@@ -62,7 +62,7 @@ RangeImage::atan2LookUp (float y, float x)
   if (x==0 && y==0)
     return 0;
   float ret;
-  if (fabsf (x) < fabsf (y)) 
+  if (std::abs (x) < std::abs (y)) 
   {
     ret = atan_lookup_table[
       static_cast<int> (
@@ -85,7 +85,7 @@ RangeImage::atan2LookUp (float y, float x)
 inline float
 RangeImage::cosLookUp (float value)
 {
-  int cell_idx = static_cast<int> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1)) * fabsf (value) / (2.0f * static_cast<float> (M_PI))));
+  int cell_idx = static_cast<int> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1)) * std::abs (value) / (2.0f * static_cast<float> (M_PI))));
   return (cos_lookup_table[cell_idx]);
 }
 
@@ -654,7 +654,7 @@ RangeImage::getAcutenessValue (const PointWithRange& point1, const PointWithRang
   float ret = 1.0f - float (std::fabs (impact_angle)/ (0.5f*M_PI));
   if (impact_angle < 0.0f)
     ret = -ret;
-  //if (fabs (ret)>1)
+  //if (std::abs (ret)>1)
     //std::cout << PVARAC (impact_angle)<<PVARN (ret);
   return ret;
 }

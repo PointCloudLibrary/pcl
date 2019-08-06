@@ -55,7 +55,7 @@ namespace pcl
     * bool
     * enforceIntensitySimilarity (const pcl::PointXYZI& point_a, const pcl::PointXYZI& point_b, float squared_distance)
     * {
-    *   if (fabs (point_a.intensity - point_b.intensity) < 0.1f)
+    *   if (std::abs (point_a.intensity - point_b.intensity) < 0.1f)
     *     return (true);
     *   else
     *     return (false);

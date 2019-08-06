@@ -79,8 +79,8 @@ pcl::isPointIn2DPolygon (const PointT &point, const pcl::PointCloud<PointT> &pol
   // Create a X-Y projected representation for within bounds polygonal checking
   int k0, k1, k2;
   // Determine the best plane to project points onto
-  k0 = (fabs (model_coefficients[0] ) > fabs (model_coefficients[1])) ? 0  : 1;
-  k0 = (fabs (model_coefficients[k0]) > fabs (model_coefficients[2])) ? k0 : 2;
+  k0 = (std::abs (model_coefficients[0] ) > std::abs (model_coefficients[1])) ? 0  : 1;
+  k0 = (std::abs (model_coefficients[k0]) > std::abs (model_coefficients[2])) ? k0 : 2;
   k1 = (k0 + 1) % 3;
   k2 = (k0 + 2) % 3;
   // Project the convex hull
@@ -206,8 +206,8 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   // Create a X-Y projected representation for within bounds polygonal checking
   int k0, k1, k2;
   // Determine the best plane to project points onto
-  k0 = (fabs (model_coefficients[0] ) > fabs (model_coefficients[1])) ? 0  : 1;
-  k0 = (fabs (model_coefficients[k0]) > fabs (model_coefficients[2])) ? k0 : 2;
+  k0 = (std::abs (model_coefficients[0] ) > std::abs (model_coefficients[1])) ? 0  : 1;
+  k0 = (std::abs (model_coefficients[k0]) > std::abs (model_coefficients[2])) ? k0 : 2;
   k1 = (k0 + 1) % 3;
   k2 = (k0 + 2) % 3;
   // Project the convex hull

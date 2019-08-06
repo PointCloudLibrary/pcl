@@ -94,7 +94,7 @@ namespace pcl
       , triangulation_type_ (QUAD_MESH)
       , viewpoint_ (Eigen::Vector3f::Zero ())
       , store_shadowed_faces_ (false)
-      , cos_angle_tolerance_ (fabsf (std::cos (pcl::deg2rad (12.5f))))
+      , cos_angle_tolerance_ (std::abs (std::cos (pcl::deg2rad (12.5f))))
       , distance_tolerance_ (-1.0f)
       , distance_dependent_ (false)
       , use_depth_as_distance_(false)
@@ -203,7 +203,7 @@ namespace pcl
       setAngleTolerance(float angle_tolerance)
       {
         if (angle_tolerance > 0)
-          cos_angle_tolerance_ = fabsf (std::cos (angle_tolerance));
+          cos_angle_tolerance_ = std::abs (std::cos (angle_tolerance));
         else
           cos_angle_tolerance_ = -1.0f;
       }

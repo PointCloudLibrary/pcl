@@ -473,7 +473,7 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
     if (update_visualizer_)
       update_visualizer_ (output, *indices_, *target_, *indices_);
 
-    //std::cout << "eps=" << fabs ((transformation - previous_transformation_).sum ()) << std::endl;
+    //std::cout << "eps=" << std::abs ((transformation - previous_transformation_).sum ()) << std::endl;
 
     Eigen::Matrix4f transformation_delta = transformation.inverse() * previous_transformation_;
     double cos_angle = 0.5 * (transformation_delta.coeff (0, 0) + transformation_delta.coeff (1, 1) + transformation_delta.coeff (2, 2) - 1);

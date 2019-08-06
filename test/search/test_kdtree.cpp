@@ -106,7 +106,7 @@ init ()
     const PointXYZ& point = cloud.points[k_index];
     bool ok = euclideanDistance (test_point, point) <= max_dist;
     if (!ok)
-    ok = (fabs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;
+    ok = (std::abs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;
     //if (!ok)  cerr << k_indices[i] << " is not correct...\n";
     //else      cerr << k_indices[i] << " is correct...\n";
     EXPECT_EQ (ok, true);

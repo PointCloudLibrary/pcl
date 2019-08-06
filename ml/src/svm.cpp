@@ -1833,7 +1833,7 @@ static void solve_epsilon_svr (
   for (int i = 0; i < l; i++)
   {
     alpha[i] = alpha2[i] - alpha2[i+l];
-    sum_alpha += fabs (alpha[i]);
+    sum_alpha += std::abs (alpha[i]);
   }
 
   info ("nu = %f\n", sum_alpha / (param->C*l));
@@ -1934,18 +1934,18 @@ static decision_function svm_train_one (
 
   for (int i = 0;i < prob->l;i++)
   {
-    if (fabs (alpha[i]) > 0)
+    if (std::abs (alpha[i]) > 0)
     {
       ++nSV;
 
       if (prob->y[i] > 0)
       {
-        if (fabs (alpha[i]) >= si.upper_bound_p)
+        if (std::abs (alpha[i]) >= si.upper_bound_p)
           ++nBSV;
       }
       else
       {
-        if (fabs (alpha[i]) >= si.upper_bound_n)
+        if (std::abs (alpha[i]) >= si.upper_bound_n)
           ++nBSV;
       }
     }
@@ -2045,7 +2045,7 @@ static void sigmoid_train (
     }
 
     // Stopping Criteria
-    if (fabs (g1) < eps && fabs (g2) < eps)
+    if (std::abs (g1) < eps && std::abs (g2) < eps)
       break;
 
     // Finding Newton direction: -inv(H') * g
@@ -2159,7 +2159,7 @@ static void multiclass_probability (int k, double **r, double *p)
 
     for (int t = 0;t < k;t++)
     {
-      double error = fabs (Qp[t] - pQp);
+      double error = std::abs (Qp[t] - pQp);
 
       if (error > max_error)
         max_error = error;
@@ -2312,7 +2312,7 @@ static double svm_svr_probability (
   for (int i = 0; i < prob->l; i++)
   {
     ymv[i] = prob->y[i] - ymv[i];
-    mae += fabs (ymv[i]);
+    mae += std::abs (ymv[i]);
   }
 
   mae /= prob->l;
@@ -2322,10 +2322,10 @@ static double svm_svr_probability (
   mae = 0;
 
   for (int i = 0; i < prob->l; i++)
-    if (fabs (ymv[i]) > 5*std)
+    if (std::abs (ymv[i]) > 5*std)
       count += 1;
     else
-      mae += fabs (ymv[i]);
+      mae += std::abs (ymv[i]);
 
   mae /= (prob->l - count);
 
@@ -2448,7 +2448,7 @@ svm_model *svm_train (const svm_problem *prob, const svm_parameter *param)
     int nSV = 0;
 
     for (int i = 0; i < prob->l; i++)
-      if (fabs (f.alpha[i]) > 0)
+      if (std::abs (f.alpha[i]) > 0)
         ++nSV;
 
     model->l = nSV;
@@ -2460,7 +2460,7 @@ svm_model *svm_train (const svm_problem *prob, const svm_parameter *param)
     int j = 0;
 
     for (int i = 0; i < prob->l; i++)
-      if (fabs (f.alpha[i]) > 0)
+      if (std::abs (f.alpha[i]) > 0)
       {
         model->SV[j] = prob->x[i];
         model->sv_coef[0][j] = f.alpha[i];
@@ -2558,11 +2558,11 @@ svm_model *svm_train (const svm_problem *prob, const svm_parameter *param)
         f[p] = svm_train_one (&sub_prob, param, weighted_C[i], weighted_C[j]);
 
         for (int k = 0; k < ci; k++)
-          if (!nonzero[si+k] && fabs (f[p].alpha[k]) > 0)
+          if (!nonzero[si+k] && std::abs (f[p].alpha[k]) > 0)
             nonzero[si+k] = true;
 
         for (int k = 0; k < cj; k++)
-          if (!nonzero[sj+k] && fabs (f[p].alpha[ci+k]) > 0)
+          if (!nonzero[sj+k] && std::abs (f[p].alpha[ci+k]) > 0)
             nonzero[sj+k] = true;
 
         free (sub_prob.x);

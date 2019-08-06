@@ -163,7 +163,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
       float curvature;
       float eig_sum = clust_cov.coeff (0) + clust_cov.coeff (4) + clust_cov.coeff (8);
       if (eig_sum != 0)
-        curvature = fabsf (eigen_value / eig_sum);
+        curvature = std::abs (eigen_value / eig_sum);
       else
         curvature = 0;
 

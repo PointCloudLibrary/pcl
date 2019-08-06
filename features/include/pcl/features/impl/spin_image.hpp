@@ -116,7 +116,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
     if (support_angle_cos_ > 0.0 || is_angular_) // not bogus
     {
       cos_between_normals = origin_normal.dot (input_normals_->points[nn_indices[i_neigh]].getNormalVector3fMap ());
-      if (fabs (cos_between_normals) > (1.0 + 10*std::numeric_limits<float>::epsilon ())) // should be okay for numeric stability
+      if (std::abs (cos_between_normals) > (1.0 + 10*std::numeric_limits<float>::epsilon ())) // should be okay for numeric stability
       {      
         PCL_ERROR ("[pcl::%s::computeSiForPoint] Normal for the point %d and/or the point %d are not normalized, dot ptoduct is %f.\n", 
           getClassName ().c_str (), nn_indices[i_neigh], index, cos_between_normals);
@@ -125,7 +125,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
       }
       cos_between_normals = std::max (-1.0, std::min (1.0, cos_between_normals));
 
-      if (fabs (cos_between_normals) < support_angle_cos_ )    // allow counter-directed normals
+      if (std::abs (cos_between_normals) < support_angle_cos_ )    // allow counter-directed normals
       {
         continue;
       }
@@ -140,13 +140,13 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
     const Eigen::Vector3f direction (
       surface_->points[nn_indices[i_neigh]].getVector3fMap () - origin_point);
     const double direction_norm = direction.norm ();
-    if (fabs(direction_norm) < 10*std::numeric_limits<double>::epsilon ())  
+    if (std::abs(direction_norm) < 10*std::numeric_limits<double>::epsilon ())  
       continue;  // ignore the point itself; it does not contribute really
     assert (direction_norm > 0.0);
 
     // the angle between the normal vector and the direction to the point
     double cos_dir_axis = direction.dot(rotation_axis) / direction_norm;
-    if (fabs(cos_dir_axis) > (1.0 + 10*std::numeric_limits<float>::epsilon())) // should be okay for numeric stability
+    if (std::abs(cos_dir_axis) > (1.0 + 10*std::numeric_limits<float>::epsilon())) // should be okay for numeric stability
     {      
       PCL_ERROR ("[pcl::%s::computeSiForPoint] Rotation axis for the point %d are not normalized, dot ptoduct is %f.\n", 
         getClassName ().c_str (), index, cos_dir_axis);
@@ -168,7 +168,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
       beta = direction_norm * cos_dir_axis;
       alpha = direction_norm * sqrt (1.0 - cos_dir_axis*cos_dir_axis);
 
-      if (fabs (beta) >= bin_size * image_width_ || alpha >= bin_size * image_width_)
+      if (std::abs (beta) >= bin_size * image_width_ || alpha >= bin_size * image_width_)
       {
         continue;  // outside the cylinder
       }

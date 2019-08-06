@@ -144,7 +144,7 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
     {
       for (size_t idx = first_index; idx < polygon.size(); idx++)
       {
-        float distance = fabsf (line_x * polygon[idx].x + line_y * polygon[idx].y + line_d);
+        float distance = std::abs (line_x * polygon[idx].x + line_y * polygon[idx].y + line_d);
         if (distance > max_distance)
         {
           max_distance = distance;
@@ -156,7 +156,7 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
 
     for (unsigned int idx = first_index; idx < currentInterval.second; idx++)
     {
-      float distance = fabsf (line_x * polygon[idx].x + line_y * polygon[idx].y + line_d);
+      float distance = std::abs (line_x * polygon[idx].x + line_y * polygon[idx].y + line_d);
       if (distance > max_distance)
       {
         max_distance = distance;
@@ -235,7 +235,7 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
       direction [1] = polygon[result[nIdx]].y - polygon[result[rIdx]].y;
       direction.normalize ();
       
-      if (fabs (direction.dot (normal)) > float(M_SQRT1_2))
+      if (std::abs (direction.dot (normal)) > float(M_SQRT1_2))
       {
         std::swap (normal [0], normal [1]);
         normal [0] = -normal [0];

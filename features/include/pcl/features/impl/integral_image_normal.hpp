@@ -244,7 +244,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 
     // Compute the curvature surface change
     if (eigen_value > 0.0)
-      normal.curvature = fabsf (eigen_value / (covariance_matrix.coeff (0) + covariance_matrix.coeff (4) + covariance_matrix.coeff (8)));
+      normal.curvature = std::abs (eigen_value / (covariance_matrix.coeff (0) + covariance_matrix.coeff (4) + covariance_matrix.coeff (8)));
     else
       normal.curvature = 0;
 
@@ -532,7 +532,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
 
     // Compute the curvature surface change
     if (eigen_value > 0.0)
-      normal.curvature = fabsf (eigen_value / (covariance_matrix.coeff (0) + covariance_matrix.coeff (4) + covariance_matrix.coeff (8)));
+      normal.curvature = std::abs (eigen_value / (covariance_matrix.coeff (0) + covariance_matrix.coeff (4) + covariance_matrix.coeff (8)));
     else
       normal.curvature = 0;
 
@@ -750,8 +750,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
       const float depthR = input_->points [index + 1].z;
       const float depthD = input_->points [index + input_->width].z;
 
-      //const float depthDependendDepthChange = (max_depth_change_factor_ * (fabs(depth)+1.0f))/(500.0f*0.001f);
-      const float depthDependendDepthChange = (max_depth_change_factor_ * (fabsf (depth) + 1.0f) * 2.0f);
+      //const float depthDependendDepthChange = (max_depth_change_factor_ * (std::abs(depth)+1.0f))/(500.0f*0.001f);
+      const float depthDependendDepthChange = (max_depth_change_factor_ * (std::abs (depth) + 1.0f) * 2.0f);
 
       if (std::fabs (depth - depthR) > depthDependendDepthChange
         || !std::isfinite (depth) || !std::isfinite (depthR))

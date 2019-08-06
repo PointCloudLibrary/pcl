@@ -330,7 +330,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
             x2 = index2 - y2*range_image.width;
         const PointWithRange& point2 = range_image.getPoint (index2);
         
-        float pixelDistance = static_cast<float> (std::max (abs (x2-x), abs (y2-y)));
+        float pixelDistance = static_cast<float> (std::max (std::abs (x2-x), std::abs (y2-y)));
         float distance_squared = squaredEuclideanDistance (point, point2);
         if (pixelDistance > 2.0f)  // Always consider immediate neighbors, even if to far away
         {
@@ -513,7 +513,7 @@ NarfKeypoint::calculateSparseInterestImage ()
           x2 = index2 - y2*range_image.width;
       const PointWithRange& point2 = range_image.getPoint (index2);
       
-      float pixelDistance = static_cast<float> (std::max (abs (x2-x), abs (y2-y)));
+      float pixelDistance = static_cast<float> (std::max (std::abs (x2-x), std::abs (y2-y)));
 
       float distance_squared = squaredEuclideanDistance (point, point2);
       if (distance_squared <= radius_overhead_squared) 
@@ -647,7 +647,7 @@ NarfKeypoint::calculateSparseInterestImage ()
             const PointWithRange& point3 = range_image.getPoint (index3);
             float surface_change_score = relevent_point_index.second;
             
-            float pixelDistance = static_cast<float> (std::max (abs (x3-x2), abs (y3-y2)));
+            float pixelDistance = static_cast<float> (std::max (std::abs (x3-x2), std::abs (y3-y2)));
             float distance = (point3.getVector3fMap ()-point2.getVector3fMap ()).norm ();
             float distance_factor = radius_reciprocal*distance;
             float positive_score, current_negative_score;

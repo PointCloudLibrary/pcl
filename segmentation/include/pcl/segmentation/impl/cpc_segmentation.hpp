@@ -207,7 +207,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
         {
           double index_score = weights[current_index];
           if (use_directed_weights_)
-            index_score *= 1.414 * (fabsf (plane_normal.dot (edge_cloud_cluster->at (current_index).getNormalVector3fMap ())));
+            index_score *= 1.414 * (std::abs (plane_normal.dot (edge_cloud_cluster->at (current_index).getNormalVector3fMap ())));
           cluster_score += index_score;
           if (weights[current_index] > 0)
             ++cluster_concave_pts;
@@ -333,7 +333,7 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
       double index_score = weights_[current_index];
       if (use_directed_weights_)
         // the sqrt(2) factor was used in the paper and was meant for making the scores better comparable between directed and undirected weights
-        index_score *= 1.414 * (fabsf (plane_normal.dot (point_cloud_ptr_->at (current_index).getNormalVector3fMap ())));
+        index_score *= 1.414 * (std::abs (plane_normal.dot (point_cloud_ptr_->at (current_index).getNormalVector3fMap ())));
 
       current_score += index_score;
     }

@@ -240,7 +240,7 @@ pcl::operator<< (std::ostream& os, const pcl::BivariatePolynomialT<real>& p)
       if (!first) 
       {
         os << (currentParameter<0.0?" - ":" + ");
-        currentParameter = fabs (currentParameter);
+        currentParameter = std::abs (currentParameter);
       }
       os << currentParameter;
       if (xDegree>0) 

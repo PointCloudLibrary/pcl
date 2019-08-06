@@ -77,7 +77,7 @@ pcl::PCDWriter::generateHeader (const pcl::PointCloud<PointT> &cloud, const int 
       field_types << " " << "U";
     else
       field_types << " " << pcl::getFieldType (field.datatype);
-    int count = abs (static_cast<int> (field.count));
+    int count = std::abs (static_cast<int> (field.count));
     if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
     field_counts << " " << count;
   }
