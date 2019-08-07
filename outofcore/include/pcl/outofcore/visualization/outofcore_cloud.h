@@ -54,7 +54,6 @@ class OutofcoreCloud : public Object
 
 
     static std::shared_ptr<std::thread> pcd_reader_thread;
-    //static MonitorQueue<std::string> pcd_queue;
 
     struct PcdQueueItem
     {
