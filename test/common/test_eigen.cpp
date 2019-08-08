@@ -79,9 +79,9 @@ TEST (PCL, InverseGeneral3x3f)
 
     // test row-major -> row-major
     Scalar determinant = invert3x3Matrix (r_matrix, r_inverse);
-    if (fabs (determinant) > epsilon)
+    if (std::abs (determinant) > epsilon)
     {
-      float eps = std::max (epsilon, epsilon / fabs(determinant));
+      float eps = std::max (epsilon, epsilon / std::abs(determinant));
 
       result = r_inverse * r_matrix;
       error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
@@ -96,9 +96,9 @@ TEST (PCL, InverseGeneral3x3f)
 
     // test row-major -> col-major
     determinant = invert3x3Matrix (c_matrix, c_inverse);
-    if (fabs (determinant) > epsilon)
+    if (std::abs (determinant) > epsilon)
     {
-      Scalar eps = std::max (epsilon, epsilon / fabs(determinant));
+      Scalar eps = std::max (epsilon, epsilon / std::abs(determinant));
 
       result = c_inverse * c_matrix;
       error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
@@ -138,9 +138,9 @@ TEST (PCL, InverseGeneral3x3d)
     c_matrix = r_matrix;
     // test row-major -> row-major
     Scalar determinant = invert3x3Matrix (r_matrix, r_inverse);
-    if (fabs (determinant) > epsilon)
+    if (std::abs (determinant) > epsilon)
     {
-      Scalar eps = std::max (epsilon, epsilon / fabs (determinant));
+      Scalar eps = std::max (epsilon, epsilon / std::abs (determinant));
 
       result = r_inverse * r_matrix;
       error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
@@ -155,9 +155,9 @@ TEST (PCL, InverseGeneral3x3d)
 
     // test row-major -> col-major
     determinant = invert3x3Matrix (c_matrix, c_inverse);
-    if (fabs (determinant) > epsilon)
+    if (std::abs (determinant) > epsilon)
     {
-      Scalar eps = std::max (epsilon, epsilon / fabs(determinant));
+      Scalar eps = std::max (epsilon, epsilon / std::abs(determinant));
 
       result = c_inverse * c_matrix;
       error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
@@ -203,9 +203,9 @@ TEST (PCL, InverseSymmetric3x3f)
 
     // test row-major -> row-major
     Scalar determinant = invert3x3SymMatrix (r_matrix, r_inverse);
-    if (fabs (determinant) > epsilon)
+    if (std::abs (determinant) > epsilon)
     {
-      float eps = std::max (epsilon, epsilon / fabs(determinant));
+      float eps = std::max (epsilon, epsilon / std::abs(determinant));
 
       result = r_inverse * r_matrix;
       error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
@@ -220,9 +220,9 @@ TEST (PCL, InverseSymmetric3x3f)
 
     // test row-major -> col-major
     determinant = invert3x3SymMatrix (c_matrix, c_inverse);
-    if (fabs (determinant) > epsilon)
+    if (std::abs (determinant) > epsilon)
     {
-      Scalar eps = std::max (epsilon, epsilon / fabs(determinant));
+      Scalar eps = std::max (epsilon, epsilon / std::abs(determinant));
 
       result = c_inverse * c_matrix;
       error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
@@ -268,9 +268,9 @@ TEST (PCL, InverseSymmetric3x3d)
 
     // test row-major -> row-major
     Scalar determinant = invert3x3SymMatrix (r_matrix, r_inverse);
-    if (fabs (determinant) > epsilon)
+    if (std::abs (determinant) > epsilon)
     {
-      Scalar eps = std::max (epsilon, epsilon / fabs (determinant));
+      Scalar eps = std::max (epsilon, epsilon / std::abs (determinant));
 
       result = r_inverse * r_matrix;
       error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
@@ -285,9 +285,9 @@ TEST (PCL, InverseSymmetric3x3d)
 
     // test row-major -> col-major
     determinant = invert3x3SymMatrix (c_matrix, c_inverse);
-    if (fabs (determinant) > epsilon)
+    if (std::abs (determinant) > epsilon)
     {
-      Scalar eps = std::max (epsilon, epsilon / fabs(determinant));
+      Scalar eps = std::max (epsilon, epsilon / std::abs(determinant));
 
       result = c_inverse * c_matrix;
       error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
@@ -327,9 +327,9 @@ TEST (PCL, Inverse2x2f)
     c_matrix = r_matrix;
     // test row-major -> row-major
     Scalar determinant = invert2x2 (r_matrix, r_inverse);
-    if (fabs (determinant) > epsilon)
+    if (std::abs (determinant) > epsilon)
     {
-      float eps = std::max (epsilon, epsilon / fabs(determinant));
+      float eps = std::max (epsilon, epsilon / std::abs(determinant));
 
       result = r_inverse * r_matrix;
       error = result - Eigen::Matrix<Scalar, 2, 2>::Identity ();
@@ -344,9 +344,9 @@ TEST (PCL, Inverse2x2f)
 
     // test row-major -> col-major
     determinant = invert2x2 (c_matrix, c_inverse);
-    if (fabs (determinant) > epsilon)
+    if (std::abs (determinant) > epsilon)
     {
-      Scalar eps = std::max (epsilon, epsilon / fabs(determinant));
+      Scalar eps = std::max (epsilon, epsilon / std::abs(determinant));
 
       result = c_inverse * c_matrix;
       error = result - Eigen::Matrix<Scalar, 2, 2>::Identity ();
@@ -385,9 +385,9 @@ TEST (PCL, Inverse2x2d)
     c_matrix = r_matrix;
     // test row-major -> row-major
     Scalar determinant = invert2x2 (r_matrix, r_inverse);
-    if (fabs (determinant) > epsilon)
+    if (std::abs (determinant) > epsilon)
     {
-      Scalar eps = std::max (epsilon, epsilon / fabs (determinant));
+      Scalar eps = std::max (epsilon, epsilon / std::abs (determinant));
 
       result = r_inverse * r_matrix;
       error = result - Eigen::Matrix<Scalar, 2, 2>::Identity ();
@@ -402,9 +402,9 @@ TEST (PCL, Inverse2x2d)
 
     // test row-major -> col-major
     determinant = invert2x2 (c_matrix, c_inverse);
-    if (fabs (determinant) > epsilon)
+    if (std::abs (determinant) > epsilon)
     {
-      Scalar eps = std::max (epsilon, epsilon / fabs(determinant));
+      Scalar eps = std::max (epsilon, epsilon / std::abs(determinant));
 
       result = c_inverse * c_matrix;
       error = result - Eigen::Matrix<Scalar, 2, 2>::Identity ();

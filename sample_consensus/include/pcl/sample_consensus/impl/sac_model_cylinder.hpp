@@ -70,9 +70,9 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
     return (false);
   }
 
-  if (fabs (input_->points[samples[0]].x - input_->points[samples[1]].x) <= std::numeric_limits<float>::epsilon () && 
-      fabs (input_->points[samples[0]].y - input_->points[samples[1]].y) <= std::numeric_limits<float>::epsilon () && 
-      fabs (input_->points[samples[0]].z - input_->points[samples[1]].z) <= std::numeric_limits<float>::epsilon ()) 
+  if (std::abs (input_->points[samples[0]].x - input_->points[samples[1]].x) <= std::numeric_limits<float>::epsilon () && 
+      std::abs (input_->points[samples[0]].y - input_->points[samples[1]].y) <= std::numeric_limits<float>::epsilon () && 
+      std::abs (input_->points[samples[0]].z - input_->points[samples[1]].z) <= std::numeric_limits<float>::epsilon ()) 
   {
     return (false);
   }
@@ -153,7 +153,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getDistancesToModel (
     Eigen::Vector4f pt (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0);
     Eigen::Vector4f n  (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0);
 
-    double d_euclid = fabs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
+    double d_euclid = std::abs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
 
     // Calculate the point's projection on the cylinder axis
     float k = (pt.dot (line_dir) - ptdotdir) * dirdotdir;
@@ -162,10 +162,10 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getDistancesToModel (
     dir.normalize ();
 
     // Calculate the angular distance between the point normal and the (dir=pt_proj->pt) vector
-    double d_normal = fabs (getAngle3D (n, dir));
+    double d_normal = std::abs (getAngle3D (n, dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    distances[i] = fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid);
+    distances[i] = std::abs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid);
   }
 }
 
@@ -196,7 +196,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
     // dist(point,cylinder_axis) and cylinder radius
     Eigen::Vector4f pt (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0);
     Eigen::Vector4f n  (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0);
-    double d_euclid = fabs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
+    double d_euclid = std::abs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
 
     // Calculate the point's projection on the cylinder axis
     float k = (pt.dot (line_dir) - ptdotdir) * dirdotdir;
@@ -205,10 +205,10 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
     dir.normalize ();
 
     // Calculate the angular distance between the point normal and the (dir=pt_proj->pt) vector
-    double d_normal = fabs (getAngle3D (n, dir));
+    double d_normal = std::abs (getAngle3D (n, dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    double distance = fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid); 
+    double distance = std::abs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid); 
     if (distance < threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
@@ -243,7 +243,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::countWithinDistance (
     // dist(point,cylinder_axis) and cylinder radius
     Eigen::Vector4f pt (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0);
     Eigen::Vector4f n  (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0);
-    double d_euclid = fabs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
+    double d_euclid = std::abs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
 
     // Calculate the point's projection on the cylinder axis
     float k = (pt.dot (line_dir) - ptdotdir) * dirdotdir;
@@ -252,10 +252,10 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::countWithinDistance (
     dir.normalize ();
 
     // Calculate the angular distance between the point normal and the (dir=pt_proj->pt) vector
-    double d_normal = fabs (getAngle3D (n, dir));
+    double d_normal = std::abs (getAngle3D (n, dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    if (fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid) < threshold)
+    if (std::abs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid) < threshold)
       nr_p++;
   }
   return (nr_p);
@@ -402,7 +402,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::doSamplesVerifyModel (
     // dist(point,cylinder_axis) and cylinder radius
     // @note need to revise this.
     Eigen::Vector4f pt (input_->points[index].x, input_->points[index].y, input_->points[index].z, 0);
-    if (fabs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]) > threshold)
+    if (std::abs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]) > threshold)
       return (false);
   }
 
@@ -455,7 +455,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::isModelValid (const Eigen::V
     coeff[3] = 0;
 
     Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0);
-    double angle_diff = fabs (getAngle3D (axis, coeff));
+    double angle_diff = std::abs (getAngle3D (axis, coeff));
     angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
     // Check whether the current cylinder model satisfies our angle threshold criterion with respect to the given axis
     if (angle_diff > eps_angle_)

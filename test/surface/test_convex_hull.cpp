@@ -357,13 +357,13 @@ TEST (PCL, ConvexHull_2dsquare)
   //Make sure they're in the plane
   for (const auto &point : hull.points)
   {
-    float dist = fabs (point.getVector4fMap ().dot (plane_normal));
+    float dist = std::abs (point.getVector4fMap ().dot (plane_normal));
     EXPECT_NEAR (dist, 0.0, 1e-2);
 
     float min_dist = std::numeric_limits<float>::infinity ();
     for (const auto &facet : facets)
     {
-      float d2 = fabs (point.getVector4fMap ().dot (facet));
+      float d2 = std::abs (point.getVector4fMap ().dot (facet));
       
       if (d2 < min_dist)
         min_dist = d2;
@@ -417,7 +417,7 @@ TEST (PCL, ConvexHull_3dcube)
     float min_dist = std::numeric_limits<float>::infinity ();
     for (const auto &facet : facets)
     {
-      float dist = fabs (point.getVector4fMap ().dot (facet));
+      float dist = std::abs (point.getVector4fMap ().dot (facet));
       
       if (dist < min_dist)
         min_dist = dist;

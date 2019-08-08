@@ -200,7 +200,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
               if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
               {
                 Vector3f Vn = ((Array3f (x+dx, y+dy, z+dz) + 0.5f) * cell_size).matrix ();
-                Vector3f point = (V * abs (Fn) + Vn * abs (F)) / (abs (F) + abs (Fn));
+                Vector3f point = (V * std::abs (Fn) + Vn * std::abs (F)) / (std::abs (F) + std::abs (Fn));
 
                 pcl::PointXYZ xyz;
                 xyz.x = point (0);
@@ -224,7 +224,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
               if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
               {
                 Vector3f Vn = ((Array3f (x+dx, y+dy, z+dz) + 0.5f) * cell_size).matrix ();
-                Vector3f point = (V * abs(Fn) + Vn * abs(F))/(abs(F) + abs (Fn));
+                Vector3f point = (V * std::abs(Fn) + Vn * std::abs(F))/(std::abs(F) + std::abs (Fn));
 
                 pcl::PointXYZ xyz;
                 xyz.x = point (0);
@@ -256,7 +256,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
             if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
             {
               Vector3f Vn = ((Array3f (x+dx, y+dy, z+dz) + 0.5f) * cell_size).matrix ();
-              Vector3f point = (V * abs (Fn) + Vn * abs (F)) / (abs (F) + abs (Fn));
+              Vector3f point = (V * std::abs (Fn) + Vn * std::abs (F)) / (std::abs (F) + std::abs (Fn));
 
               pcl::PointXYZ xyz;
               xyz.x = point (0);

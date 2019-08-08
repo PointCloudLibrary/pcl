@@ -929,7 +929,7 @@ pcl::PCDWriter::generateHeaderASCII (const pcl::PCLPointCloud2 &cloud,
     // Ignore invalid padded dimensions that are inherited from binary data
     if (cloud.fields[d].name == "_")
       continue;
-    int count = abs (static_cast<int> (cloud.fields[d].count));
+    int count = std::abs (static_cast<int> (cloud.fields[d].count));
     if (count == 0)
       count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
 
@@ -938,7 +938,7 @@ pcl::PCDWriter::generateHeaderASCII (const pcl::PCLPointCloud2 &cloud,
   // Ignore invalid padded dimensions that are inherited from binary data
   if (cloud.fields[cloud.fields.size () - 1].name != "_")
   {
-    int count = abs (static_cast<int> (cloud.fields[cloud.fields.size () - 1].count));
+    int count = std::abs (static_cast<int> (cloud.fields[cloud.fields.size () - 1].count));
     if (count == 0)
       count = 1;
 
@@ -1013,7 +1013,7 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
     field_names << " " << cloud.fields[i].name;
     field_sizes << " " << pcl::getFieldSize (cloud.fields[i].datatype);
     field_types << " " << pcl::getFieldType (cloud.fields[i].datatype);
-    int count = abs (static_cast<int> (cloud.fields[i].count));
+    int count = std::abs (static_cast<int> (cloud.fields[i].count));
     if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
     field_counts << " " << count;
   }
@@ -1074,7 +1074,7 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (std::ostream &os,
     field_names << " " << field.name;
     field_sizes << " " << pcl::getFieldSize (field.datatype);
     field_types << " " << pcl::getFieldType (field.datatype);
-    int count = abs (static_cast<int> (field.count));
+    int count = std::abs (static_cast<int> (field.count));
     if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
     field_counts << " " << count;
   }

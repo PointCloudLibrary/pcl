@@ -79,16 +79,16 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
     // D = (P-A).N/|N|
     Eigen::Vector4f p (pt.x, pt.y, pt.z, 0);
     Eigen::Vector4f n (nt.normal_x, nt.normal_y, nt.normal_z, 0);
-    double d_euclid = fabs (coeff.dot (p) + model_coefficients[3]);
+    double d_euclid = std::abs (coeff.dot (p) + model_coefficients[3]);
 
     // Calculate the angular distance between the point normal and the plane normal
-    double d_normal = fabs (getAngle3D (n, coeff));
+    double d_normal = std::abs (getAngle3D (n, coeff));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
     // Weight with the point curvature. On flat surfaces, curvature -> 0, which means the normal will have a higher influence
     double weight = normal_distance_weight_ * (1.0 - nt.curvature);
 
-    double distance = fabs (weight * d_normal + (1.0 - weight) * d_euclid); 
+    double distance = std::abs (weight * d_normal + (1.0 - weight) * d_euclid); 
     if (distance < threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
@@ -131,16 +131,16 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::countWithinDistance (
     // D = (P-A).N/|N|
     Eigen::Vector4f p (pt.x, pt.y, pt.z, 0);
     Eigen::Vector4f n (nt.normal_x, nt.normal_y, nt.normal_z, 0);
-    double d_euclid = fabs (coeff.dot (p) + model_coefficients[3]);
+    double d_euclid = std::abs (coeff.dot (p) + model_coefficients[3]);
 
     // Calculate the angular distance between the point normal and the plane normal
-    double d_normal = fabs (getAngle3D (n, coeff));
+    double d_normal = std::abs (getAngle3D (n, coeff));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
     // Weight with the point curvature. On flat surfaces, curvature -> 0, which means the normal will have a higher influence
     double weight = normal_distance_weight_ * (1.0 - nt.curvature);
 
-    if (fabs (weight * d_normal + (1.0 - weight) * d_euclid) < threshold)
+    if (std::abs (weight * d_normal + (1.0 - weight) * d_euclid) < threshold)
       nr_p++;
   }
   return (nr_p);
@@ -179,16 +179,16 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::getDistancesToModel (
     // D = (P-A).N/|N|
     Eigen::Vector4f p (pt.x, pt.y, pt.z, 0);
     Eigen::Vector4f n (nt.normal_x, nt.normal_y, nt.normal_z, 0);
-    double d_euclid = fabs (coeff.dot (p) + model_coefficients[3]);
+    double d_euclid = std::abs (coeff.dot (p) + model_coefficients[3]);
 
     // Calculate the angular distance between the point normal and the plane normal
-    double d_normal = fabs (getAngle3D (n, coeff));
+    double d_normal = std::abs (getAngle3D (n, coeff));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
     // Weight with the point curvature. On flat surfaces, curvature -> 0, which means the normal will have a higher influence
     double weight = normal_distance_weight_ * (1.0 - nt.curvature);
 
-    distances[i] = fabs (weight * d_normal + (1.0 - weight) * d_euclid);
+    distances[i] = std::abs (weight * d_normal + (1.0 - weight) * d_euclid);
   }
 }
 

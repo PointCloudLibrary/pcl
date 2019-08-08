@@ -201,9 +201,9 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   //std::cout << "max_b: " << max_b.x () << " " << max_b.y () << " " << max_b.z () << std::endl;
 
   // compute the voxel grid dimensions
-  //dim_.x () = abs (max_b.x () - min_b.x ());
-  //dim_.y () = abs (max_b.y () - min_b.y ());
-  //dim_.z () = abs (max_b.z () - min_b.z ());
+  //dim_.x () = std::abs (max_b.x () - min_b.x ());
+  //dim_.y () = std::abs (max_b.y () - min_b.y ());
+  //dim_.z () = std::abs (max_b.z () - min_b.z ());
   
   //std::cout << dim_.x () * dim_.y () * dim_.z () << std::endl;
 

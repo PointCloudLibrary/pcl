@@ -139,7 +139,7 @@ During each iteration, we keep track of and accumulate the transformations retur
 		for (int i = 0; i < 30; ++i)
 		{
 		 [...]
-		 if (fabs ((reg.getLastIncrementalTransformation () - prev).sum ()) < reg.getTransformationEpsilon ())
+		 if (std::abs ((reg.getLastIncrementalTransformation () - prev).sum ()) < reg.getTransformationEpsilon ())
 		   reg.setMaxCorrespondenceDistance (reg.getMaxCorrespondenceDistance () - 0.001);
      
 		 prev = reg.getLastIncrementalTransformation ();

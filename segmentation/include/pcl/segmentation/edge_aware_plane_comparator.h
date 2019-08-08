@@ -194,7 +194,7 @@ namespace pcl
         bool dist_ok = (dist < euclidean_dist_threshold);
 
         bool curvature_ok = normals_->points[idx1].curvature < curvature_threshold_;
-        bool plane_d_ok = fabs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < dist_threshold;
+        bool plane_d_ok = std::abs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < dist_threshold;
         
         if (distance_map_[idx1] < distance_map_threshold_)    
           curvature_ok = false;

@@ -498,7 +498,7 @@ pcl::RegionGrowing<PointT, NormalT>::validatePoint (int initial_seed, int point,
   if (smooth_mode_flag_ == true)
   {
     Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> (normals_->points[nghbr].normal));
-    float dot_product = fabsf (nghbr_normal.dot (initial_normal));
+    float dot_product = std::abs (nghbr_normal.dot (initial_normal));
     if (dot_product < cosine_threshold)
     {
       return (false);
@@ -508,7 +508,7 @@ pcl::RegionGrowing<PointT, NormalT>::validatePoint (int initial_seed, int point,
   {
     Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> (normals_->points[nghbr].normal));
     Eigen::Map<Eigen::Vector3f> initial_seed_normal (static_cast<float*> (normals_->points[initial_seed].normal));
-    float dot_product = fabsf (nghbr_normal.dot (initial_seed_normal));
+    float dot_product = std::abs (nghbr_normal.dot (initial_seed_normal));
     if (dot_product < cosine_threshold)
       return (false);
   }
@@ -527,7 +527,7 @@ pcl::RegionGrowing<PointT, NormalT>::validatePoint (int initial_seed, int point,
   data_1[2] = input_->points[nghbr].data[2];
   data_1[3] = input_->points[nghbr].data[3];
   Eigen::Map<Eigen::Vector3f> nghbr_point (static_cast<float*> (data_1));
-  float residual = fabsf (initial_normal.dot (initial_point - nghbr_point));
+  float residual = std::abs (initial_normal.dot (initial_point - nghbr_point));
   if (residual_flag_ && residual > residual_threshold_)
     is_a_seed = false;
 

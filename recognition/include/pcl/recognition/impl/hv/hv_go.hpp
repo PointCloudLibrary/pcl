@@ -112,7 +112,7 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
             + normals.points[seed_queue[sq_idx]].normal[1] * normals.points[nn_indices[j]].normal[1]
             + normals.points[seed_queue[sq_idx]].normal[2] * normals.points[nn_indices[j]].normal[2];
 
-        if (fabs (std::acos (dot_p)) < eps_angle)
+        if (std::abs (std::acos (dot_p)) < eps_angle)
         {
           processed[nn_indices[j]] = true;
           seed_queue.push_back (nn_indices[j]);

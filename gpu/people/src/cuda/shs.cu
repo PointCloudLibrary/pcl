@@ -233,7 +233,7 @@ void optimized_shs5(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
                     {
                         float h_l = hue[idx];
 
-                        if (fabs(h_l - h) < delta_hue)
+                        if (std::abs(h_l - h) < delta_hue)
                         {
                             if(idx & 1)
                                 seed_queue.push_back (idx);

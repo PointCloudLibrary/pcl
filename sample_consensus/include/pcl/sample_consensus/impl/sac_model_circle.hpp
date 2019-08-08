@@ -116,7 +116,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::getDistancesToModel (const Eigen::Vec
   for (size_t i = 0; i < indices_->size (); ++i)
     // Calculate the distance from the point to the circle as the difference between
     // dist(point,circle_origin) and circle_radius
-    distances[i] = fabsf (std::sqrt (
+    distances[i] = std::abs (std::sqrt (
                                     ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
                                     ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
 
@@ -146,7 +146,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
   {
     // Calculate the distance from the point to the sphere as the difference between
     // dist(point,sphere_origin) and sphere_radius
-    float distance = fabsf (std::sqrt (
+    float distance = std::abs (std::sqrt (
                                       ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
                                       ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
 
@@ -180,7 +180,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
   {
     // Calculate the distance from the point to the sphere as the difference between
     // dist(point,sphere_origin) and sphere_radius
-    float distance = fabsf (std::sqrt (
+    float distance = std::abs (std::sqrt (
                                       ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
                                       ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
 
@@ -306,7 +306,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::doSamplesVerifyModel (
   for (const int &index : indices)
     // Calculate the distance from the point to the sphere as the difference between
     //dist(point,sphere_origin) and sphere_radius
-    if (fabsf (std::sqrt (
+    if (std::abs (std::sqrt (
                          ( input_->points[index].x - model_coefficients[0] ) *
                          ( input_->points[index].x - model_coefficients[0] ) +
                          ( input_->points[index].y - model_coefficients[1] ) *

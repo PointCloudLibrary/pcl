@@ -147,9 +147,9 @@ namespace pcl
       getCentroidCoordinate (const Eigen::Vector3i& ijk)
       {
         int i,j,k;
-        i = ((b_min_[0] < 0) ? (abs (min_b_[0]) + ijk[0]) : (ijk[0] - min_b_[0]));
-        j = ((b_min_[1] < 0) ? (abs (min_b_[1]) + ijk[1]) : (ijk[1] - min_b_[1]));
-        k = ((b_min_[2] < 0) ? (abs (min_b_[2]) + ijk[2]) : (ijk[2] - min_b_[2]));
+        i = ((b_min_[0] < 0) ? (std::abs (min_b_[0]) + ijk[0]) : (ijk[0] - min_b_[0]));
+        j = ((b_min_[1] < 0) ? (std::abs (min_b_[1]) + ijk[1]) : (ijk[1] - min_b_[1]));
+        k = ((b_min_[2] < 0) ? (std::abs (min_b_[2]) + ijk[2]) : (ijk[2] - min_b_[2]));
 
         Eigen::Vector4f xyz;
         xyz[0] = b_min_[0] + (leaf_size_[0] * 0.5f) + (static_cast<float> (i) * leaf_size_[0]);

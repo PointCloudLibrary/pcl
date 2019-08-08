@@ -167,12 +167,12 @@ pcl::visualization::cullFrustum (double frustum[24], const Eigen::Vector3d &min_
                             (max_bb.y () - min_bb.y ()) / 2 + min_bb.y (),
                             (max_bb.z () - min_bb.z ()) / 2 + min_bb.z ());
 
-    Eigen::Vector3d radius (fabs (static_cast<double> (max_bb.x () - center.x ())),
-                            fabs (static_cast<double> (max_bb.y () - center.y ())),
-                            fabs (static_cast<double> (max_bb.z () - center.z ())));
+    Eigen::Vector3d radius (std::abs (static_cast<double> (max_bb.x () - center.x ())),
+                            std::abs (static_cast<double> (max_bb.y () - center.y ())),
+                            std::abs (static_cast<double> (max_bb.z () - center.z ())));
 
     double m = (center.x () * a) + (center.y () * b) + (center.z () * c) + d;
-    double n = (radius.x () * fabs(a)) + (radius.y () * fabs(b)) + (radius.z () * fabs(c));
+    double n = (radius.x () * std::abs(a)) + (radius.y () * std::abs(b)) + (radius.z () * std::abs(c));
 
     if (m + n < 0){
       result = PCL_OUTSIDE_FRUSTUM;
@@ -357,7 +357,7 @@ pcl::visualization::viewScreenArea (
     sum += (dst[i].x () - dst[(i+1) % num].x ()) * (dst[i].y () + dst[(i+1) % num].y ());
   }
 
-  return (fabsf (float (sum * 0.5f)));
+  return (std::abs (float (sum * 0.5f)));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

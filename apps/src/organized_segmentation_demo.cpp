@@ -140,7 +140,7 @@ compareClusterToRegion (pcl::PlanarRegion<PointT>& region, pcl::PointCloud<Point
 
   for (const auto &point : cluster.points)
   {
-    double ptp_dist = fabs (model[0] * point.x +
+    double ptp_dist = std::abs (model[0] * point.x +
                             model[1] * point.y +
                             model[2] * point.z +
                             model[3]);
@@ -156,7 +156,7 @@ comparePointToRegion (PointT& pt, pcl::ModelCoefficients& model, pcl::PointCloud
 {
   //bool dist_ok;
 
-  double ptp_dist = fabs (model.values[0] * pt.x +
+  double ptp_dist = std::abs (model.values[0] * pt.x +
                           model.values[1] * pt.y +
                           model.values[2] * pt.z +
                           model.values[3]);

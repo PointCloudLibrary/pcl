@@ -91,9 +91,9 @@ pcl::planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
 
   // Test if planes are parallel
   double test_cos = plane_a_norm.dot (plane_b_norm);
-  double tolerance_cos = 1 - sin (fabs (angular_tolerance));
+  double tolerance_cos = 1 - sin (std::abs (angular_tolerance));
 
-  if (fabs (test_cos) > tolerance_cos)
+  if (std::abs (test_cos) > tolerance_cos)
   {
       PCL_DEBUG ("Plane A and Plane B are parallel.\n");
       return (false);
@@ -142,7 +142,7 @@ pcl::threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
   }
 
   Scalar determinant = normals_in_lines.determinant ();
-  if (fabs (determinant) < determinant_tolerance)
+  if (std::abs (determinant) < determinant_tolerance)
   {
     // det ~= 0
     PCL_DEBUG ("At least two planes are parallel.\n");

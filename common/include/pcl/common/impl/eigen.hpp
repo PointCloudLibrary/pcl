@@ -78,7 +78,7 @@ pcl::computeRoots (const Matrix& m, Roots& roots)
         m (1, 2) * m (1, 2);
   Scalar c2 = m (0, 0) + m (1, 1) + m (2, 2);
 
-  if (fabs (c0) < Eigen::NumTraits < Scalar > ::epsilon ())  // one root is 0 -> quadratic equation
+  if (std::abs (c0) < Eigen::NumTraits < Scalar > ::epsilon ())  // one root is 0 -> quadratic equation
     computeRoots2 (c2, c1, roots);
   else
   {
@@ -127,7 +127,7 @@ pcl::eigen22 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& ei
 {
   // if diagonal matrix, the eigenvalues are the diagonal elements
   // and the eigenvectors are not unique, thus set to Identity
-  if (fabs (mat.coeff (1)) <= std::numeric_limits<typename Matrix::Scalar>::min ())
+  if (std::abs (mat.coeff (1)) <= std::numeric_limits<typename Matrix::Scalar>::min ())
   {
     if (mat.coeff (0) < mat.coeff (2))
     {
@@ -166,7 +166,7 @@ pcl::eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
 {
   // if diagonal matrix, the eigenvalues are the diagonal elements
   // and the eigenvectors are not unique, thus set to Identity
-  if (fabs (mat.coeff (1)) <= std::numeric_limits<typename Matrix::Scalar>::min ())
+  if (std::abs (mat.coeff (1)) <= std::numeric_limits<typename Matrix::Scalar>::min ())
   {
     if (mat.coeff (0) < mat.coeff (3))
     {

@@ -519,7 +519,7 @@ pcl::GridProjection<PointNT>::findIntersection (int level,
   double d1 = getD1AtPoint (start_pt, vec, pt_union_indices);
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > new_end_pts (2);
   std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > new_vect_at_end_pts (2);
-  if ((fabs (d1) < 10e-3) || (level == max_binary_search_level_))
+  if ((std::abs (d1) < 10e-3) || (level == max_binary_search_level_))
   {
     intersection = start_pt;
     return;

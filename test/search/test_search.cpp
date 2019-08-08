@@ -259,7 +259,7 @@ bool compareResults (const std::vector<int>& indices1, const::vector<float>& dis
   {
     for (size_t idx = 0; idx < indices1.size (); ++idx)
     {
-      if (indices1[idx] != indices2[idx] && fabs (distances1[idx] - distances2[idx]) > eps)
+      if (indices1[idx] != indices2[idx] && std::abs (distances1[idx] - distances2[idx]) > eps)
       {
 #if DEBUG_OUT
         cerr << "results between " << name1 << " search and " << name2 << " search do not match: " << idx << " nearest neighbor: "

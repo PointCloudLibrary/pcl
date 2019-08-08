@@ -302,7 +302,7 @@ pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (const float* p, f
     nodes.pop_back ();
 
     // Check if the sphere intersects the current node
-    if ( fabs (radius - aux::distance3<float> (p, node->getCenter ())) <= node->getRadius () )
+    if ( std::abs (radius - aux::distance3<float> (p, node->getCenter ())) <= node->getRadius () )
     {
       // We have an intersection -> push back the children of the current node
       if ( node->hasChildren () )
@@ -346,7 +346,7 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float ra
     nodes.pop_back ();
 
     // Check if the sphere intersects the current node
-    if ( fabs (radius - aux::distance3<float> (p, node->getCenter ())) <= node->getRadius () )
+    if ( std::abs (radius - aux::distance3<float> (p, node->getCenter ())) <= node->getRadius () )
     {
       // We have an intersection -> push back the children of the current node
       if ( node->hasChildren () )

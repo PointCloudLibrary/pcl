@@ -100,7 +100,7 @@ pcl::SampleConsensusModelParallelLine<PointT>::isModelValid (const Eigen::Vector
     Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
 
     Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0);
-    double angle_diff = fabs (getAngle3D (axis, line_dir));
+    double angle_diff = std::abs (getAngle3D (axis, line_dir));
     angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
     // Check whether the current line model satisfies our angle threshold criterion with respect to the given axis
     if (angle_diff > eps_angle_)

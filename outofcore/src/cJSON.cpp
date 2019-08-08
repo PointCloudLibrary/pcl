@@ -124,7 +124,7 @@ static char *print_number(cJSON *item)
 {
 	char *str;
 	double d=item->valuedouble;
-	if (fabs((static_cast<double>(item->valueint)-d))<=DBL_EPSILON && d<=INT_MAX && d>=INT_MIN)
+	if (std::abs((static_cast<double>(item->valueint)-d))<=DBL_EPSILON && d<=INT_MAX && d>=INT_MIN)
 	{
 		str=static_cast<char*>(cJSON_malloc(21));	/* 2^64+1 can be represented in 21 chars. */
 		if (str) sprintf(str,"%d",item->valueint);
@@ -134,7 +134,7 @@ static char *print_number(cJSON *item)
 		str=static_cast<char*>(cJSON_malloc(64));	/* This is a nice tradeoff. */
 		if (str)
 		{
-			if (fabs(floor(d)-d)<=DBL_EPSILON)			sprintf(str,"%.0f",d);
+			if (std::abs(floor(d)-d)<=DBL_EPSILON)			sprintf(str,"%.0f",d);
 			else sprintf(str,"%.16g",d);
 		}
 	}

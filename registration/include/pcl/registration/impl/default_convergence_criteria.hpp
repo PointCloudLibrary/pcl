@@ -89,7 +89,7 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
 
   // 3. The relative sum of Euclidean squared errors is smaller than a user defined threshold
   // Absolute
-  if (fabs (correspondences_cur_mse_ - correspondences_prev_mse_) < mse_threshold_absolute_)
+  if (std::abs (correspondences_cur_mse_ - correspondences_prev_mse_) < mse_threshold_absolute_)
   {
     if (iterations_similar_transforms_ >= max_iterations_similar_transforms_)
     {
@@ -100,7 +100,7 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   }
   
   // Relative
-  if (fabs (correspondences_cur_mse_ - correspondences_prev_mse_) / correspondences_prev_mse_ < mse_threshold_relative_)
+  if (std::abs (correspondences_cur_mse_ - correspondences_prev_mse_) / correspondences_prev_mse_ < mse_threshold_relative_)
   {
     if (iterations_similar_transforms_ >= max_iterations_similar_transforms_)
     {

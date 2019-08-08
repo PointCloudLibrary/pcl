@@ -1080,12 +1080,12 @@ namespace pcl
 
           //  Basic VFC algorithm
           Eigen::Vector3d center = node_metadata_->getVoxelCenter();
-          Eigen::Vector3d radius (fabs (static_cast<double> (max_bb.x () - center.x ())),
-                                  fabs (static_cast<double> (max_bb.y () - center.y ())),
-                                  fabs (static_cast<double> (max_bb.z () - center.z ())));
+          Eigen::Vector3d radius (std::abs (static_cast<double> (max_bb.x () - center.x ())),
+                                  std::abs (static_cast<double> (max_bb.y () - center.y ())),
+                                  std::abs (static_cast<double> (max_bb.z () - center.z ())));
 
           double m = (center.x () * a) + (center.y () * b) + (center.z () * c) + d;
-          double n = (radius.x () * fabs(a)) + (radius.y () * fabs(b)) + (radius.z () * fabs(c));
+          double n = (radius.x () * std::abs(a)) + (radius.y () * std::abs(b)) + (radius.z () * std::abs(c));
 
           if (m + n < 0){
             result = OUTSIDE;
@@ -1229,12 +1229,12 @@ namespace pcl
 
           //  Basic VFC algorithm
           Eigen::Vector3d center = node_metadata_->getVoxelCenter();
-          Eigen::Vector3d radius (fabs (static_cast<double> (max_bb.x () - center.x ())),
-                                  fabs (static_cast<double> (max_bb.y () - center.y ())),
-                                  fabs (static_cast<double> (max_bb.z () - center.z ())));
+          Eigen::Vector3d radius (std::abs (static_cast<double> (max_bb.x () - center.x ())),
+                                  std::abs (static_cast<double> (max_bb.y () - center.y ())),
+                                  std::abs (static_cast<double> (max_bb.z () - center.z ())));
 
           double m = (center.x () * a) + (center.y () * b) + (center.z () * c) + d;
-          double n = (radius.x () * fabs(a)) + (radius.y () * fabs(b)) + (radius.z () * fabs(c));
+          double n = (radius.x () * std::abs(a)) + (radius.y () * std::abs(b)) + (radius.z () * std::abs(c));
 
           if (m + n < 0){
             result = OUTSIDE;

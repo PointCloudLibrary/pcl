@@ -2404,7 +2404,7 @@ __global__ void resizeSuperSample_32f(NcvSize32u srcSize,
 __forceinline__
 __device__ float bicubicCoeff(float x_)
 {
-    float x = fabsf(x_);
+    float x = std::abs(x_);
     if (x <= 1.0f)
     {
         return x * x * (1.5f * x - 2.5f) + 1.0f;

@@ -194,7 +194,7 @@ pcl::StereoMatching::leftRightCheck ()
         {
           p2 = disp_map_trg_[y * width_ + p2i] / 16;
 
-          if (abs (p1 - p2) > lr_check_th_)
+          if (std::abs (p1 - p2) > lr_check_th_)
             disp_map_[y* width_ + x] = -8;
         }
       }

@@ -242,7 +242,7 @@ inline void
   {
     real x=roots[i], x2=x*x, x3=x2*x;
     real result = a*x3 + b*x2 + c*x + d;
-    if (fabs (result) > 1e-4)
+    if (std::abs (result) > 1e-4)
     {
       cout << "Something went wrong:\n";
       //roots.clear ();
@@ -395,7 +395,7 @@ inline void
   {
     real x=roots[i], x2=x*x, x3=x2*x, x4=x2*x2;
     real result = a*x4 + b*x3 + c*x2 + d*x + e;
-    if (fabs (result) > 1e-4)
+    if (std::abs (result) > 1e-4)
     {
       cout << "Something went wrong:\n";
       //roots.clear ();

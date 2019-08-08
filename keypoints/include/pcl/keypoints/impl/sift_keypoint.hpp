@@ -297,7 +297,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::findScaleSpaceExtrema (
       const float &val = diff_of_gauss (i_point, i_scale);
 
       // Does the point have sufficient contrast?
-      if (fabs (val) >= min_contrast_)
+      if (std::abs (val) >= min_contrast_)
       {
         // Is it a local minimum?
         if ((val == min_val[i_scale]) && 

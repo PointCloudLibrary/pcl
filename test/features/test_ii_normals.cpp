@@ -360,9 +360,9 @@ TEST (PCL, NormalEstimation)
 
   for (size_t i = 0; i < cloud.points.size (); ++i)
   {
-    EXPECT_NEAR (fabs (output.points[i].normal_x),   0, 1e-2);
-    EXPECT_NEAR (fabs (output.points[i].normal_y),   0, 1e-2);
-    EXPECT_NEAR (fabs (output.points[i].normal_z), 1.0, 1e-2);
+    EXPECT_NEAR (std::abs (output.points[i].normal_x),   0, 1e-2);
+    EXPECT_NEAR (std::abs (output.points[i].normal_y),   0, 1e-2);
+    EXPECT_NEAR (std::abs (output.points[i].normal_z), 1.0, 1e-2);
   }
 }
 
@@ -387,9 +387,9 @@ TEST (PCL, IINormalEstimationCovariance)
           !std::isfinite(output (u, v).normal_z))
         continue;
 
-      EXPECT_NEAR (fabs (output (u, v).normal_x),   0, 1e-2);
-      EXPECT_NEAR (fabs (output (u, v).normal_y),   0, 1e-2);
-      EXPECT_NEAR (fabs (output (u, v).normal_z), 1.0, 1e-2);
+      EXPECT_NEAR (std::abs (output (u, v).normal_x),   0, 1e-2);
+      EXPECT_NEAR (std::abs (output (u, v).normal_y),   0, 1e-2);
+      EXPECT_NEAR (std::abs (output (u, v).normal_z), 1.0, 1e-2);
     }
   }
 }
@@ -415,13 +415,13 @@ TEST (PCL, IINormalEstimationAverage3DGradient)
           !std::isfinite(output (u, v).normal_z))
         continue;
 
-      if (fabs(fabs (output (u, v).normal_z) - 1) > 1e-2)
+      if (std::abs(fabs (output (u, v).normal_z) - 1) > 1e-2)
       {
         std::cout << "T:" << u << " , " << v << " : " << output (u, v).normal_x << " , " << output (u, v).normal_y << " , " << output (u, v).normal_z <<std::endl;
       }
-      EXPECT_NEAR (fabs (output (u, v).normal_x),   0, 1e-2);
-      EXPECT_NEAR (fabs (output (u, v).normal_y),   0, 1e-2);
-      //EXPECT_NEAR (fabs (output (u, v).normal_z), 1.0, 1e-2);
+      EXPECT_NEAR (std::abs (output (u, v).normal_x),   0, 1e-2);
+      EXPECT_NEAR (std::abs (output (u, v).normal_y),   0, 1e-2);
+      //EXPECT_NEAR (std::abs (output (u, v).normal_z), 1.0, 1e-2);
     }
   }
 }
@@ -447,13 +447,13 @@ TEST (PCL, IINormalEstimationAverageDepthChange)
           !std::isfinite(output (u, v).normal_z))
         continue;
 
-      if (fabs(fabs (output (u, v).normal_z) - 1) > 1e-2)
+      if (std::abs(fabs (output (u, v).normal_z) - 1) > 1e-2)
       {
         std::cout << "T:" << u << " , " << v << " : " << output (u, v).normal_x << " , " << output (u, v).normal_y << " , " << output (u, v).normal_z <<std::endl;
       }
-      EXPECT_NEAR (fabs (output (u, v).normal_x),   0, 1e-2);
-      EXPECT_NEAR (fabs (output (u, v).normal_y),   0, 1e-2);
-      //EXPECT_NEAR (fabs (output (u, v).normal_z), 1.0, 1e-2);
+      EXPECT_NEAR (std::abs (output (u, v).normal_x),   0, 1e-2);
+      EXPECT_NEAR (std::abs (output (u, v).normal_y),   0, 1e-2);
+      //EXPECT_NEAR (std::abs (output (u, v).normal_z), 1.0, 1e-2);
     }
   }
 }
@@ -479,13 +479,13 @@ TEST (PCL, IINormalEstimationSimple3DGradient)
           !std::isfinite(output (u, v).normal_z))
         continue;
 
-      if (fabs(fabs (output (u, v).normal_z) - 1) > 1e-2)
+      if (std::abs(fabs (output (u, v).normal_z) - 1) > 1e-2)
       {
         std::cout << "T:" << u << " , " << v << " : " << output (u, v).normal_x << " , " << output (u, v).normal_y << " , " << output (u, v).normal_z <<std::endl;
       }
-      EXPECT_NEAR (fabs (output (u, v).normal_x),   0, 1e-2);
-      EXPECT_NEAR (fabs (output (u, v).normal_y),   0, 1e-2);
-      //EXPECT_NEAR (fabs (output (u, v).normal_z), 1.0, 1e-2);
+      EXPECT_NEAR (std::abs (output (u, v).normal_x),   0, 1e-2);
+      EXPECT_NEAR (std::abs (output (u, v).normal_y),   0, 1e-2);
+      //EXPECT_NEAR (std::abs (output (u, v).normal_z), 1.0, 1e-2);
     }
   }
 }

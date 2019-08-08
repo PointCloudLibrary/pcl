@@ -78,7 +78,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
         Eigen::Vector4f normal_u = Eigen::Vector4f::Zero ();
         Eigen::Vector4f normal_v = Eigen::Vector4f::Zero ();
 
-        if (fabs (normal.x ()) > 0.0001f)
+        if (std::abs (normal.x ()) > 0.0001f)
         {
           normal_u.x () = - normal.y () / normal.x ();
           normal_u.y () = 1.0f;
@@ -86,7 +86,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
           normal_u.normalize ();
 
         }
-        else if (fabs (normal.y ()) > 0.0001f)
+        else if (std::abs (normal.y ()) > 0.0001f)
         {
           normal_u.x () = 1.0f;
           normal_u.y () = - normal.x () / normal.y ();

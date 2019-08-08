@@ -73,7 +73,7 @@ void checkSimpleLine8 (unsigned x_start, unsigned y_start, unsigned x_end, unsig
   }
   int dx = x_end - x_start;
   int dy = y_end - y_start;
-  unsigned dmax = std::max (abs(dx), abs(dy));
+  unsigned dmax = std::max (std::abs(dx), std::abs(dy));
   
   EXPECT_EQ (dmax, idx);
   
@@ -91,7 +91,7 @@ void checkSimpleLine8 (unsigned x_start, unsigned y_start, unsigned x_end, unsig
     y_step = 0;
     x_step = (dx > 0) ? 1 : -1;
   }
-  else if (abs(dx) == abs(dy))
+  else if (std::abs(dx) == std::abs(dy))
   {
     y_step = (dy > 0) ? 1 : -1;
     x_step = (dx > 0) ? 1 : -1;
@@ -162,12 +162,12 @@ void checkGeneralLine (unsigned x_start, unsigned y_start, unsigned x_end, unsig
   
   int dx = x_end - x_start;
   int dy = y_end - y_start;
-  unsigned dmax = std::max (abs(dx), abs(dy));
+  unsigned dmax = std::max (std::abs(dx), std::abs(dy));
 
   if (neighorhood)
     EXPECT_EQ (dmax, idx);
   else
-    EXPECT_EQ (abs(dx) + abs(dy), idx);
+    EXPECT_EQ (std::abs(dx) + std::abs(dy), idx);
   
   float length = std::sqrt (float (dx * dx + dy * dy));
   float dir_x = float (dx) / length;

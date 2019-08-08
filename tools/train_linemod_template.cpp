@@ -143,7 +143,7 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
     if (foreground_mask[i])
     {
       const pcl::PointXYZRGBA & p = input->points[i];
-      float d = fabsf (c[0]*p.x + c[1]*p.y + c[2]*p.z + c[3]);
+      float d = std::abs (c[0]*p.x + c[1]*p.y + c[2]*p.z + c[3]);
       foreground_mask[i] = (d < max_height);
     }
   }

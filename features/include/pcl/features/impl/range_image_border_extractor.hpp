@@ -249,7 +249,7 @@ float RangeImageBorderExtractor::updatedScoreAccordingToNeighborValues(int x, in
   if (average_neighbor_score*border_score < 0.0f)
     return border_score;
   
-  float new_border_score = border_score + max_score_bonus * average_neighbor_score * (1.0f-fabsf(border_score));
+  float new_border_score = border_score + max_score_bonus * average_neighbor_score * (1.0f-std::abs(border_score));
   
   //std::cout << PVARC(border_score)<<PVARN(new_border_score);
   return new_border_score;

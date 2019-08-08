@@ -5,7 +5,7 @@
 #include<iostream>
 #include<vector>
 #include<utility>
-#include<math.h>  //for abs()
+#include<cmath>  //for std::abs()
 
 using namespace std;
 using namespace pcl::visualization;
@@ -83,7 +83,7 @@ main (int argc, char * argv [])
   plotter->addPlotData (identity, -10, 10, "identity");
   plotter->spinOnce (2000);
 
-  plotter->addPlotData (abs, -10, 10, "abs");
+  plotter->addPlotData (std::abs, -10, 10, "abs");
   plotter->spinOnce (2000);
 
   plotter->addPlotData (step, -10, 10, "step", 100, vtkChart::POINTS);

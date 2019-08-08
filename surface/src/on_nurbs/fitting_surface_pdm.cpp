@@ -1297,7 +1297,7 @@ FittingSurface::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vect
 
     delta = -0.5 * r.dot (t) / t.dot (t);
 
-    if (fabs (delta) < accuracy)
+    if (std::abs (delta) < accuracy)
     {
 
       error = r.norm ();

@@ -107,7 +107,7 @@ namespace pcl
     inline double
     gedikli (double val, double clipping, double slope = 4) 
     {
-      return (1.0 / (1.0 + pow (fabs(val) / clipping, slope)));
+      return (1.0 / (1.0 + pow (std::abs(val) / clipping, slope)));
     }
 
     /** \brief Compute the Manhattan distance between two eigen vectors.

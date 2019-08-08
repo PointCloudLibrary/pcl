@@ -459,7 +459,7 @@ Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths
     {
       float value = descriptor_[descriptor_value_idx];
       float angle2 = static_cast<float> (descriptor_value_idx) * angle_step_size2;
-      float distance_weight = powf (1.0f - fabsf (normAngle (angle - angle2)) / deg2rad (180.0f), 2.0f);
+      float distance_weight = powf (1.0f - std::abs (normAngle (angle - angle2)) / deg2rad (180.0f), 2.0f);
       
       score += value * distance_weight;
     }

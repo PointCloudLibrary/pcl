@@ -242,7 +242,7 @@ namespace pcl
                                      normal.y * ref_normals[normal_index].y +
                                      normal.z * ref_normals[normal_index].z;
 
-              const float abs_response = fabsf (response);
+              const float abs_response = std::abs (response);
               if (max_response < abs_response)
               {
                 max_response = abs_response;
@@ -630,7 +630,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals ()
           const float i = qx - px;
           const float j = qy - py;
 
-          const float f = fabs(delta) < 0.05f ? 1.0f : 0.0f;
+          const float f = std::abs(delta) < 0.05f ? 1.0f : 0.0f;
 
           matA0 += f * i * i;
           matA1 += f * i * j;
@@ -901,7 +901,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
 
           surface_normal_orientations_ (l_x, l_y) = angle;
 
-          //*lp_norm = fabs(l_nz)*255;
+          //*lp_norm = std::abs(l_nz)*255;
 
           //int l_val1 = static_cast<int>(l_nx * l_offsetx + l_offsetx);
           //int l_val2 = static_cast<int>(l_ny * l_offsety + l_offsety);

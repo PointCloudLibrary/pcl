@@ -246,9 +246,9 @@ main (int argc, char** argv)
   for (int i = 0; i < number_of_points; i++)
   {
     sphere->GetPoint (i, eye);
-    if (fabs(eye[0]) < EPS) eye[0] = 0;
-    if (fabs(eye[1]) < EPS) eye[1] = 0;
-    if (fabs(eye[2]) < EPS) eye[2] = 0;
+    if (std::abs(eye[0]) < EPS) eye[0] = 0;
+    if (std::abs(eye[1]) < EPS) eye[1] = 0;
+    if (std::abs(eye[2]) < EPS) eye[2] = 0;
 
     viewray[0] = -eye[0];
     viewray[1] = -eye[1];
@@ -280,14 +280,14 @@ main (int argc, char** argv)
       vtkMath::Cross (viewray, x_axis, right);
     else
       vtkMath::Cross (viewray, z_axis, right);
-    if (fabs(right[0]) < EPS) right[0] = 0;
-    if (fabs(right[1]) < EPS) right[1] = 0;
-    if (fabs(right[2]) < EPS) right[2] = 0;
+    if (std::abs(right[0]) < EPS) right[0] = 0;
+    if (std::abs(right[1]) < EPS) right[1] = 0;
+    if (std::abs(right[2]) < EPS) right[2] = 0;
 
     vtkMath::Cross (viewray, right, up);
-    if (fabs(up[0]) < EPS) up[0] = 0;
-    if (fabs(up[1]) < EPS) up[1] = 0;
-    if (fabs(up[2]) < EPS) up[2] = 0;
+    if (std::abs(up[0]) < EPS) up[0] = 0;
+    if (std::abs(up[1]) < EPS) up[1] = 0;
+    if (std::abs(up[2]) < EPS) up[2] = 0;
 
     if (!object_coordinates)
     {

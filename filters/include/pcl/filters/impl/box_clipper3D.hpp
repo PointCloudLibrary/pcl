@@ -128,8 +128,8 @@ pcl::BoxClipper3D<PointT>::clipLineSegment3D (PointT&, PointT&) const
   transformPoint (point2, pt2);
 
   //
-  bool pt1InBox = (fabs(pt1.x) <= 1.0 && fabs (pt1.y) <= 1.0 && fabs (pt1.z) <= 1.0);
-  bool pt2InBox = (fabs(pt2.x) <= 1.0 && fabs (pt2.y) <= 1.0 && fabs (pt2.z) <= 1.0);
+  bool pt1InBox = (std::abs(pt1.x) <= 1.0 && std::abs (pt1.y) <= 1.0 && std::abs (pt1.z) <= 1.0);
+  bool pt2InBox = (std::abs(pt2.x) <= 1.0 && std::abs (pt2.y) <= 1.0 && std::abs (pt2.z) <= 1.0);
 
   // one is outside the other one inside the box
   //if (pt1InBox ^ pt2InBox)

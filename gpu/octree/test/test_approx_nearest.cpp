@@ -137,7 +137,7 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
         ++(gpu_better ? count_gpu_better : count_pcl_better);
 
         if (!gpu_better)
-            diff_pcl_better +=fabs(diff);
+            diff_pcl_better +=std::abs(diff);
     }
 
     diff_pcl_better /=count_pcl_better;

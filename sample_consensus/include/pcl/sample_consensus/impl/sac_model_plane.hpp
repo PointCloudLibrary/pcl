@@ -126,7 +126,7 @@ pcl::SampleConsensusModelPlane<PointT>::getDistancesToModel (
   {
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
-    /*distances[i] = fabs (model_coefficients[0] * input_->points[(*indices_)[i]].x +
+    /*distances[i] = std::abs (model_coefficients[0] * input_->points[(*indices_)[i]].x +
                          model_coefficients[1] * input_->points[(*indices_)[i]].y +
                          model_coefficients[2] * input_->points[(*indices_)[i]].z +
                          model_coefficients[3]);*/
@@ -134,7 +134,7 @@ pcl::SampleConsensusModelPlane<PointT>::getDistancesToModel (
                         input_->points[(*indices_)[i]].y,
                         input_->points[(*indices_)[i]].z,
                         1);
-    distances[i] = fabs (model_coefficients.dot (pt));
+    distances[i] = std::abs (model_coefficients.dot (pt));
   }
 }
 
@@ -164,7 +164,7 @@ pcl::SampleConsensusModelPlane<PointT>::selectWithinDistance (
                         input_->points[(*indices_)[i]].z,
                         1);
     
-    float distance = fabsf (model_coefficients.dot (pt));
+    float distance = std::abs (model_coefficients.dot (pt));
     
     if (distance < threshold)
     {
@@ -201,7 +201,7 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
                         input_->points[(*indices_)[i]].y,
                         input_->points[(*indices_)[i]].z,
                         1);
-    if (fabs (model_coefficients.dot (pt)) < threshold)
+    if (std::abs (model_coefficients.dot (pt)) < threshold)
       nr_p++;
   }
   return (nr_p);
@@ -358,7 +358,7 @@ pcl::SampleConsensusModelPlane<PointT>::doSamplesVerifyModel (
                         input_->points[index].y,
                         input_->points[index].z,
                         1);
-    if (fabs (model_coefficients.dot (pt)) > threshold)
+    if (std::abs (model_coefficients.dot (pt)) > threshold)
       return (false);
   }
 

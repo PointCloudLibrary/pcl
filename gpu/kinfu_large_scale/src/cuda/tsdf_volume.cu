@@ -136,7 +136,7 @@ namespace pcl
                 if(pos < buffer.tsdf_memory_start)
                     pos += size;
 
-                int nbSteps = abs(maxBounds.z);
+                int nbSteps = std::abs(maxBounds.z);
                 
             #pragma unroll				
                 for(int z = 0; z < nbSteps; ++z, pos+=z_step)

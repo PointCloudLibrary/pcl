@@ -151,9 +151,9 @@ TEST (PCL, Eigen)
 
   eigen33 (mat, vec, val);
 
-  EXPECT_NEAR (fabs (vec (0, 0)), 0.168841, 1e-4); EXPECT_NEAR (fabs (vec (0, 1)), 0.161623, 1e-4); EXPECT_NEAR (fabs (vec (0, 2)), 0.972302, 1e-4);
-  EXPECT_NEAR (fabs (vec (1, 0)), 0.451632, 1e-4); EXPECT_NEAR (fabs (vec (1, 1)), 0.889498, 1e-4); EXPECT_NEAR (fabs (vec (1, 2)), 0.0694328, 1e-4);
-  EXPECT_NEAR (fabs (vec (2, 0)), 0.876082, 1e-4); EXPECT_NEAR (fabs (vec (2, 1)), 0.4274,   1e-4); EXPECT_NEAR (fabs (vec (2, 2)), 0.223178, 1e-4);
+  EXPECT_NEAR (std::abs (vec (0, 0)), 0.168841, 1e-4); EXPECT_NEAR (std::abs (vec (0, 1)), 0.161623, 1e-4); EXPECT_NEAR (std::abs (vec (0, 2)), 0.972302, 1e-4);
+  EXPECT_NEAR (std::abs (vec (1, 0)), 0.451632, 1e-4); EXPECT_NEAR (std::abs (vec (1, 1)), 0.889498, 1e-4); EXPECT_NEAR (std::abs (vec (1, 2)), 0.0694328, 1e-4);
+  EXPECT_NEAR (std::abs (vec (2, 0)), 0.876082, 1e-4); EXPECT_NEAR (std::abs (vec (2, 1)), 0.4274,   1e-4); EXPECT_NEAR (std::abs (vec (2, 2)), 0.223178, 1e-4);
 
   EXPECT_NEAR (val (0), 2.86806e-06, 1e-4); EXPECT_NEAR (val (1), 0.00037165, 1e-4); EXPECT_NEAR (val (2), 0.000556858, 1e-4);
 

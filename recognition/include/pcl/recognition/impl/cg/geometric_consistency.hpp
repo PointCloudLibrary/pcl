@@ -116,7 +116,7 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
           dist_ref = scene_point_k - scene_point_j;
           dist_trg = model_point_k - model_point_j;
 
-          double distance = fabs (dist_ref.norm () - dist_trg.norm ());
+          double distance = std::abs (dist_ref.norm () - dist_trg.norm ());
 
           if (distance > gc_size_)
           {

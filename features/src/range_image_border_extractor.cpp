@@ -516,7 +516,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
           
           // Border in between?
           float border_between_points_score = getNeighborDistanceChangeScore(*surface_structure_[index], x, y, x2-x,  y2-y, 1);
-          if (fabsf(border_between_points_score) >= 0.95f*parameters_.minimum_border_probability)
+          if (std::abs(border_between_points_score) >= 0.95f*parameters_.minimum_border_probability)
             continue;
           
           *average_border_direction += *neighbor_border_direction;
@@ -628,7 +628,7 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
           if (score > 0.0f)
           {
             Eigen::Vector3f& neighbor = surface_change_directions_[index2];
-            //if (fabs(neighbor.norm()-1) > 1e-4)
+            //if (std::abs(neighbor.norm()-1) > 1e-4)
               //cerr<<PVARN(neighbor)<<PVARN(score);
             if (point.dot(neighbor)<0.0f)
               neighbor *= -1.0f;

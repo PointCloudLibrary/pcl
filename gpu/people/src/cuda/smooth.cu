@@ -72,7 +72,7 @@ namespace pcl
 
             for (int dx = 0; dx < patch; ++dx)
             {
-                if (abs(d[dx+x] - depth_center) < depthThres)
+                if (std::abs(d[dx+x] - depth_center) < depthThres)
                 {
                     int l = s[dx+x];
                     if (l < num_parts)

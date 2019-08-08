@@ -118,9 +118,9 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
     v23.normalize ();
 
     //TODO: .dot gives nan's
-    th1 = static_cast<int> (pcl_round (std::acos (fabs (v21.dot (v31))) / pih * (binsize-1)));
-    th2 = static_cast<int> (pcl_round (std::acos (fabs (v23.dot (v31))) / pih * (binsize-1)));
-    th3 = static_cast<int> (pcl_round (std::acos (fabs (v23.dot (v21))) / pih * (binsize-1)));
+    th1 = static_cast<int> (pcl_round (std::acos (std::abs (v21.dot (v31))) / pih * (binsize-1)));
+    th2 = static_cast<int> (pcl_round (std::acos (std::abs (v23.dot (v31))) / pih * (binsize-1)));
+    th3 = static_cast<int> (pcl_round (std::acos (std::abs (v23.dot (v21))) / pih * (binsize-1)));
     if (th1 < 0 || th1 >= binsize)
     {
       nn_idx--;
@@ -322,17 +322,17 @@ pcl::ESFEstimation<PointInT, PointOutT>::lci (
     x_inc = -1;
   else
     x_inc = 1;
-  int l = abs (dx);
+  int l = std::abs (dx);
   if (dy < 0)
     y_inc = -1 ;
   else
     y_inc = 1;
-  int m = abs (dy);
+  int m = std::abs (dy);
   if (dz < 0)
     z_inc = -1 ;
   else
     z_inc = 1;
-  int n = abs (dz);
+  int n = std::abs (dz);
   int dx2 = 2 * l;
   int dy2 = 2 * m;
   int dz2 = 2 * n;

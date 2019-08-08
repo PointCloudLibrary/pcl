@@ -113,7 +113,7 @@ namespace pcl
 
         __device__ __forceinline__ void computeRoots3(float c0, float c1, float c2, float3& roots)
         {
-            if ( fabsf(c0) < numeric_limits<float>::epsilon())// one root is 0 -> quadratic equation
+            if ( std::abs(c0) < numeric_limits<float>::epsilon())// one root is 0 -> quadratic equation
             {
                 computeRoots2 (c2, c1, roots);
             }
@@ -211,9 +211,9 @@ namespace pcl
                 // Scale the matrix so its entries are in [-1,1].  The scaling is applied
                 // only when at least one matrix entry has magnitude larger than 1.
 
-                float max01 = fmaxf( fabsf(mat_pkg[0]), fabsf(mat_pkg[1]) );
-                float max23 = fmaxf( fabsf(mat_pkg[2]), fabsf(mat_pkg[3]) );
-                float max45 = fmaxf( fabsf(mat_pkg[4]), fabsf(mat_pkg[5]) );
+                float max01 = fmaxf( std::abs(mat_pkg[0]), std::abs(mat_pkg[1]) );
+                float max23 = fmaxf( std::abs(mat_pkg[2]), std::abs(mat_pkg[3]) );
+                float max45 = fmaxf( std::abs(mat_pkg[4]), std::abs(mat_pkg[5]) );
                 float m0123 = fmaxf( max01, max23);
                 float scale = fmaxf( max45, m0123);
 

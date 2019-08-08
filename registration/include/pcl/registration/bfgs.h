@@ -340,11 +340,11 @@ BFGS<FunctorType>::minimizeOneStep(FVectorType  &x)
 
   if (delta_f < 0)
   {
-    Scalar del = std::max (-delta_f, 10 * std::numeric_limits<Scalar>::epsilon() * fabs(f0));
+    Scalar del = std::max (-delta_f, 10 * std::numeric_limits<Scalar>::epsilon() * std::abs(f0));
     alpha1 = std::min (1.0, 2.0 * del / (-fp0));
   }
   else
-    alpha1 = fabs(parameters.step_size);
+    alpha1 = std::abs(parameters.step_size);
 
   BFGSSpace::Status status = lineSearch(parameters.rho, parameters.sigma, 
                                         parameters.tau1, parameters.tau2, parameters.tau3, 
@@ -539,7 +539,7 @@ BFGS<FunctorType>::lineSearch(Scalar rho, Scalar sigma,
     fpalpha = applyDF (alpha);
 
     /* Fletcher's sigma test */
-    if (fabs (fpalpha) <= -sigma * fp0)
+    if (std::abs (fpalpha) <= -sigma * fp0)
     {
       alpha_new = alpha;
       return BFGSSpace::Success;
@@ -594,7 +594,7 @@ BFGS<FunctorType>::lineSearch(Scalar rho, Scalar sigma,
     {
       fpalpha = applyDF (alpha);
           
-      if (fabs(fpalpha) <= -sigma * fp0)
+      if (std::abs(fpalpha) <= -sigma * fp0)
       {
         alpha_new = alpha;
         return BFGSSpace::Success;  /* terminate */

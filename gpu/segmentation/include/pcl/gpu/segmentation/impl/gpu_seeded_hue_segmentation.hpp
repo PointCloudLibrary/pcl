@@ -117,7 +117,7 @@ seededHueSegmentation (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB>
           PointXYZHSV h_l;
           PointXYZRGBtoXYZHSV(p_l, h_l);
 
-          if (fabs(h_l.h - h.h) < delta_hue)
+          if (std::abs(h_l.h - h.h) < delta_hue)
           {
             processed[data[qp_r + qp * max_answers]] = true;
             queries_host.push_back (host_cloud_->points[data[qp_r + qp * max_answers]]);

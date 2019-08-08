@@ -279,7 +279,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::isWithinNucleusCen
 // template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> bool
 // pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::isWithinSusan2D (int nucleus, int neighbor) const
 // {
-//   return (fabs (intensity_ (surface_->points[nucleus]) - 
+//   return (std::abs (intensity_ (surface_->points[nucleus]) - 
 //                 intensity_ (surface_->points[neighbor])) <= intensity_threshold_);
 // }
 
@@ -295,7 +295,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::isWithinNucleusCen
 // {
 //   Eigen::Vector3f nucleus_normal = normals_->point[nucleus].getVector3fMap ();
 //   return ((1 - nucleus_normal.dot (normals_->points[*index].getNormalVector3fMap ()) <= angular_threshold_) || 
-//           (fabs (intensity_ (surface_->points[nucleus]) - intensity_ (surface_->points[neighbor])) <= intensity_threshold_));
+//           (std::abs (intensity_ (surface_->points[nucleus]) - intensity_ (surface_->points[neighbor])) <= intensity_threshold_));
 // }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -334,7 +334,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
       if ((*index != point_index) && std::isfinite (normals_->points[*index].normal_x))
       {
         // if the point fulfill condition
-        if ((fabs (nucleus_intensity - intensity_ (input_->points[*index])) <= intensity_threshold_) ||
+        if ((std::abs (nucleus_intensity - intensity_ (input_->points[*index])) <= intensity_threshold_) ||
             (1 - nucleus_normal.dot (normals_->points[*index].getNormalVector3fMap ()) <= angular_threshold_))
         {
           ++area;

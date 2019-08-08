@@ -717,7 +717,7 @@ namespace pcl
       assert (diff[2] > 0);
       Eigen::Vector3d center = (bb_max + bb_min)/2.0;
 
-      double max_sidelength = std::max (std::max (fabs (diff[0]), fabs (diff[1])), fabs (diff[2]));
+      double max_sidelength = std::max (std::max (std::abs (diff[0]), std::abs (diff[1])), std::abs (diff[2]));
       assert (max_sidelength > 0);
       bb_min = center - Eigen::Vector3d (1.0, 1.0, 1.0)*(max_sidelength/2.0);
       bb_max = center + Eigen::Vector3d (1.0, 1.0, 1.0)*(max_sidelength/2.0);
