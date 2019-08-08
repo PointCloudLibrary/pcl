@@ -5,6 +5,7 @@
 #include <memory>
 #include <mutex>
 #include <thread>
+#include <queue>
 
 // PCL
 #include <pcl/pcl_macros.h>
