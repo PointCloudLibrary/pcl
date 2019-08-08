@@ -38,20 +38,8 @@
  */
 
 #include <fstream>
-#include <fcntl.h>
-#include <string>
-#include <cstdlib>
-#include <pcl/io/boost.h>
-#include <pcl/common/io.h>
-#include <pcl/io/low_level_io.h>
-#include <pcl/io/lzf.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/time.h>
-
-#include <cstring>
-#include <cerrno>
-
-#include <boost/version.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void

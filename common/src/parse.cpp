@@ -37,7 +37,6 @@
  */
 
 #include <cctype>
-#include <cstdio>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <boost/algorithm/string.hpp>

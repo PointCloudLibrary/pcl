@@ -36,22 +36,7 @@
  */
 
 #include <fcntl.h>
-#include <pcl/point_types.h>
-#include <pcl/common/io.h>
 #include <pcl/io/ply_io.h>
-#include <pcl/io/boost.h>
-
-#include <cstdlib>
-#include <fstream>
-#include <functional>
-#include <map>
-#include <sstream>
-#include <string>
-#include <tuple>
-
-// https://www.boost.org/doc/libs/1_70_0/libs/filesystem/doc/index.htm#Coding-guidelines
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
 

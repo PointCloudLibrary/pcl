@@ -36,8 +36,6 @@
  */
 #include <pcl/console/print.h>
 #include <algorithm>
-#include <cstdlib>
-#include <cctype> // for toupper
 #include <string>
 
 #if defined WIN32

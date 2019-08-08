@@ -40,12 +40,6 @@
 #include <png.h>
 #include <zlib.h>
 
-#include <vector>
-#include <cstdlib>
-#include <cstdio>
-#include <cassert>
-
-
 // user defined I/O callback methods for libPNG
 namespace 
 {

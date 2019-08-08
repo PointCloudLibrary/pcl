@@ -37,9 +37,7 @@
  */
 #define PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
 
-#include <pcl/compression/entropy_range_coder.h>
 #include <pcl/compression/impl/entropy_range_coder.hpp>
 
 #include <pcl/compression/octree_pointcloud_compression.h>

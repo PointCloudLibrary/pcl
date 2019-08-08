@@ -39,10 +39,6 @@
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/tar.h>
-#include <pcl/pcl_config.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberImplementation //////////////////////

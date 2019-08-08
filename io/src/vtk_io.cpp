@@ -40,7 +40,6 @@
 #include <pcl/point_types.h>
 #include <pcl/io/vtk_io.h>
 #include <fstream>
-#include <iostream>
 #include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

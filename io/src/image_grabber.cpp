@@ -39,10 +39,6 @@
 #include <pcl/io/image_grabber.h>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/pcl_config.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 
 #ifdef PCL_BUILT_WITH_VTK
   #include <vtkImageReader2.h>

@@ -36,13 +36,9 @@
  */
 
 #include <fstream>
-#include <pcl/io/boost.h>
 #include <pcl/common/io.h>
 #include <pcl/io/ifs_io.h>
 #include <pcl/console/time.h>
-
-#include <cstring>
-#include <cerrno>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 int

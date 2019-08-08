@@ -36,8 +36,6 @@
 
 #include <pcl/common/feature_histogram.h>
 
-#include <algorithm>
-
 #include <pcl/console/print.h>
 
 pcl::FeatureHistogram::FeatureHistogram (size_t const number_of_bins,

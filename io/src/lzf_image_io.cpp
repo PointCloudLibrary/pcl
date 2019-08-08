@@ -37,11 +37,8 @@
 #include <pcl/io/low_level_io.h>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/io/lzf.h>
-#include <pcl/console/print.h>
 #include <fcntl.h>
-#include <cstring>
 #include <boost/filesystem.hpp>
-#include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
 #define LZF_HEADER_SIZE 37

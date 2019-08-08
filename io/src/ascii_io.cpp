@@ -36,10 +36,7 @@
  */
 
 #include <pcl/io/ascii_io.h>
-#include <istream>
 #include <fstream>
-#include <boost/filesystem.hpp>
-#include <boost/cstdint.hpp>
 
 //////////////////////////////////////////////////////////////////////////////
 pcl::ASCIIReader::ASCIIReader ()

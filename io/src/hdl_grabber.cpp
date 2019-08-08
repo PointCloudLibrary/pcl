@@ -39,14 +39,8 @@
 #include <thread>
 
 #include <pcl/console/print.h>
-#include <pcl/io/boost.h>
 #include <pcl/io/hdl_grabber.h>
-#include <boost/version.hpp>
-#include <boost/foreach.hpp>
-#include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-#include <boost/array.hpp>
-#include <boost/math/special_functions.hpp>
 #ifdef HAVE_PCAP
 #include <pcap.h>
 #endif // #ifdef HAVE_PCAP
