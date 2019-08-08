@@ -338,7 +338,7 @@ namespace pcl
           if ( 1.0 - p <= 0.0 )
             return 1;
 
-          return static_cast<int> (log (1.0-success_probability)/log (1.0-p) + 1.0);
+          return static_cast<int> (std::log (1.0-success_probability)/std::log (1.0-p) + 1.0);
         }
 
         inline void

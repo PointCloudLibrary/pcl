@@ -413,9 +413,9 @@ namespace pcl
             std::vector<float> hr (num_of_branches + 1, 0.f);
             for (size_t branch_index = 0; branch_index < (num_of_branches + 1); ++branch_index)
             {
-              hr[branch_index] = static_cast<float>(0.5f * log (std::pow (2 * M_PI, 3)
+              hr[branch_index] = static_cast<float>(0.5f * std::log (std::pow (2 * M_PI, 3)
                                                     * offset_covariances[branch_index].determinant ())
-                                                    + 0.5f * log (std::pow (2 * M_PI, 3)
+                                                    + 0.5f * std::log (std::pow (2 * M_PI, 3)
                                                     * angle_covariances[branch_index].determinant ()));
             }
 

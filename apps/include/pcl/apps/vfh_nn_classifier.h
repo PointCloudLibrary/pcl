@@ -246,7 +246,7 @@ namespace pcl
         // compute the VFH feature for this point cloud
         FeatureCloudPtr vfhs = computeFeature (testing_data);
         // compute gaussian parameter producing the desired minimum score (around 50 for the default values)
-        float gaussian_param = - static_cast<float> (radius / log (min_score));
+        float gaussian_param = - static_cast<float> (radius / std::log (min_score));
         // TODO accept result to be filled in by reference
         return classifier_.classify(vfhs->points.at (0), radius, gaussian_param);
       }

@@ -114,7 +114,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKern
   BriskPatternPoint* pattern_iterator = pattern_points_;
 
   // define the scale discretization:
-  static const float lb_scale = logf (scalerange_) / logf (2.0);
+  static const float lb_scale = std::log (scalerange_) / std::log (2.0);
   static const float lb_scale_step = lb_scale / (float (scales_));
 
   scale_list_ = new float[scales_];

@@ -22,7 +22,7 @@ namespace pcl
       for (size_t i = 0; i < point_coherences_.size (); i++)
       {
         PointCoherencePtr coherence = point_coherences_[i];
-        double d = log(coherence->compute (source, target));
+        double d = std::log(coherence->compute (source, target));
         //double d = coherence->compute (source, target);
         if (! std::isnan(d))
           val += d;

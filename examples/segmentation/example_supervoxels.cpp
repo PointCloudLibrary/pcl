@@ -269,7 +269,7 @@ main (int argc, char ** argv)
   //////////////////////////////  //////////////////////////////
   
   // If the cloud is organized and we haven't disabled the transform we need to
-  // check that there are no negative z values, since we use log(z)
+  // check that there are no negative z values, since we use std::log(z)
   if (cloud->isOrganized () && !disable_transform)
   {
     for (const auto &point : *cloud)

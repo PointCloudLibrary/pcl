@@ -325,9 +325,9 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
 
   // Certainty that the groundtruth is correct
   const float GT_PROB = 0.9f;
-  const float u_energy = -logf ( 1.0f / static_cast<float> (n_labels) );
-  const float n_energy = -logf ( (1.0f - GT_PROB) / static_cast<float>(n_labels - 1) );
-  const float p_energy = -logf ( GT_PROB );
+  const float u_energy = -std::log ( 1.0f / static_cast<float> (n_labels) );
+  const float n_energy = -std::log ( (1.0f - GT_PROB) / static_cast<float>(n_labels - 1) );
+  const float p_energy = -std::log ( GT_PROB );
 
   for (size_t k = 0; k < filtered_anno_->points.size (); k++)
   {
@@ -362,8 +362,8 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
       if (label == 1)
       {
         const float PROB = 0.2f;
-        const float n_energy2 = -logf ( (1.0f - PROB) / static_cast<float>(n_labels - 1) );
-        const float p_energy2 = -logf ( PROB );
+        const float n_energy2 = -std::log ( (1.0f - PROB) / static_cast<float>(n_labels - 1) );
+        const float p_energy2 = -std::log ( PROB );
 
         for (size_t i = 0; i < n_labels; i++)
           unary[u_idx + i] = n_energy2;

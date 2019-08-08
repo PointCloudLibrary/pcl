@@ -239,7 +239,7 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::build (const 
 
   // Compute the number of tree levels
   if ( arg > 1 )
-    tree_levels_ = static_cast<int> (ceil (log (arg)/log (2.0)) + 0.5);
+    tree_levels_ = static_cast<int> (ceil (std::log (arg)/std::log (2.0)) + 0.5);
   else
     tree_levels_ = 0;
 

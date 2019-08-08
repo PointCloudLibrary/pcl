@@ -127,7 +127,7 @@ namespace pcl
           good_coeff = iterations_;
 #endif
 
-          // Compute the k parameter (k=log(z)/log(1-w^n))
+          // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
           float w = (float)((float)n_best_inliers_count / (float)sac_model_->getIndices ()->size ());
     //      float p_no_outliers = 1.0 - pow (w, (float)selection.size ());
           float p_no_outliers = 1.0f - pow (w, (float)1);
@@ -136,7 +136,7 @@ namespace pcl
           if (p_no_outliers == 1.0f)
             k++;
           else
-            k = log (1.0f - probability_) / log (p_no_outliers);
+            k = std::log (1.0f - probability_) / std::log (p_no_outliers);
         }
 
         ++iterations_;
