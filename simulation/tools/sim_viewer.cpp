@@ -292,9 +292,9 @@ void print_Quaterniond(Eigen::Quaterniond r, std::stringstream &ss){
 // Normalize angle to be within the interval [-pi,pi].
 double standardRad(double t) {
   if (t >= 0.) {
-    t = fmod(t+M_PI, 2*M_PI) - M_PI;
+    t = std::fmod(t+M_PI, 2*M_PI) - M_PI;
   } else {
-    t = fmod(t-M_PI, -2*M_PI) + M_PI;
+    t = std::fmod(t-M_PI, -2*M_PI) + M_PI;
   }
   return t;
 }
