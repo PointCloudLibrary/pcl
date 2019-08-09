@@ -25,6 +25,7 @@ set(incs
 
 set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/convolution.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/kernel.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/edge.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/morphology.hpp"
 )
