@@ -161,7 +161,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
 
     ++iterations_;
     if (debug_verbosity_level > 1)
-      PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Trial %d out of %d. Best penalty is %f.\n", iterations_, static_cast<int> (ceil (k)), d_best_penalty);
+      PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Trial %d out of %d. Best penalty is %f.\n", iterations_, static_cast<int> (std::ceil (k)), d_best_penalty);
     if (iterations_ > max_iterations_)
     {
       if (debug_verbosity_level > 0)

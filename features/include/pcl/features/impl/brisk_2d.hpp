@@ -150,7 +150,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKern
             pattern_iterator->sigma = static_cast<float> (sigma_scale * scale_list_[scale] * (double (radius_list[ring])) * sin (M_PI / double (number_list[ring])));
 
           // adapt the sizeList if necessary
-          const unsigned int size = static_cast<const unsigned int> (ceil (((scale_list_[scale] * radius_list[ring]) + pattern_iterator->sigma)) + 1);
+          const unsigned int size = static_cast<const unsigned int> (std::ceil (((scale_list_[scale] * radius_list[ring]) + pattern_iterator->sigma)) + 1);
 
           if (size_list_[scale] < size)
             size_list_[scale] = size;
@@ -211,7 +211,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKern
   }
 
   // no bits:
-  strings_ = int (ceil ((float (no_short_pairs_)) / 128.0)) * 4 * 4;
+  strings_ = int (std::ceil ((float (no_short_pairs_)) / 128.0)) * 4 * 4;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

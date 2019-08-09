@@ -146,12 +146,12 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
     int p_cnt = 0;
     // IN, OUT, MIXED, Ratio line tracing, index1->index2
     {
-      const int xs = p1[0] < 0.0? static_cast<int>(floor(p1[0])+GRIDSIZE_H): static_cast<int>(ceil(p1[0])+GRIDSIZE_H-1);
-      const int ys = p1[1] < 0.0? static_cast<int>(floor(p1[1])+GRIDSIZE_H): static_cast<int>(ceil(p1[1])+GRIDSIZE_H-1);
-      const int zs = p1[2] < 0.0? static_cast<int>(floor(p1[2])+GRIDSIZE_H): static_cast<int>(ceil(p1[2])+GRIDSIZE_H-1);
-      const int xt = p2[0] < 0.0? static_cast<int>(floor(p2[0])+GRIDSIZE_H): static_cast<int>(ceil(p2[0])+GRIDSIZE_H-1);
-      const int yt = p2[1] < 0.0? static_cast<int>(floor(p2[1])+GRIDSIZE_H): static_cast<int>(ceil(p2[1])+GRIDSIZE_H-1);
-      const int zt = p2[2] < 0.0? static_cast<int>(floor(p2[2])+GRIDSIZE_H): static_cast<int>(ceil(p2[2])+GRIDSIZE_H-1);
+      const int xs = p1[0] < 0.0? static_cast<int>(floor(p1[0])+GRIDSIZE_H): static_cast<int>(std::ceil(p1[0])+GRIDSIZE_H-1);
+      const int ys = p1[1] < 0.0? static_cast<int>(floor(p1[1])+GRIDSIZE_H): static_cast<int>(std::ceil(p1[1])+GRIDSIZE_H-1);
+      const int zs = p1[2] < 0.0? static_cast<int>(floor(p1[2])+GRIDSIZE_H): static_cast<int>(std::ceil(p1[2])+GRIDSIZE_H-1);
+      const int xt = p2[0] < 0.0? static_cast<int>(floor(p2[0])+GRIDSIZE_H): static_cast<int>(std::ceil(p2[0])+GRIDSIZE_H-1);
+      const int yt = p2[1] < 0.0? static_cast<int>(floor(p2[1])+GRIDSIZE_H): static_cast<int>(std::ceil(p2[1])+GRIDSIZE_H-1);
+      const int zt = p2[2] < 0.0? static_cast<int>(floor(p2[2])+GRIDSIZE_H): static_cast<int>(std::ceil(p2[2])+GRIDSIZE_H-1);
       wt_d2.push_back (this->lci (xs, ys, zs, xt, yt, zt, ratio, vxlcnt, pcnt1));
       if (wt_d2.back () == 2)
         h_mix_ratio[static_cast<int> (pcl_round (ratio * (binsize-1)))]++;
@@ -160,12 +160,12 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
     }
     // IN, OUT, MIXED, Ratio line tracing, index1->index3
     {
-      const int xs = p1[0] < 0.0? static_cast<int>(floor(p1[0])+GRIDSIZE_H): static_cast<int>(ceil(p1[0])+GRIDSIZE_H-1);
-      const int ys = p1[1] < 0.0? static_cast<int>(floor(p1[1])+GRIDSIZE_H): static_cast<int>(ceil(p1[1])+GRIDSIZE_H-1);
-      const int zs = p1[2] < 0.0? static_cast<int>(floor(p1[2])+GRIDSIZE_H): static_cast<int>(ceil(p1[2])+GRIDSIZE_H-1);
-      const int xt = p3[0] < 0.0? static_cast<int>(floor(p3[0])+GRIDSIZE_H): static_cast<int>(ceil(p3[0])+GRIDSIZE_H-1);
-      const int yt = p3[1] < 0.0? static_cast<int>(floor(p3[1])+GRIDSIZE_H): static_cast<int>(ceil(p3[1])+GRIDSIZE_H-1);
-      const int zt = p3[2] < 0.0? static_cast<int>(floor(p3[2])+GRIDSIZE_H): static_cast<int>(ceil(p3[2])+GRIDSIZE_H-1);
+      const int xs = p1[0] < 0.0? static_cast<int>(floor(p1[0])+GRIDSIZE_H): static_cast<int>(std::ceil(p1[0])+GRIDSIZE_H-1);
+      const int ys = p1[1] < 0.0? static_cast<int>(floor(p1[1])+GRIDSIZE_H): static_cast<int>(std::ceil(p1[1])+GRIDSIZE_H-1);
+      const int zs = p1[2] < 0.0? static_cast<int>(floor(p1[2])+GRIDSIZE_H): static_cast<int>(std::ceil(p1[2])+GRIDSIZE_H-1);
+      const int xt = p3[0] < 0.0? static_cast<int>(floor(p3[0])+GRIDSIZE_H): static_cast<int>(std::ceil(p3[0])+GRIDSIZE_H-1);
+      const int yt = p3[1] < 0.0? static_cast<int>(floor(p3[1])+GRIDSIZE_H): static_cast<int>(std::ceil(p3[1])+GRIDSIZE_H-1);
+      const int zt = p3[2] < 0.0? static_cast<int>(floor(p3[2])+GRIDSIZE_H): static_cast<int>(std::ceil(p3[2])+GRIDSIZE_H-1);
       wt_d2.push_back (this->lci (xs, ys, zs, xt, yt, zt, ratio, vxlcnt, pcnt2));
       if (wt_d2.back () == 2)
         h_mix_ratio[static_cast<int>(pcl_round (ratio * (binsize-1)))]++;
@@ -174,12 +174,12 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
     }
     // IN, OUT, MIXED, Ratio line tracing, index2->index3
     {
-      const int xs = p2[0] < 0.0? static_cast<int>(floor(p2[0])+GRIDSIZE_H): static_cast<int>(ceil(p2[0])+GRIDSIZE_H-1);
-      const int ys = p2[1] < 0.0? static_cast<int>(floor(p2[1])+GRIDSIZE_H): static_cast<int>(ceil(p2[1])+GRIDSIZE_H-1);
-      const int zs = p2[2] < 0.0? static_cast<int>(floor(p2[2])+GRIDSIZE_H): static_cast<int>(ceil(p2[2])+GRIDSIZE_H-1);
-      const int xt = p3[0] < 0.0? static_cast<int>(floor(p3[0])+GRIDSIZE_H): static_cast<int>(ceil(p3[0])+GRIDSIZE_H-1);
-      const int yt = p3[1] < 0.0? static_cast<int>(floor(p3[1])+GRIDSIZE_H): static_cast<int>(ceil(p3[1])+GRIDSIZE_H-1);
-      const int zt = p3[2] < 0.0? static_cast<int>(floor(p3[2])+GRIDSIZE_H): static_cast<int>(ceil(p3[2])+GRIDSIZE_H-1);
+      const int xs = p2[0] < 0.0? static_cast<int>(floor(p2[0])+GRIDSIZE_H): static_cast<int>(std::ceil(p2[0])+GRIDSIZE_H-1);
+      const int ys = p2[1] < 0.0? static_cast<int>(floor(p2[1])+GRIDSIZE_H): static_cast<int>(std::ceil(p2[1])+GRIDSIZE_H-1);
+      const int zs = p2[2] < 0.0? static_cast<int>(floor(p2[2])+GRIDSIZE_H): static_cast<int>(std::ceil(p2[2])+GRIDSIZE_H-1);
+      const int xt = p3[0] < 0.0? static_cast<int>(floor(p3[0])+GRIDSIZE_H): static_cast<int>(std::ceil(p3[0])+GRIDSIZE_H-1);
+      const int yt = p3[1] < 0.0? static_cast<int>(floor(p3[1])+GRIDSIZE_H): static_cast<int>(std::ceil(p3[1])+GRIDSIZE_H-1);
+      const int zt = p3[2] < 0.0? static_cast<int>(floor(p3[2])+GRIDSIZE_H): static_cast<int>(std::ceil(p3[2])+GRIDSIZE_H-1);
       wt_d2.push_back (this->lci (xs,ys,zs,xt,yt,zt,ratio,vxlcnt,pcnt3));
       if (wt_d2.back () == 2)
         h_mix_ratio[static_cast<int>(pcl_round(ratio * (binsize-1)))]++;

@@ -572,9 +572,9 @@ namespace pcl
         bounds.w += height_ / 2.0f;
   
         res.x = (int)floor (bounds.x); 
-        res.y = (int)ceil  (bounds.y);
+        res.y = (int)std::ceil  (bounds.y);
         res.z = (int)floor (bounds.z);
-        res.w = (int)ceil  (bounds.w);
+        res.w = (int)std::ceil  (bounds.w);
   
         // clamp the coordinates to fit to depth image size
         res.x = clamp (res.x, 0, width_-1);

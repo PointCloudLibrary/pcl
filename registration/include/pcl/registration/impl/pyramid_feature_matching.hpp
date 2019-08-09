@@ -175,7 +175,7 @@ pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
     D += aux * aux;
   }
   D = std::sqrt (D);
-  nr_levels = static_cast<size_t> (ceilf (std::log2(D)));
+  nr_levels = static_cast<size_t> (std::ceil (std::log2(D)));
   PCL_DEBUG ("[pcl::PyramidFeatureHistogram::initializeHistogram] Pyramid will have %u levels with a hyper-parallelepiped diagonal size of %f\n", nr_levels, D);
 
 
@@ -187,7 +187,7 @@ pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
     for (size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i) 
     {
       bins_per_dimension[dim_i] = 
-        static_cast<size_t> (ceilf ((dimension_range_target_[dim_i].second - dimension_range_target_[dim_i].first) / (powf (2.0f, static_cast<float> (level_i)) * std::sqrt (static_cast<float> (nr_dimensions)))));
+        static_cast<size_t> (std::ceil ((dimension_range_target_[dim_i].second - dimension_range_target_[dim_i].first) / (powf (2.0f, static_cast<float> (level_i)) * std::sqrt (static_cast<float> (nr_dimensions)))));
       bin_step[dim_i] = powf (2.0f, static_cast<float> (level_i)) * std::sqrt (static_cast<float> (nr_dimensions));
     }
     hist_levels[level_i] = PyramidFeatureHistogramLevel (bins_per_dimension, bin_step);

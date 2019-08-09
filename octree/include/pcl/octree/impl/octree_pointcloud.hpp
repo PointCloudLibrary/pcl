@@ -626,9 +626,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   const float minValue = std::numeric_limits<float>::epsilon();
 
   // find maximum key values for x, y, z
-  max_key_x = static_cast<unsigned int> (ceil ((max_x_ - min_x_ - minValue) / resolution_));
-  max_key_y = static_cast<unsigned int> (ceil ((max_y_ - min_y_ - minValue) / resolution_));
-  max_key_z = static_cast<unsigned int> (ceil ((max_z_ - min_z_ - minValue) / resolution_));
+  max_key_x = static_cast<unsigned int> (std::ceil ((max_x_ - min_x_ - minValue) / resolution_));
+  max_key_y = static_cast<unsigned int> (std::ceil ((max_y_ - min_y_ - minValue) / resolution_));
+  max_key_z = static_cast<unsigned int> (std::ceil ((max_z_ - min_z_ - minValue) / resolution_));
 
   // find maximum amount of keys
   max_voxels = std::max (std::max (std::max (max_key_x, max_key_y), max_key_z), static_cast<unsigned int> (2));

@@ -458,7 +458,7 @@ float
 costFunction2 (float ref_val, float depth_val)
 {
   float min_dist = std::abs(ref_val - 1/(1.4285f - (depth_val)*1.3788f));
-  int lup = static_cast<int> (ceil (min_dist*100)); // has resolution of 0.01m
+  int lup = static_cast<int> (std::ceil (min_dist*100)); // has resolution of 0.01m
 
   if (lup > 300)
   { // implicitly this caps the cost if there is a hole in the model
@@ -507,7 +507,7 @@ costFunction3 (float ref_val,float depth_val)
   { // working range
     float min_dist = std::abs (ref_val - 0.7253f/(1.0360f - (depth_val)));
 
-    int lup = static_cast<int> (ceil (min_dist*100)); // has resolution of 0.01m
+    int lup = static_cast<int> (std::ceil (min_dist*100)); // has resolution of 0.01m
     if (lup > 300)
     { // implicitly this caps the cost if there is a hole in the model
       lup = 300;
@@ -522,7 +522,7 @@ costFunction4(float ref_val,float depth_val)
 {
   float disparity_diff = std::abs( ( -0.7253f/ref_val +1.0360f ) -  depth_val );
 
-  int top_lup = static_cast<int> (ceil (disparity_diff*300)); // has resolution of 0.001m
+  int top_lup = static_cast<int> (std::ceil (disparity_diff*300)); // has resolution of 0.001m
   if (top_lup > 300)
   {
     top_lup =300;
@@ -531,7 +531,7 @@ costFunction4(float ref_val,float depth_val)
 
   // bottom:
   //bottom = bottom_lookup(   round(mu*1000+1));
-  int bottom_lup = static_cast<int> (ceil( (depth_val) * 300)); // has resolution of 0.001m
+  int bottom_lup = static_cast<int> (std::ceil( (depth_val) * 300)); // has resolution of 0.001m
   if (bottom_lup > 300)
   {
     bottom_lup =300;
@@ -808,7 +808,7 @@ pcl::simulation::RangeLikelihood::addNoise ()
   float bins = 470;
   for (int i = 0; i < camera_width_*camera_height_ ; i++)
   {
-    depth_buffer_[i] =  ceil (depth_buffer_[i]*bins)/bins;
+    depth_buffer_[i] =  std::ceil (depth_buffer_[i]*bins)/bins;
   }
   cout << "in add noise\n";
 }
