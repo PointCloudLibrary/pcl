@@ -85,7 +85,7 @@ pcl::recognition::HoughSpace3D::vote (const Eigen::Vector3d &single_vote_coord, 
 
   for (int i=0; i<3; ++i)
   {
-    int currentBin = static_cast<int> (floor ((single_vote_coord[i] - min_coord_[i])/bin_size_[i]));
+    int currentBin = static_cast<int> (std::floor ((single_vote_coord[i] - min_coord_[i])/bin_size_[i]));
     if (currentBin < 0 || currentBin >= bin_count_[i])
     {
       //PCL_ERROR("Current Vote goes out of bounds in the Hough Table!\nDimension: %d, Value inserted: %f, Min value: %f, Max value: %f\n", i, 
@@ -122,7 +122,7 @@ pcl::recognition::HoughSpace3D::voteInt (const Eigen::Vector3d &single_vote_coor
   for (int d = 0; d < 3; ++d)
   {
     // Compute coordinates of central bin
-    central_bin_coord[d] = static_cast<int> (floor ((single_vote_coord[d] - min_coord_[d]) / bin_size_[d]));
+    central_bin_coord[d] = static_cast<int> (std::floor ((single_vote_coord[d] - min_coord_[d]) / bin_size_[d]));
     if (central_bin_coord[d] < 0 || central_bin_coord[d] >= bin_count_[d])
     {
       //PCL_ERROR("Current Vote goes out of bounds in the Hough Table!\nDimension: %d, Value inserted: %f, Min value: %f, Max value: %f\n", d,

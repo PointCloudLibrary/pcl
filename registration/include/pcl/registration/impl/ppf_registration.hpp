@@ -77,7 +77,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
   std::vector <std::vector <unsigned int> > accumulator_array;
   accumulator_array.resize (input_->points.size ());
 
-  size_t aux_size = static_cast<size_t> (floor (2 * M_PI / search_method_->getAngleDiscretizationStep ()));
+  size_t aux_size = static_cast<size_t> (std::floor (2 * M_PI / search_method_->getAngleDiscretizationStep ()));
   for (size_t i = 0; i < input_->points.size (); ++i)
   {
     std::vector<unsigned int> aux (aux_size);
@@ -136,7 +136,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
             size_t model_point_index = nearest_index.second;
             // Calculate angle alpha = alpha_m - alpha_s
             float alpha = search_method_->alpha_m_[model_reference_index][model_point_index] - alpha_s;
-            unsigned int alpha_discretized = static_cast<unsigned int> (std::floor (alpha) + floor (M_PI / search_method_->getAngleDiscretizationStep ()));
+            unsigned int alpha_discretized = static_cast<unsigned int> (std::floor (alpha) + std::floor (M_PI / search_method_->getAngleDiscretizationStep ()));
             accumulator_array[model_reference_index][alpha_discretized] ++;
           }
         }
@@ -169,7 +169,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
     Eigen::Affine3f transform_mg (Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg);
     Eigen::Affine3f max_transform = 
       transform_sg.inverse () * 
-      Eigen::AngleAxisf ((static_cast<float> (max_votes_j) - floorf (static_cast<float> (M_PI) / search_method_->getAngleDiscretizationStep ())) * search_method_->getAngleDiscretizationStep (), Eigen::Vector3f::UnitX ()) * 
+      Eigen::AngleAxisf ((static_cast<float> (max_votes_j) - std::floor (static_cast<float> (M_PI) / search_method_->getAngleDiscretizationStep ())) * search_method_->getAngleDiscretizationStep (), Eigen::Vector3f::UnitX ()) * 
       transform_mg;
 
     voted_poses.push_back (PoseWithVotes (max_transform, max_votes));

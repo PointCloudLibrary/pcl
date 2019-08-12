@@ -141,9 +141,9 @@ pcl::people::PersonClassifier<PointT>::resize (PointCloudPtr& input_image,
   {
     A = T_inv * Eigen::Vector3f(i, j, 1);
     c1 = std::ceil(A(0));
-    f1 = floor(A(0));
+    f1 = std::floor(A(0));
     c2 = std::ceil(A(1));
-    f2 = floor(A(1));
+    f2 = std::floor(A(1));
 
     if ( (f1 < 0) ||
        (c1 < 0) ||
@@ -221,10 +221,10 @@ pcl::people::PersonClassifier<PointT>::evaluate (float height_person,
   return (-1000);
   }
 
-  int height = floor((height_person * window_height_) / (0.75 * window_height_) + 0.5);  // floor(i+0.5) = round(i)
-  int width = floor((height_person * window_width_) / (0.75 * window_height_) + 0.5);
-  int xmin = floor(xc - width / 2 + 0.5);
-  int ymin = floor(yc - height / 2 + 0.5);
+  int height = std::floor((height_person * window_height_) / (0.75 * window_height_) + 0.5);  // std::floor(i+0.5) = round(i)
+  int width = std::floor((height_person * window_width_) / (0.75 * window_height_) + 0.5);
+  int xmin = std::floor(xc - width / 2 + 0.5);
+  int ymin = std::floor(yc - height / 2 + 0.5);
   double confidence;
 
   if (height > 0)

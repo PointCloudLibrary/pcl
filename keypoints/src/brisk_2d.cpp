@@ -1565,8 +1565,8 @@ pcl::keypoints::brisk::Layer::halfsample (
   const bool noleftover = (srcwidth % 16) == 0; // note: leftoverCols can be zero but this still false...
 
   // make sure the destination image is of the right size:
-  assert (floor (double (srcwidth) / 2.0) == dstwidth);
-  assert (floor (double (srcheight) / 2.0) == dstheight);
+  assert (std::floor (double (srcwidth) / 2.0) == dstwidth);
+  assert (std::floor (double (srcheight) / 2.0) == dstheight);
 
   // mask needed later:
   __m128i mask = _mm_set_epi32 (0x00FF00FF, 0x00FF00FF, 0x00FF00FF, 0x00FF00FF);
@@ -1721,8 +1721,8 @@ pcl::keypoints::brisk::Layer::twothirdsample (
   const unsigned short leftoverCols = static_cast<unsigned short> (((srcwidth / 3) * 3) % 15);// take care with border...
 
   // make sure the destination image is of the right size:
-  assert (floor (double (srcwidth) / 3.0 * 2.0) == dstwidth);
-  assert (floor (double (srcheight) / 3.0 * 2.0) == dstheight);
+  assert (std::floor (double (srcwidth) / 3.0 * 2.0) == dstwidth);
+  assert (std::floor (double (srcheight) / 3.0 * 2.0) == dstheight);
 
   // masks:
   __m128i mask1 = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),12,char(0x80),10,char(0x80),7,char(0x80),4,char(0x80),1);

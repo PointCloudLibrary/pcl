@@ -275,7 +275,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<pcl::PCLPointCloud2>::getColo
         continue;   //skip to next point
       } 
       float a = h_data / 60;
-      int   i = static_cast<int> (floor (a));
+      int   i = static_cast<int> (std::floor (a));
       float f = a - static_cast<float> (i);
       float p = v_data * (1 - s_data);
       float q = v_data * (1 - s_data * f);
@@ -351,7 +351,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<pcl::PCLPointCloud2>::getColo
         continue;   //skip to next point
       } 
       float a = h_data / 60;
-      int   i = static_cast<int> (floor (a));
+      int   i = static_cast<int> (std::floor (a));
       float f = a - static_cast<float> (i);
       float p = v_data * (1 - s_data);
       float q = v_data * (1 - s_data * f);

@@ -186,7 +186,7 @@ main (int argc, char** argv)
 
   // Load the results
   pcl::visualization::PCLVisualizer p (argc, argv, "VFH Cluster Classifier");
-  int y_s = (int)floor (sqrt ((double)k));
+  int y_s = (int)std::floor (sqrt ((double)k));
   int x_s = y_s + (int)std::ceil ((k / (double)y_s) - y_s);
   double x_step = (double)(1 / (double)x_s);
   double y_step = (double)(1 / (double)y_s);

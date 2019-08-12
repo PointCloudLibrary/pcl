@@ -107,11 +107,11 @@ pcl::visualization::worldToView (const Eigen::Vector4d &world_pt, const Eigen::M
   world /= world.w ();
 
   // X/Y screen space coordinate
-  int screen_x = int (floor (double (((world.x () + 1) / 2.0) * width) + 0.5));
-  int screen_y = int (floor (double (((world.y () + 1) / 2.0) * height) + 0.5));
+  int screen_x = int (std::floor (double (((world.x () + 1) / 2.0) * width) + 0.5));
+  int screen_y = int (std::floor (double (((world.y () + 1) / 2.0) * height) + 0.5));
 
   // Calculate -world_pt.y () because the screen Y axis is oriented top->down, ie 0 is top-left
-  //int winY = (int) floor ( (double) (((1 - world_pt.y ()) / 2.0) * height) + 0.5); // top left
+  //int winY = (int) std::floor ( (double) (((1 - world_pt.y ()) / 2.0) * height) + 0.5); // top left
 
   return (Eigen::Vector2i (screen_x, screen_y));
 }

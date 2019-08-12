@@ -198,8 +198,8 @@ namespace pcl
 
 					// bilinear interpolation
 					float beta_bin_size = radial ? (PI*0.5f/image_width) : bin_size;
-					int beta_bin  = floorf(beta  / beta_bin_size) + image_width;
-					int alpha_bin = floorf(alpha / bin_size);
+					int beta_bin  = std::floor(beta  / beta_bin_size) + image_width;
+					int alpha_bin = std::floor(alpha / bin_size);
 
 					//alpha_bin = min(simage_cols, max(0, alpha_bin));
 					//beta_bin  = min(simage_rows, max(0,  beta_bin));					

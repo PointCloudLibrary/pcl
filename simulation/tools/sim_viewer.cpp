@@ -490,13 +490,13 @@ main (int argc, char** argv)
     int y_s = 0;
     if (!p_file_indices.empty ())
     {
-      y_s = static_cast<int>(floor (sqrt (static_cast<float>(p_file_indices.size ()))));
+      y_s = static_cast<int>(std::floor (sqrt (static_cast<float>(p_file_indices.size ()))));
       x_s = y_s + static_cast<int>(std::ceil ((p_file_indices.size () / static_cast<double>(y_s)) - y_s));
       print_highlight ("Preparing to load "); print_value ("%d", p_file_indices.size ());
     }
     else if (!vtk_file_indices.empty ())
     {
-      y_s = static_cast<int>(floor (sqrt (static_cast<float>(vtk_file_indices.size ()))));
+      y_s = static_cast<int>(std::floor (sqrt (static_cast<float>(vtk_file_indices.size ()))));
       x_s = y_s + static_cast<int>(std::ceil ((vtk_file_indices.size () / static_cast<double>(y_s)) - y_s));
       print_highlight ("Preparing to load "); print_value ("%d", vtk_file_indices.size ());
     }

@@ -313,7 +313,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSing
     // 2 RADII
     desc_index += (distance > radius1_2_) ? 2 : 0;
 
-    int step_index = static_cast<int>(floor (binDistance[i_idx] +0.5));
+    int step_index = static_cast<int>(std::floor (binDistance[i_idx] +0.5));
     int volume_index = desc_index * (nr_bins+1);
 
     //Interpolation on the cosine (adjacent bins in the histogram)
@@ -491,8 +491,8 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDou
     // 2 RADII
     desc_index += (distance > radius1_2_) ? 2 : 0;
 
-    int step_index_shape = static_cast<int>(floor (binDistanceShape[i_idx] +0.5));
-    int step_index_color = static_cast<int>(floor (binDistanceColor[i_idx] +0.5));
+    int step_index_shape = static_cast<int>(std::floor (binDistanceShape[i_idx] +0.5));
+    int step_index_color = static_cast<int>(std::floor (binDistanceColor[i_idx] +0.5));
 
     int volume_index_shape = desc_index * (nr_bins_shape+1);
     int volume_index_color = shapeToColorStride + desc_index * (nr_bins_color+1);

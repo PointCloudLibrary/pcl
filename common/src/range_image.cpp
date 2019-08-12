@@ -544,10 +544,10 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
               cell3_z = point3[2];
         
         int min_cell_x = (std::max) (0, int (pcl_lrint (std::ceil ( (std::min) (cell1_x, (std::min) (cell2_x, cell3_x)))))),
-            max_cell_x = (std::min) (pixel_size-1, int (pcl_lrint (floor ( (std::max) (cell1_x,
+            max_cell_x = (std::min) (pixel_size-1, int (pcl_lrint (std::floor ( (std::max) (cell1_x,
                                                                        (std::max) (cell2_x, cell3_x)))))),
             min_cell_y = (std::max) (0, int (pcl_lrint (std::ceil ( (std::min) (cell1_y, (std::min) (cell2_y, cell3_y)))))),
-            max_cell_y = (std::min) (pixel_size-1, int (pcl_lrint (floor ( (std::max) (cell1_y,
+            max_cell_y = (std::min) (pixel_size-1, int (pcl_lrint (std::floor ( (std::max) (cell1_y,
                                                                        (std::max) (cell2_y, cell3_y))))));
         if (max_cell_x<min_cell_x || max_cell_y<min_cell_y)
           continue;
