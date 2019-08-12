@@ -52,6 +52,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_exports.h>
 #include <limits>
+#include <pcl/recognition/ransac_based/auxiliary.h>
 
 namespace pcl
 {
