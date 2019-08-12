@@ -138,12 +138,12 @@ namespace pcl
 __inline double
 pcl_round (double number)
 {
-  return (number < 0.0 ? ceil (number - 0.5) : floor (number + 0.5));
+  return (number < 0.0 ? std::ceil (number - 0.5) : floor (number + 0.5));
 }
 __inline float
 pcl_round (float number)
 {
-  return (number < 0.0f ? ceilf (number - 0.5f) : floorf (number + 0.5f));
+  return (number < 0.0f ? std::ceil (number - 0.5f) : floorf (number + 0.5f));
 }
 
 #ifdef __GNUC__

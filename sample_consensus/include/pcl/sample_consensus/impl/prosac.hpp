@@ -109,7 +109,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
       // Update other variables
       float T_n_minus_1 = T_n;
       T_n *= (static_cast<float>(n) + 1.0f) / (static_cast<float>(n) + 1.0f - static_cast<float>(m));
-      T_prime_n += ceilf (T_n - T_n_minus_1);
+      T_prime_n += std::ceil (T_n - T_n_minus_1);
     }
 
     // Step 2
@@ -181,7 +181,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
         {
           // Typo in Equation 7, not (n-m choose i-m) but (n choose i-m)
           size_t I_possible_n_star_min = m
-                           + static_cast<size_t> (ceil (boost::math::quantile (boost::math::complement (boost::math::binomial_distribution<float>(static_cast<float> (possible_n_star), 0.1f), 0.05))));
+                           + static_cast<size_t> (std::ceil (boost::math::quantile (boost::math::complement (boost::math::binomial_distribution<float>(static_cast<float> (possible_n_star), 0.1f), 0.05))));
           // If Equation 9 is not verified, exit
           if (I_possible_n_star < I_possible_n_star_min)
             break;
@@ -205,7 +205,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
         else if (bottom_log == 1)
           k_n_star = T_N;
         else
-          k_n_star = static_cast<int> (ceil (std::log (0.05) / std::log (bottom_log)));
+          k_n_star = static_cast<int> (std::ceil (std::log (0.05) / std::log (bottom_log)));
         // It seems weird to have very few iterations, so do have a few (totally empirical)
         k_n_star = (std::max)(k_n_star, 2 * m);
       }

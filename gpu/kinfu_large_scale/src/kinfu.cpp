@@ -291,8 +291,8 @@ pcl::gpu::kinfuLS::KinfuTracker::allocateBufffers (int rows, int cols)
   }  
   depthRawScaled_.create (rows, cols);
   // see estimate transform for the magic numbers
-  int r = (int)ceil ( ((float)rows) / ESTIMATE_COMBINED_CUDA_GRID_Y );
-  int c = (int)ceil ( ((float)cols) / ESTIMATE_COMBINED_CUDA_GRID_X );
+  int r = (int)std::ceil ( ((float)rows) / ESTIMATE_COMBINED_CUDA_GRID_Y );
+  int c = (int)std::ceil ( ((float)cols) / ESTIMATE_COMBINED_CUDA_GRID_X );
   gbuf_.create (27, r * c);
   sumbuf_.create (27);
 }

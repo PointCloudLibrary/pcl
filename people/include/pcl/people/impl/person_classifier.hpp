@@ -140,9 +140,9 @@ pcl::people::PersonClassifier<PointT>::resize (PointCloudPtr& input_image,
   for (int j = 0; j < width; j++)  // for every column
   {
     A = T_inv * Eigen::Vector3f(i, j, 1);
-    c1 = ceil(A(0));
+    c1 = std::ceil(A(0));
     f1 = floor(A(0));
-    c2 = ceil(A(1));
+    c2 = std::ceil(A(1));
     f2 = floor(A(1));
 
     if ( (f1 < 0) ||

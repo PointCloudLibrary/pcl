@@ -293,7 +293,7 @@ pcl::StaticRangeCoder::encodeIntVectorToStream (std::vector<unsigned int>& input
   }
 
   // calculate amount of bytes per frequency table entry
-  uint8_t frequencyTableByteSize = static_cast<uint8_t> (ceil (
+  uint8_t frequencyTableByteSize = static_cast<uint8_t> (std::ceil (
       std::log2 (static_cast<double> (cFreqTable_[static_cast<std::size_t> (frequencyTableSize - 1)])) / 8.0));
 
   // write size of frequency table to output stream

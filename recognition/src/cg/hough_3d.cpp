@@ -54,7 +54,7 @@ pcl::recognition::HoughSpace3D::HoughSpace3D (const Eigen::Vector3d &min_coord, 
 
   for (int i = 0; i < 3; ++i)
   {
-    bin_count_[i] = static_cast<int> (ceil ((max_coord[i] - min_coord_[i]) / bin_size_[i]));
+    bin_count_[i] = static_cast<int> (std::ceil ((max_coord[i] - min_coord_[i]) / bin_size_[i]));
   }
 
   partial_bin_products_[0] = 1;
