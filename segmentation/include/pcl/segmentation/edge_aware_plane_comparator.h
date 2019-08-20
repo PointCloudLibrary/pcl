@@ -190,7 +190,7 @@ namespace pcl
         float dz = input_->points[idx1].z - input_->points[idx2].z;
         float dist = std::sqrt (dx*dx + dy*dy + dz*dz);
 
-        bool normal_ok = (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ );
+        bool normal_ok = (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) < angular_threshold_ );
         bool dist_ok = (dist < euclidean_dist_threshold);
 
         bool curvature_ok = normals_->points[idx1].curvature < curvature_threshold_;

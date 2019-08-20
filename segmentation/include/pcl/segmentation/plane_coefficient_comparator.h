@@ -195,7 +195,7 @@ namespace pcl
           threshold *= z * z;
         }
         return ( (std::fabs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < threshold)
-                 && (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ) );
+                 && (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) < angular_threshold_ ) );
       }
       
     protected:

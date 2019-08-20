@@ -223,11 +223,11 @@ namespace pcl
         }
 
         return ( (normals_->points[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
-                 (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ));
+                 (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap ()) < angular_threshold_ ));
         
         // Euclidean proximity of neighbors does not seem to be required -- pixel adjacency handles this well enough 
         //return ( (normals_->points[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
-        //          (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ) &&
+        //          (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) < angular_threshold_ ) &&
         //         (pcl::euclideanDistance (input_->points[idx1], input_->points[idx2]) < distance_threshold_ ));
       }
       

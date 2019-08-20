@@ -122,7 +122,7 @@ namespace pcl
         //Note: This is not the best metric for color comparisons, we should probably use HSV space.
         float color_dist = static_cast<float> (dr*dr + dg*dg + db*db);
         return ( (dist < distance_threshold_)
-                 && (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ )
+                 && (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) < angular_threshold_ )
                  && (color_dist < color_threshold_));
       }
       

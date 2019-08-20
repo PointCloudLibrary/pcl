@@ -92,7 +92,7 @@ namespace pcl
         float dist = std::sqrt (dx*dx + dy*dy + dz*dz);
         
         return ( (dist < distance_threshold_)
-                 && (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ) );
+                 && (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) < angular_threshold_ ) );
       }
   };
 }
