@@ -46,7 +46,8 @@
 namespace pcl
 {
   /** \brief SampleConsensusModelPerpendicularPlane defines a model for 3D plane segmentation using additional
-    * angular constraints. The plane must be perpendicular to an user-specified axis (\ref setAxis), up to an user-specified angle threshold (\ref setEpsAngle).
+    * angular constraints. The plane must be perpendicular to a user-specified axis (\ref setAxis), up to a user-specified angle threshold (\ref setEpsAngle).
+    * In other words, the plane <b>normal</b> must be (nearly) <b>parallel</b> to the specified axis.
     * The model coefficients are defined as:
     *   - \b a : the X coordinate of the plane's normal (normalized)
     *   - \b b : the Y coordinate of the plane's normal (normalized)
@@ -162,7 +163,7 @@ namespace pcl
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
                            std::vector<double> &distances) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_PERPENDICULAR_PLANE). */
+      /** \brief Return a unique id for this model (SACMODEL_PERPENDICULAR_PLANE). */
       inline pcl::SacModel 
       getModelType () const override { return (SACMODEL_PERPENDICULAR_PLANE); }
 

@@ -210,7 +210,7 @@ namespace pcl
         return (false);
       }
 
-      /** \brief Return an unique id for this model (SACMODEL_REGISTRATION). */
+      /** \brief Return a unique id for this model (SACMODEL_REGISTRATION). */
       inline pcl::SacModel
       getModelType () const override { return (SACMODEL_REGISTRATION); }
 

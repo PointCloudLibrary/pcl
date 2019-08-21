@@ -262,7 +262,7 @@ namespace pcl
                             const Eigen::VectorXf &model_coefficients,
                             const double threshold) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_CONE). */
+      /** \brief Return a unique id for this model (SACMODEL_CONE). */
       inline pcl::SacModel 
       getModelType () const override { return (SACMODEL_CONE); }
 
@@ -291,10 +291,10 @@ namespace pcl
       isSampleGood (const std::vector<int> &samples) const override;
 
     private:
-      /** \brief The axis along which we need to search for a plane perpendicular to. */
+      /** \brief The axis along which we need to search for a cone direction. */
       Eigen::Vector3f axis_;
     
-      /** \brief The maximum allowed difference between the plane normal and the given axis. */
+      /** \brief The maximum allowed difference between the cone direction and the given axis. */
       double eps_angle_;
 
       /** \brief The minimum and maximum allowed opening angles of valid cone model. */

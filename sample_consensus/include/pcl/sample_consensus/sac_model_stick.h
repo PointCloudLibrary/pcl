@@ -47,7 +47,7 @@
 namespace pcl
 {
   /** \brief SampleConsensusModelStick defines a model for 3D stick segmentation. 
-    * A stick is a line with an user given minimum/maximum width.
+    * A stick is a line with a user given minimum/maximum width.
     * The model coefficients are defined as:
     *   - \b point_on_line.x  : the X coordinate of a point on the line
     *   - \b point_on_line.y  : the Y coordinate of a point on the line
@@ -56,6 +56,7 @@ namespace pcl
     *   - \b line_direction.y : the Y coordinate of a line's direction
     *   - \b line_direction.z : the Z coordinate of a line's direction
     *   - \b line_width       : the width of the line
+    *
     * \author Radu B. Rusu
     * \ingroup sample_consensus
     */
@@ -179,7 +180,7 @@ namespace pcl
                             const Eigen::VectorXf &model_coefficients,
                             const double threshold) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_STICK). */
+      /** \brief Return a unique id for this model (SACMODEL_STICK). */
       inline pcl::SacModel 
       getModelType () const override { return (SACMODEL_STICK); }
 

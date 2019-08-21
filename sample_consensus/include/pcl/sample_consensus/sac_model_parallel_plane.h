@@ -47,7 +47,8 @@ namespace pcl
 {
   /** \brief @b SampleConsensusModelParallelPlane defines a model for 3D plane segmentation using additional
     * angular constraints. The plane must be parallel to a user-specified axis
-    * (\ref setAxis) within an user-specified angle threshold (\ref setEpsAngle).
+    * (\ref setAxis) within a user-specified angle threshold (\ref setEpsAngle).
+    * In other words, the plane <b>normal</b> must be (nearly) <b>perpendicular</b> to the specified axis.
     *
     * Code example for a plane model, parallel (within a 15 degrees tolerance) with the Z axis:
     * \code
@@ -159,7 +160,7 @@ namespace pcl
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
                            std::vector<double> &distances) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_PARALLEL_PLANE). */
+      /** \brief Return a unique id for this model (SACMODEL_PARALLEL_PLANE). */
       inline pcl::SacModel
       getModelType () const override { return (SACMODEL_PARALLEL_PLANE); }
 

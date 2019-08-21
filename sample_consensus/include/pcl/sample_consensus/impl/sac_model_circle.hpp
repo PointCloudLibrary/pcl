@@ -112,7 +112,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::getDistancesToModel (const Eigen::Vec
   }
   distances.resize (indices_->size ());
 
-  // Iterate through the 3d points and calculate the distances from them to the sphere
+  // Iterate through the 3d points and calculate the distances from them to the circle
   for (size_t i = 0; i < indices_->size (); ++i)
     // Calculate the distance from the point to the circle as the difference between
     // dist(point,circle_origin) and circle_radius
@@ -141,11 +141,11 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
   inliers.resize (indices_->size ());
   error_sqr_dists_.resize (indices_->size ());
 
-  // Iterate through the 3d points and calculate the distances from them to the sphere
+  // Iterate through the 3d points and calculate the distances from them to the circle
   for (size_t i = 0; i < indices_->size (); ++i)
   {
-    // Calculate the distance from the point to the sphere as the difference between
-    // dist(point,sphere_origin) and sphere_radius
+    // Calculate the distance from the point to the circle as the difference between
+    // dist(point,circle_origin) and circle_radius
     float distance = std::abs (std::sqrt (
                                       ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
                                       ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
@@ -175,11 +175,11 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
     return (0);
   int nr_p = 0;
 
-  // Iterate through the 3d points and calculate the distances from them to the sphere
+  // Iterate through the 3d points and calculate the distances from them to the circle
   for (size_t i = 0; i < indices_->size (); ++i)
   {
-    // Calculate the distance from the point to the sphere as the difference between
-    // dist(point,sphere_origin) and sphere_radius
+    // Calculate the distance from the point to the circle as the difference between
+    // dist(point,circle_origin) and circle_radius
     float distance = std::abs (std::sqrt (
                                       ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
                                       ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
@@ -254,7 +254,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
-    // Iterate through the 3d points and calculate the distances from them to the plane
+    // Iterate through the points and project them to the circle
     for (const int &inlier : inliers)
     {
       float dx = input_->points[inlier].x - model_coefficients[0];
@@ -278,7 +278,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
 
-    // Iterate through the 3d points and calculate the distances from them to the plane
+    // Iterate through the points and project them to the circle
     for (size_t i = 0; i < inliers.size (); ++i)
     {
       float dx = input_->points[inliers[i]].x - model_coefficients[0];
@@ -304,8 +304,8 @@ pcl::SampleConsensusModelCircle2D<PointT>::doSamplesVerifyModel (
   }
 
   for (const int &index : indices)
-    // Calculate the distance from the point to the sphere as the difference between
-    //dist(point,sphere_origin) and sphere_radius
+    // Calculate the distance from the point to the circle as the difference between
+    //dist(point,circle_origin) and circle_radius
     if (std::abs (std::sqrt (
                          ( input_->points[index].x - model_coefficients[0] ) *
                          ( input_->points[index].x - model_coefficients[0] ) +

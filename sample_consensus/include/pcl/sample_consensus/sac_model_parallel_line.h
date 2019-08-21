@@ -155,7 +155,7 @@ namespace pcl
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
                            std::vector<double> &distances) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_PARALLEL_LINE). */
+      /** \brief Return a unique id for this model (SACMODEL_PARALLEL_LINE). */
       inline pcl::SacModel
       getModelType () const override { return (SACMODEL_PARALLEL_LINE); }
 

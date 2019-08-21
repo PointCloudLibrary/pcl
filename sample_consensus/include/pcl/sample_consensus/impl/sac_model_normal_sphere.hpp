@@ -70,7 +70,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::selectWithinDistance (
   inliers.resize (indices_->size ());
   error_sqr_dists_.resize (indices_->size ());
 
-  // Iterate through the 3d points and calculate the distances from them to the plane
+  // Iterate through the 3d points and calculate the distances from them to the sphere
   for (size_t i = 0; i < indices_->size (); ++i)
   {
     // Calculate the distance from the point to the sphere center as the difference between
@@ -88,7 +88,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::selectWithinDistance (
     Eigen::Vector4f n_dir = p - center;
     double d_euclid = std::abs (n_dir.norm () - model_coefficients[3]);
 
-    // Calculate the angular distance between the point normal and the plane normal
+    // Calculate the angular distance between the point normal and the sphere normal
     double d_normal = std::abs (getAngle3D (n, n_dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
@@ -127,7 +127,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
 
   int nr_p = 0;
 
-  // Iterate through the 3d points and calculate the distances from them to the plane
+  // Iterate through the 3d points and calculate the distances from them to the sphere
   for (size_t i = 0; i < indices_->size (); ++i)
   {
     // Calculate the distance from the point to the sphere centroid as the difference between
@@ -145,7 +145,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
     Eigen::Vector4f n_dir = (p-center);
     double d_euclid = std::abs (n_dir.norm () - model_coefficients[3]);
     //
-    // Calculate the angular distance between the point normal and the plane normal
+    // Calculate the angular distance between the point normal and the sphere normal
     double d_normal = std::abs (getAngle3D (n, n_dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
@@ -179,7 +179,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::getDistancesToModel (
 
   distances.resize (indices_->size ());
 
-  // Iterate through the 3d points and calculate the distances from them to the plane
+  // Iterate through the 3d points and calculate the distances from them to the sphere
   for (size_t i = 0; i < indices_->size (); ++i)
   {
     // Calculate the distance from the point to the sphere as the difference between
@@ -197,7 +197,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::getDistancesToModel (
     Eigen::Vector4f n_dir = (p-center);
     double d_euclid = std::abs (n_dir.norm () - model_coefficients[3]);
     //
-    // Calculate the angular distance between the point normal and the plane normal
+    // Calculate the angular distance between the point normal and the sphere normal
     double d_normal = std::abs (getAngle3D (n, n_dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 

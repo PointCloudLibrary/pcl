@@ -365,7 +365,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
 
-    // Iterate through the 3d points and calculate the distances from them to the plane
+    // Iterate through the 3d points and calculate the distances from them to the cylinder
     for (size_t i = 0; i < inliers.size (); ++i)
     {
       pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap ();
