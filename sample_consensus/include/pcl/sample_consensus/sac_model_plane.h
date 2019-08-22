@@ -248,7 +248,7 @@ namespace pcl
                             const Eigen::VectorXf &model_coefficients,
                             const double threshold) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_PLANE). */
+      /** \brief Return a unique id for this model (SACMODEL_PLANE). */
       inline pcl::SacModel 
       getModelType () const override { return (SACMODEL_PLANE); }
 

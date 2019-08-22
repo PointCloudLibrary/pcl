@@ -56,10 +56,10 @@ namespace pcl
     *
     * The model coefficients are defined as:
     * <ul>
-    * <li><b>a</b> : the X coordinate of the plane's normal (normalized)
-    * <li><b>b</b> : the Y coordinate of the plane's normal (normalized)
-    * <li><b>c</b> : the Z coordinate of the plane's normal (normalized)
-    * <li><b>d</b> : radius of the sphere
+    * <li><b>center.x</b> : the X coordinate of the sphere's center
+    * <li><b>center.y</b> : the Y coordinate of the sphere's center
+    * <li><b>center.z</b> : the Z coordinate of the sphere's center
+    * <li><b>radius</b> : radius of the sphere
     * </ul>
     *
     * \author Stefan Schrandt
@@ -147,7 +147,7 @@ namespace pcl
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
                            std::vector<double> &distances) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_NORMAL_SPHERE). */
+      /** \brief Return a unique id for this model (SACMODEL_NORMAL_SPHERE). */
       inline pcl::SacModel 
       getModelType () const override { return (SACMODEL_NORMAL_SPHERE); }
 

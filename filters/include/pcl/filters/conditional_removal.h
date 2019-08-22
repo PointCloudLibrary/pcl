@@ -579,6 +579,7 @@ namespace pcl
     * hsi color space.
     *
     * Here is an example usage:
+    * \code
     *  // Build the condition
     *  pcl::ConditionAnd<PointT>::Ptr range_cond (new pcl::ConditionAnd<PointT> ());
     *  range_cond->addComparison (pcl::FieldComparison<PointT>::Ptr (new pcl::FieldComparison<PointT>("z", pcl::ComparisonOps::LT, 2.0)));
@@ -587,6 +588,7 @@ namespace pcl
     *  pcl::ConditionalRemoval<PointT> range_filt;
     *  range_filt.setCondition (range_cond);
     *  range_filt.setKeepOrganized (false);
+    * \endcode
     *
     * \author Louis LeGrand, Intel Labs Seattle
     * \ingroup filters

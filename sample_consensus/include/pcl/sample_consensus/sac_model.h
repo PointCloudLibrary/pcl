@@ -331,7 +331,7 @@ namespace pcl
       inline boost::shared_ptr <std::vector<int> > 
       getIndices () const { return (indices_); }
 
-      /** \brief Return an unique id for each type of model employed. */
+      /** \brief Return a unique id for each type of model employed. */
       virtual SacModel 
       getModelType () const = 0;
 

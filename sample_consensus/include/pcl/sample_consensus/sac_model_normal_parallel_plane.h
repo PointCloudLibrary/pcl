@@ -51,7 +51,8 @@ namespace pcl
     * this means that checking for inliers will not only involve a "distance to
     * model" criterion, but also an additional "maximum angular deviation"
     * between the plane's normal and the inlier points normals. In addition,
-    * the plane normal must lie parallel to an user-specified axis.
+    * the plane <b>normal</b> must lie parallel to a user-specified axis.
+    * This means that the plane itself will lie perpendicular to that axis, similar to \link pcl::SampleConsensusModelPerpendicularPlane SACMODEL_PERPENDICULAR_PLANE \endlink.
     *
     * The model coefficients are defined as:
     *   - \b a : the X coordinate of the plane's normal (normalized)
@@ -182,7 +183,7 @@ namespace pcl
       inline double
       getEpsDist () const { return (eps_dist_); }
 
-      /** \brief Return an unique id for this model (SACMODEL_NORMAL_PARALLEL_PLANE). */
+      /** \brief Return a unique id for this model (SACMODEL_NORMAL_PARALLEL_PLANE). */
       inline pcl::SacModel
       getModelType () const override { return (SACMODEL_NORMAL_PARALLEL_PLANE); }
 
