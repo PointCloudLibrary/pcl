@@ -39,6 +39,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <pcl/pcl_tests.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/box_clipper3D.h>
 #include <pcl/filters/crop_box.h>
@@ -132,11 +133,26 @@ TEST (CropBox, Filters)
   input->push_back (PointXYZ (-0.9f, 0.9f, -0.9f));
   input->push_back (PointXYZ (-0.9f, -0.9f, -0.9f));
 
+  // Create indices vector ( without 0 and 4)
+  pcl::IndicesPtr idx (new pcl::Indices (7));
+  (*idx)[0] = 1;
+  (*idx)[1] = 2;
+  (*idx)[2] = 3;
+  (*idx)[3] = 5;
+  (*idx)[4] = 6;
+  (*idx)[5] = 7;
+  (*idx)[6] = 8;
+
+  // Define cropBox limit
+  Eigen::Vector4f min_pt (-1.0f, -1.0f, -1.0f, 1.0f);
+  Eigen::Vector4f max_pt (1.0f, 1.0f, 1.0f, 1.0f);
+
+  // PointCloud without indices
+  // -------------------------------------------------------------------------
+
   // Test the PointCloud<PointT> method
   CropBox<PointXYZ> cropBoxFilter (true);
   cropBoxFilter.setInputCloud (input);
-  Eigen::Vector4f min_pt (-1.0f, -1.0f, -1.0f, 1.0f);
-  Eigen::Vector4f max_pt (1.0f, 1.0f, 1.0f, 1.0f);
 
   // Cropbox slightly bigger then bounding box of points
   cropBoxFilter.setMin (min_pt);
@@ -168,7 +184,6 @@ TEST (CropBox, Filters)
 
   cropBoxFilter.filter (indices);
   EXPECT_EQ (int (indices.size ()), 0);
-
   cropBoxFilter.setNegative (false);
   cropBoxFilter.filter (cloud_out);
 
@@ -287,7 +302,172 @@ TEST (CropBox, Filters)
   cropBoxFilter.filter (indices);
   EXPECT_EQ (int (indices.size ()), 9);
 
-  // PCLPointCloud2
+  // PointCloud with indices selection
+  // -------------------------------------------------------------------------
+
+  // Reset cropBox transformation 
+  cropBoxFilter.setNegative (false);
+  cropBoxFilter.setTransform (getTransformation(0, 0, 0, 0, 0, 0));
+  cropBoxFilter.setRotation (Eigen::Vector3f (0.0f, 0.0f, 0.0f));
+  cropBoxFilter.setTranslation (Eigen::Vector3f (0.0f, 0.0f, 0.0f));
+
+  // Setup input indices selection
+  cropBoxFilter.setIndices(idx);
+
+  // Indices
+  cropBoxFilter.filter (indices);
+
+  // Cloud
+  cropBoxFilter.filter (cloud_out);
+
+  // Should contain all
+  EXPECT_EQ (int (indices.size ()), 7);
+  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 7, 8}), indices);
+  EXPECT_EQ (int (cloud_out.size ()), 7);
+  EXPECT_EQ (int (cloud_out.width), 7);
+  EXPECT_EQ (int (cloud_out.height), 1);
+
+  removed_indices = cropBoxFilter.getRemovedIndices ();
+  EXPECT_EQ (int (removed_indices->size ()), 0);
+
+  // Test setNegative
+  cropBoxFilter.setNegative (true);
+  cropBoxFilter.filter (cloud_out_negative);
+  EXPECT_EQ (int (cloud_out_negative.size ()), 0);
+
+  cropBoxFilter.filter (indices);
+  EXPECT_EQ (int (indices.size ()), 0);
+  cropBoxFilter.setNegative (false);
+  cropBoxFilter.filter (cloud_out);
+
+  // Translate crop box up by 1
+  cropBoxFilter.setTranslation(Eigen::Vector3f(0, 1, 0));
+  cropBoxFilter.filter (indices);
+  cropBoxFilter.filter (cloud_out);
+
+  EXPECT_EQ (int (indices.size ()), 3);
+  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 7}), indices);
+  EXPECT_EQ (int (cloud_out.size ()), 3);
+
+  removed_indices = cropBoxFilter.getRemovedIndices ();
+  EXPECT_EQ (int (removed_indices->size ()), 4);
+  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({3, 5, 6, 8}), *removed_indices);
+
+  // Test setNegative
+  cropBoxFilter.setNegative (true);
+  cropBoxFilter.filter (cloud_out_negative);
+  EXPECT_EQ (int (cloud_out_negative.size ()), 4);
+
+  cropBoxFilter.filter (indices);
+  EXPECT_EQ (int (indices.size ()), 4);
+  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({3, 5, 6, 8}), indices);
+
+  cropBoxFilter.setNegative (false);
+  cropBoxFilter.filter (cloud_out);
+
+  // Rotate crop box up by 45
+  cropBoxFilter.setRotation (Eigen::Vector3f (0.0f, 45.0f * float (M_PI) / 180.0f, 0.0f));
+  cropBoxFilter.filter (indices);
+  cropBoxFilter.filter (cloud_out);
+
+  EXPECT_EQ (int (indices.size ()), 0);
+  EXPECT_EQ (int (cloud_out.size ()), 0);
+  EXPECT_EQ (int (cloud_out.width), 0);
+  EXPECT_EQ (int (cloud_out.height), 1);
+
+  removed_indices = cropBoxFilter.getRemovedIndices ();
+  EXPECT_EQ (int (removed_indices->size ()), 7);
+  EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), *removed_indices);
+  // Test setNegative
+  cropBoxFilter.setNegative (true);
+  cropBoxFilter.filter (cloud_out_negative);
+  EXPECT_EQ (int (cloud_out_negative.size ()), 7);
+
+  cropBoxFilter.filter (indices);
+  EXPECT_EQ (int (indices.size ()), 7);
+  EXPECT_VECTOR_DOES_NOT_CONTAIN(std::vector<int>({0, 4}), indices);
+
+  cropBoxFilter.setNegative (false);
+  cropBoxFilter.filter (cloud_out);
+
+  // Rotate point cloud by -45
+  cropBoxFilter.setTransform (getTransformation (0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -45.0f * float (M_PI) / 180.0f));
+  cropBoxFilter.filter (indices);
+  cropBoxFilter.filter (cloud_out);
+
+  EXPECT_EQ (int (indices.size ()), 1);
+  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({7}), indices);
+  EXPECT_EQ (int (cloud_out.size ()), 1);
+  EXPECT_EQ (int (cloud_out.width), 1);
+  EXPECT_EQ (int (cloud_out.height), 1);
+
+  removed_indices = cropBoxFilter.getRemovedIndices ();
+  EXPECT_EQ (int (removed_indices->size ()), 6);
+  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 8}), *removed_indices);
+
+  // Test setNegative
+  cropBoxFilter.setNegative (true);
+  cropBoxFilter.filter (cloud_out_negative);
+  EXPECT_EQ (int (cloud_out_negative.size ()), 6);
+
+  cropBoxFilter.filter (indices);
+  EXPECT_EQ (int (indices.size ()), 6);
+  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 8}), indices);
+
+  cropBoxFilter.setNegative (false);
+  cropBoxFilter.filter (cloud_out);
+
+  // Translate point cloud down by -1
+  cropBoxFilter.setTransform (getTransformation(0, -1, 0, 0, 0, -45.0 * float (M_PI) / 180.0));
+  cropBoxFilter.filter (indices);
+  cropBoxFilter.filter (cloud_out);
+
+  EXPECT_EQ (int (indices.size ()), 1);
+  EXPECT_VECTOR_CONTAINS_ALL (indices, std::vector<int>({7}));
+  EXPECT_EQ (int (cloud_out.size ()), 1);
+  EXPECT_EQ (int (cloud_out.width), 1);
+  EXPECT_EQ (int (cloud_out.height), 1);
+
+  removed_indices = cropBoxFilter.getRemovedIndices ();
+  EXPECT_EQ (int (removed_indices->size ()), 6);
+  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>( {1, 2, 3, 5, 6, 8}), *removed_indices);
+
+  // Test setNegative
+  cropBoxFilter.setNegative (true);
+  cropBoxFilter.filter (cloud_out_negative);
+  EXPECT_EQ (int (cloud_out_negative.size ()), 6);
+
+  cropBoxFilter.filter (indices);
+  EXPECT_EQ (int (indices.size ()), 6);
+  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 8}), indices);
+
+  cropBoxFilter.setNegative (false);
+  cropBoxFilter.filter (cloud_out);
+
+  // Remove point cloud rotation
+  cropBoxFilter.setTransform (getTransformation(0, -1, 0, 0, 0, 0));
+  cropBoxFilter.filter (indices);
+  cropBoxFilter.filter (cloud_out);
+
+  EXPECT_EQ (int (indices.size ()), 0);
+  EXPECT_EQ (int (cloud_out.size ()), 0);
+  EXPECT_EQ (int (cloud_out.width), 0);
+  EXPECT_EQ (int (cloud_out.height), 1);
+
+  removed_indices = cropBoxFilter.getRemovedIndices ();
+  EXPECT_EQ (int (removed_indices->size ()), 7);
+  EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), *removed_indices);
+
+  // Test setNegative
+  cropBoxFilter.setNegative (true);
+  cropBoxFilter.filter (cloud_out_negative);
+  EXPECT_EQ (int (cloud_out_negative.size ()), 7);
+
+  cropBoxFilter.filter (indices);
+  EXPECT_EQ (int (indices.size ()), 7);
+  EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), indices);
+
+  // PCLPointCloud2 without indices
   // -------------------------------------------------------------------------
 
   // Create cloud with center point and corner points
@@ -425,6 +605,168 @@ TEST (CropBox, Filters)
 
   cropBoxFilter2.setNegative (false);
   cropBoxFilter2.filter (cloud_out2);
+
+    // PointCloud2 with indices selection
+    // -------------------------------------------------------------------------
+
+    // Reset cropBox transformation
+    cropBoxFilter2.setNegative (false);
+    cropBoxFilter2.setTransform (getTransformation(0, 0, 0, 0, 0, 0));
+    cropBoxFilter2.setRotation (Eigen::Vector3f (0.0f, 0.0f, 0.0f));
+    cropBoxFilter2.setTranslation (Eigen::Vector3f (0.0f, 0.0f, 0.0f));
+
+    // Setup input indices selection
+    cropBoxFilter2.setIndices(idx);
+
+    // Indices
+    cropBoxFilter2.filter (indices2);
+
+    // Cloud
+    cropBoxFilter2.filter (cloud_out2);
+
+    // Should contain all
+    EXPECT_EQ (int (indices2.size ()), 7);
+    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 7, 8}), indices2);
+    EXPECT_EQ (int (cloud_out2.width), 7);
+    EXPECT_EQ (int (cloud_out2.height), 1);
+
+    removed_indices2 = cropBoxFilter2.getRemovedIndices ();
+    EXPECT_EQ (int (removed_indices2->size ()), 0);
+
+    // Test setNegative
+    cropBoxFilter2.setNegative (true);
+    cropBoxFilter2.filter (cloud_out2_negative);
+    EXPECT_EQ (int (cloud_out2_negative.height*cloud_out2_negative.width), 0);
+
+    cropBoxFilter2.filter (indices2);
+    EXPECT_EQ (int (indices2.size ()), 0);
+    cropBoxFilter2.setNegative (false);
+    cropBoxFilter2.filter (cloud_out2);
+
+    // Translate crop box up by 1
+    cropBoxFilter2.setTranslation(Eigen::Vector3f(0, 1, 0));
+    cropBoxFilter2.filter (indices2);
+    cropBoxFilter2.filter (cloud_out2);
+
+    EXPECT_EQ (int (indices2.size ()), 3);
+    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 7}), indices2);
+    EXPECT_EQ (int (cloud_out2.width*cloud_out2.height), 3);
+
+    removed_indices2 = cropBoxFilter2.getRemovedIndices ();
+    EXPECT_EQ (int (removed_indices2->size ()), 4);
+    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({3, 5, 6, 8}), *removed_indices2);
+
+    // Test setNegative
+    cropBoxFilter2.setNegative (true);
+    cropBoxFilter2.filter (cloud_out2_negative);
+    EXPECT_EQ (int (cloud_out2_negative.width*cloud_out2_negative.height), 4);
+
+    cropBoxFilter2.filter (indices2);
+    EXPECT_EQ (int (indices2.size ()), 4);
+    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({3, 5, 6, 8}), indices2);
+
+    cropBoxFilter2.setNegative (false);
+    cropBoxFilter2.filter (cloud_out2);
+
+    // Rotate crop box up by 45
+    cropBoxFilter2.setRotation (Eigen::Vector3f (0.0f, 45.0f * float (M_PI) / 180.0f, 0.0f));
+    cropBoxFilter2.filter (indices2);
+    cropBoxFilter2.filter (cloud_out2);
+
+    EXPECT_EQ (int (indices2.size ()), 0);
+    EXPECT_EQ (int (cloud_out2.width), 0);
+    EXPECT_EQ (int (cloud_out2.height), 1);
+
+    removed_indices2 = cropBoxFilter2.getRemovedIndices ();
+    EXPECT_EQ (int (removed_indices2->size ()), 7);
+
+    EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), *removed_indices2);
+    // Test setNegative
+    cropBoxFilter2.setNegative (true);
+    cropBoxFilter2.filter (cloud_out2_negative);
+    EXPECT_EQ (int (cloud_out2_negative.width*cloud_out2_negative.height), 7);
+
+    cropBoxFilter2.filter (indices2);
+    EXPECT_EQ (int (indices2.size ()), 7);
+    EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), indices2);
+
+    cropBoxFilter2.setNegative (false);
+    cropBoxFilter2.filter (cloud_out2);
+
+    // Rotate point cloud by -45
+    cropBoxFilter2.setTransform (getTransformation (0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -45.0f * float (M_PI) / 180.0f));
+    cropBoxFilter2.filter (indices2);
+    cropBoxFilter2.filter (cloud_out2);
+
+    EXPECT_EQ (int (indices2.size ()), 1);
+    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({7}), indices2);
+    EXPECT_EQ (int (cloud_out2.width), 1);
+    EXPECT_EQ (int (cloud_out2.height), 1);
+
+    removed_indices2 = cropBoxFilter2.getRemovedIndices ();
+    EXPECT_EQ (int (removed_indices2->size ()), 6);
+    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 8}), *removed_indices2);
+
+    // Test setNegative
+    cropBoxFilter2.setNegative (true);
+    cropBoxFilter2.filter (cloud_out2_negative);
+    EXPECT_EQ (int (cloud_out2_negative.width*cloud_out2_negative.height), 6);
+
+    cropBoxFilter2.filter (indices2);
+    EXPECT_EQ (int (indices2.size ()), 6);
+    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 8}), indices2);
+
+    cropBoxFilter2.setNegative (false);
+    cropBoxFilter2.filter (cloud_out2);
+
+    // Translate point cloud down by -1
+    cropBoxFilter2.setTransform (getTransformation(0, -1, 0, 0, 0, -45.0 * float (M_PI) / 180.0));
+    cropBoxFilter2.filter (indices2);
+    cropBoxFilter2.filter (cloud_out2);
+
+    EXPECT_EQ (int (indices2.size ()), 1);
+    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({7}), indices2);
+    EXPECT_EQ (int (cloud_out2.width), 1);
+    EXPECT_EQ (int (cloud_out2.height), 1);
+
+    removed_indices = cropBoxFilter.getRemovedIndices ();
+    EXPECT_EQ (int (removed_indices2->size ()), 6);
+    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>( {1, 2, 3, 5, 6, 8}), *removed_indices2);
+
+    // Test setNegative
+    cropBoxFilter2.setNegative (true);
+    cropBoxFilter2.filter (cloud_out2_negative);
+    EXPECT_EQ (int (cloud_out2_negative.width*cloud_out2_negative.height), 6);
+
+    cropBoxFilter2.filter (indices2);
+    EXPECT_EQ (int (indices2.size ()), 6);
+    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 8}), indices2);
+
+    cropBoxFilter2.setNegative (false);
+    cropBoxFilter2.filter (cloud_out2);
+
+    // Remove point cloud rotation
+    cropBoxFilter2.setTransform (getTransformation(0, -1, 0, 0, 0, 0));
+    cropBoxFilter2.filter (indices2);
+    cropBoxFilter2.filter (cloud_out2);
+
+    EXPECT_EQ (int (indices2.size ()), 0);
+    EXPECT_EQ (int (cloud_out2.width), 0);
+    EXPECT_EQ (int (cloud_out2.height), 1);
+
+    removed_indices2 = cropBoxFilter2.getRemovedIndices ();
+    EXPECT_EQ (int (removed_indices2->size ()), 7);
+    EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), *removed_indices2);
+
+    // Test setNegative
+    cropBoxFilter2.setNegative (true);
+    cropBoxFilter2.filter (cloud_out2_negative);
+    EXPECT_EQ (int (cloud_out2_negative.height*cloud_out2_negative.width), 7);
+
+    cropBoxFilter2.filter (indices2);
+    EXPECT_EQ (int (indices2.size ()), 7);
+    EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), indices2);
+
 }
 
 /* ---[ */
