@@ -441,6 +441,67 @@ TYPED_TEST (PLYNormalsIsDenseTest, NaNInNormals)
   EXPECT_FALSE (cloud.is_dense);
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename T>
+struct PLYTypeCastInFieldsTest : public PLYTest {};
+
+TYPED_TEST_CASE (PLYTypeCastInFieldsTest, XYZPointTypes);
+TYPED_TEST (PLYTypeCastInFieldsTest, DoubleInVertices)
+{
+  size_t const amount_vertices = 42;
+  pcl::PointCloud<TypeParam> cloud, cloud2;
+
+  cloud.resize (amount_vertices);
+
+  srand (static_cast<unsigned int> (time (nullptr)));
+  // Randomly create a new point cloud
+  for (size_t i = 0; i < amount_vertices; ++i)
+  {
+    cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud[i].z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+  }
+
+  // create file
+  {
+    std::ofstream fs (PLYTest::mesh_file_ply_.c_str ());
+    fs << "ply\n"
+      "format binary_little_endian 1.0\n"
+      "element vertex " << amount_vertices << "\n"
+      "property double x\n"
+      "property double y\n"
+      "property double z\n"
+      "end_header\n";
+  }
+  {
+    std::ofstream fs (PLYTest::mesh_file_ply_.c_str(), std::ios_base::app | std::ios_base::binary);
+    for (size_t i = 0; i < amount_vertices; ++i)
+    {
+      double v[3];
+      v[0] = cloud[i].x;
+      v[1] = cloud[i].y;
+      v[2] = cloud[i].z;
+      for (size_t j = 0; j < 3; ++j) {
+        fs.write( reinterpret_cast<char*>( &v[j] ), sizeof(double) );
+      }
+    }
+  }
+
+  // load cloud from file
+  const char * fname = PLYTest::mesh_file_ply_.c_str();
+  const int res = pcl::io::loadPLYFile(fname, cloud2);
+  ASSERT_EQ(res, 0);
+
+  ASSERT_EQ(cloud.size(), cloud2.size());
+  for (size_t i = 0; i < cloud.size(); ++i)
+  {
+    ASSERT_EQ(cloud[i].x, cloud2[i].x);
+    ASSERT_EQ(cloud[i].y, cloud2[i].y);
+    ASSERT_EQ(cloud[i].z, cloud2[i].z);
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST_F (PLYTest, NaNInIntensity)
 {

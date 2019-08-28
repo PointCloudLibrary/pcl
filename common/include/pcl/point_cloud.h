@@ -59,6 +59,56 @@ namespace pcl
       size_t serialized_offset;
       size_t struct_offset;
       size_t size;
+
+      PCLPointField field;
+      PCLPointField::PointFieldTypes out_type;
+
+      pcl::uint8_t const * cast(pcl::uint8_t const * data) const {
+        if (out_type == field.datatype || field.name == "rgb" || field.name == "rgba") {
+          return data;
+        }
+        #define PCL_DETAIL_FIELD_MAPPING_CAT_SET_BUFFER(type_idx) \
+           if (field.datatype == type_idx) { \
+             using type = typename traits::asType<type_idx>::type; \
+             type unpack_in_data = *reinterpret_cast<type const *>(data); \
+             set_buffer(out_type, unpack_in_data); \
+           }
+        PCL_DETAIL_FIELD_MAPPING_CAT_SET_BUFFER(PCLPointField::PointFieldTypes::INT8)
+        PCL_DETAIL_FIELD_MAPPING_CAT_SET_BUFFER(PCLPointField::PointFieldTypes::UINT8)
+        PCL_DETAIL_FIELD_MAPPING_CAT_SET_BUFFER(PCLPointField::PointFieldTypes::INT16)
+        PCL_DETAIL_FIELD_MAPPING_CAT_SET_BUFFER(PCLPointField::PointFieldTypes::UINT16)
+        PCL_DETAIL_FIELD_MAPPING_CAT_SET_BUFFER(PCLPointField::PointFieldTypes::INT32)
+        PCL_DETAIL_FIELD_MAPPING_CAT_SET_BUFFER(PCLPointField::PointFieldTypes::UINT32)
+        PCL_DETAIL_FIELD_MAPPING_CAT_SET_BUFFER(PCLPointField::PointFieldTypes::FLOAT32)
+        PCL_DETAIL_FIELD_MAPPING_CAT_SET_BUFFER(PCLPointField::PointFieldTypes::FLOAT64)
+        return _data;
+      }
+
+  private:
+    mutable pcl::uint8_t _data[8];
+
+    template <typename OutType, typename InType>
+      void set_buffer(InType unpack_in_data) const {
+        OutType unpack_out_data = static_cast<OutType>(unpack_in_data);
+        memcpy(_data, &unpack_out_data, sizeof(OutType));
+      }
+
+    template <typename InType>
+      void set_buffer(uint8_t out_type, InType unpack_in_data) const {
+        #define PCL_DETAIL_FIELD_MAPPING_SET_BUFFER(type_idx) \
+           if (out_type == type_idx) { \
+             using type = typename traits::asType<type_idx>::type; \
+             set_buffer<type>(unpack_in_data); \
+           }
+        PCL_DETAIL_FIELD_MAPPING_SET_BUFFER(PCLPointField::PointFieldTypes::INT8)
+        PCL_DETAIL_FIELD_MAPPING_SET_BUFFER(PCLPointField::PointFieldTypes::UINT8)
+        PCL_DETAIL_FIELD_MAPPING_SET_BUFFER(PCLPointField::PointFieldTypes::INT16)
+        PCL_DETAIL_FIELD_MAPPING_SET_BUFFER(PCLPointField::PointFieldTypes::UINT16)
+        PCL_DETAIL_FIELD_MAPPING_SET_BUFFER(PCLPointField::PointFieldTypes::INT32)
+        PCL_DETAIL_FIELD_MAPPING_SET_BUFFER(PCLPointField::PointFieldTypes::UINT32)
+        PCL_DETAIL_FIELD_MAPPING_SET_BUFFER(PCLPointField::PointFieldTypes::FLOAT32)
+        PCL_DETAIL_FIELD_MAPPING_SET_BUFFER(PCLPointField::PointFieldTypes::FLOAT64)
+      }
     };
   } // namespace detail
 

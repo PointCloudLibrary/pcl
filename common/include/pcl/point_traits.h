@@ -45,6 +45,7 @@
 #include "pcl/pcl_macros.h"
 
 #include <pcl/PCLPointField.h>
+#include <pcl/console/print.h>
 #include <boost/mpl/assert.hpp>
 
 // This is required for the workaround at line 109
@@ -194,10 +195,14 @@ namespace pcl
   {
     bool operator() (const pcl::PCLPointField& field)
     {
-      return (field.name == traits::name<PointT, Tag>::value &&
-              field.datatype == traits::datatype<PointT, Tag>::value &&
-              (field.count == traits::datatype<PointT, Tag>::size ||
-               field.count == 0 && traits::datatype<PointT, Tag>::size == 1 /* see bug #821 */));
+      bool res = (field.name == traits::name<PointT, Tag>::value  &&
+          (field.count == traits::datatype<PointT, Tag>::size ||
+           field.count == 0 && traits::datatype<PointT, Tag>::size == 1 /* see bug #821 */));
+      if (res && field.datatype != traits::datatype<PointT, Tag>::value) {
+        PCL_WARN ("Failed to find exactly match for field '%s'. Need type casting\n",
+                  traits::name<PointT, Tag>::value);
+      }
+      return res;
     }
   };
 
