@@ -45,6 +45,7 @@
 #include <pcl/PointIndices.h>
 #include <pcl/conversions.h>
 #include <pcl/exceptions.h>
+#include <pcl/PolygonMesh.h>
 #include <locale>
 
 namespace pcl
@@ -248,7 +249,7 @@ namespace pcl
     * \param[in] cloud1 the first input point cloud dataset
     * \param[in] cloud2 the second input point cloud dataset
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \return true if successful, false if failed
+    * \return true if successful, false otherwise
     * \ingroup common
     */
   template <typename PointT>
@@ -269,19 +270,37 @@ namespace pcl
     * \param[in] cloud1 the first input point cloud dataset
     * \param[in] cloud2 the second input point cloud dataset
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \return true if successful, false if failed
+    * \return true if successful, false otherwise
     * \ingroup common
     */
-  PCL_EXPORTS bool
+  PCL_EXPORTS inline bool
   concatenate (const pcl::PCLPointCloud2 &cloud1,
                const pcl::PCLPointCloud2 &cloud2,
-               pcl::PCLPointCloud2 &cloud_out);
+               pcl::PCLPointCloud2 &cloud_out)
+  {
+    return pcl::PCLPointCloud2::concatenate(cloud1, cloud2, cloud_out);
+  }
+
+  /** \brief Concatenate two pcl::PolygonMesh
+    * \param[in] mesh1 the first input mesh
+    * \param[in] mesh2 the second input mesh
+    * \param[out] mesh_out the resultant output mesh
+    * \return true if successful, false otherwise
+    * \ingroup common
+    */
+  PCL_EXPORTS inline bool
+  concatenate (const pcl::PolygonMesh &mesh1,
+               const pcl::PolygonMesh &mesh2,
+               pcl::PolygonMesh &mesh_out)
+  {
+    return pcl::PolygonMesh::concatenate(mesh1, mesh2, mesh_out);
+  }
 
   /** \brief Concatenate two pcl::PCLPointCloud2
     * \param[in] cloud1 the first input point cloud dataset
     * \param[in] cloud2 the second input point cloud dataset
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \return true if successful, false if failed (e.g., name/number of fields differs)
+    * \return true if successful, false otherwise (e.g., name/number of fields differs)
     * \ingroup common
     */
   [[deprecated("use pcl::concatenate() instead, but beware of subtle difference in behavior (see documentation)")]]
