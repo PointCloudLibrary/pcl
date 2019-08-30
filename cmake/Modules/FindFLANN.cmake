@@ -140,6 +140,13 @@ if(FLANN_FOUND)
         set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_LOCATION_DEBUG "${FLANN_LIBRARY_DEBUG}")
       endif()
     endif()
+    # Pkgconfig may specify additional link libraries besides from FLANN itself
+    # in PC_FLANN_LIBRARIES, add them to the target link interface.
+    foreach(_library ${PC_FLANN_LIBRARIES})
+      if(NOT _library MATCHES "flann")
+        set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES "${_library}")
+      endif()
+    endforeach()
   endif()
   get_filename_component(FLANN_ROOT "${FLANN_INCLUDE_DIR}" PATH)
 endif()
