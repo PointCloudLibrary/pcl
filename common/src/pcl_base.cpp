@@ -134,6 +134,12 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
   {
     fake_indices_ = true;
     indices_.reset (new std::vector<int>);
+  }
+
+  // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
+  if (fake_indices_ && indices_->size () != (input_->width * input_->height))
+  {
+    size_t indices_size = indices_->size ();
     try
     {
       indices_->resize (input_->width * input_->height);
@@ -142,13 +148,6 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
     {
       PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", (input_->width * input_->height));
     }
-    for (size_t i = 0; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
-  }
-  // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
-  if (fake_indices_ && indices_->size () != (input_->width * input_->height))
-  {
-    size_t indices_size = indices_->size ();
-    indices_->resize (input_->width * input_->height);
     for (size_t i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
   }
 
