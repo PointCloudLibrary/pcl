@@ -466,7 +466,7 @@ pcl::AdvancingFront<PointNT>::getAdvancingFrontData (const HalfEdgeIndex &half_e
 template <typename PointNT> typename pcl::AdvancingFront<PointNT>::SamplePointResults
 pcl::AdvancingFront<PointNT>::samplePoint (const pcl::AdvancingFrontGuidanceFieldPointType &pt) const
 {
-  if (!pcl_isfinite (pt.x))
+  if (!std::isfinite (pt.x))
     PCL_ERROR ("MLS Sample point is not finite\n");
 
   SamplePointResults result;
@@ -1209,7 +1209,7 @@ pcl::AdvancingFront<PointNT>::isBoundaryPoint (const int index) const
   if (K.size () < 3)
     return (false);
 
-  if (!pcl_isfinite (closest.x) || !pcl_isfinite (closest.y) || !pcl_isfinite (closest.z))
+  if (!std::isfinite (closest.x) || !std::isfinite (closest.y) || !std::isfinite (closest.z))
     return (false);
 
   // Compute the angles between each neighboring point and the query point itself
@@ -1219,9 +1219,9 @@ pcl::AdvancingFront<PointNT>::isBoundaryPoint (const int index) const
 
   for (size_t i = 0; i < K.size (); ++i)
   {
-    if (!pcl_isfinite (mls_cloud_->points[K[i]].x) ||
-        !pcl_isfinite (mls_cloud_->points[K[i]].y) ||
-        !pcl_isfinite (mls_cloud_->points[K[i]].z))
+    if (!std::isfinite (mls_cloud_->points[K[i]].x) ||
+        !std::isfinite (mls_cloud_->points[K[i]].y) ||
+        !std::isfinite (mls_cloud_->points[K[i]].z))
       continue;
 
     Eigen::Vector4f delta = mls_cloud_->points[K[i]].getVector4fMap () - closest.getVector4fMap ();

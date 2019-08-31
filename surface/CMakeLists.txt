@@ -128,7 +128,6 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/texture_mapping.h"
   "include/pcl/${SUBSYS_NAME}/poisson.h"
   "include/pcl/${SUBSYS_NAME}/advancing_front.h"
-  "include/pcl/${SUBSYS_NAME}/advancing_front_utils.h"
   "include/pcl/${SUBSYS_NAME}/advancing_front_point_type.h"
   ${HULL_INCLUDES}
 )

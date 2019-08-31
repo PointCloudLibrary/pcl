@@ -160,8 +160,8 @@ target_link_libraries(pcl_local_max pcl_common pcl_io pcl_filters)
 PCL_ADD_EXECUTABLE(pcl_grid_min COMPONENT ${SUBSYS_NAME} SOURCES grid_min.cpp)
 target_link_libraries(pcl_grid_min pcl_common pcl_io pcl_filters)
 
-PCL_ADD_EXECUTABLE (pcl_advancing_front_reconstruction "${SUBSYS_NAME}" advancing_front_reconstruction.cpp)
-target_link_libraries (pcl_advancing_front_reconstruction pcl_common pcl_io pcl_surface)
+PCL_ADD_EXECUTABLE (pcl_advancing_front_reconstruction COMPONENT ${SUBSYS_NAME} SOURCES advancing_front_reconstruction.cpp)
+target_link_libraries (pcl_advancing_front_reconstruction pcl_common pcl_io pcl_surface pcl_visualization)
 
 if(WITH_OPENNI)
   PCL_ADD_EXECUTABLE(pcl_oni2pcd COMPONENT ${SUBSYS_NAME} SOURCES oni2pcd.cpp)

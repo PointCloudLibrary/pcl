@@ -77,35 +77,34 @@ namespace pcl
   protected:
     struct MeshTraits
     {
-      typedef pcl::AdvancingFrontVertexPointType VertexData;
-      typedef int HalfEdgeData;
-      typedef int EdgeData;
-      typedef pcl::PointNormal FaceData;
-
-      typedef boost::false_type IsManifold;
+      using VertexData = pcl::AdvancingFrontVertexPointType;
+      using HalfEdgeData = int;
+      using EdgeData = int;
+      using FaceData = pcl::PointNormal;
+      using IsManifold = std::true_type;
     };
 
-    typedef pcl::geometry::PolygonMesh<MeshTraits> Mesh;
+    using Mesh = pcl::geometry::PolygonMesh<MeshTraits>;
 
-    typedef typename Mesh::VertexIndex VertexIndex;
-    typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
-    typedef typename Mesh::FaceIndex FaceIndex;
+    using VertexIndex = typename Mesh::VertexIndex;
+    using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+    using FaceIndex = typename Mesh::FaceIndex;
 
-    typedef typename Mesh::VertexIndices VertexIndices;
-    typedef typename Mesh::HalfEdgeIndices HalfEdgeIndices;
-    typedef typename Mesh::FaceIndices FaceIndices;
+    using VertexIndices = typename Mesh::VertexIndices;
+    using HalfEdgeIndices = typename Mesh::HalfEdgeIndices;
+    using FaceIndices = typename Mesh::FaceIndices;
 
-    typedef typename Mesh::VertexAroundVertexCirculator VAVC;
-    typedef typename Mesh::OutgoingHalfEdgeAroundVertexCirculator OHEAVC;
-    typedef typename Mesh::IncomingHalfEdgeAroundVertexCirculator IHEAVC;
-    typedef typename Mesh::FaceAroundVertexCirculator FAVC;
-    typedef typename Mesh::VertexAroundFaceCirculator VAFC;
-    typedef typename Mesh::InnerHalfEdgeAroundFaceCirculator IHEAFC;
-    typedef typename Mesh::OuterHalfEdgeAroundFaceCirculator OHEAFC;
+    using VAVC = typename Mesh::VertexAroundVertexCirculator;
+    using OHEAVC = typename Mesh::OutgoingHalfEdgeAroundVertexCirculator;
+    using IHEAVC = typename Mesh::IncomingHalfEdgeAroundVertexCirculator;
+    using FAVC = typename Mesh::FaceAroundVertexCirculator;
+    using VAFC = typename Mesh::VertexAroundFaceCirculator;
+    using IHEAFC = typename Mesh::InnerHalfEdgeAroundFaceCirculator;
+    using OHEAFC = typename Mesh::OuterHalfEdgeAroundFaceCirculator;
 
   public:
-    typedef boost::shared_ptr<AdvancingFront<PointNT> > Ptr;
-    typedef boost::shared_ptr<const AdvancingFront<PointNT> > ConstPtr;
+    using Ptr = std::shared_ptr<AdvancingFront<PointNT> >;
+    using ConstPtr = std::shared_ptr<const AdvancingFront<PointNT> >;
 
     struct SamplePointResults
     {
