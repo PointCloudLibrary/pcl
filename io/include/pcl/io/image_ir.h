@@ -36,6 +36,8 @@
 
 #pragma once
 
+#include <chrono>
+
 #include <pcl/pcl_macros.h>
 #include <pcl/io/boost.h>
 
@@ -55,8 +57,8 @@ namespace pcl
         using Ptr = boost::shared_ptr<IRImage>;
         using ConstPtr = boost::shared_ptr<const IRImage>;
 
-        using Clock = boost::chrono::high_resolution_clock;
-        using Timestamp = boost::chrono::high_resolution_clock::time_point;
+        using Clock = std::chrono::high_resolution_clock;
+        using Timestamp = std::chrono::high_resolution_clock::time_point;
 
         IRImage (FrameWrapper::Ptr ir_metadata);
         IRImage (FrameWrapper::Ptr ir_metadata, Timestamp time);

@@ -33,7 +33,6 @@
 #include <PS1080.h> // For XN_STREAM_PROPERTY_EMITTER_DCMOS_DISTANCE property
 
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/chrono.hpp>
 
 #include "pcl/io/openni2/openni2_device.h"
 #include "pcl/io/openni2/openni2_convert.h"
@@ -48,8 +47,6 @@ using namespace pcl::io::openni2;
 
 using openni::VideoMode;
 using std::vector;
-
-using hr_clock = boost::chrono::high_resolution_clock;
 
 pcl::io::openni2::OpenNI2Device::OpenNI2Device (const std::string& device_URI) :
   ir_video_started_(false),

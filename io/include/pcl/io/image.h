@@ -36,11 +36,11 @@
  
 #pragma once
 
-#include <pcl/pcl_config.h>
+#include <chrono>
 
+#include <pcl/pcl_config.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/io/boost.h>
-#include <boost/chrono.hpp>
 
 #include <pcl/io/image_metadata_wrapper.h>
 
@@ -60,8 +60,8 @@ namespace pcl
         using Ptr = boost::shared_ptr<Image>;
         using ConstPtr = boost::shared_ptr<const Image>;
 
-        using Clock = boost::chrono::high_resolution_clock;
-        using Timestamp = boost::chrono::high_resolution_clock::time_point;
+        using Clock = std::chrono::high_resolution_clock;
+        using Timestamp = std::chrono::high_resolution_clock::time_point;
 
         enum Encoding
         {
