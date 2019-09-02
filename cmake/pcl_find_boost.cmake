@@ -29,13 +29,8 @@ if(Boost_SERIALIZATION_FOUND)
 endif()
 
 # Required boost modules
-if(WITH_OPENNI2)
-set(BOOST_REQUIRED_MODULES filesystem date_time iostreams chrono system)
-find_package(Boost 1.55.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
-else()
 set(BOOST_REQUIRED_MODULES filesystem date_time iostreams system)
 find_package(Boost 1.55.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
-endif()
 
 if(Boost_FOUND)
   set(BOOST_FOUND TRUE)
