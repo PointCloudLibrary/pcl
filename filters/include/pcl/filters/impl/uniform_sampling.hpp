@@ -79,7 +79,7 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   // Set up the division multiplier
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
-  Filter<PointT>::removed_indices_->clear();
+  removed_indices_->clear();
   // First pass: build a set of leaves with the point index closest to the leaf center
   for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
@@ -90,10 +90,8 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
           !std::isfinite (input_->points[(*indices_)[cp]].y) || 
           !std::isfinite (input_->points[(*indices_)[cp]].z))
       {
-        if (Filter<PointT>::extract_removed_indices_)
-        {
-          Filter<PointT>::removed_indices_->push_back ((*indices_)[cp]);
-        }
+        if (extract_removed_indices_)
+          removed_indices_->push_back ((*indices_)[cp]);
         continue;
       }
     }
@@ -120,11 +118,8 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
     // If current point is closer, copy its index instead
     if (diff_cur < diff_prev)
     {
-      if (Filter<PointT>::extract_removed_indices_)
-      {
-        Filter<PointT>::removed_indices_->push_back (leaf.idx);
-      }
-
+      if (extract_removed_indices_)
+        removed_indices_->push_back (leaf.idx);
       leaf.idx = (*indices_)[cp];
     }
   }
