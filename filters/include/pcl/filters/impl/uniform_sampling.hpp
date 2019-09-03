@@ -122,6 +122,11 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
         removed_indices_->push_back (leaf.idx);
       leaf.idx = (*indices_)[cp];
     }
+    else
+    {
+      if (extract_removed_indices_)
+        removed_indices_->push_back ((*indices_)[cp]);
+    }
   }
 
   // Second pass: go over all leaves and copy data
