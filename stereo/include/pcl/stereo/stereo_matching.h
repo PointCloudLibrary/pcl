@@ -276,7 +276,7 @@ namespace pcl
       {
         float den = (s1+s3-2*s2);
         if (den != 0)
-          return (static_cast<short int> (16*dbest + floor(.5 + (((s1 - s3)*8) / den))));
+          return (static_cast<short int> (16*dbest + std::floor(.5 + (((s1 - s3)*8) / den))));
         return (static_cast<short int> (dbest*16));
       }
 

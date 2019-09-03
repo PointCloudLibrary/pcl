@@ -279,7 +279,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<PointT>::getColor () const
       {
         // calculate p, q, t from HSV-values
         float a = h / 60;
-        int   i = floor (a);
+        int   i = std::floor (a);
         float f = a - i;
         float p = v * (1 - s);
         float q = v * (1 - s * f);
@@ -331,7 +331,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<PointT>::getColor () const
       {
         // calculate p, q, t from HSV-values
         float a = h / 60;
-        int   i = floor (a);
+        int   i = std::floor (a);
         float f = a - i;
         float p = v * (1 - s);
         float q = v * (1 - s * f);

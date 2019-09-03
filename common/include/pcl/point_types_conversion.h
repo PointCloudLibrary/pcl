@@ -187,7 +187,7 @@ namespace pcl
       return;
     } 
     float a = in.h / 60;
-    int   i = static_cast<int> (floorf (a));
+    int   i = static_cast<int> (std::floor (a));
     float f = a - static_cast<float> (i);
     float p = in.v * (1 - in.s);
     float q = in.v * (1 - in.s * f);

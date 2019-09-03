@@ -507,8 +507,8 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track (const PointClou
 
       Eigen::Array2i iprev_point;
       prev_pt -= half_win;
-      iprev_point[0] = floor (prev_pt[0]);
-      iprev_point[1] = floor (prev_pt[1]);
+      iprev_point[0] = std::floor (prev_pt[0]);
+      iprev_point[1] = std::floor (prev_pt[1]);
 
       if (iprev_point[0] < -track_width_ || (uint32_t) iprev_point[0] >= grad_x.width ||
           iprev_point[1] < -track_height_ || (uint32_t) iprev_point[1] >= grad_y.height)
@@ -589,8 +589,8 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track (const PointClou
         Eigen::Array2f next_point = next_pts[ptidx] - half_win;
         Eigen::Array2i inext_point;
 
-        inext_point[0] = floor (next_point[0]);
-        inext_point[1] = floor (next_point[1]);
+        inext_point[0] = std::floor (next_point[0]);
+        inext_point[1] = std::floor (next_point[1]);
 
         if (inext_point[0] < -track_width_ || (uint32_t) inext_point[0] >= next.width ||
             inext_point[1] < -track_height_ || (uint32_t) inext_point[1] >= next.height)
@@ -604,10 +604,10 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track (const PointClou
         n.v = next_pts[ptidx][1];
         keypoints->push_back (n);
         // add points pair to compute transformation
-        inext_point[0] = floor (next_pts[ptidx][0]);
-        inext_point[1] = floor (next_pts[ptidx][1]);
-        iprev_point[0] = floor (prev_keypoints->points[ptidx].u);
-        iprev_point[1] = floor (prev_keypoints->points[ptidx].v);
+        inext_point[0] = std::floor (next_pts[ptidx][0]);
+        inext_point[1] = std::floor (next_pts[ptidx][1]);
+        iprev_point[0] = std::floor (prev_keypoints->points[ptidx].u);
+        iprev_point[1] = std::floor (prev_keypoints->points[ptidx].v);
         const PointInT& prev_pt = prev_input->points[iprev_point[1]*prev_input->width + iprev_point[0]];
         const PointInT& next_pt = input->points[inext_point[1]*input->width + inext_point[0]];
         transformation_computer.add (prev_pt.getVector3fMap (), next_pt.getVector3fMap (), 1.0);

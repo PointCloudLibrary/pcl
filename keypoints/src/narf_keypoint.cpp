@@ -364,7 +364,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
                      current_negative_score, positive_score);
         float angle = nkdGetDirectionAngle (surface_change_direction, rotation_to_viewer_coordinate_system);
         int histogram_cell = (std::min) (angle_histogram_size-1,
-                          static_cast<int> (pcl_lrint (floorf ( (angle+deg2rad (90.0f))/deg2rad (180.0f) * angle_histogram_size))));
+                          static_cast<int> (pcl_lrint (std::floor ( (angle+deg2rad (90.0f))/deg2rad (180.0f) * angle_histogram_size))));
         float& histogram_value = angle_histogram[histogram_cell];
         
         histogram_value = (std::max) (histogram_value, positive_score);
@@ -545,7 +545,7 @@ NarfKeypoint::calculateSparseInterestImage ()
       
       float angle = nkdGetDirectionAngle (surface_change_direction, rotation_to_viewer_coordinate_system);
       int histogram_cell = (std::min) (angle_histogram_size-1,
-                                       static_cast<int> (pcl_lrint (floorf ( (angle+deg2rad (90.0f))/deg2rad (180.0f) * angle_histogram_size))));
+                                       static_cast<int> (pcl_lrint (std::floor ( (angle+deg2rad (90.0f))/deg2rad (180.0f) * angle_histogram_size))));
       float& histogram_value = angle_histogram[histogram_cell];
       histogram_value = (std::max) (histogram_value, surface_change_score);
       angle_elements[histogram_cell].push_back (std::make_pair(index2, surface_change_score));

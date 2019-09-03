@@ -84,17 +84,17 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (
         continue;
 
     // Normalize the f1, f2, f3 features and push them in the histogram
-    int h_index = static_cast<int> (floor (nr_bins_f1 * ((pfh_tuple[0] + M_PI) * d_pi_)));
+    int h_index = static_cast<int> (std::floor (nr_bins_f1 * ((pfh_tuple[0] + M_PI) * d_pi_)));
     if (h_index < 0)           h_index = 0;
     if (h_index >= nr_bins_f1) h_index = nr_bins_f1 - 1;
     hist_f1 (row, h_index) += hist_incr;
 
-    h_index = static_cast<int> (floor (nr_bins_f2 * ((pfh_tuple[1] + 1.0) * 0.5)));
+    h_index = static_cast<int> (std::floor (nr_bins_f2 * ((pfh_tuple[1] + 1.0) * 0.5)));
     if (h_index < 0)           h_index = 0;
     if (h_index >= nr_bins_f2) h_index = nr_bins_f2 - 1;
     hist_f2 (row, h_index) += hist_incr;
 
-    h_index = static_cast<int> (floor (nr_bins_f3 * ((pfh_tuple[2] + 1.0) * 0.5)));
+    h_index = static_cast<int> (std::floor (nr_bins_f3 * ((pfh_tuple[2] + 1.0) * 0.5)));
     if (h_index < 0)           h_index = 0;
     if (h_index >= nr_bins_f3) h_index = nr_bins_f3 - 1;
     hist_f3 (row, h_index) += hist_incr;

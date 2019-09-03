@@ -436,7 +436,7 @@ namespace
       float y1 = (b - sqrt (det)) / a;
       float y2 = (b + sqrt (det)) / a;
 
-      min = (int)std::min(floor(y1), floor(y2));
+      min = (int)std::min(std::floor(y1), std::floor(y2));
       max = (int)std::max( std::ceil(y1),  std::ceil(y2));
       minY = std::min (rows - 1, std::max (0, min));
       maxY = std::max (std::min (rows - 1, max), 0);
@@ -456,7 +456,7 @@ namespace
       float x1 = (b - sqrt (det)) / a;
       float x2 = (b + sqrt (det)) / a;
  
-      min = (int)std::min (floor(x1), floor(x2));
+      min = (int)std::min (std::floor(x1), std::floor(x2));
       max = (int)std::max ( std::ceil(x1),  std::ceil(x2));
       minX = std::min (cols- 1, std::max (0, min));
       maxX = std::max (std::min (cols - 1, max), 0);

@@ -338,7 +338,7 @@ depthBufferToMM(const float* depth_buffer,unsigned short* depth_img)
       float zn = 0.7;
       float zf = 20.0;
       float d = depth_buffer[i_in];
-      unsigned short z_new = (unsigned short)  floor( 1000*( -zf*zn/((zf-zn)*(d - zf/(zf-zn)))));
+      unsigned short z_new = (unsigned short)  std::floor( 1000*( -zf*zn/((zf-zn)*(d - zf/(zf-zn)))));
 
       if (z_new < 0) z_new = 0;
 //      else if (z_new>65535) z_new = 65535;

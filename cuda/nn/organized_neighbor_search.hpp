@@ -115,10 +115,10 @@ namespace pcl
     x2 = (x_times_z + sqrt_term_x) * norm;
 
     // determine 2-D search window
-    minX_arg  = (int)floor((double)input_->width / 2 + (x1 / focalLength_));
+    minX_arg  = (int)std::floor((double)input_->width / 2 + (x1 / focalLength_));
     maxX_arg = (int)std::ceil((double)input_->width / 2 + (x2 / focalLength_));
 
-    minY_arg  = (int)floor((double)input_->height / 2 + (y1 / focalLength_));
+    minY_arg  = (int)std::floor((double)input_->height / 2 + (y1 / focalLength_));
     maxY_arg = (int)std::ceil((double)input_->height / 2 + (y2 / focalLength_));
 
     // make sure the coordinates fit to point cloud resolution

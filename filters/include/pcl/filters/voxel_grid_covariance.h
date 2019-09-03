@@ -316,9 +316,9 @@ namespace pcl
       getLeaf (PointT &p)
       {
         // Generate index associated with p
-        int ijk0 = static_cast<int> (floor (p.x * inverse_leaf_size_[0]) - min_b_[0]);
-        int ijk1 = static_cast<int> (floor (p.y * inverse_leaf_size_[1]) - min_b_[1]);
-        int ijk2 = static_cast<int> (floor (p.z * inverse_leaf_size_[2]) - min_b_[2]);
+        int ijk0 = static_cast<int> (std::floor (p.x * inverse_leaf_size_[0]) - min_b_[0]);
+        int ijk1 = static_cast<int> (std::floor (p.y * inverse_leaf_size_[1]) - min_b_[1]);
+        int ijk2 = static_cast<int> (std::floor (p.z * inverse_leaf_size_[2]) - min_b_[2]);
 
         // Compute the centroid leaf index
         int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
@@ -342,9 +342,9 @@ namespace pcl
       getLeaf (Eigen::Vector3f &p)
       {
         // Generate index associated with p
-        int ijk0 = static_cast<int> (floor (p[0] * inverse_leaf_size_[0]) - min_b_[0]);
-        int ijk1 = static_cast<int> (floor (p[1] * inverse_leaf_size_[1]) - min_b_[1]);
-        int ijk2 = static_cast<int> (floor (p[2] * inverse_leaf_size_[2]) - min_b_[2]);
+        int ijk0 = static_cast<int> (std::floor (p[0] * inverse_leaf_size_[0]) - min_b_[0]);
+        int ijk1 = static_cast<int> (std::floor (p[1] * inverse_leaf_size_[1]) - min_b_[1]);
+        int ijk2 = static_cast<int> (std::floor (p[2] * inverse_leaf_size_[2]) - min_b_[2]);
 
         // Compute the centroid leaf index
         int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];

@@ -113,7 +113,7 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
     float up_factor = static_cast<float>(d_+1);
     int sum = 0;
     for (int j = 0; j <= d_; j++){
-      float rd = floorf (0.5f + (down_factor * elevated (j))) ;
+      float rd = std::floor (0.5f + (down_factor * elevated (j))) ;
       rem0 (j) = rd * up_factor;
       sum += static_cast<int> (rd);
     }

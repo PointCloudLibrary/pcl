@@ -62,12 +62,12 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   pcl::getMinMax3D<PointT>(*input_, min_p, max_p);
 
   // Compute the minimum and maximum bounding box values
-  min_b_[0] = static_cast<int> (floor (min_p[0] * inverse_leaf_size_[0]));
-  max_b_[0] = static_cast<int> (floor (max_p[0] * inverse_leaf_size_[0]));
-  min_b_[1] = static_cast<int> (floor (min_p[1] * inverse_leaf_size_[1]));
-  max_b_[1] = static_cast<int> (floor (max_p[1] * inverse_leaf_size_[1]));
-  min_b_[2] = static_cast<int> (floor (min_p[2] * inverse_leaf_size_[2]));
-  max_b_[2] = static_cast<int> (floor (max_p[2] * inverse_leaf_size_[2]));
+  min_b_[0] = static_cast<int> (std::floor (min_p[0] * inverse_leaf_size_[0]));
+  max_b_[0] = static_cast<int> (std::floor (max_p[0] * inverse_leaf_size_[0]));
+  min_b_[1] = static_cast<int> (std::floor (min_p[1] * inverse_leaf_size_[1]));
+  max_b_[1] = static_cast<int> (std::floor (max_p[1] * inverse_leaf_size_[1]));
+  min_b_[2] = static_cast<int> (std::floor (min_p[2] * inverse_leaf_size_[2]));
+  max_b_[2] = static_cast<int> (std::floor (max_p[2] * inverse_leaf_size_[2]));
 
   // Compute the number of divisions needed along all axis
   div_b_ = max_b_ - min_b_ + Eigen::Vector4i::Ones ();
@@ -99,9 +99,9 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
     }
 
     Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
-    ijk[0] = static_cast<int> (floor (input_->points[(*indices_)[cp]].x * inverse_leaf_size_[0]));
-    ijk[1] = static_cast<int> (floor (input_->points[(*indices_)[cp]].y * inverse_leaf_size_[1]));
-    ijk[2] = static_cast<int> (floor (input_->points[(*indices_)[cp]].z * inverse_leaf_size_[2]));
+    ijk[0] = static_cast<int> (std::floor (input_->points[(*indices_)[cp]].x * inverse_leaf_size_[0]));
+    ijk[1] = static_cast<int> (std::floor (input_->points[(*indices_)[cp]].y * inverse_leaf_size_[1]));
+    ijk[2] = static_cast<int> (std::floor (input_->points[(*indices_)[cp]].z * inverse_leaf_size_[2]));
 
     // Compute the leaf index
     int idx = (ijk - min_b_).dot (divb_mul_);
