@@ -49,7 +49,7 @@ main (int argc, char** argv)
   reg.extract (clusters);
 
   std::cout << "Number of clusters is equal to " << clusters.size () << std::endl;
-  std::cout << "First cluster has " << clusters[0].indices.size () << " points." << endl;
+  std::cout << "First cluster has " << clusters[0].indices.size () << " points." << std::endl;
   std::cout << "These are the indices of the points of the initial" <<
     std::endl << "cloud that belong to the first cluster:" << std::endl;
   int counter = 0;

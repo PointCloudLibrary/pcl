@@ -129,13 +129,13 @@ class ObjectSelection
     keyboard_callback (const visualization::KeyboardEvent&, void*)
     {
       //if (event.getKeyCode())
-      //  cout << "the key \'" << event.getKeyCode() << "\' (" << event.getKeyCode() << ") was";
+      //  std::cout << "the key \'" << event.getKeyCode() << "\' (" << event.getKeyCode() << ") was";
       //else
-      //  cout << "the special key \'" << event.getKeySym() << "\' was";
+      //  std::cout << "the special key \'" << event.getKeySym() << "\' was";
       //if (event.keyDown())
-      //  cout << " pressed" << endl;
+      //  std::cout << " pressed" << std::endl;
       //else
-      //  cout << " released" << endl;
+      //  std::cout << " released" << std::endl;
     }
     
     /////////////////////////////////////////////////////////////////////////
@@ -144,7 +144,7 @@ class ObjectSelection
     {
       if (mouse_event.getType() == visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == visualization::MouseEvent::LeftButton)
       {
-        cout << "left button pressed @ " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
+        std::cout << "left button pressed @ " << mouse_event.getX () << " , " << mouse_event.getY () << std::endl;
       }
     }
 

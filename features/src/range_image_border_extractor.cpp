@@ -83,7 +83,7 @@ RangeImageBorderExtractor::clearData ()
   delete[] border_scores_right_;   border_scores_right_  = nullptr;
   delete[] border_scores_top_;     border_scores_top_    = nullptr;
   delete[] border_scores_bottom_;  border_scores_bottom_ = nullptr;
-  //cout << PVARC(range_image_size_during_extraction_)<<PVARN((void*)this);
+  //std::cout << PVARC(range_image_size_during_extraction_)<<PVARN((void*)this);
   for (int i=0; i<range_image_size_during_extraction_; ++i)
   {
     if (surface_structure_!=nullptr)
@@ -108,7 +108,7 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
 {
   if (surface_structure_ != nullptr)
     return;
-  //cerr << __PRETTY_FUNCTION__<<" called (this="<<(void*)this<<").\n";
+  //std::cerr << __PRETTY_FUNCTION__<<" called (this="<<(void*)this<<").\n";
   //MEASURE_FUNCTION_TIME;
   
   int width  = range_image_->width,
@@ -117,7 +117,7 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
   int array_size = range_image_size_during_extraction_;
   surface_structure_ = new LocalSurface*[array_size];
   int step_size = (std::max)(1, parameters_.pixel_radius_plane_extraction/2);
-  //cout << PVARN(step_size);
+  //std::cout << PVARN(step_size);
   int no_of_nearest_neighbors = static_cast<int> (pow (static_cast<double> (parameters_.pixel_radius_plane_extraction/step_size + 1), 2.0));
   
 # pragma omp parallel for num_threads(parameters_.max_no_of_threads) default(shared) schedule(dynamic, 10)
@@ -133,7 +133,7 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
       local_surface = new LocalSurface;
       Eigen::Vector3f point;
       range_image_->getPoint(x, y, point);
-      //cout << PVARN(point);
+      //std::cout << PVARN(point);
       if (!range_image_->getSurfaceInformation(x, y, parameters_.pixel_radius_plane_extraction, point,
                                   no_of_nearest_neighbors, step_size, local_surface->max_neighbor_distance_squared,
                                   local_surface->normal_no_jumps, local_surface->neighborhood_mean_no_jumps,
@@ -144,7 +144,7 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
         local_surface = nullptr;
       }
       
-      //cout << x<<","<<y<<": ("<<local_surface->normal_no_jumps[0]<<","<<local_surface->normal_no_jumps[1]<<","<<local_surface->normal_no_jumps[2]<<")\n";
+      //std::cout << x<<","<<y<<": ("<<local_surface->normal_no_jumps[0]<<","<<local_surface->normal_no_jumps[1]<<","<<local_surface->normal_no_jumps[2]<<")\n";
     }
   }
 }
@@ -429,7 +429,7 @@ RangeImageBorderExtractor::classifyBorders ()
         shadow_traits[BORDER_TRAIT__SHADOW_BORDER] = shadow_traits[BORDER_TRAIT__SHADOW_BORDER_BOTTOM] = true;
         for (int index3=index-width; index3>shadow_border_index; index3-=width)
         {
-          //cout << "Adding veil point at "<<(index3-index)%width<<","<<(index3-index)/width<<".\n";
+          //std::cout << "Adding veil point at "<<(index3-index)%width<<","<<(index3-index)/width<<".\n";
           BorderTraits& veil_point = border_descriptions_->points[index3].traits;
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_BOTTOM] = true;
         }
@@ -443,7 +443,7 @@ RangeImageBorderExtractor::classifyBorders ()
         shadow_traits[BORDER_TRAIT__SHADOW_BORDER] = shadow_traits[BORDER_TRAIT__SHADOW_BORDER_TOP] = true;
         for (int index3=index+width; index3<shadow_border_index; index3+=width)
         {
-          //cout << "Adding veil point at "<<(index3-index)%width<<","<<(index3-index)/width<<".\n";
+          //std::cout << "Adding veil point at "<<(index3-index)%width<<","<<(index3-index)/width<<".\n";
           BorderTraits& veil_point = border_descriptions_->points[index3].traits;
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_TOP] = true;
         }
@@ -508,11 +508,11 @@ RangeImageBorderExtractor::calculateBorderDirections ()
           float cos_angle = neighbor_border_direction->dot(*border_direction);
           if (cos_angle<min_cos_angle)
           {
-            //cout << "Reject. "<<PVARC(min_cos_angle)<<PVARC(cos_angle)<<PVARAN(acosf(cos_angle));
+            //std::cout << "Reject. "<<PVARC(min_cos_angle)<<PVARC(cos_angle)<<PVARAN(acosf(cos_angle));
             continue;
           }
           //else
-            //cout << "No reject\n";
+            //std::cout << "No reject\n";
           
           // Border in between?
           float border_between_points_score = getNeighborDistanceChangeScore(*surface_structure_[index], x, y, x2-x,  y2-y, 1);
@@ -629,7 +629,7 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
           {
             Eigen::Vector3f& neighbor = surface_change_directions_[index2];
             //if (std::abs(neighbor.norm()-1) > 1e-4)
-              //cerr<<PVARN(neighbor)<<PVARN(score);
+              //std::cerr<<PVARN(neighbor)<<PVARN(score);
             if (point.dot(neighbor)<0.0f)
               neighbor *= -1.0f;
             new_point += score*neighbor;

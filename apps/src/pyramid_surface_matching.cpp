@@ -34,7 +34,7 @@ subsampleAndCalculateNormals (PointCloud<PointXYZ>::Ptr &cloud,
   normal_estimation_filter.setRadiusSearch (normal_estimation_search_radius);
   normal_estimation_filter.compute (*cloud_subsampled_normals);
 
-  cerr << "Before -> After subsampling: " << cloud->points.size () << " -> " << cloud_subsampled->points.size () << endl;
+  std::cerr << "Before -> After subsampling: " << cloud->points.size () << " -> " << cloud_subsampled->points.size () << std::endl;
 }
 
 

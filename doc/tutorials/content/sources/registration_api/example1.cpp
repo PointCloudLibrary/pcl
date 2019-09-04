@@ -235,7 +235,7 @@ main (int argc, char** argv)
 
   saveTransform (argv[p_tr_file_indices[0]], transform);
 
-  cerr.precision (15);
+  std::cerr.precision (15);
   std::cerr << transform << std::endl;
 }
 /* ]--- */

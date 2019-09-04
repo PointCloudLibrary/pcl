@@ -37,7 +37,7 @@ struct EventHelper
 void
 printUsage (const char* progName)
 {
-  cout << "\n\nUsage: "<<progName<<" [options] [scene.pcd] <model.pcl> [model_2.pcl] ... [model_n.pcl]\n\n"
+  std::cout << "\n\nUsage: "<<progName<<" [options] [scene.pcd] <model.pcl> [model_2.pcl] ... [model_n.pcl]\n\n"
        << "Options:\n"
        << "-------------------------------------------\n"
        << "-d <device_id>  set the device id (default \""<<device_id<<"\")\n"
@@ -57,9 +57,9 @@ int main (int argc, char** argv)
     return 0;
   }
   if (pcl::console::parse (argc, argv, "-d", device_id) >= 0)
-    cout << "Using device id \""<<device_id<<"\".\n";
+    std::cout << "Using device id \""<<device_id<<"\".\n";
   if (pcl::console::parse (argc, argv, "-r", angular_resolution) >= 0)
-    cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
+    std::cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
   angular_resolution = pcl::deg2rad (angular_resolution);
   
   pcl::visualization::RangeImageVisualizer range_image_widget ("Range Image");
@@ -79,7 +79,7 @@ int main (int argc, char** argv)
   {
     for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
     {
-      cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx)
+      std::cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx)
            << ", product: " << driver.getProductName (deviceIdx) << ", connected: "
            << (int) driver.getBus (deviceIdx) << " @ " << (int) driver.getAddress (deviceIdx)
            << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'\n";
@@ -87,7 +87,7 @@ int main (int argc, char** argv)
   }
   else
   {
-    cout << "\nNo devices connected.\n\n";
+    std::cout << "\nNo devices connected.\n\n";
     return 1;
   }
   
@@ -98,9 +98,9 @@ int main (int argc, char** argv)
     [&] (const openni_wrapper::DepthImage::Ptr& depth) { event_helper.depth_image_cb (depth); };
   boost::signals2::connection c_depth_image = interface->registerCallback (f_depth_image);
   
-  cout << "Starting grabber\n";
+  std::cout << "Starting grabber\n";
   interface->start ();
-  cout << "Done\n";
+  std::cout << "Done\n";
   
   pcl::RangeImagePlanar::Ptr range_image_planar_ptr (new pcl::RangeImagePlanar);
   pcl::RangeImagePlanar& range_image_planar = *range_image_planar_ptr;
@@ -117,7 +117,7 @@ int main (int argc, char** argv)
       received_new_depth_data = false;
 
       int frame_id = depth_image_ptr->getFrameID ();
-      cout << "Visualizing frame "<<frame_id<<"\n";
+      std::cout << "Visualizing frame "<<frame_id<<"\n";
       const unsigned short* depth_map = depth_image_ptr->getDepthMetaData ().Data ();
       int width = depth_image_ptr->getWidth (), height = depth_image_ptr->getHeight ();
       float center_x = width/2, center_y = height/2;

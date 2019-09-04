@@ -91,7 +91,7 @@ RangeImagePlanar::createFromPointCloudWithFixedSize (const PointCloudType& point
 void
 RangeImagePlanar::calculate3DPoint (float image_x, float image_y, float range, Eigen::Vector3f& point) const
 {
-  //cout << __PRETTY_FUNCTION__ << " called.\n";
+  //std::cout << __PRETTY_FUNCTION__ << " called.\n";
   float delta_x = (image_x+static_cast<float> (image_offset_x_)-center_x_)*focal_length_x_reciprocal_,
         delta_y = (image_y+static_cast<float> (image_offset_y_)-center_y_)*focal_length_y_reciprocal_;
   point[2] = range / (std::sqrt (delta_x*delta_x + delta_y*delta_y + 1));

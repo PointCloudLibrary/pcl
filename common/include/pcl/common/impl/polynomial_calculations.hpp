@@ -68,7 +68,7 @@ template <typename real>
 inline void
   pcl::PolynomialCalculationsT<real>::solveLinearEquation (real a, real b, std::vector<real>& roots) const
 {
-  //cout << "Trying to solve "<<a<<"x + "<<b<<" = 0\n";
+  //std::cout << "Trying to solve "<<a<<"x + "<<b<<" = 0\n";
 
   if (isNearlyZero (b))
   {
@@ -80,17 +80,17 @@ inline void
   }
 
 #if 0
-  cout << __PRETTY_FUNCTION__ << ": Found "<<roots.size ()<<" roots.\n";
+  std::cout << __PRETTY_FUNCTION__ << ": Found "<<roots.size ()<<" roots.\n";
   for (unsigned int i=0; i<roots.size (); i++)
   {
     real x=roots[i];
     real result = a*x + b;
     if (!isNearlyZero (result))
     {
-      cout << "Something went wrong during solving of polynomial "<<a<<"x + "<<b<<" = 0\n";
+      std::cout << "Something went wrong during solving of polynomial "<<a<<"x + "<<b<<" = 0\n";
       //roots.clear ();
     }
-    cout << "Root "<<i<<" = "<<roots[i]<<". ("<<a<<"x^ + "<<b<<" = "<<result<<")\n";
+    std::cout << "Root "<<i<<" = "<<roots[i]<<". ("<<a<<"x^ + "<<b<<" = "<<result<<")\n";
   }
 #endif
 }
@@ -101,11 +101,11 @@ template <typename real>
 inline void
   pcl::PolynomialCalculationsT<real>::solveQuadraticEquation (real a, real b, real c, std::vector<real>& roots) const
 {
-  //cout << "Trying to solve "<<a<<"x^2 + "<<b<<"x + "<<c<<" = 0\n";
+  //std::cout << "Trying to solve "<<a<<"x^2 + "<<b<<"x + "<<c<<" = 0\n";
 
   if (isNearlyZero (a))
   {
-    //cout << "Highest order element is 0 => Calling solveLineaqrEquation.\n";
+    //std::cout << "Highest order element is 0 => Calling solveLineaqrEquation.\n";
     solveLinearEquation (b, c, roots);
     return;
   }
@@ -113,7 +113,7 @@ inline void
   if (isNearlyZero (c))
   {
     roots.push_back (0.0);
-    //cout << "Constant element is 0 => Adding root 0 and calling solveLinearEquation.\n";
+    //std::cout << "Constant element is 0 => Adding root 0 and calling solveLinearEquation.\n";
     std::vector<real> tmpRoots;
     solveLinearEquation (a, b, tmpRoots);
     for (unsigned int i=0; i<tmpRoots.size (); i++)
@@ -136,17 +136,17 @@ inline void
   }
 
 #if 0
-  cout << __PRETTY_FUNCTION__ << ": Found "<<roots.size ()<<" roots.\n";
+  std::cout << __PRETTY_FUNCTION__ << ": Found "<<roots.size ()<<" roots.\n";
   for (unsigned int i=0; i<roots.size (); i++)
   {
     real x=roots[i], x2=x*x;
     real result = a*x2 + b*x + c;
     if (!isNearlyZero (result))
     {
-      cout << "Something went wrong during solving of polynomial "<<a<<"x^2 + "<<b<<"x + "<<c<<" = 0\n";
+      std::cout << "Something went wrong during solving of polynomial "<<a<<"x^2 + "<<b<<"x + "<<c<<" = 0\n";
       //roots.clear ();
     }
-    //cout << "Root "<<i<<" = "<<roots[i]<<". ("<<a<<"x^2 + "<<b<<"x + "<<c<<" = "<<result<<")\n";
+    //std::cout << "Root "<<i<<" = "<<roots[i]<<". ("<<a<<"x^2 + "<<b<<"x + "<<c<<" = "<<result<<")\n";
   }
 #endif
 }
@@ -157,11 +157,11 @@ template<typename real>
 inline void
   pcl::PolynomialCalculationsT<real>::solveCubicEquation (real a, real b, real c, real d, std::vector<real>& roots) const
 {
-  //cout << "Trying to solve "<<a<<"x^3 + "<<b<<"x^2 + "<<c<<"x + "<<d<<" = 0\n";
+  //std::cout << "Trying to solve "<<a<<"x^3 + "<<b<<"x^2 + "<<c<<"x + "<<d<<" = 0\n";
 
   if (isNearlyZero (a))
   {
-    //cout << "Highest order element is 0 => Calling solveQuadraticEquation.\n";
+    //std::cout << "Highest order element is 0 => Calling solveQuadraticEquation.\n";
     solveQuadraticEquation (b, c, d, roots);
     return;
   }
@@ -169,7 +169,7 @@ inline void
   if (isNearlyZero (d))
   {
     roots.push_back (0.0);
-    //cout << "Constant element is 0 => Adding root 0 and calling solveQuadraticEquation.\n";
+    //std::cout << "Constant element is 0 => Adding root 0 and calling solveQuadraticEquation.\n";
     std::vector<real> tmpRoots;
     solveQuadraticEquation (a, b, c, tmpRoots);
     for (unsigned int i=0; i<tmpRoots.size (); i++)
@@ -191,11 +191,11 @@ inline void
   // Value for resubstitution:
   double resubValue = b/ (3*a);
 
-  //cout << "Trying to solve y^3 + "<<alpha<<"y + "<<beta<<"\n";
+  //std::cout << "Trying to solve y^3 + "<<alpha<<"y + "<<beta<<"\n";
 
   double discriminant = (alpha3/27.0) + 0.25*beta2;
 
-  //cout << "Discriminant is "<<discriminant<<"\n";
+  //std::cout << "Discriminant is "<<discriminant<<"\n";
 
   if (isNearlyZero (discriminant))
   {
@@ -224,7 +224,7 @@ inline void
     else
       d2 = pow (d2, 1.0/3.0);
 
-    //cout << PVAR (d1)<<", "<<PVAR (d2)<<"\n";
+    //std::cout << PVAR (d1)<<", "<<PVAR (d2)<<"\n";
     roots.push_back (d1 + d2 - resubValue);
   }
   else
@@ -237,19 +237,19 @@ inline void
   }
 
 #if 0
-  cout << __PRETTY_FUNCTION__ << ": Found "<<roots.size ()<<" roots.\n";
+  std::cout << __PRETTY_FUNCTION__ << ": Found "<<roots.size ()<<" roots.\n";
   for (unsigned int i=0; i<roots.size (); i++)
   {
     real x=roots[i], x2=x*x, x3=x2*x;
     real result = a*x3 + b*x2 + c*x + d;
     if (std::abs (result) > 1e-4)
     {
-      cout << "Something went wrong:\n";
+      std::cout << "Something went wrong:\n";
       //roots.clear ();
     }
-    cout << "Root "<<i<<" = "<<roots[i]<<". ("<<a<<"x^3 + "<<b<<"x^2 + "<<c<<"x + "<<d<<" = "<<result<<")\n";
+    std::cout << "Root "<<i<<" = "<<roots[i]<<". ("<<a<<"x^3 + "<<b<<"x^2 + "<<c<<"x + "<<d<<" = "<<result<<")\n";
   }
-  cout << "\n\n";
+  std::cout << "\n\n";
 #endif
 }
 
@@ -260,11 +260,11 @@ inline void
   pcl::PolynomialCalculationsT<real>::solveQuarticEquation (real a, real b, real c, real d, real e,
                                                             std::vector<real>& roots) const
 {
-  //cout << "Trying to solve "<<a<<"x^4 + "<<b<<"x^3 + "<<c<<"x^2 + "<<d<<"x + "<<e<<" = 0\n";
+  //std::cout << "Trying to solve "<<a<<"x^4 + "<<b<<"x^3 + "<<c<<"x^2 + "<<d<<"x + "<<e<<" = 0\n";
 
   if (isNearlyZero (a))
   {
-    //cout << "Highest order element is 0 => Calling solveCubicEquation.\n";
+    //std::cout << "Highest order element is 0 => Calling solveCubicEquation.\n";
     solveCubicEquation (b, c, d, e, roots);
     return;
   }
@@ -272,7 +272,7 @@ inline void
   if (isNearlyZero (e))
   {
     roots.push_back (0.0);
-    //cout << "Constant element is 0 => Adding root 0 and calling solveCubicEquation.\n";
+    //std::cout << "Constant element is 0 => Adding root 0 and calling solveCubicEquation.\n";
     std::vector<real> tmpRoots;
     solveCubicEquation (a, b, c, d, tmpRoots);
     for (unsigned int i=0; i<tmpRoots.size (); i++)
@@ -296,11 +296,11 @@ inline void
   // Value for resubstitution:
   double resubValue = b/ (4*a);
 
-  //cout << "Trying to solve y^4 + "<<alpha<<"y^2 + "<<beta<<"y + "<<gamma<<"\n";
+  //std::cout << "Trying to solve y^4 + "<<alpha<<"y^2 + "<<beta<<"y + "<<gamma<<"\n";
 
   if (isNearlyZero (beta))
   {  // y^4 + alpha*y^2 + gamma\n";
-    //cout << "Using beta=0 condition\n";
+    //std::cout << "Using beta=0 condition\n";
     std::vector<real> tmpRoots;
     solveQuadraticEquation (1.0, alpha, gamma, tmpRoots);
     for (unsigned int i=0; i<tmpRoots.size (); i++)
@@ -320,7 +320,7 @@ inline void
   }
   else
   {
-    //cout << "beta != 0\n";
+    //std::cout << "beta != 0\n";
     double alpha3 = alpha2*alpha,
            beta2 = beta*beta,
            p = (-alpha2/12.0)-gamma,
@@ -351,7 +351,7 @@ inline void
     }
     else
     {
-      //cout << "Found no roots\n";
+      //std::cout << "Found no roots\n";
       return;
     }
 
@@ -386,24 +386,24 @@ inline void
       roots.push_back (root3);
     }
 
-    //cout << "Test: " << alpha<<", "<<beta<<", "<<gamma<<", "<<p<<", "<<q<<", "<<u <<", "<<y<<", "<<w<<"\n";
+    //std::cout << "Test: " << alpha<<", "<<beta<<", "<<gamma<<", "<<p<<", "<<q<<", "<<u <<", "<<y<<", "<<w<<"\n";
   }
 
 #if 0
-  cout << __PRETTY_FUNCTION__ << ": Found "<<roots.size ()<<" roots.\n";
+  std::cout << __PRETTY_FUNCTION__ << ": Found "<<roots.size ()<<" roots.\n";
   for (unsigned int i=0; i<roots.size (); i++)
   {
     real x=roots[i], x2=x*x, x3=x2*x, x4=x2*x2;
     real result = a*x4 + b*x3 + c*x2 + d*x + e;
     if (std::abs (result) > 1e-4)
     {
-      cout << "Something went wrong:\n";
+      std::cout << "Something went wrong:\n";
       //roots.clear ();
     }
-    cout << "Root "<<i<<" = "<<roots[i]
+    std::cout << "Root "<<i<<" = "<<roots[i]
          << ". ("<<a<<"x^4 + "<<b<<"x^3 + "<<c<<"x^2 + "<<d<<"x + "<<e<<" = "<<result<<")\n";
   }
-  cout << "\n\n";
+  std::cout << "\n\n";
 #endif
 }
 
@@ -429,9 +429,9 @@ inline bool
 {
   //MEASURE_FUNCTION_TIME;
   unsigned int parameters_size = BivariatePolynomialT<real>::getNoOfParametersFromDegree (polynomial_degree);
-  //cout << PVARN (parameters_size);
+  //std::cout << PVARN (parameters_size);
 
-  //cout << "Searching for the "<<parameters_size<<" parameters for the bivariate polynom of degree "
+  //std::cout << "Searching for the "<<parameters_size<<" parameters for the bivariate polynom of degree "
   //     << polynomial_degree<<" using "<<samplePoints.size ()<<" points.\n";
 
   if (parameters_size > samplePoints.size ()) // Too many parameters for this number of equations (points)?
@@ -440,7 +440,7 @@ inline bool
     // Reduce degree of polynomial
     //polynomial_degree = (unsigned int) (0.5f* (std::sqrt (8*samplePoints.size ()+1) - 3));
     //parameters_size = BivariatePolynomialT<real>::getNoOfParametersFromDegree (polynomial_degree);
-    //cout << "Not enough points, so degree of polynomial was decreased to "<<polynomial_degree
+    //std::cout << "Not enough points, so degree of polynomial was decreased to "<<polynomial_degree
     //     << " ("<<samplePoints.size ()<<" points => "<<parameters_size<<" parameters)\n";
   }
 
@@ -459,7 +459,7 @@ inline bool
        it!=samplePoints.end (); ++it)
   {
     currentX= (*it)[0]; currentY= (*it)[1]; currentZ= (*it)[2];
-    //cout << "current point: "<<currentX<<","<<currentY<<" => "<<currentZ<<"\n";
+    //std::cout << "current point: "<<currentX<<","<<currentY<<" => "<<currentZ<<"\n";
     //unsigned int posInC = parameters_size-1;
     real* tmpCPtr = tmpCEndPtr;
     tmpX = 1.0;
@@ -469,7 +469,7 @@ inline bool
       for (unsigned int yDegree=0; yDegree<=polynomial_degree-xDegree; ++yDegree)
       {
         * (tmpCPtr--) = tmpX*tmpY;
-        //cout << "x="<<currentX<<", y="<<currentY<<", Pos "<<posInC--<<": "<<tmpX<<"*"<<tmpY<<"="<<tmpC[posInC]<<"\n";
+        //std::cout << "x="<<currentX<<", y="<<currentY<<", Pos "<<posInC--<<": "<<tmpX<<"*"<<tmpY<<"="<<tmpC[posInC]<<"\n";
         tmpY *= currentY;
       }
       tmpX *= currentX;
@@ -493,9 +493,9 @@ inline bool
     //A += DMatrix<real>::outProd (tmpC);
     //b += currentZ * tmpC;
   }
-  //cout << "Calculating matrix A and vector b (size "<<b.size ()<<") from "<<samplePoints.size ()<<" points took "
+  //std::cout << "Calculating matrix A and vector b (size "<<b.size ()<<") from "<<samplePoints.size ()<<" points took "
        //<< (coeffStuffStartTime+get_time ())*1000<<"ms using constant memory.\n";
-    //cout << PVARC (A)<<PVARN (b);
+    //std::cout << PVARC (A)<<PVARN (b);
 
 
   //double coeffStuffStartTime=-get_time ();
@@ -509,7 +509,7 @@ inline bool
   //     it!=samplePoints.end (); ++it)
   //{
     //currentX= (*it)[0]; currentY= (*it)[1]; currentZ= (*it)[2];
-    ////cout << "x="<<currentX<<", y="<<currentY<<"\n";
+    ////std::cout << "x="<<currentX<<", y="<<currentY<<"\n";
     //posInC = parameters_size-1;
     //tmpX = 1.0;
     //for (unsigned int xDegree=0; xDegree<=polynomial_degree; xDegree++)
@@ -518,7 +518,7 @@ inline bool
       //for (unsigned int yDegree=0; yDegree<=polynomial_degree-xDegree; yDegree++)
       //{
         //tmpC[posInC] = tmpX*tmpY;
-        ////cout << "x="<<currentX<<", y="<<currentY<<", Pos "<<posInC<<": "<<tmpX<<"*"<<tmpY<<"="<<tmpC[posInC]<<"\n";
+        ////std::cout << "x="<<currentX<<", y="<<currentY<<", Pos "<<posInC<<": "<<tmpX<<"*"<<tmpY<<"="<<tmpC[posInC]<<"\n";
         //tmpY *= currentY;
         //posInC--;
       //}
@@ -527,31 +527,31 @@ inline bool
     //A += DMatrix<real>::outProd (tmpC);
     //b += currentZ * tmpC;
   //}
-  //cout << "Calculating matrix A and vector b (size "<<b.size ()<<") from "<<samplePoints.size ()<<" points took "
+  //std::cout << "Calculating matrix A and vector b (size "<<b.size ()<<") from "<<samplePoints.size ()<<" points took "
        //<< (coeffStuffStartTime+get_time ())*1000<<"ms.\n";
 
   Eigen::Matrix<real, Eigen::Dynamic, 1> parameters;
   //double choleskyStartTime=-get_time ();
   //parameters = A.choleskySolve (b);
-  //cout << "Cholesky took "<< (choleskyStartTime+get_time ())*1000<<"ms.\n";
+  //std::cout << "Cholesky took "<< (choleskyStartTime+get_time ())*1000<<"ms.\n";
 
   //double invStartTime=-get_time ();
   parameters = A.inverse () * b;
-  //cout << "Inverse took "<< (invStartTime+get_time ())*1000<<"ms.\n";
+  //std::cout << "Inverse took "<< (invStartTime+get_time ())*1000<<"ms.\n";
 
-  //cout << PVARC (A)<<PVARC (b)<<PVARN (parameters);
+  //std::cout << PVARC (A)<<PVARC (b)<<PVARN (parameters);
 
   real inversionCheckResult = (A*parameters - b).norm ();
   if (inversionCheckResult > 1e-5)
   {
-    //cout << "Inversion result: "<< inversionCheckResult<<" for matrix "<<A<<"\n";
+    //std::cout << "Inversion result: "<< inversionCheckResult<<" for matrix "<<A<<"\n";
     return false;
   }
 
   for (unsigned int i=0; i<parameters_size; i++)
     ret.parameters[i] = parameters[i];
 
-  //cout << "Resulting polynomial is "<<ret<<"\n";
+  //std::cout << "Resulting polynomial is "<<ret<<"\n";
 
   //Test of gradient: ret.calculateGradient ();
 
