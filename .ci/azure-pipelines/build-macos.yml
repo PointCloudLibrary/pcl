@@ -37,6 +37,8 @@ jobs:
             -DBUILD_apps_point_cloud_editor=ON
         displayName: 'CMake Configuration'
       - script: |
+          # Following export is to prevent messages like warning: text-based stub file <...> and library file <...> are out of sync. Falling back to library file for linking.
+          export SDKROOT=macosx10.13
           cd $BUILD_DIR
           # Compiling some of the test targets with -j2 option leads to pipeline failures
           # (presumably out of memory error). Thus we make them separately in a single
