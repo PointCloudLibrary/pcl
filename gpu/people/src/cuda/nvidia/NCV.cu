@@ -56,7 +56,7 @@ using namespace std;
 
 static void stdDebugOutput(const string &msg)
 {
-    cout << msg;
+    std::cout << msg;
 }
 
 

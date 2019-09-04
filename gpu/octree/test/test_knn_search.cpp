@@ -144,7 +144,7 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
     //verify results    
     for(size_t i = 0; i < data.tests_num; ++i)    
     {           
-        //cout << i << endl;
+        //std::cout << i << std::endl;
         std::vector<int>&   results_host_cur = result_host[i];
         std::vector<float>&   dists_host_cur = dists_host[i];
                 

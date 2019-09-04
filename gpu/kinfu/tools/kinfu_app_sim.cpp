@@ -162,7 +162,7 @@ struct SampledScopeTime : public StopWatch
     time_ms_ += stopWatch_.getTime ();
     if (i_ % EACH == 0 && i_)
     {
-      cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << endl;
+      std::cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << std::endl;
       time_ms_ = 0;
     }
   }
@@ -345,7 +345,7 @@ depthBufferToMM(const float* depth_buffer,unsigned short* depth_img)
       else if (z_new>5000) z_new = 0;
 
       //      if ( z_new < 18000){
-//          cout << z_new << " " << d << " " << x << "\n";
+//          std::cout << z_new << " " << d << " " << x << "\n";
 //      }
       depth_img[i] = z_new;
     }
@@ -374,22 +374,22 @@ display_tic_toc (vector<double> &tic_toc,const string &fun_name)
 
   double percent_tic_toc_last = 0;
   double dtime = tic_toc[tic_toc_size-1] - tic_toc[0];
-  cout << "fraction_" << fun_name << ",";
+  std::cout << "fraction_" << fun_name << ",";
   for (size_t i = 0; i < tic_toc_size; i++)
   {
     double percent_tic_toc =  (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
-    cout <<  percent_tic_toc - percent_tic_toc_last << ", ";
+    std::cout <<  percent_tic_toc - percent_tic_toc_last << ", ";
     percent_tic_toc_last = percent_tic_toc;
   }
-  cout << "\ntime_" << fun_name << ",";
+  std::cout << "\ntime_" << fun_name << ",";
   double time_tic_toc_last = 0;
   for (size_t i = 0; i < tic_toc_size; i++)
   {
     double percent_tic_toc = (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
-    cout <<  percent_tic_toc*dtime - time_tic_toc_last << ", ";
+    std::cout <<  percent_tic_toc*dtime - time_tic_toc_last << ", ";
     time_tic_toc_last = percent_tic_toc*dtime;
   }
-  cout << "\ntotal_time_" << fun_name << " " << dtime << "\n";
+  std::cout << "\ntotal_time_" << fun_name << " " << dtime << "\n";
 }
 
 void
@@ -453,7 +453,7 @@ capture (Eigen::Isometry3d pose_in,unsigned short* depth_buffer_mm,const uint8_t
     pcl::PCDWriter writer;
     //writer.write (point_cloud_fname, *pc_out, false);  /// ASCII
     writer.writeBinary (point_cloud_fname, *pc_out);
-    //cout << "finished writing file\n";
+    //std::cout << "finished writing file\n";
   }
   */
 
@@ -566,7 +566,7 @@ boost::shared_ptr<pcl::PolygonMesh> convertToMesh(const DeviceArray<PointXYZ>& t
   }
   return mesh_ptr;
 
-  cout << mesh_ptr->polygons.size () << " plys\n";
+  std::cout << mesh_ptr->polygons.size () << " plys\n";
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -681,7 +681,7 @@ struct ImageView
   toggleImagePaint()
   {
     paint_image_ = !paint_image_;
-    cout << "Paint image: " << (paint_image_ ? "On   (requires registration mode)" : "Off") << endl;
+    std::cout << "Paint image: " << (paint_image_ ? "On   (requires registration mode)" : "Off") << std::endl;
   }
 
   bool paint_image_;
@@ -734,7 +734,7 @@ struct SceneCloudView
     viewer_pose_ = kinfu.getCameraPose();
 
     ScopeTimeT time ("PointCloud Extraction");
-    cout << "\nGetting cloud... " << flush;
+    std::cout << "\nGetting cloud... " << flush;
 
     valid_combined_ = false;
 
@@ -774,7 +774,7 @@ struct SceneCloudView
         point_colors_ptr_->points.clear();
     }
     size_t points_size = valid_combined_ ? combined_ptr_->points.size () : cloud_ptr_->points.size ();
-    cout << "Done.  Cloud size: " << points_size / 1000 << "K" << endl;
+    std::cout << "Done.  Cloud size: " << points_size / 1000 << "K" << std::endl;
 
     cloud_viewer_.removeAllPointClouds ();
     if (valid_combined_)
@@ -808,9 +808,9 @@ struct SceneCloudView
 
     switch (extraction_mode_)
     {
-    case 0: cout << "Cloud exctraction mode: GPU, Connected-6" << endl; break;
-    case 1: cout << "Cloud exctraction mode: CPU, Connected-6    (requires a lot of memory)" << endl; break;
-    case 2: cout << "Cloud exctraction mode: CPU, Connected-26   (requires a lot of memory)" << endl; break;
+    case 0: std::cout << "Cloud exctraction mode: GPU, Connected-6" << std::endl; break;
+    case 1: std::cout << "Cloud exctraction mode: CPU, Connected-6    (requires a lot of memory)" << std::endl; break;
+    case 2: std::cout << "Cloud exctraction mode: CPU, Connected-26   (requires a lot of memory)" << std::endl; break;
     }
     ;
   }
@@ -819,7 +819,7 @@ struct SceneCloudView
   toggleNormals ()
   {
     compute_normals_ = !compute_normals_;
-    cout << "Compute normals: " << (compute_normals_ ? "On" : "Off") << endl;
+    std::cout << "Compute normals: " << (compute_normals_ ? "On" : "Off") << std::endl;
   }
 
   void
@@ -829,14 +829,14 @@ struct SceneCloudView
     cloud_ptr_->points.clear ();
     normals_ptr_->points.clear ();
     if (print_message)
-      cout << "Clouds/Meshes were cleared" << endl;
+      std::cout << "Clouds/Meshes were cleared" << std::endl;
   }
 
   void
   showMesh(KinfuTracker& kinfu, bool /*integrate_colors*/)
   {
     ScopeTimeT time ("Mesh Extraction");
-    cout << "\nGetting mesh... " << flush;
+    std::cout << "\nGetting mesh... " << flush;
 
     if (!marching_cubes_)
       marching_cubes_ = MarchingCubes::Ptr( new MarchingCubes() );
@@ -847,12 +847,12 @@ struct SceneCloudView
     cloud_viewer_.removeAllPointClouds ();
     if (mesh_ptr_){
       cloud_viewer_.addPolygonMesh(*mesh_ptr_);
-      cout << "mesh ptr exist\n";
+      std::cout << "mesh ptr exist\n";
     }else{
-      cout << "mesh ptr no exist\n";
+      std::cout << "mesh ptr no exist\n";
     }
 
-    cout << "Done.  Triangles number: " << triangles_device.size() / MarchingCubes::POINTS_PER_TRIANGLE / 1000 << "K" << endl;
+    std::cout << "Done.  Triangles number: " << triangles_device.size() / MarchingCubes::POINTS_PER_TRIANGLE / 1000 << "K" << std::endl;
   }
 
   int extraction_mode_;
@@ -941,7 +941,7 @@ struct KinFuApp
   tryRegistrationInit ()
   {
     registration_ = capture_.setRegistration (true);
-    cout << "Registration mode: " << (registration_ ?  "On" : "Off (not supported by source)") << endl;
+    std::cout << "Registration mode: " << (registration_ ?  "On" : "Off (not supported by source)") << std::endl;
   }
 
   void
@@ -953,14 +953,14 @@ struct KinFuApp
       kinfu_.initColorIntegration(max_color_integration_weight);
       integrate_colors_ = true;
     }
-    cout << "Color integration: " << (integrate_colors_ ? "On" : "Off (not supported by source)") << endl;
+    std::cout << "Color integration: " << (integrate_colors_ ? "On" : "Off (not supported by source)") << std::endl;
   }
 
   void
   toggleIndependentCamera()
   {
     independent_camera_ = !independent_camera_;
-    cout << "Camera mode: " << (independent_camera_ ?  "Independent" : "Bound to Kinect pose") << endl;
+    std::cout << "Camera mode: " << (independent_camera_ ?  "Independent" : "Bound to Kinect pose") << std::endl;
   }
 
   void
@@ -1032,7 +1032,7 @@ struct KinFuApp
     camera_->set(0.471703, 1.59862, 3.10937, 0, 0.418879, -12.2129);
     camera_->set_pitch(0.418879); // not sure why this is here:
 
-    cout << "About to read: "<< plyfile << endl;
+    std::cout << "About to read: "<< plyfile << std::endl;
     load_PolygonMesh_model (plyfile);
 
     // Generate a series of poses:
@@ -1068,14 +1068,14 @@ struct KinFuApp
       capture (poses[i],disparity_buf_, color_buf_uint);//,ss.str());
       const KinfuTracker::PixelRGB* color_buf_ = (const KinfuTracker::PixelRGB*) color_buf_uint;
       PtrStepSz<const unsigned short> depth_sim = PtrStepSz<const unsigned short>(height, width, disparity_buf_, 2*width);
-      //cout << depth_sim.rows << " by " << depth_sim.cols << " | s: " << depth_sim.step << "\n";
+      //std::cout << depth_sim.rows << " by " << depth_sim.cols << " | s: " << depth_sim.step << "\n";
       // RGB-KinFu currently disabled for now - problems with color in KinFu apparently
       // but this constructor might not  be right either: not sure about step size
       integrate_colors_=false;
       PtrStepSz<const KinfuTracker::PixelRGB> rgb24_sim = PtrStepSz<const KinfuTracker::PixelRGB>(height, width, color_buf_, width);
       tic_toc.push_back (getTime ());
 
-      cout << " color: " << integrate_colors_ << "\n"; // integrate_colors_ seems to be zero
+      std::cout << " color: " << integrate_colors_ << "\n"; // integrate_colors_ seems to be zero
       depth_device_.upload (depth_sim.data, depth_sim.step, depth_sim.rows, depth_sim.cols);
       if (integrate_colors_){
           image_view_.colors_device_.upload (rgb24_sim.data, rgb24_sim.step, rgb24_sim.rows, rgb24_sim.cols);
@@ -1107,7 +1107,7 @@ struct KinFuApp
       // Everything below this is Visualization or I/O:
       if (i >n_pose_stop){
         int pause;
-        cout << "Enter a key to write Mesh file\n";
+        std::cout << "Enter a key to write Mesh file\n";
         cin >> pause;
 
         scene_cloud_view_.showMesh(kinfu_, integrate_colors_);
@@ -1124,20 +1124,20 @@ struct KinFuApp
             // download tsdf volume
             {
               ScopeTimeT time ("tsdf volume download");
-              cout << "Downloading TSDF volume from device ... " << flush;
+              std::cout << "Downloading TSDF volume from device ... " << flush;
               kinfu_.volume().downloadTsdfAndWeighs (tsdf_volume_.volumeWriteable (), tsdf_volume_.weightsWriteable ());
               tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_.volume().getSize ());
-              cout << "done [" << tsdf_volume_.size () << " voxels]" << endl << endl;
+              std::cout << "done [" << tsdf_volume_.size () << " voxels]" << std::endl << std::endl;
             }
             {
               ScopeTimeT time ("converting");
-              cout << "Converting volume to TSDF cloud ... " << flush;
+              std::cout << "Converting volume to TSDF cloud ... " << flush;
               tsdf_volume_.convertToTsdfCloud (tsdf_cloud_ptr_);
-              cout << "done [" << tsdf_cloud_ptr_->size () << " points]" << endl << endl;
+              std::cout << "done [" << tsdf_cloud_ptr_->size () << " points]" << std::endl << std::endl;
             }
           }
           else
-            cout << "[!] tsdf volume download is disabled" << endl << endl;
+            std::cout << "[!] tsdf volume download is disabled" << std::endl << std::endl;
         }
 
         if (scan_mesh_)
@@ -1166,11 +1166,11 @@ struct KinFuApp
         scene_cloud_view_.cloud_viewer_.spinOnce (3);
 
         // As of April 2012, entering a key will end this program...
-        cout << "Paused after view\n";
+        std::cout << "Paused after view\n";
         cin >> pause;
       }
       double elapsed = (getTime() -tic_main);
-      cout << elapsed << " sec elapsed [" << (1/elapsed) << "]\n";
+      std::cout << elapsed << " sec elapsed [" << (1/elapsed) << "]\n";
       tic_toc.push_back (getTime ());
       display_tic_toc (tic_toc, "kinfu_app_sim");
     }
@@ -1211,23 +1211,23 @@ struct KinFuApp
   void
   printHelp ()
   {
-    cout << endl;
-    cout << "KinFu app hotkeys" << endl;
-    cout << "=================" << endl;
-    cout << "    H    : print this help" << endl;
-    cout << "   Esc   : exit" << endl;
-    cout << "    T    : take cloud" << endl;
-    cout << "    A    : take mesh" << endl;
-    cout << "    M    : toggle cloud exctraction mode" << endl;
-    cout << "    N    : toggle normals exctraction" << endl;
-    cout << "    I    : toggle independent camera mode" << endl;
-    cout << "    B    : toggle volume bounds" << endl;
-    cout << "    *    : toggle scene view painting ( requires registration mode )" << endl;
-    cout << "    C    : clear clouds" << endl;
-    cout << "   1,2,3 : save cloud to PCD(binary), PCD(ASCII), PLY(ASCII)" << endl;
-    cout << "    7,8  : save mesh to PLY, VTK" << endl;
-    cout << "   X, V  : TSDF volume utility" << endl;
-    cout << endl;
+    std::cout << std::endl;
+    std::cout << "KinFu app hotkeys" << std::endl;
+    std::cout << "=================" << std::endl;
+    std::cout << "    H    : print this help" << std::endl;
+    std::cout << "   Esc   : exit" << std::endl;
+    std::cout << "    T    : take cloud" << std::endl;
+    std::cout << "    A    : take mesh" << std::endl;
+    std::cout << "    M    : toggle cloud exctraction mode" << std::endl;
+    std::cout << "    N    : toggle normals exctraction" << std::endl;
+    std::cout << "    I    : toggle independent camera mode" << std::endl;
+    std::cout << "    B    : toggle volume bounds" << std::endl;
+    std::cout << "    *    : toggle scene view painting ( requires registration mode )" << std::endl;
+    std::cout << "    C    : clear clouds" << std::endl;
+    std::cout << "   1,2,3 : save cloud to PCD(binary), PCD(ASCII), PLY(ASCII)" << std::endl;
+    std::cout << "    7,8  : save mesh to PLY, VTK" << std::endl;
+    std::cout << "   X, V  : TSDF volume utility" << std::endl;
+    std::cout << std::endl;
   }
 
   bool exit_;
@@ -1279,15 +1279,15 @@ struct KinFuApp
 
       case (int)'x': case (int)'X':
         app->scan_volume_ = !app->scan_volume_;
-        cout << endl << "Volume scan: " << (app->scan_volume_ ? "enabled" : "disabled") << endl << endl;
+        std::cout << std::endl << "Volume scan: " << (app->scan_volume_ ? "enabled" : "disabled") << std::endl << std::endl;
         break;
       case (int)'v': case (int)'V':
-        cout << "Saving TSDF volume to tsdf_volume.dat ... " << flush;
+        std::cout << "Saving TSDF volume to tsdf_volume.dat ... " << flush;
         app->tsdf_volume_.save ("tsdf_volume.dat", true);
-        cout << "done [" << app->tsdf_volume_.size () << " voxels]" << endl;
-        cout << "Saving TSDF volume cloud to tsdf_cloud.pcd ... " << flush;
+        std::cout << "done [" << app->tsdf_volume_.size () << " voxels]" << std::endl;
+        std::cout << "Saving TSDF volume cloud to tsdf_cloud.pcd ... " << flush;
         pcl::io::savePCDFile<pcl::PointXYZI> ("tsdf_cloud.pcd", *app->tsdf_cloud_ptr_, true);
-        cout << "done [" << app->tsdf_cloud_ptr_->size () << " points]" << endl;
+        std::cout << "done [" << app->tsdf_cloud_ptr_->size () << " points]" << std::endl;
         break;
 
       default:
@@ -1303,22 +1303,22 @@ writeCloudFile (int format, const CloudPtr& cloud_prt)
 {
   if (format == KinFuApp::PCD_BIN)
   {
-    cout << "Saving point cloud to 'cloud_bin.pcd' (binary)... " << flush;
+    std::cout << "Saving point cloud to 'cloud_bin.pcd' (binary)... " << flush;
     pcl::io::savePCDFile ("cloud_bin.pcd", *cloud_prt, true);
   }
   else
   if (format == KinFuApp::PCD_ASCII)
   {
-    cout << "Saving point cloud to 'cloud.pcd' (ASCII)... " << flush;
+    std::cout << "Saving point cloud to 'cloud.pcd' (ASCII)... " << flush;
     pcl::io::savePCDFile ("cloud.pcd", *cloud_prt, false);
   }
   else   /* if (format == KinFuApp::PLY) */
   {
-    cout << "Saving point cloud to 'cloud.ply' (ASCII)... " << flush;
+    std::cout << "Saving point cloud to 'cloud.ply' (ASCII)... " << flush;
     pcl::io::savePLYFileASCII ("cloud.ply", *cloud_prt);
 
   }
-  cout << "Done" << endl;
+  std::cout << "Done" << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1326,19 +1326,19 @@ writeCloudFile (int format, const CloudPtr& cloud_prt)
 void
 writePolygonMeshFile (int format, const pcl::PolygonMesh& mesh)
 {
-    cout << "writePolygonMeshFile mf" << endl;
+    std::cout << "writePolygonMeshFile mf" << std::endl;
 
   if (format == KinFuApp::MESH_PLY)
   {
-    cout << "Saving mesh to to 'mesh.ply'... " << flush;
+    std::cout << "Saving mesh to to 'mesh.ply'... " << flush;
     pcl::io::savePLYFile("mesh.ply", mesh);
   }
   else /* if (format == KinFuApp::MESH_VTK) */
   {
-    cout << "Saving mesh to to 'mesh.vtk'... " << flush;
+    std::cout << "Saving mesh to to 'mesh.vtk'... " << flush;
     pcl::io::saveVTKFile("mesh.vtk", mesh);
   }
-  cout << "Done" << endl;
+  std::cout << "Done" << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1346,20 +1346,20 @@ writePolygonMeshFile (int format, const pcl::PolygonMesh& mesh)
 int
 print_cli_help ()
 {
-  cout << "\nKinfu app concole parameters help:" << endl;
-  cout << "    --help, -h                      : print this message" << endl;
-  cout << "    --registration, -r              : try to enable registration ( requires source to support this )" << endl;
-  cout << "    --current-cloud, -cc            : show current frame cloud" << endl;
-  cout << "    --save-views, -sv               : accumulate scene view and save in the end ( Requires OpenCV. Will cause 'bad_alloc' after some time )" << endl;
-  cout << "    --registration, -r              : enable registration mode" << endl;
-  cout << "    --integrate-colors, -ic         : enable color integration mode ( allows to get cloud with colors )" << endl;
-  cout << "    -volume_suze <size_in_meters>   : define integration volume size" << endl;
-  cout << "    -dev <device>, -oni <oni_file>  : select depth source. Default will be selected if not specified" << endl;
-  cout << "";
-  cout << " For RGBD benchmark (Requires OpenCV):" << endl;
-  cout << "    -eval <eval_folder> [-match_file <associations_file_in_the_folder>]" << endl;
-  cout << " For Simuation (Requires pcl::simulation):" << endl;
-  cout << "    -plyfile                        : path to ply file for simulation testing " << endl;
+  std::cout << "\nKinfu app concole parameters help:" << std::endl;
+  std::cout << "    --help, -h                      : print this message" << std::endl;
+  std::cout << "    --registration, -r              : try to enable registration ( requires source to support this )" << std::endl;
+  std::cout << "    --current-cloud, -cc            : show current frame cloud" << std::endl;
+  std::cout << "    --save-views, -sv               : accumulate scene view and save in the end ( Requires OpenCV. Will cause 'bad_alloc' after some time )" << std::endl;
+  std::cout << "    --registration, -r              : enable registration mode" << std::endl;
+  std::cout << "    --integrate-colors, -ic         : enable color integration mode ( allows to get cloud with colors )" << std::endl;
+  std::cout << "    -volume_suze <size_in_meters>   : define integration volume size" << std::endl;
+  std::cout << "    -dev <device>, -oni <oni_file>  : select depth source. Default will be selected if not specified" << std::endl;
+  std::cout << "";
+  std::cout << " For RGBD benchmark (Requires OpenCV):" << std::endl;
+  std::cout << "    -eval <eval_folder> [-match_file <associations_file_in_the_folder>]" << std::endl;
+  std::cout << " For Simuation (Requires pcl::simulation):" << std::endl;
+  std::cout << "    -plyfile                        : path to ply file for simulation testing " << std::endl;
 
   return 0;
 }
@@ -1378,7 +1378,7 @@ main (int argc, char* argv[])
   pcl::gpu::printShortCudaDeviceInfo (device);
 
   if(checkIfPreFermiGPU(device))
-    return cout << endl << "Kinfu is not supported for pre-Fermi GPU architectures, and not built for them by default. Exiting..." << endl, 1;
+    return std::cout << std::endl << "Kinfu is not supported for pre-Fermi GPU architectures, and not built for them by default. Exiting..." << std::endl, 1;
 
   CaptureOpenNI capture;
 
@@ -1443,17 +1443,17 @@ main (int argc, char* argv[])
 
   // executing
   try { app.execute (argc, argv,plyfile); }
-  catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
-  catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
+  catch (const std::bad_alloc& /*e*/) { std::cout << "Bad alloc" << std::endl; }
+  catch (const std::exception& /*e*/) { std::cout << "Exception" << std::endl; }
 
 #ifdef HAVE_OPENCV
   for (size_t t = 0; t < app.image_view_.views_.size (); ++t)
   {
     if (t == 0)
     {
-      cout << "Saving depth map of first view." << endl;
+      std::cout << "Saving depth map of first view." << std::endl;
       cv::imwrite ("./depthmap_1stview.png", app.image_view_.views_[0]);
-      cout << "Saving sequence of (" << app.image_view_.views_.size () << ") views." << endl;
+      std::cout << "Saving sequence of (" << app.image_view_.views_.size () << ") views." << std::endl;
     }
     char buf[4096];
     sprintf (buf, "./%06d.png", (int)t);

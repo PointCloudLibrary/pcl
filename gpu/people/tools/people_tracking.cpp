@@ -82,12 +82,12 @@ class PeopleTrackingApp
 
 int print_help()
 {
-  cout << "\nPeople tracking app options:" << std::endl;
-  cout << "\t -numTrees \t<int> \tnumber of trees to load" << std::endl;
-  cout << "\t -tree0 \t<path_to_tree_file>" << std::endl;
-  cout << "\t -tree1 \t<path_to_tree_file>" << std::endl;
-  cout << "\t -tree2 \t<path_to_tree_file>" << std::endl;
-  cout << "\t -tree3 \t<path_to_tree_file>" << std::endl;
+  std::cout << "\nPeople tracking app options:" << std::endl;
+  std::cout << "\t -numTrees \t<int> \tnumber of trees to load" << std::endl;
+  std::cout << "\t -tree0 \t<path_to_tree_file>" << std::endl;
+  std::cout << "\t -tree1 \t<path_to_tree_file>" << std::endl;
+  std::cout << "\t -tree2 \t<path_to_tree_file>" << std::endl;
+  std::cout << "\t -tree3 \t<path_to_tree_file>" << std::endl;
   return 0;
 }
 

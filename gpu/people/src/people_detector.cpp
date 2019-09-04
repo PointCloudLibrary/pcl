@@ -224,14 +224,14 @@ pcl::gpu::people::PeopleDetector::process ()
       {
         if(t2.parts_lid[f] == NO_CHILD)
         {
-          cerr << "1;";
+          std::cerr << "1;";
           par++;
         }
         else
-           cerr << "0;";
+           std::cerr << "0;";
       }*/
       //static int counter = 0; // TODO move this logging to PeopleApp
-      //cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
+      //std::cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << std::endl;
       return 2;
     }
     return 1;
@@ -375,15 +375,15 @@ pcl::gpu::people::PeopleDetector::processProb ()
       {
         if(node_type == NO_CHILD)
         {
-          cerr << "1;";
+          std::cerr << "1;";
           //par++;
         }
         else
-           cerr << "0;";
+           std::cerr << "0;";
       }
       std::cerr << std::endl;
       //static int counter = 0; // TODO move this logging to PeopleApp
-      //cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
+      //std::cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << std::endl;
       first_iteration_ = false;
       return 2;
     }
