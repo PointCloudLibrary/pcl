@@ -107,7 +107,7 @@ TEST (PCL, PCLVisualizer_camera)
 //  visualizer.spinOnce ();
 //  viewer_pose = visualizer.getViewerPose ().matrix ();
 
-//  cerr << "reset camera viewer pose:" << endl << viewer_pose << endl;
+//  std::cerr << "reset camera viewer pose:" << std::endl << viewer_pose << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

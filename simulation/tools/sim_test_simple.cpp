@@ -401,7 +401,7 @@ void display ()
     
     pcl::PCDWriter writer;
     writer.write ("simulated_range_image.pcd", *pc_out,	false);  
-    cout << "finished writing file\n";
+    std::cout << "finished writing file\n";
     
 //     pcl::visualization::CloudViewer viewer ("Simple Cloud Viewer");
 //     viewer.showCloud (pc_out);
@@ -420,7 +420,7 @@ void display ()
 //    viewer.reset();
     
     
-    cout << "done\n";
+    std::cout << "done\n";
     // Problem: vtk and opengl don't seem to play very well together
     // vtk seems to misbehave after a little while and won't keep the window on the screen
 
@@ -430,7 +430,7 @@ void display ()
     
     // method2: eventually starts ignoring cin and pops up on screen and closes almost 
     // immediately
-    //  cout << "enter 1 to cont\n";
+    //  std::cout << "enter 1 to cont\n";
     //  cin >> pause;
     //  viewer.wasStopped ();
     
@@ -569,7 +569,7 @@ initialize (int, char** argv)
   camera_->setPitch(0.20944); // not sure why this is here: 
   //camera_->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   
-  cout << "About to read: " << argv[1] << endl;
+  std::cout << "About to read: " << argv[1] << std::endl;
   load_PolygonMesh_model (argv[1]);
     
   paused_ = false;

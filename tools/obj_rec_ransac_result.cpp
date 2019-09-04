@@ -127,8 +127,8 @@ main (int argc, char** argv)
 
   printf ("The following parameter values will be used:\n");
   for ( int i = 0 ; i < num_params ; ++i )
-    cout << "  " << parameter_names[i] << " = " << parameters[i] << endl;
-  cout << endl;
+    std::cout << "  " << parameter_names[i] << " = " << parameters[i] << std::endl;
+  std::cout << std::endl;
 
   run (parameters[0], parameters[1], parameters[2]);
 }
@@ -260,7 +260,7 @@ update (CallbackParameters* params)
   // Show the hypotheses
   for ( list<ObjRecRANSAC::Output>::iterator it = rec_output.begin () ; it != rec_output.end () ; ++it, ++i )
   {
-    cout << it->object_name_ << " has a confidence value of " << it->match_confidence_ << endl;
+    std::cout << it->object_name_ << " has a confidence value of " << it->match_confidence_ << std::endl;
 
     // Make a copy of the VTK model
     vtkSmartPointer<vtkPolyData> vtk_model = vtkSmartPointer<vtkPolyData>::New ();

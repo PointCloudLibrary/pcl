@@ -102,7 +102,7 @@ TEST (PCL, FlannSearch_nearestKSearch)
 
   FlannSearch->nearestKSearch (test_point, no_of_neighbors, k_indices, k_distances);
 
-  //if (k_indices.size () != no_of_neighbors)  cerr << "Found "<<k_indices.size ()<<" instead of "<<no_of_neighbors<<" neighbors.\n";
+  //if (k_indices.size () != no_of_neighbors)  std::cerr << "Found "<<k_indices.size ()<<" instead of "<<no_of_neighbors<<" neighbors.\n";
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
   // Check if all found neighbors have distance smaller than max_dist
@@ -112,8 +112,8 @@ TEST (PCL, FlannSearch_nearestKSearch)
     bool ok = euclideanDistance (test_point, point) <= max_dist;
     if (!ok)
     ok = (std::abs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;
-    //if (!ok)  cerr << k_indices[i] << " is not correct...\n";
-    //else      cerr << k_indices[i] << " is correct...\n";
+    //if (!ok)  std::cerr << k_indices[i] << " is not correct...\n";
+    //else      std::cerr << k_indices[i] << " is correct...\n";
     EXPECT_EQ (ok, true);
   }
 

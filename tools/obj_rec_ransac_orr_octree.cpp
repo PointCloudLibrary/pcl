@@ -317,7 +317,7 @@ void show_octree (ORROctree* octree, PCLVisualizer& viz, bool show_full_leaves_o
   vtkSmartPointer<vtkPolyData> vtk_octree = vtkSmartPointer<vtkPolyData>::New ();
   vtkSmartPointer<vtkAppendPolyData> append = vtkSmartPointer<vtkAppendPolyData>::New ();
 
-  cout << "There are " << octree->getFullLeaves ().size () << " full leaves.\n";
+  std::cout << "There are " << octree->getFullLeaves ().size () << " full leaves.\n";
 
   if ( show_full_leaves_only )
   {

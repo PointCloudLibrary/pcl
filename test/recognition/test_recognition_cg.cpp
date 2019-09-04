@@ -166,19 +166,19 @@ main (int argc, char** argv)
 {
   if (argc < 3)
   {
-    cerr << "No test file given. Please download `milk.pcd` and `milk_cartoon_all_small_clorox.pcd` and pass their paths to the test." << endl;
+    std::cerr << "No test file given. Please download `milk.pcd` and `milk_cartoon_all_small_clorox.pcd` and pass their paths to the test." << std::endl;
     return (-1);
   }
 
   if (loadPCDFile (argv[1], *model_) < 0)
   {
-    cerr << "Failed to read test file. Please download `milk.pcd` and pass its path to the test." << endl;
+    std::cerr << "Failed to read test file. Please download `milk.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
 
   if (loadPCDFile (argv[2], *scene_) < 0)
   {
-    cerr << "Failed to read test file. Please download `milk_cartoon_all_small_clorox.pcd` and pass its path to the test." << endl;
+    std::cerr << "Failed to read test file. Please download `milk_cartoon_all_small_clorox.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
 

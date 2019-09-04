@@ -1070,7 +1070,7 @@ namespace pcl
           double c = planes[(i*4)+2];
           double d = planes[(i*4)+3];
 
-          //cout << i << ": " << a << "x + " << b << "y + " << c << "z + " << d << endl;
+          //std::cout << i << ": " << a << "x + " << b << "y + " << c << "z + " << d << std::endl;
 
           Eigen::Vector3d normal(a, b, c);
 
@@ -1099,8 +1099,8 @@ namespace pcl
   //        Eigen::Vector3d n_vertex; //neg vertex
   //        get_np_vertices(normal, p_vertex, n_vertex, min_bb, max_bb);
   //
-  //        cout << "n_vertex: " << n_vertex.x () << ", " << n_vertex.y () << ", " << n_vertex.z () << endl;
-  //        cout << "p_vertex: " << p_vertex.x () << ", " << p_vertex.y () << ", " << p_vertex.z () << endl;
+  //        std::cout << "n_vertex: " << n_vertex.x () << ", " << n_vertex.y () << ", " << n_vertex.z () << std::endl;
+  //        std::cout << "p_vertex: " << p_vertex.x () << ", " << p_vertex.y () << ", " << p_vertex.z () << std::endl;
 
           // is the positive vertex outside?
   //        if (pl[i].distance(b.getVertexP(pl[i].normal)) < 0)
@@ -1128,14 +1128,14 @@ namespace pcl
 
           // This should be the same as above
   //        double m = (a * n_vertex.x ()) + (b * n_vertex.y ()) + (c * n_vertex.z ());
-  //        cout << "m = " << m << endl;
+  //        std::cout << "m = " << m << std::endl;
   //        if (m > -d)
   //        {
   //          result = OUTSIDE;
   //        }
   //
   //        double n = (a * p_vertex.x ()) + (b * p_vertex.y ()) + (c * p_vertex.z ());
-  //        cout << "n = " << n << endl;
+  //        std::cout << "n = " << n << std::endl;
   //        if (n > -d)
   //        {
   //          result = INTERSECT;
@@ -1150,13 +1150,13 @@ namespace pcl
 
 //      switch(result){
 //        case OUTSIDE:
-//          //cout << this->depth_ << " [OUTSIDE]: " << node_metadata_->getPCDFilename() << endl;
+//          //std::cout << this->depth_ << " [OUTSIDE]: " << node_metadata_->getPCDFilename() << std::endl;
 //          return;
 //        case INTERSECT:
-//          //cout << this->depth_ << " [INTERSECT]: " << node_metadata_->getPCDFilename() << endl;
+//          //std::cout << this->depth_ << " [INTERSECT]: " << node_metadata_->getPCDFilename() << std::endl;
 //          break;
 //        case INSIDE:
-//          //cout << this->depth_ << " [INSIDE]: " << node_metadata_->getPCDFilename() << endl;
+//          //std::cout << this->depth_ << " [INSIDE]: " << node_metadata_->getPCDFilename() << std::endl;
 //          break;
 //      }
 
@@ -1223,7 +1223,7 @@ namespace pcl
           double c = planes[(i*4)+2];
           double d = planes[(i*4)+3];
 
-          //cout << i << ": " << a << "x + " << b << "y + " << c << "z + " << d << endl;
+          //std::cout << i << ": " << a << "x + " << b << "y + " << c << "z + " << d << std::endl;
 
           Eigen::Vector3d normal(a, b, c);
 

@@ -67,7 +67,7 @@ TEST (PCL, computePointNormal)
   c.push_back (p11); c.push_back (p21); c.push_back (p31);
 
   computePointNormal (cloud, plane_parameters, curvature);
-//  cerr << plane_parameters << "\n";
+//  std::cerr << plane_parameters << "\n";
   
   c.clear ();
   PointXYZ p12 (-439747.72f, -43597.250f, 0.0000000f),
@@ -77,7 +77,7 @@ TEST (PCL, computePointNormal)
   c.push_back (p12); c.push_back (p22); c.push_back (p32);
 
   computePointNormal (cloud, plane_parameters, curvature);
-//  cerr << plane_parameters << "\n";
+//  std::cerr << plane_parameters << "\n";
 
   c.clear ();
   PointXYZ p13 (567011.56f, -7741.8179f, 0.00000000f),
@@ -87,7 +87,7 @@ TEST (PCL, computePointNormal)
   c.push_back (p13); c.push_back (p23); c.push_back (p33);
 
   computePointNormal (cloud, plane_parameters, curvature);
-//  cerr << plane_parameters << "\n";
+//  std::cerr << plane_parameters << "\n";
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

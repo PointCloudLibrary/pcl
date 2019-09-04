@@ -63,7 +63,7 @@ void write_sim_output(const string &fname_root){
     pcl::PCDWriter writer;
     //writer.write ( string (fname_root + ".pcd"), *pc_out,	false);  /// ASCII
     writer.writeBinary (  string (fname_root + ".pcd")  , *pc_out);
-    //cout << "finished writing file\n";
+    //std::cout << "finished writing file\n";
   }else{
     std::cout << pc_out->points.size() << " points in cloud, not written\n";
   }
@@ -202,10 +202,10 @@ main (int argc, char** argv)
     simexample->doSim(poses[i]);
     
     write_sim_output(ss.str());
-    cout << (getTime() -tic) << " sec\n";
+    std::cout << (getTime() -tic) << " sec\n";
   }
-  cout << poses.size() << " poses simulated in " << (getTime() -tic_main) << "seconds\n";
-  cout << (poses.size()/ (getTime() -tic_main) ) << "Hz on average\n";
+  std::cout << poses.size() << " poses simulated in " << (getTime() -tic_main) << "seconds\n";
+  std::cout << (poses.size()/ (getTime() -tic_main) ) << "Hz on average\n";
   
   return 0;
 }

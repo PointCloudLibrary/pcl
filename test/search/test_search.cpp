@@ -199,11 +199,11 @@ testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, con
     if (!indices_mask [index])
     {
 #if DEBUG_OUT
-      cerr << name << ": result contains an invalid point: " << index << " not in indices list.\n";
+      std::cerr << name << ": result contains an invalid point: " << index << " not in indices list.\n";
       
 //      for (vector<int>::const_iterator iIt2 = input_indices.begin (); iIt2 != input_indices.end (); ++iIt2)
-//        cout << *iIt2 << "  ";
-//      cout << endl;
+//        std::cout << *iIt2 << "  ";
+//      std::cout << std::endl;
 #endif
       validness = false;
       break;
@@ -211,7 +211,7 @@ testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, con
     if (!nan_mask [index])
     {
 #if DEBUG_OUT
-      cerr << name << ": result contains an invalid point: " << index << " = NaN (" << point_cloud->points [index].x << " , " 
+      std::cerr << name << ": result contains an invalid point: " << index << " = NaN (" << point_cloud->points [index].x << " , " 
                                                                                     << point_cloud->points [index].y << " , " 
                                                                                     << point_cloud->points [index].z << ")\n";
 #endif
@@ -240,17 +240,17 @@ bool compareResults (const std::vector<int>& indices1, const::vector<float>& dis
   if (indices1.size () != indices2.size ())
   {
 #if DEBUG_OUT
-    cerr << "size of results between " << name1 << " search and " << name2 << " search do not match " <<indices1.size () << " vs. " << indices2.size () << endl;
+    std::cerr << "size of results between " << name1 << " search and " << name2 << " search do not match " <<indices1.size () << " vs. " << indices2.size () << std::endl;
 //    for (unsigned idx = 0; idx < std::min (indices1.size (), indices2.size ()); ++idx)
 //    {
-//      cout << idx <<".\t" << indices1[idx] << "\t(" << distances1[idx] << "),\t" << indices2[idx] << "\t(" << distances2[idx] << ")\n";
+//      std::cout << idx <<".\t" << indices1[idx] << "\t(" << distances1[idx] << "),\t" << indices2[idx] << "\t(" << distances2[idx] << ")\n";
 //    }    
 //    for (unsigned idx = std::min (indices1.size (), indices2.size ()); idx < std::max (indices1.size (), indices2.size ()); ++idx)
 //    {
 //      if (idx >= indices1.size ())
-//        cout << idx <<".\t     \t      ,\t" << indices2[idx] << "\t(" << distances2[idx] << ")\n";
+//        std::cout << idx <<".\t     \t      ,\t" << indices2[idx] << "\t(" << distances2[idx] << ")\n";
 //      else
-//        cout << idx <<".\t" << indices1[idx] << "\t(" << distances1[idx] << ")\n";
+//        std::cout << idx <<".\t" << indices1[idx] << "\t(" << distances1[idx] << ")\n";
 //    }
 #endif
     equal = false;
@@ -262,9 +262,9 @@ bool compareResults (const std::vector<int>& indices1, const::vector<float>& dis
       if (indices1[idx] != indices2[idx] && std::abs (distances1[idx] - distances2[idx]) > eps)
       {
 #if DEBUG_OUT
-        cerr << "results between " << name1 << " search and " << name2 << " search do not match: " << idx << " nearest neighbor: "
+        std::cerr << "results between " << name1 << " search and " << name2 << " search do not match: " << idx << " nearest neighbor: "
                 << indices1[idx] << " with distance: " << distances1[idx] << " vs. "
-                << indices2[idx] << " with distance: " << distances2[idx] << endl;
+                << indices2[idx] << " with distance: " << distances2[idx] << std::endl;
 #endif
         equal = false;
         break;
@@ -340,7 +340,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
   }
   for (size_t sIdx = 0; sIdx < search_methods.size (); ++sIdx)
   {
-    cout << search_methods [sIdx]->getName () << ": " << (passed[sIdx]?"passed":"failed") << endl;
+    std::cout << search_methods [sIdx]->getName () << ": " << (passed[sIdx]?"passed":"failed") << std::endl;
     EXPECT_TRUE (passed [sIdx]);
   }
 }
@@ -387,7 +387,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
   // test radii 0.01, 0.02, 0.04, 0.08
   for (float radius = 0.01f; radius < 0.1f; radius *= 2.0f)
   {
-    //cout << radius << endl;
+    //std::cout << radius << std::endl;
     // find nn for each point in the cloud
     for (const int &query_index : query_indices)
     {
@@ -411,7 +411,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
   }
   for (size_t sIdx = 0; sIdx < search_methods.size (); ++sIdx)
   {
-    cout << search_methods [sIdx]->getName () << ": " << (passed[sIdx]?"passed":"failed") << endl;
+    std::cout << search_methods [sIdx]->getName () << ": " << (passed[sIdx]?"passed":"failed") << std::endl;
     EXPECT_TRUE (passed [sIdx]);
   }
 }
