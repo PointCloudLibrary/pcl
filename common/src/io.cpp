@@ -216,6 +216,14 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
 
 //////////////////////////////////////////////////////////////////////////
 bool
+pcl::concatenate (const pcl::PCLPointCloud2 &cloud1,
+                  const pcl::PCLPointCloud2 &cloud2,
+                  pcl::PCLPointCloud2 &cloud_out)
+{
+  return pcl::PCLPointCloud2::concatenate(cloud1, cloud2, cloud_out);
+}
+
+bool
 pcl::concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
                             const pcl::PCLPointCloud2 &cloud2,
                             pcl::PCLPointCloud2 &cloud_out)

@@ -34,6 +34,7 @@ set(range_image_srcs
 set(srcs
   src/point_types.cpp
   src/pcl_base.cpp
+  src/PCLPointCloud2.cpp
   src/io.cpp
   src/common.cpp
   src/correspondence.cpp
