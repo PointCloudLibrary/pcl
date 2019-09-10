@@ -175,7 +175,7 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, co
   if ( !num_full_leaves )
   {
 #ifdef OBJ_REC_RANSAC_VERBOSE
-    cout << "done [" << num_of_opps << " opps].\n";
+    std::cout << "done [" << num_of_opps << " opps].\n";
 #endif
     return;
   }
@@ -229,7 +229,7 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, co
   }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  cout << "done [" << num_of_opps << " opps].\n";
+  std::cout << "done [" << num_of_opps << " opps].\n";
 #endif
 }
 

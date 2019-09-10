@@ -190,7 +190,7 @@ visualize (const ModelLibrary::HashTable& hash_table)
   // right scale factor for the spheres
   float s = (0.5f*spacing)/static_cast<float> (max_num_entries);
 
-  cout << "s = " << s << ", max_num_entries = " << max_num_entries << endl;
+  std::cout << "s = " << s << ", max_num_entries = " << max_num_entries << std::endl;
 
   // Now, render a sphere with the right radius at the right place
   cells = hash_table.getVoxels ();

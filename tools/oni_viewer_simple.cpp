@@ -150,9 +150,9 @@ public:
 void
 usage(char ** argv)
 {
-  cout << "usage: " << argv[0] << " <path-to-oni-file> [framerate]\n";
-  cout << argv[0] << " -h | --help : shows this help\n";
-  cout << argv[0] << " -xyz        : enable just XYZ data display\n";
+  std::cout << "usage: " << argv[0] << " <path-to-oni-file> [framerate]\n";
+  std::cout << argv[0] << " -h | --help : shows this help\n";
+  std::cout << argv[0] << " -xyz        : enable just XYZ data display\n";
   return;
 }
 

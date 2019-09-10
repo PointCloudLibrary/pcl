@@ -86,7 +86,7 @@ TEST(PCL, IntegralImage1D)
       {
         for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
         {
-          //cout << xIdx << " : " << yIdx << " - " << window_width << " x " << window_height << " :: " << integral_image1.getFirstOrderSum (xIdx, yIdx, window_width, window_height) * 2 << endl;
+          //std::cout << xIdx << " : " << yIdx << " - " << window_width << " x " << window_height << " :: " << integral_image1.getFirstOrderSum (xIdx, yIdx, window_width, window_height) * 2 << std::endl;
           EXPECT_EQ (window_height * window_width * (window_width + 2 * xIdx - 1), integral_image1.getFirstOrderSum (xIdx, yIdx, window_width, window_height) * 2);
           EXPECT_EQ (window_height * window_width * (window_width + 2 * xIdx - 1), integral_image2.getFirstOrderSum (xIdx, yIdx, window_width, window_height) * 2);
           EXPECT_EQ (window_height * window_width, integral_image1.getFiniteElementsCount (xIdx, yIdx, window_width, window_height));

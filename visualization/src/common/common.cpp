@@ -160,7 +160,7 @@ pcl::visualization::cullFrustum (double frustum[24], const Eigen::Vector3d &min_
     double c = frustum[(i*4)+2];
     double d = frustum[(i*4)+3];
 
-    //cout << i << ": " << a << "x + " << b << "y + " << c << "z + " << d << endl;
+    //std::cout << i << ": " << a << "x + " << b << "y + " << c << "z + " << d << std::endl;
 
     //  Basic VFC algorithm
     Eigen::Vector3d center ((max_bb.x () - min_bb.x ()) / 2 + min_bb.x (),
@@ -291,54 +291,54 @@ pcl::visualization::viewScreenArea (
     //return 0.0;
 
 
-//  cout << "eye: " << eye.x() << " " << eye.y() << " " << eye.z() << endl;
-//  cout << "min: " << bounding_box[0].x() << " " << bounding_box[0].y() << " " << bounding_box[0].z() << endl;
+//  std::cout << "eye: " << eye.x() << " " << eye.y() << " " << eye.z() << std::endl;
+//  std::cout << "min: " << bounding_box[0].x() << " " << bounding_box[0].y() << " " << bounding_box[0].z() << std::endl;
 //
-//  cout << "pos: " << pos << " ";
+//  std::cout << "pos: " << pos << " ";
 //  switch(pos){
-//    case 0:  cout << "inside" << endl; break;
-//    case 1:  cout << "left" << endl; break;
-//    case 2:  cout << "right" << endl; break;
+//    case 0:  std::cout << "inside" << std::endl; break;
+//    case 1:  std::cout << "left" << std::endl; break;
+//    case 2:  std::cout << "right" << std::endl; break;
 //    case 3:
-//    case 4:  cout << "bottom" << endl; break;
-//    case 5:  cout << "bottom, left" << endl; break;
-//    case 6:  cout << "bottom, right" << endl; break;
+//    case 4:  std::cout << "bottom" << std::endl; break;
+//    case 5:  std::cout << "bottom, left" << std::endl; break;
+//    case 6:  std::cout << "bottom, right" << std::endl; break;
 //    case 7:
-//    case 8:  cout << "top" << endl; break;
-//    case 9:  cout << "top, left" << endl; break;
-//    case 10:  cout << "top, right" << endl; break;
+//    case 8:  std::cout << "top" << std::endl; break;
+//    case 9:  std::cout << "top, left" << std::endl; break;
+//    case 10:  std::cout << "top, right" << std::endl; break;
 //    case 11:
 //    case 12:
 //    case 13:
 //    case 14:
 //    case 15:
-//    case 16:  cout << "front" << endl; break;
-//    case 17:  cout << "front, left" << endl; break;
-//    case 18:  cout << "front, right" << endl; break;
+//    case 16:  std::cout << "front" << std::endl; break;
+//    case 17:  std::cout << "front, left" << std::endl; break;
+//    case 18:  std::cout << "front, right" << std::endl; break;
 //    case 19:
-//    case 20:  cout << "front, bottom" << endl; break;
-//    case 21:  cout << "front, bottom, left" << endl; break;
+//    case 20:  std::cout << "front, bottom" << std::endl; break;
+//    case 21:  std::cout << "front, bottom, left" << std::endl; break;
 //    case 22:
 //    case 23:
-//    case 24:  cout << "front, top" << endl; break;
-//    case 25:  cout << "front, top, left" << endl; break;
-//    case 26:  cout << "front, top, right" << endl; break;
+//    case 24:  std::cout << "front, top" << std::endl; break;
+//    case 25:  std::cout << "front, top, left" << std::endl; break;
+//    case 26:  std::cout << "front, top, right" << std::endl; break;
 //    case 27:
 //    case 28:
 //    case 29:
 //    case 30:
 //    case 31:
-//    case 32:  cout << "back" << endl; break;
-//    case 33:  cout << "back, left" << endl; break;
-//    case 34:  cout << "back, right" << endl; break;
+//    case 32:  std::cout << "back" << std::endl; break;
+//    case 33:  std::cout << "back, left" << std::endl; break;
+//    case 34:  std::cout << "back, right" << std::endl; break;
 //    case 35:
-//    case 36:  cout << "back, bottom" << endl; break;
-//    case 37:  cout << "back, bottom, left" << endl; break;
-//    case 38:  cout << "back, bottom, right" << endl; break;
+//    case 36:  std::cout << "back, bottom" << std::endl; break;
+//    case 37:  std::cout << "back, bottom, left" << std::endl; break;
+//    case 38:  std::cout << "back, bottom, right" << std::endl; break;
 //    case 39:
-//    case 40:  cout << "back, top" << endl; break;
-//    case 41:  cout << "back, top, left" << endl; break;
-//    case 42:  cout << "back, top, right" << endl; break;
+//    case 40:  std::cout << "back, top" << std::endl; break;
+//    case 41:  std::cout << "back, top, left" << std::endl; break;
+//    case 42:  std::cout << "back, top, right" << std::endl; break;
 //  }
 
   //return -1 if inside
@@ -347,7 +347,7 @@ pcl::visualization::viewScreenArea (
   {
     Eigen::Vector4d world_pt = bounding_box[hull_vertex_table[pos][i]];
     Eigen::Vector2i screen_pt = pcl::visualization::worldToView(world_pt, view_projection_matrix, width, height);
-//    cout << "point[" << i << "]: " << screen_pt.x() << " " << screen_pt.y() << endl;
+//    std::cout << "point[" << i << "]: " << screen_pt.x() << " " << screen_pt.y() << std::endl;
     dst[i] = Eigen::Vector2d(screen_pt.x (), screen_pt.y ());
   }
 

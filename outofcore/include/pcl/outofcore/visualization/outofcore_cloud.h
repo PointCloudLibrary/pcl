@@ -234,7 +234,7 @@ class OutofcoreCloud : public Object
         value = 100;
 
       lod_pixel_threshold_ += value;
-      std::cout << "Increasing lod pixel threshold: " << lod_pixel_threshold_ << endl;
+      std::cout << "Increasing lod pixel threshold: " << lod_pixel_threshold_ << std::endl;
     }
 
     void
@@ -252,7 +252,7 @@ class OutofcoreCloud : public Object
 
       if (lod_pixel_threshold_ < 100)
         lod_pixel_threshold_ = 100;
-      std::cout << "Decreasing lod pixel threshold: " << lod_pixel_threshold_ << endl;
+      std::cout << "Decreasing lod pixel threshold: " << lod_pixel_threshold_ << std::endl;
     }
 
     void

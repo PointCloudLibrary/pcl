@@ -268,7 +268,7 @@ pcl::simulation::SimExample::write_depth_image_uint(const float* depth_buffer, s
       if (z_new>65535) z_new = 65535;
       
       if ( z_new < 18000){
-	  cout << z_new << " " << d << " " << x << "\n";  
+	  std::cout << z_new << " " << d << " " << x << "\n";  
       }
 
       depth_img[i] = z_new;

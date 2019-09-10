@@ -213,7 +213,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
 
 //      for (int i=0; i < node->getDepth(); i++)
 //        std::cout << " ";
-//      std::cout << coverage << "-" << pcd_file << endl;//" : " << (coverage > (size[0] * size[1])) << endl;
+//      std::cout << coverage << "-" << pcd_file << std::endl;//" : " << (coverage > (size[0] * size[1])) << std::endl;
 
       std::string pcd_file = node->getPCDFilename ().string ();
 

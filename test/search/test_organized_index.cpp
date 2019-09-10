@@ -492,7 +492,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
 	  if(cloudIn->points[randomIdx].z <100)break;
   }
 
-  cout << "**Search Point:** " << cloudIn->points[randomIdx].x << " " << cloudIn->points[randomIdx].y << " " << cloudIn->points[randomIdx].z << endl;
+  std::cout << "**Search Point:** " << cloudIn->points[randomIdx].x << " " << cloudIn->points[randomIdx].y << " " << cloudIn->points[randomIdx].z << std::endl;
 
   std::cout << "+--------+-----------------+----------------+-------------------+" << std::endl;
   std::cout << "| Search | Organized       | Organized      | Number of         |" << std::endl;

@@ -125,22 +125,22 @@ display_tic_toc (vector<double> &tic_toc,const string &fun_name)
 
   double percent_tic_toc_last = 0;
   double dtime = tic_toc[tic_toc_size-1] - tic_toc[0];
-  cout << "fraction_" << fun_name << ",";
+  std::cout << "fraction_" << fun_name << ",";
   for (size_t i = 0; i < tic_toc_size; i++)
   {
     double percent_tic_toc =  (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
-    cout <<  percent_tic_toc - percent_tic_toc_last << ", ";
+    std::cout <<  percent_tic_toc - percent_tic_toc_last << ", ";
     percent_tic_toc_last = percent_tic_toc;
   }
-  cout << "\ntime_" << fun_name << ",";
+  std::cout << "\ntime_" << fun_name << ",";
   double time_tic_toc_last = 0;
   for (size_t i = 0; i < tic_toc_size; i++)
   {
     double percent_tic_toc = (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
-    cout <<  percent_tic_toc*dtime - time_tic_toc_last << ", ";
+    std::cout <<  percent_tic_toc*dtime - time_tic_toc_last << ", ";
     time_tic_toc_last = percent_tic_toc*dtime;
   }
-  cout << "\ntotal_time_" << fun_name << " " << dtime << "\n";
+  std::cout << "\ntotal_time_" << fun_name << " " << dtime << "\n";
 }
 
 pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_height, int col_width, Scene::Ptr scene) :
@@ -810,7 +810,7 @@ pcl::simulation::RangeLikelihood::addNoise ()
   {
     depth_buffer_[i] =  std::ceil (depth_buffer_[i]*bins)/bins;
   }
-  cout << "in add noise\n";
+  std::cout << "in add noise\n";
 }
 
 void

@@ -333,7 +333,7 @@ void simulate_callback (const pcl::visualization::KeyboardEvent &event,
       std::cout << "n cams not 1 exiting\n"; // for now in case ...
      return; 
     }
-   // cout << "n cams: " << cams.size() << "\n";
+   // std::cout << "n cams: " << cams.size() << "\n";
     pcl::visualization::Camera cam = cams[0];
     
 
@@ -351,9 +351,9 @@ void simulate_callback (const pcl::visualization::KeyboardEvent &event,
 	     m =pose.rotation();
 	     //All axies use right hand rule. x=red axis, y=green axis, z=blue axis z direction is point into the screen. z \ \ \ -----------> x | | | | | | y 
 	      
- cout << pose(0,0)  << " " << pose(0,1) << " " << pose(0,2)  << " " << pose(0,3) << " x0\n";
- cout << pose(1,0) << " " << pose(1,1) << " " << pose(1,2) << " " << pose(1,3) << " x1\n";
-  cout << pose(2,0) << " " << pose(2,1)  << " " << pose(2,2) << " " << pose(2,3)<< "x2\n";
+ std::cout << pose(0,0)  << " " << pose(0,1) << " " << pose(0,2)  << " " << pose(0,3) << " x0\n";
+ std::cout << pose(1,0) << " " << pose(1,1) << " " << pose(1,2) << " " << pose(1,3) << " x1\n";
+  std::cout << pose(2,0) << " " << pose(2,1)  << " " << pose(2,2) << " " << pose(2,3)<< "x2\n";
 
   double yaw,pitch, roll;
   wRo_to_euler(m,yaw,pitch,roll);
@@ -362,9 +362,9 @@ void simulate_callback (const pcl::visualization::KeyboardEvent &event,
 
 // matrix->GetElement(1,0);
   
- cout << m(0,0)  << " " << m(0,1) << " " << m(0,2)  << " "  << " x0\n";
- cout << m(1,0) << " " << m(1,1) << " " << m(1,2) << " "  << " x1\n";
-  cout << m(2,0) << " " << m(2,1)  << " " << m(2,2) << " "<< "x2\n\n";
+ std::cout << m(0,0)  << " " << m(0,1) << " " << m(0,2)  << " "  << " x0\n";
+ std::cout << m(1,0) << " " << m(1,1) << " " << m(1,2) << " "  << " x1\n";
+  std::cout << m(2,0) << " " << m(2,1)  << " " << m(2,2) << " "<< "x2\n\n";
   
   Eigen::Quaternionf rf;
   rf = Eigen::Quaternionf(m);
@@ -395,7 +395,7 @@ void simulate_callback (const pcl::visualization::KeyboardEvent &event,
     ss2.precision(20);
     ss2 << "simulated_pcl_" << tic << ".pcd";
     capture(init_pose);
-    cout << (getTime() -tic) << " sec\n";  
+    std::cout << (getTime() -tic) << " sec\n";  
   }
 }
 
