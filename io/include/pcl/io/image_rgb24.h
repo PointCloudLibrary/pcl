@@ -37,9 +37,7 @@
 #pragma once
 
 #include <pcl/pcl_config.h>
-
 #include <pcl/pcl_macros.h>
-#include <boost/chrono.hpp>
 
 #include <pcl/io/image.h>
 
