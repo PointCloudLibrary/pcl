@@ -376,12 +376,12 @@ main (int argc,
    */
   if (rototranslations.size () <= 0)
   {
-    cout << "*** No instances found! ***" << endl;
+    std::cout << "*** No instances found! ***" << std::endl;
     return (0);
   }
   else
   {
-    cout << "Recognized Instances: " << rototranslations.size () << endl << endl;
+    std::cout << "Recognized Instances: " << rototranslations.size () << std::endl << std::endl;
   }
 
   /**
@@ -402,7 +402,7 @@ main (int argc,
   std::vector<pcl::PointCloud<PointType>::ConstPtr> registered_instances;
   if (true)
   {
-    cout << "--- ICP ---------" << endl;
+    std::cout << "--- ICP ---------" << std::endl;
 
     for (size_t i = 0; i < rototranslations.size (); ++i)
     {
@@ -414,24 +414,24 @@ main (int argc,
       pcl::PointCloud<PointType>::Ptr registered (new pcl::PointCloud<PointType>);
       icp.align (*registered);
       registered_instances.push_back (registered);
-      cout << "Instance " << i << " ";
+      std::cout << "Instance " << i << " ";
       if (icp.hasConverged ())
       {
-        cout << "Aligned!" << endl;
+        std::cout << "Aligned!" << std::endl;
       }
       else
       {
-        cout << "Not Aligned!" << endl;
+        std::cout << "Not Aligned!" << std::endl;
       }
     }
 
-    cout << "-----------------" << endl << endl;
+    std::cout << "-----------------" << std::endl << std::endl;
   }
 
   /**
    * Hypothesis Verification
    */
-  cout << "--- Hypotheses Verification ---" << endl;
+  std::cout << "--- Hypotheses Verification ---" << std::endl;
   std::vector<bool> hypotheses_mask;  // Mask Vector to identify positive hypotheses
 
   pcl::GlobalHypothesesVerification<PointType, PointType> GoHv;
@@ -455,14 +455,14 @@ main (int argc,
   {
     if (hypotheses_mask[i])
     {
-      cout << "Instance " << i << " is GOOD! <---" << endl;
+      std::cout << "Instance " << i << " is GOOD! <---" << std::endl;
     }
     else
     {
-      cout << "Instance " << i << " is bad!" << endl;
+      std::cout << "Instance " << i << " is bad!" << std::endl;
     }
   }
-  cout << "-------------------------------" << endl;
+  std::cout << "-------------------------------" << std::endl;
 
   /**
    *  Visualization
@@ -511,7 +511,7 @@ main (int argc,
     viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, clusterStyle.size, ss_instance.str ());
 
     CloudStyle registeredStyles = hypotheses_mask[i] ? style_green : style_cyan;
-    ss_instance << "_registered" << endl;
+    ss_instance << "_registered" << std::endl;
     pcl::visualization::PointCloudColorHandlerCustom<PointType> registered_instance_color_handler (registered_instances[i], registeredStyles.r,
                                                                                                    registeredStyles.g, registeredStyles.b);
     viewer.addPointCloud (registered_instances[i], registered_instance_color_handler, ss_instance.str ());

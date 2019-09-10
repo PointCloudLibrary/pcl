@@ -74,7 +74,7 @@ struct SampledScopeTime : public StopWatch
     time_ms_ += getTime ();
     if (i_ % EACH == 0 && i_)
     {
-      cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << endl;
+      std::cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << std::endl;
       time_ms_ = 0;
     }
     ++i_;
@@ -280,8 +280,8 @@ class PeoplePCDApp
           }
           final_view_.spinOnce (3);
         }
-        catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
-        catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
+        catch (const std::bad_alloc& /*e*/) { std::cout << "Bad alloc" << std::endl; }
+        catch (const std::exception& /*e*/) { std::cout << "Exception" << std::endl; }
 
         capture_.stop ();
       }
@@ -345,7 +345,7 @@ int main(int argc, char** argv)
 
   tree_files.resize(num_trees);
   if (num_trees == 0 || num_trees > 4)
-    return cout << "Invalid number of trees" << endl, -1;
+    return std::cout << "Invalid number of trees" << std::endl, -1;
 
   try
   {
@@ -361,10 +361,10 @@ int main(int argc, char** argv)
     // executing
     app.startMainLoop ();
   }
-  catch (const pcl::PCLException& e) { cout << "PCLException: " << e.detailedMessage() << endl; }  
-  catch (const std::runtime_error& e) { cout << e.what() << endl; }
-  catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
-  catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
+  catch (const pcl::PCLException& e) { std::cout << "PCLException: " << e.detailedMessage() << std::endl; }  
+  catch (const std::runtime_error& e) { std::cout << e.what() << std::endl; }
+  catch (const std::bad_alloc& /*e*/) { std::cout << "Bad alloc" << std::endl; }
+  catch (const std::exception& /*e*/) { std::cout << "Exception" << std::endl; }
 
   return 0;
 }

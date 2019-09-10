@@ -62,7 +62,7 @@ namespace pcl
     closedir(dp);
     std::sort(file_names.begin(), file_names.end());
     //for (unsigned int i=0; i<file_names.size(); ++i)
-      //cout << file_names[i]<<"\n";
+      //std::cout << file_names[i]<<"\n";
   }
 #endif
 
