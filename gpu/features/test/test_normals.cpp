@@ -50,9 +50,9 @@ using namespace pcl::gpu;
 TEST(PCL_FeaturesGPU, normals_lowlevel)
 {       
     DataSource source;
-    cout << "Cloud size: " << source.cloud->points.size() << endl;
-    cout << "Radius: " << source.radius << endl;
-    cout << "K: " << source.k << endl;
+    std::cout << "Cloud size: " << source.cloud->points.size() << std::endl;
+    std::cout << "Radius: " << source.radius << std::endl;
+    std::cout << "K: " << source.k << std::endl;
 
     //source.runCloudViewer();
 
@@ -99,11 +99,11 @@ TEST(PCL_FeaturesGPU, normals_lowlevel)
 TEST(PCL_FeaturesGPU, normals_highlevel_1)
 {       
     DataSource source;
-    cout << "Cloud size: " << source.cloud->points.size() << endl;
-    cout << "Radius: " << source.radius << endl;
-    cout << "Max_elems: " <<  source.max_elements << endl;
+    std::cout << "Cloud size: " << source.cloud->points.size() << std::endl;
+    std::cout << "Radius: " << source.radius << std::endl;
+    std::cout << "Max_elems: " <<  source.max_elements << std::endl;
 
-    cout << "!indices, !surface" << endl;
+    std::cout << "!indices, !surface" << std::endl;
     
     //source.runCloudViewer();
 
@@ -163,11 +163,11 @@ TEST(PCL_FeaturesGPU, normals_highlevel_1)
 TEST(PCL_FeaturesGPU, normals_highlevel_2)
 {       
     DataSource source;
-    cout << "Cloud size: " << source.cloud->points.size() << endl;
-    cout << "Radius: " << source.radius << endl;
-    cout << "Max_elems: " <<  source.max_elements << endl;    
+    std::cout << "Cloud size: " << source.cloud->points.size() << std::endl;
+    std::cout << "Radius: " << source.radius << std::endl;
+    std::cout << "Max_elems: " <<  source.max_elements << std::endl;    
 
-    cout << "indices, !surface" << endl;
+    std::cout << "indices, !surface" << std::endl;
     
     //source.runCloudViewer();
 
@@ -228,11 +228,11 @@ TEST(PCL_FeaturesGPU, normals_highlevel_2)
 TEST(PCL_FeaturesGPU, normals_highlevel_3)
 {       
     DataSource source;
-    cout << "Cloud size: " << source.cloud->points.size() << endl;
-    cout << "Radius: " << source.radius << endl;
-    cout << "Max_elems: " <<  source.max_elements << endl;
+    std::cout << "Cloud size: " << source.cloud->points.size() << std::endl;
+    std::cout << "Radius: " << source.radius << std::endl;
+    std::cout << "Max_elems: " <<  source.max_elements << std::endl;
 
-    cout << "!indices, surface" << endl;
+    std::cout << "!indices, surface" << std::endl;
 
     //source.runCloudViewer();
 
@@ -302,11 +302,11 @@ TEST(PCL_FeaturesGPU, normals_highlevel_3)
 TEST(PCL_FeaturesGPU, normals_highlevel_4)
 {       
     DataSource source;
-    cout << "Cloud size: " << source.cloud->points.size() << endl;
-    cout << "Radius: " << source.radius << endl;
-    cout << "Max_elems: " <<  source.max_elements << endl;
+    std::cout << "Cloud size: " << source.cloud->points.size() << std::endl;
+    std::cout << "Radius: " << source.radius << std::endl;
+    std::cout << "Max_elems: " <<  source.max_elements << std::endl;
     
-    cout << "indices, surface" << endl;
+    std::cout << "indices, surface" << std::endl;
 
     //source.runCloudViewer();
 

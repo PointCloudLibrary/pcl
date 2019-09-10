@@ -57,7 +57,7 @@ TEST(PCL_FeaturesGPU, pfh_low_level)
 
     source.estimateNormals();
     source.findRadiusNeghbors();
-    cout << "max_radius_nn_size: " << source.max_nn_size << endl;
+    std::cout << "max_radius_nn_size: " << source.max_nn_size << std::endl;
                    
     std::vector<int> data;
     source.getNeghborsArray(data);
@@ -124,7 +124,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level1)
     //source.generateSurface();
     //source.generateIndices();
 
-    cout << "!indices, !surface" << endl;
+    std::cout << "!indices, !surface" << std::endl;
 
     PointCloud<Normal>::Ptr& normals = source.normals;
 
@@ -202,7 +202,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level2)
     //source.generateSurface();
     source.generateIndices();
 
-    cout << "indices, !surface" << endl;
+    std::cout << "indices, !surface" << std::endl;
 
     PointCloud<Normal>::Ptr& normals = source.normals;
 
@@ -280,7 +280,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level3)
     source.generateSurface();
     //source.generateIndices();
 
-    cout << "!indices, surface" << endl;
+    std::cout << "!indices, surface" << std::endl;
 
     PointCloud<Normal>::Ptr& normals = source.normals_surface;
 
@@ -358,7 +358,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level4)
     source.generateSurface();
     source.generateIndices();
 
-    cout << "indices, surface" << endl;
+    std::cout << "indices, surface" << std::endl;
 
     PointCloud<Normal>::Ptr& normals = source.normals_surface;
 
@@ -436,7 +436,7 @@ TEST(PCL_FeaturesGPU, pfhrgb)
     //source.generateSurface();
     //source.generateIndices();
 
-    cout << "!indices, !surface" << endl;
+    std::cout << "!indices, !surface" << std::endl;
 
     PointCloud<Normal>::Ptr& normals = source.normals;
 

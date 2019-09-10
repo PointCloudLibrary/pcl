@@ -142,8 +142,8 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
 
     diff_pcl_better /=count_pcl_better;
 
-    cout << "count_gpu_better: " << count_gpu_better << endl;
-    cout << "count_pcl_better: " << count_pcl_better << endl;
-    cout << "avg_diff_pcl_better: " << diff_pcl_better << endl;    
+    std::cout << "count_gpu_better: " << count_gpu_better << std::endl;
+    std::cout << "count_pcl_better: " << count_pcl_better << std::endl;
+    std::cout << "avg_diff_pcl_better: " << diff_pcl_better << std::endl;    
 
 }

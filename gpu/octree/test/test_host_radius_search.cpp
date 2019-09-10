@@ -96,7 +96,7 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
 
     // build host octree
     float resolution = 25.f;
-    cout << "[!]Octree resolution: " << resolution << endl;
+    std::cout << "[!]Octree resolution: " << resolution << std::endl;
     pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree_host(resolution);
     octree_host.setInputCloud (cloud_host);
     octree_host.addPointsFromInputCloud ();
@@ -129,7 +129,7 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
 
     float avg_size = std::accumulate(sizes.begin(), sizes.end(), 0) * (1.f/sizes.size());;
 
-    cout << "avg_result_size = " << avg_size << endl;
+    std::cout << "avg_result_size = " << avg_size << std::endl;
     ASSERT_GT(avg_size, 5);    
 }
 

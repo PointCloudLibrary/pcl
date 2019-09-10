@@ -164,7 +164,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
 
     float avg_size1 = std::accumulate(sizes1.begin(), sizes1.end(), 0) * (1.f/sizes1.size());
 
-    cout << "avg_result_size1 = " << avg_size1 << endl;
+    std::cout << "avg_result_size1 = " << avg_size1 << std::endl;
     ASSERT_GT(avg_size1, 5);    
 
 
@@ -193,7 +193,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
 
     float avg_size2 = std::accumulate(sizes2.begin(), sizes2.end(), 0) * (1.f/sizes2.size());
 
-    cout << "avg_result_size2 = " << avg_size2 << endl;
+    std::cout << "avg_result_size2 = " << avg_size2 << std::endl;
     ASSERT_GT(avg_size2, 5);
 
 
@@ -222,7 +222,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
 
     float avg_size3 = std::accumulate(sizes3.begin(), sizes3.end(), 0) * (1.f/sizes3.size());
 
-    cout << "avg_result_size3 = " << avg_size3 << endl;
+    std::cout << "avg_result_size3 = " << avg_size3 << std::endl;
     ASSERT_GT(avg_size3, 5);
 }
 

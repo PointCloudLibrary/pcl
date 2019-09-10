@@ -205,7 +205,7 @@ pcl::gpu::kinfuLS::KinfuTracker::extractAndSaveWorld ()
 void
 pcl::gpu::kinfuLS::KinfuTracker::reset ()
 {
-  cout << "in reset function!" << std::endl;
+  std::cout << "in reset function!" << std::endl;
   
   if (global_time_)
     PCL_WARN ("Reset\n");
@@ -431,7 +431,7 @@ pcl::gpu::kinfuLS::KinfuTracker::performICP(const Intr& cam_intrinsics, Matrix3f
     
         if ( std::abs (det) < 100000 /*1e-15*/ || std::isnan (det) ) //TODO find a threshold that makes ICP track well, but prevents it from generating wrong transforms
         {
-          if (std::isnan (det)) cout << "qnan" << endl;
+          if (std::isnan (det)) std::cout << "qnan" << std::endl;
           if(!lost_)
             PCL_ERROR ("ICP LOST... PLEASE COME BACK TO THE LAST VALID POSE (green)\n");
           //reset (); //GUI will now show the user that ICP is lost. User needs to press "R" to reset the volume
@@ -516,7 +516,7 @@ pcl::gpu::kinfuLS::KinfuTracker::performPairWiseICP(const Intr cam_intrinsics, M
         
         if ( std::abs (det) < 1e-15 || std::isnan (det) )
         {
-          if (std::isnan (det)) cout << "qnan" << endl;
+          if (std::isnan (det)) std::cout << "qnan" << std::endl;
                     
           PCL_WARN ("ICP PairWise LOST...\n");
           //reset ();

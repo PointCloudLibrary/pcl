@@ -172,7 +172,7 @@ void
 pcl::gpu::KinfuTracker::reset()
 {
   if (global_time_)
-    cout << "Reset" << endl;
+    std::cout << "Reset" << std::endl;
 
   global_time_ = 0;
   rmats_.clear ();
@@ -342,7 +342,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
 
             if (std::abs (det) < 1e-15 || std::isnan (det))
             {
-              if (std::isnan (det)) cout << "qnan" << endl;
+              if (std::isnan (det)) std::cout << "qnan" << std::endl;
 
               reset ();
               return (false);
