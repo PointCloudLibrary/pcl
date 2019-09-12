@@ -304,17 +304,8 @@ pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
         errno = EINVAL;
         return (0);
       }
-      switch (ctrl)
-      {
-        case 32: *op++ = *ip++; case 31: *op++ = *ip++; case 30: *op++ = *ip++; case 29: *op++ = *ip++;
-        case 28: *op++ = *ip++; case 27: *op++ = *ip++; case 26: *op++ = *ip++; case 25: *op++ = *ip++;
-        case 24: *op++ = *ip++; case 23: *op++ = *ip++; case 22: *op++ = *ip++; case 21: *op++ = *ip++;
-        case 20: *op++ = *ip++; case 19: *op++ = *ip++; case 18: *op++ = *ip++; case 17: *op++ = *ip++;
-        case 16: *op++ = *ip++; case 15: *op++ = *ip++; case 14: *op++ = *ip++; case 13: *op++ = *ip++;
-        case 12: *op++ = *ip++; case 11: *op++ = *ip++; case 10: *op++ = *ip++; case  9: *op++ = *ip++;
-        case  8: *op++ = *ip++; case  7: *op++ = *ip++; case  6: *op++ = *ip++; case  5: *op++ = *ip++;
-        case  4: *op++ = *ip++; case  3: *op++ = *ip++; case  2: *op++ = *ip++; case  1: *op++ = *ip++;
-      }
+      for (unsigned ctrl_c = ctrl; ctrl_c; --ctrl_c)
+        *op++ = *ip++;
     }
     // Back reference
     else
@@ -353,40 +344,27 @@ pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
         return (0);
       }
 
-      switch (len)
+      if (len > 9)
       {
-        default:
+        len += 2;
+
+        if (op >= ref + len)
         {
-          len += 2;
-
-          if (op >= ref + len)
-          {
-            // Disjunct areas
-            memcpy (op, ref, len);
-            op += len;
-          }
-          else
-          {
-            // Overlapping, use byte by byte copying
-            do
-              *op++ = *ref++;
-            while (--len);
-          }
-
-          break;
+          // Disjunct areas
+          memcpy (op, ref, len);
+          op += len;
         }
-        case 9: *op++ = *ref++;
-        case 8: *op++ = *ref++;
-        case 7: *op++ = *ref++;
-        case 6: *op++ = *ref++;
-        case 5: *op++ = *ref++;
-        case 4: *op++ = *ref++;
-        case 3: *op++ = *ref++;
-        case 2: *op++ = *ref++;
-        case 1: *op++ = *ref++;
-        case 0: *op++ = *ref++; // two octets more
-                *op++ = *ref++;
+        else
+        {
+          // Overlapping, use byte by byte copying
+          do
+            *op++ = *ref++;
+          while (--len);
+        }
       }
+      else
+        for (unsigned len_c = len + 2 /* case 0 iterates twice */; len_c; --len_c)
+          *op++ = *ref++;
     }
   }
   while (ip < in_end);
