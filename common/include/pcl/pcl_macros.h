@@ -344,3 +344,22 @@ aligned_free (void* ptr)
 #define PCL_MAKE_ALIGNED_OPERATOR_NEW \
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
   using _custom_allocator_type_trait = void;
+
+/**
+ * \brief Macro to add a no-op or a fallthrough attribute based on compiler feature
+ *
+ * \ingroup common
+ */
+#if __has_cpp_attribute(fallthrough) && !(defined(__clang__) && __cplusplus < 201703L)
+  #define PCL_FALLTHROUGH [[fallthrough]];
+#elif defined(__clang__)
+  #define PCL_FALLTHROUGH [[clang::fallthrough]];
+#elif defined(__GNUC__)
+  #if __GNUC__ >= 7
+    #define PCL_FALLTHROUGH [[gnu::fallthrough]];
+  #else
+    #define PCL_FALLTHROUGH ;
+  #endif
+#else
+  #define PCL_FALLTHROUGH ;
+#endif

@@ -247,21 +247,7 @@ namespace pcl
       inline PointCloud&
       operator += (const PointCloud& rhs)
       {
-        // Make the resultant point cloud take the newest stamp
-        if (rhs.header.stamp > header.stamp)
-          header.stamp = rhs.header.stamp;
-
-        size_t nr_points = points.size ();
-        points.resize (nr_points + rhs.points.size ());
-        for (size_t i = nr_points; i < points.size (); ++i)
-          points[i] = rhs.points[i - nr_points];
-
-        width    = static_cast<uint32_t>(points.size ());
-        height   = 1;
-        if (rhs.is_dense && is_dense)
-          is_dense = true;
-        else
-          is_dense = false;
+        concatenate((*this), rhs);
         return (*this);
       }
 
@@ -269,10 +255,36 @@ namespace pcl
         * \param[in] rhs the cloud to add to the current cloud
         * \return the new cloud as a concatenation of the current cloud and the new given cloud
         */
-      inline const PointCloud
+      inline PointCloud
       operator + (const PointCloud& rhs)
       {
         return (PointCloud (*this) += rhs);
+      }
+
+      inline static bool
+      concatenate(pcl::PointCloud<PointT> &cloud1,
+                  const pcl::PointCloud<PointT> &cloud2)
+      {
+        // Make the resultant point cloud take the newest stamp
+        cloud1.header.stamp = std::max (cloud1.header.stamp, cloud2.header.stamp);
+
+        size_t nr_points = cloud1.points.size ();
+        cloud1.points.reserve (nr_points + cloud2.points.size ());
+        cloud1.points.insert (cloud1.points.end (), cloud2.points.begin (), cloud2.points.end ());
+
+        cloud1.width    = static_cast<uint32_t>(cloud1.points.size ());
+        cloud1.height   = 1;
+        cloud1.is_dense = cloud1.is_dense && cloud2.is_dense;
+        return true;
+      }
+
+      inline static bool
+      concatenate(const pcl::PointCloud<PointT> &cloud1,
+               const pcl::PointCloud<PointT> &cloud2,
+               pcl::PointCloud<PointT> &cloud_out)
+      {
+        cloud_out = cloud1;
+        return concatenate(cloud_out, cloud2);
       }
 
       /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized

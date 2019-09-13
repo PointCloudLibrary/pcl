@@ -244,13 +244,47 @@ namespace pcl
   PCL_EXPORTS int
   interpolatePointIndex (int p, int length, InterpolationType type);
 
-  /** \brief Concatenate two pcl::PCLPointCloud2.
+  /** \brief Concatenate two pcl::PointCloud<PointT>
+    * \param[in] cloud1 the first input point cloud dataset
+    * \param[in] cloud2 the second input point cloud dataset
+    * \param[out] cloud_out the resultant output point cloud dataset
+    * \return true if successful, false if failed
+    * \ingroup common
+    */
+  template <typename PointT>
+  PCL_EXPORTS bool
+  concatenate (const pcl::PointCloud<PointT> &cloud1,
+               const pcl::PointCloud<PointT> &cloud2,
+               pcl::PointCloud<PointT> &cloud_out)
+  {
+    return pcl::PointCloud<PointT>::concatenate(cloud1, cloud2, cloud_out);
+  }
+
+  /** \brief Concatenate two pcl::PCLPointCloud2
+    *
+    * \warn This function subtly differs from the deprecated `concatenatePointloud`
+    * The difference is thatthis function will concatenate IFF the non-skip fields
+    * are in the correct order and same in number. The deprecated function skipped
+    * fields even if both clouds didn't agree on the number of output fields
+    * \param[in] cloud1 the first input point cloud dataset
+    * \param[in] cloud2 the second input point cloud dataset
+    * \param[out] cloud_out the resultant output point cloud dataset
+    * \return true if successful, false if failed
+    * \ingroup common
+    */
+  PCL_EXPORTS bool
+  concatenate (const pcl::PCLPointCloud2 &cloud1,
+               const pcl::PCLPointCloud2 &cloud2,
+               pcl::PCLPointCloud2 &cloud_out);
+
+  /** \brief Concatenate two pcl::PCLPointCloud2
     * \param[in] cloud1 the first input point cloud dataset
     * \param[in] cloud2 the second input point cloud dataset
     * \param[out] cloud_out the resultant output point cloud dataset
     * \return true if successful, false if failed (e.g., name/number of fields differs)
     * \ingroup common
     */
+  [[deprecated("use pcl::concatenate() instead, but beware of subtle difference in behavior (see documentation)")]]
   PCL_EXPORTS bool 
   concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
                          const pcl::PCLPointCloud2 &cloud2,
