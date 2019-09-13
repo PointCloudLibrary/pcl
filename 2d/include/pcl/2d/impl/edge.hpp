@@ -427,14 +427,17 @@ pcl::Edge<PointInT, PointOutT>::canny(const pcl::PointCloud<PointInT>& input_x,
         continue;
 
       (*maxima)(j, i).intensity = std::numeric_limits<float>::max();
-      cannyTraceEdge(1, 0, i, j, *maxima);
-      cannyTraceEdge(-1, 0, i, j, *maxima);
-      cannyTraceEdge(1, 1, i, j, *maxima);
+
+      // clang-format off
+      cannyTraceEdge( 1,  0, i, j, *maxima);
+      cannyTraceEdge(-1,  0, i, j, *maxima);
+      cannyTraceEdge( 1,  1, i, j, *maxima);
       cannyTraceEdge(-1, -1, i, j, *maxima);
-      cannyTraceEdge(0, -1, i, j, *maxima);
-      cannyTraceEdge(0, 1, i, j, *maxima);
-      cannyTraceEdge(-1, 1, i, j, *maxima);
-      cannyTraceEdge(1, -1, i, j, *maxima);
+      cannyTraceEdge( 0, -1, i, j, *maxima);
+      cannyTraceEdge( 0,  1, i, j, *maxima);
+      cannyTraceEdge(-1,  1, i, j, *maxima);
+      cannyTraceEdge( 1, -1, i, j, *maxima);
+      // clang-format on
     }
   }
 

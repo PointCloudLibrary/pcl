@@ -44,62 +44,48 @@ void
 pcl::kernel<PointT>::fetchKernel(pcl::PointCloud<PointT>& kernel)
 {
   switch (kernel_type_) {
-  case SOBEL_X: {
+  case SOBEL_X:
     sobelKernelX(kernel);
     break;
-  }
-  case SOBEL_Y: {
+  case SOBEL_Y:
     sobelKernelY(kernel);
     break;
-  }
-  case PREWITT_X: {
+  case PREWITT_X:
     prewittKernelX(kernel);
     break;
-  }
-  case PREWITT_Y: {
+  case PREWITT_Y:
     prewittKernelY(kernel);
     break;
-  }
-  case ROBERTS_X: {
+  case ROBERTS_X:
     robertsKernelX(kernel);
     break;
-  }
-  case ROBERTS_Y: {
+  case ROBERTS_Y:
     robertsKernelY(kernel);
     break;
-  }
-  case LOG: {
+  case LOG:
     loGKernel(kernel);
     break;
-  }
-  case DERIVATIVE_CENTRAL_X: {
+  case DERIVATIVE_CENTRAL_X:
     derivativeXCentralKernel(kernel);
     break;
-  }
-  case DERIVATIVE_FORWARD_X: {
+  case DERIVATIVE_FORWARD_X:
     derivativeXForwardKernel(kernel);
     break;
-  }
-  case DERIVATIVE_BACKWARD_X: {
+  case DERIVATIVE_BACKWARD_X:
     derivativeXBackwardKernel(kernel);
     break;
-  }
-  case DERIVATIVE_CENTRAL_Y: {
+  case DERIVATIVE_CENTRAL_Y:
     derivativeYCentralKernel(kernel);
     break;
-  }
-  case DERIVATIVE_FORWARD_Y: {
+  case DERIVATIVE_FORWARD_Y:
     derivativeYForwardKernel(kernel);
     break;
-  }
-  case DERIVATIVE_BACKWARD_Y: {
+  case DERIVATIVE_BACKWARD_Y:
     derivativeYBackwardKernel(kernel);
     break;
-  }
-  case GAUSSIAN: {
+  case GAUSSIAN:
     gaussianKernel(kernel);
     break;
-  }
   }
 }
 
