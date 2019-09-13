@@ -37,136 +37,162 @@
 
 #pragma once
 
-#include <pcl/io/grabber.h>
 #include <pcl/common/time_trigger.h>
-#include <pcl/point_cloud.h>
 #include <pcl/conversions.h>
+#include <pcl/io/grabber.h>
+#include <pcl/point_cloud.h>
 #include <pcl/stereo/stereo_matching.h>
 
-namespace pcl
+namespace pcl {
+
+/** \brief Base class for Stereo file grabber.
+ * \ingroup io
+ */
+class PCL_EXPORTS StereoGrabberBase : public Grabber {
+public:
+  /** \brief Constructor taking just one Stereo pair.
+   * \param[in] pair_files the name of the the stereo (left + right) images.
+   * \param[in] frames_per_second frames per second. If 0, start() functions like a
+   *                              trigger, publishing the next pair in the list.
+   * \param[in] repeat whether to play files in an endless loop or not.
+   */
+  StereoGrabberBase(const std::pair<std::string, std::string>& pair_files,
+                    float frames_per_second,
+                    bool repeat);
+
+  /** \brief Constructor taking a list of paths to Stereo pair files, that are played in
+   * the order they appear in the list.
+   *
+   * \param[in] files vector of paths to stereo (left+right) images.
+   * \param[in] frames_per_second frames per second. If 0, start() functions like a
+   *            trigger, publishing the next pair in the list.
+   * \param[in] repeat whether to play files in an endless loop or not.
+   */
+  StereoGrabberBase(const std::vector<std::pair<std::string, std::string>>& files,
+                    float frames_per_second,
+                    bool repeat);
+
+  /** \brief Copy constructor.
+   * \param[in] src the Stereo Grabber base object to copy into this
+   */
+  StereoGrabberBase(const StereoGrabberBase& src) : impl_() { *this = src; }
+
+  /** \brief Copy operator.
+   * \param[in] src the Stereo Grabber base object to copy into this
+   */
+  StereoGrabberBase&
+  operator=(const StereoGrabberBase& src)
+  {
+    impl_ = src.impl_;
+    return (*this);
+  }
+
+  /** \brief Virtual destructor. */
+  ~StereoGrabberBase() throw();
+
+  /** \brief Starts playing the list of Stereo images if frames_per_second is > 0.
+   * Otherwise it works as a trigger: publishes only the next pair in the list. */
+  void
+  start() override;
+
+  /** \brief Stops playing the list of Stereo images if frames_per_second is > 0.
+   * Otherwise the method has no effect. */
+  void
+  stop() override;
+
+  /** \brief Triggers a callback with new data */
+  virtual void
+  trigger();
+
+  /** \brief whether the grabber is started (publishing) or not.
+   * \return true only if publishing.
+   */
+  bool
+  isRunning() const override;
+
+  /** \return The name of the grabber */
+  std::string
+  getName() const override;
+
+  /** \brief Rewinds to the first pair of files in the list.*/
+  virtual void
+  rewind();
+
+  /** \brief Returns the frames_per_second. 0 if grabber is trigger-based */
+  float
+  getFramesPerSecond() const override;
+
+  /** \brief Returns whether the repeat flag is on */
+  bool
+  isRepeatOn() const;
+
+private:
+  virtual void
+  publish(const pcl::PCLPointCloud2& blob,
+          const Eigen::Vector4f& origin,
+          const Eigen::Quaternionf& orientation) const = 0;
+
+  // to separate and hide the implementation from interface: PIMPL
+  struct StereoGrabberImpl;
+  StereoGrabberImpl* impl_;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+class StereoGrabber : public StereoGrabberBase {
+public:
+  StereoGrabber(const std::pair<std::string, std::string>& pair_files,
+                float frames_per_second = 0,
+                bool repeat = false);
+  StereoGrabber(const std::vector<std::pair<std::string, std::string>>& files,
+                float frames_per_second = 0,
+                bool repeat = false);
+
+protected:
+  void
+  publish(const pcl::PCLPointCloud2& blob,
+          const Eigen::Vector4f& origin,
+          const Eigen::Quaternionf& orientation) const override;
+
+  boost::signals2::signal<void(const typename pcl::PointCloud<PointT>::ConstPtr&)>*
+      signal_;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+StereoGrabber<PointT>::StereoGrabber(
+    const std::pair<std::string, std::string>& pair_files,
+    float frames_per_second,
+    bool repeat)
+: StereoGrabberBase(pair_files, frames_per_second, repeat)
 {
-  /** \brief Base class for Stereo file grabber.
-    * \ingroup io
-    */
-  class PCL_EXPORTS StereoGrabberBase : public Grabber
-  {
-    public:
-      /** \brief Constructor taking just one Stereo pair.
-        * \param[in] pair_files the name of the the stereo (left + right) images.
-        * \param[in] frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next pair in the list.
-        * \param[in] repeat whether to play files in an endless loop or not.
-        */
-      StereoGrabberBase (const std::pair<std::string, std::string>& pair_files, float frames_per_second, bool repeat);
-
-      /** \brief Constructor taking a list of paths to Stereo pair files, that are played in the order they appear in the list.
-        * \param[in] files vector of paths to stereo (left+right) images.
-        * \param[in] frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next pair in the list.
-        * \param[in] repeat whether to play files in an endless loop or not.
-        */
-      StereoGrabberBase (const std::vector<std::pair<std::string, std::string> >& files, float frames_per_second, bool repeat);
-
-      /** \brief Copy constructor.
-        * \param[in] src the Stereo Grabber base object to copy into this
-        */
-      StereoGrabberBase (const StereoGrabberBase &src) : impl_ ()
-      {
-        *this = src;
-      }
-
-      /** \brief Copy operator.
-        * \param[in] src the Stereo Grabber base object to copy into this
-        */
-      StereoGrabberBase&
-      operator = (const StereoGrabberBase &src)
-      {
-        impl_ = src.impl_;
-        return (*this);
-      }
-
-      /** \brief Virtual destructor. */
-      ~StereoGrabberBase () throw ();
-
-      /** \brief Starts playing the list of Stereo images if frames_per_second is > 0. Otherwise it works as a trigger: publishes only the next pair in the list. */
-      void 
-      start () override;
-      
-      /** \brief Stops playing the list of Stereo images if frames_per_second is > 0. Otherwise the method has no effect. */
-      void 
-      stop () override;
-      
-      /** \brief Triggers a callback with new data */
-      virtual void 
-      trigger ();
-
-      /** \brief whether the grabber is started (publishing) or not.
-        * \return true only if publishing.
-        */
-      bool 
-      isRunning () const override;
-      
-      /** \return The name of the grabber */
-      std::string 
-      getName () const override;
-      
-      /** \brief Rewinds to the first pair of files in the list.*/
-      virtual void 
-      rewind ();
-
-      /** \brief Returns the frames_per_second. 0 if grabber is trigger-based */
-      float 
-      getFramesPerSecond () const override;
-
-      /** \brief Returns whether the repeat flag is on */
-      bool 
-      isRepeatOn () const;
-
-    private:
-      virtual void 
-      publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const = 0;
-
-      // to separate and hide the implementation from interface: PIMPL
-      struct StereoGrabberImpl;
-      StereoGrabberImpl* impl_;
-  };
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointT> class StereoGrabber : public StereoGrabberBase
-  {
-    public:
-      StereoGrabber (const std::pair<std::string, std::string> & pair_files, float frames_per_second = 0, bool repeat = false);
-      StereoGrabber (const std::vector<std::pair<std::string, std::string> >& files, float frames_per_second = 0, bool repeat = false);
-    protected:
-      void 
-      publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const override;
-      
-      boost::signals2::signal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>* signal_;
-  };
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template<typename PointT>
-  StereoGrabber<PointT>::StereoGrabber (const std::pair<std::string, std::string>& pair_files, float frames_per_second, bool repeat)
-    : StereoGrabberBase (pair_files, frames_per_second, repeat)
-  {
-    signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>();
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template<typename PointT>
-  StereoGrabber<PointT>::StereoGrabber (const std::vector<std::pair<std::string, std::string> >& files, float frames_per_second, bool repeat)
-    : StereoGrabberBase (files, frames_per_second, repeat), signal_ ()
-  {
-    signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPTr&)>();
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template<typename PointT> void 
-  StereoGrabber<PointT>::publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
-  {
-    typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
-    pcl::fromPCLPointCloud2 (blob, *cloud);
-    cloud->sensor_origin_ = origin;
-    cloud->sensor_orientation_ = orientation;
-
-    signal_->operator () (cloud);
-  }
+  signal_ = createSignal<void(const typename pcl::PointCloud<PointT>::ConstPtr&)>();
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+StereoGrabber<PointT>::StereoGrabber(
+    const std::vector<std::pair<std::string, std::string>>& files,
+    float frames_per_second,
+    bool repeat)
+: StereoGrabberBase(files, frames_per_second, repeat), signal_()
+{
+  signal_ = createSignal<void(const typename pcl::PointCloud<PointT>::ConstPTr&)>();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void
+StereoGrabber<PointT>::publish(const pcl::PCLPointCloud2& blob,
+                               const Eigen::Vector4f& origin,
+                               const Eigen::Quaternionf& orientation) const
+{
+  typename pcl::PointCloud<PointT>::Ptr cloud(new pcl::PointCloud<PointT>());
+  pcl::fromPCLPointCloud2(blob, *cloud);
+  cloud->sensor_origin_ = origin;
+  cloud->sensor_orientation_ = orientation;
+
+  signal_->operator()(cloud);
+}
+
+} // namespace pcl
