@@ -619,7 +619,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
             INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS}"
             INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES}"
         )
-      else(CMAKE_VERSION VERSION_LESS 3.11)
+      elseif(CMAKE_VERSION VERSION_LESS 3.11)
         set_target_properties(${pcl_component}
           PROPERTIES
             INTERFACE_COMPILE_DEFINITIONS "${definitions}"
