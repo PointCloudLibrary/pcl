@@ -651,20 +651,28 @@ pcl::SVMClassify::classificationTest ()
 
   if (svm_type == NU_SVR || svm_type == EPSILON_SVR)
   {
+    testClassReport_.MSE = error / total;
     pcl::console::print_info (" - Mean squared error (regression) = ");
-    pcl::console::print_value ("%g\n", error / total);
+    pcl::console::print_value ("%g\n", testClassReport_.MSE);
 
+    testClassReport_.SCC = ( (total*sumpt - sump*sumt) * (total*sumpt - sump*sumt) ) /
+                           ( (total*sumpp - sump*sump) * (total*sumtt - sumt*sumt) );
     pcl::console::print_info (" - Squared correlation coefficient (regression) = ");
-    pcl::console::print_value ("%g\n",
-                               ( (total*sumpt - sump*sumt) * (total*sumpt - sump*sumt)) /
-                               ( (total*sumpp - sump*sump) * (total*sumtt - sumt*sumt))
-                              );
+    pcl::console::print_value ("%g\n", testClassReport_.SCC );
+
   }
   else
   {
-    pcl::console::print_info (" - Accuracy (classification) = ");
-    pcl::console::print_value ("%g%% (%d/%d)\n",
-            double (correct) / total*100, correct, total);
+    testClassReport_.accuracy = double (correct) / total*100.0;
+    testClassReport_.correctPredictionsIdx = correct;
+    testClassReport_.totalSamples = total;
+    // No print stuff here, get the value instead
+    // pcl::console::print_info (" - Accuracy (classification) = ");
+    // pcl::console::print_value ("%g%% (%d/%d)\n",
+    //                           testClassReport_.accuracy, correct, total);
+
+
+
   }
 
   if (predict_probability_)
