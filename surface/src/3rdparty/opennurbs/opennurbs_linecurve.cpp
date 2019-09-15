@@ -56,7 +56,7 @@ ON_LineCurve::ON_LineCurve( const ON_Line& L, double t0, double t1 ) : m_line(L)
 {
 }
 
-ON_LineCurve::ON_LineCurve( const ON_LineCurve& src )
+ON_LineCurve::ON_LineCurve( const ON_LineCurve& src ) : ON_Curve(src)
 {
   *this = src;
 }

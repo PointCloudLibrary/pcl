@@ -31,7 +31,7 @@ ON_PointGrid::ON_PointGrid( int c0, int c1 )
   Create(c0,c1);
 }
 
-ON_PointGrid::ON_PointGrid( const ON_PointGrid& src )
+ON_PointGrid::ON_PointGrid( const ON_PointGrid& src ) : ON_Geometry(src)
 {
   *this = src;
 }

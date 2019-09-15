@@ -414,8 +414,9 @@ ON_Mesh::ON_Mesh(
   m_hidden_count = 0;
 }
 
-ON_Mesh::ON_Mesh( const ON_Mesh& src ) 
-: m_packed_tex_rotate(0)
+ON_Mesh::ON_Mesh( const ON_Mesh& src )
+: ON_Geometry(src)
+, m_packed_tex_rotate(0)
 , m_parent(0) 
 , m_mesh_parameters(0) 
 , m_invalid_count(0) 

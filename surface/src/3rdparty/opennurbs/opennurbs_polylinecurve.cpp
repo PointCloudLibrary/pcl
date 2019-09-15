@@ -23,7 +23,7 @@ ON_PolylineCurve::ON_PolylineCurve()
   m_dim = 3;
 }
 
-ON_PolylineCurve::ON_PolylineCurve( const ON_PolylineCurve& L )
+ON_PolylineCurve::ON_PolylineCurve( const ON_PolylineCurve& L ) : ON_Curve(L)
 {
   *this = L;
 }

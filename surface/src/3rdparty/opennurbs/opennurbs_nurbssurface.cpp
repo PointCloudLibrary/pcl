@@ -60,7 +60,7 @@ ON_NurbsSurface::ON_NurbsSurface()
   Initialize();
 }
 
-ON_NurbsSurface::ON_NurbsSurface( const ON_NurbsSurface& src )
+ON_NurbsSurface::ON_NurbsSurface( const ON_NurbsSurface& src ) : ON_Surface(src)
 {
   ON__SET__THIS__PTR(m_s_ON_NurbsSurface_ptr);
   Initialize();

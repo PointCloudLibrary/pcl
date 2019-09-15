@@ -22,7 +22,7 @@ ON_OBJECT_IMPLEMENT(ON_ClippingPlaneSurface,ON_PlaneSurface,"DBC5A584-CE3F-4170-
 ON_PlaneSurface::ON_PlaneSurface()
 {}
 
-ON_PlaneSurface::ON_PlaneSurface( const ON_PlaneSurface& src )
+ON_PlaneSurface::ON_PlaneSurface( const ON_PlaneSurface& src ) : ON_Surface(src)
 {
   *this = src;
 }

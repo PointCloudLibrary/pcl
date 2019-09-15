@@ -46,7 +46,7 @@ ON_PointCloud::ON_PointCloud( int capacity ) : m_P(capacity), m_flags(0)
   m_hidden_count=0;
 }
 
-ON_PointCloud::ON_PointCloud( const ON_PointCloud& src )
+ON_PointCloud::ON_PointCloud( const ON_PointCloud& src ) : ON_Geometry(src)
 {
   *this = src;
 }
