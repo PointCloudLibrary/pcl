@@ -15,6 +15,8 @@
 */
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
+#include <pcl/pcl_macros.h>
+
 
 ON_OBJECT_IMPLEMENT(ON_NurbsCage,ON_Geometry,"06936AFB-3D3C-41ac-BF70-C9319FA480A1");
 
@@ -1682,7 +1684,7 @@ bool ON_NurbsCage::GetCV( int i, int j, int k, ON::point_style style, double* Po
   switch(style) {
   case ON::euclidean_rational:
     Point[dim] = w;
-    // no break here
+    PCL_FALLTHROUGH
   case ON::not_rational:
     if ( w == 0.0 )
       return false;

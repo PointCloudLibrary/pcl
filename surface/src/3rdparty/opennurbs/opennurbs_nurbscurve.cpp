@@ -15,6 +15,7 @@
 */
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
+#include <pcl/pcl_macros.h>
 
 ON_OBJECT_IMPLEMENT(ON_NurbsCurve,ON_Curve,"4ED7D4DD-E947-11d3-BFE5-0010830122F0");
 
@@ -2131,7 +2132,7 @@ ON_NurbsCurve::GetCV( int i, ON::point_style style, double* Point ) const
   switch(style) {
   case ON::euclidean_rational:
     Point[dim] = w;
-    // no break here
+    PCL_FALLTHROUGH
   case ON::not_rational:
     if ( w == 0.0 )
       return false;

@@ -15,6 +15,7 @@
 */
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
+#include <pcl/pcl_macros.h>
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -1374,7 +1375,7 @@ bool ON_BezierCurve::GetCV( int i, ON::point_style style, double* Point ) const
   switch(style) {
   case ON::euclidean_rational:
     Point[dim] = w;
-    // no break here
+    PCL_FALLTHROUGH
   case ON::not_rational:
     if ( w == 0.0 )
       return false;
@@ -2502,7 +2503,7 @@ bool ON_BezierSurface::GetCV( int i, int j, ON::point_style style, double* Point
   switch(style) {
   case ON::euclidean_rational:
     Point[dim] = w;
-    // no break here
+    PCL_FALLTHROUGH
   case ON::not_rational:
     if ( w == 0.0 )
       return false;

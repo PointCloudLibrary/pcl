@@ -15,6 +15,8 @@
 */
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
+#include <pcl/pcl_macros.h>
+
 
 bool ON_BezierCage::Read(ON_BinaryArchive& archive)
 {
@@ -870,7 +872,7 @@ bool ON_BezierCage::GetCV( int i, int j, int k, ON::point_style style, double* P
   switch(style) {
   case ON::euclidean_rational:
     Point[dim] = w;
-    // no break here
+    PCL_FALLTHROUGH
   case ON::not_rational:
     if ( w == 0.0 )
       return false;

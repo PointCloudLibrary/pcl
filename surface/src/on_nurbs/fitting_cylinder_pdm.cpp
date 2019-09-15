@@ -507,6 +507,7 @@ FittingCylinder::addCageBoundaryRegularisation (double weight, int side, unsigne
   {
     case EAST:
       i = m_nurbs.m_cv_count[0] - 1;
+      PCL_FALLTHROUGH
     case WEST:
       for (j = 1; j < (m_nurbs.m_cv_count[1] - 2 * cp_red) + 1; j++)
       {

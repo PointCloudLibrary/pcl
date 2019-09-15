@@ -15,6 +15,8 @@
 */
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
+#include <pcl/pcl_macros.h>
+
 
 ON_OBJECT_IMPLEMENT(ON_NurbsSurface,ON_Surface,"4ED7D4DE-E947-11d3-BFE5-0010830122F0");
 
@@ -1853,7 +1855,7 @@ ON_NurbsSurface::GetCV( int i, int j, ON::point_style style, double* Point ) con
   switch(style) {
   case ON::euclidean_rational:
     Point[dim] = w;
-    // no break here
+    PCL_FALLTHROUGH
   case ON::not_rational:
     if ( w == 0.0 )
       return false;

@@ -36,6 +36,8 @@
  */
 
 #include <pcl/surface/on_nurbs/fitting_surface_im.h>
+#include <pcl/pcl_macros.h>
+
 #include <stdexcept>
 
 using namespace pcl;
@@ -391,6 +393,7 @@ FittingSurfaceIM::addCageBoundaryRegularisation (double weight, int side, unsign
   {
     case SOUTH:
       j = m_nurbs.m_cv_count[1] - 1;
+      PCL_FALLTHROUGH
     case NORTH:
       for (i = 1; i < (m_nurbs.m_cv_count[0] - 1); i++)
       {
@@ -407,6 +410,7 @@ FittingSurfaceIM::addCageBoundaryRegularisation (double weight, int side, unsign
 
     case EAST:
       i = m_nurbs.m_cv_count[0] - 1;
+      PCL_FALLTHROUGH
     case WEST:
       for (j = 1; j < (m_nurbs.m_cv_count[1] - 1); j++)
       {
