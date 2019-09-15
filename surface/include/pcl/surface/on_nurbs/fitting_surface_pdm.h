@@ -106,6 +106,9 @@ namespace pcl
        */
       FittingSurface (int order, NurbsDataSurface *data, Eigen::Vector3d z = Eigen::Vector3d (0.0, 0.0, 1.0));
 
+      /** \brief Default virtual destructor */
+      virtual ~FittingSurface() = default;
+
       /** \brief Refines surface by inserting a knot in the middle of each element.
        * \param[in] dim dimension of refinement (0,1)
        */
