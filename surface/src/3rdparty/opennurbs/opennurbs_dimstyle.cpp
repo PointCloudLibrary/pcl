@@ -327,7 +327,7 @@ bool ON_DimStyleExtra::IsDefault() const
   return true;
 }
 
-void ON_DimStyleExtra::Dump( ON_TextLog& text_log ) const
+void ON_DimStyleExtra::Dump( ON_TextLog& ) const
 {
   // do nothing
 }
@@ -723,7 +723,7 @@ ON_DimStyle& ON_DimStyle::operator=( const ON_3dmAnnotationSettings& src)
 //
 // ON_Object overrides
 
-ON_BOOL32 ON_DimStyle::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_DimStyle::IsValid( ON_TextLog* ) const
 {
   return ( m_dimstyle_name.Length() > 0 && m_dimstyle_index >= 0);
 }
@@ -1255,7 +1255,7 @@ void ON_DimStyle::SetSuppressExtension2( bool suppress)
 }
 
 // This function deprecated 5/01/07 LW
-void ON_DimStyle::Composite( const ON_DimStyle& OverRide)
+void ON_DimStyle::Composite( const ON_DimStyle& /*OverRide*/)
 {
 /*
   InvalidateAllFields();

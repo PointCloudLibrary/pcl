@@ -43,6 +43,8 @@ ON__QSORT_FASTER_THAN_HSORT.
 void 
 ON_qsort( void *base, std::size_t nel, std::size_t width, int (*compar)(void*,const void *, const void *),void* context)
 {
+  // no-op to suppress warning on all compilers
+  (void) base; (void) nel; (void) width; (void) compar; (void) context;
 #if defined(ON__HAVE_RELIABLE_SYSTEM_CONTEXT_QSORT)
   // The call here must be a thread safe system qsort
   // that is faster than the alternative code in this function.

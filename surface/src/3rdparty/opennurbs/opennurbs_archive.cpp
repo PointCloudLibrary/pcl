@@ -790,7 +790,7 @@ ON_BinaryArchive::ReadInt( // Read a single 32 bit unsigned integer
 }
 
 bool ON_BinaryArchive::ReadBigInt( // Read an array of 64 bit integers
-		size_t count,
+		size_t,
 		ON__INT64* p 
 		)
 {
@@ -798,7 +798,7 @@ bool ON_BinaryArchive::ReadBigInt( // Read an array of 64 bit integers
 }
 
 bool ON_BinaryArchive::ReadBigInt( // Read an array of 64 bit integers
-		size_t count,
+		size_t,
 		ON__UINT64* p
 		)
 {
@@ -3866,7 +3866,7 @@ bool ON_BinaryArchive::WriteObjectUserData( const ON_Object& object )
 }
 
 int
-ON_BinaryArchive::LoadUserDataApplication( ON_UUID application_id )
+ON_BinaryArchive::LoadUserDataApplication( ON_UUID )
 {
   // This is a virtual function.
   // Rhino overrides this function to load plug-ins.

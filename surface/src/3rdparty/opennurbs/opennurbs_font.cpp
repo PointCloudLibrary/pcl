@@ -82,7 +82,7 @@ void ON_Font::Defaults()
 //
 // ON_Object overrides
 
-ON_BOOL32 ON_Font::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_Font::IsValid( ON_TextLog* ) const
 {
   return ( m_font_name.Length() > 0 
            && m_font_index >= 0 
@@ -277,7 +277,7 @@ int CALLBACK ON__IsSymbolFontFaceNameHelper( ENUMLOGFONTEX*, NEWTEXTMETRICEX*, D
 bool ON_Font::IsSymbolFontFaceName( const wchar_t* s)
 {
   bool rc = false;
-
+  (void) s; // no op to supress warning
 #if defined(ON_OS_WINDOWS_GDI)
   if( s && s[0])
   {

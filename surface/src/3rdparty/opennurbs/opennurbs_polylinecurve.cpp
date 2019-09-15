@@ -420,10 +420,10 @@ int ON_PolylineCurve::IsPolyline(
 
 ON_BOOL32
 ON_PolylineCurve::IsArc( // true if curve locus in an arc or circle
-      const ON_Plane* plane, // if not NULL, test is performed in this plane
-      ON_Arc* arc,         // if not NULL and true is returned, then arc
+      const ON_Plane*, // if not NULL, test is performed in this plane
+      ON_Arc*,         // if not NULL and true is returned, then arc
                               // arc parameters are filled in
-      double tolerance // tolerance to use when checking linearity
+      double // tolerance to use when checking linearity
       ) const
 {
   return false;
@@ -1218,7 +1218,7 @@ ON_BOOL32 ON_PolylineCurve::Split(
 
 int ON_PolylineCurve::GetNurbForm( 
                                   ON_NurbsCurve& nurb, 
-                                  double tol,
+                                  double,
                                   const ON_Interval* subdomain  // OPTIONAL subdomain of ON::ProxyCurve::Domain()
                                   ) const
 {

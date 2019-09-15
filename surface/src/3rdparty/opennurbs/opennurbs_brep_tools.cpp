@@ -2015,12 +2015,12 @@ bool ON_Brep::ChangeVertex( int old_vi, int new_vi, bool bClearTolerances )
   return true;
 }
 
-ON_BOOL32 ON_BrepEdge::SetStartPoint(ON_3dPoint start_point)
+ON_BOOL32 ON_BrepEdge::SetStartPoint(ON_3dPoint)
 {
   return false;
 }
 
-ON_BOOL32 ON_BrepEdge::SetEndPoint(ON_3dPoint end_point)
+ON_BOOL32 ON_BrepEdge::SetEndPoint(ON_3dPoint)
 {
   return false;
 }
@@ -2065,7 +2065,7 @@ ON_BOOL32 ON_BrepTrim::SetStartPoint(ON_3dPoint point)
   return false;
 }
 
-ON_BOOL32 ON_BrepTrim::SetEndPoint(ON_3dPoint end_point)
+ON_BOOL32 ON_BrepTrim::SetEndPoint(ON_3dPoint)
 {
   return false;
 }

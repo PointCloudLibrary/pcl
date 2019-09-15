@@ -1011,7 +1011,7 @@ bool ON_Mesh::WriteFaceArray( int vcount, int fcount, ON_BinaryArchive& file ) c
   return rc;
 }
 
-bool ON_Mesh::ReadFaceArray( int vcount, int fcount, ON_BinaryArchive& file )
+bool ON_Mesh::ReadFaceArray( int, int fcount, ON_BinaryArchive& file )
 {
   unsigned char  cvi[4];
   unsigned short svi[4];
@@ -3302,7 +3302,7 @@ bool ON_Mesh::GetCurvatureStats( // returns true if successful
   return rc;
 }
 
-int ON_MeshTopology::WaitUntilReady(int sleep_value) const
+int ON_MeshTopology::WaitUntilReady(int) const
 {
   return m_b32IsValid;
 }
@@ -3556,8 +3556,8 @@ ON_Mesh::ComputeFaceNormals()
 //}
 
 bool ON_Mesh::CombineCoincidentVertices( 
-        const ON_3fVector tolerance,
-        double cos_normal_angle // = -1.0  // cosine(break angle) -1.0 will merge all coincident vertices
+        const ON_3fVector /*tolerance*/,
+        double //cos_normal_angle // = -1.0  // cosine(break angle) -1.0 will merge all coincident vertices
         )
 {
   // TODO - If you need this function, please ask Dale Lear to finish it.
@@ -4905,7 +4905,7 @@ bool ON_MeshCurvatureStats::Read( ON_BinaryArchive& file )
 bool ON_MeshCurvatureStats::Set( ON::curvature_style kappa_style,
                                  int Kcount,
                                  const ON_SurfaceCurvature* K,
-                                 const ON_3fVector* N, // needed for normal sectional curvatures
+                                 const ON_3fVector* /*N*/, // needed for normal sectional curvatures
                                  double infinity
                                  )
 {
@@ -8135,7 +8135,7 @@ ON_BOOL32 ON_MeshVertexRef::GetBBox(
 }
 
 ON_BOOL32 ON_MeshVertexRef::Transform( 
-       const ON_Xform& xform
+       const ON_Xform&
        )
 {
   return false;
@@ -8271,7 +8271,7 @@ ON_BOOL32 ON_MeshEdgeRef::GetBBox(
 }
 
 ON_BOOL32 ON_MeshEdgeRef::Transform( 
-       const ON_Xform& xform
+       const ON_Xform&
        )
 {
   return false;
@@ -8417,7 +8417,7 @@ ON_BOOL32 ON_MeshFaceRef::GetBBox(
 }
 
 ON_BOOL32 ON_MeshFaceRef::Transform( 
-       const ON_Xform& xform
+       const ON_Xform&
        )
 {
   return false;
@@ -9698,7 +9698,7 @@ ON_PerObjectMeshParameters::~ON_PerObjectMeshParameters()
 }
 
 // virtual ON_Object override
-ON_BOOL32 ON_PerObjectMeshParameters::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_PerObjectMeshParameters::IsValid( ON_TextLog* ) const
 {
   return true;
 }
@@ -9846,7 +9846,7 @@ bool ON_3dmObjectAttributes::EnableCustomRenderMeshParameters(bool bEnable)
   return (!bEnable || 0 != ud);
 }
 
-void ON_Mesh::DestroyTree( bool bDeleteTree )
+void ON_Mesh::DestroyTree( bool )
 {
 }
 

@@ -200,7 +200,7 @@ ON_BOOL32 ON_UserData::IsUnknownUserData() const
   return (ClassId() == &ON_UnknownUserData::m_ON_UnknownUserData_class_id)?true:false;
 }
 
-ON_BOOL32 ON_UserData::GetDescription( ON_wString& description )
+ON_BOOL32 ON_UserData::GetDescription( ON_wString& )
 {
   return true;
 }
@@ -529,7 +529,7 @@ bool ON_UserDataHolder::MoveUserDataTo(  const ON_Object& source_object, bool bA
   return (0 != source_object.FirstUserData());
 }
 
-ON_BOOL32 ON_UserDataHolder::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_UserDataHolder::IsValid( ON_TextLog* ) const
 {
   return true;
 }
@@ -1104,7 +1104,7 @@ ON_DocumentUserStringList::~ON_DocumentUserStringList()
 {
 }
 
-ON_BOOL32 ON_DocumentUserStringList::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_DocumentUserStringList::IsValid( ON_TextLog* ) const
 {
   return true;
 }

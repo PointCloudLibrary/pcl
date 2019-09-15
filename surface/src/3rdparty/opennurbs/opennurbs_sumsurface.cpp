@@ -621,7 +621,7 @@ ON_BOOL32 ON_SumSurface::IsPeriodic( int dir ) const
   return rc;
 }
 
-ON_BOOL32 ON_SumSurface::IsSingular( int side ) const
+ON_BOOL32 ON_SumSurface::IsSingular( int ) const
 {
   return false;
 }
