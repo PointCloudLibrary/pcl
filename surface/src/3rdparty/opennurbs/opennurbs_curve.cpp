@@ -1406,7 +1406,6 @@ bool ON_MatchCurveEnds( ON_Curve* curve0,
     if ( !rc )
     {
       // try to close the gap
-      ON_Curve* seg[2] = {0,0};
       int fix[2] = {0,0};
       ON_3dPoint fixPoint[2];
       fixPoint[0] = ON_UNSET_POINT;
@@ -1432,7 +1431,6 @@ bool ON_MatchCurveEnds( ON_Curve* curve0,
             return false;
           ct = ON_CurveType(c);
         }
-        seg[i] = c;
         switch(ct)
         {
         case ON::ctArc: // arc
@@ -2670,7 +2668,6 @@ ON_JoinCurves(const ON_SimpleArray<const ON_Curve*>& InCurves,
       }
       if (SArray[j].bRev) C->Reverse();
       if (PC->Count()){
-        bool bSet = true;
         if (!ON_ForceMatchCurveEnds(*PC, 1, *C, 0)) {
           ON_3dPoint P = PC->PointAtEnd();
           ON_3dPoint Q = C->PointAtStart();
@@ -2682,7 +2679,6 @@ ON_JoinCurves(const ON_SimpleArray<const ON_Curve*>& InCurves,
               C = NC;
             }
             else {
-              bSet = false;
               delete NC;
               if (PC->Count()) {
                 pc_added = true;

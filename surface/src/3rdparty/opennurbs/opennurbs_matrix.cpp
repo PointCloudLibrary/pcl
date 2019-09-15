@@ -1044,7 +1044,7 @@ bool ON_Matrix::IsColOrthoNormal() const
 bool ON_Matrix::Invert( double zero_tolerance )
 {
   ON_Workspace ws;
-  int i, j, k, ix, jx, rank;
+  int i, j, k, ix, jx;
   double x;
   const int n = MinCount();
   if ( n < 1 )
@@ -1055,7 +1055,6 @@ bool ON_Matrix::Invert( double zero_tolerance )
   int* col = ws.GetIntMemory(n);
 
   I.SetDiagonal(1.0);
-  rank = 0;
 
   double** this_m = ThisM();
 
