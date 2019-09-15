@@ -13312,7 +13312,8 @@ bool ON_BinaryFile::AtEnd() const
       else 
       {
         int buffer;
-        fread( &buffer, 1, 1, m_fp );
+        size_t res = fread( &buffer, 1, 1, m_fp );
+        (void) res;
         if ( feof( m_fp ) ) 
         {
           rc = true;
