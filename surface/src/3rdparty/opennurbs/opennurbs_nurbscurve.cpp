@@ -54,7 +54,7 @@ ON_NurbsCurve::ON_NurbsCurve()
   Initialize();
 }
 
-ON_NurbsCurve::ON_NurbsCurve( const ON_NurbsCurve& src )
+ON_NurbsCurve::ON_NurbsCurve( const ON_NurbsCurve& src ) : ON_Curve(src)
 {
   ON__SET__THIS__PTR(m_s_ON_NurbsCurve_ptr);
   Initialize();

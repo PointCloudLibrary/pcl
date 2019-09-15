@@ -29,7 +29,7 @@ ON_PolyCurve::ON_PolyCurve( int capacity )
 }
 
 ON_PolyCurve::ON_PolyCurve( const ON_PolyCurve& src )
-              : m_segment(src.Count()), m_t(src.Count()+1)
+              : ON_Curve(src), m_segment(src.Count()), m_t(src.Count()+1)
 {
   *this = src;
 }

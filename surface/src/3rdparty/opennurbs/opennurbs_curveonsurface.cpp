@@ -25,7 +25,7 @@ ON_CurveOnSurface::ON_CurveOnSurface( ON_Curve* c2, ON_Curve* c3, ON_Surface* s 
                  : m_c2(c2), m_c3(c3), m_s(s)
 {}
 
-ON_CurveOnSurface::ON_CurveOnSurface( const ON_CurveOnSurface& src ) : m_c2(0), m_c3(0), m_s(0)
+ON_CurveOnSurface::ON_CurveOnSurface( const ON_CurveOnSurface& src ) : ON_Curve(src), m_c2(0), m_c3(0), m_s(0)
 {
   *this = src;
 }
