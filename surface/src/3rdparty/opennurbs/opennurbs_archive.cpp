@@ -4540,22 +4540,6 @@ size_t ON_BinaryArchive::ArchiveStartOffset() const
 bool 
 ON_BinaryArchive::BeginWrite3dmChunk( unsigned int typecode, int value )
 {
-  ON__INT64 value64 = 0;
-  if ( 0 != value )
-  {
-    if ( ON_IsUnsignedChunkTypecode(typecode) )
-    {
-      // treat value parameter as an unsigned int
-      ON__UINT32 u32 = (ON__UINT32)value;
-      ON__UINT64 u64 = u32;
-      value64 = (ON__INT64)u64;
-    }
-    else
-    {
-      // treat value paramter is a signed int
-      value64 = value;
-    }
-  }
   return BeginWrite3dmBigChunk(typecode,value);
 }
 
@@ -6164,7 +6148,6 @@ bool ON_BinaryArchive::Read3dmProperties( ON_3dmProperties& prop )
 
   ON__UINT32 tcode;
   ON__INT64 big_value;
-  int version = 0;
 
   if ( m_3dm_version != 1 ) {
     for(;;) 
@@ -6280,7 +6263,6 @@ bool ON_BinaryArchive::Read3dmProperties( ON_3dmProperties& prop )
 
       case TCODE_SUMMARY: 
         // version 1 revision history chunk (has 16 bit CRC)
-        version = 1;
         bHaveRevisionHistory = true;
         {
           int slength = 0;
@@ -6319,7 +6301,6 @@ bool ON_BinaryArchive::Read3dmProperties( ON_3dmProperties& prop )
 
       case TCODE_NOTES: 
         // version 1 notes chunk
-        version = 1;
         bHaveNotes = true;
         for(;;)
         {
@@ -6356,7 +6337,6 @@ bool ON_BinaryArchive::Read3dmProperties( ON_3dmProperties& prop )
 
       case TCODE_BITMAPPREVIEW: 
         // version 1 preview image chunk
-        version = 1;
         rc = prop.m_PreviewImage.Read(*this)?true:false;
         bHavePreviewImage = rc;
         break;
@@ -10892,7 +10872,7 @@ static ON_NurbsCurve* ReadV1_TCODE_LEGACY_SPLSTUFF( ON_BinaryArchive& file )
 {
   // reads contents of a v1 TCODE_LEGACY_SPLSTUFF chunk
   ON_NurbsCurve* pNurbsCurve = 0;
-  int i, dim, is_rat, order, cv_count, is_closed, form;
+  int i, dim, is_rat, order, cv_count;
   ON_BoundingBox bbox;
   char c;
 
@@ -10931,17 +10911,12 @@ static ON_NurbsCurve* ReadV1_TCODE_LEGACY_SPLSTUFF( ON_BinaryArchive& file )
       return NULL;
   }
 
-  // The "is_closed" and "form" flags are here to recording
-  // the values of legacy data found in the Rhino file.  These
-  // values are not used in the toolkit code.
   if ( !file.ReadByte(1,&c) )
     return NULL;  
   if (c != 0 && c != 1 && c != 2)
     return NULL;
-  is_closed = c; // 0 = open, 1 = closed, 2 = periodic
   if ( !file.ReadByte(1,&c) )
     return NULL;
-  form = c;
 
   // read bounding box
   if ( !file.ReadDouble( dim, bbox.m_min ) )
@@ -11055,7 +11030,7 @@ static ON_NurbsSurface* ReadV1_TCODE_LEGACY_SRFSTUFF( ON_BinaryArchive& file )
 {
   // reads contents of TCODE_LEGACY_SRFSTUFF chunk
   ON_NurbsSurface* pNurbsSurface = 0;
-  int i, j, dim=0, is_rat=0, order[2], cv_count[2], is_closed[2], is_singular[2], form;
+  int i, j, dim=0, is_rat=0, order[2], cv_count[2];
   ON_BoundingBox bbox;
   char c;
 
@@ -11067,7 +11042,6 @@ static ON_NurbsSurface* ReadV1_TCODE_LEGACY_SRFSTUFF( ON_BinaryArchive& file )
   dim = c;
   if ( !file.ReadByte(1,&c) )
     return NULL;
-  form = c;
   if ( !file.ReadChar(1,&c) )
     return NULL;
   if ( c < 1 )
@@ -11109,30 +11083,23 @@ static ON_NurbsSurface* ReadV1_TCODE_LEGACY_SRFSTUFF( ON_BinaryArchive& file )
     return NULL;
   if ( c == 1 ) is_rat = 1; else if ( c == 2 ) is_rat = 2;
 
-  // The "is_closed" and "is_singular" flags are here to recording
-  // the values of legacy data found in the Rhino file.  These
-  // values are not used in the toolkit code.
   if ( !file.ReadByte(1,&c) )
     return NULL;  
   if (c != 0 && c != 1 && c != 2)
     return NULL;
-  is_closed[0] = c; // 0 = open, 1 = closed, 2 = periodic
   if ( !file.ReadByte(1,&c) )
     return NULL;  
   if (c != 0 && c != 1 && c != 2)
     return NULL;
-  is_closed[1] = c; // 0 = open, 1 = closed, 2 = periodic
 
   if ( !file.ReadByte(1,&c) )
     return NULL;  
   if (c != 0 && c != 1 && c != 2 && c != 3)
     return NULL;
-  is_singular[0] = c;
   if ( !file.ReadByte(1,&c) )
     return NULL;  
   if (c != 0 && c != 1 && c != 2 && c != 3)
     return NULL;
-  is_singular[1] = c;
 
   // read bounding box
   if ( !file.ReadDouble( dim, bbox.m_min ) )
@@ -11334,7 +11301,6 @@ bool ON_Brep::ReadV1_LegacyTrimStuff( ON_BinaryArchive& file,
         ON_BrepLoop& loop )
 {
   // read contents of TCODE_LEGACY_TRMSTUFF chunk
-  bool rc = false;
   int revedge, gcon, mono;
   int curve2d_index = -1, curve3d_index = -1, trim_index = -1;
   double tol_3d, tol_2d;
@@ -11364,11 +11330,9 @@ bool ON_Brep::ReadV1_LegacyTrimStuff( ON_BinaryArchive& file,
     return false;
   if ( BeginRead3dmLEGACYSTUFF( file, TCODE_LEGACY_CRVSTUFF ) ) {
     curve2d = ReadV1_TCODE_LEGACY_CRVSTUFF(file);
-    if ( !file.EndRead3dmChunk() ) // end of TCODE_LEGACY_CRVSTUFF chunk
-      rc = false;
+    file.EndRead3dmChunk(); // end of TCODE_LEGACY_CRVSTUFF chunk
   }
-  if ( !file.EndRead3dmChunk() ) // end of TCODE_LEGACY_CRV chunk
-    rc = false;
+  file.EndRead3dmChunk(); // end of TCODE_LEGACY_CRV chunk
   if ( !curve2d )
     return false;
   curve2d_index = AddTrimCurve(curve2d);
@@ -11383,11 +11347,9 @@ bool ON_Brep::ReadV1_LegacyTrimStuff( ON_BinaryArchive& file,
       return false;
     if ( BeginRead3dmLEGACYSTUFF( file, TCODE_LEGACY_CRVSTUFF ) ) {
       curve3d = ReadV1_TCODE_LEGACY_CRVSTUFF(file);
-      if ( !file.EndRead3dmChunk() ) // end of TCODE_LEGACY_CRVSTUFF chunk
-        rc = false;
+      file.EndRead3dmChunk(); // end of TCODE_LEGACY_CRVSTUFF chunk
     }
-    if ( !file.EndRead3dmChunk() ) // end of TCODE_LEGACY_CRV chunk
-      rc = false;
+    file.EndRead3dmChunk(); // end of TCODE_LEGACY_CRV chunk
     if ( !curve3d )
       return false;
     curve3d_index = AddEdgeCurve(curve3d);
@@ -12863,7 +12825,7 @@ bool ON_BinaryArchive::Read3dmAnonymousUserTable( ON_3dmGoo& goo )
 
 bool ON_BinaryArchive::Read3dmAnonymousUserTable( 
     int archive_3dm_version,
-    int archive_opennurbs_version,
+    int,
     ON_3dmGoo& goo
     )
 {
@@ -12872,13 +12834,12 @@ bool ON_BinaryArchive::Read3dmAnonymousUserTable(
     if ( Archive3dmVersion() < 50 )
     {
       archive_3dm_version = Archive3dmVersion();
-      archive_opennurbs_version = ArchiveOpenNURBSVersion();
     }
     else
     {
       // recent version with 4 byte chunk lengths.
       archive_3dm_version = 5;
-      archive_opennurbs_version = 200910190;
+      // archive_opennurbs_version = 200910190;
     }
   }
   bool rc = Read3dmGoo( goo );

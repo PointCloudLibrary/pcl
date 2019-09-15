@@ -2366,36 +2366,30 @@ bool ON_Layer::GetSavedSettings( ON_Layer& layer, unsigned int& ) const
   const ON__LayerSettingsUserData* ud = ON__LayerSettingsUserData::LayerSettings(*this,false);
   if ( 0 == ud )
     return false;
-  bool rc = false;
 
   if ( ud->HaveColor() )
   {
     layer.m_color = ud->m_color;
-    rc = true;
   }
 
   if ( ud->HavePlotColor() )
   {
     layer.m_plot_color = ud->m_plot_color;
-    rc = true;
   }
 
   if ( ud->HaveVisible() )
   {
     layer.m_bVisible = ud->m_bVisible;
-    rc = true;
   }
 
   if ( ud->HaveLocked() )
   {
     layer.m_bLocked = ud->m_bLocked;
-    rc = true;
   }
 
   if ( ud->HavePlotWeight() )
   {
     layer.m_plot_weight_mm = ud->m_plot_weight_mm;
-    rc = true;
   }
 
   return true;

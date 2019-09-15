@@ -256,10 +256,9 @@ bool ON_Buffer::SeekFromEnd( ON__INT64 offset )
 
 bool ON_Buffer::Compact()
 {
-  bool rc = false;
   if ( 0 == m_buffer_size )
   {
-    rc = ChangeSize(0); // frees all heap and zeros everything but m_current_position.
+    ChangeSize(0); // frees all heap and zeros everything but m_current_position.
     m_current_segment = 0;
   }
   else if ( 0 != m_last_segment 
@@ -267,9 +266,7 @@ bool ON_Buffer::Compact()
             && m_buffer_size <= m_last_segment->m_segment_position1
             )
   {
-    if ( m_buffer_size == m_last_segment->m_segment_position1 )
-      rc = true;
-    else
+    if ( m_buffer_size != m_last_segment->m_segment_position1 )
     {
       ON__UINT64 sizeof_segment_buffer = m_buffer_size - m_last_segment->m_segment_position0;
       struct ON_BUFFER_SEGMENT* prev_segment = m_last_segment->m_prev_segment;
@@ -301,7 +298,6 @@ bool ON_Buffer::Compact()
           }
         }
         m_last_segment->m_segment_position1 = m_buffer_size;
-        rc = true;
       }
     }
   }
@@ -476,7 +472,6 @@ bool ON_Buffer::IsValid( const ON_TextLog* ) const
   if ( 0 != m_last_segment->m_next_segment )
     return ON_Buffer_IsNotValid();
 
-  bool bCurrentSegInList = (0 == m_current_segment);
   ON__UINT64 pos = 0;
   ON__UINT64 u;
   const struct ON_BUFFER_SEGMENT* prev_seg = 0;
@@ -491,9 +486,6 @@ bool ON_Buffer::IsValid( const ON_TextLog* ) const
       return ON_Buffer_IsNotValid();
     if ( pos != seg->m_segment_position0 )
       return ON_Buffer_IsNotValid();
-
-    if ( m_current_segment == seg )
-      bCurrentSegInList = true;
 
     // pos checks prevent infinite loop when the linked list has a cycle;
     u = pos + (seg->m_segment_position1 - seg->m_segment_position0);
@@ -912,7 +904,6 @@ bool ON_Buffer::WriteToBinaryArchive( ON_BinaryArchive& archive ) const
     if ( !archive.WriteInt(buffer_crc) )
       break;
 
-    bool buffer_rc = true;
     ON__UINT64 size = 0;
     for ( struct ON_BUFFER_SEGMENT* seg = m_first_segment; 
           0 != seg && size < m_buffer_size; 
@@ -928,7 +919,6 @@ bool ON_Buffer::WriteToBinaryArchive( ON_BinaryArchive& archive ) const
         seg_size = m_buffer_size - size;
       if ( !archive.WriteByte( (std::size_t)seg_size, seg->m_segment_buffer ) )
       {
-        buffer_rc = false;
         break;
       }
       size += seg_size;
