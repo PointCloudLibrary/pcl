@@ -1441,8 +1441,8 @@ void ON_SerialNumberMap::GarbageCollectHelper()
         while ( k < m_sn_block0.m_count && m_sn_block0.m_sn[k].m_sn < sn1 )
           snarray[snarray_count++] = m_sn_block0.m_sn[k++];
       }
-      n = (snarray_count > SN_BLOCK_CAPACITY) 
-        ? SN_BLOCK_CAPACITY 
+      n = (snarray_count > static_cast<size_t>(SN_BLOCK_CAPACITY))
+        ? static_cast<size_t>(SN_BLOCK_CAPACITY)
         : snarray_count;
       if ( k < m_sn_block0.m_count )
       {
