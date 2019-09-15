@@ -563,7 +563,7 @@ int ON_InstanceDefinition::Dimension() const
 ON_BOOL32 ON_InstanceDefinition::GetBBox(
        double* boxmin,
        double* boxmax,
-       ON_BOOL32 bGrowBox
+       ON_BOOL32
        ) const
 {
   if ( boxmin )
@@ -582,7 +582,7 @@ ON_BOOL32 ON_InstanceDefinition::GetBBox(
 }
 
 ON_BOOL32 ON_InstanceDefinition::Transform( 
-       const ON_Xform& xform
+       const ON_Xform&
        )
 {
   // instance DEFs cannot be transformed
@@ -1050,7 +1050,7 @@ ON__IDefLayerSettingsUserData& ON__IDefLayerSettingsUserData::operator=(const ON
 }
 
 // virtual ON_Object override
-ON_BOOL32 ON__IDefLayerSettingsUserData::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON__IDefLayerSettingsUserData::IsValid( ON_TextLog* ) const
 {
   return true;
 }
@@ -1568,7 +1568,7 @@ ON__IDefAlternativePathUserData& ON__IDefAlternativePathUserData::operator=(cons
 }
 
 // virtual ON_Object override
-ON_BOOL32 ON__IDefAlternativePathUserData::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON__IDefAlternativePathUserData::IsValid( ON_TextLog* ) const
 {
   return !m_alternate_path.IsEmpty();
 }

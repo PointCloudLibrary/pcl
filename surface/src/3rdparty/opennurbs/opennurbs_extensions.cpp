@@ -3034,7 +3034,7 @@ bool ONX_Model::Write(
 bool ONX_Model::Write( 
        ON_BinaryArchive& archive,
        int version,
-       const char* sStartSectionComment,
+       const char*,
        ON_TextLog* error_log
        )
 {
@@ -5139,10 +5139,10 @@ static int AuditObjectTableHelper(
 }
 
 static int AuditHistoryRecordTableHelper( 
-      ONX_Model& model,
-      bool bAttemptRepair,
-      int* repair_count,
-      ON_TextLog* text_log 
+      ONX_Model&,
+      bool,
+      int*,
+      ON_TextLog*
       )
 {
   // TODO - make sure object id's exist

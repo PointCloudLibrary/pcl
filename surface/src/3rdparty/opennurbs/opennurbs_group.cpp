@@ -31,7 +31,7 @@ ON_Group::~ON_Group()
 //
 // ON_Object overrides
 
-ON_BOOL32 ON_Group::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_Group::IsValid( ON_TextLog* ) const
 {
   return ( m_group_name.Length() > 0 && m_group_index >= 0 );
 }

@@ -201,7 +201,7 @@ void ON_PointGrid::Dump( ON_TextLog& dump ) const
   }
 }
 
-ON_BOOL32 ON_PointGrid::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_PointGrid::IsValid( ON_TextLog* ) const
 {
   ON_BOOL32 rc = false;
   if ( ON_IsValidPointGrid( 3, false, 

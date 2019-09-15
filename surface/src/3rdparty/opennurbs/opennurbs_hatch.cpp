@@ -109,7 +109,7 @@ void ON_HatchExtra::SetDefaults()
   m_basepoint.Set(0.0,0.0);
 }
 
-void ON_HatchExtra::Dump(ON_TextLog& text_log) const
+void ON_HatchExtra::Dump(ON_TextLog&) const
 {
 }
 

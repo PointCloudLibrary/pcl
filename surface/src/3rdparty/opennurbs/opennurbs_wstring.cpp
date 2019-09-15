@@ -239,7 +239,7 @@ void ON_wString::EmergencyDestroy()
 	Create();
 }
 
-void ON_wString::EnableReferenceCounting( bool bEnable )
+void ON_wString::EnableReferenceCounting( bool )
 {
   // TODO fill this in;
 }

@@ -1522,7 +1522,7 @@ ON_HistoryRecord& ON_HistoryRecord::operator=(const ON_HistoryRecord& src)
   return *this;
 }
 
-ON_BOOL32 ON_HistoryRecord::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_HistoryRecord::IsValid( ON_TextLog* ) const
 {
   return true;
 }

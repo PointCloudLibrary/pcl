@@ -86,7 +86,7 @@ void ON_String::EmergencyDestroy()
 	Create();
 }
 
-void ON_String::EnableReferenceCounting( bool bEnable )
+void ON_String::EnableReferenceCounting( bool )
 {
   // TODO fill this in;
 }

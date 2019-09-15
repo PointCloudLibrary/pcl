@@ -49,7 +49,7 @@ ON_Light::~ON_Light()
 {
 }
 
-ON_BOOL32 ON_Light::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_Light::IsValid( ON_TextLog* ) const
 {
   int s = Style();
   if ( s <= ON::unknown_light_style || s >= ON::light_style_count ) {

@@ -448,7 +448,7 @@ static bool ON_Buffer_IsNotValid()
   return false;
 }
 
-bool ON_Buffer::IsValid( const ON_TextLog* text_log ) const
+bool ON_Buffer::IsValid( const ON_TextLog* ) const
 {
   // This function is primarily used to discover bugs
   // in the ON_Buffer member function code.

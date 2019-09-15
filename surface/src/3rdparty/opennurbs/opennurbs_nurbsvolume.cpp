@@ -2231,7 +2231,7 @@ ON_BOOL32 ON_MorphControl::GetBBox(
 bool ON_MorphControl::GetTightBoundingBox( 
 		ON_BoundingBox& tight_bbox, 
     int bGrowBox,
-		const ON_Xform* xform
+		const ON_Xform*
     ) const
 {
   bool rc = false;

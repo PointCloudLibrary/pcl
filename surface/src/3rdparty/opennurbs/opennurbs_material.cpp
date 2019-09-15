@@ -82,7 +82,7 @@ ON_Material::~ON_Material()
 {}
 
 ON_BOOL32
-ON_Material::IsValid( ON_TextLog* text_log ) const
+ON_Material::IsValid( ON_TextLog* ) const
 {
   return true;
 }

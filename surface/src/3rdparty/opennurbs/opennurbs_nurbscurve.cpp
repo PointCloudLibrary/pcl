@@ -1453,7 +1453,7 @@ bool ON_IsG2CurvatureContinuous(
 bool ON_IsGsmoothCurvatureContinuous(
   const ON_3dVector Km, 
   const ON_3dVector Kp,
-  double cos_angle_tolerance,
+  double,
   double curvature_tolerance
   )
 {
@@ -3270,7 +3270,7 @@ ON_BOOL32 ON_NurbsCurve::Split(
 
 
 int ON_NurbsCurve::GetNurbForm( ON_NurbsCurve& curve, 
-                                double tolerance,
+                                double,
                                 const ON_Interval* subdomain  // OPTIONAL subdomain of ON::ProxyCurve::Domain()
                                 ) const
 {
@@ -3493,8 +3493,8 @@ bool ON_NurbsSurface::IsDuplicate(
 
 
 bool ON_Brep::IsDuplicate( 
-        const ON_Brep& other, 
-        double tolerance 
+        const ON_Brep&,
+        double
         ) const
 {
   // OBSOLETE FUNCTION - REMOVE

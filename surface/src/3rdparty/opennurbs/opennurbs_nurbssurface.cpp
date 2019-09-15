@@ -1198,9 +1198,9 @@ ON_NurbsSurface::GetNurbForm( // returns 0: unable to create NURBS representatio
 }
 
 ON_Surface* ON_NurbsSurface::Offset(
-      double offset_distance, 
-      double tolerance, 
-      double* max_deviation
+      double,
+      double,
+      double*
       ) const
 {
   // 3rd party developers who want to enhance openNURBS

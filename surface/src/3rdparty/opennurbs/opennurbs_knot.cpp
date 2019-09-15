@@ -67,7 +67,7 @@ double ON_KnotTolerance( int order, int cv_count, const double* knot,
 // Computes tolerance associated with span of a knot vector
 //
 
-double ON_SpanTolerance( int order, int cv_count, const double* knot, int span_index )
+double ON_SpanTolerance( int order, int, const double* knot, int span_index )
 {
   const int i0 = span_index+order-2;
   return ON_DomainTolerance( knot[i0], knot[i0+1] );

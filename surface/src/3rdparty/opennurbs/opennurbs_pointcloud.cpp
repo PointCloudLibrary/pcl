@@ -96,7 +96,7 @@ void ON_PointCloud::EmergencyDestroy()
   m_bbox.Destroy();
 }
 
-ON_BOOL32 ON_PointCloud::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_PointCloud::IsValid( ON_TextLog* ) const
 {
   return ( m_P.Count() > 0 ) ? true : false;
 }
