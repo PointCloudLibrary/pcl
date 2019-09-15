@@ -37,6 +37,8 @@
 
 #include <pcl/surface/on_nurbs/global_optimization_pdm.h>
 #include <pcl/surface/on_nurbs/closing_boundary.h>
+#include <pcl/pcl_macros.h>
+
 #include <stdexcept>
 
 #undef DEBUG
@@ -611,6 +613,7 @@ GlobalOptimization::addCageBoundaryRegularisation (unsigned id, int ncps, double
   {
     case SOUTH:
       j = nurbs->CVCount (1) - 1;
+      PCL_FALLTHROUGH
     case NORTH:
       for (i = 1; i < (nurbs->CVCount (0) - 1); i++)
       {
@@ -629,6 +632,7 @@ GlobalOptimization::addCageBoundaryRegularisation (unsigned id, int ncps, double
 
     case EAST:
       i = nurbs->CVCount (0) - 1;
+      PCL_FALLTHROUGH
     case WEST:
       for (j = 1; j < (nurbs->CVCount (1) - 1); j++)
       {
