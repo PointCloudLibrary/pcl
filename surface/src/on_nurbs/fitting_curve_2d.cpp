@@ -698,8 +698,8 @@ FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Ei
 
   if (d_shortest_hint < d_shortest_elem)
     return hint;
-  
-    return param;
+
+  return param;
 }
 
 double

@@ -1068,8 +1068,8 @@ FittingCurve2dAPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, cons
 
   if (d_shortest_hint < d_shortest_elem)
     return hint;
-  
-    return param;
+
+  return param;
 }
 
 double

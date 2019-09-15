@@ -126,11 +126,14 @@ void ON_Light::Dump( ON_TextLog& dump ) const
 
   dump.Print("location = "); dump.Print(Location()); dump.Print("\n");
   if ( bDumpDir )
-    dump.Print("direction = "); dump.Print(Direction()); dump.Print("\n");
+    dump.Print("direction = ");
+  dump.Print(Direction()); dump.Print("\n");
   if ( bDumpLength )
-    dump.Print("length = "); dump.Print(Length()); dump.Print("\n");
+    dump.Print("length = ");
+  dump.Print(Length()); dump.Print("\n");
   if ( bDumpWidth )
-    dump.Print("width = "); dump.Print(Width()); dump.Print("\n");
+    dump.Print("width = ");
+  dump.Print(Width()); dump.Print("\n");
 
   dump.Print("intensity = %g%%\n",Intensity()*100.0);
 
