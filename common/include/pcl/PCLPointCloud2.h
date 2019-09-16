@@ -16,7 +16,7 @@
 namespace pcl
 {
 
-  struct PCLPointCloud2
+  struct PCL_EXPORTS PCLPointCloud2
   {
     PCLPointCloud2 () : height (0), width (0), 
                      is_bigendian (false), point_step (0), row_step (0),
