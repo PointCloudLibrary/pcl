@@ -25,6 +25,10 @@ PCL_ADD_TEST(filters_local_maximum test_filters_local_maximum
              FILES test_local_maximum.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters pcl_search pcl_octree)
 
+PCL_ADD_TEST(filters_uniform_sampling test_uniform_sampling
+             FILES test_uniform_sampling.cpp
+             LINK_WITH pcl_gtest pcl_common pcl_filters)
+
 if(BUILD_io)
   PCL_ADD_TEST(filters_bilateral test_filters_bilateral
          FILES test_bilateral.cpp

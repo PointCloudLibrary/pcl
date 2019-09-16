@@ -65,6 +65,8 @@ namespace pcl
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::input_;
     using Filter<PointT>::indices_;
+    using Filter<PointT>::removed_indices_;
+    using Filter<PointT>::extract_removed_indices_;
     using Filter<PointT>::getClassName;
 
     public:
