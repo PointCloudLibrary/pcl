@@ -33,10 +33,11 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
+
 #include <pcl/stereo/disparity_map_converter.h>
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 PCL_INSTANTIATE(DisparityMapConverter, PCL_XYZ_POINT_TYPES);
-#endif    // PCL_NO_PRECOMPILE
+#endif // PCL_NO_PRECOMPILE
