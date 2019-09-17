@@ -1350,7 +1350,7 @@ bool Solver_NU::be_shrunk (int i, double Gmax1, double Gmax2, double Gmax3, doub
     if (y[i] == + 1)
       return (G[i] > Gmax2);
 
-      return (G[i] > Gmax3);
+    return (G[i] > Gmax3);
   }
   return (false);
 }
