@@ -529,7 +529,8 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
             error_callback_ (line_number_, "parse error");
           return false;
         }
-        istream.ignore (char_ignore_count);
+        if(element_index!= element.count-1)
+          istream.ignore (char_ignore_count);
         ++line_number_;
         std::istringstream stringstream (line);
         stringstream.unsetf (std::ios_base::skipws);
