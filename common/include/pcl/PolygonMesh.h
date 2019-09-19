@@ -42,18 +42,17 @@ namespace pcl
       std::transform(mesh2.polygons.begin (),
                      mesh2.polygons.end (),
                      std::back_inserter (mesh1.polygons),
-                     [point_offset](const auto& polygon)
+                     [point_offset](auto polygon)
                      {
-                        auto poly = polygon;
-                        std::for_each(poly.vertices.begin (),
-                                      poly.vertices.end (),
-                                    [point_offset](auto& point_idx)
-                                    {
-                                      return point_idx + point_offset;
-                                    });
-                        return poly;
+                        std::transform(polygon.vertices.begin (),
+                                       polygon.vertices.end (),
+                                       polygon.vertices.begin (),
+                                       [point_offset](auto& point_idx)
+                                       {
+                                         return point_idx + point_offset;
+                                       });
+                        return polygon;
                       });
-      mesh1.polygons.insert(mesh1.polygons.end(), mesh2.polygons.begin(), mesh2.polygons.end());
 
       return true;
     }
