@@ -153,7 +153,7 @@ namespace pcl
     struct offset : offset<typename POD<PointT>::type, Tag>
     {
       // Contents of specialization:
-      // static const size_t value;
+      // static const std::size_t value;
 
       // Avoid infinite compile-time recursion
       BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
@@ -320,7 +320,7 @@ namespace pcl
     * \param[in] value the value to set
     */
   template <typename PointT, typename ValT> inline void
-  setFieldValue (PointT &pt, size_t field_offset, const ValT &value)
+  setFieldValue (PointT &pt, std::size_t field_offset, const ValT &value)
   {
     uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&pt) + field_offset;
     *reinterpret_cast<ValT*>(data_ptr) = value;
@@ -332,7 +332,7 @@ namespace pcl
     * \param[out] value the value to retrieve
     */
   template <typename PointT, typename ValT> inline void
-  getFieldValue (const PointT &pt, size_t field_offset, ValT &value)
+  getFieldValue (const PointT &pt, std::size_t field_offset, ValT &value)
   {
     const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&pt) + field_offset;
     value = *reinterpret_cast<const ValT*>(data_ptr);

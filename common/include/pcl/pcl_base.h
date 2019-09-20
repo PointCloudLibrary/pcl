@@ -126,7 +126,7 @@ namespace pcl
         * \param[in] nb_cols the number of columns to be considered col_start included
         */
       virtual void
-      setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols);
+      setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols);
 
       /** \brief Get a pointer to the vector of indices used. */
       inline IndicesPtr const
@@ -141,7 +141,7 @@ namespace pcl
         * or input_->points[(*indices_)[pos]]
         * \param[in] pos position in indices_ vector
         */
-      inline const PointT& operator[] (size_t pos) const
+      inline const PointT& operator[] (std::size_t pos) const
       {
         return ((*input_)[(*indices_)[pos]]);
       }

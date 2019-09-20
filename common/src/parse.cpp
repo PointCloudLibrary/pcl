@@ -359,7 +359,7 @@ pcl::console::parse_x_arguments (int argc, const char * const * argv, const char
       boost::split (values, argv[i], boost::is_any_of (","), boost::token_compress_on);
 
       v.resize (values.size ());
-      for (size_t j = 0; j < v.size (); ++j)
+      for (std::size_t j = 0; j < v.size (); ++j)
         v[j] = atof (values.at (j).c_str ());
 
       return (i - 1);
@@ -382,7 +382,7 @@ pcl::console::parse_x_arguments (int argc, const char * const * argv, const char
       boost::split (values, argv[i], boost::is_any_of (","), boost::token_compress_on);
 
       v.resize (values.size ());
-      for (size_t j = 0; j < v.size (); ++j)
+      for (std::size_t j = 0; j < v.size (); ++j)
         v[j] = static_cast<float> (atof (values.at (j).c_str ()));
 
       return (i - 1);
@@ -405,7 +405,7 @@ pcl::console::parse_x_arguments (int argc, const char * const * argv, const char
       boost::split (values, argv[i], boost::is_any_of (","), boost::token_compress_on);
 
       v.resize (values.size ());
-      for (size_t j = 0; j < v.size (); ++j)
+      for (std::size_t j = 0; j < v.size (); ++j)
         v[j] = atoi (values.at (j).c_str ());
 
       return (i - 1);

@@ -31,7 +31,7 @@ namespace pcl
     s << "header: " << std::endl;
     s << "  " << v.header;
     s << "indices[]" << std::endl;
-    for (size_t i = 0; i < v.indices.size (); ++i)
+    for (std::size_t i = 0; i < v.indices.size (); ++i)
     {
       s << "  indices[" << i << "]: ";
       s << "  " << v.indices[i] << std::endl;

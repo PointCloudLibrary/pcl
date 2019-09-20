@@ -90,7 +90,7 @@ namespace pcl
         return (iterator_ - cloud_.begin ());
       }
 
-      size_t size () const
+      std::size_t size () const
       {
         return cloud_.size ();
       }
@@ -162,7 +162,7 @@ namespace pcl
         return (iterator_ - indices_.begin ());
       }
 
-      size_t size () const
+      std::size_t size () const
       {
         return indices_.size ();
       }
@@ -230,7 +230,7 @@ namespace pcl
         return (unsigned (iterator_ - cloud_.begin ()));
       }
 
-      size_t size () const override
+      std::size_t size () const override
       {
         return cloud_.size ();
       }
@@ -304,7 +304,7 @@ namespace pcl
         return (unsigned (iterator_ - indices_.begin ()));
       }
 
-      size_t size () const override
+      std::size_t size () const override
       {
         return indices_.size ();
       }
@@ -419,7 +419,7 @@ pcl::CloudIterator<PointT>::getCurrentIndex () const
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <class PointT> size_t
+template <class PointT> std::size_t
 pcl::CloudIterator<PointT>::size () const
 {
   return (iterator_->size ());
@@ -533,7 +533,7 @@ pcl::ConstCloudIterator<PointT>::getCurrentIndex () const
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <class PointT> size_t
+template <class PointT> std::size_t
 pcl::ConstCloudIterator<PointT>::size () const
 {
   return (iterator_->size ());

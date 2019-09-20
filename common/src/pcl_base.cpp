@@ -70,7 +70,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setInputCloud (const PCLPointCloud2ConstPtr &
 
   // Obtain the size of all fields. Restrict to sizeof FLOAT32 for now
   field_sizes_.resize (input_->fields.size ());
-  for (size_t d = 0; d < input_->fields.size (); ++d)
+  for (std::size_t d = 0; d < input_->fields.size (); ++d)
   {
     int fsize;
     switch (input_->fields[d].datatype)
@@ -139,7 +139,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
   // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
   if (fake_indices_ && indices_->size () != (input_->width * input_->height))
   {
-    size_t indices_size = indices_->size ();
+    std::size_t indices_size = indices_->size ();
     try
     {
       indices_->resize (input_->width * input_->height);
@@ -148,7 +148,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
     {
       PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", (input_->width * input_->height));
     }
-    for (size_t i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
+    for (std::size_t i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
   }
 
   return (true);

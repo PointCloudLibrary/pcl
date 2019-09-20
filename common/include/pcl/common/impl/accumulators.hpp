@@ -79,7 +79,7 @@ namespace pcl
       add (const PointT& t) { xyz += t.getVector3fMap (); }
 
       template <typename PointT> void
-      get (PointT& t, size_t n) const { t.getVector3fMap () = xyz / n; }
+      get (PointT& t, std::size_t n) const { t.getVector3fMap () = xyz / n; }
 
       PCL_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -102,7 +102,7 @@ namespace pcl
       add (const PointT& t) { normal += t.getNormalVector4fMap (); }
 
       template <typename PointT> void
-      get (PointT& t, size_t) const
+      get (PointT& t, std::size_t) const
       {
 #if EIGEN_VERSION_AT_LEAST (3, 3, 0)
         t.getNormalVector4fMap () = normal.normalized ();
@@ -133,7 +133,7 @@ namespace pcl
       add (const PointT& t) { curvature += t.curvature; }
 
       template <typename PointT> void
-      get (PointT& t, size_t n) const { t.curvature = curvature / n; }
+      get (PointT& t, std::size_t n) const { t.curvature = curvature / n; }
 
     };
 
@@ -158,7 +158,7 @@ namespace pcl
       }
 
       template <typename PointT> void
-      get (PointT& t, size_t n) const
+      get (PointT& t, std::size_t n) const
       {
         t.rgba = static_cast<uint32_t> (a / n) << 24 |
                  static_cast<uint32_t> (r / n) << 16 |
@@ -183,7 +183,7 @@ namespace pcl
       add (const PointT& t) { intensity += t.intensity; }
 
       template <typename PointT> void
-      get (PointT& t, size_t n) const { t.intensity = intensity / n; }
+      get (PointT& t, std::size_t n) const { t.intensity = intensity / n; }
 
     };
 
@@ -195,7 +195,7 @@ namespace pcl
 
       // Storage
       // A better performance may be achieved with a heap structure
-      std::map<uint32_t, size_t> labels;
+      std::map<uint32_t, std::size_t> labels;
 
       AccumulatorLabel () { }
 
@@ -210,9 +210,9 @@ namespace pcl
       }
 
       template <typename PointT> void
-      get (PointT& t, size_t) const
+      get (PointT& t, std::size_t) const
       {
-        size_t max = 0;
+        std::size_t max = 0;
         for (const auto &label : labels)
           if (label.second > max)
           {
@@ -281,9 +281,9 @@ namespace pcl
     {
 
       PointT& p;
-      size_t n;
+      std::size_t n;
 
-      GetPoint (PointT& point, size_t num) : p (point), n (num) { }
+      GetPoint (PointT& point, std::size_t num) : p (point), n (num) { }
 
       template <typename AccumulatorT> void
       operator () (AccumulatorT& accumulator) const

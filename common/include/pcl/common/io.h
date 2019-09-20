@@ -59,7 +59,7 @@ namespace pcl
   getFieldIndex (const pcl::PCLPointCloud2 &cloud, const std::string &field_name)
   {
     // Get the index we need
-    for (size_t d = 0; d < cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < cloud.fields.size (); ++d)
       if (cloud.fields[d].name == field_name)
         return (static_cast<int>(d));
     return (-1);
@@ -118,7 +118,7 @@ namespace pcl
   getFieldsList (const pcl::PCLPointCloud2 &cloud)
   {
     std::string result;
-    for (size_t i = 0; i < cloud.fields.size () - 1; ++i)
+    for (std::size_t i = 0; i < cloud.fields.size () - 1; ++i)
       result += cloud.fields[i].name + " ";
     result += cloud.fields[cloud.fields.size () - 1].name;
     return (result);

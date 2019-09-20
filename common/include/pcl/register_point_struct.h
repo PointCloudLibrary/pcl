@@ -330,7 +330,7 @@ namespace pcl
 #define POINT_CLOUD_REGISTER_FIELD_OFFSET(r, name, elem)                \
   template<> struct offset<name, pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem)> \
   {                                                                     \
-    static const size_t value = offsetof(name, BOOST_PP_TUPLE_ELEM(3, 1, elem)); \
+    static const std::size_t value = offsetof(name, BOOST_PP_TUPLE_ELEM(3, 1, elem)); \
   };                                                                    \
   /***/
 

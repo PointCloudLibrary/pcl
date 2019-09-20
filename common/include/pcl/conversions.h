@@ -254,7 +254,7 @@ namespace pcl
     }
 
     // Fill point cloud binary data (padding and all)
-    size_t data_size = sizeof (PointT) * cloud.points.size ();
+    std::size_t data_size = sizeof (PointT) * cloud.points.size ();
     msg.data.resize (data_size);
     if (data_size)
     {
@@ -296,9 +296,9 @@ namespace pcl
     msg.encoding = "bgr8";
     msg.step = msg.width * sizeof (uint8_t) * 3;
     msg.data.resize (msg.step * msg.height);
-    for (size_t y = 0; y < cloud.height; y++)
+    for (std::size_t y = 0; y < cloud.height; y++)
     {
-      for (size_t x = 0; x < cloud.width; x++)
+      for (std::size_t x = 0; x < cloud.width; x++)
       {
         uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
         memcpy (pixel, &cloud (x, y).rgb, 3 * sizeof(uint8_t));
@@ -316,7 +316,7 @@ namespace pcl
   {
     int rgb_index = -1;
     // Get the index we need
-    for (size_t d = 0; d < cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < cloud.fields.size (); ++d)
       if (cloud.fields[d].name == "rgb")
       {
         rgb_index = static_cast<int>(d);
@@ -340,9 +340,9 @@ namespace pcl
     msg.step = static_cast<uint32_t>(msg.width * sizeof (uint8_t) * 3);
     msg.data.resize (msg.step * msg.height);
 
-    for (size_t y = 0; y < cloud.height; y++)
+    for (std::size_t y = 0; y < cloud.height; y++)
     {
-      for (size_t x = 0; x < cloud.width; x++, rgb_offset += point_step)
+      for (std::size_t x = 0; x < cloud.width; x++, rgb_offset += point_step)
       {
         uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
         memcpy (pixel, &(cloud.data[rgb_offset]), 3 * sizeof (uint8_t));

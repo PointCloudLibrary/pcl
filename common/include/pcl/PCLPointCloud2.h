@@ -114,7 +114,7 @@ namespace pcl
     s << "width: ";
     s << "  " << v.width << std::endl;
     s << "fields[]" << std::endl;
-    for (size_t i = 0; i < v.fields.size (); ++i)
+    for (std::size_t i = 0; i < v.fields.size (); ++i)
     {
       s << "  fields[" << i << "]: ";
       s << std::endl;
@@ -127,7 +127,7 @@ namespace pcl
     s << "row_step: ";
     s << "  " << v.row_step << std::endl;
     s << "data[]" << std::endl;
-    for (size_t i = 0; i < v.data.size (); ++i)
+    for (std::size_t i = 0; i < v.data.size (); ++i)
     {
       s << "  data[" << i << "]: ";
       s << "  " << v.data[i] << std::endl;

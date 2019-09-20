@@ -52,7 +52,7 @@ namespace pcl
     s << "step: ";
     s << "  " << v.step << std::endl;
     s << "data[]" << std::endl;
-    for (size_t i = 0; i < v.data.size (); ++i)
+    for (std::size_t i = 0; i < v.data.size (); ++i)
     {
       s << "  data[" << i << "]: ";
       s << "  " << v.data[i] << std::endl;

@@ -32,7 +32,7 @@ namespace pcl
     s << "header: " << std::endl;
     s << v.header;
     s << "values[]" << std::endl;
-    for (size_t i = 0; i < v.values.size (); ++i)
+    for (std::size_t i = 0; i < v.values.size (); ++i)
     {
       s << "  values[" << i << "]: ";
       s << "  " << v.values[i] << std::endl;

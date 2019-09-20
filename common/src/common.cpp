@@ -48,7 +48,7 @@ pcl::getMinMax (const pcl::PCLPointCloud2 &cloud, int,
   max_p = -FLT_MAX;
 
   int field_idx = -1;
-  for (size_t d = 0; d < cloud.fields.size (); ++d)
+  for (std::size_t d = 0; d < cloud.fields.size (); ++d)
     if (cloud.fields[d].name == field_name)
       field_idx = static_cast<int>(d);
 
