@@ -1,208 +1,193 @@
 #pragma once
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__)
-# define WIN32_LEAN_AND_MEAN 1
-# include <windows.h>
+#define WIN32_LEAN_AND_MEAN 1
+#include <windows.h>
 #endif
 
 #include <GL/glew.h>
 
 #include <pcl/pcl_config.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
-# include <OpenGL/gl.h>
-# include <OpenGL/glu.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
 #else
-# include <GL/gl.h>
-# include <GL/glu.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #endif
 
 #include <boost/shared_ptr.hpp>
-#include <pcl/pcl_macros.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
 #include <pcl/PolygonMesh.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/point_types.h>
 #include <pcl/simulation/glsl_shader.h>
 
-namespace pcl
-{
-  namespace simulation
-  {
-    struct SinglePoly
-    {
-      float* vertices_;
-      float* colors_;
-      GLenum mode_;
-      GLuint nvertices_;
-    };
+namespace pcl {
+namespace simulation {
 
-    struct Vertex
-    {
-      Vertex () {}
-      //Vertex(Eigen::Vector3f pos, Eigen::Vector3f norm) : pos(pos), norm(norm) {}
-      Vertex (Eigen::Vector3f pos, Eigen::Vector3f rgb) : pos (pos), rgb (rgb) {}
-      Eigen::Vector3f pos;
-      Eigen::Vector3f rgb;
-      //Eigen::Vector3f norm;
-      //Eigen::Vector2f tex;
-    };
+struct SinglePoly {
+  float* vertices_;
+  float* colors_;
+  GLenum mode_;
+  GLuint nvertices_;
+};
 
-    struct Face
-    {
-      // Index int to the index list
-      unsigned int index_offset;
-      // Number of vertices on face
-      unsigned int count;
-      // Normal of face
-      Eigen::Vector3f norm;
-    };
+struct Vertex {
+  Vertex() {}
+  // Vertex(Eigen::Vector3f pos, Eigen::Vector3f norm) : pos(pos), norm(norm) {}
+  Vertex(Eigen::Vector3f pos, Eigen::Vector3f rgb) : pos(pos), rgb(rgb) {}
+  Eigen::Vector3f pos;
+  Eigen::Vector3f rgb;
+  // Eigen::Vector3f norm;
+  // Eigen::Vector2f tex;
+};
 
-    using Vertices = std::vector<Vertex>;
-    using Indices = std::vector<GLuint>;
+struct Face {
+  /// Index int to the index list
+  unsigned int index_offset;
+  /// Number of vertices on face
+  unsigned int count;
+  /// Normal of face
+  Eigen::Vector3f norm;
+};
 
-    class Model
-    {
-      public:
-        virtual void draw () = 0;
+using Vertices = std::vector<Vertex>;
+using Indices = std::vector<GLuint>;
 
-        using Ptr = boost::shared_ptr<Model>;
-        using ConstPtr = boost::shared_ptr<const Model>;
-    };
+class Model {
+public:
+  virtual void
+  draw() = 0;
 
-    class PCL_EXPORTS TriangleMeshModel : public Model
-    {
-      public:
-        using Ptr = boost::shared_ptr<TriangleMeshModel>;
-        using ConstPtr = boost::shared_ptr<const TriangleMeshModel>;
+  using Ptr = boost::shared_ptr<Model>;
+  using ConstPtr = boost::shared_ptr<const Model>;
+};
 
-        TriangleMeshModel (pcl::PolygonMesh::Ptr plg);
+class PCL_EXPORTS TriangleMeshModel : public Model {
+public:
+  using Ptr = boost::shared_ptr<TriangleMeshModel>;
+  using ConstPtr = boost::shared_ptr<const TriangleMeshModel>;
 
-        virtual
-        ~TriangleMeshModel ();
+  TriangleMeshModel(pcl::PolygonMesh::Ptr plg);
 
-        void
-        draw () override;
+  virtual ~TriangleMeshModel();
 
-      private:
-        GLuint vbo_;
-        GLuint ibo_;
-        GLuint size_;
-        //Vertices vertices_;
-        //Indices indices_;
-    };
+  void
+  draw() override;
 
-    class PCL_EXPORTS PolygonMeshModel : public Model
-    {
-      public:
-        PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg);
-        virtual ~PolygonMeshModel();
-        void draw() override;
+private:
+  GLuint vbo_;
+  GLuint ibo_;
+  GLuint size_;
+  // Vertices vertices_;
+  // Indices indices_;
+};
 
-        using Ptr = boost::shared_ptr<PolygonMeshModel>;
-        using ConstPtr = boost::shared_ptr<const PolygonMeshModel>;
-      private:
-        std::vector<SinglePoly> polygons;
+class PCL_EXPORTS PolygonMeshModel : public Model {
+public:
+  PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg);
+  virtual ~PolygonMeshModel();
+  void
+  draw() override;
 
-        /*
-          GL_POINTS;
-          GL_LINE_STRIP;
-          GL_LINE_LOOP;
-          GL_LINES;
-          GL_TRIANGLE_STRIP;
-          GL_TRIANGLE_FAN;
-          GL_TRIANGLES;
-          GL_QUAD_STRIP;
-          GL_QUADS;
-          GL_POLYGON;
-        */
-        GLenum mode_;
-    };
+  using Ptr = boost::shared_ptr<PolygonMeshModel>;
+  using ConstPtr = boost::shared_ptr<const PolygonMeshModel>;
 
-    class PCL_EXPORTS PointCloudModel : public Model
-    {
-      public:
-        using Ptr = boost::shared_ptr<PointCloudModel>;
-        using ConstPtr = boost::shared_ptr<const PointCloudModel>;
+private:
+  std::vector<SinglePoly> polygons;
 
-        PointCloudModel (GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc);
+  /*
+    GL_POINTS;
+    GL_LINE_STRIP;
+    GL_LINE_LOOP;
+    GL_LINES;
+    GL_TRIANGLE_STRIP;
+    GL_TRIANGLE_FAN;
+    GL_TRIANGLES;
+    GL_QUAD_STRIP;
+    GL_QUADS;
+    GL_POLYGON;
+  */
+  GLenum mode_;
+};
 
-        virtual
-        ~PointCloudModel ();
+class PCL_EXPORTS PointCloudModel : public Model {
+public:
+  using Ptr = boost::shared_ptr<PointCloudModel>;
+  using ConstPtr = boost::shared_ptr<const PointCloudModel>;
 
-        void
-        draw() override;
+  PointCloudModel(GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc);
 
-      private:
-        float* vertices_;
-        float* colors_;
+  virtual ~PointCloudModel();
 
-        /*
-          GL_POINTS;
-          GL_LINE_STRIP;
-          GL_LINE_LOOP;
-          GL_LINES;
-          GL_TRIANGLE_STRIP;
-          GL_TRIANGLE_FAN;
-          GL_TRIANGLES;
-          GL_QUAD_STRIP;
-          GL_QUADS;
-          GL_POLYGON;
-        */
-        GLenum mode_;
-        size_t nvertices_;
-    };
+  void
+  draw() override;
 
-    /**
-     * Renders a single quad providing position (-1,-1,0) - (1,1,0) and
-     * texture coordinates (0,0) - (1,1) to each vertex.
-     * Coordinates are (lower left) - (upper right).
-     * Position is set as vertex attribute 0 and the texture coordinate
-     * as vertex attribute 1.
-     */
-    class PCL_EXPORTS Quad
-    {
-      public:
-        /**
-         * Setup the vbo for the quad.
-         */
-        Quad ();
+private:
+  float* vertices_;
+  float* colors_;
 
-        /**
-         * Release any resources.
-         */
+  /*
+    GL_POINTS;
+    GL_LINE_STRIP;
+    GL_LINE_LOOP;
+    GL_LINES;
+    GL_TRIANGLE_STRIP;
+    GL_TRIANGLE_FAN;
+    GL_TRIANGLES;
+    GL_QUAD_STRIP;
+    GL_QUADS;
+    GL_POLYGON;
+  */
+  GLenum mode_;
+  size_t nvertices_;
+};
 
-        ~Quad ();
+/** Renders a single quad providing position (-1,-1,0) - (1,1,0) and texture coordinates
+ *  (0,0) - (1,1) to each vertex.
+ *
+ *  Coordinates are (lower left) - (upper right). Position is set as vertex attribute 0
+ *  and the texture coordinate as vertex attribute 1.
+ */
+class PCL_EXPORTS Quad {
+public:
+  /** Setup the vbo for the quad. */
+  Quad();
 
-        /**
-         * Render the quad.
-         */
-        void
-        render ();
+  /** Release any resources. */
 
-      private:
-        GLuint quad_vbo_;
-    };
+  ~Quad();
 
-    class PCL_EXPORTS TexturedQuad
-    {
-      public:
-        using Ptr = boost::shared_ptr<TexturedQuad>;
-        using ConstPtr = boost::shared_ptr<const TexturedQuad>;
+  /** Render the quad. */
+  void
+  render();
 
-        TexturedQuad (int width, int height);
-        ~TexturedQuad ();
+private:
+  GLuint quad_vbo_;
+};
 
-        void
-        setTexture (const uint8_t* data);
+class PCL_EXPORTS TexturedQuad {
+public:
+  using Ptr = boost::shared_ptr<TexturedQuad>;
+  using ConstPtr = boost::shared_ptr<const TexturedQuad>;
 
-        void
-        render ();
-  
-      private:
-        int width_;
-        int height_;
-        Quad quad_;
-        GLuint texture_;
-        gllib::Program::Ptr program_;
-    };
-  } // namespace - simulation
-} // namespace - pcl
+  TexturedQuad(int width, int height);
+  ~TexturedQuad();
+
+  void
+  setTexture(const uint8_t* data);
+
+  void
+  render();
+
+private:
+  int width_;
+  int height_;
+  Quad quad_;
+  GLuint texture_;
+  gllib::Program::Ptr program_;
+};
+
+} // namespace simulation
+} // namespace pcl
