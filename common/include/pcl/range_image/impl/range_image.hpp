@@ -240,11 +240,11 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
   
   float x_real, y_real, range_of_current_point;
   int x, y;
-  for (typename pcl::PointCloud<PointType2>::VectorType::const_iterator it=points2.begin (); it!=points2.end (); ++it)
+  for (const auto& point: points2)
   {
-    if (!isFinite (*it))  // Check for NAN etc
+    if (!isFinite (point))  // Check for NAN etc
       continue;
-    Vector3fMapConst current_point = it->getVector3fMap ();
+    Vector3fMapConst current_point = point.getVector3fMap ();
     
     this->getImagePoint (current_point, x_real, y_real, range_of_current_point);
     this->real2DToInt2D (x_real, y_real, x, y);
@@ -1122,9 +1122,8 @@ RangeImage::getAverageViewPoint (const PointCloudTypeWithViewpoints& point_cloud
 {
   Eigen::Vector3f average_viewpoint (0,0,0);
   int point_counter = 0;
-  for (unsigned int point_idx=0; point_idx<point_cloud.points.size (); ++point_idx)
+  for (const auto& point: point_cloud.points)
   {
-    const typename PointCloudTypeWithViewpoints::PointType& point = point_cloud.points[point_idx];
     if (!std::isfinite (point.vp_x) || !std::isfinite (point.vp_y) || !std::isfinite (point.vp_z))
       continue;
     average_viewpoint[0] += point.vp_x;
@@ -1218,11 +1217,11 @@ template <typename PointCloudType> void
 RangeImage::integrateFarRanges (const PointCloudType& far_ranges)
 {
   float x_real, y_real, range_of_current_point;
-  for (typename PointCloudType::const_iterator it  = far_ranges.points.begin (); it != far_ranges.points.end (); ++it)
+  for (const auto& point: far_ranges.points)
   {
-    //if (!isFinite (*it))  // Check for NAN etc
+    //if (!isFinite (point))  // Check for NAN etc
       //continue;
-    Vector3fMapConst current_point = it->getVector3fMap ();
+    Vector3fMapConst current_point = point.getVector3fMap ();
     
     this->getImagePoint (current_point, x_real, y_real, range_of_current_point);
     

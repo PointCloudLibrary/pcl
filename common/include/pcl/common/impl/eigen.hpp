@@ -39,6 +39,8 @@
 #ifndef PCL_COMMON_EIGEN_IMPL_HPP_
 #define PCL_COMMON_EIGEN_IMPL_HPP_
 
+#include <algorithm>
+
 #include <pcl/console/print.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -859,8 +861,7 @@ pcl::transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
   Eigen::Matrix < Scalar, 4, 1 > v_plane_in (values.data ());
   pcl::transformPlane (v_plane_in, v_plane_in, transformation);
   plane_out->values.resize (4);
-  for (int i = 0; i < 4; i++)
-    plane_in->values[i] = v_plane_in[i];
+  std::copy_n(v_plane_in.data (), 4, plane_in->values.begin ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

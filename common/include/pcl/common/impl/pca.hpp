@@ -186,13 +186,13 @@ pcl::PCA<PointT>::project (const PointCloud& input, PointCloud& projection)
   else
   {
     PointT p;
-    for (std::size_t i = 0; i < input.size (); ++i)
+    for (const auto& pt: input)
     {
-      if (!std::isfinite (input[i].x) || 
-          !std::isfinite (input[i].y) ||
-          !std::isfinite (input[i].z))
+      if (!std::isfinite (pt.x) ||
+          !std::isfinite (pt.y) ||
+          !std::isfinite (pt.z))
         continue;
-      project (input[i], p);
+      project (pt, p);
       projection.push_back (p);
     }
   }

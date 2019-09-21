@@ -248,9 +248,9 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, PointT &min_pt, PointT &
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (const auto& point: cloud.points)
     {
-      pcl::Array4fMapConst pt = cloud.points[i].getArray4fMap ();
+      const auto pt = point.getArray4fMap ();
       min_p = min_p.min (pt);
       max_p = max_p.max (pt);
     }
@@ -258,14 +258,14 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, PointT &min_pt, PointT &
   // NaN or Inf values could exist => check for them
   else
   {
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (const auto& point: cloud.points)
     {
       // Check if the point is invalid
-      if (!std::isfinite (cloud.points[i].x) || 
-          !std::isfinite (cloud.points[i].y) || 
-          !std::isfinite (cloud.points[i].z))
+      if (!std::isfinite (point.x) ||
+          !std::isfinite (point.y) ||
+          !std::isfinite (point.z))
         continue;
-      pcl::Array4fMapConst pt = cloud.points[i].getArray4fMap ();
+      const auto pt = point.getArray4fMap ();
       min_p = min_p.min (pt);
       max_p = max_p.max (pt);
     }
@@ -285,9 +285,9 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &min_pt,
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (const auto& point: cloud.points)
     {
-      pcl::Array4fMapConst pt = cloud.points[i].getArray4fMap ();
+      const auto pt = point.getArray4fMap ();
       min_p = min_p.min (pt);
       max_p = max_p.max (pt);
     }
@@ -295,14 +295,14 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &min_pt,
   // NaN or Inf values could exist => check for them
   else
   {
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (const auto& point: cloud.points)
     {
       // Check if the point is invalid
-      if (!std::isfinite (cloud.points[i].x) || 
-          !std::isfinite (cloud.points[i].y) || 
-          !std::isfinite (cloud.points[i].z))
+      if (!std::isfinite (point.x) ||
+          !std::isfinite (point.y) ||
+          !std::isfinite (point.z))
         continue;
-      pcl::Array4fMapConst pt = cloud.points[i].getArray4fMap ();
+      const auto pt = point.getArray4fMap ();
       min_p = min_p.min (pt);
       max_p = max_p.max (pt);
     }

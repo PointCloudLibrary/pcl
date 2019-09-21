@@ -314,17 +314,12 @@ namespace pcl
   inline void
   toPCLPointCloud2 (const pcl::PCLPointCloud2& cloud, pcl::PCLImage& msg)
   {
-    int rgb_index = -1;
-    // Get the index we need
-    for (std::size_t d = 0; d < cloud.fields.size (); ++d)
-      if (cloud.fields[d].name == "rgb")
-      {
-        rgb_index = static_cast<int>(d);
-        break;
-      }
-
-    if(rgb_index == -1)
+    const auto predicate = [](const auto& field) { return field.name == "rgb"; };
+    const auto result = std::find_if(cloud.fields.cbegin (), cloud.fields.cend (), predicate);
+    if (result == cloud.fields.end ())
       throw std::runtime_error ("No rgb field!!");
+
+    const auto rgb_index = std::distance(cloud.fields.begin (), result);
     if (cloud.width == 0 && cloud.height == 0)
       throw std::runtime_error ("Needs to be a dense like cloud!!");
     else

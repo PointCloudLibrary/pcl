@@ -39,6 +39,8 @@
 #ifndef BIVARIATE_POLYNOMIAL_HPP
 #define BIVARIATE_POLYNOMIAL_HPP
 
+#include <algorithm>
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename real>
 pcl::BivariatePolynomialT<real>::BivariatePolynomialT (int new_degree) :
@@ -113,11 +115,8 @@ pcl::BivariatePolynomialT<real>::deepCopy (const pcl::BivariatePolynomialT<real>
     gradient_x = new pcl::BivariatePolynomialT<real> ();
     gradient_y = new pcl::BivariatePolynomialT<real> ();
   }
-  real* tmpParameters1 = parameters;
-  const real* tmpParameters2 = other.parameters;
-  unsigned int noOfParameters = getNoOfParameters ();
-  for (unsigned int i=0; i<noOfParameters; i++)
-    *tmpParameters1++ = *tmpParameters2++;
+
+  std::copy_n(other.parameters, getNoOfParameters (), parameters);
 
   if (other.gradient_x != NULL) 
   {
