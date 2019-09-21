@@ -25,7 +25,7 @@ jobs:
             -DQt5_DIR=/usr/local/opt/qt5/lib/cmake/Qt5 \
             -DPCL_ONLY_CORE_POINT_TYPES=ON \
             -DBUILD_simulation=ON \
-            -DBUILD_surface_on_nurbs=ON \
+            -DBUILD_surface=OFF \
             -DBUILD_global_tests=ON \
             -DBUILD_examples=ON \
             -DBUILD_tools=ON \
