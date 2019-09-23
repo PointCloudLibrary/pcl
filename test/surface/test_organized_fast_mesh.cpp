@@ -82,9 +82,9 @@ TEST (PCL, Organized)
     }
   }
   int nan_idx = cloud_organized->width*cloud_organized->height - 2*cloud_organized->width + 1;
-  cloud_organized->points[nan_idx].x = numeric_limits<float>::quiet_NaN ();
-  cloud_organized->points[nan_idx].y = numeric_limits<float>::quiet_NaN ();
-  cloud_organized->points[nan_idx].z = numeric_limits<float>::quiet_NaN ();
+  cloud_organized->points[nan_idx].x = std::numeric_limits<float>::quiet_NaN ();
+  cloud_organized->points[nan_idx].y = std::numeric_limits<float>::quiet_NaN ();
+  cloud_organized->points[nan_idx].z = std::numeric_limits<float>::quiet_NaN ();
   
   // Init objects
   PolygonMesh triangles;

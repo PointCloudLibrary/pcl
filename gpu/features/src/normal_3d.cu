@@ -84,7 +84,7 @@ namespace pcl
 
                 if (size < MIN_NEIGHBOORS)
                 {
-                    const float NaN = numeric_limits<float>::quiet_NaN();
+                    const float NaN = std::numeric_limits<float>::quiet_NaN();
                     if (lane == 0)
                         normals.data[idx] = make_float4(NaN, NaN, NaN, NaN);
                 }

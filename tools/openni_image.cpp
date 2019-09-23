@@ -524,9 +524,9 @@ class Viewer
             unsigned char* data = visualization::FloatImageUtils::getVisualImage (
                 reinterpret_cast<const unsigned short*> (&frame->depth_image->getDepthMetaData ().Data ()[0]),
                   frame->depth_image->getWidth (), frame->depth_image->getHeight (),
-                  numeric_limits<unsigned short>::min (), 
+                  std::numeric_limits<unsigned short>::min (), 
                   // Scale so that the colors look brigher on screen
-                  numeric_limits<unsigned short>::max () / 10, 
+                  std::numeric_limits<unsigned short>::max () / 10, 
                   true);
 
             depth_image_viewer_->addRGBImage (data, 

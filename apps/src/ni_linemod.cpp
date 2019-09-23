@@ -322,7 +322,7 @@ class NILinemod
       mps_.segmentAndRefine (regions, model_coefficients, inlier_indices, labels, label_indices, boundary_indices);
       PCL_DEBUG ("Number of planar regions detected: %lu for a cloud of %lu points and %lu normals.\n", regions.size (), search_.getInputCloud ()->points.size (), normal_cloud->points.size ());
 
-      double max_dist = numeric_limits<double>::max ();
+      double max_dist = std::numeric_limits<double>::max ();
       // Compute the distances from all the planar regions to the picked point, and select the closest region
       int idx = -1;
       for (size_t i = 0; i < regions.size (); ++i)

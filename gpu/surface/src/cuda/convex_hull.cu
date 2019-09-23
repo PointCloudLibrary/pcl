@@ -39,7 +39,6 @@
 #include "device.h"
 #include <limits>
 
-#include <pcl/gpu/utils/device/limits.hpp>
 #include <pcl/gpu/utils/device/algorithm.hpp>
 #include <pcl/gpu/utils/device/warp.hpp>
 #include <pcl/gpu/utils/device/static_check.hpp>
@@ -278,7 +277,7 @@ namespace pcl
           int negs_inds[4];
           int neg_count = 0;
           
-          int idx = numeric_limits<int>::max();
+          int idx = std::numeric_limits<int>::max();
           float dist = 0;
 
           #pragma unroll
@@ -377,7 +376,7 @@ namespace pcl
 
         bool last_thread = facet == facet_count;
 
-        int search_value = !last_thread ? facet : numeric_limits<int>::max();		
+        int search_value = !last_thread ? facet : std::numeric_limits<int>::max();		
 		int index = lower_bound(b, e, search_value, LessThanByFacet()) - b;			
         
         if (last_thread)
@@ -614,7 +613,7 @@ namespace pcl
 
           if (hi == perm_index)
           {
-            uint64_type res = numeric_limits<int>::max();
+            uint64_type res = std::numeric_limits<int>::max();
 		    res <<= 32;		                      
             facets_dists[point_idx] = res;
           }
@@ -650,7 +649,7 @@ namespace pcl
             int negs_inds[3];
             int neg_count = 0;
 
-            int new_idx = numeric_limits<int>::max();
+            int new_idx = std::numeric_limits<int>::max();
             float dist = 0;
 
             int indeces[] = { facet, facet + facet_count, facet + facet_count * 2 };

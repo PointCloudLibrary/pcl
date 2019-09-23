@@ -37,7 +37,6 @@
 #include "internal.hpp"
 #include "pcl/gpu/utils/device/warp.hpp"
 #include "pcl/gpu/utils/device/block.hpp"
-#include "pcl/gpu/utils/device/limits.hpp"
 #include "pcl/gpu/utils/device/vector_math.hpp"
 #include "pcl/gpu/utils/device/functional.hpp"
 
@@ -75,7 +74,7 @@ namespace pcl
 
 		struct Div12eps
 		{
-            __device__ __forceinline__ float operator()(float v1, float v2) const { return (float)(v1 / ( v2 + numeric_limits<double>::epsilon() )); }
+            __device__ __forceinline__ float operator()(float v1, float v2) const { return (float)(v1 / ( v2 + std::numeric_limits<double>::epsilon() )); }
 		};
 
 		struct DivValIfNonZero
@@ -146,7 +145,7 @@ namespace pcl
                 float3 rotation_axis = AxesStrategy::getRotationAxes(index, origin_normal);
 				rotation_axis = normalized_safe(rotation_axis); //normalize if non-zero
 
-				const float eps = numeric_limits<float>::epsilon ();
+				const float eps = std::numeric_limits<float>::epsilon ();
 
 				for(int i_neighb = threadIdx.x; i_neighb < neighb_count; i_neighb += CTA_SIZE)
 				{
@@ -179,8 +178,8 @@ namespace pcl
 					cos_dir_axis = fmax(-1.f, fmin(1.f, cos_dir_axis));
 
 					// compute coordinates w.r.t. the reference frame
-					float beta  = numeric_limits<float>::quiet_NaN();
-					float alpha = numeric_limits<float>::quiet_NaN();
+					float beta  = std::numeric_limits<float>::quiet_NaN();
+					float alpha = std::numeric_limits<float>::quiet_NaN();
 					
 					if (radial) // radial spin image structure
 					{
