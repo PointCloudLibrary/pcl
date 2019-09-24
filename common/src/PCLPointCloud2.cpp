@@ -74,16 +74,16 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
   }
 
   // Ideally this should be in PCLPointField class since this is global behavior
-  // We're fine with the special RGB vs RGBA use case
   auto field_eq = [](const auto& field1, const auto& field2)
   {
+    // We're fine with the special RGB vs RGBA use case
     return ((field1.name == field2.name) ||
             (field1.name == "rgb" && field2.name == "rgba") ||
             (field1.name == "rgba" && field2.name == "rgb"));
   };
 
-  // A simple memcpy is possible if layout (name and order of fields) is same
-  bool memcpy_possible = std::equal(cloud1.fields.begin (),
+  // A simple memcpy is possible if layout (name and order of fields) is same for both clouds
+  bool simple_layout = std::equal(cloud1.fields.begin (),
                                     cloud1.fields.end (),
                                     cloud2.fields.begin (),
                                     cloud2.fields.end (),
@@ -100,8 +100,9 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
   const auto max_field_size = std::max (cloud1.fields.size (), cloud2.fields.size ());
   valid_fields.reserve (max_field_size);
 
-  // refactor to return std::optional<std::vector<FieldDetails>>
-  if (!memcpy_possible)
+  // @TODO: Refactor to return std::optional<std::vector<FieldDetails>>
+  // Store the details of fields with common data in both cloud, exit early if any errors are found
+  if (!simple_layout)
   {
     std::size_t i = 0, j = 0;
     while (i < cloud1.fields.size () && j < cloud2.fields.size ())
@@ -119,6 +120,7 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
 
       if (field_eq(cloud1.fields[i], cloud2.fields[j]))
       {
+        // Assumption: cloud1.fields[i].datatype == cloud2.fields[j].datatype
         valid_fields.emplace_back(i, j, pcl::getFieldSize (cloud2.fields[j].datatype));
         ++i;
         ++j;
@@ -127,6 +129,7 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
       PCL_ERROR ("[pcl::PCLPointCloud2::concatenate] Name of field %d in cloud1, %s, does not match name in cloud2, %s\n", i, cloud1.fields[i].name.c_str (), cloud2.fields[i].name.c_str ());
       return (false);
     }
+    // Both i and j should have exhausted their respective cloud.fields
     if (i != cloud1.fields.size () || j != cloud2.fields.size ())
     {
       PCL_ERROR ("[pcl::PCLPointCloud2::concatenate] Number of fields to copy in cloud1 (%u) != Number of fields to copy in cloud2 (%u)\n", i, j);
@@ -134,22 +137,20 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
     }
   }
 
-  // It's safe to modify the cloud1 inplace
+  // Save the latest timestamp in the destination cloud
   cloud1.header.stamp = std::max (cloud1.header.stamp, cloud2.header.stamp);
 
   cloud1.is_dense = cloud1.is_dense && cloud2.is_dense;
   cloud1.height = 1;
   cloud1.width = size1 + size2;
 
-  const auto data1_size = cloud1.data.size ();
-
-  // conservative allocation
-  cloud1.data.reserve (data1_size + cloud2.data.size ());
-  if (memcpy_possible)
+  if (simple_layout)
   {
     cloud1.data.insert (cloud1.data.end (), cloud2.data.begin (), cloud2.data.end ());
     return (true);
   }
+  const auto data1_size = cloud1.data.size ();
+  cloud1.data.resize(data1_size + cloud2.data.size ());
   for (std::size_t cp = 0; cp < size2; ++cp)
   {
     for (const auto field_data: valid_fields)
@@ -157,6 +158,8 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
       const auto& i = field_data.idx1;
       const auto& j = field_data.idx2;
       const auto& size = field_data.size;
+      // Leave the data for the skip fields untouched in cloud1
+      // Copy only the required data from cloud2 to the correct location for cloud1
       memcpy (reinterpret_cast<char*> (&cloud1.data[data1_size + cp * cloud1.point_step + cloud1.fields[i].offset]),
               reinterpret_cast<const char*> (&cloud2.data[cp * cloud2.point_step + cloud2.fields[j].offset]),
               cloud2.fields[j].count * size);
