@@ -18,10 +18,7 @@
 #include <pcl/simulation/range_likelihood.h>
 
 // For adding noise:
-static std::minstd_rand rng([] {
-  std::random_device rd;
-  return rd();
-}()); // seed
+static std::minstd_rand rng(std::random_device{}());
 
 //#define SIMULATION_DEBUG 1
 #define DO_TIMING_PROFILE 0
