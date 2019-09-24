@@ -271,8 +271,8 @@ namespace pcl
         // Make the resultant point cloud take the newest stamp
         cloud1.header.stamp = std::max (cloud1.header.stamp, cloud2.header.stamp);
 
-        size_t nr_points = cloud1.points.size ();
-        cloud1.points.reserve (nr_points + cloud2.points.size ());
+        // libstdc++ (GCC) on calling reserve allocates new memory, copies and deallocates old vector
+        // This causes a drastic performance hit. Prefer not to use reserve with libstdc++ (default on clang)
         cloud1.points.insert (cloud1.points.end (), cloud2.points.begin (), cloud2.points.end ());
 
         cloud1.width    = static_cast<uint32_t>(cloud1.points.size ());
