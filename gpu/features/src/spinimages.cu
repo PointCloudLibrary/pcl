@@ -145,7 +145,7 @@ namespace pcl
                 float3 rotation_axis = AxesStrategy::getRotationAxes(index, origin_normal);
 				rotation_axis = normalized_safe(rotation_axis); //normalize if non-zero
 
-				const float eps = std::numeric_limits<float>::epsilon ();
+				constexpr float eps = std::numeric_limits<float>::epsilon ();
 
 				for(int i_neighb = threadIdx.x; i_neighb < neighb_count; i_neighb += CTA_SIZE)
 				{
@@ -178,8 +178,8 @@ namespace pcl
 					cos_dir_axis = fmax(-1.f, fmin(1.f, cos_dir_axis));
 
 					// compute coordinates w.r.t. the reference frame
-					float beta  = std::numeric_limits<float>::quiet_NaN();
-					float alpha = std::numeric_limits<float>::quiet_NaN();
+					float beta;
+					float alpha;
 					
 					if (radial) // radial spin image structure
 					{

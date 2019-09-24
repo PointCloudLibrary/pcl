@@ -454,7 +454,7 @@ namespace pcl
         __device__  __forceinline__ static bool isMuchSmallerThan (float x, float y)
         {
             // copied from <eigen>/include/Eigen/src/Core/NumTraits.h
-            const float prec_sqr = std::numeric_limits<float>::epsilon() * std::numeric_limits<float>::epsilon(); 
+            constexpr float prec_sqr = std::numeric_limits<float>::epsilon() * std::numeric_limits<float>::epsilon(); 
             return x * x <= prec_sqr * y * y;
         }
       };   

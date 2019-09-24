@@ -230,7 +230,7 @@ namespace pcl
 
       if (x < rgba.cols && y < rgba.rows)
       {
-        const float qnan = std::numeric_limits<float>::quiet_NaN();
+        constexpr float qnan = std::numeric_limits<float>::quiet_NaN();
 
         unsigned short d = depth.ptr(y)[x];            
         hue.ptr(y)[x] = (d == 0) ? qnan : computeHueFunc(rgba.ptr(y)[x]);           
@@ -265,10 +265,9 @@ namespace pcl
       int x = blockIdx.x * blockDim.x + threadIdx.x;
       int y = blockIdx.y * blockDim.y + threadIdx.y;
 
-      const float qnan = std::numeric_limits<float>::quiet_NaN();
-
       if (x < depth.cols && y < depth.rows)
       {
+        constexpr float qnan = std::numeric_limits<float>::quiet_NaN();
         float4 p = make_float4(qnan, qnan, qnan, qnan);
 
         int d = depth.ptr(y)[x];
