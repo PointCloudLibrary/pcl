@@ -52,7 +52,7 @@ pcl::computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
   if (d < 0.0)  // no real roots ! THIS SHOULD NOT HAPPEN!
     d = 0.0;
 
-  Scalar sd = ::std::sqrt (d);
+  Scalar sd = std::sqrt (d);
 
   roots (2) = 0.5f * (b + sd);
   roots (1) = 0.5f * (b - sd);
@@ -155,7 +155,7 @@ pcl::eigen22 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& ei
   if (temp < 0)
     temp = 0;
 
-  eigenvalue = trace - ::std::sqrt (temp);
+  eigenvalue = trace - std::sqrt (temp);
 
   eigenvector[0] = -mat.coeff (1);
   eigenvector[1] = mat.coeff (0) - eigenvalue;
@@ -200,7 +200,7 @@ pcl::eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
   if (temp < 0)
     temp = 0;
   else
-    temp = ::std::sqrt (temp);
+    temp = std::sqrt (temp);
 
   eigenvalues.coeffRef (0) = trace - temp;
   eigenvalues.coeffRef (1) = trace + temp;
@@ -209,7 +209,7 @@ pcl::eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
   eigenvectors.coeffRef (0) = -mat.coeff (1);
   eigenvectors.coeffRef (2) = mat.coeff (0) - eigenvalues.coeff (0);
   typename Matrix::Scalar norm = static_cast<typename Matrix::Scalar> (1.0)
-      / static_cast<typename Matrix::Scalar> (::std::sqrt (eigenvectors.coeffRef (0) * eigenvectors.coeffRef (0) + eigenvectors.coeffRef (2) * eigenvectors.coeffRef (2)));
+      / static_cast<typename Matrix::Scalar> (std::sqrt (eigenvectors.coeffRef (0) * eigenvectors.coeffRef (0) + eigenvectors.coeffRef (2) * eigenvectors.coeffRef (2)));
   eigenvectors.coeffRef (0) *= norm;
   eigenvectors.coeffRef (2) *= norm;
   eigenvectors.coeffRef (1) = eigenvectors.coeffRef (2);

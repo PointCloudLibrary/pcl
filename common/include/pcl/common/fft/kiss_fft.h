@@ -80,7 +80,7 @@ typedef struct kiss_fft_state* kiss_fft_cfg;
  * */
 
 kiss_fft_cfg PCL_EXPORTS 
-kiss_fft_alloc(int nfft,int inverse_fft,void * mem,size_t * lenmem); 
+kiss_fft_alloc(int nfft,int inverse_fft,void * mem,size_t * lenmem);
 
 /*
  * kiss_fft(cfg,in_out_buf)
