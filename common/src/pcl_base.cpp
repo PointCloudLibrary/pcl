@@ -61,7 +61,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setInputCloud (const PCLPointCloud2ConstPtr &
 {
   input_ = cloud;
 
-  for (int d = 0; d < static_cast<int>(cloud->fields.size ()); ++d)
+  for (std::size_t d = 0; d < cloud->fields.size (); ++d)
   {
     if (cloud->fields[d].name == x_field_name_)
       x_idx_ = d;
