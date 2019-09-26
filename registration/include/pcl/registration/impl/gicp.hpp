@@ -311,7 +311,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFun
   f = 0;
   g.setZero ();
   Eigen::Matrix3d R = Eigen::Matrix3d::Zero ();
-  const int m = static_cast<const int> (gicp_->tmp_idx_src_->size ());
+  const int m = static_cast<int> (gicp_->tmp_idx_src_->size ());
   for (int i = 0; i < m; ++i)
   {
     // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
