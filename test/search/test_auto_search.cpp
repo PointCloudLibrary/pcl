@@ -221,7 +221,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 
 
     // brute force search
-    double BFdistance = numeric_limits<double>::max ();
+    double BFdistance = std::numeric_limits<double>::max ();
     int BFindex = 0;
 
     for (size_t i = 0; i < cloudIn->points.size (); i++)

@@ -451,7 +451,7 @@ namespace pcl
                     bool integrate = true;
                     if ((x > 0 &&  x < VOLUME_X-2) && (y > 0 && y < VOLUME_Y-2) && (z > 0 && z < VOLUME_Z-2))
                     {
-                        const float qnan = numeric_limits<float>::quiet_NaN();
+                        const float qnan = std::numeric_limits<float>::quiet_NaN();
                         float3 normal = make_float3(qnan, qnan, qnan);
 
                         float Fn, Fp;

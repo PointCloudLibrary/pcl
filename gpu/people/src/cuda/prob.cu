@@ -40,7 +40,6 @@
 
 #include <pcl/gpu/people/tree.h>
 #include <pcl/gpu/people/label_common.h>
-#include <pcl/gpu/utils/device/limits.hpp>
 #include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/gpu/utils/texture_binder.hpp>
 #include <stdio.h>

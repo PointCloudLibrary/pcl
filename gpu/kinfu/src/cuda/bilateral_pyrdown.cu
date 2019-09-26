@@ -84,7 +84,7 @@ namespace pcl
       }
 
       int res = __float2int_rn (sum1 / sum2);
-      dst.ptr (y)[x] = max (0, min (res, numeric_limits<short>::max ()));
+      dst.ptr (y)[x] = max (0, min (res, std::numeric_limits<short>::max ()));
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

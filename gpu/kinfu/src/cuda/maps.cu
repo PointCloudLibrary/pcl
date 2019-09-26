@@ -65,7 +65,7 @@ namespace pcl
           vmap.ptr (v + depth.rows * 2)[u] = vz;
         }
         else
-          vmap.ptr (v)[u] = numeric_limits<float>::quiet_NaN ();
+          vmap.ptr (v)[u] = std::numeric_limits<float>::quiet_NaN ();
 
       }
     }
@@ -81,7 +81,7 @@ namespace pcl
 
       if (u == cols - 1 || v == rows - 1)
       {
-        nmap.ptr (v)[u] = numeric_limits<float>::quiet_NaN ();
+        nmap.ptr (v)[u] = std::numeric_limits<float>::quiet_NaN ();
         return;
       }
 
@@ -107,7 +107,7 @@ namespace pcl
         nmap.ptr (v + 2 * rows)[u] = r.z;
       }
       else
-        nmap.ptr (v)[u] = numeric_limits<float>::quiet_NaN ();
+        nmap.ptr (v)[u] = std::numeric_limits<float>::quiet_NaN ();
     }
   }
 }
@@ -159,7 +159,7 @@ namespace pcl
       int x = threadIdx.x + blockIdx.x * blockDim.x;
       int y = threadIdx.y + blockIdx.y * blockDim.y;
 
-      const float qnan = pcl::device::numeric_limits<float>::quiet_NaN ();
+      const float qnan = std::numeric_limits<float>::quiet_NaN ();
 
       if (x < cols && y < rows)
       {
@@ -238,7 +238,7 @@ namespace pcl
       if (x >= dcols || y >= drows)
         return;
 
-      const float qnan = numeric_limits<float>::quiet_NaN ();
+      const float qnan = std::numeric_limits<float>::quiet_NaN ();
 
       int xs = x * 2;
       int ys = y * 2;
@@ -332,7 +332,7 @@ namespace pcl
       if (x >= cols || y >= rows)
         return;
 
-      const float qnan = numeric_limits<float>::quiet_NaN ();
+      const float qnan = std::numeric_limits<float>::quiet_NaN ();
 
       T t;
       t.x = map.ptr (y)[x];

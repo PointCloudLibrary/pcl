@@ -58,7 +58,7 @@ namespace pcl
       if (u >= cols || v >= rows)
         return;
 
-      nmap.ptr (v)[u] = numeric_limits<float>::quiet_NaN ();
+      nmap.ptr (v)[u] = std::numeric_limits<float>::quiet_NaN ();
 
       if (isnan (vmap.ptr (v)[u]))
         return;

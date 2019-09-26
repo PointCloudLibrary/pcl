@@ -172,7 +172,7 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
 
       // We are suppose to use normals. However, it could be that all normals in this leaf are "illegal", because,
       // e.g., they were not available in the data set. In this case, remove the leaf from the octree.
-      if ( normal_length <= numeric_limits<float>::epsilon () )
+      if ( normal_length <= std::numeric_limits<float>::epsilon () )
       {
         this->deleteBranch (*it);
         it = full_leaves_.erase (it);

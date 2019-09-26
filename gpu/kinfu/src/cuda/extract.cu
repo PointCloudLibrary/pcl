@@ -346,7 +346,7 @@ namespace pcl
 
         if (idx >= points.size)
           return;
-        const float qnan = numeric_limits<float>::quiet_NaN ();
+        constexpr float qnan = std::numeric_limits<float>::quiet_NaN ();
         float3 n = make_float3 (qnan, qnan, qnan);
 
         float3 point = fetchPoint (idx);

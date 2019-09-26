@@ -94,7 +94,7 @@ TEST (PCL, BOARDLocalReferenceFrameEstimation)
   EXPECT_EQ (indices.size (), bunny_LRF.size ());
 
   EXPECT_FALSE (bunny_LRF.is_dense);
-  //EXPECT_EQ (numeric_limits<float>::max (), bunny_LRF.at (24).confidence);
+  //EXPECT_EQ (std::numeric_limits<float>::max (), bunny_LRF.at (24).confidence);
   EXPECT_TRUE (std::isnan (bunny_LRF.at (24).x_axis[0]));
 
   // Expected Results
