@@ -525,7 +525,7 @@ namespace pcl
         
         size_t previous_num_pts = tmp_cloud->width*tmp_cloud->height + input_cloud->width*input_cloud->height;
         //Concatenate will fail if the fields in input_cloud do not match the fields in the PCD file.
-        pcl::concatenatePointCloud (*tmp_cloud, *input_cloud, *tmp_cloud);
+        pcl::concatenate (*tmp_cloud, *input_cloud, *tmp_cloud);
         size_t res_pts = tmp_cloud->width*tmp_cloud->height;
         
         (void)previous_num_pts;
@@ -594,7 +594,7 @@ namespace pcl
 
       if(output_cloud.get () != nullptr)
       {
-        pcl::concatenatePointCloud (*output_cloud, *temp_output_cloud, *output_cloud);
+        pcl::concatenate (*output_cloud, *temp_output_cloud, *output_cloud);
       }
       else
       {
