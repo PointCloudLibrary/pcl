@@ -221,7 +221,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   float norm = direction.norm ();
   direction.normalize ();
 
-  const float step_size = static_cast<const float> (resolution_) * precision;
+  const float step_size = static_cast<float> (resolution_) * precision;
   // Ensure we get at least one step for the first voxel.
   const int nsteps = std::max (1, static_cast<int> (norm / step_size));
 
@@ -232,7 +232,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   // Walk along the line segment with small steps.
   for (int i = 0; i < nsteps; ++i)
   {
-    Eigen::Vector3f p = origin + (direction * step_size * static_cast<const float> (i));
+    Eigen::Vector3f p = origin + (direction * step_size * static_cast<float> (i));
 
     PointT octree_p;
     octree_p.x = p.x ();

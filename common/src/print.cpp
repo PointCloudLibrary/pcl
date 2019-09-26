@@ -126,7 +126,7 @@ pcl::console::change_text_color (FILE *stream, int attribute, int fg, int bg)
   HANDLE h = GetStdHandle ((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
   SetConsoleTextAttribute (h, convertAttributesColor (attribute, fg, bg));
 #else
-  char command[13];
+  char command[40];
   // Command is the control command to the terminal
   sprintf (command, "%c[%d;%d;%dm", 0x1B, attribute, fg + 30, bg + 40);
   fprintf (stream, "%s", command);
@@ -143,7 +143,7 @@ pcl::console::change_text_color (FILE *stream, int attribute, int fg)
   HANDLE h = GetStdHandle ((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
   SetConsoleTextAttribute (h, convertAttributesColor (attribute, fg));
 #else
-  char command[13];
+  char command[17];
   // Command is the control command to the terminal
   sprintf (command, "%c[%d;%dm", 0x1B, attribute, fg + 30);
   fprintf (stream, "%s", command);
