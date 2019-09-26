@@ -1421,7 +1421,7 @@ namespace pcl
             {
               PCL_DEBUG ("[pcl::outofocre::OutofcoreOctreeBaseNode::%s] Size of cloud before: %lu\n", __FUNCTION__, dst_blob->width*dst_blob->height );
               PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Concatenating point cloud\n", __FUNCTION__);
-              int res = pcl::concatenatePointCloud (*dst_blob, *tmp_blob, *dst_blob);
+              int res = pcl::concatenate (*dst_blob, *tmp_blob, *dst_blob);
               (void)res;
               assert (res == 1);
 
@@ -1471,7 +1471,7 @@ namespace pcl
               PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Concatenating point cloud in place\n", __FUNCTION__);
               boost::uint64_t orig_points_in_destination = dst_blob->width*dst_blob->height;
               (void)orig_points_in_destination;
-              int res = pcl::concatenatePointCloud (*dst_blob, *tmp_blob_within_bb, *dst_blob);
+              int res = pcl::concatenate (*dst_blob, *tmp_blob_within_bb, *dst_blob);
               (void)res;
               assert (res == 1);
               assert (dst_blob->width*dst_blob->height == indices.size () + orig_points_in_destination);
@@ -1620,7 +1620,7 @@ namespace pcl
               extractor.filter (*downsampled_points);
               
               //concatenate the result into the destination cloud
-              pcl::concatenatePointCloud (*dst_blob, *downsampled_points, *dst_blob);
+              pcl::concatenate (*dst_blob, *downsampled_points, *dst_blob);
             }
           }
         }
