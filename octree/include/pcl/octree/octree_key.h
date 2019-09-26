@@ -69,6 +69,8 @@ namespace pcl
         memcpy(key_, source.key_, sizeof(key_));
       }
 
+      OctreeKey& operator=(const OctreeKey&) = default;
+
       /** \brief Operator== for comparing octree keys with each other.
        *  \return "true" if leaf node indices are identical; "false" otherwise.
        * */
