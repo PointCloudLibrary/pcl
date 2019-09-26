@@ -74,7 +74,7 @@ pcl::UnaryClassifier<PointT>::setInputCloud (typename pcl::PointCloud<PointT>::P
   std::vector<pcl::PCLPointField> fields;
 
   int label_index = -1;
-  label_index = pcl::getFieldIndex (point, "label", fields);
+  label_index = pcl::getFieldIndex<PointT> ("label", fields);
   
   if (label_index != -1)
     label_field_ = true;
@@ -137,7 +137,7 @@ pcl::UnaryClassifier<PointT>::findClusters (typename pcl::PointCloud<PointT>::Pt
   std::vector <pcl::PCLPointField> fields;
   int label_idx = -1;
   pcl::PointCloud <PointT> point;
-  label_idx = pcl::getFieldIndex (point, "label", fields);
+  label_idx = pcl::getFieldIndex<PointT> ("label", fields);
 
   if (label_idx != -1)
   {
@@ -173,7 +173,7 @@ pcl::UnaryClassifier<PointT>::getCloudWithLabel (typename pcl::PointCloud<PointT
   std::vector <pcl::PCLPointField> fields;
   int label_idx = -1;
   pcl::PointCloud <PointT> point;
-  label_idx = pcl::getFieldIndex (point, "label", fields);
+  label_idx = pcl::getFieldIndex<PointT> ("label", fields);
 
   if (label_idx != -1)
   {

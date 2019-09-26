@@ -65,22 +65,19 @@ template <typename PointT> int
 pcl::getFieldIndex (const std::string &field_name, 
                     std::vector<pcl::PCLPointField> &fields)
 {
-  fields.clear ();
-  // Get the fields list
-  pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
-  for (size_t d = 0; d < fields.size (); ++d)
-    if (fields[d].name == field_name)
-      return (static_cast<int>(d));
-  return (-1);
+  getFields<PointT> (fields);
+  const auto result = std::find_if(fields.begin (), fields.end (),
+      [&field_name](const auto& field) { return field.name == field_name; });
+  if (result == fields.end ())
+    return -1;
+  return std::distance(fields.begin (), result);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::getFields (const pcl::PointCloud<PointT> &, std::vector<pcl::PCLPointField> &fields)
 {
-  fields.clear ();
-  // Get the fields list
-  pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
+  getFields<PointT> (fields);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

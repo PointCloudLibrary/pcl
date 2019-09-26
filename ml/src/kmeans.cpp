@@ -203,11 +203,11 @@ pcl::Kmeans::cluster (std::vector<PointIndices> &clusters)
     int x_index = -1;
     int y_index = -1;
     int z_index = -1;
-    x_index = pcl::getFieldIndex (point, "x", fields);
+    x_index = pcl::getFieldIndex<PointT> ("x", fields);
     if (y_index != -1)
-      y_index = pcl::getFieldIndex (point, "y", fields);
+      y_index = pcl::getFieldIndex<PointT> ("y", fields);
     if (z_index != -1)
-      z_index = pcl::getFieldIndex (point, "z", fields);
+      z_index = pcl::getFieldIndex<PointT> ("z", fields);
 
     if (x_index == -1 && y_index == -1 && z_index == -1)
     {
@@ -253,7 +253,7 @@ pcl::Kmeans::cluster (std::vector<PointIndices> &clusters)
   // if cluster field name is set, check if field name is valid
   else
   {
-    user_index = pcl::getFieldIndex (point, cluster_field_name_.c_str (), fields);
+    user_index = pcl::getFieldIndex<PointT> (cluster_field_name_.c_str (), fields);
 
     if (user_index == -1)
     {
@@ -268,7 +268,7 @@ pcl::Kmeans::cluster (std::vector<PointIndices> &clusters)
 /*
   int xyz_index = -1;
   pcl::PointCloud <PointT> point;
-  xyz_index = pcl::getFieldIndex (point, "r", fields);
+  xyz_index = pcl::getFieldIndex<PointT> ("r", fields);
 
 
   if (xyz_index == -1 && strcmp (cluster_field_name_.c_str (), "") == 0)

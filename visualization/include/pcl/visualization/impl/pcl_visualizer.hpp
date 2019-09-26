@@ -1628,9 +1628,9 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   int rgb_idx = -1;
   std::vector<pcl::PCLPointField> fields;
   vtkSmartPointer<vtkUnsignedCharArray> colors;
-  rgb_idx = pcl::getFieldIndex (*cloud, "rgb", fields);
+  rgb_idx = pcl::getFieldIndex<PointT> ("rgb", fields);
   if (rgb_idx == -1)
-    rgb_idx = pcl::getFieldIndex (*cloud, "rgba", fields);
+    rgb_idx = pcl::getFieldIndex<PointT> ("rgba", fields);
   if (rgb_idx != -1)
   {
     colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
@@ -1845,9 +1845,9 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     return (false);
   int rgb_idx = -1;
   std::vector<pcl::PCLPointField> fields;
-  rgb_idx = pcl::getFieldIndex (*cloud, "rgb", fields);
+  rgb_idx = pcl::getFieldIndex<PointT> ("rgb", fields);
   if (rgb_idx == -1)
-    rgb_idx = pcl::getFieldIndex (*cloud, "rgba", fields);
+    rgb_idx = pcl::getFieldIndex<PointT> ("rgba", fields);
   if (rgb_idx != -1 && colors)
   {
     int j = 0;

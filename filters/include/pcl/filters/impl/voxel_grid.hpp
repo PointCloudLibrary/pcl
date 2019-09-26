@@ -55,7 +55,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
 
   // Get the fields list and the distance field index
   std::vector<pcl::PCLPointField> fields;
-  int distance_idx = pcl::getFieldIndex (*cloud, distance_field_name, fields);
+  int distance_idx = pcl::getFieldIndex<PointT> (distance_field_name, fields);
 
   float distance_value;
   // If dense, no need to check for NaNs
@@ -134,7 +134,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
 
   // Get the fields list and the distance field index
   std::vector<pcl::PCLPointField> fields;
-  int distance_idx = pcl::getFieldIndex (*cloud, distance_field_name, fields);
+  int distance_idx = pcl::getFieldIndex<PointT> (distance_field_name, fields);
 
   float distance_value;
   // If dense, no need to check for NaNs
@@ -269,7 +269,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   {
     // Get the distance field index
     std::vector<pcl::PCLPointField> fields;
-    int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
+    int distance_idx = pcl::getFieldIndex<PointT> (filter_field_name_, fields);
     if (distance_idx == -1)
       PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), distance_idx);
 

@@ -99,9 +99,9 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
   // ---[ RGB special case
   std::vector<pcl::PCLPointField> fields;
   int rgba_index = -1;
-  rgba_index = pcl::getFieldIndex (*input_, "rgb", fields);
+  rgba_index = pcl::getFieldIndex<PointXYZRGBL> ("rgb", fields);
   if (rgba_index == -1)
-    rgba_index = pcl::getFieldIndex (*input_, "rgba", fields);
+    rgba_index = pcl::getFieldIndex<PointXYZRGBL> ("rgba", fields);
   if (rgba_index >= 0)
   {
     rgba_index = fields[rgba_index].offset;
@@ -110,7 +110,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
 
   // ---[ Label special case
   int label_index = -1;
-  label_index = pcl::getFieldIndex (*input_, "label", fields);
+  label_index = pcl::getFieldIndex<PointXYZRGBL> ("label", fields);
 
   std::vector<cloud_point_index_idx> index_vector;
   index_vector.reserve(input_->points.size());
@@ -120,7 +120,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
   {
     // Get the distance field index
     std::vector<pcl::PCLPointField> fields;
-    int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
+    int distance_idx = pcl::getFieldIndex<PointXYZRGBL> (filter_field_name_, fields);
     if (distance_idx == -1)
       PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), distance_idx);
 

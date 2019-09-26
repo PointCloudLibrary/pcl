@@ -100,7 +100,7 @@ pcl::PassThrough<PointT>::applyFilterIndices (std::vector<int> &indices)
   {
     // Attempt to get the field name's index
     std::vector<pcl::PCLPointField> fields;
-    int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
+    int distance_idx = pcl::getFieldIndex<PointT> (filter_field_name_, fields);
     if (distance_idx == -1)
     {
       PCL_WARN ("[pcl::%s::applyFilter] Unable to find field name in point type.\n", getClassName ().c_str ());

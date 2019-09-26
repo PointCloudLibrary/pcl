@@ -46,13 +46,13 @@ template <typename PointT>
 pcl::visualization::PointCloudGeometryHandlerXYZ<PointT>::PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud) 
   : pcl::visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
 {
-  field_x_idx_ = pcl::getFieldIndex (*cloud, "x", fields_);
+  field_x_idx_ = pcl::getFieldIndex<PointT> ("x", fields_);
   if (field_x_idx_ == -1)
     return;
-  field_y_idx_ = pcl::getFieldIndex (*cloud, "y", fields_);
+  field_y_idx_ = pcl::getFieldIndex<PointT> ("y", fields_);
   if (field_y_idx_ == -1)
     return;
-  field_z_idx_ = pcl::getFieldIndex (*cloud, "z", fields_);
+  field_z_idx_ = pcl::getFieldIndex<PointT> ("z", fields_);
   if (field_z_idx_ == -1)
     return;
   capable_ = true;
@@ -114,13 +114,13 @@ template <typename PointT>
 pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud) 
   : pcl::visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
 {
-  field_x_idx_ = pcl::getFieldIndex (*cloud, "normal_x", fields_);
+  field_x_idx_ = pcl::getFieldIndex<PointT> ("normal_x", fields_);
   if (field_x_idx_ == -1)
     return;
-  field_y_idx_ = pcl::getFieldIndex (*cloud, "normal_y", fields_);
+  field_y_idx_ = pcl::getFieldIndex<PointT> ("normal_y", fields_);
   if (field_y_idx_ == -1)
     return;
-  field_z_idx_ = pcl::getFieldIndex (*cloud, "normal_z", fields_);
+  field_z_idx_ = pcl::getFieldIndex<PointT> ("normal_z", fields_);
   if (field_z_idx_ == -1)
     return;
   capable_ = true;
