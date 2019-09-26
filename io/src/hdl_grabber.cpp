@@ -691,7 +691,7 @@ pcl::HDLGrabber::readPacketsFromPcap ()
 
   struct timeval lasttime;
 
-  lasttime.tv_sec = 0;
+  lasttime.tv_sec = lasttime.tv_usec = 0;
 
   int32_t returnValue = pcap_next_ex (pcap, &header, &data);
 
