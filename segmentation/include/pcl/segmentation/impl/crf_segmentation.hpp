@@ -250,9 +250,9 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   // check if we have color data
   bool color_data = false;
   int rgba_index = -1;  
-  rgba_index = pcl::getFieldIndex (*input_cloud_, "rgb", fields);
+  rgba_index = pcl::getFieldIndex<PointT> ("rgb", fields);
   if (rgba_index == -1)
-    rgba_index = pcl::getFieldIndex (*input_cloud_, "rgba", fields);
+    rgba_index = pcl::getFieldIndex<PointT> ("rgba", fields);
   if (rgba_index >= 0)
   {
     color_data = true;
@@ -264,7 +264,7 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   // check if we have normal data
   bool normal_data = false;
   int normal_index = -1;  
-  rgba_index = pcl::getFieldIndex (*input_cloud_, "normal_x", fields);
+  rgba_index = pcl::getFieldIndex<PointT> ("normal_x", fields);
   if (rgba_index >= 0)
   {
     normal_data = true;

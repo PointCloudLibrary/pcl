@@ -74,10 +74,10 @@ namespace pcl
         cloud_with_color_ = false;
         std::vector<pcl::PCLPointField> fields;
         int rgba_index = -1;
-        rgba_index = pcl::getFieldIndex (*this->input_, "rgb", fields);
+        rgba_index = pcl::getFieldIndex<PointT> ("rgb", fields);
         if (rgba_index == -1)
         {
-          rgba_index = pcl::getFieldIndex (*this->input_, "rgba", fields);
+          rgba_index = pcl::getFieldIndex<PointT> ("rgba", fields);
         }
         if (rgba_index >= 0)
         {
@@ -190,9 +190,9 @@ namespace pcl
       cloud_with_color_ = false;
       std::vector<pcl::PCLPointField> fields;
       int rgba_index = -1;
-      rgba_index = pcl::getFieldIndex (*output_, "rgb", fields);
+      rgba_index = pcl::getFieldIndex<PointT> ("rgb", fields);
       if (rgba_index == -1)
-        rgba_index = pcl::getFieldIndex (*output_, "rgba", fields);
+        rgba_index = pcl::getFieldIndex<PointT> ("rgba", fields);
       if (rgba_index >= 0)
       {
         point_color_offset_ = static_cast<unsigned char> (fields[rgba_index].offset);

@@ -529,7 +529,7 @@ class ObjectSelection
         // If the dataset is organized, and has RGB data, create an image viewer
         std::vector<pcl::PCLPointField> fields;
         int rgba_index = -1;
-        rgba_index = getFieldIndex (*cloud_, "rgba", fields);
+        rgba_index = getFieldIndex<PointT> ("rgba", fields);
        
         if (rgba_index >= 0)
         {

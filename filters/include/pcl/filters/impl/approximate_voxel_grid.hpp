@@ -71,9 +71,9 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
   // ---[ RGB special case
   std::vector<pcl::PCLPointField> fields;
   int rgba_index = -1;
-  rgba_index = pcl::getFieldIndex (*input_, "rgb", fields);
+  rgba_index = pcl::getFieldIndex<PointT> ("rgb", fields);
   if (rgba_index == -1)
-    rgba_index = pcl::getFieldIndex (*input_, "rgba", fields);
+    rgba_index = pcl::getFieldIndex<PointT> ("rgba", fields);
   if (rgba_index >= 0)
   {
     rgba_index = fields[rgba_index].offset;

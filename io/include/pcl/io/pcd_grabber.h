@@ -276,9 +276,9 @@ namespace pcl
 
     // ---[ RGB special case
     std::vector<pcl::PCLPointField> fields;
-    int rgba_index = pcl::getFieldIndex (*cloud, "rgb", fields);
+    int rgba_index = pcl::getFieldIndex<PointT> ("rgb", fields);
     if (rgba_index == -1)
-      rgba_index = pcl::getFieldIndex (*cloud, "rgba", fields);
+      rgba_index = pcl::getFieldIndex<PointT> ("rgba", fields);
     if (rgba_index >= 0)
     {
       rgba_index = fields[rgba_index].offset;

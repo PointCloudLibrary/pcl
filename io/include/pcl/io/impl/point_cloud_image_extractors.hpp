@@ -71,9 +71,9 @@ template <typename PointT> bool
 pcl::io::PointCloudImageExtractorFromNormalField<PointT>::extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const
 {
   std::vector<pcl::PCLPointField> fields;
-  int field_x_idx = pcl::getFieldIndex (cloud, "normal_x", fields);
-  int field_y_idx = pcl::getFieldIndex (cloud, "normal_y", fields);
-  int field_z_idx = pcl::getFieldIndex (cloud, "normal_z", fields);
+  int field_x_idx = pcl::getFieldIndex<PointT> ("normal_x", fields);
+  int field_y_idx = pcl::getFieldIndex<PointT> ("normal_y", fields);
+  int field_z_idx = pcl::getFieldIndex<PointT> ("normal_z", fields);
   if (field_x_idx == -1 || field_y_idx == -1 || field_z_idx == -1)
     return (false);
   const size_t offset_x = fields[field_x_idx].offset;
@@ -107,10 +107,10 @@ template <typename PointT> bool
 pcl::io::PointCloudImageExtractorFromRGBField<PointT>::extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const
 {
   std::vector<pcl::PCLPointField> fields;
-  int field_idx = pcl::getFieldIndex (cloud, "rgb", fields);
+  int field_idx = pcl::getFieldIndex<PointT> ("rgb", fields);
   if (field_idx == -1)
   {
-    field_idx = pcl::getFieldIndex (cloud, "rgba", fields);
+    field_idx = pcl::getFieldIndex<PointT> ("rgba", fields);
     if (field_idx == -1)
       return (false);
   }
@@ -139,7 +139,7 @@ template <typename PointT> bool
 pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const
 {
   std::vector<pcl::PCLPointField> fields;
-  int field_idx = pcl::getFieldIndex (cloud, "label", fields);
+  int field_idx = pcl::getFieldIndex<PointT> ("label", fields);
   if (field_idx == -1)
     return (false);
   const size_t offset = fields[field_idx].offset;
@@ -244,7 +244,7 @@ template <typename PointT> bool
 pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const
 {
   std::vector<pcl::PCLPointField> fields;
-  int field_idx = pcl::getFieldIndex (cloud, field_name_, fields);
+  int field_idx = pcl::getFieldIndex<PointT> (field_name_, fields);
   if (field_idx == -1)
     return (false);
   const size_t offset = fields[field_idx].offset;

@@ -111,7 +111,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::setInputCloud (
 {
   PointCloudColorHandler<PointT>::setInputCloud (cloud);
   // Handle the 24-bit packed RGB values
-  field_idx_ = pcl::getFieldIndex (*cloud, "rgb", fields_);
+  field_idx_ = pcl::getFieldIndex<PointT> ("rgb", fields_);
   if (field_idx_ != -1)
   {
     capable_ = true;
@@ -119,7 +119,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::setInputCloud (
   }
   else
   {
-    field_idx_ = pcl::getFieldIndex (*cloud, "rgba", fields_);
+    field_idx_ = pcl::getFieldIndex<PointT> ("rgba", fields_);
     if (field_idx_ != -1)
       capable_ = true;
     else
@@ -137,9 +137,9 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor () const
    // Get the RGB field index
   std::vector<pcl::PCLPointField> fields;
   int rgba_index = -1;
-  rgba_index = pcl::getFieldIndex (*cloud_, "rgb", fields);
+  rgba_index = pcl::getFieldIndex<PointT> ("rgb", fields);
   if (rgba_index == -1)
-    rgba_index = pcl::getFieldIndex (*cloud_, "rgba", fields);
+    rgba_index = pcl::getFieldIndex<PointT> ("rgba", fields);
 
   int rgba_offset = fields[rgba_index].offset;
 
@@ -197,7 +197,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<PointT>::PointCloudColorHandl
   pcl::visualization::PointCloudColorHandler<PointT>::PointCloudColorHandler (cloud)
 {
   // Check for the presence of the "H" field
-  field_idx_ = pcl::getFieldIndex (*cloud, "h", fields_);
+  field_idx_ = pcl::getFieldIndex<PointT> ("h", fields_);
   if (field_idx_ == -1)
   {
     capable_ = false;
@@ -205,7 +205,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<PointT>::PointCloudColorHandl
   }
 
   // Check for the presence of the "S" field
-  s_field_idx_ = pcl::getFieldIndex (*cloud, "s", fields_);
+  s_field_idx_ = pcl::getFieldIndex<PointT> ("s", fields_);
   if (s_field_idx_ == -1)
   {
     capable_ = false;
@@ -213,7 +213,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<PointT>::PointCloudColorHandl
   }
 
   // Check for the presence of the "V" field
-  v_field_idx_ = pcl::getFieldIndex (*cloud, "v", fields_);
+  v_field_idx_ = pcl::getFieldIndex<PointT> ("v", fields_);
   if (v_field_idx_ == -1)
   {
     capable_ = false;
@@ -365,7 +365,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::setInputCloud (
     const PointCloudConstPtr &cloud)
 {
   PointCloudColorHandler<PointT>::setInputCloud (cloud);
-  field_idx_  = pcl::getFieldIndex (*cloud, field_name_, fields_);
+  field_idx_  = pcl::getFieldIndex<PointT> (field_name_, fields_);
   if (field_idx_ != -1)
     capable_ = true;
   else
@@ -439,7 +439,7 @@ pcl::visualization::PointCloudColorHandlerRGBAField<PointT>::setInputCloud (
 {
   PointCloudColorHandler<PointT>::setInputCloud (cloud);
   // Handle the 24-bit packed RGBA values
-  field_idx_ = pcl::getFieldIndex (*cloud, "rgba", fields_);
+  field_idx_ = pcl::getFieldIndex<PointT> ("rgba", fields_);
   if (field_idx_ != -1)
     capable_ = true;
   else
@@ -505,7 +505,7 @@ template <typename PointT> void
 pcl::visualization::PointCloudColorHandlerLabelField<PointT>::setInputCloud (const PointCloudConstPtr &cloud)
 {
   PointCloudColorHandler<PointT>::setInputCloud (cloud);
-  field_idx_ = pcl::getFieldIndex (*cloud, "label", fields_);
+  field_idx_ = pcl::getFieldIndex<PointT> ("label", fields_);
   if (field_idx_ != -1)
   {
     capable_ = true;

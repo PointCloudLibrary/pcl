@@ -71,7 +71,9 @@ namespace pcl
     * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
     * \ingroup common
     */
-  template <typename PointT> inline int 
+  template <typename PointT>
+  [[deprecated("use getFieldIndex<typename decltype(cloud)::PointType> () instead")]]
+  inline int
   getFieldIndex (const pcl::PointCloud<PointT> &cloud, const std::string &field_name, 
                  std::vector<pcl::PCLPointField> &fields);
 
@@ -89,7 +91,9 @@ namespace pcl
     * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
     * \ingroup common
     */
-  template <typename PointT> inline void 
+  template <typename PointT>
+  [[deprecated("use getFields<typename decltype(cloud)::PointType> () instead")]]
+  inline void
   getFields (const pcl::PointCloud<PointT> &cloud, std::vector<pcl::PCLPointField> &fields);
 
   /** \brief Get the list of available fields (i.e., dimension/channel)

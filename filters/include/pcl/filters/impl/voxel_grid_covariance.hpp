@@ -109,9 +109,9 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   // ---[ RGB special case
   std::vector<pcl::PCLPointField> fields;
   int rgba_index = -1;
-  rgba_index = pcl::getFieldIndex (*input_, "rgb", fields);
+  rgba_index = pcl::getFieldIndex<PointT> ("rgb", fields);
   if (rgba_index == -1)
-    rgba_index = pcl::getFieldIndex (*input_, "rgba", fields);
+    rgba_index = pcl::getFieldIndex<PointT> ("rgba", fields);
   if (rgba_index >= 0)
   {
     rgba_index = fields[rgba_index].offset;
@@ -123,7 +123,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   {
     // Get the distance field index
     std::vector<pcl::PCLPointField> fields;
-    int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
+    int distance_idx = pcl::getFieldIndex<PointT> (filter_field_name_, fields);
     if (distance_idx == -1)
       PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), distance_idx);
 
