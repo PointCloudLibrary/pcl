@@ -66,7 +66,7 @@ pcl::EarClipping::performProcessing (PolygonMesh& output)
 void
 pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
 {
-  const int n_vertices = static_cast<const int> (vertices.vertices.size ());
+  const int n_vertices = static_cast<int> (vertices.vertices.size ());
 
   if (n_vertices < 3)
     return;
