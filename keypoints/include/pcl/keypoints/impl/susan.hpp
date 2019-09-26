@@ -306,7 +306,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
   response->reserve (surface_->size ());
 
   // Check if the output has a "label" field
-  label_idx_ = pcl::getFieldIndex<PointOutT> (output, "label", out_fields_);
+  label_idx_ = pcl::getFieldIndex<PointOutT> ("label", out_fields_);
 
   const int input_size = static_cast<int> (input_->size ());
 //#ifdef _OPENMP

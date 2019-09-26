@@ -389,7 +389,7 @@ TEST (PCL, IO)
 
   // Test getFieldIndex
   std::vector<pcl::PCLPointField> fields;
-  pcl::getFields (cloud, fields);
+  pcl::getFields<PointXYZI> (fields);
   EXPECT_EQ (fields.size (), size_t (4));
   int x_idx = pcl::getFieldIndex<PointXYZI> ("x", fields);
   EXPECT_EQ (x_idx, 0);
