@@ -130,6 +130,8 @@ TEST (PCL, copyPointCloud)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+#pragma GCC diagnostic ignored "-Wdeprecated"
+#pragma GCC diagnostic push
 TEST (PCL, concatenatePointCloud)
 {
   CloudXYZRGBA cloud_xyz_rgba;
@@ -314,6 +316,7 @@ TEST (PCL, concatenatePointCloud)
     EXPECT_EQ (cloud_all[cloud_xyz_rgb.size () + i].rgba, 0);
   }
 }
+#pragma GCC diagnostic pop
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, concatenatePointCloud2)
