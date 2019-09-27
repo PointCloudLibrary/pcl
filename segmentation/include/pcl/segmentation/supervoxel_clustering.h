@@ -139,8 +139,8 @@ namespace pcl
             rgb_ (0.0f, 0.0f, 0.0f),
             normal_ (0.0f, 0.0f, 0.0f, 0.0f),
             curvature_ (0.0f),
-            idx_(0),
             distance_(0),
+            idx_(0),
             owner_ (nullptr)
             {}
 
