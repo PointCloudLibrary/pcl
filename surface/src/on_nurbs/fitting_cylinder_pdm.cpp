@@ -116,7 +116,7 @@ FittingCylinder::refine (int dim, unsigned span_index)
 {
   std::vector<double> elements = getElementVector (m_nurbs, dim);
 
-  if (span_index > int (elements.size ()) - 2)
+  if (span_index + 2 > elements.size ())
   {
     printf ("[NurbsTools::refine(int, unsigned)] Warning span index out of bounds\n");
     return;

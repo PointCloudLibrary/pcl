@@ -242,7 +242,7 @@ GlobalOptimization::assembleCommonBoundaries (unsigned id1, double weight, unsig
     Eigen::Vector3d p0 = data1->common_boundary_point[i];
     Eigen::Vector2i id (id1, data1->common_boundary_idx[i]);
 
-    if (id (1) < 0 || id (1) >= m_nurbs.size ())
+    if (id (1) < 0 || id (1) >= static_cast<int>(m_nurbs.size ()))
       throw std::runtime_error (
                                 "[GlobalOptimization::assembleCommonBoundaries] Error, common boundary index out of bounds.\n");
 

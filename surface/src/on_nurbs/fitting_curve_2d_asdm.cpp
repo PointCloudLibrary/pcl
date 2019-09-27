@@ -289,7 +289,7 @@ FittingCurve2dASDM::assembleInterior (double wInt, double sigma2, double rScale,
     double param;
     Eigen::Vector2d pt, t, n;
     double error;
-    if (p < int (m_data->interior_param.size ()))
+    if (p < static_cast<unsigned int>(m_data->interior_param.size ()))
     {
       param = findClosestElementMidPoint (m_nurbs, pcp, m_data->interior_param[p]);
       param = inverseMapping (m_nurbs, pcp, param, error, pt, t, rScale, in_max_steps, in_accuracy, m_quiet);

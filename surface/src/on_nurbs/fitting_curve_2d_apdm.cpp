@@ -120,9 +120,9 @@ FittingCurve2dAPDM::fitting (FitParameter &param)
   bool stop (false);
   for (unsigned j = 0; j < param.iterations && !stop; j++)
   {
-    if (2 * m_nurbs.CVCount () < m_data->interior.size ())
+    if (2 * m_nurbs.CVCount () < static_cast<int>(m_data->interior.size ()))
       if (!(j % param.addCPsIteration))
-        if (m_nurbs.CVCount () < param.maxCPs)
+        if (m_nurbs.CVCount () < static_cast<int>(param.maxCPs))
           addCPsOnClosestPointViolation (param.addCPsAccuracy);
 
     assemble (param.param);
@@ -504,7 +504,7 @@ FittingCurve2dAPDM::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
 {
   int cp_red = order - 2;
   ON_NurbsCurve nurbs;
-  if (cps.size () < 3 || cps.size () < (2 * cp_red + 1))
+  if (cps.size () < 3 || cps.size () < (2 * static_cast<std::size_t>(cp_red) + 1))
   {
     printf ("[FittingCurve2dAPDM::initCPsNurbsCurve2D] Warning, number of control points too low.\n");
     return nurbs;
@@ -937,7 +937,7 @@ FittingCurve2dAPDM::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::V
   if (is_corner >= 0)
   {
     double param1, param2;
-    if (is_corner == 0 || is_corner == elements.size () - 1)
+    if (is_corner == 0 || is_corner == static_cast<int>(elements.size ()) - 1)
     {
       double x0a = elements[0];
       double x0b = elements[elements.size () - 1];
@@ -1046,7 +1046,7 @@ FittingCurve2dAPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, cons
     double &xi1 = elements[i + 1];
     double dxi = xi1 - xi0;
 
-    for (unsigned j = 0; j < nurbs.Order (); j++)
+    for (unsigned j = 0; j < static_cast<unsigned int>(nurbs.Order ()); j++)
     {
       double xi = xi0 + (seg * j) * dxi;
 
@@ -1089,7 +1089,7 @@ FittingCurve2dAPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, cons
     double &xi1 = elements[i + 1];
     double dxi = xi1 - xi0;
 
-    for (std::size_t j = 0; j < nurbs.Order (); j++)
+    for (std::size_t j = 0; j < static_cast<std::size_t>(nurbs.Order ()); j++)
     {
       double xi = xi0 + (seg * j) * dxi;
 
