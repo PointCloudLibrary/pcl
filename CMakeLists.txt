@@ -95,6 +95,11 @@ include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_options.cmake")
 include("${PCL_SOURCE_DIR}/cmake/clang-format.cmake")
 
+if(${PCL_ENABLE_CCACHE})
+  include (UseCompilerCache)
+  UseCompilerCache(ccache REQUIRED)
+endif()
+
 # Enable verbose timing display?
 if(CMAKE_TIMING_VERBOSE AND UNIX)
   set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
