@@ -365,7 +365,7 @@ FittingCurve2dPDM::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
 {
   int cp_red = order - 2;
   ON_NurbsCurve nurbs;
-  if (cps.size () < 3 || cps.size () < (2 * cp_red + 1))
+  if (cps.size () < 3 || cps.size () < (2 * static_cast<size_t>(cp_red) + 1))
   {
     printf ("[FittingCurve2dPDM::initCPsNurbsCurve2D] Warning, number of control points too low.\n");
     return nurbs;
@@ -696,7 +696,7 @@ FittingCurve2dPDM::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Ve
   if (is_corner >= 0)
   {
     double param1, param2;
-    if (is_corner == 0 || is_corner == elements.size () - 1)
+    if (is_corner == 0 || is_corner == static_cast<int>(elements.size ()) - 1)
     {
       double x0a = elements[0];
       double x0b = elements[elements.size () - 1];
@@ -805,7 +805,7 @@ FittingCurve2dPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const
     double &xi1 = elements[i + 1];
     double dxi = xi1 - xi0;
 
-    for (unsigned j = 0; j < nurbs.Order (); j++)
+    for (unsigned j = 0; j < static_cast<unsigned int>(nurbs.Order ()); j++)
     {
       double xi = xi0 + (seg * j) * dxi;
 
@@ -847,7 +847,7 @@ FittingCurve2dPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const
     double &xi1 = elements[i + 1];
     double dxi = xi1 - xi0;
 
-    for (unsigned j = 0; j < nurbs.Order (); j++)
+    for (unsigned j = 0; j < static_cast<unsigned int>(nurbs.Order ()); j++)
     {
       double xi = xi0 + (seg * j) * dxi;
 
