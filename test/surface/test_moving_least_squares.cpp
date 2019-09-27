@@ -87,37 +87,6 @@ TEST (PCL, MovingLeastSquares)
   EXPECT_NEAR (std::abs (mls_normals->points[0].normal[2]), 0.795969, 1e-3);
   EXPECT_NEAR (mls_normals->points[0].curvature, 0.012019, 1e-3);
 
-#ifdef _OPENMP
-  // Testing OpenMP version
-  MovingLeastSquaresOMP<PointXYZ, PointNormal> mls_omp;
-  mls_omp.setInputCloud (cloud);
-  mls_omp.setComputeNormals (true);
-  mls_omp.setPolynomialOrder (2);
-  mls_omp.setSearchMethod (tree);
-  mls_omp.setSearchRadius (0.03);
-  mls_omp.setNumberOfThreads (4);
-
-  // Reconstruct
-  mls_normals->clear ();
-  mls_omp.process (*mls_normals);
-
-  int count = 0;
-  for (size_t i = 0; i < mls_normals->size (); ++i)
-  {
-  	if (std::abs (mls_normals->points[i].x - 0.005417) < 1e-3 &&
-	    std::abs (mls_normals->points[i].y - 0.113463) < 1e-3 &&
-	    std::abs (mls_normals->points[i].z - 0.040715) < 1e-3 &&
-	    std::abs (std::abs (mls_normals->points[i].normal[0]) - 0.111894) < 1e-3 &&
-		std::abs (std::abs (mls_normals->points[i].normal[1]) - 0.594906) < 1e-3 &&
-		std::abs (std::abs (mls_normals->points[i].normal[2]) - 0.795969) < 1e-3 &&
-		std::abs (mls_normals->points[i].curvature - 0.012019) < 1e-3)
-		count ++;
-  }
-
-  EXPECT_EQ (count, 1);
-
-#endif
-
   // Testing upsampling
   MovingLeastSquares<PointXYZ, PointNormal> mls_upsampling;
   // Set parameters
@@ -172,6 +141,35 @@ TEST (PCL, MovingLeastSquares)
   EXPECT_NEAR (mls_normals->points[10].curvature, 0.107273, 1e-1);
   EXPECT_NEAR (double (mls_normals->size ()), 29394, 2);
 }
+
+#ifdef _OPENMP
+TEST (PCL, MovingLeastSquaresOMP)
+{
+  // Init objects
+  PointCloud<PointXYZ> mls_points;
+  PointCloud<PointNormal>::Ptr mls_normals (new PointCloud<PointNormal> ());
+  MovingLeastSquares<PointXYZ, PointNormal> mls_omp;
+
+  // Set parameters
+  mls_omp.setInputCloud (cloud);
+  mls_omp.setComputeNormals (true);
+  mls_omp.setPolynomialOrder (2);
+  mls_omp.setSearchMethod (tree);
+  mls_omp.setSearchRadius (0.03);
+  mls_omp.setNumberOfThreads (4);
+
+  // Reconstruct
+  mls_omp.process (*mls_normals);
+
+  EXPECT_NEAR (mls_normals->points[0].x, 0.005417, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].y, 0.113463, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].z, 0.040715, 1e-3);
+  EXPECT_NEAR (std::abs (mls_normals->points[0].normal[0]), 0.111894, 1e-3);
+  EXPECT_NEAR (std::abs (mls_normals->points[0].normal[1]), 0.594906, 1e-3);
+  EXPECT_NEAR (std::abs (mls_normals->points[0].normal[2]), 0.795969, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].curvature, 0.012019, 1e-3);
+}
+#endif
 
 /* ---[ */
 int
