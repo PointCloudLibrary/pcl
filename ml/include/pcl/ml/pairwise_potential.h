@@ -43,43 +43,41 @@
 
 #include <pcl/ml/permutohedral.h>
 
-namespace pcl
-{
-  /** \brief
-   * 
-   */
-  class PairwisePotential
-  {
-    public:
+namespace pcl {
 
-      /** \brief Constructor for DenseCrf class */
-      PairwisePotential (const std::vector<float> &feature, const int D, const int N, const float w);
+class PairwisePotential {
+public:
+  /** Constructor for PairwisePotential class. */
+  PairwisePotential(const std::vector<float>& feature,
+                    const int D,
+                    const int N,
+                    const float w);
 
-      /** \brief Deconstructor for DenseCrf class */
-      ~PairwisePotential () {};
+  /** Deconstructor for PairwisePotential class. */
+  ~PairwisePotential(){};
 
-      /** \brief  */
-      void
-      compute (std::vector<float> &out, const std::vector<float> &in,
-               std::vector<float> &tmp, int value_size) const;
+  void
+  compute(std::vector<float>& out,
+          const std::vector<float>& in,
+          std::vector<float>& tmp,
+          int value_size) const;
 
-    protected:
-      /** \brief Permutohedral lattice */
-      Permutohedral lattice_;
+protected:
+  /// Permutohedral lattice
+  Permutohedral lattice_;
 
-      /** \brief Number of variables */
-      int N_;
+  /// Number of variables
+  int N_;
 
-      /** \brief weight */
-      float w_;
+  /// Weight
+  float w_;
 
-      /** \brief norm */
-      std::vector<float> norm_;
+  /// Norm
+  std::vector<float> norm_;
 
-      //DBUG
-    public:
-      std::vector<float> bary_;
-      std::vector<float> features_;
+public:
+  std::vector<float> bary_;
+  std::vector<float> features_;
+};
 
-  };
-}
+} // namespace pcl
