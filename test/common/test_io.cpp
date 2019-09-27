@@ -130,7 +130,7 @@ TEST (PCL, copyPointCloud)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-#pragma GCC diagnostic ignored "-Wdeprecated"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #pragma GCC diagnostic push
 TEST (PCL, concatenatePointCloud)
 {

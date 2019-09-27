@@ -62,6 +62,8 @@ search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic push
 TEST (PCL, MovingLeastSquares)
 {
   // Init objects
@@ -172,6 +174,7 @@ TEST (PCL, MovingLeastSquares)
   EXPECT_NEAR (mls_normals->points[10].curvature, 0.107273, 1e-1);
   EXPECT_NEAR (double (mls_normals->size ()), 29394, 2);
 }
+#pragma GCC diagnostic pop
 
 /* ---[ */
 int
