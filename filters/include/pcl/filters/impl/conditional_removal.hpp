@@ -56,9 +56,7 @@ pcl::FieldComparison<PointT>::FieldComparison (
 
   // Get all fields
   std::vector<pcl::PCLPointField> point_fields;
-  // Use a dummy cloud to get the field types in a clever way
-  PointCloud<PointT> dummyCloud;
-  pcl::getFields (dummyCloud, point_fields);
+  pcl::getFields<PointT> (point_fields);
 
   // Find field_name
   if (point_fields.empty ())
@@ -143,9 +141,7 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
 {
   // get all the fields
   std::vector<pcl::PCLPointField> point_fields;
-  // Use a dummy cloud to get the field types in a clever way
-  PointCloud<PointT> dummyCloud;
-  pcl::getFields (dummyCloud, point_fields);
+  pcl::getFields<PointT> (point_fields);
 
   // Locate the "rgb" field
   size_t d;
@@ -235,9 +231,7 @@ pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
 {
   // Get all the fields
   std::vector<pcl::PCLPointField> point_fields;
-  // Use a dummy cloud to get the field types in a clever way
-  PointCloud<PointT> dummyCloud;
-  pcl::getFields (dummyCloud, point_fields);
+  pcl::getFields<PointT> (point_fields);
 
   // Locate the "rgb" field
   size_t d;
@@ -384,9 +378,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison () :
 {
   // get all the fields
   std::vector<pcl::PCLPointField> point_fields;
-  // Use a dummy cloud to get the field types in a clever way
-  PointCloud<PointT> dummyCloud;
-  pcl::getFields (dummyCloud, point_fields);
+  pcl::getFields<PointT> (point_fields);
 
   // Locate the "x" field
   size_t dX;
@@ -449,9 +441,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison (const pcl::Comp
 {
   // get all the fields
   std::vector<pcl::PCLPointField> point_fields;
-  // Use a dummy cloud to get the field types in a clever way
-  PointCloud<PointT> dummyCloud;
-  pcl::getFields (dummyCloud, point_fields);
+  pcl::getFields<PointT> (point_fields);
 
   // Locate the "x" field
   size_t dX;

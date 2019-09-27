@@ -106,7 +106,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
   }
 
   // Check if the output has a "scale" field
-  scale_idx_ = pcl::getFieldIndex<PointOutT> (output, "scale", out_fields_);
+  scale_idx_ = pcl::getFieldIndex<PointOutT> ("scale", out_fields_);
 
   // Make sure the output cloud is empty
   output.points.clear ();

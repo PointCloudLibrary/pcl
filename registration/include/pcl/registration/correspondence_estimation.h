@@ -115,7 +115,7 @@ namespace pcl
         {
           source_cloud_updated_ = true;
           PCLBase<PointSource>::setInputCloud (cloud);
-          pcl::getFields (*cloud, input_fields_);
+          pcl::getFields<PointSource> (input_fields_);
         }
 
         /** \brief Get a pointer to the input point cloud dataset target. */
