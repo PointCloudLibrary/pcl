@@ -1045,7 +1045,7 @@ namespace pcl
       get (PointOutT& point) const;
 
       /** Get the total number of points that were added. */
-      inline size_t
+      inline std::size_t
       getSize () const
       {
         return (num_points_);
@@ -1055,7 +1055,7 @@ namespace pcl
 
     private:
 
-      size_t num_points_ = 0;
+      std::size_t num_points_ = 0;
       typename pcl::detail::Accumulators<PointT>::type accumulators_;
 
   };
@@ -1076,7 +1076,7 @@ namespace pcl
     * not valid.
     *
     * \ingroup common */
-  template <typename PointInT, typename PointOutT> size_t
+  template <typename PointInT, typename PointOutT> std::size_t
   computeCentroid (const pcl::PointCloud<PointInT>& cloud,
                    PointOutT& centroid);
 
@@ -1088,7 +1088,7 @@ namespace pcl
     * documentation for computeCentroid().
     *
     * \ingroup common */
-  template <typename PointInT, typename PointOutT> size_t
+  template <typename PointInT, typename PointOutT> std::size_t
   computeCentroid (const pcl::PointCloud<PointInT>& cloud,
                    const std::vector<int>& indices,
                    PointOutT& centroid);

@@ -91,8 +91,8 @@ class OpenNIUniformSampling
       pcl::PointCloud<pcl::PointXYZRGBA> sampled;
       pass_.filter (sampled);
       *cloud_  = *cloud;
-      
-      pcl::copyPointCloud<pcl::PointXYZRGBA, pcl::PointXYZ> (sampled, *keypoints_);
+
+      pcl::copyPointCloud (sampled, *keypoints_);
     }
 
     void

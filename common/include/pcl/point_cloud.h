@@ -59,9 +59,9 @@ namespace pcl
   {
     struct FieldMapping
     {
-      size_t serialized_offset;
-      size_t struct_offset;
-      size_t size;
+      std::size_t serialized_offset;
+      std::size_t struct_offset;
+      std::size_t size;
     };
   } // namespace detail
 
@@ -220,7 +220,7 @@ namespace pcl
       {
         // Copy the obvious
         assert (indices.size () <= pc.size ());
-        for (size_t i = 0; i < indices.size (); i++)
+        for (std::size_t i = 0; i < indices.size (); i++)
           points[i] = pc.points[indices[i]];
       }
 
@@ -324,7 +324,7 @@ namespace pcl
         * \param[in] row the row coordinate
         */
       inline const PointT&
-      operator () (size_t column, size_t row) const
+      operator () (std::size_t column, std::size_t row) const
       {
         return (points[row * this->width + column]);
       }
@@ -335,7 +335,7 @@ namespace pcl
         * \param[in] row the row coordinate
         */
       inline PointT&
-      operator () (size_t column, size_t row)
+      operator () (std::size_t column, std::size_t row)
       {
         return (points[row * this->width + column]);
       }
@@ -461,14 +461,14 @@ namespace pcl
       inline const_iterator end () const  { return (points.end ()); }
 
       //capacity
-      inline size_t size () const { return (points.size ()); }
-      inline void reserve (size_t n) { points.reserve (n); }
+      inline std::size_t size () const { return (points.size ()); }
+      inline void reserve (std::size_t n) { points.reserve (n); }
       inline bool empty () const { return points.empty (); }
 
       /** \brief Resize the cloud
         * \param[in] n the new cloud size
         */
-      inline void resize (size_t n)
+      inline void resize (std::size_t n)
       {
         points.resize (n);
         if (width * height != n)
@@ -479,10 +479,10 @@ namespace pcl
       }
 
       //element access
-      inline const PointT& operator[] (size_t n) const { return (points[n]); }
-      inline PointT& operator[] (size_t n) { return (points[n]); }
-      inline const PointT& at (size_t n) const { return (points.at (n)); }
-      inline PointT& at (size_t n) { return (points.at (n)); }
+      inline const PointT& operator[] (std::size_t n) const { return (points[n]); }
+      inline PointT& operator[] (std::size_t n) { return (points[n]); }
+      inline const PointT& at (std::size_t n) const { return (points.at (n)); }
+      inline PointT& at (std::size_t n) { return (points.at (n)); }
       inline const PointT& front () const { return (points.front ()); }
       inline PointT& front () { return (points.front ()); }
       inline const PointT& back () const { return (points.back ()); }
@@ -536,7 +536,7 @@ namespace pcl
         * \param[in] pt the point to insert
         */
       inline void
-      insert (iterator position, size_t n, const PointT& pt)
+      insert (iterator position, std::size_t n, const PointT& pt)
       {
         points.insert (position, n, pt);
         width = static_cast<uint32_t> (points.size ());

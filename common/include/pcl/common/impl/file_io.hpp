@@ -68,19 +68,19 @@ namespace pcl
 
 std::string getFilenameWithoutPath(const std::string& input)
 {
-  size_t filename_start = input.find_last_of('/', static_cast<size_t>(-1)) + 1;
+  std::size_t filename_start = input.find_last_of('/', static_cast<std::size_t>(-1)) + 1;
   return input.substr(filename_start, input.size()-filename_start);
 }
 
 std::string getFilenameWithoutExtension(const std::string& input)
 {
-  size_t dot_position = input.find_last_of('.', input.size());
+  std::size_t dot_position = input.find_last_of('.', input.size());
   return input.substr(0, dot_position);
 }
 
 std::string getFileExtension(const std::string& input)
 {
-  size_t dot_position = input.find_last_of('.', input.size());
+  std::size_t dot_position = input.find_last_of('.', input.size());
   return input.substr(dot_position+1, input.size());
 }
 

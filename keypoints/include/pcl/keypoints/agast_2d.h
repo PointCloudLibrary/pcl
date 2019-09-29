@@ -488,7 +488,7 @@ namespace pcl
         {
           pcl::PointCloud<pcl::PointUV> output_temp;
           detector->applyNonMaxSuppression (image_data, tmp_cloud, output_temp);
-          pcl::copyPointCloud<pcl::PointUV, Out> (output_temp, output);
+          pcl::copyPointCloud (output_temp, output);
         }
       };
 
@@ -516,7 +516,7 @@ namespace pcl
         {
           pcl::PointCloud<pcl::PointUV> output_temp;
           detector->detectKeypoints (image_data, output_temp);
-          pcl::copyPointCloud<pcl::PointUV, Out> (output_temp, output);
+          pcl::copyPointCloud (output_temp, output);
         }
       };
 

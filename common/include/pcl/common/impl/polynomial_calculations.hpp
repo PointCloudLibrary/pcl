@@ -116,9 +116,9 @@ inline void
     //std::cout << "Constant element is 0 => Adding root 0 and calling solveLinearEquation.\n";
     std::vector<real> tmpRoots;
     solveLinearEquation (a, b, tmpRoots);
-    for (unsigned int i=0; i<tmpRoots.size (); i++)
-      if (!isNearlyZero (tmpRoots[i]))
-        roots.push_back (tmpRoots[i]);
+    for (const auto& tmpRoot: tmpRoots)
+      if (!isNearlyZero (tmpRoot))
+        roots.push_back (tmpRoot);
     return;
   }
 
@@ -172,9 +172,9 @@ inline void
     //std::cout << "Constant element is 0 => Adding root 0 and calling solveQuadraticEquation.\n";
     std::vector<real> tmpRoots;
     solveQuadraticEquation (a, b, c, tmpRoots);
-    for (unsigned int i=0; i<tmpRoots.size (); i++)
-      if (!isNearlyZero (tmpRoots[i]))
-        roots.push_back (tmpRoots[i]);
+    for (const auto& tmpRoot: tmpRoots)
+      if (!isNearlyZero (tmpRoot))
+        roots.push_back (tmpRoot);
     return;
   }
 
@@ -275,9 +275,9 @@ inline void
     //std::cout << "Constant element is 0 => Adding root 0 and calling solveCubicEquation.\n";
     std::vector<real> tmpRoots;
     solveCubicEquation (a, b, c, d, tmpRoots);
-    for (unsigned int i=0; i<tmpRoots.size (); i++)
-      if (!isNearlyZero (tmpRoots[i]))
-        roots.push_back (tmpRoots[i]);
+    for (const auto& tmpRoot: tmpRoots)
+      if (!isNearlyZero (tmpRoot))
+        roots.push_back (tmpRoot);
     return;
   }
 
@@ -303,16 +303,15 @@ inline void
     //std::cout << "Using beta=0 condition\n";
     std::vector<real> tmpRoots;
     solveQuadraticEquation (1.0, alpha, gamma, tmpRoots);
-    for (unsigned int i=0; i<tmpRoots.size (); i++)
+    for (const auto& quadraticRoot: tmpRoots)
     {
-      double qudraticRoot = tmpRoots[i];
-      if (sqrtIsNearlyZero (qudraticRoot))
+      if (sqrtIsNearlyZero (quadraticRoot))
       {
         roots.push_back (-resubValue);
       }
-      else if (qudraticRoot > 0.0)
+      else if (quadraticRoot > 0.0)
       {
-        root1 = sqrt (qudraticRoot);
+        root1 = sqrt (quadraticRoot);
         roots.push_back (root1 - resubValue);
         roots.push_back (-root1 - resubValue);
       }
@@ -455,10 +454,9 @@ inline bool
   real tmpX, tmpY;
   real *tmpC = new real[parameters_size];
   real* tmpCEndPtr = &tmpC[parameters_size-1];
-  for (typename std::vector<Eigen::Matrix<real, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1> > >::const_iterator it=samplePoints.begin ();
-       it!=samplePoints.end (); ++it)
+  for (const auto& point: samplePoints)
   {
-    currentX= (*it)[0]; currentY= (*it)[1]; currentZ= (*it)[2];
+    currentX= point[0]; currentY= point[1]; currentZ= point[2];
     //std::cout << "current point: "<<currentX<<","<<currentY<<" => "<<currentZ<<"\n";
     //unsigned int posInC = parameters_size-1;
     real* tmpCPtr = tmpCEndPtr;
@@ -548,8 +546,7 @@ inline bool
     return false;
   }
 
-  for (unsigned int i=0; i<parameters_size; i++)
-    ret.parameters[i] = parameters[i];
+  std::copy_n(parameters.data(), parameters_size, ret.parameters);
 
   //std::cout << "Resulting polynomial is "<<ret<<"\n";
 

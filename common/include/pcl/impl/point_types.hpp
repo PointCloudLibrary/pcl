@@ -43,8 +43,11 @@
 #  pragma GCC system_header
 #endif
 
-#include <Eigen/Core>
+#include <algorithm>
 #include <ostream>
+
+#include <Eigen/Core>
+
 #include <pcl/pcl_macros.h>
 
 // Define all PCL point types
@@ -1346,14 +1349,14 @@ namespace pcl
   {
     inline ReferenceFrame (const _ReferenceFrame &p)
     {
-      for (int d = 0; d < 9; ++d)
-        rf[d] = p.rf[d];
+      std::copy_n(p.rf, 9, rf);
     }
 
     inline ReferenceFrame ()
     {
-      for (int d = 0; d < 3; ++d)
-        x_axis[d] = y_axis[d] = z_axis[d] = 0;
+      std::fill_n(x_axis, 3, 0);
+      std::fill_n(y_axis, 3, 0);
+      std::fill_n(z_axis, 3, 0);
     }
 
     friend std::ostream& operator << (std::ostream& os, const ReferenceFrame& p);
@@ -1685,8 +1688,14 @@ namespace pcl
   template <int N> std::ostream& 
   operator << (std::ostream& os, const Histogram<N>& p)
   {
-    for (int i = 0; i < N; ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < N-1 ? ", " : ")");
+    // make constexpr
+    if (N > 0)
+    {
+        os << "(" << p.histogram[0];
+        std::for_each(p.histogram + 1, std::end(p.histogram),
+            [&os](const auto& hist) { os << ", " << hist; });
+        os << ")";
+    }
     return (os);
   }
 } // End namespace

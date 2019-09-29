@@ -108,7 +108,7 @@ namespace pcl
     s << "cloud: " << std::endl;
     s << v.cloud;
     s << "polygons[]" << std::endl;
-    for (size_t i = 0; i < v.polygons.size (); ++i)
+    for (std::size_t i = 0; i < v.polygons.size (); ++i)
     {
       s << "  polygons[" << i << "]: " << std::endl;
       s << v.polygons[i];

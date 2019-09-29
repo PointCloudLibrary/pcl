@@ -1036,7 +1036,7 @@ TEST (PCL, CopyPointCloud)
     cloud_b.points[i].rgba = 255;
   }
 
-  pcl::copyPointCloud<pcl::PointXYZ, pcl::PointXYZRGBA> (cloud_a, cloud_b);
+  pcl::copyPointCloud (cloud_a, cloud_b);
 
   for (size_t i = 0; i < cloud_a.points.size (); ++i)
   {
@@ -1047,7 +1047,7 @@ TEST (PCL, CopyPointCloud)
     cloud_a.points[i].x = cloud_a.points[i].y = cloud_a.points[i].z = 0;
   }
 
-  pcl::copyPointCloud<pcl::PointXYZRGBA, pcl::PointXYZ> (cloud_b, cloud_a);
+  pcl::copyPointCloud (cloud_b, cloud_a);
 
   for (size_t i = 0; i < cloud_a.points.size (); ++i)
   {

@@ -205,7 +205,7 @@ pcl_round (float number)
 #endif
 
 #ifndef SET_ARRAY
-#define SET_ARRAY(var, value, size) { for (int i = 0; i < static_cast<int> (size); ++i) var[i]=value; }
+#define SET_ARRAY(var, value, size) { for (decltype(size) i = 0; i < size; ++i) var[i]=value; }
 #endif
 
 #ifndef PCL_EXTERN_C
@@ -295,7 +295,7 @@ pcl_round (float number)
 #endif
 
 inline void*
-aligned_malloc (size_t size)
+aligned_malloc (std::size_t size)
 {
   void *ptr;
 #if   defined (MALLOC_ALIGNED)

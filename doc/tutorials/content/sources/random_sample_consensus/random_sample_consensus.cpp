@@ -88,7 +88,7 @@ main(int argc, char** argv)
   }
 
   // copies all inliers of the model computed to another PointCloud
-  pcl::copyPointCloud<pcl::PointXYZ>(*cloud, inliers, *final);
+  pcl::copyPointCloud (*cloud, inliers, *final);
 
   // creates the visualization object and adds either our original cloud or all of the inliers
   // depending on the command line arguments specified.
