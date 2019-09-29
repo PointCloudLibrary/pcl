@@ -274,7 +274,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::cl
   // Insert maximas into result vector, after Ransac correspondence rejection
   // Temp copy of scene cloud with the type cast to ModelT in order to use Ransac
   PointCloudPtr temp_scene_cloud_ptr (new PointCloud);
-  pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
+  pcl::copyPointCloud (*scene_, *temp_scene_cloud_ptr);
 
   pcl::registration::CorrespondenceRejectorSampleConsensus<PointModelT> corr_rejector;
   corr_rejector.setMaximumIterations (10000);
@@ -355,7 +355,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
 
   //// Temp copy of scene cloud with the type cast to ModelT in order to use Ransac
   //PointCloudPtr temp_scene_cloud_ptr (new PointCloud);
-  //pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
+  //pcl::copyPointCloud (*scene_, *temp_scene_cloud_ptr);
 
   //for (size_t i = 0; i < model_instances.size (); ++i)
   //{

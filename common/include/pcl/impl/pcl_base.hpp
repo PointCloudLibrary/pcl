@@ -151,7 +151,7 @@ pcl::PCLBase<PointT>::initCompute ()
   // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
   if (fake_indices_ && indices_->size () != input_->points.size ())
   {
-    std::size_t indices_size = indices_->size ();
+    const auto indices_size = indices_->size ();
     try
     {
       indices_->resize (input_->points.size ());

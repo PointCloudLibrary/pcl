@@ -182,7 +182,7 @@ namespace pcl
     center_x_ = static_cast<float> (di_center_x) / static_cast<float> (skip);
     center_y_ = static_cast<float> (di_center_y) / static_cast<float> (skip);
     points.resize (width * height);
-    
+
     for (int y = 0; y < static_cast<int> (height); ++y)
     {
       for (int x = 0; x < static_cast<int> (width); ++x)

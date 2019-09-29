@@ -974,7 +974,8 @@ RangeImage::getSurfaceInformation (int x, int y, int radius, const Eigen::Vector
   if (eigen_values_all_neighbors!=nullptr)
     eigen_values_all_neighbors->setZero ();
   
-  int blocksize = static_cast<int> (pow (static_cast<double> ( (2.0 * radius + 1.0)), 2.0));
+  const auto sqrt_blocksize = 2 * radius + 1;
+  const auto blocksize = sqrt_blocksize * sqrt_blocksize;
   
   PointWithRange given_point;
   given_point.x=point[0];  given_point.y=point[1];  given_point.z=point[2];
@@ -1051,7 +1052,8 @@ RangeImage::getSquaredDistanceOfNthNeighbor (int x, int y, int radius, int n, in
   if (!std::isfinite (point.range))
     return -std::numeric_limits<float>::infinity ();
   
-  int blocksize = static_cast<int> (pow (static_cast<double> (2.0 * radius + 1.0), 2.0));
+  const auto sqrt_blocksize = 2 * radius + 1;
+  const auto blocksize = sqrt_blocksize * sqrt_blocksize;
   std::vector<float> neighbor_distances (blocksize);
   int neighbor_counter = 0;
   for (int y2=y-radius; y2<=y+radius; y2+=step_size)

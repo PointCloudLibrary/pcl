@@ -61,7 +61,7 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
   if (cloud_in->empty ())
     return;
 
-  pcl::copyPointCloud<PointT, PointT> (*cloud_in, cloud_out);
+  pcl::copyPointCloud (*cloud_in, cloud_out);
 
   pcl::octree::OctreePointCloudSearch<PointT> tree (resolution);
 
@@ -116,7 +116,7 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
     {
       pcl::PointCloud<PointT> cloud_temp;
 
-      pcl::copyPointCloud<PointT, PointT> (*cloud_in, cloud_temp);
+      pcl::copyPointCloud (*cloud_in, cloud_temp);
 
       for (size_t p_idx = 0; p_idx < cloud_temp.points.size (); ++p_idx)
       {

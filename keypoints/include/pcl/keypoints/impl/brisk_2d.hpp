@@ -79,7 +79,7 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
   brisk_scale_space.constructPyramid (image_data, width, height);
   pcl::PointCloud<pcl::PointWithScale> output_temp;
   brisk_scale_space.getKeypoints (threshold_, output_temp.points);
-  pcl::copyPointCloud<pcl::PointWithScale, PointOutT> (output_temp, output);
+  pcl::copyPointCloud (output_temp, output);
 
   // we do not change the denseness
   output.width = int (output.points.size ());

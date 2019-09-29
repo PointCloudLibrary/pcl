@@ -103,7 +103,7 @@ main (int argc, char *argv[])
 
   // Create output cloud for DoN results
   PointCloud<PointNormal>::Ptr doncloud (new pcl::PointCloud<PointNormal>);
-  copyPointCloud<PointXYZRGB, PointNormal>(*cloud, *doncloud);
+  copyPointCloud (*cloud, *doncloud);
 
   std::cout << "Calculating DoN... " << std::endl;
   // Create DoN operator

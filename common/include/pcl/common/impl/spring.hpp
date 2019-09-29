@@ -200,13 +200,10 @@ pcl::common::mirrorRows (const PointCloud<PointT>& input, PointCloud<PointT>& ou
   output.reserve (new_height * old_width);
   for(std::size_t i = 0; i < amount; i++)
   {
-    typename PointCloud<PointT>::iterator up;
-    if (output.height % 2 ==  0)
-      up = output.begin () + (2*i) * old_width;
-    else
-      up = output.begin () + (2*i+1) * old_width;
+    const auto extra_odd = output.height % 2;
+    auto up = output.begin () + (2*i + extra_odd) * old_width;
     output.insert (output.begin (), up, up + old_width);
-    typename PointCloud<PointT>::iterator bottom = output.end () - (2*i+1) * old_width;
+    auto bottom = output.end () - (2*i+1) * old_width;
     output.insert (output.end (), bottom, bottom + old_width);
   }
   output.width = old_width;

@@ -252,12 +252,12 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
   //std::cout << oldRangeImage.width<<"x"<<oldRangeImage.height<<" -> "<<width<<"x"<<height<<"\n";
   
   // Copy points
-  for (int y=0, oldY=top; y< static_cast<int> (height); ++y,++oldY) 
+  for (int y=0, oldY=top; y< static_cast<int> (height); ++y,++oldY)
   {
-    for (int x=0, oldX=left; x< static_cast<int> (width); ++x,++oldX) 
+    for (int x=0, oldX=left; x< static_cast<int> (width); ++x,++oldX)
     {
       PointWithRange& currentPoint = points[y*width + x];
-      if (oldX<0 || oldX>= static_cast<int> (oldRangeImage.width) || oldY<0 || oldY>= static_cast<int> (oldRangeImage.height)) 
+      if (oldX<0 || oldX>= static_cast<int> (oldRangeImage.width) || oldY<0 || oldY>= static_cast<int> (oldRangeImage.height))
       {
         currentPoint = unobserved_point;
         continue;
@@ -271,9 +271,9 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
 void 
 RangeImage::recalculate3DPointPositions () 
 {
-  for (int y = 0; y < static_cast<int> (height); ++y) 
+  for (int y = 0; y < static_cast<int> (height); ++y)
   {
-    for (int x = 0; x < static_cast<int> (width); ++x) 
+    for (int x = 0; x < static_cast<int> (width); ++x)
     {
       PointWithRange& point = points[y*width + x];
       if (!std::isinf (point.range)) 
