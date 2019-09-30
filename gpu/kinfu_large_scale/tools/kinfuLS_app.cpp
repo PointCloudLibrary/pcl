@@ -72,6 +72,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/oni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
+#include <pcl/io/openni2_grabber.h>
 
 #include "openni_capture.h"
 #include "color_handler.h"
@@ -764,8 +765,9 @@ struct KinFuLSApp
 
   void
   initRegistration ()
-  {        
-    registration_ = capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ();
+  {
+    registration_ = capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ()
+                      || capture_.providesCallback<pcl::io::OpenNI2Grabber::sig_cb_openni_image_depth_image> ();
     std::cout << "Registration mode: " << (registration_ ? "On" : "Off (not supported by source)") << std::endl;
   }
 
@@ -979,29 +981,59 @@ struct KinFuLSApp
   }
 
   void
-  startMainLoop (bool triggered_capture)
+  startMainLoop (bool triggered_capture, bool oni2_interface = false)
   {   
-    using namespace openni_wrapper;
-    using DepthImagePtr = boost::shared_ptr<DepthImage>;
-    using ImagePtr = boost::shared_ptr<Image>;
+    boost::signals2::connection c;
 
-    std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func1 = [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
+    if(oni2_interface)
     {
-      source_cb2 (img, depth, constant);
-    };
-    std::function<void (const DepthImagePtr&)> func2 = [this] (const DepthImagePtr& depth) { source_cb1 (depth); };
-    std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
-    {
-      source_cb3 (cloud);
-    };
+      using namespace pcl::io;
+      using DepthImagePtr = boost::shared_ptr<DepthImage>;
+      using ImagePtr = boost::shared_ptr<Image>;
 
-    bool need_colors = integrate_colors_ || registration_ || enable_texture_extraction_;
+      std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func1 = [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
+      {
+        source_cb2 (img, depth, constant);
+      };
+      std::function<void (const DepthImagePtr&)> func2 = [this] (const DepthImagePtr& depth) { source_cb1 (depth); };
+      std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+      {
+        source_cb3 (cloud);
+      };
 
-    if ( pcd_source_ && !capture_.providesCallback<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>() ) {
-      std::cout << "grabber doesn't provide pcl::PointCloud<pcl::PointXYZRGBA> callback !\n";
+      bool need_colors = integrate_colors_ || registration_ || enable_texture_extraction_;
+
+      if ( pcd_source_ && !capture_.providesCallback<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>() ) {
+        std::cout << "grabber doesn't provide pcl::PointCloud<pcl::PointXYZRGBA> callback !\n";
+      }
+
+      c = pcd_source_? capture_.registerCallback (func3) : need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
     }
+    else
+    {
+      using namespace openni_wrapper;
+      using DepthImagePtr = boost::shared_ptr<DepthImage>;
+      using ImagePtr = boost::shared_ptr<Image>;
 
-    boost::signals2::connection c = pcd_source_? capture_.registerCallback (func3) : need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
+      std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func1 = [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
+      {
+        source_cb2 (img, depth, constant);
+      };
+      std::function<void (const DepthImagePtr&)> func2 = [this] (const DepthImagePtr& depth) { source_cb1 (depth); };
+      std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+      {
+        source_cb3 (cloud);
+      };
+
+      bool need_colors = integrate_colors_ || registration_ || enable_texture_extraction_;
+
+      if ( pcd_source_ && !capture_.providesCallback<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>() ) {
+        std::cout << "grabber doesn't provide pcl::PointCloud<pcl::PointXYZRGBA> callback !\n";
+      }
+
+      c = pcd_source_? capture_.registerCallback (func3) : need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
+
+    }
 
     {
       std::unique_lock<std::mutex> lock(data_ready_mutex_);
@@ -1242,7 +1274,7 @@ print_cli_help ()
   std::cout << "    --snapshot_rate <X_frames>, -sr     : Extract RGB textures every <X_frames>. Default: 45  " << std::endl;
   std::cout << std::endl << "";
   std::cout << "Valid depth data sources:" << std::endl; 
-  std::cout << "    -dev <device> (default), -oni <oni_file>, -pcd <pcd_file or directory>" << std::endl;
+  std::cout << "    -dev <device> (default), -oni <oni_file>, -pcd <pcd_file or directory>, -oni2 [file or device id]" << std::endl;
   std::cout << std::endl << "";
   std::cout << " For RGBD benchmark (Requires OpenCV):" << std::endl; 
   std::cout << "    -eval <eval_folder> [-match_file <associations_file_in_the_folder>]" << std::endl << std::endl;
@@ -1269,8 +1301,9 @@ main (int argc, char* argv[])
   boost::shared_ptr<pcl::Grabber> capture;
   bool triggered_capture = false;
   bool pcd_input = false;
+  bool oni2_interface = false;
 
-  std::string eval_folder, match_file, openni_device, oni_file, pcd_dir;
+  std::string eval_folder, match_file, openni_device, oni_file, pcd_dir, oni2_file{};
   try
   {    
     if (pc::parse_argument (argc, argv, "-dev", openni_device) > 0)
@@ -1282,6 +1315,11 @@ main (int argc, char* argv[])
       triggered_capture = true;
       bool repeat = false; // Only run ONI file once
       capture.reset (new pcl::ONIGrabber (oni_file, repeat, false));
+    }
+    else if (pc::parse_argument (argc, argv, "-oni2", oni2_file) > 0)
+    {
+      capture.reset(new pcl::io::OpenNI2Grabber(oni2_file));
+      oni2_interface = true;
     }
     else if (pc::parse_argument (argc, argv, "-pcd", pcd_dir) > 0)
     {
@@ -1359,7 +1397,7 @@ main (int argc, char* argv[])
 
   // set verbosity level
   pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
-  try { app.startMainLoop (triggered_capture); }  
+  try { app.startMainLoop (triggered_capture, oni2_interface); }
   catch (const pcl::PCLException& e) { cout << "PCLException: " << e.what() << endl; }
   catch (const std::bad_alloc& /*e*/) { std::cout << "Bad alloc" << std::endl; }
   catch (const std::exception& e) { cout << "Exception: " << e.what() << endl; }
