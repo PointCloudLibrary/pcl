@@ -1360,9 +1360,9 @@ main (int argc, char* argv[])
   // set verbosity level
   pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
   try { app.startMainLoop (triggered_capture); }  
-  catch (const pcl::PCLException& /*e*/) { std::cout << "PCLException" << std::endl; }
+  catch (const pcl::PCLException& e) { cout << "PCLException: " << e.what() << endl; }
   catch (const std::bad_alloc& /*e*/) { std::cout << "Bad alloc" << std::endl; }
-  catch (const std::exception& /*e*/) { std::cout << "Exception" << std::endl; }
+  catch (const std::exception& e) { cout << "Exception: " << e.what() << endl; }
 
   //~ #ifdef HAVE_OPENCV
   //~ for (size_t t = 0; t < app.image_view_.views_.size (); ++t)
