@@ -46,10 +46,11 @@ namespace pcl
   namespace registration
   {
     /** \brief @b TransformationEstimationSymmetricPointToPlaneLLS implements a Linear Least Squares (LLS) approximation
-      * for minimizing the point-to-plane distance between two clouds of corresponding points with normals.
+      * for minimizing the symmetric point-to-plane distance between two clouds of corresponding points with normals.
       *
       * For additional details, see 
       *   "Linear Least-Squares Optimization for Point-to-Plane ICP Surface Registration", Kok-Lim Low, 2004
+      *   "A Symmetric Objective Function for ICP", Szymon Rusinkiewicz, 2019
       *
       * \note The class is templated on the source and target point types as well as on the output scalar of the
       * transformation matrix (i.e., float or double). Default: float.
