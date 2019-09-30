@@ -889,7 +889,8 @@ struct KinFuLSApp
     
   }
 
-  void source_cb1(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper)  
+  template<typename DepthImg>
+  void source_cb1(const boost::shared_ptr<DepthImg>& depth_wrapper)
   {        
     {
       std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
@@ -907,7 +908,8 @@ struct KinFuLSApp
     data_ready_cond_.notify_one();
   }
 
-  void source_cb2(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
+  template<typename Img, typename DepthImg>
+  void source_cb2(const boost::shared_ptr<Img>& image_wrapper, const boost::shared_ptr<DepthImg>& depth_wrapper, float)
   {
     {
       std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
