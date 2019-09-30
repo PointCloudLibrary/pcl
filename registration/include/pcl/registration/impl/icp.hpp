@@ -295,6 +295,16 @@ pcl::IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transfo
 {
   pcl::transformPointCloudWithNormals (input, output, transform);
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::SymmetricIterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transformCloud (
+    const PointCloudSource &input, 
+    PointCloudSource &output, 
+    const Matrix4 &transform)
+{
+  pcl::transformPointCloudWithNormals (input, output, transform);
+}
       
 
 #endif /* PCL_REGISTRATION_IMPL_ICP_HPP_ */

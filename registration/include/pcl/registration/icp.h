@@ -46,6 +46,7 @@
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
+#include <pcl/registration/transformation_estimation_symmetric_point_to_plane_lls.h>
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/default_convergence_criteria.h>
 
@@ -331,6 +332,54 @@ namespace pcl
                       PointCloudSource &output, 
                       const Matrix4 &transform);
   };
+
+  /** \brief @b SymmetricIterativeClosestPointWithNormals is a special case of
+    * IterativeClosestPoint, that uses a transformation estimated based on
+    * Symmetric Point to Plane distances by default.
+    *
+    * \author Matthew Cong
+    * \ingroup registration
+    */
+  template <typename PointSource, typename PointTarget, typename Scalar = float>
+  class SymmetricIterativeClosestPointWithNormals : public IterativeClosestPoint<PointSource, PointTarget, Scalar>
+  {
+    public:
+      using PointCloudSource = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudSource;
+      using PointCloudTarget = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudTarget;
+      using Matrix4 = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4;
+
+      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::reg_name_;
+      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformation_estimation_;
+      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::correspondence_rejectors_;
+
+      using Ptr = boost::shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
+      using ConstPtr = boost::shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
+
+      /** \brief Empty constructor. */
+      SymmetricIterativeClosestPointWithNormals () 
+      {
+        reg_name_ = "SymmetricIterativeClosestPointWithNormals";
+        transformation_estimation_.reset (new pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> ());
+        //correspondence_rejectors_.add
+      };
+      
+      /** \brief Empty destructor */
+      virtual ~SymmetricIterativeClosestPointWithNormals () {}
+
+    protected:
+
+      /** \brief Apply a rigid transform to a given dataset
+        * \param[in] input the input point cloud
+        * \param[out] output the resultant output point cloud
+        * \param[in] transform a 4x4 rigid transformation
+        * \note Can be used with cloud_in equal to cloud_out
+        */
+      virtual void 
+      transformCloud (const PointCloudSource &input, 
+                      PointCloudSource &output, 
+                      const Matrix4 &transform);
+  };
+
 }
 
 #include <pcl/registration/impl/icp.hpp>
