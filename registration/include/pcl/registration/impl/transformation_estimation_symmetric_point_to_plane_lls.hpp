@@ -166,7 +166,7 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
   }
 
   // Solve A*x = b
-  auto x = static_cast<Vector6> (M.ldlt ().solve (ATb));
+  const auto x = static_cast<Vector6> (M.ldlt ().solve (ATb));
   
   // Construct the transformation matrix from x
   constructTransformationMatrix (x, transformation_matrix);
