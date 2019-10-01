@@ -66,7 +66,7 @@ namespace pcl
 
         using Matrix4 = typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
 
-        using Vector6d = Eigen::Matrix<double, 6, 1>;
+        using Vector6 = Eigen::Matrix<Scalar, 6, 1>;
         
         TransformationEstimationSymmetricPointToPlaneLLS () {};
         ~TransformationEstimationSymmetricPointToPlaneLLS () {};
@@ -140,7 +140,7 @@ namespace pcl
           * \param[out] transformation_matrix the resultant transformation matrix
           */
         inline void
-        constructTransformationMatrix (const Vector6d &parameters,
+        constructTransformationMatrix (const Vector6 &parameters,
                                        Matrix4 &transformation_matrix) const;
 
     };

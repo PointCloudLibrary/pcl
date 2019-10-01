@@ -101,13 +101,4 @@ namespace pcl
   {
     return (std::isfinite (n.normal_x) && std::isfinite (n.normal_y) && std::isfinite (n.normal_z));
   }
-
-  // specification for pcl::PointNormal
-  template <> inline bool
-  isFinite<pcl::PointNormal> (const pcl::PointNormal &p)
-  {
-    return (std::isfinite (p.x) && std::isfinite (p.y) && std::isfinite (p.z) &&
-            std::isfinite (p.normal_x) && std::isfinite (p.normal_y) && std::isfinite (p.normal_z) &&
-            std::isfinite (p.curvature));
-  }
 }

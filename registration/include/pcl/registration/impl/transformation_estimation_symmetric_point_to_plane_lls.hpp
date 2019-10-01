@@ -116,19 +116,16 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
 pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar>::
-constructTransformationMatrix (const Vector6d &parameters,
+constructTransformationMatrix (const Vector6 &parameters,
                                Matrix4 &transformation_matrix) const
 {
   // Construct the transformation matrix from rotation and translation 
-  Eigen::Matrix<Scalar, 3, 3> rotation_matrix;
-  rotation_matrix = Eigen::AngleAxis<Scalar> (parameters (2), Eigen::Matrix<Scalar, 3, 1>::UnitZ ()) * 
-                    Eigen::AngleAxis<Scalar> (parameters (1), Eigen::Matrix<Scalar, 3, 1>::UnitY ()) *
-                    Eigen::AngleAxis<Scalar> (parameters (0), Eigen::Matrix<Scalar, 3, 1>::UnitX ());
-  Eigen::Matrix<Scalar, 3, 1> translation_vector;
-  translation_vector << static_cast<Scalar> (parameters (3)), static_cast<Scalar> (parameters (4)), static_cast<Scalar> (parameters (5));
-  transformation_matrix.setIdentity();
-  transformation_matrix.template block<3, 3> (0, 0) = rotation_matrix;
-  transformation_matrix.template block<3, 1> (0, 3) = translation_vector;
+  const Eigen::AngleAxis<Scalar> rotation_z (parameters (2), Eigen::Matrix<Scalar, 3, 1>::UnitZ ());
+  const Eigen::AngleAxis<Scalar> rotation_y (parameters (1), Eigen::Matrix<Scalar, 3, 1>::UnitY ());
+  const Eigen::AngleAxis<Scalar> rotation_x (parameters (0), Eigen::Matrix<Scalar, 3, 1>::UnitX ());
+  const Eigen::Translation<Scalar, 3> translation (parameters (3), parameters (4), parameters (5));
+  const Eigen::Transform<Scalar, 3, Eigen::Affine> transform = rotation_z * rotation_y * rotation_x * translation * rotation_z * rotation_y * rotation_x;
+  transformation_matrix = transform.matrix();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,70 +133,40 @@ template <typename PointSource, typename PointTarget, typename Scalar> inline vo
 pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar>::
 estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCloudIterator<PointTarget>& target_it, Matrix4 &transformation_matrix) const
 {
-  using Matrix6d = Eigen::Matrix<double, 6, 6>;
+  using Matrix6 = Eigen::Matrix<Scalar, 6, 6>;
+  using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
 
-  Matrix6d ATA;
-  Vector6d ATb;
+  Matrix6 ATA;
+  Vector6 ATb;
   ATA.setZero ();
   ATb.setZero ();
-  auto U = ATA.triangularView<Eigen::Upper> ();
+  auto M = ATA.template selfadjointView<Eigen::Upper> ();
 
   // Approximate as a linear least squares problem
   for (; source_it.isValid () && target_it.isValid (); ++source_it, ++target_it)
   {
-    if (!isFinite(*source_it) ||
-        !isFinite(*target_it))
+    Vector3 s (source_it->x, source_it->y, source_it->z);
+    Vector3 d (target_it->x, target_it->y, target_it->z);
+    Vector3 n (source_it->normal[0] + target_it->normal[0],
+               source_it->normal[1] + target_it->normal[1],
+               source_it->normal[2] + target_it->normal[2]);
+
+    if (!s.array().isFinite().all() ||
+        !d.array().isFinite().all() ||
+        !n.array().isFinite().all())
     {
       continue;
     }
 
-    const float & sx = source_it->x;
-    const float & sy = source_it->y;
-    const float & sz = source_it->z;
-    const float & dx = target_it->x;
-    const float & dy = target_it->y;
-    const float & dz = target_it->z;
-    const float & nx = source_it->normal[0] + target_it->normal[0];
-    const float & ny = source_it->normal[1] + target_it->normal[1];
-    const float & nz = source_it->normal[2] + target_it->normal[2];
-
-    double a = nz*sy - ny*sz;
-    double b = nx*sz - nz*sx; 
-    double c = ny*sx - nx*sy;
+    Vector6 v;
+    v << (s + d).cross (n), n;
+    M.rankUpdate (v);
    
-    U.coeffRef (0, 0) += a * a;
-    U.coeffRef (0, 1) += a * b;
-    U.coeffRef (0, 2) += a * c;
-    U.coeffRef (0, 3) += a * nx;
-    U.coeffRef (0, 4) += a * ny;
-    U.coeffRef (0, 5) += a * nz;
-    U.coeffRef (1, 1) += b * b;
-    U.coeffRef (1, 2) += b * c;
-    U.coeffRef (1, 3) += b * nx;
-    U.coeffRef (1, 4) += b * ny;
-    U.coeffRef (1, 5) += b * nz;
-    U.coeffRef (2, 2) += c * c;
-    U.coeffRef (2, 3) += c * nx;
-    U.coeffRef (2, 4) += c * ny;
-    U.coeffRef (2, 5) += c * nz;
-    U.coeffRef (3, 3) += nx * nx;
-    U.coeffRef (3, 4) += nx * ny;
-    U.coeffRef (3, 5) += nx * nz;
-    U.coeffRef (4, 4) += ny * ny;
-    U.coeffRef (4, 5) += ny * nz;
-    U.coeffRef (5, 5) += nz * nz;
-
-    double d = nx*dx + ny*dy + nz*dz - nx*sx - ny*sy - nz*sz;
-    ATb.coeffRef (0) += a * d;
-    ATb.coeffRef (1) += b * d;
-    ATb.coeffRef (2) += c * d;
-    ATb.coeffRef (3) += nx * d;
-    ATb.coeffRef (4) += ny * d;
-    ATb.coeffRef (5) += nz * d;
+    ATb += v * (d - s).dot (n);
   }
 
   // Solve A*x = b
-  Vector6d x = static_cast<Vector6d> (ATA.selfadjointView<Eigen::Upper> ().ldlt ().solve (ATb));
+  auto x = static_cast<Vector6> (M.ldlt ().solve (ATb));
   
   // Construct the transformation matrix from x
   constructTransformationMatrix (x, transformation_matrix);
