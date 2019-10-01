@@ -46,7 +46,7 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
                              Matrix4 &transformation_matrix) const
 {
-  size_t nr_points = cloud_src.points.size ();
+  const auto nr_points = cloud_src.points.size ();
   if (cloud_tgt.points.size () != nr_points)
   {
     PCL_ERROR ("[pcl::TransformationEstimationSymmetricPointToPlaneLLS::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", nr_points, cloud_tgt.points.size ());
@@ -66,7 +66,7 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
                              Matrix4 &transformation_matrix) const
 {
-  size_t nr_points = indices_src.size ();
+  const auto nr_points = indices_src.size ();
   if (cloud_tgt.points.size () != nr_points)
   {
     PCL_ERROR ("[pcl::TransformationEstimationSymmetricPointToPlaneLLS::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), cloud_tgt.points.size ());
@@ -88,7 +88,7 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const std::vector<int> &indices_tgt,
                              Matrix4 &transformation_matrix) const
 {
-  size_t nr_points = indices_src.size ();
+  const auto nr_points = indices_src.size ();
   if (indices_tgt.size () != nr_points)
   {
     PCL_ERROR ("[pcl::TransformationEstimationSymmetricPointToPlaneLLS::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), indices_tgt.size ());
@@ -116,26 +116,19 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
 pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar>::
-constructTransformationMatrix (const double & alpha, const double & beta, const double & gamma,
-                               const double & tx,    const double & ty,   const double & tz,
+constructTransformationMatrix (const Vector6d &parameters,
                                Matrix4 &transformation_matrix) const
 {
   // Construct the transformation matrix from rotation and translation 
-  transformation_matrix = Eigen::Matrix<Scalar, 4, 4>::Zero ();
-  transformation_matrix (0, 0) = static_cast<Scalar> ( std::cos (gamma) * std::cos (beta));
-  transformation_matrix (0, 1) = static_cast<Scalar> (-sin (gamma) * std::cos (alpha) + std::cos (gamma) * sin (beta) * sin (alpha));
-  transformation_matrix (0, 2) = static_cast<Scalar> ( sin (gamma) * sin (alpha) + std::cos (gamma) * sin (beta) * std::cos (alpha));
-  transformation_matrix (1, 0) = static_cast<Scalar> ( sin (gamma) * std::cos (beta));
-  transformation_matrix (1, 1) = static_cast<Scalar> ( std::cos (gamma) * std::cos (alpha) + sin (gamma) * sin (beta) * sin (alpha));
-  transformation_matrix (1, 2) = static_cast<Scalar> (-std::cos (gamma) * sin (alpha) + sin (gamma) * sin (beta) * std::cos (alpha));
-  transformation_matrix (2, 0) = static_cast<Scalar> (-sin (beta));
-  transformation_matrix (2, 1) = static_cast<Scalar> ( std::cos (beta) * sin (alpha));
-  transformation_matrix (2, 2) = static_cast<Scalar> ( std::cos (beta) * std::cos (alpha));
-
-  transformation_matrix (0, 3) = static_cast<Scalar> (tx);
-  transformation_matrix (1, 3) = static_cast<Scalar> (ty);
-  transformation_matrix (2, 3) = static_cast<Scalar> (tz);
-  transformation_matrix (3, 3) = static_cast<Scalar> (1);
+  Eigen::Matrix<Scalar, 3, 3> rotation_matrix;
+  rotation_matrix = Eigen::AngleAxis<Scalar> (parameters (2), Eigen::Matrix<Scalar, 3, 1>::UnitZ ()) * 
+                    Eigen::AngleAxis<Scalar> (parameters (1), Eigen::Matrix<Scalar, 3, 1>::UnitY ()) *
+                    Eigen::AngleAxis<Scalar> (parameters (0), Eigen::Matrix<Scalar, 3, 1>::UnitX ());
+  Eigen::Matrix<Scalar, 3, 1> translation_vector;
+  translation_vector << static_cast<Scalar> (parameters (3)), static_cast<Scalar> (parameters (4)), static_cast<Scalar> (parameters (5));
+  transformation_matrix.setIdentity();
+  transformation_matrix.template block<3, 3> (0, 0) = rotation_matrix;
+  transformation_matrix.template block<3, 1> (0, 3) = translation_vector;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -143,32 +136,20 @@ template <typename PointSource, typename PointTarget, typename Scalar> inline vo
 pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar>::
 estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCloudIterator<PointTarget>& target_it, Matrix4 &transformation_matrix) const
 {
-  using Vector6d = Eigen::Matrix<double, 6, 1>;
   using Matrix6d = Eigen::Matrix<double, 6, 6>;
 
   Matrix6d ATA;
   Vector6d ATb;
   ATA.setZero ();
   ATb.setZero ();
+  auto U = ATA.triangularView<Eigen::Upper> ();
 
   // Approximate as a linear least squares problem
-  while (source_it.isValid () && target_it.isValid ())
+  for (; source_it.isValid () && target_it.isValid (); ++source_it, ++target_it)
   {
-    if (!std::isfinite (source_it->x) ||
-        !std::isfinite (source_it->y) ||
-        !std::isfinite (source_it->z) ||
-        !std::isfinite (target_it->x) ||
-        !std::isfinite (target_it->y) ||
-        !std::isfinite (target_it->z) ||
-        !std::isfinite (source_it->normal_x) ||
-        !std::isfinite (source_it->normal_y) ||
-        !std::isfinite (source_it->normal_z) ||
-        !std::isfinite (target_it->normal_x) ||
-        !std::isfinite (target_it->normal_y) ||
-        !std::isfinite (target_it->normal_z))
+    if (!isFinite(*source_it) ||
+        !isFinite(*target_it))
     {
-      ++target_it;
-      ++source_it;    
       continue;
     }
 
@@ -186,34 +167,27 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
     double b = nx*sz - nz*sx; 
     double c = ny*sx - nx*sy;
    
-    //    0  1  2  3  4  5
-    //    6  7  8  9 10 11
-    //   12 13 14 15 16 17
-    //   18 19 20 21 22 23
-    //   24 25 26 27 28 29
-    //   30 31 32 33 34 35
-   
-    ATA.coeffRef (0) += a * a;
-    ATA.coeffRef (1) += a * b;
-    ATA.coeffRef (2) += a * c;
-    ATA.coeffRef (3) += a * nx;
-    ATA.coeffRef (4) += a * ny;
-    ATA.coeffRef (5) += a * nz;
-    ATA.coeffRef (7) += b * b;
-    ATA.coeffRef (8) += b * c;
-    ATA.coeffRef (9) += b * nx;
-    ATA.coeffRef (10) += b * ny;
-    ATA.coeffRef (11) += b * nz;
-    ATA.coeffRef (14) += c * c;
-    ATA.coeffRef (15) += c * nx;
-    ATA.coeffRef (16) += c * ny;
-    ATA.coeffRef (17) += c * nz;
-    ATA.coeffRef (21) += nx * nx;
-    ATA.coeffRef (22) += nx * ny;
-    ATA.coeffRef (23) += nx * nz;
-    ATA.coeffRef (28) += ny * ny;
-    ATA.coeffRef (29) += ny * nz;
-    ATA.coeffRef (35) += nz * nz;
+    U.coeffRef (0, 0) += a * a;
+    U.coeffRef (0, 1) += a * b;
+    U.coeffRef (0, 2) += a * c;
+    U.coeffRef (0, 3) += a * nx;
+    U.coeffRef (0, 4) += a * ny;
+    U.coeffRef (0, 5) += a * nz;
+    U.coeffRef (1, 1) += b * b;
+    U.coeffRef (1, 2) += b * c;
+    U.coeffRef (1, 3) += b * nx;
+    U.coeffRef (1, 4) += b * ny;
+    U.coeffRef (1, 5) += b * nz;
+    U.coeffRef (2, 2) += c * c;
+    U.coeffRef (2, 3) += c * nx;
+    U.coeffRef (2, 4) += c * ny;
+    U.coeffRef (2, 5) += c * nz;
+    U.coeffRef (3, 3) += nx * nx;
+    U.coeffRef (3, 4) += nx * ny;
+    U.coeffRef (3, 5) += nx * nz;
+    U.coeffRef (4, 4) += ny * ny;
+    U.coeffRef (4, 5) += ny * nz;
+    U.coeffRef (5, 5) += nz * nz;
 
     double d = nx*dx + ny*dy + nz*dz - nx*sx - ny*sy - nz*sz;
     ATb.coeffRef (0) += a * d;
@@ -222,30 +196,12 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
     ATb.coeffRef (3) += nx * d;
     ATb.coeffRef (4) += ny * d;
     ATb.coeffRef (5) += nz * d;
-
-    ++target_it;
-    ++source_it;    
   }
-  ATA.coeffRef (6) = ATA.coeff (1);
-  ATA.coeffRef (12) = ATA.coeff (2);
-  ATA.coeffRef (13) = ATA.coeff (8);
-  ATA.coeffRef (18) = ATA.coeff (3);
-  ATA.coeffRef (19) = ATA.coeff (9);
-  ATA.coeffRef (20) = ATA.coeff (15);
-  ATA.coeffRef (24) = ATA.coeff (4);
-  ATA.coeffRef (25) = ATA.coeff (10);
-  ATA.coeffRef (26) = ATA.coeff (16);
-  ATA.coeffRef (27) = ATA.coeff (22);
-  ATA.coeffRef (30) = ATA.coeff (5);
-  ATA.coeffRef (31) = ATA.coeff (11);
-  ATA.coeffRef (32) = ATA.coeff (17);
-  ATA.coeffRef (33) = ATA.coeff (23);
-  ATA.coeffRef (34) = ATA.coeff (29);
 
   // Solve A*x = b
-  Vector6d x = static_cast<Vector6d> (ATA.inverse () * ATb);
+  Vector6d x = static_cast<Vector6d> (ATA.selfadjointView<Eigen::Upper> ().ldlt ().solve (ATb));
   
   // Construct the transformation matrix from x
-  constructTransformationMatrix (x (0), x (1), x (2), x (3), x (4), x (5), transformation_matrix);
+  constructTransformationMatrix (x, transformation_matrix);
 }
 #endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SYMMETRIC_POINT_TO_PLANE_LLS_HPP_ */

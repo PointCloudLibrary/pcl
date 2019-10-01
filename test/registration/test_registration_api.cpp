@@ -688,6 +688,8 @@ TEST (PCL, TransformationEstimationSymmetricPointToPlaneLLS)
   src->width = static_cast<uint32_t> (src->points.size ());
 
   // Create a test matrix
+  // (alpha, beta, gamma) = (-0.0180524, 0.0525268, -0.0999635)
+  // (tx, ty, tz) = (0.0911343, -0.207119, 0.294305)
   Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
   ground_truth_tform.row (0) <<  0.9938f,  0.0988f,  0.0517f,  0.1000f;
   ground_truth_tform.row (1) << -0.0997f,  0.9949f,  0.0149f, -0.2000f;
