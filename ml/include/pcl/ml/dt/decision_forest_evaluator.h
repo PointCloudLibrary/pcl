@@ -34,74 +34,78 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-  
+
 #pragma once
 
 #include <pcl/common/common.h>
 
-#include <pcl/ml/dt/decision_tree_evaluator.h>
 #include <pcl/ml/dt/decision_forest.h>
+#include <pcl/ml/dt/decision_tree_evaluator.h>
 #include <pcl/ml/feature_handler.h>
 #include <pcl/ml/stats_estimator.h>
 
 #include <vector>
 
-namespace pcl
-{
+namespace pcl {
 
-  /** \brief Utility class for evaluating a decision forests. */
-  template <
-    class FeatureType,
-    class DataSet,
-    class LabelType,
-    class ExampleIndex,
-    class NodeType >
-  class DecisionForestEvaluator
-  {
-    public:
-      /** \brief Constructor. */
-      DecisionForestEvaluator();
-      /** \brief Destructor. */
-      virtual 
-      ~DecisionForestEvaluator();
+/** Utility class for evaluating a decision forests. */
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
+class DecisionForestEvaluator {
+public:
+  /** Constructor. */
+  DecisionForestEvaluator();
 
-      /** \brief Evaluates the specified examples using the supplied forest. 
-        * \param[in] DecisionForestEvaluator The decision forest.
-        * \param[in] feature_handler The feature handler used to train the tree.
-        * \param[in] stats_estimator The statistics estimation instance used while training the tree.
-        * \param[in] data_set The data set used for evaluation.
-        * \param[in] examples The examples that have to be evaluated.
-        * \param[out] label_data The destination for the resulting label data.
-        */
-      void
-      evaluate (pcl::DecisionForest<NodeType> & DecisionForestEvaluator,
-                pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
-                pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
-                DataSet & data_set,
-                std::vector<ExampleIndex> & examples,
-                std::vector<LabelType> & label_data);
+  /** Destructor. */
+  virtual ~DecisionForestEvaluator();
 
-     /** \brief Evaluates a specific patch using the supplied forest.
-       * \param[in] DecisionForestEvaluator The decision forest.
-       * \param[in] feature_handler The feature handler used to train the tree.
-       * \param[in] stats_estimator The statistics estimation instance used while training the tree.
-       * \param[in] data_set The data set used for evaluation.
-       * \param[in] example The examples that have to be evaluated.
-       * \param[out] leaves The leaves where the patch arrives
-       */
-      void
-      evaluate (pcl::DecisionForest<NodeType> & DecisionForestEvaluator,
-                pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
-                pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
-                DataSet & data_set,
-                ExampleIndex example,
-                std::vector<NodeType> & leaves);
-    
-    private:
-      /** \brief Evaluator for decision trees. */
-      DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType> tree_evaluator_;
-  };
+  /** Evaluates the specified examples using the supplied forest.
+   *
+   * \param[in] DecisionForestEvaluator the decision forest
+   * \param[in] feature_handler the feature handler used to train the tree
+   * \param[in] stats_estimator the statistics estimation instance used while training
+   *            the tree
+   * \param[in] data_set the data set used for evaluation
+   * \param[in] examples the examples that have to be evaluated
+   * \param[out] label_data the destination for the resulting label data
+   */
+  void
+  evaluate(
+      pcl::DecisionForest<NodeType>& DecisionForestEvaluator,
+      pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+      pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
+      DataSet& data_set,
+      std::vector<ExampleIndex>& examples,
+      std::vector<LabelType>& label_data);
 
-}
+  /** Evaluates a specific patch using the supplied forest.
+   *
+   * \param[in] DecisionForestEvaluator the decision forest
+   * \param[in] feature_handler the feature handler used to train the tree
+   * \param[in] stats_estimator the statistics estimation instance used while training
+   *            the tree
+   * \param[in] data_set the data set used for evaluation
+   * \param[in] example the examples that have to be evaluated
+   * \param[out] leaves the leaves where the patch arrives
+   */
+  void
+  evaluate(
+      pcl::DecisionForest<NodeType>& DecisionForestEvaluator,
+      pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+      pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
+      DataSet& data_set,
+      ExampleIndex example,
+      std::vector<NodeType>& leaves);
+
+private:
+  /** Evaluator for decision trees. */
+  DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>
+      tree_evaluator_;
+};
+
+} // namespace pcl
 
 #include <pcl/ml/impl/dt/decision_forest_evaluator.hpp>
