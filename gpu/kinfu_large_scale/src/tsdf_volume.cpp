@@ -163,7 +163,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
   cloud.points.clear ();
   cloud.points.reserve (10000);
 
-  const int DIVISOR = pcl::device::kinfuLS::DIVISOR; // SHRT_MAX;
+  constexpr int DIVISOR = pcl::device::kinfuLS::DIVISOR; // SHRT_MAX;
 
 #define FETCH(x, y, z) volume_host[(x) + (y) * volume_x + (z) * volume_y * volume_x]
 

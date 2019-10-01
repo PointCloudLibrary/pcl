@@ -84,7 +84,7 @@ namespace pcl
         if(number_of_points == 0)
           return;
         
-        const int DIVISOR = 32767;
+        constexpr int DIVISOR = std::numeric_limits<short>::max();
 
         const short2 *first_point_pointer_const = &(volume.ptr (0)[0]);
         short2  *first_point_pointer = const_cast<short2*>(first_point_pointer_const);
