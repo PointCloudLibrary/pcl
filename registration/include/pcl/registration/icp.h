@@ -309,62 +309,36 @@ namespace pcl
       using ConstPtr = boost::shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
 
       /** \brief Empty constructor. */
-      IterativeClosestPointWithNormals () 
+      IterativeClosestPointWithNormals ()
       {
         reg_name_ = "IterativeClosestPointWithNormals";
-        transformation_estimation_.reset (new pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar> ());
+        setUseSymmetricObjective (false);
         //correspondence_rejectors_.add
       };
       
       /** \brief Empty destructor */
       virtual ~IterativeClosestPointWithNormals () {}
 
-    protected:
-
-      /** \brief Apply a rigid transform to a given dataset
-        * \param[in] input the input point cloud
-        * \param[out] output the resultant output point cloud
-        * \param[in] transform a 4x4 rigid transformation
-        * \note Can be used with cloud_in equal to cloud_out
+      /** \brief Set whether to use a symmetric objective function or not
+        *
+        * \param[in] use_symmetric_objective whether to use a symmetric objective function or not
         */
-      virtual void 
-      transformCloud (const PointCloudSource &input, 
-                      PointCloudSource &output, 
-                      const Matrix4 &transform);
-  };
-
-  /** \brief @b SymmetricIterativeClosestPointWithNormals is a special case of
-    * IterativeClosestPoint, that uses a transformation estimated based on
-    * Symmetric Point to Plane distances by default.
-    *
-    * \author Matthew Cong
-    * \ingroup registration
-    */
-  template <typename PointSource, typename PointTarget, typename Scalar = float>
-  class SymmetricIterativeClosestPointWithNormals : public IterativeClosestPoint<PointSource, PointTarget, Scalar>
-  {
-    public:
-      using PointCloudSource = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudSource;
-      using PointCloudTarget = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudTarget;
-      using Matrix4 = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4;
-
-      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::reg_name_;
-      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformation_estimation_;
-      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::correspondence_rejectors_;
-
-      using Ptr = boost::shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
-      using ConstPtr = boost::shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
-
-      /** \brief Empty constructor. */
-      SymmetricIterativeClosestPointWithNormals () 
+      inline void
+      setUseSymmetricObjective (bool use_symmetric_objective)
       {
-        reg_name_ = "SymmetricIterativeClosestPointWithNormals";
-        transformation_estimation_.reset (new pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> ());
-        //correspondence_rejectors_.add
-      };
-      
-      /** \brief Empty destructor */
-      virtual ~SymmetricIterativeClosestPointWithNormals () {}
+        use_symmetric_objective_ = use_symmetric_objective;
+        if (use_symmetric_objective_)
+            transformation_estimation_.reset (new pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> ());
+        else
+            transformation_estimation_.reset (new pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar> ());
+      }
+
+      /** \brief Obtain whether a symmetric objective is used or not */
+      inline bool
+      getUseSymmetricObjective () const
+      {
+        return use_symmetric_objective_;
+      }
 
     protected:
 
@@ -378,6 +352,9 @@ namespace pcl
       transformCloud (const PointCloudSource &input, 
                       PointCloudSource &output, 
                       const Matrix4 &transform);
+
+      /** \brief Type of objective function (asymmetric vs. symmetric) used for transform estimation */
+      bool use_symmetric_objective_;
   };
 
 }
