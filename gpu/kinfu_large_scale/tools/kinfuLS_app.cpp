@@ -985,29 +985,40 @@ struct KinFuLSApp
   {   
     boost::signals2::connection c;
 
+    std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) >
+        func3 = [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+    {
+      source_cb3 (cloud);
+    };
+
+    bool need_colors = integrate_colors_ || registration_ || enable_texture_extraction_;
+
     if(oni2_interface)
     {
       using namespace pcl::io;
       using DepthImagePtr = boost::shared_ptr<DepthImage>;
       using ImagePtr = boost::shared_ptr<Image>;
 
-      std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func1 = [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
+      std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func1 =
+          [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
       {
         source_cb2 (img, depth, constant);
       };
-      std::function<void (const DepthImagePtr&)> func2 = [this] (const DepthImagePtr& depth) { source_cb1 (depth); };
-      std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+      std::function<void (const DepthImagePtr&)> func2 =
+          [this] (const DepthImagePtr& depth) { source_cb1 (depth); };
+
+      if(pcd_source_)
       {
-        source_cb3 (cloud);
-      };
-
-      bool need_colors = integrate_colors_ || registration_ || enable_texture_extraction_;
-
-      if ( pcd_source_ && !capture_.providesCallback<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>() ) {
-        std::cout << "grabber doesn't provide pcl::PointCloud<pcl::PointXYZRGBA> callback !\n";
+        c = capture_.registerCallback (func3);
       }
-
-      c = pcd_source_? capture_.registerCallback (func3) : need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
+      else if (need_colors)
+      {
+        c = capture_.registerCallback (func1);
+      }
+      else
+      {
+        c = capture_.registerCallback (func2);
+      }
     }
     else
     {
@@ -1015,24 +1026,26 @@ struct KinFuLSApp
       using DepthImagePtr = boost::shared_ptr<DepthImage>;
       using ImagePtr = boost::shared_ptr<Image>;
 
-      std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func1 = [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
+      std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func1 =
+          [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
       {
         source_cb2 (img, depth, constant);
       };
-      std::function<void (const DepthImagePtr&)> func2 = [this] (const DepthImagePtr& depth) { source_cb1 (depth); };
-      std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+      std::function<void (const DepthImagePtr&)> func2 =
+          [this] (const DepthImagePtr& depth) { source_cb1 (depth); };
+
+      if(pcd_source_)
       {
-        source_cb3 (cloud);
-      };
-
-      bool need_colors = integrate_colors_ || registration_ || enable_texture_extraction_;
-
-      if ( pcd_source_ && !capture_.providesCallback<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>() ) {
-        std::cout << "grabber doesn't provide pcl::PointCloud<pcl::PointXYZRGBA> callback !\n";
+        c = capture_.registerCallback (func3);
       }
-
-      c = pcd_source_? capture_.registerCallback (func3) : need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
-
+      else if (need_colors)
+      {
+        c = capture_.registerCallback (func1);
+      }
+      else
+      {
+        c = capture_.registerCallback (func2);
+      }
     }
 
     {
@@ -1050,7 +1063,7 @@ struct KinFuLSApp
 
         try { this->execute (depth_, rgb24_, has_data); }
         catch (const std::bad_alloc& /*e*/) { std::cout << "Bad alloc" << std::endl; break; }
-        catch (const std::exception& /*e*/) { std::cout << "Exception" << std::endl; break; }
+        catch (const std::exception& e) { std::cout << "Exception: " << e.what() << std::endl; break; }
 
         scene_cloud_view_.cloud_viewer_.spinOnce (3);
         //~ std::cout << "In main loop" << std::endl;                  
