@@ -35,8 +35,9 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SYMMETRIC_POINT_TO_PLANE_LLS_HPP_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SYMMETRIC_POINT_TO_PLANE_LLS_HPP_
+#pragma once
+
+#include <pcl/common/centroid.h>
 #include <pcl/cloud_iterator.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +50,7 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
   const auto nr_points = cloud_src.points.size ();
   if (cloud_tgt.points.size () != nr_points)
   {
-    PCL_ERROR ("[pcl::TransformationEstimationSymmetricPointToPlaneLLS::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", nr_points, cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::TransformationEstimationSymmetricPointToPlaneLLS::estimateRigidTransformation] Number or points in source (%lu) differs from target (%lu)!\n", nr_points, cloud_tgt.points.size ());
     return;
   }
 
@@ -117,6 +118,8 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
 pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar>::
 constructTransformationMatrix (const Vector6 &parameters,
+                               const Vector4 &source_centroid,
+                               const Vector4 &target_centroid,
                                Matrix4 &transformation_matrix) const
 {
   // Construct the transformation matrix from rotation and translation 
@@ -124,8 +127,14 @@ constructTransformationMatrix (const Vector6 &parameters,
   const Eigen::AngleAxis<Scalar> rotation_y (parameters (1), Eigen::Matrix<Scalar, 3, 1>::UnitY ());
   const Eigen::AngleAxis<Scalar> rotation_x (parameters (0), Eigen::Matrix<Scalar, 3, 1>::UnitX ());
   const Eigen::Translation<Scalar, 3> translation (parameters (3), parameters (4), parameters (5));
-  const Eigen::Transform<Scalar, 3, Eigen::Affine> transform = rotation_z * rotation_y * rotation_x * translation * rotation_z * rotation_y * rotation_x;
-  transformation_matrix = transform.matrix();
+  const Eigen::Translation<Scalar, 3> source_translation (-source_centroid.template head<3> ());
+  const Eigen::Translation<Scalar, 3> target_translation (target_centroid.template head<3> ());
+  const Eigen::Transform<Scalar, 3, Eigen::Affine> transform = target_translation *
+                                                               rotation_z * rotation_y * rotation_x *
+                                                               translation *
+                                                               rotation_z * rotation_y * rotation_x *
+                                                               source_translation;
+  transformation_matrix = transform.matrix ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,33 +151,41 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
   ATb.setZero ();
   auto M = ATA.template selfadjointView<Eigen::Upper> ();
 
+  Vector4 source_centroid;
+  compute3DCentroid (source_it, source_centroid);
+
+  Vector4 target_centroid;
+  compute3DCentroid (target_it, target_centroid);
+
   // Approximate as a linear least squares problem
+  source_it.reset ();
+  target_it.reset ();
   for (; source_it.isValid () && target_it.isValid (); ++source_it, ++target_it)
   {
-    Vector3 s (source_it->x, source_it->y, source_it->z);
-    Vector3 d (target_it->x, target_it->y, target_it->z);
-    Vector3 n (source_it->normal[0] + target_it->normal[0],
-               source_it->normal[1] + target_it->normal[1],
-               source_it->normal[2] + target_it->normal[2]);
+    Vector3 p (source_it->x, source_it->y, source_it->z);
+    Vector3 q (target_it->x, target_it->y, target_it->z);
+    Vector3 n (source_it->getNormalVector3fMap() + target_it->getNormalVector3fMap());
 
-    if (!s.array().isFinite().all() ||
-        !d.array().isFinite().all() ||
+    if (!p.array().isFinite().all() ||
+        !q.array().isFinite().all() ||
         !n.array().isFinite().all())
     {
       continue;
     }
 
+    p -= source_centroid.template head<3> ();
+    q -= target_centroid.template head<3> ();
+
     Vector6 v;
-    v << (s + d).cross (n), n;
+    v << (p + q).cross (n), n;
     M.rankUpdate (v);
    
-    ATb += v * (d - s).dot (n);
+    ATb += v * (q - p).dot (n);
   }
 
   // Solve A*x = b
-  const auto x = static_cast<Vector6> (M.ldlt ().solve (ATb));
+  const Vector6 x = M.ldlt ().solve (ATb);
   
   // Construct the transformation matrix from x
-  constructTransformationMatrix (x, transformation_matrix);
+  constructTransformationMatrix (x, source_centroid, target_centroid, transformation_matrix);
 }
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SYMMETRIC_POINT_TO_PLANE_LLS_HPP_ */
