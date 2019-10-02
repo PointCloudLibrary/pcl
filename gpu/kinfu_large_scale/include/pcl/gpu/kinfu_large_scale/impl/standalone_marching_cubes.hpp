@@ -187,7 +187,7 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::loadTsdfCloudToGPU (const Po
 template <typename PointT> void 
 pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::convertTsdfVectors (const PointCloud &cloud, std::vector<int> &output)
 {
-	  const int DIVISOR = 32767;     // SHRT_MAX;
+	constexpr int DIVISOR = std::numeric_limits<short>::max();
 
     ///For every point in the cloud
 #pragma omp parallel for
