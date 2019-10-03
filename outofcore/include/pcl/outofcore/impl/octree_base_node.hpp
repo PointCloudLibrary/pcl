@@ -428,7 +428,7 @@ namespace pcl
         }
         //check which points belong to this node, throw away the rest
         std::vector<const PointT*> buff;
-        BOOST_FOREACH(const PointT* pt, p)
+        for (const PointT* pt : p)
         {
           if(pointInBoundingBox(*pt))
           {
@@ -566,9 +566,13 @@ namespace pcl
       AlignedPointTVector sampleBuff;
       if (!skip_bb_check)
       {
-        BOOST_FOREACH (const PointT& pt, p)
-        if(pointInBoundingBox(pt))
-          sampleBuff.push_back(pt);
+        for (const PointT& pt: p)
+        {
+          if (pointInBoundingBox(pt))
+          {
+            sampleBuff.push_back(pt);
+          }
+        }
       }
       else
       {

@@ -91,7 +91,7 @@ namespace pcl
       template<typename Tag> void
       operator () ()
       {
-        BOOST_FOREACH (const pcl::PCLPointField& field, fields_)
+        for (const auto& field : fields_)
         {
           if (FieldMatches<PointT, Tag>()(field))
           {
@@ -211,7 +211,7 @@ namespace pcl
         for (uint32_t col = 0; col < msg.width; ++col)
         {
           const uint8_t* msg_data = row_data + col * msg.point_step;
-          BOOST_FOREACH (const detail::FieldMapping& mapping, field_map)
+          for (const detail::FieldMapping& mapping : field_map)
           {
             memcpy (cloud_data + mapping.struct_offset, msg_data + mapping.serialized_offset, mapping.size);
           }

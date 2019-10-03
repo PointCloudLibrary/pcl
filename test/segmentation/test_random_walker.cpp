@@ -90,7 +90,7 @@ struct GraphInfo
     color_map = boost::get (boost::vertex_color, graph);
 
     // Read graph topology
-    BOOST_FOREACH (ptree::value_type& v, pt.get_child ("Topology"))
+    for (ptree::value_type& v : pt.get_child ("Topology"))
     {
       uint32_t source, target;
       float weight;
@@ -104,7 +104,7 @@ struct GraphInfo
       color_map[*vi] = 0;
 
     // Read seeds
-    BOOST_FOREACH (ptree::value_type& v, pt.get_child ("Seeds"))
+    for (ptree::value_type& v : pt.get_child ("Seeds"))
     {
       uint32_t id, color;
       std::stringstream (v.second.data ()) >> id >> color;
@@ -121,7 +121,7 @@ struct GraphInfo
     std::stringstream (pt.get<std::string> ("Dimensions")) >> rows >> cols;
 
     // Read expected potentials
-    BOOST_FOREACH (ptree::value_type& v, pt.get_child ("Potentials"))
+    for (ptree::value_type& v : pt.get_child ("Potentials"))
     {
       Color color = boost::lexical_cast<uint32_t> (v.first);
       potentials[color] = Vector::Zero (size);

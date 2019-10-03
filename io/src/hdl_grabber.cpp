@@ -211,20 +211,20 @@ pcl::HDLGrabber::loadCorrectionsFile (const std::string& correctionsFile)
     return;
   }
 
-  BOOST_FOREACH (boost::property_tree::ptree::value_type &v, pt.get_child ("boost_serialization.DB.points_"))
+  for (const auto& v : pt.get_child ("boost_serialization.DB.points_"))
   {
     if (v.first == "item")
     {
-      boost::property_tree::ptree points = v.second;
-      BOOST_FOREACH(boost::property_tree::ptree::value_type &px, points)
+      const auto& points = v.second;
+      for (const auto& px : points)
       {
         if (px.first == "px")
         {
-          boost::property_tree::ptree calibration_data = px.second;
+          const auto& calibration_data = px.second;
           int32_t index = -1;
           double azimuth = 0, vert_correction = 0, dist_correction = 0, vert_offset_correction = 0, horiz_offset_correction = 0;
 
-          BOOST_FOREACH (boost::property_tree::ptree::value_type &item, calibration_data)
+          for (const auto& item : calibration_data)
           {
             if (item.first == "id_")
               index = atoi (item.second.data ().c_str ());

@@ -194,7 +194,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
       }
       {
         std::lock_guard<std::mutex> lock (once_mtx);
-        BOOST_FOREACH (CallableList::value_type& x, callables_once)
+        for (CallableList::value_type& x : callables_once)
         {
           (x)(*viewer_);
         }
@@ -202,7 +202,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
       }
       {
         std::lock_guard<std::mutex> lock (c_mtx);
-        BOOST_FOREACH (CallableMap::value_type& x, callables)
+        for (CallableMap::value_type& x : callables)
         {
           (x.second)(*viewer_);
         }
