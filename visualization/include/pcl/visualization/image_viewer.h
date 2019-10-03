@@ -260,10 +260,12 @@ namespace pcl
           * \param[in] height the height of the image
           * \param[in] layer_id the name of the layer (default: "image")
           * \param[in] opacity the opacity of the layer (default: 1.0)
+          * \param[in] autoresize flag to enable window to adapt to image size (default true)
           */
         void 
         addRGBImage (const unsigned char* data, unsigned width, unsigned height, 
-                     const std::string &layer_id = "rgb_image", double opacity = 1.0);
+                     const std::string &layer_id = "rgb_image", double opacity = 1.0,
+                     bool autoresize = true);
 
         /** \brief Show a 2D image on screen, obtained from the RGB channel of a point cloud.
           * \param[in] cloud the input data representing the RGB point cloud 

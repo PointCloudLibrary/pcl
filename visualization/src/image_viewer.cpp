@@ -127,10 +127,11 @@ pcl::visualization::ImageViewer::~ImageViewer ()
 void
 pcl::visualization::ImageViewer::addRGBImage (
     const unsigned char* rgb_data, unsigned width, unsigned height,
-    const std::string &layer_id, double opacity)
+    const std::string &layer_id, double opacity, bool autoresize)
 {
-  if (unsigned (getSize ()[0]) != width ||
-      unsigned (getSize ()[1]) != height)
+  if (autoresize &&
+      (unsigned (getSize ()[0]) != width ||
+      unsigned (getSize ()[1]) != height))
     setSize (width, height);
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
