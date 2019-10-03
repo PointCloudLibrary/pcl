@@ -65,9 +65,7 @@ namespace pcl
         using ConstPtr = boost::shared_ptr<const TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> >;
 
         using Matrix4 = typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
-
         using Vector6 = Eigen::Matrix<Scalar, 6, 1>;
-        using Vector4 = Eigen::Matrix<Scalar, 4, 1>;
         
         TransformationEstimationSymmetricPointToPlaneLLS () {};
         ~TransformationEstimationSymmetricPointToPlaneLLS () {};
@@ -138,14 +136,10 @@ namespace pcl
 
         /** \brief Construct a 4 by 4 transformation matrix from the provided rotation and translation.
           * \param[in] (alpha, beta, gamma, tx, ty, tz) specifying rotation about the x, y, and z-axis and translation along the the x, y, and z-axis respectively
-          * \param[in] source_centroid a vector specifying the source centroid
-          * \param[in] target_centroid a vector specifying the target centroid
           * \param[out] transformation_matrix the resultant transformation matrix
           */
         inline void
         constructTransformationMatrix (const Vector6 &parameters,
-                                       const Vector4 &source_centroid,
-                                       const Vector4 &target_centroid,
                                        Matrix4 &transformation_matrix) const;
 
     };

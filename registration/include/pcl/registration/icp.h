@@ -290,7 +290,21 @@ namespace pcl
     * IterativeClosestPoint, that uses a transformation estimated based on
     * Point to Plane distances by default.
     *
-    * \author Radu B. Rusu
+    * By default, this implementation uses the traditional point to plane objective
+    * and computes point to plane distances using the normals of the target point
+    * cloud. It also provides the option (through setUseSymmetricObjective) of
+    * using the symmetric objective function of [Rusinkiewicz 2019]. This objective
+    * uses the normals of both the source and target point cloud and has a similar
+    * computational cost to the traditional point to plane objective while also
+    * offering improved convergence speed and a wider basin of convergence.
+    *
+    * Note that this implementation not demean the point clouds which can lead
+    * to increased numerical error. If desired, a user can demean the point cloud,
+    * run iterative closest point, and composite the resulting ICP transformation
+    * with the translations from demeaning to obtain a transformation between
+    * the original point clouds.
+    *
+    * \author Radu B. Rusu, Matthew Cong
     * \ingroup registration
     */
   template <typename PointSource, typename PointTarget, typename Scalar = float>
