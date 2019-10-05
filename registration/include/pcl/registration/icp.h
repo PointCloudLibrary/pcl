@@ -327,6 +327,7 @@ namespace pcl
       {
         reg_name_ = "IterativeClosestPointWithNormals";
         setUseSymmetricObjective (false);
+        setEnforceSameDirectionNormals (true);
         //correspondence_rejectors_.add
       };
       
@@ -342,9 +343,15 @@ namespace pcl
       {
         use_symmetric_objective_ = use_symmetric_objective;
         if (use_symmetric_objective_)
-            transformation_estimation_.reset (new pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> ());
+        {
+            auto symmetric_transformation_estimation = std::make_shared<pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> > ();
+            symmetric_transformation_estimation->setEnforceSameDirectionNormals (enforce_same_direction_normals_);
+            transformation_estimation_.reset (symmetric_transformation_estimation);
+        }
         else
+        {
             transformation_estimation_.reset (new pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar> ());
+        }
       }
 
       /** \brief Obtain whether a symmetric objective is used or not */
@@ -352,6 +359,26 @@ namespace pcl
       getUseSymmetricObjective () const
       {
         return use_symmetric_objective_;
+      }
+
+        /** \brief Set whether or not to negate source or target normals on a per-point basis such that they point in the same direction. Only applicable to the symmetric objective function.
+        *
+        * \param[in] enforce_same_direction_normals whether to negate source or target normals on a per-point basis such that they point in the same direction.
+        */
+      inline void
+      setEnforceSameDirectionNormals (bool enforce_same_direction_normals)
+      {
+        enforce_same_direction_normals_ = enforce_same_direction_normals;
+        auto symmetric_transformation_estimation = boost::dynamic_pointer_cast<pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> >(transformation_estimation_);
+        if (symmetric_transformation_estimation)
+            symmetric_transformation_estimation->setEnforceSameDirectionNormals (enforce_same_direction_normals_);
+      }
+
+      /** \brief Obtain whether source or target normals are negated on a per-point basis such that they point in the same direction or not */
+      inline bool
+      getEnforceSameDirectionNormals () const
+      {
+        return enforce_same_direction_normals_;
       }
 
     protected:
@@ -369,6 +396,8 @@ namespace pcl
 
       /** \brief Type of objective function (asymmetric vs. symmetric) used for transform estimation */
       bool use_symmetric_objective_;
+      /** \brief Whether or not to negate source and/or target normals such that they point in the same direction in the symmetric objective function */
+      bool enforce_same_direction_normals_;
   };
 
 }

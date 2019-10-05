@@ -67,7 +67,7 @@ namespace pcl
         using Matrix4 = typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
         using Vector6 = Eigen::Matrix<Scalar, 6, 1>;
         
-        TransformationEstimationSymmetricPointToPlaneLLS () {};
+        TransformationEstimationSymmetricPointToPlaneLLS () : enforce_same_direction_normals_ (true) {};
         ~TransformationEstimationSymmetricPointToPlaneLLS () {};
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
@@ -122,6 +122,16 @@ namespace pcl
             const pcl::Correspondences &correspondences,
             Matrix4 &transformation_matrix) const override;
 
+        /** \brief Set whether or not to negate source or target normals on a per-point basis such that they point in the same direction.
+        * \param[in] enforce_same_direction_normals whether to negate source or target normals on a per-point basis such that they point in the same direction.
+        */
+        inline void
+        setEnforceSameDirectionNormals (bool enforce_same_direction_normals);
+        
+        /** \brief Obtain whether source or target normals are negated on a per-point basis such that they point in the same direction or not */
+        inline bool
+        getEnforceSameDirectionNormals ();
+
       protected:
         
         /** \brief Estimate a rigid rotation transformation between a source and a target
@@ -141,6 +151,9 @@ namespace pcl
         inline void
         constructTransformationMatrix (const Vector6 &parameters,
                                        Matrix4 &transformation_matrix) const;
+
+      /** \brief Whether or not to negate source and/or target normals such that they point in the same direction */
+        bool enforce_same_direction_normals_;
 
     };
   }

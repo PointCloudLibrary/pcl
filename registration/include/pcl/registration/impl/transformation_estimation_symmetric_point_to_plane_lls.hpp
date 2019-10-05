@@ -154,10 +154,17 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
     const Vector3 n1 (source_it->getNormalVector3fMap());
     const Vector3 n2 (target_it->getNormalVector3fMap());
     Vector3 n;
-    if (n1.dot (n2) >= 0.)
-        n = n1 + n2;
+    if (enforce_same_direction_normals_)
+    {
+        if (n1.dot (n2) >= 0.)
+            n = n1 + n2;
+        else
+            n = n1 - n2;
+    }
     else
-        n = n1 - n2;
+    {
+        n = n1 + n2;
+    }
 
     if (!p.array().isFinite().all() ||
         !q.array().isFinite().all() ||
@@ -178,4 +185,20 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
   
   // Construct the transformation matrix from x
   constructTransformationMatrix (x, transformation_matrix);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> inline void
+pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar>::
+setEnforceSameDirectionNormals (bool enforce_same_direction_normals)
+{
+    enforce_same_direction_normals_ = enforce_same_direction_normals;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> inline bool 
+pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar>::
+getEnforceSameDirectionNormals ()
+{
+    return enforce_same_direction_normals_;
 }
