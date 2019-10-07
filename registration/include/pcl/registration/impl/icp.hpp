@@ -295,6 +295,6 @@ pcl::IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transfo
 {
   pcl::transformPointCloudWithNormals (input, output, transform);
 }
-      
+
 
 #endif /* PCL_REGISTRATION_IMPL_ICP_HPP_ */
