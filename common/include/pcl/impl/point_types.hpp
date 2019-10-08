@@ -1700,7 +1700,4 @@ namespace pcl
   }
 } // End namespace
 
-// Preserve API for PCL users < 1.4
-#include <pcl/common/point_tests.h>
-
 #endif

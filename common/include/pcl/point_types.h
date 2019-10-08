@@ -790,12 +790,43 @@ namespace pcl
                                                             has_field<PointT, boost::mpl::_2> > >::type
     { };
 
+    /** \brief Traits defined for ease of use with fields already registered before
+     *
+     * has_<fields to be detected>: struct with `value` datamember defined at compiletime
+     * has_<fields to be detected>_v: constexpr boolean
+     * Has<Fields to be detected>: concept modelling name alias for `enable_if`
+     */
+
+    /** Metafunction to check if a given point type has x and y fields. */
+    template <typename PointT>
+    struct has_xy : has_all_fields<PointT, boost::mpl::vector<pcl::fields::x,
+                                                              pcl::fields::y> >
+    { };
+
+    template <typename PointT>
+    constexpr auto has_xy_v = has_xy<PointT>::value;
+
+    template <typename PointT>
+    using HasXY = std::enable_if_t<has_xy_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoXY = std::enable_if_t<!has_xy_v<PointT>, bool>;
+
     /** Metafunction to check if a given point type has x, y, and z fields. */
     template <typename PointT>
     struct has_xyz : has_all_fields<PointT, boost::mpl::vector<pcl::fields::x,
                                                                pcl::fields::y,
                                                                pcl::fields::z> >
     { };
+
+    template <typename PointT>
+    constexpr auto has_xyz_v = has_xyz<PointT>::value;
+
+    template <typename PointT>
+    using HasXYZ = std::enable_if_t<has_xyz_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoXYZ = std::enable_if_t<!has_xyz_v<PointT>, bool>;
 
     /** Metafunction to check if a given point type has normal_x, normal_y, and
       * normal_z fields. */
@@ -805,15 +836,42 @@ namespace pcl
                                                                   pcl::fields::normal_z> >
     { };
 
+    template <typename PointT>
+    constexpr auto has_normal_v = has_normal<PointT>::value;
+
+    template <typename PointT>
+    using HasNormal = std::enable_if_t<has_normal_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoNormal = std::enable_if_t<!has_normal_v<PointT>, bool>;
+
     /** Metafunction to check if a given point type has curvature field. */
     template <typename PointT>
     struct has_curvature : has_field<PointT, pcl::fields::curvature>
     { };
 
+    template <typename PointT>
+    constexpr auto has_curvature_v = has_curvature<PointT>::value;
+
+    template <typename PointT>
+    using HasCurvature = std::enable_if_t<has_curvature_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoCurvature = std::enable_if_t<!has_curvature_v<PointT>, bool>;
+
     /** Metafunction to check if a given point type has intensity field. */
     template <typename PointT>
     struct has_intensity : has_field<PointT, pcl::fields::intensity>
     { };
+
+    template <typename PointT>
+    constexpr auto has_intensity_v = has_intensity<PointT>::value;
+
+    template <typename PointT>
+    using HasIntensity = std::enable_if_t<has_intensity_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoIntensity = std::enable_if_t<!has_intensity_v<PointT>, bool>;
 
     /** Metafunction to check if a given point type has either rgb or rgba field. */
     template <typename PointT>
@@ -821,14 +879,34 @@ namespace pcl
                                                                 pcl::fields::rgba> >
     { };
 
+    template <typename PointT>
+    constexpr auto has_color_v = has_color<PointT>::value;
+
+    template <typename PointT>
+    using HasColor = std::enable_if_t<has_color_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoColor = std::enable_if_t<!has_color_v<PointT>, bool>;
+
     /** Metafunction to check if a given point type has label field. */
     template <typename PointT>
     struct has_label : has_field<PointT, pcl::fields::label>
     { };
 
+    template <typename PointT>
+    constexpr auto has_label_v = has_label<PointT>::value;
+
+    template <typename PointT>
+    using HasLabel = std::enable_if_t<has_label_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoLabel = std::enable_if_t<!has_label_v<PointT>, bool>;
   }
 
 } // namespace pcl
+
+// Not strictly required, merely to preserve API for PCL users < 1.4
+#include <pcl/common/point_tests.h>
 
 #if defined _MSC_VER
   #pragma warning(default: 4201)
