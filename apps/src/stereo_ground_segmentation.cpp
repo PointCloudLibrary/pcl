@@ -346,8 +346,6 @@ class HRCSSegmentation
       mps.setInputNormals (normal_cloud);
       mps.refine (model_coefficients,
                   inlier_indices,
-                  centroids,
-                  covariances,
                   labels_ptr,
                   region_indices);
       
