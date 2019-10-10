@@ -59,7 +59,16 @@ template <typename PointT> int
 pcl::getFieldIndex (const std::string &field_name, 
                     std::vector<pcl::PCLPointField> &fields)
 {
-  getFields<PointT> (fields);
+  fields = getFields<PointT> ();
+  const auto& ref = fields;
+  return pcl::getFieldIndex<PointT> (field_name, ref);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> int
+pcl::getFieldIndex (const std::string &field_name,
+                    const std::vector<pcl::PCLPointField> &fields)
+{
   const auto result = std::find_if(fields.begin (), fields.end (),
       [&field_name](const auto& field) { return field.name == field_name; });
   if (result == fields.end ())
@@ -71,16 +80,24 @@ pcl::getFieldIndex (const std::string &field_name,
 template <typename PointT> void
 pcl::getFields (const pcl::PointCloud<PointT> &, std::vector<pcl::PCLPointField> &fields)
 {
-  getFields<PointT> (fields);
+  fields = getFields<PointT> ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::getFields (std::vector<pcl::PCLPointField> &fields)
 {
-  fields.clear ();
+  fields = getFields<PointT> ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> std::vector<pcl::PCLPointField>
+pcl::getFields ()
+{
+  std::vector<pcl::PCLPointField> fields;
   // Get the fields list
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
+  return fields;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,8 +105,7 @@ template <typename PointT> std::string
 pcl::getFieldsList (const pcl::PointCloud<PointT> &)
 {
   // Get the fields list
-  std::vector<pcl::PCLPointField> fields;
-  pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
+  const auto fields = getFields<PointT>();
   std::string result;
   for (std::size_t i = 0; i < fields.size () - 1; ++i)
     result += fields[i].name + " ";

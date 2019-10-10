@@ -178,8 +178,7 @@ namespace pcl
       setInputSource (const PointCloudSourceConstPtr &cloud) override
       {
         Registration<PointSource, PointTarget, Scalar>::setInputSource (cloud);
-        std::vector<pcl::PCLPointField> fields;
-        pcl::getFields<PointSource> (fields);
+        const auto fields = pcl::getFields<PointSource> ();
         source_has_normals_ = false;
         for (const auto &field : fields)
         {
@@ -213,8 +212,7 @@ namespace pcl
       setInputTarget (const PointCloudTargetConstPtr &cloud) override
       {
         Registration<PointSource, PointTarget, Scalar>::setInputTarget (cloud);
-        std::vector<pcl::PCLPointField> fields;
-        pcl::getFields<PointSource> (fields);
+        const auto fields = pcl::getFields<PointSource> ();
         target_has_normals_ = false;
         for (const auto &field : fields)
         {
