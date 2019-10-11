@@ -182,7 +182,7 @@ Viewport::viewportHudUpdate ()
 
   char points_loaded_str[50];
   snprintf (points_loaded_str, sizeof(points_loaded_str),
-            "%"PRIu64" points/%"PRIu64" mb", points_loaded, data_loaded/1024);
+            "%" PRIu64 " points/%" PRIu64 " mb", points_loaded, data_loaded/1024);
   points_hud_actor_->SetInput (points_loaded_str);
 }
 
