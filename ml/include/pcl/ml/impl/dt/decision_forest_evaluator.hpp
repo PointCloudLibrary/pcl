@@ -125,4 +125,3 @@ pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, Node
     leaves[forest_index] = leave;
   }
 }
-
