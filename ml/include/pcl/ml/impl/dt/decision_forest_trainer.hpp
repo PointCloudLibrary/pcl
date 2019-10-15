@@ -72,4 +72,3 @@ pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeTy
     forest.push_back(tree);
   }
 }
-
