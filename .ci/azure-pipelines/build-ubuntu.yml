@@ -13,21 +13,11 @@ jobs:
     variables:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
       CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi -O2'
-      CCACHE_DIR: $(Pipeline.Workspace)/ccache
-      CCACHE_MAXSIZE: 15G
     steps:
-      - task: CacheBeta@0
-        inputs:
-          key: ccache | gcc | $(Agent.OS)
-          path: $(CCACHE_DIR)
-        displayName: Fetch cached files for ccache
-      - script: ccache -z
-        displayName: 'Zero ccache statistics'
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) \
             -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
-            -DPCL_ENABLE_CCACHE=ON \
             -DPCL_ONLY_CORE_POINT_TYPES=ON \
             -DBUILD_simulation=ON \
             -DBUILD_surface_on_nurbs=ON \
@@ -51,8 +41,6 @@ jobs:
           cmake --build . -- test_filters test_registration test_registration_api
           cmake --build . -- -j2
         displayName: 'Build Library'
-      - script: ccache -s
-        displayName: 'Display ccache statistics'
       - script: |
           cd $BUILD_DIR/test
           ctest -V -T Test
