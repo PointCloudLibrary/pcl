@@ -606,8 +606,7 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
     MaskMap eroded_mask;
     erode (mask, eroded_mask);
 
-    MaskMap diff_mask;
-    MaskMap::getDifferenceMask (mask, eroded_mask, diff_mask);
+    auto diff_mask = MaskMap::getDifferenceMask (mask, eroded_mask);
 
     for (size_t row_index = 0; row_index < height; ++row_index)
     {
