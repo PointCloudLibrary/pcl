@@ -10,7 +10,7 @@ jobs:
       vmImage: 'Ubuntu 16.04'
     container: fmt
     steps:
-      - script: ./.dev/format.sh $(which clang-format) .
+      - script: ./.dev/format.sh $(which clang-format-8) .
         displayName: 'Run clang-format'
       - script: git diff > formatting.patch
         displayName: 'Compute diff'
