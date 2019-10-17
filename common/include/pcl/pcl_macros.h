@@ -376,7 +376,7 @@ aligned_free (void* ptr)
  *
  * \ingroup common
  */
-#ifdef TYPED_TEST_SUITE
+#if defined(TYPED_TEST_SUITE)
   #define PCL_TYPED_TEST_SUITE TYPED_TEST_SUITE
 #elif defined(TYPED_TEST_CASE)
   #define PCL_TYPED_TEST_SUITE TYPED_TEST_CASE
