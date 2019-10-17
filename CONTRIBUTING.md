@@ -16,6 +16,7 @@ the preferred channel for submitting [pull requests](#pull-requests) and
 [bug reports](#bugs), but please respect the following
 restrictions:
 
+
 * Please **do not** use the issue tracker for personal support requests. Please
   consider one of the following alternatives instead:
   * [Stack Overflow](https://stackoverflow.com/questions/tagged/point-cloud-library)
