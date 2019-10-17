@@ -80,7 +80,7 @@ class TestTriangleMesh : public testing::Test
     using Mesh = MeshT;
 };
 
-TYPED_TEST_CASE (TestTriangleMesh, TriangleMeshTypes);
+PCL_TYPED_TEST_SUITE (TestTriangleMesh, TriangleMeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 

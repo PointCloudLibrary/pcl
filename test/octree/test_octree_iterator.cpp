@@ -154,7 +154,7 @@ using OctreeIteratorTypes = testing::Types
          OctreeLeafNodeDepthFirstIterator<OctreeBase<int> >,
          OctreeFixedDepthIterator<OctreeBase<int> >,
          OctreeLeafNodeBreadthFirstIterator<OctreeBase<int> > >;
-TYPED_TEST_CASE (OctreeIteratorTest, OctreeIteratorTypes);
+PCL_TYPED_TEST_SUITE (OctreeIteratorTest, OctreeIteratorTypes);
 
 TYPED_TEST (OctreeIteratorTest, CopyConstructor)
 {

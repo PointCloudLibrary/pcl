@@ -294,7 +294,7 @@ struct FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >
 using FPFHEstimatorTypes = ::testing::Types
         <FPFHEstimation<PointT, PointT, FPFHSignature33>,
          FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >;
-TYPED_TEST_CASE (FPFHTest, FPFHEstimatorTypes);
+PCL_TYPED_TEST_SUITE (FPFHTest, FPFHEstimatorTypes);
 
 // This is a copy of the old FPFHEstimation test which will now
 // be applied to both FPFHEstimation and FPFHEstimationOMP

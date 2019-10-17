@@ -82,7 +82,7 @@ class TestPolygonMesh : public testing::Test
     using Mesh = MeshT;
 };
 
-TYPED_TEST_CASE (TestPolygonMesh, PolygonMeshTypes);
+PCL_TYPED_TEST_SUITE (TestPolygonMesh, PolygonMeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 

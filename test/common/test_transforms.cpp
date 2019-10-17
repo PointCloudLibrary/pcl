@@ -107,7 +107,7 @@ class Transforms : public ::testing::Test
   PCL_MAKE_ALIGNED_OPERATOR_NEW;
 };
 
-TYPED_TEST_CASE (Transforms, TransformTypes);
+PCL_TYPED_TEST_SUITE (Transforms, TransformTypes);
 
 TYPED_TEST (Transforms, PointCloudXYZDense)
 {

@@ -92,7 +92,7 @@ using sacTypes = ::testing::Types<
   RandomizedMEstimatorSampleConsensus<PointXYZ>,
   MaximumLikelihoodSampleConsensus<PointXYZ>
 >;
-TYPED_TEST_CASE(SacTest, sacTypes);
+PCL_TYPED_TEST_SUITE(SacTest, sacTypes);
 
 TYPED_TEST(SacTest, InfiniteLoop)
 {

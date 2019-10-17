@@ -84,7 +84,7 @@ class BuffersTest : public ::testing::Test
 };
 
 using DataTypes = ::testing::Types<std::int8_t, std::int32_t, float>;
-TYPED_TEST_CASE (BuffersTest, DataTypes);
+PCL_TYPED_TEST_SUITE (BuffersTest, DataTypes);
 
 TYPED_TEST (BuffersTest, SingleBuffer)
 {

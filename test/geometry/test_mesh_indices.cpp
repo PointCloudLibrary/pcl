@@ -63,7 +63,7 @@ class TestMeshIndicesTyped : public testing::Test
 
 using MeshIndexTypes = testing::Types <VertexIndex, HalfEdgeIndex, EdgeIndex, FaceIndex>;
 
-TYPED_TEST_CASE (TestMeshIndicesTyped, MeshIndexTypes);
+PCL_TYPED_TEST_SUITE (TestMeshIndicesTyped, MeshIndexTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -80,7 +80,7 @@ class TestQuadMesh : public testing::Test
     using Mesh = MeshT;
 };
 
-TYPED_TEST_CASE (TestQuadMesh, QuadMeshTypes);
+PCL_TYPED_TEST_SUITE (TestQuadMesh, QuadMeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -68,7 +68,7 @@ class TestGetBoundary : public testing::Test
     using Mesh = MeshT;
 };
 
-TYPED_TEST_CASE (TestGetBoundary, MeshTypes);
+PCL_TYPED_TEST_SUITE (TestGetBoundary, MeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -308,7 +308,7 @@ TEST (PCL, PointTypes)
 
 template <typename T> class XYZPointTypesTest : public ::testing::Test { };
 using XYZPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_XYZ_POINT_TYPES)>;
-TYPED_TEST_CASE(XYZPointTypesTest, XYZPointTypes);
+PCL_TYPED_TEST_SUITE(XYZPointTypesTest, XYZPointTypes);
 TYPED_TEST(XYZPointTypesTest, GetVectorXfMap)
 {
   TypeParam pt;
@@ -329,7 +329,7 @@ TYPED_TEST(XYZPointTypesTest, GetArrayXfMap)
 
 template <typename T> class NormalPointTypesTest : public ::testing::Test { };
 using NormalPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_NORMAL_POINT_TYPES)>;
-TYPED_TEST_CASE(NormalPointTypesTest, NormalPointTypes);
+PCL_TYPED_TEST_SUITE(NormalPointTypesTest, NormalPointTypes);
 TYPED_TEST(NormalPointTypesTest, GetNormalVectorXfMap)
 {
   TypeParam pt;
@@ -341,7 +341,7 @@ TYPED_TEST(NormalPointTypesTest, GetNormalVectorXfMap)
 
 template <typename T> class RGBPointTypesTest : public ::testing::Test { };
 using RGBPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_RGB_POINT_TYPES)>;
-TYPED_TEST_CASE(RGBPointTypesTest, RGBPointTypes);
+PCL_TYPED_TEST_SUITE(RGBPointTypesTest, RGBPointTypes);
 TYPED_TEST(RGBPointTypesTest, GetRGBVectorXi)
 {
   TypeParam pt; pt.r = 1; pt.g = 2; pt.b = 3; pt.a = 4;

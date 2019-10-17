@@ -152,7 +152,7 @@ using NonManifoldMeshTraits = MeshTraits<false>;
 
 using MeshTraitsTypes = testing::Types <ManifoldMeshTraits, NonManifoldMeshTraits>;
 
-TYPED_TEST_CASE (TestMeshConversion, MeshTraitsTypes);
+PCL_TYPED_TEST_SUITE (TestMeshConversion, MeshTraitsTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 
