@@ -74,7 +74,7 @@ namespace pcl
         getFrameID () const = 0;
 
         // Microseconds from some arbitrary start point
-        virtual pcl::uint64_t
+        virtual std::uint64_t
         getTimestamp () const = 0;
     };
 

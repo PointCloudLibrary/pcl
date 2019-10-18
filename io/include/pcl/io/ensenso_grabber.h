@@ -464,7 +464,7 @@ namespace pcl
        * @return PCL stamp
        * The Ensenso API returns the time elapsed from January 1st, 1601 (UTC); on Linux OS the reference time is January 1st, 1970 (UTC).
        * See [time-stamp page](http://www.ensenso.de/manual/index.html?json_types.htm) for more info about the time stamp conversion. */
-      pcl::uint64_t
+      std::uint64_t
       static
       getPCLStamp (const double ensenso_stamp);
 

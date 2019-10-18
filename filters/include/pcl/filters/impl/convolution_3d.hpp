@@ -156,9 +156,9 @@ pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (const std::vec
     total_weight = 1.f/total_weight;
     r*= total_weight; g*= total_weight; b*= total_weight;
     result.x*= total_weight; result.y*= total_weight; result.z*= total_weight;
-    result.r = static_cast<pcl::uint8_t> (r);
-    result.g = static_cast<pcl::uint8_t> (g);
-    result.b = static_cast<pcl::uint8_t> (b);
+    result.r = static_cast<std::uint8_t> (r);
+    result.g = static_cast<std::uint8_t> (g);
+    result.b = static_cast<std::uint8_t> (b);
   }
   else
     makeInfinite (result);

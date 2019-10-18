@@ -107,7 +107,7 @@ pcl::io::LZFImageWriter::saveImageBlob (const char* data,
 }
 
 //////////////////////////////////////////////////////////////////////////////
-pcl::uint32_t
+std::uint32_t
 pcl::io::LZFImageWriter::compress (const char* input, 
                                    uint32_t uncompressed_size, 
                                    uint32_t width,

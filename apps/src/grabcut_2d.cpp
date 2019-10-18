@@ -512,7 +512,7 @@ int main (int argc, char** argv)
 
   if (scene->isOrganized ())
   {
-    pcl::uint32_t height_1 = scene->height -1;
+    std::uint32_t height_1 = scene->height -1;
     for (std::size_t i = 0; i < scene->height; ++i)
     {
       for (std::size_t j = 0; j < scene->width; ++j)

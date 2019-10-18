@@ -21,14 +21,14 @@ namespace pcl
 
      ::pcl::PCLHeader  header;
 
-    pcl::uint32_t height;
-    pcl::uint32_t width;
+    std::uint32_t height;
+    std::uint32_t width;
     std::string encoding;
 
-    pcl::uint8_t is_bigendian;
-    pcl::uint32_t step;
+    std::uint8_t is_bigendian;
+    std::uint32_t step;
 
-    std::vector<pcl::uint8_t> data;
+    std::vector<std::uint8_t> data;
 
     using Ptr = boost::shared_ptr< ::pcl::PCLImage>;
     using ConstPtr = boost::shared_ptr<const ::pcl::PCLImage>;

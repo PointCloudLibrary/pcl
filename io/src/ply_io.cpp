@@ -606,7 +606,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   if ((r_size  = (*range_grid_).size ()) > 0 && r_size != vertex_count_)
   {
     //cloud.header = cloud_->header;
-    std::vector<pcl::uint8_t> data ((*range_grid_).size () * cloud.point_step);
+    std::vector<std::uint8_t> data ((*range_grid_).size () * cloud.point_step);
     const static float f_nan = std::numeric_limits <float>::quiet_NaN ();
     const static double d_nan = std::numeric_limits <double>::quiet_NaN ();
     for (size_t r = 0; r < r_size; ++r)
@@ -673,7 +673,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
   if ((r_size  = (*range_grid_).size ()) > 0 && r_size != vertex_count_)
   {
     //cloud.header = cloud_->header;
-    std::vector<pcl::uint8_t> data ((*range_grid_).size () * mesh.cloud.point_step);
+    std::vector<std::uint8_t> data ((*range_grid_).size () * mesh.cloud.point_step);
     const static float f_nan = std::numeric_limits <float>::quiet_NaN ();
     const static double d_nan = std::numeric_limits <double>::quiet_NaN ();
     for (size_t r = 0; r < r_size; ++r)

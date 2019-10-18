@@ -427,12 +427,12 @@ namespace openni_wrapper
 
 
       /** \brief Convert shift to depth value. */
-      pcl::uint16_t
-      shiftToDepth (pcl::uint16_t shift_value) const
+      std::uint16_t
+      shiftToDepth (std::uint16_t shift_value) const
       {
         assert (shift_conversion_parameters_.init_);
 
-        pcl::uint16_t ret = 0;
+        std::uint16_t ret = 0;
 
         // lookup depth value in shift lookup table
         if (shift_value<shift_to_depth_table_.size())
@@ -502,7 +502,7 @@ namespace openni_wrapper
 
       } shift_conversion_parameters_;
 
-      std::vector<pcl::uint16_t> shift_to_depth_table_;
+      std::vector<std::uint16_t> shift_to_depth_table_;
 
       // holds the callback functions together with custom data
       // since same callback function can be registered multiple times with e.g. different custom data
