@@ -47,7 +47,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cstdio>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 namespace pcl
 {

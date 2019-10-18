@@ -33,7 +33,7 @@
 
 #include <ostream>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 namespace pcl
 {
