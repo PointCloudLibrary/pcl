@@ -206,4 +206,3 @@ pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeTy
     nodes.push_back(node);
   }
 }
-

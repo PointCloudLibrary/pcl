@@ -41,7 +41,7 @@
 template<typename PointT> void
 pcl::ASCIIReader::setInputFields ()
 {
-  pcl::getFields<PointT> (fields_);
+  fields_ = pcl::getFields<PointT> ();
 
   // Remove empty fields and adjust offset
   int offset =0;

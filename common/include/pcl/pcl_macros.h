@@ -363,3 +363,9 @@ aligned_free (void* ptr)
 #else
   #define PCL_FALLTHROUGH ;
 #endif
+
+#if __has_cpp_attribute(nodiscard)
+  #define PCL_NODISCARD [[nodiscard]]
+#else
+  #define PCL_NODISCARD
+#endif

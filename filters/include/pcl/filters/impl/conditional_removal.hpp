@@ -55,8 +55,7 @@ pcl::FieldComparison<PointT>::FieldComparison (
   op_ = op;
 
   // Get all fields
-  std::vector<pcl::PCLPointField> point_fields;
-  pcl::getFields<PointT> (point_fields);
+  const auto point_fields = pcl::getFields<PointT> ();
 
   // Find field_name
   if (point_fields.empty ())
@@ -140,8 +139,7 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
   component_name_ (component_name), component_offset_ (), compare_val_ (compare_val)
 {
   // get all the fields
-  std::vector<pcl::PCLPointField> point_fields;
-  pcl::getFields<PointT> (point_fields);
+  const auto point_fields = pcl::getFields<PointT> ();
 
   // Locate the "rgb" field
   size_t d;
@@ -230,8 +228,7 @@ pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
   component_name_ (component_name), component_id_ (), compare_val_ (compare_val), rgb_offset_ ()
 {
   // Get all the fields
-  std::vector<pcl::PCLPointField> point_fields;
-  pcl::getFields<PointT> (point_fields);
+  const auto point_fields = pcl::getFields<PointT> ();
 
   // Locate the "rgb" field
   size_t d;
@@ -377,8 +374,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison () :
   comp_scalar_ (0.0)
 {
   // get all the fields
-  std::vector<pcl::PCLPointField> point_fields;
-  pcl::getFields<PointT> (point_fields);
+  const auto point_fields = pcl::getFields<PointT> ();
 
   // Locate the "x" field
   size_t dX;
@@ -440,8 +436,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison (const pcl::Comp
   comp_scalar_ (comparison_scalar)
 {
   // get all the fields
-  std::vector<pcl::PCLPointField> point_fields;
-  pcl::getFields<PointT> (point_fields);
+  const auto point_fields = pcl::getFields<PointT> ();
 
   // Locate the "x" field
   size_t dX;

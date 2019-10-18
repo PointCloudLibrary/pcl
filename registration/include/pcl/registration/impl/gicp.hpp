@@ -450,9 +450,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
     if (nr_iterations_ >= max_iterations_ || delta < 1)
     {
       converged_ = true;
-      previous_transformation_ = transformation_;
       PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f\n",
                  getClassName ().c_str (), nr_iterations_, max_iterations_, (transformation_ - previous_transformation_).array ().abs ().sum ());
+      previous_transformation_ = transformation_;
     }
     else
       PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence failed\n", getClassName ().c_str ());

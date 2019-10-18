@@ -300,4 +300,3 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
         min_value + step * (static_cast<float>(threshold_index + 1));
   }
 }
-

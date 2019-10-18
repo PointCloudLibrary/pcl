@@ -388,8 +388,7 @@ TEST (PCL, IO)
   EXPECT_FLOAT_EQ (last.intensity, static_cast<float> (nr_p - 1));
 
   // Test getFieldIndex
-  std::vector<pcl::PCLPointField> fields;
-  pcl::getFields<PointXYZI> (fields);
+  const auto fields = pcl::getFields<PointXYZI> ();
   EXPECT_EQ (fields.size (), size_t (4));
   int x_idx = pcl::getFieldIndex<PointXYZI> ("x", fields);
   EXPECT_EQ (x_idx, 0);
