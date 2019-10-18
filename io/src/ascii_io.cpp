@@ -243,7 +243,7 @@ pcl::ASCIIReader::parse (
 }
 
 //////////////////////////////////////////////////////////////////////////////
-boost::uint32_t
+std::uint32_t
 pcl::ASCIIReader::typeSize (int type)
 {
   switch (type)

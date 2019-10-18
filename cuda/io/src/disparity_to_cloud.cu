@@ -184,7 +184,7 @@ ComputeXYZRGB::operator () (const Tuple &t)
 
 //////////////////////////////////////////////////////////////////////////
 template <template <typename> class Storage> void
-DisparityToCloud::compute (const boost::uint16_t* depth_image,
+DisparityToCloud::compute (const std::uint16_t* depth_image,
                            const OpenNIRGB* rgb_image,
                            int width, int height,
                            float constant,
@@ -512,14 +512,14 @@ DisparityToCloud::compute<Device> (const boost::shared_ptr<openni_wrapper::Depth
                                      PointCloudAOS<Device>::Ptr &output,
                                      bool downsample, int stridem, int, int);
 template PCL_EXPORTS void
-DisparityToCloud::compute<Host> (const boost::uint16_t* depth_image,
+DisparityToCloud::compute<Host> (const std::uint16_t* depth_image,
                                  const OpenNIRGB* rgb_image,
                                  int width, int height,
                                  float constant,
                                  typename PointCloudAOS<Host>::Ptr &output,
                                  int smoothing_nr_iterations, int smoothing_filter_size);
 template PCL_EXPORTS void
-DisparityToCloud::compute<Device> (const boost::uint16_t* depth_image,
+DisparityToCloud::compute<Device> (const std::uint16_t* depth_image,
                                    const OpenNIRGB* rgb_image,
                                    int width, int height,
                                    float constant,

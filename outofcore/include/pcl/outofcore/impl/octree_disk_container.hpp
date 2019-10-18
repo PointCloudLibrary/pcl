@@ -668,7 +668,7 @@ namespace pcl
     }
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT> boost::uint64_t
+    template<typename PointT> std::uint64_t
     OutofcoreOctreeDiskContainer<PointT>::getDataSize () const
     {
       pcl::PCLPointCloud2 cloud_info;
@@ -682,7 +682,7 @@ namespace pcl
       PCDReader reader;
       reader.readHeader (disk_storage_filename_, cloud_info, origin, orientation, pcd_version, data_type, data_index, 0);
       
-      boost::uint64_t total_points = cloud_info.width * cloud_info.height + writebuff_.size ();
+      std::uint64_t total_points = cloud_info.width * cloud_info.height + writebuff_.size ();
 
       return (total_points);
     }

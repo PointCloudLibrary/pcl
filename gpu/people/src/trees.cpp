@@ -63,9 +63,9 @@ namespace pcl
          */
         struct Tex2Dfetcher
         {
-	  	  Tex2Dfetcher( const boost::uint16_t* dmap, int W, int H ) : m_dmap(dmap), m_W(W), m_H(H) {}
+	  	  Tex2Dfetcher( const std::uint16_t* dmap, int W, int H ) : m_dmap(dmap), m_W(W), m_H(H) {}
 
-          inline boost::uint16_t operator () ( float uf, float vf ) 
+          inline std::uint16_t operator () ( float uf, float vf ) 
           {
             int u = static_cast<int>(uf);
             int v = static_cast<int>(vf);
@@ -76,7 +76,7 @@ namespace pcl
             
             return m_dmap[u+v*m_W]; // this is going to be SLOOOWWW
           }
-          const boost::uint16_t*  m_dmap;
+          const std::uint16_t*  m_dmap;
           const int               m_W;
           const int               m_H;
         };

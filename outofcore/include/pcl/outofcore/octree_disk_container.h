@@ -268,7 +268,7 @@ namespace pcl
         getRandomUUIDString (std::string &s);
 
         /** \brief Returns the number of points in the PCD file by reading the PCD header. */
-        boost::uint64_t
+        std::uint64_t
         getDataSize () const;
         
       private:

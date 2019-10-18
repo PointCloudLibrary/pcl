@@ -184,7 +184,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
 
     PCLPointCloud2::Ptr cloud = getCloudFromFile (pcd_path);
 
-    boost::uint64_t pts = 0;
+    std::uint64_t pts = 0;
     
     if (gen_lod && !multiresolution)
     {

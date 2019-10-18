@@ -705,7 +705,7 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
   const Eigen::Vector3d min (-100.1, -100.1, -100.1);
   const Eigen::Vector3d max (100.1, 100.1, 100.1);
   
-  const boost::uint64_t depth = 2;
+  const std::uint64_t depth = 2;
   
   //create a point cloud
   pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
@@ -836,7 +836,7 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
   const Eigen::Vector3d min (-100.1, -100.1, -100.1);
   const Eigen::Vector3d max (100.1, 100.1, 100.1);
   
-  const boost::uint64_t depth = 2;
+  const std::uint64_t depth = 2;
 
   //create a point cloud
   pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
@@ -888,7 +888,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
   const Eigen::Vector3d min (-100.1, -100.1, -100.1);
   const Eigen::Vector3d max (100.1, 100.1, 100.1);
   
-  const boost::uint64_t depth = 2;
+  const std::uint64_t depth = 2;
   
   //create a point cloud
   pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
@@ -929,7 +929,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
 
   uint64_t total_octreeB_LOD_query = 0;
   
-  for (boost::uint64_t i=0; i <= octreeB.getDepth (); i++)
+  for (std::uint64_t i=0; i <= octreeB.getDepth (); i++)
   {
     octreeB.queryBBIncludes (min, max, i, query_result_b);
     total_octreeB_LOD_query += query_result_b->width*query_result_b->height;

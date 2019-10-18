@@ -119,9 +119,9 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
     print_depth = depth;
 
   // Cloud point counts at each level
-  std::vector<boost::uint64_t> lodPoints = octree->getNumPointsVector ();
+  std::vector<std::uint64_t> lodPoints = octree->getNumPointsVector ();
   PCL_INFO (" Points:\n");
-  for (boost::uint64_t i = 0; i < lodPoints.size (); i++)
+  for (std::uint64_t i = 0; i < lodPoints.size (); i++)
     PCL_INFO ("   %d: %d\n", i, lodPoints[i]);
 
   // Cloud voxel side length
@@ -133,8 +133,8 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
   PCL_INFO(" Voxel Count: %d\n", voxel_centers.size ());
 
   // Point data for statistics
-  std::vector<boost::uint64_t> pointsPerVoxel;
-	ba::accumulator_set<boost::uint64_t, ba::features< ba::tag::min,  ba::tag::max, ba::tag::mean,  ba::tag::variance> > acc;
+  std::vector<std::uint64_t> pointsPerVoxel;
+	ba::accumulator_set<std::uint64_t, ba::features< ba::tag::min,  ba::tag::max, ba::tag::mean,  ba::tag::variance> > acc;
 
   if (!breadth_first)
   {

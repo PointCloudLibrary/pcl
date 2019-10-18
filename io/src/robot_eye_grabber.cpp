@@ -178,7 +178,7 @@ pcl::RobotEyeGrabber::convertPacketData (unsigned char *data_packet, size_t leng
     size_t response_size = 6; //"EBRBEP"
     if( !strncmp((char*)(data_packet), "EBRBEP", response_size) )
     {
-      boost::uint32_t timestamp; // counts of a 66 MHz clock since power-on of eye.
+      std::uint32_t timestamp; // counts of a 66 MHz clock since power-on of eye.
       computeTimestamp(timestamp, data_packet + response_size);
       //std::cout << "Timestamp: " << timestamp << std::endl;
       offset = (response_size + sizeof(timestamp));
@@ -247,9 +247,9 @@ pcl::RobotEyeGrabber::computeXYZI (pcl::PointXYZI& point, unsigned char* point_d
 
 /////////////////////////////////////////////////////////////////////////////
 void
-pcl::RobotEyeGrabber::computeTimestamp (boost::uint32_t& timestamp, unsigned char* point_data)
+pcl::RobotEyeGrabber::computeTimestamp (std::uint32_t& timestamp, unsigned char* point_data)
 {
-  boost::uint32_t buffer;
+  std::uint32_t buffer;
   buffer = point_data[0] << 24;
   buffer |= point_data[1] << 16;
   buffer |= point_data[2] << 8;
