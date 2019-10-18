@@ -39,7 +39,7 @@
 #include <istream>
 #include <fstream>
 #include <boost/filesystem.hpp>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 //////////////////////////////////////////////////////////////////////////////
 pcl::ASCIIReader::ASCIIReader ()

@@ -40,7 +40,7 @@
 #pragma once
 
 #include "label_common.h"
-#include <boost/cstdint.hpp> 
+#include <cstdint>
 #include <iostream>
 #include <vector>
 

@@ -44,7 +44,7 @@
 //#include <pcl/CameraInfo.h>
 //#include <pcl/PCLImage.h>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 namespace pcl
 {

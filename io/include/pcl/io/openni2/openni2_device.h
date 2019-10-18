@@ -36,7 +36,7 @@
 #include "pcl/io/io_exception.h"
 
 #include <boost/shared_ptr.hpp>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 #include <functional>
 #include <string>
 #include <vector>

@@ -46,7 +46,6 @@
 #include <boost/version.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/mpl/fold.hpp>

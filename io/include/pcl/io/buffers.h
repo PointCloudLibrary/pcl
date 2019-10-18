@@ -42,7 +42,7 @@
 #include <mutex>
 #include <vector>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 namespace pcl
 {
