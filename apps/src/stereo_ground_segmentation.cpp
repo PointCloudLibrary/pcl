@@ -276,7 +276,7 @@ class HRCSSegmentation
                                      cloud->points[region_index.indices[j]].y,
                                      cloud->points[region_index.indices[j]].z);
             ground_cloud->points.push_back (ground_pt);
-            ground_image->points[region_index.indices[j]].g = static_cast<pcl::uint8_t> ((cloud->points[region_index.indices[j]].g + 255) / 2);
+            ground_image->points[region_index.indices[j]].g = static_cast<std::uint8_t> ((cloud->points[region_index.indices[j]].g + 255) / 2);
             label_image->points[region_index.indices[j]].r = 0;
             label_image->points[region_index.indices[j]].g = 255;
             label_image->points[region_index.indices[j]].b = 0;
@@ -364,8 +364,8 @@ class HRCSSegmentation
                                        cloud->points[region_index.indices[j]].y,
                                        cloud->points[region_index.indices[j]].z);
               ground_cloud->points.push_back (ground_pt);
-              ground_image->points[region_index.indices[j]].r = static_cast<pcl::uint8_t> ((cloud->points[region_index.indices[j]].r + 255) / 2);
-              ground_image->points[region_index.indices[j]].g = static_cast<pcl::uint8_t> ((cloud->points[region_index.indices[j]].g + 255) / 2);
+              ground_image->points[region_index.indices[j]].r = static_cast<std::uint8_t> ((cloud->points[region_index.indices[j]].r + 255) / 2);
+              ground_image->points[region_index.indices[j]].g = static_cast<std::uint8_t> ((cloud->points[region_index.indices[j]].g + 255) / 2);
               label_image->points[region_index.indices[j]].r = 128;
               label_image->points[region_index.indices[j]].g = 128;
               label_image->points[region_index.indices[j]].b = 0;
@@ -446,7 +446,7 @@ class HRCSSegmentation
       {
         if (!pcl::isFinite (cloud->points[i]))
         {
-          ground_image->points[i].b = static_cast<pcl::uint8_t>((cloud->points[i].b + 255) / 2);
+          ground_image->points[i].b = static_cast<std::uint8_t>((cloud->points[i].b + 255) / 2);
           label_image->points[i].r = 0;
           label_image->points[i].g = 0;
           label_image->points[i].b = 255;

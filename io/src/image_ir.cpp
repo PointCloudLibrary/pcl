@@ -101,7 +101,7 @@ pcl::io::IRImage::getFrameID () const
 }
 
 
-pcl::uint64_t
+std::uint64_t
 pcl::io::IRImage::getTimestamp () const
 {
   return (wrapper_->getTimestamp ());

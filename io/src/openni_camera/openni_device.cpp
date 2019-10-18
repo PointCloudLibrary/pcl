@@ -389,15 +389,15 @@ void openni_wrapper::OpenNIDevice::InitShiftToDepthConversion ()
     const double dPlanePixelSize = shift_conversion_parameters_.zero_plane_pixel_size_ * shift_conversion_parameters_.pixel_size_factor_;
     const double dPlaneDsr = shift_conversion_parameters_.zero_plane_distance_;
     const double dPlaneDcl = shift_conversion_parameters_.emitter_dcmos_distace_;
-    const pcl::int32_t nConstShift = (shift_conversion_parameters_.param_coeff_ *
+    const std::int32_t nConstShift = (shift_conversion_parameters_.param_coeff_ *
                                       shift_conversion_parameters_.const_shift_) /
                                       shift_conversion_parameters_.pixel_size_factor_;
 
     shift_to_depth_table_.resize(shift_conversion_parameters_.device_max_shift_+1);
 
-    for (pcl::uint32_t nIndex = 1; nIndex < shift_conversion_parameters_.device_max_shift_; nIndex++)
+    for (std::uint32_t nIndex = 1; nIndex < shift_conversion_parameters_.device_max_shift_; nIndex++)
     {
-      pcl::int32_t nShiftValue = (pcl::int32_t)nIndex;
+      std::int32_t nShiftValue = (std::int32_t)nIndex;
 
       double dFixedRefX = (double) (nShiftValue - nConstShift) /
                           (double) shift_conversion_parameters_.param_coeff_;
@@ -410,7 +410,7 @@ void openni_wrapper::OpenNIDevice::InitShiftToDepthConversion ()
       if ((dDepth > shift_conversion_parameters_.min_depth_) &&
           (dDepth < shift_conversion_parameters_.max_depth_))
       {
-        shift_to_depth_table_[nIndex] = (pcl::uint16_t)(dDepth);
+        shift_to_depth_table_[nIndex] = (std::uint16_t)(dDepth);
       }
     }
 

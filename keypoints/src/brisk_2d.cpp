@@ -1362,7 +1362,7 @@ pcl::keypoints::brisk::Layer::getAgastPoints (
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-pcl::uint8_t 
+std::uint8_t 
 pcl::keypoints::brisk::Layer::getAgastScore (int x, int y, uint8_t threshold)
 {
   if (x < 3 || y < 3) 
@@ -1385,7 +1385,7 @@ pcl::keypoints::brisk::Layer::getAgastScore (int x, int y, uint8_t threshold)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-pcl::uint8_t 
+std::uint8_t 
 pcl::keypoints::brisk::Layer::getAgastScore_5_8 (int x, int y, uint8_t threshold)
 {
   if (x < 2 || y < 2)
@@ -1405,7 +1405,7 @@ pcl::keypoints::brisk::Layer::getAgastScore_5_8 (int x, int y, uint8_t threshold
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-pcl::uint8_t 
+std::uint8_t 
 pcl::keypoints::brisk::Layer::getAgastScore (float xf, float yf, uint8_t threshold, float scale)
 {
   if (scale <= 1.0f)
@@ -1439,7 +1439,7 @@ pcl::keypoints::brisk::Layer::getAgastScore (float xf, float yf, uint8_t thresho
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // access gray values (smoothed/interpolated)
-pcl::uint8_t 
+std::uint8_t 
 pcl::keypoints::brisk::Layer::getValue (
     const std::vector<unsigned char>& mat, 
     int width, int height,

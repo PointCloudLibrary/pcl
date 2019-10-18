@@ -148,9 +148,9 @@ TEST (PointOperators, PointXYZRGB)
   EXPECT_NEAR (p2.y, 0.1 * p1.y, 1e-4);
   EXPECT_NEAR (p2.z, 0.1 * p1.z, 1e-4);
   // Disabled. Doesn't make any sense
-  //EXPECT_EQ (p2.r, static_cast<pcl::uint8_t> (0.1 * p1.r));
-  //EXPECT_EQ (p2.g, static_cast<pcl::uint8_t> (0.1 * p1.g));
-  //EXPECT_EQ (p2.b, static_cast<pcl::uint8_t> (0.1 * p1.b));
+  //EXPECT_EQ (p2.r, static_cast<std::uint8_t> (0.1 * p1.r));
+  //EXPECT_EQ (p2.g, static_cast<std::uint8_t> (0.1 * p1.g));
+  //EXPECT_EQ (p2.b, static_cast<std::uint8_t> (0.1 * p1.b));
   PointXYZRGB p4 = p1 * 0.1f;
   EXPECT_EQ_VECTORS (p2.getVector3fMap (), p4.getVector3fMap ());
   // Disabled. Doesn't make any sense

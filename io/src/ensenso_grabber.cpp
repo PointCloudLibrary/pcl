@@ -929,7 +929,7 @@ pcl::EnsensoGrabber::matrixTransformationToJson (const Eigen::Affine3d &matrix,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::uint64_t
+std::uint64_t
 pcl::EnsensoGrabber::getPCLStamp (const double ensenso_stamp)
 {
 #if defined _WIN32 || defined _WIN64

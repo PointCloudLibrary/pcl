@@ -33,18 +33,18 @@ namespace pcl
 
     ::pcl::PCLHeader header;
 
-    pcl::uint32_t height;
-    pcl::uint32_t width;
+    std::uint32_t height;
+    std::uint32_t width;
 
     std::vector< ::pcl::PCLPointField>  fields;
 
-    pcl::uint8_t is_bigendian;
-    pcl::uint32_t point_step;
-    pcl::uint32_t row_step;
+    std::uint8_t is_bigendian;
+    std::uint32_t point_step;
+    std::uint32_t row_step;
 
-    std::vector<pcl::uint8_t> data;
+    std::vector<std::uint8_t> data;
 
-    pcl::uint8_t is_dense;
+    std::uint8_t is_dense;
 
   public:
     using Ptr = boost::shared_ptr< ::pcl::PCLPointCloud2>;
