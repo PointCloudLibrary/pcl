@@ -62,6 +62,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
+#include <cstdint>
 #include <iostream>
 
 #include <boost/cstdint.hpp>
@@ -76,15 +77,15 @@
 
 namespace pcl
 {
-  using boost::uint8_t;
-  using boost::int8_t;
-  using boost::int16_t;
-  using boost::uint16_t;
-  using boost::int32_t;
-  using boost::uint32_t;
-  using boost::int64_t;
-  using boost::uint64_t;
-  using boost::int_fast16_t;
+  using uint8_t [[deprecated("use std::uint8_t instead of pcl::uint8_t")]] = std::uint8_t;
+  using int8_t [[deprecated("use std::int8_t instead of pcl::int8_t")]] = std::int8_t;
+  using uint16_t [[deprecated("use std::uint16_t instead of pcl::uint16_t")]] = std::uint16_t;
+  using int16_t [[deprecated("use std::uint16_t instead of pcl::int16_t")]] = std::int16_t;
+  using uint32_t [[deprecated("use std::uint32_t instead of pcl::uint32_t")]] = std::uint32_t;
+  using int32_t [[deprecated("use std::int32_t instead of pcl::int32_t")]] = std::int32_t;
+  using uint64_t [[deprecated("use std::uint64_t instead of pcl::uint64_t")]] = std::uint64_t;
+  using int64_t [[deprecated("use std::int64_t instead of pcl::int64_t")]] = std::int64_t;
+  using int_fast16_t [[deprecated("use std::int_fast16_t instead of pcl::int_fast16_t")]] = std::int_fast16_t;
 }
 
 #if defined _WIN32 && defined _MSC_VER
