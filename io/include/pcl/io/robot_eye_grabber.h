@@ -144,6 +144,6 @@ namespace pcl
       void socketCallback (const boost::system::error_code& error, std::size_t number_of_bytes);
       void convertPacketData (unsigned char *data_packet, size_t length);
       void computeXYZI (pcl::PointXYZI& point_XYZI, unsigned char* point_data);
-      void computeTimestamp (boost::uint32_t& timestamp, unsigned char* point_data);
+      void computeTimestamp (std::uint32_t& timestamp, unsigned char* point_data);
   };
 }

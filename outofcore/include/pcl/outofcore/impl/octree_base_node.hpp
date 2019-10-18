@@ -392,7 +392,7 @@ namespace pcl
         c[static_cast<size_t>(box)].push_back (&pt);
       }
       
-      boost::uint64_t points_added = 0;
+      std::uint64_t points_added = 0;
       for (size_t i = 0; i < 8; i++)
       {
         if (c[i].empty ())
@@ -407,7 +407,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
 
-    template<typename ContainerT, typename PointT> boost::uint64_t
+    template<typename ContainerT, typename PointT> std::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataToLeaf (const std::vector<const PointT*>& p, const bool skip_bb_check)
     {
       if (p.empty ())
@@ -479,7 +479,7 @@ namespace pcl
         c[box].push_back (p[i]);
       }
 
-      boost::uint64_t points_added = 0;
+      std::uint64_t points_added = 0;
       for (size_t i = 0; i < 8; i++)
       {
         if (c[i].empty ())
@@ -494,7 +494,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
 
-    template<typename ContainerT, typename PointT> boost::uint64_t
+    template<typename ContainerT, typename PointT> std::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addPointCloud (const typename pcl::PCLPointCloud2::Ptr& input_cloud, const bool skip_bb_check)
     {
       assert (this->root_node_->m_tree_ != NULL);
@@ -524,7 +524,7 @@ namespace pcl
           PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Computed %d indices in octact %d\n", __FUNCTION__, indices[k].size (), k);
         }
 
-        boost::uint64_t points_added = 0;
+        std::uint64_t points_added = 0;
 
         for(size_t i=0; i<8; i++)
         {
@@ -613,7 +613,7 @@ namespace pcl
     }
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename ContainerT, typename PointT> boost::uint64_t
+    template<typename ContainerT, typename PointT> std::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataAtMaxDepth (const AlignedPointTVector& p, const bool skip_bb_check)
     {
       assert (this->root_node_->m_tree_ != NULL);
@@ -650,7 +650,7 @@ namespace pcl
       return (buff.size ());
     }
     ////////////////////////////////////////////////////////////////////////////////
-    template<typename ContainerT, typename PointT> boost::uint64_t
+    template<typename ContainerT, typename PointT> std::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataAtMaxDepth (const pcl::PCLPointCloud2::Ptr input_cloud, const bool skip_bb_check)
     {
       //this assumes data is already in the correct bin
@@ -701,10 +701,10 @@ namespace pcl
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    template<typename ContainerT, typename PointT> boost::uint64_t
+    template<typename ContainerT, typename PointT> std::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addPointCloud_and_genLOD (const pcl::PCLPointCloud2::Ptr input_cloud) //, const bool skip_bb_check = false )
     {
-      boost::uint64_t points_added = 0;
+      std::uint64_t points_added = 0;
       
       if ( input_cloud->width * input_cloud->height == 0 )
       {
@@ -801,7 +801,7 @@ namespace pcl
     }
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename ContainerT, typename PointT> boost::uint64_t
+    template<typename ContainerT, typename PointT> std::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataToLeaf_and_genLOD (const AlignedPointTVector& p, const bool skip_bb_check)
     {
       // If there are no points return
@@ -839,7 +839,7 @@ namespace pcl
       std::vector<AlignedPointTVector> c;
       subdividePoints(p, c, skip_bb_check);
 
-      boost::uint64_t points_added = 0;
+      std::uint64_t points_added = 0;
       for(size_t i = 0; i < 8; i++)
       {
         // If child doesn't have points
@@ -1051,7 +1051,7 @@ namespace pcl
     }
 
     template<typename Container, typename PointT> void
-    OutofcoreOctreeBaseNode<Container, PointT>::queryFrustum (const double planes[24], std::list<std::string>& file_names, const boost::uint32_t query_depth, const bool skip_vfc_check)
+    OutofcoreOctreeBaseNode<Container, PointT>::queryFrustum (const double planes[24], std::list<std::string>& file_names, const std::uint32_t query_depth, const bool skip_vfc_check)
     {
 
       enum {INSIDE, INTERSECT, OUTSIDE};
@@ -1200,7 +1200,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
-    OutofcoreOctreeBaseNode<Container, PointT>::queryFrustum (const double planes[24], const Eigen::Vector3d &eye, const Eigen::Matrix4d &view_projection_matrix, std::list<std::string>& file_names, const boost::uint32_t query_depth, const bool skip_vfc_check)
+    OutofcoreOctreeBaseNode<Container, PointT>::queryFrustum (const double planes[24], const Eigen::Vector3d &eye, const Eigen::Matrix4d &view_projection_matrix, std::list<std::string>& file_names, const std::uint32_t query_depth, const bool skip_vfc_check)
     {
 
       // If we're above our query depth
@@ -1335,7 +1335,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIntersects (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const boost::uint32_t query_depth, std::list<std::string>& file_names)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIntersects (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const std::uint32_t query_depth, std::list<std::string>& file_names)
     {
       
       Eigen::Vector3d my_min = min_bb;
@@ -1473,7 +1473,7 @@ namespace pcl
               assert ( tmp_blob->fields.size () == tmp_blob_within_bb->fields.size () );
               //concatenate those points into the returned dst_blob
               PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Concatenating point cloud in place\n", __FUNCTION__);
-              boost::uint64_t orig_points_in_destination = dst_blob->width*dst_blob->height;
+              std::uint64_t orig_points_in_destination = dst_blob->width*dst_blob->height;
               (void)orig_points_in_destination;
               int res = pcl::concatenate (*dst_blob, *tmp_blob_within_bb, *dst_blob);
               (void)res;
@@ -1565,7 +1565,7 @@ namespace pcl
     
     ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, boost::uint64_t query_depth, const pcl::PCLPointCloud2::Ptr& dst_blob, double percent)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, std::uint64_t query_depth, const pcl::PCLPointCloud2::Ptr& dst_blob, double percent)
     {
       if (intersectsWithBoundingBox (min_bb, max_bb))
         {
@@ -1633,7 +1633,7 @@ namespace pcl
     
     ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, boost::uint64_t query_depth, const double percent, AlignedPointTVector& dst)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, std::uint64_t query_depth, const double percent, AlignedPointTVector& dst)
     {
       //check if the queried bounding box has any intersection with this node's bounding box
       if (intersectsWithBoundingBox (min_bb, max_bb))
@@ -1901,7 +1901,7 @@ namespace pcl
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    template<typename ContainerT, typename PointT> boost::uint64_t
+    template<typename ContainerT, typename PointT> std::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::getDataSize () const
     {
       return (this->payload_->getDataSize ());
@@ -2108,7 +2108,7 @@ namespace pcl
 
 //accelerate search
     template<typename ContainerT, typename PointT> void
-    queryBBIntersects_noload (const boost::filesystem::path& root_node, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name)
+    queryBBIntersects_noload (const boost::filesystem::path& root_node, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const std::uint32_t query_depth, std::list<std::string>& bin_name)
     {
       OutofcoreOctreeBaseNode<ContainerT, PointT>* root = makenode_norec<ContainerT, PointT> (root_node, NULL);
       if (root == NULL)
@@ -2144,7 +2144,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    queryBBIntersects_noload (OutofcoreOctreeBaseNode<ContainerT, PointT>* current, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name)
+    queryBBIntersects_noload (OutofcoreOctreeBaseNode<ContainerT, PointT>* current, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const std::uint32_t query_depth, std::list<std::string>& bin_name)
     {
       if (current->intersectsWithBoundingBox (min, max))
       {

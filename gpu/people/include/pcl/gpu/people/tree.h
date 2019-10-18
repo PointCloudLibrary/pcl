@@ -63,11 +63,11 @@ namespace pcl
         // ###############################################
         // base data types used in the structures
 
-        using boost::uint8_t;
-        using boost::int16_t;
-        using boost::uint16_t;
-        using boost::int32_t;
-        using boost::uint32_t;
+        using std::uint8_t;
+        using std::int16_t;
+        using std::uint16_t;
+        using std::int32_t;
+        using std::uint32_t;
 
         using Attrib = int16_t;
         using Label = uint8_t;
