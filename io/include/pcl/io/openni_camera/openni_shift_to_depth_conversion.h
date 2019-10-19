@@ -91,7 +91,7 @@ namespace openni_wrapper
       /** \brief Generate a look-up table for converting openni shift values to depth
          */
       inline float
-      shiftToDepth (uint16_t shift_val)
+      shiftToDepth (std::uint16_t shift_val)
       {
         assert (init_);
 

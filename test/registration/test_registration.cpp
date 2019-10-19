@@ -119,10 +119,10 @@ TEST (PCL, findFeatureCorrespondences)
       feature3.points.push_back (f);
     }
   }
-  feature0.width = static_cast<uint32_t> (feature0.points.size ());
-  feature1.width = static_cast<uint32_t> (feature1.points.size ());
-  feature2.width = static_cast<uint32_t> (feature2.points.size ());
-  feature3.width = static_cast<uint32_t> (feature3.points.size ());
+  feature0.width = static_cast<std::uint32_t> (feature0.points.size ());
+  feature1.width = static_cast<std::uint32_t> (feature1.points.size ());
+  feature2.width = static_cast<std::uint32_t> (feature2.points.size ());
+  feature3.width = static_cast<std::uint32_t> (feature3.points.size ());
 
   KdTreeFLANN<FeatureT> tree;
 

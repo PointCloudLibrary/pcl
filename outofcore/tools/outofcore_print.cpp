@@ -113,7 +113,7 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
   PCL_INFO (" Bounding Box: <%lf, %lf, %lf> - <%lf, %lf, %lf>\n", min[0], min[1], min[2], max[0], max[1], max[2]);
 
   // Cloud depth
-  uint64_t depth = octree->getTreeDepth ();
+  std::uint64_t depth = octree->getTreeDepth ();
   PCL_INFO (" Depth: %ld\n", depth);
   if (print_depth > depth)
     print_depth = depth;

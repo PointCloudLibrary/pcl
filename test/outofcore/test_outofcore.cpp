@@ -70,9 +70,9 @@ using namespace pcl::outofcore;
 
 // For doing exhaustive checks this is set low remove those, and this can be
 // set much higher
-const static uint64_t numPts (10000);
+const static std::uint64_t numPts (10000);
 
-constexpr uint32_t rngseed = 0xAAFF33DD;
+constexpr std::uint32_t rngseed = 0xAAFF33DD;
 
 const static boost::filesystem::path filename_otreeA = "treeA/tree_test.oct_idx";
 const static boost::filesystem::path filename_otreeB = "treeB/tree_test.oct_idx";
@@ -746,7 +746,7 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
   pcl::PointCloud<pcl::PointXYZ> point_cloud;
 
   point_cloud.points.reserve (numPts);
-  point_cloud.width = static_cast<uint32_t> (numPts);
+  point_cloud.width = static_cast<std::uint32_t> (numPts);
   point_cloud.height = 1;
 
   for (size_t i=0; i < numPts; i++)
@@ -762,7 +762,7 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
   octree_disk octreeB (1, min, max, filename_otreeB, "ECEF");
 
   //make sure the number of points successfully added are the same as how many we input
-  uint64_t points_in_input_cloud = input_cloud->width*input_cloud->height;
+  std::uint64_t points_in_input_cloud = input_cloud->width*input_cloud->height;
   EXPECT_EQ (octreeA.addPointCloud (input_cloud, false), points_in_input_cloud) << "Insertion failure. Number of points successfully added does not match size of input cloud\n";
   EXPECT_EQ (octreeB.addPointCloud (input_cloud, false), points_in_input_cloud) << "Insertion failure. Number of points successfully added does not match size of input cloud\n";
 }
@@ -862,7 +862,7 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
   octree_disk octreeA (depth, min, max, filename_otreeA, "ECEF");
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
 
-  uint64_t points_added = octreeA.addPointCloud (dst_blob, false);
+  std::uint64_t points_added = octreeA.addPointCloud (dst_blob, false);
   EXPECT_EQ (points_added, dst_blob->width*dst_blob->height);
   
   pcl::PCLPointCloud2::Ptr dst_blob2 (new pcl::PCLPointCloud2 ());
@@ -914,8 +914,8 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
   octree_disk octreeA (depth, min, max, filename_otreeA, "ECEF");
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
 
-  uint64_t points_added = octreeA.addPointCloud (dst_blob, false);
-  uint64_t LOD_points_added = octreeB.addPointCloud_and_genLOD (dst_blob);
+  std::uint64_t points_added = octreeA.addPointCloud (dst_blob, false);
+  std::uint64_t LOD_points_added = octreeB.addPointCloud_and_genLOD (dst_blob);
 
   ASSERT_EQ (points_added, dst_blob->width*dst_blob->height) << "Number of points returned by addPointCloud does not match the number of poitns in the input point cloud\n";
   ASSERT_EQ (LOD_points_added, dst_blob->width*dst_blob->height) << "Number of points returned by addPointCloud_and_genLOD does not match the number of points in the input point cloud\n";
@@ -927,7 +927,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
   
   EXPECT_EQ (test_cloud->width*test_cloud->height, query_result_a->width*query_result_a->height) << "PCLPointCloud2 Query number of points returned failed\n";
 
-  uint64_t total_octreeB_LOD_query = 0;
+  std::uint64_t total_octreeB_LOD_query = 0;
   
   for (std::uint64_t i=0; i <= octreeB.getDepth (); i++)
   {

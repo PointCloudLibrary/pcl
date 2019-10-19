@@ -303,7 +303,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood(
   width_ = cols_ * col_width;
 
   depth_buffer_ = new float[width_ * height_];
-  color_buffer_ = new uint8_t[width_ * height_ * 3];
+  color_buffer_ = new std::uint8_t[width_ * height_ * 3];
 
   // Set Default Camera Intrinstic Parameters. techquad
   // Correspond closely to those stated here:
@@ -832,7 +832,7 @@ pcl::simulation::RangeLikelihood::getPointCloud(
   float zn = z_near_;
   float zf = z_far_;
 
-  const uint8_t* color_buffer = getColorBuffer();
+  const std::uint8_t* color_buffer = getColorBuffer();
 
   // TODO: support decimation
   // Copied the format of RangeImagePlanar::setDepthImage()
@@ -1240,7 +1240,7 @@ RangeLikelihood::getDepthBuffer() const
   return depth_buffer_;
 }
 
-const uint8_t*
+const std::uint8_t*
 RangeLikelihood::getColorBuffer() const
 {
   // It's only possible to read the color buffer if it

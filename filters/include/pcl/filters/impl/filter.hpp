@@ -87,7 +87,7 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     }
 
     cloud_out.height = 1;
-    cloud_out.width  = static_cast<uint32_t>(j);
+    cloud_out.width  = static_cast<std::uint32_t>(j);
 
     // Removing bad points => dense (note: 'dense' doesn't mean 'organized')
     cloud_out.is_dense = true;
@@ -130,7 +130,7 @@ pcl::removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
 
   cloud_out.height = 1;
-  cloud_out.width  = static_cast<uint32_t>(j);
+  cloud_out.width  = static_cast<std::uint32_t>(j);
 }
 
 

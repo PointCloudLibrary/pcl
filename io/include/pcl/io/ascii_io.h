@@ -152,13 +152,13 @@ namespace pcl
         *  returns the size of the parsed point field in bytes
         */
       int 
-      parse (const std::string& token, const pcl::PCLPointField& field, uint8_t* data_target);
+      parse (const std::string& token, const pcl::PCLPointField& field, std::uint8_t* data_target);
 
       /** \brief Returns the size in bytes of a point field type.
         * \param[in] type   point field type
         *  returns the size of the type in bytes
         */
-      uint32_t 
+      std::uint32_t 
       typeSize (int type);
 	};
 }

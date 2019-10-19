@@ -176,7 +176,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
     outofcore_octree = new octree_disk (bounding_box_min, bounding_box_max, resolution, octree_path_on_disk, "ECEF");
   }
 
-  uint64_t total_pts = 0;
+  std::uint64_t total_pts = 0;
 
   // Iterate over all pcd files adding points to the octree
   for (const auto &pcd_path : pcd_paths)

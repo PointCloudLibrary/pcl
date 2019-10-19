@@ -566,7 +566,7 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr ONIGrabber::convertToXYZRGBAPointCloud (
       color.Red = rgb_buffer[color_idx];
       color.Green = rgb_buffer[color_idx + 1];
       color.Blue = rgb_buffer[color_idx + 2];
-      pt.rgba = static_cast<uint32_t> (color.long_value);
+      pt.rgba = static_cast<std::uint32_t> (color.long_value);
     }
   }
   return (cloud);

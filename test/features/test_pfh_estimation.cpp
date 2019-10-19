@@ -498,7 +498,7 @@ TEST (PCL, GFPFH)
         p.z = static_cast<float> (z);
         cloud->points.push_back (p);
       }
-  cloud->width = static_cast<uint32_t> (cloud->points.size ());
+  cloud->width = static_cast<std::uint32_t> (cloud->points.size ());
   cloud->height = 1;
 
   pcl::GFPFHEstimation<PointXYZL, PointXYZL, GFPFHSignature16> gfpfh;

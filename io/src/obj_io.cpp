@@ -1111,7 +1111,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
       // different UV depending on the face.
       for (size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
-        uint32_t idx = tex_mesh.tex_polygons[m][i].vertices[j] + 1;
+        std::uint32_t idx = tex_mesh.tex_polygons[m][i].vertices[j] + 1;
         fs << " " << idx
            << "/" << tex_mesh.tex_polygons[m][i].vertices.size () * (i+f_idx) +j+1
            << "/" << idx; // vertex index in obj file format starting with 1

@@ -152,8 +152,8 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeTransitionHistograms 
 
     for (size_t k = 1; k < label_histograms[i].size (); ++k)
     {
-      uint32_t first_class = label_histograms[i][k-1];
-      uint32_t second_class = label_histograms[i][k];
+      std::uint32_t first_class = label_histograms[i][k-1];
+      std::uint32_t second_class = label_histograms[i][k];
       // Order has no influence.
       if (second_class < first_class)
         std::swap (first_class, second_class);
@@ -251,19 +251,19 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeHIKDistance (const st
 template <typename PointInT, typename PointNT, typename PointOutT> std::uint32_t
 pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std::vector<int>& indices)
 {
-  std::vector<uint32_t> counts (getNumberOfClasses () + 1, 0);
+  std::vector<std::uint32_t> counts (getNumberOfClasses () + 1, 0);
   for (const int &nn_index : indices)
   {
-    uint32_t label = labels_->points[nn_index].label;
+    std::uint32_t label = labels_->points[nn_index].label;
     counts[label] += 1;
   }
 
-  std::vector<uint32_t>::const_iterator max_it;
+  std::vector<std::uint32_t>::const_iterator max_it;
   max_it = std::max_element (counts.begin (), counts.end ());
   if (max_it == counts.end ())
     return (emptyLabel ());
 
-  return (static_cast<uint32_t> (max_it - counts.begin ()));
+  return (static_cast<std::uint32_t> (max_it - counts.begin ()));
 }
 
 #define PCL_INSTANTIATE_GFPFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::GFPFHEstimation<T,NT,OutT>;

@@ -62,11 +62,11 @@ std::mutex io_mutex;
 size_t 
 getTotalSystemMemory ()
 {
-  uint64_t memory = std::numeric_limits<size_t>::max ();
+  std::uint64_t memory = std::numeric_limits<size_t>::max ();
 
 #ifdef _SC_AVPHYS_PAGES
-  uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
-  uint64_t page_size = sysconf (_SC_PAGE_SIZE);
+  std::uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
+  std::uint64_t page_size = sysconf (_SC_PAGE_SIZE);
   
   memory = pages * page_size;
   
@@ -82,7 +82,7 @@ getTotalSystemMemory ()
   }
 #endif
 
-  if (memory > uint64_t (std::numeric_limits<size_t>::max ()))
+  if (memory > std::uint64_t (std::numeric_limits<size_t>::max ()))
   {
     memory = std::numeric_limits<size_t>::max ();
   }

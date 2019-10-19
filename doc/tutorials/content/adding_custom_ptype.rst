@@ -125,7 +125,7 @@ addition, the type that you want, might already be defined for you.
     float data_c[4];
   };
 
-* `PointXYZRGBA` - Members: float x, y, z; uint32_t rgba;
+* `PointXYZRGBA` - Members: float x, y, z; std::uint32_t rgba;
 
   Similar to `PointXYZI`, except `rgba` contains the RGBA information packed
   into an unsigned 32-bit integer. Thanks to the `union` declaration, it is
@@ -155,17 +155,17 @@ addition, the type that you want, might already be defined for you.
     {
       struct
       {
-        uint8_t b;
-        uint8_t g;
-        uint8_t r;
-        uint8_t a;
+        std::uint8_t b;
+        std::uint8_t g;
+        std::uint8_t r;
+        std::uint8_t a;
       };
       float rgb;
     };
-    uint32_t rgba;
+    std::uint32_t rgba;
   };
 
-* `PointXYZRGB` - float x, y, z; uint32_t rgba;
+* `PointXYZRGB` - float x, y, z; std::uint32_t rgba;
 
   Same as `PointXYZRGBA`.
 
@@ -281,7 +281,7 @@ addition, the type that you want, might already be defined for you.
   };
 
 
-* `PointXYZRGBNormal` - float x, y, z, normal[3], curvature; uint32_t rgba;
+* `PointXYZRGBNormal` - float x, y, z, normal[3], curvature; std::uint32_t rgba;
 
   A point structure that holds XYZ data, and RGBA colors, together with surface
   normals and curvatures.
@@ -323,14 +323,14 @@ addition, the type that you want, might already be defined for you.
         {
           struct
           {
-            uint8_t b;
-            uint8_t g;
-            uint8_t r;
-            uint8_t a;
+            std::uint8_t b;
+            std::uint8_t g;
+            std::uint8_t r;
+            std::uint8_t a;
           };
           float rgb;
         };
-        uint32_t rgba;
+        std::uint32_t rgba;
       };
       float curvature;
     };
@@ -456,7 +456,7 @@ addition, the type that you want, might already be defined for you.
     float r_min, r_max;
   };
 
-* `Boundary` - uint8_t boundary_point;
+* `Boundary` - std::uint8_t boundary_point;
 
   Simple point type holding whether the point is lying on a surface boundary or
   not. See `BoundaryEstimation` for more information. 
@@ -465,7 +465,7 @@ addition, the type that you want, might already be defined for you.
 
   struct
   {
-    uint8_t boundary_point;
+    std::uint8_t boundary_point;
   };
 
 * `PrincipalCurvatures` - float principal_curvature[3], pc1, pc2;
@@ -641,7 +641,7 @@ addition, the type that you want, might already be defined for you.
   {
     struct
     {
-      uint32_t rgba;
+      std::uint32_t rgba;
       float radius;
       float confidence;
       float curvature;

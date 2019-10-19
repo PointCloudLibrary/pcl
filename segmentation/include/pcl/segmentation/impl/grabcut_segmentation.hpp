@@ -64,9 +64,9 @@ template <typename PointT>
 pcl::segmentation::grabcut::Color::operator PointT () const
 {
   PointT p;
-  p.r = static_cast<uint32_t> (r * 255);
-  p.g = static_cast<uint32_t> (g * 255);
-  p.b = static_cast<uint32_t> (b * 255);
+  p.r = static_cast<std::uint32_t> (r * 255);
+  p.g = static_cast<std::uint32_t> (g * 255);
+  p.b = static_cast<std::uint32_t> (b * 255);
   return (p);
 }
 

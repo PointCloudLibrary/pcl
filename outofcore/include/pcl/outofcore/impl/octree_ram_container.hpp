@@ -120,15 +120,15 @@ namespace pcl
                                                       const double percent, 
                                                       AlignedPointTVector& v)
     {
-      uint64_t samplesize = static_cast<uint64_t> (percent * static_cast<double> (count));
+      std::uint64_t samplesize = static_cast<std::uint64_t> (percent * static_cast<double> (count));
 
       std::lock_guard<std::mutex> lock (rng_mutex_);
 
-      std::uniform_int_distribution < uint64_t > buffdist (start, start + count);
+      std::uniform_int_distribution < std::uint64_t > buffdist (start, start + count);
 
-      for (uint64_t i = 0; i < samplesize; i++)
+      for (std::uint64_t i = 0; i < samplesize; i++)
       {
-        uint64_t buffstart = buffdist (rng_);
+        std::uint64_t buffstart = buffdist (rng_);
         v.push_back (container_[buffstart]);
       }
     }

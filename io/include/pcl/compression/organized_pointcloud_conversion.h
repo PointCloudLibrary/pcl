@@ -63,7 +63,7 @@ namespace pcl
     {
         static const bool hasColor = true;
         static const unsigned int channels = 4;
-        static const size_t bytesPerPoint = 3 * sizeof(float) + 3 * sizeof(uint8_t);
+        static const size_t bytesPerPoint = 3 * sizeof(float) + 3 * sizeof(std::uint8_t);
     };
 
     template<>
@@ -71,7 +71,7 @@ namespace pcl
     {
         static const bool hasColor = true;
         static const unsigned int channels = 4;
-        static const size_t bytesPerPoint = 3 * sizeof(float) + 3 * sizeof(uint8_t);
+        static const size_t bytesPerPoint = 3 * sizeof(float) + 3 * sizeof(std::uint8_t);
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,8 +97,8 @@ namespace pcl
                           float disparityShift_arg,
                           float disparityScale_arg,
                           bool ,
-                          typename std::vector<uint16_t>& disparityData_arg,
-                          typename std::vector<uint8_t>&)
+                          typename std::vector<std::uint16_t>& disparityData_arg,
+                          typename std::vector<std::uint8_t>&)
       {
         size_t cloud_size = cloud_arg.points.size ();
 
@@ -115,7 +115,7 @@ namespace pcl
           if (pcl::isFinite (point))
           {
             // Inverse depth quantization
-            uint16_t disparity = static_cast<uint16_t> ( focalLength_arg / (disparityScale_arg * point.z) + disparityShift_arg / disparityScale_arg);
+            std::uint16_t disparity = static_cast<std::uint16_t> ( focalLength_arg / (disparityScale_arg * point.z) + disparityShift_arg / disparityScale_arg);
             disparityData_arg.push_back (disparity);
           }
           else
@@ -136,8 +136,8 @@ namespace pcl
         * \param[out] cloud_arg output point cloud
         * \ingroup io
         */
-      static void convert(typename std::vector<uint16_t>& disparityData_arg,
-                          typename std::vector<uint8_t>&,
+      static void convert(typename std::vector<std::uint16_t>& disparityData_arg,
+                          typename std::vector<std::uint8_t>&,
                           bool,
                           size_t width_arg,
                           size_t height_arg,
@@ -155,8 +155,8 @@ namespace pcl
         cloud_arg.points.reserve (cloud_size);
 
         // Define point cloud parameters
-        cloud_arg.width = static_cast<uint32_t> (width_arg);
-        cloud_arg.height = static_cast<uint32_t> (height_arg);
+        cloud_arg.width = static_cast<std::uint32_t> (width_arg);
+        cloud_arg.height = static_cast<std::uint32_t> (height_arg);
         cloud_arg.is_dense = false;
 
         // Calculate center of disparity image
@@ -171,7 +171,7 @@ namespace pcl
           for (int x = -centerX; x < centerX; ++x )
           {
             PointT newPoint;
-            const uint16_t& pixel_disparity = disparityData_arg[i];
+            const std::uint16_t& pixel_disparity = disparityData_arg[i];
             ++i;
 
             if (pixel_disparity)
@@ -206,7 +206,7 @@ namespace pcl
         * \ingroup io
         */
       static void convert(typename std::vector<float>& depthData_arg,
-                          typename std::vector<uint8_t>&,
+                          typename std::vector<std::uint8_t>&,
                           bool,
                           size_t width_arg,
                           size_t height_arg,
@@ -222,8 +222,8 @@ namespace pcl
         cloud_arg.points.reserve (cloud_size);
 
         // Define point cloud parameters
-        cloud_arg.width = static_cast<uint32_t> (width_arg);
-        cloud_arg.height = static_cast<uint32_t> (height_arg);
+        cloud_arg.width = static_cast<std::uint32_t> (width_arg);
+        cloud_arg.height = static_cast<std::uint32_t> (height_arg);
         cloud_arg.is_dense = false;
 
         // Calculate center of disparity image
@@ -286,8 +286,8 @@ namespace pcl
                           float disparityShift_arg,
                           float disparityScale_arg,
                           bool convertToMono,
-                          typename std::vector<uint16_t>& disparityData_arg,
-                          typename std::vector<uint8_t>& rgbData_arg)
+                          typename std::vector<std::uint16_t>& disparityData_arg,
+                          typename std::vector<std::uint8_t>& rgbData_arg)
       {
         size_t cloud_size = cloud_arg.points.size ();
 
@@ -315,7 +315,7 @@ namespace pcl
             if (convertToMono)
             {
               // Encode point color
-              uint8_t grayvalue = static_cast<uint8_t>(0.2989 * point.r
+              std::uint8_t grayvalue = static_cast<std::uint8_t>(0.2989 * point.r
                                                         + 0.5870 * point.g
                                                         + 0.1140 * point.b);
 
@@ -330,7 +330,7 @@ namespace pcl
 
 
             // Inverse depth quantization
-            uint16_t disparity = static_cast<uint16_t> (focalLength_arg / (disparityScale_arg * point.z) + disparityShift_arg / disparityScale_arg);
+            std::uint16_t disparity = static_cast<std::uint16_t> (focalLength_arg / (disparityScale_arg * point.z) + disparityShift_arg / disparityScale_arg);
 
             // Encode disparity
             disparityData_arg.push_back (disparity);
@@ -368,8 +368,8 @@ namespace pcl
         * \param[out] cloud_arg output point cloud
         * \ingroup io
         */
-      static void convert(typename std::vector<uint16_t>& disparityData_arg,
-                          typename std::vector<uint8_t>& rgbData_arg,
+      static void convert(typename std::vector<std::uint16_t>& disparityData_arg,
+                          typename std::vector<std::uint8_t>& rgbData_arg,
                           bool monoImage_arg,
                           size_t width_arg,
                           size_t height_arg,
@@ -399,8 +399,8 @@ namespace pcl
         cloud_arg.points.reserve(cloud_size);
 
         // Define point cloud parameters
-        cloud_arg.width = static_cast<uint32_t>(width_arg);
-        cloud_arg.height = static_cast<uint32_t>(height_arg);
+        cloud_arg.width = static_cast<std::uint32_t>(width_arg);
+        cloud_arg.height = static_cast<std::uint32_t>(height_arg);
         cloud_arg.is_dense = false;
 
         // Calculate center of disparity image
@@ -416,7 +416,7 @@ namespace pcl
           {
             PointT newPoint;
 
-            const uint16_t& pixel_disparity = disparityData_arg[i];
+            const std::uint16_t& pixel_disparity = disparityData_arg[i];
 
             if (pixel_disparity && (pixel_disparity!=0x7FF))
             {
@@ -473,7 +473,7 @@ namespace pcl
         * \ingroup io
         */
       static void convert(typename std::vector<float>& depthData_arg,
-                          typename std::vector<uint8_t>& rgbData_arg,
+                          typename std::vector<std::uint8_t>& rgbData_arg,
                           bool monoImage_arg,
                           size_t width_arg,
                           size_t height_arg,
@@ -501,8 +501,8 @@ namespace pcl
         cloud_arg.points.reserve(cloud_size);
 
         // Define point cloud parameters
-        cloud_arg.width = static_cast<uint32_t>(width_arg);
-        cloud_arg.height = static_cast<uint32_t>(height_arg);
+        cloud_arg.width = static_cast<std::uint32_t>(width_arg);
+        cloud_arg.height = static_cast<std::uint32_t>(height_arg);
         cloud_arg.is_dense = false;
 
         // Calculate center of disparity image

@@ -70,9 +70,9 @@ namespace pcl
         using std::uint32_t;
 
         using Attrib = int16_t;
-        using Label = uint8_t;
-        using Label32 = uint32_t;
-        using Depth = uint16_t;
+        using Label = std::uint8_t;
+        using Label32 = std::uint32_t;
+        using Depth = std::uint16_t;
 
         struct AttribLocation
         {
@@ -130,7 +130,7 @@ namespace pcl
           */
         int loadTree( std::istream& is, std::vector<Node>&  tree, std::vector<Label>& leaves );
         int loadTree( const std::string&  filename, std::vector<Node>&  tree, std::vector<Label>& leaves );
-        void runThroughTree( int maxDepth, const std::vector<Node>& tree, const std::vector<Label>& leaves, int W, int H, const uint16_t* dmap, Label* lmap );
+        void runThroughTree( int maxDepth, const std::vector<Node>& tree, const std::vector<Label>& leaves, int W, int H, const std::uint16_t* dmap, Label* lmap );
 
       } // end namespace Trees
     } // end namespace people

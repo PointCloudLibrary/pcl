@@ -62,8 +62,8 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud (
 
     for (size_t i = 0; i < input.size (); ++i)
     {
-      const uint8_t* data_in = reinterpret_cast<const uint8_t*> (&input[i]);
-      uint8_t* data_out = reinterpret_cast<uint8_t*> (&output[i]);
+      const std::uint8_t* data_in = reinterpret_cast<const std::uint8_t*> (&input[i]);
+      std::uint8_t* data_out = reinterpret_cast<std::uint8_t*> (&output[i]);
       memcpy (&pt[0], data_in + x_idx_offset_, sizeof (float));
       memcpy (&pt[1], data_in + y_idx_offset_, sizeof (float));
       memcpy (&pt[2], data_in + z_idx_offset_, sizeof (float));
@@ -95,8 +95,8 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud (
   {
     for (size_t i = 0; i < input.size (); ++i)
     {
-      const uint8_t* data_in = reinterpret_cast<const uint8_t*> (&input[i]);
-      uint8_t* data_out = reinterpret_cast<uint8_t*> (&output[i]);
+      const std::uint8_t* data_in = reinterpret_cast<const std::uint8_t*> (&input[i]);
+      std::uint8_t* data_out = reinterpret_cast<std::uint8_t*> (&output[i]);
       memcpy (&pt[0], data_in + x_idx_offset_, sizeof (float));
       memcpy (&pt[1], data_in + y_idx_offset_, sizeof (float));
       memcpy (&pt[2], data_in + z_idx_offset_, sizeof (float));

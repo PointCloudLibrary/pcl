@@ -758,8 +758,8 @@ namespace pcl
       // BaseClass:
       //   roslib::Header header;
       //   std::vector<PointT> points;
-      //   uint32_t width;
-      //   uint32_t height;
+      //   std::uint32_t width;
+      //   std::uint32_t height;
       //   bool is_dense;
 
       static bool debug; /**< Just for... well... debugging purposes. :-) */

@@ -83,7 +83,7 @@ pcl::io::ImageYUV422::fillRGB (unsigned width, unsigned height, unsigned char* r
       THROW_IO_EXCEPTION ("Downsampling only possible for power of two scale in both dimensions. Request was %d x %d -> %d x %d.", wrapper_->getWidth (), wrapper_->getHeight (), width, height);
   }
 
-  const uint8_t* yuv_buffer = (uint8_t*) wrapper_->getData ();
+  const std::uint8_t* yuv_buffer = (std::uint8_t*) wrapper_->getData ();
 
   unsigned rgb_line_skip = 0;
   if (rgb_line_step != 0)
@@ -147,7 +147,7 @@ pcl::io::ImageYUV422::fillGrayscale (unsigned width, unsigned height, unsigned c
   unsigned yuv_step = wrapper_->getWidth () / width;
   unsigned yuv_x_step = yuv_step << 1;
   unsigned yuv_skip = (wrapper_->getHeight () / height - 1) * ( wrapper_->getWidth () << 1 );
-  const uint8_t* yuv_buffer = ( (uint8_t*) wrapper_->getData () + 1);
+  const std::uint8_t* yuv_buffer = ( (std::uint8_t*) wrapper_->getData () + 1);
 
   for (unsigned yIdx = 0; yIdx < wrapper_->getHeight (); yIdx += yuv_step, yuv_buffer += yuv_skip, gray_buffer += gray_line_skip)
   {

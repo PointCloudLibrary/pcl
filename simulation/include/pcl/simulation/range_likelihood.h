@@ -192,7 +192,7 @@ public:
     use_color_ = use_color;
   }
 
-  const uint8_t*
+  const std::uint8_t*
   getColorBuffer() const;
 
   const float*
@@ -262,7 +262,7 @@ private:
   int width_;
   int height_;
   float* depth_buffer_;
-  uint8_t* color_buffer_;
+  std::uint8_t* color_buffer_;
 
   // Camera Intrinsic Parameters
   int camera_width_;

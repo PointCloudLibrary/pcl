@@ -131,7 +131,7 @@ struct OctreeIteratorTest : public OctreeIteratorBaseTest
     it_.reset ();
 
     // increment the iterator 4 times
-    for (uint8_t i = 0; i < 4; ++it_, ++i);
+    for (std::uint8_t i = 0; i < 4; ++it_, ++i);
   }
 
   // members

@@ -138,10 +138,10 @@ TEST (PCL, PLYPolygonMeshColoredIO)
   {
     pcl::PointXYZRGB &pt_rgb = vertices_rgb.at (i);
     pcl::PointXYZRGBA &pt_rgba = vertices_rgba.at (i);
-    pt_rgb.r = pt_rgba.r = static_cast<uint8_t> (rand () % 256);
-    pt_rgb.g = pt_rgba.g = static_cast<uint8_t> (rand () % 256);
-    pt_rgb.b = pt_rgba.b = static_cast<uint8_t> (rand () % 256);
-    pt_rgba.a = static_cast<uint8_t> (rand () % 256);
+    pt_rgb.r = pt_rgba.r = static_cast<std::uint8_t> (rand () % 256);
+    pt_rgb.g = pt_rgba.g = static_cast<std::uint8_t> (rand () % 256);
+    pt_rgb.b = pt_rgba.b = static_cast<std::uint8_t> (rand () % 256);
+    pt_rgba.a = static_cast<std::uint8_t> (rand () % 256);
   }
   pcl::toPCLPointCloud2 (vertices_rgb, mesh_rgb.cloud);
   pcl::toPCLPointCloud2 (vertices_rgba, mesh_rgba.cloud);

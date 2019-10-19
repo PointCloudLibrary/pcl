@@ -66,7 +66,7 @@ namespace pcl
 {
   namespace device
   { 	  
-	  __global__ void size_check() { Static<sizeof(uint64_type) == 8>::check(); };
+	  __global__ void size_check() { Static<sizeof(std::uint64_type) == 8>::check(); };
 	  
 	  template<bool use_max>
 	  struct IndOp
@@ -262,7 +262,7 @@ namespace pcl
 	  }
 	  	  
 	  __device__ __forceinline__
-	  uint64_type 
+	  std::uint64_type 
 	  operator()(const PointType& p) const
 	  {                   
 		  float4 x = p;
@@ -314,13 +314,13 @@ namespace pcl
           //if (neg_count == 0)
           //  then internal point ==>> idx = INT_MAX
 
-		  uint64_type res = idx;
+		  std::uint64_type res = idx;
 		  res <<= 32;
 		  return res + *reinterpret_cast<unsigned int*>(&dist);
 	  }		
 	};		
 
-    __global__ void initalClassifyKernel(const InitalClassify ic, const PointType* points, int cloud_size, uint64_type* output) 
+    __global__ void initalClassifyKernel(const InitalClassify ic, const PointType* points, int cloud_size, std::uint64_type* output) 
     { 
         int index = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -334,7 +334,7 @@ void pcl::device::PointStream::initalClassify()
 {        
   //thrust::device_ptr<const PointType> beg(cloud.ptr());
   //thrust::device_ptr<const PointType> end = beg + cloud_size;
-  thrust::device_ptr<uint64_type> out(facets_dists.ptr());
+  thrust::device_ptr<std::uint64_type> out(facets_dists.ptr());
   
   InitalClassify ic(simplex.p1, simplex.p2, simplex.p3, simplex.p4, cloud_diag);
   //thrust::transform(beg, end, out, ic);
@@ -359,7 +359,7 @@ namespace pcl
     __device__ int new_cloud_size;    
 	struct SearchFacetHeads
 	{		
-	  uint64_type *facets_dists;
+	  std::uint64_type *facets_dists;
 	  int cloud_size;
 	  int facet_count;
 	  int *perm;
@@ -371,8 +371,8 @@ namespace pcl
 	  __device__ __forceinline__
 	  void operator()(int facet) const
 	  {			
-		const uint64_type* b = facets_dists;
-		const uint64_type* e = b + cloud_size;
+		const std::uint64_type* b = facets_dists;
+		const std::uint64_type* e = b + cloud_size;
 
         bool last_thread = facet == facet_count;
 
@@ -588,7 +588,7 @@ namespace pcl
   {
 	  struct Classify
 	  {
-		uint64_type* facets_dists;
+		std::uint64_type* facets_dists;
 		int* scan_buffer;
 
 		int* head_points;
@@ -613,7 +613,7 @@ namespace pcl
 
           if (hi == perm_index)
           {
-            uint64_type res = std::numeric_limits<int>::max();
+            std::uint64_type res = std::numeric_limits<int>::max();
 		    res <<= 32;		                      
             facets_dists[point_idx] = res;
           }
@@ -689,7 +689,7 @@ namespace pcl
             // if (neg_count == 0)
             // new_idx = INT_MAX ==>> internal point
                       	       	 	   
-            uint64_type res = new_idx;
+            std::uint64_type res = new_idx;
 		    res <<= 32;
 		    res += *reinterpret_cast<unsigned int*>(&dist);
 
@@ -731,8 +731,8 @@ void pcl::device::PointStream::classify(FacetStream& fs)
   cudaSafeCall( cudaGetLastError() );
   cudaSafeCall( cudaDeviceSynchronize() );
   
-  thrust::device_ptr<uint64_type> beg(facets_dists.ptr());
-  thrust::device_ptr<uint64_type> end = beg + cloud_size;
+  thrust::device_ptr<std::uint64_type> beg(facets_dists.ptr());
+  thrust::device_ptr<std::uint64_type> end = beg + cloud_size;
   
   thrust::device_ptr<int> pbeg(perm.ptr());
   thrust::sort_by_key(beg, end, pbeg);

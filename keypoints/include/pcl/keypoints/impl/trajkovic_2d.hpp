@@ -247,7 +247,7 @@ pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (Poin
   }
 
   output.height = 1;
-  output.width = static_cast<uint32_t> (output.size());
+  output.width = static_cast<std::uint32_t> (output.size());
   // we don not change the denseness
   output.is_dense = input_->is_dense;
 }

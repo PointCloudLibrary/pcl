@@ -137,7 +137,7 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::init (const uint64_t& depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_name, const std::string& coord_sys)
+    OutofcoreOctreeBase<ContainerT, PointT>::init (const std::uint64_t& depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_name, const std::string& coord_sys)
     {
       //Validate the extension of the pathname
       if (!this->checkExtension (root_name))
@@ -211,7 +211,7 @@ namespace pcl
 
       const bool _FORCE_BB_CHECK = true;
       
-      uint64_t pt_added = root_node_->addDataToLeaf (p, _FORCE_BB_CHECK);
+      std::uint64_t pt_added = root_node_->addDataToLeaf (p, _FORCE_BB_CHECK);
 
       assert (p.size () == pt_added);
 
@@ -231,7 +231,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> std::uint64_t
     OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud (pcl::PCLPointCloud2::Ptr &input_cloud, const bool skip_bb_check)
     {
-      uint64_t pt_added = this->root_node_->addPointCloud (input_cloud, skip_bb_check) ;
+      std::uint64_t pt_added = this->root_node_->addPointCloud (input_cloud, skip_bb_check) ;
 //      assert (input_cloud->width*input_cloud->height == pt_added);
       return (pt_added);
     }
@@ -627,7 +627,7 @@ namespace pcl
           lod_filter_ptr_->setInputCloud (leaf_input_cloud);
 
           //set sample size to 1/8 of total points (12.5%)
-          uint64_t sample_size = static_cast<uint64_t> (static_cast<double> (leaf_input_cloud->width*leaf_input_cloud->height) * current_depth_sample_percent);
+          std::uint64_t sample_size = static_cast<std::uint64_t> (static_cast<double> (leaf_input_cloud->width*leaf_input_cloud->height) * current_depth_sample_percent);
 
           if (sample_size == 0)
             sample_size = 1;
@@ -683,7 +683,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::incrementPointsInLOD (std::uint64_t depth, std::uint64_t new_point_count)
     {
-      if (std::numeric_limits<uint64_t>::max () - metadata_->getLODPoints (depth) < new_point_count)
+      if (std::numeric_limits<std::uint64_t>::max () - metadata_->getLODPoints (depth) < new_point_count)
       {
         PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBase::incrementPointsInLOD] Overflow error. Too many points in depth %d of outofcore octree with root at %s\n", depth, metadata_->getMetadataFilename().c_str());
         PCL_THROW_EXCEPTION (PCLException, "Overflow error");

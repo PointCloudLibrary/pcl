@@ -542,7 +542,7 @@ namespace pcl
         std::vector<OutofcoreOctreeBaseNode*> children_;
 
         /** \brief Number of children on disk. This is only changed when a new node is created */
-        uint64_t num_children_;
+        std::uint64_t num_children_;
 
         /** \brief Number of loaded children this node has
          *
@@ -550,7 +550,7 @@ namespace pcl
          *  and their metadata files have been loaded into
          *  memory. num_loaded_children_ <= num_children_
          */
-        uint64_t num_loaded_children_;
+        std::uint64_t num_loaded_children_;
 
         /** \brief what holds the points. currently a custom class, but in theory
          * you could use an stl container if you rewrote some of this class. I used

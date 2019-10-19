@@ -57,10 +57,10 @@ public:
   write_depth_image_uint(const float* depth_buffer, std::string fname);
 
   void
-  write_rgb_image(const uint8_t* rgb_buffer, std::string fname);
+  write_rgb_image(const std::uint8_t* rgb_buffer, std::string fname);
 
 private:
-  uint16_t t_gamma[2048];
+  std::uint16_t t_gamma[2048];
 
   // of platter, usually 640x480
   int height_;

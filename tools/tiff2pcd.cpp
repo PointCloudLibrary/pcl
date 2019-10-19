@@ -123,9 +123,9 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
       Intensity     depth_point;
       PointXYZRGBA  xyzrgba_point;
 
-      color_point.r = xyzrgba_point.r = static_cast<uint8_t> (rgb_data->GetScalarComponentAsFloat(u,v,0,0));
-      color_point.g = xyzrgba_point.g = static_cast<uint8_t> (rgb_data->GetScalarComponentAsFloat(u,v,0,1));
-      color_point.b = xyzrgba_point.b = static_cast<uint8_t> (rgb_data->GetScalarComponentAsFloat(u,v,0,2));
+      color_point.r = xyzrgba_point.r = static_cast<std::uint8_t> (rgb_data->GetScalarComponentAsFloat(u,v,0,0));
+      color_point.g = xyzrgba_point.g = static_cast<std::uint8_t> (rgb_data->GetScalarComponentAsFloat(u,v,0,1));
+      color_point.b = xyzrgba_point.b = static_cast<std::uint8_t> (rgb_data->GetScalarComponentAsFloat(u,v,0,2));
       xyzrgba_point.a = 0;
 
       pc_image.points.push_back(color_point);

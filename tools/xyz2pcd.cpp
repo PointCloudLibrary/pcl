@@ -83,7 +83,7 @@ loadCloud (const string &filename, PointCloud<PointXYZ> &cloud)
   }
   fs.close ();
 
-  cloud.width = uint32_t (cloud.size ()); cloud.height = 1; cloud.is_dense = true;
+  cloud.width = std::uint32_t (cloud.size ()); cloud.height = 1; cloud.is_dense = true;
   return (true);
 }
 

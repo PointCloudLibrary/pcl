@@ -348,12 +348,12 @@ openni_wrapper::OpenNIDriver::getDeviceInfos () throw ()
   for (int devIdx = 0; devIdx < count; ++devIdx)
   {
     libusb_device* device = devices[devIdx];
-    uint8_t busId = libusb_get_bus_number (device);
+    std::uint8_t busId = libusb_get_bus_number (device);
     std::map<unsigned char, std::map<unsigned char, unsigned> >::const_iterator busIt = bus_map_.find (busId);
     if (busIt == bus_map_.end ())
       continue;
 
-    uint8_t address = libusb_get_device_address (device);
+    std::uint8_t address = libusb_get_device_address (device);
     std::map<unsigned char, unsigned>::const_iterator addressIt = busIt->second.find (address);
     if (addressIt == busIt->second.end ())
       continue;

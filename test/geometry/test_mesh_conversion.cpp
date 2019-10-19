@@ -81,15 +81,15 @@ class TestMeshConversion : public ::testing::Test
         pt.normal_y = static_cast <float> (200 * i);
         pt.normal_z = static_cast <float> (300 * i);
 
-        pt.r = static_cast <uint8_t> (1 * i);
-        pt.g = static_cast <uint8_t> (2 * i);
-        pt.b = static_cast <uint8_t> (3 * i);
+        pt.r = static_cast <std::uint8_t> (1 * i);
+        pt.g = static_cast <std::uint8_t> (2 * i);
+        pt.b = static_cast <std::uint8_t> (3 * i);
 
         vertices_.push_back (pt);
       }
 
       // Faces
-      std::vector <uint32_t> face;
+      std::vector <std::uint32_t> face;
 
       face.push_back (0);
       face.push_back (1);
@@ -130,8 +130,8 @@ class TestMeshConversion : public ::testing::Test
     }
 
     pcl::PointCloud <pcl::PointXYZRGBNormal> vertices_;
-    std::vector <std::vector <uint32_t> >    non_manifold_faces_;
-    std::vector <std::vector <uint32_t> >    manifold_faces_;
+    std::vector <std::vector <std::uint32_t> >    non_manifold_faces_;
+    std::vector <std::vector <std::uint32_t> >    manifold_faces_;
 
   public:
     PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -163,7 +163,7 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
   using VertexIndex = typename Mesh::VertexIndex;
   using VertexIndices = typename Mesh::VertexIndices;
 
-  const std::vector <std::vector <uint32_t> > faces =
+  const std::vector <std::vector <std::uint32_t> > faces =
       Mesh::IsManifold::value ? this->manifold_faces_ :
                                 this->non_manifold_faces_;
 
@@ -268,13 +268,13 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
   }
 
   // Check the faces
-  const std::vector <std::vector <uint32_t> > expected_faces =
+  const std::vector <std::vector <std::uint32_t> > expected_faces =
       Mesh::IsManifold::value ? this->manifold_faces_ :
                                 this->non_manifold_faces_;
 
   ASSERT_EQ (expected_faces.size (), half_edge_mesh.sizeFaces ());
 
-  std::vector <uint32_t> converted_face;
+  std::vector <std::uint32_t> converted_face;
   for (size_t i=0; i<half_edge_mesh.sizeFaces (); ++i)
   {
     VAFC       circ     = half_edge_mesh.getVertexAroundFaceCirculator (FaceIndex (i));
@@ -282,7 +282,7 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
     converted_face.clear ();
     do
     {
-      converted_face.push_back (static_cast <uint32_t> (circ.getTargetIndex ().get ()));
+      converted_face.push_back (static_cast <std::uint32_t> (circ.getTargetIndex ().get ()));
     } while (++circ != circ_end);
 
     EXPECT_TRUE (isCircularPermutation (expected_faces [i], converted_face)) << "Face number " << i;

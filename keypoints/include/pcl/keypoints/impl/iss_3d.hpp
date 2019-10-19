@@ -446,7 +446,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   }
 
   output.header = input_->header;
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = static_cast<std::uint32_t> (output.points.size ());
   output.height = 1;
 
   // Clear the contents of variables and arrays before the beginning of the next computation.

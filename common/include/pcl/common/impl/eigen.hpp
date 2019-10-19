@@ -703,11 +703,11 @@ pcl::getTransformation (Scalar x, Scalar y, Scalar z,
 template <typename Derived> void 
 pcl::saveBinary (const Eigen::MatrixBase<Derived>& matrix, std::ostream& file)
 {
-  uint32_t rows = static_cast<uint32_t> (matrix.rows ()), cols = static_cast<uint32_t> (matrix.cols ());
+  std::uint32_t rows = static_cast<std::uint32_t> (matrix.rows ()), cols = static_cast<std::uint32_t> (matrix.cols ());
   file.write (reinterpret_cast<char*> (&rows), sizeof (rows));
   file.write (reinterpret_cast<char*> (&cols), sizeof (cols));
-  for (uint32_t i = 0; i < rows; ++i)
-    for (uint32_t j = 0; j < cols; ++j)
+  for (std::uint32_t i = 0; i < rows; ++i)
+    for (std::uint32_t j = 0; j < cols; ++j)
     {
       typename Derived::Scalar tmp = matrix(i,j);
       file.write (reinterpret_cast<const char*> (&tmp), sizeof (tmp));
@@ -720,14 +720,14 @@ pcl::loadBinary (Eigen::MatrixBase<Derived> const & matrix_, std::istream& file)
 {
   Eigen::MatrixBase<Derived> &matrix = const_cast<Eigen::MatrixBase<Derived> &> (matrix_);
 
-  uint32_t rows, cols;
+  std::uint32_t rows, cols;
   file.read (reinterpret_cast<char*> (&rows), sizeof (rows));
   file.read (reinterpret_cast<char*> (&cols), sizeof (cols));
   if (matrix.rows () != static_cast<int>(rows) || matrix.cols () != static_cast<int>(cols))
     matrix.derived().resize(rows, cols);
   
-  for (uint32_t i = 0; i < rows; ++i)
-    for (uint32_t j = 0; j < cols; ++j)
+  for (std::uint32_t i = 0; i < rows; ++i)
+    for (std::uint32_t j = 0; j < cols; ++j)
     {
       typename Derived::Scalar tmp;
       file.read (reinterpret_cast<char*> (&tmp), sizeof (tmp));

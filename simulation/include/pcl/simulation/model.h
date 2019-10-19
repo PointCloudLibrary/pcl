@@ -176,7 +176,7 @@ public:
   ~TexturedQuad();
 
   void
-  setTexture(const uint8_t* data);
+  setTexture(const std::uint8_t* data);
 
   void
   render();

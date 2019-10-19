@@ -257,10 +257,10 @@ convertDepthRGBToCloud (const pcl::device::PtrStepSz<const unsigned short> &dept
       point.x = u * point.z;
       point.y = v * point.z;
 
-/*      uint8_t r = *(rgb24_row_ptr + 0);
-      uint8_t g = *(rgb24_row_ptr + 1);
-      uint8_t b = *(rgb24_row_ptr + 2);
-      uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+/*      std::uint8_t r = *(rgb24_row_ptr + 0);
+      std::uint8_t g = *(rgb24_row_ptr + 1);
+      std::uint8_t b = *(rgb24_row_ptr + 2);
+      std::uint32_t rgb = ((std::uint32_t)r << 16 | (std::uint32_t)g << 8 | (std::uint32_t)b);
       point.rgb = *reinterpret_cast<float*>(&rgb);
 
       point.r = *((const char*)rgb24.data + y*rgb24.step + x*rgb24.elem_size);

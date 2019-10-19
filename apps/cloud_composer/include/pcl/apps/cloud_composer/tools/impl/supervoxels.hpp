@@ -89,10 +89,10 @@ pcl::cloud_composer::SupervoxelsTool::performTemplatedAction (const QList <const
     super.setColorImportance (rgb_weight);
     super.setSpatialImportance (spatial_weight);
     super.setNormalImportance (normal_weight);
-    std::map <uint32_t, typename pcl::Supervoxel<PointT>::Ptr > supervoxel_clusters;
+    std::map <std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr > supervoxel_clusters;
     super.extract (supervoxel_clusters);
     
-    std::map <uint32_t, typename pcl::Supervoxel<PointT>::Ptr > refined_supervoxel_clusters;
+    std::map <std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr > refined_supervoxel_clusters;
     super.refineSupervoxels (3, refined_supervoxel_clusters);
   
     typename pcl::PointCloud<PointXYZRGBA>::Ptr color_segments;

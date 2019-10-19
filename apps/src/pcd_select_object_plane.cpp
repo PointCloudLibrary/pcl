@@ -438,7 +438,7 @@ class ObjectSelection
       if (image_viewer_)
       {
         // Get the [u, v] in pixel coordinates for the ImageViewer. Remember that 0,0 is bottom left.
-        uint32_t width  = search_->getInputCloud ()->width,
+        std::uint32_t width  = search_->getInputCloud ()->width,
                  height = search_->getInputCloud ()->height;
         int v = height - indices[0] / width,
             u = indices[0] % width;
@@ -543,7 +543,7 @@ class ObjectSelection
           int poff = fields[rgba_index].offset;
           // BGR to RGB
           rgb_data_ = new unsigned char [cloud_->width * cloud_->height * 3];
-          for (uint32_t i = 0; i < cloud_->width * cloud_->height; ++i)
+          for (std::uint32_t i = 0; i < cloud_->width * cloud_->height; ++i)
           {
             RGB rgb;
             memcpy (&rgb, reinterpret_cast<unsigned char*> (&cloud_->points[i]) + poff, sizeof (rgb));

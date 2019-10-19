@@ -89,9 +89,9 @@ namespace pcl
           getVendor () const;
           const std::string
           getName () const;
-          uint16_t
+          std::uint16_t
           getUsbVendorId () const;
-          uint16_t
+          std::uint16_t
           getUsbProductId () const;
 
           const std::string
@@ -192,7 +192,7 @@ namespace pcl
           getBaseline();
 
           // Value of pixels in shadow or that have no valid measurement
-          uint64_t
+          std::uint64_t
           getShadowValue();
 
           void
@@ -319,9 +319,9 @@ namespace pcl
           /** \brief distance between the projector and the IR camera in meters*/
           float baseline_;
           /** the value for shadow (occluded pixels) */
-          uint64_t shadow_value_;
+          std::uint64_t shadow_value_;
           /** the value for pixels without a valid disparity measurement */
-          uint64_t no_sample_value_;
+          std::uint64_t no_sample_value_;
       };
 
       PCL_EXPORTS std::ostream& operator<< (std::ostream& stream, const OpenNI2Device& device);

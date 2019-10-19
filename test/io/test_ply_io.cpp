@@ -192,10 +192,10 @@ struct PLYColorTest : public PLYTest
 TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoBlob)
 {
   int res;
-  uint32_t rgba;
+  std::uint32_t rgba;
 
   pcl::PCLPointCloud2 cloud_blob;
-  uint32_t ps;
+  std::uint32_t ps;
   int32_t offset = -1;
 
   // check if loading is ok
@@ -221,19 +221,19 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoBlob)
   ASSERT_GE (offset, 0);
 
   // 1st point
-  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&cloud_blob.data[offset]);
   ASSERT_EQ (rgba, clr_1_.rgba);
 
   // 2th point
-  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[ps + offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&cloud_blob.data[ps + offset]);
   ASSERT_EQ (rgba, clr_2_.rgba);
 
   // 3th point
-  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[2 * ps + offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&cloud_blob.data[2 * ps + offset]);
   ASSERT_EQ (rgba, clr_3_.rgba);
 
   // 4th point
-  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[3 * ps + offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&cloud_blob.data[3 * ps + offset]);
   ASSERT_EQ (rgba, clr_4_.rgba);
 }
 
@@ -241,9 +241,9 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoBlob)
 TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoPolygonMesh)
 {
   int res;
-  uint32_t rgba;
+  std::uint32_t rgba;
   pcl::PolygonMesh mesh;
-  uint32_t ps;
+  std::uint32_t ps;
   int32_t offset = -1;
 
   // check if loading is ok
@@ -269,19 +269,19 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoPolygonMesh)
   ASSERT_GE (offset, 0);
 
   // 1st point
-  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&mesh.cloud.data[offset]);
   ASSERT_EQ (rgba, clr_1_.rgba);
 
   // 2th point
-  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[ps + offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&mesh.cloud.data[ps + offset]);
   ASSERT_EQ (rgba, clr_2_.rgba);
 
   // 3th point
-  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[2 * ps + offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&mesh.cloud.data[2 * ps + offset]);
   ASSERT_EQ (rgba, clr_3_.rgba);
 
   // 4th point
-  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[3 * ps + offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&mesh.cloud.data[3 * ps + offset]);
   ASSERT_EQ (rgba, clr_4_.rgba);
 }
 

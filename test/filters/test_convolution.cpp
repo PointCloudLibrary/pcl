@@ -67,11 +67,11 @@ TEST (Convolution, convolveRows)
   Eigen::ArrayXf output_47 (64);
   output_47[0] = 0; output_47[1] = 0; output_47[2] = 0; output_47[3] = 121.887; output_47[4] = 121.395; output_47[5] = 120.547; output_47[6] = 119.866; output_47[7] = 119.493; output_47[8] = 119.153; output_47[9] = 118.484; output_47[10] = 117.753; output_47[11] = 117.009; output_47[12] = 116.35; output_47[13] = 115.941; output_47[14] = 115.349; output_47[15] = 114.35; output_47[16] = 113.588; output_47[17] = 112.99; output_47[18] = 111.645; output_47[19] = 110.009; output_47[20] = 109.13; output_47[21] = 108.771; output_47[22] = 108.592; output_47[23] = 108.641; output_47[24] = 108.345; output_47[25] = 107.592; output_47[26] = 107.063; output_47[27] = 106.767; output_47[28] = 106.592; output_47[29] = 106.645; output_47[30] = 106.399; output_47[31] = 105.843; output_47[32] = 105.57; output_47[33] = 105.502; output_47[34] = 105.557; output_47[35] = 105.672; output_47[36] = 105.56; output_47[37] = 104.897; output_47[38] = 104.642; output_47[39] = 104.708; output_47[40] = 104.054; output_47[41] = 103.556; output_47[42] = 103.982; output_47[43] = 104.43; output_47[44] = 104.682; output_47[45] = 104.596; output_47[46] = 104.104; output_47[47] = 103.852; output_47[48] = 103.964; output_47[49] = 103.91; output_47[50] = 103.556; output_47[51] = 102.614; output_47[52] = 102.126; output_47[53] = 102.762; output_47[54] = 103.466; output_47[55] = 103.273; output_47[56] = 102.292; output_47[57] = 101.363; output_47[58] = 100.821; output_47[59] = 100.538; output_47[60] = 100.332; output_47[61] = 0; output_47[62] = 0; output_47[63] = 0;
 
-  uint32_t j = 0;
-  for (uint32_t i = 0; i < output->width ; ++i)
+  std::uint32_t j = 0;
+  for (std::uint32_t i = 0; i < output->width ; ++i)
     EXPECT_NEAR ((*output) (i,j).intensity, output_0[i], 1e-3);
   j = 47;
-  for (uint32_t i = 0; i < output->width ; ++i)
+  for (std::uint32_t i = 0; i < output->width ; ++i)
     EXPECT_NEAR ((*output) (i,j).intensity, output_47[i], 1e-3);
 }
 

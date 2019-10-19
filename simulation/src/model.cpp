@@ -131,7 +131,7 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel(GLenum mode,
       apoly.colors_ = new float[4 * apoly_in.vertices.size()];
 
       for (size_t j = 0; j < apoly_in.vertices.size(); j++) { // each point
-        uint32_t pt = apoly_in.vertices[j];
+        std::uint32_t pt = apoly_in.vertices[j];
         tmp = newcloud.points[pt].getVector4fMap();
         // x,y,z
         apoly.vertices_[3 * j + 0] = tmp(0);
@@ -157,7 +157,7 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel(GLenum mode,
       apoly.colors_ = new float[4 * apoly_in.vertices.size()];
 
       for (size_t j = 0; j < apoly_in.vertices.size(); j++) { // each point
-        uint32_t pt = apoly_in.vertices[j];
+        std::uint32_t pt = apoly_in.vertices[j];
         tmp = newcloud.points[pt].getVector4fMap();
         // x,y,z
         apoly.vertices_[3 * j + 0] = tmp(0);
@@ -313,7 +313,7 @@ pcl::simulation::TexturedQuad::TexturedQuad(int width, int height)
 pcl::simulation::TexturedQuad::~TexturedQuad() { glDeleteTextures(1, &texture_); }
 
 void
-pcl::simulation::TexturedQuad::setTexture(const uint8_t* data)
+pcl::simulation::TexturedQuad::setTexture(const std::uint8_t* data)
 {
   glBindTexture(GL_TEXTURE_2D, texture_);
   glTexImage2D(

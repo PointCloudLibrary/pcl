@@ -90,7 +90,7 @@ namespace pcl
     {
       //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
       using T = typename pcl::traits::datatype<PointOutT, Key>::type;
-      uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value;
+      std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value;
       *reinterpret_cast<T*>(data_ptr) = static_cast<T> (p1_[f_idx_++]);
     }
 
@@ -121,7 +121,7 @@ namespace pcl
     {
       //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
       using T = typename pcl::traits::datatype<PointInT, Key>::type;
-      const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value;
+      const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value;
       p2_[f_idx_++] = static_cast<float> (*reinterpret_cast<const T*>(data_ptr));
     }
 
@@ -229,7 +229,7 @@ namespace pcl
         * \param[in] height_ the cloud height
         * \param[in] value_ default value
         */
-      PointCloud (uint32_t width_, uint32_t height_, const PointT& value_ = PointT ())
+      PointCloud (std::uint32_t width_, std::uint32_t height_, const PointT& value_ = PointT ())
         : header ()
         , points (width_ * height_, value_)
         , width (width_)
@@ -275,7 +275,7 @@ namespace pcl
         // This causes a drastic performance hit. Prefer not to use reserve with libstdc++ (default on clang)
         cloud1.points.insert (cloud1.points.end (), cloud2.points.begin (), cloud2.points.end ());
 
-        cloud1.width    = static_cast<uint32_t>(cloud1.points.size ());
+        cloud1.width    = static_cast<std::uint32_t>(cloud1.points.size ());
         cloud1.height   = 1;
         cloud1.is_dense = cloud1.is_dense && cloud2.is_dense;
         return true;
@@ -426,9 +426,9 @@ namespace pcl
       std::vector<PointT, Eigen::aligned_allocator<PointT> > points;
 
       /** \brief The point cloud width (if organized as an image-structure). */
-      uint32_t width;
+      std::uint32_t width;
       /** \brief The point cloud height (if organized as an image-structure). */
-      uint32_t height;
+      std::uint32_t height;
 
       /** \brief True if no points are invalid (e.g., have NaN or Inf values in any of their floating point fields). */
       bool is_dense;
@@ -473,7 +473,7 @@ namespace pcl
         points.resize (n);
         if (width * height != n)
         {
-          width = static_cast<uint32_t> (n);
+          width = static_cast<std::uint32_t> (n);
           height = 1;
         }
       }
@@ -496,7 +496,7 @@ namespace pcl
       push_back (const PointT& pt)
       {
         points.push_back (pt);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
       }
 
@@ -509,7 +509,7 @@ namespace pcl
       emplace_back (Args&& ...args)
       {
         points.emplace_back (std::forward<Args> (args)...);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
         return points.back();
       }
@@ -524,7 +524,7 @@ namespace pcl
       insert (iterator position, const PointT& pt)
       {
         iterator it = points.insert (position, pt);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
         return (it);
       }
@@ -539,7 +539,7 @@ namespace pcl
       insert (iterator position, std::size_t n, const PointT& pt)
       {
         points.insert (position, n, pt);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
       }
 
@@ -553,7 +553,7 @@ namespace pcl
       insert (iterator position, InputIterator first, InputIterator last)
       {
         points.insert (position, first, last);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
       }
 
@@ -567,7 +567,7 @@ namespace pcl
       emplace (iterator position, Args&& ...args)
       {
         iterator it = points.emplace (position, std::forward<Args> (args)...);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
         return (it);
       }
@@ -581,7 +581,7 @@ namespace pcl
       erase (iterator position)
       {
         iterator it = points.erase (position);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
         return (it);
       }
@@ -596,7 +596,7 @@ namespace pcl
       erase (iterator first, iterator last)
       {
         iterator it = points.erase (first, last);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
         return (it);
       }

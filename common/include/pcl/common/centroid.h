@@ -850,7 +850,7 @@ namespace pcl
     template<typename Key> inline void operator() ()
     {
       using T = typename pcl::traits::datatype<PointT, Key>::type;
-      const uint8_t* raw_ptr = reinterpret_cast<const uint8_t*>(&p_) + pcl::traits::offset<PointT, Key>::value;
+      const std::uint8_t* raw_ptr = reinterpret_cast<const std::uint8_t*>(&p_) + pcl::traits::offset<PointT, Key>::value;
       const T* data_ptr = reinterpret_cast<const T*>(raw_ptr);
 
       // Check if the value is invalid

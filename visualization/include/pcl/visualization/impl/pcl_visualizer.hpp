@@ -1636,7 +1636,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
     colors->SetNumberOfComponents (3);
     colors->SetName ("Colors");
-    uint32_t offset = fields[rgb_idx].offset;
+    std::uint32_t offset = fields[rgb_idx].offset;
     for (size_t i = 0; i < cloud->size (); ++i)
     {
       if (!isFinite (cloud->points[i]))
@@ -1851,7 +1851,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   if (rgb_idx != -1 && colors)
   {
     int j = 0;
-    uint32_t offset = fields[rgb_idx].offset;
+    std::uint32_t offset = fields[rgb_idx].offset;
     for (size_t i = 0; i < cloud->size (); ++i)
     {
       if (!isFinite (cloud->points[i]))

@@ -104,7 +104,7 @@ namespace pcl
                 ids[i] = i;
 
               // The random generator
-              pcl::common::UniformGenerator<int> randgen (0, num_octree_points - 1, static_cast<uint32_t> (time (nullptr)));
+              pcl::common::UniformGenerator<int> randgen (0, num_octree_points - 1, static_cast<std::uint32_t> (time (nullptr)));
 
               // Randomly sample some points from the octree
               for ( int i = 0 ; i < num_points_for_registration ; ++i )

@@ -105,7 +105,7 @@ namespace pcl
     plus (std::remove_const_t<T> &l, const T &r)
     {
       using type = std::remove_all_extents_t<T>;
-      static const uint32_t count = sizeof (T) / sizeof (type);
+      static const std::uint32_t count = sizeof (T) / sizeof (type);
       for (int i = 0; i < count; ++i)
         l[i] += r[i];
     }
@@ -122,7 +122,7 @@ namespace pcl
     plusscalar (T1 &p, const T2 &scalar)
     {
       using type = std::remove_all_extents_t<T1>;
-      static const uint32_t count = sizeof (T1) / sizeof (type);
+      static const std::uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
         p[i] += scalar;
     }
@@ -139,7 +139,7 @@ namespace pcl
     minus (std::remove_const_t<T> &l, const T &r)
     {
       using type = std::remove_all_extents_t<T>;
-      static const uint32_t count = sizeof (T) / sizeof (type);
+      static const std::uint32_t count = sizeof (T) / sizeof (type);
       for (int i = 0; i < count; ++i)
         l[i] -= r[i];
     }
@@ -156,7 +156,7 @@ namespace pcl
     minusscalar (T1 &p, const T2 &scalar)
     {
       using type = std::remove_all_extents_t<T1>;
-      static const uint32_t count = sizeof (T1) / sizeof (type);
+      static const std::uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
         p[i] -= scalar;
     }
@@ -173,7 +173,7 @@ namespace pcl
     mulscalar (T1 &p, const T2 &scalar)
     {
       using type = std::remove_all_extents_t<T1>;
-      static const uint32_t count = sizeof (T1) / sizeof (type);
+      static const std::uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
         p[i] *= scalar;
     }
@@ -190,7 +190,7 @@ namespace pcl
     divscalar (T1 &p, const T2 &scalar)
     {
       using type = std::remove_all_extents_t<T1>;
-      static const uint32_t count = sizeof (T1) / sizeof (type);
+      static const std::uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
         p[i] /= scalar;
     }
@@ -339,8 +339,8 @@ namespace pcl
   {                                                                     \
     using type = boost::mpl::identity<BOOST_PP_TUPLE_ELEM(3, 0, elem)>::type; \
     using decomposed = decomposeArray<type>;                            \
-    static const uint8_t value = asEnum<decomposed::type>::value;       \
-    static const uint32_t size = decomposed::value;                     \
+    static const std::uint8_t value = asEnum<decomposed::type>::value;       \
+    static const std::uint32_t size = decomposed::value;                     \
   };                                                                    \
   /***/
 

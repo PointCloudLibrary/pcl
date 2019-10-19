@@ -111,7 +111,7 @@ using NcvBool = bool;
 using Ncv64s = long long;
 
 #if defined(__APPLE__) && !defined(__CUDACC__)
-    using Ncv64u = uint64_t;
+    using Ncv64u = std::uint64_t;
 #else
     using Ncv64u = unsigned long long;
 #endif

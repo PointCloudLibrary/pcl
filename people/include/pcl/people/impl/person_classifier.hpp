@@ -240,9 +240,9 @@ pcl::people::PersonClassifier<PointT>::evaluate (float height_person,
     // Convert the image to array of float:
     float* sample_float = new float[sample->width * sample->height * 3]; 
     int delta = sample->height * sample->width;
-    for (uint32_t row = 0; row < sample->height; row++)
+    for (std::uint32_t row = 0; row < sample->height; row++)
     {
-      for (uint32_t col = 0; col < sample->width; col++)
+      for (std::uint32_t col = 0; col < sample->width; col++)
       {
         sample_float[row + sample->height * col] = ((float) ((*sample)(col, row).r))/255; //ptr[col * 3 + 2];
         sample_float[row + sample->height * col + delta] = ((float) ((*sample)(col, row).g))/255; //ptr[col * 3 + 1];

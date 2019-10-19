@@ -333,7 +333,7 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float ra
   std::vector<int> tmp_ids;
   tmp_ids.reserve (8);
 
-  pcl::common::UniformGenerator<int> randgen (0, 1, static_cast<uint32_t> (time (nullptr)));
+  pcl::common::UniformGenerator<int> randgen (0, 1, static_cast<std::uint32_t> (time (nullptr)));
 
   list<ORROctree::Node*> nodes;
   nodes.push_back (root_);

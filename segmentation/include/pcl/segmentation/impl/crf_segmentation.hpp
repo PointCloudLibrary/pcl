@@ -283,10 +283,10 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
 
     if (color_data)
     {    
-      uint32_t rgb = *reinterpret_cast<int*>(&filtered_cloud_->points[i].rgba);
-      uint8_t r = (rgb >> 16) & 0x0000ff;
-      uint8_t g = (rgb >> 8)  & 0x0000ff;
-      uint8_t b = (rgb)       & 0x0000ff;
+      std::uint32_t rgb = *reinterpret_cast<int*>(&filtered_cloud_->points[i].rgba);
+      std::uint8_t r = (rgb >> 16) & 0x0000ff;
+      std::uint8_t g = (rgb >> 8)  & 0x0000ff;
+      std::uint8_t b = (rgb)       & 0x0000ff;
       color_[i] = Eigen::Vector3i (r, g, b);
     }
 

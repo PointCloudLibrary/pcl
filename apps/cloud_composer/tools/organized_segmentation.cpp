@@ -27,7 +27,7 @@ pcl::cloud_composer::OrganizedSegmentationTool::performAction (ConstItemList inp
 {
   if (type != PointTypeFlags::NONE)
   {
-    switch ((uint8_t) type)
+    switch ((std::uint8_t) type)
     {
       case (PointTypeFlags::XYZ):
         return this->performTemplatedAction<pcl::PointXYZ> (input_data);

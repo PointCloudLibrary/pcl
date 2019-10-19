@@ -79,8 +79,8 @@ pcl::FieldComparison<PointT>::FieldComparison (
     capable_ = false;
     return;
   }
-  uint8_t datatype = point_fields[d].datatype;
-  uint32_t offset = point_fields[d].offset;
+  std::uint8_t datatype = point_fields[d].datatype;
+  std::uint32_t offset = point_fields[d].offset;
 
   point_data_ = new PointDataAtOffset<PointT>(datatype, offset);
   capable_ = true;
@@ -156,7 +156,7 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
   }
 
   // Verify the datatype
-  uint8_t datatype = point_fields[d].datatype;
+  std::uint8_t datatype = point_fields[d].datatype;
   if (datatype != pcl::PCLPointField::FLOAT32 &&
       datatype != pcl::PCLPointField::UINT32 &&
       datatype != pcl::PCLPointField::INT32)
@@ -197,8 +197,8 @@ template <typename PointT> bool
 pcl::PackedRGBComparison<PointT>::evaluate (const PointT &point) const
 {
   // extract the component value
-  const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&point);
-  uint8_t my_val = *(pt_data + component_offset_);
+  const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+  std::uint8_t my_val = *(pt_data + component_offset_);
 
   // now do the comparison
   switch (this->op_) 
@@ -243,7 +243,7 @@ pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
   }
 
   // Verify the datatype
-  uint8_t datatype = point_fields[d].datatype;
+  std::uint8_t datatype = point_fields[d].datatype;
   if (datatype != pcl::PCLPointField::FLOAT32 &&
       datatype != pcl::PCLPointField::UINT32 &&
       datatype != pcl::PCLPointField::INT32)
@@ -254,7 +254,7 @@ pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
   }
 
   // verify the offset
-  uint32_t offset = point_fields[d].offset;
+  std::uint32_t offset = point_fields[d].offset;
   if (offset % 4 != 0)
   {
     PCL_WARN ("[pcl::PackedHSIComparison::PackedHSIComparison] rgb field is not 32 bit aligned!\n");
@@ -293,26 +293,26 @@ template <typename PointT> bool
 pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
 {
   // Since this is a const function, we can't make these data members because we change them here
-  static uint32_t rgb_val_ = 0;
-  static uint8_t r_ = 0;
-  static uint8_t g_ = 0;
-  static uint8_t b_ = 0;
+  static std::uint32_t rgb_val_ = 0;
+  static std::uint8_t r_ = 0;
+  static std::uint8_t g_ = 0;
+  static std::uint8_t b_ = 0;
   static int8_t h_ = 0;
-  static uint8_t s_ = 0;
-  static uint8_t i_ = 0;
+  static std::uint8_t s_ = 0;
+  static std::uint8_t i_ = 0;
 
   // We know that rgb data is 32 bit aligned (verified in the ctor) so...
-  const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&point);
-  const uint32_t* rgb_data = reinterpret_cast<const uint32_t*> (pt_data + rgb_offset_);
-  uint32_t new_rgb_val = *rgb_data;
+  const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+  const std::uint32_t* rgb_data = reinterpret_cast<const std::uint32_t*> (pt_data + rgb_offset_);
+  std::uint32_t new_rgb_val = *rgb_data;
 
   if (rgb_val_ != new_rgb_val) 
   { // avoid having to redo this calc, if possible
     rgb_val_ = new_rgb_val;
     // extract r,g,b
-    r_ = static_cast <uint8_t> (rgb_val_ >> 16); 
-    g_ = static_cast <uint8_t> (rgb_val_ >> 8);
-    b_ = static_cast <uint8_t> (rgb_val_);
+    r_ = static_cast <std::uint8_t> (rgb_val_ >> 16); 
+    g_ = static_cast <std::uint8_t> (rgb_val_ >> 8);
+    b_ = static_cast <std::uint8_t> (rgb_val_);
 
     // definitions taken from http://en.wikipedia.org/wiki/HSL_and_HSI
     float hx = (2.0f * r_ - g_ - b_) / 4.0f;  // hue x component -127 to 127
@@ -320,13 +320,13 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
     h_ = static_cast<int8_t> (std::atan2(hy, hx) * 128.0f / M_PI);
 
     int32_t i = (r_+g_+b_)/3; // 0 to 255
-    i_ = static_cast<uint8_t> (i);
+    i_ = static_cast<std::uint8_t> (i);
 
     int32_t m;  // min(r,g,b)
     m = (r_ < g_) ? r_ : g_;
     m = (m < b_) ? m : b_;
 
-    s_ = static_cast<uint8_t> ((i == 0) ? 0 : 255 - (m * 255) / i); // saturation 0 to 255
+    s_ = static_cast<std::uint8_t> ((i == 0) ? 0 : 255 - (m * 255) / i); // saturation 0 to 255
   }
 
   float my_val = 0;
@@ -527,7 +527,7 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
   // if p(data) == val return 0
   // if p(data) < val return -1 
   
-  const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&p);
+  const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&p);
 
   switch (datatype_) 
   {
@@ -539,9 +539,9 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
     }
     case pcl::PCLPointField::UINT8 :
     {
-      uint8_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (uint8_t));
-      return (pt_val > static_cast<uint8_t>(val)) - (pt_val < static_cast<uint8_t> (val));
+      std::uint8_t pt_val;
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (std::uint8_t));
+      return (pt_val > static_cast<std::uint8_t>(val)) - (pt_val < static_cast<std::uint8_t> (val));
     }
     case pcl::PCLPointField::INT16 :
     {
@@ -551,9 +551,9 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
     }
     case pcl::PCLPointField::UINT16 :
     {
-      uint16_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (uint16_t));
-      return (pt_val > static_cast<uint16_t> (val)) - (pt_val < static_cast<uint16_t> (val));
+      std::uint16_t pt_val;
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (std::uint16_t));
+      return (pt_val > static_cast<std::uint16_t> (val)) - (pt_val < static_cast<std::uint16_t> (val));
     }
     case pcl::PCLPointField::INT32 :
     {
@@ -563,9 +563,9 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
     }
     case pcl::PCLPointField::UINT32 :
     {
-      uint32_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (uint32_t));
-      return (pt_val > static_cast<uint32_t> (val)) - (pt_val < static_cast<uint32_t> (val));
+      std::uint32_t pt_val;
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (std::uint32_t));
+      return (pt_val > static_cast<std::uint32_t> (val)) - (pt_val < static_cast<std::uint32_t> (val));
     }
     case pcl::PCLPointField::FLOAT32 :
     {

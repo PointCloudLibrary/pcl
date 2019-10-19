@@ -80,8 +80,8 @@ namespace pcl
 
     public:
 
-      // Adjacency list with nodes holding labels (uint32_t) and edges holding EdgeProperties.
-      using SupervoxelAdjacencyList = boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, uint32_t, EdgeProperties>;
+      // Adjacency list with nodes holding labels (std::uint32_t) and edges holding EdgeProperties.
+      using SupervoxelAdjacencyList = boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, std::uint32_t, EdgeProperties>;
       using VertexIterator = typename boost::graph_traits<SupervoxelAdjacencyList>::vertex_iterator;
       using AdjacencyIterator = typename boost::graph_traits<SupervoxelAdjacencyList>::adjacency_iterator;
 
@@ -104,8 +104,8 @@ namespace pcl
        *  \param[in] label_adjacency_arg The graph defining the supervoxel adjacency relations  
        *  \note Implicitly calls \ref reset */
       inline void
-      setInputSupervoxels (const std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr> &supervoxel_clusters_arg,
-                           const std::multimap<uint32_t, uint32_t> &label_adjacency_arg)
+      setInputSupervoxels (const std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr> &supervoxel_clusters_arg,
+                           const std::multimap<std::uint32_t, std::uint32_t> &label_adjacency_arg)
       {
         // Initialization
         prepareSegmentation (supervoxel_clusters_arg, label_adjacency_arg);  // after this, sv_adjacency_list_ can be used to access adjacency list
@@ -125,7 +125,7 @@ namespace pcl
       /** \brief Get map<SegmentID, std::set<SuperVoxel IDs> >
        *  \param[out] segment_supervoxel_map_arg The output container. On error the map is empty. */
       inline void
-      getSegmentToSupervoxelMap (std::map<uint32_t, std::set<uint32_t> >& segment_supervoxel_map_arg) const
+      getSegmentToSupervoxelMap (std::map<std::uint32_t, std::set<std::uint32_t> >& segment_supervoxel_map_arg) const
       {
         if (grouping_data_valid_)
         {
@@ -134,14 +134,14 @@ namespace pcl
         else
         {
           PCL_WARN ("[pcl::LCCPSegmentation::getSegmentMap] WARNING: Call function segment first. Nothing has been done. \n");
-          segment_supervoxel_map_arg = std::map<uint32_t, std::set<uint32_t> > ();
+          segment_supervoxel_map_arg = std::map<std::uint32_t, std::set<std::uint32_t> > ();
         }
       }
       
       /** \brief Get map<Supervoxel_ID, Segment_ID>
        *  \param[out] supervoxel_segment_map_arg The output container. On error the map is empty. */
       inline void
-      getSupervoxelToSegmentMap (std::map<uint32_t, uint32_t>& supervoxel_segment_map_arg) const
+      getSupervoxelToSegmentMap (std::map<std::uint32_t, std::uint32_t>& supervoxel_segment_map_arg) const
       {
         if (grouping_data_valid_)
         {
@@ -150,14 +150,14 @@ namespace pcl
         else
         {
           PCL_WARN ("[pcl::LCCPSegmentation::getSegmentMap] WARNING: Call function segment first. Nothing has been done. \n");
-          supervoxel_segment_map_arg = std::map<uint32_t, uint32_t> ();
+          supervoxel_segment_map_arg = std::map<std::uint32_t, std::uint32_t> ();
         }
       }
       
       /** \brief Get map <SegmentID, std::set<Neighboring SegmentIDs> >
        * \param[out] segment_adjacency_map_arg map < SegmentID, std::set< Neighboring SegmentIDs> >. On error the map is empty.  */
       inline void
-      getSegmentAdjacencyMap (std::map<uint32_t, std::set<uint32_t> >& segment_adjacency_map_arg)
+      getSegmentAdjacencyMap (std::map<std::uint32_t, std::set<std::uint32_t> >& segment_adjacency_map_arg)
       {
         if (grouping_data_valid_)
         {
@@ -168,7 +168,7 @@ namespace pcl
         else
         {
           PCL_WARN ("[pcl::LCCPSegmentation::getSegmentAdjacencyMap] WARNING: Call function segment first. Nothing has been done. \n");
-          segment_adjacency_map_arg = std::map<uint32_t, std::set<uint32_t> > ();
+          segment_adjacency_map_arg = std::map<std::uint32_t, std::set<std::uint32_t> > ();
         }
       }
       
@@ -232,7 +232,7 @@ namespace pcl
       /** \brief Set the value used for k convexity. For k>0 convex connections between p_i and p_j require k common neighbors of these patches that have a convex connection to both.
        *  \param[in] k_factor_arg factor used for extended convexity check */
       inline void
-      setKFactor (const uint32_t k_factor_arg)
+      setKFactor (const std::uint32_t k_factor_arg)
       {
         k_factor_ = k_factor_arg;
       }
@@ -240,7 +240,7 @@ namespace pcl
       /** \brief Set the value \ref min_segment_size_ used in \ref mergeSmallSegments
        *  \param[in] min_segment_size_arg Segments smaller than this size will be merged */
       inline void
-      setMinSegmentSize (const uint32_t min_segment_size_arg)
+      setMinSegmentSize (const std::uint32_t min_segment_size_arg)
       {
         min_segment_size_ = min_segment_size_arg;
       }
@@ -259,8 +259,8 @@ namespace pcl
        *  \param[in] supervoxel_clusters_arg map of < supervoxel labels, supervoxels >
        *  \param[in] label_adjacency_arg The graph defining the supervoxel adjacency relations */
       void
-      prepareSegmentation (const std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr> &supervoxel_clusters_arg,
-                           const std::multimap<uint32_t, uint32_t> &label_adjacency_arg);
+      prepareSegmentation (const std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr> &supervoxel_clusters_arg,
+                           const std::multimap<std::uint32_t, std::uint32_t> &label_adjacency_arg);
 
 
       /** Perform depth search on the graph and recursively group all supervoxels with convex connections
@@ -291,8 +291,8 @@ namespace pcl
        *  \param[out] normal_angle The angle between source and target
        *  \return True if connection is convex */
       bool
-      connIsConvex (const uint32_t source_label_arg,
-                    const uint32_t target_label_arg,
+      connIsConvex (const std::uint32_t source_label_arg,
+                    const std::uint32_t target_label_arg,
                     float &normal_angle);
 
       ///  *** Parameters *** ///
@@ -322,30 +322,30 @@ namespace pcl
       float voxel_resolution_;
 
       /** \brief Factor used for k-convexity */
-      uint32_t k_factor_;
+      std::uint32_t k_factor_;
       
       /** \brief Minimum segment size */
-      uint32_t min_segment_size_;
+      std::uint32_t min_segment_size_;
 
       /** \brief Stores which supervoxel labels were already visited during recursive grouping.    
        *  \note processed_[sv_Label] = false (default)/true (already processed) */
-      std::map<uint32_t, bool> processed_;
+      std::map<std::uint32_t, bool> processed_;
 
       /** \brief Adjacency graph with the supervoxel labels as nodes and edges between adjacent supervoxels */
       SupervoxelAdjacencyList sv_adjacency_list_;
 
       /** \brief map from the supervoxel labels to the supervoxel objects  */
-      std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr> sv_label_to_supervoxel_map_;
+      std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr> sv_label_to_supervoxel_map_;
 
       /** \brief Storing relation between original SuperVoxel Labels and new segmantion labels. 
        *  \note sv_label_to_seg_label_map_[old_labelID] = new_labelID */
-      std::map<uint32_t, uint32_t> sv_label_to_seg_label_map_;
+      std::map<std::uint32_t, std::uint32_t> sv_label_to_seg_label_map_;
 
       /** \brief map <Segment Label, std::set <SuperVoxel Labels> > */
-      std::map<uint32_t, std::set<uint32_t> > seg_label_to_sv_list_map_;
+      std::map<std::uint32_t, std::set<std::uint32_t> > seg_label_to_sv_list_map_;
 
       /** \brief map < SegmentID, std::set< Neighboring segment labels> > */
-      std::map<uint32_t, std::set<uint32_t> > seg_label_to_neighbor_set_map_;
+      std::map<std::uint32_t, std::set<std::uint32_t> > seg_label_to_neighbor_set_map_;
 
   };
 }

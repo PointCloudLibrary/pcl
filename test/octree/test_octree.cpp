@@ -825,7 +825,7 @@ TEST (PCL, Octree_Pointcloud_Density_Test)
       for (float x = 0.05f; x < 7.0f; x += 0.1f)
         cloudIn->push_back (PointXYZ (x, y, z));
 
-  cloudIn->width = static_cast<uint32_t> (cloudIn->points.size ());
+  cloudIn->width = static_cast<std::uint32_t> (cloudIn->points.size ());
   cloudIn->height = 1;
 
   OctreePointCloudDensity<PointXYZ> octreeA (1.0f); // low resolution
@@ -864,7 +864,7 @@ TEST (PCL, Octree_Pointcloud_Iterator_Test)
       for (float x = 0.05f; x < 7.0f; x += 0.1f)
         cloudIn->push_back (PointXYZ (x, y, z));
 
-  cloudIn->width = static_cast<uint32_t> (cloudIn->points.size ());
+  cloudIn->width = static_cast<std::uint32_t> (cloudIn->points.size ());
   cloudIn->height = 1;
 
   OctreePointCloud<PointXYZ> octreeA (1.0f); // low resolution

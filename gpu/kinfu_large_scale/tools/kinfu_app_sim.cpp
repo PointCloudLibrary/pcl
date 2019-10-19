@@ -133,7 +133,7 @@ using namespace pcl::console;
 using namespace pcl::io;
 using namespace pcl::simulation;
 using namespace std;
-uint16_t t_gamma[2048];
+std::uint16_t t_gamma[2048];
 Scene::Ptr scene_;
 Camera::Ptr camera_;
 RangeLikelihood::Ptr range_likelihood_;
@@ -207,7 +207,7 @@ void
 write_depth_image(const float* depth_buffer)
 {
   int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
-  uint8_t* depth_img = new uint8_t[npixels * 3];
+  std::uint8_t* depth_img = new std::uint8_t[npixels * 3];
 
   float min_depth = depth_buffer[0];
   float max_depth = depth_buffer[0];
@@ -231,7 +231,7 @@ write_depth_image(const float* depth_buffer)
       float z = -zf*zn/((zf-zn)*(d - zf/(zf-zn)));
       float b = 0.075;
       float f = 580.0;
-      uint16_t kd = static_cast<uint16_t>(1090 - b*f/z*8);
+      std::uint16_t kd = static_cast<std::uint16_t>(1090 - b*f/z*8);
       if (kd < 0) kd = 0;
       else if (kd>2047) kd = 2047;
 
@@ -291,10 +291,10 @@ write_depth_image(const float* depth_buffer)
 
 
 void
-write_rgb_image(const uint8_t* rgb_buffer)
+write_rgb_image(const std::uint8_t* rgb_buffer)
 {
   int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
-  uint8_t* rgb_img = new uint8_t[npixels * 3];
+  std::uint8_t* rgb_img = new std::uint8_t[npixels * 3];
 
   for (int y = 0; y <  480; ++y)
   {
@@ -391,7 +391,7 @@ display_tic_toc (vector<double> &tic_toc,const string &fun_name)
 }
 
 void
-capture (Eigen::Isometry3d pose_in,unsigned short* depth_buffer_mm,const uint8_t* color_buffer)//, string point_cloud_fname)
+capture (Eigen::Isometry3d pose_in,unsigned short* depth_buffer_mm,const std::uint8_t* color_buffer)//, string point_cloud_fname)
 {
   // No reference image - but this is kept for compatibility with range_test_v2:
   float* reference = new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
@@ -1047,7 +1047,7 @@ struct KinFuApp
     generate_halo(poses,focus_center,halo_r,halo_dz,n_poses);    
     
     unsigned short * disparity_buf_ = new unsigned short[width*height ];
-    const uint8_t* color_buf_uint;
+    const std::uint8_t* color_buf_uint;
     
     // loop though and create the mesh:
     for (int i = 0; !exit_; ++i)
