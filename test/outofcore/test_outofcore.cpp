@@ -362,7 +362,7 @@ TEST (PCL, Outofcore_Ram_Tree)
 
     //query the list
     AlignedPointTVector pointsinregion;
-    BOOST_FOREACH(const PointT& p, points)
+    for (const PointT& p : points)
     {
       if ((qboxmin[0] <= p.x) && (p.x <= qboxmax[0]) && (qboxmin[1] <= p.y) && (p.y <= qboxmax[1]) && (qboxmin[2] <= p.z) && (p.z <= qboxmax[2]))
       {

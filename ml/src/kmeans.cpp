@@ -94,11 +94,11 @@ pcl::Kmeans::computeCentroids()
 {
   ClusterId cid = 0;
   // For each centroid
-  BOOST_FOREACH (Centroids::value_type& centroid, centroids_) {
+  for (Centroids::value_type& centroid : centroids_) {
     PointId num_points_in_cluster = 0;
 
     // For each PointId in this set
-    BOOST_FOREACH (SetPoints::value_type pid, clusters_to_points_[cid]) {
+    for (const auto& pid : clusters_to_points_[cid]) {
       Point p = data_[pid];
       // Point p = ps__.getPoint(pid);
       for (unsigned int i = 0; i < num_dimensions_; i++)
@@ -142,7 +142,7 @@ pcl::Kmeans::kMeans()
       // foreach centroid
       cid = 0;
       bool move = false;
-      BOOST_FOREACH (Centroids::value_type c, centroids_) {
+      for (const auto& c : centroids_) {
         d = distance(c, data_[pid]);
         if (d < min) {
           min = d;

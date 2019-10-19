@@ -153,8 +153,10 @@ namespace pcl
           if (pcl::io::savePCDFile (file_name.c_str (), *training_features_) != 0)
             return false;
           std::ofstream f (labels_file_name.c_str ());
-          BOOST_FOREACH (std::string s, labels_)
+          for (const auto& s : labels_)
+          {
             f << s << "\n";
+          }
           return true;
         }
         return false;

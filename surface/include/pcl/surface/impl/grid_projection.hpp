@@ -676,7 +676,7 @@ pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &p
   }
 
   // Update the hashtable and store the vector and point
-  BOOST_FOREACH (typename HashMap::value_type entry, cell_hash_map_)
+  for (const auto &entry : cell_hash_map_)
   {
     getIndexIn3D (entry.first, index);
     std::vector <int> pt_union_indices;
@@ -693,7 +693,7 @@ pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &p
   }
 
   // Go through the hash table another time to extract surface
-  BOOST_FOREACH (typename HashMap::value_type entry, cell_hash_map_)
+  for (const auto &entry : cell_hash_map_)
   {
     getIndexIn3D (entry.first, index);
     std::vector <int> pt_union_indices;

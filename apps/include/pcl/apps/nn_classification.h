@@ -116,15 +116,17 @@ namespace pcl
 
         // Save the mapping from labels to indices in the class list
         std::map<std::string, int> label2idx;
-        for (std::vector<std::string>::const_iterator it = classes_.begin (); it != classes_.end (); it++)
-          label2idx[*it] = int (it - classes_.begin ());
+        for (std::size_t i = 0; i < classes_.size(); ++i)
+        {
+            label2idx[classes_[i]] = i;
+        }
 
         // Create a list holding the class index of each label
         labels_idx_.reserve (labels.size ());
-        BOOST_FOREACH (std::string s, labels)
+        for (const auto &s : labels)
+        {
           labels_idx_.push_back (label2idx[s]);
-//        for (std::vector<std::string>::const_iterator it = labels.begin (); it != labels.end (); it++)
-//          labels_idx_.push_back (label2idx[*it]);
+        }
       }
 
       /** \brief Load the list of training examples and corresponding labels.
@@ -165,8 +167,10 @@ namespace pcl
           if (pcl::io::savePCDFile (file_name.c_str (), *training_features) != 0)
             return (false);
           std::ofstream f (labels_file_name.c_str ());
-          BOOST_FOREACH (int i, labels_idx_)
+          for (const int& i : labels_idx_)
+          {
             f << classes_[i] << "\n";
+          }
           return (true);
         }
         return (false);
