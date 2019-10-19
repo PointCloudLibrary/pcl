@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <ostream>
+#include <memory>
 #include <boost/shared_ptr.hpp>
 #include <pcl/pcl_macros.h>
 
@@ -14,14 +15,11 @@ namespace pcl
 {
   struct PCLPointField
   {
-    PCLPointField () : offset (0), datatype (0), count (0)
-    {}
-
     std::string name;
 
-    pcl::uint32_t offset;
-    pcl::uint8_t datatype;
-    pcl::uint32_t count;
+    pcl::uint32_t offset = 0;
+    pcl::uint8_t datatype = 0;
+    pcl::uint32_t count = 0;
 
     enum PointFieldTypes { INT8 = 1,
                            UINT8 = 2,
@@ -33,12 +31,12 @@ namespace pcl
                            FLOAT64 = 8 };
 
   public:
-    using Ptr = boost::shared_ptr< ::pcl::PCLPointField>;
-    using ConstPtr = boost::shared_ptr<const ::pcl::PCLPointField>;
+    using Ptr = std::shared_ptr< ::pcl::PCLPointField>;
+    using ConstPtr = std::shared_ptr<const ::pcl::PCLPointField>;
   }; // struct PCLPointField
 
-  using PCLPointFieldPtr = boost::shared_ptr< ::pcl::PCLPointField>;
-  using PCLPointFieldConstPtr = boost::shared_ptr<const ::pcl::PCLPointField>;
+  using PCLPointFieldPtr = std::shared_ptr<::pcl::PCLPointField>;
+  using PCLPointFieldConstPtr = std::shared_ptr<const ::pcl::PCLPointField>;
 
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLPointField & v)
   {
@@ -51,5 +49,12 @@ namespace pcl
     s << "count: ";
     s << "  " << v.count << std::endl;
     return (s);
+  }
+
+  inline bool operator==(const PCLPointField& f1, const PCLPointField& f2)
+  {
+      return ((f1.name == f2.name) ||
+              (f1.name == "rgb" && f2.name == "rgba") ||
+              (f1.name == "rgba" && f2.name == "rgb"));
   }
 } // namespace pcl
