@@ -74,22 +74,22 @@ namespace pcl
   {
     // Metafunction to return enum value representing a type
     template<typename T> struct asEnum {};
-    template<> struct asEnum<int8_t>   { static const std::uint8_t value = pcl::PCLPointField::INT8;    };
+    template<> struct asEnum<std::int8_t>   { static const std::uint8_t value = pcl::PCLPointField::INT8;    };
     template<> struct asEnum<std::uint8_t>  { static const std::uint8_t value = pcl::PCLPointField::UINT8;   };
-    template<> struct asEnum<int16_t>  { static const std::uint8_t value = pcl::PCLPointField::INT16;   };
+    template<> struct asEnum<std::int16_t>  { static const std::uint8_t value = pcl::PCLPointField::INT16;   };
     template<> struct asEnum<std::uint16_t> { static const std::uint8_t value = pcl::PCLPointField::UINT16;  };
-    template<> struct asEnum<int32_t>  { static const std::uint8_t value = pcl::PCLPointField::INT32;   };
+    template<> struct asEnum<std::int32_t>  { static const std::uint8_t value = pcl::PCLPointField::INT32;   };
     template<> struct asEnum<std::uint32_t> { static const std::uint8_t value = pcl::PCLPointField::UINT32;  };
     template<> struct asEnum<float>    { static const std::uint8_t value = pcl::PCLPointField::FLOAT32; };
     template<> struct asEnum<double>   { static const std::uint8_t value = pcl::PCLPointField::FLOAT64; };
 
     // Metafunction to return type of enum value
     template<int> struct asType {};
-    template<> struct asType<pcl::PCLPointField::INT8>    { using type = int8_t; };
+    template<> struct asType<pcl::PCLPointField::INT8>    { using type = std::int8_t; };
     template<> struct asType<pcl::PCLPointField::UINT8>   { using type = std::uint8_t; };
-    template<> struct asType<pcl::PCLPointField::INT16>   { using type = int16_t; };
+    template<> struct asType<pcl::PCLPointField::INT16>   { using type = std::int16_t; };
     template<> struct asType<pcl::PCLPointField::UINT16>  { using type = std::uint16_t; };
-    template<> struct asType<pcl::PCLPointField::INT32>   { using type = int32_t; };
+    template<> struct asType<pcl::PCLPointField::INT32>   { using type = std::int32_t; };
     template<> struct asType<pcl::PCLPointField::UINT32>  { using type = std::uint32_t; };
     template<> struct asType<pcl::PCLPointField::FLOAT32> { using type = float; };
     template<> struct asType<pcl::PCLPointField::FLOAT64> { using type = double; };

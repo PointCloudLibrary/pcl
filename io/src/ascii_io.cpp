@@ -200,7 +200,7 @@ pcl::ASCIIReader::parse (
   {
     case pcl::PCLPointField::INT8:
     {
-      *(reinterpret_cast<int8_t*>(data_target)) = boost::lexical_cast<int8_t> (token);
+      *(reinterpret_cast<std::int8_t*>(data_target)) = boost::lexical_cast<std::int8_t> (token);
       return (1);
     }
     case pcl::PCLPointField::UINT8:
@@ -210,7 +210,7 @@ pcl::ASCIIReader::parse (
     }
     case pcl::PCLPointField::INT16:
     {
-      *(reinterpret_cast<int16_t*>(data_target)) = boost::lexical_cast<int16_t> (token);
+      *(reinterpret_cast<std::int16_t*>(data_target)) = boost::lexical_cast<std::int16_t> (token);
       return 2;
     }
     case pcl::PCLPointField::UINT16:
@@ -220,7 +220,7 @@ pcl::ASCIIReader::parse (
     }
     case pcl::PCLPointField::INT32:
     {
-      *(reinterpret_cast<int32_t*>(data_target)) = boost::lexical_cast<int32_t> (token);
+      *(reinterpret_cast<std::int32_t*>(data_target)) = boost::lexical_cast<std::int32_t> (token);
       return 4;
     }
     case pcl::PCLPointField::UINT32:

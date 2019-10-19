@@ -270,7 +270,7 @@ pcl::gpu::people::RDFBodyPartsDetector::processProb (const pcl::device::Depth& d
 
   // Process the depthimage into probabilities (CUDA)
   //impl_->process(depth, labels_);
-  //impl_->processProb(depth, labels_, P_l_, (int) std::numeric_limits<int16_t>::max());
+  //impl_->processProb(depth, labels_, P_l_, (int) std::numeric_limits<std::int16_t>::max());
   impl_->processProb(depth, labels_, P_l_, std::numeric_limits<int>::max());
 }
 

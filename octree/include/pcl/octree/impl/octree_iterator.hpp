@@ -138,7 +138,7 @@ namespace pcl
               static_cast<BranchNode*> (stack_entry.node_);
 
           // add all children to stack
-          for (int8_t i = 7; i >= 0; --i)
+          for (std::int8_t i = 7; i >= 0; --i)
           {
             const unsigned char child_idx = (unsigned char) i;
 

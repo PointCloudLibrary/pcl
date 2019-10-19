@@ -221,7 +221,7 @@ pcl::HDLGrabber::loadCorrectionsFile (const std::string& correctionsFile)
         if (px.first == "px")
         {
           const auto& calibration_data = px.second;
-          int32_t index = -1;
+          std::int32_t index = -1;
           double azimuth = 0, vert_correction = 0, dist_correction = 0, vert_offset_correction = 0, horiz_offset_correction = 0;
 
           for (const auto& item : calibration_data)
@@ -666,7 +666,7 @@ pcl::HDLGrabber::readPacketsFromPcap ()
 {
   struct pcap_pkthdr *header;
   const std::uint8_t *data;
-  int8_t errbuff[PCAP_ERRBUF_SIZE];
+  std::int8_t errbuff[PCAP_ERRBUF_SIZE];
 
   pcap_t *pcap = pcap_open_offline (pcap_file_name_.c_str (), reinterpret_cast<char *> (errbuff));
 
@@ -693,7 +693,7 @@ pcl::HDLGrabber::readPacketsFromPcap ()
 
   lasttime.tv_sec = lasttime.tv_usec = 0;
 
-  int32_t returnValue = pcap_next_ex (pcap, &header, &data);
+  std::int32_t returnValue = pcap_next_ex (pcap, &header, &data);
 
   while (returnValue >= 0 && !terminate_read_packet_thread_)
   {

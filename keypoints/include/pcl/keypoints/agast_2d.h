@@ -322,7 +322,7 @@ namespace pcl
           static const int border_width_ = 2;
 
           // offsets defining the sample pattern
-          std::array<int_fast16_t, 12> offset_;
+          std::array<std::int_fast16_t, 12> offset_;
       };
 
       /** \brief Detector class for AGAST corner point detector (5_8). 
@@ -393,7 +393,7 @@ namespace pcl
           static const int border_width_ = 1;
 
           // offsets defining the sample pattern
-          std::array<int_fast16_t, 8> offset_;
+          std::array<std::int_fast16_t, 8> offset_;
       };
 
       /** \brief Detector class for AGAST corner point detector (OAST 9_16). 
@@ -464,7 +464,7 @@ namespace pcl
           static const int border_width_ = 3;
 
           // offsets defining the sample pattern
-          std::array<int_fast16_t, 16> offset_;
+          std::array<std::int_fast16_t, 16> offset_;
       };
     } // namespace agast
   } // namespace keypoints

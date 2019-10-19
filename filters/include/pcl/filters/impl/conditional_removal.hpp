@@ -297,7 +297,7 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
   static std::uint8_t r_ = 0;
   static std::uint8_t g_ = 0;
   static std::uint8_t b_ = 0;
-  static int8_t h_ = 0;
+  static std::int8_t h_ = 0;
   static std::uint8_t s_ = 0;
   static std::uint8_t i_ = 0;
 
@@ -317,12 +317,12 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
     // definitions taken from http://en.wikipedia.org/wiki/HSL_and_HSI
     float hx = (2.0f * r_ - g_ - b_) / 4.0f;  // hue x component -127 to 127
     float hy = static_cast<float> (g_ - b_) * 111.0f / 255.0f; // hue y component -111 to 111
-    h_ = static_cast<int8_t> (std::atan2(hy, hx) * 128.0f / M_PI);
+    h_ = static_cast<std::int8_t> (std::atan2(hy, hx) * 128.0f / M_PI);
 
-    int32_t i = (r_+g_+b_)/3; // 0 to 255
+    std::int32_t i = (r_+g_+b_)/3; // 0 to 255
     i_ = static_cast<std::uint8_t> (i);
 
-    int32_t m;  // min(r,g,b)
+    std::int32_t m;  // min(r,g,b)
     m = (r_ < g_) ? r_ : g_;
     m = (m < b_) ? m : b_;
 
@@ -533,9 +533,9 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
   {
     case pcl::PCLPointField::INT8 :
     {
-      int8_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (int8_t));
-      return (pt_val > static_cast<int8_t>(val)) - (pt_val < static_cast<int8_t> (val));
+      std::int8_t pt_val;
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (std::int8_t));
+      return (pt_val > static_cast<std::int8_t>(val)) - (pt_val < static_cast<std::int8_t> (val));
     }
     case pcl::PCLPointField::UINT8 :
     {
@@ -545,9 +545,9 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
     }
     case pcl::PCLPointField::INT16 :
     {
-      int16_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (int16_t));
-      return (pt_val > static_cast<int16_t>(val)) - (pt_val < static_cast<int16_t> (val));
+      std::int16_t pt_val;
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (std::int16_t));
+      return (pt_val > static_cast<std::int16_t>(val)) - (pt_val < static_cast<std::int16_t> (val));
     }
     case pcl::PCLPointField::UINT16 :
     {
@@ -557,9 +557,9 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
     }
     case pcl::PCLPointField::INT32 :
     {
-      int32_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (int32_t));
-      return (pt_val > static_cast<int32_t> (val)) - (pt_val < static_cast<int32_t> (val));
+      std::int32_t pt_val;
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (std::int32_t));
+      return (pt_val > static_cast<std::int32_t> (val)) - (pt_val < static_cast<std::int32_t> (val));
     }
     case pcl::PCLPointField::UINT32 :
     {

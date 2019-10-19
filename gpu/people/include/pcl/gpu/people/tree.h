@@ -69,7 +69,7 @@ namespace pcl
         using std::int32_t;
         using std::uint32_t;
 
-        using Attrib = int16_t;
+        using Attrib = std::int16_t;
         using Label = std::uint8_t;
         using Label32 = std::uint32_t;
         using Depth = std::uint16_t;
@@ -77,13 +77,13 @@ namespace pcl
         struct AttribLocation
         {
           inline AttribLocation () {du1=dv1=du2=dv2=0;}
-          inline AttribLocation (int u1, int v1, int u2, int v2): du1 (static_cast<int16_t>(u1)),
-                                                                  dv1 (static_cast<int16_t>(v1)),
-                                                                  du2 (static_cast<int16_t>(u2)),
-                                                                  dv2 (static_cast<int16_t>(v2))
+          inline AttribLocation (int u1, int v1, int u2, int v2): du1 (static_cast<std::int16_t>(u1)),
+                                                                  dv1 (static_cast<std::int16_t>(v1)),
+                                                                  du2 (static_cast<std::int16_t>(u2)),
+                                                                  dv2 (static_cast<std::int16_t>(v2))
           {}
 
-          int16_t du1,dv1,du2,dv2;
+          std::int16_t du1,dv1,du2,dv2;
         };
 
         ////////////////////////////////////////////////
