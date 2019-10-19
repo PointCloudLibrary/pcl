@@ -52,12 +52,12 @@ TEST (CopyPointCloud, constant)
   pcl::copyPointCloud (cloud, dst, top, bottom, left, right, pcl::BORDER_CONSTANT, constant);
 
   for (int j = 0; j < top; ++j)
-    for (uint32_t i = 0; i < dst.width; ++i)
+    for (std::uint32_t i = 0; i < dst.width; ++i)
       EXPECT_XYZ_EQ (dst (i,j), constant);
 
   for (unsigned int j = top; j < cloud.height+top; ++j)
   {
-    for (uint32_t i = 0; i < dst.width; ++i)
+    for (std::uint32_t i = 0; i < dst.width; ++i)
     {
       if (static_cast<int> (i) < left)
         EXPECT_XYZ_EQ (dst (i,j), constant);
@@ -71,8 +71,8 @@ TEST (CopyPointCloud, constant)
     }
   }
 
-  for (uint32_t j = cloud.height+top; j < dst.height; ++j)
-    for (uint32_t i = 0; i < dst.width; ++i)
+  for (std::uint32_t j = cloud.height+top; j < dst.height; ++j)
+    for (std::uint32_t i = 0; i < dst.width; ++i)
       EXPECT_XYZ_EQ (dst (i,j), constant);
 }
 
@@ -87,13 +87,13 @@ TEST (CopyPointCloud, replicate)
       EXPECT_XYZ_EQ (dst (i,j), cloud (0,0));
     for (unsigned int i = left; i < cloud.width+left; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (i-left,0));
-    for (uint32_t i = cloud.width+left; i < dst.width; ++i)
+    for (std::uint32_t i = cloud.width+left; i < dst.width; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (cloud.width-1,0));
   }
 
   for (unsigned int j = top; j < cloud.height+top; ++j)
   {
-    for (uint32_t i = 0; i < dst.width; ++i)
+    for (std::uint32_t i = 0; i < dst.width; ++i)
     {
       if (static_cast<int> (i) < left)
         EXPECT_XYZ_EQ (dst (i,j), cloud (0,j-top));
@@ -107,13 +107,13 @@ TEST (CopyPointCloud, replicate)
     }
   }
 
-  for (uint32_t j = cloud.height+top; j < dst.height; ++j)
+  for (std::uint32_t j = cloud.height+top; j < dst.height; ++j)
   {
     for (int i = 0; i < left; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (0,cloud.height-1));
     for (unsigned int i = left; i < cloud.width+left; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (i-left,cloud.height-1));
-    for (uint32_t i = cloud.width+left; i < dst.width; ++i)
+    for (std::uint32_t i = cloud.width+left; i < dst.width; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (cloud.width-1,cloud.height-1));
   }
 }

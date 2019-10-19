@@ -213,9 +213,9 @@ void vtkVertexBufferObjectMapper::createVBOs(vtkRenderWindow* win)
 //    colorVbo->SetContext(win);
 //
 //    int rgb = scalars->GetTuple1(0);
-//      uint8_t r = (rgb >> 16) & 0x0000ff;
-//      uint8_t g = (rgb >> 8)  & 0x0000ff;
-//      uint8_t b = (rgb)     & 0x0000ff;
+//      std::uint8_t r = (rgb >> 16) & 0x0000ff;
+//      std::uint8_t g = (rgb >> 8)  & 0x0000ff;
+//      std::uint8_t b = (rgb)     & 0x0000ff;
 //    cout << "r: " << r << "\tg: " << g<< "\tb: " << b << endl;
 //
 //    colorVbo->SetAttributeNormalized(true);

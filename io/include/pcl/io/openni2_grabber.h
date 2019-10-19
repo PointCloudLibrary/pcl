@@ -423,9 +423,9 @@ namespace pcl
         convertToXYZIPointCloud (const pcl::io::openni2::IRImage::Ptr &image,
           const pcl::io::openni2::DepthImage::Ptr &depth_image);
 
-        std::vector<uint8_t> color_resize_buffer_;
-        std::vector<uint16_t> depth_resize_buffer_;
-        std::vector<uint16_t> ir_resize_buffer_;
+        std::vector<std::uint8_t> color_resize_buffer_;
+        std::vector<std::uint16_t> depth_resize_buffer_;
+        std::vector<std::uint16_t> ir_resize_buffer_;
 
         // Stream callbacks /////////////////////////////////////////////////////
         void

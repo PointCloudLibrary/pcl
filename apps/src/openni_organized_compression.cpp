@@ -218,19 +218,19 @@ struct EventHelper
                   const openni_wrapper::DepthImage::Ptr &depth_image, float)
   {
 
-    std::vector<uint16_t> disparity_data;
-    std::vector<uint8_t> rgb_data;
+    std::vector<std::uint16_t> disparity_data;
+    std::vector<std::uint8_t> rgb_data;
 
-    uint32_t width=depth_image->getWidth ();
-    uint32_t height=depth_image->getHeight ();
+    std::uint32_t width=depth_image->getWidth ();
+    std::uint32_t height=depth_image->getHeight ();
 
     disparity_data.resize(width*height);
-    depth_image->fillDepthImageRaw (width, height, &disparity_data[0], static_cast<unsigned int> (width * sizeof (uint16_t)));
+    depth_image->fillDepthImageRaw (width, height, &disparity_data[0], static_cast<unsigned int> (width * sizeof (std::uint16_t)));
 
     if (image->getEncoding() != openni_wrapper::Image::RGB)
     {
       rgb_data.resize(width*height*3);
-      image->fillRGB(width, height, &rgb_data[0], static_cast<unsigned int> (width * sizeof (uint8_t) * 3));
+      image->fillRGB(width, height, &rgb_data[0], static_cast<unsigned int> (width * sizeof (std::uint8_t) * 3));
     }
 
     organizedEncoder_->encodeRawDisparityMapWithColorImage (disparity_data, rgb_data, width, height, outputFile_, doColorEncoding_, bGrayScaleConversion_, bShowStatistics_, pngLevel_);

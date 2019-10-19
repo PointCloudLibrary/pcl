@@ -287,7 +287,7 @@ namespace pcl
           for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->points.size ()); ++i)
           {
             // Copy the value at the specified field
-            const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud_->points[i]);
+            const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&cloud_->points[i]);
             memcpy (&data, pt_data + fields_[field_x_idx_].offset, sizeof (float));
             p[0] = data;
 

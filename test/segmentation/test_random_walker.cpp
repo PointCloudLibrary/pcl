@@ -52,7 +52,7 @@
 std::string TEST_DATA_DIR;
 
 using Weight = float;
-using Color = uint32_t;
+using Color = std::uint32_t;
 using Graph = boost::adjacency_list
         <boost::vecS,
          boost::vecS,
@@ -92,7 +92,7 @@ struct GraphInfo
     // Read graph topology
     for (ptree::value_type& v : pt.get_child ("Topology"))
     {
-      uint32_t source, target;
+      std::uint32_t source, target;
       float weight;
       std::stringstream (v.second.data ()) >> source >> target >> weight;
       boost::add_edge (source, target, weight, graph);
@@ -106,7 +106,7 @@ struct GraphInfo
     // Read seeds
     for (ptree::value_type& v : pt.get_child ("Seeds"))
     {
-      uint32_t id, color;
+      std::uint32_t id, color;
       std::stringstream (v.second.data ()) >> id >> color;
       color_map[id] = color;
       colors.insert (color);
@@ -123,7 +123,7 @@ struct GraphInfo
     // Read expected potentials
     for (ptree::value_type& v : pt.get_child ("Potentials"))
     {
-      Color color = boost::lexical_cast<uint32_t> (v.first);
+      Color color = boost::lexical_cast<std::uint32_t> (v.first);
       potentials[color] = Vector::Zero (size);
       std::stringstream ss (v.second.data ());
       for (size_t i = 0; i < size; ++i)

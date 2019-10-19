@@ -117,10 +117,10 @@ namespace pcl
         using FieldListInT = typename pcl::traits::fieldList<PointInT>::type;
         using FieldListOutT = typename pcl::traits::fieldList<PointOutT>::type;
         using FieldList = typename pcl::intersect<FieldListInT, FieldListOutT>::type;
-        const uint32_t offset_in  = boost::mpl::if_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
+        const std::uint32_t offset_in  = boost::mpl::if_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
                                                     pcl::traits::offset<PointInT, pcl::fields::rgb>,
                                                     pcl::traits::offset<PointInT, pcl::fields::rgba> >::type::value;
-        const uint32_t offset_out = boost::mpl::if_<pcl::traits::has_field<PointOutT, pcl::fields::rgb>,
+        const std::uint32_t offset_out = boost::mpl::if_<pcl::traits::has_field<PointOutT, pcl::fields::rgb>,
                                                     pcl::traits::offset<PointOutT, pcl::fields::rgb>,
                                                     pcl::traits::offset<PointOutT, pcl::fields::rgba> >::type::value;
         pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (point_in, point_out));

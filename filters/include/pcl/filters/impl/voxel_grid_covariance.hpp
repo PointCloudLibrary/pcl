@@ -138,7 +138,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
           continue;
 
       // Get the distance value
-      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&input_->points[cp]);
+      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&input_->points[cp]);
       float distance_value = 0;
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
@@ -366,7 +366,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
     }
   }
 
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = static_cast<std::uint32_t> (output.points.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

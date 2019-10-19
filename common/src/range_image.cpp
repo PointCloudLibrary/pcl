@@ -149,8 +149,8 @@ RangeImage::createEmpty (float angular_resolution_x, float angular_resolution_y,
                          RangeImage::CoordinateFrame coordinate_frame, float angle_width, float angle_height)
 {
   setAngularResolution(angular_resolution_x, angular_resolution_y);
-  width  = static_cast<uint32_t> (pcl_lrint (std::floor (angle_width * angular_resolution_x_reciprocal_)));
-  height = static_cast<uint32_t> (pcl_lrint (std::floor (angle_height * angular_resolution_y_reciprocal_)));
+  width  = static_cast<std::uint32_t> (pcl_lrint (std::floor (angle_width * angular_resolution_x_reciprocal_)));
+  height = static_cast<std::uint32_t> (pcl_lrint (std::floor (angle_height * angular_resolution_y_reciprocal_)));
 
   int full_width  = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (360.0f)*angular_resolution_x_reciprocal_))),
       full_height = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (180.0f)*angular_resolution_y_reciprocal_)));
@@ -860,7 +860,7 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
       far_ranges.points.push_back (point);
     }
   }
-  far_ranges.width= static_cast<uint32_t> (far_ranges.points.size ());  far_ranges.height = 1;
+  far_ranges.width= static_cast<std::uint32_t> (far_ranges.points.size ());  far_ranges.height = 1;
   far_ranges.is_dense = false;
 }
 

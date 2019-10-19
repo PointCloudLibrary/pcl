@@ -65,7 +65,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
     // Cloud dimensions may have already been set from obj_info fields
     if (cloud_->width == 0 || cloud_->height == 0)
     {
-      cloud_->width = static_cast<uint32_t> (count);
+      cloud_->width = static_cast<std::uint32_t> (count);
       cloud_->height = 1;
     }
     cloud_->is_dense = true;
@@ -113,12 +113,12 @@ pcl::PLYReader::appendScalarProperty (const std::string& name, const size_t& siz
   current_field.name = name;
   current_field.offset = cloud_->point_step;
   current_field.datatype = pcl::traits::asEnum<Scalar>::value;
-  current_field.count = static_cast<uint32_t> (size);
-  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (pcl::traits::asEnum<Scalar>::value) * size);
+  current_field.count = static_cast<std::uint32_t> (size);
+  cloud_->point_step += static_cast<std::uint32_t> (pcl::getFieldSize (pcl::traits::asEnum<Scalar>::value) * size);
 }
 
 void
-pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& new_name, uint8_t new_datatype)
+pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& new_name, std::uint8_t new_datatype)
 {
   auto finder = cloud_->fields.rbegin ();
   for (; finder != cloud_->fields.rend (); ++finder)
@@ -337,10 +337,10 @@ namespace pcl
       current_field.offset = cloud_->point_step;
       current_field.datatype = pcl::traits::asEnum<pcl::io::ply::int32>::value;
       current_field.count = 1u; // value will be updated once first vertex is read
-      if (sizeof (pcl::io::ply::int32) + cloud_->point_step < std::numeric_limits<uint32_t>::max ())
-          cloud_->point_step += static_cast<uint32_t> (sizeof (pcl::io::ply::int32));
+      if (sizeof (pcl::io::ply::int32) + cloud_->point_step < std::numeric_limits<std::uint32_t>::max ())
+          cloud_->point_step += static_cast<std::uint32_t> (sizeof (pcl::io::ply::int32));
       else
-        cloud_->point_step = static_cast<uint32_t> (std::numeric_limits<uint32_t>::max ());
+        cloud_->point_step = static_cast<std::uint32_t> (std::numeric_limits<std::uint32_t>::max ());
       do_resize_ = true;
       return std::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
         std::bind (&pcl::PLYReader::vertexListPropertyBeginCallback<pcl::io::ply::uint8>, this, property_name, std::placeholders::_1),
@@ -363,10 +363,10 @@ namespace pcl
       current_field.offset = cloud_->point_step;
       current_field.datatype = pcl::traits::asEnum<ContentType>::value;
       current_field.count = 1u; // value will be updated once first vertex is read
-      if (sizeof (ContentType) + cloud_->point_step < std::numeric_limits<uint32_t>::max ())
-        cloud_->point_step += static_cast<uint32_t> (sizeof (ContentType));
+      if (sizeof (ContentType) + cloud_->point_step < std::numeric_limits<std::uint32_t>::max ())
+        cloud_->point_step += static_cast<std::uint32_t> (sizeof (ContentType));
       else
-        cloud_->point_step = static_cast<uint32_t> (std::numeric_limits<uint32_t>::max ());
+        cloud_->point_step = static_cast<std::uint32_t> (std::numeric_limits<std::uint32_t>::max ());
       do_resize_ = true;
       return std::tuple<std::function<void (SizeType)>, std::function<void (ContentType)>, std::function<void ()> > (
         std::bind (&pcl::PLYReader::vertexListPropertyBeginCallback<SizeType>, this, property_name, std::placeholders::_1),
@@ -404,7 +404,7 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
 void
 pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
 {
-  a_ = uint32_t (alpha);
+  a_ = std::uint32_t (alpha);
   // get anscient rgb value and store it in rgba
   memcpy (&rgba_, 
           &cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
@@ -414,7 +414,7 @@ pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
   // put rgba back
   memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
           &rgba_, 
-          sizeof (uint32_t));
+          sizeof (std::uint32_t));
 }
 
 void
@@ -1567,7 +1567,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
                (mesh.cloud.fields[d].name == "rgba"))
       {
         pcl::RGB color;
-        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (uint32_t)], sizeof (RGB));
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (std::uint32_t)], sizeof (RGB));
         fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " " << int (color.a);
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
@@ -1726,7 +1726,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
                (mesh.cloud.fields[d].name == "rgba"))
       {
         pcl::RGB color;
-        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (uint32_t)], sizeof (RGB));
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (std::uint32_t)], sizeof (RGB));
         fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));

@@ -140,7 +140,7 @@ pcl::gpu::people::trees::runThroughTree( int maxDepth,
                                     const std::vector<Label>& leaves,
                                     int                       W, 
                                     int                       H,
-                                    const uint16_t*           dmap,
+                                    const std::uint16_t*           dmap,
                                     Label*                    lmap )
 {
   Tex2Dfetcher tfetch( dmap, W, H ); // the tex fetcher
@@ -150,8 +150,8 @@ pcl::gpu::people::trees::runThroughTree( int maxDepth,
   {
     for(int x = 0; x < W; ++x) 
     {
-      uint16_t depth = tfetch((float)x,(float)y);
-      if(depth == std::numeric_limits<uint16_t>::max() ) 
+      std::uint16_t depth = tfetch((float)x,(float)y);
+      if(depth == std::numeric_limits<std::uint16_t>::max() ) 
       {
         lmap[x+W*y] = pcl::gpu::people::NOLABEL;
         continue;
@@ -165,8 +165,8 @@ pcl::gpu::people::trees::runThroughTree( int maxDepth,
       {
         const Node& node = tree[nid];
         const AttribLocation& loc = node.loc;
-        uint16_t d1       = tfetch((float)(x+loc.du1*scale), (float)(y+loc.dv1*scale));
-        uint16_t d2       = tfetch((float)(x+loc.du2*scale), (float)(y+loc.dv2*scale));
+        std::uint16_t d1       = tfetch((float)(x+loc.du1*scale), (float)(y+loc.dv1*scale));
+        std::uint16_t d2       = tfetch((float)(x+loc.du2*scale), (float)(y+loc.dv2*scale));
         int32_t delta     = int32_t(d1) - int32_t(d2);
         bool test = delta > int32_t(node.thresh);
 

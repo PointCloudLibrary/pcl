@@ -140,9 +140,9 @@ namespace pcl
   template<> void
   pcl::SupervoxelClustering<pcl::PointXYZRGB>::VoxelData::getPoint (pcl::PointXYZRGB &point_arg) const
   {
-    point_arg.rgba = static_cast<uint32_t>(rgb_[0]) << 16 | 
-    static_cast<uint32_t>(rgb_[1]) << 8 | 
-    static_cast<uint32_t>(rgb_[2]);  
+    point_arg.rgba = static_cast<std::uint32_t>(rgb_[0]) << 16 | 
+    static_cast<std::uint32_t>(rgb_[1]) << 8 | 
+    static_cast<std::uint32_t>(rgb_[2]);  
     point_arg.x = xyz_[0];
     point_arg.y = xyz_[1];
     point_arg.z = xyz_[2];
@@ -151,9 +151,9 @@ namespace pcl
   template<> void
   pcl::SupervoxelClustering<pcl::PointXYZRGBA>::VoxelData::getPoint (pcl::PointXYZRGBA &point_arg ) const
   {
-    point_arg.rgba = static_cast<uint32_t>(rgb_[0]) << 16 | 
-    static_cast<uint32_t>(rgb_[1]) << 8 | 
-    static_cast<uint32_t>(rgb_[2]);  
+    point_arg.rgba = static_cast<std::uint32_t>(rgb_[0]) << 16 | 
+    static_cast<std::uint32_t>(rgb_[1]) << 8 | 
+    static_cast<std::uint32_t>(rgb_[2]);  
     point_arg.x = xyz_[0];
     point_arg.y = xyz_[1];
     point_arg.z = xyz_[2];

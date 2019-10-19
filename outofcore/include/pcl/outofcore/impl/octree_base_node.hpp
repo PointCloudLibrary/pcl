@@ -348,7 +348,7 @@ namespace pcl
     }
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename ContainerT, typename PointT> uint64_t
+    template<typename ContainerT, typename PointT> std::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataToLeaf (const AlignedPointTVector& p, const bool skip_bb_check)
     {
       //quit if there are no points to add
@@ -385,10 +385,10 @@ namespace pcl
           }
         }
 
-        uint8_t box = 0;
+        std::uint8_t box = 0;
         Eigen::Vector3d mid_xyz = node_metadata_->getVoxelCenter ();
         
-        box = static_cast<uint8_t>(((pt.z >= mid_xyz[2]) << 2) | ((pt.y >= mid_xyz[1]) << 1) | ((pt.x >= mid_xyz[0]) << 0));
+        box = static_cast<std::uint8_t>(((pt.z >= mid_xyz[2]) << 2) | ((pt.y >= mid_xyz[1]) << 1) | ((pt.x >= mid_xyz[0]) << 0));
         c[static_cast<size_t>(box)].push_back (&pt);
       }
       
@@ -471,10 +471,10 @@ namespace pcl
           }
         }
 
-        uint8_t box = 00;
+        std::uint8_t box = 00;
         Eigen::Vector3d mid_xyz = node_metadata_->getVoxelCenter ();
         //hash each coordinate to the appropriate octant
-        box = static_cast<uint8_t> (((p[i]->z >= mid_xyz[2]) << 2) | ((p[i]->y >= mid_xyz[1]) << 1) | ((p[i]->x >= mid_xyz[0] )));
+        box = static_cast<std::uint8_t> (((p[i]->z >= mid_xyz[2]) << 2) | ((p[i]->y >= mid_xyz[1]) << 1) | ((p[i]->x >= mid_xyz[0] )));
         //3 bit, 8 octants
         c[box].push_back (p[i]);
       }
@@ -581,8 +581,8 @@ namespace pcl
 
       // Derive percentage from specified sample_percent and tree depth
       const double percent = pow(sample_percent_, double((this->root_node_->m_tree_->getDepth () - depth_)));
-      const uint64_t samplesize = static_cast<uint64_t>(percent * static_cast<double>(sampleBuff.size()));
-      const uint64_t inputsize = sampleBuff.size();
+      const std::uint64_t samplesize = static_cast<std::uint64_t>(percent * static_cast<double>(sampleBuff.size()));
+      const std::uint64_t inputsize = sampleBuff.size();
 
       if(samplesize > 0)
       {
@@ -591,12 +591,12 @@ namespace pcl
 
         // Create random number generator
         std::lock_guard<std::mutex> lock(rng_mutex_);
-        std::uniform_int_distribution<uint64_t> buffdist(0, inputsize-1);
+        std::uniform_int_distribution<std::uint64_t> buffdist(0, inputsize-1);
 
         // Randomly pick sampled points
-        for(uint64_t i = 0; i < samplesize; ++i)
+        for(std::uint64_t i = 0; i < samplesize; ++i)
         {
-          uint64_t buffstart = buffdist(rng_);
+          std::uint64_t buffstart = buffdist(rng_);
           insertBuff[i] = ( sampleBuff[buffstart] );
         }
       }
@@ -606,7 +606,7 @@ namespace pcl
         std::lock_guard<std::mutex> lock(rng_mutex_);
         std::bernoulli_distribution buffdist(percent);
 
-        for(uint64_t i = 0; i < inputsize; ++i)
+        for(std::uint64_t i = 0; i < inputsize; ++i)
           if(buffdist(rng_))
             insertBuff.push_back( p[i] );
       }
@@ -713,7 +713,7 @@ namespace pcl
       
       if ( this->depth_ == this->root_node_->m_tree_->getDepth () || input_cloud->width*input_cloud->height < 8 )
       {
-        uint64_t points_added = addDataAtMaxDepth (input_cloud, true);
+        std::uint64_t points_added = addDataAtMaxDepth (input_cloud, true);
         assert (points_added > 0);
         return (points_added);        
       }
@@ -735,7 +735,7 @@ namespace pcl
       random_sampler.setInputCloud (input_cloud);
 
       //set sample size to 1/8 of total points (12.5%)
-      uint64_t sample_size = input_cloud->width*input_cloud->height / 8;
+      std::uint64_t sample_size = input_cloud->width*input_cloud->height / 8;
       random_sampler.setSample (static_cast<unsigned int> (sample_size));
       
       //create our destination
@@ -1377,7 +1377,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, size_t query_depth, const pcl::PCLPointCloud2::Ptr& dst_blob)
     {
-      uint64_t startingSize = dst_blob->width*dst_blob->height;
+      std::uint64_t startingSize = dst_blob->width*dst_blob->height;
       PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Starting points in destination blob: %ul\n", __FUNCTION__, startingSize );
 
       // If the queried bounding box has any intersection with this node's bounding box
@@ -1543,9 +1543,9 @@ namespace pcl
           AlignedPointTVector payload_cache;
           payload_->readRange (0, payload_->size (), payload_cache);
 
-          uint64_t len = payload_->size ();
+          std::uint64_t len = payload_->size ();
           //iterate through each of them
-          for (uint64_t i = 0; i < len; i++)
+          for (std::uint64_t i = 0; i < len; i++)
           {
             const PointT& p = payload_cache[i];
             //if it falls within this bounding box
@@ -1593,7 +1593,7 @@ namespace pcl
             {
               pcl::PCLPointCloud2::Ptr tmp_blob;
               this->payload_->read (tmp_blob);
-              uint64_t num_pts = tmp_blob->width*tmp_blob->height;
+              std::uint64_t num_pts = tmp_blob->width*tmp_blob->height;
                 
               double sample_points = static_cast<double>(num_pts) * percent;
               if (num_pts > 0)

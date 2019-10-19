@@ -44,12 +44,12 @@ namespace pcl
 {
   namespace device
   {
-	  using uint64_type = unsigned long long;
+	  using std::uint64_type = unsigned long long;
 
 	  using PointType = float4;
 	  using Cloud = pcl::gpu::DeviceArray<PointType>;
 
-	  using FacetsDists = DeviceArray<uint64_type>;
+	  using FacetsDists = DeviceArray<std::uint64_type>;
 	  using Perm = DeviceArray<int>;
 
 	  struct InitalSimplex

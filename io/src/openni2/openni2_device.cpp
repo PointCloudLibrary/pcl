@@ -136,13 +136,13 @@ pcl::io::openni2::OpenNI2Device::getName () const
   return (std::string (device_info_->getName ()));
 }
 
-uint16_t
+std::uint16_t
 pcl::io::openni2::OpenNI2Device::getUsbVendorId () const
 {
   return (device_info_->getUsbVendorId ());
 }
 
-uint16_t
+std::uint16_t
 pcl::io::openni2::OpenNI2Device::getUsbProductId () const
 {
   return (device_info_->getUsbProductId ());
@@ -205,7 +205,7 @@ pcl::io::openni2::OpenNI2Device::getBaseline()
   return (baseline_);
 }
 
-uint64_t
+std::uint64_t
 pcl::io::openni2::OpenNI2Device::getShadowValue()
 {
   return (shadow_value_);

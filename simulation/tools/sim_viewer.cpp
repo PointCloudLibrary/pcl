@@ -118,7 +118,7 @@ using GeometryHandlerConstPtr = GeometryHandler::ConstPtr;
 #define NORMALS_SCALE 0.01
 #define PC_SCALE 0.001
 
-uint16_t t_gamma[2048];
+std::uint16_t t_gamma[2048];
 Scene::Ptr scene_;
 Camera::Ptr camera_;
 RangeLikelihood::Ptr range_likelihood_;

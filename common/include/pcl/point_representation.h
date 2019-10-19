@@ -260,7 +260,7 @@ namespace pcl
       {
         static void copyPoint (const Pod &p1, float * p2, int &f_idx)
         {
-          const uint8_t * data_ptr = reinterpret_cast<const uint8_t *> (&p1) +
+          const std::uint8_t * data_ptr = reinterpret_cast<const std::uint8_t *> (&p1) +
             pcl::traits::offset<PointDefault, Key>::value;
           p2[f_idx++] = *reinterpret_cast<const FieldT*> (data_ptr);
         }
@@ -271,7 +271,7 @@ namespace pcl
       {
         static void copyPoint (const Pod &p1, float * p2, int &f_idx)
         {
-          const uint8_t * data_ptr = reinterpret_cast<const uint8_t *> (&p1) +
+          const std::uint8_t * data_ptr = reinterpret_cast<const std::uint8_t *> (&p1) +
             pcl::traits::offset<PointDefault, Key>::value;
           int nr_dims = NrDims;
           const FieldT * array = reinterpret_cast<const FieldT *> (data_ptr);

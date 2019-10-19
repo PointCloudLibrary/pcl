@@ -991,7 +991,7 @@ TEST (VoxelGrid_RGBA, Filters)
     pt.x = 0.0f;
     pt.y = 0.0f;
     pt.z = 0.0f;
-    pt.rgba = *reinterpret_cast<uint32_t*> (&rgba);
+    pt.rgba = *reinterpret_cast<std::uint32_t*> (&rgba);
     cloud_rgba_.points.push_back (pt);
   }
 
@@ -1780,7 +1780,7 @@ TEST (SamplingSurfaceNormal, Filters)
     }
   }
   incloud->width = 1;
-  incloud->height = uint32_t (incloud->points.size ());
+  incloud->height = std::uint32_t (incloud->points.size ());
 
   pcl::SamplingSurfaceNormal <pcl::PointNormal> ssn_filter;
   ssn_filter.setInputCloud (incloud);
@@ -1814,7 +1814,7 @@ TEST (ShadowPoints, Filters)
   input->points.push_back (pt);
 
   input->width = 1;
-  input->height = static_cast<uint32_t> (input->points.size ());
+  input->height = static_cast<std::uint32_t> (input->points.size ());
 
 	NormalEstimation<PointXYZ, PointNormal> ne;
 	ne.setInputCloud (input);
@@ -1881,7 +1881,7 @@ TEST (FrustumCulling, Filters)
     }
   }
   input->width = 1;
-  input->height = static_cast<uint32_t> (input->points.size ());
+  input->height = static_cast<std::uint32_t> (input->points.size ());
 
   pcl::FrustumCulling<pcl::PointXYZ> fc (true); // Extract removed indices
   fc.setInputCloud (input);

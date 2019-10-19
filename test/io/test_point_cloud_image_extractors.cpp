@@ -211,12 +211,12 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
   EXPECT_EQ (cloud.height, image.height);
 
   // Make sure same labels got the same random color
-  uint8_t r0 = image.data[0 * 3 + 0];
-  uint8_t g0 = image.data[0 * 3 + 1];
-  uint8_t b0 = image.data[0 * 3 + 2];
-  uint8_t r1 = image.data[1 * 3 + 0];
-  uint8_t g1 = image.data[1 * 3 + 1];
-  uint8_t b1 = image.data[1 * 3 + 2];
+  std::uint8_t r0 = image.data[0 * 3 + 0];
+  std::uint8_t g0 = image.data[0 * 3 + 1];
+  std::uint8_t b0 = image.data[0 * 3 + 2];
+  std::uint8_t r1 = image.data[1 * 3 + 0];
+  std::uint8_t g1 = image.data[1 * 3 + 1];
+  std::uint8_t b1 = image.data[1 * 3 + 2];
 
   EXPECT_EQ (r0, image.data[2 * 3 + 0]);
   EXPECT_EQ (g0, image.data[2 * 3 + 1]);

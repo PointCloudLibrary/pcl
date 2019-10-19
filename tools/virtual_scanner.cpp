@@ -420,12 +420,12 @@ main (int argc, char** argv)
 
     if (organized)
     {
-      cloud.height = 1 + static_cast<uint32_t> ((vert_end - vert_start) / sp.vert_res);
-      cloud.width = 1 + static_cast<uint32_t> ((hor_end - hor_start) / sp.hor_res);
+      cloud.height = 1 + static_cast<std::uint32_t> ((vert_end - vert_start) / sp.vert_res);
+      cloud.width = 1 + static_cast<std::uint32_t> ((hor_end - hor_start) / sp.hor_res);
     }
     else
     {
-      cloud.width = static_cast<uint32_t> (cloud.points.size ());
+      cloud.width = static_cast<std::uint32_t> (cloud.points.size ());
       cloud.height = 1;
     }
 

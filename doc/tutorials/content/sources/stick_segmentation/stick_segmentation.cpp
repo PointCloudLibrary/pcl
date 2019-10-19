@@ -42,7 +42,7 @@ class ConditionThresholdHSV : public pcl::ConditionBase<PointT>
               (min_v_ <= v) && (v <= max_v_));
     }
     
-    void rgb2hsv (uint8_t r, uint8_t g, uint8_t b, float & h, float & s, float & v) const
+    void rgb2hsv (std::uint8_t r, std::uint8_t g, std::uint8_t b, float & h, float & s, float & v) const
     {
       float maxval = (r > g) ? ((r > b) ? r : b) : ((g > b) ? g : b);
       float minval = (r < g) ? ((r < b) ? r : b) : ((g < b) ? g : b);

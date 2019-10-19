@@ -495,10 +495,10 @@ pcl::ihs::Integration::getMinDirections () const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t
+std::uint8_t
 pcl::ihs::Integration::trimRGB (const float val) const
 {
-  return (static_cast <uint8_t> (val > 255.f ? 255 : val));
+  return (static_cast <std::uint8_t> (val > 255.f ? 255 : val));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

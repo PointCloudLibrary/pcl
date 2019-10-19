@@ -145,7 +145,7 @@ pcl::ASCIIReader::read (
 
   int total=0;
 
-  uint8_t* data = &cloud.data[0];
+  std::uint8_t* data = &cloud.data[0];
   while (std::getline (ifile, line))
   {
     boost::algorithm::trim (line);
@@ -158,7 +158,7 @@ pcl::ASCIIReader::read (
    if (tokens.size () != fields_.size ()) 
      continue;
 
-   uint32_t offset = 0;
+   std::uint32_t offset = 0;
    try
    {
      for (size_t i = 0; i < fields_.size (); i++) 
@@ -194,7 +194,7 @@ int
 pcl::ASCIIReader::parse (
     const std::string& token,
     const pcl::PCLPointField& field,
-    uint8_t* data_target)
+    std::uint8_t* data_target)
 {
   switch (field.datatype)
   {
@@ -205,7 +205,7 @@ pcl::ASCIIReader::parse (
     }
     case pcl::PCLPointField::UINT8:
     {
-      *(reinterpret_cast<uint8_t*>(data_target)) = boost::lexical_cast<uint8_t> (token);
+      *(reinterpret_cast<std::uint8_t*>(data_target)) = boost::lexical_cast<std::uint8_t> (token);
       return 1;
     }
     case pcl::PCLPointField::INT16:
@@ -215,7 +215,7 @@ pcl::ASCIIReader::parse (
     }
     case pcl::PCLPointField::UINT16:
     {
-      *(reinterpret_cast<uint16_t*>(data_target)) = boost::lexical_cast<uint16_t> (token);
+      *(reinterpret_cast<std::uint16_t*>(data_target)) = boost::lexical_cast<std::uint16_t> (token);
       return 2;
     }
     case pcl::PCLPointField::INT32:
@@ -225,7 +225,7 @@ pcl::ASCIIReader::parse (
     }
     case pcl::PCLPointField::UINT32:
     {
-      *(reinterpret_cast<uint32_t*>(data_target)) = boost::lexical_cast<uint32_t> (token);
+      *(reinterpret_cast<std::uint32_t*>(data_target)) = boost::lexical_cast<std::uint32_t> (token);
       return 4;
     }
     case pcl::PCLPointField::FLOAT32:

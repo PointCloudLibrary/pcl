@@ -56,7 +56,7 @@ namespace pcl
       PCL_ADD_RGB
       float        weight;
       unsigned int age;
-      uint32_t     directions;
+      std::uint32_t     directions;
 
       PCL_MAKE_ALIGNED_OPERATOR_NEW
     };

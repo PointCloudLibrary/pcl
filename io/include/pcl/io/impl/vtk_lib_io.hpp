@@ -152,7 +152,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
       colors->GetTupleValue (i, color);
       pcl::RGB rgb;
       rgb.r = color[0]; rgb.g = color[1]; rgb.b = color[2];
-      pcl::setFieldValue<PointT, uint32_t> (cloud.points[i], rgb_idx, rgb.rgba);
+      pcl::setFieldValue<PointT, std::uint32_t> (cloud.points[i], rgb_idx, rgb.rgba);
     }
   }
 }
@@ -272,7 +272,7 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
           colors->GetTupleValue (i, color);
           pcl::RGB rgb;
           rgb.r = color[0]; rgb.g = color[1]; rgb.b = color[2];
-          pcl::setFieldValue<PointT, uint32_t> (cloud (i, j), rgb_idx, rgb.rgba);
+          pcl::setFieldValue<PointT, std::uint32_t> (cloud (i, j), rgb_idx, rgb.rgba);
         }
         else
         {
@@ -376,7 +376,7 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
     {
       unsigned char color[3];
       pcl::RGB rgb;
-      pcl::getFieldValue<PointT, uint32_t> (cloud[i], rgb_idx, rgb.rgba);
+      pcl::getFieldValue<PointT, std::uint32_t> (cloud[i], rgb_idx, rgb.rgba);
       color[0] = rgb.r; color[1] = rgb.g; color[2] = rgb.b;
       colors->SetTupleValue (i, color);
     }
@@ -493,7 +493,7 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
 
           unsigned char color[3];
           pcl::RGB rgb;
-          pcl::getFieldValue<PointT, uint32_t> (cloud[i], rgb_idx, rgb.rgba);
+          pcl::getFieldValue<PointT, std::uint32_t> (cloud[i], rgb_idx, rgb.rgba);
           color[0] = rgb.r; color[1] = rgb.g; color[2] = rgb.b;
           colors->SetTupleValue (pointId, color);
         }

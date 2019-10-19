@@ -60,7 +60,7 @@ using namespace pcl::io;
 using namespace pcl::simulation;
 using namespace std;
 
-uint16_t t_gamma[2048];
+std::uint16_t t_gamma[2048];
 
 Scene::Ptr scene_;
 Camera::Ptr camera_;
@@ -87,7 +87,7 @@ void
 display_score_image(const float* score_buffer)
 {
   int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
-  uint8_t* score_img = new uint8_t[npixels * 3];
+  std::uint8_t* score_img = new std::uint8_t[npixels * 3];
 
   float min_score = score_buffer[0];
   float max_score = score_buffer[0];
@@ -113,7 +113,7 @@ void
 display_depth_image(const float* depth_buffer, int width, int height)
 {
   int npixels = width * height;
-  uint8_t* depth_img = new uint8_t[npixels * 3];
+  std::uint8_t* depth_img = new std::uint8_t[npixels * 3];
 
   float min_depth = depth_buffer[0];
   float max_depth = depth_buffer[0];
@@ -138,12 +138,12 @@ display_depth_image(const float* depth_buffer, int width, int height)
       kd = 2047;
 
     int pval = t_gamma[kd];
-    uint8_t lb = static_cast<uint8_t>(pval & 0xff);
+    std::uint8_t lb = static_cast<std::uint8_t>(pval & 0xff);
     switch (pval >> 8) {
     case 0:
       depth_img[3 * i + 0] = 255;
-      depth_img[3 * i + 1] = static_cast<uint8_t>(255 - lb);
-      depth_img[3 * i + 2] = static_cast<uint8_t>(255 - lb);
+      depth_img[3 * i + 1] = static_cast<std::uint8_t>(255 - lb);
+      depth_img[3 * i + 2] = static_cast<std::uint8_t>(255 - lb);
       break;
     case 1:
       depth_img[3 * i + 0] = 255;
@@ -151,7 +151,7 @@ display_depth_image(const float* depth_buffer, int width, int height)
       depth_img[3 * i + 2] = 0;
       break;
     case 2:
-      depth_img[3 * i + 0] = static_cast<uint8_t>(255 - lb);
+      depth_img[3 * i + 0] = static_cast<std::uint8_t>(255 - lb);
       depth_img[3 * i + 1] = 255;
       depth_img[3 * i + 2] = 0;
       break;
@@ -162,13 +162,13 @@ display_depth_image(const float* depth_buffer, int width, int height)
       break;
     case 4:
       depth_img[3 * i + 0] = 0;
-      depth_img[3 * i + 1] = static_cast<uint8_t>(255 - lb);
+      depth_img[3 * i + 1] = static_cast<std::uint8_t>(255 - lb);
       depth_img[3 * i + 2] = 255;
       break;
     case 5:
       depth_img[3 * i + 0] = 0;
       depth_img[3 * i + 1] = 0;
-      depth_img[3 * i + 2] = static_cast<uint8_t>(255 - lb);
+      depth_img[3 * i + 2] = static_cast<std::uint8_t>(255 - lb);
       break;
     default:
       depth_img[3 * i + 0] = 0;
@@ -405,7 +405,7 @@ main(int argc, char** argv)
   for (int i = 0; i < 2048; ++i) {
     float v = static_cast<float>(i / 2048.0);
     v = powf(v, 3) * 6;
-    t_gamma[i] = static_cast<uint16_t>(v * 6 * 256);
+    t_gamma[i] = static_cast<std::uint16_t>(v * 6 * 256);
   }
 
   glutInit(&argc, argv);

@@ -262,9 +262,9 @@ namespace pcl
     boost::shared_ptr<xn::DepthMetaData> depth_meta_data (new xn::DepthMetaData);
     depth_meta_data->AllocateData (cloud->width, cloud->height);
     XnDepthPixel* depth_map = depth_meta_data->WritableData ();
-    uint32_t k = 0;
-    for (uint32_t i = 0; i < cloud->height; ++i)
-      for (uint32_t j = 0; j < cloud->width; ++j)
+    std::uint32_t k = 0;
+    for (std::uint32_t i = 0; i < cloud->height; ++i)
+      for (std::uint32_t j = 0; j < cloud->width; ++j)
       {
         depth_map[k] = static_cast<XnDepthPixel> ((*cloud)[k].z * 1000);
         ++k;
@@ -287,9 +287,9 @@ namespace pcl
       image_meta_data->AllocateData (cloud->width, cloud->height, XN_PIXEL_FORMAT_RGB24);
       XnRGB24Pixel* image_map = image_meta_data->WritableRGB24Data ();
       k = 0;
-      for (uint32_t i = 0; i < cloud->height; ++i)
+      for (std::uint32_t i = 0; i < cloud->height; ++i)
       {
-        for (uint32_t j = 0; j < cloud->width; ++j)
+        for (std::uint32_t j = 0; j < cloud->width; ++j)
         {
           // Fill r/g/b data, assuming that the order is BGRA
           pcl::RGB rgb;

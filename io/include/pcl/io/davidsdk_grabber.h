@@ -96,7 +96,7 @@ namespace pcl
        * @return Server info*/
       david::ServerInfo
       connect (const std::string & address = "127.0.0.1",
-               uint16_t port = david::DAVID_SDK_DefaultPort);
+               std::uint16_t port = david::DAVID_SDK_DefaultPort);
 
       /** @brief [Disconnect](http://docs.david-3d.com/sdk/en/classdavid_1_1_client_json_rpc.html#a2770728a6de2c708df767bedf8be0814) client
        * @param[in] stop_server */

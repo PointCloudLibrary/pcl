@@ -144,14 +144,14 @@ pcl::UnaryClassifier<PointT>::findClusters (typename pcl::PointCloud<PointT>::Pt
     for (size_t i = 0; i < in->points.size (); i++)
     {
       // get the 'label' field                                                                       
-      uint32_t label;      
-      memcpy (&label, reinterpret_cast<char*> (&in->points[i]) + fields[label_idx].offset, sizeof(uint32_t));
+      std::uint32_t label;      
+      memcpy (&label, reinterpret_cast<char*> (&in->points[i]) + fields[label_idx].offset, sizeof(std::uint32_t));
 
       // check if label exist
       bool exist = false;
       for (const int &cluster_number : cluster_numbers)
       {
-        if (static_cast<uint32_t> (cluster_number) == label)
+        if (static_cast<std::uint32_t> (cluster_number) == label)
         {
           exist = true;
           break;
@@ -180,8 +180,8 @@ pcl::UnaryClassifier<PointT>::getCloudWithLabel (typename pcl::PointCloud<PointT
     for (size_t i = 0; i < in->points.size (); i++)
     {
       // get the 'label' field                                                                       
-      uint32_t label;
-      memcpy (&label, reinterpret_cast<char*> (&in->points[i]) + fields[label_idx].offset, sizeof(uint32_t));
+      std::uint32_t label;
+      memcpy (&label, reinterpret_cast<char*> (&in->points[i]) + fields[label_idx].offset, sizeof(std::uint32_t));
 
       if (static_cast<int> (label) == label_num)
       {

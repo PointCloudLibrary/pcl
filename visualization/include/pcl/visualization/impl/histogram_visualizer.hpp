@@ -112,7 +112,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 
   // Parse the cloud data and store it in the array
   double xy[2];
-  for (uint32_t d = 0; d < fields[field_idx].count; ++d)
+  for (std::uint32_t d = 0; d < fields[field_idx].count; ++d)
   {
     xy[0] = d;
     //xy[1] = cloud.points[index].histogram[d];
@@ -195,7 +195,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
 
   // Parse the cloud data and store it in the array
   double xy[2];
-  for (uint32_t d = 0; d < fields[field_idx].count; ++d)
+  for (std::uint32_t d = 0; d < fields[field_idx].count; ++d)
   {
     xy[0] = d;
     //xy[1] = cloud.points[index].histogram[d];

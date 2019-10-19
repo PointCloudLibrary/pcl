@@ -280,7 +280,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
     //   refineCorners (output);
 
     output.height = 1;
-    output.width = static_cast<uint32_t> (output.size());
+    output.width = static_cast<std::uint32_t> (output.size());
   }
 
   // we don not change the denseness

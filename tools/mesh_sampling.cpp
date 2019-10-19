@@ -170,9 +170,9 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, bool 
     }
     if (calc_color)
     {
-      cloud_out.points[i].r = static_cast<uint8_t>(c[0]);
-      cloud_out.points[i].g = static_cast<uint8_t>(c[1]);
-      cloud_out.points[i].b = static_cast<uint8_t>(c[2]);
+      cloud_out.points[i].r = static_cast<std::uint8_t>(c[0]);
+      cloud_out.points[i].g = static_cast<std::uint8_t>(c[1]);
+      cloud_out.points[i].b = static_cast<std::uint8_t>(c[2]);
     }
   }
 }

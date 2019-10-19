@@ -233,7 +233,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
         for (int i = 0; i < specified_channel_count; ++i)
         {
           field_types[i] = st.at (i + 1).c_str ()[0];
-          cloud.fields[i].datatype = static_cast<uint8_t> (getFieldType (field_sizes[i], field_types[i]));
+          cloud.fields[i].datatype = static_cast<std::uint8_t> (getFieldType (field_sizes[i], field_types[i]));
         }
         continue;
       }
@@ -619,11 +619,11 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
   // Extra checks (not needed for ASCII)
   int point_size = static_cast<int> (cloud.data.size () / (cloud.height * cloud.width));
   // Once copied, we need to go over each field and check if it has NaN/Inf values and assign cloud.is_dense to true or false
-  for (uint32_t i = 0; i < cloud.width * cloud.height; ++i)
+  for (std::uint32_t i = 0; i < cloud.width * cloud.height; ++i)
   {
     for (unsigned int d = 0; d < static_cast<unsigned int> (cloud.fields.size ()); ++d)
     {
-      for (uint32_t c = 0; c < cloud.fields[d].count; ++c)
+      for (std::uint32_t c = 0; c < cloud.fields[d].count; ++c)
       {
         switch (cloud.fields[d].datatype)
         {
@@ -1374,10 +1374,10 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
 
   // If the data is too large the two 32 bit integers used to store the
   // compressed and uncompressed size will overflow.
-  if (data_size * 3 / 2 > std::numeric_limits<uint32_t>::max ())
+  if (data_size * 3 / 2 > std::numeric_limits<std::uint32_t>::max ())
   {
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] The input data exceeds the maximum size for compressed version 0.7 pcds of %l bytes.\n",
-               static_cast<size_t> (std::numeric_limits<uint32_t>::max ()) * 2 / 3);
+               static_cast<size_t> (std::numeric_limits<std::uint32_t>::max ()) * 2 / 3);
     return (-2);
   }
 

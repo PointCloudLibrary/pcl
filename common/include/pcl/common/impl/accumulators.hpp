@@ -160,10 +160,10 @@ namespace pcl
       template <typename PointT> void
       get (PointT& t, std::size_t n) const
       {
-        t.rgba = static_cast<uint32_t> (a / n) << 24 |
-                 static_cast<uint32_t> (r / n) << 16 |
-                 static_cast<uint32_t> (g / n) <<  8 |
-                 static_cast<uint32_t> (b / n);
+        t.rgba = static_cast<std::uint32_t> (a / n) << 24 |
+                 static_cast<std::uint32_t> (r / n) << 16 |
+                 static_cast<std::uint32_t> (g / n) <<  8 |
+                 static_cast<std::uint32_t> (b / n);
       }
 
     };
@@ -195,7 +195,7 @@ namespace pcl
 
       // Storage
       // A better performance may be achieved with a heap structure
-      std::map<uint32_t, std::size_t> labels;
+      std::map<std::uint32_t, std::size_t> labels;
 
       AccumulatorLabel () { }
 

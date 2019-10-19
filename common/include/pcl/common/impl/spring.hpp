@@ -54,9 +54,9 @@ pcl::common::expandColumns (const PointCloud<PointT>& input, PointCloud<PointT>&
                          "[pcl::common::expandColumns] error: " 
                          << "columns expansion requires organised point cloud");
 
-  uint32_t old_height = input.height;
-  uint32_t old_width = input.width;
-  uint32_t new_width = old_width + 2*amount;
+  std::uint32_t old_height = input.height;
+  std::uint32_t old_width = input.width;
+  std::uint32_t new_width = old_width + 2*amount;
   if (&input != &output)
     output = input;
   output.reserve (new_width * old_height);
@@ -81,9 +81,9 @@ pcl::common::expandRows (const PointCloud<PointT>& input, PointCloud<PointT>& ou
                          "[pcl::common::expandRows] error: amount must be ]0.."
                          << (input.height/2) << "] !");
 
-  uint32_t old_height = input.height;
-  uint32_t new_height = old_height + 2*amount;
-  uint32_t old_width = input.width;
+  std::uint32_t old_height = input.height;
+  std::uint32_t new_height = old_height + 2*amount;
+  std::uint32_t old_width = input.width;
   if (&input != &output)
     output = input;
   output.reserve (new_height * old_width);
@@ -135,9 +135,9 @@ pcl::common::duplicateRows (const PointCloud<PointT>& input, PointCloud<PointT>&
                          "[pcl::common::duplicateRows] error: amount must be ]0.." 
                          << (input.height/2) << "] !");
 
-  uint32_t old_height = input.height;
-  uint32_t new_height = old_height + 2*amount;
-  uint32_t old_width = input.width;
+  std::uint32_t old_height = input.height;
+  std::uint32_t new_height = old_height + 2*amount;
+  std::uint32_t old_width = input.width;
   if (&input != &output)
     output = input;
   output.reserve (new_height * old_width);
@@ -192,9 +192,9 @@ pcl::common::mirrorRows (const PointCloud<PointT>& input, PointCloud<PointT>& ou
                          "[pcl::common::mirrorRows] error: amount must be ]0.." 
                          << (input.height/2) << "] !");
 
-  uint32_t old_height = input.height;
-  uint32_t new_height = old_height + 2*amount;
-  uint32_t old_width = input.width;
+  std::uint32_t old_height = input.height;
+  std::uint32_t new_height = old_height + 2*amount;
+  std::uint32_t old_width = input.width;
   if (&input != &output)
     output = input;
   output.reserve (new_height * old_width);
@@ -219,8 +219,8 @@ pcl::common::deleteRows (const PointCloud<PointT>& input, PointCloud<PointT>& ou
                          "[pcl::common::deleteRows] error: amount must be ]0.." 
                          << (input.height/2) << "] !");
 
-  uint32_t old_height = input.height;
-  uint32_t old_width = input.width;
+  std::uint32_t old_height = input.height;
+  std::uint32_t old_width = input.width;
   output.erase (output.begin (), output.begin () + amount * old_width);
   output.erase (output.end () - amount * old_width, output.end ());
   output.height = old_height - 2*amount;
@@ -241,9 +241,9 @@ pcl::common::deleteCols (const PointCloud<PointT>& input, PointCloud<PointT>& ou
                          "[pcl::common::deleteCols] error: " 
                          << "columns delete requires organised point cloud");
 
-  uint32_t old_height = input.height;
-  uint32_t old_width = input.width;
-  uint32_t new_width = old_width - 2 * amount;
+  std::uint32_t old_height = input.height;
+  std::uint32_t old_width = input.width;
+  std::uint32_t new_width = old_width - 2 * amount;
   for(std::size_t j = 0; j < old_height; j++)
   {
     typename PointCloud<PointT>::iterator start = output.begin () + j * new_width;

@@ -149,13 +149,13 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
   }
 
   //we need to compute the size of the additional data added from cloud 1
-  uint32_t cloud1_unique_point_step = 0;
+  std::uint32_t cloud1_unique_point_step = 0;
   for (std::size_t i = 0; i < cloud1_unique_fields.size (); ++i)
     cloud1_unique_point_step += field_sizes[i];
 
   //the total size of extra data should be the size of data per point
   //multiplied by the total number of points in the cloud
-  uint32_t cloud1_unique_data_size = cloud1_unique_point_step * cloud1.width * cloud1.height; 
+  std::uint32_t cloud1_unique_data_size = cloud1_unique_point_step * cloud1.width * cloud1.height; 
 
   // Point step must increase with the length of each matching field
   cloud_out.point_step = cloud2.point_step + cloud1_unique_point_step;
@@ -421,11 +421,11 @@ pcl::copyPointCloud (
 {
   cloud_out.header       = cloud_in.header;
   cloud_out.height       = 1;
-  cloud_out.width        = static_cast<uint32_t> (indices.size ()); 
+  cloud_out.width        = static_cast<std::uint32_t> (indices.size ()); 
   cloud_out.fields       = cloud_in.fields;
   cloud_out.is_bigendian = cloud_in.is_bigendian;
   cloud_out.point_step   = cloud_in.point_step;
-  cloud_out.row_step     = cloud_in.point_step * static_cast<uint32_t> (indices.size ());
+  cloud_out.row_step     = cloud_in.point_step * static_cast<std::uint32_t> (indices.size ());
   cloud_out.is_dense     = cloud_in.is_dense;
 
   cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);
@@ -444,11 +444,11 @@ pcl::copyPointCloud (
 {
   cloud_out.header       = cloud_in.header;
   cloud_out.height       = 1;
-  cloud_out.width        = static_cast<uint32_t> (indices.size ()); 
+  cloud_out.width        = static_cast<std::uint32_t> (indices.size ()); 
   cloud_out.fields       = cloud_in.fields;
   cloud_out.is_bigendian = cloud_in.is_bigendian;
   cloud_out.point_step   = cloud_in.point_step;
-  cloud_out.row_step     = cloud_in.point_step * static_cast<uint32_t> (indices.size ());
+  cloud_out.row_step     = cloud_in.point_step * static_cast<std::uint32_t> (indices.size ());
   cloud_out.is_dense     = cloud_in.is_dense;
 
   cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);

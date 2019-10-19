@@ -25,7 +25,7 @@ pcl::cloud_composer::SupervoxelsTool::performAction (ConstItemList input_data, P
 {
   if (type != PointTypeFlags::NONE)
   {
-    switch ((uint8_t) type)
+    switch ((std::uint8_t) type)
     {
       case (PointTypeFlags::XYZ | PointTypeFlags::RGB):
         return this->performTemplatedAction<pcl::PointXYZRGB> (input_data);

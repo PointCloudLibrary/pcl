@@ -180,9 +180,9 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
     {
       for (int dz = dz_min; dz <= dz_max; ++dz)
       {
-        neighbor_key.x = static_cast<uint32_t> (key_arg.x + dx);
-        neighbor_key.y = static_cast<uint32_t> (key_arg.y + dy);
-        neighbor_key.z = static_cast<uint32_t> (key_arg.z + dz);
+        neighbor_key.x = static_cast<std::uint32_t> (key_arg.x + dx);
+        neighbor_key.y = static_cast<std::uint32_t> (key_arg.y + dy);
+        neighbor_key.z = static_cast<std::uint32_t> (key_arg.z + dz);
         LeafContainerT *neighbor = this->findLeaf (neighbor_key);
         if (neighbor)
         {

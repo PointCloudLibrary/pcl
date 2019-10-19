@@ -356,7 +356,7 @@ namespace pcl
          * 
          */
         void
-        queryBBIncludes_subsample (const Eigen::Vector3d &min, const Eigen::Vector3d &max, uint64_t query_depth, const double percent, AlignedPointTVector &dst) const;
+        queryBBIncludes_subsample (const Eigen::Vector3d &min, const Eigen::Vector3d &max, std::uint64_t query_depth, const double percent, AlignedPointTVector &dst) const;
 
         //--------------------------------------------------------------------------------
         //PCLPointCloud2 methods
@@ -644,7 +644,7 @@ namespace pcl
         const static std::string TREE_EXTENSION_;
         const static int OUTOFCORE_VERSION_;
 
-        const static uint64_t LOAD_COUNT_ = static_cast<uint64_t>(2e9);
+        const static std::uint64_t LOAD_COUNT_ = static_cast<std::uint64_t>(2e9);
 
       private:    
 

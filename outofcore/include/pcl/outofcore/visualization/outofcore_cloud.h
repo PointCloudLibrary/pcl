@@ -150,7 +150,7 @@ class OutofcoreCloud : public Object
         displayDepth = octree_->getDepth ();
       }
 
-      if (display_depth_ != static_cast<uint64_t> (displayDepth))
+      if (display_depth_ != static_cast<std::uint64_t> (displayDepth))
       {
         display_depth_ = displayDepth;
         updateVoxelData ();
@@ -164,13 +164,13 @@ class OutofcoreCloud : public Object
       return display_depth_;
     }
 
-    uint64_t
+    std::uint64_t
     getPointsLoaded () const
     {
       return points_loaded_;
     }
 
-    uint64_t
+    std::uint64_t
     getDataLoaded () const
     {
       return data_loaded_;
@@ -264,9 +264,9 @@ class OutofcoreCloud : public Object
     // -----------------------------------------------------------------------------
     OctreeDiskPtr octree_;
 
-    uint64_t display_depth_;
-    uint64_t points_loaded_;
-    uint64_t data_loaded_;
+    std::uint64_t display_depth_;
+    std::uint64_t points_loaded_;
+    std::uint64_t data_loaded_;
 
     Eigen::Vector3d bbox_min_, bbox_max_;
 

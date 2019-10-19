@@ -177,7 +177,7 @@ namespace pcl
 
     private:
       /** \brief Vector containing cumulative symbol frequency table. */
-      std::vector<uint64_t> cFreqTable_;
+      std::vector<std::uint64_t> cFreqTable_;
 
       /** \brief Vector containing compressed data. */
       std::vector<char> outputCharVector_;

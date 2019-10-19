@@ -101,7 +101,7 @@ BearingAngleImage::generateBAImage (PointCloud<PointXYZ>& point_cloud)
   points.resize (size, unobserved_point_);
 
   double theta;
-  uint8_t r, g, b, gray;
+  std::uint8_t r, g, b, gray;
 
   // primary transformation process
   for (decltype(height) i = 0; i < height - 1; ++i)

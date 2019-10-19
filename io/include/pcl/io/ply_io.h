@@ -451,7 +451,7 @@ namespace pcl
         * param[in] new_name property new name
         */
       void
-      amendProperty (const std::string& old_name, const std::string& new_name, uint8_t datatype = 0);
+      amendProperty (const std::string& old_name, const std::string& new_name, std::uint8_t datatype = 0);
 
       /** Callback function for the begin of vertex line */
       void
@@ -536,7 +536,7 @@ namespace pcl
       // RGB values stored by vertexColorCallback()
       int32_t r_, g_, b_;
       // Color values stored by vertexAlphaCallback()
-      uint32_t a_, rgba_;
+      std::uint32_t a_, rgba_;
   };
 
   /** \brief Point Cloud Data (PLY) file format writer.

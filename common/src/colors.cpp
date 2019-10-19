@@ -607,9 +607,9 @@ pcl::getRandomColor (double min, double max)
   }
   while (sum <= min || sum >= max);
   pcl::RGB color;
-  color.r = uint8_t (r * 255.0);
-  color.g = uint8_t (g * 255.0);
-  color.b = uint8_t (b * 255.0);
+  color.r = std::uint8_t (r * 255.0);
+  color.g = std::uint8_t (g * 255.0);
+  color.b = std::uint8_t (b * 255.0);
   return (color);
 }
 

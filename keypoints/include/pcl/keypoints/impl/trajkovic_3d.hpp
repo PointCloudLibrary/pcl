@@ -261,7 +261,7 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
   }
 
   output.height = 1;
-  output.width = static_cast<uint32_t> (output.size());
+  output.width = static_cast<std::uint32_t> (output.size());
   // we don not change the denseness
   output.is_dense = true;
 }

@@ -71,10 +71,10 @@ int nr_frames_total = 0;
 size_t 
 getTotalSystemMemory ()
 {
-  uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
-  uint64_t page_size = sysconf (_SC_PAGE_SIZE);
+  std::uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
+  std::uint64_t page_size = sysconf (_SC_PAGE_SIZE);
   print_info ("Total available memory size: %lluMB.\n", (pages * page_size) / 1048576);
-  if (pages * page_size > uint64_t (std::numeric_limits<size_t>::max ()))
+  if (pages * page_size > std::uint64_t (std::numeric_limits<size_t>::max ()))
   {
     return std::numeric_limits<size_t>::max ();
   }

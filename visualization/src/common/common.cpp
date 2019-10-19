@@ -75,9 +75,9 @@ pcl::visualization::getRandomColors (pcl::RGB &rgb, double min, double max)
     sum = r + g + b;
   }
   while (sum <= min || sum >= max);
-  rgb.r = uint8_t (r * 255.0);
-  rgb.g = uint8_t (g * 255.0);
-  rgb.b = uint8_t (b * 255.0);
+  rgb.r = std::uint8_t (r * 255.0);
+  rgb.g = std::uint8_t (g * 255.0);
+  rgb.b = std::uint8_t (b * 255.0);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

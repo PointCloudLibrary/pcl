@@ -174,7 +174,7 @@ pcl::RobotEyeGrabber::convertPacketData (unsigned char *data_packet, size_t leng
   {
     //The new packet data format contains this as a header
     //char[6]  "EBRBEP"
-    //uint32_t Timestamp // counts of a 66 MHz clock since power-on of eye.
+    //std::uint32_t Timestamp // counts of a 66 MHz clock since power-on of eye.
     size_t response_size = 6; //"EBRBEP"
     if( !strncmp((char*)(data_packet), "EBRBEP", response_size) )
     {
@@ -217,11 +217,11 @@ pcl::RobotEyeGrabber::convertPacketData (unsigned char *data_packet, size_t leng
 void
 pcl::RobotEyeGrabber::computeXYZI (pcl::PointXYZI& point, unsigned char* point_data)
 {
-  uint16_t buffer = 0;
+  std::uint16_t buffer = 0;
   double az = 0.0;
   double el = 0.0;
   double range = 0.0;
-  uint16_t intensity = 0;
+  std::uint16_t intensity = 0;
 
   buffer = point_data[0] << 8;
   buffer |= point_data[1]; // First 2-byte read will be Azimuth

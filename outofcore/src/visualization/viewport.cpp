@@ -168,8 +168,8 @@ Viewport::viewportHudUpdate ()
   Scene *scene = Scene::instance ();
   std::vector<Object*> objects = scene->getObjects ();
 
-  uint64_t points_loaded = 0;
-  uint64_t data_loaded = 0;
+  std::uint64_t points_loaded = 0;
+  std::uint64_t data_loaded = 0;
   for (const auto &object : objects)
   {
     const auto cloud = dynamic_cast<const OutofcoreCloud*> (object);

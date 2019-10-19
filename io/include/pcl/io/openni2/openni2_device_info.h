@@ -47,8 +47,8 @@ namespace pcl
         std::string uri_;
         std::string vendor_;
         std::string name_;
-        uint16_t vendor_id_;
-        uint16_t product_id_;
+        std::uint16_t vendor_id_;
+        std::uint16_t product_id_;
       };
 
       std::ostream&

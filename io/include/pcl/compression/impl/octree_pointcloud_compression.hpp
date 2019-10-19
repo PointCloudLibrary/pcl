@@ -222,7 +222,7 @@ namespace pcl
 
       // assign point cloud properties
       output_->height = 1;
-      output_->width = static_cast<uint32_t> (cloud_arg->points.size ());
+      output_->width = static_cast<std::uint32_t> (cloud_arg->points.size ());
       output_->is_dense = false;
 
       if (b_show_statistics_)
@@ -253,8 +253,8 @@ namespace pcl
     template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
     OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::entropyEncoding (std::ostream& compressed_tree_data_out_arg)
     {
-      uint64_t binary_tree_data_vector_size;
-      uint64_t point_avg_color_data_vector_size;
+      std::uint64_t binary_tree_data_vector_size;
+      std::uint64_t point_avg_color_data_vector_size;
 
       compressed_point_data_len_ = 0;
       compressed_color_data_len_ = 0;
@@ -278,9 +278,9 @@ namespace pcl
 
       if (!do_voxel_grid_enDecoding_)
       {
-        uint64_t pointCountDataVector_size;
-        uint64_t point_diff_data_vector_size;
-        uint64_t point_diff_color_data_vector_size;
+        std::uint64_t pointCountDataVector_size;
+        std::uint64_t point_diff_data_vector_size;
+        std::uint64_t point_diff_color_data_vector_size;
 
         // encode amount of points per voxel
         pointCountDataVector_size = point_count_data_vector_.size ();
@@ -313,8 +313,8 @@ namespace pcl
     template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
     OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::entropyDecoding (std::istream& compressed_tree_data_in_arg)
     {
-      uint64_t binary_tree_data_vector_size;
-      uint64_t point_avg_color_data_vector_size;
+      std::uint64_t binary_tree_data_vector_size;
+      std::uint64_t point_avg_color_data_vector_size;
 
       compressed_point_data_len_ = 0;
       compressed_color_data_len_ = 0;
@@ -337,9 +337,9 @@ namespace pcl
 
       if (!do_voxel_grid_enDecoding_)
       {
-        uint64_t point_count_data_vector_size;
-        uint64_t point_diff_data_vector_size;
-        uint64_t point_diff_color_data_vector_size;
+        std::uint64_t point_count_data_vector_size;
+        std::uint64_t point_diff_data_vector_size;
+        std::uint64_t point_diff_color_data_vector_size;
 
         // decode amount of points per voxel
         compressed_tree_data_in_arg.read (reinterpret_cast<char*> (&point_count_data_vector_size), sizeof (point_count_data_vector_size));

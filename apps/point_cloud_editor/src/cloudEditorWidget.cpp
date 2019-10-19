@@ -590,7 +590,7 @@ CloudEditorWidget::swapRBValues ()
     return;
   for (unsigned int i = 0; i < cloud_ptr_ -> size(); i++)
   {
-    uint8_t cc = (*cloud_ptr_)[i].r;
+    std::uint8_t cc = (*cloud_ptr_)[i].r;
     (*cloud_ptr_)[i].r = (*cloud_ptr_)[i].b;
     (*cloud_ptr_)[i].b = cc;
   }

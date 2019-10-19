@@ -68,8 +68,8 @@ namespace pcl
       BOOST_MPL_ASSERT_MSG ((std::is_same<InT, OutT>::value),
                             POINT_IN_AND_POINT_OUT_HAVE_DIFFERENT_TYPES_FOR_FIELD,
                             (Key, PointInT&, InT, PointOutT&, OutT));
-      memcpy (reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value,
-              reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value,
+      memcpy (reinterpret_cast<std::uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value,
+              reinterpret_cast<const std::uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value,
               sizeof (InT));
     }
 

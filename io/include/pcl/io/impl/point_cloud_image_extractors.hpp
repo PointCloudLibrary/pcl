@@ -124,8 +124,8 @@ pcl::io::PointCloudImageExtractorFromRGBField<PointT>::extractImpl (const PointC
 
   for (size_t i = 0; i < cloud.points.size (); ++i)
   {
-    uint32_t val;
-    pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+    std::uint32_t val;
+    pcl::getFieldValue<PointT, std::uint32_t> (cloud.points[i], offset, val);
     img.data[i * 3 + 0] = (val >> 16) & 0x0000ff;
     img.data[i * 3 + 1] = (val >> 8) & 0x0000ff;
     img.data[i * 3 + 2] = (val) & 0x0000ff;
@@ -156,8 +156,8 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       unsigned short* data = reinterpret_cast<unsigned short*>(&img.data[0]);
       for (size_t i = 0; i < cloud.points.size (); ++i)
       {
-        uint32_t val;
-        pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+        std::uint32_t val;
+        pcl::getFieldValue<PointT, std::uint32_t> (cloud.points[i], offset, val);
         data[i] = static_cast<unsigned short>(val);
       }
       break;
@@ -171,18 +171,18 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       img.data.resize (img.step * img.height);
 
       std::srand(std::time(nullptr));
-      std::map<uint32_t, size_t> colormap;
+      std::map<std::uint32_t, size_t> colormap;
 
       for (size_t i = 0; i < cloud.points.size (); ++i)
       {
-        uint32_t val;
-        pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+        std::uint32_t val;
+        pcl::getFieldValue<PointT, std::uint32_t> (cloud.points[i], offset, val);
         if (colormap.count (val) == 0)
         {
           colormap[val] = i * 3;
-          img.data[i * 3 + 0] = static_cast<uint8_t> ((std::rand () % 256));
-          img.data[i * 3 + 1] = static_cast<uint8_t> ((std::rand () % 256));
-          img.data[i * 3 + 2] = static_cast<uint8_t> ((std::rand () % 256));
+          img.data[i * 3 + 0] = static_cast<std::uint8_t> ((std::rand () % 256));
+          img.data[i * 3 + 1] = static_cast<std::uint8_t> ((std::rand () % 256));
+          img.data[i * 3 + 2] = static_cast<std::uint8_t> ((std::rand () % 256));
         }
         else
         {
@@ -200,8 +200,8 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       img.data.resize (img.step * img.height);
 
       std::srand(std::time(nullptr));
-      std::set<uint32_t> labels;
-      std::map<uint32_t, size_t> colormap;
+      std::set<std::uint32_t> labels;
+      std::map<std::uint32_t, size_t> colormap;
 
       // First pass: find unique labels
       for (size_t i = 0; i < cloud.points.size (); ++i)
@@ -209,8 +209,8 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
         // If we need to paint NaN points with black do not waste colors on them
         if (paint_nans_with_black_ && !pcl::isFinite (cloud.points[i]))
           continue;
-        uint32_t val;
-        pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+        std::uint32_t val;
+        pcl::getFieldValue<PointT, std::uint32_t> (cloud.points[i], offset, val);
         labels.insert (val);
       }
 
@@ -218,7 +218,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       // Note: the color LUT has a finite size (256 colors), therefore when
       // there are more labels the colors will repeat
       size_t color = 0;
-      for (const uint32_t &label : labels)
+      for (const std::uint32_t &label : labels)
       {
         colormap[label] = color % GlasbeyLUT::size ();
         ++color;
@@ -227,8 +227,8 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       // Second pass: copy colors from the LUT
       for (size_t i = 0; i < cloud.points.size (); ++i)
       {
-        uint32_t val;
-        pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+        std::uint32_t val;
+        pcl::getFieldValue<PointT, std::uint32_t> (cloud.points[i], offset, val);
         memcpy (&img.data[i * 3], GlasbeyLUT::data () + colormap[val] * 3, 3);
       }
 

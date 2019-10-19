@@ -16,7 +16,7 @@ namespace pcl
     Vertices ()
     {}
 
-    std::vector<uint32_t> vertices;
+    std::vector<std::uint32_t> vertices;
 
   public:
     using Ptr = boost::shared_ptr<Vertices>;

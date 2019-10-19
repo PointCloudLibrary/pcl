@@ -64,7 +64,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     for (size_t i = 0; i < cloud->points.size (); ++i)
     {
       // Get the distance value
-      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud->points[i]);
+      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&cloud->points[i]);
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
       if (limit_negative)
@@ -90,7 +90,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     for (size_t i = 0; i < cloud->points.size (); ++i)
     {
       // Get the distance value
-      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud->points[i]);
+      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&cloud->points[i]);
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
       if (limit_negative)
@@ -143,7 +143,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     for (const int &index : indices)
     {
       // Get the distance value
-      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud->points[index]);
+      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&cloud->points[index]);
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
       if (limit_negative)
@@ -169,7 +169,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     for (const int &index : indices)
     {
       // Get the distance value
-      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud->points[index]);
+      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&cloud->points[index]);
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
       if (limit_negative)
@@ -286,7 +286,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
           continue;
 
       // Get the distance value
-      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&input_->points[*it]);
+      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&input_->points[*it]);
       float distance_value = 0;
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
@@ -371,10 +371,10 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     try
     { 
       // Resizing won't reset old elements to -1.  If leaf_layout_ has been used previously, it needs to be re-initialized to -1
-      uint32_t new_layout_size = div_b_[0]*div_b_[1]*div_b_[2];
+      std::uint32_t new_layout_size = div_b_[0]*div_b_[1]*div_b_[2];
       //This is the number of elements that need to be re-initialized to -1
-      uint32_t reinit_size = std::min (static_cast<unsigned int> (new_layout_size), static_cast<unsigned int> (leaf_layout_.size()));
-      for (uint32_t i = 0; i < reinit_size; i++)
+      std::uint32_t reinit_size = std::min (static_cast<unsigned int> (new_layout_size), static_cast<unsigned int> (leaf_layout_.size()));
+      for (std::uint32_t i = 0; i < reinit_size; i++)
       {
         leaf_layout_[i] = -1;
       }        
@@ -427,7 +427,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
      
     ++index;
   }
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = static_cast<std::uint32_t> (output.points.size ());
 }
 
 #define PCL_INSTANTIATE_VoxelGrid(T) template class PCL_EXPORTS pcl::VoxelGrid<T>;

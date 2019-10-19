@@ -80,12 +80,12 @@ namespace pcl
     */
   struct Intensity;
 
-  /** \brief Members: intensity (uint8_t)
+  /** \brief Members: intensity (std::uint8_t)
     * \ingroup common
     */
   struct Intensity8u;
 
-  /** \brief Members: intensity (uint32_t)
+  /** \brief Members: intensity (std::uint32_t)
     * \ingroup common
     */
   struct Intensity32u;
@@ -100,12 +100,12 @@ namespace pcl
     */
   struct PointXYZL;
 
-  /** \brief Members: uint32_t label
+  /** \brief Members: std::uint32_t label
     * \ingroup common
     */
   struct Label;
 
-  /** \brief Members: float x, y, z; uint32_t rgba
+  /** \brief Members: float x, y, z; std::uint32_t rgba
     * \ingroup common
     */
   struct PointXYZRGBA;
@@ -115,7 +115,7 @@ namespace pcl
     */
   struct PointXYZRGB;
 
-  /** \brief Members: float x, y, z, rgb, uint32_t label
+  /** \brief Members: float x, y, z, rgb, std::uint32_t label
     * \ingroup common
     */
   struct PointXYZRGBL;
@@ -190,7 +190,7 @@ namespace pcl
     */
   struct PrincipalRadiiRSD;
 
-  /** \brief Members: uint8_t boundary_point
+  /** \brief Members: std::uint8_t boundary_point
     * \ingroup common
     */
   struct Boundary;
@@ -295,7 +295,7 @@ namespace pcl
     */
   struct GFPFHSignature16;
 
-  /** \brief Members: float scale; float orientation; uint8_t descriptor[64]
+  /** \brief Members: float scale; float orientation; std::uint8_t descriptor[64]
     * \ingroup common
     */
   struct BRISKSignature512;
@@ -363,7 +363,7 @@ namespace pcl
 // ==============================
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_RGB,
-    (uint32_t, rgba, rgba)
+    (std::uint32_t, rgba, rgba)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::RGB, pcl::_RGB)
 
@@ -373,12 +373,12 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Intensity,
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Intensity, pcl::_Intensity)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Intensity8u,
-    (uint8_t, intensity, intensity)
+    (std::uint8_t, intensity, intensity)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Intensity8u, pcl::_Intensity8u)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Intensity32u,
-    (uint32_t, intensity, intensity)
+    (std::uint32_t, intensity, intensity)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Intensity32u, pcl::_Intensity32u)
 
@@ -393,7 +393,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGBA,
     (float, x, x)
     (float, y, y)
     (float, z, z)
-    (uint32_t, rgba, rgba)
+    (std::uint32_t, rgba, rgba)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGBA, pcl::_PointXYZRGBA)
 
@@ -409,8 +409,8 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGBL,
     (float, x, x)
     (float, y, y)
     (float, z, z)
-    (uint32_t, rgba, rgba)
-    (uint32_t, label, label)
+    (std::uint32_t, rgba, rgba)
+    (std::uint32_t, label, label)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGBL, pcl::_PointXYZRGBL)
 
@@ -453,11 +453,11 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZL,
     (float, x, x)
     (float, y, y)
     (float, z, z)
-    (uint32_t, label, label)
+    (std::uint32_t, label, label)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Label,
-    (uint32_t, label, label)
+    (std::uint32_t, label, label)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Normal,
@@ -509,7 +509,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZLNormal,
     (float, x, x)
     (float, y, y)
     (float, z, z)
-    (uint32_t, label, label)
+    (std::uint32_t, label, label)
     (float, normal_x, normal_x)
     (float, normal_y, normal_y)
     (float, normal_z, normal_z)
@@ -544,7 +544,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PrincipalRadiiRSD,
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Boundary,
-    (uint8_t, boundary_point, boundary_point)
+    (std::uint8_t, boundary_point, boundary_point)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PrincipalCurvatures,
@@ -682,7 +682,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::PointSurfel,
     (float, normal_x, normal_x)
     (float, normal_y, normal_y)
     (float, normal_z, normal_z)
-    (uint32_t, rgba, rgba)
+    (std::uint32_t, rgba, rgba)
     (float, radius, radius)
     (float, confidence, confidence)
     (float, curvature, curvature)

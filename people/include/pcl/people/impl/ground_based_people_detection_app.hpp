@@ -224,9 +224,9 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::extractRGBFromPointCloud (Po
   output_cloud->height = input_cloud->height;
 
   pcl::RGB rgb_point;
-  for (uint32_t j = 0; j < input_cloud->width; j++)
+  for (std::uint32_t j = 0; j < input_cloud->width; j++)
   {
-    for (uint32_t i = 0; i < input_cloud->height; i++)
+    for (std::uint32_t i = 0; i < input_cloud->height; i++)
     { 
       rgb_point.r = (*input_cloud)(j,i).r;
       rgb_point.g = (*input_cloud)(j,i).g;
@@ -243,9 +243,9 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::swapDimensions (pcl::PointCl
   output_cloud->points.resize(cloud->height*cloud->width);
   output_cloud->width = cloud->height;
   output_cloud->height = cloud->width;
-  for (uint32_t i = 0; i < cloud->width; i++)
+  for (std::uint32_t i = 0; i < cloud->width; i++)
   {
-    for (uint32_t j = 0; j < cloud->height; j++)
+    for (std::uint32_t j = 0; j < cloud->height; j++)
     {
       (*output_cloud)(j,i) = (*cloud)(cloud->width - i - 1, j);
     }
@@ -341,9 +341,9 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
     cloud_downsampled->height = (cloud_->height)/sampling_factor_;
     cloud_downsampled->points.resize(cloud_downsampled->height*cloud_downsampled->width);
     cloud_downsampled->is_dense = cloud_->is_dense;
-    for (uint32_t j = 0; j < cloud_downsampled->width; j++)
+    for (std::uint32_t j = 0; j < cloud_downsampled->width; j++)
     {
-      for (uint32_t i = 0; i < cloud_downsampled->height; i++)
+      for (std::uint32_t i = 0; i < cloud_downsampled->height; i++)
       {
         (*cloud_downsampled)(j,i) = (*cloud_)(sampling_factor_*j,sampling_factor_*i);
       }

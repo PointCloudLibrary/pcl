@@ -355,8 +355,8 @@ processInputData ()
 
   pcl::PointCloud<pcl::RGB>::Ptr rgb_input_ (new pcl::PointCloud<pcl::RGB>());
   
-  const uint32_t width = input_->width;
-  const uint32_t height = input_->height;
+  const std::uint32_t width = input_->width;
+  const std::uint32_t height = input_->height;
 
   rgb_input_->resize (width*height);
   rgb_input_->width = width;

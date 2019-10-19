@@ -170,7 +170,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   // Make gray point clouds
   for (auto &point : cloud->points)
   {
-    uint8_t gray = uint8_t ((point.r + point.g + point.b) / 3);
+    std::uint8_t gray = std::uint8_t ((point.r + point.g + point.b) / 3);
     point.r = point.g = point.b = gray;
   }
 

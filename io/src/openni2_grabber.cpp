@@ -67,7 +67,7 @@ namespace
       unsigned char Alpha;
     };
     float float_value;
-    uint32_t long_value;
+    std::uint32_t long_value;
   };
 }
 
@@ -556,13 +556,13 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
 
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-  const uint16_t* depth_map = (const uint16_t*) depth_image->getData ();
+  const std::uint16_t* depth_map = (const std::uint16_t*) depth_image->getData ();
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     // Resize the image if nessacery
     depth_resize_buffer_.resize(depth_width_ * depth_height_);
 
-    depth_image->fillDepthImageRaw (depth_width_, depth_height_, (uint16_t*) depth_resize_buffer_.data() );
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, (std::uint16_t*) depth_resize_buffer_.data() );
     depth_map = depth_resize_buffer_.data();
   }
 
@@ -633,7 +633,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   float fx_inv = 1.0f / fx;
   float fy_inv = 1.0f / fy;
 
-  const uint16_t* depth_map = (const uint16_t*) depth_image->getData ();
+  const std::uint16_t* depth_map = (const std::uint16_t*) depth_image->getData ();
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     // Resize the image if nessacery
@@ -642,7 +642,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
     depth_image->fillDepthImageRaw (depth_width_, depth_height_, (unsigned short*) depth_map );
   }
 
-  const uint8_t* rgb_buffer = (const uint8_t*) image->getData ();
+  const std::uint8_t* rgb_buffer = (const std::uint8_t*) image->getData ();
   if (image->getWidth () != image_width_ || image->getHeight () != image_height_)
   {
     // Resize the image if nessacery
@@ -760,7 +760,7 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
   float fy_inv = 1.0f / fy;
 
 
-  const uint16_t* depth_map = (const uint16_t*) depth_image->getData ();
+  const std::uint16_t* depth_map = (const std::uint16_t*) depth_image->getData ();
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     // Resize the image if nessacery
@@ -769,7 +769,7 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
     depth_image->fillDepthImageRaw (depth_width_, depth_height_, (unsigned short*) depth_map );
   }
 
-  const uint16_t* ir_map = (const uint16_t*) ir_image->getData ();
+  const std::uint16_t* ir_map = (const std::uint16_t*) ir_image->getData ();
   if (ir_image->getWidth () != depth_width_ || ir_image->getHeight () != depth_height_)
   {
     // Resize the image if nessacery

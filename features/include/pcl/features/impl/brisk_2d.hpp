@@ -515,7 +515,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     }
   }
 
-  keypoints_->width = uint32_t (keypoints_->size ());
+  keypoints_->width = std::uint32_t (keypoints_->size ());
   keypoints_->height = 1;
 
   // first, calculate the integral image over the whole image:
@@ -628,12 +628,12 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
       *(pvalues++) = smoothedIntensity (image_data, width, height, integral, x, y, scale, theta, i);
 
 #ifdef __GNUC__
-      using UINT32_ALIAS = uint32_t;
+      using UINT32_ALIAS = std::uint32_t;
 #endif
 #ifdef _MSC_VER
       // Todo: find the equivalent to may_alias
-      #define UCHAR_ALIAS uint32_t //__declspec(noalias)
-      #define UINT32_ALIAS uint32_t //__declspec(noalias)
+      #define UCHAR_ALIAS std::uint32_t //__declspec(noalias)
+      #define UINT32_ALIAS std::uint32_t //__declspec(noalias)
 #endif
 
     // now iterate through all the pairings

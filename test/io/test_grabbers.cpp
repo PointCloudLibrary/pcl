@@ -347,11 +347,11 @@ TEST (PCL, ImageGrabberTimestamps)
 {
   // Initialize the grabber but don't load
   pcl::ImageGrabber<PointT> grabber (pclzf_dir_, 0, false, true);
-  uint64_t frame0_microsec, frame1_microsec; 
+  std::uint64_t frame0_microsec, frame1_microsec; 
   ASSERT_EQ (grabber.size (), 3);
   EXPECT_TRUE (grabber.getTimestampAtIndex (0, frame0_microsec));
   EXPECT_TRUE (grabber.getTimestampAtIndex (1, frame1_microsec));
-  uint64_t timediff = frame1_microsec - frame0_microsec;
+  std::uint64_t timediff = frame1_microsec - frame0_microsec;
   EXPECT_EQ (timediff, 254471); // 20121214T142256.068683 - 20121214T142255.814212 
 }
 
@@ -409,9 +409,9 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
   {
     EXPECT_EQ (pcds_[i]->width, tiff_clouds[i]->width);
     EXPECT_EQ (pcds_[i]->height, tiff_clouds[i]->height);
-    for (uint32_t x = 0; x < pcds_[i]->width; x++)
+    for (std::uint32_t x = 0; x < pcds_[i]->width; x++)
     {
-      for (uint32_t y = 0; y < pcds_[i]->height; y++)
+      for (std::uint32_t y = 0; y < pcds_[i]->height; y++)
       {
         const PointT &pcd_pt = pcds_[i]->operator()(x,y);
         const PointT &tiff_pt = tiff_clouds[i]->operator()(x,y);
@@ -481,9 +481,9 @@ TEST (PCL, ImageGrabberSetIntrinsicsPCLZF)
   {
     EXPECT_EQ (pcds_[i]->width, pclzf_clouds[i]->width);
     EXPECT_EQ (pcds_[i]->height, pclzf_clouds[i]->height);
-    for (uint32_t x = 0; x < pcds_[i]->width; x++)
+    for (std::uint32_t x = 0; x < pcds_[i]->width; x++)
     {
-      for (uint32_t y = 0; y < pcds_[i]->height; y++)
+      for (std::uint32_t y = 0; y < pcds_[i]->height; y++)
       {
         const PointT &pcd_pt = pcds_[i]->operator()(x,y);
         const PointT &pclzf_pt = pclzf_clouds[i]->operator()(x,y);

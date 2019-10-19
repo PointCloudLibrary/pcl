@@ -70,7 +70,7 @@ TEST(PolygonMesh, concatenate_cloud)
 
     cloud_template.width = 10;
     cloud_template.height = 480;
-    for (uint32_t i = 0; i < size; ++i)
+    for (std::uint32_t i = 0; i < size; ++i)
     {
         cloud_template.points.emplace_back(3.0f * static_cast<float>(i) + 0, 
                                            3.0f * static_cast<float> (i) + 1,

@@ -54,7 +54,7 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
 {
   // Iterate through the points and copy the data in a pcl::PointCloud
   pcl::PointCloud<pcl::PointXYZ> cloud;
-  cloud.height = 1; cloud.width = static_cast<uint32_t> (src->GetNumberOfPoints ());
+  cloud.height = 1; cloud.width = static_cast<std::uint32_t> (src->GetNumberOfPoints ());
   cloud.is_dense = false;
   cloud.points.resize (cloud.width * cloud.height);
   for (vtkIdType i = 0; i < src->GetNumberOfPoints (); i++)

@@ -311,7 +311,7 @@ pcl::RealSenseGrabber::run ()
     else
       status = device_->getPXCDevice ().ReadStreams (PXCCapture::STREAM_TYPE_DEPTH, &sample);
 
-    uint64_t timestamp = pcl::getTime () * 1.0e+6;
+    std::uint64_t timestamp = pcl::getTime () * 1.0e+6;
 
     switch (status)
     {
@@ -368,7 +368,7 @@ pcl::RealSenseGrabber::run ()
         PXCImage::ImageData data;
         PXCImage* mapped = projection->CreateColorImageMappedToDepth (sample.depth, sample.color);
         mapped->AcquireAccess (PXCImage::ACCESS_READ, &data);
-        uint32_t* d = reinterpret_cast<uint32_t*> (data.planes[0]);
+        std::uint32_t* d = reinterpret_cast<std::uint32_t*> (data.planes[0]);
         if (need_xyz_)
         {
           // We can fill XYZ coordinates more efficiently using pcl::copyPointCloud,
@@ -378,9 +378,9 @@ pcl::RealSenseGrabber::run ()
           for (int i = 0; i < HEIGHT; i++)
           {
             pcl::PointXYZRGBA* cloud_row = &xyzrgba_cloud->points[i * WIDTH];
-            uint32_t* color_row = &d[i * data.pitches[0] / sizeof (uint32_t)];
+            std::uint32_t* color_row = &d[i * data.pitches[0] / sizeof (std::uint32_t)];
             for (int j = 0; j < WIDTH; j++)
-              memcpy (&cloud_row[j].rgba, &color_row[j], sizeof (uint32_t));
+              memcpy (&cloud_row[j].rgba, &color_row[j], sizeof (std::uint32_t));
           }
         }
         else
@@ -392,11 +392,11 @@ pcl::RealSenseGrabber::run ()
           {
             PXCPoint3DF32* vertices_row = &vertices[i * WIDTH];
             pcl::PointXYZRGBA* cloud_row = &xyzrgba_cloud->points[i * WIDTH];
-            uint32_t* color_row = &d[i * data.pitches[0] / sizeof (uint32_t)];
+            std::uint32_t* color_row = &d[i * data.pitches[0] / sizeof (std::uint32_t)];
             for (int j = 0; j < WIDTH; j++)
             {
               convertPoint (vertices_row[j], cloud_row[j]);
-              memcpy (&cloud_row[j].rgba, &color_row[j], sizeof (uint32_t));
+              memcpy (&cloud_row[j].rgba, &color_row[j], sizeof (std::uint32_t));
             }
           }
         }

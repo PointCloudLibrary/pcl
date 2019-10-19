@@ -103,7 +103,7 @@
      std::vector<pcl::PointIndices> boundary_indices;
      mps.segmentAndRefine (regions, model_coefficients, inlier_indices, labels, label_indices, boundary_indices);
      
-     auto plane_labels = boost::make_shared<std::set<uint32_t> > ();
+     auto plane_labels = boost::make_shared<std::set<std::uint32_t> > ();
      for (size_t i = 0; i < label_indices.size (); ++i)
       if (label_indices[i].indices.size () > (size_t) min_plane_size)
         plane_labels->insert (i);

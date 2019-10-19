@@ -145,7 +145,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
   if (compute_normals_)
   {
     normals_->height = 1;
-    normals_->width = static_cast<uint32_t> (normals_->size ());
+    normals_->width = static_cast<std::uint32_t> (normals_->size ());
 
     for (size_t i = 0; i < output.size (); ++i)
     {
@@ -160,7 +160,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
 
   // Set proper widths and heights for the clouds
   output.height = 1;
-  output.width = static_cast<uint32_t> (output.size ());
+  output.width = static_cast<std::uint32_t> (output.size ());
 
   deinitCompute ();
 }
@@ -839,14 +839,14 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::MLSVoxelGrid (PointC
   Eigen::Vector4f bounding_box_size = bounding_max_ - bounding_min_;
   const double max_size = (std::max) ((std::max)(bounding_box_size.x (), bounding_box_size.y ()), bounding_box_size.z ());
   // Put initial cloud in voxel grid
-  data_size_ = static_cast<uint64_t> (1.5 * max_size / voxel_size_);
+  data_size_ = static_cast<std::uint64_t> (1.5 * max_size / voxel_size_);
   for (size_t i = 0; i < indices->size (); ++i)
     if (std::isfinite (cloud->points[(*indices)[i]].x))
     {
       Eigen::Vector3i pos;
       getCellIndex (cloud->points[(*indices)[i]].getVector3fMap (), pos);
 
-      uint64_t index_1d;
+      std::uint64_t index_1d;
       getIndexIn1D (pos, index_1d);
       Leaf leaf;
       voxel_grid_[index_1d] = leaf;
@@ -872,7 +872,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::dilate ()
             Eigen::Vector3i new_index;
             new_index = index + Eigen::Vector3i (x, y, z);
 
-            uint64_t index_1d;
+            std::uint64_t index_1d;
             getIndexIn1D (new_index, index_1d);
             Leaf leaf;
             new_voxel_grid[index_1d] = leaf;

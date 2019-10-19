@@ -604,21 +604,21 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::getCo
   const int field_size = pcl::getFieldSize (cloud_->fields[field_idx_].datatype);
 
 
-  std::map<uint32_t, pcl::RGB> colormap;
+  std::map<std::uint32_t, pcl::RGB> colormap;
   if (!static_mapping_)
   {
-    std::set<uint32_t> labels;
+    std::set<std::uint32_t> labels;
     // First pass: find unique labels
     for (vtkIdType i = 0; i < nr_points; ++i, point_offset += cloud_->point_step)
     {
-      uint32_t label;
+      std::uint32_t label;
       memcpy (&label, &cloud_->data[point_offset], field_size);
       labels.insert (label);
     }
 
     // Assign Glasbey colors in ascending order of labels
     size_t color = 0;
-    for (std::set<uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter, ++color)
+    for (std::set<std::uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter, ++color)
       colormap[*iter] = GlasbeyLUT::at (color % GlasbeyLUT::size ());
   }
   // If XYZ present, check if the points are invalid
@@ -634,7 +634,7 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::getCo
                                            point_offset += cloud_->point_step,
                                            x_point_offset += cloud_->point_step)
     {
-      uint32_t label;
+      std::uint32_t label;
       memcpy (&label, &cloud_->data[point_offset], field_size);
 
       memcpy (&x_data, &cloud_->data[x_point_offset], sizeof (float));
@@ -656,7 +656,7 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::getCo
     // Color every point
     for (vtkIdType cp = 0; cp < nr_points; ++cp, point_offset += cloud_->point_step)
     {
-      uint32_t label;
+      std::uint32_t label;
       memcpy (&label, &cloud_->data[point_offset], field_size);
       const pcl::RGB& color = static_mapping_ ? GlasbeyLUT::at (label % GlasbeyLUT::size ()) : colormap[label];
       colors[j    ] = color.r;

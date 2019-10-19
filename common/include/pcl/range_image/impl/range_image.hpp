@@ -110,8 +110,8 @@ RangeImage::createFromPointCloud (const PointCloudType& point_cloud,
 {
   setAngularResolution (angular_resolution_x, angular_resolution_y);
   
-  width  = static_cast<uint32_t> (pcl_lrint (std::floor (max_angle_width*angular_resolution_x_reciprocal_)));
-  height = static_cast<uint32_t> (pcl_lrint (std::floor (max_angle_height*angular_resolution_y_reciprocal_)));
+  width  = static_cast<std::uint32_t> (pcl_lrint (std::floor (max_angle_width*angular_resolution_x_reciprocal_)));
+  height = static_cast<std::uint32_t> (pcl_lrint (std::floor (max_angle_height*angular_resolution_y_reciprocal_)));
   
   int full_width  = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (360.0f)*angular_resolution_x_reciprocal_))),
       full_height = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (180.0f)*angular_resolution_y_reciprocal_)));
