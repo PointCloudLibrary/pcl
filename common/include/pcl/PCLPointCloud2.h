@@ -18,9 +18,7 @@ namespace pcl
 
   struct PCL_EXPORTS PCLPointCloud2
   {
-    PCLPointCloud2 () : height (0), width (0), 
-                     is_bigendian (false), point_step (0), row_step (0),
-                     is_dense (false)
+    PCLPointCloud2 ()
     {
 #if BOOST_ENDIAN_BIG_BYTE
       is_bigendian = true;
@@ -33,22 +31,23 @@ namespace pcl
 
     ::pcl::PCLHeader header;
 
-    pcl::uint32_t height;
-    pcl::uint32_t width;
+    pcl::uint32_t height = 0;
+    pcl::uint32_t width = 0;
 
-    std::vector< ::pcl::PCLPointField>  fields;
+    std::vector<::pcl::PCLPointField>  fields;
 
-    pcl::uint8_t is_bigendian;
-    pcl::uint32_t point_step;
-    pcl::uint32_t row_step;
+    pcl::uint8_t is_bigendian = false;
+    pcl::uint32_t point_step = 0;
+    pcl::uint32_t row_step = 0;
 
     std::vector<pcl::uint8_t> data;
 
-    pcl::uint8_t is_dense;
+    pcl::uint8_t is_dense = 0;
 
   public:
-    using Ptr = boost::shared_ptr< ::pcl::PCLPointCloud2>;
-    using ConstPtr = boost::shared_ptr<const ::pcl::PCLPointCloud2>;
+    using Ptr = std::shared_ptr< ::pcl::PCLPointCloud2>;
+    using ConstPtr = std::shared_ptr<const ::pcl::PCLPointCloud2>;
+
 
     //////////////////////////////////////////////////////////////////////////
     /** \brief Inplace concatenate two pcl::PCLPointCloud2
@@ -67,7 +66,27 @@ namespace pcl
       * \return true if successful, false if failed (e.g., name/number of fields differs)
       */
     static bool
-    concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPointCloud2 &cloud2);
+    concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPointCloud2 &cloud2) noexcept;
+
+    //////////////////////////////////////////////////////////////////////////
+    /** \brief  Concatenate two pcl::PCLPointCloud2
+      *
+      * IFF the layout of all the fields in both the clouds is the same, this command
+      * doesn't remove any fields named "_" (aka marked as skip). For comparison of field
+      * names, "rgb" and "rgba" are considered equivalent
+      * However, if the order and/or number of non-skip fields is different, the skip fields
+      * are dropped and non-skip fields copied selectively.
+      * This function returns an error if
+      *   * the total number of non-skip fields is different
+      *   * the non-skip field names are named differently (excluding "rbg{a}") in serial order
+      *   * the endian-ness of both clouds is different
+      * \param[in] cloud1 the first input
+      * \param[in] cloud2 the second input point cloud dataset
+      * \return new cloud result of cloud1 concatenated with cloud2
+      * \throw std::invalid_argument exception (name / number of fields differ)
+      */
+    static pcl::PCLPointCloud2
+    concatenate (const pcl::PCLPointCloud2 &cloud1, const pcl::PCLPointCloud2 & cloud2);
 
     /** \brief Concatenate two pcl::PCLPointCloud2
       * \param[in] cloud1 the first input point cloud dataset
@@ -75,13 +94,20 @@ namespace pcl
       * \param[out] cloud_out the resultant output point cloud dataset
       * \return true if successful, false if failed (e.g., name/number of fields differs)
       */
+    [[deprecated( "use new version PCLPointCloud2 concatenate(cloud1, cloud2)")]]
     static bool
     concatenate (const PCLPointCloud2 &cloud1,
                  const PCLPointCloud2 &cloud2,
-                 PCLPointCloud2 &cloud_out)
+                 PCLPointCloud2 &cloud_out) noexcept
     {
-      cloud_out = cloud1;
-      return concatenate(cloud_out, cloud2);
+        try {
+            cloud_out = concatenate(cloud1, cloud2);
+            return true;
+        }
+        catch(const std::invalid_argument& e)
+        {
+            return false;
+        }
     }
 
     /** \brief Add a point cloud to the current cloud.
