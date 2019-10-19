@@ -70,7 +70,7 @@ namespace openni_wrapper
         lookupTable_.resize(table_size);
 
         // constants taken from openni driver
-        constexpr int16_t nConstShift = 800;
+        constexpr std::int16_t nConstShift = 800;
         constexpr double nParamCoeff = 4.000000;
         constexpr double dPlanePixelSize = 0.104200;
         constexpr double nShiftScale = 10.000000;

@@ -274,8 +274,8 @@ namespace pcl
       std::uint64_t filestart = 0;
       std::uint64_t filecount = 0;
 
-      int64_t buffstart = -1;
-      int64_t buffcount = -1;
+      std::int64_t buffstart = -1;
+      std::int64_t buffcount = -1;
 
       if (start < filelen_)
       {
@@ -367,7 +367,7 @@ namespace pcl
       std::uint64_t filestart = 0;
       std::uint64_t filecount = 0;
 
-      int64_t buffcount = -1;
+      std::int64_t buffcount = -1;
 
       if (start < filelen_)
       {

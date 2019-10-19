@@ -196,7 +196,7 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoBlob)
 
   pcl::PCLPointCloud2 cloud_blob;
   std::uint32_t ps;
-  int32_t offset = -1;
+  std::int32_t offset = -1;
 
   // check if loading is ok
   res = pcl::io::loadPLYFile (mesh_file_ply_, cloud_blob);
@@ -216,7 +216,7 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoBlob)
   ps = cloud_blob.point_step;
   for (const auto &field : cloud_blob.fields)
     if (field.name == std::string("rgba"))
-      offset = static_cast<int32_t> (field.offset);
+      offset = static_cast<std::int32_t> (field.offset);
 
   ASSERT_GE (offset, 0);
 
@@ -244,7 +244,7 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoPolygonMesh)
   std::uint32_t rgba;
   pcl::PolygonMesh mesh;
   std::uint32_t ps;
-  int32_t offset = -1;
+  std::int32_t offset = -1;
 
   // check if loading is ok
   res = pcl::io::loadPLYFile (mesh_file_ply_, mesh);
@@ -264,7 +264,7 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoPolygonMesh)
   ps = mesh.cloud.point_step;
   for (const auto &field : mesh.cloud.fields)
     if (field.name == std::string("rgba"))
-      offset = static_cast<int32_t> (field.offset);
+      offset = static_cast<std::int32_t> (field.offset);
 
   ASSERT_GE (offset, 0);
 

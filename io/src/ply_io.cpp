@@ -383,17 +383,17 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
 {
   if ((color_name == "red") || (color_name == "diffuse_red"))
   {
-    r_ = int32_t (color);
+    r_ = std::int32_t (color);
     rgb_offset_before_ = vertex_offset_before_;
   }
   if ((color_name == "green") || (color_name == "diffuse_green"))
   {
-    g_ = int32_t (color);
+    g_ = std::int32_t (color);
   }
   if ((color_name == "blue") || (color_name == "diffuse_blue"))
   {
-    b_ = int32_t (color);
-    int32_t rgb = r_ << 16 | g_ << 8 | b_;
+    b_ = std::int32_t (color);
+    std::int32_t rgb = r_ << 16 | g_ << 8 | b_;
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_],
             &rgb,
             sizeof (pcl::io::ply::float32));

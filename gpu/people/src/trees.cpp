@@ -167,8 +167,8 @@ pcl::gpu::people::trees::runThroughTree( int maxDepth,
         const AttribLocation& loc = node.loc;
         std::uint16_t d1       = tfetch((float)(x+loc.du1*scale), (float)(y+loc.dv1*scale));
         std::uint16_t d2       = tfetch((float)(x+loc.du2*scale), (float)(y+loc.dv2*scale));
-        int32_t delta     = int32_t(d1) - int32_t(d2);
-        bool test = delta > int32_t(node.thresh);
+        std::int32_t delta     = std::int32_t(d1) - std::int32_t(d2);
+        bool test = delta > std::int32_t(node.thresh);
 
         nid = test ? (nid*2+2) : (nid*2+1);
       }

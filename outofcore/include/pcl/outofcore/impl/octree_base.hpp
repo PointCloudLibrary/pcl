@@ -610,7 +610,7 @@ namespace pcl
         assert (leaf_input_cloud->width*leaf_input_cloud->height > 0);
         
         //go up the tree, re-downsampling the full resolution leaf cloud at lower and lower resolution
-        for (int64_t level = static_cast<int64_t>(current_branch.size ()-1); level >= 1; level--)
+        for (std::int64_t level = static_cast<std::int64_t>(current_branch.size ()-1); level >= 1; level--)
         {
           BranchNode* target_parent = current_branch[level-1];
           assert (target_parent != 0);

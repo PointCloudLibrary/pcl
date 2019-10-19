@@ -534,7 +534,7 @@ namespace pcl
       
     private:
       // RGB values stored by vertexColorCallback()
-      int32_t r_, g_, b_;
+      std::int32_t r_, g_, b_;
       // Color values stored by vertexAlphaCallback()
       std::uint32_t a_, rgba_;
   };

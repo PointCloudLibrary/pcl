@@ -87,10 +87,10 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
   getMinMax3D<PointT> (*input_, *indices_, min_p, max_p);
 
   // Check that the resolution is not too small, given the size of the data
-  int64_t dx = static_cast<int64_t> ((max_p[0] - min_p[0]) * inverse_resolution_)+1;
-  int64_t dy = static_cast<int64_t> ((max_p[1] - min_p[1]) * inverse_resolution_)+1;
+  std::int64_t dx = static_cast<std::int64_t> ((max_p[0] - min_p[0]) * inverse_resolution_)+1;
+  std::int64_t dy = static_cast<std::int64_t> ((max_p[1] - min_p[1]) * inverse_resolution_)+1;
 
-  if ((dx*dy) > static_cast<int64_t> (std::numeric_limits<int32_t>::max ()))
+  if ((dx*dy) > static_cast<std::int64_t> (std::numeric_limits<std::int32_t>::max ()))
   {
     PCL_WARN ("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName ().c_str ());
     return;
