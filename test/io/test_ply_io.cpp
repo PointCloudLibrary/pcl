@@ -34,13 +34,14 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <gtest/gtest.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/conversions.h>
 #include <pcl/PolygonMesh.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <gtest/gtest.h>
+#include <pcl/pcl_macros.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PLYReaderWriter)

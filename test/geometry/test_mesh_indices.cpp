@@ -38,12 +38,12 @@
  *
  */
 
+#include <gtest/gtest.h>
 #include <string>
 #include <sstream>
 
-#include <gtest/gtest.h>
-
 #include <pcl/geometry/mesh_indices.h>
+#include <pcl/pcl_macros.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
