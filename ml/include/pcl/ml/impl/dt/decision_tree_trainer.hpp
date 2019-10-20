@@ -148,7 +148,8 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   float best_feature_information_gain = 0.0f;
 
   const std::size_t num_of_features = features.size();
-  for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index) {
+  for (std::size_t feature_index = 0; feature_index < num_of_features;
+       ++feature_index) {
     // evaluate features
     feature_handler_->evaluateFeature(
         features[feature_index], data_set_, examples, feature_results, flags);
@@ -222,7 +223,8 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
     const std::size_t num_of_branches = stats_estimator_->getNumOfBranches();
 
     std::vector<std::size_t> branch_counts(num_of_branches, 0);
-    for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index) {
+    for (std::size_t example_index = 0; example_index < num_of_examples;
+         ++example_index) {
       ++branch_counts[branch_indices[example_index]];
     }
 
@@ -247,7 +249,8 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
       branch_labels.reserve(branch_counts[branch_index]);
       branch_examples.reserve(branch_counts[branch_index]);
 
-      for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index) {
+      for (std::size_t example_index = 0; example_index < num_of_examples;
+           ++example_index) {
         if (branch_indices[example_index] == branch_index) {
           branch_examples.push_back(examples[example_index]);
           branch_labels.push_back(label_data[example_index]);

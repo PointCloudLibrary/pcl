@@ -93,7 +93,8 @@ public:
       std::vector<MultiChannel2DComparisonFeature<PointXY32i>>& features)
   {
     features.resize(num_of_features);
-    for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index) {
+    for (std::size_t feature_index = 0; feature_index < num_of_features;
+         ++feature_index) {
       features[feature_index].p1 = PointXY32i::randomPoint(-feature_window_width_ / 2,
                                                            feature_window_width_ / 2,
                                                            -feature_window_height_ / 2,
@@ -152,11 +153,15 @@ public:
     const int center_col_index = example.x;
     const int center_row_index = example.y;
 
-    const std::size_t p1_col = static_cast<std::size_t>(feature.p1.x + center_col_index);
-    const std::size_t p1_row = static_cast<std::size_t>(feature.p1.y + center_row_index);
+    const std::size_t p1_col =
+        static_cast<std::size_t>(feature.p1.x + center_col_index);
+    const std::size_t p1_row =
+        static_cast<std::size_t>(feature.p1.y + center_row_index);
 
-    const std::size_t p2_col = static_cast<std::size_t>(feature.p2.x + center_col_index);
-    const std::size_t p2_row = static_cast<std::size_t>(feature.p2.y + center_row_index);
+    const std::size_t p2_col =
+        static_cast<std::size_t>(feature.p2.x + center_col_index);
+    const std::size_t p2_row =
+        static_cast<std::size_t>(feature.p2.y + center_row_index);
 
     const unsigned char channel = feature.channel;
 
@@ -240,7 +245,8 @@ public:
       std::vector<MultiChannel2DComparisonFeature<PointXY32f>>& features)
   {
     features.resize(num_of_features);
-    for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index) {
+    for (std::size_t feature_index = 0; feature_index < num_of_features;
+         ++feature_index) {
       features[feature_index].p1 = PointXY32f::randomPoint(-feature_window_width_ / 2,
                                                            feature_window_width_ / 2,
                                                            -feature_window_height_ / 2,
@@ -308,11 +314,15 @@ public:
       scale = static_cast<float>(data_set(
           example.data_set_id, center_col_index, center_row_index)[SCALE_CHANNEL]);
 
-    const std::size_t p1_col = static_cast<std::size_t>(scale * feature.p1.x + center_col_index);
-    const std::size_t p1_row = static_cast<std::size_t>(scale * feature.p1.y + center_row_index);
+    const std::size_t p1_col =
+        static_cast<std::size_t>(scale * feature.p1.x + center_col_index);
+    const std::size_t p1_row =
+        static_cast<std::size_t>(scale * feature.p1.y + center_row_index);
 
-    const std::size_t p2_col = static_cast<std::size_t>(scale * feature.p2.x + center_col_index);
-    const std::size_t p2_row = static_cast<std::size_t>(scale * feature.p2.y + center_row_index);
+    const std::size_t p2_col =
+        static_cast<std::size_t>(scale * feature.p2.x + center_col_index);
+    const std::size_t p2_row =
+        static_cast<std::size_t>(scale * feature.p2.y + center_row_index);
 
     const unsigned char channel = feature.channel;
 

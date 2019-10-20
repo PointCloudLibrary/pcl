@@ -87,7 +87,8 @@ pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::eva
   std::vector<std::vector<unsigned char>> flags(num_of_features);
   std::vector<std::vector<unsigned char>> branch_indices(num_of_features);
 
-  for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index) {
+  for (std::size_t feature_index = 0; feature_index < num_of_features;
+       ++feature_index) {
     results[feature_index].reserve(num_of_examples);
     flags[feature_index].reserve(num_of_examples);
     branch_indices[feature_index].reserve(num_of_examples);
@@ -103,9 +104,11 @@ pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::eva
                                          branch_indices[feature_index]);
   }
 
-  for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index) {
+  for (std::size_t example_index = 0; example_index < num_of_examples;
+       ++example_index) {
     std::size_t node_index = 0;
-    for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index) {
+    for (std::size_t feature_index = 0; feature_index < num_of_features;
+         ++feature_index) {
       node_index *= num_of_branches;
       node_index += branch_indices[feature_index][example_index];
     }
@@ -138,7 +141,8 @@ pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
   std::vector<std::vector<unsigned char>> flags(num_of_features);
   std::vector<std::vector<unsigned char>> branch_indices(num_of_features);
 
-  for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index) {
+  for (std::size_t feature_index = 0; feature_index < num_of_features;
+       ++feature_index) {
     results[feature_index].reserve(num_of_examples);
     flags[feature_index].reserve(num_of_examples);
     branch_indices[feature_index].reserve(num_of_examples);
@@ -154,9 +158,11 @@ pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
                                          branch_indices[feature_index]);
   }
 
-  for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index) {
+  for (std::size_t example_index = 0; example_index < num_of_examples;
+       ++example_index) {
     std::size_t node_index = 0;
-    for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index) {
+    for (std::size_t feature_index = 0; feature_index < num_of_features;
+         ++feature_index) {
       node_index *= num_of_branches;
       node_index += branch_indices[feature_index][example_index];
     }
@@ -189,7 +195,8 @@ pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::get
   std::vector<std::vector<unsigned char>> flags(num_of_features);
   std::vector<std::vector<unsigned char>> branch_indices(num_of_features);
 
-  for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index) {
+  for (std::size_t feature_index = 0; feature_index < num_of_features;
+       ++feature_index) {
     results[feature_index].reserve(num_of_examples);
     flags[feature_index].reserve(num_of_examples);
     branch_indices[feature_index].reserve(num_of_examples);
@@ -205,9 +212,11 @@ pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::get
                                          branch_indices[feature_index]);
   }
 
-  for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index) {
+  for (std::size_t example_index = 0; example_index < num_of_examples;
+       ++example_index) {
     std::size_t node_index = 0;
-    for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index) {
+    for (std::size_t feature_index = 0; feature_index < num_of_features;
+         ++feature_index) {
       node_index *= num_of_branches;
       node_index += branch_indices[feature_index][example_index];
     }

@@ -226,7 +226,9 @@ pcl::DisparityMapConverter<PointT>::setDisparityMap(
 template <typename PointT>
 void
 pcl::DisparityMapConverter<PointT>::setDisparityMap(
-    const std::vector<float>& disparity_map, const std::size_t width, const std::size_t height)
+    const std::vector<float>& disparity_map,
+    const std::size_t width,
+    const std::size_t height)
 {
   disparity_map_width_ = width;
   disparity_map_height_ = height;

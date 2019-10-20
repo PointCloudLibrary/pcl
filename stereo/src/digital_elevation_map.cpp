@@ -152,7 +152,8 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
   }     // column
 
   // For all histograms.
-  for (std::size_t index_column = 0; index_column < resolution_column_; ++index_column) {
+  for (std::size_t index_column = 0; index_column < resolution_column_;
+       ++index_column) {
     for (std::size_t index_disparity = 0; index_disparity < resolution_disparity_;
          ++index_disparity) {
       std::size_t index = index_column + index_disparity * resolution_column_;

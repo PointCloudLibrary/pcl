@@ -105,7 +105,9 @@ public:
    * \param[in] channel the channel index
    */
   inline DATA_TYPE&
-  operator()(const std::size_t col_index, const std::size_t row_index, const std::size_t channel)
+  operator()(const std::size_t col_index,
+             const std::size_t row_index,
+             const std::size_t channel)
   {
     return data_[NUM_OF_CHANNELS * (row_index * width_ + col_index) + channel];
   };
@@ -117,7 +119,9 @@ public:
    * \param[in] channel the channel index
    */
   inline const DATA_TYPE&
-  operator()(const std::size_t col_index, const std::size_t row_index, const std::size_t channel) const
+  operator()(const std::size_t col_index,
+             const std::size_t row_index,
+             const std::size_t channel) const
   {
     return data_[NUM_OF_CHANNELS * (row_index * width_ + col_index) + channel];
   };
@@ -180,7 +184,9 @@ public:
    * \param[in] row the row of the desired location
    */
   inline DATA_TYPE*
-  operator()(const std::size_t data_set_id, const std::size_t col, const std::size_t row)
+  operator()(const std::size_t data_set_id,
+             const std::size_t col,
+             const std::size_t row)
   {
     return (*data_set_[data_set_id])(col, row);
   };
@@ -192,7 +198,9 @@ public:
    * \param[in] row the row of the desired location
    */
   inline const DATA_TYPE*
-  operator()(const std::size_t data_set_id, const std::size_t col, const std::size_t row) const
+  operator()(const std::size_t data_set_id,
+             const std::size_t col,
+             const std::size_t row) const
   {
     return (*data_set_[data_set_id])(col, row);
   };

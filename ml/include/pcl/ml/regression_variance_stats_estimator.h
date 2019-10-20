@@ -182,7 +182,8 @@ public:
       ++branch_element_count[num_of_branches];
     }
 
-    for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index) {
+    for (std::size_t example_index = 0; example_index < num_of_examples;
+         ++example_index) {
       unsigned char branch_index;
       computeBranchIndex(
           results[example_index], flags[example_index], threshold, branch_index);
@@ -200,7 +201,8 @@ public:
     }
 
     std::vector<float> variances(num_of_branches + 1, 0);
-    for (std::size_t branch_index = 0; branch_index < num_of_branches + 1; ++branch_index) {
+    for (std::size_t branch_index = 0; branch_index < num_of_branches + 1;
+         ++branch_index) {
       const float mean_sum =
           static_cast<float>(sums[branch_index]) / branch_element_count[branch_index];
       const float mean_sqr_sum = static_cast<float>(sqr_sums[branch_index]) /
@@ -280,7 +282,8 @@ public:
 
     LabelDataType sum = 0.0f;
     LabelDataType sqr_sum = 0.0f;
-    for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index) {
+    for (std::size_t example_index = 0; example_index < num_of_examples;
+         ++example_index) {
       const LabelDataType label = label_data[example_index];
 
       sum += label;

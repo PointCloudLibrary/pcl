@@ -93,7 +93,8 @@ public:
     stream.write(reinterpret_cast<const char*>(&num_of_decisions_),
                  sizeof(num_of_decisions_));
 
-    for (std::size_t feature_index = 0; feature_index < features_.size(); ++feature_index) {
+    for (std::size_t feature_index = 0; feature_index < features_.size();
+         ++feature_index) {
       features_[feature_index].serialize(stream);
     }
 
@@ -121,7 +122,8 @@ public:
     thresholds_.resize(num_of_decisions_);
     nodes_.resize(0x1 << num_of_decisions_);
 
-    for (std::size_t feature_index = 0; feature_index < features_.size(); ++feature_index) {
+    for (std::size_t feature_index = 0; feature_index < features_.size();
+         ++feature_index) {
       features_[feature_index].deserialize(stream);
     }
 
@@ -140,7 +142,10 @@ public:
    *
    * \param node_index the index of the node to access
    */
-  inline NodeType& operator[](const std::size_t node_index) { return nodes_[node_index]; }
+  inline NodeType& operator[](const std::size_t node_index)
+  {
+    return nodes_[node_index];
+  }
 
   /** Access operator for nodes.
    *
