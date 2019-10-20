@@ -61,6 +61,7 @@ using ssize_t = SSIZE_T;
 # include <sys/fcntl.h>
 # include <cerrno>
 #endif
+#include <cstddef>
 
 namespace pcl
 {
