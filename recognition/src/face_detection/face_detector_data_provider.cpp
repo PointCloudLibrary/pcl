@@ -186,7 +186,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
   pcl::visualization::PCLVisualizer vis("training");
 #endif
 
-  for (size_t j = 0; j < files.size (); j++)
+  for (std::size_t j = 0; j < files.size (); j++)
   {
 
 #if PCL_FACE_DETECTION_VIS_TRAINING_FDDP == 1
@@ -210,14 +210,14 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     //crop images to remove as many NaNs as possible and reduce the memory footprint
     {
-      size_t min_col, min_row;
-      size_t max_col, max_row;
-      min_col = min_row = std::numeric_limits<size_t>::max ();
+      std::size_t min_col, min_row;
+      std::size_t max_col, max_row;
+      min_col = min_row = std::numeric_limits<std::size_t>::max ();
       max_col = max_row = 0;
 
-      for (size_t col = 0; col < loaded_cloud->width; col++)
+      for (std::size_t col = 0; col < loaded_cloud->width; col++)
       {
-        for (size_t row = 0; row < loaded_cloud->height; row++)
+        for (std::size_t row = 0; row < loaded_cloud->height; row++)
         {
           if (pcl::isFinite (loaded_cloud->at (col, row)))
           {
@@ -295,16 +295,16 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     //Using cloud labels estimate a 2D window from where to extract positive samples
     //Rest can be used to extract negative samples
-    size_t min_col, min_row;
-    size_t max_col, max_row;
-    min_col = min_row = std::numeric_limits<size_t>::max ();
+    std::size_t min_col, min_row;
+    std::size_t max_col, max_row;
+    min_col = min_row = std::numeric_limits<std::size_t>::max ();
     max_col = max_row = 0;
 
     //std::cout << cloud_labels->width << " " << cloud_labels->height << std::endl;
 
-    for (size_t col = 0; col < cloud_labels->width; col++)
+    for (std::size_t col = 0; col < cloud_labels->width; col++)
     {
-      for (size_t row = 0; row < cloud_labels->height; row++)
+      for (std::size_t row = 0; row < cloud_labels->height; row++)
       {
         if (cloud_labels->at (col, row).label == 1)
         {
@@ -521,7 +521,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
   //train random forest and make persistent
   std::vector<int> example_indices;
-  for (size_t i = 0; i < labels.size (); i++)
+  for (std::size_t i = 0; i < labels.size (); i++)
     example_indices.push_back (static_cast<int> (i));
 
   label_data = labels;

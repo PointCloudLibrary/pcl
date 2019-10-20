@@ -779,7 +779,7 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
   }
 
 
-  size_t depth_idx = 0;
+  std::size_t depth_idx = 0;
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   for (unsigned v = 0; v < depth_height_; ++v)

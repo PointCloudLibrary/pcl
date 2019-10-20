@@ -44,7 +44,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::ApproximateVoxelGrid<PointT>::flush (PointCloud &output, size_t op, he *hhe, int rgba_index, int centroid_size)
+pcl::ApproximateVoxelGrid<PointT>::flush (PointCloud &output, std::size_t op, he *hhe, int rgba_index, int centroid_size)
 {
   hhe->centroid /= static_cast<float> (hhe->count);
   pcl::for_each_type <FieldList> (pcl::xNdCopyEigenPointFunctor <PointT> (hhe->centroid, output.points[op]));
@@ -80,7 +80,7 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
     centroid_size += 3;
   }
 
-  for (size_t i = 0; i < histsize_; i++) 
+  for (std::size_t i = 0; i < histsize_; i++) 
   {
     history_[i].count = 0;
     history_[i].centroid = Eigen::VectorXf::Zero (centroid_size);
@@ -88,8 +88,8 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
   Eigen::VectorXf scratch = Eigen::VectorXf::Zero (centroid_size);
 
   output.points.resize (input_->points.size ());   // size output for worst case
-  size_t op = 0;    // output pointer
-  for (size_t cp = 0; cp < input_->points.size (); ++cp) 
+  std::size_t op = 0;    // output pointer
+  for (std::size_t cp = 0; cp < input_->points.size (); ++cp) 
   {
     int ix = static_cast<int> (std::floor (input_->points[cp].x * inverse_leaf_size_[0]));
     int iy = static_cast<int> (std::floor (input_->points[cp].y * inverse_leaf_size_[1]));
@@ -121,7 +121,7 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
     pcl::for_each_type <FieldList> (xNdCopyPointEigenFunctor <PointT> (input_->points[cp], scratch));
     hhe->centroid += scratch;
   }
-  for (size_t i = 0; i < histsize_; i++) 
+  for (std::size_t i = 0; i < histsize_; i++) 
   {
     he *hhe = &history_[i];
     if (hhe->count)

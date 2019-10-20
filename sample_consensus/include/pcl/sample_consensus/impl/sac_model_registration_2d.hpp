@@ -85,7 +85,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::getDistancesToModel (const Eige
   transform.row (2).matrix () = model_coefficients.segment<4>(8);
   transform.row (3).matrix () = model_coefficients.segment<4>(12);
 
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
                             input_->points[(*indices_)[i]].y, 
@@ -139,7 +139,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::selectWithinDistance (const Eig
   transform.row (2).matrix () = model_coefficients.segment<4>(8);
   transform.row (3).matrix () = model_coefficients.segment<4>(12);
 
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
                             input_->points[(*indices_)[i]].y, 
@@ -199,7 +199,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
 
   int nr_p = 0; 
   
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
                             input_->points[(*indices_)[i]].y, 

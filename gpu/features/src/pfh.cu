@@ -136,7 +136,7 @@ namespace pcl
                 FSize = NR_SPLIT * NR_SPLIT * NR_SPLIT * (enable_rgb ? 2 : 1)
             };
 
-            size_t work_size;
+            std::size_t work_size;
             const int* sizes;
 
             PtrStep<float> rpk;

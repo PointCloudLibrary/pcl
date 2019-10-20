@@ -324,7 +324,7 @@ int main(int argc, char ** argv)
   sort (tiff_depth_files.begin (), tiff_depth_files.end ());
   sort (tiff_depth_paths.begin (), tiff_depth_paths.end ());
 
-  for(size_t i = 0; i < tiff_rgb_paths.size(); i++)
+  for(std::size_t i = 0; i < tiff_rgb_paths.size(); i++)
   {
     // Load the input file
     vtkSmartPointer<vtkImageData> rgb_data;
@@ -353,7 +353,7 @@ int main(int argc, char ** argv)
       // Try to read the depth file
       bool found = false; // indicates if a corresponding depth file was found
       // Find the correct file name
-      for(size_t j = 0; j < tiff_depth_paths.size(); j++)
+      for(std::size_t j = 0; j < tiff_depth_paths.size(); j++)
       {
         std::string depth_filename = tiff_depth_paths[i].filename().string();
         std::string depth_time = depth_filename.substr(6,22);

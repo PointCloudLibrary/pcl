@@ -69,7 +69,7 @@ namespace pcl
           /// destructor
           virtual ~BoykovKolmogorov () {}
           /// get number of nodes in the graph
-          size_t
+          std::size_t
           numNodes () const { return nodes_.size (); }
           /// reset all edge capacities to zero (but don't free the graph)
           void

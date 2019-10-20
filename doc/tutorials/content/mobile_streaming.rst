@@ -164,7 +164,7 @@ that lie outside of the predefined bounding box or contain NaN values.
     void
     CopyPointCloudToBuffers (pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud, PointCloudBuffers& cloud_buffers)
     {
-      const size_t nr_points = cloud->points.size ();
+      const std::size_t nr_points = cloud->points.size ();
 
       cloud_buffers.points.resize (nr_points*3);
       cloud_buffers.rgb.resize (nr_points*3);
@@ -172,8 +172,8 @@ that lie outside of the predefined bounding box or contain NaN values.
       const pcl::PointXYZ  bounds_min (-0.9, -0.8, 1.0);
       const pcl::PointXYZ  bounds_max (0.9, 3.0, 3.3);
 
-      size_t j = 0;
-      for (size_t i = 0; i < nr_points; ++i)
+      std::size_t j = 0;
+      for (std::size_t i = 0; i < nr_points; ++i)
       {
 
         const pcl::PointXYZRGBA& point = cloud->points[i];

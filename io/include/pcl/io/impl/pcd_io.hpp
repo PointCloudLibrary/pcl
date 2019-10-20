@@ -142,9 +142,9 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
   auto fields = pcl::getFields<PointT> ();
   std::vector<int> fields_sizes;
-  size_t fsize = 0;
-  size_t data_size = 0;
-  size_t nri = 0;
+  std::size_t fsize = 0;
+  std::size_t data_size = 0;
+  std::size_t nri = 0;
   // Compute the total size of the fields
   for (const auto &field : fields)
   {
@@ -198,7 +198,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
   // Copy the data
   char *out = &map[0] + data_idx;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
     int nrj = 0;
     for (const auto &field : fields)
@@ -273,9 +273,9 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   setLockingPermissions (file_name, file_lock);
 
   auto fields = pcl::getFields<PointT> ();
-  size_t fsize = 0;
-  size_t data_size = 0;
-  size_t nri = 0;
+  std::size_t fsize = 0;
+  std::size_t data_size = 0;
+  std::size_t nri = 0;
   std::vector<int> fields_sizes (fields.size ());
   // Compute the total size of the fields
   for (const auto &field : fields)
@@ -299,7 +299,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   if (data_size * 3 / 2 > std::numeric_limits<std::uint32_t>::max ())
   {
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] The input data exceeds the maximum size for compressed version 0.7 pcds of %l bytes.\n",
-               static_cast<size_t> (std::numeric_limits<std::uint32_t>::max ()) * 2 / 3);
+               static_cast<std::size_t> (std::numeric_limits<std::uint32_t>::max ()) * 2 / 3);
     return (-2);
   }
 
@@ -319,17 +319,17 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   //   pters[3] = &only_valid_data[offset_of_plane_RGB];
   //
   std::vector<char*> pters (fields.size ());
-  size_t toff = 0;
-  for (size_t i = 0; i < pters.size (); ++i)
+  std::size_t toff = 0;
+  for (std::size_t i = 0; i < pters.size (); ++i)
   {
     pters[i] = &only_valid_data[toff];
-    toff += static_cast<size_t>(fields_sizes[i]) * cloud.points.size();
+    toff += static_cast<std::size_t>(fields_sizes[i]) * cloud.points.size();
   }
   
   // Go over all the points, and copy the data in the appropriate places
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
-    for (size_t j = 0; j < fields.size (); ++j)
+    for (std::size_t j = 0; j < fields.size (); ++j)
     {
       memcpy (pters[j], reinterpret_cast<const char*> (&cloud.points[i]) + fields[j].offset, fields_sizes[j]);
       // Increment the pointer
@@ -337,7 +337,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
     }
   }
 
-  char* temp_buf = static_cast<char*> (malloc (static_cast<size_t> (static_cast<float> (data_size) * 1.5f + 8.0f)));
+  char* temp_buf = static_cast<char*> (malloc (static_cast<std::size_t> (static_cast<float> (data_size) * 1.5f + 8.0f)));
   // Compress the valid data
   unsigned int compressed_size = pcl::lzfCompress (only_valid_data, 
                                                    static_cast<std::uint32_t> (data_size), 
@@ -470,9 +470,9 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
   stream.precision (precision);
   stream.imbue (std::locale::classic ());
   // Iterate through the points
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
-    for (size_t d = 0; d < fields.size (); ++d)
+    for (std::size_t d = 0; d < fields.size (); ++d)
     {
       // Ignore invalid padded dimensions that are inherited from binary data
       if (fields[d].name == "_")
@@ -619,9 +619,9 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
   auto fields = pcl::getFields<PointT> ();
   std::vector<int> fields_sizes;
-  size_t fsize = 0;
-  size_t data_size = 0;
-  size_t nri = 0;
+  std::size_t fsize = 0;
+  std::size_t data_size = 0;
+  std::size_t nri = 0;
   // Compute the total size of the fields
   for (const auto &field : fields)
   {
@@ -755,7 +755,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
   // Iterate through the points
   for (const int &index : indices)
   {
-    for (size_t d = 0; d < fields.size (); ++d)
+    for (std::size_t d = 0; d < fields.size (); ++d)
     {
       // Ignore invalid padded dimensions that are inherited from binary data
       if (fields[d].name == "_")

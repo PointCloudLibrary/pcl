@@ -118,7 +118,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
     *hslot = static_cast<unsigned int> (ip - (static_cast<const unsigned char*> (in_data)));
 
     // off requires a type wide enough to hold a general pointer difference.
-    // ISO C doesn't have that (size_t might not be enough and ptrdiff_t only
+    // ISO C doesn't have that (std::size_t might not be enough and ptrdiff_t only
     // works for differences within a single object). We also assume that no
     // no bit pattern traps. Since the only platform that is both non-POSIX
     // and fails to support both assumptions is windows 64 bit, we make a

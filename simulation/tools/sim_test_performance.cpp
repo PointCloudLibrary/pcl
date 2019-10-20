@@ -284,7 +284,7 @@ display()
 
 #if 0
   std::cout << "score: ";
-  for (size_t i = 0; i < scores.size (); ++i)
+  for (std::size_t i = 0; i < scores.size (); ++i)
   {
     std::cout << " " << scores[i];
   }

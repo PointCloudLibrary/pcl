@@ -145,7 +145,7 @@ namespace pcl
         history_ ()
       {
         history_ = new he[histsize_];
-        for (size_t i = 0; i < histsize_; i++)
+        for (std::size_t i = 0; i < histsize_; i++)
           history_[i] = src.history_[i];
       }
 
@@ -169,7 +169,7 @@ namespace pcl
         downsample_all_data_ = src.downsample_all_data_;
         histsize_ = src.histsize_;
         history_ = new he[histsize_];
-        for (size_t i = 0; i < histsize_; i++)
+        for (std::size_t i = 0; i < histsize_; i++)
           history_[i] = src.history_[i];
         return (*this);
       }
@@ -222,7 +222,7 @@ namespace pcl
       bool downsample_all_data_;
 
       /** \brief history buffer size, power of 2 */
-      size_t histsize_;
+      std::size_t histsize_;
 
       /** \brief history buffer */
       struct he* history_;
@@ -238,7 +238,7 @@ namespace pcl
       /** \brief Write a single point from the hash to the output cloud
         */
       void 
-      flush (PointCloud &output, size_t op, he *hhe, int rgba_index, int centroid_size);
+      flush (PointCloud &output, std::size_t op, he *hhe, int rgba_index, int centroid_size);
   };
 }
 

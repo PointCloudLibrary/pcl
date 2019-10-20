@@ -191,7 +191,7 @@ pcl::MinCutSegmentation<PointT>::setForegroundPoints (typename pcl::PointCloud<P
 {
   foreground_points_.clear ();
   foreground_points_.reserve (foreground_points->points.size ());
-  for (size_t i_point = 0; i_point < foreground_points->points.size (); i_point++)
+  for (std::size_t i_point = 0; i_point < foreground_points->points.size (); i_point++)
     foreground_points_.push_back (foreground_points->points[i_point]);
 
   unary_potentials_are_valid_ = false;
@@ -210,7 +210,7 @@ pcl::MinCutSegmentation<PointT>::setBackgroundPoints (typename pcl::PointCloud<P
 {
   background_points_.clear ();
   background_points_.reserve (background_points->points.size ());
-  for (size_t i_point = 0; i_point < background_points->points.size (); i_point++)
+  for (std::size_t i_point = 0; i_point < background_points->points.size (); i_point++)
     background_points_.push_back (background_points->points[i_point]);
 
   unary_potentials_are_valid_ = false;
@@ -354,7 +354,7 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
   {
     int point_index = (*indices_)[i_point];
     search_->nearestKSearch (i_point, number_of_neighbours_, neighbours, distances);
-    for (size_t i_nghbr = 1; i_nghbr < neighbours.size (); i_nghbr++)
+    for (std::size_t i_nghbr = 1; i_nghbr < neighbours.size (); i_nghbr++)
     {
       double weight = calculateBinaryPotential (point_index, neighbours[i_nghbr]);
       addEdge (point_index, neighbours[i_nghbr], weight);
@@ -381,7 +381,7 @@ pcl::MinCutSegmentation<PointT>::calculateUnaryPotential (int point, double& sou
   initial_point[0] = input_->points[point].x;
   initial_point[1] = input_->points[point].y;
 
-  for (size_t i_point = 0; i_point < foreground_points_.size (); i_point++)
+  for (std::size_t i_point = 0; i_point < foreground_points_.size (); i_point++)
   {
     double dist = 0.0;
     dist += (foreground_points_[i_point].x - initial_point[0]) * (foreground_points_[i_point].x - initial_point[0]);

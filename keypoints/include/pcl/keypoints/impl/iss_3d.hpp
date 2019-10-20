@@ -328,7 +328,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 #ifdef _OPENMP
   Eigen::Vector3d *omp_mem = new Eigen::Vector3d[threads_];
 
-  for (size_t i = 0; i < threads_; i++)
+  for (std::size_t i = 0; i < threads_; i++)
     omp_mem[i].setZero (3);
 #else
   Eigen::Vector3d *omp_mem = new Eigen::Vector3d[1];
@@ -339,7 +339,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   double *prg_local_mem = new double[input_->size () * 3];
   double **prg_mem = new double * [input_->size ()];
 
-  for (size_t i = 0; i < input_->size (); i++)
+  for (std::size_t i = 0; i < input_->size (); i++)
     prg_mem[i] = prg_local_mem + 3 * i;
 
 #ifdef _OPENMP

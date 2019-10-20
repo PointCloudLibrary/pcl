@@ -73,7 +73,7 @@ TEST (PCL, RIFTEstimation)
   gradient.width = static_cast<std::uint32_t> (cloud_xyzi.points.size ());
   gradient.is_dense = true;
   gradient.points.resize (gradient.width);
-  for (size_t i = 0; i < cloud_xyzi.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_xyzi.points.size (); ++i)
   {
     const PointXYZI &p = cloud_xyzi.points[i];
 

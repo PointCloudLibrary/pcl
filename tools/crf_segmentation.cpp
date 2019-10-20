@@ -113,7 +113,7 @@ compute (const CloudT::Ptr &cloud,
   cloud_normals->width = cloud->width;
   cloud_normals->height = cloud->height;
   cloud_normals->points.resize (cloud->points.size ());
-  for (size_t i = 0; i < cloud->points.size (); i++)
+  for (std::size_t i = 0; i < cloud->points.size (); i++)
   {
     cloud_normals->points[i].x = cloud->points[i].x;
     cloud_normals->points[i].y = cloud->points[i].y;

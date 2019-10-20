@@ -98,7 +98,7 @@ namespace pcl
 }
 
 
-int pcl::device::computeUniqueIndices(size_t surface_size, const NeighborIndices& neighbours, DeviceArray<int>& unique_indices, DeviceArray<int>& lookup)
+int pcl::device::computeUniqueIndices(std::size_t surface_size, const NeighborIndices& neighbours, DeviceArray<int>& unique_indices, DeviceArray<int>& lookup)
 {
     unique_indices.create(neighbours.data.size());
     lookup.create(surface_size);

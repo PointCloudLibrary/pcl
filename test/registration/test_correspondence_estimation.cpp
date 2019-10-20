@@ -76,7 +76,7 @@ TEST (CorrespondenceEstimation, CorrespondenceEstimationNormalShooting)
   ce.determineCorrespondences (*corr);
 
   // Based on the data defined, the correspondence indices should be 1 <-> 1 , 2 <-> 2 , 3 <-> 3 etc.
-  for (size_t i = 0; i < corr->size (); i++)
+  for (std::size_t i = 0; i < corr->size (); i++)
   {
     EXPECT_EQ ((*corr)[i].index_query, (*corr)[i].index_match);
   }
@@ -88,7 +88,7 @@ TEST (CorrespondenceEstimation, CorrespondenceEstimationSetSearchMethod)
   // Generating 3 random clouds
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud1 (new pcl::PointCloud<pcl::PointXYZ> ());
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2 (new pcl::PointCloud<pcl::PointXYZ> ());
-  for ( size_t i = 0; i < 50; i++ )
+  for ( std::size_t i = 0; i < 50; i++ )
   {
     cloud1->points.emplace_back(float (rand()), float (rand()), float (rand()));
     cloud2->points.emplace_back(float (rand()), float (rand()), float (rand()));
@@ -111,7 +111,7 @@ TEST (CorrespondenceEstimation, CorrespondenceEstimationSetSearchMethod)
   ce.determineCorrespondences (corr_cached);
   // Ensure they're the same
   EXPECT_EQ(corr_orig.size(), corr_cached.size());
-  for(size_t i = 0; i < corr_orig.size(); i++)
+  for(std::size_t i = 0; i < corr_orig.size(); i++)
   {
     EXPECT_EQ(corr_orig[i].index_query, corr_cached[i].index_query);
     EXPECT_EQ(corr_orig[i].index_match, corr_cached[i].index_match);

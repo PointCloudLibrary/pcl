@@ -273,7 +273,7 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
 */
 
   // fill the data vector
-  for (size_t i = 0; i < filtered_cloud_->points.size (); i++)
+  for (std::size_t i = 0; i < filtered_cloud_->points.size (); i++)
   {
     Eigen::Vector3f p (filtered_anno_->points[i].x,
                        filtered_anno_->points[i].y,
@@ -302,7 +302,7 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   }
 
   normal_.resize (filtered_normal_->points.size ());
-  for (size_t i = 0; i < filtered_normal_->points.size (); i++)
+  for (std::size_t i = 0; i < filtered_normal_->points.size (); i++)
   {
     float n_x = filtered_normal_->points[i].normal_x;
     float n_y = filtered_normal_->points[i].normal_y;
@@ -329,7 +329,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
   const float n_energy = -std::log ( (1.0f - GT_PROB) / static_cast<float>(n_labels - 1) );
   const float p_energy = -std::log ( GT_PROB );
 
-  for (size_t k = 0; k < filtered_anno_->points.size (); k++)
+  for (std::size_t k = 0; k < filtered_anno_->points.size (); k++)
   {
     int label = filtered_anno_->points[k].label;
 
@@ -352,10 +352,10 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
     }
   
     // set the engeries for the labels
-    size_t u_idx = k * n_labels;
+    std::size_t u_idx = k * n_labels;
     if (label > 0)
     {
-      for (size_t i = 0; i < n_labels; i++)
+      for (std::size_t i = 0; i < n_labels; i++)
         unary[u_idx + i] = n_energy;
       unary[u_idx + labels.size ()] = p_energy;
 
@@ -365,7 +365,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
         const float n_energy2 = -std::log ( (1.0f - PROB) / static_cast<float>(n_labels - 1) );
         const float p_energy2 = -std::log ( PROB );
 
-        for (size_t i = 0; i < n_labels; i++)
+        for (std::size_t i = 0; i < n_labels; i++)
           unary[u_idx + i] = n_energy2;
         unary[u_idx + labels.size ()] = p_energy2;
       }
@@ -373,7 +373,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
     }
     else
     {
-      for (size_t i = 0; i < n_labels; i++)
+      for (std::size_t i = 0; i < n_labels; i++)
         unary[u_idx + i] = u_energy;
     } 
   }
@@ -448,7 +448,7 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
 	short * map = new short[N];
 	crfOLD.map(10, map);
 
-  for (size_t i = 0; i < N; i++)
+  for (std::size_t i = 0; i < N; i++)
   {
     tmp_cloud_OLD.points[i].label = map[i];
   }
@@ -550,7 +550,7 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
 
 /*
   bool c = true;
-  for (size_t i = 0; i < tmp_cloud.points.size (); i++)
+  for (std::size_t i = 0; i < tmp_cloud.points.size (); i++)
   {
     if (tmp_cloud.points[i].label != tmp_cloud_OLD.points[i].label)
     {
@@ -570,14 +570,14 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
 
 
 /*
-  for (size_t i = 0; i < 25; i++)
+  for (std::size_t i = 0; i < 25; i++)
   {
     std::cout << result[i] << " |  " << resultOLD[i] << std::endl;
   }
   
 
   c = true;
-  for (size_t i = 0; i < result.size (); i++)
+  for (std::size_t i = 0; i < result.size (); i++)
   {
     if (result[i] != resultOLD[i])
     {

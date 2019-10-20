@@ -153,8 +153,8 @@ namespace pcl
 
           flann::Matrix<float> flann_data (new float[models.size () * models[0].descr.size ()], models.size (), models[0].descr.size ());
 
-          for (size_t i = 0; i < data.rows; ++i)
-            for (size_t j = 0; j < data.cols; ++j)
+          for (std::size_t i = 0; i < data.rows; ++i)
+            for (std::size_t j = 0; j < data.cols; ++j)
             {
               flann_data.ptr ()[i * data.cols + j] = models[i].descr[j];
             }
@@ -170,8 +170,8 @@ namespace pcl
 
           flann::Matrix<float> flann_data(new float[indices->size () * models[0].descr.size ()],indices->size(),models[0].descr.size ());
 
-          for (size_t i = 0; i < data.rows; ++i)
-            for (size_t j = 0; j < data.cols; ++j)
+          for (std::size_t i = 0; i < data.rows; ++i)
+            for (std::size_t j = 0; j < data.cols; ++j)
             {
               flann_data.ptr()[i * data.cols + j] = models[indices->at(i)].descr[j];
             }

@@ -346,7 +346,7 @@ int main (int argc, char** argv)
 	PointCloud::Ptr result (new PointCloud), source, target;
   Eigen::Matrix4f GlobalTransform = Eigen::Matrix4f::Identity (), pairTransform;
   
-  for (size_t i = 1; i < data.size (); ++i)
+  for (std::size_t i = 1; i < data.size (); ++i)
   {
     source = data[i-1].cloud;
     target = data[i].cloud;

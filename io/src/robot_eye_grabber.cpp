@@ -160,10 +160,10 @@ pcl::RobotEyeGrabber::consumerThreadLoop ()
 
 /////////////////////////////////////////////////////////////////////////////
 void
-pcl::RobotEyeGrabber::convertPacketData (unsigned char *data_packet, size_t length)
+pcl::RobotEyeGrabber::convertPacketData (unsigned char *data_packet, std::size_t length)
 {
   //Check for the presence of the header
-  size_t offset = 0;
+  std::size_t offset = 0;
   //The old packet data format does not start with an E since it just starts with laser data
   if(data_packet[0] != 'E')
   {
@@ -175,7 +175,7 @@ pcl::RobotEyeGrabber::convertPacketData (unsigned char *data_packet, size_t leng
     //The new packet data format contains this as a header
     //char[6]  "EBRBEP"
     //std::uint32_t Timestamp // counts of a 66 MHz clock since power-on of eye.
-    size_t response_size = 6; //"EBRBEP"
+    std::size_t response_size = 6; //"EBRBEP"
     if( !strncmp((char*)(data_packet), "EBRBEP", response_size) )
     {
       std::uint32_t timestamp; // counts of a 66 MHz clock since power-on of eye.
@@ -190,10 +190,10 @@ pcl::RobotEyeGrabber::convertPacketData (unsigned char *data_packet, size_t leng
     }
   }
 
-  const size_t bytes_per_point = 8;
-  const size_t total_points = (length - offset)/ bytes_per_point;
+  const std::size_t bytes_per_point = 8;
+  const std::size_t total_points = (length - offset)/ bytes_per_point;
 
-  for (size_t i = 0; i < total_points; ++i)
+  for (std::size_t i = 0; i < total_points; ++i)
   {
     PointXYZI xyzi;
     computeXYZI (xyzi, data_packet + i*bytes_per_point + offset);

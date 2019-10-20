@@ -118,7 +118,7 @@ namespace pcl
       };
 
       /** \brief The 3D grid leaves. */
-      std::unordered_map<size_t, Leaf> leaves_;
+      std::unordered_map<std::size_t, Leaf> leaves_;
 
       /** \brief The size of a leaf. */
       Eigen::Vector4f leaf_size_;

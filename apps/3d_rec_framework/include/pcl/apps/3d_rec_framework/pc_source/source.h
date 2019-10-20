@@ -201,7 +201,7 @@ namespace pcl
       void
       voxelizeAllModels (float resolution)
       {
-        for (size_t i = 0; i < models_->size (); i++)
+        for (std::size_t i = 0; i < models_->size (); i++)
         {
           models_->at (i).getAssembled (resolution);
         }

@@ -102,7 +102,7 @@ namespace pcl
     float nx = 0.0f;
     float ny = 0.0f;
     float nz = 0.0f;
-    for (size_t i = 0; i < k_indices.size (); ++i) {
+    for (std::size_t i = 0; i < k_indices.size (); ++i) {
       // Neighbor
       const NormalT& pointi = cloud[k_indices[i]];
       

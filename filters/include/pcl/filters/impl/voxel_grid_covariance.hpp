@@ -128,7 +128,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), distance_idx);
 
     // First pass: go over all points and insert them into the right leaf
-    for (size_t cp = 0; cp < input_->points.size (); ++cp)
+    for (std::size_t cp = 0; cp < input_->points.size (); ++cp)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
@@ -205,7 +205,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   else
   {
     // First pass: go over all points and insert them into the right leaf
-    for (size_t cp = 0; cp < input_->points.size (); ++cp)
+    for (std::size_t cp = 0; cp < input_->points.size (); ++cp)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
@@ -278,7 +278,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   // Eigen values less than a threshold of max eigen value are inflated to a set fraction of the max eigen value.
   double min_covar_eigvalue;
 
-  for (typename std::map<size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
+  for (typename std::map<std::size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
   {
 
     // Normalize the centroid
@@ -392,7 +392,7 @@ pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const PointT& referenc
     // Checking if the specified cell is in the grid
     if ((diff2min <= displacement.array ()).all () && (diff2max >= displacement.array ()).all ())
     {
-      typename std::map<size_t, Leaf>::iterator leaf_iter = leaves_.find (((ijk + displacement - min_b_).dot (divb_mul_)));
+      typename std::map<std::size_t, Leaf>::iterator leaf_iter = leaves_.find (((ijk + displacement - min_b_).dot (divb_mul_)));
       if (leaf_iter != leaves_.end () && leaf_iter->second.nr_points >= min_points_per_voxel_)
       {
         LeafConstPtr leaf = &(leaf_iter->second);
@@ -422,7 +422,7 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
   Eigen::Vector3d dist_point;
 
   // Generate points for each occupied voxel with sufficient points.
-  for (typename std::map<size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
+  for (typename std::map<std::size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
   {
     Leaf& leaf = it->second;
 

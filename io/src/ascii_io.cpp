@@ -105,7 +105,7 @@ pcl::ASCIIReader::readHeader (const std::string& file_name,
 
   cloud.fields = fields_;
   cloud.point_step = 0;
-  for (size_t i = 0; i < fields_.size (); i++) 
+  for (std::size_t i = 0; i < fields_.size (); i++) 
     cloud.point_step += typeSize (cloud.fields[i].datatype);
 
   std::fstream ifile (file_name.c_str (), std::fstream::in);
@@ -161,7 +161,7 @@ pcl::ASCIIReader::read (
    std::uint32_t offset = 0;
    try
    {
-     for (size_t i = 0; i < fields_.size (); i++) 
+     for (std::size_t i = 0; i < fields_.size (); i++) 
        offset += parse (tokens[i], fields_[i], data + offset);
    }
    catch (std::exception& /*e*/)

@@ -15,7 +15,7 @@ main ()
   cloud->height = 1;
   cloud->points.resize (cloud->width * cloud->height);
   // 1.1 Add noise
-  for (size_t i = 0; i < noise_size; ++i)
+  for (std::size_t i = 0; i < noise_size; ++i)
   {
     cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
     cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
@@ -24,7 +24,7 @@ main ()
   // 1.2 Add sphere:
   double rand_x1 = 1;
   double rand_x2 = 1;
-  for (size_t i = noise_size; i < noise_size + sphere_data_size; ++i)
+  for (std::size_t i = noise_size; i < noise_size + sphere_data_size; ++i)
   {
     // See: http://mathworld.wolfram.com/SpherePointPicking.html
     while (pow (rand_x1, 2) + pow (rand_x2, 2) >= 1)
@@ -41,7 +41,7 @@ main ()
   }
 
   std::cerr << "Cloud before filtering: " << std::endl;
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->points.size (); ++i)
     std::cout << "    " << cloud->points[i].x << " " << cloud->points[i].y << " " << cloud->points[i].z << std::endl;
 
   // 2. filter sphere:
@@ -63,7 +63,7 @@ main ()
   sphere_filter.filter (*cloud_sphere_filtered);
 
   std::cerr << "Sphere after filtering: " << std::endl;
-  for (size_t i = 0; i < cloud_sphere_filtered->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_sphere_filtered->points.size (); ++i)
     std::cout << "    " << cloud_sphere_filtered->points[i].x << " " << cloud_sphere_filtered->points[i].y << " " << cloud_sphere_filtered->points[i].z
         << std::endl;
 

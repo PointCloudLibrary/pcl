@@ -57,7 +57,7 @@ public:
    * \param[out] features the destination for the created features
    */
   virtual void
-  createRandomFeatures(const size_t num_of_features,
+  createRandomFeatures(const std::size_t num_of_features,
                        std::vector<FeatureType>& features) = 0;
 
   /** Evaluates a feature on the specified data.

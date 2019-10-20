@@ -512,19 +512,19 @@ namespace pcl
       double lowerVoxelCorner[3];
       PointT newPoint;
 
-      size_t pointCount = 1;
+      std::size_t pointCount = 1;
 
       if (!do_voxel_grid_enDecoding_)
       {
         // get current cloud size
-        size_t cloudSize = output_->points.size ();
+        std::size_t cloudSize = output_->points.size ();
 
         // get amount of point to be decoded
         pointCount = *point_count_data_vector_iterator_;
         point_count_data_vector_iterator_++;
 
         // increase point cloud by amount of voxel points
-        for (size_t i = 0; i < pointCount; i++)
+        for (std::size_t i = 0; i < pointCount; i++)
           output_->points.push_back (newPoint);
 
         // calculcate position of lower voxel corner

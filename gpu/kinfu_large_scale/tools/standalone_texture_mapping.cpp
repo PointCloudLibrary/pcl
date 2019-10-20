@@ -101,7 +101,7 @@ saveOBJFile (const std::string &file_name,
     int xyz = 0;
     // "v" just be written one
     bool v_written = false;
-    for (size_t d = 0; d < tex_mesh.cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < tex_mesh.cloud.fields.size (); ++d)
     {
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
@@ -138,7 +138,7 @@ saveOBJFile (const std::string &file_name,
     int xyz = 0;
     // "vn" just be written one
     bool v_written = false;
-    for (size_t d = 0; d < tex_mesh.cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < tex_mesh.cloud.fields.size (); ++d)
     {
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
@@ -199,13 +199,13 @@ saveOBJFile (const std::string &file_name,
       fs << "usemtl " <<  tex_mesh.tex_materials[m].tex_name << std::endl;
       fs << "# Faces" << std::endl;
     }
-    for (size_t i = 0; i < tex_mesh.tex_polygons[m].size(); ++i)
+    for (std::size_t i = 0; i < tex_mesh.tex_polygons[m].size(); ++i)
     {
       // Write faces with "f"
       fs << "f";
       // There's one UV per vertex per face, i.e., the same vertex can have
       // different UV depending on the face.
-      for (size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
+      for (std::size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
         unsigned int idx = tex_mesh.tex_polygons[m][i].vertices[j] + 1;
         fs << " " << idx
@@ -264,7 +264,7 @@ void showCameras (pcl::texture_mapping::CameraVector cams, pcl::PointCloud<pcl::
   pcl::visualization::PCLVisualizer visu ("cameras");
 
   // add a visual for each camera at the correct pose
-  for(size_t i = 0 ; i < cams.size () ; ++i)
+  for(std::size_t i = 0 ; i < cams.size () ; ++i)
   {
     // read current camera
     pcl::TextureMapping<pcl::PointXYZ>::Camera cam = cams[i];
@@ -417,7 +417,7 @@ main (int argc, char** argv)
   
   // push faces into the texturemesh object
   polygon_1.resize (triangles.polygons.size ());
-  for(size_t i =0; i < triangles.polygons.size (); ++i)
+  for(std::size_t i =0; i < triangles.polygons.size (); ++i)
   {
     polygon_1[i] = triangles.polygons[i];
   }
@@ -451,7 +451,7 @@ main (int argc, char** argv)
 
   // Create materials for each texture (and one extra for occluded faces)
   mesh.tex_materials.resize (my_cams.size () + 1);
-  for(size_t i = 0 ; i <= my_cams.size() ; ++i)
+  for(std::size_t i = 0 ; i <= my_cams.size() ; ++i)
   {
     pcl::TexMaterial mesh_material;
     mesh_material.tex_Ka.r = 0.2f;
@@ -490,7 +490,7 @@ main (int argc, char** argv)
   
   
   PCL_INFO ("Sorting faces by cameras done.\n");
-  for(size_t i = 0 ; i <= my_cams.size() ; ++i)
+  for(std::size_t i = 0 ; i <= my_cams.size() ; ++i)
   {
     PCL_INFO ("\tSub mesh %d contains %d faces and %d UV coordinates.\n", i, mesh.tex_polygons[i].size (), mesh.tex_coordinates[i].size ());
   }

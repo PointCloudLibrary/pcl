@@ -87,7 +87,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
       min_dist = std::numeric_limits<float>::max ();
       
       // Find the best correspondence
-      for (size_t j = 0; j < nn_indices.size (); j++)
+      for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
         float cos_angle = source_normals_->points[*idx_i].normal_x * target_normals_->points[nn_indices[j]].normal_x +
                           source_normals_->points[*idx_i].normal_y * target_normals_->points[nn_indices[j]].normal_y +
@@ -122,7 +122,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
       min_dist = std::numeric_limits<float>::max ();
       
       // Find the best correspondence
-      for (size_t j = 0; j < nn_indices.size (); j++)
+      for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
         PointSource pt_src;
         // Copy the source data to a target PointTarget format so we can search in the tree
@@ -192,7 +192,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
       min_dist = std::numeric_limits<float>::max ();
       
       // Find the best correspondence
-      for (size_t j = 0; j < nn_indices.size (); j++)
+      for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
         float cos_angle = source_normals_->points[*idx_i].normal_x * target_normals_->points[nn_indices[j]].normal_x +
                           source_normals_->points[*idx_i].normal_y * target_normals_->points[nn_indices[j]].normal_y +
@@ -234,7 +234,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
       min_dist = std::numeric_limits<float>::max ();
       
       // Find the best correspondence
-      for (size_t j = 0; j < nn_indices.size (); j++)
+      for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
         PointSource pt_src;
         // Copy the source data to a target PointTarget format so we can search in the tree

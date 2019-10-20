@@ -370,7 +370,7 @@ namespace pcl
          *  \param maxObjsPerLeaf: maximum number of DataT objects per leaf
          * */
         inline void
-        enableDynamicDepth ( size_t maxObjsPerLeaf )
+        enableDynamicDepth ( std::size_t maxObjsPerLeaf )
         {
           assert(this->leaf_count_==0);
           max_objs_per_leaf_ = maxObjsPerLeaf;

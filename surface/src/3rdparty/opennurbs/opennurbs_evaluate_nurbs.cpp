@@ -539,7 +539,7 @@ RELATED FUNCTIONS:
     }    
   }
 
-  size_t sizeofCV = (i+j)*sizeof(*CV);
+  std::size_t sizeofCV = (i+j)*sizeof(*CV);
 
 
   // 21 November 2007 Dale Lear RR 29005 - remove call to alloca()

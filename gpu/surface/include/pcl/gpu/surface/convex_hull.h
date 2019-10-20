@@ -53,7 +53,7 @@ namespace pcl
 	  using Cloud = pcl::gpu::DeviceArray<PointType>;
       
 
-	  PseudoConvexHull3D(size_t buffer_size);
+	  PseudoConvexHull3D(std::size_t buffer_size);
       ~PseudoConvexHull3D();
 	        
 	  void

@@ -93,7 +93,7 @@ pcl::DenseCrf::addPairwiseGaussian(float sx, float sy, float sz, float w)
   feature.resize(N_ * 3);
 
   // fill the feature vector
-  for (size_t i = 0; i < data_.size(); i++) {
+  for (std::size_t i = 0; i < data_.size(); i++) {
     feature[i * 3] = static_cast<float>(data_[i].x()) / sx;
     feature[i * 3 + 1] = static_cast<float>(data_[i].y()) / sy;
     feature[i * 3 + 2] = static_cast<float>(data_[i].z()) / sz;
@@ -112,7 +112,7 @@ pcl::DenseCrf::addPairwiseBilateral(
   feature.resize(N_ * 6);
 
   // fill the feature vector
-  for (size_t i = 0; i < color_.size(); i++) {
+  for (std::size_t i = 0; i < color_.size(); i++) {
     feature[i * 6] = static_cast<float>(data_[i].x()) / sx;
     feature[i * 6 + 1] = static_cast<float>(data_[i].y()) / sy;
     feature[i * 6 + 2] = static_cast<float>(data_[i].z()) / sz;
@@ -145,7 +145,7 @@ pcl::DenseCrf::addPairwiseNormals(
   feature.resize(N_ * 6);
 
   // fill the feature vector
-  for (size_t i = 0; i < coord.size(); i++) {
+  for (std::size_t i = 0; i < coord.size(); i++) {
     if (std::isnan(normals[i].x())) {
       if (i > 0) {
         normals[i].x() = normals[i - 1].x();
@@ -267,7 +267,7 @@ void
 pcl::DenseCrf::runInference(float relax)
 {
   // set the unary potentials
-  for (size_t i = 0; i < unary_.size(); i++)
+  for (std::size_t i = 0; i < unary_.size(); i++)
     next_[i] = -unary_[i];
 
   // Add up all pairwise potentials

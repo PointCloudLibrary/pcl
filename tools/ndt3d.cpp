@@ -108,7 +108,7 @@ main (int argc, char **argv)
   pcl::ApproximateVoxelGrid<PointType> voxel_filter;
   voxel_filter.setLeafSize (filter_res, filter_res, filter_res);
 
-  for (size_t i = 1; i < pcd_indices.size (); i++)
+  for (std::size_t i = 1; i < pcd_indices.size (); i++)
   {
     CloudPtr data (new Cloud);
     if (pcl::io::loadPCDFile (argv[pcd_indices[i]], *data) == -1)

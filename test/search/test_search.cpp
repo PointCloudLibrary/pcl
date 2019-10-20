@@ -167,7 +167,7 @@ bool testUniqueness (const std::vector<int>& indices, const string& name)
 bool testOrder (const std::vector<float>& distances, const string& name)
 {
   bool ordered = true;
-  for (size_t idx1 = 1; idx1 < distances.size (); ++idx1)
+  for (std::size_t idx1 = 1; idx1 < distances.size (); ++idx1)
   {
     if (distances [idx1-1] > distances [idx1])
     {
@@ -257,7 +257,7 @@ bool compareResults (const std::vector<int>& indices1, const::vector<float>& dis
   }
   else
   {
-    for (size_t idx = 0; idx < indices1.size (); ++idx)
+    for (std::size_t idx = 0; idx < indices1.size (); ++idx)
     {
       if (indices1[idx] != indices2[idx] && std::abs (distances1[idx] - distances2[idx]) > eps)
       {
@@ -338,7 +338,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
       }
     }
   }
-  for (size_t sIdx = 0; sIdx < search_methods.size (); ++sIdx)
+  for (std::size_t sIdx = 0; sIdx < search_methods.size (); ++sIdx)
   {
     std::cout << search_methods [sIdx]->getName () << ": " << (passed[sIdx]?"passed":"failed") << std::endl;
     EXPECT_TRUE (passed [sIdx]);
@@ -409,7 +409,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
       }
     }
   }
-  for (size_t sIdx = 0; sIdx < search_methods.size (); ++sIdx)
+  for (std::size_t sIdx = 0; sIdx < search_methods.size (); ++sIdx)
   {
     std::cout << search_methods [sIdx]->getName () << ": " << (passed[sIdx]?"passed":"failed") << std::endl;
     EXPECT_TRUE (passed [sIdx]);

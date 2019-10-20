@@ -151,7 +151,7 @@ namespace pcl
         
         /** \brief Returns the number of points contained in the world.
           */      
-        size_t getWorldSize () 
+        std::size_t getWorldSize () 
         { 
           return (world_->points.size () );
         }

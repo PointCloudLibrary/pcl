@@ -96,7 +96,7 @@ Select2DTool::end (int x, int y, BitMask modifiers, BitMask)
 
   Point3DVector ptsvec;
   cloud_ptr_->getDisplaySpacePoints(ptsvec);
-  for(size_t i = 0; i < ptsvec.size(); ++i)
+  for(std::size_t i = 0; i < ptsvec.size(); ++i)
   {
     Point3D pt = ptsvec[i];
     if (isInSelectBox(pt, project, viewport))

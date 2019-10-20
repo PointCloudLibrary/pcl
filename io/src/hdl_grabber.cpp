@@ -649,7 +649,7 @@ pcl::HDLGrabber::readPacketsFromSocket ()
 
   while (!terminate_read_packet_thread_ && hdl_read_socket_->is_open ())
   {
-    size_t length = hdl_read_socket_->receive_from (boost::asio::buffer (data, 1500), sender_endpoint);
+    std::size_t length = hdl_read_socket_->receive_from (boost::asio::buffer (data, 1500), sender_endpoint);
 
     if (isAddressUnspecified (source_address_filter_)
         || (source_address_filter_ == sender_endpoint.address () && source_port_filter_ == sender_endpoint.port ()))

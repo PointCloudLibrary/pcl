@@ -261,7 +261,7 @@ Narf::extractFromRangeImageWithBestRotation (const RangeImage& range_image, cons
   if (rotations.empty())
     return false;
   float best_rotation=rotations[0], best_strength=strengths[0];
-  for (size_t i = 1; i < rotations.size(); ++i)
+  for (std::size_t i = 1; i < rotations.size(); ++i)
   {
     if (strengths[i] > best_strength)
     {
@@ -548,7 +548,7 @@ Narf::saveBinary (const std::string& filename) const
 int 
 Narf::loadHeader(std::istream& file) const
 {
-  size_t pos_in_file = static_cast<size_t> (file.tellg ());
+  std::size_t pos_in_file = static_cast<std::size_t> (file.tellg ());
   file.width (getHeaderKeyword ().size()+10); // limit maximum number of bytes to read
   std::string header;
   file >> header;
@@ -655,7 +655,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
   std::vector<Narf*> feature_list;
   if (indices_)
   {
-    for (size_t indices_idx=0; indices_idx<indices_->size(); ++indices_idx)
+    for (std::size_t indices_idx=0; indices_idx<indices_->size(); ++indices_idx)
     {
       int point_index = (*indices_)[indices_idx];
       int y=point_index/range_image_->width, x=point_index - y*range_image_->width;
@@ -677,7 +677,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
   
   // Copy to NARF36 struct
   output.points.resize(feature_list.size());
-  for (size_t i = 0; i < feature_list.size(); ++i)
+  for (std::size_t i = 0; i < feature_list.size(); ++i)
   {
     feature_list[i]->copyToNarf36(output.points[i]);
   }

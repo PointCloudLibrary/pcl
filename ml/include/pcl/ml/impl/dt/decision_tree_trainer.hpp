@@ -111,10 +111,10 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
     trainDecisionTreeNode(std::vector<FeatureType>& features,
                           std::vector<ExampleIndex>& examples,
                           std::vector<LabelType>& label_data,
-                          const size_t max_depth,
+                          const std::size_t max_depth,
                           NodeType& node)
 {
-  const size_t num_of_examples = examples.size();
+  const std::size_t num_of_examples = examples.size();
   if (num_of_examples == 0) {
     PCL_ERROR(
         "Reached invalid point in decision tree training: Number of examples is 0!");
@@ -147,8 +147,8 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   float best_feature_threshold = 0.0f;
   float best_feature_information_gain = 0.0f;
 
-  const size_t num_of_features = features.size();
-  for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index) {
+  const std::size_t num_of_features = features.size();
+  for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index) {
     // evaluate features
     feature_handler_->evaluateFeature(
         features[feature_index], data_set_, examples, feature_results, flags);
@@ -157,7 +157,7 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
     if (!thresholds_.empty()) {
       // compute information gain for each threshold and store threshold with highest
       // information gain
-      for (size_t threshold_index = 0; threshold_index < thresholds_.size();
+      for (std::size_t threshold_index = 0; threshold_index < thresholds_.size();
            ++threshold_index) {
 
         const float information_gain =
@@ -182,7 +182,7 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
 
       // compute information gain for each threshold and store threshold with highest
       // information gain
-      for (size_t threshold_index = 0; threshold_index < num_of_thresholds_;
+      for (std::size_t threshold_index = 0; threshold_index < num_of_thresholds_;
            ++threshold_index) {
         const float threshold = thresholds[threshold_index];
 
@@ -219,10 +219,10 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
 
   // separate data
   {
-    const size_t num_of_branches = stats_estimator_->getNumOfBranches();
+    const std::size_t num_of_branches = stats_estimator_->getNumOfBranches();
 
-    std::vector<size_t> branch_counts(num_of_branches, 0);
-    for (size_t example_index = 0; example_index < num_of_examples; ++example_index) {
+    std::vector<std::size_t> branch_counts(num_of_branches, 0);
+    for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index) {
       ++branch_counts[branch_indices[example_index]];
     }
 
@@ -230,7 +230,7 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
     node.threshold = best_feature_threshold;
     node.sub_nodes.resize(num_of_branches);
 
-    for (size_t branch_index = 0; branch_index < num_of_branches; ++branch_index) {
+    for (std::size_t branch_index = 0; branch_index < num_of_branches; ++branch_index) {
       if (branch_counts[branch_index] == 0) {
         NodeType branch_node;
         stats_estimator_->computeAndSetNodeStats(
@@ -247,7 +247,7 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
       branch_labels.reserve(branch_counts[branch_index]);
       branch_examples.reserve(branch_counts[branch_index]);
 
-      for (size_t example_index = 0; example_index < num_of_examples; ++example_index) {
+      for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index) {
         if (branch_indices[example_index] == branch_index) {
           branch_examples.push_back(examples[example_index]);
           branch_labels.push_back(label_data[example_index]);
@@ -270,7 +270,7 @@ template <class FeatureType,
           class NodeType>
 void
 pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    createThresholdsUniform(const size_t num_of_thresholds,
+    createThresholdsUniform(const std::size_t num_of_thresholds,
                             std::vector<float>& values,
                             std::vector<float>& thresholds)
 {
@@ -278,8 +278,8 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   float min_value = ::std::numeric_limits<float>::max();
   float max_value = -::std::numeric_limits<float>::max();
 
-  const size_t num_of_values = values.size();
-  for (size_t value_index = 0; value_index < num_of_values; ++value_index) {
+  const std::size_t num_of_values = values.size();
+  for (std::size_t value_index = 0; value_index < num_of_values; ++value_index) {
     const float value = values[value_index];
 
     if (value < min_value)
@@ -294,7 +294,7 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   // compute thresholds
   thresholds.resize(num_of_thresholds);
 
-  for (size_t threshold_index = 0; threshold_index < num_of_thresholds;
+  for (std::size_t threshold_index = 0; threshold_index < num_of_thresholds;
        ++threshold_index) {
     thresholds[threshold_index] =
         min_value + step * (static_cast<float>(threshold_index + 1));

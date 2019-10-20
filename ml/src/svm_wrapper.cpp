@@ -202,7 +202,7 @@ pcl::SVM::adaptInputToLibSVM(std::vector<SVMData> training_set, svm_problem& pro
 
     int k = 0;
 
-    for (size_t j = 0; j < training_set[i].SV.size(); j++)
+    for (std::size_t j = 0; j < training_set[i].SV.size(); j++)
       if (training_set[i].SV[j].idx != -1 &&
           std::isfinite(training_set[i].SV[j].value)) {
         prob.x[i][k].index = training_set[i].SV[j].idx;
@@ -767,7 +767,7 @@ pcl::SVMClassify::classification(pcl::SVMData in)
   svm_node* buff;
   buff = Malloc(struct svm_node, in.SV.size() + 10);
 
-  for (size_t i = 0; i < in.SV.size(); i++) {
+  for (std::size_t i = 0; i < in.SV.size(); i++) {
     buff[i].index = in.SV[i].idx;
 
     if (in.SV[i].idx < scaling_.max && scaling_.obj[in.SV[i].idx].index == 1)

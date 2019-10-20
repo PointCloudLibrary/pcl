@@ -227,7 +227,7 @@ pcl::io::LZFRGB24ImageReader::read (
   unsigned char *color_g = reinterpret_cast<unsigned char*> (&uncompressed_data[getWidth () * getHeight ()]);
   unsigned char *color_b = reinterpret_cast<unsigned char*> (&uncompressed_data[2 * getWidth () * getHeight ()]);
 
-  for (size_t i = 0; i < cloud.size (); ++i, ++rgb_idx)
+  for (std::size_t i = 0; i < cloud.size (); ++i, ++rgb_idx)
   {
     PointT &pt = cloud.points[i];
 
@@ -451,7 +451,7 @@ pcl::io::LZFBayer8ImageReader::read (
   cloud.height = getHeight ();
   cloud.resize (getWidth () * getHeight ());
   int rgb_idx = 0;
-  for (size_t i = 0; i < cloud.size (); ++i, rgb_idx += 3)
+  for (std::size_t i = 0; i < cloud.size (); ++i, rgb_idx += 3)
   {
     PointT &pt = cloud.points[i];
 

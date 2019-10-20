@@ -293,7 +293,7 @@ namespace pcl
             const OpenNI2VideoMode& output_mode, OpenNI2VideoMode& mode) const;
 
           bool
-          resizingSupported (size_t input_width, size_t input_height, size_t output_width, size_t output_height) const;
+          resizingSupported (std::size_t input_width, std::size_t input_height, std::size_t output_width, std::size_t output_height) const;
 
           // Members
 

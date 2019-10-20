@@ -268,7 +268,7 @@ typename PointCloud<MergedT>::Ptr merge(const PointCloud<PointT>& points, const 
   typename PointCloud<MergedT>::Ptr merged_ptr(new PointCloud<MergedT>());
     
   pcl::copyPointCloud (points, *merged_ptr);      
-  for (size_t i = 0; i < colors.size (); ++i)
+  for (std::size_t i = 0; i < colors.size (); ++i)
     merged_ptr->points[i].rgba = colors.points[i].rgba;
       
   return merged_ptr;
@@ -291,7 +291,7 @@ boost::shared_ptr<pcl::PolygonMesh> convertToMesh(const DeviceArray<PointXYZ>& t
   pcl::toPCLPointCloud2(cloud, mesh_ptr->cloud);
       
   mesh_ptr->polygons.resize (triangles.size() / 3);
-  for (size_t i = 0; i < mesh_ptr->polygons.size (); ++i)
+  for (std::size_t i = 0; i < mesh_ptr->polygons.size (); ++i)
   {
     pcl::Vertices v;
     v.vertices.push_back(i*3+0);
@@ -522,7 +522,7 @@ struct SceneCloudView
       else
         point_colors_ptr_->points.clear();
     }
-    size_t points_size = valid_combined_ ? combined_ptr_->points.size () : cloud_ptr_->points.size ();
+    std::size_t points_size = valid_combined_ ? combined_ptr_->points.size () : cloud_ptr_->points.size ();
     std::cout << "Done.  Cloud size: " << points_size / 1000 << "K" << std::endl;
 
     if (viz_)
@@ -1358,7 +1358,7 @@ main (int argc, char* argv[])
   catch (const std::exception& /*e*/) { std::cout << "Exception" << std::endl; }
 
 #ifdef HAVE_OPENCV
-  for (size_t t = 0; t < app.image_view_.views_.size (); ++t)
+  for (std::size_t t = 0; t < app.image_view_.views_.size (); ++t)
   {
     if (t == 0)
     {

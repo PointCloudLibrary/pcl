@@ -74,7 +74,7 @@ FittingCurve2d::findElement (double xi, const std::vector<double> &elements)
   if (xi >= elements.back ())
     return (int (elements.size ()) - 2);
 
-  for (size_t i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
   {
     if (xi >= elements[i] && xi < elements[i + 1])
     {
@@ -94,7 +94,7 @@ FittingCurve2d::refine ()
 
   std::vector<double> elements = getElementVector (m_nurbs);
 
-  for (size_t i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
   for (const double &i : xi)
@@ -254,7 +254,7 @@ FittingCurve2d::initNurbsCPS (int order, const vector_vec2d &cps)
 
   printf ("[FittingCurve2d::initCPsNurbsCurve2D] Warning, this function is under development.\n");
   //
-  //  size_t ncps = cps.size ();
+  //  std::size_t ncps = cps.size ();
   //  nurbs = ON_NurbsCurve (2, false, order, ncps);
   //  nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order + 1));
   //
@@ -512,7 +512,7 @@ FittingCurve2d::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Vecto
   error = DBL_MAX;
   int is_corner (-1);
 
-  for (size_t i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
   {
     Eigen::Vector2d p1;
     nurbs.Evaluate (elements[i], 0, 2, &p1 (0));
@@ -670,7 +670,7 @@ FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Ei
   std::vector<double> elements = pcl::on_nurbs::FittingCurve2d::getElementVector (nurbs);
   double seg = 1.0 / (nurbs.Order () - 1);
 
-  for (size_t i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
   {
     double &xi0 = elements[i];
     double &xi1 = elements[i + 1];
@@ -713,7 +713,7 @@ FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Ei
   double d_shortest (DBL_MAX);
   double seg = 1.0 / (nurbs.Order () - 1);
 
-  for (size_t i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
   {
     double &xi0 = elements[i];
     double &xi1 = elements[i + 1];

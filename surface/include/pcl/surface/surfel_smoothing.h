@@ -89,7 +89,7 @@ namespace pcl
 
 
       void
-      smoothPoint (size_t &point_index,
+      smoothPoint (std::size_t &point_index,
                    PointT &output_point,
                    PointNT &output_normal);
 

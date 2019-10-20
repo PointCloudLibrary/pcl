@@ -76,14 +76,14 @@ namespace pcl
 
     template<typename PointT>
       inline void
-      uniform_sampling (const vtkSmartPointer<vtkPolyData>& polydata, size_t n_samples, typename pcl::PointCloud<PointT> & cloud_out)
+      uniform_sampling (const vtkSmartPointer<vtkPolyData>& polydata, std::size_t n_samples, typename pcl::PointCloud<PointT> & cloud_out)
       {
         polydata->BuildCells ();
         vtkSmartPointer < vtkCellArray > cells = polydata->GetPolys ();
 
         double p1[3], p2[3], p3[3], totalArea = 0;
         std::vector<double> cumulativeAreas (cells->GetNumberOfCells (), 0);
-        size_t i = 0;
+        std::size_t i = 0;
         vtkIdType npts = 0, *ptIds = nullptr;
         for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds); i++)
         {
@@ -110,7 +110,7 @@ namespace pcl
 
     template<typename PointT>
       inline void
-      uniform_sampling (std::string & file, size_t n_samples, typename pcl::PointCloud<PointT> & cloud_out, float scale = 1.f)
+      uniform_sampling (std::string & file, std::size_t n_samples, typename pcl::PointCloud<PointT> & cloud_out, float scale = 1.f)
       {
 
         vtkSmartPointer < vtkPLYReader > reader = vtkSmartPointer<vtkPLYReader>::New ();

@@ -67,8 +67,8 @@ sortFiles (const std::string & file1, const std::string & file2)
   std::string id_1 = strs1[strs1.size () - 1];
   std::string id_2 = strs2[strs2.size () - 1];
 
-  size_t pos1 = id_1.find (".ply.pcd");
-  size_t pos2 = id_2.find (".ply.pcd");
+  std::size_t pos1 = id_1.find (".ply.pcd");
+  std::size_t pos2 = id_2.find (".ply.pcd");
 
   id_1 = id_1.substr (0, pos1);
   id_2 = id_2.substr (0, pos2);
@@ -101,11 +101,11 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
     {
       pcl::visualization::PCLVisualizer vis ("Mians dataset");
 
-      for (size_t i = 0; i < files.size (); i++)
+      for (std::size_t i = 0; i < files.size (); i++)
       {
         std::cout << files[i] << std::endl;
         if (scene != -1)
-          if ((size_t) scene != i)
+          if ((std::size_t) scene != i)
             continue;
 
         std::stringstream file;
@@ -130,7 +130,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
         boost::shared_ptr < std::vector<ModelT> > models = local.getModels ();
         boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms = local.getTransforms ();
 
-        for (size_t j = 0; j < models->size (); j++)
+        for (std::size_t j = 0; j < models->size (); j++)
         {
           std::stringstream name;
           name << "cloud_" << j;
@@ -176,7 +176,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
 
         vis.removePointCloud ("scene_cloud");
         vis.removeShape ("scene_text");
-        for (size_t j = 0; j < models->size (); j++)
+        for (std::size_t j = 0; j < models->size (); j++)
         {
           std::stringstream name;
           name << "cloud_" << j;
@@ -193,7 +193,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
       local.setSearchModel (id);
       local.initialize ();
 
-      for (size_t i = 0; i < files.size (); i++)
+      for (std::size_t i = 0; i < files.size (); i++)
       {
         std::stringstream file;
         file << ply_files_dir.string () << files[i];
@@ -213,7 +213,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
         boost::shared_ptr < std::vector<ModelT> > models = local.getModels ();
         boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms = local.getTransforms ();
 
-        for (size_t j = 0; j < models->size (); j++)
+        for (std::size_t j = 0; j < models->size (); j++)
         {
           std::stringstream name;
           name << "cloud_" << j;
@@ -230,7 +230,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
 
         vis.removePointCloud ("scene_cloud");
         vis.removeShape ("scene_text");
-        for (size_t j = 0; j < models->size (); j++)
+        for (std::size_t j = 0; j < models->size (); j++)
         {
           std::stringstream name;
           name << "cloud_" << j;

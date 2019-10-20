@@ -71,9 +71,9 @@ TEST (PCL, Organized)
   cloud_organized->points.resize (cloud_organized->width * cloud_organized->height);
 
   int npoints = 0;
-  for (size_t i = 0; i < cloud_organized->height; i++)
+  for (std::size_t i = 0; i < cloud_organized->height; i++)
   {
-    for (size_t j = 0; j < cloud_organized->width; j++)
+    for (std::size_t j = 0; j < cloud_organized->width; j++)
     {
       cloud_organized->points[npoints].x = static_cast<float> (i);
       cloud_organized->points[npoints].y = static_cast<float> (j);

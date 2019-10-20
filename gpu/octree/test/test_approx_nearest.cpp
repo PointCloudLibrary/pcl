@@ -118,7 +118,7 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
     std::vector<int> downloaded;
     result_device.data.download(downloaded);
                 
-    for(size_t i = 0; i < data.tests_num; ++i)
+    for(std::size_t i = 0; i < data.tests_num; ++i)
     {
         octree_host.approxNearestSearch(data.queries[i], result_host_pcl[i], dists_pcl[i]);
         octree_device.approxNearestSearchHost(data.queries[i], result_host_gpu[i], dists_gpu[i]);
@@ -129,7 +129,7 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
     int count_gpu_better = 0;
     int count_pcl_better = 0;
     float diff_pcl_better = 0;
-    for(size_t i = 0; i < data.tests_num; ++i)
+    for(std::size_t i = 0; i < data.tests_num; ++i)
     {
         float diff = dists_pcl[i] - dists_gpu[i];
         bool gpu_better = diff > 0;

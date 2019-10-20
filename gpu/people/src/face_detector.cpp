@@ -378,7 +378,7 @@ pcl::gpu::people::FaceDetector::loadFromNVBIN(const std::string &filename,
                                std::vector<HaarClassifierNode128> &haarClassifierNodes,
                                std::vector<HaarFeature64> &haar_features)
 {
-    size_t readCount;
+    std::size_t readCount;
     FILE *fp = fopen(filename.c_str(), "rbe");
     ncvAssertReturn(fp != nullptr, NCV_FILE_ERROR);
     Ncv32u fileVersion;
@@ -503,7 +503,7 @@ pcl::gpu::people::FaceDetector::ncvHaarGetClassifierSize(const std::string &file
         FILE *fp = fopen(filename.c_str(), "rbe");
         PCL_ASSERT_ERROR_PRINT_RETURN(fp != nullptr, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
         Ncv32u fileVersion;
-        size_t readCount = fread(&fileVersion, sizeof(Ncv32u), 1, fp);
+        std::size_t readCount = fread(&fileVersion, sizeof(Ncv32u), 1, fp);
         PCL_ASSERT_ERROR_PRINT_RETURN(1 == readCount, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
         PCL_ASSERT_ERROR_PRINT_RETURN(fileVersion == NVBIN_HAAR_VERSION, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
         fseek(fp, NVBIN_HAAR_SIZERESERVED, SEEK_SET);

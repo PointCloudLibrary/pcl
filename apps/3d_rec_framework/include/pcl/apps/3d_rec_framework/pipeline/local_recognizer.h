@@ -116,8 +116,8 @@ namespace pcl
 
           flann::Matrix<float> flann_data (new float[models.size () * models[0].descr.size ()], models.size (), models[0].descr.size ());
 
-          for (size_t i = 0; i < data.rows; ++i)
-            for (size_t j = 0; j < data.cols; ++j)
+          for (std::size_t i = 0; i < data.rows; ++i)
+            for (std::size_t j = 0; j < data.cols; ++j)
             {
               flann_data.ptr ()[i * data.cols + j] = models[i].descr[j];
             }
@@ -157,7 +157,7 @@ namespace pcl
           pcl::visualization::PointCloudColorHandlerCustom<PointInT> random_handler_sampled (cloud_sampled, 0, 0, 255);
           vis_corresp_.addPointCloud<PointInT> (cloud_sampled, random_handler_sampled, "sampled");
 
-          for (size_t kk = 0; kk < correspondences.size (); kk++)
+          for (std::size_t kk = 0; kk < correspondences.size (); kk++)
           {
             pcl::PointXYZ p;
             p.getVector4fMap () = oh.correspondences_pointcloud->points[correspondences[kk].index_query].getVector4fMap ();

@@ -212,7 +212,7 @@ namespace pcl
         (void)seekret;
         assert (seekret == 0);
 
-        size_t readlen = fread (&temp, 1, sizeof(PointT), f);
+        std::size_t readlen = fread (&temp, 1, sizeof(PointT), f);
         (void)readlen;
         assert (readlen == sizeof (PointT));
 
@@ -255,7 +255,7 @@ namespace pcl
       (void)res;
       assert (res == 0);
       
-      for (size_t i=0; i < cloud->points.size (); i++)
+      for (std::size_t i=0; i < cloud->points.size (); i++)
         dst.push_back (cloud->points[i]);
       
     }
@@ -301,7 +301,7 @@ namespace pcl
           boost::bernoulli_distribution<double> buffdist (percent);
           boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > buffcoin (rand_gen_, buffdist);
 
-          for (size_t i = buffstart; i < static_cast<std::uint64_t> (buffcount); i++)
+          for (std::size_t i = buffstart; i < static_cast<std::uint64_t> (buffcount); i++)
           {
             if (buffcoin ())
             {
@@ -341,7 +341,7 @@ namespace pcl
           int seekret = _fseeki64 (f, offsets[i] * static_cast<std::uint64_t> (sizeof(PointT)), SEEK_SET);
           (void)seekret;
           assert (seekret == 0);
-          size_t readlen = fread (loc, sizeof(PointT), 1, f);
+          std::size_t readlen = fread (loc, sizeof(PointT), 1, f);
           (void)readlen;
           assert (readlen == 1);
 
@@ -438,7 +438,7 @@ namespace pcl
           int seekret = _fseeki64 (f, offsets[i] * static_cast<std::uint64_t> (sizeof(PointT)), SEEK_SET);
           (void)seekret;
           assert (seekret == 0);
-          size_t readlen = fread (loc, sizeof(PointT), 1, f);
+          std::size_t readlen = fread (loc, sizeof(PointT), 1, f);
           (void)readlen;
           assert (readlen == 1);
 
@@ -485,11 +485,11 @@ namespace pcl
         tmp_cloud->height = 1;
       }            
 
-      for (size_t i = 0; i < src.size (); i++)
+      for (std::size_t i = 0; i < src.size (); i++)
         tmp_cloud->points.push_back (src[i]);
       
       // If there are any points in the write cache writebuff_, a different write cache than this one, concatenate
-      for (size_t i = 0; i < writebuff_.size (); i++)
+      for (std::size_t i = 0; i < writebuff_.size (); i++)
       {
         tmp_cloud->points.push_back (writebuff_[i]);
       }
@@ -523,10 +523,10 @@ namespace pcl
         pcl::PCDWriter writer;
         PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, disk_storage_filename_.c_str ());
         
-        size_t previous_num_pts = tmp_cloud->width*tmp_cloud->height + input_cloud->width*input_cloud->height;
+        std::size_t previous_num_pts = tmp_cloud->width*tmp_cloud->height + input_cloud->width*input_cloud->height;
         //Concatenate will fail if the fields in input_cloud do not match the fields in the PCD file.
         pcl::concatenate (*tmp_cloud, *input_cloud, *tmp_cloud);
-        size_t res_pts = tmp_cloud->width*tmp_cloud->height;
+        std::size_t res_pts = tmp_cloud->width*tmp_cloud->height;
         
         (void)previous_num_pts;
         (void)res_pts;
@@ -613,7 +613,7 @@ namespace pcl
       PointT* arr = new PointT[count];
 
       //copy from start of array, element by element
-      for (size_t i = 0; i < count; i++)
+      for (std::size_t i = 0; i < count; i++)
       {
         arr[i] = *(start[i]);
       }
@@ -645,13 +645,13 @@ namespace pcl
       }            
 
       // Add any points in the cache
-      for (size_t i = 0; i < writebuff_.size (); i++)
+      for (std::size_t i = 0; i < writebuff_.size (); i++)
       {
         tmp_cloud->points.push_back (writebuff_ [i]);
       }
 
       //add the new points passed with this function
-      for (size_t i = 0; i < count; i++)
+      for (std::size_t i = 0; i < count; i++)
       {
         tmp_cloud->points.push_back (*(start + i));
       }

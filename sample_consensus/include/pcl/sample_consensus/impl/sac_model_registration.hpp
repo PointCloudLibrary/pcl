@@ -113,7 +113,7 @@ pcl::SampleConsensusModelRegistration<PointT>::getDistancesToModel (const Eigen:
   transform.row (2).matrix () = model_coefficients.segment<4>(8);
   transform.row (3).matrix () = model_coefficients.segment<4>(12);
 
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
                             input_->points[(*indices_)[i]].y, 
@@ -164,7 +164,7 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
   transform.row (2).matrix () = model_coefficients.segment<4>(8);
   transform.row (3).matrix () = model_coefficients.segment<4>(12);
 
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
                             input_->points[(*indices_)[i]].y, 
@@ -217,7 +217,7 @@ pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
   transform.row (3).matrix () = model_coefficients.segment<4>(12);
 
   int nr_p = 0; 
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
                             input_->points[(*indices_)[i]].y, 
@@ -254,7 +254,7 @@ pcl::SampleConsensusModelRegistration<PointT>::optimizeModelCoefficients (const 
 
   std::vector<int> indices_src (inliers.size ());
   std::vector<int> indices_tgt (inliers.size ());
-  for (size_t i = 0; i < inliers.size (); ++i)
+  for (std::size_t i = 0; i < inliers.size (); ++i)
   {
     indices_src[i] = inliers[i];
     indices_tgt[i] = correspondences_.at (indices_src[i]);
@@ -277,7 +277,7 @@ pcl::SampleConsensusModelRegistration<PointT>::estimateRigidTransformationSVD (
   Eigen::Matrix<double, 3, Eigen::Dynamic> src (3, indices_src.size ());
   Eigen::Matrix<double, 3, Eigen::Dynamic> tgt (3, indices_tgt.size ());
 
-  for (size_t i = 0; i < indices_src.size (); ++i)
+  for (std::size_t i = 0; i < indices_src.size (); ++i)
   {
     src (0, i) = cloud_src[indices_src[i]].x;
     src (1, i) = cloud_src[indices_src[i]].y;

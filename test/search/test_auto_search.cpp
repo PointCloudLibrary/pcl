@@ -64,7 +64,7 @@ init ()
   cloud_big.height = 480;
   srand (time (NULL));
   // Randomly create a new point cloud
-  for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
+  for (std::size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
     cloud_big.points.push_back (PointXYZ (1024 * rand () / (RAND_MAX + 1.0),
                                          1024 * rand () / (RAND_MAX + 1.0),
                                          1024 * rand () / (RAND_MAX + 1.0)));
@@ -127,7 +127,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     cloudIn->width = 1000;
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
-    for (size_t i = 0; i < 1000; i++)
+    for (std::size_t i = 0; i < 1000; i++)
     {
       cloudIn->points[i] = PointXYZ (5.0 * ((double)rand () / (double)RAND_MAX),
                                      10.0 * ((double)rand () / (double)RAND_MAX),
@@ -141,7 +141,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     k_sqr_distances_bruteforce.clear();
 
     // push all points and their distance to the search point into a priority queue - bruteforce approach.
-    for (size_t i = 0; i < cloudIn->points.size (); i++)
+    for (std::size_t i = 0; i < cloudIn->points.size (); i++)
     {
       double pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x) +
                           (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y) +
@@ -212,7 +212,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     cloudIn->width = 1000;
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
-    for (size_t i = 0; i < 1000; i++)
+    for (std::size_t i = 0; i < 1000; i++)
     {
       cloudIn->points[i] = PointXYZ (5.0 * ((double)rand () / (double)RAND_MAX),
                                      10.0 * ((double)rand () / (double)RAND_MAX),
@@ -224,7 +224,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     double BFdistance = std::numeric_limits<double>::max ();
     int BFindex = 0;
 
-    for (size_t i = 0; i < cloudIn->points.size (); i++)
+    for (std::size_t i = 0; i < cloudIn->points.size (); i++)
     {
       double pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x) +
                           (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y) +
@@ -265,7 +265,7 @@ TEST (PCL, KdTreeWrapper_nearestKSearch)
   PointXYZ test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
   multimap<float, int> sorted_brute_force_result;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
     float distance = euclideanDistance (cloud.points[i], test_point);
     sorted_brute_force_result.insert (make_pair (distance, (int) i));
@@ -288,7 +288,7 @@ TEST (PCL, KdTreeWrapper_nearestKSearch)
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
   // Check if all found neighbors have distance smaller than max_dist
-  for (size_t i = 0; i < k_indices.size (); ++i)
+  for (std::size_t i = 0; i < k_indices.size (); ++i)
   {
     const PointXYZ& point = cloud.points[k_indices[i]];
     bool ok = euclideanDistance (test_point, point) <= max_dist;
@@ -304,7 +304,7 @@ TEST (PCL, KdTreeWrapper_nearestKSearch)
     pcl::search::Search<PointXYZ>* kdtree = new pcl::search::AutotunedSearch<PointXYZ>(pcl::search::KDTREE);
     //kdtree->initSearchDS ();
     kdtree->setInputCloud (cloud_big.makeShared ());
-    for (size_t i = 0; i < cloud_big.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_big.points.size (); ++i)
       kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
   }
 

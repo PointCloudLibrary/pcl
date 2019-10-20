@@ -84,7 +84,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
   pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::loadFeaturesAndCreateFLANN ()
   {
     boost::shared_ptr < std::vector<ModelT> > models = source_->getModels ();
-    for (size_t i = 0; i < models->size (); i++)
+    for (std::size_t i = 0; i < models->size (); i++)
     {
       std::string path = source_->getModelDescriptorDir (models->at (i), training_dir_, descr_name_);
       bf::path inside = path;
@@ -189,7 +189,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
       {
         pcl::ScopeTime t_matching ("Matching and roll...");
-        for (size_t idx = 0; idx < signatures.size (); idx++)
+        for (std::size_t idx = 0; idx < signatures.size (); idx++)
         {
 
           float* hist = signatures[idx].points[0].histogram;
@@ -359,7 +359,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         std::vector<typename pcl::PointCloud<PointInT>::ConstPtr> aligned_models;
         aligned_models.resize (models_->size ());
 
-        for (size_t i = 0; i < models_->size (); i++)
+        for (std::size_t i = 0; i < models_->size (); i++)
         {
           ConstPointInTPtr model_cloud = models_->at (i).getAssembled (0.005f);
           PointInTPtr model_aligned (new pcl::PointCloud<PointInT>);
@@ -379,7 +379,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         models_temp.reset (new std::vector<ModelT>);
         transforms_temp.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >);
 
-        for (size_t i = 0; i < models_->size (); i++)
+        for (std::size_t i = 0; i < models_->size (); i++)
         {
           if (!mask_hv[i])
             continue;
@@ -407,17 +407,17 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
     if (force_retrain)
     {
-      for (size_t i = 0; i < models->size (); i++)
+      for (std::size_t i = 0; i < models->size (); i++)
       {
         source_->removeDescDirectory (models->at (i), training_dir_, descr_name_);
       }
     }
 
-    for (size_t i = 0; i < models->size (); i++)
+    for (std::size_t i = 0; i < models->size (); i++)
     {
       if (!source_->modelAlreadyTrained (models->at (i), training_dir_, descr_name_))
       {
-        for (size_t v = 0; v < models->at (i).views_->size (); v++)
+        for (std::size_t v = 0; v < models->at (i).views_->size (); v++)
         {
           PointInTPtr processed (new pcl::PointCloud<PointInT>);
           PointInTPtr view = models->at (i).views_->at (v);
@@ -428,7 +428,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
             std::mt19937 rng(rd());
             std::normal_distribution<float> nd (0.0f, noise_);
             // Noisify each point in the dataset
-            for (size_t cp = 0; cp < view->points.size (); ++cp)
+            for (std::size_t cp = 0; cp < view->points.size (); ++cp)
               view->points[cp].z += nd (rng);
           }
 
@@ -459,7 +459,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           crh_estimator_->getCRHHistograms (crh_histograms);
 
           //save signatures and centroids to disk
-          for (size_t j = 0; j < signatures.size (); j++)
+          for (std::size_t j = 0; j < signatures.size (); j++)
           {
             std::stringstream path_centroid;
             path_centroid << path << "/centroid_" << v << "_" << j << ".txt";

@@ -55,7 +55,7 @@ namespace pcl
     {
         static const bool hasColor = false;
         static const unsigned int channels = 1;
-        static const size_t bytesPerPoint = 3 * sizeof(float);
+        static const std::size_t bytesPerPoint = 3 * sizeof(float);
     };
 
     template<>
@@ -63,7 +63,7 @@ namespace pcl
     {
         static const bool hasColor = true;
         static const unsigned int channels = 4;
-        static const size_t bytesPerPoint = 3 * sizeof(float) + 3 * sizeof(std::uint8_t);
+        static const std::size_t bytesPerPoint = 3 * sizeof(float) + 3 * sizeof(std::uint8_t);
     };
 
     template<>
@@ -71,7 +71,7 @@ namespace pcl
     {
         static const bool hasColor = true;
         static const unsigned int channels = 4;
-        static const size_t bytesPerPoint = 3 * sizeof(float) + 3 * sizeof(std::uint8_t);
+        static const std::size_t bytesPerPoint = 3 * sizeof(float) + 3 * sizeof(std::uint8_t);
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,14 +100,14 @@ namespace pcl
                           typename std::vector<std::uint16_t>& disparityData_arg,
                           typename std::vector<std::uint8_t>&)
       {
-        size_t cloud_size = cloud_arg.points.size ();
+        std::size_t cloud_size = cloud_arg.points.size ();
 
         // Clear image data
         disparityData_arg.clear ();
 
         disparityData_arg.reserve (cloud_size);
 
-        for (size_t i = 0; i < cloud_size; ++i)
+        for (std::size_t i = 0; i < cloud_size; ++i)
         {
           // Get point from cloud
           const PointT& point = cloud_arg.points[i];
@@ -139,14 +139,14 @@ namespace pcl
       static void convert(typename std::vector<std::uint16_t>& disparityData_arg,
                           typename std::vector<std::uint8_t>&,
                           bool,
-                          size_t width_arg,
-                          size_t height_arg,
+                          std::size_t width_arg,
+                          std::size_t height_arg,
                           float focalLength_arg,
                           float disparityShift_arg,
                           float disparityScale_arg,
                           pcl::PointCloud<PointT>& cloud_arg)
       {
-        size_t cloud_size = width_arg * height_arg;
+        std::size_t cloud_size = width_arg * height_arg;
 
         assert(disparityData_arg.size()==cloud_size);
 
@@ -166,7 +166,7 @@ namespace pcl
         const float fl_const = 1.0f / focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-        size_t i = 0;
+        std::size_t i = 0;
         for (int y = -centerY; y < centerY; ++y )
           for (int x = -centerX; x < centerX; ++x )
           {
@@ -208,12 +208,12 @@ namespace pcl
       static void convert(typename std::vector<float>& depthData_arg,
                           typename std::vector<std::uint8_t>&,
                           bool,
-                          size_t width_arg,
-                          size_t height_arg,
+                          std::size_t width_arg,
+                          std::size_t height_arg,
                           float focalLength_arg,
                           pcl::PointCloud<PointT>& cloud_arg)
       {
-        size_t cloud_size = width_arg * height_arg;
+        std::size_t cloud_size = width_arg * height_arg;
 
         assert(depthData_arg.size()==cloud_size);
 
@@ -233,7 +233,7 @@ namespace pcl
         const float fl_const = 1.0f / focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-        size_t i = 0;
+        std::size_t i = 0;
         for (int y = -centerY; y < centerY; ++y )
           for (int x = -centerX; x < centerX; ++x )
           {
@@ -289,7 +289,7 @@ namespace pcl
                           typename std::vector<std::uint16_t>& disparityData_arg,
                           typename std::vector<std::uint8_t>& rgbData_arg)
       {
-        size_t cloud_size = cloud_arg.points.size ();
+        std::size_t cloud_size = cloud_arg.points.size ();
 
         // Reset output vectors
         disparityData_arg.clear ();
@@ -306,7 +306,7 @@ namespace pcl
         }
 
 
-        for (size_t i = 0; i < cloud_size; ++i)
+        for (std::size_t i = 0; i < cloud_size; ++i)
         {
           const PointT& point = cloud_arg.points[i];
 
@@ -371,14 +371,14 @@ namespace pcl
       static void convert(typename std::vector<std::uint16_t>& disparityData_arg,
                           typename std::vector<std::uint8_t>& rgbData_arg,
                           bool monoImage_arg,
-                          size_t width_arg,
-                          size_t height_arg,
+                          std::size_t width_arg,
+                          std::size_t height_arg,
                           float focalLength_arg,
                           float disparityShift_arg,
                           float disparityScale_arg,
                           pcl::PointCloud<PointT>& cloud_arg)
       {
-        size_t cloud_size = width_arg*height_arg;
+        std::size_t cloud_size = width_arg*height_arg;
         bool hasColor = (!rgbData_arg.empty ());
 
         // Check size of input data
@@ -410,7 +410,7 @@ namespace pcl
         const float fl_const = 1.0f/focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-        size_t i = 0;
+        std::size_t i = 0;
         for (int y = -centerY; y < centerY; ++y )
           for (int x = -centerX; x < centerX; ++x )
           {
@@ -475,12 +475,12 @@ namespace pcl
       static void convert(typename std::vector<float>& depthData_arg,
                           typename std::vector<std::uint8_t>& rgbData_arg,
                           bool monoImage_arg,
-                          size_t width_arg,
-                          size_t height_arg,
+                          std::size_t width_arg,
+                          std::size_t height_arg,
                           float focalLength_arg,
                           pcl::PointCloud<PointT>& cloud_arg)
       {
-        size_t cloud_size = width_arg*height_arg;
+        std::size_t cloud_size = width_arg*height_arg;
         bool hasColor = (!rgbData_arg.empty ());
 
         // Check size of input data
@@ -512,7 +512,7 @@ namespace pcl
         const float fl_const = 1.0f/focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-        size_t i = 0;
+        std::size_t i = 0;
         for (int y = -centerY; y < centerY; ++y )
           for (int x = -centerX; x < centerX; ++x )
           {

@@ -87,7 +87,7 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
   corr_rejector.setInputSource(input_);
   corr_rejector.setInputTarget (temp_scene_cloud_ptr);
 
-  for (size_t i = 0; i < model_scene_corrs_->size (); ++i)
+  for (std::size_t i = 0; i < model_scene_corrs_->size (); ++i)
   {
     if (taken_corresps[i])
       continue;
@@ -95,7 +95,7 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
     consensus_set.clear ();
     consensus_set.push_back (static_cast<int> (i));
     
-    for (size_t j = 0; j < model_scene_corrs_->size (); ++j)
+    for (std::size_t j = 0; j < model_scene_corrs_->size (); ++j)
     {
       if ( j != i &&  !taken_corresps[j])
       {

@@ -95,30 +95,30 @@ public:
    * \param[in] resolution_disparity the disparity resolution.
    */
   void
-  setResolution(size_t resolution_column, size_t resolution_disparity);
+  setResolution(std::size_t resolution_column, std::size_t resolution_disparity);
 
   /** \brief Get column resolution of the DEM.
    * \return column resolution of the DEM.
    */
-  size_t
+  std::size_t
   getColumnResolution() const;
 
   /** \brief Get disparity resolution of the DEM.
    * \return disparity resolution of the DEM.
    */
-  size_t
+  std::size_t
   getDisparityResolution() const;
 
   /** \brief Set minimum amount of points in a DEM's cell.
    * \param[in] min_points_in_cell minimum amount of points in a DEM's cell.
    */
   void
-  setMinPointsInCell(size_t min_points_in_cell);
+  setMinPointsInCell(std::size_t min_points_in_cell);
 
   /** \brief Get minimum amount of points in a DEM's cell.
    * \return minimum amount of points in a DEM's cell.
    */
-  size_t
+  std::size_t
   getMinPointsInCell() const;
 
   /** \brief Compute the Digital Elevation Map.
@@ -129,11 +129,11 @@ public:
 
 protected:
   /** \brief Column resolution of the DEM. */
-  size_t resolution_column_;
+  std::size_t resolution_column_;
   /** \brief disparity resolution of the DEM. */
-  size_t resolution_disparity_;
+  std::size_t resolution_disparity_;
   /** \brief Minimum amount of points in a DEM's cell. */
-  size_t min_points_in_cell_;
+  std::size_t min_points_in_cell_;
 };
 
 } // namespace pcl

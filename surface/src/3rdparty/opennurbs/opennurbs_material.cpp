@@ -729,7 +729,7 @@ static int CompareXform( const ON_Xform& a, const ON_Xform& b )
   return j;
 }
 
-static int CompareTextureDoubles( size_t count, const double* a, const double* b )
+static int CompareTextureDoubles( std::size_t count, const double* a, const double* b )
 {
   while ( count-- )
   {

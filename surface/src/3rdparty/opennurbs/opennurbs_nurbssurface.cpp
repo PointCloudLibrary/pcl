@@ -114,7 +114,7 @@ ON__UINT32 ON_NurbsSurface::DataCRC(ON__UINT32 current_remainder) const
       && m_cv_stride[0] > 0 && m_cv_stride[1] > 0 
       && m_cv )
   {
-    size_t sizeof_cv = CVSize()*sizeof(m_cv[0]);
+    std::size_t sizeof_cv = CVSize()*sizeof(m_cv[0]);
     const double* cv = m_cv;
     int i, j;
     for ( i = 0; i < m_cv_count[0]; i++ )
@@ -948,7 +948,7 @@ static ON_NurbsCurve* ToCurve( const ON_NurbsSurface& srf, int dir,
   double* pdst;
   const double* psrc;
   int i, j;
-  size_t sz = srf_cv_size*sizeof(pdst[0]);
+  std::size_t sz = srf_cv_size*sizeof(pdst[0]);
   for ( i = 0; i < srf.m_cv_count[dir]; i++ )
   {
     pdst = crv->CV(i);

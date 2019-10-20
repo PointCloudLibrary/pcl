@@ -197,7 +197,7 @@ GlobalOptimization::refine (unsigned id, int dim)
   std::vector<double> xi;
   std::vector<double> elements = FittingSurface::getElementVector (*m_nurbs[id], dim);
 
-  for (size_t i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
   for (const double &i : xi)
@@ -214,7 +214,7 @@ GlobalOptimization::assembleCommonParams (unsigned id1, double weight, unsigned 
 
   NurbsDataSurface *data = m_data[id1];
 
-  for (size_t i = 0; i < data->common_idx.size (); i++)
+  for (std::size_t i = 0; i < data->common_idx.size (); i++)
     addParamConstraint (Eigen::Vector2i (id1, data->common_idx[i]), data->common_param1[i], data->common_param2[i],
                         weight, row);
 }
@@ -232,7 +232,7 @@ GlobalOptimization::assembleCommonBoundaries (unsigned id1, double weight, unsig
   if (nurbs1->Order (0) != nurbs1->Order (1))
     printf ("[GlobalOptimization::assembleCommonBoundaries] Warning, order in u and v direction differ (nurbs1).\n");
 
-  for (size_t i = 0; i < data1->common_boundary_point.size (); i++)
+  for (std::size_t i = 0; i < data1->common_boundary_point.size (); i++)
   {
     Eigen::Vector3d p1, tu1, tv1, p2, tu2, tv2, t1, t2;
     Eigen::Vector2d params1, params2;
@@ -323,12 +323,12 @@ GlobalOptimization::assembleClosingBoundaries (unsigned id, unsigned samples, do
   ClosingBoundary::sampleFromBoundary (nurbs1, boundary1, params1, samples);
 
   // for each other nurbs
-  for (size_t n2 = (id + 1); n2 < m_nurbs.size (); n2++)
+  for (std::size_t n2 = (id + 1); n2 < m_nurbs.size (); n2++)
   {
     ON_NurbsSurface *nurbs2 = m_nurbs[n2];
 
     // find closest point to boundary
-    for (size_t i = 0; i < boundary1.size (); i++)
+    for (std::size_t i = 0; i < boundary1.size (); i++)
     {
       double error;
       Eigen::Vector3d p, tu, tv;
@@ -357,7 +357,7 @@ GlobalOptimization::assembleInteriorPoints (unsigned id, int ncps, double weight
 
   ON_NurbsSurface *nurbs = m_nurbs[id];
   NurbsDataSurface *data = m_data[id];
-  size_t interiorSize = m_data[id]->interior.size ();
+  std::size_t interiorSize = m_data[id]->interior.size ();
 
   // interior points should lie on surface
   data->interior_line_start.clear ();
@@ -366,7 +366,7 @@ GlobalOptimization::assembleInteriorPoints (unsigned id, int ncps, double weight
   data->interior_normals.clear ();
   //  data->interior_param.clear();
 
-  for (size_t p = 0; p < interiorSize; p++)
+  for (std::size_t p = 0; p < interiorSize; p++)
   {
     Vector3d pcp;
     pcp (0) = data->interior[p] (0);

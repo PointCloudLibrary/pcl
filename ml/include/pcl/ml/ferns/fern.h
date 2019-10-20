@@ -59,7 +59,7 @@ public:
    * \param num_of_decisions the number of decisions taken to access the nodes
    */
   void
-  initialize(const size_t num_of_decisions)
+  initialize(const std::size_t num_of_decisions)
   {
     num_of_decisions_ = num_of_decisions;
     features_.resize(num_of_decisions_);
@@ -68,14 +68,14 @@ public:
   }
 
   /** Returns the number of nodes the Fern has. */
-  inline size_t
+  inline std::size_t
   getNumOfNodes()
   {
     return 0x1U << num_of_decisions_;
   }
 
   /** Returns the number of features the Fern has. */
-  inline size_t
+  inline std::size_t
   getNumOfFeatures()
   {
     return num_of_decisions_;
@@ -93,17 +93,17 @@ public:
     stream.write(reinterpret_cast<const char*>(&num_of_decisions_),
                  sizeof(num_of_decisions_));
 
-    for (size_t feature_index = 0; feature_index < features_.size(); ++feature_index) {
+    for (std::size_t feature_index = 0; feature_index < features_.size(); ++feature_index) {
       features_[feature_index].serialize(stream);
     }
 
-    for (size_t threshold_index = 0; threshold_index < thresholds_.size();
+    for (std::size_t threshold_index = 0; threshold_index < thresholds_.size();
          ++threshold_index) {
       stream.write(reinterpret_cast<const char*>(&(thresholds_[threshold_index])),
                    sizeof(thresholds_[threshold_index]));
     }
 
-    for (size_t node_index = 0; node_index < nodes_.size(); ++node_index) {
+    for (std::size_t node_index = 0; node_index < nodes_.size(); ++node_index) {
       nodes_[node_index].serialize(stream);
     }
   }
@@ -121,17 +121,17 @@ public:
     thresholds_.resize(num_of_decisions_);
     nodes_.resize(0x1 << num_of_decisions_);
 
-    for (size_t feature_index = 0; feature_index < features_.size(); ++feature_index) {
+    for (std::size_t feature_index = 0; feature_index < features_.size(); ++feature_index) {
       features_[feature_index].deserialize(stream);
     }
 
-    for (size_t threshold_index = 0; threshold_index < thresholds_.size();
+    for (std::size_t threshold_index = 0; threshold_index < thresholds_.size();
          ++threshold_index) {
       stream.read(reinterpret_cast<char*>(&(thresholds_[threshold_index])),
                   sizeof(thresholds_[threshold_index]));
     }
 
-    for (size_t node_index = 0; node_index < nodes_.size(); ++node_index) {
+    for (std::size_t node_index = 0; node_index < nodes_.size(); ++node_index) {
       nodes_[node_index].deserialize(stream);
     }
   }
@@ -140,13 +140,13 @@ public:
    *
    * \param node_index the index of the node to access
    */
-  inline NodeType& operator[](const size_t node_index) { return nodes_[node_index]; }
+  inline NodeType& operator[](const std::size_t node_index) { return nodes_[node_index]; }
 
   /** Access operator for nodes.
    *
    * \param node_index the index of the node to access
    */
-  inline const NodeType& operator[](const size_t node_index) const
+  inline const NodeType& operator[](const std::size_t node_index) const
   {
     return nodes_[node_index];
   }
@@ -156,7 +156,7 @@ public:
    * \param feature_index the index of the feature to access
    */
   inline FeatureType&
-  accessFeature(const size_t feature_index)
+  accessFeature(const std::size_t feature_index)
   {
     return features_[feature_index];
   }
@@ -166,7 +166,7 @@ public:
    * \param feature_index the index of the feature to access
    */
   inline const FeatureType&
-  accessFeature(const size_t feature_index) const
+  accessFeature(const std::size_t feature_index) const
   {
     return features_[feature_index];
   }
@@ -176,7 +176,7 @@ public:
    * \param threshold_index the index of the threshold to access
    */
   inline float&
-  accessThreshold(const size_t threshold_index)
+  accessThreshold(const std::size_t threshold_index)
   {
     return thresholds_[threshold_index];
   }
@@ -186,14 +186,14 @@ public:
    * \param threshold_index the index of the threshold to access
    */
   inline const float&
-  accessThreshold(const size_t threshold_index) const
+  accessThreshold(const std::size_t threshold_index) const
   {
     return thresholds_[threshold_index];
   }
 
 private:
   /** The number of decisions. */
-  size_t num_of_decisions_;
+  std::size_t num_of_decisions_;
   /** The list of Features used to make the decisions. */
   std::vector<FeatureType> features_;
   /** The list of thresholds used to make the decisions. */

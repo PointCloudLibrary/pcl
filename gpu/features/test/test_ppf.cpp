@@ -93,7 +93,7 @@ TEST(PCL_FeaturesGPU, ppf)
     PointCloud<PPFSignature> ppfs;
     fe.compute (ppfs);
 
-    for(size_t i = 0; i < downloaded.size(); ++i)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         PPFSignature& gpu = downloaded[i];
         PPFSignature& cpu = ppfs.points[i];        
@@ -147,7 +147,7 @@ TEST(PCL_FeaturesGPU, ppfrgb)
     
     PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
     cloud_XYZRGB->points.clear();
-    for(size_t i = 0; i < source.cloud->points.size(); ++i)               
+    for(std::size_t i = 0; i < source.cloud->points.size(); ++i)               
     {
         const PointXYZ& p = source.cloud->points[i];        
         int color = *(int*)&p.data[3];
@@ -170,7 +170,7 @@ TEST(PCL_FeaturesGPU, ppfrgb)
     PointCloud<PPFRGBSignature> ppfs;
     fe.compute (ppfs);
 
-    for(size_t i = 207025; i < downloaded.size(); ++i)
+    for(std::size_t i = 207025; i < downloaded.size(); ++i)
     {
         PPFRGBSignature& gpu = downloaded[i];
         PPFRGBSignature& cpu = ppfs.points[i];        
@@ -237,7 +237,7 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
     
     PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
     cloud_XYZRGB->points.clear();
-    for(size_t i = 0; i < source.cloud->points.size(); ++i)               
+    for(std::size_t i = 0; i < source.cloud->points.size(); ++i)               
     {
         const PointXYZ& p = source.cloud->points[i];        
         int color = *(int*)&p.data[3];
@@ -261,7 +261,7 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
     PointCloud<PPFRGBSignature> ppfs;
     fe.compute (ppfs);
 
-    for(size_t i = 0; i < downloaded.size(); ++i)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         PPFRGBSignature& gpu = downloaded[i];
         PPFRGBSignature& cpu = ppfs.points[i];        

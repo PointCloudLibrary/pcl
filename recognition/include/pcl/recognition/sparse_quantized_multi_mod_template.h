@@ -57,7 +57,7 @@ namespace pcl
     /** \brief y-position. */
     int y;
     /** \brief the index of the corresponding modality. */
-    size_t modality_index;
+    std::size_t modality_index;
     /** \brief the quantized value attached to the feature. */
     unsigned char quantized_value;
 

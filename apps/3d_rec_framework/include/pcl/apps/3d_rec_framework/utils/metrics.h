@@ -66,7 +66,7 @@ namespace Metrics
 
       template<typename Iterator1, typename Iterator2>
         ResultType
-        operator() (Iterator1 a, Iterator2 b, size_t size, ResultType worst_dist = -1) const
+        operator() (Iterator1 a, Iterator2 b, std::size_t size, ResultType worst_dist = -1) const
         {
           (void)worst_dist;
           ResultType result = ResultType ();

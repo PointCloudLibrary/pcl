@@ -1148,7 +1148,7 @@ bool ON_Mesh::Read_2( int vcount, ON_BinaryArchive& file )
 
   if ( vcount > 0 ) 
   {
-    size_t sz = 0;
+    std::size_t sz = 0;
     int bFailedCRC;
 
     sz = 0;
@@ -1642,7 +1642,7 @@ ON_BOOL32 ON_Mesh::Read( ON_BinaryArchive& file )
         // compressed m_S[]
         if ( rc && vcount > 0 ) 
         {
-          size_t sz = 0;
+          std::size_t sz = 0;
           ON_BOOL32 bFailedCRC=false;
           if (rc) rc = file.ReadCompressedBufferSize( &sz );
           if (rc && sz) 
@@ -2608,10 +2608,10 @@ bool ON_Mesh::IsManifold(
   return bIsManifold;
 }
 
-static void ON_hsort_3dex(ON_3dex *e, size_t nel)
+static void ON_hsort_3dex(ON_3dex *e, std::size_t nel)
 {
   // dictionary sort e[]
-  size_t i_end,k,i,j;
+  std::size_t i_end,k,i,j;
   ON_3dex e_tmp;
 
   if (nel < 2) return;
@@ -3601,7 +3601,7 @@ static int CompareMeshPoint(const void* a,const void* b,void* ptr)
   const struct tagMESHPOINTS * mp = (const struct tagMESHPOINTS *)ptr;
 
   // use bogus pointer to convert a,b into vertex indices
-  int i = (int)(((const char*)a) - mp->p0); // the (int) is for 64 bit size_t conversion
+  int i = (int)(((const char*)a) - mp->p0); // the (int) is for 64 bit std::size_t conversion
   int j = (int)(((const char*)b) - mp->p0);
 
   d = mp->V[j].x - mp->V[i].x;
@@ -6474,11 +6474,11 @@ bool ON_MeshTopology::SortVertexEdges() const
 static
 void ON_ReverseIntArray(
         int* e,    // array of ints
-        size_t  nel   // length of array
+        std::size_t  nel   // length of array
         )
 {
   int ei;
-  size_t i;
+  std::size_t i;
   nel--;
   for ( i = 0; i<nel; i++, nel--)
   {
@@ -9706,7 +9706,7 @@ ON_BOOL32 ON_PerObjectMeshParameters::IsValid( ON_TextLog* text_log ) const
 // virtual ON_Object override
 unsigned int ON_PerObjectMeshParameters::SizeOf() const
 {
-  size_t sz = sizeof(*this) - sizeof(ON_UserData);
+  std::size_t sz = sizeof(*this) - sizeof(ON_UserData);
   return (unsigned int)sz;
 }
 

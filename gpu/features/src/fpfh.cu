@@ -71,7 +71,7 @@ namespace pcl
             };
 
             const PointType* point_cloud;                           
-            size_t work_size;
+            std::size_t work_size;
 
             PtrStep<int> gindices;            
             const int* sizes;            

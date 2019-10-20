@@ -89,7 +89,7 @@ main (int argc, char** argv)
   point.g = 255;
   point.b = 255;
 
-  for (size_t i_point = 0; i_point < testing_cloud->points.size (); i_point++)
+  for (std::size_t i_point = 0; i_point < testing_cloud->points.size (); i_point++)
   {
     point.x = testing_cloud->points[i_point].x;
     point.y = testing_cloud->points[i_point].y;
@@ -101,7 +101,7 @@ main (int argc, char** argv)
   point.r = 255;
   point.g = 0;
   point.b = 0;
-  for (size_t i_vote = 0; i_vote < strongest_peaks.size (); i_vote++)
+  for (std::size_t i_vote = 0; i_vote < strongest_peaks.size (); i_vote++)
   {
     point.x = strongest_peaks[i_vote].x;
     point.y = strongest_peaks[i_vote].y;

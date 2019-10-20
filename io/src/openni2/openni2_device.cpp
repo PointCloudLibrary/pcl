@@ -640,7 +640,7 @@ pcl::io::openni2::OpenNI2Device::findCompatibleVideoMode (const std::vector<Open
 }
 
 bool
-pcl::io::openni2::OpenNI2Device::resizingSupported (size_t input_width, size_t input_height, size_t output_width, size_t output_height) const
+pcl::io::openni2::OpenNI2Device::resizingSupported (std::size_t input_width, std::size_t input_height, std::size_t output_width, std::size_t output_height) const
 {
   return (output_width <= input_width && output_height <= input_height && input_width % output_width == 0 && input_height % output_height == 0 );
 }

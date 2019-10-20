@@ -89,7 +89,7 @@ namespace mets {
   public:
     virtual 
     ~hashable() {};
-    virtual size_t 
+    virtual std::size_t 
     hash() const = 0;
   };
 
@@ -219,7 +219,7 @@ namespace mets {
 
     /// @brief The size of the problem.
     /// Do not override unless you know what you are doing.
-    size_t 
+    std::size_t 
     size() const
     { return pi_m.size(); }
 
@@ -258,17 +258,17 @@ namespace mets {
   void random_shuffle(permutation_problem& p, random_generator& rng)
   {
 #if defined (METSLIB_TR1_BOOST)
-    boost::uniform_int<size_t> unigen;
+    boost::uniform_int<std::size_t> unigen;
     boost::variate_generator<random_generator&,
-      boost::uniform_int<size_t> >gen(rng, unigen);
+      boost::uniform_int<std::size_t> >gen(rng, unigen);
 #elif defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
-    std::uniform_int<size_t> unigen;
+    std::uniform_int<std::size_t> unigen;
     std::variate_generator<random_generator&, 
-      std::uniform_int<size_t> >gen(rng, unigen);
+      std::uniform_int<std::size_t> >gen(rng, unigen);
 #else
-    std::tr1::uniform_int<size_t> unigen;
+    std::tr1::uniform_int<std::size_t> unigen;
     std::tr1::variate_generator<random_generator&, 
-      std::tr1::uniform_int<size_t> >gen(rng, unigen);
+      std::tr1::uniform_int<std::size_t> >gen(rng, unigen);
 #endif
     std::random_shuffle(p.pi_m.begin(), p.pi_m.end(), gen);
     p.update_cost();
@@ -412,7 +412,7 @@ namespace mets {
 
     /// @brief An hash function used by the tabu list (the hash value is
     /// used to insert the move in an hash set).
-    size_t
+    std::size_t
     hash() const
     { return (p1)<<16^(p2); }
     
@@ -461,7 +461,7 @@ namespace mets {
 
     /// @brief An hash function used by the tabu list (the hash value is
     /// used to insert the move in an hash set).
-    size_t
+    std::size_t
     hash() const
     { return (p1)<<16^(p2); }
     
@@ -702,7 +702,7 @@ namespace mets {
   class mana_move_hash 
   {
   public:
-    size_t operator()(mana_move const* mov) const 
+    std::size_t operator()(mana_move const* mov) const 
     {return mov->hash();}
   };
   

@@ -61,7 +61,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   // If dense, no need to check for NaNs
   if (cloud->is_dense)
   {
-    for (size_t i = 0; i < cloud->points.size (); ++i)
+    for (std::size_t i = 0; i < cloud->points.size (); ++i)
     {
       // Get the distance value
       const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&cloud->points[i]);
@@ -87,7 +87,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   }
   else
   {
-    for (size_t i = 0; i < cloud->points.size (); ++i)
+    for (std::size_t i = 0; i < cloud->points.size (); ++i)
     {
       // Get the distance value
       const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&cloud->points[i]);

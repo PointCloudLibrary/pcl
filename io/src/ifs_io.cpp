@@ -189,7 +189,7 @@ pcl::IFSReader::read (const std::string &file_name,
 
   boost::iostreams::mapped_file_source mapped_file;
 
-  size_t data_size = data_idx + cloud.data.size ();
+  std::size_t data_size = data_idx + cloud.data.size ();
 
   try
   {
@@ -240,7 +240,7 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
 
   boost::iostreams::mapped_file_source mapped_file;
 
-  size_t data_size = data_idx + mesh.cloud.data.size ();
+  std::size_t data_size = data_idx + mesh.cloud.data.size ();
 
   try
   {

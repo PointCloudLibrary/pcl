@@ -112,7 +112,7 @@ printDeviceList ()
       std::vector<pcl::RealSenseGrabber::Mode> xyz_modes = grabbers.back ()->getAvailableModes (true);
       std::cout << "\n      Depth modes:";
       if (xyz_modes.size ())
-        for (size_t i = 0; i < xyz_modes.size (); ++i)
+        for (std::size_t i = 0; i < xyz_modes.size (); ++i)
           std::cout << boost::str (fmt_dm % (i + 1) % xyz_modes[i].fps % xyz_modes[i].depth_width % xyz_modes[i].depth_height);
       else
       {
@@ -121,7 +121,7 @@ printDeviceList ()
       std::vector<pcl::RealSenseGrabber::Mode> xyzrgba_modes = grabbers.back ()->getAvailableModes (false);
       std::cout << "\n      Depth + color modes:";
       if (xyz_modes.size ())
-        for (size_t i = 0; i < xyzrgba_modes.size (); ++i)
+        for (std::size_t i = 0; i < xyzrgba_modes.size (); ++i)
         {
           const pcl::RealSenseGrabber::Mode& m = xyzrgba_modes[i];
           std::cout << boost::str (fmt_dcm % (i + xyz_modes.size () + 1) % m.fps % m.depth_width % m.depth_height % m.color_width % m.color_height);
@@ -296,7 +296,7 @@ class RealSenseViewer
       // Temporal filter settings
       std::string tfs = boost::str (boost::format (", window size %i") % window_);
       entries.push_back (boost::format ("temporal filtering: %s%s") % TF[temporal_filtering_] % (temporal_filtering_ == pcl::RealSenseGrabber::RealSense_None ? "" : tfs));
-      for (size_t i = 0; i < entries.size (); ++i)
+      for (std::size_t i = 0; i < entries.size (); ++i)
       {
         std::string name = boost::str (name_fmt % i);
         std::string entry = boost::str (entries[i]);

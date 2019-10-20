@@ -57,7 +57,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
   Eigen::Vector3f normal;
   projected_normals_.resize (indices.size ());
   xyz_centroid_.setZero ();
-  for (size_t idx = 0; idx < indices.size(); ++idx)
+  for (std::size_t idx = 0; idx < indices.size(); ++idx)
   {
     normal[0] = normals.points[indices[idx]].normal[0];
     normal[1] = normals.points[indices[idx]].normal[1];
@@ -75,7 +75,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
 
   double demean_xy, demean_xz, demean_yz;
   // For each point in the cloud
-  for (size_t idx = 0; idx < indices.size (); ++idx)
+  for (std::size_t idx = 0; idx < indices.size (); ++idx)
   {
     demean_ = projected_normals_[idx] - xyz_centroid_;
 
@@ -123,7 +123,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
   if (input_->is_dense)
   {
     // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
@@ -142,7 +142,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
   else
   {
     // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)

@@ -65,7 +65,7 @@ void
 pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     train(pcl::DecisionForest<NodeType>& forest)
 {
-  for (size_t tree_index = 0; tree_index < num_of_trees_to_train_; ++tree_index) {
+  for (std::size_t tree_index = 0; tree_index < num_of_trees_to_train_; ++tree_index) {
     pcl::DecisionTree<NodeType> tree;
     decision_tree_trainer_.train(tree);
 

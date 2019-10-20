@@ -78,7 +78,7 @@ pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeTy
              std::vector<ExampleIndex>& examples,
              std::vector<LabelType>& label_data)
 {
-  const size_t num_of_examples = examples.size();
+  const std::size_t num_of_examples = examples.size();
   label_data.resize(num_of_examples);
   for (int example_index = 0; example_index < num_of_examples; ++example_index) {
     NodeType* node = &(tree.getRoot());
@@ -116,7 +116,7 @@ pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeTy
         std::vector<ExampleIndex>& examples,
         std::vector<LabelType>& label_data)
 {
-  const size_t num_of_examples = examples.size();
+  const std::size_t num_of_examples = examples.size();
   for (int example_index = 0; example_index < num_of_examples; ++example_index) {
     NodeType* node = &(tree.getRoot());
 
@@ -186,7 +186,7 @@ pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeTy
              std::vector<ExampleIndex>& examples,
              std::vector<NodeType*>& nodes)
 {
-  const size_t num_of_examples = examples.size();
+  const std::size_t num_of_examples = examples.size();
   for (int example_index = 0; example_index < num_of_examples; ++example_index) {
     NodeType* node = &(tree.getRoot());
 

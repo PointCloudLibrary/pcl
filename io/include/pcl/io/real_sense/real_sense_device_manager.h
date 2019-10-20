@@ -80,7 +80,7 @@ namespace pcl
             return (instance);
           }
 
-          inline size_t
+          inline std::size_t
           getNumDevices ()
           {
             return (device_list_.size ());
@@ -90,7 +90,7 @@ namespace pcl
           captureDevice ();
 
           std::shared_ptr<RealSenseDevice>
-          captureDevice (size_t index);
+          captureDevice (std::size_t index);
 
           std::shared_ptr<RealSenseDevice>
           captureDevice (const std::string& sn);

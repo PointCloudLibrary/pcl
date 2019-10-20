@@ -211,7 +211,7 @@ namespace pcl
             model.poses_.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > ());
             model.self_occlusions_.reset (new std::vector<float> ());
 
-            for (size_t i = 0; i < views_xyz_orig.size (); i++)
+            for (std::size_t i = 0; i < views_xyz_orig.size (); i++)
             {
               model.views_->push_back (views_xyz_orig[i]);
               model.poses_->push_back (poses[i]);
@@ -222,7 +222,7 @@ namespace pcl
             direc << dir << "/" << model.class_ << "/" << model.id_;
             this->createClassAndModelDirectories (dir, model.class_, model.id_);
 
-            for (size_t i = 0; i < model.views_->size (); i++)
+            for (std::size_t i = 0; i < model.views_->size (); i++)
             {
               //save generated model for future use
               std::stringstream path_view;

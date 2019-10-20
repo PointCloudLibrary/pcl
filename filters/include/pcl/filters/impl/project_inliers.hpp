@@ -55,7 +55,7 @@ pcl::ProjectInliers<PointT>::applyFilter (PointCloud &output)
   //Eigen::Map<Eigen::VectorXf, Eigen::Aligned> model_coefficients (&model_->values[0], model_->values.size ());
   // More expensive than a map but safer (32bit architectures seem to complain)
   Eigen::VectorXf model_coefficients (model_->values.size ());
-  for (size_t i = 0; i < model_->values.size (); ++i)
+  for (std::size_t i = 0; i < model_->values.size (); ++i)
     model_coefficients[i] = model_->values[i];
 
   // Initialize the Sample Consensus model and set its parameters

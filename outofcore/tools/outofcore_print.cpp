@@ -85,9 +85,9 @@ using OctreeDepthFirstIterator = OutofcoreDepthFirstIterator<>;
 using AlignedPointT = Eigen::aligned_allocator<PointT>;
 
 void
-printDepth(size_t depth)
+printDepth(std::size_t depth)
 {
-  for (size_t i = 0; i < depth; i++)
+  for (std::size_t i = 0; i < depth; i++)
     PCL_INFO ("  ");
 }
 
@@ -98,7 +98,7 @@ printNode(OctreeDiskNode *)
 }
 
 int
-outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool bounding_box=false, bool pcd=false, 
+outofcorePrint (boost::filesystem::path tree_root, std::size_t print_depth, bool bounding_box=false, bool pcd=false, 
 		bool point_count=false, bool breadth_first=false)
 {
   std::cout << boost::filesystem::absolute (tree_root) << std::endl;
@@ -143,7 +143,7 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
     while ( *depth_first_it !=nullptr )
     {
       OctreeDiskNode *node = *depth_first_it;
-      size_t node_depth = node->getDepth();
+      std::size_t node_depth = node->getDepth();
 
       printDepth(node_depth);
       std::string metadata_relative_file = node->getMetadataFilename ().string ();
@@ -186,7 +186,7 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
     while ( *breadth_first_it !=nullptr )
     {
       OctreeDiskNode *node = *breadth_first_it;
-      size_t node_depth = node->getDepth();
+      std::size_t node_depth = node->getDepth();
 
       printDepth(node_depth);
       std::string metadata_relative_file = node->getMetadataFilename ().string ();

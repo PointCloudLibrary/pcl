@@ -81,7 +81,7 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
 
   removed_indices_->clear();
   // First pass: build a set of leaves with the point index closest to the leaf center
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  for (std::size_t cp = 0; cp < indices_->size (); ++cp)
   {
     if (!input_->is_dense)
     {

@@ -121,12 +121,12 @@ namespace pcl
       std::vector<PointCloudNTConstPtr> cloud_normals_;
       std::vector<KdTreePtr> cloud_trees_;
       PointCloudNTConstPtr normals_;
-      std::vector<std::pair<float, size_t> > scales_;
+      std::vector<std::pair<float, std::size_t> > scales_;
       float input_scale_;
-      size_t input_index_;
+      std::size_t input_index_;
 
       static bool
-      compareScalesFunction (const std::pair<float, size_t> &a,
-                             const std::pair<float, size_t> &b) { return a.first < b.first; }
+      compareScalesFunction (const std::pair<float, std::size_t> &a,
+                             const std::pair<float, std::size_t> &b) { return a.first < b.first; }
   };
 }

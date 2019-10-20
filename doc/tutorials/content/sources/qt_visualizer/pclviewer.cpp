@@ -19,7 +19,7 @@ PCLViewer::PCLViewer (QWidget *parent) :
   blue  = 128;
 
   // Fill the cloud with some points
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->points.size (); ++i)
   {
     cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
     cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
@@ -62,7 +62,7 @@ PCLViewer::randomButtonPressed ()
   printf ("Random button was pressed\n");
 
   // Set the new color
-  for (size_t i = 0; i < cloud->size(); i++)
+  for (std::size_t i = 0; i < cloud->size(); i++)
   {
     cloud->points[i].r = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
     cloud->points[i].g = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
@@ -77,7 +77,7 @@ void
 PCLViewer::RGBsliderReleased ()
 {
   // Set the new color
-  for (size_t i = 0; i < cloud->size (); i++)
+  for (std::size_t i = 0; i < cloud->size (); i++)
   {
     cloud->points[i].r = red;
     cloud->points[i].g = green;

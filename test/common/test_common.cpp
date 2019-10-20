@@ -312,18 +312,18 @@ TYPED_TEST_CASE(XYZPointTypesTest, XYZPointTypes);
 TYPED_TEST(XYZPointTypesTest, GetVectorXfMap)
 {
   TypeParam pt;
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
     EXPECT_EQ (&pt.data[i], &pt.getVector3fMap () (i));
-  for (size_t i = 0; i < 4; ++i)
+  for (std::size_t i = 0; i < 4; ++i)
     EXPECT_EQ (&pt.data[i], &pt.getVector4fMap () (i));
 }
 
 TYPED_TEST(XYZPointTypesTest, GetArrayXfMap)
 {
   TypeParam pt;
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
     EXPECT_EQ (&pt.data[i], &pt.getArray3fMap () (i));
-  for (size_t i = 0; i < 4; ++i)
+  for (std::size_t i = 0; i < 4; ++i)
     EXPECT_EQ (&pt.data[i], &pt.getArray4fMap () (i));
 }
 
@@ -333,9 +333,9 @@ TYPED_TEST_CASE(NormalPointTypesTest, NormalPointTypes);
 TYPED_TEST(NormalPointTypesTest, GetNormalVectorXfMap)
 {
   TypeParam pt;
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
     EXPECT_EQ (&pt.data_n[i], &pt.getNormalVector3fMap () (i));
-  for (size_t i = 0; i < 4; ++i)
+  for (std::size_t i = 0; i < 4; ++i)
     EXPECT_EQ (&pt.data_n[i], &pt.getNormalVector4fMap () (i));
 }
 

@@ -15,7 +15,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     boost::shared_ptr < std::vector<ModelT> > models = source_->getModels ();
     std::cout << "Models size:" << models->size () << std::endl;
 
-    for (size_t i = 0; i < models->size (); i++)
+    for (std::size_t i = 0; i < models->size (); i++)
     {
       std::string path = source_->getModelDescriptorDir (models->at (i), training_dir_, descr_name_);
       bf::path inside = path;
@@ -66,7 +66,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
           int size_feat = sizeof(signature->points[0].histogram) / sizeof(float);
 
-          for (size_t dd = 0; dd < signature->points.size (); dd++)
+          for (std::size_t dd = 0; dd < signature->points.size (); dd++)
           {
             descr_model.keypoint_id = static_cast<int> (dd);
             descr_model.descr.resize (size_feat);
@@ -124,19 +124,19 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
     if (force_retrain)
     {
-      for (size_t i = 0; i < models->size (); i++)
+      for (std::size_t i = 0; i < models->size (); i++)
       {
         source_->removeDescDirectory (models->at (i), training_dir_, descr_name_);
       }
     }
 
-    for (size_t i = 0; i < models->size (); i++)
+    for (std::size_t i = 0; i < models->size (); i++)
     {
       std::cout << models->at (i).class_ << " " << models->at (i).id_ << std::endl;
 
       if (!source_->modelAlreadyTrained (models->at (i), training_dir_, descr_name_))
       {
-        for (size_t v = 0; v < models->at (i).views_->size (); v++)
+        for (std::size_t v = 0; v < models->at (i).views_->size (); v++)
         {
           PointInTPtr processed (new pcl::PointCloud<PointInT>);
           typename pcl::PointCloud<FeatureT>::Ptr signatures (new pcl::PointCloud<FeatureT> ());
@@ -172,7 +172,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
             /*boost::shared_ptr < std::vector<int> > indices (new std::vector<int> ());
             indices->resize (keypoints.points.size ());
-            for (size_t kk = 0; kk < indices->size (); kk++)
+            for (std::size_t kk = 0; kk < indices->size (); kk++)
               (*indices)[kk] = keypoints.points[kk];
             typename pcl::PointCloud<PointInT> keypoints_pointcloud;
             pcl::copyPointCloud (*processed, *indices, keypoints_pointcloud);*/
@@ -238,7 +238,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     //feature matching and object hypotheses
     std::map<std::string, ObjectHypothesis> object_hypotheses;
     {
-      for (size_t idx = 0; idx < signatures->points.size (); idx++)
+      for (std::size_t idx = 0; idx < signatures->points.size (); idx++)
       {
         float* hist = signatures->points[idx].histogram;
         std::vector<float> std_hist (hist, hist + size_feat);
@@ -322,7 +322,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
             }
           }
 
-          for (size_t i = 0; i < corresp_clusters.size (); i++)
+          for (std::size_t i = 0; i < corresp_clusters.size (); i++)
           {
             if (static_cast<float> ((corresp_clusters[i]).size ()) < (threshold_accept_model_hypothesis_ * static_cast<float> (max_cardinality)))
             {
@@ -331,7 +331,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           }
         }
 
-        for (size_t i = 0; i < corresp_clusters.size (); i++)
+        for (std::size_t i = 0; i < corresp_clusters.size (); i++)
         {
 
           if (!good_indices_for_hypothesis[i])
@@ -411,7 +411,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
       std::vector<typename pcl::PointCloud<PointInT>::ConstPtr> aligned_models;
       aligned_models.resize (models_->size ());
-      for (size_t i = 0; i < models_->size (); i++)
+      for (std::size_t i = 0; i < models_->size (); i++)
       {
         ConstPointInTPtr model_cloud = models_->at (i).getAssembled (0.0025f);
         //ConstPointInTPtr model_cloud = models_->at (i).getAssembled (VOXEL_SIZE_ICP_);
@@ -432,7 +432,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       models_temp.reset (new std::vector<ModelT>);
       transforms_temp.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >);
 
-      for (size_t i = 0; i < models_->size (); i++)
+      for (std::size_t i = 0; i < models_->size (); i++)
       {
         if (!mask_hv[i])
           continue;

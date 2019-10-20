@@ -141,12 +141,12 @@ pcl::people::HeadBasedSubclustering<PointT>::mergeClustersCloseInFloorCoordinate
   connected_clusters.resize(input_clusters.size());
   std::vector<bool> used_clusters;          // 0 in correspondence of clusters remained to process, 1 for already used clusters
   used_clusters.resize(input_clusters.size());
-  for(size_t i = 0; i < input_clusters.size(); i++)             // for every cluster
+  for(std::size_t i = 0; i < input_clusters.size(); i++)             // for every cluster
   {
     Eigen::Vector3f theoretical_center = input_clusters[i].getTCenter();
     float t = theoretical_center.dot(head_ground_coeffs) / normalize_factor;    // height from the ground
     Eigen::Vector3f current_cluster_center_projection = theoretical_center - head_ground_coeffs * t;    // projection of the point on the groundplane
-    for(size_t j = i+1; j < input_clusters.size(); j++)         // for every remaining cluster
+    for(std::size_t j = i+1; j < input_clusters.size(); j++)         // for every remaining cluster
     {
       theoretical_center = input_clusters[j].getTCenter();
       float t = theoretical_center.dot(head_ground_coeffs) / normalize_factor;    // height from the ground
@@ -158,7 +158,7 @@ pcl::people::HeadBasedSubclustering<PointT>::mergeClustersCloseInFloorCoordinate
     }
   }
 
-  for(size_t i = 0; i < connected_clusters.size(); i++)   // for every cluster
+  for(std::size_t i = 0; i < connected_clusters.size(); i++)   // for every cluster
   {
     if (!used_clusters[i])                                      // if this cluster has not been used yet
     {
@@ -280,7 +280,7 @@ pcl::people::HeadBasedSubclustering<PointT>::subcluster (std::vector<pcl::people
 
   // Remove clusters with too high height from the ground plane:
   std::vector<pcl::people::PersonCluster<PointT> > new_clusters;
-  for(size_t i = 0; i < clusters.size(); i++)   // for every cluster
+  for(std::size_t i = 0; i < clusters.size(); i++)   // for every cluster
   {
     if (clusters[i].getHeight() <= max_height_)
       new_clusters.push_back(clusters[i]);

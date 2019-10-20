@@ -358,7 +358,7 @@ TEST (PCL, NormalEstimation)
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
     EXPECT_NEAR (std::abs (output.points[i].normal_x),   0, 1e-2);
     EXPECT_NEAR (std::abs (output.points[i].normal_y),   0, 1e-2);
@@ -378,9 +378,9 @@ TEST (PCL, IINormalEstimationCovariance)
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
-  for (size_t v = 0; v < cloud.height; ++v)
+  for (std::size_t v = 0; v < cloud.height; ++v)
   {
-    for (size_t u = 0; u < cloud.width; ++u)
+    for (std::size_t u = 0; u < cloud.width; ++u)
     {
       if (!std::isfinite(output (u, v).normal_x) &&
           !std::isfinite(output (u, v).normal_y) &&
@@ -406,9 +406,9 @@ TEST (PCL, IINormalEstimationAverage3DGradient)
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
-  for (size_t v = 0; v < cloud.height; ++v)
+  for (std::size_t v = 0; v < cloud.height; ++v)
   {
-    for (size_t u = 0; u < cloud.width; ++u)
+    for (std::size_t u = 0; u < cloud.width; ++u)
     {
       if (!std::isfinite(output (u, v).normal_x) &&
           !std::isfinite(output (u, v).normal_y) &&
@@ -438,9 +438,9 @@ TEST (PCL, IINormalEstimationAverageDepthChange)
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
-  for (size_t v = 0; v < cloud.height; ++v)
+  for (std::size_t v = 0; v < cloud.height; ++v)
   {
-    for (size_t u = 0; u < cloud.width; ++u)
+    for (std::size_t u = 0; u < cloud.width; ++u)
     {
       if (!std::isfinite(output (u, v).normal_x) &&
           !std::isfinite(output (u, v).normal_y) &&
@@ -470,9 +470,9 @@ TEST (PCL, IINormalEstimationSimple3DGradient)
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
-  for (size_t v = 0; v < cloud.height; ++v)
+  for (std::size_t v = 0; v < cloud.height; ++v)
   {
-    for (size_t u = 0; u < cloud.width; ++u)
+    for (std::size_t u = 0; u < cloud.width; ++u)
     {
       if (!std::isfinite(output (u, v).normal_x) &&
           !std::isfinite(output (u, v).normal_y) &&
@@ -514,9 +514,9 @@ main (int argc, char** argv)
   cloud.height = 480;
   cloud.points.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
-  for (size_t v = 0; v < cloud.height; ++v)
+  for (std::size_t v = 0; v < cloud.height; ++v)
   {
-    for (size_t u = 0; u < cloud.width; ++u)
+    for (std::size_t u = 0; u < cloud.width; ++u)
     {
       cloud (u, v).x = static_cast<float> (u);
       cloud (u, v).y = static_cast<float> (v);

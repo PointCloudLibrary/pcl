@@ -483,7 +483,7 @@ namespace pcl
         /** \brief Prints size of BBox to stdout
          */ 
         void
-        printBoundingBox (const size_t query_depth) const;
+        printBoundingBox (const std::size_t query_depth) const;
 
         /** \brief Prints the coordinates of the bounding box of the node to stdout */
         void
@@ -502,14 +502,14 @@ namespace pcl
             \param[in] query_depth the depth of the tree at which to retrieve occupied/existing voxels
         */
         void
-        getOccupiedVoxelCenters(AlignedPointTVector &voxel_centers, size_t query_depth) const;
+        getOccupiedVoxelCenters(AlignedPointTVector &voxel_centers, std::size_t query_depth) const;
 
         /** \brief Returns the voxel centers of all existing voxels at \c query_depth
             \param[out] voxel_centers Vector of PointXYZ voxel centers for nodes that exist at that depth
             \param[in] query_depth the depth of the tree at which to retrieve occupied/existing voxels
         */
         void
-        getOccupiedVoxelCenters(std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, size_t query_depth) const;
+        getOccupiedVoxelCenters(std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, std::size_t query_depth) const;
 
         /** \brief Gets the voxel centers of all occupied/existing leaves of the tree */
         void

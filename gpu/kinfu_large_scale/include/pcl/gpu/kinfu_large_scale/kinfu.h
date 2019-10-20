@@ -169,7 +169,7 @@ namespace pcl
           getLastEstimatedPose () const;
 
           /** \brief Returns number of poses including initial */
-          size_t
+          std::size_t
           getNumberOfPoses () const;
 
           /** \brief Returns TSDF volume storage */

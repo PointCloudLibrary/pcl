@@ -68,7 +68,7 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeSobel(pcl::PointCloud<PointOutT>& outp
   output.height = height;
   output.width = width;
 
-  for (size_t i = 0; i < output.size(); ++i) {
+  for (std::size_t i = 0; i < output.size(); ++i) {
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude =
@@ -110,7 +110,7 @@ pcl::Edge<PointInT, PointOutT>::sobelMagnitudeDirection(
   output.height = height;
   output.width = width;
 
-  for (size_t i = 0; i < output.size(); ++i) {
+  for (std::size_t i = 0; i < output.size(); ++i) {
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude =
@@ -149,7 +149,7 @@ pcl::Edge<PointInT, PointOutT>::detectEdgePrewitt(pcl::PointCloud<PointOutT>& ou
   output.height = height;
   output.width = width;
 
-  for (size_t i = 0; i < output.size(); ++i) {
+  for (std::size_t i = 0; i < output.size(); ++i) {
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude =
@@ -188,7 +188,7 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeRoberts(pcl::PointCloud<PointOutT>& ou
   output.height = height;
   output.width = width;
 
-  for (size_t i = 0; i < output.size(); ++i) {
+  for (std::size_t i = 0; i < output.size(); ++i) {
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude =
@@ -369,7 +369,7 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeCanny(pcl::PointCloud<PointOutT>& outp
   }
 
   // Final thresholding
-  for (size_t i = 0; i < input_->size(); ++i) {
+  for (std::size_t i = 0; i < input_->size(); ++i) {
     if ((*maxima)[i].intensity == std::numeric_limits<float>::max())
       output[i].magnitude = 255;
     else

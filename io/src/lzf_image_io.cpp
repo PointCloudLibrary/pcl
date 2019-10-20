@@ -60,7 +60,7 @@
 //////////////////////////////////////////////////////////////////////////////
 bool
 pcl::io::LZFImageWriter::saveImageBlob (const char* data, 
-                                        size_t data_size, 
+                                        std::size_t data_size, 
                                         const std::string &filename)
 {
 #ifdef _WIN32
@@ -157,9 +157,9 @@ pcl::io::LZFDepth16ImageWriter::write (const char* data,
 {
   // Prepare the compressed depth buffer
   unsigned int depth_size = width * height * 2;
-  char* compressed_depth = static_cast<char*> (malloc (size_t (float (depth_size) * 1.5f + float (LZF_HEADER_SIZE))));
+  char* compressed_depth = static_cast<char*> (malloc (std::size_t (float (depth_size) * 1.5f + float (LZF_HEADER_SIZE))));
 
-  size_t compressed_size = compress (data,
+  std::size_t compressed_size = compress (data,
                                      depth_size,
                                      width, height,
                                      "depth16",
@@ -237,8 +237,8 @@ pcl::io::LZFRGB24ImageWriter::write (const char *data,
     rrggbb[ptr3] = data[i * 3 + 2];
   }
 
-  char* compressed_rgb = static_cast<char*> (malloc (size_t (float (rrggbb.size ()) * 1.5f + float (LZF_HEADER_SIZE))));
-  size_t compressed_size = compress (reinterpret_cast<const char*> (&rrggbb[0]), 
+  char* compressed_rgb = static_cast<char*> (malloc (std::size_t (float (rrggbb.size ()) * 1.5f + float (LZF_HEADER_SIZE))));
+  std::size_t compressed_size = compress (reinterpret_cast<const char*> (&rrggbb[0]), 
                                      std::uint32_t (rrggbb.size ()),
                                      width, height,
                                      "rgb24",
@@ -298,8 +298,8 @@ pcl::io::LZFYUV422ImageWriter::write (const char *data,
     uuyyvv[ptr3] = data[i * 4 + 2];       // v
   }
 
-  char* compressed_yuv = static_cast<char*> (malloc (size_t (float (uuyyvv.size ()) * 1.5f + float (LZF_HEADER_SIZE))));
-  size_t compressed_size = compress (reinterpret_cast<const char*> (&uuyyvv[0]), 
+  char* compressed_yuv = static_cast<char*> (malloc (std::size_t (float (uuyyvv.size ()) * 1.5f + float (LZF_HEADER_SIZE))));
+  std::size_t compressed_size = compress (reinterpret_cast<const char*> (&uuyyvv[0]), 
                                      std::uint32_t (uuyyvv.size ()),
                                      width, height,
                                      "yuv422",
@@ -324,8 +324,8 @@ pcl::io::LZFBayer8ImageWriter::write (const char *data,
                                       const std::string &filename)
 {
   unsigned int bayer_size = width * height;
-  char* compressed_bayer = static_cast<char*> (malloc (size_t (float (bayer_size) * 1.5f + float (LZF_HEADER_SIZE))));
-  size_t compressed_size = compress (data,
+  char* compressed_bayer = static_cast<char*> (malloc (std::size_t (float (bayer_size) * 1.5f + float (LZF_HEADER_SIZE))));
+  std::size_t compressed_size = compress (data,
                                      bayer_size,
                                      width, height,
                                      "bayer8",

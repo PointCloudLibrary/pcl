@@ -249,7 +249,7 @@ pcl::registration::ELCH<PointT>::compute ()
   //TODO iterate ovr loop_graph_
   //typename boost::graph_traits<LoopGraph>::vertex_iterator vertex_it, vertex_it_end;
   //for (std::tie (vertex_it, vertex_it_end) = vertices (*loop_graph_); vertex_it != vertex_it_end; vertex_it++)
-  for (size_t i = 0; i < num_vertices (*loop_graph_); i++)
+  for (std::size_t i = 0; i < num_vertices (*loop_graph_); i++)
   {
     Eigen::Vector3f t2;
     t2[0] = loop_transform_ (0, 3) * static_cast<float> (weights[0][i]);

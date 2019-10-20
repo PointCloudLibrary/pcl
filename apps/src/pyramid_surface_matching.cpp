@@ -83,9 +83,9 @@ main (int argc, char **argv)
 
   PCL_INFO ("Finished calculating the features ...\n");
   std::vector<pair<float, float> > dim_range_input, dim_range_target;
-  for (size_t i = 0; i < 3; ++i) dim_range_input.emplace_back(float (-M_PI), float (M_PI));
+  for (std::size_t i = 0; i < 3; ++i) dim_range_input.emplace_back(float (-M_PI), float (M_PI));
   dim_range_input.emplace_back(0.0f, 1.0f);
-  for (size_t i = 0; i < 3; ++i) dim_range_target.emplace_back(float (-M_PI) * 10.0f, float (M_PI) * 10.0f);
+  for (std::size_t i = 0; i < 3; ++i) dim_range_target.emplace_back(float (-M_PI) * 10.0f, float (M_PI) * 10.0f);
   dim_range_target.emplace_back(0.0f, 50.0f);
 
 

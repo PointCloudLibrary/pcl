@@ -109,7 +109,7 @@ namespace pcl
       }
 
       /** \brief Get the threshold for corner detection, as set by the user. */
-      inline size_t
+      inline std::size_t
       getThreshold ()
       {
         return (threshold_);

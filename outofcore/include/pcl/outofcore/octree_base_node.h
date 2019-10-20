@@ -173,7 +173,7 @@ namespace pcl
          *  \param[out] dst destion of points returned by the queries
          */
         virtual void
-        queryBBIncludes (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, size_t query_depth, AlignedPointTVector &dst);
+        queryBBIncludes (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, std::size_t query_depth, AlignedPointTVector &dst);
 
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth
          *
@@ -183,7 +183,7 @@ namespace pcl
          *  \param[out] dst_blob destion of points returned by the queries
          */
         virtual void
-        queryBBIncludes (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, size_t query_depth, const pcl::PCLPointCloud2::Ptr &dst_blob);
+        queryBBIncludes (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, std::size_t query_depth, const pcl::PCLPointCloud2::Ptr &dst_blob);
 
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth 
          *
@@ -208,7 +208,7 @@ namespace pcl
          * \param[in] query_depth The depth at which to print the size of the voxel/bounding boxes
          */
         virtual void
-        printBoundingBox (const size_t query_depth) const;
+        printBoundingBox (const std::size_t query_depth) const;
 
         /** \brief add point to this node if we are a leaf, or find the leaf below us that is supposed to take the point 
          *  \param[in] p vector of points to add to the leaf
@@ -268,31 +268,31 @@ namespace pcl
           return (res);
         }
 
-        virtual inline size_t
+        virtual inline std::size_t
         getDepth () const
         {
           return (this->depth_);
         }
 
         /** \brief Returns the total number of children on disk */
-        virtual size_t
+        virtual std::size_t
         getNumChildren () const 
         {
-          size_t res = this->countNumChildren ();
+          std::size_t res = this->countNumChildren ();
           return (res);
         }
 
         /** \brief Count loaded chilren */
-        virtual size_t
+        virtual std::size_t
         getNumLoadedChildren ()  const
         {
-          size_t res = this->countNumLoadedChildren ();
+          std::size_t res = this->countNumLoadedChildren ();
           return (res);
         }        
         
         /** \brief Returns a pointer to the child in octant index_arg */
         virtual OutofcoreOctreeBaseNode*
-        getChildPtr (size_t index_arg) const;
+        getChildPtr (std::size_t index_arg) const;
 
         /** \brief Gets the number of points available in the PCD file */
         virtual std::uint64_t
@@ -344,13 +344,13 @@ namespace pcl
         operator= (const OutofcoreOctreeBaseNode &rval);
 
         /** \brief Counts the number of child directories on disk; used to update num_children_ */
-        virtual size_t
+        virtual std::size_t
         countNumChildren () const;
 
         /** \brief Counts the number of loaded chilren by testing the \c children_ array; 
          *  used to update num_loaded_chilren_ internally 
          */
-        virtual size_t
+        virtual std::size_t
         countNumLoadedChildren () const;
         
         /** \brief Save node's metadata to file
@@ -508,14 +508,14 @@ namespace pcl
          * \param[in] query_depth
          */
         void
-        getOccupiedVoxelCentersRecursive (AlignedPointTVector &voxel_centers, const size_t query_depth);
+        getOccupiedVoxelCentersRecursive (AlignedPointTVector &voxel_centers, const std::size_t query_depth);
 
         /** \brief Gets a vector of occupied voxel centers
          * \param[out] voxel_centers
          * \param[in] query_depth
          */
         void
-        getOccupiedVoxelCentersRecursive (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const size_t query_depth);
+        getOccupiedVoxelCentersRecursive (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const std::size_t query_depth);
 
         /** \brief Sorts the indices based on x,y,z fields and pushes the index into the proper octant's vector;
          *  This could be overloaded with a parallelized implementation
@@ -537,7 +537,7 @@ namespace pcl
         /** \brief super-node */
         OutofcoreOctreeBaseNode* parent_;
         /** \brief Depth in the tree, root is 0, root's children are 1, ... */
-        size_t depth_;
+        std::size_t depth_;
         /** \brief The children of this node */
         std::vector<OutofcoreOctreeBaseNode*> children_;
 

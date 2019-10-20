@@ -329,7 +329,7 @@ namespace pcl
 
           std::cout << k_radius_indices.size () <<std::endl;
 
-          for (size_t i = 0; i < k_radius_indices.size (); i++)
+          for (std::size_t i = 0; i < k_radius_indices.size (); i++)
           {
             nearestNeighborCandidate newCandidate;
             newCandidate.index_ = k_radius_indices[i];
@@ -342,7 +342,7 @@ namespace pcl
         std::sort (nearestNeighbors.begin (), nearestNeighbors.end ());
 
         // truncate sorted nearest neighbor vector if we found more than k_arg candidates
-        if (nearestNeighbors.size () > (size_t)k_arg)
+        if (nearestNeighbors.size () > (std::size_t)k_arg)
         {
           nearestNeighbors.resize (k_arg);
         }
@@ -353,7 +353,7 @@ namespace pcl
       k_indices_arg.resize (nearestNeighbors.size ());
       k_sqr_distances_arg.resize (nearestNeighbors.size ());
 
-      for (size_t i = 0; i < nearestNeighbors.size (); i++)
+      for (std::size_t i = 0; i < nearestNeighbors.size (); i++)
       {
         k_indices_arg[i] = nearestNeighbors[i].index_;
         k_sqr_distances_arg[i] = nearestNeighbors[i].squared_distance_;
@@ -370,11 +370,11 @@ namespace pcl
     {
       focalLength_ = 0;
 
-      size_t count = 0;
+      std::size_t count = 0;
       for (int y = 0; y < (int)input_->height; y++)
         for (int x = 0; x < (int)input_->width; x++)
         {
-          size_t i = y * input_->width + x;
+          std::size_t i = y * input_->width + x;
           if ((input_->points[i].x == input_->points[i].x) && // check for NaNs
               (input_->points[i].y == input_->points[i].y) && (input_->points[i].z == input_->points[i].z))
           {

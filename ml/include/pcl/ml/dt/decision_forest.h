@@ -67,7 +67,7 @@ public:
     const int num_of_trees = static_cast<int>(this->size());
     stream.write(reinterpret_cast<const char*>(&num_of_trees), sizeof(num_of_trees));
 
-    for (size_t tree_index = 0; tree_index < this->size(); ++tree_index) {
+    for (std::size_t tree_index = 0; tree_index < this->size(); ++tree_index) {
       (*this)[tree_index].serialize(stream);
     }
 
@@ -75,7 +75,7 @@ public:
     // stream.write (reinterpret_cast<const char*> (&num_of_trees), sizeof
     // (num_of_trees));
 
-    // for (size_t tree_index = 0; tree_index < trees_.size (); ++tree_index)
+    // for (std::size_t tree_index = 0; tree_index < trees_.size (); ++tree_index)
     //{
     //  tree_[tree_index].serialize (stream);
     //}
@@ -92,7 +92,7 @@ public:
     stream.read(reinterpret_cast<char*>(&num_of_trees), sizeof(num_of_trees));
     this->resize(num_of_trees);
 
-    for (size_t tree_index = 0; tree_index < this->size(); ++tree_index) {
+    for (std::size_t tree_index = 0; tree_index < this->size(); ++tree_index) {
       (*this)[tree_index].deserialize(stream);
     }
 
@@ -100,7 +100,7 @@ public:
     // stream.read (reinterpret_cast<char*> (&num_of_trees), sizeof (num_of_trees));
     // trees_.resize (num_of_trees);
 
-    // for (size_t tree_index = 0; tree_index < trees_.size (); ++tree_index)
+    // for (std::size_t tree_index = 0; tree_index < trees_.size (); ++tree_index)
     //{
     //  tree_[tree_index].deserialize (stream);
     //}

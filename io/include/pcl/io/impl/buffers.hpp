@@ -65,7 +65,7 @@ struct buffer_traits <double>
 };
 
 template <typename T>
-pcl::io::Buffer<T>::Buffer (size_t size)
+pcl::io::Buffer<T>::Buffer (std::size_t size)
 : size_ (size)
 {
 }
@@ -76,7 +76,7 @@ pcl::io::Buffer<T>::~Buffer ()
 }
 
 template <typename T>
-pcl::io::SingleBuffer<T>::SingleBuffer (size_t size)
+pcl::io::SingleBuffer<T>::SingleBuffer (std::size_t size)
 : Buffer<T> (size)
 , data_ (size, buffer_traits<T>::invalid ())
 {
@@ -88,7 +88,7 @@ pcl::io::SingleBuffer<T>::~SingleBuffer ()
 }
 
 template <typename T> T
-pcl::io::SingleBuffer<T>::operator[] (size_t idx) const
+pcl::io::SingleBuffer<T>::operator[] (std::size_t idx) const
 {
   assert (idx < size_);
   return (data_[idx]);
@@ -104,7 +104,7 @@ pcl::io::SingleBuffer<T>::push (std::vector<T>& data)
 }
 
 template <typename T>
-pcl::io::MedianBuffer<T>::MedianBuffer (size_t size,
+pcl::io::MedianBuffer<T>::MedianBuffer (std::size_t size,
                                         unsigned char window_size)
 : Buffer<T> (size)
 , window_size_ (window_size)
@@ -115,14 +115,14 @@ pcl::io::MedianBuffer<T>::MedianBuffer (size_t size,
   assert (window_size_ > 0);
 
   data_.resize (window_size_);
-  for (size_t i = 0; i < window_size_; ++i)
+  for (std::size_t i = 0; i < window_size_; ++i)
     data_[i].resize (size_, buffer_traits<T>::invalid ());
 
   data_argsort_indices_.resize (size_);
-  for (size_t i = 0; i < size_; ++i)
+  for (std::size_t i = 0; i < size_; ++i)
   {
     data_argsort_indices_[i].resize (window_size_);
-    for (size_t j = 0; j < window_size_; ++j)
+    for (std::size_t j = 0; j < window_size_; ++j)
       data_argsort_indices_[i][j] = j;
   }
 
@@ -135,7 +135,7 @@ pcl::io::MedianBuffer<T>::~MedianBuffer ()
 }
 
 template <typename T> T
-pcl::io::MedianBuffer<T>::operator[] (size_t idx) const
+pcl::io::MedianBuffer<T>::operator[] (std::size_t idx) const
 {
   assert (idx < size_);
   int midpoint = (window_size_ - data_invalid_count_[idx]) / 2;
@@ -154,7 +154,7 @@ pcl::io::MedianBuffer<T>::push (std::vector<T>& data)
   // New data will replace the column with index data_current_idx_. Before
   // overwriting it, we go through all the new-old value pairs and update
   // data_argsort_indices_ to maintain sorted order.
-  for (size_t i = 0; i < size_; ++i)
+  for (std::size_t i = 0; i < size_; ++i)
   {
     const T& new_value = data[i];
     const T& old_value = data_[data_current_idx_][i];
@@ -222,7 +222,7 @@ pcl::io::MedianBuffer<T>::compare (T a, T b)
 }
 
 template <typename T>
-pcl::io::AverageBuffer<T>::AverageBuffer (size_t size,
+pcl::io::AverageBuffer<T>::AverageBuffer (std::size_t size,
                                           unsigned char window_size)
 : Buffer<T> (size)
 , window_size_ (window_size)
@@ -232,7 +232,7 @@ pcl::io::AverageBuffer<T>::AverageBuffer (size_t size,
   assert (window_size_ > 0);
 
   data_.resize (window_size_);
-  for (size_t i = 0; i < window_size_; ++i)
+  for (std::size_t i = 0; i < window_size_; ++i)
     data_[i].resize (size_, buffer_traits<T>::invalid ());
 
   data_sum_.resize (size_, 0);
@@ -245,7 +245,7 @@ pcl::io::AverageBuffer<T>::~AverageBuffer ()
 }
 
 template <typename T> T
-pcl::io::AverageBuffer<T>::operator[] (size_t idx) const
+pcl::io::AverageBuffer<T>::operator[] (std::size_t idx) const
 {
   assert (idx < size_);
   if (data_invalid_count_[idx] == window_size_)
@@ -265,7 +265,7 @@ pcl::io::AverageBuffer<T>::push (std::vector<T>& data)
   // New data will replace the column with index data_current_idx_. Before
   // overwriting it, we go through the old values and subtract them from the
   // data_sum_
-  for (size_t i = 0; i < size_; ++i)
+  for (std::size_t i = 0; i < size_; ++i)
   {
     const float& new_value = data[i];
     const float& old_value = data_[data_current_idx_][i];

@@ -183,7 +183,7 @@ namespace pcl
         unsigned int refine_iterations = 0;
         bool inlier_changed = false, oscillating = false;
         std::vector<int> new_inliers, prev_inliers = inliers_;
-        std::vector<size_t> inliers_sizes;
+        std::vector<std::size_t> inliers_sizes;
         Eigen::VectorXf new_model_coefficients = model_coefficients_;
         do
         {
@@ -229,7 +229,7 @@ namespace pcl
           }
 
           // Check the values of the inlier set
-          for (size_t i = 0; i < prev_inliers.size (); ++i)
+          for (std::size_t i = 0; i < prev_inliers.size (); ++i)
           {
             // If the value of the inliers changed, then we are still optimizing
             if (prev_inliers[i] != new_inliers[i])
@@ -271,7 +271,7 @@ namespace pcl
         */
       inline void
       getRandomSamples (const boost::shared_ptr <std::vector<int> > &indices, 
-                        size_t nr_samples, 
+                        std::size_t nr_samples, 
                         std::set<int> &indices_subset)
       {
         indices_subset.clear ();

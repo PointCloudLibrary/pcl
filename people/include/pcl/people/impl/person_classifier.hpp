@@ -57,7 +57,7 @@ pcl::people::PersonClassifier<PointT>::loadSVMFromFile (std::string svm_filename
   SVM_file.open(svm_filename.c_str());
 
   getline (SVM_file,line);      // read window_height line
-  size_t tok_pos = line.find_first_of(':', 0);  // search for token ":"
+  std::size_t tok_pos = line.find_first_of(':', 0);  // search for token ":"
   window_height_ = std::atoi(line.substr(tok_pos+1, std::string::npos - tok_pos-1).c_str());
 
   getline (SVM_file,line);      // read window_width line
@@ -70,8 +70,8 @@ pcl::people::PersonClassifier<PointT>::loadSVMFromFile (std::string svm_filename
 
   getline (SVM_file,line);      // read SVM_weights line
   tok_pos = line.find_first_of('[', 0);  // search for token "["
-  size_t tok_end_pos = line.find_first_of(']', 0);  // search for token "]" , end of SVM weights
-  size_t prev_tok_pos;
+  std::size_t tok_end_pos = line.find_first_of(']', 0);  // search for token "]" , end of SVM weights
+  std::size_t prev_tok_pos;
   while (tok_pos < tok_end_pos) // while end of SVM_weights is not reached
   {
     prev_tok_pos = tok_pos;
@@ -257,7 +257,7 @@ pcl::people::PersonClassifier<PointT>::evaluate (float height_person,
  
     // Calculate confidence value by dot product:
     confidence = 0.0;
-    for(size_t i = 0; i < SVM_weights_.size(); i++)
+    for(std::size_t i = 0; i < SVM_weights_.size(); i++)
     { 
       confidence += SVM_weights_[i] * descriptor[i];
     }

@@ -163,7 +163,7 @@ namespace pcl
         getCameraPose (int time = -1) const;
 
         /** \brief Returns number of poses including initial */
-        size_t
+        std::size_t
         getNumberOfPoses () const;
 
         /** \brief Returns TSDF volume storage */

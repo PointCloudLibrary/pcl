@@ -92,17 +92,17 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::initCompute ()
 
   // Fills radii interval based on formula (1) in section 2.1 of Frome's paper
   radii_interval_.resize (radius_bins_ + 1);
-  for (size_t j = 0; j < radius_bins_ + 1; j++)
+  for (std::size_t j = 0; j < radius_bins_ + 1; j++)
     radii_interval_[j] = static_cast<float> (std::exp (std::log (min_radius_) + ((static_cast<float> (j) / static_cast<float> (radius_bins_)) * std::log (search_radius_/min_radius_))));
 
   // Fill theta didvisions of elevation
   theta_divisions_.resize (elevation_bins_+1);
-  for (size_t k = 0; k < elevation_bins_+1; k++)
+  for (std::size_t k = 0; k < elevation_bins_+1; k++)
     theta_divisions_[k] = static_cast<float> (k) * elevation_interval;
 
   // Fill phi didvisions of elevation
   phi_divisions_.resize (azimuth_bins_+1);
-  for (size_t l = 0; l < azimuth_bins_+1; l++)
+  for (std::size_t l = 0; l < azimuth_bins_+1; l++)
     phi_divisions_[l] = static_cast<float> (l) * azimuth_interval;
 
   // LookUp Table that contains the volume of all the bins
@@ -114,12 +114,12 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::initCompute ()
   // Resize volume look up table
   volume_lut_.resize (radius_bins_ * elevation_bins_ * azimuth_bins_);
   // Fill volumes look up table
-  for (size_t j = 0; j < radius_bins_; j++)
+  for (std::size_t j = 0; j < radius_bins_; j++)
   {
     // "r" term of the volume integral
     float integr_r = (radii_interval_[j+1]*radii_interval_[j+1]*radii_interval_[j+1] / 3) - (radii_interval_[j]*radii_interval_[j]*radii_interval_[j]/ 3);
 
-    for (size_t k = 0; k < elevation_bins_; k++)
+    for (std::size_t k = 0; k < elevation_bins_; k++)
     {
       // "theta" term of the volume integral
       float integr_theta = std::cos (deg2rad (theta_divisions_[k])) - std::cos (deg2rad (theta_divisions_[k+1]));
@@ -130,7 +130,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::initCompute ()
       // float cbrt = pow(V, e);
       // cbrt = 1 / cbrt;
 
-      for (size_t l = 0; l < azimuth_bins_; l++)
+      for (std::size_t l = 0; l < azimuth_bins_; l++)
         // Store in lut 1/cbrt
         //volume_lut_[ (l*elevation_bins_*radius_bins_) + k*radius_bins_ + j ] = cbrt;
         volume_lut_[(l*elevation_bins_*radius_bins_) + k*radius_bins_ + j] = 1.0f / powf (V, e);
@@ -141,7 +141,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::initCompute ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename PointRFT> void
-pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (size_t index, /*float rf[9],*/ std::vector<float> &desc)
+pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (std::size_t index, /*float rf[9],*/ std::vector<float> &desc)
 {
   pcl::Vector3fMapConst origin = input_->points[(*indices_)[index]].getVector3fMap ();
 
@@ -156,9 +156,9 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
   // Find every point within specified search_radius_
   std::vector<int> nn_indices;
   std::vector<float> nn_dists;
-  const size_t neighb_cnt = searchForNeighbors ((*indices_)[index], search_radius_, nn_indices, nn_dists);
+  const std::size_t neighb_cnt = searchForNeighbors ((*indices_)[index], search_radius_, nn_indices, nn_dists);
   // For each point within radius
-  for (size_t ne = 0; ne < neighb_cnt; ne++)
+  for (std::size_t ne = 0; ne < neighb_cnt; ne++)
   {
     if (pcl::utils::equal(nn_dists[ne], 0.0f))
       continue;
@@ -189,12 +189,12 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
     theta = pcl::rad2deg (std::acos (std::min (1.0f, std::max (-1.0f, theta))));
 
     /// Bin (j, k, l)
-    size_t j = 0;
-    size_t k = 0;
-    size_t l = 0;
+    std::size_t j = 0;
+    std::size_t k = 0;
+    std::size_t l = 0;
 
     /// Compute the Bin(j, k, l) coordinates of current neighbour
-    for (size_t rad = 1; rad < radius_bins_ + 1; rad++)
+    for (std::size_t rad = 1; rad < radius_bins_ + 1; rad++)
     {
       if (r <= radii_interval_[rad])
       {
@@ -203,7 +203,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
       }
     }
 
-    for (size_t ang = 1; ang < elevation_bins_ + 1; ang++)
+    for (std::size_t ang = 1; ang < elevation_bins_ + 1; ang++)
     {
       if (theta <= theta_divisions_[ang])
       {
@@ -212,7 +212,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
       }
     }
 
-    for (size_t ang = 1; ang < azimuth_bins_ + 1; ang++)
+    for (std::size_t ang = 1; ang < azimuth_bins_ + 1; ang++)
     {
       if (phi <= phi_divisions_[ang])
       {
@@ -250,7 +250,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
 
   output.is_dense = true;
 
-  for (size_t point_index = 0; point_index < indices_->size (); ++point_index)
+  for (std::size_t point_index = 0; point_index < indices_->size (); ++point_index)
   {
     //output[point_index].descriptor.resize (descriptor_length_);
 
@@ -261,7 +261,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
         !std::isfinite (current_frame.y_axis[0]) ||
         !std::isfinite (current_frame.z_axis[0])  )
     {
-      for (size_t i = 0; i < descriptor_length_; ++i)
+      for (std::size_t i = 0; i < descriptor_length_; ++i)
         output[point_index].descriptor[i] = std::numeric_limits<float>::quiet_NaN ();
 
       memset (output[point_index].rf, 0, sizeof (output[point_index].rf[0]) * 9);
@@ -278,7 +278,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
 
     std::vector<float> descriptor (descriptor_length_);
     computePointDescriptor (point_index, descriptor);
-    for (size_t j = 0; j < descriptor_length_; ++j)
+    for (std::size_t j = 0; j < descriptor_length_; ++j)
       output [point_index].descriptor[j] = descriptor[j];
   }
 }

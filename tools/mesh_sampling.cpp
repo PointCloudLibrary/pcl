@@ -131,7 +131,7 @@ randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, dou
 }
 
 void
-uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, bool calc_normal, bool calc_color, pcl::PointCloud<pcl::PointXYZRGBNormal> & cloud_out)
+uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, std::size_t n_samples, bool calc_normal, bool calc_color, pcl::PointCloud<pcl::PointXYZRGBNormal> & cloud_out)
 {
   polydata->BuildCells ();
   vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys ();
@@ -139,7 +139,7 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, bool 
   double p1[3], p2[3], p3[3], totalArea = 0;
   std::vector<double> cumulativeAreas (cells->GetNumberOfCells (), 0);
   vtkIdType npts = 0, *ptIds = nullptr;
-  size_t cellId = 0;
+  std::size_t cellId = 0;
   for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds); cellId++)
   {
     polydata->GetPoint (ptIds[0], p1);
@@ -153,7 +153,7 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, bool 
   cloud_out.width = static_cast<std::uint32_t> (n_samples);
   cloud_out.height = 1;
 
-  for (size_t i = 0; i < n_samples; i++)
+  for (std::size_t i = 0; i < n_samples; i++)
   {
     Eigen::Vector3f p;
     Eigen::Vector3f n (0, 0, 0);

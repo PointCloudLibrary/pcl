@@ -64,13 +64,13 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
 
   //! Get cloud at a particular location
   bool
-  getCloudAt (size_t idx, 
+  getCloudAt (std::size_t idx, 
               pcl::PCLPointCloud2 &blob,
               Eigen::Vector4f &origin, 
               Eigen::Quaternionf &orientation);
 
   //! Returns the size
-  size_t
+  std::size_t
   numFrames ();
 
   pcl::PCDGrabberBase& grabber_;
@@ -96,7 +96,7 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   // True if we have already found the location of all clouds (for tar only)
   bool scraped_;
   std::vector<int> tar_offsets_;
-  std::vector<size_t> cloud_idx_to_file_idx_;
+  std::vector<std::size_t> cloud_idx_to_file_idx_;
 
   // Mutex to ensure that two quick consecutive triggers do not cause
   // simultaneous asynchronous read-aheads
@@ -292,7 +292,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::scrapeForClouds (bool force)
   // Go through and index the clouds
   PCDReader reader;
   pcl::PCLPointCloud2 blob;
-  for (size_t i = 0; i < pcd_files_.size (); ++i)
+  for (std::size_t i = 0; i < pcd_files_.size (); ++i)
   {
     std::string pcd_file = pcd_files_[i];
     // Try to read the file header (TODO this is a huge waste just to make sure it's PCD...is extension enough?)
@@ -329,7 +329,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::scrapeForClouds (bool force)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool 
-pcl::PCDGrabberBase::PCDGrabberImpl::getCloudAt (size_t idx, 
+pcl::PCDGrabberBase::PCDGrabberImpl::getCloudAt (std::size_t idx, 
                                                  pcl::PCLPointCloud2 &blob,
                                                  Eigen::Vector4f &origin, 
                                                  Eigen::Quaternionf &orientation)
@@ -445,7 +445,7 @@ pcl::PCDGrabberBase::isRepeatOn () const
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::PCDGrabberBase::getCloudAt (size_t idx, 
+pcl::PCDGrabberBase::getCloudAt (std::size_t idx, 
                                  pcl::PCLPointCloud2 &blob,
                                  Eigen::Vector4f &origin, 
                                  Eigen::Quaternionf &orientation) const

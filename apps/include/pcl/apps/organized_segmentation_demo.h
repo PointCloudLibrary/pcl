@@ -121,8 +121,8 @@ class OrganizedSegmentationDemo : public QMainWindow
 
     bool capture_;
     bool data_modified_;
-    size_t previous_data_size_;
-    size_t previous_clusters_size_;
+    std::size_t previous_data_size_;
+    std::size_t previous_clusters_size_;
 
     bool display_normals_;
     bool display_curvature_;

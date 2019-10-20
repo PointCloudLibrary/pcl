@@ -44,7 +44,7 @@ main (int argc, char ** argv)
   else
   {
     cloud->resize (1000000);
-    for (size_t idx = 0; idx < cloud->size (); ++idx)
+    for (std::size_t idx = 0; idx < cloud->size (); ++idx)
     {
       (*cloud)[idx].x = static_cast<float> (rand () / RAND_MAX);
       (*cloud)[idx].y = static_cast<float> (rand () / RAND_MAX);
@@ -125,7 +125,7 @@ main (int argc, char ** argv)
   else
   {
     std::cerr << "size of result: " <<kd_indices.size () << std::endl;
-    for (size_t idx = 0; idx < kd_indices.size (); ++idx)
+    for (std::size_t idx = 0; idx < kd_indices.size (); ++idx)
     {
       if (kd_indices[idx] != bf_indices[idx] && kd_distances[idx] != bf_distances[idx])
       {

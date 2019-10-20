@@ -218,7 +218,7 @@ main (int argc, char** argv)
   KdTreeFLANN<DescriptorType> match_search;
   match_search.setInputCloud (model_descriptors_);
 
-  for (size_t i = 0; i < scene_descriptors_->size (); ++i)
+  for (std::size_t i = 0; i < scene_descriptors_->size (); ++i)
   {
     if ( std::isfinite( scene_descriptors_->at (i).descriptor[0] ) )
     {

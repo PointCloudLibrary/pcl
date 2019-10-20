@@ -92,14 +92,14 @@ public:
   Returns:
     Number of active serial numbers in the list.
   */
-  size_t ActiveSerialNumberCount() const;
+  std::size_t ActiveSerialNumberCount() const;
 
   /*
   Returns:
     Number of active ids in the list.  This number
     is less than or equal to ActiveSerialNumberCount().
   */
-  size_t ActiveIdCount() const;
+  std::size_t ActiveIdCount() const;
 
   /*
   Returns:
@@ -310,10 +310,10 @@ public:
     When many elements are returned, GetElements() can be
     substantially faster than repeated calls to FindElement().
   */
-  size_t GetElements(
+  std::size_t GetElements(
           unsigned int sn0,
           unsigned int sn1, 
-          size_t max_count,
+          std::size_t max_count,
           ON_SimpleArray<SN_ELEMENT>& elements
           ) const;
 
@@ -354,8 +354,8 @@ private:
 
   struct SN_BLOCK
   {
-    size_t m_count;  // used elements in m_sn[]
-    size_t m_purged; // number of purged elements in m_sn[]
+    std::size_t m_count;  // used elements in m_sn[]
+    std::size_t m_purged; // number of purged elements in m_sn[]
     unsigned int m_sorted; // 0 = no, 1 = yes
     unsigned int m_sn0; // minimum sn in m_sn[]
     unsigned int m_sn1; // maximum sn in m_sn[]
@@ -363,10 +363,10 @@ private:
     void EmptyBlock();
     void CullBlockHelper();
     void SortBlockHelper();
-    bool IsValidBlock(ON_TextLog* textlog,struct SN_ELEMENT*const* hash_table,size_t* active_id_count) const;
+    bool IsValidBlock(ON_TextLog* textlog,struct SN_ELEMENT*const* hash_table,std::size_t* active_id_count) const;
     struct SN_ELEMENT* BinarySearchBlockHelper(unsigned int sn);
     static int CompareMaxSN(const void*,const void*);
-    size_t ActiveElementEstimate(unsigned int sn0, unsigned int sn1) const;
+    std::size_t ActiveElementEstimate(unsigned int sn0, unsigned int sn1) const;
     void Dump(ON_TextLog&) const;
   };
 
@@ -377,12 +377,12 @@ private:
   ON_MEMORY_POOL* m_pool;
 
   // Serial Number list counts
-  size_t m_sn_count;   // total number of elements                       
-  size_t m_sn_purged;  // total number of purged elements
+  std::size_t m_sn_count;   // total number of elements                       
+  std::size_t m_sn_purged;  // total number of purged elements
 
   // ID hash table counts (all ids in the hash table are active)
   bool m_bHashTableIsValid; // true if m_hash_table[] is valid
-  size_t m_active_id_count; // number of active ids in the hash table
+  std::size_t m_active_id_count; // number of active ids in the hash table
   ON_UUID m_inactive_id;    // frequently and id is removed and
                             // then added back.  m_inactive_id
                             // records the most recently removed
@@ -398,8 +398,8 @@ private:
   // requiring large amounts of contiguous memory for
   // situations with millions of serial numbers.
   struct SN_BLOCK** m_snblk_list;
-  size_t m_snblk_list_capacity; // capacity of m_blk_list[]
-  size_t m_snblk_list_count;    // used elements in m_snblk_list[]
+  std::size_t m_snblk_list_capacity; // capacity of m_blk_list[]
+  std::size_t m_snblk_list_count;    // used elements in m_snblk_list[]
 
   // If FindElementHelper() returns a non-null pointer
   // to an element, then m_e_blk points to the SN_BLOCK
@@ -416,14 +416,14 @@ private:
   struct SN_ELEMENT* FindElementHelper(unsigned int sn);
   void UpdateMaxSNHelper();
   void GarbageCollectHelper();
-  size_t GarbageCollectMoveHelper(SN_BLOCK* dst,SN_BLOCK* src);
+  std::size_t GarbageCollectMoveHelper(SN_BLOCK* dst,SN_BLOCK* src);
 
   // When m_bHashTableIsValid is true, then m_hash_table[i] is 
   // a linked list of elements whose id satisfies 
   // i = HashIndex(&e->m_id).  When m_bHashTableIsValid is false,
   // m_hash_table[] is identically zero.
   struct SN_ELEMENT* m_hash_table[ID_HASH_TABLE_COUNT];
-  size_t HashIndex(const ON_UUID*) const;
+  std::size_t HashIndex(const ON_UUID*) const;
   void InvalidateHashTableHelper(); // marks table as dirty
   bool RemoveBlockFromHashTableHelper(const struct SN_BLOCK* blk);
   void AddBlockToHashTableHelper(struct SN_BLOCK* blk);

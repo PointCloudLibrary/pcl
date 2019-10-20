@@ -262,11 +262,11 @@ CPCSegmentation Parameters: \n\
     if (outputname.empty () || (outputname.at (0) == '-'))
     {
       outputname = pcd_filename;
-      size_t sep = outputname.find_last_of ('/');
+      std::size_t sep = outputname.find_last_of ('/');
       if (sep != std::string::npos)
         outputname = outputname.substr (sep + 1, outputname.size () - sep - 1);
 
-      size_t dot = outputname.find_last_of ('.');
+      std::size_t dot = outputname.find_last_of ('.');
       if (dot != std::string::npos)
         outputname = outputname.substr (0, dot);
     }

@@ -89,11 +89,11 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
   // Determine the voxels crosses along the line segments
   // formed by every pair of occupied cells.
   std::vector< std::vector<int> > line_histograms;
-  for (size_t i = 0; i < occupied_cells.size (); ++i)
+  for (std::size_t i = 0; i < occupied_cells.size (); ++i)
   {
     Eigen::Vector3f origin = occupied_cells[i].getVector3fMap ();
 
-    for (size_t j = i+1; j < occupied_cells.size (); ++j)
+    for (std::size_t j = i+1; j < occupied_cells.size (); ++j)
     {
       typename pcl::PointCloud<PointInT>::VectorType intersected_cells;
       Eigen::Vector3f end = occupied_cells[j].getVector3fMap ();
@@ -101,7 +101,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
 
       // Intersected cells are ordered from closest to furthest w.r.t. the origin.
       std::vector<int> histogram;
-      for (size_t k = 0; k < intersected_cells.size (); ++k)
+      for (std::size_t k = 0; k < intersected_cells.size (); ++k)
       {
         std::vector<int> indices;
         octree.voxelSearch (intersected_cells[k], indices);
@@ -140,7 +140,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeTransitionHistograms 
 {
   transition_histograms.resize (label_histograms.size ());
 
-  for (size_t i = 0; i < label_histograms.size (); ++i)
+  for (std::size_t i = 0; i < label_histograms.size (); ++i)
   {
     transition_histograms[i].resize ((getNumberOfClasses () + 2) * (getNumberOfClasses () + 1) / 2, 0);
 
@@ -150,7 +150,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeTransitionHistograms 
       transition.resize (getNumberOfClasses () + 1, 0);
     }
 
-    for (size_t k = 1; k < label_histograms[i].size (); ++k)
+    for (std::size_t k = 1; k < label_histograms[i].size (); ++k)
     {
       std::uint32_t first_class = label_histograms[i][k-1];
       std::uint32_t second_class = label_histograms[i][k];
@@ -184,7 +184,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeDistancesToMean (cons
   std::vector<float> mean_histogram;
   computeMeanHistogram (transition_histograms, mean_histogram);
 
-  for (size_t i = 0; i < transition_histograms.size (); ++i)
+  for (std::size_t i = 0; i < transition_histograms.size (); ++i)
   {
     float d = computeHIKDistance (transition_histograms[i], mean_histogram);
     distances[i] = d;
@@ -225,7 +225,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeMeanHistogram (const 
 
   mean_histogram.resize (histograms[0].size (), 0);
   for (const auto &histogram : histograms)
-    for (size_t j = 0; j < histogram.size (); ++j)
+    for (std::size_t j = 0; j < histogram.size (); ++j)
       mean_histogram[j] += static_cast<float> (histogram[j]);
 
   for (float &i : mean_histogram)
@@ -240,7 +240,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeHIKDistance (const st
   assert (histogram.size () == mean_histogram.size ());
 
   float norm = 0.f;
-  for (size_t i = 0; i < histogram.size (); ++i)
+  for (std::size_t i = 0; i < histogram.size (); ++i)
     norm += std::min (static_cast<float> (histogram[i]), mean_histogram[i]);
 
   norm /= static_cast<float> (histogram.size ());

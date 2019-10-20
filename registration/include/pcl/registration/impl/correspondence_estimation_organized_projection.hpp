@@ -76,7 +76,7 @@ pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, Poin
     return;
 
   correspondences.resize (indices_->size ());
-  size_t c_index = 0;
+  std::size_t c_index = 0;
 
   for (std::vector<int>::const_iterator src_it = indices_->begin (); src_it != indices_->end (); ++src_it)
   {

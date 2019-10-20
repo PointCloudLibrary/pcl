@@ -1433,7 +1433,7 @@ void ON_InstanceDefinition::UpdateLinkedIdefLayerSettings( unsigned int layer_co
 
   // Apply any saved settings
   ON_Layer** ud_layers = ud->m_layers.Array();
-  size_t ud_layers_count = ud->m_layers.Count();
+  std::size_t ud_layers_count = ud->m_layers.Count();
   ON_Layer layerId;
   const ON_Layer* layerPtrId = &layerId;
   for ( unsigned int i = 0; i < layer_count; i++ )

@@ -54,8 +54,8 @@ namespace face_detection_apps_utils
       std::string id_1 = strs1[strs1.size () - 1];
       std::string id_2 = strs2[strs2.size () - 1];
 
-      size_t pos1 = id_1.find (".pcd");
-      size_t pos2 = id_2.find (".pcd");
+      std::size_t pos1 = id_1.find (".pcd");
+      std::size_t pos2 = id_2.find (".pcd");
 
       id_1 = id_1.substr (0, pos1);
       id_2 = id_2.substr (0, pos2);
@@ -100,7 +100,7 @@ namespace face_detection_apps_utils
 
   void displayHeads(std::vector<Eigen::VectorXf> & heads, pcl::visualization::PCLVisualizer & vis)
   {
-    for (size_t i = 0; i < heads.size (); i++)
+    for (std::size_t i = 0; i < heads.size (); i++)
     {
       std::stringstream name;
       name << "sphere" << i;

@@ -55,7 +55,7 @@ pcl::getApproximateIndices (
   std::vector<int> nn_idx (1);
   std::vector<float> nn_dists (1);
   indices.resize (cloud_in->points.size ());
-  for (size_t i = 0; i < cloud_in->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_in->points.size (); ++i)
   {
     tree.nearestKSearchT ((*cloud_in)[i], 1, nn_idx, nn_dists);
     indices[i] = nn_idx[0];
@@ -75,7 +75,7 @@ pcl::getApproximateIndices (
   std::vector<int> nn_idx (1);
   std::vector<float> nn_dists (1);
   indices.resize (cloud_in->points.size ());
-  for (size_t i = 0; i < cloud_in->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_in->points.size (); ++i)
   {
     tree.nearestKSearch (*cloud_in, i, 1, nn_idx, nn_dists);
     indices[i] = nn_idx[0];

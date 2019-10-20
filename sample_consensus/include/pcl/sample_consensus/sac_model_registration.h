@@ -306,7 +306,7 @@ namespace pcl
       {
         if (!indices_tgt_ || !indices_ || indices_->empty () || indices_->size () != indices_tgt_->size ())
           return;
-        for (size_t i = 0; i < indices_->size (); ++i)
+        for (std::size_t i = 0; i < indices_->size (); ++i)
           correspondences_[(*indices_)[i]] = (*indices_tgt_)[i];
       }
 

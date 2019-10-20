@@ -57,7 +57,7 @@ pcl::visualization::ImageViewer::convertRGBCloudToUChar (
     boost::shared_array<unsigned char> &data)
 {
   int j = 0;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
     data[j++] = cloud.points[i].r;
     data[j++] = cloud.points[i].g;
@@ -117,7 +117,7 @@ pcl::visualization::ImageViewer::addMask (
   search.setInputCloud (image);
   std::vector<float> xy;
   xy.reserve (mask.size () * 2);
-  for (size_t i = 0; i < mask.size (); ++i)
+  for (std::size_t i = 0; i < mask.size (); ++i)
   {
     pcl::PointXY p_projected;
     search.projectPoint (mask[i], p_projected);
@@ -171,7 +171,7 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
   search.setInputCloud (image);
   std::vector<float> xy;
   xy.reserve ((polygon.getContour ().size () + 1) * 2);
-  for (size_t i = 0; i < polygon.getContour ().size (); ++i)
+  for (std::size_t i = 0; i < polygon.getContour ().size (); ++i)
   {
     pcl::PointXY p;
     search.projectPoint (polygon.getContour ()[i], p);
@@ -309,7 +309,7 @@ pcl::visualization::ImageViewer::addRectangle (
   pcl::search::OrganizedNeighbor<T> search;
   search.setInputCloud (image);
   std::vector<pcl::PointXY> pp_2d (mask.points.size ());
-  for (size_t i = 0; i < mask.points.size (); ++i)
+  for (std::size_t i = 0; i < mask.points.size (); ++i)
     search.projectPoint (mask.points[i], pp_2d[i]);
 
   pcl::PointXY min_pt_2d, max_pt_2d;
@@ -377,7 +377,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
   setSize (source_img.width + target_img.width , std::max (source_img.height, target_img.height));
 
   // Set data size
-  if (data_size_ < static_cast<size_t> (src_size + tgt_size))
+  if (data_size_ < static_cast<std::size_t> (src_size + tgt_size))
   {
     data_size_ = src_size + tgt_size;
     data_.reset (new unsigned char[data_size_]);
@@ -385,12 +385,12 @@ pcl::visualization::ImageViewer::showCorrespondences (
 
   // Copy data in VTK format
   int j = 0;
-  for (size_t i = 0; i < std::max (source_img.height, target_img.height); ++i)
+  for (std::size_t i = 0; i < std::max (source_img.height, target_img.height); ++i)
   {
     // Still need to copy the source?
     if (i < source_img.height)
     {
-      for (size_t k = 0; k < source_img.width; ++k)
+      for (std::size_t k = 0; k < source_img.width; ++k)
       {
         data_[j++] = source_img[i * source_img.width + k].r;
         data_[j++] = source_img[i * source_img.width + k].g;
@@ -406,7 +406,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
     // Still need to copy the target?
     if (i < source_img.height)
     {
-      for (size_t k = 0; k < target_img.width; ++k)
+      for (std::size_t k = 0; k < target_img.width; ++k)
       {
         data_[j++] = target_img[i * source_img.width + k].r;
         data_[j++] = target_img[i * source_img.width + k].g;
@@ -433,7 +433,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
   image_viewer_->SetSize (image->GetDimensions ()[0], image->GetDimensions ()[1]);
 
   // Draw lines between the best corresponding points
-  for (size_t i = 0; i < correspondences.size (); i += nth)
+  for (std::size_t i = 0; i < correspondences.size (); i += nth)
   {
     double r, g, b;
     getRandomColors (r, g, b);

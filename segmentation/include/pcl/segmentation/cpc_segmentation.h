@@ -224,7 +224,7 @@ namespace pcl
             }
             weights_ = weights;
             model_pt_indices_->clear ();
-            for (size_t i = 0; i < weights.size (); ++i)
+            for (std::size_t i = 0; i < weights.size (); ++i)
             {
               if (weights[i] > std::numeric_limits<double>::epsilon ())
                 model_pt_indices_->push_back (i);

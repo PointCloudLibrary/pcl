@@ -184,8 +184,8 @@ public:
    */
   bool
   loadDisparityMap(const std::string& file_name,
-                   const size_t width,
-                   const size_t height);
+                   const std::size_t width,
+                   const std::size_t height);
 
   /** \brief Set the disparity map.
    * \param[in] disparity_map the disparity map.
@@ -201,8 +201,8 @@ public:
    */
   void
   setDisparityMap(const std::vector<float>& disparity_map,
-                  const size_t width,
-                  const size_t height);
+                  const std::size_t width,
+                  const std::size_t height);
 
   /** \brief Get the disparity map.
    * \return the disparity map.
@@ -225,7 +225,7 @@ protected:
    * calibration.
    */
   PointXYZ
-  translateCoordinates(size_t row, size_t column, float disparity) const;
+  translateCoordinates(std::size_t row, std::size_t column, float disparity) const;
 
   /** \brief X-coordinate of the image center. */
   float center_x_;
@@ -244,9 +244,9 @@ protected:
   /** \brief Vector for the disparity map. */
   std::vector<float> disparity_map_;
   /** \brief X-size of the disparity map. */
-  size_t disparity_map_width_;
+  std::size_t disparity_map_width_;
   /** \brief Y-size of the disparity map. */
-  size_t disparity_map_height_;
+  std::size_t disparity_map_height_;
 
   /** \brief Thresholds of the disparity. */
   float disparity_threshold_min_;

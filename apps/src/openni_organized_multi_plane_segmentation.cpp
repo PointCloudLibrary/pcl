@@ -93,10 +93,10 @@ class OpenNIOrganizedMultiPlaneSegmentation
     }
 
     void
-    removePreviousDataFromScreen (size_t prev_models_size)
+    removePreviousDataFromScreen (std::size_t prev_models_size)
     {
       char name[1024];
-      for (size_t i = 0; i < prev_models_size; i++)
+      for (std::size_t i = 0; i < prev_models_size; i++)
       {
         sprintf (name, "normal_%lu", i);
         viewer->removeShape (name);
@@ -136,7 +136,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
 
       std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allocator<pcl::PlanarRegion<PointT> > > regions;
       pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT>);
-      size_t prev_models_size = 0;
+      std::size_t prev_models_size = 0;
       char name[1024];
 
       while (!viewer->wasStopped ())
@@ -168,7 +168,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
 
           removePreviousDataFromScreen (prev_models_size);
           //Draw Visualization
-          for (size_t i = 0; i < regions.size (); i++)
+          for (std::size_t i = 0; i < regions.size (); i++)
           {
             Eigen::Vector3f centroid = regions[i].getCentroid ();
             Eigen::Vector4f model = regions[i].getCoefficients ();

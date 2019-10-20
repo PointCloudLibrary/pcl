@@ -3152,7 +3152,7 @@ bool ON_3dmSettings::Read_v1( ON_BinaryArchive& file )
   bool bGotSomething = false;
   bool rc = false;
   // read settings from old version 1 file
-  size_t pos0 = file.CurrentPosition();
+  std::size_t pos0 = file.CurrentPosition();
 
   // need to start at the beginning of the file
   ON__UINT32 tcode;

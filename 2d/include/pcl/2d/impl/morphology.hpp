@@ -282,7 +282,7 @@ pcl::Morphology<PointT>::subtractionBinary(pcl::PointCloud<PointT>& output,
   output.height = height;
   output.resize(height * width);
 
-  for (size_t i = 0; i < output.size(); ++i) {
+  for (std::size_t i = 0; i < output.size(); ++i) {
     if (input1[i].intensity == 1 && input2[i].intensity == 0)
       output[i].intensity = 1;
     else
@@ -303,7 +303,7 @@ pcl::Morphology<PointT>::unionBinary(pcl::PointCloud<PointT>& output,
   output.height = height;
   output.resize(height * width);
 
-  for (size_t i = 0; i < output.size(); ++i) {
+  for (std::size_t i = 0; i < output.size(); ++i) {
     if (input1[i].intensity == 1 || input2[i].intensity == 1)
       output[i].intensity = 1;
     else
@@ -324,7 +324,7 @@ pcl::Morphology<PointT>::intersectionBinary(pcl::PointCloud<PointT>& output,
   output.height = height;
   output.resize(height * width);
 
-  for (size_t i = 0; i < output.size(); ++i) {
+  for (std::size_t i = 0; i < output.size(); ++i) {
     if (input1[i].intensity == 1 && input2[i].intensity == 1)
       output[i].intensity = 1;
     else
@@ -363,7 +363,7 @@ pcl::Morphology<PointT>::structuringElementRectangle(pcl::PointCloud<PointT>& ke
   kernel.height = height;
   kernel.width = width;
   kernel.resize(height * width);
-  for (size_t i = 0; i < kernel.size(); ++i)
+  for (std::size_t i = 0; i < kernel.size(); ++i)
     kernel[i].intensity = 1;
 }
 

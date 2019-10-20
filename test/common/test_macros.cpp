@@ -47,7 +47,7 @@ Eigen::Vector3f ev1, ev2;
 
 TEST(MACROS, expect_eq_vectors_macro)
 {
-  for (size_t i = 0; i < 3; i++)
+  for (std::size_t i = 0; i < 3; i++)
   {
     float val = static_cast<float> (i) * 1.5f;
     v1.push_back (val);
@@ -68,7 +68,7 @@ TEST(MACROS, expect_near_vectors_macro)
   v1.clear ();
   v2.clear ();
   const static float epsilon = 1e-5f;
-  for (size_t i = 0; i < 3; i++)
+  for (std::size_t i = 0; i < 3; i++)
   {
     float val = static_cast<float> (i) * 1.5f;
     v1.push_back (val);

@@ -292,7 +292,7 @@ pcl::device::extractCloud (const PtrStep<short2>& volume, const float3& volume_s
 
   int size;
   cudaSafeCall ( cudaMemcpyFromSymbol (&size, output_count, sizeof(size)) );
-  return (size_t)size;
+  return (std::size_t)size;
 }
 
 

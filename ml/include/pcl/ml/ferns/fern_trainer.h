@@ -89,7 +89,7 @@ public:
    * \param[in] fern_depth maximum depth of the learned tree
    */
   inline void
-  setFernDepth(const size_t fern_depth)
+  setFernDepth(const std::size_t fern_depth)
   {
     fern_depth_ = fern_depth;
   }
@@ -99,7 +99,7 @@ public:
    * \param[in] num_of_features the number of features
    */
   inline void
-  setNumOfFeatures(const size_t num_of_features)
+  setNumOfFeatures(const std::size_t num_of_features)
   {
     num_of_features_ = num_of_features;
   }
@@ -110,7 +110,7 @@ public:
    * \param[in] num_of_threshold the number of thresholds
    */
   inline void
-  setNumOfThresholds(const size_t num_of_threshold)
+  setNumOfThresholds(const std::size_t num_of_threshold)
   {
     num_of_thresholds_ = num_of_threshold;
   }
@@ -161,17 +161,17 @@ protected:
    * \param[out] thresholds the resulting thresholds
    */
   static void
-  createThresholdsUniform(const size_t num_of_thresholds,
+  createThresholdsUniform(const std::size_t num_of_thresholds,
                           std::vector<float>& values,
                           std::vector<float>& thresholds);
 
 private:
   /** Desired depth of the learned fern. */
-  size_t fern_depth_;
+  std::size_t fern_depth_;
   /** Number of features used to find optimal decision features. */
-  size_t num_of_features_;
+  std::size_t num_of_features_;
   /** Number of thresholds. */
-  size_t num_of_thresholds_;
+  std::size_t num_of_thresholds_;
 
   /** FeatureHandler instance, responsible for creating and evaluating features. */
   pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>* feature_handler_;

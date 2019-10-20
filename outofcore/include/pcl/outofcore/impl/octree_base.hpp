@@ -372,7 +372,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::printBoundingBox(const size_t query_depth) const
+    OutofcoreOctreeBase<ContainerT, PointT>::printBoundingBox(const std::size_t query_depth) const
     {
       std::shared_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       root_node_->printBoundingBox (query_depth);
@@ -381,7 +381,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::getOccupiedVoxelCenters(AlignedPointTVector &voxel_centers, const size_t query_depth) const
+    OutofcoreOctreeBase<ContainerT, PointT>::getOccupiedVoxelCenters(AlignedPointTVector &voxel_centers, const std::size_t query_depth) const
     {
       std::shared_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       if (query_depth > metadata_->getDepth ()) 
@@ -397,7 +397,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::getOccupiedVoxelCenters(std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const size_t query_depth) const
+    OutofcoreOctreeBase<ContainerT, PointT>::getOccupiedVoxelCenters(std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const std::size_t query_depth) const
     {
       std::shared_lock < std::shared_timed_mutex > lock (read_write_mutex_);
       if (query_depth > metadata_->getDepth ())
@@ -667,7 +667,7 @@ namespace pcl
           current_branch.back ()->loadChildren (false);
         }
 
-        for (size_t i = 0; i < 8; i++)
+        for (std::size_t i = 0; i < 8; i++)
         {
           next_branch.push_back (current_branch.back ()->getChildPtr (i));
           //skip that child if it doesn't exist

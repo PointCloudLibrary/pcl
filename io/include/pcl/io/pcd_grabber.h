@@ -135,13 +135,13 @@ namespace pcl
   
       /** \brief Get cloud (in ROS form) at a particular location */
       bool
-      getCloudAt (size_t idx, 
+      getCloudAt (std::size_t idx, 
                   pcl::PCLPointCloud2 &blob,
                   Eigen::Vector4f &origin, 
                   Eigen::Quaternionf &orientation) const;
 
       /** \brief Returns the size */
-      size_t
+      std::size_t
       numFrames () const;
 
     private:
@@ -171,10 +171,10 @@ namespace pcl
     
       // Inherited from FileGrabber
       const typename pcl::PointCloud<PointT>::ConstPtr
-      operator[] (size_t idx) const override;
+      operator[] (std::size_t idx) const override;
 
       // Inherited from FileGrabber
-      size_t
+      std::size_t
       size () const override;
     protected:
 
@@ -221,7 +221,7 @@ namespace pcl
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT> const typename pcl::PointCloud<PointT>::ConstPtr
-  PCDGrabber<PointT>::operator[] (size_t idx) const
+  PCDGrabber<PointT>::operator[] (std::size_t idx) const
   {
     pcl::PCLPointCloud2 blob;
     Eigen::Vector4f origin;
@@ -235,7 +235,7 @@ namespace pcl
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointT> size_t
+  template <typename PointT> std::size_t
   PCDGrabber<PointT>::size () const
   {
     return (numFrames ());

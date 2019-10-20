@@ -133,7 +133,7 @@ namespace pcl
           * \param indices_subset the resultant output set of randomly selected indices
           */
 /*      inline void
-        getRandomSamples (const IndicesPtr &indices, size_t nr_samples, 
+        getRandomSamples (const IndicesPtr &indices, std::size_t nr_samples, 
                           std::set<int> &indices_subset)
         {
           indices_subset.clear ();

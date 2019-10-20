@@ -33,8 +33,8 @@ segmentAndClassify (typename pcl::rec_3d_framework::GlobalNNPipeline<DistT, Poin
     camera.onKeyboardEvent (event);
   };
   vis.registerKeyboardCallback (keyboard_cb);
-  size_t previous_cluster_size = 0;
-  size_t previous_categories_size = 0;
+  std::size_t previous_cluster_size = 0;
+  std::size_t previous_categories_size = 0;
 
   float Z_DIST_ = 1.25f;
   float text_scale = 0.015f;
@@ -68,7 +68,7 @@ segmentAndClassify (typename pcl::rec_3d_framework::GlobalNNPipeline<DistT, Poin
     vis.removePointCloud ("frame");
     vis.addPointCloud<OpenNIFrameSource::PointT> (frame, "frame");
 
-    for (size_t i = 0; i < previous_cluster_size; i++)
+    for (std::size_t i = 0; i < previous_cluster_size; i++)
     {
       std::stringstream cluster_name;
       cluster_name << "cluster_" << i;
@@ -78,7 +78,7 @@ segmentAndClassify (typename pcl::rec_3d_framework::GlobalNNPipeline<DistT, Poin
       vis.removeShape (cluster_name.str ());
     }
 
-    for (size_t i = 0; i < previous_categories_size; i++)
+    for (std::size_t i = 0; i < previous_categories_size; i++)
     {
       std::stringstream cluster_text;
       cluster_text << "cluster_" << i << "_text";
@@ -88,7 +88,7 @@ segmentAndClassify (typename pcl::rec_3d_framework::GlobalNNPipeline<DistT, Poin
     previous_categories_size = 0;
     float dist_ = 0.03f;
 
-    for (size_t i = 0; i < clusters.size (); i++)
+    for (std::size_t i = 0; i < clusters.size (); i++)
     {
       std::stringstream cluster_name;
       cluster_name << "cluster_" << i;
@@ -107,7 +107,7 @@ segmentAndClassify (typename pcl::rec_3d_framework::GlobalNNPipeline<DistT, Poin
 
       Eigen::Vector4f centroid;
       pcl::compute3DCentroid (*xyz_points, indices[i].indices, centroid);
-      for (size_t kk = 0; kk < categories.size (); kk++)
+      for (std::size_t kk = 0; kk < categories.size (); kk++)
       {
 
         pcl::PointXYZ pos;

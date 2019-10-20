@@ -51,9 +51,9 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (PointCloud &output)
   if (extract_removed_indices_)
     removed_indices_->resize (input_->points.size ());
 
-  size_t cp = 0;
-  size_t ri = 0;
-  for (size_t i = 0; i < input_->points.size (); i++)
+  std::size_t cp = 0;
+  std::size_t ri = 0;
+  for (std::size_t i = 0; i < input_->points.size (); i++)
   {
     const NormalT &normal = input_normals_->points[i];
     const PointT &pt = input_->points[i];

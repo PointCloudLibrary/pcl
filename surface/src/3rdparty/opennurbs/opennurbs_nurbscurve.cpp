@@ -97,7 +97,7 @@ ON__UINT32 ON_NurbsCurve::DataCRC(ON__UINT32 current_remainder) const
   current_remainder = ON_CRC32(current_remainder,sizeof(m_cv_count),&m_cv_count);
   if ( m_cv_count > 0 && m_cv_stride > 0 && m_cv )
   {
-    size_t sizeof_cv = CVSize()*sizeof(m_cv[0]);
+    std::size_t sizeof_cv = CVSize()*sizeof(m_cv[0]);
     const double* cv = m_cv;
     int i;
     for ( i = 0; i < m_cv_count; i++ )
@@ -3742,7 +3742,7 @@ bool ON_NurbsCurve::SpanIsSingular(
   int cv_stride = m_cv_stride;
   if ( knot[0] != knot[m_order-2] || knot[m_order-1] != knot[2*m_order-3] )
   {
-    const size_t sizeof_cv = cv_size*sizeof(p[0]);
+    const std::size_t sizeof_cv = cv_size*sizeof(p[0]);
     p = (double*)onmalloc(sizeof_cv*m_order);
     for ( int i = 0; i < m_order; i++ )
       memcpy( p+(i*cv_size), cv+(i*cv_stride), sizeof_cv );
@@ -3788,7 +3788,7 @@ bool ON_NurbsCurve::RemoveSpan(
     return false;
   }
 
-  const size_t sizeof_cv = cv_size*sizeof(m_cv[0]);
+  const std::size_t sizeof_cv = cv_size*sizeof(m_cv[0]);
   int i, j;
 
   const double knot0 = m_knot[span_index+m_order-2];

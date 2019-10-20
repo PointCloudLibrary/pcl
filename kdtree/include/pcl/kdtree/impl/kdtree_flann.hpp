@@ -156,7 +156,7 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k,
   // Do mapping to original point cloud
   if (!identity_mapping_) 
   {
-    for (size_t i = 0; i < static_cast<size_t> (k); ++i)
+    for (std::size_t i = 0; i < static_cast<std::size_t> (k); ++i)
     {
       int& neighbor_index = k_indices[i];
       neighbor_index = index_mapping_[neighbor_index];

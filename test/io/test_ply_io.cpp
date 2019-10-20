@@ -57,9 +57,9 @@ TEST (PCL, PLYReaderWriter)
   cloud.is_dense = true;
 
   srand (static_cast<unsigned int> (time (nullptr)));
-  size_t nr_p = cloud.size ();
+  std::size_t nr_p = cloud.size ();
   // Randomly create a new point cloud
-  for (size_t i = 0; i < nr_p; ++i)
+  for (std::size_t i = 0; i < nr_p; ++i)
   {
     cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
     cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
@@ -85,7 +85,7 @@ TEST (PCL, PLYReaderWriter)
   //PLY DOES preserve organiziation
   EXPECT_EQ (cloud_blob.width * cloud_blob.height, cloud_blob2.width * cloud_blob2.height);
   EXPECT_EQ (cloud_blob.is_dense, cloud.is_dense);
-  EXPECT_EQ (size_t (cloud_blob2.data.size ()),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
+  EXPECT_EQ (std::size_t (cloud_blob2.data.size ()),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
              cloud_blob2.width * cloud_blob2.height * sizeof (PointXYZ));  // test for loadPLYFile ()
 
   // Convert from blob to data type
@@ -96,7 +96,7 @@ TEST (PCL, PLYReaderWriter)
   EXPECT_EQ (cloud.is_dense, cloud2.is_dense);   // test for fromPCLPointCloud2 ()
   EXPECT_EQ (cloud.size (), cloud2.size ());         // test for fromPCLPointCloud2 ()
 
-  for (size_t counter = 0; counter < cloud.size (); ++counter)
+  for (std::size_t counter = 0; counter < cloud.size (); ++counter)
   {
     EXPECT_FLOAT_EQ (cloud[counter].x, cloud2[counter].x);     // test for fromPCLPointCloud2 ()
     EXPECT_FLOAT_EQ (cloud[counter].y, cloud2[counter].y);     // test for fromPCLPointCloud2 ()

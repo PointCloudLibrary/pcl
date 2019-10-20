@@ -212,7 +212,7 @@ pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth
     for(auto &matrix : blob_matrix_)
       matrix.clear();
 
-    for(size_t k = 0; k < dst_labels_.size(); ++k)
+    for(std::size_t k = 0; k < dst_labels_.size(); ++k)
     {
       const PointXYZ& p = cloud.points[k];
       int cc = dst_labels_[k];
@@ -224,7 +224,7 @@ pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth
 
     means[-1].z = 0; // cc == -1 means invalid
 
-    for(size_t k = 0; k < dst_labels_.size(); ++k)
+    for(std::size_t k = 0; k < dst_labels_.size(); ++k)
     {
       int label = lmap_host_[k];
       int cc    = dst_labels_[k];
@@ -250,7 +250,7 @@ pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth
 
     int id = 0;
     for(auto &matrix : blob_matrix_)
-      for(size_t b = 0; b < matrix.size(); ++b)
+      for(std::size_t b = 0; b < matrix.size(); ++b)
       {
         matrix[b].id = id++;
         matrix[b].lid = static_cast<int> (b);
@@ -306,7 +306,7 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth (const pcl::device::Depth&
     for(auto &matrix : blob_matrix_)
       matrix.clear();
 
-    for(size_t k = 0; k < dst_labels_.size(); ++k)
+    for(std::size_t k = 0; k < dst_labels_.size(); ++k)
     {
       const PointXYZ& p = cloud.points[k];
       int cc = dst_labels_[k];
@@ -318,7 +318,7 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth (const pcl::device::Depth&
 
     means[-1].z = 0; // cc == -1 means invalid
 
-    for(size_t k = 0; k < dst_labels_.size(); ++k)
+    for(std::size_t k = 0; k < dst_labels_.size(); ++k)
     {
       int label = lmap_host_[k];
       int cc    = dst_labels_[k];
@@ -344,7 +344,7 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth (const pcl::device::Depth&
 
     int id = 0;
     for(auto &matrix : blob_matrix_)
-      for(size_t b = 0; b < matrix.size(); ++b)
+      for(std::size_t b = 0; b < matrix.size(); ++b)
       {
         matrix[b].id = id++;
         matrix[b].lid = static_cast<int> (b);

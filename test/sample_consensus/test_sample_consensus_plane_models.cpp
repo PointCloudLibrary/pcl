@@ -250,7 +250,7 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
   cloud.points.resize (10);
   normals.resize (10);
 
-  for (size_t idx = 0; idx < cloud.size (); ++idx)
+  for (std::size_t idx = 0; idx < cloud.size (); ++idx)
   {
     cloud.points[idx].x = static_cast<float> ((rand () % 200) - 100);
     cloud.points[idx].y = static_cast<float> ((rand () % 200) - 100);
@@ -326,7 +326,7 @@ main (int argc, char** argv)
   fromPCLPointCloud2 (cloud_blob, *normals_);
 
   indices_.resize (cloud_->points.size ());
-  for (size_t i = 0; i < indices_.size (); ++i) { indices_[i] = int (i); }
+  for (std::size_t i = 0; i < indices_.size (); ++i) { indices_[i] = int (i); }
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

@@ -114,7 +114,7 @@ pcl::segmentation::grabcut::BoykovKolmogorov::preAugmentPaths ()
 }
 
 int
-pcl::segmentation::grabcut::BoykovKolmogorov::addNodes (size_t n)
+pcl::segmentation::grabcut::BoykovKolmogorov::addNodes (std::size_t n)
 {
   int node_id = (int)nodes_.size ();
   nodes_.resize (nodes_.size () + n);

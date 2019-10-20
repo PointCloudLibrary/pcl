@@ -73,13 +73,13 @@ int ON_Buffer::Compare( const ON_Buffer& a, const ON_Buffer& b )
   struct ON_BUFFER_SEGMENT* bseg = b.m_first_segment;
   const ON__UINT64 buffer_size = a.m_buffer_size;
   ON__UINT64 size = 0;
-  size_t aoffset = 0;
-  size_t boffset = 0;
-  size_t asegsize = 0;
-  size_t bsegsize = 0;  
-  size_t asize = 0;
-  size_t bsize = 0;  
-  size_t sz;
+  std::size_t aoffset = 0;
+  std::size_t boffset = 0;
+  std::size_t asegsize = 0;
+  std::size_t bsegsize = 0;  
+  std::size_t asize = 0;
+  std::size_t bsize = 0;  
+  std::size_t sz;
   int rc = 0;
 
   while ( 0 != aseg && 0 != bseg && size < buffer_size )
@@ -91,7 +91,7 @@ int ON_Buffer::Compare( const ON_Buffer& a, const ON_Buffer& b )
         aseg = aseg->m_next_segment;
         continue;
       }
-      asegsize = (size_t)(aseg->m_segment_position1 - aseg->m_segment_position0);
+      asegsize = (std::size_t)(aseg->m_segment_position1 - aseg->m_segment_position0);
       aoffset = 0;
     }
 
@@ -102,7 +102,7 @@ int ON_Buffer::Compare( const ON_Buffer& a, const ON_Buffer& b )
         bseg = bseg->m_next_segment;
         continue;
       }
-      bsegsize = (size_t)(bseg->m_segment_position1 - bseg->m_segment_position0);
+      bsegsize = (std::size_t)(bseg->m_segment_position1 - bseg->m_segment_position0);
       boffset = 0;
     }
     
@@ -134,8 +134,8 @@ int ON_Buffer::Compare( const ON_Buffer& a, const ON_Buffer& b )
     bsize = bsegsize - boffset;
     sz = (asize <= bsize) ? asize : bsize;
     if ( size + sz > buffer_size )
-      sz = (size_t)(buffer_size - size);
-    rc = memcmp( aseg->m_segment_buffer + aoffset, bseg->m_segment_buffer + boffset, (size_t)sz );
+      sz = (std::size_t)(buffer_size - size);
+    rc = memcmp( aseg->m_segment_buffer + aoffset, bseg->m_segment_buffer + boffset, (std::size_t)sz );
     if ( 0 != rc )
       return ((rc<0)?-1:1);
     aoffset += sz;
@@ -276,7 +276,7 @@ bool ON_Buffer::Compact()
       void* last_buffer = ( 0 != m_last_segment->m_segment_buffer && m_last_segment->m_segment_buffer != (unsigned char*)(m_last_segment+1) )
                         ? m_last_segment->m_segment_buffer
                         : 0;
-      struct ON_BUFFER_SEGMENT* new_last_segment = (struct ON_BUFFER_SEGMENT*)onrealloc(m_last_segment,sizeof(*m_last_segment) + ((size_t)sizeof_segment_buffer)); // sizeof_segment_buffer always < 0xFFFFFFFF
+      struct ON_BUFFER_SEGMENT* new_last_segment = (struct ON_BUFFER_SEGMENT*)onrealloc(m_last_segment,sizeof(*m_last_segment) + ((std::size_t)sizeof_segment_buffer)); // sizeof_segment_buffer always < 0xFFFFFFFF
       if ( 0 != new_last_segment )
       {
         if ( new_last_segment != m_last_segment || 0 != last_buffer )
@@ -284,7 +284,7 @@ bool ON_Buffer::Compact()
           new_last_segment->m_segment_buffer = (unsigned char*)(new_last_segment+1);
           if ( 0 != last_buffer )
           {
-            memcpy(new_last_segment->m_segment_buffer,last_buffer,(size_t)sizeof_segment_buffer);
+            memcpy(new_last_segment->m_segment_buffer,last_buffer,(std::size_t)sizeof_segment_buffer);
             onfree(last_buffer);
             last_buffer = 0;
           }
@@ -360,7 +360,7 @@ bool ON_Buffer::ChangeSize(ON__UINT64 buffer_size)
         {
           memset(m_last_segment->m_segment_buffer + (buffer_size - m_last_segment->m_segment_position0),
                  0,
-                 (size_t)(m_last_segment->m_segment_position1 - buffer_size)
+                 (std::size_t)(m_last_segment->m_segment_position1 - buffer_size)
                  );
         }
         m_buffer_size = buffer_size;
@@ -417,13 +417,13 @@ void ON_Buffer::Copy( const ON_Buffer& src )
     ON__UINT64 segment_buffer_size = ( 0 != src_seg->m_segment_buffer)
                                ? src_seg->m_segment_position1 - src_seg->m_segment_position0
                                : 0;
-    dst_seg = (struct ON_BUFFER_SEGMENT*)onmalloc(sizeof(*dst_seg) + ((size_t)segment_buffer_size) );
+    dst_seg = (struct ON_BUFFER_SEGMENT*)onmalloc(sizeof(*dst_seg) + ((std::size_t)segment_buffer_size) );
     memset(dst_seg,0,sizeof(*dst_seg));
 
     if ( segment_buffer_size > 0 )
     {
       dst_seg->m_segment_buffer = (unsigned char*)(dst_seg+1);
-      memcpy( dst_seg->m_segment_buffer, src_seg->m_segment_buffer, (size_t)segment_buffer_size ); // segment_buffer_size always < 0xFFFFFFFF
+      memcpy( dst_seg->m_segment_buffer, src_seg->m_segment_buffer, (std::size_t)segment_buffer_size ); // segment_buffer_size always < 0xFFFFFFFF
     }
 
     if ( 0 == m_first_segment )
@@ -594,7 +594,7 @@ ON__UINT32 ON_Buffer::CRC32( ON__UINT32 current_remainder ) const
       seg_size = m_buffer_size - size;
     }
 
-    current_remainder = ON_CRC32(current_remainder,(size_t)seg_size,seg->m_segment_buffer);
+    current_remainder = ON_CRC32(current_remainder,(std::size_t)seg_size,seg->m_segment_buffer);
     size += seg_size;
     if ( size >= m_buffer_size )
     {
@@ -735,9 +735,9 @@ ON__UINT64 ON_Buffer::Write( ON__UINT64 size, const void* buffer )
         malloc_size *= 2;
 
       malloc_size -= padding_size;
-      // (size_t) cast is safe because malloc_size is always <= max_malloc_size = 16*page_size <  0xFFFFFFFF
-      m_current_segment = (struct ON_BUFFER_SEGMENT*)onmalloc((size_t)malloc_size); 
-      memset(m_current_segment,0,(size_t)malloc_size);
+      // (std::size_t) cast is safe because malloc_size is always <= max_malloc_size = 16*page_size <  0xFFFFFFFF
+      m_current_segment = (struct ON_BUFFER_SEGMENT*)onmalloc((std::size_t)malloc_size); 
+      memset(m_current_segment,0,(std::size_t)malloc_size);
       m_current_segment->m_prev_segment = m_last_segment;
       m_current_segment->m_segment_buffer = (unsigned char*)(m_current_segment + 1);
       if ( 0 != m_last_segment )
@@ -773,7 +773,7 @@ ON__UINT64 ON_Buffer::Write( ON__UINT64 size, const void* buffer )
 
     if ( sz > size )
       sz = size;
-    memcpy( m_current_segment->m_segment_buffer + offset, buffer, (size_t)sz );
+    memcpy( m_current_segment->m_segment_buffer + offset, buffer, (std::size_t)sz );
     m_current_position += sz;
     if ( m_buffer_size < m_current_position )
     {
@@ -849,7 +849,7 @@ ON__UINT64 ON_Buffer::Read( ON__UINT64 size, void* buffer )
 
     if ( sz > size )
       sz = size;
-    memcpy( buffer, m_current_segment->m_segment_buffer + offset, (size_t)sz );
+    memcpy( buffer, m_current_segment->m_segment_buffer + offset, (std::size_t)sz );
     m_current_position += sz;
     rc += sz;
     size -= sz;
@@ -926,7 +926,7 @@ bool ON_Buffer::WriteToBinaryArchive( ON_BinaryArchive& archive ) const
       ON__UINT64 seg_size = (seg->m_segment_position1 - seg->m_segment_position0);
       if ( seg_size + size > m_buffer_size )
         seg_size = m_buffer_size - size;
-      if ( !archive.WriteByte( (size_t)seg_size, seg->m_segment_buffer ) )
+      if ( !archive.WriteByte( (std::size_t)seg_size, seg->m_segment_buffer ) )
       {
         buffer_rc = false;
         break;
@@ -1001,7 +1001,7 @@ bool ON_Buffer::ReadFromBinaryArchive( ON_BinaryArchive& archive )
       ON__UINT64 a_capacity = saved_buffer_size;
       if ( a_capacity > 16*4096 )
         a_capacity = 16*4096;
-      a = onmalloc((size_t)a_capacity);
+      a = onmalloc((std::size_t)a_capacity);
       if ( 0 == a )
         break;
       ON__UINT64 size = 0;
@@ -1011,7 +1011,7 @@ bool ON_Buffer::ReadFromBinaryArchive( ON_BinaryArchive& archive )
         ON__UINT64 read_size = a_capacity;
         if ( read_size > saved_buffer_size - size )
           read_size = saved_buffer_size - size;
-        if ( !archive.ReadByte((size_t)read_size,a) )
+        if ( !archive.ReadByte((std::size_t)read_size,a) )
         {
           buffer_rc = false;
           break;
@@ -1404,7 +1404,7 @@ bool ON_EmbeddedFile::Create(
   // copy file into buffer
   // ~ON_Workspace will free the memory
   ON_Workspace ws;
-  const size_t buffer_capacity = 4090;
+  const std::size_t buffer_capacity = 4090;
   ON__UINT64 buffer_size;
   void* buffer = (void*)ws.GetMemory(buffer_capacity);
   if ( 0 == buffer )
@@ -1426,7 +1426,7 @@ bool ON_EmbeddedFile::Create(
     if ( buffer_size <= 0 )
       break;
     m_file_size += buffer_size;
-    m_file_crc = ON_CRC32(m_file_crc,(size_t)buffer_size,buffer);
+    m_file_crc = ON_CRC32(m_file_crc,(std::size_t)buffer_size,buffer);
     if ( bCompress )
     {
       if ( !compress.In(buffer_size,buffer) )
@@ -1520,7 +1520,7 @@ bool ON_EmbeddedFile::Extract(
       return false;
   }
 
-  const size_t buffer_capacity = 4088;
+  const std::size_t buffer_capacity = 4088;
   void* buffer = ws.GetMemory(buffer_capacity);
   ON__UINT64 file_size = 0;
   ON__UINT32 file_crc = 0;
@@ -1539,8 +1539,8 @@ bool ON_EmbeddedFile::Extract(
     else
     {
       file_size += buffer_size;
-      file_crc = ON_CRC32(file_crc,(size_t)buffer_size,buffer);
-      if ( !ON_FileStream::Write(fp,(size_t)buffer_size,buffer) )
+      file_crc = ON_CRC32(file_crc,(std::size_t)buffer_size,buffer);
+      if ( !ON_FileStream::Write(fp,(std::size_t)buffer_size,buffer) )
         return false;
     }
   }
@@ -1570,7 +1570,7 @@ struct BufferAndSize
 static bool UncompressedToBufferHandler( void* context, ON__UINT32 size, const void* buffer )
 {
   struct BufferAndSize* bs = (struct BufferAndSize*)context;
-  size_t sz = (bs->buffer_size < size) ? (size_t)bs->buffer_size  : (size_t)size;
+  std::size_t sz = (bs->buffer_size < size) ? (std::size_t)bs->buffer_size  : (std::size_t)size;
   if ( sz > 0 )
   {
     memcpy(bs->buffer,buffer,sz);
@@ -1607,7 +1607,7 @@ bool ON_EmbeddedFile::Extract(
       return false;
   }
 
-  const size_t buffer_capacity = 4088;
+  const std::size_t buffer_capacity = 4088;
   void* buffer = ws.GetMemory(buffer_capacity);
   ON__UINT64 file_size = 0;
   ON__UINT32 file_crc = 0;
@@ -1626,8 +1626,8 @@ bool ON_EmbeddedFile::Extract(
     else
     {
       file_size += buffer_size;
-      file_crc = ON_CRC32(file_crc,(size_t)buffer_size,buffer);
-      size_t sz = (bs.buffer_size < buffer_size) ? (size_t)bs.buffer_size  : (size_t)buffer_size;
+      file_crc = ON_CRC32(file_crc,(std::size_t)buffer_size,buffer);
+      std::size_t sz = (bs.buffer_size < buffer_size) ? (std::size_t)bs.buffer_size  : (std::size_t)buffer_size;
       if ( sz > 0 )
       {
         memcpy(bs.buffer,buffer,sz);

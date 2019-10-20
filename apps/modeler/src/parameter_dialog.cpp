@@ -84,7 +84,7 @@ pcl::modeler::ParameterDialog::exec()
   QTableView tableView(this);
   tableView.setModel(&parameterModel);
 
-  size_t currentRow = 0;
+  std::size_t currentRow = 0;
   for(const auto &name_parameter : name_parameter_map_)
   {
     QModelIndex name = parameterModel.index(int (currentRow), 0, QModelIndex());
@@ -134,7 +134,7 @@ pcl::modeler::ParameterDialog::exec()
 void
 pcl::modeler::ParameterDialog::reset()
 {
-  size_t currentRow = 0;
+  std::size_t currentRow = 0;
   for (auto &name_parameter : name_parameter_map_)
   {
     name_parameter.second->reset();
@@ -154,8 +154,8 @@ pcl::modeler::Parameter* pcl::modeler::ParameterDelegate::getCurrentParameter(co
 {
   std::map<std::string, Parameter*>::iterator currentParameter = parameter_map_.begin();
 
-  size_t currentRow = 0;
-  while(currentRow < (size_t) index.row() && currentParameter != parameter_map_.end()) {
+  std::size_t currentRow = 0;
+  while(currentRow < (std::size_t) index.row() && currentParameter != parameter_map_.end()) {
     ++ currentParameter;
     ++ currentRow;
   }

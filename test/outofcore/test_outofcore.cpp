@@ -140,7 +140,7 @@ TEST (PCL, Outofcore_Octree_Build)
   // p.triadID = 0;
 
   // Radomize it's position in space
-  for (size_t i = 0; i < numPts; i++)
+  for (std::size_t i = 0; i < numPts; i++)
   {
     p.x = dist (rng);
     p.y = dist (rng);
@@ -190,7 +190,7 @@ TEST (PCL, Outofcore_Octree_Build_LOD)
   points.resize (numPts);
 
   // Radomize it's position in space
-  for (size_t i = 0; i < numPts; i++)
+  for (std::size_t i = 0; i < numPts; i++)
   {
     p.x = dist (rng);
     p.y = dist (rng);
@@ -328,7 +328,7 @@ TEST (PCL, Outofcore_Ram_Tree)
   PointT p;
 
   points.resize (numPts);
-  for (size_t i = 0; i < numPts; i++)
+  for (std::size_t i = 0; i < numPts; i++)
   {
     p.x = dist(rng);
     p.y = dist(rng);
@@ -522,7 +522,7 @@ TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
   test_cloud->reserve (numPts);
   
   //generate some random points
-  for (size_t i=0; i < numPts; i++)
+  for (std::size_t i=0; i < numPts; i++)
   {
     PointT tmp (static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024), 
@@ -608,7 +608,7 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
   second_cloud->reserve (numPts);
   
   //generate some random points
-  for (size_t i=0; i < numPts; i++)
+  for (std::size_t i=0; i < numPts; i++)
   {
     PointT tmp (static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024), 
@@ -617,7 +617,7 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
     test_cloud->points.push_back (tmp);
   }
 
-  for (size_t i=0; i < numPts; i++)
+  for (std::size_t i=0; i < numPts; i++)
   {
     PointT tmp (static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024), 
@@ -640,7 +640,7 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
   pcl_cloud.buildLOD ();
   
   //check that there is at least one point in each LOD
-  for (size_t i=0; i<pcl_cloud.getDepth (); i++)
+  for (std::size_t i=0; i<pcl_cloud.getDepth (); i++)
     EXPECT_GE (pcl_cloud.getNumPointsAtDepth (i), 1) << "No points in the LOD indicates buildLOD failed\n";
 
   EXPECT_EQ (2*numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ())) << "Points in leaves were lost while building LOD!\n";
@@ -671,7 +671,7 @@ TEST_F (OutofcoreTest, Outofcore_PointCloudInput_LOD)
   second_cloud->reserve (numPts);
   
   //generate some random points
-  for (size_t i=0; i < numPts; i++)
+  for (std::size_t i=0; i < numPts; i++)
   {
     PointT tmp (static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024), 
@@ -680,7 +680,7 @@ TEST_F (OutofcoreTest, Outofcore_PointCloudInput_LOD)
     test_cloud->points.push_back (tmp);
   }
 
-  for (size_t i=0; i < numPts; i++)
+  for (std::size_t i=0; i < numPts; i++)
   {
     PointT tmp (static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024), 
@@ -715,7 +715,7 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
   test_cloud->reserve (numPts);
 
   //generate some random points
-  for (size_t i=0; i < numPts; i++)
+  for (std::size_t i=0; i < numPts; i++)
   {
     PointT tmp (static_cast<float> (i % 200) - 99 , 
                  static_cast<float> (i % 200) - 99, 
@@ -749,7 +749,7 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
   point_cloud.width = static_cast<std::uint32_t> (numPts);
   point_cloud.height = 1;
 
-  for (size_t i=0; i < numPts; i++)
+  for (std::size_t i=0; i < numPts; i++)
     point_cloud.points.emplace_back(static_cast<float>(rand () % 10), static_cast<float>(rand () % 10), static_cast<float>(rand () % 10));
 
 
@@ -789,7 +789,7 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
   second_cloud->reserve (numPts);
   
   //generate some random points
-  for (size_t i=0; i < numPts; i++)
+  for (std::size_t i=0; i < numPts; i++)
   {
     PointT tmp (static_cast<float> (i % 50), 
                 static_cast<float> (i % 50),
@@ -798,7 +798,7 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
     first_cloud->points.push_back (tmp);
   }
 
-  for (size_t i=0; i < numPts; i++)
+  for (std::size_t i=0; i < numPts; i++)
   {
     PointT tmp (static_cast<float> (i % 50), 
                  static_cast<float> (i % 50), 
@@ -822,8 +822,8 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
   pcl::PCLPointCloud2::Ptr result (new pcl::PCLPointCloud2 ());
   shallow_outofcore.queryBBIncludes (min, max, 0, result);
   
-  size_t num_points_queried = result->width*result->height;
-  size_t num_points_inserted = first_cloud->width*first_cloud->height + second_cloud->width*second_cloud->height;
+  std::size_t num_points_queried = result->width*result->height;
+  std::size_t num_points_inserted = first_cloud->width*first_cloud->height + second_cloud->width*second_cloud->height;
 
   EXPECT_EQ (num_points_inserted, num_points_queried) << "If num_points_inserted > num_points_on_disk, then points were dropped on insertion of multiple clouds in the outofcore octree";
 }
@@ -846,7 +846,7 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
   test_cloud->reserve (numPts);
 
   //generate some random points
-  for (size_t i=0; i < numPts; i++)
+  for (std::size_t i=0; i < numPts; i++)
   {
     PointT tmp (static_cast<float> (i % 50) - 50 , 
                  static_cast<float> (i % 50) - 50, 
@@ -898,7 +898,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
   test_cloud->reserve (numPts);
 
   //generate some random points
-  for (size_t i=0; i < numPts; i++)
+  for (std::size_t i=0; i < numPts; i++)
   {
     PointT tmp (static_cast<float> (i % 50) - 50 , 
                  static_cast<float> (i % 50) - 50, 

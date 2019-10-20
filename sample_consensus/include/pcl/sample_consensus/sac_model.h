@@ -297,7 +297,7 @@ namespace pcl
         {
           // Prepare a set of indices to be used (entire cloud)
           indices_->resize (cloud->points.size ());
-          for (size_t i = 0; i < cloud->points.size (); ++i) 
+          for (std::size_t i = 0; i < cloud->points.size (); ++i) 
             (*indices_)[i] = static_cast<int> (i);
         }
         shuffled_indices_ = *indices_;
@@ -412,7 +412,7 @@ namespace pcl
       computeVariance (const std::vector<double> &error_sqr_dists) const
       {
         std::vector<double> dists (error_sqr_dists);
-        const size_t medIdx = dists.size () >> 1;
+        const std::size_t medIdx = dists.size () >> 1;
         std::nth_element (dists.begin (), dists.begin () + medIdx, dists.end ());
         double median_error_sqr = dists[medIdx];
         return (2.1981 * median_error_sqr);
@@ -441,9 +441,9 @@ namespace pcl
       inline void
       drawIndexSample (std::vector<int> &sample)
       {
-        size_t sample_size = sample.size ();
-        size_t index_size = shuffled_indices_.size ();
-        for (size_t i = 0; i < sample_size; ++i)
+        std::size_t sample_size = sample.size ();
+        std::size_t index_size = shuffled_indices_.size ();
+        for (std::size_t i = 0; i < sample_size; ++i)
           // The 1/(RAND_MAX+1.0) trick is when the random numbers are not uniformly distributed and for small modulo
           // elements, that does not matter (and nowadays, random number generators are good)
           //std::swap (shuffled_indices_[i], shuffled_indices_[i + (rand () % (index_size - i))]);
@@ -458,8 +458,8 @@ namespace pcl
       inline void
       drawIndexSampleRadius (std::vector<int> &sample)
       {
-        size_t sample_size = sample.size ();
-        size_t index_size = shuffled_indices_.size ();
+        std::size_t sample_size = sample.size ();
+        std::size_t index_size = shuffled_indices_.size ();
 
         std::swap (shuffled_indices_[0], shuffled_indices_[0 + (rnd () % (index_size - 0))]);
         //const PointT& pt0 = (*input_)[shuffled_indices_[0]];
@@ -478,14 +478,14 @@ namespace pcl
         if (indices.size () < sample_size - 1)
         {
           // radius search failed, make an invalid model
-          for(size_t i = 1; i < sample_size; ++i)
+          for(std::size_t i = 1; i < sample_size; ++i)
             shuffled_indices_[i] = shuffled_indices_[0];
         }
         else
         {
-          for (size_t i = 0; i < sample_size-1; ++i)
+          for (std::size_t i = 0; i < sample_size-1; ++i)
             std::swap (indices[i], indices[i + (rnd () % (indices.size () - i))]);
-          for (size_t i = 1; i < sample_size; ++i)
+          for (std::size_t i = 1; i < sample_size; ++i)
             shuffled_indices_[i] = indices[i-1];
         }
 

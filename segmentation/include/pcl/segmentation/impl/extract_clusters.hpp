@@ -81,7 +81,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
         continue;
       }
 
-      for (size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
+      for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
       {
         if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
@@ -99,7 +99,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
     {
       pcl::PointIndices r;
       r.indices.resize (seed_queue.size ());
-      for (size_t j = 0; j < seed_queue.size (); ++j)
+      for (std::size_t j = 0; j < seed_queue.size (); ++j)
         r.indices[j] = seed_queue[j];
 
       // These two lines should not be needed: (can anyone confirm?) -FF
@@ -169,7 +169,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
         continue;
       }
 
-      for (size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
+      for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
       {
         if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
@@ -187,7 +187,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
     {
       pcl::PointIndices r;
       r.indices.resize (seed_queue.size ());
-      for (size_t j = 0; j < seed_queue.size (); ++j)
+      for (std::size_t j = 0; j < seed_queue.size (); ++j)
         // This is the only place where indices come into play
         r.indices[j] = seed_queue[j];
 

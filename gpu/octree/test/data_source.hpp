@@ -52,8 +52,8 @@ struct DataGenerator
 {
     using PointType = pcl::gpu::Octree::PointType;
 
-    size_t data_size;            
-    size_t tests_num;
+    std::size_t data_size;            
+    std::size_t tests_num;
 
     float cube_size;
     float max_radius;     
@@ -78,7 +78,7 @@ struct DataGenerator
         srand (0);
 
         points.resize(data_size);
-        for(size_t i = 0; i < data_size; ++i)
+        for(std::size_t i = 0; i < data_size; ++i)
         {            
             points[i].x = ((float)rand())/RAND_MAX * cube_size;  
             points[i].y = ((float)rand())/RAND_MAX * cube_size;  
@@ -88,7 +88,7 @@ struct DataGenerator
 
         queries.resize(tests_num);
         radiuses.resize(tests_num);
-        for (size_t i = 0; i < tests_num; ++i)
+        for (std::size_t i = 0; i < tests_num; ++i)
         {            
             queries[i].x = ((float)rand())/RAND_MAX * cube_size;  
             queries[i].y = ((float)rand())/RAND_MAX * cube_size;  
@@ -96,7 +96,7 @@ struct DataGenerator
             radiuses[i]  = ((float)rand())/RAND_MAX * max_radius;	
         };        
 
-        for(size_t i = 0; i < tests_num/2; ++i)
+        for(std::size_t i = 0; i < tests_num/2; ++i)
             indices.push_back(i*2);
     }
 
@@ -109,7 +109,7 @@ struct DataGenerator
         int step = tests_num/value100;        
 
         bfresutls.resize(tests_num);
-        for(size_t i = 0; i < tests_num; ++i)
+        for(std::size_t i = 0; i < tests_num; ++i)
         {            
             if (log && i % step == 0)
             {
@@ -123,7 +123,7 @@ struct DataGenerator
             float query_radius = radius > 0 ? radius : radiuses[i];
             const PointType& query = queries[i];
 
-            for(size_t ind = 0; ind < points.size(); ++ind)
+            for(std::size_t ind = 0; ind < points.size(); ++ind)
             {
                 const PointType& point = points[ind];
 

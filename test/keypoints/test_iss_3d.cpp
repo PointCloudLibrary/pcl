@@ -74,7 +74,7 @@ TEST (PCL, ISSKeypoint3D_WBE)
   //
   // Compare to previously validated output
   //
-  const size_t correct_nr_keypoints = 6;
+  const std::size_t correct_nr_keypoints = 6;
   const float correct_keypoints[correct_nr_keypoints][3] =
     {
       // { x,  y,  z}
@@ -89,7 +89,7 @@ TEST (PCL, ISSKeypoint3D_WBE)
 
   ASSERT_EQ (keypoints.points.size (), correct_nr_keypoints);
 
-  for (size_t i = 0; i < correct_nr_keypoints; ++i)
+  for (std::size_t i = 0; i < correct_nr_keypoints; ++i)
   {
     EXPECT_NEAR (keypoints.points[i].x, correct_keypoints[i][0], 1e-6);
     EXPECT_NEAR (keypoints.points[i].y, correct_keypoints[i][1], 1e-6);
@@ -130,7 +130,7 @@ TEST (PCL, ISSKeypoint3D_BE)
   //
   // Compare to previously validated output
   //
-  const size_t correct_nr_keypoints = 5;
+  const std::size_t correct_nr_keypoints = 5;
   const float correct_keypoints[correct_nr_keypoints][3] =
     {
       // { x,  y,  z}
@@ -143,7 +143,7 @@ TEST (PCL, ISSKeypoint3D_BE)
 
   ASSERT_EQ (keypoints.points.size (), correct_nr_keypoints);
 
-  for (size_t i = 0; i < correct_nr_keypoints; ++i)
+  for (std::size_t i = 0; i < correct_nr_keypoints; ++i)
   {
     EXPECT_NEAR (keypoints.points[i].x, correct_keypoints[i][0], 1e-6);
     EXPECT_NEAR (keypoints.points[i].y, correct_keypoints[i][1], 1e-6);

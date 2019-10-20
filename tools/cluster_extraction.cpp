@@ -134,7 +134,7 @@ saveCloud (const std::string &filename, const std::vector<pcl::PCLPointCloud2::P
 
   std::string basename = filename.substr (0, filename.length () - 4);
 
-  for (size_t i = 0; i < output.size (); i++)
+  for (std::size_t i = 0; i < output.size (); i++)
   {
     std::string clustername = basename + std::to_string(i) + ".pcd";
     print_highlight ("Saving "); print_value ("%s ", clustername.c_str ());

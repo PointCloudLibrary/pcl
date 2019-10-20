@@ -157,12 +157,12 @@ protected:
   void
   convert (std::vector<std::uint16_t>& depthData_arg,
            std::vector<std::uint8_t>& rgbData_arg,
-           size_t width_arg,
-           size_t height_arg,
+           std::size_t width_arg,
+           std::size_t height_arg,
            float focalLength_arg,
            pcl::PointCloud<PointXYZRGB>& cloud_arg) const
   {
-    size_t cloud_size = width_arg * height_arg;
+    std::size_t cloud_size = width_arg * height_arg;
 
     // Reset point cloud
     cloud_arg.points.clear ();
@@ -180,7 +180,7 @@ protected:
     const float fl_const = 1.0f / focalLength_arg;
     static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-    size_t i = 0;
+    std::size_t i = 0;
     for (int y = -centerY; y < +centerY; ++y)
       for (int x = -centerX; x < +centerX; ++x)
       {

@@ -273,7 +273,7 @@ main (int argc, char **argv)
   std::vector<double> scales_vector_double = default_scales_vector;
   pcl::console::parse_multiple_arguments (argc, argv, "-scales", scales_vector_double);
   std::vector<float> scales_vector (scales_vector_double.size ());
-  for (size_t i = 0; i < scales_vector_double.size (); ++i) scales_vector[i] = float (scales_vector_double[i]);
+  for (std::size_t i = 0; i < scales_vector_double.size (); ++i) scales_vector[i] = float (scales_vector_double[i]);
 
   float alpha = default_alpha;
   pcl::console::parse_argument (argc, argv, "-persistence_alpha", alpha);

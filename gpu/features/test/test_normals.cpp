@@ -65,7 +65,7 @@ TEST(PCL_FeaturesGPU, normals_lowlevel)
     // convert to single array format
     std::vector<int> neighbors_all(source.max_nn_size * cloud.size());
     PtrStep<int> ps(&neighbors_all[0], source.max_nn_size * PtrStep<int>::elem_size);    
-    for(size_t i = 0; i < cloud.size(); ++i)
+    for(std::size_t i = 0; i < cloud.size(); ++i)
         copy(source.neighbors_all[i].begin(), source.neighbors_all[i].end(), ps.ptr(i));
 
     NeighborIndices indices;
@@ -78,7 +78,7 @@ TEST(PCL_FeaturesGPU, normals_lowlevel)
     std::vector<PointXYZ> downloaded;
     normals.download(downloaded);
 
-    for(size_t i = 0; i < downloaded.size(); ++i)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         Normal n = source.normals->points[i];
 
@@ -142,7 +142,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_1)
     std::vector<PointXYZ> downloaded;
     normals_device.download(downloaded);
 
-    for(size_t i = 0; i < downloaded.size(); ++i)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         Normal n = normals->points[i];
 
@@ -207,7 +207,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_2)
     std::vector<PointXYZ> downloaded;
     normals_device.download(downloaded);
 
-    for(size_t i = 0; i < downloaded.size(); ++i)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         Normal n = normals->points[i];
 
@@ -272,7 +272,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_3)
     std::vector<PointXYZ> downloaded;
     normals_device.download(downloaded);
 
-    for(size_t i = 0; i < downloaded.size(); ++i)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         Normal n = normals->points[i];
 
@@ -346,7 +346,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_4)
     std::vector<PointXYZ> downloaded;
     normals_device.download(downloaded);
 
-   for(size_t i = 0; i < downloaded.size(); ++i)
+   for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         Normal n = normals->points[i];
 

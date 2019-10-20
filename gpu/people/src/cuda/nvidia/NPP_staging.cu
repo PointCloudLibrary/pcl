@@ -299,7 +299,7 @@ NCVStatus scanRowsWrapperDevice(T_in *d_src, Ncv32u srcStride,
                                 T_out *d_dst, Ncv32u dstStride, NcvSize32u roi)
 {
     cudaChannelFormatDesc cfdTex;
-    size_t alignmentOffset = 0;
+    std::size_t alignmentOffset = 0;
     if (sizeof(T_in) == 1)
     {
         cfdTex = cudaCreateChannelDesc<Ncv8u>();
@@ -749,7 +749,7 @@ static NCVStatus decimateWrapperDevice(T *d_src, Ncv32u srcStep,
         {
             cfdTexSrc = cudaCreateChannelDesc<Ncv32u>();
 
-            size_t alignmentOffset;
+            std::size_t alignmentOffset;
             ncvAssertCUDAReturn(cudaBindTexture(&alignmentOffset, tex32u, d_src, cfdTexSrc, srcRoi.height * srcStep * sizeof(T)), NPPST_TEXTURE_BIND_ERROR);
             ncvAssertReturn(alignmentOffset==0, NPPST_TEXTURE_BIND_ERROR);
         }
@@ -757,7 +757,7 @@ static NCVStatus decimateWrapperDevice(T *d_src, Ncv32u srcStep,
         {
             cfdTexSrc = cudaCreateChannelDesc<uint2>();
 
-            size_t alignmentOffset;
+            std::size_t alignmentOffset;
             ncvAssertCUDAReturn(cudaBindTexture(&alignmentOffset, tex64u, d_src, cfdTexSrc, srcRoi.height * srcStep * sizeof(T)), NPPST_TEXTURE_BIND_ERROR);
             ncvAssertReturn(alignmentOffset==0, NPPST_TEXTURE_BIND_ERROR);
         }
@@ -985,7 +985,7 @@ NCVStatus nppiStRectStdDev_32f_C1R(Ncv32u *d_sum, Ncv32u sumStep,
         cfdTexSrc = cudaCreateChannelDesc<Ncv32u>();
         cfdTexSqr = cudaCreateChannelDesc<uint2>();
 
-        size_t alignmentOffset;
+        std::size_t alignmentOffset;
         ncvAssertCUDAReturn(cudaBindTexture(&alignmentOffset, tex32u, d_sum, cfdTexSrc, (roi.height + rect.y + rect.height) * sumStep * sizeof(Ncv32u)), NPPST_TEXTURE_BIND_ERROR);
         ncvAssertReturn(alignmentOffset==0, NPPST_TEXTURE_BIND_ERROR);
         ncvAssertCUDAReturn(cudaBindTexture(&alignmentOffset, tex64u, d_sqsum, cfdTexSqr, (roi.height + rect.y + rect.height) * sqsumStep * sizeof(Ncv64u)), NPPST_TEXTURE_BIND_ERROR);

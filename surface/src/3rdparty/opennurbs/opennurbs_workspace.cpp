@@ -62,7 +62,7 @@ void ON_Workspace::Destroy()
   m_pMemBlk = 0;
 }
 
-void* ON_Workspace::GetMemory( size_t size )
+void* ON_Workspace::GetMemory( std::size_t size )
 {
   void* p = NULL;
   if ( size > 0 ) 
@@ -78,7 +78,7 @@ void* ON_Workspace::GetMemory( size_t size )
   return p;
 }
 
-void* ON_Workspace::GrowMemory( void* p, size_t size )
+void* ON_Workspace::GrowMemory( void* p, std::size_t size )
 {
   void* newp = NULL;
   if ( !p ) {
@@ -146,34 +146,34 @@ int ON_Workspace::KeepMemory( void* p )
   return rc;
 }
 
-int* ON_Workspace::GetIntMemory( size_t size )
+int* ON_Workspace::GetIntMemory( std::size_t size )
 {
   int* pi = (int*)(GetMemory(size*sizeof(*pi)));
   return pi;
 }
 
-double* ON_Workspace::GetDoubleMemory( size_t size )
+double* ON_Workspace::GetDoubleMemory( std::size_t size )
 {
   double* pd = (double*)(GetMemory(size*sizeof(*pd)));
   return pd;
 }
 
-ON_3dPoint* ON_Workspace::GetPointMemory( size_t size )
+ON_3dPoint* ON_Workspace::GetPointMemory( std::size_t size )
 {
   ON_3dPoint* p3d = (ON_3dPoint*)(GetMemory(size*sizeof(*p3d)));
   return p3d;
 }
 
-ON_3dVector* ON_Workspace::GetVectorMemory( size_t size )
+ON_3dVector* ON_Workspace::GetVectorMemory( std::size_t size )
 {
   ON_3dVector* v3d = (ON_3dVector*)(GetMemory(size*sizeof(*v3d)));
   return v3d;
 }
 
-int** ON_Workspace::GetIntMemory( size_t row_count, size_t col_count )
+int** ON_Workspace::GetIntMemory( std::size_t row_count, std::size_t col_count )
 {
   int** p = 0;
-  size_t i;
+  std::size_t i;
   if ( row_count > 0 && col_count > 0 )
   {
     p = (int**)GetMemory(row_count*(sizeof(*p) + col_count*sizeof(**p)));
@@ -189,10 +189,10 @@ int** ON_Workspace::GetIntMemory( size_t row_count, size_t col_count )
   return p;
 }
 
-double** ON_Workspace::GetDoubleMemory( size_t row_count, size_t col_count )
+double** ON_Workspace::GetDoubleMemory( std::size_t row_count, std::size_t col_count )
 {
   double** p = 0;
-  size_t i;
+  std::size_t i;
   if ( row_count > 0 && col_count > 0 )
   {
     // i keeps doubles aligned
@@ -213,25 +213,25 @@ double** ON_Workspace::GetDoubleMemory( size_t row_count, size_t col_count )
 }
 
 
-int* ON_Workspace::GrowIntMemory( int* p, size_t size )
+int* ON_Workspace::GrowIntMemory( int* p, std::size_t size )
 {
   int* pi = (int*)(GrowMemory(p,size*sizeof(*pi)));
   return pi;
 }
 
-double* ON_Workspace::GrowDoubleMemory( double* p, size_t size )
+double* ON_Workspace::GrowDoubleMemory( double* p, std::size_t size )
 {
   double* pd = (double*)(GrowMemory(p,size*sizeof(*pd)));
   return pd;
 }
 
-ON_3dPoint* ON_Workspace::GrowPointMemory( ON_3dPoint* p, size_t size )
+ON_3dPoint* ON_Workspace::GrowPointMemory( ON_3dPoint* p, std::size_t size )
 {
   ON_3dPoint* p3d = (ON_3dPoint*)(GrowMemory(p,size*sizeof(*p3d)));
   return p3d;
 }
 
-ON_3dVector* ON_Workspace::GrowVectorMemory( ON_3dVector* p, size_t size )
+ON_3dVector* ON_Workspace::GrowVectorMemory( ON_3dVector* p, std::size_t size )
 {
   ON_3dVector* v3d = (ON_3dVector*)(GrowMemory(p,size*sizeof(*v3d)));
   return v3d;

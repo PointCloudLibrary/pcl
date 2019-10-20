@@ -85,7 +85,7 @@ drawParticles (pcl::visualization::PCLVisualizer& viz)
     {
       //Set pointCloud with particle's points
       pcl::PointCloud<pcl::PointXYZ>::Ptr particle_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-      for (size_t i = 0; i < particles->points.size (); i++)
+      for (std::size_t i = 0; i < particles->points.size (); i++)
 	{
 	  pcl::PointXYZ point;
           

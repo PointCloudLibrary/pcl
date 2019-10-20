@@ -89,7 +89,7 @@ namespace pcl
           {};
 
           /** \brief Get the size of data stored on host*/
-          inline size_t
+          inline std::size_t
           getVolumeSize () const { return resolution[0] * resolution[1] * resolution[2]; };
 
           friend inline std::ostream&
@@ -184,7 +184,7 @@ namespace pcl
           * \param[in] shiftZ Offset in indices.
           * \return DeviceArray with disabled reference counting that points to filled part of cloud_buffer.
           */
-        size_t
+        std::size_t
         fetchSliceAsCloud (DeviceArray<PointType>& cloud_buffer_xyz, DeviceArray<float>& cloud_buffer_intensity, const tsdf_buffer* buffer, int shiftX, int shiftY, int shiftZ ) const;
 
         /** \brief Computes normals as gradient of tsdf for given points
@@ -226,7 +226,7 @@ namespace pcl
         /** \brief Releases tsdf buffer on GPU */
         void releaseVolume () {volume_.release();}
 
-        void print_warn(const char* arg1, size_t size);
+        void print_warn(const char* arg1, std::size_t size);
 
         /** \brief Set the header for data stored on host directly. Useful if directly writing into volume and weights */
         inline void
@@ -237,7 +237,7 @@ namespace pcl
         }
 
         /** \brief Returns overall number of voxels in grid stored on host */
-        inline size_t
+        inline std::size_t
         size () const {
           return header_.getVolumeSize ();
         }

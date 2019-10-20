@@ -1948,7 +1948,7 @@ bool ON_Brep::ChangeVertex( int old_vi, int new_vi, bool bClearTolerances )
     return true;
 
   // clear type bits
-  old_vi = (int)(old_v - m_V.Array()); // the (int) is for 64 bit size_t conversion
+  old_vi = (int)(old_v - m_V.Array()); // the (int) is for 64 bit std::size_t conversion
   new_vi = (int)(new_v - m_V.Array());
   if ( old_vi == new_vi )
     return true;

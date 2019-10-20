@@ -339,7 +339,7 @@ namespace pcl
       * \param[out] output buffer large enough to store point cloud
       * \return number of point stored to passed buffer
       */ 
-    PCL_EXPORTS size_t 
+    PCL_EXPORTS std::size_t 
     extractCloud (const PtrStep<short2>& volume, const float3& volume_size, PtrSz<PointType> output);
 
     /** \brief Performs normals computation for given points using tsdf volume

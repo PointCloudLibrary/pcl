@@ -126,7 +126,7 @@ main (int argc, char** argv)
   viewer.addPointCloud (cloud_scene);
   viewer.spinOnce (10);
   PCL_INFO ("Registering models to scene ...\n");
-  for (size_t model_i = 0; model_i < cloud_models.size (); ++model_i)
+  for (std::size_t model_i = 0; model_i < cloud_models.size (); ++model_i)
   {
 
     PPFRegistration<PointNormal, PointNormal> ppf_registration;

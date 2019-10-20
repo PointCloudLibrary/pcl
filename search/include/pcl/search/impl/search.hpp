@@ -119,14 +119,14 @@ pcl::search::Search<PointT>::nearestKSearch (
   {
     k_indices.resize (cloud.size ());
     k_sqr_distances.resize (cloud.size ());
-    for (size_t i = 0; i < cloud.size (); i++)
+    for (std::size_t i = 0; i < cloud.size (); i++)
       nearestKSearch (cloud, static_cast<int> (i), k, k_indices[i], k_sqr_distances[i]);
   }
   else
   {
     k_indices.resize (indices.size ());
     k_sqr_distances.resize (indices.size ());
-    for (size_t i = 0; i < indices.size (); i++)
+    for (std::size_t i = 0; i < indices.size (); i++)
       nearestKSearch (cloud, indices[i], k, k_indices[i], k_sqr_distances[i]);
   }
 }
@@ -171,14 +171,14 @@ pcl::search::Search<PointT>::radiusSearch (
   {
     k_indices.resize (cloud.size ());
     k_sqr_distances.resize (cloud.size ());
-    for (size_t i = 0; i < cloud.size (); i++)
+    for (std::size_t i = 0; i < cloud.size (); i++)
       radiusSearch (cloud, static_cast<int> (i), radius,k_indices[i], k_sqr_distances[i], max_nn);
   }
   else
   {
     k_indices.resize (indices.size ());
     k_sqr_distances.resize (indices.size ());
-    for (size_t i = 0; i < indices.size (); i++)
+    for (std::size_t i = 0; i < indices.size (); i++)
       radiusSearch (cloud,indices[i],radius,k_indices[i],k_sqr_distances[i], max_nn);
   }
 }
@@ -189,14 +189,14 @@ pcl::search::Search<PointT>::sortResults (
     std::vector<int>& indices, std::vector<float>& distances) const
 {
   std::vector<int> order (indices.size ());
-  for (size_t idx = 0; idx < order.size (); ++idx)
+  for (std::size_t idx = 0; idx < order.size (); ++idx)
     order [idx] = static_cast<int> (idx);
 
   Compare compare (distances);
   sort (order.begin (), order.end (), compare);
 
   std::vector<int> sorted (indices.size ());
-  for (size_t idx = 0; idx < order.size (); ++idx)
+  for (std::size_t idx = 0; idx < order.size (); ++idx)
     sorted [idx] = indices[order [idx]];
 
   indices = sorted;

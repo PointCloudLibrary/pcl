@@ -239,7 +239,7 @@ namespace pcl
               int seekret = _fseeki64 (f, i * sizeof (PointT), SEEK_SET);
               (void)seekret;
               assert (seekret == 0);
-              size_t readlen = fread (loc, sizeof (PointT), 1, f);
+              std::size_t readlen = fread (loc, sizeof (PointT), 1, f);
               (void)readlen;
               assert (readlen == 1);
 

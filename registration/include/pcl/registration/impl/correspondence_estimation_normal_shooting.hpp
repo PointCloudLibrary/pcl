@@ -88,7 +88,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       min_dist = std::numeric_limits<double>::max ();
       
       // Find the best correspondence
-      for (size_t j = 0; j < nn_indices.size (); j++)
+      for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
         // computing the distance between a point and a line in 3d. 
         // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
@@ -131,7 +131,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       min_dist = std::numeric_limits<double>::max ();
       
       // Find the best correspondence
-      for (size_t j = 0; j < nn_indices.size (); j++)
+      for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
         PointSource pt_src;
         // Copy the source data to a target PointTarget format so we can search in the tree
@@ -210,7 +210,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       min_dist = std::numeric_limits<double>::max ();
       
       // Find the best correspondence
-      for (size_t j = 0; j < nn_indices.size (); j++)
+      for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
         // computing the distance between a point and a line in 3d. 
         // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
@@ -261,7 +261,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       min_dist = std::numeric_limits<double>::max ();
       
       // Find the best correspondence
-      for (size_t j = 0; j < nn_indices.size (); j++)
+      for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
         PointSource pt_src;
         // Copy the source data to a target PointTarget format so we can search in the tree

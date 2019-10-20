@@ -89,7 +89,7 @@ TEST (PCL, IntensityGradientEstimation)
   grad_est.compute (gradient);
 
   // Compare to gradient estimates to actual values
-  for (size_t i = 0; i < cloud_ptr->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_ptr->points.size (); ++i)
   {
     const PointXYZI &p = cloud_ptr->points[i];
 

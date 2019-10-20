@@ -41,7 +41,7 @@ ON__QSORT_FASTER_THAN_HSORT.
 #define work_size 64
 
 void 
-ON_qsort( void *base, size_t nel, size_t width, int (*compar)(void*,const void *, const void *),void* context)
+ON_qsort( void *base, std::size_t nel, std::size_t width, int (*compar)(void*,const void *, const void *),void* context)
 {
 #if defined(ON__HAVE_RELIABLE_SYSTEM_CONTEXT_QSORT)
   // The call here must be a thread safe system qsort
@@ -59,7 +59,7 @@ ON_qsort( void *base, size_t nel, size_t width, int (*compar)(void*,const void *
 }
 
 void 
-ON_qsort( void *base, size_t nel, size_t width, int (*compar)(const void *, const void *))
+ON_qsort( void *base, std::size_t nel, std::size_t width, int (*compar)(const void *, const void *))
 {
 #if defined(ON__HAVE_RELIABLE_SYSTEM_QSORT)
   // The call here must be a thread safe system qsort
@@ -73,9 +73,9 @@ ON_qsort( void *base, size_t nel, size_t width, int (*compar)(const void *, cons
 }
 
 void
-ON_hsort(void *base, size_t nel, size_t width, int (*compar)(const void*,const void*))
+ON_hsort(void *base, std::size_t nel, std::size_t width, int (*compar)(const void*,const void*))
 {
-  size_t
+  std::size_t
     i_end,k;
   unsigned char
     work_memory[work_size], *e_tmp, *e_end;
@@ -99,7 +99,7 @@ ON_hsort(void *base, size_t nel, size_t width, int (*compar)(const void*,const v
       }
       e_end -= width;
     }
-    { size_t i, j;
+    { std::size_t i, j;
       unsigned char *e_i, *e_j;
       i = k;
       j = (k<<1) + 1;
@@ -122,9 +122,9 @@ ON_hsort(void *base, size_t nel, size_t width, int (*compar)(const void*,const v
 }
 
 void
-ON_hsort(void *base, size_t nel, size_t width, int (*compar)(void*,const void*,const void*), void* context)
+ON_hsort(void *base, std::size_t nel, std::size_t width, int (*compar)(void*,const void*,const void*), void* context)
 {
-  size_t
+  std::size_t
     i_end,k;
   unsigned char
     work_memory[work_size], *e_tmp, *e_end;
@@ -148,7 +148,7 @@ ON_hsort(void *base, size_t nel, size_t width, int (*compar)(void*,const void*,c
       }
       e_end -= width;
     }
-    { size_t i, j;
+    { std::size_t i, j;
       unsigned char *e_i, *e_j;
       i = k;
       j = (k<<1) + 1;
@@ -188,7 +188,7 @@ ON_hsort(void *base, size_t nel, size_t width, int (*compar)(void*,const void*,c
 void ON_SortDoubleArray( 
         ON::sort_algorithm sort_algorithm,
         double* a,
-        size_t nel
+        std::size_t nel
         )
 {
   if ( ON::heap_sort == sort_algorithm )
@@ -209,7 +209,7 @@ void ON_SortDoubleArray(
 void ON_SortFloatArray( 
         ON::sort_algorithm sort_algorithm,
         float* a,
-        size_t nel
+        std::size_t nel
         )
 {
   if ( ON::heap_sort == sort_algorithm )
@@ -231,7 +231,7 @@ void ON_SortFloatArray(
 void ON_SortIntArray(
         ON::sort_algorithm sort_algorithm,
         int* a,
-        size_t nel
+        std::size_t nel
         )
 {
   if ( ON::heap_sort == sort_algorithm )
@@ -253,7 +253,7 @@ void ON_SortIntArray(
 void ON_SortUnsignedIntArray(
         ON::sort_algorithm sort_algorithm,
         unsigned int* a,
-        size_t nel
+        std::size_t nel
         )
 {
   if ( ON::heap_sort == sort_algorithm )

@@ -192,7 +192,7 @@ main (int argc, char** argv)
 
   std::vector<int> p_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
 
-  for (size_t i = 0; i < p_file_indices.size (); ++i)
+  for (std::size_t i = 0; i < p_file_indices.size (); ++i)
   {
     pcl::io::loadPCDFile (argv[p_file_indices[i]], *cloud);
     

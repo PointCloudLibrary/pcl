@@ -440,7 +440,7 @@ void ON_Font::UpdateImplementationSettings()
 #if defined(ON_OS_WINDOWS_GDI) 
   BYTE b;
   LONG w;
-  size_t cap0, cap1, cap, i;
+  std::size_t cap0, cap1, cap, i;
 
   w = m_font_weight;
   if ( w < 0 )

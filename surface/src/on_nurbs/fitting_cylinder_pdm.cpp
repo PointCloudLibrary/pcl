@@ -81,7 +81,7 @@ FittingCylinder::refine (int dim)
   std::vector<double> xi;
   std::vector<double> elements = getElementVector (m_nurbs, dim);
 
-  for (size_t i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
   for (const double &i : xi)
@@ -95,13 +95,13 @@ FittingCylinder::refine (int dim, double param)
 
   if (param == elements[elements.size () - 1])
   {
-    size_t i = elements.size () - 2;
+    std::size_t i = elements.size () - 2;
     double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
     m_nurbs.InsertKnot (dim, xi);
     return;
   }
 
-  for (size_t i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
   {
     if (param >= elements[i] && param < elements[i + 1])
     {
@@ -610,9 +610,9 @@ FittingCylinder::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest = std::numeric_limits<double>::max ();
-  for (size_t i = 0; i < elementsU.size () - 1; i++)
+  for (std::size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (size_t j = 0; j < elementsV.size () - 1; j++)
+    for (std::size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
 

@@ -147,7 +147,7 @@ namespace pcl
       inline void
       getCentroidClusters (std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
       {
-        for (size_t i = 0; i < centroids_dominant_orientations_.size (); ++i)
+        for (std::size_t i = 0; i < centroids_dominant_orientations_.size (); ++i)
           centroids.push_back (centroids_dominant_orientations_[i]);
       }
 
@@ -157,7 +157,7 @@ namespace pcl
       inline void
       getCentroidNormalClusters (std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
       {
-        for (size_t i = 0; i < dominant_normals_.size (); ++i)
+        for (std::size_t i = 0; i < dominant_normals_.size (); ++i)
           centroids.push_back (dominant_normals_[i]);
       }
 
@@ -193,7 +193,7 @@ namespace pcl
         * \param[in] min the minimum amount of points to be set 
         */
       inline void
-      setMinPoints (size_t min)
+      setMinPoints (std::size_t min)
       {
         min_points_ = min;
       }
@@ -239,7 +239,7 @@ namespace pcl
       /** \brief Minimum amount of points in a clustered region to be considered stable for CVFH
         * computation.
         */
-      size_t min_points_;
+      std::size_t min_points_;
 
       /** \brief Radius for the normals computation. */
       float radius_normals_;

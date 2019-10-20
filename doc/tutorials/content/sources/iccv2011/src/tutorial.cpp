@@ -293,7 +293,7 @@ void ICCVTutorial<FeatureType>::findCorrespondences (typename pcl::PointCloud<Fe
   const int k = 1;
   std::vector<int> k_indices (k);
   std::vector<float> k_squared_distances (k);
-  for (size_t i = 0; i < source->size (); ++i)
+  for (std::size_t i = 0; i < source->size (); ++i)
   {
     descriptor_kdtree.nearestKSearch (*source, i, k, k_indices, k_squared_distances);
     correspondences[i] = k_indices[0];

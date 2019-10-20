@@ -66,7 +66,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   float minX = std::numeric_limits<float>::max (), minY = std::numeric_limits<float>::max (), minZ = std::numeric_limits<float>::max ();
   float maxX = -std::numeric_limits<float>::max(), maxY = -std::numeric_limits<float>::max(), maxZ = -std::numeric_limits<float>::max();
   
-  for (size_t i = 0; i < input_->size (); ++i)
+  for (std::size_t i = 0; i < input_->size (); ++i)
   {
     PointT temp (input_->points[i]);
     if (transform_func_) //Search for point with 

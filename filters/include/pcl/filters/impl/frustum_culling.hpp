@@ -55,7 +55,7 @@ pcl::FrustumCulling<PointT>::applyFilter (PointCloud& output)
     extract_removed_indices_ = temp;
     copyPointCloud (*input_, output);
 
-    for (size_t rii = 0; rii < removed_indices_->size (); ++rii)
+    for (std::size_t rii = 0; rii < removed_indices_->size (); ++rii)
     {
       PointT &pt_to_remove = output.at ((*removed_indices_)[rii]);
       pt_to_remove.x = pt_to_remove.y = pt_to_remove.z = user_filter_value_;
@@ -148,9 +148,9 @@ pcl::FrustumCulling<PointT>::applyFilter (std::vector<int> &indices)
     removed_indices_->resize (indices_->size ());
   }
   indices.resize (indices_->size ());
-  size_t indices_ctr = 0;
-  size_t removed_ctr = 0;
-  for (size_t i = 0; i < indices_->size (); i++) 
+  std::size_t indices_ctr = 0;
+  std::size_t removed_ctr = 0;
+  for (std::size_t i = 0; i < indices_->size (); i++) 
   {
     int idx = indices_->at (i);
     Eigen::Vector4f pt (input_->points[idx].x,

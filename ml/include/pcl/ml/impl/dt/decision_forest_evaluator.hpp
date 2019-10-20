@@ -80,10 +80,10 @@ pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, Node
              std::vector<ExampleIndex>& examples,
              std::vector<LabelType>& label_data)
 {
-  const size_t num_of_examples = examples.size();
+  const std::size_t num_of_examples = examples.size();
   label_data.resize(num_of_examples, 0);
 
-  for (size_t forest_index = 0; forest_index < forest.size(); ++forest_index) {
+  for (std::size_t forest_index = 0; forest_index < forest.size(); ++forest_index) {
     tree_evaluator_.evaluateAndAdd(forest[forest_index],
                                    feature_handler,
                                    stats_estimator,
@@ -93,7 +93,7 @@ pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, Node
   }
 
   const float inv_num_of_trees = 1.0f / static_cast<float>(forest.size());
-  for (size_t label_index = 0; label_index < label_data.size(); ++label_index) {
+  for (std::size_t label_index = 0; label_index < label_data.size(); ++label_index) {
     label_data[label_index] *= inv_num_of_trees;
   }
 }
@@ -114,7 +114,7 @@ pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, Node
              std::vector<NodeType>& leaves)
 {
   leaves.resize(forest.size());
-  for (size_t forest_index = 0; forest_index < forest.size(); ++forest_index) {
+  for (std::size_t forest_index = 0; forest_index < forest.size(); ++forest_index) {
     NodeType leave;
     tree_evaluator_.evaluate(forest[forest_index],
                              feature_handler,

@@ -130,7 +130,7 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel(GLenum mode,
       apoly.vertices_ = new float[3 * apoly_in.vertices.size()];
       apoly.colors_ = new float[4 * apoly_in.vertices.size()];
 
-      for (size_t j = 0; j < apoly_in.vertices.size(); j++) { // each point
+      for (std::size_t j = 0; j < apoly_in.vertices.size(); j++) { // each point
         std::uint32_t pt = apoly_in.vertices[j];
         tmp = newcloud.points[pt].getVector4fMap();
         // x,y,z
@@ -156,7 +156,7 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel(GLenum mode,
       apoly.vertices_ = new float[3 * apoly_in.vertices.size()];
       apoly.colors_ = new float[4 * apoly_in.vertices.size()];
 
-      for (size_t j = 0; j < apoly_in.vertices.size(); j++) { // each point
+      for (std::size_t j = 0; j < apoly_in.vertices.size(); j++) { // each point
         std::uint32_t pt = apoly_in.vertices[j];
         tmp = newcloud.points[pt].getVector4fMap();
         // x,y,z
@@ -209,7 +209,7 @@ pcl::simulation::PointCloudModel::PointCloudModel(
   vertices_ = new float[3 * nvertices_];
   colors_ = new float[4 * nvertices_];
 
-  for (size_t i = 0; i < pc->points.size(); ++i) {
+  for (std::size_t i = 0; i < pc->points.size(); ++i) {
     vertices_[3 * i + 0] = pc->points[i].x;
     vertices_[3 * i + 1] = pc->points[i].y;
     vertices_[3 * i + 2] = pc->points[i].z;
