@@ -381,3 +381,14 @@ aligned_free (void* ptr)
 #elif defined(TYPED_TEST_CASE)
   #define PCL_TYPED_TEST_SUITE TYPED_TEST_CASE
 #endif
+
+/**
+ * \brief Macro choose between INSTANTIATE_TEST_CASE_P and INSTANTIATE_TEST_SUITE_P depending on the GTest version
+ *
+ * \ingroup common
+ */
+#if defined(INSTANTIATE_TEST_SUITE_P)
+  #define PCL_INSTANTIATE_TEST_SUITE_P INSTANTIATE_TEST_SUITE_P
+#elif defined(INSTANTIATE_TEST_CASE_P)
+  #define PCL_INSTANTIATE_TEST_SUITE_P INSTANTIATE_TEST_CASE_P
+#endif
