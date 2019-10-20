@@ -103,7 +103,7 @@ namespace pcl
 void
 pcl::ihs::addDirection (const Eigen::Vector4f& normal,
                         const Eigen::Vector4f& direction,
-                        std::uint32_t&              directions)
+                        std::uint32_t&         directions)
 {
   // Find the rotation that aligns the normal with [0; 0; 1]
   const float dot = normal.z ();
