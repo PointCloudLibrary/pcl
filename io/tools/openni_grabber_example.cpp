@@ -132,6 +132,7 @@ class SimpleOpenNIProcessor
               interface.stop ();
             else
               interface.start ();
+            break;
           case 's':
             save = !save;
         }
