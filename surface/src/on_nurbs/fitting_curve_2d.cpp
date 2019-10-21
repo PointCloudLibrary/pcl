@@ -676,7 +676,7 @@ FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Ei
     double &xi1 = elements[i + 1];
     double dxi = xi1 - xi0;
 
-    for (unsigned j = 0; j < static_cast<unsigned int>(nurbs.Order ()); j++)
+    for (std::size_t j = 0; j < static_cast<std::size_t>(nurbs.Order ()); j++)
     {
       double xi = xi0 + (seg * j) * dxi;
 
@@ -719,7 +719,7 @@ FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Ei
     double &xi1 = elements[i + 1];
     double dxi = xi1 - xi0;
 
-    for (unsigned j = 0; j < static_cast<unsigned int>(nurbs.Order ()); j++)
+    for (std::size_t j = 0; j < static_cast<std::size_t>(nurbs.Order ()); j++)
     {
       double xi = xi0 + (seg * j) * dxi;
 
