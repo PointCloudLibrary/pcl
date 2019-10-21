@@ -106,17 +106,16 @@ namespace pcl
             //load views, poses and self-occlusions
             std::vector < std::string > view_filenames;
             int number_of_views = 0;
-            bf::directory_iterator end_itr;
-            for (bf::directory_iterator itr (trained_dir); itr != end_itr; ++itr)
+            for (const auto& dir_entry : bf::directory_iterator(trained_dir))
             {
               //check if its a directory, then get models in it
-              if (!(bf::is_directory (*itr)))
+              if (!(bf::is_directory (dir_entry)))
               {
                 //check that it is a ply file and then add, otherwise ignore..
                 std::vector < std::string > strs;
                 std::vector < std::string > strs_;
 
-                std::string file = (itr->path ().filename ()).string();
+                std::string file = (dir_entry.path ().filename ()).string();
 
                 boost::split (strs, file, boost::is_any_of ("."));
                 boost::split (strs_, file, boost::is_any_of ("_"));
@@ -125,7 +124,7 @@ namespace pcl
 
                 if (extension == "pcd" && strs_[0] == "view")
                 {
-                  view_filenames.push_back ((itr->path ().filename ()).string());
+                  view_filenames.push_back ((dir_entry.path ().filename ()).string());
 
                   number_of_views++;
                 }

@@ -110,12 +110,10 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     for (size_t i = 0; i < models->size (); i++)
     {
       std::string path = source_->getModelDescriptorDir (models->at (i), training_dir_, descr_name_);
-      bf::path inside = path;
-      bf::directory_iterator end_itr;
 
-      for (bf::directory_iterator itr_in (inside); itr_in != end_itr; ++itr_in)
+      for (const auto& dir_entry : bf::directory_iterator(path))
       {
-        std::string file_name = (itr_in->path ().filename ()).string();
+        std::string file_name = (dir_entry.path ().filename ()).string();
 
         std::vector < std::string > strs;
         boost::split (strs, file_name, boost::is_any_of ("_"));
@@ -128,7 +126,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           boost::split (strs1, strs[2], boost::is_any_of ("."));
           int descriptor_id = atoi (strs1[0].c_str ());
 
-          std::string full_file_name = itr_in->path ().string ();
+          std::string full_file_name = dir_entry.path ().string ();
           typename pcl::PointCloud<FeatureT>::Ptr signature (new pcl::PointCloud<FeatureT>);
           pcl::io::loadPCDFile (full_file_name, *signature);
 
