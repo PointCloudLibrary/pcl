@@ -523,7 +523,7 @@ ON__UINT32 ON_NurbsCage::DataCRC(ON__UINT32 current_remainder) const
       && m_cv_stride[0] > 0 && m_cv_stride[1] > 0 && m_cv_stride[2] > 0
       && m_cv )
   {
-    size_t sizeof_cv = CVSize()*sizeof(m_cv[0]);
+    std::size_t sizeof_cv = CVSize()*sizeof(m_cv[0]);
     const double* cv = m_cv;
     int i, j, k;
     for ( i = 0; i < m_cv_count[0]; i++ )

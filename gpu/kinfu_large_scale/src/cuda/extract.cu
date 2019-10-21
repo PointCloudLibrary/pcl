@@ -428,7 +428,7 @@ namespace pcl
 
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      size_t
+      std::size_t
       extractCloud (const PtrStep<short2>& volume, const float3& volume_size, PtrSz<PointType> output_xyz)
       {
         FullScan6 fs;
@@ -448,12 +448,12 @@ namespace pcl
         int size;
         cudaSafeCall ( cudaMemcpyFromSymbol (&size, output_xyz_count, sizeof (size)) );
       //  cudaSafeCall ( cudaMemcpyFromSymbol (&size, "output_xyz_count", sizeof (size)) );
-        return ((size_t)size);
+        return ((std::size_t)size);
       }
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      size_t
+      std::size_t
       extractSliceAsCloud (const PtrStep<short2>& volume, const float3& volume_size, const pcl::gpu::kinfuLS::tsdf_buffer* buffer, 
                                         const int shiftX, const int shiftY, const int shiftZ, 
                                         PtrSz<PointType> output_xyz, PtrSz<float> output_intensities)
@@ -556,7 +556,7 @@ namespace pcl
 
         int size;
         cudaSafeCall ( cudaMemcpyFromSymbol (&size, output_xyz_count, sizeof(size)) );  
-        return (size_t)size;
+        return (std::size_t)size;
       }
     }
   }

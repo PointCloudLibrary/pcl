@@ -444,7 +444,7 @@ pcl::RegionGrowing<PointT, NormalT>::growRegion (int initial_seed, int segment_n
     curr_seed = seeds.front ();
     seeds.pop ();
 
-    size_t i_nghbr = 0;
+    std::size_t i_nghbr = 0;
     while ( i_nghbr < neighbour_number_ && i_nghbr < point_neighbours_[curr_seed].size () )
     {
       int index = point_neighbours_[curr_seed][i_nghbr];
@@ -614,7 +614,7 @@ pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint (int index, pcl::PointI
     for (auto i_segment = clusters_.cbegin (); i_segment != clusters_.cend (); i_segment++)
     {
       bool segment_was_found = false;
-      for (size_t i_point = 0; i_point < i_segment->indices.size (); i_point++)
+      for (std::size_t i_point = 0; i_point < i_segment->indices.size (); i_point++)
       {
         if (i_segment->indices[i_point] == index)
         {
@@ -647,7 +647,7 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
 
     srand (static_cast<unsigned int> (time (nullptr)));
     std::vector<unsigned char> colors;
-    for (size_t i_segment = 0; i_segment < clusters_.size (); i_segment++)
+    for (std::size_t i_segment = 0; i_segment < clusters_.size (); i_segment++)
     {
       colors.push_back (static_cast<unsigned char> (rand () % 256));
       colors.push_back (static_cast<unsigned char> (rand () % 256));
@@ -657,7 +657,7 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
     colored_cloud->width = input_->width;
     colored_cloud->height = input_->height;
     colored_cloud->is_dense = input_->is_dense;
-    for (size_t i_point = 0; i_point < input_->points.size (); i_point++)
+    for (std::size_t i_point = 0; i_point < input_->points.size (); i_point++)
     {
       pcl::PointXYZRGB point;
       point.x = *(input_->points[i_point].data);
@@ -699,7 +699,7 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
 
     srand (static_cast<unsigned int> (time (nullptr)));
     std::vector<unsigned char> colors;
-    for (size_t i_segment = 0; i_segment < clusters_.size (); i_segment++)
+    for (std::size_t i_segment = 0; i_segment < clusters_.size (); i_segment++)
     {
       colors.push_back (static_cast<unsigned char> (rand () % 256));
       colors.push_back (static_cast<unsigned char> (rand () % 256));
@@ -709,7 +709,7 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
     colored_cloud->width = input_->width;
     colored_cloud->height = input_->height;
     colored_cloud->is_dense = input_->is_dense;
-    for (size_t i_point = 0; i_point < input_->points.size (); i_point++)
+    for (std::size_t i_point = 0; i_point < input_->points.size (); i_point++)
     {
       pcl::PointXYZRGBA point;
       point.x = *(input_->points[i_point].data);

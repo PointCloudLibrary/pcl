@@ -78,7 +78,7 @@ pcl::PairwisePotential::PairwisePotential(const std::vector<float>& feature,
     ///////////
     // DEBUG //
     bool same = true;
-    for (size_t i = 0; i < normOLD.size (); i++)
+    for (std::size_t i = 0; i < normOLD.size (); i++)
     {
       if (norm_[i] != normOLD[i])
         same = false;

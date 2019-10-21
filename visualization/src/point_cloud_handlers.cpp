@@ -133,15 +133,15 @@ pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2>::getColo
   unsigned char* colors = new unsigned char[nr_points * 3];
 
   pcl::RGB rgb_data;
-  size_t point_offset = cloud_->fields[field_idx_].offset;
-  size_t j = 0;
+  std::size_t point_offset = cloud_->fields[field_idx_].offset;
+  std::size_t j = 0;
   
   // If XYZ present, check if the points are invalid
   int x_idx = pcl::getFieldIndex (*cloud_, "x");
   if (x_idx != -1)
   {
     float x_data, y_data, z_data;
-    size_t x_point_offset = cloud_->fields[x_idx].offset;
+    std::size_t x_point_offset = cloud_->fields[x_idx].offset;
     
     // Color every point
     for (vtkIdType cp = 0; cp < nr_points; ++cp, 
@@ -617,7 +617,7 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::getCo
     }
 
     // Assign Glasbey colors in ascending order of labels
-    size_t color = 0;
+    std::size_t color = 0;
     for (std::set<std::uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter, ++color)
       colormap[*iter] = GlasbeyLUT::at (color % GlasbeyLUT::size ());
   }

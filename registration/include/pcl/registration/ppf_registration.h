@@ -77,7 +77,7 @@ namespace pcl
             return h1 ^ (h2 << 1) ^ (h3 << 2) ^ (h4 << 3);
         }
       };
-      using FeatureHashMapType = std::unordered_multimap<HashKeyStruct, std::pair<size_t, size_t>, HashKeyStruct>;
+      using FeatureHashMapType = std::unordered_multimap<HashKeyStruct, std::pair<std::size_t, std::size_t>, HashKeyStruct>;
       using FeatureHashMapTypePtr = boost::shared_ptr<FeatureHashMapType>;
       using Ptr = boost::shared_ptr<PPFHashMapSearch>;
 
@@ -112,7 +112,7 @@ namespace pcl
        */
       void
       nearestNeighborSearch (float &f1, float &f2, float &f3, float &f4,
-                             std::vector<std::pair<size_t, size_t> > &indices);
+                             std::vector<std::pair<std::size_t, std::size_t> > &indices);
 
       /** \brief Convenience method for returning a copy of the class instance as a boost::shared_ptr */
       Ptr
@@ -278,8 +278,8 @@ namespace pcl
       /** \brief static method used for the std::sort function to order two pairs <index, votes>
        * by the number of votes (unsigned integer value) */
       static bool
-      clusterVotesCompareFunction (const std::pair<size_t, unsigned int> &a,
-                                   const std::pair<size_t, unsigned int> &b);
+      clusterVotesCompareFunction (const std::pair<std::size_t, unsigned int> &a,
+                                   const std::pair<std::size_t, unsigned int> &b);
 
       /** \brief Method that clusters a set of given poses by using the clustering thresholds
        * and their corresponding number of votes (see publication for more details) */

@@ -92,7 +92,7 @@ namespace pcl
 
         void
         assembleModelFromViewsAndPoses(ModelT & model, std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > & poses) {
-          for(size_t i=0; i < model.views_->size(); i++) {
+          for(std::size_t i=0; i < model.views_->size(); i++) {
             Eigen::Matrix4f inv = poses[i];
             typename pcl::PointCloud<PointInT>::Ptr global_cloud(new pcl::PointCloud<PointInT>);
             pcl::transformPointCloud(*(model.views_->at(i)),*global_cloud, inv);
@@ -143,7 +143,7 @@ namespace pcl
 
             std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > poses_to_assemble_;
 
-            for (size_t i = 0; i < view_filenames.size (); i++)
+            for (std::size_t i = 0; i < view_filenames.size (); i++)
             {
               std::stringstream view_file;
               view_file << pathmodel.str () << "/" << view_filenames[i];
@@ -214,7 +214,7 @@ namespace pcl
             getViewsFilenames (model_dir, view_filenames);
             std::cout << view_filenames.size () << std::endl;
 
-            for (size_t i = 0; i < view_filenames.size (); i++)
+            for (std::size_t i = 0; i < view_filenames.size (); i++)
             {
               std::stringstream view_file;
               view_file << model_path << "/" << view_filenames[i];
@@ -312,7 +312,7 @@ namespace pcl
 
           models_.reset (new std::vector<ModelT>);
 
-          for (size_t i = 0; i < files.size (); i++)
+          for (std::size_t i = 0; i < files.size (); i++)
           {
             ModelT m;
 

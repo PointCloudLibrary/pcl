@@ -53,7 +53,7 @@ pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget, S
   pcl::PointCloud<PointSource> input_transformed;
   //transformPointCloud (*cloud_src, input_transformed, transformation_matrix);
   input_transformed.resize (cloud_src->size ());
-  for (size_t i = 0; i < cloud_src->size (); ++i)
+  for (std::size_t i = 0; i < cloud_src->size (); ++i)
   {
     const PointSource &src = cloud_src->points[i];
     PointTarget &tgt = input_transformed.points[i];
@@ -74,7 +74,7 @@ pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget, S
 
   // For each point in the source dataset
   int nr = 0;
-  for (size_t i = 0; i < input_transformed.points.size (); ++i)
+  for (std::size_t i = 0; i < input_transformed.points.size (); ++i)
   {
     // Find its nearest neighbor in the target
     tree_->nearestKSearch (input_transformed.points[i], 1, nn_indices, nn_dists);

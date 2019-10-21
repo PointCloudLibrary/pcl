@@ -71,7 +71,7 @@ pcl::RandomSample<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     unsigned index = 0;
 
     // Algorithm A
-    for (size_t n = sample_; n >= 2; n--)
+    for (std::size_t n = sample_; n >= 2; n--)
     {
       float V = unifRand ();
       unsigned S = 0;
@@ -120,7 +120,7 @@ pcl::RandomSample<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
     unsigned index = 0;
 
     // Algorithm A
-    for (size_t n = sample_; n >= 2; n--)
+    for (std::size_t n = sample_; n >= 2; n--)
     {
       float V = unifRand ();
       unsigned S = 0;

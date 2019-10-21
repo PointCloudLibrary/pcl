@@ -272,7 +272,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
     }
 
     is_free = NONE;
-    for (size_t temp = 0; temp < indices_->size (); temp++)
+    for (std::size_t temp = 0; temp < indices_->size (); temp++)
     {
       if (state_[temp] == FREE)
       {
@@ -1658,13 +1658,13 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> std::vector<std::vector<size_t> >
+template <typename PointInT> std::vector<std::vector<std::size_t> >
 pcl::GreedyProjectionTriangulation<PointInT>::getTriangleList (const pcl::PolygonMesh &input)
 {
-  std::vector<std::vector<size_t> > triangleList (input.cloud.width * input.cloud.height);
+  std::vector<std::vector<std::size_t> > triangleList (input.cloud.width * input.cloud.height);
 
-  for (size_t i=0; i < input.polygons.size (); ++i)
-    for (size_t j=0; j < input.polygons[i].vertices.size (); ++j)
+  for (std::size_t i=0; i < input.polygons.size (); ++i)
+    for (std::size_t j=0; j < input.polygons[i].vertices.size (); ++j)
       triangleList[input.polygons[i].vertices[j]].push_back (i);
   return (triangleList);
 }

@@ -205,7 +205,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::createBinDistan
   Eigen::Vector4f current_frame_z (current_frame.z_axis[0], current_frame.z_axis[1], current_frame.z_axis[2], 0);
 
   unsigned nan_counter = 0;
-  for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
+  for (std::size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
     // check NaN normal
     const Eigen::Vector4f& normal_vec = normals_->points[indices[i_idx]].getNormalVector4fMap ();
@@ -267,7 +267,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSing
   Eigen::Vector4f current_frame_y (current_frame.y_axis[0], current_frame.y_axis[1], current_frame.y_axis[2], 0);
   Eigen::Vector4f current_frame_z (current_frame.z_axis[0], current_frame.z_axis[1], current_frame.z_axis[2], 0);
 
-  for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
+  for (std::size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
     if (!std::isfinite(binDistance[i_idx]))
       continue;
@@ -446,7 +446,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDou
   Eigen::Vector4f current_frame_y (current_frame.y_axis[0], current_frame.y_axis[1], current_frame.y_axis[2], 0);
   Eigen::Vector4f current_frame_z (current_frame.z_axis[0], current_frame.z_axis[1], current_frame.z_axis[2], 0);
 
-  for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
+  for (std::size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
     if (!std::isfinite(binDistanceShape[i_idx]))
       continue;
@@ -650,7 +650,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSH
   shot.setZero ();
   std::vector<double> binDistanceShape;
   std::vector<double> binDistanceColor;
-  size_t nNeighbors = indices.size ();
+  std::size_t nNeighbors = indices.size ();
   //Skip the current feature if the number of its neighbors is not sufficient for its description
   if (nNeighbors < 5)
   {
@@ -687,7 +687,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSH
     aRef /= 120.0f;
     bRef /= 120.0f;    //normalized LAB components (0<L<1, -1<a<1, -1<b<1)
 
-    for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
+    for (std::size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
     {
       //unsigned char red = surface_->points[indices[i_idx]].rgba >> 16 & 0xFF;
       //unsigned char green = surface_->points[indices[i_idx]].rgba >> 8 & 0xFF;
@@ -781,7 +781,7 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
 
   output.is_dense = true;
   // Iterating over the entire index vector
-  for (size_t idx = 0; idx < indices_->size (); ++idx)
+  for (std::size_t idx = 0; idx < indices_->size (); ++idx)
   {
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
@@ -853,7 +853,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
 
   output.is_dense = true;
   // Iterating over the entire index vector
-  for (size_t idx = 0; idx < indices_->size (); ++idx)
+  for (std::size_t idx = 0; idx < indices_->size (); ++idx)
   {
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];

@@ -171,7 +171,7 @@ namespace pcl
     {
        float maxDepth = -1;
 
-       size_t cloud_size = width_arg*height_arg;
+       std::size_t cloud_size = width_arg*height_arg;
        assert (disparityMap_arg.size()==cloud_size);
        if (!colorImage_arg.empty ())
        {
@@ -204,7 +204,7 @@ namespace pcl
        std::uint16_t* depth_ptr = &disparityMap_arg[0];
        std::uint8_t* color_ptr = &colorImage_arg[0];
 
-       for (size_t i = 0; i < cloud_size; ++i, ++depth_ptr, color_ptr += sizeof(std::uint8_t) * 3)
+       for (std::size_t i = 0; i < cloud_size; ++i, ++depth_ptr, color_ptr += sizeof(std::uint8_t) * 3)
        {
          if (!(*depth_ptr) || (*depth_ptr==0x7FF))
            memset(color_ptr, 0, sizeof(std::uint8_t)*3);
@@ -225,12 +225,12 @@ namespace pcl
          if (convertToMono)
          {
            std::vector<std::uint8_t> monoImage;
-           size_t size = width_arg*height_arg;
+           std::size_t size = width_arg*height_arg;
 
            monoImage.reserve(size);
 
            // grayscale conversion
-           for (size_t i = 0; i < size; ++i)
+           for (std::size_t i = 0; i < size; ++i)
            {
              std::uint8_t grayvalue = static_cast<std::uint8_t>(0.2989 * static_cast<float>(colorImage_arg[i*3+0]) +
                                                       0.5870 * static_cast<float>(colorImage_arg[i*3+1]) +
@@ -295,8 +295,8 @@ namespace pcl
       std::uint32_t compressedColorSize;
 
       // PNG decoded parameters
-      size_t png_width = 0;
-      size_t png_height = 0;
+      std::size_t png_width = 0;
+      std::size_t png_height = 0;
       unsigned int png_channels = 1;
 
       // sync to frame header
@@ -403,8 +403,8 @@ namespace pcl
                                                                    float& maxDepth_arg,
                                                                    float& focalLength_arg) const
     {
-      size_t width = cloud_arg->width;
-      size_t height = cloud_arg->height;
+      std::size_t width = cloud_arg->width;
+      std::size_t height = cloud_arg->height;
 
       // Center of organized point cloud
       int centerX = static_cast<int> (width / 2);
@@ -417,7 +417,7 @@ namespace pcl
       float maxDepth = 0;
       float focalLength = 0;
 
-      size_t it = 0;
+      std::size_t it = 0;
       for (int y = -centerY; y < centerY; ++y )
         for (int x = -centerX; x < centerX; ++x )
         {

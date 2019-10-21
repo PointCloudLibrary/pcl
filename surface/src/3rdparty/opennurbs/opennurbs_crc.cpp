@@ -15,7 +15,7 @@
 */
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
-ON__UINT16 ON_CRC16( ON__UINT16 current_remainder, size_t count, const void* p )
+ON__UINT16 ON_CRC16( ON__UINT16 current_remainder, std::size_t count, const void* p )
 {
   // 16 bit cyclic redundancy check using CCITT generator polynomial
 
@@ -106,7 +106,7 @@ ON__UINT16 ON_CRC16( ON__UINT16 current_remainder, size_t count, const void* p )
   return current_remainder;
 }
 
-ON__UINT32 ON_CRC32( ON__UINT32 current_remainder, size_t count, const void* p )
+ON__UINT32 ON_CRC32( ON__UINT32 current_remainder, std::size_t count, const void* p )
 {
   /*
   //////////////////////////////////////////////////////////////////////////////////////////

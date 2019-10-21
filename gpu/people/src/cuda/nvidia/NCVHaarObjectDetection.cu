@@ -1060,7 +1060,7 @@ NCVStatus ncvApplyHaarClassifierCascade_device(NCVMatrix<Ncv32u> &d_integralImag
         cudaChannelFormatDesc cfdTexIImage;
         cfdTexIImage = cudaCreateChannelDesc<Ncv32u>();
 
-        size_t alignmentOffset;
+        std::size_t alignmentOffset;
         ncvAssertCUDAReturn(cudaBindTexture(&alignmentOffset, texIImage, d_integralImage.ptr(), cfdTexIImage,
             (anchorsRoi.height + haar.ClassifierSize.height) * d_integralImage.pitch()), NCV_CUDA_ERROR);
         ncvAssertReturn(alignmentOffset==0, NCV_TEXTURE_BIND_ERROR);
@@ -1073,7 +1073,7 @@ NCVStatus ncvApplyHaarClassifierCascade_device(NCVMatrix<Ncv32u> &d_integralImag
         cfdTexHaarFeatures = cudaCreateChannelDesc<uint2>();
         cfdTexHaarClassifierNodes = cudaCreateChannelDesc<uint4>();
 
-        size_t alignmentOffset;
+        std::size_t alignmentOffset;
         ncvAssertCUDAReturn(cudaBindTexture(&alignmentOffset, texHaarFeatures,
             d_HaarFeatures.ptr(), cfdTexHaarFeatures,sizeof(HaarFeature64) * haar.NumFeatures), NCV_CUDA_ERROR);
         ncvAssertReturn(alignmentOffset==0, NCV_TEXTURE_BIND_ERROR);

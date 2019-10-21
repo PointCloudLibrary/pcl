@@ -17,9 +17,9 @@ size_t ON_FixedSizePool::SizeofElement() const
 
 
 bool ON_FixedSizePool::Create( 
-        size_t sizeof_element, 
-        size_t element_count_estimate,
-        size_t block_element_capacity
+        std::size_t sizeof_element, 
+        std::size_t element_count_estimate,
+        std::size_t block_element_capacity
         )
 {
   if ( sizeof_element <= 0 )
@@ -40,16 +40,16 @@ bool ON_FixedSizePool::Create(
 
   if ( block_element_capacity <= 0 )
   {
-    size_t page_size = ON_MemoryPageSize();
+    std::size_t page_size = ON_MemoryPageSize();
     if ( page_size < 512 )
       page_size = 512;
 
     // The "overhead" is for the 2*sizeof(void*) ON_FixedSizePool uses at
     // the start of each block + 32 bytes extra for the heap manager
     // to keep the total allocation not exceeding multiple of page_size.
-    const size_t overhead = 2*sizeof(void*) + 32;
+    const std::size_t overhead = 2*sizeof(void*) + 32;
 
-    size_t page_count = 1;
+    std::size_t page_count = 1;
     block_element_capacity = (page_count*page_size - overhead)/m_sizeof_element;
     while ( block_element_capacity < 1000 )
     {
@@ -332,12 +332,12 @@ void* ON_FixedSizePoolIterator::NextElement()
   return m_it_element;
 }
 
-void* ON_FixedSizePool::FirstElement(size_t element_index)
+void* ON_FixedSizePool::FirstElement(std::size_t element_index)
 {
   const char* block;
   const char* block_end;
   const char* next_block;
-  size_t block_count;
+  std::size_t block_count;
 
   m_qwerty_it_block = 0;
   m_qwerty_it_element = 0;
@@ -368,12 +368,12 @@ void* ON_FixedSizePool::FirstElement(size_t element_index)
   return m_qwerty_it_element;
 }
 
-void* ON_FixedSizePoolIterator::FirstElement(size_t element_index)
+void* ON_FixedSizePoolIterator::FirstElement(std::size_t element_index)
 {
   const char* block;
   const char* block_end;
   const char* next_block;
-  size_t block_count;
+  std::size_t block_count;
 
   m_it_block = 0;
   m_it_element = 0;
@@ -424,7 +424,7 @@ size_t ON_FixedSizePool::BlockElementCount( const void* block ) const
   return (block_end - ((char*)block))/m_sizeof_element;
 }
 
-void* ON_FixedSizePool::FirstBlock( size_t* block_element_count )
+void* ON_FixedSizePool::FirstBlock( std::size_t* block_element_count )
 {
   if ( m_first_block && m_total_element_count > 0 )
   {
@@ -443,7 +443,7 @@ void* ON_FixedSizePool::FirstBlock( size_t* block_element_count )
   return m_qwerty_it_element;
 }
 
-void* ON_FixedSizePoolIterator::FirstBlock( size_t* block_element_count )
+void* ON_FixedSizePoolIterator::FirstBlock( std::size_t* block_element_count )
 {
   if ( m_fsp.m_first_block && m_fsp.m_total_element_count > 0 )
   {
@@ -462,7 +462,7 @@ void* ON_FixedSizePoolIterator::FirstBlock( size_t* block_element_count )
   return m_it_element;
 }
 
-void* ON_FixedSizePool::NextBlock( size_t* block_element_count )
+void* ON_FixedSizePool::NextBlock( std::size_t* block_element_count )
 {
   if ( 0 != m_qwerty_it_block 
        && m_qwerty_it_block != m_al_block
@@ -493,7 +493,7 @@ void* ON_FixedSizePool::NextBlock( size_t* block_element_count )
   return m_qwerty_it_element;
 }
 
-void* ON_FixedSizePoolIterator::NextBlock( size_t* block_element_count )
+void* ON_FixedSizePoolIterator::NextBlock( std::size_t* block_element_count )
 {
   if ( 0 != m_it_block 
        && m_it_block != m_fsp.m_al_block
@@ -524,12 +524,12 @@ void* ON_FixedSizePoolIterator::NextBlock( size_t* block_element_count )
   return m_it_element;
 }
 
-void* ON_FixedSizePool::Element(size_t element_index) const
+void* ON_FixedSizePool::Element(std::size_t element_index) const
 {
   const char* block;
   const char* block_end;
   const char* next_block;
-  size_t block_count;
+  std::size_t block_count;
 
   for ( block = (const char*)m_first_block; 0 != block; block = next_block )
   {

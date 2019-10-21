@@ -55,9 +55,9 @@ pcl::filters::Pyramid<PointT>::initCompute ()
     return (false);
   }
 
-  // size_t ratio (std::pow (2, levels_));
-  // size_t last_width = input_->width / ratio;
-  // size_t last_height = input_->height / ratio;
+  // std::size_t ratio (std::pow (2, levels_));
+  // std::size_t last_width = input_->width / ratio;
+  // std::size_t last_height = input_->height / ratio;
   
   if (levels_ > 4)
   {

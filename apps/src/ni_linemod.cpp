@@ -274,7 +274,7 @@ class NILinemod
         if (cluster_found)
           break;
         // Check if the point that we picked belongs to it
-        for (size_t j = 0; j < euclidean_label_index.indices.size (); ++j)
+        for (std::size_t j = 0; j < euclidean_label_index.indices.size (); ++j)
         {
           if (picked_idx != euclidean_label_index.indices[j])
             continue;
@@ -325,7 +325,7 @@ class NILinemod
       double max_dist = std::numeric_limits<double>::max ();
       // Compute the distances from all the planar regions to the picked point, and select the closest region
       int idx = -1;
-      for (size_t i = 0; i < regions.size (); ++i)
+      for (std::size_t i = 0; i < regions.size (); ++i)
       {
         double dist = pointToPlaneDistance (picked_point, regions[i].getCoefficients ()); 
         if (dist < max_dist)

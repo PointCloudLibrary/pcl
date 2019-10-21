@@ -236,7 +236,7 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
   if (use_correspondence_weights_)
   {
     correspondence_weights_.resize (nr_correspondences);
-    for (size_t i = 0; i < nr_correspondences; ++i)
+    for (std::size_t i = 0; i < nr_correspondences; ++i)
       correspondence_weights_[i] = correspondences[i].weight;
   }
 

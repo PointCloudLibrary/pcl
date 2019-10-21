@@ -48,7 +48,7 @@ pcl::registration::CorrespondenceRejectorVarTrimmed::getRemainingCorrespondences
   std::vector <double> dists;
   dists.resize (original_correspondences.size ());
 
-  for (size_t i = 0; i < original_correspondences.size (); ++i)
+  for (std::size_t i = 0; i < original_correspondences.size (); ++i)
   {
     if (data_container_)
     {
@@ -66,7 +66,7 @@ pcl::registration::CorrespondenceRejectorVarTrimmed::getRemainingCorrespondences
   unsigned int number_valid_correspondences = 0;
   remaining_correspondences.resize (original_correspondences.size ());
 
-  for (size_t i = 0; i < original_correspondences.size (); ++i)
+  for (std::size_t i = 0; i < original_correspondences.size (); ++i)
   {
     if ( dists[i] < trimmed_distance_)
     {

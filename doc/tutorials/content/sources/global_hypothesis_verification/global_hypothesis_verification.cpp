@@ -294,7 +294,7 @@ main (int argc,
   std::vector<int> model_good_keypoints_indices;
   std::vector<int> scene_good_keypoints_indices;
 
-  for (size_t i = 0; i < scene_descriptors->size (); ++i)
+  for (std::size_t i = 0; i < scene_descriptors->size (); ++i)
   {
     std::vector<int> neigh_indices (1);
     std::vector<float> neigh_sqr_dists (1);
@@ -389,7 +389,7 @@ main (int argc,
    */
   std::vector<pcl::PointCloud<PointType>::ConstPtr> instances;
 
-  for (size_t i = 0; i < rototranslations.size (); ++i)
+  for (std::size_t i = 0; i < rototranslations.size (); ++i)
   {
     pcl::PointCloud<PointType>::Ptr rotated_model (new pcl::PointCloud<PointType> ());
     pcl::transformPointCloud (*model, *rotated_model, rototranslations[i]);
@@ -404,7 +404,7 @@ main (int argc,
   {
     std::cout << "--- ICP ---------" << std::endl;
 
-    for (size_t i = 0; i < rototranslations.size (); ++i)
+    for (std::size_t i = 0; i < rototranslations.size (); ++i)
     {
       pcl::IterativeClosestPoint<PointType, PointType> icp;
       icp.setMaximumIterations (icp_max_iter_);
@@ -500,7 +500,7 @@ main (int argc,
     viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, goodKeypointStyle.size, "scene_good_keypoints");
   }
 
-  for (size_t i = 0; i < instances.size (); ++i)
+  for (std::size_t i = 0; i < instances.size (); ++i)
   {
     std::stringstream ss_instance;
     ss_instance << "instance_" << i;

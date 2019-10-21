@@ -52,7 +52,7 @@ public:
   virtual ~BranchEstimator() {}
 
   /** Returns the number of branches the corresponding tree has. */
-  virtual size_t
+  virtual std::size_t
   getNumOfBranches() const = 0;
 
   /** Computes the branch index for the specified result.
@@ -79,7 +79,7 @@ public:
   inline ~BinaryTreeThresholdBasedBranchEstimator() {}
 
   /** Returns the number of branches the corresponding tree has. */
-  inline size_t
+  inline std::size_t
   getNumOfBranches() const override
   {
     return 2;
@@ -113,7 +113,7 @@ public:
   inline ~TernaryTreeMissingDataBranchEstimator() {}
 
   /** \brief Returns the number of branches the corresponding tree has. */
-  inline size_t
+  inline std::size_t
   getNumOfBranches() const override
   {
     return 3;

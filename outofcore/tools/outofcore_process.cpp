@@ -101,7 +101,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
   PointT min_pt, max_pt;
 
   // Iterate over all pcd files resizing min/max
-  for (size_t i = 0; i < pcd_paths.size (); i++)
+  for (std::size_t i = 0; i < pcd_paths.size (); i++)
   {
 
     // Get cloud

@@ -71,8 +71,8 @@ void
 pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train(
     pcl::Fern<FeatureType, NodeType>& fern)
 {
-  const size_t num_of_branches = stats_estimator_->getNumOfBranches();
-  const size_t num_of_examples = examples_.size();
+  const std::size_t num_of_branches = stats_estimator_->getNumOfBranches();
+  const std::size_t num_of_examples = examples_.size();
 
   // create random features
   std::vector<FeatureType> features;
@@ -85,7 +85,8 @@ pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train
   std::vector<std::vector<float>> feature_results(num_of_features_);
   std::vector<std::vector<unsigned char>> flags(num_of_features_);
 
-  for (size_t feature_index = 0; feature_index < num_of_features_; ++feature_index) {
+  for (std::size_t feature_index = 0; feature_index < num_of_features_;
+       ++feature_index) {
     feature_results[feature_index].reserve(num_of_examples);
     flags[feature_index].reserve(num_of_examples);
 
@@ -107,7 +108,8 @@ pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train
       num_of_features_); // [feature_index][branch_index][flag_index]
 
   // - initialize branch feature results and flags
-  for (size_t feature_index = 0; feature_index < num_of_features_; ++feature_index) {
+  for (std::size_t feature_index = 0; feature_index < num_of_features_;
+       ++feature_index) {
     branch_feature_results[feature_index].resize(1);
     branch_flags[feature_index].resize(1);
     branch_examples[feature_index].resize(1);
@@ -119,11 +121,12 @@ pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train
     branch_label_data[feature_index][0] = label_data_;
   }
 
-  for (size_t depth_index = 0; depth_index < fern_depth_; ++depth_index) {
+  for (std::size_t depth_index = 0; depth_index < fern_depth_; ++depth_index) {
     // get thresholds
     std::vector<std::vector<float>> thresholds(num_of_features_);
 
-    for (size_t feature_index = 0; feature_index < num_of_features_; ++feature_index) {
+    for (std::size_t feature_index = 0; feature_index < num_of_features_;
+         ++feature_index) {
       thresholds.reserve(num_of_thresholds_);
       createThresholdsUniform(num_of_thresholds_,
                               feature_results[feature_index],
@@ -135,11 +138,12 @@ pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train
     float best_feature_threshold = 0.0f;
     float best_feature_information_gain = 0.0f;
 
-    for (size_t feature_index = 0; feature_index < num_of_features_; ++feature_index) {
-      for (size_t threshold_index = 0; threshold_index < num_of_thresholds_;
+    for (std::size_t feature_index = 0; feature_index < num_of_features_;
+         ++feature_index) {
+      for (std::size_t threshold_index = 0; threshold_index < num_of_thresholds_;
            ++threshold_index) {
         float information_gain = 0.0f;
-        for (size_t branch_index = 0;
+        for (std::size_t branch_index = 0;
              branch_index < branch_feature_results[feature_index].size();
              ++branch_index) {
           const float branch_information_gain =
@@ -169,7 +173,8 @@ pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train
     fern.accessThreshold(depth_index) = best_feature_threshold;
 
     // update branch feature results and flags
-    for (size_t feature_index = 0; feature_index < num_of_features_; ++feature_index) {
+    for (std::size_t feature_index = 0; feature_index < num_of_features_;
+         ++feature_index) {
       std::vector<std::vector<float>>& cur_branch_feature_results =
           branch_feature_results[feature_index];
       std::vector<std::vector<unsigned char>>& cur_branch_flags =
@@ -179,7 +184,7 @@ pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train
       std::vector<std::vector<LabelType>>& cur_branch_label_data =
           branch_label_data[feature_index];
 
-      const size_t total_num_of_new_branches =
+      const std::size_t total_num_of_new_branches =
           num_of_branches * cur_branch_feature_results.size();
 
       std::vector<std::vector<float>> new_branch_feature_results(
@@ -191,9 +196,10 @@ pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train
       std::vector<std::vector<LabelType>> new_branch_label_data(
           total_num_of_new_branches); // [branch_index][example_index]
 
-      for (size_t branch_index = 0; branch_index < cur_branch_feature_results.size();
+      for (std::size_t branch_index = 0;
+           branch_index < cur_branch_feature_results.size();
            ++branch_index) {
-        const size_t num_of_examples_in_this_branch =
+        const std::size_t num_of_examples_in_this_branch =
             cur_branch_feature_results[branch_index].size();
 
         std::vector<unsigned char> branch_indices;
@@ -205,10 +211,11 @@ pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train
                                                branch_indices);
 
         // split results into different branches
-        const size_t base_branch_index = branch_index * num_of_branches;
-        for (size_t example_index = 0; example_index < num_of_examples_in_this_branch;
+        const std::size_t base_branch_index = branch_index * num_of_branches;
+        for (std::size_t example_index = 0;
+             example_index < num_of_examples_in_this_branch;
              ++example_index) {
-          const size_t combined_branch_index =
+          const std::size_t combined_branch_index =
               base_branch_index + branch_indices[example_index];
 
           new_branch_feature_results[combined_branch_index].push_back(
@@ -237,7 +244,7 @@ pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train
       fern_depth_); // [feature_index][example_index]
   std::vector<std::vector<unsigned char>> final_branch_indices(
       fern_depth_); // [feature_index][example_index]
-  for (size_t depth_index = 0; depth_index < fern_depth_; ++depth_index) {
+  for (std::size_t depth_index = 0; depth_index < fern_depth_; ++depth_index) {
     final_feature_results[depth_index].reserve(num_of_examples);
     final_flags[depth_index].reserve(num_of_examples);
     final_branch_indices[depth_index].reserve(num_of_examples);
@@ -260,9 +267,10 @@ pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train
   std::vector<std::vector<ExampleIndex>> node_examples(
       0x1 << fern_depth_); // [node_index][example_index]
 
-  for (size_t example_index = 0; example_index < num_of_examples; ++example_index) {
-    size_t node_index = 0;
-    for (size_t depth_index = 0; depth_index < fern_depth_; ++depth_index) {
+  for (std::size_t example_index = 0; example_index < num_of_examples;
+       ++example_index) {
+    std::size_t node_index = 0;
+    for (std::size_t depth_index = 0; depth_index < fern_depth_; ++depth_index) {
       node_index *= num_of_branches;
       node_index += final_branch_indices[depth_index][example_index];
     }
@@ -272,8 +280,8 @@ pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train
   }
 
   // - compute and set statistics for every node
-  const size_t num_of_nodes = 0x1 << fern_depth_;
-  for (size_t node_index = 0; node_index < num_of_nodes; ++node_index) {
+  const std::size_t num_of_nodes = 0x1 << fern_depth_;
+  for (std::size_t node_index = 0; node_index < num_of_nodes; ++node_index) {
     stats_estimator_->computeAndSetNodeStats(data_set_,
                                              node_examples[node_index],
                                              node_labels[node_index],
@@ -288,7 +296,7 @@ template <class FeatureType,
           class NodeType>
 void
 pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    createThresholdsUniform(const size_t num_of_thresholds,
+    createThresholdsUniform(const std::size_t num_of_thresholds,
                             std::vector<float>& values,
                             std::vector<float>& thresholds)
 {
@@ -296,7 +304,7 @@ pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
   float min_value = ::std::numeric_limits<float>::max();
   float max_value = -::std::numeric_limits<float>::max();
 
-  const size_t num_of_values = values.size();
+  const std::size_t num_of_values = values.size();
   for (int value_index = 0; value_index < num_of_values; ++value_index) {
     const float value = values[value_index];
 

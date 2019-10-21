@@ -69,7 +69,7 @@ public:
    * \param[in] num_of_trees the number of trees
    */
   inline void
-  setNumberOfTreesToTrain(const size_t num_of_trees)
+  setNumberOfTreesToTrain(const std::size_t num_of_trees)
   {
     num_of_trees_to_train_ = num_of_trees;
   }
@@ -101,7 +101,7 @@ public:
    * \param[in] max_tree_depth maximum depth of the learned tree
    */
   inline void
-  setMaxTreeDepth(const size_t max_tree_depth)
+  setMaxTreeDepth(const std::size_t max_tree_depth)
   {
     decision_tree_trainer_.setMaxTreeDepth(max_tree_depth);
   }
@@ -111,7 +111,7 @@ public:
    * \param[in] num_of_features the number of features
    */
   inline void
-  setNumOfFeatures(const size_t num_of_features)
+  setNumOfFeatures(const std::size_t num_of_features)
   {
     decision_tree_trainer_.setNumOfFeatures(num_of_features);
   }
@@ -122,7 +122,7 @@ public:
    * \param[in] num_of_threshold the number of thresholds
    */
   inline void
-  setNumOfThresholds(const size_t num_of_threshold)
+  setNumOfThresholds(const std::size_t num_of_threshold)
   {
     decision_tree_trainer_.setNumOfThresholds(num_of_threshold);
   }
@@ -162,7 +162,7 @@ public:
    * \param[in] n number of examples
    */
   inline void
-  setMinExamplesForSplit(size_t n)
+  setMinExamplesForSplit(std::size_t n)
   {
     decision_tree_trainer_.setMinExamplesForSplit(n);
   }
@@ -212,7 +212,7 @@ public:
 
 private:
   /** The number of trees to train. */
-  size_t num_of_trees_to_train_;
+  std::size_t num_of_trees_to_train_;
 
   /** The trainer for the decision trees of the forest. */
   pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>

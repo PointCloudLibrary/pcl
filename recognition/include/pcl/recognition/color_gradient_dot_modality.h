@@ -71,7 +71,7 @@ namespace pcl
     public:
       using PointCloudIn = pcl::PointCloud<PointInT>;
 
-      ColorGradientDOTModality (size_t bin_size);
+      ColorGradientDOTModality (std::size_t bin_size);
   
       virtual ~ColorGradientDOTModality ();
   
@@ -122,7 +122,7 @@ namespace pcl
       //computeInvariantQuantizedGradients ();
   
     private:
-      size_t bin_size_;
+      std::size_t bin_size_;
 
       float gradient_magnitude_threshold_;
       pcl::PointCloud<pcl::GradientXY> color_gradients_;
@@ -137,7 +137,7 @@ namespace pcl
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 pcl::ColorGradientDOTModality<PointInT>::
-ColorGradientDOTModality (const size_t bin_size)
+ColorGradientDOTModality (const std::size_t bin_size)
   : bin_size_ (bin_size), gradient_magnitude_threshold_ (80.0f), color_gradients_ (), dominant_quantized_color_gradients_ ()
 {
 }
@@ -246,36 +246,36 @@ void
 pcl::ColorGradientDOTModality<PointInT>::
 computeDominantQuantizedGradients ()
 {
-  const size_t input_width = input_->width;
-  const size_t input_height = input_->height;
+  const std::size_t input_width = input_->width;
+  const std::size_t input_height = input_->height;
 
-  const size_t output_width = input_width / bin_size_;
-  const size_t output_height = input_height / bin_size_;
+  const std::size_t output_width = input_width / bin_size_;
+  const std::size_t output_height = input_height / bin_size_;
 
   dominant_quantized_color_gradients_.resize (output_width, output_height);
 
-  constexpr size_t num_gradient_bins = 7;
+  constexpr std::size_t num_gradient_bins = 7;
   
   constexpr float divisor = 180.0f / (num_gradient_bins - 1.0f);
 
   unsigned char * peak_pointer = dominant_quantized_color_gradients_.getData ();
   memset (peak_pointer, 0, output_width*output_height);
   
-  for (size_t row_bin_index = 0; row_bin_index < output_height; ++row_bin_index)
+  for (std::size_t row_bin_index = 0; row_bin_index < output_height; ++row_bin_index)
   {
-    for (size_t col_bin_index = 0; col_bin_index < output_width; ++col_bin_index)
+    for (std::size_t col_bin_index = 0; col_bin_index < output_width; ++col_bin_index)
     {
-      const size_t x_position = col_bin_index * bin_size_;
-      const size_t y_position = row_bin_index * bin_size_;
+      const std::size_t x_position = col_bin_index * bin_size_;
+      const std::size_t y_position = row_bin_index * bin_size_;
 
       float max_gradient = 0.0f;
-      size_t max_gradient_pos_x = 0;
-      size_t max_gradient_pos_y = 0;
+      std::size_t max_gradient_pos_x = 0;
+      std::size_t max_gradient_pos_y = 0;
             
       // find next location and value of maximum gradient magnitude in current region
-      for (size_t row_sub_index = 0; row_sub_index < bin_size_; ++row_sub_index)
+      for (std::size_t row_sub_index = 0; row_sub_index < bin_size_; ++row_sub_index)
       {
-        for (size_t col_sub_index = 0; col_sub_index < bin_size_; ++col_sub_index)
+        for (std::size_t col_sub_index = 0; col_sub_index < bin_size_; ++col_sub_index)
         {
           const float magnitude = color_gradients_ (col_sub_index + x_position, row_sub_index + y_position).magnitude;
 
@@ -290,8 +290,8 @@ computeDominantQuantizedGradients ()
             
       if (max_gradient >= gradient_magnitude_threshold_)
       {
-        const size_t angle = static_cast<size_t> (180 + color_gradients_ (max_gradient_pos_x + x_position, max_gradient_pos_y + y_position).angle + 0.5f);
-        const size_t bin_index = static_cast<size_t> ((angle >= 180 ? angle-180 : angle)/divisor);
+        const std::size_t angle = static_cast<std::size_t> (180 + color_gradients_ (max_gradient_pos_x + x_position, max_gradient_pos_y + y_position).angle + 0.5f);
+        const std::size_t bin_index = static_cast<std::size_t> ((angle >= 180 ? angle-180 : angle)/divisor);
             
         *peak_pointer |= 1 << bin_index;
       }
@@ -313,22 +313,22 @@ pcl::ColorGradientDOTModality<PointInT>::
 computeInvariantQuantizedMap (const MaskMap & mask,
                               const RegionXY & region)
 {
-  const size_t input_width = input_->width;
-  const size_t input_height = input_->height;
+  const std::size_t input_width = input_->width;
+  const std::size_t input_height = input_->height;
 
-  const size_t output_width = input_width / bin_size_;
-  const size_t output_height = input_height / bin_size_;
+  const std::size_t output_width = input_width / bin_size_;
+  const std::size_t output_height = input_height / bin_size_;
 
-  const size_t sub_start_x = region.x / bin_size_;
-  const size_t sub_start_y = region.y / bin_size_;
-  const size_t sub_width = region.width / bin_size_;
-  const size_t sub_height = region.height / bin_size_;
+  const std::size_t sub_start_x = region.x / bin_size_;
+  const std::size_t sub_start_y = region.y / bin_size_;
+  const std::size_t sub_width = region.width / bin_size_;
+  const std::size_t sub_height = region.height / bin_size_;
 
   QuantizedMap map;
   map.resize (sub_width, sub_height);
 
-  constexpr size_t num_gradient_bins = 7;
-  constexpr size_t max_num_of_gradients = 7;
+  constexpr std::size_t num_gradient_bins = 7;
+  constexpr std::size_t max_num_of_gradients = 7;
   
   const float divisor = 180.0f / (num_gradient_bins - 1.0f);
   
@@ -337,19 +337,19 @@ computeInvariantQuantizedMap (const MaskMap & mask,
   
   unsigned char * peak_pointer = map.getData ();
   
-  for (size_t row_bin_index = 0; row_bin_index < sub_height; ++row_bin_index)
+  for (std::size_t row_bin_index = 0; row_bin_index < sub_height; ++row_bin_index)
   {
-    for (size_t col_bin_index = 0; col_bin_index < sub_width; ++col_bin_index)
+    for (std::size_t col_bin_index = 0; col_bin_index < sub_width; ++col_bin_index)
     {
-      std::vector<size_t> x_coordinates;
-      std::vector<size_t> y_coordinates;
+      std::vector<std::size_t> x_coordinates;
+      std::vector<std::size_t> y_coordinates;
       std::vector<float> values;
       
       for (int row_pixel_index = -static_cast<int> (bin_size_)/2; 
            row_pixel_index <= static_cast<int> (bin_size_)/2; 
            row_pixel_index += static_cast<int> (bin_size_)/2)
       {
-        const size_t y_position = row_pixel_index + (sub_start_y + row_bin_index)*bin_size_;
+        const std::size_t y_position = row_pixel_index + (sub_start_y + row_bin_index)*bin_size_;
 
         if (y_position < 0 || y_position >= input_height) 
           continue;
@@ -358,8 +358,8 @@ computeInvariantQuantizedMap (const MaskMap & mask,
              col_pixel_index <= static_cast<int> (bin_size_)/2; 
              col_pixel_index += static_cast<int> (bin_size_)/2)
         {
-          const size_t x_position = col_pixel_index + (sub_start_x + col_bin_index)*bin_size_;
-          size_t counter = 0;
+          const std::size_t x_position = col_pixel_index + (sub_start_x + col_bin_index)*bin_size_;
+          std::size_t counter = 0;
           
           if (x_position < 0 || x_position >= input_width) 
             continue;
@@ -367,9 +367,9 @@ computeInvariantQuantizedMap (const MaskMap & mask,
           // find maximum gradient magnitude in current bin
           {
             local_max_gradient = 0.0f;
-            for (size_t row_sub_index = 0; row_sub_index < bin_size_; ++row_sub_index)
+            for (std::size_t row_sub_index = 0; row_sub_index < bin_size_; ++row_sub_index)
             {
-              for (size_t col_sub_index = 0; col_sub_index < bin_size_; ++col_sub_index)
+              for (std::size_t col_sub_index = 0; col_sub_index < bin_size_; ++col_sub_index)
               {
                 const float magnitude = color_gradients_ (col_sub_index + x_position, row_sub_index + y_position).magnitude;
 
@@ -388,15 +388,15 @@ computeInvariantQuantizedMap (const MaskMap & mask,
           while (true)
           {
             float max_gradient;
-            size_t max_gradient_pos_x;
-            size_t max_gradient_pos_y;
+            std::size_t max_gradient_pos_x;
+            std::size_t max_gradient_pos_y;
             
             // find next location and value of maximum gradient magnitude in current region
             {
               max_gradient = 0.0f;
-              for (size_t row_sub_index = 0; row_sub_index < bin_size_; ++row_sub_index)
+              for (std::size_t row_sub_index = 0; row_sub_index < bin_size_; ++row_sub_index)
               {
-                for (size_t col_sub_index = 0; col_sub_index < bin_size_; ++col_sub_index)
+                for (std::size_t col_sub_index = 0; col_sub_index < bin_size_; ++col_sub_index)
                 {
                   const float magnitude = color_gradients_ (col_sub_index + x_position, row_sub_index + y_position).magnitude;
 
@@ -426,8 +426,8 @@ computeInvariantQuantizedMap (const MaskMap & mask,
             
             ++counter;
             
-            const size_t angle = static_cast<size_t> (180 + color_gradients_ (max_gradient_pos_x + x_position, max_gradient_pos_y + y_position).angle + 0.5f);
-            const size_t bin_index = static_cast<size_t> ((angle >= 180 ? angle-180 : angle)/divisor);
+            const std::size_t angle = static_cast<std::size_t> (180 + color_gradients_ (max_gradient_pos_x + x_position, max_gradient_pos_y + y_position).angle + 0.5f);
+            const std::size_t bin_index = static_cast<std::size_t> ((angle >= 180 ? angle-180 : angle)/divisor);
             
             *peak_pointer |= 1 << bin_index;
             
@@ -439,7 +439,7 @@ computeInvariantQuantizedMap (const MaskMap & mask,
           }
           
           // reset values which have been set to -1
-          for (size_t value_index = 0; value_index < values.size (); ++value_index)
+          for (std::size_t value_index = 0; value_index < values.size (); ++value_index)
           {
             color_gradients_ (x_coordinates[value_index], y_coordinates[value_index]).magnitude = values[value_index];
           }

@@ -62,17 +62,17 @@ namespace pcl
      *  \param[in] idx The frame to load
      */
     virtual const typename pcl::PointCloud<PointT>::ConstPtr
-    operator[] (size_t idx) const = 0;
+    operator[] (std::size_t idx) const = 0;
 
     /** \brief size Returns the number of clouds currently loaded by the grabber */
-    virtual size_t
+    virtual std::size_t
     size () const = 0;
     
     /** \brief at Returns the idx-th cloud in the dataset, with bounds checking
      *  \param[in] idx The frame to load
      */
     virtual const typename pcl::PointCloud<PointT>::ConstPtr
-    at (size_t idx) const
+    at (std::size_t idx) const
     {
       if (idx >= size ())
       {

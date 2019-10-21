@@ -398,7 +398,7 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
     r = 1;
     In -= h;
   }
-  if( h<4 || h%4>0 || (size_t(I)&15) || (size_t(Gx)&15) )
+  if( h<4 || h%4>0 || (std::size_t(I)&15) || (std::size_t(Gx)&15) )
   {
     for( y = 0; y < h; y++ )
       *Gx++ = (*In++ - *Ip++) * r;
@@ -418,7 +418,7 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
   Ip = I;
   In = Ip + 1;
   // GRADY(1); Ip--; for(y = 1; y < h-1; y++) GRADY(.5f); In--; GRADY(1);
-  y1 = ((~((size_t) Gy) + 1) & 15)/4;
+  y1 = ((~((std::size_t) Gy) + 1) & 15)/4;
   if(y1 == 0) y1 = 4;
   if(y1 > h-1) y1 = h-1;
   GRADY(1);
@@ -461,7 +461,7 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
   };
   Ip=I; In=Ip+1;
   // GRADY(1); Ip--; for(y=1; y<h-1; y++) GRADY(.5f); In--; GRADY(1);
-  y1=((~((size_t) Gy) + 1) & 15)/4; if(y1==0) y1=4; if(y1>h-1) y1=h-1;
+  y1=((~((std::size_t) Gy) + 1) & 15)/4; if(y1==0) y1=4; if(y1>h-1) y1=h-1;
   GRADY(1); Ip--; for(y=1; y<y1; y++) GRADY(.5f);
   
   r = 0.5f;
@@ -543,12 +543,12 @@ pcl::people::HOG::gradQuantize (float *O, float *M, int *O0, int *O1, float *M0,
 }
 
 inline void* 
-pcl::people::HOG::alMalloc (size_t size, int alignment) const
+pcl::people::HOG::alMalloc (std::size_t size, int alignment) const
 {
-  const size_t pSize = sizeof(void*), a = alignment-1;
+  const std::size_t pSize = sizeof(void*), a = alignment-1;
   void *raw = malloc(size + a + pSize);
-  void *aligned = (void*) (((size_t) raw + pSize + a) & ~a);
-  *(void**) ((size_t) aligned-pSize) = raw;
+  void *aligned = (void*) (((std::size_t) raw + pSize + a) & ~a);
+  *(void**) ((std::size_t) aligned-pSize) = raw;
   return aligned;
 }
 

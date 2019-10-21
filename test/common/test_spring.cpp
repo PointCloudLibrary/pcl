@@ -44,7 +44,7 @@ using namespace pcl;
 using namespace pcl::test;
 
 PointCloud<PointXYZ>::Ptr cloud_ptr (new PointCloud<PointXYZ> (4, 5));
-const size_t size = 5 * 4;
+const std::size_t size = 5 * 4;
 const int amount = 2;
 
 // TEST (PointCloudSpring, vertical)

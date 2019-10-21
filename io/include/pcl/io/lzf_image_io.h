@@ -445,7 +445,7 @@ namespace pcl
           * \return true if operation successful, false otherwise
           */
         bool
-        saveImageBlob (const char* data, size_t data_size, 
+        saveImageBlob (const char* data, std::size_t data_size, 
                        const std::string &filename);
 
         /** \brief Realtime LZF compression.

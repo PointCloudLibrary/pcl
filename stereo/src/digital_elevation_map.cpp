@@ -46,8 +46,8 @@ pcl::DigitalElevationMapBuilder::DigitalElevationMapBuilder()
 pcl::DigitalElevationMapBuilder::~DigitalElevationMapBuilder() {}
 
 void
-pcl::DigitalElevationMapBuilder::setResolution(size_t resolution_column,
-                                               size_t resolution_disparity)
+pcl::DigitalElevationMapBuilder::setResolution(std::size_t resolution_column,
+                                               std::size_t resolution_disparity)
 {
   resolution_column_ = resolution_column;
   resolution_disparity_ = resolution_disparity;
@@ -66,7 +66,7 @@ pcl::DigitalElevationMapBuilder::getDisparityResolution() const
 }
 
 void
-pcl::DigitalElevationMapBuilder::setMinPointsInCell(size_t min_points_in_cell)
+pcl::DigitalElevationMapBuilder::setMinPointsInCell(std::size_t min_points_in_cell)
 {
   min_points_in_cell_ = min_points_in_cell;
 }
@@ -89,24 +89,24 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
   out_cloud.resize(out_cloud.width * out_cloud.height);
 
   // Initialize steps.
-  const size_t kColumnStep = (disparity_map_width_ - 1) / resolution_column_ + 1;
+  const std::size_t kColumnStep = (disparity_map_width_ - 1) / resolution_column_ + 1;
   const float kDisparityStep =
       (disparity_threshold_max_ - disparity_threshold_min_) / resolution_disparity_;
 
   // Initialize histograms.
-  const size_t kNumberOfHistograms = resolution_column_ * resolution_disparity_;
+  const std::size_t kNumberOfHistograms = resolution_column_ * resolution_disparity_;
 
   const float kHeightMin = -0.5f;
   const float kHeightMax = 1.5f;
   const float kHeightResolution = 0.01f;
-  const size_t kHeightBins =
-      static_cast<size_t>((kHeightMax - kHeightMin) / kHeightResolution);
+  const std::size_t kHeightBins =
+      static_cast<std::size_t>((kHeightMax - kHeightMin) / kHeightResolution);
   // Histogram for initializing other height histograms.
   FeatureHistogram height_histogram_example(kHeightBins, kHeightMin, kHeightMax);
 
   const float kIntensityMin = 0.0f;
   const float kIntensityMax = 255.0f;
-  const size_t kIntensityBins = 256;
+  const std::size_t kIntensityBins = 256;
   // Histogram for initializing other intensity histograms.
   FeatureHistogram intensity_histogram_example(
       kIntensityBins, kIntensityMin, kIntensityMax);
@@ -123,8 +123,8 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
     return;
   }
 
-  for (size_t column = 0; column < disparity_map_width_; ++column) {
-    for (size_t row = 0; row < disparity_map_height_; ++row) {
+  for (std::size_t column = 0; column < disparity_map_width_; ++column) {
+    for (std::size_t row = 0; row < disparity_map_height_; ++row) {
       float disparity = disparity_map_[column + row * disparity_map_width_];
       if (disparity_threshold_min_ < disparity &&
           disparity < disparity_threshold_max_) {
@@ -137,11 +137,11 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
             static_cast<float>((point_RGB.r + point_RGB.g + point_RGB.b) / 3);
 
         // Calculate index of histograms.
-        size_t index_column = column / kColumnStep;
-        size_t index_disparity = static_cast<size_t>(
+        std::size_t index_column = column / kColumnStep;
+        std::size_t index_disparity = static_cast<std::size_t>(
             (disparity - disparity_threshold_min_) / kDisparityStep);
 
-        size_t index = index_column + index_disparity * resolution_column_;
+        std::size_t index = index_column + index_disparity * resolution_column_;
 
         // Increase the histograms.
         height_histograms[index].addValue(height);
@@ -152,12 +152,13 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
   }     // column
 
   // For all histograms.
-  for (size_t index_column = 0; index_column < resolution_column_; ++index_column) {
-    for (size_t index_disparity = 0; index_disparity < resolution_disparity_;
+  for (std::size_t index_column = 0; index_column < resolution_column_;
+       ++index_column) {
+    for (std::size_t index_disparity = 0; index_disparity < resolution_disparity_;
          ++index_disparity) {
-      size_t index = index_column + index_disparity * resolution_column_;
+      std::size_t index = index_column + index_disparity * resolution_column_;
       // Compute the corresponding DEM cell.
-      size_t column = index_column * kColumnStep;
+      std::size_t column = index_column * kColumnStep;
       float disparity = disparity_threshold_min_ +
                         static_cast<float>(index_disparity) * kDisparityStep;
 

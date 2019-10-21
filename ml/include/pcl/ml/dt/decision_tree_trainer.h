@@ -90,7 +90,7 @@ public:
    * \param[in] max_tree_depth maximum depth of the learned tree
    */
   inline void
-  setMaxTreeDepth(const size_t max_tree_depth)
+  setMaxTreeDepth(const std::size_t max_tree_depth)
   {
     max_tree_depth_ = max_tree_depth;
   }
@@ -100,7 +100,7 @@ public:
    * \param[in] num_of_features the number of features
    */
   inline void
-  setNumOfFeatures(const size_t num_of_features)
+  setNumOfFeatures(const std::size_t num_of_features)
   {
     num_of_features_ = num_of_features;
   }
@@ -111,7 +111,7 @@ public:
    * \param[in] num_of_threshold the number of thresholds
    */
   inline void
-  setNumOfThresholds(const size_t num_of_threshold)
+  setNumOfThresholds(const std::size_t num_of_threshold)
   {
     num_of_thresholds_ = num_of_threshold;
   }
@@ -151,7 +151,7 @@ public:
    * \param[in] n number of examples
    */
   inline void
-  setMinExamplesForSplit(size_t n)
+  setMinExamplesForSplit(std::size_t n)
   {
     min_examples_for_split_ = n;
   }
@@ -213,7 +213,7 @@ protected:
   trainDecisionTreeNode(std::vector<FeatureType>& features,
                         std::vector<ExampleIndex>& examples,
                         std::vector<LabelType>& label_data,
-                        size_t max_depth,
+                        std::size_t max_depth,
                         NodeType& node);
 
   /** Creates uniformely distrebuted thresholds over the range of the supplied
@@ -224,17 +224,17 @@ protected:
    * \param[out] thresholds the resulting thresholds
    */
   static void
-  createThresholdsUniform(const size_t num_of_thresholds,
+  createThresholdsUniform(const std::size_t num_of_thresholds,
                           std::vector<float>& values,
                           std::vector<float>& thresholds);
 
 private:
   /** Maximum depth of the learned tree. */
-  size_t max_tree_depth_;
+  std::size_t max_tree_depth_;
   /** Number of features used to find optimal decision features. */
-  size_t num_of_features_;
+  std::size_t num_of_features_;
   /** Number of thresholds. */
-  size_t num_of_thresholds_;
+  std::size_t num_of_thresholds_;
 
   /** FeatureHandler instance, responsible for creating and evaluating features. */
   pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>* feature_handler_;
@@ -249,7 +249,7 @@ private:
   std::vector<ExampleIndex> examples_;
 
   /** Minimum number of examples to split a node. */
-  size_t min_examples_for_split_;
+  std::size_t min_examples_for_split_;
   /** Thresholds to be used instead of generating uniform distributed thresholds. */
   std::vector<float> thresholds_;
   /** The data provider which is called before training a specific tree, if pointer is

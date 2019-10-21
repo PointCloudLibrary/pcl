@@ -72,7 +72,7 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
   // destination for intensity data; will be forwarded to BRISK
   std::vector<unsigned char> image_data (width*height);
 
-  for (size_t i = 0; i < image_data.size (); ++i)
+  for (std::size_t i = 0; i < image_data.size (); ++i)
     image_data[i] = static_cast<unsigned char> (intensity_ ((*input_)[i]));
 
   pcl::keypoints::brisk::ScaleSpace brisk_scale_space (octaves_);
@@ -90,7 +90,7 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
   if (remove_invalid_3D_keypoints_)
   {
     PointCloudOut output_clean;
-    for (size_t i = 0; i < output.size (); ++i)
+    for (std::size_t i = 0; i < output.size (); ++i)
     {
       PointOutT pt;
       // Interpolate its position in 3D, as the "u" and "v" are subpixel accurate

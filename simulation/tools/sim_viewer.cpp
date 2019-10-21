@@ -241,7 +241,7 @@ pp_callback(const pcl::visualization::PointPickingEvent& event, void* cookie)
   std::stringstream ss;
   ss << event.getPointIndex();
   // Get the cloud's fields
-  for (size_t i = 0; i < cloud->fields.size(); ++i) {
+  for (std::size_t i = 0; i < cloud->fields.size(); ++i) {
     if (!isMultiDimensionalFeatureField(cloud->fields[i]))
       continue;
     ph_global.addFeatureHistogram(
@@ -547,10 +547,10 @@ main(int argc, char** argv)
 
   // Fix invalid multiple arguments
   if (psize.size() != p_file_indices.size() && !psize.empty())
-    for (size_t i = psize.size(); i < p_file_indices.size(); ++i)
+    for (std::size_t i = psize.size(); i < p_file_indices.size(); ++i)
       psize.push_back(1);
   if (opaque.size() != p_file_indices.size() && !opaque.empty())
-    for (size_t i = opaque.size(); i < p_file_indices.size(); ++i)
+    for (std::size_t i = opaque.size(); i < p_file_indices.size(); ++i)
       opaque.push_back(1.0);
 
   // Create the PCLHistogramVisualizer object
@@ -568,7 +568,7 @@ main(int argc, char** argv)
   GeometryHandlerPtr geometry_handler;
 
   // Go through VTK files
-  for (size_t i = 0; i < vtk_file_indices.size(); ++i) {
+  for (std::size_t i = 0; i < vtk_file_indices.size(); ++i) {
     // Load file
     tt.tic();
     print_highlight(stderr, "Loading ");
@@ -627,7 +627,7 @@ main(int argc, char** argv)
 
   pcl::PCLPointCloud2::Ptr cloud;
   // Go through PCD files
-  for (size_t i = 0; i < p_file_indices.size(); ++i) {
+  for (std::size_t i = 0; i < p_file_indices.size(); ++i) {
     cloud.reset(new pcl::PCLPointCloud2);
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
@@ -820,7 +820,7 @@ main(int argc, char** argv)
 
     // Add every dimension as a possible color
     if (!fcolorparam) {
-      for (size_t f = 0; f < cloud->fields.size(); ++f) {
+      for (std::size_t f = 0; f < cloud->fields.size(); ++f) {
         if (cloud->fields[f].name == "rgb" || cloud->fields[f].name == "rgba")
           color_handler.reset(new pcl::visualization::PointCloudColorHandlerRGBField<
                               pcl::PCLPointCloud2>(cloud));

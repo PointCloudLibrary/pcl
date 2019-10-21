@@ -125,7 +125,7 @@ namespace pcl
 
           int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
 
-          for (size_t k = 0; k < shots->points.size (); k++)
+          for (std::size_t k = 0; k < shots->points.size (); k++)
             for (int i = 0; i < size_feat; i++)
               signatures->points[k].histogram[i] = shots->points[k].descriptor[i];
 

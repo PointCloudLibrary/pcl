@@ -293,7 +293,7 @@ pcl::FeatureFromLabels<PointInT, PointLT, PointOutT>::initCompute ()
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointRFT> bool
-pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFrames (const size_t& indices_size,
+pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFrames (const std::size_t& indices_size,
                                                                                     const LRFEstimationPtr& lrf_estimation)
 {
   if (frames_never_defined_)

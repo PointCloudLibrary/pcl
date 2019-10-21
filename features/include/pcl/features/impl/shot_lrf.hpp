@@ -63,7 +63,7 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const i
 
   int valid_nn_points = 0;
 
-  for (size_t i_idx = 0; i_idx < n_indices.size (); ++i_idx)
+  for (std::size_t i_idx = 0; i_idx < n_indices.size (); ++i_idx)
   {
     Eigen::Vector4f pt = surface_->points[n_indices[i_idx]].getVector4fMap ();
     if (pt.head<3> () == central_point.head<3> ())
@@ -178,7 +178,7 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::computeFeature (Poi
   }
   tree_->setSortedResults (true);
 
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // point result
     Eigen::Matrix3f rf;

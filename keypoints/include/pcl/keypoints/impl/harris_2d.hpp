@@ -237,7 +237,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
   if (!nonmax_)
   {
     output = *response_;
-    for (size_t i = 0; i < response_->size (); ++i)
+    for (std::size_t i = 0; i < response_->size (); ++i)
       keypoints_indices_->indices.push_back (i);
   }
   else

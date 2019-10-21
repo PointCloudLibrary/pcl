@@ -116,7 +116,7 @@ compute (const PointCloudXYZRGBA::ConstPtr & input, const char * templates_filen
   std::vector<pcl::LINEMODDetection> detections = matchTemplates (input, linemod);
 
   // Output the position and score of the best match for each template
-  for (size_t i = 0; i < detections.size (); ++i)
+  for (std::size_t i = 0; i < detections.size (); ++i)
   {
     const LINEMODDetection & d = detections[i];
     printf ("%lu: %d %d %d %f\n", i, d.x, d.y, d.template_id, d.score);
@@ -125,16 +125,16 @@ compute (const PointCloudXYZRGBA::ConstPtr & input, const char * templates_filen
   /*// Visualization code for testing purposes (requires libpng++)
   int i = 0;
   png::image<png::rgb_pixel> image (640, 480);
-  for (size_t y = 0; y < image.get_height (); ++y)
+  for (std::size_t y = 0; y < image.get_height (); ++y)
   {
-    for (size_t x = 0; x < image.get_width (); ++x)
+    for (std::size_t x = 0; x < image.get_width (); ++x)
     {
       const pcl::PointXYZRGBA & p = input->points[i++];
       image[y][x] = png::rgb_pixel(p.r, p.g, p.b);
     }
   }
   // Draw a green box around the object
-  for (size_t i = 0; i < detections.size (); ++i)
+  for (std::size_t i = 0; i < detections.size (); ++i)
   {
     const LINEMODDetection & d = detections[i];
     if (d.score < 0.6)

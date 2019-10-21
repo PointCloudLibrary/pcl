@@ -116,13 +116,13 @@ pcl::GASDEstimation<PointInT, PointOutT>::computeAlignmentTransform ()
 template <typename PointInT, typename PointOutT> void
 pcl::GASDEstimation<PointInT, PointOutT>::addSampleToHistograms (const Eigen::Vector4f &p,
                                                                  const float max_coord,
-                                                                 const size_t half_grid_size,
+                                                                 const std::size_t half_grid_size,
                                                                  const HistogramInterpolationMethod interp,
                                                                  const float hbin,
                                                                  const float hist_incr,
                                                                  std::vector<Eigen::VectorXf> &hists)
 {
-  const size_t grid_size = half_grid_size * 2;
+  const std::size_t grid_size = half_grid_size * 2;
 
   // compute normalized coordinates with respect to axis-aligned bounding cube centered on the origin
   const Eigen::Vector3f scaled ( (p[0] / max_coord) * half_grid_size, (p[1] / max_coord) * half_grid_size, (p[2] / max_coord) * half_grid_size);
@@ -140,8 +140,8 @@ pcl::GASDEstimation<PointInT, PointOutT>::addSampleToHistograms (const Eigen::Ve
   const Eigen::Vector4f bins (std::floor (coords[0]), std::floor (coords[1]), std::floor (coords[2]), std::floor (coords[3]));
 
   // compute indices of the bin where the sample falls into
-  const size_t grid_idx = ( (bins[0] + 1) * (grid_size + 2) + bins[1] + 1) * (grid_size + 2) + bins[2] + 1;
-  const size_t h_idx = bins[3] + 1;
+  const std::size_t grid_idx = ( (bins[0] + 1) * (grid_size + 2) + bins[1] + 1) * (grid_size + 2) + bins[2] + 1;
+  const std::size_t h_idx = bins[3] + 1;
 
   if (interp == INTERP_NONE)
   {
@@ -226,19 +226,19 @@ pcl::GASDEstimation<PointInT, PointOutT>::addSampleToHistograms (const Eigen::Ve
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::GASDEstimation<PointInT, PointOutT>::copyShapeHistogramsToOutput (const size_t grid_size,
-                                                                       const size_t hists_size,
+pcl::GASDEstimation<PointInT, PointOutT>::copyShapeHistogramsToOutput (const std::size_t grid_size,
+                                                                       const std::size_t hists_size,
                                                                        const std::vector<Eigen::VectorXf> &hists,
                                                                        PointCloudOut &output,
-                                                                       size_t &pos)
+                                                                       std::size_t &pos)
 {
-  for (size_t i = 0; i < grid_size; ++i)
+  for (std::size_t i = 0; i < grid_size; ++i)
   {
-    for (size_t j = 0; j < grid_size; ++j)
+    for (std::size_t j = 0; j < grid_size; ++j)
     {
-      for (size_t k = 0; k < grid_size; ++k)
+      for (std::size_t k = 0; k < grid_size; ++k)
       {
-        const size_t idx = ( (i + 1) * (grid_size + 2) + (j + 1)) * (grid_size + 2) + (k + 1);
+        const std::size_t idx = ( (i + 1) * (grid_size + 2) + (j + 1)) * (grid_size + 2) + (k + 1);
 
         std::copy (hists[idx].data () + 1, hists[idx].data () + hists_size + 1, output.points[0].histogram + pos);
         pos += hists_size;
@@ -257,7 +257,7 @@ pcl::GASDEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
   // align point cloud
   pcl::transformPointCloud (*surface_, *indices_, shape_samples_, transform_);
 
-  const size_t shape_grid_size = shape_half_grid_size_ * 2;
+  const std::size_t shape_grid_size = shape_half_grid_size_ * 2;
 
   // each histogram dimension has 2 additional bins, 1 in each boundary, for performing interpolation
   std::vector<Eigen::VectorXf> shape_hists ((shape_grid_size + 2) * (shape_grid_size + 2) * (shape_grid_size + 2),
@@ -281,7 +281,7 @@ pcl::GASDEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
   hist_incr_ = 100.0f / static_cast<float> (shape_samples_.size () - 1);
 
   // for each sample
-  for (size_t i = 0; i < shape_samples_.size (); ++i)
+  for (std::size_t i = 0; i < shape_samples_.size (); ++i)
   {
     // compute shape histogram array coord based on distance between sample and centroid
     const Eigen::Vector4f p (shape_samples_[i].x, shape_samples_[i].y, shape_samples_[i].z, 0.0f);
@@ -310,19 +310,19 @@ pcl::GASDEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::GASDColorEstimation<PointInT, PointOutT>::copyColorHistogramsToOutput (const size_t grid_size,
-                                                                            const size_t hists_size,
+pcl::GASDColorEstimation<PointInT, PointOutT>::copyColorHistogramsToOutput (const std::size_t grid_size,
+                                                                            const std::size_t hists_size,
                                                                             std::vector<Eigen::VectorXf> &hists,
                                                                             PointCloudOut &output,
-                                                                            size_t &pos)
+                                                                            std::size_t &pos)
 {
-  for (size_t i = 0; i < grid_size; ++i)
+  for (std::size_t i = 0; i < grid_size; ++i)
   {
-    for (size_t j = 0; j < grid_size; ++j)
+    for (std::size_t j = 0; j < grid_size; ++j)
     {
-      for (size_t k = 0; k < grid_size; ++k)
+      for (std::size_t k = 0; k < grid_size; ++k)
       {
-        const size_t idx = ( (i + 1) * (grid_size + 2) + (j + 1)) * (grid_size + 2) + (k + 1);
+        const std::size_t idx = ( (i + 1) * (grid_size + 2) + (j + 1)) * (grid_size + 2) + (k + 1);
 
         hists[idx][1] += hists[idx][hists_size + 1];
         hists[idx][hists_size] += hists[idx][0];
@@ -341,14 +341,14 @@ pcl::GASDColorEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
   // call shape feature computation
   GASDEstimation<PointInT, PointOutT>::computeFeature (output);
 
-  const size_t color_grid_size = color_half_grid_size_ * 2;
+  const std::size_t color_grid_size = color_half_grid_size_ * 2;
 
   // each histogram dimension has 2 additional bins, 1 in each boundary, for performing interpolation
   std::vector<Eigen::VectorXf> color_hists ((color_grid_size + 2) * (color_grid_size + 2) * (color_grid_size + 2),
                                              Eigen::VectorXf::Zero (color_hists_size_ + 2));
 
   // for each sample
-  for (size_t i = 0; i < shape_samples_.size (); ++i)
+  for (std::size_t i = 0; i < shape_samples_.size (); ++i)
   {
     // compute shape histogram array coord based on distance between sample and centroid
     const Eigen::Vector4f p (shape_samples_[i].x, shape_samples_[i].y, shape_samples_[i].z, 0.0f);

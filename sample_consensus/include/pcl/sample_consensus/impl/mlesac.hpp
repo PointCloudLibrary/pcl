@@ -76,7 +76,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   double v = sqrt (max_pt.dot (max_pt));
 
   int n_inliers_count = 0;
-  size_t indices_size;
+  std::size_t indices_size;
   unsigned skipped_count = 0;
   // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
   const unsigned max_skip = max_iterations_ * 10;
@@ -117,7 +117,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
     for (int j = 0; j < iterations_EM_; ++j)
     {
       // Likelihood of a datum given that it is an inlier
-      for (size_t i = 0; i < indices_size; ++i)
+      for (std::size_t i = 0; i < indices_size; ++i)
         p_inlier_prob[i] = gamma * std::exp (- (distances[i] * distances[i] ) / 2 * (sigma_ * sigma_) ) /
                            (sqrt (2 * M_PI) * sigma_);
 
@@ -125,14 +125,14 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
       p_outlier_prob = (1 - gamma) / v;
 
       gamma = 0;
-      for (size_t i = 0; i < indices_size; ++i)
+      for (std::size_t i = 0; i < indices_size; ++i)
         gamma += p_inlier_prob [i] / (p_inlier_prob[i] + p_outlier_prob);
       gamma /= static_cast<double>(sac_model_->getIndices ()->size ());
     }
 
     // Find the std::log likelihood of the model -L = -sum [std::log (pInlierProb + pOutlierProb)]
     double d_cur_penalty = 0;
-    for (size_t i = 0; i < indices_size; ++i)
+    for (std::size_t i = 0; i < indices_size; ++i)
       d_cur_penalty += std::log (p_inlier_prob[i] + p_outlier_prob);
     d_cur_penalty = - d_cur_penalty;
 
@@ -189,7 +189,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   inliers_.resize (distances.size ());
   // Get the inliers for the best model found
   n_inliers_count = 0;
-  for (size_t i = 0; i < distances.size (); ++i)
+  for (std::size_t i = 0; i < distances.size (); ++i)
     if (distances[i] <= 2 * sigma_)
       inliers_[n_inliers_count++] = indices[i];
 
@@ -215,7 +215,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedianAbsoluteDeviation (
   // median (dist (x - median (x)))
   computeMedian (cloud, indices, median);
 
-  for (size_t i = 0; i < indices->size (); ++i)
+  for (std::size_t i = 0; i < indices->size (); ++i)
   {
     pcl::Vector4fMapConst pt = cloud->points[(*indices)[i]].getVector4fMap ();
     Eigen::Vector4f ptdiff = pt - median;
@@ -226,7 +226,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedianAbsoluteDeviation (
   std::sort (distances.begin (), distances.end ());
 
   double result;
-  size_t mid = indices->size () / 2;
+  std::size_t mid = indices->size () / 2;
   // Do we have a "middle" point or should we "estimate" one ?
   if (indices->size () % 2 == 0)
     result = (sqrt (distances[mid-1]) + sqrt (distances[mid])) / 2;
@@ -247,7 +247,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::getMinMax (
   max_p.setConstant (-FLT_MAX);
   min_p[3] = max_p[3] = 0;
 
-  for (size_t i = 0; i < indices->size (); ++i)
+  for (std::size_t i = 0; i < indices->size (); ++i)
   {
     if (cloud->points[(*indices)[i]].x < min_p[0]) min_p[0] = cloud->points[(*indices)[i]].x;
     if (cloud->points[(*indices)[i]].y < min_p[1]) min_p[1] = cloud->points[(*indices)[i]].y;
@@ -270,7 +270,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedian (
   std::vector<float> x (indices->size ());
   std::vector<float> y (indices->size ());
   std::vector<float> z (indices->size ());
-  for (size_t i = 0; i < indices->size (); ++i)
+  for (std::size_t i = 0; i < indices->size (); ++i)
   {
     x[i] = cloud->points[(*indices)[i]].x;
     y[i] = cloud->points[(*indices)[i]].y;
@@ -280,7 +280,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedian (
   std::sort (y.begin (), y.end ());
   std::sort (z.begin (), z.end ());
 
-  size_t mid = indices->size () / 2;
+  std::size_t mid = indices->size () / 2;
   if (indices->size () % 2 == 0)
   {
     median[0] = (x[mid-1] + x[mid]) / 2;

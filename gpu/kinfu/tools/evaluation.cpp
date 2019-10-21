@@ -136,8 +136,8 @@ void Evaluation::readFile(const string& file, std::vector< pair<double,string> >
   
 bool Evaluation::grab (double stamp, PtrStepSz<const RGB>& rgb24)
 {  
-  size_t i = static_cast<size_t>(stamp); // temporary solution, now it expects only index
-  size_t total = accociations_.empty() ? rgb_stamps_and_filenames_.size() : accociations_.size();
+  std::size_t i = static_cast<std::size_t>(stamp); // temporary solution, now it expects only index
+  std::size_t total = accociations_.empty() ? rgb_stamps_and_filenames_.size() : accociations_.size();
   
   if ( i>= total)
       return false;
@@ -165,8 +165,8 @@ bool Evaluation::grab (double stamp, PtrStepSz<const RGB>& rgb24)
 
 bool Evaluation::grab (double stamp, PtrStepSz<const unsigned short>& depth)
 {  
-  size_t i = static_cast<size_t>(stamp); // temporary solution, now it expects only index
-  size_t total = accociations_.empty() ? depth_stamps_and_filenames_.size() : accociations_.size();
+  std::size_t i = static_cast<std::size_t>(stamp); // temporary solution, now it expects only index
+  std::size_t total = accociations_.empty() ? depth_stamps_and_filenames_.size() : accociations_.size();
 
   if ( i>= total)
       return false;
@@ -209,7 +209,7 @@ bool Evaluation::grab (double stamp, PtrStepSz<const unsigned short>& depth, Ptr
     exit(0);
   }
 
-  size_t i = static_cast<size_t>(stamp); // temporary solution, now it expects only index
+  std::size_t i = static_cast<std::size_t>(stamp); // temporary solution, now it expects only index
 
   if ( i>= accociations_.size())
       return false;
@@ -252,7 +252,7 @@ bool Evaluation::grab (double stamp, PtrStepSz<const unsigned short>& depth, Ptr
 
 void Evaluation::saveAllPoses(const pcl::gpu::KinfuTracker& kinfu, int frame_number, const std::string& logfile) const
 {   
-  size_t total = accociations_.empty() ? depth_stamps_and_filenames_.size() : accociations_.size();
+  std::size_t total = accociations_.empty() ? depth_stamps_and_filenames_.size() : accociations_.size();
 
   if (frame_number < 0)
       frame_number = (int)total;

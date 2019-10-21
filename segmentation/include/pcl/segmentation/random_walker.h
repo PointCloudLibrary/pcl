@@ -83,7 +83,7 @@ namespace pcl
       * convenience.
       *
       * \sa randomWalker(Graph&, EdgeWeightMap, VertexColorMap)
-      * \sa randomWalker(Graph&, EdgeWeightMap, VertexColorMap, Eigen::Matrix <typename boost::property_traits<EdgeWeightMap>::value_type, Eigen::Dynamic, Eigen::Dynamic>&, std::map<typename boost::property_traits <VertexColorMap>::value_type, size_t>&)
+      * \sa randomWalker(Graph&, EdgeWeightMap, VertexColorMap, Eigen::Matrix <typename boost::property_traits<EdgeWeightMap>::value_type, Eigen::Dynamic, Eigen::Dynamic>&, std::map<typename boost::property_traits <VertexColorMap>::value_type, std::size_t>&)
       *
       * \author Sergey Alexandrov
       * \ingroup segmentation
@@ -131,7 +131,7 @@ namespace pcl
                   EdgeWeightMap weights,
                   VertexColorMap colors,
                   Eigen::Matrix<typename boost::property_traits<EdgeWeightMap>::value_type, Eigen::Dynamic, Eigen::Dynamic>& potentials,
-                  std::map<typename boost::property_traits<VertexColorMap>::value_type, size_t>& colors_to_columns_map);
+                  std::map<typename boost::property_traits<VertexColorMap>::value_type, std::size_t>& colors_to_columns_map);
 
   }
 

@@ -110,10 +110,10 @@ namespace pcl
         delete[] midPoint;
       bestTriangulation=NULL;
       midPoint=NULL;
-      size_t eCount=vertices.size();
+      std::size_t eCount=vertices.size();
       bestTriangulation=new Real[eCount*eCount];
       midPoint=new int[eCount*eCount];
-      for(size_t i=0;i<eCount*eCount;i++)
+      for(std::size_t i=0;i<eCount*eCount;i++)
         bestTriangulation[i]=-1;
       memset(midPoint,-1,sizeof(int)*eCount*eCount);
       GetArea(0,1,vertices);
@@ -138,11 +138,11 @@ namespace pcl
       return GetArea(0,1,vertices);
     }
     template<class Real>
-    void MinimalAreaTriangulation<Real>::GetTriangulation(const size_t& i,const size_t& j,const std::vector<Point3D<Real> >& vertices,std::vector<TriangleIndex>& triangles)
+    void MinimalAreaTriangulation<Real>::GetTriangulation(const std::size_t& i,const std::size_t& j,const std::vector<Point3D<Real> >& vertices,std::vector<TriangleIndex>& triangles)
     {
       TriangleIndex tIndex;
-      size_t eCount=vertices.size();
-      size_t ii=i;
+      std::size_t eCount=vertices.size();
+      std::size_t ii=i;
       if(i<j)
         ii+=eCount;
       if(j+1>=ii)
@@ -160,12 +160,12 @@ namespace pcl
     }
 
     template<class Real>
-    Real MinimalAreaTriangulation<Real>::GetArea(const size_t& i,const size_t& j,const std::vector<Point3D<Real> >& vertices)
+    Real MinimalAreaTriangulation<Real>::GetArea(const std::size_t& i,const std::size_t& j,const std::vector<Point3D<Real> >& vertices)
     {
       Real a=FLT_MAX,temp;
-      size_t eCount=vertices.size();
-      size_t idx=i*eCount+j;
-      size_t ii=i;
+      std::size_t eCount=vertices.size();
+      std::size_t idx=i*eCount+j;
+      std::size_t ii=i;
       if(i<j)
         ii+=eCount;
       if(j+1>=ii)
@@ -176,10 +176,10 @@ namespace pcl
       if(midPoint[idx]!=-1)
         return bestTriangulation[idx];
       int mid=-1;
-      for(size_t r=j+1;r<ii;r++)
+      for(std::size_t r=j+1;r<ii;r++)
       {
-        size_t rr=r%eCount;
-        size_t idx1=i*eCount+rr,idx2=rr*eCount+j;
+        std::size_t rr=r%eCount;
+        std::size_t idx1=i*eCount+rr,idx2=rr*eCount+j;
         Point3D<Real> p,p1,p2;
         p1=vertices[i]-vertices[rr];
         p2=vertices[j]-vertices[rr];

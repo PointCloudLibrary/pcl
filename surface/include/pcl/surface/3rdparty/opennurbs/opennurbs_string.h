@@ -48,8 +48,8 @@ void ON_Sort(
         ON::sort_algorithm method,
         int* index,
         const void* base,
-        size_t count,
-        size_t sizeof_element,
+        std::size_t count,
+        std::size_t sizeof_element,
         int (*compare)(const void*,const void*) // int compar(const void*,const void*)
         );
 
@@ -87,8 +87,8 @@ void ON_Sort(
         ON::sort_algorithm method,
         int* index,
         const void* base,
-        size_t count,
-        size_t sizeof_element,
+        std::size_t count,
+        std::size_t sizeof_element,
         int (*compare)(const void*,const void*,void*), // int compar(const void* a,const void* b, void* ptr)
         void* context
         );
@@ -127,24 +127,24 @@ Remarks:
 ON_DECL
 void ON_hsort( 
         void* base,
-        size_t count,
-        size_t sizeof_element,
+        std::size_t count,
+        std::size_t sizeof_element,
         int (*compare)(const void*,const void*)
         );
 
 ON_DECL
 void ON_qsort( 
         void* base,
-        size_t count,
-        size_t sizeof_element,
+        std::size_t count,
+        std::size_t sizeof_element,
         int (*compare)(const void*,const void*)
         );
 
 ON_DECL
 void ON_hsort( 
         void* base,
-        size_t count,
-        size_t sizeof_element,
+        std::size_t count,
+        std::size_t sizeof_element,
         int (*compare)(void*,const void*,const void*),
         void* context
         );
@@ -152,8 +152,8 @@ void ON_hsort(
 ON_DECL
 void ON_qsort( 
         void* base,
-        size_t count,
-        size_t sizeof_element,
+        std::size_t count,
+        std::size_t sizeof_element,
         int (*compare)(void*,const void*,const void*),
         void* context
         );
@@ -177,7 +177,7 @@ ON_DECL
 void ON_SortDoubleArray( 
         ON::sort_algorithm sort_algorithm,
         double* a,
-        size_t nel
+        std::size_t nel
         );
 
 /*
@@ -198,7 +198,7 @@ ON_DECL
 void ON_SortIntArray(
         ON::sort_algorithm sort_algorithm,
         int* a,
-        size_t nel
+        std::size_t nel
         );
 
 /*
@@ -219,7 +219,7 @@ ON_DECL
 void ON_SortUnsignedIntArray(
         ON::sort_algorithm sort_algorithm,
         unsigned int* a,
-        size_t nel
+        std::size_t nel
         );
 
 /*
@@ -240,28 +240,28 @@ ON_DECL
 void ON_SortStringArray(
         ON::sort_algorithm sort_algorithm,
         char** a,
-        size_t nel
+        std::size_t nel
         );
 
 ON_DECL
 const int* ON_BinarySearchIntArray( 
           int key, 
           const int* base, 
-          size_t nel
+          std::size_t nel
           );
 
 ON_DECL
 const unsigned int* ON_BinarySearchUnsignedIntArray( 
           unsigned int key, 
           const unsigned int* base, 
-          size_t nel
+          std::size_t nel
           );
 
 ON_DECL
 const double* ON_BinarySearchDoubleArray( 
           double key, 
           const double* base, 
-          size_t nel
+          std::size_t nel
           );
 
 
@@ -303,7 +303,7 @@ public:
     True if checksum is set.
   */
   bool SetBufferCheckSum( 
-    size_t size, 
+    std::size_t size, 
     const void* buffer,
     time_t time
    );
@@ -342,7 +342,7 @@ public:
     True if the buffer has a matching checksum.
   */
   bool CheckBuffer( 
-    size_t size, 
+    std::size_t size, 
     const void* buffer
     ) const;
 
@@ -382,7 +382,7 @@ public:
   void Dump(class ON_TextLog&) const;
 
 public:
-  size_t     m_size;   // bytes in the file.
+  std::size_t     m_size;   // bytes in the file.
   time_t     m_time;   // last modified time in seconds since Jan 1, 1970, UCT
   ON__UINT32 m_crc[8]; // crc's
 };
@@ -598,10 +598,10 @@ public:
 	void ON_MSC_CDECL Format( const unsigned char*, ...);
 
 	// Low level access to string contents as character array
-	void ReserveArray(size_t); // make sure internal array has at least
+	void ReserveArray(std::size_t); // make sure internal array has at least
                           // the requested capacity.
 	void ShrinkArray();     // shrink internal storage to minimum size
-  void SetLength(size_t);    // set length (<=capacity)
+  void SetLength(std::size_t);    // set length (<=capacity)
   char* Array();
   const char* Array() const;
 
@@ -954,10 +954,10 @@ public:
 	void ON_MSC_CDECL Format( const wchar_t*, ...);
 
 	// Low level access to string contents as character array
-	void ReserveArray(size_t); // make sure internal array has at least
+	void ReserveArray(std::size_t); // make sure internal array has at least
                           // the requested capacity.
 	void ShrinkArray();     // shrink internal storage to minimum size
-  void SetLength(size_t); // set length (<=capacity)
+  void SetLength(std::size_t); // set length (<=capacity)
   wchar_t* Array();
   const wchar_t* Array() const;
 

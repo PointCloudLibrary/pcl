@@ -134,7 +134,7 @@ bool ON_CompressStream::In( ON__UINT64 size, const void* uncompressed_buffer )
       // submit a portion of uncompressed_buffer to zlib
       ON__UINT64 sz = (size > max_sz) ? max_sz : size;
       m_in_size += sz;
-      m_in_crc = ON_CRC32(m_in_crc,(size_t)sz,uncompressed_buffer); // (size_t) cast is safe because sz <= max_sz = 0x7FFFFFF0
+      m_in_crc = ON_CRC32(m_in_crc,(std::size_t)sz,uncompressed_buffer); // (std::size_t) cast is safe because sz <= max_sz = 0x7FFFFFF0
       strm.next_in = (z_Bytef*)uncompressed_buffer;
       strm.avail_in = (ON__UINT32)sz;
       uncompressed_buffer = ((const unsigned char*)uncompressed_buffer) + sz;
@@ -452,7 +452,7 @@ bool ON_UncompressStream::In( ON__UINT64 size, const void* compressed_buffer )
       // submit a portion of compressed_buffer to zlib
       ON__UINT64 sz = (size > max_sz) ? max_sz : size;
       m_in_size += sz;
-      m_in_crc = ON_CRC32(m_in_crc,(size_t)sz,compressed_buffer); // (size_t) cast is safe because sz <= max_sz = 0x7FFFFFF0
+      m_in_crc = ON_CRC32(m_in_crc,(std::size_t)sz,compressed_buffer); // (std::size_t) cast is safe because sz <= max_sz = 0x7FFFFFF0
       strm.next_in = (z_Bytef*)compressed_buffer;
       strm.avail_in = (ON__UINT32)sz;
       compressed_buffer = ((const unsigned char*)compressed_buffer) + sz;

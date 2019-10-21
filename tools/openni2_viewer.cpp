@@ -311,7 +311,7 @@ main (int argc, char** argv)
         auto deviceManager = pcl::io::openni2::OpenNI2DeviceManager::getInstance ();
         if (deviceManager->getNumOfConnectedDevices () > 0)
         {
-          for (size_t deviceIdx = 0; deviceIdx < deviceManager->getNumOfConnectedDevices (); ++deviceIdx)
+          for (std::size_t deviceIdx = 0; deviceIdx < deviceManager->getNumOfConnectedDevices (); ++deviceIdx)
           {
             auto device = deviceManager->getDeviceByIndex (deviceIdx);
             std::cout << "Device " << device->getStringID () << "connected." << std::endl;

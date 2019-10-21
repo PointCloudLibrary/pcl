@@ -80,11 +80,11 @@ namespace pcl
         Detection () : template_id (0), object_id (0), detection_id (0), response (0.0f) {}
 
         /** \brief The ID of the template. */
-        size_t template_id;
+        std::size_t template_id;
         /** \brief The ID of the object corresponding to the template. */
-        size_t object_id;
+        std::size_t object_id;
         /** \brief The ID of this detection. This is only valid for the last call of the method detect (...). */
-        size_t detection_id;
+        std::size_t detection_id;
         /** \brief The response of this detection. Responses are between 0 and 1, where 1 is best. */
         float response;
         /** \brief The 3D bounding box of the detection. */
@@ -121,10 +121,10 @@ namespace pcl
         * \return true, if the operation was successful, false otherwise.
         */
       bool
-      loadTemplates (const std::string &file_name, size_t object_id = 0);
+      loadTemplates (const std::string &file_name, std::size_t object_id = 0);
 
       bool
-      addTemplate (const SparseQuantizedMultiModTemplate & sqmmt, pcl::PointCloud<pcl::PointXYZRGBA> & cloud, size_t object_id = 0);
+      addTemplate (const SparseQuantizedMultiModTemplate & sqmmt, pcl::PointCloud<pcl::PointXYZRGBA> & cloud, std::size_t object_id = 0);
 
       /** \brief Sets the threshold for the detection responses. Responses are between 0 and 1, where 1 is a best. 
         * \param[in] threshold The threshold used to decide where a template is detected.
@@ -192,7 +192,7 @@ namespace pcl
       int 
       createAndAddTemplate (
         pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
-        const size_t object_id,
+        const std::size_t object_id,
         const MaskMap & mask_xyz,
         const MaskMap & mask_rgb,
         const RegionXY & region);
@@ -220,22 +220,22 @@ namespace pcl
         * \param[out] cloud The storage for the transformed points.
         */
       void
-      computeTransformedTemplatePoints (const size_t detection_id,
+      computeTransformedTemplatePoints (const std::size_t detection_id,
                                         pcl::PointCloud<pcl::PointXYZRGBA> & cloud);
 
       /** \brief Finds the indices of the points in the input cloud which correspond to the specified detection. 
         *        The detection ID refers to the last call of the method detect (...).
         * \param[in] detection_id The ID of the detection (according to the last call of the method detect (...)).
         */
-      inline std::vector<size_t>
-      findObjectPointIndices (const size_t detection_id)
+      inline std::vector<std::size_t>
+      findObjectPointIndices (const std::size_t detection_id)
       {
         if (detection_id >= detections_.size ())
           PCL_ERROR ("ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id is out of bounds\n");
 
         // TODO: compute transform from detection
         // TODO: transform template points
-        std::vector<size_t> vec;
+        std::vector<std::size_t> vec;
         return (vec);
       }
 
@@ -246,15 +246,15 @@ namespace pcl
         *        The detection ID refers to the last call of the method detect (...). 
         * \param[in] detection_id The ID of the detection (according to the last call of the method detect (...)).
         */
-      inline std::vector<size_t>
-      alignTemplatePoints (const size_t detection_id)
+      inline std::vector<std::size_t>
+      alignTemplatePoints (const std::size_t detection_id)
       {
         if (detection_id >= detections_.size ())
           PCL_ERROR ("ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id is out of bounds\n");
 
         // TODO: compute transform from detection
         // TODO: transform template points
-        std::vector<size_t> vec;
+        std::vector<std::size_t> vec;
         return (vec);
       }
 
@@ -302,7 +302,7 @@ namespace pcl
       /** \brief Bounding boxes corresponding to the templates. */
       std::vector<pcl::BoundingBoxXYZ> bounding_boxes_;
       /** \brief Object IDs corresponding to the templates. */
-      std::vector<size_t> object_ids_;
+      std::vector<std::size_t> object_ids_;
 
       /** \brief Detections from last call of method detect (...). */
       std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> detections_; 

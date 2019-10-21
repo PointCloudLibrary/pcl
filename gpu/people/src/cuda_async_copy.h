@@ -49,7 +49,7 @@ namespace pcl
     class AsyncCopy
     {
     public:
-      AsyncCopy(T* ptr, size_t size) : ptr_(ptr)
+      AsyncCopy(T* ptr, std::size_t size) : ptr_(ptr)
       {
         cudaSafeCall( cudaHostRegister(ptr_, size, 0) );        
         cudaSafeCall( cudaStreamCreate(&stream_) );

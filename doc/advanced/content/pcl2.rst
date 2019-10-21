@@ -108,7 +108,7 @@ Proposals for the 2.x API:
 
 1.5 Data slices
 ^^^^^^^^^^^^^^^
-Anything involving a slice of data should use size_t for indices and not int. E.g the indices of the inliers in RANSAC, the focused points in RANSAC ...
+Anything involving a slice of data should use std::size_t for indices and not int. E.g the indices of the inliers in RANSAC, the focused points in RANSAC ...
 
 1.6 RANSAC
 ^^^^^^^^^^

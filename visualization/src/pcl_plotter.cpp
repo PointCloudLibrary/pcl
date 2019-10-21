@@ -158,7 +158,7 @@ pcl::visualization::PCLPlotter::addPlotData (
   double *array_x = new double[plot_data.size ()];
   double *array_y = new double[plot_data.size ()];
 
-  for (size_t i = 0; i < plot_data.size (); i++)
+  for (std::size_t i = 0; i < plot_data.size (); i++)
   {
     array_x[i] = plot_data[i].first;
     array_y[i] = plot_data[i].second;
@@ -585,7 +585,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
 
   //find min and max in the data
   double min = data[0], max = data[0];
-  for (size_t i = 1; i < data.size (); i++)
+  for (std::size_t i = 1; i < data.size (); i++)
   {
     if (std::isfinite (data[i]))
     {
@@ -624,7 +624,7 @@ pcl::visualization::PCLPlotter::compute (
     double val)
 {
   double res = 0;
-  for (size_t i = 0; i < p_function.size (); i++)
+  for (std::size_t i = 0; i < p_function.size (); i++)
     res += (p_function[i] * pow (val, static_cast<double> (i)) );
   return (res);
 }

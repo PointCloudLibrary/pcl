@@ -128,7 +128,7 @@ namespace pcl
         * The window size parameter is not relevant for `DepthSense_None`
         * filtering type. */
       void
-      enableTemporalFiltering (TemporalFilteringType type, size_t window_size = 1);
+      enableTemporalFiltering (TemporalFilteringType type, std::size_t window_size = 1);
 
       /** Disable temporal filtering. */
       void

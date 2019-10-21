@@ -189,8 +189,8 @@ pcl::DisparityMapConverter<PointT>::loadDisparityMap(const std::string& file_nam
   disparity_map_.resize(disparity_map_width_ * disparity_map_height_);
 
   // Reading the disparity map.
-  for (size_t row = 0; row < disparity_map_height_; ++row) {
-    for (size_t column = 0; column < disparity_map_width_; ++column) {
+  for (std::size_t row = 0; row < disparity_map_height_; ++row) {
+    for (std::size_t column = 0; column < disparity_map_width_; ++column) {
       float disparity;
       disparity_file >> disparity;
 
@@ -204,8 +204,8 @@ pcl::DisparityMapConverter<PointT>::loadDisparityMap(const std::string& file_nam
 template <typename PointT>
 bool
 pcl::DisparityMapConverter<PointT>::loadDisparityMap(const std::string& file_name,
-                                                     const size_t width,
-                                                     const size_t height)
+                                                     const std::size_t width,
+                                                     const std::size_t height)
 {
   // Initialize disparity map's size.
   disparity_map_width_ = width;
@@ -226,7 +226,9 @@ pcl::DisparityMapConverter<PointT>::setDisparityMap(
 template <typename PointT>
 void
 pcl::DisparityMapConverter<PointT>::setDisparityMap(
-    const std::vector<float>& disparity_map, const size_t width, const size_t height)
+    const std::vector<float>& disparity_map,
+    const std::size_t width,
+    const std::size_t height)
 {
   disparity_map_width_ = width;
   disparity_map_height_ = height;
@@ -257,10 +259,10 @@ pcl::DisparityMapConverter<PointT>::compute(PointCloud& out_cloud)
     return;
   }
 
-  for (size_t row = 0; row < disparity_map_height_; ++row) {
-    for (size_t column = 0; column < disparity_map_width_; ++column) {
+  for (std::size_t row = 0; row < disparity_map_height_; ++row) {
+    for (std::size_t column = 0; column < disparity_map_width_; ++column) {
       // ID of current disparity point.
-      size_t disparity_point = column + row * disparity_map_width_;
+      std::size_t disparity_point = column + row * disparity_map_width_;
 
       // Disparity value.
       float disparity = disparity_map_[disparity_point];
@@ -300,8 +302,8 @@ pcl::DisparityMapConverter<PointT>::compute(PointCloud& out_cloud)
 
 template <typename PointT>
 pcl::PointXYZ
-pcl::DisparityMapConverter<PointT>::translateCoordinates(size_t row,
-                                                         size_t column,
+pcl::DisparityMapConverter<PointT>::translateCoordinates(std::size_t row,
+                                                         std::size_t column,
                                                          float disparity) const
 {
   // Returning point.

@@ -133,7 +133,7 @@ namespace pcl
       sortModels ()
       {
         indices_models_.clear ();
-        for (size_t i = 0; i < recognition_models_.size (); i++)
+        for (std::size_t i = 0; i < recognition_models_.size (); i++)
         {
           modelIndices mi;
           mi.index_ = static_cast<int> (i);
@@ -150,10 +150,10 @@ namespace pcl
       void
       updateGoodInformation (int i)
       {
-        for (size_t k = 0; k < recognition_models_[i]->explained_.size (); k++)
+        for (std::size_t k = 0; k < recognition_models_[i]->explained_.size (); k++)
         {
           //update good_information_ for all hypotheses that were explaining the same points as hypothesis i
-          for (size_t kk = 0; kk < points_explained_by_rm_[recognition_models_[i]->explained_[k]].size (); kk++)
+          for (std::size_t kk = 0; kk < points_explained_by_rm_[recognition_models_[i]->explained_[k]].size (); kk++)
           {
             (points_explained_by_rm_[recognition_models_[i]->explained_[k]])[kk]->good_information_--;
             (points_explained_by_rm_[recognition_models_[i]->explained_[k]])[kk]->bad_information_++;

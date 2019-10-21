@@ -120,7 +120,7 @@ namespace pcl
         setConfidenceThreshold (int threshold);
 
         void
-        enableTemporalFiltering (DepthSenseGrabber::TemporalFilteringType type, size_t window_size);
+        enableTemporalFiltering (DepthSenseGrabber::TemporalFilteringType type, std::size_t window_size);
 
         void
         setCameraParameters (const DepthSense::StereoCameraParameters& parameters);

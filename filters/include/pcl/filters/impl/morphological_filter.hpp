@@ -75,7 +75,7 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
     case MORPH_DILATE:
     case MORPH_ERODE:
     {
-      for (size_t p_idx = 0; p_idx < cloud_in->points.size (); ++p_idx)
+      for (std::size_t p_idx = 0; p_idx < cloud_in->points.size (); ++p_idx)
       {
         Eigen::Vector3f bbox_min, bbox_max;
         std::vector<int> pt_indices;
@@ -118,7 +118,7 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
 
       pcl::copyPointCloud (*cloud_in, cloud_temp);
 
-      for (size_t p_idx = 0; p_idx < cloud_temp.points.size (); ++p_idx)
+      for (std::size_t p_idx = 0; p_idx < cloud_temp.points.size (); ++p_idx)
       {
         Eigen::Vector3f bbox_min, bbox_max;
         std::vector<int> pt_indices;
@@ -155,7 +155,7 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
 
       cloud_temp.swap (cloud_out);
 
-      for (size_t p_idx = 0; p_idx < cloud_temp.points.size (); ++p_idx)
+      for (std::size_t p_idx = 0; p_idx < cloud_temp.points.size (); ++p_idx)
       {
         Eigen::Vector3f bbox_min, bbox_max;
         std::vector<int> pt_indices;

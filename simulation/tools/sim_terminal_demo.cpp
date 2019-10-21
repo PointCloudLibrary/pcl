@@ -204,7 +204,7 @@ main(int argc, char** argv)
 
   // 4 Do the simulation and write the output:
   double tic_main = getTime();
-  for (size_t i = 0; i < poses.size(); i++) {
+  for (std::size_t i = 0; i < poses.size(); i++) {
     std::stringstream ss;
     ss.precision(20);
     ss << "simcloud_" << i; // << ".pcd";

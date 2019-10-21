@@ -51,7 +51,7 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
   std::vector <pcl::PCLPointField> fields;
   pcl::getFieldIndex<pcl::VFHSignature308> ("vfh", fields);
 
-  for (size_t i = 0; i < fields[vfh_idx].count; ++i)
+  for (std::size_t i = 0; i < fields[vfh_idx].count; ++i)
   {
     vfh.second[i] = point.points[0].histogram[i];
   }

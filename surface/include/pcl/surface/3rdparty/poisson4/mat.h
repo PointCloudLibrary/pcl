@@ -40,8 +40,8 @@ namespace pcl
     {
         Real* bestTriangulation;
         int* midPoint;
-        Real GetArea(const size_t& i,const size_t& j,const std::vector<Point3D<Real> >& vertices);
-        void GetTriangulation(const size_t& i,const size_t& j,const std::vector<Point3D<Real> >& vertices,std::vector<TriangleIndex>& triangles);
+        Real GetArea(const std::size_t& i,const std::size_t& j,const std::vector<Point3D<Real> >& vertices);
+        void GetTriangulation(const std::size_t& i,const std::size_t& j,const std::vector<Point3D<Real> >& vertices,std::vector<TriangleIndex>& triangles);
       public:
         MinimalAreaTriangulation(void);
         ~MinimalAreaTriangulation(void);

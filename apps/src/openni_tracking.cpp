@@ -437,7 +437,7 @@ public:
     result.width = cloud->width;
     result.height = cloud->height;
     result.is_dense = cloud->is_dense;
-    for (size_t i = 0; i < cloud->points.size (); i++)
+    for (std::size_t i = 0; i < cloud->points.size (); i++)
     {
       RefPointType point;
       point.x = cloud->points[i].x;
@@ -473,7 +473,7 @@ public:
   void removeZeroPoints (const CloudConstPtr &cloud,
                          Cloud &result)
   {
-    for (size_t i = 0; i < cloud->points.size (); i++)
+    for (std::size_t i = 0; i < cloud->points.size (); i++)
     {
       PointType point = cloud->points[i];
       if (!(std::abs(point.x) < 0.01 &&
@@ -566,7 +566,7 @@ public:
           pcl::compute3DCentroid<RefPointType> (*temp_cloud, c);
           int segment_index = 0;
           double segment_distance = c[0] * c[0] + c[1] * c[1];
-          for (size_t i = 1; i < cluster_indices.size (); i++)
+          for (std::size_t i = 1; i < cluster_indices.size (); i++)
           {
             temp_cloud.reset (new Cloud);
             extractSegmentCluster (target_cloud, cluster_indices, int (i), *temp_cloud);

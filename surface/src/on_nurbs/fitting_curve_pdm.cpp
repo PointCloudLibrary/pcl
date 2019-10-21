@@ -75,7 +75,7 @@ FittingCurve::findElement (double xi, const std::vector<double> &elements)
   if (xi >= elements.back ())
     return (int (elements.size ()) - 2);
 
-  for (size_t i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
   {
     if (xi >= elements[i] && xi < elements[i + 1])
     {
@@ -95,7 +95,7 @@ FittingCurve::refine ()
 
   std::vector<double> elements = getElementVector (m_nurbs);
 
-  for (size_t i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
   for (const double &i : xi)
@@ -417,7 +417,7 @@ FittingCurve::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eige
 
   double d_shortest (DBL_MAX);
 
-  for (size_t i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
   {
     double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
 

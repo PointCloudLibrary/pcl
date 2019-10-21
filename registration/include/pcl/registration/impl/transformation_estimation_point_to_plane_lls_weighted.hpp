@@ -47,7 +47,7 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
                              Matrix4 &transformation_matrix) const
 {
-  size_t nr_points = cloud_src.points.size ();
+  std::size_t nr_points = cloud_src.points.size ();
   if (cloud_tgt.points.size () != nr_points)
   {
     PCL_ERROR ("[pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", nr_points, cloud_tgt.points.size ());
@@ -74,7 +74,7 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
                              Matrix4 &transformation_matrix) const
 {
-  size_t nr_points = indices_src.size ();
+  std::size_t nr_points = indices_src.size ();
   if (cloud_tgt.points.size () != nr_points)
   {
     PCL_ERROR ("[pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), cloud_tgt.points.size ());
@@ -104,7 +104,7 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const std::vector<int> &indices_tgt,
                              Matrix4 &transformation_matrix) const
 {
-  size_t nr_points = indices_src.size ();
+  std::size_t nr_points = indices_src.size ();
   if (indices_tgt.size () != nr_points)
   {
     PCL_ERROR ("[pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), indices_tgt.size ());
@@ -134,7 +134,7 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
   ConstCloudIterator<PointSource> source_it (cloud_src, correspondences, true);
   ConstCloudIterator<PointTarget> target_it (cloud_tgt, correspondences, false);
   std::vector<Scalar> weights (correspondences.size ());
-  for (size_t i = 0; i < correspondences.size (); ++i)
+  for (std::size_t i = 0; i < correspondences.size (); ++i)
     weights[i] = correspondences[i].weight;
   typename std::vector<Scalar>::const_iterator weights_it = weights.begin ();
   estimateRigidTransformation (source_it, target_it, weights_it, transformation_matrix);

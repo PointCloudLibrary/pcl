@@ -161,7 +161,7 @@ void optimized_shs5(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
     cv::Mat huebuf(cloud.height, cloud.width, CV_32F);
     float *hue = huebuf.ptr<float>();    
 
-    for(size_t i = 0; i < cloud.points.size(); ++i)
+    for(std::size_t i = 0; i < cloud.points.size(); ++i)
     {
         PointXYZHSV h;
         PointXYZRGB p = cloud.points[i];

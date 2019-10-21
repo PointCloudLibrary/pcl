@@ -71,7 +71,7 @@ public:
     True if inbuffer is successfully compressed.
   */
   bool Compress(
-          size_t sizeof__inbuffer,  // sizeof uncompressed input data
+          std::size_t sizeof__inbuffer,  // sizeof uncompressed input data
           const void* inbuffer,     // uncompressed input data
           int sizeof_element
           );
@@ -80,7 +80,7 @@ public:
   Returns:
     Number of bytes in the uncompressed information.
   */
-  size_t SizeOfUncompressedBuffer() const;
+  std::size_t SizeOfUncompressedBuffer() const;
 
   /*
   Description:
@@ -117,28 +117,28 @@ public:
   //
   bool CompressionInit( struct ON_CompressedBufferHelper* ) const;
   bool CompressionEnd( struct ON_CompressedBufferHelper* ) const;
-  size_t DeflateHelper( // returns number of bytes written
+  std::size_t DeflateHelper( // returns number of bytes written
         struct ON_CompressedBufferHelper*,
-        size_t sizeof___inbuffer,  // sizeof uncompressed input data ( > 0 )
+        std::size_t sizeof___inbuffer,  // sizeof uncompressed input data ( > 0 )
         const void* in___buffer     // uncompressed input data ( != NULL )
         );
   bool InflateHelper(
         struct ON_CompressedBufferHelper*,
-        size_t sizeof___outbuffer,  // sizeof uncompressed data
+        std::size_t sizeof___outbuffer,  // sizeof uncompressed data
         void* out___buffer          // buffer for uncompressed data
         ) const;
   bool WriteChar( 
-        size_t count, 
+        std::size_t count, 
         const void* buffer 
         );
 
-  size_t     m_sizeof_uncompressed;
-  size_t     m_sizeof_compressed;
+  std::size_t     m_sizeof_uncompressed;
+  std::size_t     m_sizeof_compressed;
   ON__UINT32 m_crc_uncompressed;
   ON__UINT32 m_crc_compressed;
   int        m_method; // 0 = copied, 1 = compressed
   int        m_sizeof_element;
-  size_t     m_buffer_compressed_capacity;
+  std::size_t     m_buffer_compressed_capacity;
   void*      m_buffer_compressed;
 };
 

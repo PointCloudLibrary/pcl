@@ -606,7 +606,7 @@ unsigned
 SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, const std::vector<int> &indices,
                           vector_vec3d &on_cloud)
 {
-  size_t numPoints = 0;
+  std::size_t numPoints = 0;
 
   for (const int &index : indices)
   {

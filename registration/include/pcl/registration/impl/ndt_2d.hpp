@@ -109,7 +109,7 @@ namespace pcl
           * \param[in] i Point index to store
           */
         void
-        addIdx (size_t i)
+        addIdx (std::size_t i)
         {
           pt_indices_.push_back (i);
         }
@@ -182,7 +182,7 @@ namespace pcl
             1, 0, -(x * sin_theta + y*cos_theta),
             0, 1,   x * cos_theta - y*sin_theta;
           
-          for (size_t i = 0; i < 3; i++)
+          for (std::size_t i = 0; i < 3; i++)
             r.grad[i] = double (qt_cvi * jacobian.col (i)) * exp_qt_cvi_q;
           
           // second derivative only for i == j == 2:
@@ -191,8 +191,8 @@ namespace pcl
             -(x * sin_theta + y*cos_theta)
           );
 
-          for (size_t i = 0; i < 3; i++)
-            for (size_t j = 0; j < 3; j++)
+          for (std::size_t i = 0; i < 3; i++)
+            for (std::size_t j = 0; j < 3; j++)
               r.hessian (i,j) = -exp_qt_cvi_q * (
                 double (-qt_cvi*jacobian.col (i)) * double (-qt_cvi*jacobian.col (j)) +
                 (-qt_cvi * ((i==2 && j==2)? d2q_didj : Eigen::Vector2d::Zero ())) +
@@ -203,10 +203,10 @@ namespace pcl
         }
 
     protected:
-        const size_t min_n_;
+        const std::size_t min_n_;
 
-        size_t n_;
-        std::vector<size_t> pt_indices_;
+        std::size_t n_;
+        std::vector<std::size_t> pt_indices_;
         Eigen::Vector2d mean_;
         Eigen::Matrix2d covar_inv_;
     };
@@ -234,8 +234,8 @@ namespace pcl
         {
           // sort through all points, assigning them to distributions:
           NormalDist* n;
-          size_t used_points = 0;
-          for (size_t i = 0; i < cloud->size (); i++)
+          std::size_t used_points = 0;
+          for (std::size_t i = 0; i < cloud->size (); i++)
           if ((n = normalDistForPoint (cloud->at (i))))
           {
             n->addIdx (i);
@@ -276,10 +276,10 @@ namespace pcl
         {
           // this would be neater in 3d...
           Eigen::Vector2f idxf;
-          for (size_t i = 0; i < 2; i++)
+          for (std::size_t i = 0; i < 2; i++)
             idxf[i] = (p.getVector3fMap ()[i] - min_[i]) / step_[i];
           Eigen::Vector2i idxi = idxf.cast<int> ();
-          for (size_t i = 0; i < 2; i++)
+          for (std::size_t i = 0; i < 2; i++)
             if (idxi[i] >= cells_[i] || idxi[i] < 0)
               return nullptr;
           // const cast to avoid duplicating this function in const and
@@ -414,7 +414,7 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
     previous_transformation_ = transformation;    
 
     ndt2d::ValueAndDerivatives<3, double> score = ndt2d::ValueAndDerivatives<3, double>::Zero ();
-    for (size_t i = 0; i < intm_cloud.size (); i++)
+    for (std::size_t i = 0; i < intm_cloud.size (); i++)
       score += target_ndt.test (intm_cloud[i], cos_theta, sin_theta);
     
     PCL_DEBUG ("[pcl::NormalDistributionsTransform2D::computeTransformation] NDT score %f (x=%f,y=%f,r=%f)\n",

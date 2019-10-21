@@ -62,7 +62,7 @@ std::mutex io_mutex;
 size_t 
 getTotalSystemMemory ()
 {
-  std::uint64_t memory = std::numeric_limits<size_t>::max ();
+  std::uint64_t memory = std::numeric_limits<std::size_t>::max ();
 
 #ifdef _SC_AVPHYS_PAGES
   std::uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
@@ -73,7 +73,7 @@ getTotalSystemMemory ()
 #elif defined(HAVE_SYSCTL) && defined(HW_PHYSMEM)
   // This works on *bsd and darwin.
   unsigned int physmem;
-  size_t len = sizeof physmem;
+  std::size_t len = sizeof physmem;
   static int mib[2] = { CTL_HW, HW_PHYSMEM };
 
   if (sysctl (mib, ARRAY_SIZE (mib), &physmem, &len, NULL, 0) == 0 && len == sizeof (physmem))
@@ -82,19 +82,19 @@ getTotalSystemMemory ()
   }
 #endif
 
-  if (memory > std::uint64_t (std::numeric_limits<size_t>::max ()))
+  if (memory > std::uint64_t (std::numeric_limits<std::size_t>::max ()))
   {
-    memory = std::numeric_limits<size_t>::max ();
+    memory = std::numeric_limits<std::size_t>::max ();
   }
   
   print_info ("Total available memory size: %lluMB.\n", memory / 1048576ull);
-  return size_t (memory);
+  return std::size_t (memory);
 }
 
-const size_t BUFFER_SIZE = size_t (getTotalSystemMemory () / (640 * 480 * sizeof (pcl::PointXYZRGBA)));
+const std::size_t BUFFER_SIZE = std::size_t (getTotalSystemMemory () / (640 * 480 * sizeof (pcl::PointXYZRGBA)));
 #else
 
-const size_t BUFFER_SIZE = 200;
+const std::size_t BUFFER_SIZE = 200;
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////

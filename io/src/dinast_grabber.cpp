@@ -421,7 +421,7 @@ pcl::DinastGrabber::checkHeader ()
 
   int data_ptr = -1;
 
-  for (size_t i = 0; i < g_buffer_.size (); ++i)
+  for (std::size_t i = 0; i < g_buffer_.size (); ++i)
   {
     if ((g_buffer_[i + 0] == 0xAA) && (g_buffer_[i + 1] == 0xAA) &&
         (g_buffer_[i + 2] == 0x44) && (g_buffer_[i + 3] == 0x44) &&

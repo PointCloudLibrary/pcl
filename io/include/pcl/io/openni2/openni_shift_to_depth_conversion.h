@@ -63,7 +63,7 @@ namespace openni_wrapper
       generateLookupTable ()
       {
         // lookup of 11 bit shift values
-        constexpr size_t table_size = 1<<10;
+        constexpr std::size_t table_size = 1<<10;
 
         lookupTable_.clear();
         lookupTable_.resize(table_size);
@@ -76,7 +76,7 @@ namespace openni_wrapper
         constexpr double dPlaneDsr = 120.000000;
         constexpr double dPlaneDcl = 7.500000;
 
-        for (size_t i=0; i<table_size; ++i)
+        for (std::size_t i=0; i<table_size; ++i)
         {
           // shift to depth calculation from opnni
           double dFixedRefX = (static_cast<double>(i - nConstShift) / nParamCoeff)-0.375;

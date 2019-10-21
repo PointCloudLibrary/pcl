@@ -64,7 +64,7 @@ Example:
 ON_DECL
 ON__UINT16 ON_CRC16(
          ON__UINT16 current_remainder,
-         size_t sizeof_buffer,
+         std::size_t sizeof_buffer,
          const void* buffer
          );
 
@@ -112,7 +112,7 @@ Example:
 ON_DECL
 ON__UINT32 ON_CRC32(
          ON__UINT32 current_remainder,
-         size_t sizeof_buffer,
+         std::size_t sizeof_buffer,
          const void* buffer
          );
 

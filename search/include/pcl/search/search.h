@@ -239,7 +239,7 @@ namespace pcl
           if (indices.empty ())
           {
             pc.resize (cloud.size());
-            for (size_t i = 0; i < cloud.size(); i++)
+            for (std::size_t i = 0; i < cloud.size(); i++)
             {
               pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (
                                               cloud[i], pc[i]));
@@ -249,7 +249,7 @@ namespace pcl
           else
           {
             pc.resize (indices.size());
-            for (size_t i = 0; i < indices.size(); i++)
+            for (std::size_t i = 0; i < indices.size(); i++)
             {
               pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (
                                               cloud[indices[i]], pc[i]));
@@ -382,14 +382,14 @@ namespace pcl
           if (indices.empty ())
           {
             pc.resize (cloud.size ());
-            for (size_t i = 0; i < cloud.size (); ++i)
+            for (std::size_t i = 0; i < cloud.size (); ++i)
               pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (cloud[i], pc[i]));
             radiusSearch (pc, std::vector<int> (), radius, k_indices, k_sqr_distances, max_nn);
           }
           else
           {
             pc.resize (indices.size ());
-            for (size_t i = 0; i < indices.size (); ++i)
+            for (std::size_t i = 0; i < indices.size (); ++i)
               pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (cloud[indices[i]], pc[i]));
             radiusSearch (pc, std::vector<int>(), radius, k_indices, k_sqr_distances, max_nn);
           }

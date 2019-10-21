@@ -52,7 +52,7 @@ template<typename ModelT, typename SceneT>
 
     // initialize mask...
     mask_.resize (complete_models_.size ());
-    for (size_t i = 0; i < complete_models_.size (); i++)
+    for (std::size_t i = 0; i < complete_models_.size (); i++)
       mask_[i] = true;
 
     // initialize explained_by_RM
@@ -60,7 +60,7 @@ template<typename ModelT, typename SceneT>
     points_explained_by_rm_.resize (scene_cloud_downsampled_->points.size ());
 
     // initialize model
-    for (size_t m = 0; m < complete_models_.size (); m++)
+    for (std::size_t m = 0; m < complete_models_.size (); m++)
     {
       RecognitionModelPtr recog_model (new RecognitionModel);
       // voxelize model cloud
@@ -83,7 +83,7 @@ template<typename ModelT, typename SceneT>
       std::vector<int> nn_indices;
       std::vector<float> nn_distances;
 
-      for (size_t i = 0; i < recog_model->cloud_->points.size (); i++)
+      for (std::size_t i = 0; i < recog_model->cloud_->points.size (); i++)
       {
         if (!scene_downsampled_tree_->radiusSearch (recog_model->cloud_->points[i], inliers_threshold_, nn_indices, nn_distances,
                                                     std::numeric_limits<int>::max ()))
@@ -92,7 +92,7 @@ template<typename ModelT, typename SceneT>
         }
         else
         {
-          for (size_t k = 0; k < nn_distances.size (); k++)
+          for (std::size_t k = 0; k < nn_distances.size (); k++)
           {
             explained_indices.push_back (nn_indices[k]); //nn_indices[k] points to the scene
           }
@@ -166,22 +166,22 @@ template<typename ModelT, typename SceneT>
   pcl::PapazovHV<ModelT, SceneT>::buildConflictGraph ()
   {
     // create vertices for the graph
-    for (size_t i = 0; i < (recognition_models_.size ()); i++)
+    for (std::size_t i = 0; i < (recognition_models_.size ()); i++)
     {
       const typename Graph::vertex_descriptor v = boost::add_vertex (recognition_models_[i], conflict_graph_);
       graph_id_model_map_[int (v)] = boost::static_pointer_cast<RecognitionModel> (recognition_models_[i]);
     }
 
     // iterate over the remaining models and check for each one if there is a conflict with another one
-    for (size_t i = 0; i < recognition_models_.size (); i++)
+    for (std::size_t i = 0; i < recognition_models_.size (); i++)
     {
-      for (size_t j = i; j < recognition_models_.size (); j++)
+      for (std::size_t j = i; j < recognition_models_.size (); j++)
       {
         if (i != j)
         {
           float n_conflicts = 0.f;
           // count scene points explained by both models
-          for (size_t k = 0; k < explained_by_RM_.size (); k++)
+          for (std::size_t k = 0; k < explained_by_RM_.size (); k++)
           {
             if (explained_by_RM_[k] > 1)
             {
@@ -189,7 +189,7 @@ template<typename ModelT, typename SceneT>
               bool i_found = false;
               bool j_found = false;
               bool both_found = false;
-              for (size_t kk = 0; (kk < points_explained_by_rm_[k].size ()) && !both_found; kk++)
+              for (std::size_t kk = 0; (kk < points_explained_by_rm_[k].size ()) && !both_found; kk++)
               {
                 if (points_explained_by_rm_[k][kk]->id_ == recognition_models_[i]->id_)
                   i_found = true;

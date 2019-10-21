@@ -43,19 +43,19 @@ namespace pcl
       public:
         Vector();
         Vector( const Vector<T>& V );
-        Vector( size_t N );
-        Vector( size_t N, T* pV );
+        Vector( std::size_t N );
+        Vector( std::size_t N, T* pV );
         ~Vector();
 
-        const T& operator () (size_t i) const;
-        T& operator () (size_t i);
-        const T& operator [] (size_t i) const;
-        T& operator [] (size_t i);
+        const T& operator () (std::size_t i) const;
+        T& operator () (std::size_t i);
+        const T& operator [] (std::size_t i) const;
+        T& operator [] (std::size_t i);
 
         void SetZero();
 
-        size_t Dimensions() const;
-        void Resize( size_t N );
+        std::size_t Dimensions() const;
+        void Resize( std::size_t N );
 
         Vector operator * (const T& A) const;
         Vector operator / (const T& A) const;
@@ -80,7 +80,7 @@ namespace pcl
 
         T Length() const;
 
-        T Norm( size_t Ln ) const;
+        T Norm( std::size_t Ln ) const;
         void Normalize();
 
         bool write( FILE* fp ) const;
@@ -90,7 +90,7 @@ namespace pcl
 
         T* m_pV;
       protected:
-        size_t m_N;
+        std::size_t m_N;
 
     };
 
@@ -100,19 +100,19 @@ namespace pcl
       public:
         NVector();
         NVector( const NVector& V );
-        NVector( size_t N );
-        NVector( size_t N, T* pV );
+        NVector( std::size_t N );
+        NVector( std::size_t N, T* pV );
         ~NVector();
 
-        const T* operator () (size_t i) const;
-        T* operator () (size_t i);
-        const T* operator [] (size_t i) const;
-        T* operator [] (size_t i);
+        const T* operator () (std::size_t i) const;
+        T* operator () (std::size_t i);
+        const T* operator [] (std::size_t i) const;
+        T* operator [] (std::size_t i);
 
         void SetZero();
 
-        size_t Dimensions() const;
-        void Resize( size_t N );
+        std::size_t Dimensions() const;
+        void Resize( std::size_t N );
 
         NVector operator * (const T& A) const;
         NVector operator / (const T& A) const;
@@ -137,12 +137,12 @@ namespace pcl
 
         T Length() const;
 
-        T Norm( size_t Ln ) const;
+        T Norm( std::size_t Ln ) const;
         void Normalize();
 
         T* m_pV;
       protected:
-        size_t m_N;
+        std::size_t m_N;
 
     };
 

@@ -277,7 +277,7 @@ double ON_RandomNumberGenerator::RandomDouble(double t0, double t1)
   return ((1.0-s)*t0 + s*t1);
 }
 
-static void Swap1(size_t count, unsigned char* a, unsigned char* b)
+static void Swap1(std::size_t count, unsigned char* a, unsigned char* b)
 {
   unsigned char t;
   while (count--)
@@ -290,7 +290,7 @@ static void Swap1(size_t count, unsigned char* a, unsigned char* b)
   }
 }
 
-static void Swap4(size_t count, ON__UINT32* a, ON__UINT32* b)
+static void Swap4(std::size_t count, ON__UINT32* a, ON__UINT32* b)
 {
   ON__UINT32 t;
   while (count--)
@@ -303,7 +303,7 @@ static void Swap4(size_t count, ON__UINT32* a, ON__UINT32* b)
   }
 }
 
-static void Swap8(size_t count, ON__UINT64* a, ON__UINT64* b)
+static void Swap8(std::size_t count, ON__UINT64* a, ON__UINT64* b)
 {
   ON__UINT64 t;
   while (count--)
@@ -316,7 +316,7 @@ static void Swap8(size_t count, ON__UINT64* a, ON__UINT64* b)
   }
 }
 
-void ON_RandomNumberGenerator::RandomPermutation(void* base, size_t nel, size_t sizeof_element )
+void ON_RandomNumberGenerator::RandomPermutation(void* base, std::size_t nel, std::size_t sizeof_element )
 {
   ON__UINT32 i, j, n;
 

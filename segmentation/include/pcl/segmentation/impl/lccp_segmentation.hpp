@@ -316,7 +316,7 @@ pcl::LCCPSegmentation<PointT>::doGrouping ()
   std::pair< VertexIterator, VertexIterator> vertex_iterator_range;
   vertex_iterator_range = boost::vertices (sv_adjacency_list_);
 
-  // Note: *sv_itr is of type " boost::graph_traits<VoxelAdjacencyList>::vertex_descriptor " which it nothing but a typedef of size_t..
+  // Note: *sv_itr is of type " boost::graph_traits<VoxelAdjacencyList>::vertex_descriptor " which it nothing but a typedef of std::size_t..
   unsigned int segment_label = 1;  // This starts at 1, because 0 is reserved for errors
   for (VertexIterator sv_itr = vertex_iterator_range.first; sv_itr != vertex_iterator_range.second; ++sv_itr)  // For all supervoxels
   {

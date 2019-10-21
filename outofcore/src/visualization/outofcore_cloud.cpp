@@ -54,7 +54,7 @@ OutofcoreCloud::pcdReaderThread ()
 {
 
   std::string pcd_file;
-  size_t timestamp = 0;
+  std::size_t timestamp = 0;
 
   while (true)
   {
@@ -304,7 +304,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
       }
     }
 
-    for (size_t i = 0; i < actors_to_remove.size (); i++)
+    for (std::size_t i = 0; i < actors_to_remove.size (); i++)
     {
       points_loaded_ -= actors_to_remove.back ()->GetMapper ()->GetInput ()->GetNumberOfPoints ();
       data_loaded_ -= actors_to_remove.back ()->GetMapper ()->GetInput ()->GetActualMemorySize();

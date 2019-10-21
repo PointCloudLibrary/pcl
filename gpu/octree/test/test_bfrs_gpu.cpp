@@ -82,8 +82,8 @@ TEST (PCL_GPU, bruteForceRadiusSeachGPU)
     pcl::gpu::DeviceArray<int> results_device, buffer(cloud_device.size());
     
     std::vector<int> results_host;
-    std::vector<size_t> sizes;
-    for(size_t i = 0; i < data.tests_num; ++i)
+    std::vector<std::size_t> sizes;
+    for(std::size_t i = 0; i < data.tests_num; ++i)
     {
         pcl::gpu::bruteForceRadiusSearchGPU(cloud_device, data.queries[i], data.radiuses[i], results_device, buffer);
 
@@ -94,7 +94,7 @@ TEST (PCL_GPU, bruteForceRadiusSeachGPU)
         sizes.push_back(results_device.size());      
     }
         
-    float avg_size = std::accumulate(sizes.begin(), sizes.end(), (size_t)0) * (1.f/sizes.size());;
+    float avg_size = std::accumulate(sizes.begin(), sizes.end(), (std::size_t)0) * (1.f/sizes.size());;
 
     std::cout << "avg_result_size = " << avg_size << std::endl;
     ASSERT_GT(avg_size, 5);    

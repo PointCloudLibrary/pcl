@@ -120,7 +120,7 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
     //prepare output buffers on host
     std::vector<vector<  int> > result_host(data.tests_num);   
     std::vector<vector<float> >  dists_host(data.tests_num);    
-    for(size_t i = 0; i < data.tests_num; ++i)
+    for(std::size_t i = 0; i < data.tests_num; ++i)
     {
         result_host[i].reserve(k);
         dists_host[i].reserve(k);
@@ -137,12 +137,12 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
                  
     {
         pcl::ScopeTime time("1nn-cpu");
-        for(size_t i = 0; i < data.tests_num; ++i)
+        for(std::size_t i = 0; i < data.tests_num; ++i)
             octree_host.nearestKSearch(data.queries[i], k, result_host[i], dists_host[i]);
     }
 
     //verify results    
-    for(size_t i = 0; i < data.tests_num; ++i)    
+    for(std::size_t i = 0; i < data.tests_num; ++i)    
     {           
         //std::cout << i << std::endl;
         std::vector<int>&   results_host_cur = result_host[i];

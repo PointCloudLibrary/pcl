@@ -267,10 +267,10 @@ namespace pcl
       determineRequiredBlobData ();
 
       /** \brief XYZ fields offset. */
-      size_t x_idx_offset_, y_idx_offset_, z_idx_offset_;
+      std::size_t x_idx_offset_, y_idx_offset_, z_idx_offset_;
 
       /** \brief Normal fields offset. */
-      size_t nx_idx_offset_, ny_idx_offset_, nz_idx_offset_;
+      std::size_t nx_idx_offset_, ny_idx_offset_, nz_idx_offset_;
 
       /** \brief The correspondence type used for correspondence estimation. */
       bool use_reciprocal_correspondence_;

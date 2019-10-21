@@ -207,7 +207,7 @@ pcl::Kmeans::cluster (std::vector<PointIndices> &clusters)
 
 // create input data
 /*
-    for (size_t i = 0; i < input_->points.size (); i++)
+    for (std::size_t i = 0; i < input_->points.size (); i++)
     {
       DataPoint data (3);
       data[0] = input_->points[i].data[0];
@@ -273,7 +273,7 @@ if (user_index == -1)
 // std::cout << "field: " << fields[xyz_index].count << std::endl;
 
 /*
-  for (size_t i = 0; i < fields[vfh_idx].count; ++i)
+  for (std::size_t i = 0; i < fields[vfh_idx].count; ++i)
   {
 
     //vfh.second[i] = point.points[0].histogram[i];

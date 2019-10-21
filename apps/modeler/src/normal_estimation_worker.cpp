@@ -125,9 +125,9 @@ pcl::modeler::NormalEstimationWorker::processImpl(CloudMeshItem* cloud_mesh_item
   pcl::PointCloud<pcl::PointNormal> normals;
   normal_estimator.compute(normals);
 
-  for (size_t i = 0, i_end = indices->size(); i < i_end; ++ i)
+  for (std::size_t i = 0, i_end = indices->size(); i < i_end; ++ i)
   {
-    size_t dest = (*indices)[i];
+    std::size_t dest = (*indices)[i];
     cloud->points[dest].normal_x = normals.points[i].normal_x;
     cloud->points[dest].normal_y = normals.points[i].normal_y;
     cloud->points[dest].normal_z = normals.points[i].normal_z;

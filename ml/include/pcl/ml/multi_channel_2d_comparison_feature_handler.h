@@ -53,7 +53,7 @@ namespace pcl {
 
 /** Feature utility class that handles the creation and evaluation of RGBD
  *  comparison features. */
-template <class DATA_TYPE, size_t NUM_OF_CHANNELS>
+template <class DATA_TYPE, std::size_t NUM_OF_CHANNELS>
 class PCL_EXPORTS MultiChannel2DComparisonFeatureHandler
 : public pcl::FeatureHandler<pcl::MultiChannel2DComparisonFeature<pcl::PointXY32i>,
                              pcl::MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS>,
@@ -89,11 +89,12 @@ public:
    */
   inline void
   createRandomFeatures(
-      const size_t num_of_features,
+      const std::size_t num_of_features,
       std::vector<MultiChannel2DComparisonFeature<PointXY32i>>& features)
   {
     features.resize(num_of_features);
-    for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index) {
+    for (std::size_t feature_index = 0; feature_index < num_of_features;
+         ++feature_index) {
       features[feature_index].p1 = PointXY32i::randomPoint(-feature_window_width_ / 2,
                                                            feature_window_width_ / 2,
                                                            -feature_window_height_ / 2,
@@ -152,11 +153,15 @@ public:
     const int center_col_index = example.x;
     const int center_row_index = example.y;
 
-    const size_t p1_col = static_cast<size_t>(feature.p1.x + center_col_index);
-    const size_t p1_row = static_cast<size_t>(feature.p1.y + center_row_index);
+    const std::size_t p1_col =
+        static_cast<std::size_t>(feature.p1.x + center_col_index);
+    const std::size_t p1_row =
+        static_cast<std::size_t>(feature.p1.y + center_row_index);
 
-    const size_t p2_col = static_cast<size_t>(feature.p2.x + center_col_index);
-    const size_t p2_row = static_cast<size_t>(feature.p2.y + center_row_index);
+    const std::size_t p2_col =
+        static_cast<std::size_t>(feature.p2.x + center_col_index);
+    const std::size_t p2_row =
+        static_cast<std::size_t>(feature.p2.y + center_row_index);
 
     const unsigned char channel = feature.channel;
 
@@ -198,8 +203,8 @@ private:
 /** Feature utility class that handles the creation and evaluation of RGBD
  *  comparison features. */
 template <class DATA_TYPE,
-          size_t NUM_OF_CHANNELS,
-          size_t SCALE_CHANNEL,
+          std::size_t NUM_OF_CHANNELS,
+          std::size_t SCALE_CHANNEL,
           bool INVERT_SCALE>
 class PCL_EXPORTS ScaledMultiChannel2DComparisonFeatureHandler
 : public pcl::FeatureHandler<pcl::MultiChannel2DComparisonFeature<pcl::PointXY32f>,
@@ -236,11 +241,12 @@ public:
    */
   inline void
   createRandomFeatures(
-      const size_t num_of_features,
+      const std::size_t num_of_features,
       std::vector<MultiChannel2DComparisonFeature<PointXY32f>>& features)
   {
     features.resize(num_of_features);
-    for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index) {
+    for (std::size_t feature_index = 0; feature_index < num_of_features;
+         ++feature_index) {
       features[feature_index].p1 = PointXY32f::randomPoint(-feature_window_width_ / 2,
                                                            feature_window_width_ / 2,
                                                            -feature_window_height_ / 2,
@@ -308,11 +314,15 @@ public:
       scale = static_cast<float>(data_set(
           example.data_set_id, center_col_index, center_row_index)[SCALE_CHANNEL]);
 
-    const size_t p1_col = static_cast<size_t>(scale * feature.p1.x + center_col_index);
-    const size_t p1_row = static_cast<size_t>(scale * feature.p1.y + center_row_index);
+    const std::size_t p1_col =
+        static_cast<std::size_t>(scale * feature.p1.x + center_col_index);
+    const std::size_t p1_row =
+        static_cast<std::size_t>(scale * feature.p1.y + center_row_index);
 
-    const size_t p2_col = static_cast<size_t>(scale * feature.p2.x + center_col_index);
-    const size_t p2_row = static_cast<size_t>(scale * feature.p2.y + center_row_index);
+    const std::size_t p2_col =
+        static_cast<std::size_t>(scale * feature.p2.x + center_col_index);
+    const std::size_t p2_row =
+        static_cast<std::size_t>(scale * feature.p2.y + center_row_index);
 
     const unsigned char channel = feature.channel;
 
@@ -360,8 +370,8 @@ private:
 };
 
 template <class DATA_TYPE,
-          size_t NUM_OF_CHANNELS,
-          size_t SCALE_CHANNEL,
+          std::size_t NUM_OF_CHANNELS,
+          std::size_t SCALE_CHANNEL,
           bool INVERT_SCALE>
 class PCL_EXPORTS ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator
 : public pcl::FeatureHandlerCodeGenerator<
@@ -381,8 +391,8 @@ public:
 };
 
 template <class DATA_TYPE,
-          size_t NUM_OF_CHANNELS,
-          size_t SCALE_CHANNEL,
+          std::size_t NUM_OF_CHANNELS,
+          std::size_t SCALE_CHANNEL,
           bool INVERT_SCALE>
 void
 ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator<
@@ -416,8 +426,8 @@ ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator<
 }
 
 template <class DATA_TYPE,
-          size_t NUM_OF_CHANNELS,
-          size_t SCALE_CHANNEL,
+          std::size_t NUM_OF_CHANNELS,
+          std::size_t SCALE_CHANNEL,
           bool INVERT_SCALE>
 void
 ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator<DATA_TYPE,

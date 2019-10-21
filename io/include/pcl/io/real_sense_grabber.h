@@ -173,7 +173,7 @@ namespace pcl
         * \note if the grabber is running and the new parameters are different
         * from the current parameters, grabber will be restarted. */
       void
-      enableTemporalFiltering (TemporalFilteringType type, size_t window_size);
+      enableTemporalFiltering (TemporalFilteringType type, std::size_t window_size);
 
       /** Disable temporal filtering. */
       void
@@ -239,7 +239,7 @@ namespace pcl
       unsigned int confidence_threshold_;
 
       TemporalFilteringType temporal_filtering_type_;
-      size_t temporal_filtering_window_size_;
+      std::size_t temporal_filtering_window_size_;
 
       /// Capture mode requested by the user at construction time
       Mode mode_requested_;

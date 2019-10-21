@@ -178,7 +178,7 @@ main (int argc, char ** argv)
   std::string start = "";
   getModelsInDirectory (dir_path, start, files);
 
-  for(size_t i=0; i < files.size(); i++) {
+  for(std::size_t i=0; i < files.size(); i++) {
     // Load input file
 
     std::string filename = directory;

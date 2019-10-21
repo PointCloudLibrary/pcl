@@ -1208,7 +1208,7 @@ int ON_RowReduce( int row_count,
   // returned A is identity, B = inverse of input A
   const int M = row_count;
   const int N = col_count;
-  const size_t sizeof_row = N*sizeof(A[0][0]);
+  const std::size_t sizeof_row = N*sizeof(A[0][0]);
   int i, j, ii;
   double a, p, p0, p1;
   const double* ptr0;

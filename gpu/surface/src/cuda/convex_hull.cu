@@ -400,7 +400,7 @@ namespace pcl
   }
 }
 
-int pcl::device::PointStream::searchFacetHeads(size_t facet_count, DeviceArray<int>& head_points)
+int pcl::device::PointStream::searchFacetHeads(std::size_t facet_count, DeviceArray<int>& head_points)
 {
 	SearchFacetHeads sfh;
 
@@ -805,7 +805,7 @@ size_t pcl::device::remove_duplicates(DeviceArray<int>& indeces)
   thrust::device_ptr<int> end = beg + indeces.size();
 
   thrust::sort(beg, end);  
-  return (size_t)(thrust::unique(beg, end) - beg);  
+  return (std::size_t)(thrust::unique(beg, end) - beg);  
 }
 
 

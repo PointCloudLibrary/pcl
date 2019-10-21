@@ -72,8 +72,8 @@ namespace pcl
             * \param[in] threshold the corner detection threshold
             * \param[in] bmax the max image value (default: 255)
             */
-          AbstractAgastDetector (const size_t width, 
-                                 const size_t height, 
+          AbstractAgastDetector (const std::size_t width, 
+                                 const std::size_t height, 
                                  const double threshold,
                                  const double bmax) 
             : width_ (width)
@@ -240,9 +240,9 @@ namespace pcl
                                std::vector<ScoreIndex> & scores);
 
           /** \brief Width of the image to process. */
-          size_t width_;
+          std::size_t width_;
           /** \brief Height of the image to process. */
-          size_t height_;
+          std::size_t height_;
 
           /** \brief Threshold for corner detection. */
           double threshold_;
@@ -274,8 +274,8 @@ namespace pcl
             * \param[in] threshold the corner detection threshold
             * \param[in] bmax the max image value (default: 255)
             */
-          AgastDetector7_12s (const size_t width, 
-                              const size_t height, 
+          AgastDetector7_12s (const std::size_t width, 
+                              const std::size_t height, 
                               const double threshold,
                               const double bmax = 255) 
             : AbstractAgastDetector (width, height, threshold, bmax)
@@ -345,8 +345,8 @@ namespace pcl
             * \param[in] threshold the corner detection threshold
             * \param[in] bmax the max image value (default: 255)
             */
-          AgastDetector5_8 (const size_t width, 
-                            const size_t height, 
+          AgastDetector5_8 (const std::size_t width, 
+                            const std::size_t height, 
                             const double threshold,
                             const double bmax = 255) 
             : AbstractAgastDetector (width, height, threshold, bmax)
@@ -416,8 +416,8 @@ namespace pcl
             * \param[in] threshold the corner detection threshold
             * \param[in] bmax the max image value (default: 255)
             */
-          OastDetector9_16 (const size_t width, 
-                            const size_t height, 
+          OastDetector9_16 (const std::size_t width, 
+                            const std::size_t height, 
                             const double threshold,
                             const double bmax = 255) 
             : AbstractAgastDetector (width, height, threshold, bmax)

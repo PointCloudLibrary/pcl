@@ -63,7 +63,7 @@ pcl::QuantizedMap::QuantizedMap (const QuantizedMap & copy_me)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::QuantizedMap::QuantizedMap (const size_t width, const size_t height)
+pcl::QuantizedMap::QuantizedMap (const std::size_t width, const std::size_t height)
   : data_ (width*height), width_ (width), height_ (height)
 {
 }
@@ -76,7 +76,7 @@ pcl::QuantizedMap::~QuantizedMap ()
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::QuantizedMap::
-resize (const size_t width, const size_t height)
+resize (const std::size_t width, const std::size_t height)
 {
   data_.resize (width*height);
   width_ = width;
@@ -86,23 +86,23 @@ resize (const size_t width, const size_t height)
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::QuantizedMap::
-spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, const size_t spreading_size)
+spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, const std::size_t spreading_size)
 {
   // TODO: implement differently (as in opencv)
-  const size_t width = input_map.getWidth ();
-  const size_t height = input_map.getHeight ();
-  const size_t half_spreading_size = spreading_size / 2;
+  const std::size_t width = input_map.getWidth ();
+  const std::size_t height = input_map.getHeight ();
+  const std::size_t half_spreading_size = spreading_size / 2;
 
   QuantizedMap tmp_map (width, height);
   output_map.resize (width, height);
 
-  for (size_t row_index = 0; row_index < height-spreading_size-1; ++row_index)
+  for (std::size_t row_index = 0; row_index < height-spreading_size-1; ++row_index)
   {
-    for (size_t col_index = 0; col_index < width-spreading_size-1; ++col_index)
+    for (std::size_t col_index = 0; col_index < width-spreading_size-1; ++col_index)
     {
       unsigned char value = 0;
       const unsigned char * data_ptr = &(input_map (col_index, row_index));
-      for (size_t spreading_index = 0; spreading_index < spreading_size; ++spreading_index, ++data_ptr)
+      for (std::size_t spreading_index = 0; spreading_index < spreading_size; ++spreading_index, ++data_ptr)
       {
         value |= *data_ptr;
       }
@@ -111,13 +111,13 @@ spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, c
     }
   }
 
-  for (size_t row_index = 0; row_index < height-spreading_size-1; ++row_index)
+  for (std::size_t row_index = 0; row_index < height-spreading_size-1; ++row_index)
   {
-    for (size_t col_index = 0; col_index < width-spreading_size-1; ++col_index)
+    for (std::size_t col_index = 0; col_index < width-spreading_size-1; ++col_index)
     {
       unsigned char value = 0;
       const unsigned char * data_ptr = &(tmp_map (col_index, row_index));
-      for (size_t spreading_index = 0; spreading_index < spreading_size; ++spreading_index, data_ptr += width)
+      for (std::size_t spreading_index = 0; spreading_index < spreading_size; ++spreading_index, data_ptr += width)
       {
         value |= *data_ptr;
       }

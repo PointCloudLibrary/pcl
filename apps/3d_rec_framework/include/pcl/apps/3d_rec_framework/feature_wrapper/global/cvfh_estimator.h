@@ -133,7 +133,7 @@ namespace pcl
 
         cvfh.compute (cvfh_signatures);
 
-        for (size_t i = 0; i < cvfh_signatures.points.size (); i++)
+        for (std::size_t i = 0; i < cvfh_signatures.points.size (); i++)
         {
           pcl::PointCloud<FeatureT> vfh_signature;
           vfh_signature.points.resize (1);

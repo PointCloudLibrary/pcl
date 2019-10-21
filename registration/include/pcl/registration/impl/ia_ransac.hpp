@@ -137,7 +137,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::findSi
   std::vector<float> nn_distances (k_correspondences_);
 
   corresponding_indices.resize (sample_indices.size ());
-  for (size_t i = 0; i < sample_indices.size (); ++i)
+  for (std::size_t i = 0; i < sample_indices.size (); ++i)
   {
     // Find the k features nearest to input_features.points[sample_indices[i]]
     feature_tree_->nearestKSearch (input_features, sample_indices[i], k_correspondences_, nn_indices, nn_distances);

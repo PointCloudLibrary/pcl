@@ -163,7 +163,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   else 
   {
     // Make sure we are addressing values in the original index vector
-    for (size_t i = 0; i < removed_indices->indices.size (); ++i)
+    for (std::size_t i = 0; i < removed_indices->indices.size (); ++i)
       indices->indices.push_back (valid_indices[removed_indices->indices[i]]);
 
     // Extract the indices of the remaining points

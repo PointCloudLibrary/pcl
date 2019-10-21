@@ -67,7 +67,7 @@ inline void
 pcl::registration::getQueryIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
 {
   indices.resize (correspondences.size ());
-  for (size_t i = 0; i < correspondences.size (); ++i)
+  for (std::size_t i = 0; i < correspondences.size (); ++i)
     indices[i] = correspondences[i].index_query;
 }
 
@@ -76,7 +76,7 @@ inline void
 pcl::registration::getMatchIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
 {
   indices.resize (correspondences.size ());
-  for (size_t i = 0; i < correspondences.size (); ++i)
+  for (std::size_t i = 0; i < correspondences.size (); ++i)
     indices[i] = correspondences[i].index_match;
 }
 

@@ -346,7 +346,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
 #ifndef _WIN32
     else if (device_id.find ('@') != std::string::npos)
     {
-      size_t pos = device_id.find ('@');
+      std::size_t pos = device_id.find ('@');
       unsigned bus = atoi (device_id.substr (0, pos).c_str ());
       unsigned address = atoi (device_id.substr (pos + 1, device_id.length () - pos - 1).c_str ());
       //printf("[%s] searching for device with bus@address = %d@%d\n", getName().c_str(), bus, address);

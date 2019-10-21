@@ -61,7 +61,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
   {
     manual_correspondence_estimations_set = false;
     correspondence_estimations_.resize (sources_.size ());
-    for (size_t i = 0; i < sources_.size (); i++)
+    for (std::size_t i = 0; i < sources_.size (); i++)
     {
       correspondence_estimations_[i] = correspondence_estimation_->clone ();      
       KdTreeReciprocalPtr src_tree (new KdTreeReciprocal);
@@ -77,7 +77,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
     return;
   }
   std::vector<PointCloudSourcePtr> inputs_transformed (sources_.size ());
-  for (size_t i = 0; i < sources_.size (); i++)
+  for (std::size_t i = 0; i < sources_.size (); i++)
   {
     inputs_transformed[i].reset (new PointCloudSource);
   }
@@ -89,14 +89,14 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
   final_transformation_ = guess;
 
   // Make a combined transformed input and output
-  std::vector<size_t> input_offsets (sources_.size ());
-  std::vector<size_t> target_offsets (targets_.size ());
+  std::vector<std::size_t> input_offsets (sources_.size ());
+  std::vector<std::size_t> target_offsets (targets_.size ());
   PointCloudSourcePtr sources_combined (new PointCloudSource);
   PointCloudSourcePtr inputs_transformed_combined (new PointCloudSource);
   PointCloudTargetPtr targets_combined (new PointCloudTarget);
-  size_t input_offset = 0;
-  size_t target_offset = 0;
-  for (size_t i = 0; i < sources_.size (); i++)
+  std::size_t input_offset = 0;
+  std::size_t target_offset = 0;
+  for (std::size_t i = 0; i < sources_.size (); i++)
   {
     // If the guessed transformation is non identity
     if (guess != Matrix4::Identity ())
@@ -123,7 +123,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
   // Make blobs if necessary
   determineRequiredBlobData ();
   // Pass in the default target for the Correspondence Estimation/Rejection code
-  for (size_t i = 0; i < sources_.size (); i++)
+  for (std::size_t i = 0; i < sources_.size (); i++)
   {
     correspondence_estimations_[i]->setInputTarget (targets_[i]);
     if (correspondence_estimations_[i]->requiresTargetNormals ())
@@ -138,7 +138,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
   if (!correspondence_rejectors_.empty () && need_target_blob_)
     pcl::toPCLPointCloud2 (*targets_combined, *targets_combined_blob);
 
-  for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
+  for (std::size_t i = 0; i < correspondence_rejectors_.size (); ++i)
   {
     registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
     if (rej->requiresTargetPoints ())
@@ -154,7 +154,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
 
   // Repeat until convergence
   std::vector<CorrespondencesPtr> partial_correspondences_ (sources_.size ());
-  for (size_t i = 0; i < sources_.size (); i++)
+  for (std::size_t i = 0; i < sources_.size (); i++)
   {
     partial_correspondences_[i].reset (new pcl::Correspondences);
   }
@@ -166,7 +166,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
 
     // Set the source each iteration, to ensure the dirty flag is updated
     correspondences_->clear ();
-    for (size_t i = 0; i < correspondence_estimations_.size (); i++)
+    for (std::size_t i = 0; i < correspondence_estimations_.size (); i++)
     {
       correspondence_estimations_[i]->setInputSource (inputs_transformed[i]);
       // Get blob data if needed
@@ -189,7 +189,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
       PCL_DEBUG ("[pcl::%s::computeTransformation] Found %d partial correspondences for cloud [%d]\n", 
           getClassName ().c_str (), 
           partial_correspondences_[i]->size (), i);
-      for (size_t j = 0; j < partial_correspondences_[i]->size (); j++)
+      for (std::size_t j = 0; j < partial_correspondences_[i]->size (); j++)
       {
         pcl::Correspondence corr = partial_correspondences_[i]->at (j);
         // Update the offsets to be for the combined clouds
@@ -207,7 +207,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
       toPCLPointCloud2 (*inputs_transformed_combined, *inputs_transformed_combined_blob);
     }
     CorrespondencesPtr temp_correspondences (new Correspondences (*correspondences_));
-    for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
+    for (std::size_t i = 0; i < correspondence_rejectors_.size (); ++i)
     {
       PCL_DEBUG ("Applying a correspondence rejector method: %s.\n", correspondence_rejectors_[i]->getClassName ().c_str ());
       registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
@@ -239,7 +239,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
     // Transform the combined data
     this->transformCloud (*inputs_transformed_combined, *inputs_transformed_combined, transformation_);
     // And all its components
-    for (size_t i = 0; i < sources_.size (); i++)
+    for (std::size_t i = 0; i < sources_.size (); i++)
     {
       this->transformCloud (*inputs_transformed[i], *inputs_transformed[i], transformation_);
     }
@@ -285,7 +285,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::determineRequ
   need_source_blob_ = false;
   need_target_blob_ = false;
   // Check estimators
-  for (size_t i = 0; i < correspondence_estimations_.size (); i++)
+  for (std::size_t i = 0; i < correspondence_estimations_.size (); i++)
   {
     CorrespondenceEstimationPtr& ce = correspondence_estimations_[i];
 
@@ -302,7 +302,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::determineRequ
     }
   }
   // Check rejectors
-  for (size_t i = 0; i < correspondence_rejectors_.size (); i++)
+  for (std::size_t i = 0; i < correspondence_rejectors_.size (); i++)
   {
     registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
     need_source_blob_ |= rej->requiresSourcePoints ();

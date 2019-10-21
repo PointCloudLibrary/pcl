@@ -242,7 +242,7 @@ GlobalOptimizationTDM::assembleCommonParams (unsigned id1, double weight, unsign
   NurbsDataSurface *data = m_data[id1];
   //ON_NurbsSurface *nurbs = this->m_nurbs[id1];
 
-  for (size_t i = 0; i < data->common_idx.size (); i++)
+  for (std::size_t i = 0; i < data->common_idx.size (); i++)
   {
     //    Eigen::Vector3d n, tu, tv;
     //    Eigen::Vector2d &param1 = data->common_param1[i];
@@ -274,7 +274,7 @@ GlobalOptimizationTDM::assembleCommonBoundaries (unsigned id1, double weight, un
   if (nurbs1->m_order[0] != nurbs1->m_order[1])
     printf ("[GlobalOptimizationTDM::assembleCommonBoundaries] Warning, order in u and v direction differ (nurbs1).\n");
 
-  for (size_t i = 0; i < data1->common_boundary_point.size (); i++)
+  for (std::size_t i = 0; i < data1->common_boundary_point.size (); i++)
   {
     Eigen::Vector3d p0 = data1->common_boundary_point[i];
     Eigen::Vector2i id (id1, data1->common_boundary_idx[i]);
@@ -366,12 +366,12 @@ GlobalOptimizationTDM::assembleClosingBoundaries (unsigned id, unsigned samples,
   ClosingBoundary::sampleFromBoundary (nurbs1, boundary1, params1, samples);
 
   // for each other nurbs
-  for (size_t n2 = (id + 1); n2 < m_nurbs.size (); n2++)
+  for (std::size_t n2 = (id + 1); n2 < m_nurbs.size (); n2++)
   {
     ON_NurbsSurface *nurbs2 = m_nurbs[n2];
 
     // find closest point to boundary
-    for (size_t i = 0; i < boundary1.size (); i++)
+    for (std::size_t i = 0; i < boundary1.size (); i++)
     {
       double error;
       Eigen::Vector3d p, tu, tv;
@@ -410,14 +410,14 @@ GlobalOptimizationTDM::assembleClosingBoundariesTD (unsigned id, unsigned sample
 
   // for each other nurbs
   //  for (unsigned n2 = (id + 1); n2 < m_nurbs.size(); n2++) {
-  for (size_t n2 = 0; n2 < m_nurbs.size (); n2++)
+  for (std::size_t n2 = 0; n2 < m_nurbs.size (); n2++)
   {
     if (id == n2)
       continue;
     ON_NurbsSurface *nurbs2 = m_nurbs[n2];
 
     // find closest point to boundary
-    for (size_t i = 0; i < boundary1.size (); i++)
+    for (std::size_t i = 0; i < boundary1.size (); i++)
     {
       double error;
       Eigen::Vector3d p, n, tu, tv;

@@ -65,13 +65,13 @@ template <typename PointInT, typename PointOutT> void
 pcl::AgastKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 {
   // image size
-  const size_t width = input_->width;
-  const size_t height = input_->height;
+  const std::size_t width = input_->width;
+  const std::size_t height = input_->height;
 
   // destination for intensity data; will be forwarded to AGAST
   std::vector<unsigned char> image_data (width*height);
 
-  for (size_t i = 0; i < image_data.size (); ++i)
+  for (std::size_t i = 0; i < image_data.size (); ++i)
     image_data[i] = static_cast<unsigned char> (intensity_ ((*input_)[i]));
 
   if (!detector_)

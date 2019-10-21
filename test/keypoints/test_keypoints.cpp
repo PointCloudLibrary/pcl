@@ -80,7 +80,7 @@ TEST (PCL, SIFTKeypoint)
 
   ASSERT_EQ (keypoints.width, keypoints.points.size ());
   ASSERT_EQ (keypoints.height, 1);
-  EXPECT_EQ (keypoints.points.size (), static_cast<size_t> (169));
+  EXPECT_EQ (keypoints.points.size (), static_cast<std::size_t> (169));
   EXPECT_EQ (keypoints.header, cloud_xyzi->header);
   EXPECT_EQ (keypoints.sensor_origin_ (0), cloud_xyzi->sensor_origin_ (0));
   EXPECT_EQ (keypoints.sensor_origin_ (1), cloud_xyzi->sensor_origin_ (1));
@@ -100,7 +100,7 @@ TEST (PCL, SIFTKeypoint)
   ASSERT_EQ (keypoints.height, 1);
 
   // Compare to previously validated output
-  const size_t correct_nr_keypoints = 5;
+  const std::size_t correct_nr_keypoints = 5;
   const float correct_keypoints[correct_nr_keypoints][4] = 
     { 
       // { x,  y,  z,  scale }
@@ -112,7 +112,7 @@ TEST (PCL, SIFTKeypoint)
     };
 
   ASSERT_EQ (keypoints.points.size (), correct_nr_keypoints);
-  for (size_t i = 0; i < correct_nr_keypoints; ++i)
+  for (std::size_t i = 0; i < correct_nr_keypoints; ++i)
   {
     EXPECT_NEAR (keypoints.points[i].x, correct_keypoints[i][0], 1e-4);
     EXPECT_NEAR (keypoints.points[i].y, correct_keypoints[i][1], 1e-4);
@@ -154,7 +154,7 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
 
   const float max_radius = 0.10f;
 
-  const size_t i_point = 500;
+  const std::size_t i_point = 500;
   tree.radiusSearch (i_point, max_radius, nn_indices, nn_dist);
 
   // Are they all unique?

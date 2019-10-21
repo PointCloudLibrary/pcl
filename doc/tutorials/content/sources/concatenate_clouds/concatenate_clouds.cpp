@@ -28,36 +28,36 @@ int
     n_cloud_b.points.resize (n_cloud_b.width * n_cloud_b.height);
   }
 
-  for (size_t i = 0; i < cloud_a.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_a.points.size (); ++i)
   {
     cloud_a.points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
     cloud_a.points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
     cloud_a.points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
   }
   if (strcmp(argv[1], "-p") == 0)
-    for (size_t i = 0; i < cloud_b.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_b.points.size (); ++i)
     {
       cloud_b.points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
       cloud_b.points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
       cloud_b.points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
     }
   else
-    for (size_t i = 0; i < n_cloud_b.points.size (); ++i)
+    for (std::size_t i = 0; i < n_cloud_b.points.size (); ++i)
     {
       n_cloud_b.points[i].normal[0] = 1024 * rand () / (RAND_MAX + 1.0f);
       n_cloud_b.points[i].normal[1] = 1024 * rand () / (RAND_MAX + 1.0f);
       n_cloud_b.points[i].normal[2] = 1024 * rand () / (RAND_MAX + 1.0f);
     }
   std::cerr << "Cloud A: " << std::endl;
-  for (size_t i = 0; i < cloud_a.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_a.points.size (); ++i)
     std::cerr << "    " << cloud_a.points[i].x << " " << cloud_a.points[i].y << " " << cloud_a.points[i].z << std::endl;
 
   std::cerr << "Cloud B: " << std::endl;
   if (strcmp(argv[1], "-p") == 0)
-    for (size_t i = 0; i < cloud_b.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_b.points.size (); ++i)
       std::cerr << "    " << cloud_b.points[i].x << " " << cloud_b.points[i].y << " " << cloud_b.points[i].z << std::endl;
   else
-    for (size_t i = 0; i < n_cloud_b.points.size (); ++i)
+    for (std::size_t i = 0; i < n_cloud_b.points.size (); ++i)
       std::cerr << "    " << n_cloud_b.points[i].normal[0] << " " << n_cloud_b.points[i].normal[1] << " " << n_cloud_b.points[i].normal[2] << std::endl;
 
   // Copy the point cloud data
@@ -66,14 +66,14 @@ int
     cloud_c  = cloud_a;
     cloud_c += cloud_b;
     std::cerr << "Cloud C: " << std::endl;
-    for (size_t i = 0; i < cloud_c.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_c.points.size (); ++i)
       std::cerr << "    " << cloud_c.points[i].x << " " << cloud_c.points[i].y << " " << cloud_c.points[i].z << " " << std::endl;
   }
   else
   {
     pcl::concatenateFields (cloud_a, n_cloud_b, p_n_cloud_c);
     std::cerr << "Cloud C: " << std::endl;
-    for (size_t i = 0; i < p_n_cloud_c.points.size (); ++i)
+    for (std::size_t i = 0; i < p_n_cloud_c.points.size (); ++i)
       std::cerr << "    " <<
         p_n_cloud_c.points[i].x << " " << p_n_cloud_c.points[i].y << " " << p_n_cloud_c.points[i].z << " " <<
         p_n_cloud_c.points[i].normal[0] << " " << p_n_cloud_c.points[i].normal[1] << " " << p_n_cloud_c.points[i].normal[2] << std::endl;

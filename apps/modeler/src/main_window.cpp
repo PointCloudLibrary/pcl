@@ -202,7 +202,7 @@ pcl::modeler::MainWindow::slotOpenRecentProject()
 void 
 pcl::modeler::MainWindow::createRecentPointCloudActions()
 {
-  for (size_t i = 0; i < MAX_RECENT_NUMBER; ++ i)
+  for (std::size_t i = 0; i < MAX_RECENT_NUMBER; ++ i)
   {
     recent_pointcloud_actions_.push_back(boost::shared_ptr<QAction>(new QAction(this)));
     ui_->menuRecentPointClouds->addAction(recent_pointcloud_actions_[i].get());
@@ -226,7 +226,7 @@ pcl::modeler::MainWindow::updateRecentPointCloudActions()
 void 
 pcl::modeler::MainWindow::createRecentProjectActions()
 {
-  for (size_t i = 0; i < MAX_RECENT_NUMBER; ++ i)
+  for (std::size_t i = 0; i < MAX_RECENT_NUMBER; ++ i)
   {
     recent_project_actions_.push_back(boost::shared_ptr<QAction>(new QAction(this)));
     ui_->menuRecentPointClouds->addAction(recent_project_actions_[i].get());
@@ -274,7 +274,7 @@ pcl::modeler::MainWindow::updateRecentActions (std::vector<boost::shared_ptr<QAc
     recent_actions[i]->setVisible (true);
   }
 
-  for (size_t i = recent_number, i_end = recent_actions.size (); i < i_end; ++ i)
+  for (std::size_t i = recent_number, i_end = recent_actions.size (); i < i_end; ++ i)
     recent_actions[i]->setVisible (false);
 
   while (recent_items.size () > recent_number)

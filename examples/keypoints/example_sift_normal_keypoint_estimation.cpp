@@ -84,7 +84,7 @@ main(int, char** argv)
   ne.compute(*cloud_normals);
 
   // Copy the xyz info from cloud_xyz and add it to cloud_normals as the xyz field in PointNormals estimation is zero
-  for(size_t i = 0; i<cloud_normals->points.size(); ++i)
+  for(std::size_t i = 0; i<cloud_normals->points.size(); ++i)
   {
     cloud_normals->points[i].x = cloud_xyz->points[i].x;
     cloud_normals->points[i].y = cloud_xyz->points[i].y;

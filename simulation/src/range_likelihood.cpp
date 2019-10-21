@@ -253,12 +253,12 @@ max_level(int a, int b)
 void
 display_tic_toc(vector<double>& tic_toc, const string& fun_name)
 {
-  size_t tic_toc_size = tic_toc.size();
+  std::size_t tic_toc_size = tic_toc.size();
 
   double percent_tic_toc_last = 0;
   double dtime = tic_toc[tic_toc_size - 1] - tic_toc[0];
   std::cout << "fraction_" << fun_name << ",";
-  for (size_t i = 0; i < tic_toc_size; i++) {
+  for (std::size_t i = 0; i < tic_toc_size; i++) {
     double percent_tic_toc =
         (tic_toc[i] - tic_toc[0]) / (tic_toc[tic_toc_size - 1] - tic_toc[0]);
     std::cout << percent_tic_toc - percent_tic_toc_last << ", ";
@@ -266,7 +266,7 @@ display_tic_toc(vector<double>& tic_toc, const string& fun_name)
   }
   std::cout << "\ntime_" << fun_name << ",";
   double time_tic_toc_last = 0;
-  for (size_t i = 0; i < tic_toc_size; i++) {
+  for (std::size_t i = 0; i < tic_toc_size; i++) {
     double percent_tic_toc =
         (tic_toc[i] - tic_toc[0]) / (tic_toc[tic_toc_size - 1] - tic_toc[0]);
     std::cout << percent_tic_toc * dtime - time_tic_toc_last << ", ";

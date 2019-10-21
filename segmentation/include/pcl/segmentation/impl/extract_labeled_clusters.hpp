@@ -84,7 +84,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
         continue;
       }
 
-      for (size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
+      for (std::size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
       {
         if (processed[nn_indices[j]])                             // Has this point been processed before ?
           continue;
@@ -104,7 +104,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
     {
       pcl::PointIndices r;
       r.indices.resize (seed_queue.size ());
-      for (size_t j = 0; j < seed_queue.size (); ++j)
+      for (std::size_t j = 0; j < seed_queue.size (); ++j)
         r.indices[j] = seed_queue[j];
 
       std::sort (r.indices.begin (), r.indices.end ());

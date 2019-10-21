@@ -339,7 +339,7 @@ namespace pcl
         * \param[out] output buffer large enough to store point cloud
         * \return number of point stored to passed buffer
         */ 
-      PCL_EXPORTS size_t 
+      PCL_EXPORTS std::size_t 
       extractCloud (const PtrStep<short2>& volume, const float3& volume_size, PtrSz<PointType> output);
 
       /** \brief Perform point cloud extraction of a slice from tsdf volume
@@ -353,7 +353,7 @@ namespace pcl
         * \param[out] output_intensities buffer large enough to store point cloud intensity values
         * \return number of point stored to passed buffer
         */ 
-      PCL_EXPORTS size_t
+      PCL_EXPORTS std::size_t
       extractSliceAsCloud (const PtrStep<short2>& volume, const float3& volume_size, const pcl::gpu::kinfuLS::tsdf_buffer* buffer, const int shiftX, const int shiftY, const int shiftZ, PtrSz<PointType> output_xyz, PtrSz<float> output_intensities);
 
       /** \brief Performs normals computation for given points using tsdf volume

@@ -82,7 +82,7 @@ class OutofcoreCloud : public Object
     {
     public:
 
-      CloudDataCacheItem (std::string pcd_file, float coverage, vtkSmartPointer<vtkPolyData> cloud_data, size_t timestamp)
+      CloudDataCacheItem (std::string pcd_file, float coverage, vtkSmartPointer<vtkPolyData> cloud_data, std::size_t timestamp)
       {
        this->pcd_file = pcd_file;
        this->coverage = coverage;
@@ -90,7 +90,7 @@ class OutofcoreCloud : public Object
        this->timestamp = timestamp;
       }
 
-      size_t
+      std::size_t
       sizeOf() const override
       {
         return item->GetActualMemorySize();

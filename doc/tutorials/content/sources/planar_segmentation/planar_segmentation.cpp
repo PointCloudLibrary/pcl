@@ -17,7 +17,7 @@ int
   cloud->points.resize (cloud->width * cloud->height);
 
   // Generate the data
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->points.size (); ++i)
   {
     cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
     cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
@@ -30,7 +30,7 @@ int
   cloud->points[6].z = 4.0;
 
   std::cerr << "Point cloud data: " << cloud->points.size () << " points" << std::endl;
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->points.size (); ++i)
     std::cerr << "    " << cloud->points[i].x << " "
                         << cloud->points[i].y << " "
                         << cloud->points[i].z << std::endl;
@@ -61,7 +61,7 @@ int
                                       << coefficients->values[3] << std::endl;
 
   std::cerr << "Model inliers: " << inliers->indices.size () << std::endl;
-  for (size_t i = 0; i < inliers->indices.size (); ++i)
+  for (std::size_t i = 0; i < inliers->indices.size (); ++i)
     std::cerr << inliers->indices[i] << "    " << cloud->points[inliers->indices[i]].x << " "
                                                << cloud->points[inliers->indices[i]].y << " "
                                                << cloud->points[inliers->indices[i]].z << std::endl;

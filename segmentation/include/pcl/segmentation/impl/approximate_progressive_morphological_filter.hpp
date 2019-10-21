@@ -154,7 +154,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
   ground = *indices_;
 
   // Progressively filter ground returns using morphological open
-  for (size_t i = 0; i < window_sizes.size (); ++i)
+  for (std::size_t i = 0; i < window_sizes.size (); ++i)
   {
     PCL_DEBUG ("      Iteration %d (height threshold = %f, window size = %f, half size = %d)...",
                i, height_thresholds[i], window_sizes[i], half_sizes[i]);
@@ -235,7 +235,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
     // Find indices of the points whose difference between the source and
     // filtered point clouds is less than the current height threshold.
     std::vector<int> pt_indices;
-    for (size_t p_idx = 0; p_idx < ground.size (); ++p_idx)
+    for (std::size_t p_idx = 0; p_idx < ground.size (); ++p_idx)
     {
       PointT p = cloud->points[p_idx];
       int erow = static_cast<int> (std::floor ((p.y - global_min.y ()) / cell_size_));

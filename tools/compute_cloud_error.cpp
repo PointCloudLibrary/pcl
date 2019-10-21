@@ -90,7 +90,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
       return;
     }
 
-    for (size_t point_i = 0; point_i < xyz_source->points.size (); ++point_i)
+    for (std::size_t point_i = 0; point_i < xyz_source->points.size (); ++point_i)
     {
       if (!std::isfinite (xyz_source->points[point_i].x) || !std::isfinite (xyz_source->points[point_i].y) || !std::isfinite (xyz_source->points[point_i].z))
         continue;
@@ -115,7 +115,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
     KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
     tree->setInputCloud (xyz_target);
 
-    for (size_t point_i = 0; point_i < xyz_source->points.size (); ++ point_i)
+    for (std::size_t point_i = 0; point_i < xyz_source->points.size (); ++ point_i)
     {
       if (!std::isfinite (xyz_source->points[point_i].x) || !std::isfinite (xyz_source->points[point_i].y) || !std::isfinite (xyz_source->points[point_i].z))
         continue;
@@ -124,7 +124,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
       std::vector<float> nn_distances (1);
       if (!tree->nearestKSearch (xyz_source->points[point_i], 1, nn_indices, nn_distances))
         continue;
-      size_t point_nn_i = nn_indices.front();
+      std::size_t point_nn_i = nn_indices.front();
 
       float dist = squaredEuclideanDistance (xyz_source->points[point_i], xyz_target->points[point_nn_i]);
       rmse += dist;
@@ -147,7 +147,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
     KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
     tree->setInputCloud (xyz_target);
 
-    for (size_t point_i = 0; point_i < xyz_source->points.size (); ++ point_i)
+    for (std::size_t point_i = 0; point_i < xyz_source->points.size (); ++ point_i)
     {
       if (!std::isfinite (xyz_source->points[point_i].x) || !std::isfinite (xyz_source->points[point_i].y) || !std::isfinite (xyz_source->points[point_i].z))
         continue;
@@ -156,7 +156,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
       std::vector<float> nn_distances (1);
       if (!tree->nearestKSearch (xyz_source->points[point_i], 1, nn_indices, nn_distances))
         continue;
-      size_t point_nn_i = nn_indices.front();
+      std::size_t point_nn_i = nn_indices.front();
 
       Eigen::Vector3f normal_target = normals_target->points[point_nn_i].getNormalVector3fMap (),
           point_source = xyz_source->points[point_i].getVector3fMap (),

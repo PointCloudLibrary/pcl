@@ -111,7 +111,7 @@ namespace pcl
           const pcl::device::LabelProbability& getProbability2() const;
           const pcl::device::LabelProbability& getPrevProbability1() const;
           const pcl::device::LabelProbability& getPrevProbability2() const;
-          size_t getNumberTrees() const;
+          std::size_t getNumberTrees() const;
           const BlobMatrix& getBlobMatrix() const;
 
           

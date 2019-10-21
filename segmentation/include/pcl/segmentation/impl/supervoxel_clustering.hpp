@@ -344,7 +344,7 @@ pcl::SupervoxelClustering<PointT>::createSupervoxelHelpers (std::vector<int> &se
 {
   
   supervoxel_helpers_.clear ();
-  for (size_t i = 0; i < seed_indices.size (); ++i)
+  for (std::size_t i = 0; i < seed_indices.size (); ++i)
   {
     supervoxel_helpers_.push_back (new SupervoxelHelper(i+1,this));
     //Find which leaf corresponds to this seed index

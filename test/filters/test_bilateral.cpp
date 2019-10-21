@@ -67,7 +67,7 @@ TEST (FastBilateralFilter, Filters_Bilateral)
       p_102219 (0.175637f, -0.101353f, 0.661631f),
       p_81765 (0.223189f, -0.151714f, 0.708332f);
 
-  for (size_t dim = 0; dim < 3; ++dim)
+  for (std::size_t dim = 0; dim < 3; ++dim)
   {
     EXPECT_NEAR (p_84737[dim], (*cloud_filtered)[84737].getVector3fMap ()[dim], 1e-3);
     EXPECT_NEAR (p_57966[dim], (*cloud_filtered)[57966].getVector3fMap ()[dim], 1e-3);
@@ -91,7 +91,7 @@ TEST (FastBilateralFilterOMP, Filters_Bilateral)
   sigma_r.push_back (0.023f);
   sigma_r.push_back (0.0345f);
   pcl::console::TicToc tt;
-  for (size_t i = 0; i < 3; i++)
+  for (std::size_t i = 0; i < 3; i++)
   {
     FastBilateralFilter<PointXYZ> fbf;
     fbf.setInputCloud (cloud);
@@ -112,7 +112,7 @@ TEST (FastBilateralFilterOMP, Filters_Bilateral)
     PCL_INFO ("[FastBilateralFilterOMP] filtering took %f ms\n", tt.toc ());
 
     EXPECT_EQ (cloud_filtered_omp->points.size (), cloud_filtered->points.size ());
-    for (size_t j = 0; j < cloud_filtered_omp->size (); ++j)
+    for (std::size_t j = 0; j < cloud_filtered_omp->size (); ++j)
     {
       if (std::isnan (cloud_filtered_omp->at (j).x))
         EXPECT_TRUE (std::isnan (cloud_filtered->at (j).x));

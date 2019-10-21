@@ -66,7 +66,7 @@ pcl::FieldComparison<PointT>::FieldComparison (
   }
 
   // Get the field index
-  size_t d;
+  std::size_t d;
   for (d = 0; d < point_fields.size (); ++d)
   {
     if (point_fields[d].name == field_name) 
@@ -142,7 +142,7 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
   const auto point_fields = pcl::getFields<PointT> ();
 
   // Locate the "rgb" field
-  size_t d;
+  std::size_t d;
   for (d = 0; d < point_fields.size (); ++d)
   {
     if (point_fields[d].name == "rgb" || point_fields[d].name == "rgba")
@@ -231,7 +231,7 @@ pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
   const auto point_fields = pcl::getFields<PointT> ();
 
   // Locate the "rgb" field
-  size_t d;
+  std::size_t d;
   for (d = 0; d < point_fields.size (); ++d)
     if (point_fields[d].name == "rgb" || point_fields[d].name == "rgba") 
       break;
@@ -377,7 +377,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison () :
   const auto point_fields = pcl::getFields<PointT> ();
 
   // Locate the "x" field
-  size_t dX;
+  std::size_t dX;
   for (dX = 0; dX < point_fields.size (); ++dX)
   {
     if (point_fields[dX].name == "x")
@@ -391,7 +391,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison () :
   }
 
   // Locate the "y" field
-  size_t dY;
+  std::size_t dY;
   for (dY = 0; dY < point_fields.size (); ++dY)
   {
     if (point_fields[dY].name == "y")
@@ -405,7 +405,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison () :
   }
 
   // Locate the "z" field
-  size_t dZ;
+  std::size_t dZ;
   for (dZ = 0; dZ < point_fields.size (); ++dZ)
   {
     if (point_fields[dZ].name == "z")
@@ -439,7 +439,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison (const pcl::Comp
   const auto point_fields = pcl::getFields<PointT> ();
 
   // Locate the "x" field
-  size_t dX;
+  std::size_t dX;
   for (dX = 0; dX < point_fields.size (); ++dX)
   {
     if (point_fields[dX].name == "x")
@@ -453,7 +453,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison (const pcl::Comp
   }
 
   // Locate the "y" field
-  size_t dY;
+  std::size_t dY;
   for (dY = 0; dY < point_fields.size (); ++dY)
   {
     if (point_fields[dY].name == "y")
@@ -467,7 +467,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison (const pcl::Comp
   }
 
   // Locate the "z" field
-  size_t dZ;
+  std::size_t dZ;
   for (dZ = 0; dZ < point_fields.size (); ++dZ)
   {
     if (point_fields[dZ].name == "z")
@@ -611,11 +611,11 @@ pcl::ConditionBase<PointT>::addCondition (Ptr condition)
 template <typename PointT> bool
 pcl::ConditionAnd<PointT>::evaluate (const PointT &point) const
 {
-  for (size_t i = 0; i < comparisons_.size (); ++i)
+  for (std::size_t i = 0; i < comparisons_.size (); ++i)
     if (!comparisons_[i]->evaluate (point))
       return (false);
 
-  for (size_t i = 0; i < conditions_.size (); ++i)
+  for (std::size_t i = 0; i < conditions_.size (); ++i)
     if (!conditions_[i]->evaluate (point))
       return (false);
 
@@ -630,11 +630,11 @@ pcl::ConditionOr<PointT>::evaluate (const PointT &point) const
 {
   if (comparisons_.empty () && conditions_.empty ()) 
     return (true);
-  for (size_t i = 0; i < comparisons_.size (); ++i)
+  for (std::size_t i = 0; i < comparisons_.size (); ++i)
     if (comparisons_[i]->evaluate(point))
       return (true);
 
-  for (size_t i = 0; i < conditions_.size (); ++i)
+  for (std::size_t i = 0; i < conditions_.size (); ++i)
     if (conditions_[i]->evaluate (point))
       return (true);
 
@@ -694,7 +694,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 
   if (!keep_organized_)
   {
-    for (size_t cp = 0; cp < Filter<PointT>::indices_->size (); ++cp)
+    for (std::size_t cp = 0; cp < Filter<PointT>::indices_->size (); ++cp)
     {
       // Check if the point is invalid
       if (!std::isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].x)
@@ -732,15 +732,15 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     std::vector<int> indices = *Filter<PointT>::indices_;
     std::sort (indices.begin (), indices.end ());   //TODO: is this necessary or can we assume the indices to be sorted?
     bool removed_p = false;
-    size_t ci = 0;
-    for (size_t cp = 0; cp < input_->points.size (); ++cp)
+    std::size_t ci = 0;
+    for (std::size_t cp = 0; cp < input_->points.size (); ++cp)
     {
-      if (cp == static_cast<size_t> (indices[ci]))
+      if (cp == static_cast<std::size_t> (indices[ci]))
       {
         if (ci < indices.size () - 1)
         {
           ci++;
-          if (cp == static_cast<size_t> (indices[ci]))   //check whether the next index will have the same value. TODO: necessary?
+          if (cp == static_cast<std::size_t> (indices[ci]))   //check whether the next index will have the same value. TODO: necessary?
             continue;
         }
 

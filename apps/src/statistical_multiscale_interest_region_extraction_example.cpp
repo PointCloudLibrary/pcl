@@ -69,7 +69,7 @@ main (int, char **argv)
   std::vector<float> scale_vector;
   PCL_INFO ("Scale values that will be used: ");
   float base_scale_aux = base_scale;
-  for (size_t scales = 0; scales < 7; ++scales)
+  for (std::size_t scales = 0; scales < 7; ++scales)
   {
     PCL_INFO ("%f ", base_scale_aux);
     scale_vector.push_back (base_scale_aux);

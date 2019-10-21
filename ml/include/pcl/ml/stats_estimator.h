@@ -53,7 +53,7 @@ public:
   virtual ~StatsEstimator(){};
 
   /** Returns the number of brances a node can have (e.g. a binary tree has 2). */
-  virtual size_t
+  virtual std::size_t
   getNumOfBranches() const = 0;
 
   /** Computes and sets the statistics for a node.

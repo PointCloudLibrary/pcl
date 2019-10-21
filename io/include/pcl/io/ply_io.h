@@ -443,7 +443,7 @@ namespace pcl
         * list property.
         */
       template<typename Scalar> void
-      appendScalarProperty (const std::string& name, const size_t& count = 1);
+      appendScalarProperty (const std::string& name, const std::size_t& count = 1);
 
       /** Amend property from cloud fields identified by \a old_name renaming
         * it \a new_name.
@@ -521,11 +521,11 @@ namespace pcl
 
       //vertex element artifacts
       pcl::PCLPointCloud2 *cloud_;
-      size_t vertex_count_;
+      std::size_t vertex_count_;
       int vertex_offset_before_;
       //range element artifacts
       std::vector<std::vector <int> > *range_grid_;
-      size_t rgb_offset_before_;
+      std::size_t rgb_offset_before_;
       bool do_resize_;
       //face element artifact
       std::vector<pcl::Vertices> *polygons_;

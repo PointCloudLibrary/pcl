@@ -66,7 +66,7 @@ TEST(PolygonMesh, concatenate_header)
 TEST(PolygonMesh, concatenate_cloud)
 {
     PointCloud<PointXYZ> cloud_template;
-    const size_t size = 10 * 480;
+    const std::size_t size = 10 * 480;
 
     cloud_template.width = 10;
     cloud_template.height = 480;

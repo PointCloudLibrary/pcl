@@ -79,7 +79,7 @@ init ()
   cloud_big.height = 480;
   srand (static_cast<unsigned int> (time (nullptr)));
   // Randomly create a new point cloud
-  for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
+  for (std::size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
     cloud_big.points.emplace_back(static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
                                          static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
                                          static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)));
@@ -93,7 +93,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   MyPoint test_point(0.0f, 0.0f, 0.0f);
   double max_dist = 0.15;
   set<int> brute_force_result;
-  for (size_t i=0; i < cloud.points.size(); ++i)
+  for (std::size_t i=0; i < cloud.points.size(); ++i)
     if (euclideanDistance(cloud.points[i], test_point) < max_dist)
       brute_force_result.insert(i);
   std::vector<int> k_indices;
@@ -162,7 +162,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   MyPoint test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
   multimap<float, int> sorted_brute_force_result;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
     float distance = euclideanDistance (cloud.points[i], test_point);
     sorted_brute_force_result.insert (make_pair (distance, static_cast<int> (i)));
@@ -292,7 +292,7 @@ TEST (PCL, KdTreeFLANN_32_vs_64_bit)
   tree.setInputCloud (cloud_in);
 
   std::vector<std::vector<int> > nn_indices_vector;
-  for (size_t i = 0; i < cloud_in->size (); ++i)
+  for (std::size_t i = 0; i < cloud_in->size (); ++i)
     if (isFinite ((*cloud_in)[i]))
     {
       std::vector<int> nn_indices;
@@ -304,7 +304,7 @@ TEST (PCL, KdTreeFLANN_32_vs_64_bit)
 
 
 
-  for (size_t vec_i = 0; vec_i < nn_indices_vector.size (); ++vec_i)
+  for (std::size_t vec_i = 0; vec_i < nn_indices_vector.size (); ++vec_i)
   {
     char str[512];
     sprintf (str, "point_%d", int (vec_i));
@@ -315,7 +315,7 @@ TEST (PCL, KdTreeFLANN_32_vs_64_bit)
     int vec_size = tree.get ().get<int> ("size");
     EXPECT_EQ (vec_size, nn_indices_vector[vec_i].size ());
 
-    for (size_t n_i = 0; n_i < nn_indices_vector[vec_i].size (); ++n_i)
+    for (std::size_t n_i = 0; n_i < nn_indices_vector[vec_i].size (); ++n_i)
     {
       sprintf (str, "nn_%d", int (n_i));
       int neighbor_index = tree.get ().get<int> (str);

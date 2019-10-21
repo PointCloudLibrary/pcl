@@ -119,7 +119,7 @@ pcl::modeler::CloudMesh::save(const std::vector<const CloudMesh*>& cloud_meshes,
   {
     if (filename.rfind(".obj") == (filename.length()-4))
     {
-      size_t delta = cloud_mesh.cloud_->size();
+      std::size_t delta = cloud_mesh.cloud_->size();
       for (auto polygon : mesh->polygons_)
       {
         for (unsigned int &vertice : polygon.vertices)

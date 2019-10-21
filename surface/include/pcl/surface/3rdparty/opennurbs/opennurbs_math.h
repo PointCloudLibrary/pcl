@@ -1448,7 +1448,7 @@ ON_DECL
 const ON_2dex* ON_BinarySearch2dexArray( 
           int key_i, 
           const ON_2dex* base, 
-          size_t nel
+          std::size_t nel
           );
 
 // These simple intersectors are fast and detect transverse intersections.

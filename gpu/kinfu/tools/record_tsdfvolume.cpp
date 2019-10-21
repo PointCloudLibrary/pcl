@@ -170,7 +170,7 @@ DeviceVolume::getVolume (pcl::TSDFVolume<VoxelT, WeightT>::Ptr &volume)
 {
   int volume_size = device_volume_.rows() * device_volume_.cols();
 
-  if ((size_t)volume_size != volume->size())
+  if ((std::size_t)volume_size != volume->size())
   {
     pc::print_error ("Device volume size (%d) and tsdf volume size (%d) don't match. ABORTING!\n", volume_size, volume->size());
     return false;

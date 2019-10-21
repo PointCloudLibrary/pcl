@@ -67,7 +67,7 @@ namespace pcl
         crh.setInputCloud(processed);
         crh.setInputNormals(normals_);
 
-        for (size_t idx = 0; idx < signatures.size (); idx++)
+        for (std::size_t idx = 0; idx < signatures.size (); idx++)
         {
           Eigen::Vector4f centroid4f(centroids[idx][0],centroids[idx][1],centroids[idx][2],0);
           crh.setCentroid(centroid4f);

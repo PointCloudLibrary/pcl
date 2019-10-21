@@ -57,7 +57,7 @@ pcl::Permutohedral::init(const std::vector<float>& feature,
   // Create hash table
   std::vector<std::vector<short>> keys;
   keys.reserve((d_ + 1) * N_);
-  std::multimap<size_t, int> hash_table;
+  std::multimap<std::size_t, int> hash_table;
 
   // reserve class memory
   if (!offset_.empty())
@@ -164,7 +164,7 @@ pcl::Permutohedral::init(const std::vector<float>& feature,
                                     static_cast<float>(canonical(rank(j), remainder)));
 
       // insert key in hash table
-      size_t hash_key = generateHashKey(key);
+      std::size_t hash_key = generateHashKey(key);
       auto it = hash_table.find(hash_key);
       int key_index = -1;
       if (it != hash_table.end()) {
@@ -175,7 +175,7 @@ pcl::Permutohedral::init(const std::vector<float>& feature,
           int ii = it->second;
           bool same = true;
           std::vector<short> k = keys[ii];
-          for (size_t i_k = 0; i_k < k.size(); i_k++) {
+          for (std::size_t i_k = 0; i_k < k.size(); i_k++) {
             if (key[i_k] != k[i_k]) {
               same = false;
               break;
@@ -191,7 +191,7 @@ pcl::Permutohedral::init(const std::vector<float>& feature,
         if (tmp_key_index == -1) {
           key_index = static_cast<int>(keys.size());
           keys.push_back(key);
-          hash_table.insert(std::pair<size_t, int>(hash_key, key_index));
+          hash_table.insert(std::pair<std::size_t, int>(hash_key, key_index));
         }
         else
           key_index = tmp_key_index;
@@ -200,7 +200,7 @@ pcl::Permutohedral::init(const std::vector<float>& feature,
       else {
         key_index = static_cast<int>(keys.size());
         keys.push_back(key);
-        hash_table.insert(std::pair<size_t, int>(hash_key, key_index));
+        hash_table.insert(std::pair<std::size_t, int>(hash_key, key_index));
       }
       offset_[k * (d_ + 1) + remainder] = static_cast<float>(key_index);
 
@@ -233,8 +233,8 @@ pcl::Permutohedral::init(const std::vector<float>& feature,
       n1[j] = static_cast<short>(key[j] + d_);
       n2[j] = static_cast<short>(key[j] - d_);
 
-      std::multimap<size_t, int>::iterator it;
-      size_t hash_key;
+      std::multimap<std::size_t, int>::iterator it;
+      std::size_t hash_key;
       int key_index = -1;
       hash_key = generateHashKey(n1);
       it = hash_table.find(hash_key);
@@ -552,7 +552,7 @@ void
 pcl::Permutohedral::debug()
 {
   bool same = true;
-  for (size_t i = 0; i < barycentric_.size(); i++) {
+  for (std::size_t i = 0; i < barycentric_.size(); i++) {
     if (barycentric_[i] != barycentricOLD_[i])
       same = false;
     if (offset_[i] != offsetOLD_[i]) {
@@ -560,7 +560,7 @@ pcl::Permutohedral::debug()
     }
   }
 
-  for (size_t i = 0; i < blur_neighbors_.size(); i++) {
+  for (std::size_t i = 0; i < blur_neighbors_.size(); i++) {
     if (blur_neighbors_[i].n1 != blur_neighborsOLD_[i].n1)
       same = false;
     if (blur_neighbors_[i].n2 != blur_neighborsOLD_[i].n2)

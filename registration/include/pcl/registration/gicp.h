@@ -139,7 +139,7 @@ namespace pcl
         }
         PointCloudSource input = *cloud;
         // Set all the point.data[3] values to 1 to aid the rigid transformation
-        for (size_t i = 0; i < input.size (); ++i)
+        for (std::size_t i = 0; i < input.size (); ++i)
           input[i].data[3] = 1.0;
         
         pcl::IterativeClosestPoint<PointSource, PointTarget>::setInputSource (cloud);
@@ -194,7 +194,7 @@ namespace pcl
                                        Eigen::Matrix4f &transformation_matrix);
       
       /** \brief \return Mahalanobis distance matrix for the given point index */
-      inline const Eigen::Matrix3d& mahalanobis(size_t index) const
+      inline const Eigen::Matrix3d& mahalanobis(std::size_t index) const
       {
         assert(index < mahalanobis_.size());
         return mahalanobis_[index];
@@ -315,10 +315,10 @@ namespace pcl
       matricesInnerProd(const Eigen::MatrixXd& mat1, const Eigen::MatrixXd& mat2) const
       {
         double r = 0.;
-        size_t n = mat1.rows();
+        std::size_t n = mat1.rows();
         // tr(mat1^t.mat2)
-        for(size_t i = 0; i < n; i++)
-          for(size_t j = 0; j < n; j++)
+        for(std::size_t i = 0; i < n; i++)
+          for(std::size_t j = 0; j < n; j++)
             r += mat1 (j, i) * mat2 (i,j);
         return r;
       }

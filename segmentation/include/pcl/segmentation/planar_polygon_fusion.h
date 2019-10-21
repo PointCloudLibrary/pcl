@@ -72,7 +72,7 @@ namespace pcl
       {
         int start = static_cast<int> (regions_.size ());
         regions_.resize (regions_.size () + input.size ());
-        for(size_t i = 0; i < input.size (); i++)
+        for(std::size_t i = 0; i < input.size (); i++)
           regions_[start+i] = input[i];
       }
 

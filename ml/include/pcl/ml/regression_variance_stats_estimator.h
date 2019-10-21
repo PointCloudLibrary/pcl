@@ -135,7 +135,7 @@ public:
   virtual ~RegressionVarianceStatsEstimator() {}
 
   /** Returns the number of branches the corresponding tree has. */
-  inline size_t
+  inline std::size_t
   getNumOfBranches() const
   {
     // return 2;
@@ -169,20 +169,21 @@ public:
                          std::vector<unsigned char>& flags,
                          const float threshold) const
   {
-    const size_t num_of_examples = examples.size();
-    const size_t num_of_branches = getNumOfBranches();
+    const std::size_t num_of_examples = examples.size();
+    const std::size_t num_of_branches = getNumOfBranches();
 
     // compute variance
     std::vector<LabelDataType> sums(num_of_branches + 1, 0);
     std::vector<LabelDataType> sqr_sums(num_of_branches + 1, 0);
-    std::vector<size_t> branch_element_count(num_of_branches + 1, 0);
+    std::vector<std::size_t> branch_element_count(num_of_branches + 1, 0);
 
-    for (size_t branch_index = 0; branch_index < num_of_branches; ++branch_index) {
+    for (std::size_t branch_index = 0; branch_index < num_of_branches; ++branch_index) {
       branch_element_count[branch_index] = 1;
       ++branch_element_count[num_of_branches];
     }
 
-    for (size_t example_index = 0; example_index < num_of_examples; ++example_index) {
+    for (std::size_t example_index = 0; example_index < num_of_examples;
+         ++example_index) {
       unsigned char branch_index;
       computeBranchIndex(
           results[example_index], flags[example_index], threshold, branch_index);
@@ -200,7 +201,8 @@ public:
     }
 
     std::vector<float> variances(num_of_branches + 1, 0);
-    for (size_t branch_index = 0; branch_index < num_of_branches + 1; ++branch_index) {
+    for (std::size_t branch_index = 0; branch_index < num_of_branches + 1;
+         ++branch_index) {
       const float mean_sum =
           static_cast<float>(sums[branch_index]) / branch_element_count[branch_index];
       const float mean_sqr_sum = static_cast<float>(sqr_sums[branch_index]) /
@@ -209,7 +211,7 @@ public:
     }
 
     float information_gain = variances[num_of_branches];
-    for (size_t branch_index = 0; branch_index < num_of_branches; ++branch_index) {
+    for (std::size_t branch_index = 0; branch_index < num_of_branches; ++branch_index) {
       // const float weight = static_cast<float>(sums[branchIndex]) /
       // sums[numOfBranches];
       const float weight = static_cast<float>(branch_element_count[branch_index]) /
@@ -233,11 +235,11 @@ public:
                        const float threshold,
                        std::vector<unsigned char>& branch_indices) const
   {
-    const size_t num_of_results = results.size();
-    const size_t num_of_branches = getNumOfBranches();
+    const std::size_t num_of_results = results.size();
+    const std::size_t num_of_branches = getNumOfBranches();
 
     branch_indices.resize(num_of_results);
-    for (size_t result_index = 0; result_index < num_of_results; ++result_index) {
+    for (std::size_t result_index = 0; result_index < num_of_results; ++result_index) {
       unsigned char branch_index;
       computeBranchIndex(
           results[result_index], flags[result_index], threshold, branch_index);
@@ -276,11 +278,12 @@ public:
                          std::vector<LabelDataType>& label_data,
                          NodeType& node) const
   {
-    const size_t num_of_examples = examples.size();
+    const std::size_t num_of_examples = examples.size();
 
     LabelDataType sum = 0.0f;
     LabelDataType sqr_sum = 0.0f;
-    for (size_t example_index = 0; example_index < num_of_examples; ++example_index) {
+    for (std::size_t example_index = 0; example_index < num_of_examples;
+         ++example_index) {
       const LabelDataType label = label_data[example_index];
 
       sum += label;

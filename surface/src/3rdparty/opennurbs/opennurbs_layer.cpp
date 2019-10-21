@@ -1155,7 +1155,7 @@ ON_BOOL32 ON__LayerExtensions::IsValid( ON_TextLog* text_log ) const
 // virtual ON_Object override
 unsigned int ON__LayerExtensions::SizeOf() const
 {
-  size_t sz = sizeof(*this) - sizeof(ON_UserData);
+  std::size_t sz = sizeof(*this) - sizeof(ON_UserData);
   sz += m_vp_settings.SizeOfArray();
   return (unsigned int)sz;
 }
@@ -1325,7 +1325,7 @@ void ON__LayerExtensions::DeleteViewportSettings(
     }
     else
     {
-      const size_t vp_settings_count = ud->m_vp_settings.Count();
+      const std::size_t vp_settings_count = ud->m_vp_settings.Count();
       if ( vp_settings_count > 0 )
       {
         const ON__LayerPerViewSettings* vp_settings0 = ud->m_vp_settings.Array();

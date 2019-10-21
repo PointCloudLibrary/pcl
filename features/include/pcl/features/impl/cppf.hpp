@@ -67,10 +67,10 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   output.is_dense = true;
 
   // Compute point pair features for every pair of points in the cloud
-  for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
+  for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
-    size_t i = (*indices_)[index_i];
-    for (size_t j = 0 ; j < input_->points.size (); ++j)
+    std::size_t i = (*indices_)[index_i];
+    for (std::size_t j = 0 ; j < input_->points.size (); ++j)
     {
       PointOutT p;
       if (i != j)

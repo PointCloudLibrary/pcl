@@ -159,7 +159,7 @@ class SUSANDemo
           if (keypoints && !keypoints->empty ())
           {
             image_viewer_.removeLayer (getStrBool (keypts));
-            for (size_t i = 0; i < keypoints->size (); ++i)
+            for (std::size_t i = 0; i < keypoints->size (); ++i)
             {
               int u = int (keypoints->points[i].label % cloud->width);
               int v = cloud->height - int (keypoints->points[i].label / cloud->width);

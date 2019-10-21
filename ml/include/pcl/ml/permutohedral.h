@@ -113,10 +113,10 @@ public:
   debug();
 
   /** Pseudo radnom generator. */
-  inline size_t
+  inline std::size_t
   generateHashKey(const std::vector<short>& k)
   {
-    size_t r = 0;
+    std::size_t r = 0;
     for (int i = 0; i < d_; i++) {
       r += k[i];
       r *= 1664525;
@@ -161,7 +161,7 @@ class HashTableOLD {
   }
 
 protected:
-  size_t key_size_, filled_, capacity_;
+  std::size_t key_size_, filled_, capacity_;
   short* keys_;
   int* table_;
 
@@ -185,7 +185,7 @@ protected:
     for (int i = 0; i < old_capacity; i++)
       if (old_table[i] >= 0) {
         int e = old_table[i];
-        size_t h = hash(old_keys + (getKey(e) - keys_)) % capacity_;
+        std::size_t h = hash(old_keys + (getKey(e) - keys_)) % capacity_;
         for (; table_[h] >= 0; h = h < capacity_ - 1 ? h + 1 : 0) {
         };
         table_[h] = e;
@@ -195,11 +195,11 @@ protected:
     delete[] old_table;
   }
 
-  size_t
+  std::size_t
   hash(const short* k)
   {
-    size_t r = 0;
-    for (size_t i = 0; i < key_size_; i++) {
+    std::size_t r = 0;
+    for (std::size_t i = 0; i < key_size_; i++) {
       r += k[i];
       r *= 1664525;
     }
@@ -240,14 +240,14 @@ public:
     if (2 * filled_ >= capacity_)
       grow();
     // Get the hash value
-    size_t h = hash(k) % capacity_;
+    std::size_t h = hash(k) % capacity_;
     // Find the element with he right key, using linear probing
     while (1) {
       int e = table_[h];
       if (e == -1) {
         if (create) {
           // Insert a new key and return the new id
-          for (size_t i = 0; i < key_size_; i++)
+          for (std::size_t i = 0; i < key_size_; i++)
             keys_[filled_ * key_size_ + i] = k[i];
           return table_[h] = static_cast<int>(filled_++);
         }
@@ -256,7 +256,7 @@ public:
       }
       // Check if the current key is The One
       bool good = true;
-      for (size_t i = 0; i < key_size_ && good; i++)
+      for (std::size_t i = 0; i < key_size_ && good; i++)
         if (keys_[e * key_size_ + i] != k[i])
           good = false;
       if (good)
@@ -293,7 +293,7 @@ class HashTable
 
 
   protected:
-    std::multimap<size_t, int> table_;
+    std::multimap<std::size_t, int> table_;
 
     std::vector<std::vector<short> > keys;
     //keys.reserve ( (d_+1) * N_ );

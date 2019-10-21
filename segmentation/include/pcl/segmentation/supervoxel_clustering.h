@@ -515,7 +515,7 @@ namespace pcl
           getCentroid () const
           { return centroid_; }
 
-          size_t
+          std::size_t
           size () const { return leaves_.size (); }
         private:
           //Stores leaves

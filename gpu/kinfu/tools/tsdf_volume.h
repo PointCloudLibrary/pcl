@@ -85,7 +85,7 @@ namespace pcl
           weights_element_size (sizeof(WeightT))
       {};
 
-      inline size_t
+      inline std::size_t
       getVolumeSize () const { return resolution[0] * resolution[1] * resolution[2]; };
 
       friend inline std::ostream&
@@ -183,7 +183,7 @@ public:
     save (const std::string &filename = "tsdf_volume.dat", bool binary = true) const;
 
     /** \brief Returns overall number of voxels in grid */
-    inline size_t
+    inline std::size_t
     size () const { return header_.getVolumeSize(); };
 
     /** \brief Returns the volume size in mm */

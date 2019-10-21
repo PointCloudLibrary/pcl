@@ -51,14 +51,14 @@ namespace pcl
         template<typename T> struct DevPtr
         {
             using elem_type = T;
-            const static size_t elem_size = sizeof(elem_type);
+            const static std::size_t elem_size = sizeof(elem_type);
 
             T* data;
 
             __PCL_GPU_HOST_DEVICE__ DevPtr() : data(nullptr) {}
             __PCL_GPU_HOST_DEVICE__ DevPtr(T* data_arg) : data(data_arg) {}
 
-            __PCL_GPU_HOST_DEVICE__ size_t elemSize() const { return elem_size; }
+            __PCL_GPU_HOST_DEVICE__ std::size_t elemSize() const { return elem_size; }
             __PCL_GPU_HOST_DEVICE__ operator       T*()       { return data; }
             __PCL_GPU_HOST_DEVICE__ operator const T*() const { return data; }
         };
@@ -66,18 +66,18 @@ namespace pcl
         template<typename T> struct PtrSz : public DevPtr<T>
         {                     
             __PCL_GPU_HOST_DEVICE__ PtrSz() : size(0) {}
-            __PCL_GPU_HOST_DEVICE__ PtrSz(T* data_arg, size_t size_arg) : DevPtr<T>(data_arg), size(size_arg) {}
+            __PCL_GPU_HOST_DEVICE__ PtrSz(T* data_arg, std::size_t size_arg) : DevPtr<T>(data_arg), size(size_arg) {}
 
-            size_t size;
+            std::size_t size;
         };
 
         template<typename T>  struct PtrStep : public DevPtr<T>
         {   
             __PCL_GPU_HOST_DEVICE__ PtrStep() : step(0) {}
-            __PCL_GPU_HOST_DEVICE__ PtrStep(T* data_arg, size_t step_arg) : DevPtr<T>(data_arg), step(step_arg) {}
+            __PCL_GPU_HOST_DEVICE__ PtrStep(T* data_arg, std::size_t step_arg) : DevPtr<T>(data_arg), step(step_arg) {}
 
             /** \brief stride between two consecutive rows in bytes. Step is stored always and everywhere in bytes!!! */
-            size_t step;            
+            std::size_t step;            
 
             __PCL_GPU_HOST_DEVICE__       T* ptr(int y = 0)       { return (      T*)( (      char*)DevPtr<T>::data + y * step); }
             __PCL_GPU_HOST_DEVICE__ const T* ptr(int y = 0) const { return (const T*)( (const char*)DevPtr<T>::data + y * step); }
@@ -89,7 +89,7 @@ namespace pcl
         template <typename T> struct PtrStepSz : public PtrStep<T>
         {   
             __PCL_GPU_HOST_DEVICE__ PtrStepSz() : cols(0), rows(0) {}
-            __PCL_GPU_HOST_DEVICE__ PtrStepSz(int rows_arg, int cols_arg, T* data_arg, size_t step_arg) 
+            __PCL_GPU_HOST_DEVICE__ PtrStepSz(int rows_arg, int cols_arg, T* data_arg, std::size_t step_arg) 
                 : PtrStep<T>(data_arg, step_arg), cols(cols_arg), rows(rows_arg) {}
 
             int cols;

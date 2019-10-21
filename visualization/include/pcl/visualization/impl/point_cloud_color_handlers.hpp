@@ -153,7 +153,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor () const
   int j = 0;
   // If XYZ present, check if the points are invalid
   int x_idx = -1;
-  for (size_t d = 0; d < fields_.size (); ++d)
+  for (std::size_t d = 0; d < fields_.size (); ++d)
     if (fields_[d].name == "x")
       x_idx = static_cast<int> (d);
 
@@ -240,7 +240,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<PointT>::getColor () const
   // If XYZ present, check if the points are invalid
   int x_idx = -1;
 
-  for (size_t d = 0; d < fields_.size (); ++d)
+  for (std::size_t d = 0; d < fields_.size (); ++d)
     if (fields_[d].name == "x")
       x_idx = static_cast<int> (d);
 
@@ -393,7 +393,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor () cons
   int j = 0;
   // If XYZ present, check if the points are invalid
   int x_idx = -1;
-  for (size_t d = 0; d < fields_.size (); ++d)
+  for (std::size_t d = 0; d < fields_.size (); ++d)
     if (fields_[d].name == "x")
       x_idx = static_cast<int> (d);
 
@@ -463,7 +463,7 @@ pcl::visualization::PointCloudColorHandlerRGBAField<PointT>::getColor () const
   int j = 0;
   // If XYZ present, check if the points are invalid
   int x_idx = -1;
-  for (size_t d = 0; d < fields_.size (); ++d)
+  for (std::size_t d = 0; d < fields_.size (); ++d)
     if (fields_[d].name == "x")
       x_idx = static_cast<int> (d);
 
@@ -537,7 +537,7 @@ pcl::visualization::PointCloudColorHandlerLabelField<PointT>::getColor () const
       labels.insert (cloud_->points[i].label);
 
     // Assign Glasbey colors in ascending order of labels
-    size_t color = 0;
+    std::size_t color = 0;
     for (std::set<std::uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter, ++color)
       colormap[*iter] = GlasbeyLUT::at (color % GlasbeyLUT::size ());
   }

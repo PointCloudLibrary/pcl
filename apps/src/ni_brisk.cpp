@@ -184,8 +184,8 @@ class BRISKDemo
       keypoints3d.height = keypoints->height;
       keypoints3d.is_dense = true;
 
-      size_t j = 0;
-      for (size_t i = 0; i < keypoints->size (); ++i)
+      std::size_t j = 0;
+      for (std::size_t i = 0; i < keypoints->size (); ++i)
       {
         PointT pt = bilinearInterpolation (cloud, keypoints->points[i].x, keypoints->points[i].y);
 
@@ -254,7 +254,7 @@ class BRISKDemo
           image_viewer_.showRGBImage<PointT> (cloud);
 
           image_viewer_.removeLayer (getStrBool (keypts));
-          for (size_t i = 0; i < keypoints->size (); ++i)
+          for (std::size_t i = 0; i < keypoints->size (); ++i)
           {
             int u = int (keypoints->points[i].x);
             int v = int (keypoints->points[i].y);

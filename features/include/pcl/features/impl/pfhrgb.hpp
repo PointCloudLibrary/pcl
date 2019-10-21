@@ -74,9 +74,9 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computePointPFHRGBSignature
   float hist_incr = 100.0f / static_cast<float> (indices.size () * (indices.size () - 1) / 2);
 
   // Iterate over all the points in the neighborhood
-  for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
+  for (std::size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
-    for (size_t j_idx = 0; j_idx < indices.size (); ++j_idx)
+    for (std::size_t j_idx = 0; j_idx < indices.size (); ++j_idx)
     {
       // Avoid unnecessary returns
       if (i_idx == j_idx)
@@ -152,7 +152,7 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
   std::vector<float> nn_dists (k_);
 
   // Iterating over the entire index vector
-  for (size_t idx = 0; idx < indices_->size (); ++idx)
+  for (std::size_t idx = 0; idx < indices_->size (); ++idx)
   {
     this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 

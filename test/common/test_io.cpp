@@ -439,7 +439,7 @@ TEST (PCL, CopyPointCloudWithIndicesAndRGBToRGBA)
   pcl::copyPointCloud (cloud_xyz_rgba, indices, cloud_xyz_rgb);
 
   EXPECT_EQ (indices.size (), cloud_xyz_rgb.size ());
-  for (size_t i = 0; i < indices.size (); ++i)
+  for (std::size_t i = 0; i < indices.size (); ++i)
   {
     EXPECT_XYZ_EQ (cloud_xyz_rgb[i], cloud_xyz_rgba[indices[i]]);
     EXPECT_EQ (cloud_xyz_rgb[i].rgba, cloud_xyz_rgba[indices[i]].rgba);
@@ -455,7 +455,7 @@ TEST (PCL, CopyPointCloudWithSameTypes)
   pcl::copyPointCloud (cloud_in, cloud_out);
 
   ASSERT_EQ (cloud_in.size (), cloud_out.size ());
-  for (size_t i = 0; i < cloud_out.size (); ++i)
+  for (std::size_t i = 0; i < cloud_out.size (); ++i)
     EXPECT_XYZ_EQ (cloud_in[i], cloud_out[i]);
 
   pcl::copyPointCloud (cloud_in_empty, cloud_out);

@@ -171,12 +171,12 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
   Mesh half_edge_mesh;
   VertexIndices vi;
 
-  for (size_t i=0; i<this->vertices_.size (); ++i)
+  for (std::size_t i=0; i<this->vertices_.size (); ++i)
   {
     half_edge_mesh.addVertex (this->vertices_ [i]);
   }
 
-  for (size_t i=0; i<faces.size (); ++i)
+  for (std::size_t i=0; i<faces.size (); ++i)
   {
     vi.clear ();
     for (const unsigned int &j : faces [i])
@@ -195,7 +195,7 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
   pcl::PointCloud <pcl::PointXYZRGBNormal> converted_cloud;
   pcl::fromPCLPointCloud2 (face_vertex_mesh.cloud, converted_cloud);
   ASSERT_EQ (this->vertices_.size (), converted_cloud.size ());
-  for (size_t i=0; i<this->vertices_.size (); ++i)
+  for (std::size_t i=0; i<this->vertices_.size (); ++i)
   {
     const pcl::PointXYZRGBNormal& expected_pt = this->vertices_ [i];
     const pcl::PointXYZRGBNormal& actual_pt   = converted_cloud [i];
@@ -215,7 +215,7 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
 
   // Check the polygons
   ASSERT_EQ (faces.size (), face_vertex_mesh.polygons.size ());
-  for (size_t i=0; i<faces.size (); ++i)
+  for (std::size_t i=0; i<faces.size (); ++i)
   {
     EXPECT_TRUE (isCircularPermutation (faces [i], face_vertex_mesh.polygons [i].vertices)) << "Face number " << i;
   }
@@ -234,7 +234,7 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
   pcl::PolygonMesh face_vertex_mesh;
   pcl::toPCLPointCloud2 (this->vertices_, face_vertex_mesh.cloud);
   pcl::Vertices face;
-  for (size_t i=0; i<this->non_manifold_faces_.size (); ++i)
+  for (std::size_t i=0; i<this->non_manifold_faces_.size (); ++i)
   {
     face.vertices = this->non_manifold_faces_ [i];
     face_vertex_mesh.polygons.push_back (face);
@@ -249,7 +249,7 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
 
   // Check if the cloud got copied correctly.
   ASSERT_EQ (this->vertices_.size (), half_edge_mesh.getVertexDataCloud ().size ());
-  for (size_t i=0; i<this->vertices_.size (); ++i)
+  for (std::size_t i=0; i<this->vertices_.size (); ++i)
   {
     const pcl::PointXYZRGBNormal& expected_pt = this->vertices_ [i];
     const pcl::PointXYZRGBNormal& actual_pt   = half_edge_mesh.getVertexDataCloud () [i];
@@ -275,7 +275,7 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
   ASSERT_EQ (expected_faces.size (), half_edge_mesh.sizeFaces ());
 
   std::vector <std::uint32_t> converted_face;
-  for (size_t i=0; i<half_edge_mesh.sizeFaces (); ++i)
+  for (std::size_t i=0; i<half_edge_mesh.sizeFaces (); ++i)
   {
     VAFC       circ     = half_edge_mesh.getVertexAroundFaceCirculator (FaceIndex (i));
     const VAFC circ_end = circ;
@@ -317,7 +317,7 @@ TYPED_TEST (TestMeshConversion, NonConvertibleCases)
   pcl::PolygonMesh face_vertex_mesh;
   pcl::toPCLPointCloud2 (this->vertices_, face_vertex_mesh.cloud);
   pcl::Vertices face;
-  for (size_t i=0; i<this->non_manifold_faces_.size (); ++i)
+  for (std::size_t i=0; i<this->non_manifold_faces_.size (); ++i)
   {
     face.vertices = this->non_manifold_faces_ [i];
     face_vertex_mesh.polygons.push_back (face);

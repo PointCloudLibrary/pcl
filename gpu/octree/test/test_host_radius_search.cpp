@@ -108,7 +108,7 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
     sizes.reserve(data.tests_num);
     octree_device.internalDownload();
              
-    for(size_t i = 0; i < data.tests_num; ++i)
+    for(std::size_t i = 0; i < data.tests_num; ++i)
     {
         //search host on octree that was built on device
         std::vector<int> results_host_gpu; //host search

@@ -100,7 +100,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 
     std::sort (distances.begin (), distances.end ());
     // d_cur_penalty = median (distances)
-    size_t mid = sac_model_->getIndices ()->size () / 2;
+    std::size_t mid = sac_model_->getIndices ()->size () / 2;
     if (mid >= distances.size ())
     {
       //iterations_++;
@@ -162,7 +162,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
   inliers_.resize (distances.size ());
   // Get the inliers for the best model found
   n_inliers_count = 0;
-  for (size_t i = 0; i < distances.size (); ++i)
+  for (std::size_t i = 0; i < distances.size (); ++i)
     if (distances[i] <= threshold_)
       inliers_[n_inliers_count++] = indices[i];
 

@@ -160,7 +160,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
 {
   // Check the input
   // TODO: Double check the minimum number of points necessary for icp
-  const size_t n_min = 4;
+  const std::size_t n_min = 4;
 
   if(mesh_model->sizeVertices () < n_min || cloud_data->size () < n_min)
   {
@@ -194,8 +194,8 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
   const CloudNormalConstPtr cloud_data_selected  = this->selectDataPoints (cloud_data);
   t_select = sw.getTime ();
 
-  const size_t n_model = cloud_model_selected->size ();
-  const size_t n_data  = cloud_data_selected->size ();
+  const std::size_t n_model = cloud_model_selected->size ();
+  const std::size_t n_data  = cloud_data_selected->size ();
   if(n_model < n_min) {std::cerr << "ERROR in icp.cpp: Not enough model points after selection!\n"; return (false);}
   if(n_data < n_min)  {std::cerr << "ERROR in icp.cpp: Not enough data points after selection!\n"; return (false);}
 
@@ -244,7 +244,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
       // Check the distance threshold
       if (squared_distance [0] < squared_distance_threshold)
       {
-        if ((size_t) index [0] >= cloud_model_selected->size ())
+        if ((std::size_t) index [0] >= cloud_model_selected->size ())
         {
           std::cerr << "ERROR in icp.cpp: Segfault!\n";
           std::cerr << "  Trying to access index " << index [0] << " >= " << cloud_model_selected->size () << std::endl;
@@ -266,7 +266,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
 
     t_nn_search += sw.getTime ();
 
-    const size_t n_corr = cloud_data_corr.size ();
+    const std::size_t n_corr = cloud_data_corr.size ();
     if (n_corr < n_min)
     {
       std::cerr << "ERROR in icp.cpp: Not enough correspondences: " << n_corr << " < " << n_min << std::endl;
@@ -425,7 +425,7 @@ pcl::ihs::ICP::minimizePointPlane (const CloudNormal& cloud_source,
 {
   // Check the input
   // n < n_min already checked in the icp main loop
-  const size_t n = cloud_source.size ();
+  const std::size_t n = cloud_source.size ();
   if (cloud_target.size () != n)
   {
     std::cerr << "ERROR in icp.cpp: Input must have the same size!\n";

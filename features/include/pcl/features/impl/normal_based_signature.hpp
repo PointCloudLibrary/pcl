@@ -61,18 +61,18 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
   tree_->setInputCloud (input_);
   output.points.resize (indices_->size ());
 
-  for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
+  for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
-    size_t point_i = (*indices_)[index_i];
+    std::size_t point_i = (*indices_)[index_i];
     Eigen::MatrixXf s_matrix (N_, M_);
 
     Eigen::Vector4f center_point = input_->points[point_i].getVector4fMap ();
 
-    for (size_t k = 0; k < N_; ++k)
+    for (std::size_t k = 0; k < N_; ++k)
     {
       Eigen::VectorXf s_row (M_);
 
-      for (size_t l = 0; l < M_; ++l)
+      for (std::size_t l = 0; l < M_; ++l)
       {
         Eigen::Vector4f normal = normals_->points[point_i].getNormalVector4fMap ();
         Eigen::Vector4f normal_u = Eigen::Vector4f::Zero ();
@@ -125,7 +125,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
         float average_normalization_factor = 0.0f;
 
         // Normals weighted by 1/squared_distances
-        for (size_t nn_i = 0; nn_i < k_indices.size (); ++nn_i)
+        for (std::size_t nn_i = 0; nn_i < k_indices.size (); ++nn_i)
         {
           if (k_sqr_distances[nn_i] < 1e-7f)
           {
@@ -156,13 +156,13 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
 
     // do DFT on the s_matrix column-wise
     Eigen::MatrixXf dft_matrix (N_, M_);
-    for (size_t column_i = 0; column_i < M_; ++column_i)
+    for (std::size_t column_i = 0; column_i < M_; ++column_i)
     {
       Eigen::VectorXf dft_col (N_);
-      for (size_t k = 0; k < N_; ++k)
+      for (std::size_t k = 0; k < N_; ++k)
       {
         float Xk_real = 0.0f, Xk_imag = 0.0f;
-        for (size_t n = 0; n < N_; ++n)
+        for (std::size_t n = 0; n < N_; ++n)
         {
           Xk_real += static_cast<float> (s_matrix (n, column_i) * std::cos (2.0f * M_PI / static_cast<double> (N_ * k * n)));
           Xk_imag += static_cast<float> (s_matrix (n, column_i) * sin (2.0f * M_PI / static_cast<double> (N_ * k * n)));
@@ -175,8 +175,8 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
     Eigen::MatrixXf final_matrix = dft_matrix.block (0, 0, N_prime_, M_prime_);
 
     PointFeature feature_point;
-    for (size_t i = 0; i < N_prime_; ++i)
-      for (size_t j = 0; j < M_prime_; ++j)
+    for (std::size_t i = 0; i < N_prime_; ++i)
+      for (std::size_t j = 0; j < M_prime_; ++j)
         feature_point.values[i*M_prime_ + j] = final_matrix (i, j);
 
     output.points[index_i] = feature_point;

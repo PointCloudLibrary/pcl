@@ -91,7 +91,7 @@ pcl::UnaryClassifier<PointT>::convertCloud (typename pcl::PointCloud<PointT>::Pt
   out->height = 1;
   out->is_dense = false;
 
-  for (size_t i = 0; i < in->points.size (); i++)
+  for (std::size_t i = 0; i < in->points.size (); i++)
   {
     pcl::PointXYZ point;
     // fill X Y Z
@@ -114,7 +114,7 @@ pcl::UnaryClassifier<PointT>::convertCloud (typename pcl::PointCloud<PointT>::Pt
   out->height = 1;
   out->is_dense = false;
 
-  for (size_t i = 0; i < in->points.size (); i++)
+  for (std::size_t i = 0; i < in->points.size (); i++)
   {
     pcl::PointXYZRGBL point;
     // X Y Z R G B L
@@ -141,7 +141,7 @@ pcl::UnaryClassifier<PointT>::findClusters (typename pcl::PointCloud<PointT>::Pt
 
   if (label_idx != -1)
   {
-    for (size_t i = 0; i < in->points.size (); i++)
+    for (std::size_t i = 0; i < in->points.size (); i++)
     {
       // get the 'label' field                                                                       
       std::uint32_t label;      
@@ -177,7 +177,7 @@ pcl::UnaryClassifier<PointT>::getCloudWithLabel (typename pcl::PointCloud<PointT
 
   if (label_idx != -1)
   {
-    for (size_t i = 0; i < in->points.size (); i++)
+    for (std::size_t i = 0; i < in->points.size (); i++)
     {
       // get the 'label' field                                                                       
       std::uint32_t label;
@@ -258,7 +258,7 @@ pcl::UnaryClassifier<PointT>::kmeansClustering (pcl::PointCloud<pcl::FPFHSignatu
   out->is_dense = false;
   out->points.resize (static_cast<int> (centroids.size ()));
   // copy cluster centroids into feature cloud 
-  for (size_t i = 0; i < centroids.size (); i++)
+  for (std::size_t i = 0; i < centroids.size (); i++)
   {
     pcl::FPFHSignature33 point;
     for (int idx = 0; idx < 33; idx++)
@@ -282,12 +282,12 @@ pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud
   // Convert data into FLANN format
   int n_col = 33;
   flann::Matrix<float> data (new float[n_row * n_col], n_row, n_col);
-  for (size_t k = 0; k < trained_features.size (); k++)
+  for (std::size_t k = 0; k < trained_features.size (); k++)
   {
     pcl::PointCloud<pcl::FPFHSignature33>::Ptr hist = trained_features[k];
-    size_t c = hist->points.size ();
-    for (size_t i = 0; i < c; ++i)
-      for (size_t j = 0; j < data.cols; ++j)
+    std::size_t c = hist->points.size ();
+    for (std::size_t i = 0; i < c; ++i)
+      for (std::size_t j = 0; j < data.cols; ++j)
         data[(k * c) + i][j] = hist->points[i].histogram[j];
   }
 
@@ -303,7 +303,7 @@ pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud
   indi.resize (query_features->points.size ());
   dist.resize (query_features->points.size ());
   // Query all points
-  for (size_t i = 0; i < query_features->points.size (); i++)
+  for (std::size_t i = 0; i < query_features->points.size (); i++)
   {
     // Query point  
     flann::Matrix<float> p = flann::Matrix<float>(new float[n_col], 1, n_col);
@@ -334,7 +334,7 @@ pcl::UnaryClassifier<PointT>::assignLabels (std::vector<int> &indi,
                               
 {
   float nfm = static_cast<float> (n_feature_means);
-  for (size_t i = 0; i < out->points.size (); i++)
+  for (std::size_t i = 0; i < out->points.size (); i++)
   {
     if (dist[i] < feature_threshold)
     {
