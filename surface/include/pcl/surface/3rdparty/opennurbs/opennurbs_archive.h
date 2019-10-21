@@ -2485,6 +2485,7 @@ protected:
   bool Flush() = 0;
 
   /*
+  Applications (like Rhino) override this function to load plug-ins
   Description:
     When ON_BinaryArchive::ReadObject() encounters userdata and
     the user data class id is not present,  LoadUserDataApplication
@@ -2495,9 +2496,12 @@ protected:
     2 - the application was already loaded
   */
   virtual
-  int LoadUserDataApplication( 
-    ON_UUID application_id 
-    );
+  int LoadUserDataApplication(
+    ON_UUID /*application_id*/
+    )
+  {
+    return 0;
+  }
 
   bool SetArchive3dmVersion(int);
 

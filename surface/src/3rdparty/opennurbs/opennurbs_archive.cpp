@@ -3865,14 +3865,6 @@ bool ON_BinaryArchive::WriteObjectUserData( const ON_Object& object )
   return rc;
 }
 
-int
-ON_BinaryArchive::LoadUserDataApplication( ON_UUID )
-{
-  // This is a virtual function.
-  // Rhino overrides this function to load plug-ins.
-  return 0;
-}
-
 int ON_BinaryArchive::ReadObject( ON_Object** ppObject )
 {
   if ( !ppObject ) 
