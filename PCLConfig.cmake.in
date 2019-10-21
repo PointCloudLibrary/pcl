@@ -12,6 +12,10 @@
 #                                   www.pointclouds.org
 #------------------------------------------------------------------------------------
 
+# Set default policy behavior similar to minimum requirement version
+cmake_policy(VERSION 3.5)
+
+# explicitly set policies we already support in newer cmake versions
 if(POLICY CMP0074)
   # TODO: update *_ROOT variables to be PCL_*_ROOT or equivalent.
   # CMP0074 directly affects how Find* modules work and *_ROOT variables.  Since
