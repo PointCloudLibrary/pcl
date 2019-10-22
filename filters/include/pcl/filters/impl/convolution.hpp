@@ -92,8 +92,8 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveRows (PointCloudOut& outpu
     initCompute (output);
     switch (borders_policy_)
     {
-      case BORDERS_POLICY_MIRROR : convolve_rows_mirror (output);
-      case BORDERS_POLICY_DUPLICATE : convolve_rows_duplicate (output);
+      case BORDERS_POLICY_MIRROR : convolve_rows_mirror (output); break;
+      case BORDERS_POLICY_DUPLICATE : convolve_rows_duplicate (output); break;
       case BORDERS_POLICY_IGNORE : convolve_rows (output);
     }
   }
@@ -112,8 +112,8 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveCols (PointCloudOut& outpu
     initCompute (output);
     switch (borders_policy_)
     {
-      case BORDERS_POLICY_MIRROR : convolve_cols_mirror (output);
-      case BORDERS_POLICY_DUPLICATE : convolve_cols_duplicate (output);
+      case BORDERS_POLICY_MIRROR : convolve_cols_mirror (output); break;
+      case BORDERS_POLICY_DUPLICATE : convolve_cols_duplicate (output); break;
       case BORDERS_POLICY_IGNORE : convolve_cols (output);
     }
   }
