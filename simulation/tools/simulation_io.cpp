@@ -248,10 +248,8 @@ pcl::simulation::SimExample::write_depth_image_uint(const float* depth_buffer,
       float zf = 20.0;
       float d = depth_buffer[i_in];
 
-      unsigned short z_new = (unsigned short)std::floor(
-          1000 * (-zf * zn / ((zf - zn) * (d - zf / (zf - zn)))));
-      if (z_new > 65535)
-        z_new = 65535;
+      unsigned short z_new = static_cast<unsigned short>(std::min(
+          std::floor(1000 * (-zf * zn / ((zf - zn) * (d - zf / (zf - zn))))), 65535.f));
 
       if (z_new < 18000) {
         std::cout << z_new << " " << d << " " << x << "\n";
