@@ -427,9 +427,9 @@ static const char *parse_object(cJSON *item,const char *value)
 static char *print_object(cJSON *item,int depth,int fmt)
 {
 	char *out=nullptr;
-	size_t len=7;
+	std::size_t len=7;
 	cJSON *child=item->child;
-	size_t numentries=0,fail=0;
+	std::size_t numentries=0,fail=0;
 	/* Count the number of entries. */
 	while (child) numentries++,child=child->next;
 	/* Allocate space for the names and the objects */

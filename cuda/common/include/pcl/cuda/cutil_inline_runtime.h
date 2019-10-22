@@ -213,7 +213,7 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
 #  ifdef _DEBUG // Do this only in debug mode...
 	inline void VSPrintf(FILE *file, LPCSTR fmt, ...)
 	{
-		size_t fmt2_sz	= 2048;
+		std::size_t fmt2_sz	= 2048;
 		char *fmt2		= (char*)malloc(fmt2_sz);
 		va_list  vlist;
 		va_start(vlist, fmt);
